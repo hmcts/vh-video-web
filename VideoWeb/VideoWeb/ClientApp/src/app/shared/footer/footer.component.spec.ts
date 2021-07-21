@@ -56,6 +56,10 @@ describe('FooterComponent', () => {
         fixture.detectChanges();
     });
 
+    afterEach(() => {
+        component.routerEventsSubscription$.unsubscribe();
+    });
+
     it('should create', () => {
         expect(component).toBeTruthy();
     });

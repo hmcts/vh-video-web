@@ -1,28 +1,35 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NavigationEnd, Router, RouterEvent } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { filter } from 'rxjs/operators';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from '../page-url.constants';
-
+import { Subscription } from 'rxjs';
 @Component({
     selector: 'app-footer',
     templateUrl: './footer.component.html',
     styleUrls: ['./footer.component.css']
 })
-export class FooterComponent implements OnInit {
+export class FooterComponent implements OnInit, OnDestroy {
     hideContactUsLink = false;
     privacyPolicyUri = pageUrls.PrivacyPolicy;
     accessibilityUri = pageUrls.Accessibility;
+    routerEventsSubscription$: Subscription = new Subscription();
 
     constructor(private router: Router, private translate: TranslateService, private logger: Logger) {
-        this.router.events.pipe(filter((event: RouterEvent) => event instanceof NavigationEnd)).subscribe(x => {
-            this.hideContactUs();
-        });
+        this.routerEventsSubscription$.add(
+            this.router.events.pipe(filter((event: RouterEvent) => event instanceof NavigationEnd)).subscribe(x => {
+                this.hideContactUs();
+            })
+        );
     }
 
     ngOnInit() {
         this.hideContactUs();
+    }
+
+    ngOnDestroy(): void {
+        this.routerEventsSubscription$.unsubscribe();
     }
 
     hideContactUs() {
