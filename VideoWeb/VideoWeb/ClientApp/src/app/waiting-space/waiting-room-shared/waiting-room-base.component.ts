@@ -386,15 +386,21 @@ export abstract class WaitingRoomBaseDirective {
         this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub room transfer`);
         this.eventHubSubscription$.add(
             this.eventService.getRoomTransfer().subscribe(async roomTransfer => {
+                console.log('Faz - roomTransfer');
+                console.log('Faz - conference', this.conference);
                 const participant = this.conference.participants.find(p => p.id === roomTransfer.participant_id);
                 const endpoint = this.conference.endpoints.find(p => p.id === roomTransfer.participant_id);
 
+                console.log('Faz - participant', participant);
                 if (participant) {
+                    console.log('Faz - IsParticipant');
                     if (roomTransfer.to_room.toLowerCase().indexOf('consultation') >= 0) {
                         const room = this.conferenceRooms.find(r => r.label === roomTransfer.to_room);
+                        console.log('Faz - room', room);
                         participant.current_room = room
                             ? new RoomSummaryResponse(room)
                             : new RoomSummaryResponse({ label: roomTransfer.to_room });
+                        console.log('Faz - participant.current_room', participant.current_room);
                     } else {
                         participant.current_room = null;
                     }
@@ -458,25 +464,19 @@ export abstract class WaitingRoomBaseDirective {
 
         this.eventHubSubscription$.add(
             this.eventService.getParticipantsUpdated().subscribe(async participantsUpdatedMessage => {
-                this.logger.debug(`[WR] - Participant Updated`, participantsUpdatedMessage.participants);
+                this.logger.debug(`[WR] - Participants Updated`, participantsUpdatedMessage.participants);
                 const newParticipants = participantsUpdatedMessage.participants.filter(
                     x => !this.conference.participants.find(y => y.id === x.id)
                 );
                 newParticipants.forEach(participant => {
+                    this.logger.debug(`[WR] - Participant added, showing notification`, participant);
                     this.notificationToastrService.showParticipantAdded(
                         participant,
                         this.participant.status === ParticipantStatus.InHearing
                     );
                 });
 
-                const updatedParticipants = [...participantsUpdatedMessage.participants].map(updatedParticipant => {
-                    updatedParticipant.current_room = this.conference.participants.find(
-                        currentParticipant => currentParticipant.id === updatedParticipant.id
-                    )?.current_room;
-                    return updatedParticipant;
-                });
-
-                this.conference.participants = updatedParticipants;
+                this.conference.participants = participantsUpdatedMessage.participants;
             })
         );
     }
@@ -943,6 +943,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): void {
+        console.log('Faz - handleParticipantStatusChange', message);
         if (!this.validateIsForConference(message.conferenceId)) {
             return;
         }
@@ -1089,6 +1090,8 @@ export abstract class WaitingRoomBaseDirective {
         }
 
         if (this.participant.status === ParticipantStatus.InConsultation) {
+            console.log('Faz - updateShowVideo status === InConsultation');
+            console.log('Faz - participant', this.participant);
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because participant is in a consultation';
             this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);

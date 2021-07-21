@@ -29,7 +29,7 @@
     </div>
   </div>
 
-  <div *ngIf="hearing && isPrivateConsultation" class="panel-wrapper">
+  <div *ngIf="hearing && isPrivateConsultation && this.participant.current_room" class="panel-wrapper">
     <app-private-consultation-participants
       [conference]="hearing.getConference()"
       [participantEndpoints]="participantEndpoints"

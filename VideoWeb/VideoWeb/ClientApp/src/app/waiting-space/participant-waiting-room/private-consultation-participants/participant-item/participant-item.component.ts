@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { ConsultationAnswer, ParticipantResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
@@ -8,7 +8,7 @@ import { ConsultationAnswer, ParticipantResponse, ParticipantStatus } from 'src/
     templateUrl: './participant-item.component.html',
     styleUrls: ['./participant-item.component.scss']
 })
-export class ParticipantItemComponent {
+export class ParticipantItemComponent implements OnInit {
     @Input() participant: ParticipantResponse;
     @Input() interpreter: ParticipantResponse;
     @Input() participantCallStatuses: any = {};
@@ -17,6 +17,9 @@ export class ParticipantItemComponent {
     @Input() canInvite: boolean;
 
     constructor(private translateService: TranslateService, private consultationService: ConsultationService) {}
+    ngOnInit(): void {
+        console.log('Faz - Init participant', this.participant);
+    }
 
     getRowClasses(participant: any): string {
         if (this.isParticipantInCurrentRoom(participant)) {

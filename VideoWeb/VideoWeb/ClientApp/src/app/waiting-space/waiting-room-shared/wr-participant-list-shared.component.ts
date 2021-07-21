@@ -55,6 +55,7 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     }
 
     initParticipants() {
+        console.log('Faz - conference', this.conference);
         this.filterNonJudgeParticipants();
         this.filterJudge();
         this.filterPanelMembers();
@@ -183,10 +184,12 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
 
     protected filterPanelMembers(): void {
         this.panelMembers = this.conference.participants.filter(x => x.hearing_role === HearingRole.PANEL_MEMBER);
+        console.log('Faz - panel members', this.panelMembers);
     }
 
     protected filterJudge(): void {
         this.judge = this.conference.participants.find(x => x.role === Role.Judge);
+        console.log('Faz - judge', this.judge);
     }
 
     protected filterParticipantInConsultation(): void {
