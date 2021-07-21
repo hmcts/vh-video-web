@@ -66,7 +66,6 @@ export class EventsService {
         ParticipantStatusMessage: (participantId: string, username: string, conferenceId: string, status: ParticipantStatus) => {
             const message = new ParticipantStatusMessage(participantId, username, conferenceId, status);
             this.logger.debug('[EventsService] - ParticipantStatusMessage received', message);
-            console.log('Faz - ParticipantStatusMessage', message);
             this.participantStatusSubject.next(message);
         },
 
@@ -108,7 +107,6 @@ export class EventsService {
             requestedFor: string
         ) => {
             const message = new RequestedConsultationMessage(conferenceId, invitationId, roomLabel, requestedBy, requestedFor);
-            console.log('Faz - RequestedConsultationMessage', message);
             this.logger.debug('[EventsService] - RequestConsultationMessage received', message);
             this.requestedConsultationMessageSubject.next(message);
         },
@@ -130,7 +128,6 @@ export class EventsService {
                 responseInitiatorId
             );
             this.logger.debug('[EventsService] - ConsultationRequestResponseMessage received', message);
-            console.log('Faz - ConsultationRequestResponseMessage', message);
             this.consultationRequestResponseMessageSubject.next(message);
         },
 
@@ -181,13 +178,11 @@ export class EventsService {
 
         RoomUpdate: (payload: Room) => {
             this.logger.debug('[EventsService] - Room Update received: ', payload);
-            console.log('Faz - RoomUpdate', payload);
             this.roomUpdateSubject.next(payload);
         },
 
         RoomTransfer: (payload: RoomTransfer) => {
             this.logger.debug('[EventsService] - Room Transfer received: ', payload);
-            console.log('Faz - RoomTransfer', payload);
             this.roomTransferSubject.next(payload);
         },
 

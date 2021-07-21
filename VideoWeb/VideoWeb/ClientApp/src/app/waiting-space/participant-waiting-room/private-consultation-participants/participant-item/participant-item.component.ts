@@ -17,9 +17,7 @@ export class ParticipantItemComponent implements OnInit {
     @Input() canInvite: boolean;
 
     constructor(private translateService: TranslateService, private consultationService: ConsultationService) {}
-    ngOnInit(): void {
-        console.log('Faz - Init participant', this.participant);
-    }
+    ngOnInit(): void {}
 
     getRowClasses(participant: any): string {
         if (this.isParticipantInCurrentRoom(participant)) {

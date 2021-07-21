@@ -157,7 +157,6 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     getLoggedParticipant(): ParticipantResponse {
-        console.log('Faz - this.loggedInUser', this.loggedInUser);
         return this.conference.participants.find(x => x.id === this.loggedInUser.participant_id);
     }
 
@@ -387,21 +386,15 @@ export abstract class WaitingRoomBaseDirective {
         this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub room transfer`);
         this.eventHubSubscription$.add(
             this.eventService.getRoomTransfer().subscribe(async roomTransfer => {
-                console.log('Faz - roomTransfer');
-                console.log('Faz - conference', this.conference);
                 const participant = this.conference.participants.find(p => p.id === roomTransfer.participant_id);
                 const endpoint = this.conference.endpoints.find(p => p.id === roomTransfer.participant_id);
 
-                console.log('Faz - participant', participant);
                 if (participant) {
-                    console.log('Faz - IsParticipant');
                     if (roomTransfer.to_room.toLowerCase().indexOf('consultation') >= 0) {
                         const room = this.conferenceRooms.find(r => r.label === roomTransfer.to_room);
-                        console.log('Faz - room', room);
                         participant.current_room = room
                             ? new RoomSummaryResponse(room)
                             : new RoomSummaryResponse({ label: roomTransfer.to_room });
-                        console.log('Faz - participant.current_room', participant.current_room);
                     } else {
                         participant.current_room = null;
                     }
@@ -423,8 +416,6 @@ export abstract class WaitingRoomBaseDirective {
                         currentParticipantState: participant
                     }
                 );
-
-                console.log('Faz - conference', this.conference);
             })
         );
 
@@ -480,9 +471,7 @@ export abstract class WaitingRoomBaseDirective {
                 });
 
                 const updatedParticipants = [...participantsUpdatedMessage.participants].map(updatedParticipant => {
-                    const currentParticipant = this.conference.participants.find(
-                        x => x.id === updatedParticipant.id
-                    );
+                    const currentParticipant = this.conference.participants.find(x => x.id === updatedParticipant.id);
                     updatedParticipant.current_room = currentParticipant?.current_room;
                     updatedParticipant.status = currentParticipant ? currentParticipant.status : updatedParticipant.status;
                     return updatedParticipant;
@@ -490,7 +479,6 @@ export abstract class WaitingRoomBaseDirective {
 
                 this.conference.participants = updatedParticipants;
                 this.participant = this.getLoggedParticipant();
-                console.log('Faz - this.participant', this.participant);
             })
         );
     }
@@ -957,7 +945,6 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): void {
-        console.log('Faz - handleParticipantStatusChange', message);
         if (!this.validateIsForConference(message.conferenceId)) {
             return;
         }
@@ -1104,8 +1091,6 @@ export abstract class WaitingRoomBaseDirective {
         }
 
         if (this.participant.status === ParticipantStatus.InConsultation) {
-            console.log('Faz - updateShowVideo status === InConsultation');
-            console.log('Faz - participant', this.participant);
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because participant is in a consultation';
             this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);

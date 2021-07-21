@@ -38,7 +38,6 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     ngOnInit(): void {
-        console.log('Faz - roomLabel', this.roomLabel);
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
         this.initParticipants();
         this.setupSubscribers();
@@ -143,11 +142,6 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     geMemberParticipantsByRole(role: any): ParticipantListItem[] {
-        console.log('Faz - geMemberParticipantsByRole', role);
-        console.log(
-            'Faz - filter',
-            this.participantsInConsultation.filter(p => p.hearing_role === role)
-        );
         return this.participantsInConsultation.filter(p => p.hearing_role === role);
     }
 
