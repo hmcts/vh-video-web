@@ -42,7 +42,7 @@ export class UserMediaStreamService {
         this.stopStream(this.requestStream);
     }
 
-    private async getStream(): Promise<MediaStream> {
+    async getStream(): Promise<MediaStream> {
         if (this.requestStream) {
             this.stopStream(this.requestStream);
         }

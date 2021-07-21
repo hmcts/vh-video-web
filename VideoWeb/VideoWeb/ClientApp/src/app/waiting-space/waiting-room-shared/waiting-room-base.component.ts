@@ -54,8 +54,17 @@ import { NotificationSoundsService } from '../services/notification-sounds.servi
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
+import * as tf from '@tensorflow/tfjs';
+import '@tensorflow/tfjs-backend-wasm';
+import * as bodyPix from '@tensorflow-models/body-pix';
+import { setWasmPaths } from '@tensorflow/tfjs-backend-wasm';
 
 declare var HeartbeatFactory: any;
+declare global {
+    interface HTMLCanvasElement {
+        captureStream(frameRate?: number): MediaStream;
+    }
+}
 
 @Directive()
 export abstract class WaitingRoomBaseDirective {
@@ -104,6 +113,9 @@ export abstract class WaitingRoomBaseDirective {
     @ViewChild('roomTitleLabel', { static: false }) roomTitleLabel: ElementRef<HTMLDivElement>;
     @ViewChild('hearingControls', { static: false }) hearingControls: PrivateConsultationRoomControlsComponent;
     countdownComplete: boolean;
+    videoElement: any;
+    canvasElement: HTMLCanvasElement;
+    virtualBackground: boolean;
 
     protected constructor(
         protected route: ActivatedRoute,
@@ -130,6 +142,11 @@ export abstract class WaitingRoomBaseDirective {
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
         this.errorCount = 0;
+        // tf.browser.fromPixels();
+        setWasmPaths('https://localhost:5800/');
+    }
+    async main() {
+        this.logger.debug(`${this.loggerPrefix} Wasml successful`);
     }
 
     isParticipantInCorrectWaitingRoomState(): boolean {
@@ -646,14 +663,128 @@ export abstract class WaitingRoomBaseDirective {
             participant: this.participant.id
         };
         try {
+            await tf.setBackend('wasm').then(() => this.main());
             this.logger.debug(`${this.loggerPrefix} Retrieving jwtoken for heartbeat`, logPayload);
             this.token = await this.videoWebService.getJwToken(this.participant.id);
             this.logger.debug(`${this.loggerPrefix} Retrieved jwtoken for heartbeat`, logPayload);
             await this.setupPexipEventSubscriptionAndClient();
+            this.videoElement = document.getElementById('webcam') as any;
+            this.canvasElement = document.getElementById('canvasOutgoingFeed') as HTMLCanvasElement;
+            await this.userMediaStreamService.getStream().then(originalStream => {
+                if (this.videoElement != null) {
+                    this.videoElement.srcObject = originalStream;
+                    this.loadAndBlur();
+                    const stream = this.canvasElement.captureStream();
+                    originalStream.getAudioTracks().forEach(track => { stream.addTrack(track); });
+                    this.videoCallService.pexipAPI.video_source = null;
+                    this.videoCallService.pexipAPI.audio_source = null;
+                    this.videoCallService.pexipAPI.user_media_stream = stream;
+                    this.outgoingStream = stream;
+                }
+            });
             await this.call();
         } catch (error) {
             this.logger.error(`${this.loggerPrefix} There was an error getting a jwtoken for heartbeat`, error, logPayload);
             this.errorService.handleApiError(error);
+        }
+    }
+    async loadAndBlur() {
+        this.logger.warn(`${this.loggerPrefix} load and blur called`);
+        //       multiplier: 0.75,
+        //       stride: 32,
+        //       quantBytes: 4
+
+        const net = await bodyPix.load({
+            architecture: 'MobileNetV1',
+            outputStride: 16,
+            multiplier: 0.75,
+            quantBytes: 2
+        });
+        this.canvasElement.height = this.videoElement.videoHeight;
+        this.canvasElement.width = this.videoElement.videoWidth;
+        this.videoElement.hidden = true;
+        this.canvasElement.hidden = true;
+
+        this.perform(net);
+        this.logger.warn(`${this.loggerPrefix} load model ended ${net}`);
+    }
+
+    async perform(net) {
+        const backgroundBlurAmount = 19;
+        const edgeBlurAmount = 12;
+        const flipHorizontal = false;
+        this.logger.warn(`{this.loggerPrefix} PERFORM CALL`);
+        this.virtualBackground = false;
+        const self = this;
+        setInterval(function () {
+            if (self.videoElement.srcObject != null) {
+                net.segmentPerson(self.videoElement, {
+                    flipHorizontal: false,
+                    internalResolution: 'medium',
+                    segmentationThreshold: 0.5
+                })
+                    .then(personSegmentation => {
+                        if (personSegmentation != null) {
+                            if (self.virtualBackground) {
+                                self.drawBody(personSegmentation, 'l');
+                            } else {
+                                bodyPix.drawBokehEffect(self.canvasElement, self.videoElement, personSegmentation, backgroundBlurAmount, edgeBlurAmount, flipHorizontal);
+                            }
+                        }
+                    });
+            }
+        }, 25);
+    }
+
+    async drawBody(personSegmentation, screenMode: string) {
+        const context = this.canvasElement.getContext('2d');
+        // const background = document.getElementById('background-container');
+        // background.style.backgroundImage = '/assets/images/pyramid.jpg';
+        const self = this;
+        const imageObject = new Image();
+
+        if (screenMode === 'l') {
+            context.drawImage(this.videoElement, 0, 0);
+            const imageData = context.getImageData(0, 0, this.videoElement.width, this.videoElement.height);
+
+            const pixel = imageData.data;
+            for (let p = 0; p < pixel.length; p += 4) {
+                if (personSegmentation.data[p / 4] === 0) {
+                    pixel[p + 3] = 0;
+                }
+            }
+            context.imageSmoothingEnabled = true;
+            context.putImageData(imageData, 0, 0);
+
+            imageObject.onload = function () {
+                context.clearRect(0, 0, self.canvasElement.width, self.canvasElement.height);
+                context.imageSmoothingEnabled = true;
+                context.drawImage(imageObject, 0, 0, self.canvasElement.width, self.canvasElement.height);
+            };
+            imageObject.src = self.canvasElement.toDataURL();
+            // imageObject.src = '/assets/images/pyramid.jpg';
+        } else {
+            context.drawImage(this.videoElement, 0, 0, this.videoElement.width, this.videoElement.height);
+            const imageData = context.getImageData(0, 0, this.videoElement.width, this.videoElement.height);
+            const pixel = imageData.data;
+            for (let p = 0; p < pixel.length; p += 4) {
+                if (personSegmentation.data[p / 4] === 0) {
+                    pixel[p + 3] = 0;
+                }
+            }
+            context.imageSmoothingEnabled = true;
+            context.putImageData(imageData, 0, 0);
+        }
+    }
+
+    screenModeChange() {
+        const screenMode = window.innerWidth > window.innerHeight ? 'l' : 'p';
+        if (screenMode === 'l') {
+            this.canvasElement.style.width = '100vw';
+            this.canvasElement.style.height = 'auto';
+        } else {
+            this.canvasElement.style.width = window.innerWidth + 'px';
+            this.canvasElement.style.height = '100vh';
         }
     }
 

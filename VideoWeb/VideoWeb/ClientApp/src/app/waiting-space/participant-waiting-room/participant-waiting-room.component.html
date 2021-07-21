@@ -2,6 +2,19 @@
   <p class="govuk-body">{{ 'participant-waiting-room.loading-please-wait' | translate }}</p>
 </div>
 
+<div id="webcam-container" class="webcam-container d-none">
+  <video id="webcam" autoplay playsinline width="640" height="480" hidden></video>
+  <div id="selfie-container">
+    <div id="background-container" style="background-image: url(/assets/images/pyramid.jpg)">
+      <!-- <div class="spinner-border d-none" role="status">
+        <span class="sr-only">Loading...</span>
+      </div> -->
+    </div>
+    <canvas id="canvasOutgoingFeed" style=" background-color: transparent;"></canvas>
+  </div>
+  <div class="flash"></div>
+</div>
+
 <div *ngIf="showVideo" class="video-background">
   <div class="header-bar">
     <div class="govuk-body" [class]="!isJohRoom && isPrivateConsultation ? 'header-content-grid-with-lock' : 'header-content-grid'">
