@@ -157,6 +157,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     getLoggedParticipant(): ParticipantResponse {
+        console.log('Faz - this.loggedInUser', this.loggedInUser);
         return this.conference.participants.find(x => x.id === this.loggedInUser.participant_id);
     }
 
@@ -422,6 +423,8 @@ export abstract class WaitingRoomBaseDirective {
                         currentParticipantState: participant
                     }
                 );
+
+                console.log('Faz - conference', this.conference);
             })
         );
 
@@ -476,7 +479,18 @@ export abstract class WaitingRoomBaseDirective {
                     );
                 });
 
-                this.conference.participants = participantsUpdatedMessage.participants;
+                const updatedParticipants = [...participantsUpdatedMessage.participants].map(updatedParticipant => {
+                    const currentParticipant = this.conference.participants.find(
+                        x => x.id === updatedParticipant.id
+                    );
+                    updatedParticipant.current_room = currentParticipant?.current_room;
+                    updatedParticipant.status = currentParticipant ? currentParticipant.status : updatedParticipant.status;
+                    return updatedParticipant;
+                });
+
+                this.conference.participants = updatedParticipants;
+                this.participant = this.getLoggedParticipant();
+                console.log('Faz - this.participant', this.participant);
             })
         );
     }
