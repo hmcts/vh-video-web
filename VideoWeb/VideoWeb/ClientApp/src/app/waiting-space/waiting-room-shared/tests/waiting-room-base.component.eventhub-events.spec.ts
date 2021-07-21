@@ -8,7 +8,8 @@ import {
     LoggedParticipantResponse,
     EndpointStatus,
     ParticipantResponse,
-    ParticipantStatus
+    ParticipantStatus,
+    RoomSummaryResponse
 } from 'src/app/services/clients/api-client';
 import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
@@ -1499,6 +1500,25 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
             // Assert
             expect(notificationToastrService.showParticipantAdded).toHaveBeenCalledWith(testParticipant, false);
+        });
+
+        it('should keep current room if already in in hearing', () => {
+            // Arrange
+            const existingParticipant = new ParticipantResponse();
+            existingParticipant.id = testParticipant.id;
+            const existingRoom = new RoomSummaryResponse();
+            existingRoom.id = 'ExistingRoomId';
+            existingRoom.label = 'ExistingRoomLabel';
+            existingParticipant.current_room = existingRoom;
+            component.conference.participants = [existingParticipant];
+
+            // Act
+            getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
+
+            // Assert
+            const updatedParticipant = component.conference.participants.find(x => x.id === testParticipant.id);
+            expect(updatedParticipant.display_name).toBe(testParticipant.display_name);
+            expect(updatedParticipant.current_room).toBe(existingRoom);
         });
     });
 });
