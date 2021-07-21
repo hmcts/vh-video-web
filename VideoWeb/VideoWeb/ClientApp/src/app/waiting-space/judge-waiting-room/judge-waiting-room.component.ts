@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { merge, Subject, Subscription } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { take, takeUntil } from 'rxjs/operators';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -113,11 +113,18 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     ngOnInit() {
+        this.init();
+    }
+
+    private init() {
+        this.destroyedSubject = new Subject();
+
         this.errorCount = 0;
         this.logger.debug(`${this.loggerPrefixJudge} Loading judge waiting room`);
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
 
-        this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.destroyedSubject)).subscribe(() => this.cleanUp());
+        this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.destroyedSubject)).subscribe(() => this.onShouldUnload());
+        this.unloadDetectorService.shouldReload.pipe(take(1)).subscribe(() => this.onShouldReload());
 
         this.initialiseVideoControlCacheLogic();
 
@@ -140,6 +147,14 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
                 this.errorService.handlePexipError(new CallError(error.name), conferenceId);
             });
+    }
+
+    private onShouldReload(): void {
+        window.location.reload();
+    }
+
+    private onShouldUnload(): void {
+        this.cleanUp();
     }
 
     private initialiseVideoControlCacheLogic() {
