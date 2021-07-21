@@ -470,14 +470,12 @@ export abstract class WaitingRoomBaseDirective {
                     );
                 });
 
-                const updatedParticipants = [...participantsUpdatedMessage.participants].map(updatedParticipant => {
-                    const currentParticipant = this.conference.participants.find(x => x.id === updatedParticipant.id);
-                    updatedParticipant.current_room = currentParticipant ? currentParticipant.current_room : null;
-                    updatedParticipant.status = currentParticipant ? currentParticipant.status : ParticipantStatus.NotSignedIn;
-                    return updatedParticipant;
+                this.conference.participants = [...participantsUpdatedMessage.participants].map(participant => {
+                    const currentParticipant = this.conference.participants.find(x => x.id === participant.id);
+                    participant.current_room = currentParticipant ? currentParticipant.current_room : null;
+                    participant.status = currentParticipant ? currentParticipant.status : ParticipantStatus.NotSignedIn;
+                    return participant;
                 });
-
-                this.conference.participants = updatedParticipants;
                 this.participant = this.getLoggedParticipant();
             })
         );
