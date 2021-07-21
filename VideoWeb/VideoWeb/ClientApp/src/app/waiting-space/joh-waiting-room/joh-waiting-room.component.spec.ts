@@ -26,11 +26,17 @@ import {
 } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { JohWaitingRoomComponent } from './joh-waiting-room.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
+import { Subject } from 'rxjs';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 
 describe('JohWaitingRoomComponent', () => {
     let component: JohWaitingRoomComponent;
     const conferenceTestData = new ConferenceTestData();
     let activatedRoute: ActivatedRoute;
+    let unloadDetectorServiceSpy: jasmine.SpyObj<UnloadDetectorService>;
+    let shouldUnloadSubject: Subject<void>;
+
     beforeAll(() => {
         initAllWRDependencies();
     });
@@ -44,6 +50,10 @@ describe('JohWaitingRoomComponent', () => {
     };
 
     const translateService = translateServiceSpy;
+
+    unloadDetectorServiceSpy = jasmine.createSpyObj<UnloadDetectorService>('UnloadDetectorService', [], ['shouldUnload']);
+    shouldUnloadSubject = new Subject<void>();
+    getSpiedPropertyGetter(unloadDetectorServiceSpy, 'shouldUnload').and.returnValue(shouldUnloadSubject.asObservable());
 
     beforeEach(async () => {
         translateService.instant.calls.reset();
@@ -65,7 +75,8 @@ describe('JohWaitingRoomComponent', () => {
             roomClosingToastrService,
             clockService,
             translateService,
-            consultationInvitiationService
+            consultationInvitiationService,
+            unloadDetectorServiceSpy
         );
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));
