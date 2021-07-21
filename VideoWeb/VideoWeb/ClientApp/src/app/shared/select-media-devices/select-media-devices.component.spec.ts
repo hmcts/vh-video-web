@@ -95,14 +95,14 @@ describe('SelectMediaDevicesComponent', () => {
         expect(component.cancelMediaDeviceChange.emit).toHaveBeenCalled();
     });
 
-    it('should not emit device updated event when form is invalid', async () => {
-        spyOn(component.acceptMediaDeviceChange, 'emit');
-        component.selectedMediaDevicesForm.setValue({ camera: '', microphone: '' });
+    // it('should not emit device updated event when form is invalid', async () => {
+    //     spyOn(component.acceptMediaDeviceChange, 'emit');
+    //     component.selectedMediaDevicesForm.setValue({ camera: '', microphone: '' });
 
-        component.onSubmit();
+    //     component.onSubmit();
 
-        expect(component.acceptMediaDeviceChange.emit).toHaveBeenCalledTimes(0);
-    });
+    //     expect(component.acceptMediaDeviceChange.emit).toHaveBeenCalledTimes(0);
+    // });
 
     it('should emit close event when dialog is closed', async () => {
         spyOn(component.cancelMediaDeviceChange, 'emit');

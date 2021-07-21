@@ -45,15 +45,11 @@ describe('UnloadDetectorService', () => {
             expect(service).toBeTruthy();
         });
 
-        it('should initialise the isDesktop value', () => {
-            expect(service.isDesktop).toBeTrue();
-        });
-
         it('should listen to the before unload event', () => {
             expect(renderer2Mock.listen).toHaveBeenCalledOnceWith('window', 'beforeunload', jasmine.anything());
         });
 
-        it('should emit an event when the before unload callback is recieved', fakeAsync(() => {
+        it('should emit the shouldUnload event when the before unload callback is recieved', fakeAsync(() => {
             // Arrange
             let wasCalled = false;
             service.shouldUnload.subscribe(() => (wasCalled = true));
@@ -77,15 +73,11 @@ describe('UnloadDetectorService', () => {
             expect(service).toBeTruthy();
         });
 
-        it('should initialise the isDesktop value', () => {
-            expect(service.isDesktop).toBeFalse();
-        });
-
         it('should listen to the visibility change event', () => {
             expect(renderer2Mock.listen).toHaveBeenCalledOnceWith('document', 'visibilitychange', jasmine.anything());
         });
 
-        it('should emit an event when the visibilitychange event is recieved with the isHidden as true', fakeAsync(() => {
+        it('should emit the shouldUnload event when the visibilitychange event is recieved with the isHidden as true', fakeAsync(() => {
             // Arrange
             let wasCalled = false;
             service.shouldUnload.subscribe(() => (wasCalled = true));
@@ -100,7 +92,7 @@ describe('UnloadDetectorService', () => {
             expect(wasCalled).toBeTrue();
         }));
 
-        it('should NOT emit an event when the visibilitychange event is recieved with the isHidden as false', fakeAsync(() => {
+        it('should NOT emit the shouldUnload event when the visibilitychange event is recieved with the isHidden as false', fakeAsync(() => {
             // Arrange
             let wasCalled = false;
             service.shouldUnload.subscribe(() => (wasCalled = true));
@@ -113,6 +105,56 @@ describe('UnloadDetectorService', () => {
 
             // Assert
             expect(wasCalled).toBeFalse();
+        }));
+
+        it('should NOT emit the shouldReload event when the visibilitychange event is recieved with the isHidden as true', fakeAsync(() => {
+            // Arrange
+            let wasCalled = false;
+            service.shouldReload.subscribe(() => (wasCalled = true));
+
+            spyOnProperty(document, 'hidden', 'get').and.returnValue(true);
+
+            // Act
+            renderer2Mock.visibiltyChangeCallback(undefined);
+            flush();
+
+            // Assert
+            expect(wasCalled).toBeFalse();
+        }));
+
+        it('should NOT emit the shouldReload event when the visibilitychange event is recieved with the isHidden as false AND unload has NOT been emitted', fakeAsync(() => {
+            // Arrange
+            let wasCalled = false;
+            service.shouldReload.subscribe(() => (wasCalled = true));
+
+            spyOnProperty(document, 'hidden', 'get').and.returnValue(false);
+
+            // Act
+            renderer2Mock.visibiltyChangeCallback(undefined);
+            flush();
+
+            // Assert
+            expect(wasCalled).toBeFalse();
+        }));
+
+        it('should emit the shouldReload event when the visibilitychange event is recieved with the isHidden as false AND unload has been emitted', fakeAsync(() => {
+            // Arrange
+            let wasShouldReloadCalled = false;
+            service.shouldReload.subscribe(() => (wasShouldReloadCalled = true));
+
+            // First value for the page been hidden (switch tab/press home button) second value for the page becoming visible
+            spyOnProperty(document, 'hidden', 'get').and.returnValues(true, false);
+
+            // Simulate the events from the user switching tabs/pressing the home button
+            renderer2Mock.visibiltyChangeCallback(undefined);
+            flush();
+
+            // Act
+            renderer2Mock.visibiltyChangeCallback(undefined);
+            flush();
+
+            // Assert
+            expect(wasShouldReloadCalled).toBeTrue();
         }));
     });
 });

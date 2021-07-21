@@ -123,8 +123,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.logger.debug(`${this.loggerPrefixJudge} Loading judge waiting room`);
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
 
-        this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.destroyedSubject)).subscribe(() => this.cleanUp());
-        this.unloadDetectorService.shouldReload.pipe(take(1)).subscribe(() => this.onReload());
+        this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.destroyedSubject)).subscribe(() => this.onShouldUnload());
+        this.unloadDetectorService.shouldReload.pipe(take(1)).subscribe(() => this.onShouldReload());
 
         this.initialiseVideoControlCacheLogic();
 
@@ -149,8 +149,12 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             });
     }
 
-    private onReload() {
-        this.init();
+    private onShouldReload(): void {
+        window.location.reload();
+    }
+
+    private onShouldUnload(): void {
+        this.cleanUp();
     }
 
     private initialiseVideoControlCacheLogic() {

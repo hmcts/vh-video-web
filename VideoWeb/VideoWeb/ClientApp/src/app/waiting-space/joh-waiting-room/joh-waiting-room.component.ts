@@ -30,7 +30,7 @@ import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-ba
 })
 export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
     private readonly loggerPrefixJOH = '[JOH WR] -';
-    private destroyedSubject;
+    private destroyedSubject = new Subject();
 
     constructor(
         protected route: ActivatedRoute,
@@ -78,8 +78,12 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         this.init();
     }
 
-    private onReload() {
-        this.init();
+    private onShouldReload(): void {
+        window.location.reload();
+    }
+
+    private onShouldUnload(): void {
+        this.cleanUp();
     }
 
     private init() {
@@ -91,8 +95,8 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         this.connected = false;
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
 
-        this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.destroyedSubject)).subscribe(() => this.cleanUp());
-        this.unloadDetectorService.shouldReload.pipe(take(1)).subscribe(() => this.onReload());
+        this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.destroyedSubject)).subscribe(() => this.onShouldUnload());
+        this.unloadDetectorService.shouldReload.pipe(take(1)).subscribe(() => this.onShouldReload());
 
         this.notificationSoundsService.initHearingAlertSound();
         this.getConference().then(() => {

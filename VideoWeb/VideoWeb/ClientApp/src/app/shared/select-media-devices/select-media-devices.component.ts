@@ -134,7 +134,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         this.saveSelectedDevices();
     }
 
-    private saveSelectedDevices() {
+    saveSelectedDevices() {
         // save on select device
         const selectedCam = this.getSelectedCamera();
         const selectedMic = this.getSelectedMicrophone();

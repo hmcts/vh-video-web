@@ -22,7 +22,7 @@ import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
 import { TranslateService } from '@ngx-translate/core';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
-import { takeUntil } from 'rxjs/operators';
+import { take, takeUntil } from 'rxjs/operators';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 
 @Component({
@@ -32,7 +32,7 @@ import { UnloadDetectorService } from 'src/app/services/unload-detector.service'
 })
 export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
     private readonly loggerPrefixParticipant = '[Participant WR] -';
-    private destroyedSubject;
+    private destroyedSubject = new Subject();
 
     currentTime: Date;
     hearingStartingAnnounced: boolean;
@@ -85,15 +85,19 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         this.init();
     }
 
-    private onReload() {
-        this.init();
+    private onShouldReload(): void {
+        window.location.reload();
+    }
+
+    private onShouldUnload(): void {
+        this.cleanUp();
     }
 
     private init() {
         this.destroyedSubject = new Subject();
 
-        this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.destroyedSubject)).subscribe(() => this.cleanUp());
-        this.unloadDetectorService.shouldReload.pipe(takeUntil(this.destroyedSubject)).subscribe(() => this.onReload());
+        this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.destroyedSubject)).subscribe(() => this.onShouldUnload());
+        this.unloadDetectorService.shouldReload.pipe(take(1)).subscribe(() => this.onShouldReload());
 
         this.audioOnly = this.videoCallService.retrieveVideoCallPreferences().audioOnly;
         this.errorCount = 0;
