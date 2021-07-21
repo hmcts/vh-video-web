@@ -141,6 +141,11 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         const audioOnly = !this.connectWithCameraOn;
 
         if ((!selectedCam && !audioOnly) || !selectedMic) {
+            this.logger.warn(`${this.loggerPrefix} Selected camera or microphone was falsey.`, {
+                selectedCam: selectedCam,
+                selectedMic: selectedMic,
+                audioOnly: audioOnly
+            });
             return;
         }
 
