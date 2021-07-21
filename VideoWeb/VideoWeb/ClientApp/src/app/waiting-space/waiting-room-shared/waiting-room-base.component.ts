@@ -472,8 +472,8 @@ export abstract class WaitingRoomBaseDirective {
 
                 const updatedParticipants = [...participantsUpdatedMessage.participants].map(updatedParticipant => {
                     const currentParticipant = this.conference.participants.find(x => x.id === updatedParticipant.id);
-                    updatedParticipant.current_room = currentParticipant?.current_room;
-                    updatedParticipant.status = currentParticipant ? currentParticipant.status : updatedParticipant.status;
+                    updatedParticipant.current_room = currentParticipant ? currentParticipant.current_room : null;
+                    updatedParticipant.status = currentParticipant ? currentParticipant.status : ParticipantStatus.NotSignedIn;
                     return updatedParticipant;
                 });
 
