@@ -9,31 +9,33 @@ using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.Mappings
 {
-    public class ParticipantToParticipantResponseMapper : IMapTo<Participant, ParticipantResponse>
+    public class ParticipantToParticipantResponseMapper : IMapTo<Participant, Conference, ParticipantResponse>
     {
         private readonly IMapTo<LinkedParticipant, LinkedParticipantResponse> linkedParticipantMapper;
+        private readonly IMapTo<CivilianRoom, RoomSummaryResponse> roomMapper;
         public ParticipantToParticipantResponseMapper(IMapperFactory mapperFactory)
         {
             linkedParticipantMapper = mapperFactory.Get<LinkedParticipant, LinkedParticipantResponse>();
+            roomMapper = mapperFactory.Get<CivilianRoom, RoomSummaryResponse>();
         }
-        public ParticipantResponse Map(Participant input)
+        public ParticipantResponse Map(Participant participant, Conference conference)
         {
             
             var response = new ParticipantResponse()
             {
-                CaseTypeGroup = input.CaseTypeGroup,
-                CurrentRoom = null,
-                DisplayName = input.DisplayName,
-                FirstName = input.FirstName,
-                HearingRole = input.HearingRole,
-                Id = input.Id,
-                InterpreterRoom = null,
-                LastName = input.LastName,
-                Name = input.Name,
-                Representee = input.Representee,
-                Role = input.Role,
-                Status = input.ParticipantStatus,
-                LinkedParticipants = input.LinkedParticipants.Select(x => linkedParticipantMapper.Map(x)).ToList(),
+                CaseTypeGroup = participant.CaseTypeGroup,
+                CurrentRoom = null, // This cannot currently be gotten from the conference cache, the UI will keep the current room for an existing user.
+                DisplayName = participant.DisplayName,
+                FirstName = participant.FirstName,
+                HearingRole = participant.HearingRole,
+                Id = participant.Id,
+                InterpreterRoom = roomMapper.Map(conference.GetRoom(participant.Id)),
+                LastName = participant.LastName,
+                Name = participant.Name,
+                Representee = participant.Representee,
+                Role = participant.Role,
+                Status = participant.ParticipantStatus,
+                LinkedParticipants = participant.LinkedParticipants.Select(x => linkedParticipantMapper.Map(x)).ToList(),
             };
 
             response.TiledDisplayName = ParticipantTilePositionHelper.GetTiledDisplayName(response);

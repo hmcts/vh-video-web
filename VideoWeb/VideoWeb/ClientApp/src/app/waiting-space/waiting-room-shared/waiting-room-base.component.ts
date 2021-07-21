@@ -458,7 +458,7 @@ export abstract class WaitingRoomBaseDirective {
 
         this.eventHubSubscription$.add(
             this.eventService.getParticipantsUpdated().subscribe(async participantsUpdatedMessage => {
-                this.logger.debug(`[WR] - Participant Updated`, participantsUpdatedMessage);
+                this.logger.debug(`[WR] - Participant Updated`, participantsUpdatedMessage.participants);
                 const newParticipants = participantsUpdatedMessage.participants.filter(
                     x => !this.conference.participants.find(y => y.id === x.id)
                 );
@@ -469,7 +469,14 @@ export abstract class WaitingRoomBaseDirective {
                     );
                 });
 
-                this.conference.participants = participantsUpdatedMessage.participants;
+                const updatedParticipants = [...participantsUpdatedMessage.participants].map(updatedParticipant => {
+                    updatedParticipant.current_room = this.conference.participants.find(
+                        currentParticipant => currentParticipant.id === updatedParticipant.id
+                    )?.current_room;
+                    return updatedParticipant;
+                });
+
+                this.conference.participants = updatedParticipants;
             })
         );
     }
