@@ -51,6 +51,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     const translateService = translateServiceSpy;
     let unloadDetectorServiceSpy: jasmine.SpyObj<UnloadDetectorService>;
     let shouldUnloadSubject: Subject<void>;
+    let shouldReloadSubject: Subject<void>;
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -73,9 +74,15 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     });
 
     beforeEach(() => {
-        unloadDetectorServiceSpy = jasmine.createSpyObj<UnloadDetectorService>('UnloadDetectorService', [], ['shouldUnload']);
+        unloadDetectorServiceSpy = jasmine.createSpyObj<UnloadDetectorService>(
+            'UnloadDetectorService',
+            [],
+            ['shouldUnload', 'shouldReload']
+        );
         shouldUnloadSubject = new Subject<void>();
+        shouldReloadSubject = new Subject<void>();
         getSpiedPropertyGetter(unloadDetectorServiceSpy, 'shouldUnload').and.returnValue(shouldUnloadSubject.asObservable());
+        getSpiedPropertyGetter(unloadDetectorServiceSpy, 'shouldReload').and.returnValue(shouldReloadSubject.asObservable());
 
         consultationService.consultationNameToString.calls.reset();
         logged = new LoggedParticipantResponse({
