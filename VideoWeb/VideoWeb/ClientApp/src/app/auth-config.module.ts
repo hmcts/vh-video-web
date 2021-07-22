@@ -1,13 +1,13 @@
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { AuthInterceptor, AuthModule, OidcConfigService, OidcSecurityService } from 'angular-auth-oidc-client';
-import { OidcConfigSetupService } from './security/oidc-config-setup.service';
+import { SecurityConfigSetupService } from './security/security-config-setup.service';
 import { RefreshTokenParameterInterceptor } from './security/refresh-token-parameter.interceptor';
 import { ConfigService } from './services/api/config.service';
 
-export function loadConfig(oidcConfigSetupService: OidcConfigSetupService): Function {
+export function loadConfig(securityConfigSetupService: SecurityConfigSetupService): Function {
     return () => {
-        oidcConfigSetupService.restoreConfig();
+        securityConfigSetupService.restoreConfig();
     };
 }
 
@@ -16,12 +16,12 @@ export function loadConfig(oidcConfigSetupService: OidcConfigSetupService): Func
     providers: [
         OidcSecurityService,
         OidcConfigService,
-        OidcConfigSetupService,
+        SecurityConfigSetupService,
         ConfigService,
         {
             provide: APP_INITIALIZER,
             useFactory: loadConfig,
-            deps: [OidcConfigSetupService],
+            deps: [SecurityConfigSetupService],
             multi: true
         },
         { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

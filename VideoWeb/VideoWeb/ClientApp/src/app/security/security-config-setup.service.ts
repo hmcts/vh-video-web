@@ -4,20 +4,24 @@ import { BehaviorSubject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { ConfigService } from '../services/api/config.service';
 import { IdpSettingsResponse } from '../services/clients/api-client';
+import { IdpProviders } from './security-providers';
 
 @Injectable()
-export class OidcConfigSetupService {
+export class SecurityConfigSetupService {
     config = {
         ejud: {} as OpenIdConfiguration,
-        vhaad: {} as OpenIdConfiguration
+        vhaad: {} as OpenIdConfiguration,
+        magicLink: {}
     };
-    private defaultProvider = 'vhaad';
+
+    private IdpProvidersSessionStorageKey = 'IdpProviders';
+    private defaultProvider = IdpProviders.vhaad;
     private configSetup$ = new BehaviorSubject(false);
 
     constructor(private oidcConfigService: OidcConfigService, configService: ConfigService) {
         configService.getClientSettings().subscribe(clientSettings => {
-            this.config.ejud = this.initOidcConfig(clientSettings.e_jud_idp_settings);
-            this.config.vhaad = this.initOidcConfig(clientSettings.vh_idp_settings);
+            this.config[IdpProviders.ejud] = this.initOidcConfig(clientSettings.e_jud_idp_settings);
+            this.config[IdpProviders.vhaad] = this.initOidcConfig(clientSettings.vh_idp_settings);
 
             this.configSetup$.next(true);
         });
@@ -49,14 +53,16 @@ export class OidcConfigSetupService {
         });
     }
 
-    setIdp(provider: string) {
-        window.sessionStorage.setItem('OidcProvider', provider);
+    setIdp(provider: IdpProviders) {
+        window.sessionStorage.setItem(this.IdpProvidersSessionStorageKey, provider);
         this.configSetup$.pipe(filter(Boolean)).subscribe(() => {
-            this.oidcConfigService.withConfig(this.config[provider]);
+            if (provider !== IdpProviders.magicLink) this.oidcConfigService.withConfig(this.config[provider]);
         });
     }
 
-    getIdp() {
-        return window.sessionStorage.getItem('OidcProvider') ?? this.defaultProvider;
+    getIdp(): IdpProviders {
+        return (
+            (window.sessionStorage.getItem(this.IdpProvidersSessionStorageKey) as IdpProviders) ?? (this.defaultProvider as IdpProviders)
+        );
     }
 }

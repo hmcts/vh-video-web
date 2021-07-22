@@ -5,11 +5,11 @@ import { of } from 'rxjs';
 import { MagicLinksService } from 'src/app/services/api/magic-links.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { MockComponent, MockPipe } from 'ng-mocks';
-
 import { MagicLinksComponent } from './magic-links.component';
 import { TranslatePipeMock } from '../..//testing/mocks/mock-translation-pipe';
 import { Role } from 'src/app/services/clients/api-client';
 import { ContactUsFoldingComponent } from 'src/app/shared/contact-us-folding/contact-us-folding.component';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('MagicLinksComponent', () => {
     const magicLinkParticipantRoles = [Role.MagicLinkObserver, Role.MagicLinkParticipant];
@@ -53,7 +53,7 @@ describe('MagicLinksComponent', () => {
                     useValue: magicLinksServiceSpy
                 }
             ],
-            imports: [ReactiveFormsModule]
+            imports: [ReactiveFormsModule, RouterTestingModule]
         }).compileComponents();
     });
 

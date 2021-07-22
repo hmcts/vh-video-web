@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { OidcConfigSetupService } from '../oidc-config-setup.service';
+import { SecurityConfigSetupService } from '../security-config-setup.service';
+import { IdpProviders } from '../security-providers';
 
 @Component({
     selector: 'app-ejud-sign-in',
@@ -9,10 +10,10 @@ import { OidcConfigSetupService } from '../oidc-config-setup.service';
     styles: []
 })
 export class EjudSignInComponent implements OnInit {
-    constructor(private router: Router, private oidcConfigSetupService: OidcConfigSetupService) {}
+    constructor(private router: Router, private securityConfigSetupService: SecurityConfigSetupService) {}
 
     ngOnInit(): void {
-        this.oidcConfigSetupService.setIdp('ejud');
+        this.securityConfigSetupService.setIdp(IdpProviders.ejud);
         this.router.navigate([`/${pageUrls.Login}`]);
     }
 }

@@ -4,7 +4,8 @@ import { MockLogger } from '../../testing/mocks/mock-logger';
 import { IdpSelectionComponent } from './idp-selection.component';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { of } from 'rxjs';
-import { OidcConfigSetupService } from '../oidc-config-setup.service';
+import { SecurityConfigSetupService } from '../security-config-setup.service';
+import { IdpProviders } from '../security-providers';
 
 describe('IdpSelectionComponent', () => {
     let component: IdpSelectionComponent;
@@ -12,13 +13,13 @@ describe('IdpSelectionComponent', () => {
     let oidcSecurityService;
     let router: jasmine.SpyObj<Router>;
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
-    let oidcConfigSetupServiceSpy: jasmine.SpyObj<OidcConfigSetupService>;
+    let oidcConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
 
     beforeAll(() => {
         oidcSecurityService = mockOidcSecurityService;
         router = jasmine.createSpyObj<Router>('Router', ['navigate', 'navigateByUrl']);
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings']);
-        oidcConfigSetupServiceSpy = jasmine.createSpyObj<OidcConfigSetupService>('OidcConfigSetupService', ['setIdp']);
+        oidcConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>('OidcConfigSetupService', ['setIdp']);
     });
 
     beforeEach(() => {
@@ -43,7 +44,7 @@ describe('IdpSelectionComponent', () => {
         component.selectedProvider = null;
         const result = component.onSubmit();
         expect(result).toBeFalse();
-        component.selectedProvider = 'vhaad';
+        component.selectedProvider = IdpProviders.vhaad;
         expect(component.showError()).toBeFalse();
     });
 
@@ -56,19 +57,19 @@ describe('IdpSelectionComponent', () => {
 
     it('should set selected provider', () => {
         component.selectedProvider = null;
-        component.selectProvider('test_provider');
-        expect(component.selectedProvider).toBe('test_provider');
+        component.selectProvider(IdpProviders.ejud);
+        expect(component.selectedProvider).toBe(IdpProviders.ejud);
     });
 
     it('should navigate on next if exists', () => {
-        component.selectedProvider = 'vhaad';
+        component.selectedProvider = IdpProviders.vhaad;
         const result = component.onSubmit();
         expect(result).toBeTrue();
-        expect(router.navigate).toHaveBeenCalledWith([component.identityProviders.vhaad.url]);
+        expect(router.navigate).toHaveBeenCalledWith([component.identityProviders[IdpProviders.vhaad].url]);
     });
 
     it('should not navigate on next if doesnt exists', () => {
-        component.selectedProvider = '';
+        component.selectedProvider = null;
         const result = component.onSubmit();
         expect(result).toBeFalse();
         expect(router.navigate).not.toHaveBeenCalled();

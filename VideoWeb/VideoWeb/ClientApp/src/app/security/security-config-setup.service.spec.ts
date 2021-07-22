@@ -1,16 +1,17 @@
 import { OidcConfigService } from 'angular-auth-oidc-client';
 import { MockConfigService } from '../testing/mocks/mock-config.service';
-import { OidcConfigSetupService } from './oidc-config-setup.service';
+import { SecurityConfigSetupService } from './security-config-setup.service';
+import { IdpProviders } from './security-providers';
 
-describe('OidcConfigSetupService', () => {
-    let sut: OidcConfigSetupService;
+describe('SecurityConfigSetupService', () => {
+    let sut: SecurityConfigSetupService;
     let oidcConfigServiceSpy: jasmine.SpyObj<OidcConfigService>;
     const configService = new MockConfigService();
 
     beforeEach(() => {
         window.sessionStorage.clear();
         oidcConfigServiceSpy = jasmine.createSpyObj<OidcConfigService>('OidcConfigService', ['withConfig']);
-        sut = new OidcConfigSetupService(oidcConfigServiceSpy, configService as any);
+        sut = new SecurityConfigSetupService(oidcConfigServiceSpy, configService as any);
     });
 
     it('should get default idp if not set', async () => {
@@ -20,12 +21,12 @@ describe('OidcConfigSetupService', () => {
         const result = sut.getIdp();
 
         // Assert
-        expect(result).toBe('vhaad');
+        expect(result).toBe(IdpProviders.vhaad);
     });
 
     it('should set store when setting idp', async () => {
         // Arrange
-        const testProvider = 'ejud';
+        const testProvider = IdpProviders.ejud;
 
         // Act
         sut.setIdp(testProvider);
@@ -37,7 +38,7 @@ describe('OidcConfigSetupService', () => {
 
     it('should set oidc config on setIdp', async () => {
         // Arrange
-        const testProvider = 'ejud';
+        const testProvider = IdpProviders.ejud;
 
         // Act
         sut.setIdp(testProvider);
