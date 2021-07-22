@@ -80,7 +80,7 @@ namespace VideoWeb.Controllers
 
                 request.RemovedParticipants.ToList().ForEach(referenceId =>
                 {
-                    _logger.LogTrace($"Adding participant from conference. ReferenceID: {referenceId}");
+                    _logger.LogTrace($"Removing participant from conference. ReferenceID: {referenceId}");
                     conference.RemoveParticipant(referenceId);
                 });
 
