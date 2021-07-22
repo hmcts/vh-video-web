@@ -74,7 +74,7 @@ namespace VideoWeb.Controllers
                 {
                     _logger.LogTrace($"Mapping new participant: {JsonSerializer.Serialize(participant)}");
                     var mappedParticipant = requestToParticipantMapper.Map(participant, conference.Participants);
-                    _logger.LogTrace($"Adding participant to conference: {JsonSerializer.Serialize(participant)}");
+                    _logger.LogTrace($"Adding participant to conference: {JsonSerializer.Serialize(mappedParticipant)}");
                     conference.AddParticipant(mappedParticipant);
                 });
 
