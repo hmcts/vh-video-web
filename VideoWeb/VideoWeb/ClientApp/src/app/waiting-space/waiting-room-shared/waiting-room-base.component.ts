@@ -54,10 +54,14 @@ import { NotificationSoundsService } from '../services/notification-sounds.servi
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
-import * as tf from '@tensorflow/tfjs';
+// import * as tf from '@tensorflow/tfjs';
 import '@tensorflow/tfjs-backend-wasm';
 import * as bodyPix from '@tensorflow-models/body-pix';
-import { setWasmPaths } from '@tensorflow/tfjs-backend-wasm';
+// import { setWasmPaths } from '@tensorflow/tfjs-backend-wasm';
+import * as ss from '@mediapipe/selfie_segmentation';
+import * as cu from '@mediapipe/camera_utils';
+// import * as ctlu from '@mediapipe/control_utils';
+// import * as du from '@mediapipe/drawing_utils';
 
 declare var HeartbeatFactory: any;
 declare global {
@@ -116,7 +120,8 @@ export abstract class WaitingRoomBaseDirective {
     videoElement: any;
     canvasElement: HTMLCanvasElement;
     virtualBackground: boolean;
-
+    canvasCtx: any;
+    selfieSegmentation: ss.SelfieSegmentation;
     protected constructor(
         protected route: ActivatedRoute,
         protected videoWebService: VideoWebService,
@@ -143,11 +148,10 @@ export abstract class WaitingRoomBaseDirective {
         this.isPrivateConsultation = false;
         this.errorCount = 0;
         // tf.browser.fromPixels();
-        setWasmPaths('https://localhost:5800/');
     }
-    async main() {
-        this.logger.debug(`${this.loggerPrefix} Wasml successful`);
-    }
+    // async main() {
+    //     this.logger.debug(`${this.loggerPrefix} Wasml successful`);
+    // }
 
     isParticipantInCorrectWaitingRoomState(): boolean {
         return (
@@ -663,17 +667,37 @@ export abstract class WaitingRoomBaseDirective {
             participant: this.participant.id
         };
         try {
-            await tf.setBackend('wasm').then(() => this.main());
+            // await tf.setBackend('wasm').then(() => this.main());
             this.logger.debug(`${this.loggerPrefix} Retrieving jwtoken for heartbeat`, logPayload);
             this.token = await this.videoWebService.getJwToken(this.participant.id);
             this.logger.debug(`${this.loggerPrefix} Retrieved jwtoken for heartbeat`, logPayload);
             await this.setupPexipEventSubscriptionAndClient();
             this.videoElement = document.getElementById('webcam') as any;
             this.canvasElement = document.getElementById('canvasOutgoingFeed') as HTMLCanvasElement;
+            this.canvasCtx = this.canvasElement.getContext('2d');
+
             await this.userMediaStreamService.getStream().then(originalStream => {
                 if (this.videoElement != null) {
-                    this.videoElement.srcObject = originalStream;
-                    this.loadAndBlur();
+                    // this.videoElement.srcObject = originalStream;
+                    // this.loadAndBlur();
+                    this.selfieSegmentation = new ss.SelfieSegmentation({
+                        locateFile: (file) => {
+                            return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`;
+                        }
+                    });
+                    this.selfieSegmentation.setOptions({
+                        modelSelection: 1, selfieMode: true
+                    });
+                    this.selfieSegmentation.onResults(this.onResults2.bind(this));
+
+                    const camera = new cu.Camera(this.videoElement, {
+                        onFrame: async () => {
+                            await this.selfieSegmentation.send({ image: this.videoElement });
+                        },
+                        width: 1280,
+                        height: 720
+                    });
+                    camera.start();
                     const stream = this.canvasElement.captureStream();
                     originalStream.getAudioTracks().forEach(track => { stream.addTrack(track); });
                     this.videoCallService.pexipAPI.video_source = null;
@@ -1353,4 +1377,180 @@ export abstract class WaitingRoomBaseDirective {
         await this.call();
         this.getConference().then(() => this.updateShowVideo());
     }
+
+    onResults1(results) {
+        const self = this;
+        const imageObject = new Image();
+        imageObject.onload = function () {
+            self.canvasCtx.clearRect(0, 0, self.canvasElement.width, self.canvasElement.height);
+            self.canvasCtx.imageSmoothingEnabled = true;
+            self.canvasCtx.drawImage(imageObject, 0, 0, self.canvasElement.width, self.canvasElement.height);
+        };
+        imageObject.src = '/assets/images/pyramid.jpg';
+
+        self.canvasCtx.globalCompositeOperation = 'source-out'; // source-in
+        self.canvasCtx.drawImage(results.segmentationMask, 0, 0,
+            self.canvasElement.width, self.canvasElement.height);
+        self.canvasCtx.save();
+        // self.canvasCtx.drawImage(binaryMask, 0, 0,
+        //     self.canvasElement.width, self.canvasElement.height);
+
+        // Only overwrite existing pixels.
+        // self.canvasCtx.globalCompositeOperation = 'source-out'; //source-in
+        // self.canvasCtx.fillStyle = '#00FF00'; // '#cfd4cf';
+        // self.canvasCtx.fillRect(0, 0, self.canvasElement.width, self.canvasElement.height);
+
+        // Only overwrite missing pixels.
+        self.canvasCtx.globalCompositeOperation = 'destination-atop'; //'source-atop'
+        self.canvasCtx.drawImage(
+            results.image, 0, 0, self.canvasElement.width, self.canvasElement.height);
+
+        self.canvasCtx.restore();
+    }
+
+
+    onResults2(results): void {
+        const self = this;
+        const activeEffect = 'background';
+        // Draw the overlays.
+        self.canvasCtx.save();
+
+        self.canvasCtx.clearRect(0, 0, self.canvasElement.width, self.canvasElement.height);
+
+        self.canvasCtx.drawImage(
+            results.segmentationMask, 0, 0, self.canvasElement.width,
+            self.canvasElement.height);
+
+        // Only overwrite existing pixels.
+        self.canvasCtx.globalCompositeOperation = 'source-in';
+        if (activeEffect === 'mask' || activeEffect === 'both') {
+            // This can be a color or a texture or whatever...
+            self.canvasCtx.fillStyle = '#00FF00';
+            self.canvasCtx.fillRect(0, 0, self.canvasElement.width, self.canvasElement.height);
+        } else {
+            self.canvasCtx.drawImage(
+                results.image, 0, 0, self.canvasElement.width, self.canvasElement.height);
+        }
+
+        // Only overwrite missing pixels.
+        self.canvasCtx.globalCompositeOperation = 'destination-atop';
+        if (activeEffect === 'background' || activeEffect === 'both') {
+            // This can be a color or a texture or whatever...
+            // self.canvasCtx.fillStyle = '#0000FF';
+            // self.canvasCtx.fillRect(0, 0, self.canvasElement.width, self.canvasElement.height);
+            const imageObject = new Image();
+            imageObject.src = '/assets/images/pyramid.jpg';
+            self.canvasCtx.imageSmoothingEnabled = true;
+
+            // self.canvasCtx.fillRect(0, 0, self.canvasElement.width, self.canvasElement.height);
+            self.canvasCtx.drawImage(imageObject, 0, 0, self.canvasElement.width, self.canvasElement.height);
+
+        } else {
+            self.canvasCtx.drawImage(
+                results.image, 0, 0, self.canvasElement.width, self.canvasElement.height);
+        }
+
+        self.canvasCtx.restore();
+    }
+
+
+    onResults(results) {
+        const self = this;
+        self.canvasCtx.save();
+        self.canvasCtx.clearRect(0, 0, self.canvasElement.width, self.canvasElement.height);
+        self.canvasCtx.drawImage(results.segmentationMask, 0, 0,
+            self.canvasElement.width, self.canvasElement.height);
+
+        // Only overwrite existing pixels.
+        self.canvasCtx.globalCompositeOperation = 'source-out'; //source-in
+        self.canvasCtx.fillStyle = '#00FF00'; // '#cfd4cf';
+        self.canvasCtx.fillRect(0, 0, self.canvasElement.width, self.canvasElement.height);
+
+        // Only overwrite missing pixels.
+        self.canvasCtx.globalCompositeOperation = 'destination-atop'; //'source-atop'
+        self.canvasCtx.drawImage(
+            results.image, 0, 0, self.canvasElement.width, self.canvasElement.height);
+
+        self.canvasCtx.restore();
+    }
+
+    gaussBlur(imgData) {
+        const pixes = imgData.data;
+        const width = imgData.width;
+        const height = imgData.height;
+        const gaussMatrix = [];
+        let gaussSum = 0;
+        let x, y,
+            r, g, b, a,
+            i, j, k, len;
+
+        const radius = 10;
+        const sigma = 5;
+
+        a = 1 / (Math.sqrt(2 * Math.PI) * sigma);
+        b = -1 / (2 * sigma * sigma);
+        // Generate a Gaussian matrix
+        for (i = 0, x = -radius; x <= radius; x++, i++) {
+            g = a * Math.exp(b * x * x);
+            gaussMatrix[i] = g;
+            gaussSum += g;
+
+        }
+
+        // normalized to ensure that the value of the Gaussian matrix is ​​between [0,1]
+        for (i = 0, len = gaussMatrix.length; i < len; i++) {
+            gaussMatrix[i] /= gaussSum;
+        }
+        // x direction one-dimensional Gaussian operation
+        for (y = 0; y < height; y++) {
+            for (x = 0; x < width; x++) {
+                r = g = b = a = 0;
+                gaussSum = 0;
+                for (j = -radius; j <= radius; j++) {
+                    k = x + j;
+                    if (k >= 0 && k < width) {// ensure that k does not exceed the range of x
+                        // r,g,b,a four groups
+                        i = (y * width + k) * 4;
+                        r += pixes[i] * gaussMatrix[j + radius];
+                        g += pixes[i + 1] * gaussMatrix[j + radius];
+                        b += pixes[i + 2] * gaussMatrix[j + radius];
+                        // a += pixes[i + 3] * gaussMatrix[j];
+                        gaussSum += gaussMatrix[j + radius];
+                    }
+                }
+                i = (y * width + x) * 4;
+                // Divide by gaussSum to eliminate pixels at the edge, insufficient Gaussian operation
+                // console.log(gaussSum)
+                pixes[i] = r / gaussSum;
+                pixes[i + 1] = g / gaussSum;
+                pixes[i + 2] = b / gaussSum;
+                // pixes[i + 3] = a ;
+            }
+        }
+        // y direction one-dimensional Gaussian operation
+        for (x = 0; x < width; x++) {
+            for (y = 0; y < height; y++) {
+                r = g = b = a = 0;
+                gaussSum = 0;
+                for (j = -radius; j <= radius; j++) {
+                    k = y + j;
+                    if (k >= 0 && k < height) { // ensure that k does not exceed the range of y
+                        i = (k * width + x) * 4;
+                        r += pixes[i] * gaussMatrix[j + radius];
+                        g += pixes[i + 1] * gaussMatrix[j + radius];
+                        b += pixes[i + 2] * gaussMatrix[j + radius];
+                        // a += pixes[i + 3] * gaussMatrix[j];
+                        gaussSum += gaussMatrix[j + radius];
+                    }
+                }
+                i = (y * width + x) * 4;
+                pixes[i] = r / gaussSum;
+                pixes[i + 1] = g / gaussSum;
+                pixes[i + 2] = b / gaussSum;
+            }
+        }
+        return imgData;
+    }
+
+
 }
