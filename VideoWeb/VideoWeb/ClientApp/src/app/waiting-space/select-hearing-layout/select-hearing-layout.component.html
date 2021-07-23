@@ -6,70 +6,18 @@
       </h2>
     </div>
     <div *ngIf="!isAccordianOpen">
-      <app-hearing-layout [layout]="selectedLayout" [recommended]="selectedLayout === recommendedLayout()"></app-hearing-layout>
+      <app-hearing-layout [layout]="selectedLayout" [recommended]="isRecommendedLayout(selectedLayout)" [showInput]="false"></app-hearing-layout>
     </div>
 
-    <div id="accordion-default-content-1" class="govuk-accordion__section-content">
+    <div id="select-hearing-container-content-1" class="govuk-accordion__section-content">
       <div class="govuk-radios govuk-radios--small layoutsgrid">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-visually-hidden">{{'select-hearing-layout.choose-hearing-layout' | translate }}</legend>
-          <ng-container *ngTemplateOutlet="layout17"></ng-container>
-          <ng-container *ngTemplateOutlet="layout221"></ng-container>
-          <ng-container *ngTemplateOutlet="layoutDynamic"></ng-container>
+          <ng-container *ngFor="let layout of availableLayouts">
+            <app-hearing-layout [layout]="layout" [recommended]="isRecommendedLayout(layout)" [isSelected]="selectedLayout === layout" (selectedEvent)="updateSelectedLayout(layout)"></app-hearing-layout>
+          </ng-container>
         </fieldset>
       </div>
     </div>
   </div>
 </div>
-
-  <ng-template #layout17>
-    <div class="govuk-radios__item layoutradio1">
-      <input
-        [checked]="getSelectedOrPreferredLayout() === availableLayouts.OnePlus7"
-        [value]="availableLayouts.OnePlus7"
-        (change)="updateSelectedLayout(availableLayouts.OnePlus7)"
-        class="govuk-radios__input"
-        id="layout_1_7"
-        name="layout"
-        type="radio"
-        attr.aria-labelledby="{{headerLayoutTitlePrefix}}{{availableLayouts.OnePlus7}}"
-        attr.aria-describedby="{{headerLayoutDescriptionPrefix}}{{availableLayouts.OnePlus7}}"
-      />
-      <label class="govuk-label govuk-radios__label"></label>
-    </div>
-    <app-hearing-layout [layout]="availableLayouts.OnePlus7" [recommended]="recommend1Plus7" [headerLayoutTitlePrefix] = "headerLayoutTitlePrefix" [headerLayoutDescriptionPrefix] = "headerLayoutDescriptionPrefix"></app-hearing-layout>
-  </ng-template>
-  <ng-template #layout221>
-    <div class="govuk-radios__item layoutradio2">
-      <input
-        [checked]="getSelectedOrPreferredLayout() === availableLayouts.TwoPlus21"
-        [value]="availableLayouts.TwoPlus21"
-        (change)="updateSelectedLayout(availableLayouts.TwoPlus21)"
-        class="govuk-radios__input"
-        id="layout_2_21"
-        name="layout"
-        type="radio"
-        attr.aria-labelledby="{{headerLayoutTitlePrefix}}{{availableLayouts.TwoPlus21}}"
-        attr.aria-describedby="{{headerLayoutDescriptionPrefix}}{{availableLayouts.TwoPlus21}}"
-      />
-      <label class="govuk-label govuk-radios__label"></label>
-    </div>
-    <app-hearing-layout [layout]="availableLayouts.TwoPlus21" [recommended]="recommend2Plus21" [headerLayoutTitlePrefix] = "headerLayoutTitlePrefix" [headerLayoutDescriptionPrefix] = "headerLayoutDescriptionPrefix"></app-hearing-layout>
-  </ng-template>
-  <ng-template #layoutDynamic>
-    <div class="govuk-radios__item layoutradio3">
-      <input
-        [checked]="getSelectedOrPreferredLayout() === availableLayouts.Dynamic"
-        [value]="availableLayouts.Dynamic"
-        (change)="updateSelectedLayout(availableLayouts.Dynamic)"
-        class="govuk-radios__input"
-        id="layout_dynamic"
-        name="layout" 
-        type="radio"
-        attr.aria-labelledby="{{headerLayoutTitlePrefix}}{{availableLayouts.Dynamic}}"
-        attr.aria-describedby="{{headerLayoutDescriptionPrefix}}{{availableLayouts.Dynamic}}"
-      />
-      <label class="govuk-label govuk-radios__label"></label>
-    </div>
-    <app-hearing-layout [layout]="availableLayouts.Dynamic" [recommended]="recommendDynamic" [headerLayoutTitlePrefix] = "headerLayoutTitlePrefix" [headerLayoutDescriptionPrefix] = "headerLayoutDescriptionPrefix"></app-hearing-layout>
-  </ng-template>

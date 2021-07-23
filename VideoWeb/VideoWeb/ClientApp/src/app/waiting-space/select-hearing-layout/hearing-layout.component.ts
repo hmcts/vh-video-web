@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { HearingLayout } from 'src/app/services/clients/api-client';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -10,8 +10,11 @@ import { TranslateService } from '@ngx-translate/core';
 export class HearingLayoutComponent {
     @Input() layout: HearingLayout;
     @Input() recommended: boolean;
-    @Input() headerLayoutTitlePrefix: string;
-    @Input() headerLayoutDescriptionPrefix: string;
+    @Input() showInput = true;
+    @Input() isSelected: boolean;
+    @Output() selectedEvent = new EventEmitter();
+    headerLayoutTitlePrefix = 'hearing-layout-title-';
+    headerLayoutDescriptionPrefix = 'hearing-layout-description-';
 
     constructor(private translateService: TranslateService) {}
 
@@ -46,5 +49,9 @@ export class HearingLayoutComponent {
             default:
                 return this.translateService.instant('hearing-layout.description-dynamic');
         }
+    }
+
+    emitSelected() {
+        this.selectedEvent.emit();
     }
 }
