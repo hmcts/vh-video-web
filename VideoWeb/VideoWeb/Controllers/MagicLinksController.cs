@@ -61,7 +61,7 @@ namespace VideoWeb.Controllers
             }
         }
 
-        [HttpPost("join/${hearingId}")]
+        [HttpPost("joinConferenceAsAMagicLinkUser/${hearingId}")]
         [AllowAnonymous]
         [SwaggerOperation("joinConferenceAsAMagicLinkUser")]
         [ProducesResponseType(typeof(MagicLinkParticipantJoinResponse), (int) HttpStatusCode.OK)]
@@ -69,6 +69,24 @@ namespace VideoWeb.Controllers
             [FromBody] MagicLinkParticipantJoinRequest joinRequest)
         {
             return Ok(await Task.FromResult(new MagicLinkParticipantJoinResponse() { Jwt=$"{joinRequest.Name}-{joinRequest.Role}" }));
+        }
+        
+        [HttpGet("isMagicLinkParticipantAuthorised")]
+        [SwaggerOperation("joinConferenceAsAMagicLinkUser")]
+        [ProducesResponseType((int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.Forbidden)]
+        public IActionResult IsAuthorised()
+        {
+            return Ok();
+        }
+        
+        [HttpGet("revokeMagicLinkUserToken")]
+        [SwaggerOperation("revokeMagicLinkUserToken")]
+        [ProducesResponseType((int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        public IActionResult RevokeToken()
+        {
+            return Ok();
         }
     }
 }

@@ -41,9 +41,7 @@ export class MagicLinksComponent implements OnInit {
         this.hearingId = this.route.snapshot.paramMap.get('hearingId');
         this.magicLinksService.validateMagicLink(this.hearingId).subscribe(isValid => {
             if (isValid) {
-                debugger;
                 this.magicLinksService.getMagicLinkParticipantRoles().subscribe(roles => {
-                    debugger;
                     this.magicLinkParticipantRoles = roles;
                 });
             } else {

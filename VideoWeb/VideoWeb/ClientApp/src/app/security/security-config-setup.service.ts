@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { LogLevel, OidcConfigService, OpenIdConfiguration } from 'angular-auth-oidc-client';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { ConfigService } from '../services/api/config.service';
 import { IdpSettingsResponse } from '../services/clients/api-client';
@@ -17,6 +17,7 @@ export class SecurityConfigSetupService {
     private IdpProvidersSessionStorageKey = 'IdpProviders';
     private defaultProvider = IdpProviders.vhaad;
     private configSetup$ = new BehaviorSubject(false);
+    private currentIdpSubject = new ReplaySubject<IdpProviders>(1);
 
     constructor(private oidcConfigService: OidcConfigService, configService: ConfigService) {
         configService.getClientSettings().subscribe(clientSettings => {
@@ -58,11 +59,16 @@ export class SecurityConfigSetupService {
         this.configSetup$.pipe(filter(Boolean)).subscribe(() => {
             if (provider !== IdpProviders.magicLink) this.oidcConfigService.withConfig(this.config[provider]);
         });
+        this.currentIdpSubject.next(provider);
     }
 
     getIdp(): IdpProviders {
         return (
             (window.sessionStorage.getItem(this.IdpProvidersSessionStorageKey) as IdpProviders) ?? (this.defaultProvider as IdpProviders)
         );
+    }
+
+    get currentIdp$(): Observable<IdpProviders> {
+        return this.currentIdpSubject.asObservable();
     }
 }

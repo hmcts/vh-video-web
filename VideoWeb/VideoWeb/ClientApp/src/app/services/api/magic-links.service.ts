@@ -28,7 +28,7 @@ export class MagicLinksService /* extends BaseApiService */ {
 
     joinHearing(hearingId: string, name: string, role: Role): Observable<object> {
         return this.apiClient
-            .join(
+            .joinConferenceAsAMagicLinkUser(
                 hearingId,
                 new MagicLinkParticipantJoinRequest({
                     name: name,
@@ -38,7 +38,7 @@ export class MagicLinksService /* extends BaseApiService */ {
             .pipe(
                 tap((response: MagicLinkParticipantJoinResponse) => {
                     this.securityConfigSetupService.setIdp(IdpProviders.magicLink);
-                    this.securityServiceProviderService.getSecurityService().setToken(response.jwt);
+                    this.securityServiceProviderService.getSecurityService().authorize(null, response.jwt);
                 })
             );
     }
