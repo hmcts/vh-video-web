@@ -12,6 +12,8 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
     selectedLayout: HearingLayout;
     accordionOpenAllElement: HTMLButtonElement;
     currentButtonContentKey: string;
+    headerLayoutTitlePrefix = 'hearing-layout-title-';
+    headerLayoutDescriptionPrefix = 'hearing-layout-description-';
     @Input() conference: ConferenceResponse;
     constructor(private videoCallService: VideoCallService, protected translateService: TranslateService) {}
 

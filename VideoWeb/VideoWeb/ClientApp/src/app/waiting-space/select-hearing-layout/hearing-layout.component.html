@@ -4,9 +4,9 @@
   </div>
   <div class="layouttxt">
     <div class="govuk-body f16">
-      <strong>{{ getLayoutTitle() }}</strong>
+      <strong id='{{headerLayoutTitlePrefix}}{{layout}}'>{{ getLayoutTitle() }}</strong>
       <span *ngIf="recommended" class="recommended-txt"> ({{'hearing-layout.recommended' | translate}})</span>
-      <br />{{ getLayoutDescription() }}
+      <br /><p id='{{headerLayoutDescriptionPrefix}}{{layout}}'>{{ getLayoutDescription() }}</p>
     </div>
   </div>
 </div>

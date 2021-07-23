@@ -10,6 +10,8 @@ import { TranslateService } from '@ngx-translate/core';
 export class HearingLayoutComponent {
     @Input() layout: HearingLayout;
     @Input() recommended: boolean;
+    @Input() headerLayoutTitlePrefix: string;
+    @Input() headerLayoutDescriptionPrefix: string;
 
     constructor(private translateService: TranslateService) {}
 

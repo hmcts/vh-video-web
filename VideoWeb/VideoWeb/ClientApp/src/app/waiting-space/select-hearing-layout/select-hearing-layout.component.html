@@ -9,9 +9,10 @@
       <app-hearing-layout [layout]="selectedLayout" [recommended]="selectedLayout === recommendedLayout()"></app-hearing-layout>
     </div>
 
-    <div id="accordion-default-content-1" class="govuk-accordion__section-content" aria-labelledby="accordion-default-heading-1">
-      <div class="govuk-radios govuk-radios--small layoutsgrid" aria-labelledby="hearing layout options">
+    <div id="accordion-default-content-1" class="govuk-accordion__section-content">
+      <div class="govuk-radios govuk-radios--small layoutsgrid">
         <fieldset class="govuk-fieldset">
+          <legend class="govuk-visually-hidden">{{'select-hearing-layout.choose-hearing-layout' | translate }}</legend>
           <ng-container *ngTemplateOutlet="layout17"></ng-container>
           <ng-container *ngTemplateOutlet="layout221"></ng-container>
           <ng-container *ngTemplateOutlet="layoutDynamic"></ng-container>
@@ -31,10 +32,12 @@
         id="layout_1_7"
         name="layout"
         type="radio"
+        attr.aria-labelledby="{{headerLayoutTitlePrefix}}{{availableLayouts.OnePlus7}}"
+        attr.aria-describedby="{{headerLayoutDescriptionPrefix}}{{availableLayouts.OnePlus7}}"
       />
-      <label class="govuk-label govuk-radios__label" for="layout_1_7"></label>
+      <label class="govuk-label govuk-radios__label"></label>
     </div>
-    <app-hearing-layout [layout]="availableLayouts.OnePlus7" [recommended]="recommend1Plus7"></app-hearing-layout>
+    <app-hearing-layout [layout]="availableLayouts.OnePlus7" [recommended]="recommend1Plus7" [headerLayoutTitlePrefix] = "headerLayoutTitlePrefix" [headerLayoutDescriptionPrefix] = "headerLayoutDescriptionPrefix"></app-hearing-layout>
   </ng-template>
   <ng-template #layout221>
     <div class="govuk-radios__item layoutradio2">
@@ -46,10 +49,12 @@
         id="layout_2_21"
         name="layout"
         type="radio"
+        attr.aria-labelledby="{{headerLayoutTitlePrefix}}{{availableLayouts.TwoPlus21}}"
+        attr.aria-describedby="{{headerLayoutDescriptionPrefix}}{{availableLayouts.TwoPlus21}}"
       />
-      <label class="govuk-label govuk-radios__label" for="layout_2_21"></label>
+      <label class="govuk-label govuk-radios__label"></label>
     </div>
-    <app-hearing-layout [layout]="availableLayouts.TwoPlus21" [recommended]="recommend2Plus21"></app-hearing-layout>
+    <app-hearing-layout [layout]="availableLayouts.TwoPlus21" [recommended]="recommend2Plus21" [headerLayoutTitlePrefix] = "headerLayoutTitlePrefix" [headerLayoutDescriptionPrefix] = "headerLayoutDescriptionPrefix"></app-hearing-layout>
   </ng-template>
   <ng-template #layoutDynamic>
     <div class="govuk-radios__item layoutradio3">
@@ -61,8 +66,10 @@
         id="layout_dynamic"
         name="layout" 
         type="radio"
+        attr.aria-labelledby="{{headerLayoutTitlePrefix}}{{availableLayouts.Dynamic}}"
+        attr.aria-describedby="{{headerLayoutDescriptionPrefix}}{{availableLayouts.Dynamic}}"
       />
-      <label class="govuk-label govuk-radios__label" for="layout_dynamic"></label>
+      <label class="govuk-label govuk-radios__label"></label>
     </div>
-    <app-hearing-layout [layout]="availableLayouts.Dynamic" [recommended]="recommendDynamic"></app-hearing-layout>
+    <app-hearing-layout [layout]="availableLayouts.Dynamic" [recommended]="recommendDynamic" [headerLayoutTitlePrefix] = "headerLayoutTitlePrefix" [headerLayoutDescriptionPrefix] = "headerLayoutDescriptionPrefix"></app-hearing-layout>
   </ng-template>
