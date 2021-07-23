@@ -2,7 +2,7 @@ import { HearingLayout } from 'src/app/services/clients/api-client';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { HearingLayoutComponent } from './hearing-layout.component';
 
-fdescribe('HearingLayoutComponent', () => {
+describe('HearingLayoutComponent', () => {
     let component: HearingLayoutComponent;
     const translateService = translateServiceSpy;
 
