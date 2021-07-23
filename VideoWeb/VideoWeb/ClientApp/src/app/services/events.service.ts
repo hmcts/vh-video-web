@@ -84,7 +84,7 @@ export class EventsService {
 
         ParticipantsUpdatedMessage: (conferenceId: string, participants: ParticipantResponse[]) => {
             const message = new ParticipantsUpdatedMessage(conferenceId, participants);
-            this.logger.debug('[EventsService] - ParticipantUpdatedMessage received', message);
+            this.logger.debug('[EventsService] - ParticipantsUpdatedMessage received', message);
             this.participantsUpdatedSubject.next(message);
         },
 

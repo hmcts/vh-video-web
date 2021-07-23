@@ -56,6 +56,10 @@ describe('FooterComponent', () => {
         fixture.detectChanges();
     });
 
+    afterEach(() => {
+        component.routerEventsSubscription$.unsubscribe();
+    });
+
     it('should create', () => {
         expect(component).toBeTruthy();
     });
@@ -74,20 +78,6 @@ describe('FooterComponent', () => {
         expect(component.hideContactUsLink).toBeTruthy();
     }));
 
-    it('navigate to any page with supported browser you should see the links in the footer', fakeAsync(() => {
-        router.navigate(['dashboard']);
-        tick();
-        expect(location.path()).toBe('/dashboard');
-        expect(component.hideLinksForUnsupportedBrowser).toBeFalsy();
-    }));
-
-    it('navigate to unsupported browser you should not see the links in the footer', fakeAsync(() => {
-        router.navigate(['unsupported-browser']);
-        tick();
-        expect(location.path()).toBe('/unsupported-browser');
-        expect(component.hideLinksForUnsupportedBrowser).toBeTruthy();
-    }));
-
     it('should switch language when clicking button, english to welsh', () => {
         // Arrange
         translateServiceSpy.currentLang = 'en';
@@ -100,7 +90,7 @@ describe('FooterComponent', () => {
         expect(translateServiceSpy.use).toHaveBeenCalledOnceWith('cy');
     });
 
-    it('should switch language when clicking button, english to welsh', () => {
+    it('should switch language when clicking button, welsh to english', () => {
         // Arrange
         translateServiceSpy.currentLang = 'cy';
 
