@@ -91,7 +91,7 @@ export class VideoWebService implements IVideoWebApiService {
     }
 
     getVenues(): Observable<HearingVenueResponse[]> {
-        return this.apiClient.getVenues();
+        return this.apiClient.getVenues_();
     }
 
     /**

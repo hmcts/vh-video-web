@@ -1,38 +1,45 @@
-import { Inject, Injectable, Optional } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { API_BASE_URL, Role } from 'src/app/services/clients/api-client';
+import { Injectable } from '@angular/core';
+import { ApiClient, MagicLinkParticipantJoinRequest, MagicLinkParticipantJoinResponse, Role } from 'src/app/services/clients/api-client';
 import { Observable } from 'rxjs';
-import { BaseApiService } from './base-api.service';
-import { map, tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
+import { SecurityConfigSetupService } from 'src/app/security/security-config-setup.service';
+import { IdpProviders } from 'src/app/security/idp-providers';
+import { SecurityServiceProviderService } from 'src/app/security/authentication/security-service-provider.service';
 
 @Injectable({
     providedIn: 'root'
 })
-export class MagicLinksService extends BaseApiService {
-    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
-        super(http, baseUrl);
+export class MagicLinksService /* extends BaseApiService */ {
+    constructor(
+        private apiClient: ApiClient,
+        private securityConfigSetupService: SecurityConfigSetupService,
+        private securityServiceProviderService: SecurityServiceProviderService
+    ) {
+        // super(http, baseUrl);
     }
 
     getMagicLinkParticipantRoles(): Observable<Role[]> {
-        const url = `${this.baseUrl}/quickjoin/GetMagicLinkParticipantRoles`;
-        return this.http.get<Role[]>(url);
+        return this.apiClient.getMagicLinkParticipantRoles();
     }
 
     validateMagicLink(hearingId: string): Observable<boolean> {
-        const url = `${this.baseUrl}/quickjoin/validateMagicLink/${hearingId}`;
-        return this.http.get<boolean>(url);
+        return this.apiClient.validateMagicLink(hearingId);
     }
 
-    joinHearing(hearingId: string, name: string, role: Role): Observable<string> {
-        const url = `${this.baseUrl}/quickjoin/join/${hearingId}`;
-        const body = {
-            name: name,
-            role: role
-        };
-
-        return this.http.post<object>(url, body).pipe(
-            tap((response: { redirectUrl: string; jwt: {} }) => {}),
-            map((response: { redirectUrl: string; jwt: {} }) => response.redirectUrl)
-        );
+    joinHearing(hearingId: string, name: string, role: Role): Observable<object> {
+        return this.apiClient
+            .join(
+                hearingId,
+                new MagicLinkParticipantJoinRequest({
+                    name: name,
+                    role: role
+                })
+            )
+            .pipe(
+                tap((response: MagicLinkParticipantJoinResponse) => {
+                    this.securityConfigSetupService.setIdp(IdpProviders.magicLink);
+                    this.securityServiceProviderService.getSecurityService().setToken(response.jwt);
+                })
+            );
     }
 }

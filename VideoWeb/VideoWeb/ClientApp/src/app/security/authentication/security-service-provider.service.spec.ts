@@ -1,19 +1,27 @@
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { SecurityConfigSetupService } from '../security-config-setup.service';
-import { IdpProviders } from '../security-providers';
+import { IdpProviders } from '../idp-providers';
 import { SecurityServiceProviderService } from './security-service-provider.service';
+import { ISecurityService } from './security-service.interface';
+import { MagicLinkSecurityService } from './magic-link-security.service';
 
 describe('SecurityServiceProviderService', () => {
     let service: SecurityServiceProviderService;
 
     let securityConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
-    let oidcSecurityServiceSpy: jasmine.SpyObj<OidcSecurityService>;
+    let oidcSecurityServiceSpy: jasmine.SpyObj<ISecurityService>;
+    let magicLinkSecurityServiceSpy: jasmine.SpyObj<ISecurityService>;
 
     beforeEach(() => {
         securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>('SecurityConfigSetupService', ['getIdp']);
-        oidcSecurityServiceSpy = jasmine.createSpyObj<OidcSecurityService>('OidcSecurityService', ['getToken']);
+        oidcSecurityServiceSpy = jasmine.createSpyObj<ISecurityService>('OidcSecurityService', ['getToken']);
+        magicLinkSecurityServiceSpy = jasmine.createSpyObj<ISecurityService>('MagicLinkSecurityService', ['getToken']);
 
-        service = new SecurityServiceProviderService(securityConfigSetupServiceSpy, oidcSecurityServiceSpy);
+        service = new SecurityServiceProviderService(
+            securityConfigSetupServiceSpy,
+            (magicLinkSecurityServiceSpy as unknown) as MagicLinkSecurityService,
+            (oidcSecurityServiceSpy as unknown) as OidcSecurityService
+        );
     });
 
     it('should be created', () => {
@@ -51,7 +59,7 @@ describe('SecurityServiceProviderService', () => {
             const securityService = service.getSecurityService();
 
             // Assert
-            expect(securityService).toBeNull();
+            expect(securityService).toBe(magicLinkSecurityServiceSpy);
         });
     });
 });

@@ -5,7 +5,7 @@ import { IdpSelectionComponent } from './idp-selection.component';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { of } from 'rxjs';
 import { SecurityConfigSetupService } from '../security-config-setup.service';
-import { IdpProviders } from '../security-providers';
+import { IdpProviders } from '../idp-providers';
 
 describe('IdpSelectionComponent', () => {
     let component: IdpSelectionComponent;

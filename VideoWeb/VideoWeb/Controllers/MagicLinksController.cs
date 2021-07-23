@@ -5,10 +5,13 @@ using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using VideoApi.Client;
 using VideoApi.Contract.Enums;
 using VideoWeb.Common.Models;
+using VideoWeb.Contract.Request;
+using VideoWeb.Contract.Responses;
 
 namespace VideoWeb.Controllers
 {
@@ -30,7 +33,7 @@ namespace VideoWeb.Controllers
         [HttpGet("GetMagicLinkParticipantRoles")]
         [AllowAnonymous]
         [SwaggerOperation(OperationId = "GetMagicLinkParticipantRoles")]
-        [ProducesResponseType(typeof(List<UserRole>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<Role>), StatusCodes.Status200OK)]
         public IActionResult GetMagicLinkParticipantRoles()
         {
             var magicParticipantRoles = new List<Role>
@@ -49,8 +52,7 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var response = await _videoApiClient.ValidateMagicLinkAsync(hearingId);
-                return Ok(response);
+                return Ok(true);
             }
             catch(VideoApiException e)
             {
@@ -59,5 +61,14 @@ namespace VideoWeb.Controllers
             }
         }
 
+        [HttpPost("join/${hearingId}")]
+        [AllowAnonymous]
+        [SwaggerOperation("joinConferenceAsAMagicLinkUser")]
+        [ProducesResponseType(typeof(MagicLinkParticipantJoinResponse), (int) HttpStatusCode.OK)]
+        public async Task<IActionResult> Join(Guid hearingId,
+            [FromBody] MagicLinkParticipantJoinRequest joinRequest)
+        {
+            return Ok(await Task.FromResult(new MagicLinkParticipantJoinResponse() { Jwt=$"{joinRequest.Name}-{joinRequest.Role}" }));
+        }
     }
 }

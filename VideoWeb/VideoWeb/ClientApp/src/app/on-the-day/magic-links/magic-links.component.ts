@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { MagicLinksService } from 'src/app/services/api/magic-links.service';
 import { Role } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
+import { Logger } from 'src/app/services/logging/logger-base';
 import { CustomValidators } from 'src/app/shared/custom-validators';
 
 @Component({
@@ -11,6 +12,8 @@ import { CustomValidators } from 'src/app/shared/custom-validators';
     templateUrl: './magic-links.component.html'
 })
 export class MagicLinksComponent implements OnInit {
+    private loggerPrefix = '[MagicLinksComponent] -';
+
     error: {
         nameError: String;
         roleError: String;
@@ -25,7 +28,7 @@ export class MagicLinksComponent implements OnInit {
     magicLinkParticipantRoles: Role[] = [];
 
     constructor(
-        private router: Router,
+        private logger: Logger,
         private errorService: ErrorService,
         private formBuilder: FormBuilder,
         private readonly magicLinksService: MagicLinksService,
@@ -38,7 +41,9 @@ export class MagicLinksComponent implements OnInit {
         this.hearingId = this.route.snapshot.paramMap.get('hearingId');
         this.magicLinksService.validateMagicLink(this.hearingId).subscribe(isValid => {
             if (isValid) {
+                debugger;
                 this.magicLinksService.getMagicLinkParticipantRoles().subscribe(roles => {
+                    debugger;
                     this.magicLinkParticipantRoles = roles;
                 });
             } else {
@@ -92,7 +97,11 @@ export class MagicLinksComponent implements OnInit {
         if (this.isFormValid) {
             this.magicLinksService
                 .joinHearing(this.hearingId, this.magicLinkNameFormControl.value, this.magicLinkRoleFormControl.value)
-                .subscribe(redirectUrl => this.router.navigateByUrl(redirectUrl));
+                .subscribe(response => {
+                    this.logger.info(`${this.loggerPrefix} Joined conference as magic link participant`, {
+                        apiResponse: response
+                    });
+                });
         }
     }
 }

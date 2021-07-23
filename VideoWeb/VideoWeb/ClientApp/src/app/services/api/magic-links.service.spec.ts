@@ -1,50 +1,107 @@
-import { getTestBed, TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-
 import { MagicLinksService } from './magic-links.service';
-import { Role } from '../clients/api-client';
+import { ApiClient, MagicLinkParticipantJoinRequest, MagicLinkParticipantJoinResponse, Role } from '../clients/api-client';
+import { SecurityConfigSetupService } from 'src/app/security/security-config-setup.service';
+import { SecurityServiceProviderService } from 'src/app/security/authentication/security-service-provider.service';
+import { fakeAsync, flush } from '@angular/core/testing';
+import { IdpProviders } from 'src/app/security/idp-providers';
+import { MagicLinkSecurityService } from 'src/app/security/authentication/magic-link-security.service';
+import { Subject } from 'rxjs';
 
 describe('MagicLinksService', () => {
     let service: MagicLinksService;
-    let httpMock: HttpTestingController;
+
+    let apiClientSpy: jasmine.SpyObj<ApiClient>;
+    let securityConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
+    let magicLinkSecurityServiceSpy: jasmine.SpyObj<MagicLinkSecurityService>;
+    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProviderService>;
 
     beforeEach(() => {
-        TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule],
-            providers: [MagicLinksService]
-        });
+        apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', ['join', 'validateMagicLink', 'getMagicLinkParticipantRoles']);
+        securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>('SecurityConfigSetupService', ['setIdp']);
+        magicLinkSecurityServiceSpy = jasmine.createSpyObj<MagicLinkSecurityService>('MagicLinkSecurityService', ['setToken']);
+        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProviderService>('SecurityServiceProviderService', [
+            'getSecurityService'
+        ]);
 
-        const testBed = getTestBed();
-        service = testBed.inject(MagicLinksService);
-        httpMock = testBed.inject(HttpTestingController);
+        securityServiceProviderServiceSpy.getSecurityService.and.returnValue(magicLinkSecurityServiceSpy);
+
+        service = new MagicLinksService(apiClientSpy, securityConfigSetupServiceSpy, securityServiceProviderServiceSpy);
     });
 
     describe('getMagicLinkParticipantRoles', () => {
         it('should call the api to get magic link participant roles', () => {
-            const response = [Role.MagicLinkParticipant];
-            service.getMagicLinkParticipantRoles().subscribe(res => {
-                expect(res).toBe(response);
-                httpMock.verify();
-            });
+            // Act
+            service.getMagicLinkParticipantRoles();
 
-            const request = httpMock.expectOne(req => req.url.includes('/quickjoin/GetMagicLinkParticipantRoles'));
-            expect(request.request.method).toBe('GET');
-            request.flush(response);
+            // Assert
+            expect(apiClientSpy.getMagicLinkParticipantRoles).toHaveBeenCalledTimes(1);
         });
     });
 
     describe('validateMagicLink', () => {
         it('should call the api for validation', () => {
-            const hearingId = 'd1faff56-aa5e-45d5-8ec5-67e7840b1f6d';
-            const response = false;
-            service.validateMagicLink(hearingId).subscribe(res => {
-                expect(res).toBe(response);
-                httpMock.verify();
+            // Arrange
+            const hearingId = 'hearing-id';
+
+            // Act
+            service.validateMagicLink(hearingId);
+
+            // Assert
+            expect(apiClientSpy.validateMagicLink).toHaveBeenCalledOnceWith(hearingId);
+        });
+    });
+
+    describe('joinHearing', () => {
+        it('should call the api to join the hearing', () => {
+            // Arrange
+            const hearingId = 'hearing-id';
+            const name = 'name';
+            const role = Role.Judge;
+            const expectedRequest = new MagicLinkParticipantJoinRequest({
+                name: name,
+                role: role
             });
 
-            const request = httpMock.expectOne(req => req.url.includes(`/quickjoin/validateMagicLink/${hearingId}`));
-            expect(request.request.method).toBe('GET');
-            request.flush(response);
+            const joinSubject = new Subject<MagicLinkParticipantJoinResponse>();
+            apiClientSpy.join.and.returnValue(joinSubject.asObservable());
+
+            // Act
+            service.joinHearing(hearingId, name, role);
+
+            // Assert
+            expect(apiClientSpy.join).toHaveBeenCalledOnceWith(hearingId, expectedRequest);
         });
+
+        it('should perform side effects when the observable is subscribed to', fakeAsync(() => {
+            // Arrange
+            const hearingId = 'hearing-id';
+            const name = 'name';
+            const role = Role.Judge;
+            const expectedRequest = new MagicLinkParticipantJoinRequest({
+                name: name,
+                role: role
+            });
+            const expectedResponse = new MagicLinkParticipantJoinResponse({
+                jwt: 'jwt'
+            });
+
+            const joinSubject = new Subject<MagicLinkParticipantJoinResponse>();
+            apiClientSpy.join.and.returnValue(joinSubject.asObservable());
+
+            // Act
+            let result = null;
+            service.joinHearing(hearingId, name, role).subscribe(response => {
+                result = response;
+            });
+            joinSubject.next(expectedResponse);
+            flush();
+
+            // Assert
+            expect(result).toBe(expectedResponse);
+            expect(apiClientSpy.join).toHaveBeenCalledOnceWith(hearingId, expectedRequest);
+            expect(securityConfigSetupServiceSpy.setIdp).toHaveBeenCalledOnceWith(IdpProviders.magicLink);
+            expect(securityServiceProviderServiceSpy.getSecurityService).toHaveBeenCalledTimes(1);
+            expect(magicLinkSecurityServiceSpy.setToken).toHaveBeenCalledOnceWith(expectedResponse.jwt);
+        }));
     });
 });

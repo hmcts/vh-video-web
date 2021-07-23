@@ -9,7 +9,7 @@ import { MagicLinksComponent } from './magic-links.component';
 import { TranslatePipeMock } from '../..//testing/mocks/mock-translation-pipe';
 import { Role } from 'src/app/services/clients/api-client';
 import { ContactUsFoldingComponent } from 'src/app/shared/contact-us-folding/contact-us-folding.component';
-import { RouterTestingModule } from '@angular/router/testing';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 describe('MagicLinksComponent', () => {
     const magicLinkParticipantRoles = [Role.MagicLinkObserver, Role.MagicLinkParticipant];
@@ -25,12 +25,19 @@ describe('MagicLinksComponent', () => {
         });
         magicLinksServiceSpy = jasmine.createSpyObj('magicLinksService', {
             getMagicLinkParticipantRoles: of(magicLinkParticipantRoles),
-            validateMagicLink: of(true)
+            validateMagicLink: of(true),
+            joinHearing: of({})
         });
 
         await TestBed.configureTestingModule({
             declarations: [MagicLinksComponent, MockComponent(ContactUsFoldingComponent), MockPipe(TranslatePipeMock)],
             providers: [
+                {
+                    provide: Logger,
+                    useValue: {
+                        info: () => {}
+                    }
+                },
                 {
                     provide: ActivatedRoute,
                     useValue: {
@@ -53,7 +60,7 @@ describe('MagicLinksComponent', () => {
                     useValue: magicLinksServiceSpy
                 }
             ],
-            imports: [ReactiveFormsModule, RouterTestingModule]
+            imports: [ReactiveFormsModule]
         }).compileComponents();
     });
 
@@ -162,6 +169,14 @@ describe('MagicLinksComponent', () => {
         });
 
         it('should validate the form', () => {
+            const spy = spyOn(component, 'validateForm');
+
+            component.onSubmit();
+
+            expect(spy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should try and join the conference', () => {
             const spy = spyOn(component, 'validateForm');
 
             component.onSubmit();

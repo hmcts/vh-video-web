@@ -52,7 +52,7 @@ export class VenueListComponent implements OnInit {
 
     getFiltersCourtRoomsAccounts(response: CourtRoomsAccountResponse[]) {
         if (this.venuesSelected) {
-            this.filterCourtRoomsAccounts = response.map(x => new CourtRoomsAccounts(x.venue, x.court_rooms, true));
+            this.filterCourtRoomsAccounts = response.map(x => new CourtRoomsAccounts(x.first_name, x.last_names, true));
             const previousFilter = this.courtAccountsAllocationStorage.get();
             if (previousFilter) {
                 previousFilter.forEach(x => this.updateFilterSelection(x));

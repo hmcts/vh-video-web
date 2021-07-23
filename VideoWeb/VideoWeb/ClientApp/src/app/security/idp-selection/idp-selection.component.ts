@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from '../../shared/page-url.constants';
 import { SecurityConfigSetupService } from '../security-config-setup.service';
-import { IdpProviders } from '../security-providers';
+import { IdpProviders } from '../idp-providers';
 
 @Component({
     selector: 'app-idp-selection',

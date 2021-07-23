@@ -4,7 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { ConfigService } from '../services/api/config.service';
 import { IdpSettingsResponse } from '../services/clients/api-client';
-import { IdpProviders } from './security-providers';
+import { IdpProviders } from './idp-providers';
 
 @Injectable()
 export class SecurityConfigSetupService {

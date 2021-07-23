@@ -1,4 +1,4 @@
-<h1 class="govuk-heading-xl govuk-!-margin-top-8">{{ 'magic-participant-landing-page.page-title' | translate }}</h1>  
+<h1 class="govuk-heading-xl govuk-!-margin-top-8">{{ 'magic-participant-landing-page.page-title' | translate }}</h1>
 
 <p>{{ 'magic-participant-landing-page.paragraph1' | translate }}</p>
 
@@ -18,7 +18,7 @@
     <div *ngFor="let magicLinkParticipantRole of magicLinkParticipantRoles" class="govuk-radios__item">
       <ng-container [ngSwitch]="magicLinkParticipantRole">
         <ng-container *ngSwitchCase="role.MagicLinkParticipant">
-          <input 
+          <input
             [id]="magicLinkParticipantRole"
             formControlName="magicLinkParticipantRole"
             class="govuk-radios__input"
@@ -34,8 +34,7 @@
           </div>
         </ng-container>
         <ng-container *ngSwitchCase="role.MagicLinkObserver">
-          
-          <input 
+          <input
             [id]="magicLinkParticipantRole"
             formControlName="magicLinkParticipantRole"
             class="govuk-radios__input"

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { SecurityConfigSetupService } from '../security-config-setup.service';
-import { IdpProviders } from '../security-providers';
+import { IdpProviders } from '../idp-providers';
 
 @Component({
     selector: 'app-vh-sign-in',

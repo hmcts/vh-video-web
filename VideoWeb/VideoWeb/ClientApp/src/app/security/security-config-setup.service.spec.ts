@@ -1,7 +1,7 @@
 import { OidcConfigService } from 'angular-auth-oidc-client';
 import { MockConfigService } from '../testing/mocks/mock-config.service';
 import { SecurityConfigSetupService } from './security-config-setup.service';
-import { IdpProviders } from './security-providers';
+import { IdpProviders } from './idp-providers';
 
 describe('SecurityConfigSetupService', () => {
     let sut: SecurityConfigSetupService;
