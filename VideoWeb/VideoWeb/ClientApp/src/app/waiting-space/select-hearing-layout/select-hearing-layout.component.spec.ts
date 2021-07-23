@@ -6,7 +6,7 @@ import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.serv
 import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
 import { SelectHearingLayoutComponent } from './select-hearing-layout.component';
 
-fdescribe('SelectHearingLayoutComponent', () => {
+describe('SelectHearingLayoutComponent', () => {
     let component: SelectHearingLayoutComponent;
     const videoCallService = videoCallServiceSpy;
     let conference: ConferenceResponse;
@@ -135,7 +135,6 @@ fdescribe('SelectHearingLayoutComponent', () => {
         expect(component.isRecommendedLayout(HearingLayout.Dynamic)).toBeTruthy();
         expect(component.isRecommendedLayout(HearingLayout.OnePlus7)).toBeFalsy();
         expect(component.isRecommendedLayout(HearingLayout.TwoPlus21)).toBeFalsy();
-
     });
 
     it('should return true when 2+1 is recommended', () => {
