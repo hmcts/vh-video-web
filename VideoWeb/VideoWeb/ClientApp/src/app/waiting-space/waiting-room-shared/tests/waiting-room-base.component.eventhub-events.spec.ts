@@ -1500,7 +1500,18 @@ describe('WaitingRoomComponent EventHub Call', () => {
             expect(notificationToastrService.showParticipantAdded).toHaveBeenCalledWith(testParticipant, true);
         });
 
-        it('should show toast for not in hearing', () => {
+        it('should show toast for in consultation', () => {
+            // Arrange
+            component.participant.status = ParticipantStatus.InConsultation;
+
+            // Act
+            getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
+
+            // Assert
+            expect(notificationToastrService.showParticipantAdded).toHaveBeenCalledWith(testParticipant, true);
+        });
+
+        it('should show toast for not in hearing or consultation', () => {
             // Arrange
             component.participant.status = ParticipantStatus.Available;
 
