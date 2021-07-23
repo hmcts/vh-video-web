@@ -42,7 +42,7 @@ export class ParticipantService {
         return this._endpointParticipants;
     }
 
-    private _virtualMeetingRooms: VirtualMeetingRoomModel[];
+    private _virtualMeetingRooms: VirtualMeetingRoomModel[] = [];
     public get virtualMeetingRooms(): VirtualMeetingRoomModel[] {
         return this._virtualMeetingRooms;
     }

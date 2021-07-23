@@ -458,25 +458,25 @@ export abstract class WaitingRoomBaseDirective {
 
         this.eventHubSubscription$.add(
             this.eventService.getParticipantsUpdated().subscribe(async participantsUpdatedMessage => {
-                this.logger.debug(`[WR] - Participant Updated`, participantsUpdatedMessage.participants);
+                this.logger.debug(`[WR] - Participants Updated`, participantsUpdatedMessage.participants);
                 const newParticipants = participantsUpdatedMessage.participants.filter(
                     x => !this.conference.participants.find(y => y.id === x.id)
                 );
                 newParticipants.forEach(participant => {
+                    this.logger.debug(`[WR] - Participant added, showing notification`, participant);
                     this.notificationToastrService.showParticipantAdded(
                         participant,
                         this.participant.status === ParticipantStatus.InHearing
                     );
                 });
 
-                const updatedParticipants = [...participantsUpdatedMessage.participants].map(updatedParticipant => {
-                    updatedParticipant.current_room = this.conference.participants.find(
-                        currentParticipant => currentParticipant.id === updatedParticipant.id
-                    )?.current_room;
-                    return updatedParticipant;
+                this.conference.participants = [...participantsUpdatedMessage.participants].map(participant => {
+                    const currentParticipant = this.conference.participants.find(x => x.id === participant.id);
+                    participant.current_room = currentParticipant ? currentParticipant.current_room : null;
+                    participant.status = currentParticipant ? currentParticipant.status : ParticipantStatus.NotSignedIn;
+                    return participant;
                 });
-
-                this.conference.participants = updatedParticipants;
+                this.participant = this.getLoggedParticipant();
             })
         );
     }
