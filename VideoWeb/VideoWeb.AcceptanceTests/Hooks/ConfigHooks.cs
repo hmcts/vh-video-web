@@ -42,7 +42,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             RegisterDefaultData(context);
             RegisterIsLive(context);
             RegisterLocals(context);
-            RegisterValidEjudDIdDomains(context);
+            // RegisterValidEjudDIdDomains(context);
             RegisterHearingServices(context);
             RegisterWowzaSettings(context);
             RegisterSauceLabsSettings(context);
