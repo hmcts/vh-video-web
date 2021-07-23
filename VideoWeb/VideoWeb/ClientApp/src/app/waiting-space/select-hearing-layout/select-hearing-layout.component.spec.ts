@@ -6,7 +6,7 @@ import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.serv
 import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
 import { SelectHearingLayoutComponent } from './select-hearing-layout.component';
 
-describe('SelectHearingLayoutComponent', () => {
+fdescribe('SelectHearingLayoutComponent', () => {
     let component: SelectHearingLayoutComponent;
     const videoCallService = videoCallServiceSpy;
     let conference: ConferenceResponse;
@@ -127,29 +127,29 @@ describe('SelectHearingLayoutComponent', () => {
     it('should return false when accordian is close', () => {
         const accordian: HTMLDivElement = document.createElement('div');
         document.getElementById = jasmine.createSpy('accordian-container').and.returnValue(accordian);
-
         expect(component.isAccordianOpen).toBeFalsy();
     });
 
     it('should return true when dynamic is recommended', () => {
         spyOn(component, 'recommendedLayout').and.returnValue(HearingLayout.Dynamic);
-        expect(component.recommendDynamic).toBeTruthy();
-        expect(component.recommend1Plus7).toBeFalsy();
-        expect(component.recommend2Plus21).toBeFalsy();
+        expect(component.isRecommendedLayout(HearingLayout.Dynamic)).toBeTruthy();
+        expect(component.isRecommendedLayout(HearingLayout.OnePlus7)).toBeFalsy();
+        expect(component.isRecommendedLayout(HearingLayout.TwoPlus21)).toBeFalsy();
+
     });
 
     it('should return true when 2+1 is recommended', () => {
         spyOn(component, 'recommendedLayout').and.returnValue(HearingLayout.TwoPlus21);
-        expect(component.recommendDynamic).toBeFalsy();
-        expect(component.recommend1Plus7).toBeFalsy();
-        expect(component.recommend2Plus21).toBeTruthy();
+        expect(component.isRecommendedLayout(HearingLayout.Dynamic)).toBeFalsy();
+        expect(component.isRecommendedLayout(HearingLayout.OnePlus7)).toBeFalsy();
+        expect(component.isRecommendedLayout(HearingLayout.TwoPlus21)).toBeTruthy();
     });
 
     it('should return true when 1+7 is recommended', () => {
         spyOn(component, 'recommendedLayout').and.returnValue(HearingLayout.OnePlus7);
-        expect(component.recommendDynamic).toBeFalsy();
-        expect(component.recommend1Plus7).toBeTruthy();
-        expect(component.recommend2Plus21).toBeFalsy();
+        expect(component.isRecommendedLayout(HearingLayout.Dynamic)).toBeFalsy();
+        expect(component.isRecommendedLayout(HearingLayout.OnePlus7)).toBeTruthy();
+        expect(component.isRecommendedLayout(HearingLayout.TwoPlus21)).toBeFalsy();
     });
 
     describe('onLangChange event', () => {
