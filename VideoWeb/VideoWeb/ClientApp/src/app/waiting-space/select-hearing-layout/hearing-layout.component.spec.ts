@@ -50,7 +50,7 @@ describe('HearingLayoutComponent', () => {
     });
     it('should emit on when layout has been selected', () => {
         spyOn(component.selectedEvent, 'emit');
-        component.emitSelected()
+        component.emitSelected();
         expect(component.selectedEvent.emit).toHaveBeenCalled();
-     });
+    });
 });
