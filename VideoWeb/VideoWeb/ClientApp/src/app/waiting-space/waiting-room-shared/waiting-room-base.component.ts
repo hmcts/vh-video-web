@@ -122,6 +122,8 @@ export abstract class WaitingRoomBaseDirective {
     virtualBackground: boolean;
     canvasCtx: any;
     selfieSegmentation: ss.SelfieSegmentation;
+    activeEffect = 'blur';
+
     protected constructor(
         protected route: ActivatedRoute,
         protected videoWebService: VideoWebService,
@@ -1411,12 +1413,9 @@ export abstract class WaitingRoomBaseDirective {
 
     onResults2(results): void {
         const self = this;
-        const activeEffect = 'background';
-        // Draw the overlays.
 
+        // Draw the overlays.
         self.canvasCtx.save();
-        // self.backgroundBlur = new buildBackgroundBlurStage()
-        // self.backgroundBlur.render();
         self.canvasCtx.clearRect(0, 0, self.canvasElement.width, self.canvasElement.height);
 
         self.canvasCtx.drawImage(
@@ -1425,40 +1424,71 @@ export abstract class WaitingRoomBaseDirective {
 
         // Only overwrite existing pixels.
         self.canvasCtx.globalCompositeOperation = 'source-in';
-        if (activeEffect === 'mask') {
-            // This can be a color or a texture or whatever...
-            self.canvasCtx.fillStyle = '#00FF00';
-            self.canvasCtx.fillRect(0, 0, self.canvasElement.width, self.canvasElement.height);
-        } else {
-            self.canvasCtx.drawImage(
-                results.image, 0, 0, self.canvasElement.width, self.canvasElement.height);
-        }
+        // if (activeEffect === 'blur') {
+        self.canvasCtx.drawImage(
+            results.image, 0, 0, self.canvasElement.width, self.canvasElement.height);
+        // }
 
         // Only overwrite missing pixels.
         self.canvasCtx.globalCompositeOperation = 'destination-atop';
-        if (activeEffect === 'background') {
+        if (self.activeEffect === 'virtual') {
+            // With Background image
+            const imageObject = new Image();
+            imageObject.src = '/assets/images/architecture.jpg';
+            self.canvasCtx.imageSmoothingEnabled = true;
+            self.canvasCtx.drawImage(imageObject, 0, 0, self.canvasElement.width, self.canvasElement.height);
 
             // This can be a color or a texture or whatever...
             // self.canvasCtx.fillStyle = '#0000FF';
             // self.canvasCtx.fillRect(0, 0, self.canvasElement.width, self.canvasElement.height);
-
-            // With Background image
-            const imageObject = new Image();
-            imageObject.src = '/assets/images/pyramid.jpg';
-            self.canvasCtx.imageSmoothingEnabled = true;
-            self.canvasCtx.drawImage(imageObject, 0, 0, self.canvasElement.width, self.canvasElement.height);
-
-            // With Blur
-            // self.canvasCtx.fillRect(0, 0, self.canvasElement.width, self.canvasElement.height);
-
         } else {
+            // With Blur
+            self.canvasCtx.filter = 'blur(10px)';
             self.canvasCtx.drawImage(
                 results.image, 0, 0, self.canvasElement.width, self.canvasElement.height);
         }
 
+        // if (activeEffect === 'mask') {
+        //     // This can be a color or a texture or whatever...
+        //     self.canvasCtx.fillStyle = '#00FF00';
+        //     self.canvasCtx.fillRect(0, 0, self.canvasElement.width, self.canvasElement.height);
+        // } else {
+
+        //     self.canvasCtx.drawImage(
+        //         results.image, 0, 0, self.canvasElement.width, self.canvasElement.height);
+        // }
+
+        // // Only overwrite missing pixels.
+        // self.canvasCtx.globalCompositeOperation = 'destination-atop';
+        // if (activeEffect === 'background') {
+
+        //     // This can be a color or a texture or whatever...
+        //     // self.canvasCtx.fillStyle = '#0000FF';
+        //     // self.canvasCtx.fillRect(0, 0, self.canvasElement.width, self.canvasElement.height);
+
+        //     // With Background image
+        //     // const imageObject = new Image();
+        //     // imageObject.src = '/assets/images/pyramid.jpg';
+        //     // self.canvasCtx.imageSmoothingEnabled = true;
+        //     // self.canvasCtx.drawImage(imageObject, 0, 0, self.canvasElement.width, self.canvasElement.height);
+
+        //     // With Blur
+        //     self.canvasCtx.filter = 'blur(10px)';
+        //     self.canvasCtx.drawImage(
+        //         results.image, 0, 0, self.canvasElement.width, self.canvasElement.height);
+
+
+        // } else {
+        //     self.canvasCtx.drawImage(
+        //         results.image, 0, 0, self.canvasElement.width, self.canvasElement.height);
+        // }
+
         self.canvasCtx.restore();
     }
 
+    backgroundChanged(e) {
+        this.activeEffect = e.target.value === 'blur' ? 'blur' : 'virtual';
+    }
 
     onResults(results) {
         const self = this;

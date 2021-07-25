@@ -16,11 +16,18 @@
 </div> -->
 
 <div class="container">
-  <video id="webcam"></video>
-  <canvas id="canvasOutgoingFeed" width="1280px" height="720px"></canvas>
+  <video id="webcam" hidden></video>
+  <canvas id="canvasOutgoingFeed" width="640px" height="360px" hidden></canvas>
 </div>
 
 <div *ngIf="showVideo" class="video-background">
+  <div>  
+    <select id="background" (change)="this.backgroundChanged($event)">
+    <option value="blur">blur</option>
+    <option value="virtual">virtual</option>
+  </select>
+</div>
+
   <div class="header-bar">
     <div class="govuk-body" [class]="!isJohRoom && isPrivateConsultation ? 'header-content-grid-with-lock' : 'header-content-grid'">
       <ng-container *ngIf="!isJohRoom && isPrivateConsultation">
