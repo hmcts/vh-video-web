@@ -1413,8 +1413,10 @@ export abstract class WaitingRoomBaseDirective {
         const self = this;
         const activeEffect = 'background';
         // Draw the overlays.
-        self.canvasCtx.save();
 
+        self.canvasCtx.save();
+        // self.backgroundBlur = new buildBackgroundBlurStage()
+        // self.backgroundBlur.render();
         self.canvasCtx.clearRect(0, 0, self.canvasElement.width, self.canvasElement.height);
 
         self.canvasCtx.drawImage(
@@ -1423,7 +1425,7 @@ export abstract class WaitingRoomBaseDirective {
 
         // Only overwrite existing pixels.
         self.canvasCtx.globalCompositeOperation = 'source-in';
-        if (activeEffect === 'mask' || activeEffect === 'both') {
+        if (activeEffect === 'mask') {
             // This can be a color or a texture or whatever...
             self.canvasCtx.fillStyle = '#00FF00';
             self.canvasCtx.fillRect(0, 0, self.canvasElement.width, self.canvasElement.height);
@@ -1434,16 +1436,20 @@ export abstract class WaitingRoomBaseDirective {
 
         // Only overwrite missing pixels.
         self.canvasCtx.globalCompositeOperation = 'destination-atop';
-        if (activeEffect === 'background' || activeEffect === 'both') {
+        if (activeEffect === 'background') {
+
             // This can be a color or a texture or whatever...
             // self.canvasCtx.fillStyle = '#0000FF';
             // self.canvasCtx.fillRect(0, 0, self.canvasElement.width, self.canvasElement.height);
+
+            // With Background image
             const imageObject = new Image();
             imageObject.src = '/assets/images/pyramid.jpg';
             self.canvasCtx.imageSmoothingEnabled = true;
-
-            // self.canvasCtx.fillRect(0, 0, self.canvasElement.width, self.canvasElement.height);
             self.canvasCtx.drawImage(imageObject, 0, 0, self.canvasElement.width, self.canvasElement.height);
+
+            // With Blur
+            // self.canvasCtx.fillRect(0, 0, self.canvasElement.width, self.canvasElement.height);
 
         } else {
             self.canvasCtx.drawImage(
