@@ -1,7 +1,6 @@
 <div class="chat-input-group">
     <div [ngClass]="isInputInvalid ? '' : 'govuk-form-group  govuk-!-margin-bottom-2'"
          class="chat-input-text-button-group govuk-!-margin-left-2">
-         <label for="new-message-box" class="govuk-visually-hidden">{{chat-input-box.type-a-message | translate}}</label>
         <textarea class="govuk-textarea chat-input"
                   [ngClass]="{ 'govuk-textarea--error': isInputInvalid }"
                   required
@@ -13,7 +12,8 @@
                   #newMessageBox
                   type="text"
                   (keydown.enter)="$event.preventDefault()"
-                  (keydown)="onKeydown($event)">
+                  (keydown)="onKeydown($event)"
+                  attr.aria-label="{{'chat-input-box.type-a-message' | translate}}">
         </textarea>
         <button [disabled]="isSendingBlocked"
                 (click)="sendMessage()"
