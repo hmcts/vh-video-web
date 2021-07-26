@@ -1016,7 +1016,7 @@
     },
     "participant-added": {
       "title": "{{name}}",
-      "message": "{{role}}({{party}}) has been added to the hearing.",
+      "message": "{{role}} ({{party}}) has been added to the hearing.",
       "dismiss": "Dismiss"
     }
   },
