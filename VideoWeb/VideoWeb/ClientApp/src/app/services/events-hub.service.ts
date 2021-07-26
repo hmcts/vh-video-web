@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { ReplaySubject, Subject, Observable } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 import { SecurityServiceProviderService } from '../security/authentication/security-service-provider.service';

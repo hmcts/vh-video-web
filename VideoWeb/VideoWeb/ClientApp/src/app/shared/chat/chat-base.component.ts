@@ -9,10 +9,13 @@ import { InstantMessage } from 'src/app/services/models/instant-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ImHelper } from '../im-helper';
 import { TranslateService } from '@ngx-translate/core';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { SecurityServiceProviderService } from 'src/app/security/authentication/security-service-provider.service';
+import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
 
 export abstract class ChatBaseComponent {
     protected hearing: Hearing;
+    protected securityService: ISecurityService;
+
     messages: InstantMessage[] = [];
     pendingMessages: Map<string, InstantMessage[]> = new Map<string, InstantMessage[]>();
     loggedInUserProfile: UserProfileResponse;
@@ -26,10 +29,12 @@ export abstract class ChatBaseComponent {
         protected profileService: ProfileService,
         protected eventService: EventsService,
         protected logger: Logger,
-        protected oidcSecurityService: OidcSecurityService,
+        securityServiceProviderService: SecurityServiceProviderService,
         protected imHelper: ImHelper,
         protected translateService: TranslateService
-    ) {}
+    ) {
+        securityServiceProviderService.currentSecurityService$.subscribe(securityService => (this.securityService = securityService));
+    }
 
     abstract content: ElementRef<HTMLElement>;
     abstract sendMessage(messageBody: string): void;
@@ -65,7 +70,7 @@ export abstract class ChatBaseComponent {
             return;
         }
 
-        this.oidcSecurityService.userData$.subscribe(async ud => {
+        this.securityService.userData$.subscribe(async ud => {
             const from = message.from.toUpperCase();
             const username =
                 this.loggedInUser && this.loggedInUser.participant_id && this.loggedInUser.participant_id !== this.emptyGuid

@@ -27,7 +27,6 @@ import { DisplayMissingTranslationHandler } from './shared/display-missing-trans
 import { registerLocaleData } from '@angular/common';
 import localeCy from '@angular/common/locales/cy';
 import { AuthConfigModule } from './auth-config.module';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { NavigatorComponent } from './home/navigator/navigator.component';
 import { ProfileService } from './services/api/profile.service';
 
@@ -76,7 +75,7 @@ export function getLocale() {
             provide: LOG_ADAPTER,
             useClass: AppInsightsLoggerService,
             multi: true,
-            deps: [ConfigService, Router, OidcSecurityService, ProfileService]
+            deps: [ConfigService, Router, ProfileService]
         },
         { provide: API_BASE_URL, useFactory: () => '.' },
         { provide: LOCALE_ID, useFactory: getLocale },

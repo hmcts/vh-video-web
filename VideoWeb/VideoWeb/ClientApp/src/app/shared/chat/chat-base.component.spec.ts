@@ -15,8 +15,10 @@ import { Hearing } from '../models/hearing';
 import { ChatBaseComponent } from './chat-base.component';
 import { TranslateService } from '@ngx-translate/core';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-security.service';
+import { SecurityServiceProviderService } from 'src/app/security/authentication/security-service-provider.service';
+import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
+import { getSpiedPropertyGetter } from '../jasmine-helpers/property-helpers';
+import { of, Subject } from 'rxjs';
 
 class ChatBaseTest extends ChatBaseComponent {
     content: ElementRef<HTMLElement>;
@@ -28,11 +30,11 @@ class ChatBaseTest extends ChatBaseComponent {
         protected profileService: ProfileService,
         protected eventService: EventsService,
         protected logger: Logger,
-        protected oidcSecurityService: OidcSecurityService,
+        protected securityServiceProviderService: SecurityServiceProviderService,
         protected imHelper: ImHelper,
         protected translateService: TranslateService
     ) {
-        super(videoWebService, profileService, eventService, logger, oidcSecurityService, imHelper, translateService);
+        super(videoWebService, profileService, eventService, logger, securityServiceProviderService, imHelper, translateService);
     }
 
     sendMessage(messageBody: string): void {
@@ -52,8 +54,6 @@ class ChatBaseTest extends ChatBaseComponent {
     }
 }
 
-const mockOidcSecurityService = new MockOidcSecurityService();
-
 describe('ChatBaseComponent', () => {
     let component: ChatBaseComponent;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
@@ -63,13 +63,12 @@ describe('ChatBaseComponent', () => {
     let hearing: Hearing;
     const adminProfile = adminTestProfile;
     let contentElement: HTMLDivElement;
+    let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
+    let isAuthenticatedSubject: Subject<boolean>;
+    let userDataSubject: Subject<boolean>;
+    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProviderService>;
 
     beforeAll(() => {
-        mockOidcSecurityService.setUserData({
-            preferred_username: adminProfile.username
-        });
-        mockOidcSecurityService.setAuthenticated(true);
-
         conference = new ConferenceTestData().getConferenceDetailFuture();
         hearing = new Hearing(conference);
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
@@ -84,12 +83,25 @@ describe('ChatBaseComponent', () => {
     });
 
     beforeEach(() => {
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', [], ['isAuthenticated$', 'userData$']);
+        isAuthenticatedSubject = new Subject<boolean>();
+        userDataSubject = new Subject<any>();
+        getSpiedPropertyGetter(securityServiceSpy, 'isAuthenticated$').and.returnValue(isAuthenticatedSubject.asObservable());
+        getSpiedPropertyGetter(securityServiceSpy, 'userData$').and.returnValue(userDataSubject.asObservable());
+
+        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProviderService>(
+            'SecurityServiceProviderService',
+            [],
+            ['currentSecurityService$']
+        );
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
+
         component = new ChatBaseTest(
             videoWebServiceSpy,
             profileServiceSpy,
             eventsService,
             new MockLogger(),
-            mockOidcSecurityService as any,
+            securityServiceProviderServiceSpy,
             new ImHelper(),
             translateServiceSpy
         );

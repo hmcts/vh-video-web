@@ -1,4 +1,4 @@
-import { fakeAsync, tick } from '@angular/core/testing';
+import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -14,6 +14,10 @@ import { ParticipantChatComponent } from './participant-chat.component';
 import { ActivatedRoute } from '@angular/router';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-security.service';
+import { of, Subject } from 'rxjs';
+import { SecurityServiceProviderService } from 'src/app/security/authentication/security-service-provider.service';
+import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 
 describe('ParticipantChatComponent', () => {
     let component: ParticipantChatComponent;
@@ -31,6 +35,11 @@ describe('ParticipantChatComponent', () => {
     const judgeProfile = judgeTestProfile;
     const adminProfile = adminTestProfile;
     const timer = jasmine.createSpyObj<NodeJS.Timeout>('NodeJS.Timeout', ['ref', 'unref']);
+
+    let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
+    let isAuthenticatedSubject: Subject<boolean>;
+    let userDataSubject: Subject<any>;
+    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProviderService>;
 
     beforeAll(() => {
         conference = new ConferenceTestData().getConferenceDetailFuture();
@@ -64,6 +73,19 @@ describe('ParticipantChatComponent', () => {
             snapshot: { data: { loggedUser: logged } }
         };
 
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', [], ['isAuthenticated$', 'userData$']);
+        isAuthenticatedSubject = new Subject<boolean>();
+        userDataSubject = new Subject<any>();
+        getSpiedPropertyGetter(securityServiceSpy, 'isAuthenticated$').and.returnValue(isAuthenticatedSubject.asObservable());
+        getSpiedPropertyGetter(securityServiceSpy, 'userData$').and.returnValue(userDataSubject.asObservable());
+
+        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProviderService>(
+            'SecurityServiceProviderService',
+            [],
+            ['currentSecurityService$']
+        );
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
+
         component = new ParticipantChatComponent(
             videoWebService,
             profileService,
@@ -72,7 +94,7 @@ describe('ParticipantChatComponent', () => {
             new ImHelper(),
             activatedRoute,
             translateServiceSpy,
-            oidcSecurityService as any
+            securityServiceProviderServiceSpy
         );
         component.loggedInUserProfile = judgeProfile;
         component.hearing = hearing;
@@ -93,7 +115,9 @@ describe('ParticipantChatComponent', () => {
 
     it('should return logged participant Id username as participant username', fakeAsync(() => {
         component.ngOnInit();
-        tick();
+        userDataSubject.next({ preferred_username: judgeTestProfile.username });
+        flush();
+
         expect(component.participantUsername).toEqual(judgeUsername.toLowerCase());
     }));
 

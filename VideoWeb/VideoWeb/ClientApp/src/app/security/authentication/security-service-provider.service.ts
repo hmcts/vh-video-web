@@ -44,4 +44,8 @@ export class SecurityServiceProviderService {
     get currentSecurityService$(): Observable<ISecurityService> {
         return this.securityServiceSubject.asObservable();
     }
+
+    get currentIdp$(): Observable<IdpProviders> {
+        return this.idpSubject.asObservable();
+    }
 }

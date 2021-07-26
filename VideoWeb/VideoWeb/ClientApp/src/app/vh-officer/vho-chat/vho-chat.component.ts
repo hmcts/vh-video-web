@@ -25,7 +25,7 @@ import { Participant } from 'src/app/shared/models/participant';
 import { LoggedParticipantResponse, Role } from '../../services/clients/api-client';
 import { ConferenceUnreadMessageCount } from './vho-conference-unread_message-count.model';
 import { TranslateService } from '@ngx-translate/core';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { SecurityServiceProviderService } from 'src/app/security/authentication/security-service-provider.service';
 
 @Component({
     selector: 'app-vho-chat',
@@ -63,11 +63,11 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         protected profileService: ProfileService,
         protected eventService: EventsService,
         protected logger: Logger,
-        protected oidcSecurityService: OidcSecurityService,
+        securityServiceProviderService: SecurityServiceProviderService,
         protected imHelper: ImHelper,
         protected translateService: TranslateService
     ) {
-        super(videoWebService, profileService, eventService, logger, oidcSecurityService, imHelper, translateService);
+        super(videoWebService, profileService, eventService, logger, securityServiceProviderService, imHelper, translateService);
     }
 
     get participantUsername() {
@@ -87,7 +87,7 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         this.initForm();
         this.setupChatSubscription().then(sub => (this.chatHubSubscription = sub));
         this.updateChatWindow();
-        this.oidcSecurityService.userData$.subscribe(ud => {
+        this.securityService.userData$.subscribe(ud => {
             this.username = ud.preferred_username;
             this.setLoggedAdminUser();
         });
