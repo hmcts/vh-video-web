@@ -8,7 +8,7 @@ import { VideoCallService } from '../services/video-call.service';
     templateUrl: './select-hearing-layout.component.html'
 })
 export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
-    availableLayouts = HearingLayout;
+    availableLayouts = [HearingLayout.OnePlus7, HearingLayout.TwoPlus21, HearingLayout.Dynamic];
     selectedLayout: HearingLayout;
     accordionOpenAllElement: HTMLButtonElement;
     currentButtonContentKey: string;
@@ -64,20 +64,12 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
         }
     }
 
-    get recommendDynamic(): boolean {
-        return this.recommendedLayout() === HearingLayout.Dynamic;
-    }
-
-    get recommend1Plus7(): boolean {
-        return this.recommendedLayout() === HearingLayout.OnePlus7;
-    }
-
-    get recommend2Plus21(): boolean {
-        return this.recommendedLayout() === HearingLayout.TwoPlus21;
-    }
-
     get isAccordianOpen(): boolean {
         return document.getElementById('accordian-container').classList.contains('govuk-accordion__section--expanded');
+    }
+
+    isRecommendedLayout(layout: HearingLayout): boolean {
+        return this.recommendedLayout() === layout;
     }
 
     recommendedLayout(): HearingLayout {
