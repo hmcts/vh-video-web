@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MagicLinksService } from 'src/app/services/api/magic-links.service';
 import { Role } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { CustomValidators } from 'src/app/shared/custom-validators';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
     selector: 'app-magic-links',
@@ -29,6 +30,7 @@ export class MagicLinksComponent implements OnInit {
 
     constructor(
         private logger: Logger,
+        private router: Router,
         private errorService: ErrorService,
         private formBuilder: FormBuilder,
         private readonly magicLinksService: MagicLinksService,
@@ -95,11 +97,17 @@ export class MagicLinksComponent implements OnInit {
         if (this.isFormValid) {
             this.magicLinksService
                 .joinHearing(this.hearingId, this.magicLinkNameFormControl.value, this.magicLinkRoleFormControl.value)
-                .subscribe(response => {
-                    this.logger.info(`${this.loggerPrefix} Joined conference as magic link participant`, {
-                        apiResponse: response
-                    });
-                });
+                .subscribe(
+                    response => {
+                        this.logger.info(`${this.loggerPrefix} Joined conference as magic link participant`, {
+                            apiResponse: response
+                        });
+                        setTimeout(() => {
+                            this.router.navigate([pageUrls.ParticipantHearingList]);
+                        }, 500);
+                    },
+                    error => console.log(this.loggerPrefix, error)
+                );
         }
     }
 }

@@ -15,15 +15,15 @@ namespace VideoWeb.Controllers
     public class TokenController : ControllerBase
     {
         private readonly IHashGenerator _hashGenerator;
-        private readonly ICustomJwtTokenProvider _customJwtTokenProvider;
+        private readonly IKinlyJwtTokenProvider _kinlyJwtTokenProvider;
         private readonly KinlyConfiguration _kinlyConfiguration;
 
         public TokenController(IHashGenerator hashGenerator, 
-            ICustomJwtTokenProvider customJwtTokenProvider,
+            IKinlyJwtTokenProvider kinlyJwtTokenProvider,
             KinlyConfiguration kinlyConfiguration)
         {
             _hashGenerator = hashGenerator;
-            _customJwtTokenProvider = customJwtTokenProvider;
+            _kinlyJwtTokenProvider = kinlyJwtTokenProvider;
             _kinlyConfiguration = kinlyConfiguration;
         }
 
@@ -58,7 +58,7 @@ namespace VideoWeb.Controllers
             }
 
             var expiresOn = DateTime.UtcNow.AddMinutes(_kinlyConfiguration.ExpiresInMinutes).ToUniversalTime().ToString(CultureInfo.InvariantCulture);
-            var token = _customJwtTokenProvider.GenerateToken(participantId.ToString(), _kinlyConfiguration.ExpiresInMinutes);
+            var token = _kinlyJwtTokenProvider.GenerateToken(participantId.ToString(), _kinlyConfiguration.ExpiresInMinutes);
             var tokenResponse = new TokenResponse {ExpiresOn = expiresOn, Token = token}; 
             return Ok(tokenResponse);
         }

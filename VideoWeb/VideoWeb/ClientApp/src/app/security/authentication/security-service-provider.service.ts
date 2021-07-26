@@ -4,13 +4,13 @@ import { SecurityConfigSetupService } from '../security-config-setup.service';
 import { IdpProviders } from '../idp-providers';
 import { MagicLinkSecurityService } from './magic-link-security.service';
 import { ISecurityService } from './security-service.interface';
-import { Observable, ReplaySubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
 })
 export class SecurityServiceProviderService {
-    private securityServiceSubject = new ReplaySubject<ISecurityService>(1);
+    private securityServiceSubject;
 
     constructor(
         private securityConfigSetupService: SecurityConfigSetupService,
@@ -20,10 +20,15 @@ export class SecurityServiceProviderService {
         this.securityConfigSetupService.currentIdp$.subscribe(() => {
             this.securityServiceSubject.next(this.getSecurityService());
         });
+
+        this.securityServiceSubject = new BehaviorSubject<ISecurityService>(this.getSecurityService());
     }
 
     getSecurityService(): ISecurityService {
         switch (this.securityConfigSetupService.getIdp()) {
+            default:
+                return null;
+
             case IdpProviders.magicLink:
                 return this.magicLinkSecurityService;
 

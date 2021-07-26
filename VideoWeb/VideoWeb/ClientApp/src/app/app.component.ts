@@ -2,13 +2,7 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/co
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import {
-    AuthorizationResult,
-    EventTypes,
-    OidcClientNotification,
-    OidcSecurityService,
-    PublicEventsService
-} from 'angular-auth-oidc-client';
+import { AuthorizationResult, EventTypes, OidcClientNotification, PublicEventsService } from 'angular-auth-oidc-client';
 import { NEVER, Observable, Subscription } from 'rxjs';
 import { catchError, filter, map } from 'rxjs/operators';
 import { ConfigService } from './services/api/config.service';
@@ -21,6 +15,10 @@ import { PageTrackerService } from './services/page-tracker.service';
 import { pageUrls } from './shared/page-url.constants';
 import { TestLanguageService } from './shared/test-language.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { IdpProviders } from './security/idp-providers';
+import { SecurityServiceProviderService } from './security/authentication/security-service-provider.service';
+import { SecurityConfigSetupService } from './security/security-config-setup.service';
+import { ISecurityService } from './security/authentication/security-service.interface';
 
 @Component({
     selector: 'app-root',
@@ -39,6 +37,8 @@ export class AppComponent implements OnInit, OnDestroy {
     pageTitle = 'Video Hearings - ';
 
     subscriptions = new Subscription();
+    securityService: ISecurityService;
+
     constructor(
         private router: Router,
         private deviceTypeService: DeviceTypeService,
@@ -50,10 +50,11 @@ export class AppComponent implements OnInit, OnDestroy {
         pageTracker: PageTrackerService,
         testLanguageService: TestLanguageService,
         translate: TranslateService,
-        private oidcSecurityService: OidcSecurityService,
         private configService: ConfigService,
         private eventService: PublicEventsService,
-        private logger: Logger
+        private logger: Logger,
+        securityServiceProviderService: SecurityServiceProviderService,
+        private securityConfigSetupService: SecurityConfigSetupService
     ) {
         this.loggedIn = false;
         this.isRepresentativeOrIndividual = false;
@@ -64,17 +65,24 @@ export class AppComponent implements OnInit, OnDestroy {
 
         testLanguageService.setupSubscriptions();
         pageTracker.trackPreviousPage(router);
+
+        this.securityService = securityServiceProviderService.getSecurityService();
+        securityServiceProviderService.currentSecurityService$.subscribe(service => (this.securityService = service));
     }
 
     ngOnInit() {
         this.configService.getClientSettings().subscribe({
             next: async () => {
-                this.postConfigSetup();
+                if (this.securityConfigSetupService.getIdp() === IdpProviders.magicLink) {
+                    this.postConfigSetupMagicLinks();
+                } else {
+                    this.postConfigSetupOidc();
+                }
             }
         });
     }
 
-    private postConfigSetup() {
+    private postConfigSetupOidc() {
         this.checkAuth().subscribe({
             next: async (loggedIn: boolean) => {
                 await this.postAuthSetup(loggedIn, false);
@@ -88,6 +96,14 @@ export class AppComponent implements OnInit, OnDestroy {
                 this.logger.info('[AppComponent] - OidcClientNotification event received with value ', value);
                 await this.postAuthSetup(true, value.value.isRenewProcess);
             });
+    }
+
+    private postConfigSetupMagicLinks() {
+        this.checkAuth().subscribe({
+            next: async (loggedIn: boolean) => {
+                await this.postAuthSetup(loggedIn, false);
+            }
+        });
     }
 
     private async postAuthSetup(loggedIn: boolean, skip: boolean) {
@@ -130,7 +146,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     checkAuth(): Observable<boolean> {
-        return this.oidcSecurityService.checkAuth().pipe(
+        return this.securityService.checkAuth().pipe(
             catchError(err => {
                 console.error('[AppComponent] - Check Auth Error', err);
                 if (!this.isSignInUrl) {
@@ -159,7 +175,7 @@ export class AppComponent implements OnInit, OnDestroy {
     logOut() {
         this.loggedIn = false;
         sessionStorage.clear();
-        this.oidcSecurityService.logoffAndRevokeTokens();
+        this.securityService.logoffAndRevokeTokens();
     }
 
     skipToContent() {

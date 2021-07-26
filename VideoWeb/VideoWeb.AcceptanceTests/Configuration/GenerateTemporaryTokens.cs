@@ -18,7 +18,7 @@ namespace VideoWeb.AcceptanceTests.Configuration
 
         public static string SetCustomJwTokenForCallback(KinlyConfiguration kinlyConfiguration)
         {
-            var generateTokenWithAsciiKey = new CustomJwtTokenProvider(kinlyConfiguration).GenerateTokenForCallbackEndpoint("VhVideoApi", TokenExpiresInMinutes);
+            var generateTokenWithAsciiKey = new KinlyJwtTokenProvider(kinlyConfiguration).GenerateTokenForCallbackEndpoint("VhVideoApi", TokenExpiresInMinutes);
             return generateTokenWithAsciiKey;
         }
     }

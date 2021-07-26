@@ -22,6 +22,7 @@ namespace VideoWeb.Extensions
         {
             var kinlyConfiguration = configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
             var azureAdConfiguration = configuration.GetSection("AzureAd").Get<AzureAdConfiguration>();
+            var magicLinksConfiguration = configuration.GetSection("MagicLinks").Get<MagicLinksConfiguration>();
             var eJudAdConfiguration = configuration.GetSection("EJudAd").Get<EJudAdConfiguration>();
             var kinlyCallbackSecret = Convert.FromBase64String(kinlyConfiguration.CallbackSecret);
          
@@ -32,7 +33,8 @@ namespace VideoWeb.Extensions
             var providerSchemes = new List<IProviderSchemes>
             {
                 new VhAadScheme(azureAdConfiguration, eventhubPath),
-                new EJudiciaryScheme(eventhubPath, eJudAdConfiguration)
+                new EJudiciaryScheme(eventhubPath, eJudAdConfiguration),
+                new MagicLinksScheme(magicLinksConfiguration, eventhubPath)
             };
 
             var authenticationBuilder = serviceCollection.AddAuthentication(options =>

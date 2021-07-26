@@ -3,6 +3,7 @@
     public enum AuthProvider
     {
         VHAAD,
-        EJudiciary
+        EJudiciary,
+        MagicLinks
     }
 }

@@ -10,11 +10,13 @@ using System.Threading.Tasks;
 using VideoApi.Client;
 using VideoApi.Contract.Enums;
 using VideoWeb.Common.Models;
+using VideoWeb.Common.Security;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 
 namespace VideoWeb.Controllers
 {
+    
     [Produces("application/json")]
     [ApiController]
     [Route("quickjoin")]
@@ -22,12 +24,13 @@ namespace VideoWeb.Controllers
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly ILogger<MagicLinksController> _logger;
+        private readonly IMagicLinksJwtTokenProvider _tokenProvider;
 
-        public MagicLinksController(IVideoApiClient videoApiClient, ILogger<MagicLinksController> logger)
+        public MagicLinksController(IVideoApiClient videoApiClient, ILogger<MagicLinksController> logger, IMagicLinksJwtTokenProvider tokenProvider)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
-
+            _tokenProvider = tokenProvider;
         }
 
         [HttpGet("GetMagicLinkParticipantRoles")]
@@ -68,7 +71,12 @@ namespace VideoWeb.Controllers
         public async Task<IActionResult> Join(Guid hearingId,
             [FromBody] MagicLinkParticipantJoinRequest joinRequest)
         {
-            return Ok(await Task.FromResult(new MagicLinkParticipantJoinResponse() { Jwt=$"{joinRequest.Name}-{joinRequest.Role}" }));
+            MagicLinkParticipantJoinResponse joinResponse = new MagicLinkParticipantJoinResponse()
+            {
+                Jwt = _tokenProvider.GenerateToken(joinRequest.Name, AppRoles.CitizenRole, 8 * 60)
+            };
+            
+            return Ok(await Task.FromResult(joinResponse));
         }
         
         [HttpGet("isMagicLinkParticipantAuthorised")]

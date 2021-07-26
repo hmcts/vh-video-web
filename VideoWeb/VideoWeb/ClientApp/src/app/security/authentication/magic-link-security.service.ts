@@ -2,20 +2,16 @@ import { Injectable } from '@angular/core';
 import { PublicConfiguration } from 'angular-auth-oidc-client';
 import { AuthOptions } from 'angular-auth-oidc-client/lib/login/auth-options';
 import { ReplaySubject, Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { take, tap } from 'rxjs/operators';
 import { ApiClient } from 'src/app/services/clients/api-client';
 import { DecodedJWT, JWTBody } from './models/decoded-jwt.model';
 import { ISecurityService } from './security-service.interface';
 
 export class MagicLinkJwtBody extends JWTBody {
-    name: string;
+    preferred_username: string;
 
     constructor(body: any) {
         super(body);
-    }
-
-    get preferred_username() {
-        return this.name;
     }
 }
 
@@ -56,7 +52,7 @@ export class MagicLinkSecurityService implements ISecurityService {
                 });
             });
 
-        return this.apiClient.isMagicLinkParticipantAuthorised().pipe(toIsAuthorisedResult);
+        return this.apiClient.isMagicLinkParticipantAuthorised().pipe(take(1), toIsAuthorisedResult);
     }
 
     getToken(): string {
@@ -72,15 +68,15 @@ export class MagicLinkSecurityService implements ISecurityService {
         );
     }
 
-    isAuthenticated$(): Observable<boolean> {
+    get isAuthenticated$(): Observable<boolean> {
         return this.isAuthenticatedSubject.asObservable();
     }
 
-    userData$(): Observable<any> {
+    get userData$(): Observable<any> {
         return this.userDataSubject.asObservable();
     }
 
-    configuration(): PublicConfiguration {
+    get configuration(): PublicConfiguration {
         return null;
     }
 }

@@ -11,7 +11,7 @@ namespace VideoWeb.UnitTests.Controllers.TokenController
     {
         public VideoWeb.Controllers.TokenController TokenController;
         protected Mock<IHashGenerator> hashGenerator;
-        protected Mock<ICustomJwtTokenProvider> customJwtTokenProvider;
+        protected Mock<IKinlyJwtTokenProvider> customJwtTokenProvider;
         protected Guid participantId;
         protected string token;
 
@@ -19,7 +19,7 @@ namespace VideoWeb.UnitTests.Controllers.TokenController
         public void Setup()
         {
             hashGenerator = new Mock<IHashGenerator>();
-            customJwtTokenProvider = new Mock<ICustomJwtTokenProvider>();
+            customJwtTokenProvider = new Mock<IKinlyJwtTokenProvider>();
             participantId = Guid.NewGuid();
             token = "TestToken";
             hashGenerator.Setup(h => h.GenerateSelfTestTokenHash(It.IsAny<string>(), It.IsAny<string>())).Returns(token);

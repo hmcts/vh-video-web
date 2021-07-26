@@ -60,6 +60,11 @@ namespace VideoWeb
                 Configuration.Bind("EJudAd", options);
             });
 
+            services.Configure<MagicLinksConfiguration>(options =>
+            {
+                Configuration.Bind("MagicLinks", options);
+            });
+            
             var customTokenSettings = Configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
             services.AddSingleton(customTokenSettings);
 
