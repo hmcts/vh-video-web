@@ -24,7 +24,8 @@
                 </div>
                 <span *ngIf="showError()"  class="govuk-error-message">{{ 'idp-selection.select-a-provider' | translate }}</span>
                 <div *ngFor="let provider of getProviders()" class="govuk-radios__item" (click)="selectProvider(provider);">
-                    <input [id]="provider" class="govuk-radios__input" name="provider" type="radio" value="government-gateway" [attr.aria-describedby]="provider + '-item-hint'">
+                    <input [id]="provider" class="govuk-radios__input" name="provider" type="radio" [disabled]="this.identityProviders[provider].disable"
+                    value="government-gateway" [attr.aria-describedby]="provider + '-item-hint'">
                     <label class="govuk-label govuk-radios__label" [attr.for]="provider">
                         {{ 'idp-selection.' + provider + '.title' | translate }}
                     </label>

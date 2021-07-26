@@ -11,10 +11,12 @@ import { OidcConfigSetupService } from '../oidc-config-setup.service';
 export class IdpSelectionComponent {
     identityProviders = {
         ejud: {
-            url: '/' + pageUrls.Login
+            url: '/' + pageUrls.Login,
+            disable: true
         },
         vhaad: {
-            url: '/' + pageUrls.Login
+            url: '/' + pageUrls.Login,
+            disable: false
         }
     };
 
