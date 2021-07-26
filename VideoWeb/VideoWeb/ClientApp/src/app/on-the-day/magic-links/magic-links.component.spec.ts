@@ -10,6 +10,7 @@ import { TranslatePipeMock } from '../..//testing/mocks/mock-translation-pipe';
 import { Role } from 'src/app/services/clients/api-client';
 import { ContactUsFoldingComponent } from 'src/app/shared/contact-us-folding/contact-us-folding.component';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('MagicLinksComponent', () => {
     const magicLinkParticipantRoles = [Role.MagicLinkObserver, Role.MagicLinkParticipant];
@@ -60,7 +61,7 @@ describe('MagicLinksComponent', () => {
                     useValue: magicLinksServiceSpy
                 }
             ],
-            imports: [ReactiveFormsModule]
+            imports: [ReactiveFormsModule, RouterTestingModule]
         }).compileComponents();
     });
 

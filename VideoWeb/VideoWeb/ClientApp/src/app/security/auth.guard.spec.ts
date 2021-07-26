@@ -1,37 +1,61 @@
 import { Router } from '@angular/router';
+import { of, Subject } from 'rxjs';
+import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
 import { pageUrls } from '../shared/page-url.constants';
-import { MockOidcSecurityService } from '../testing/mocks/mock-oidc-security.service';
 import { AuthGuard } from './auth.guard';
+import { SecurityServiceProviderService } from './authentication/security-service-provider.service';
+import { ISecurityService } from './authentication/security-service.interface';
 
 describe('authguard', () => {
     let authGuard: AuthGuard;
-    let oidcSecurityService;
-    const mockOidcSecurityService = new MockOidcSecurityService();
+    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProviderService>;
+    let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
     let router: jasmine.SpyObj<Router>;
 
     beforeAll(() => {
-        oidcSecurityService = mockOidcSecurityService;
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', [], ['isAuthenticated$']);
+        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProviderService>(
+            'SecurityServiceProviderService',
+            [],
+            ['currentSecurityService$']
+        );
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
     });
 
     beforeEach(() => {
-        authGuard = new AuthGuard(oidcSecurityService, router);
+        authGuard = new AuthGuard(securityServiceProviderServiceSpy, router);
     });
 
     describe('when logged in with successful authentication', () => {
         it('canActivate should return true', async () => {
-            oidcSecurityService.setAuthenticated(true);
-            const result = await authGuard.canActivate(null, null).toPromise();
+            // Arrange
+            const isAuthenticatedSubject = new Subject<boolean>();
+            getSpiedPropertyGetter(securityServiceSpy, 'isAuthenticated$').and.returnValue(isAuthenticatedSubject.asObservable());
+
+            // Act
+            let result = false;
+            authGuard.canActivate(null, null).subscribe(canActivate => (result = canActivate));
+            isAuthenticatedSubject.next(true);
+
+            // Assert
             expect(result).toBeTruthy();
         });
     });
 
     describe('when login failed with unsuccessful authentication', () => {
         it('canActivate should return false', async () => {
-            oidcSecurityService.setAuthenticated(false);
-            const result = await authGuard.canActivate(null, null).toPromise();
+            // Arrange
+            const isAuthenticatedSubject = new Subject<boolean>();
+            getSpiedPropertyGetter(securityServiceSpy, 'isAuthenticated$').and.returnValue(isAuthenticatedSubject.asObservable());
+
+            // Act
+            let result = true;
+            authGuard.canActivate(null, null).subscribe(canActivate => (result = canActivate));
+            isAuthenticatedSubject.next(false);
+
+            // Assert
             expect(result).toBeFalsy();
-            expect(router.navigate).toHaveBeenCalledWith([`/${pageUrls.IdpSelection}`]);
         });
     });
 });

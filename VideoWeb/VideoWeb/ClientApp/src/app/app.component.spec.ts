@@ -24,6 +24,10 @@ import {
     ValidationResult
 } from 'angular-auth-oidc-client';
 import { MockLogger } from './testing/mocks/mock-logger';
+import { SecurityServiceProviderService } from './security/authentication/security-service-provider.service';
+import { SecurityConfigSetupService } from './security/security-config-setup.service';
+import { getSpiedPropertyGetter } from './shared/jasmine-helpers/property-helpers';
+import { ISecurityService } from './security/authentication/security-service.interface';
 
 describe('AppComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
@@ -36,8 +40,10 @@ describe('AppComponent', () => {
     let connectionStatusServiceSpy: jasmine.SpyObj<ConnectionStatusService>;
     let pageTrackerServiceSpy: jasmine.SpyObj<PageTrackerService>;
     let testLanguageServiceSpy: jasmine.SpyObj<TestLanguageService>;
-    const mockOidcSecurityService = new MockOidcSecurityService();
-    let oidcSecurityService;
+    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProviderService>;
+    let securityConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
+    let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
+
     const clientSettings = new ClientSettingsResponse({
         event_hub_path: 'evenhub',
         join_by_phone_from_date: '2020-09-01',
@@ -56,7 +62,6 @@ describe('AppComponent', () => {
 
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings', 'loadConfig']);
         configServiceSpy.getClientSettings.and.returnValue(of(clientSettings));
-        oidcSecurityService = mockOidcSecurityService;
         deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isSupportedBrowser']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
         const profile = new UserProfileResponse({ role: Role.Representative });
@@ -70,9 +75,20 @@ describe('AppComponent', () => {
         pageTrackerServiceSpy = jasmine.createSpyObj('PageTrackerService', ['trackNavigation', 'trackPreviousPage']);
         testLanguageServiceSpy = jasmine.createSpyObj('TestLanguageService', ['setupSubscriptions']);
         publicEventsServiceSpy = jasmine.createSpyObj('PublicEventsService', ['registerForEvents']);
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['checkAuth', 'logoffAndRevokeTokens']);
     });
 
     beforeEach(() => {
+        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProviderService>(
+            'SecurityServiceProviderService',
+            [],
+            ['currentSecurityService$']
+        );
+
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
+
+        securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>('SecurityConfigSetupService', ['getIdp'], []);
+
         component = new AppComponent(
             routerSpy,
             deviceTypeServiceSpy,
@@ -84,10 +100,11 @@ describe('AppComponent', () => {
             pageTrackerServiceSpy,
             testLanguageServiceSpy,
             translateServiceSpy,
-            oidcSecurityService,
             configServiceSpy,
             publicEventsServiceSpy,
-            new MockLogger()
+            new MockLogger(),
+            securityServiceProviderServiceSpy,
+            securityConfigSetupServiceSpy
         );
 
         document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(dummyElement);
@@ -101,19 +118,23 @@ describe('AppComponent', () => {
         profileServiceSpy.getUserProfile.calls.reset();
     });
 
-    afterEach(() => {
-        mockOidcSecurityService.setAuthenticated(false);
-    });
-
     it('should start connection status service if authenticated oninit', fakeAsync(() => {
+        // Arrange
+        const checkAuthSubject = new Subject<boolean>();
+        securityServiceSpy.checkAuth.and.returnValue(checkAuthSubject.asObservable());
+
         const eventValue: OidcClientNotification<AuthorizationResult> = {
             type: EventTypes.NewAuthorizationResult,
             value: { isRenewProcess: false, authorizationState: AuthorizedState.Authorized, validationResult: ValidationResult.Ok }
         };
+
         publicEventsServiceSpy.registerForEvents.and.returnValue(of(eventValue));
-        mockOidcSecurityService.setAuthenticated(true);
+
+        // Act
         component.ngOnInit();
         flush();
+
+        // Assert
         expect(connectionStatusServiceSpy.start).toHaveBeenCalled();
     }));
 
@@ -130,10 +151,9 @@ describe('AppComponent', () => {
     });
 
     it('should log out of adal', () => {
-        spyOn(oidcSecurityService, 'logoffAndRevokeTokens');
         component.logOut();
         expect(component.loggedIn).toBeFalsy();
-        expect(oidcSecurityService.logoffAndRevokeTokens).toHaveBeenCalled();
+        expect(securityServiceSpy.logoffAndRevokeTokens).toHaveBeenCalled();
     });
 
     it('should set to true when user profile is a representative', async () => {
@@ -165,13 +185,11 @@ describe('AppComponent', () => {
     });
 
     it('should retrieve profile when on not on logout and authenticated', async () => {
-        mockOidcSecurityService.setAuthenticated(true);
         await component.ngOnInit();
         expect(profileServiceSpy.getUserProfile).toHaveBeenCalled();
     });
 
     it('should not check auth or get profile on logout', async () => {
-        mockOidcSecurityService.setAuthenticated(true);
         await component.checkAuth();
         expect(routerSpy.navigate).toHaveBeenCalledTimes(0);
         expect(profileServiceSpy.getUserProfile).toHaveBeenCalledTimes(0);

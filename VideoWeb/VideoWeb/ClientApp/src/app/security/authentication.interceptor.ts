@@ -14,7 +14,7 @@ export class AuthenticationInterceptor {
     constructor(
         private securityConfigSetupService: SecurityConfigSetupService,
         private securityServiceProviderService: SecurityServiceProviderService,
-        private vhLoggerService: Logger
+        private logger: Logger
     ) {
         this.securityConfigSetupService.currentIdp$.subscribe(newIdp => (this.currentIdp = newIdp));
     }
@@ -23,11 +23,11 @@ export class AuthenticationInterceptor {
         if (this.currentIdp) {
             switch (this.currentIdp) {
                 case IdpProviders.magicLink:
-                    this.vhLoggerService.debug(`${this.loggerPrefix} IDP is ${this.currentIdp}. Using Magic Links intercepter.`);
+                    this.logger.debug(`${this.loggerPrefix} IDP is ${this.currentIdp}. Using Magic Links intercepter.`);
                     return next.handle(this.attachMagicLinkUsersToken(request));
             }
         } else {
-            this.vhLoggerService.warn(`${this.loggerPrefix} Current IDP is not defined. Cannot intercept request.`);
+            this.logger.warn(`${this.loggerPrefix} Current IDP is not defined. Cannot intercept request.`);
         }
 
         return next.handle(request);
@@ -58,10 +58,10 @@ export class AuthenticationInterceptor {
             headers['Content-Type'] = 'application/json';
         });
 
-        this.vhLoggerService.debug(`${this.loggerPrefix} Attached magic links token.`, {
+        this.logger.debug(`${this.loggerPrefix} Attached magic links token.`, {
             token: token,
-            requestUrl: request.url,
-            requestHeaders: request.headers
+            requestUrl: newRequest.url,
+            requestHeaders: newRequest.headers
         });
 
         return newRequest;

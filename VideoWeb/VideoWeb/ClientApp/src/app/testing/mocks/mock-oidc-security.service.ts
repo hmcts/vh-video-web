@@ -1,5 +1,7 @@
 import { PublicConfiguration } from 'angular-auth-oidc-client';
+import { AuthOptions } from 'angular-auth-oidc-client/lib/login/auth-options';
 import { Observable, of, from } from 'rxjs';
+import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
 interface UserData {
     preferred_username?: string;
     name?: string;
@@ -10,7 +12,13 @@ interface UserData {
     amr?: string;
 }
 
-export class MockOidcSecurityService {
+export class MockOidcSecurityService implements ISecurityService {
+    authorize(authOptions?: AuthOptions, token?: string): void {
+        throw new Error('Method not implemented.');
+    }
+    logoffAndRevokeTokens(urlHandler?: (url: string) => any): Observable<any> {
+        throw new Error('Method not implemented.');
+    }
     userData: UserData;
     authenticated: boolean;
     configuration = {
@@ -41,10 +49,5 @@ export class MockOidcSecurityService {
 
     checkAuth(url?: string): Observable<boolean> {
         return of(this.authenticated);
-    }
-
-    logoffAndRevokeTokens() {
-        this.setAuthenticated(false);
-        this.setUserData(null);
     }
 }

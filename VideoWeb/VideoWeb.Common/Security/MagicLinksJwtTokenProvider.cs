@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using VideoWeb.Common.Configuration;
-using VideoWeb.Common.Models;
 
 namespace VideoWeb.Common.Security
 {
@@ -17,7 +16,7 @@ namespace VideoWeb.Common.Security
             _magicLinksConfiguration = magicLinksConfiguration.Value;
         }
 
-        public string GenerateToken(string name, string role, int expiresInMinutes)
+        public string GenerateToken(string name, string userName, string role, int expiresInMinutes)
         {
             var key = Convert.FromBase64String(_magicLinksConfiguration.JwtProviderSecret);
 
@@ -26,9 +25,9 @@ namespace VideoWeb.Common.Security
                 new Claim(ClaimTypes.Name, name),
                 new Claim(ClaimTypes.GivenName, name),
                 new Claim(ClaimTypes.Surname, name),
-                new Claim("preferred_username", name),
-                new Claim("name", name),
-                new Claim(ClaimTypes.Role, role)
+                new Claim("preferred_username", userName),
+                new Claim("name", name), // Display Name
+                new Claim(ClaimTypes.Role, role) // MagicLinkParticipant / MagicLinkObserver
             });
             
             return BuildToken(claims, expiresInMinutes, key);

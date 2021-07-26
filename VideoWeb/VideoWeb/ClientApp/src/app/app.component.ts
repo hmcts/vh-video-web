@@ -66,7 +66,6 @@ export class AppComponent implements OnInit, OnDestroy {
         testLanguageService.setupSubscriptions();
         pageTracker.trackPreviousPage(router);
 
-        this.securityService = securityServiceProviderService.getSecurityService();
         securityServiceProviderService.currentSecurityService$.subscribe(service => (this.securityService = service));
     }
 

@@ -48,7 +48,17 @@ namespace VideoWeb.Mappings
             {
                 return Role.Individual;
             }
-
+            
+            if (user.IsInRole(AppRoles.MagicLinkObserver))
+            {
+                return Role.MagicLinkObserver;
+            }
+            
+            if (user.IsInRole(AppRoles.MagicLinkParticipant))
+            {
+                return Role.MagicLinkParticipant;
+            }
+            
             if (user.IsInRole(AppRoles.CaseAdminRole))
             {
                 return Role.CaseAdmin;

@@ -25,6 +25,10 @@ import { MockOidcSecurityService } from './testing/mocks/mock-oidc-security.serv
 import { TranslatePipeMock } from './testing/mocks/mock-translation-pipe';
 import { of } from 'rxjs';
 import { PublicEventsService } from 'angular-auth-oidc-client';
+import { SecurityServiceProviderService } from './security/authentication/security-service-provider.service';
+import { ISecurityService } from './security/authentication/security-service.interface';
+import { SecurityConfigSetupService } from './security/security-config-setup.service';
+import { getSpiedPropertyGetter } from './shared/jasmine-helpers/property-helpers';
 
 describe('AppComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
@@ -44,6 +48,9 @@ describe('AppComponent', () => {
     let component: AppComponent;
     let fixture: ComponentFixture<AppComponent>;
     let router: Router;
+    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProviderService>;
+    let securityConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
+    let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
 
     configureTestSuite(() => {
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings', 'loadConfig']);
@@ -62,6 +69,16 @@ describe('AppComponent', () => {
         participantStatusUpdateServiceSpy.postParticipantStatus.and.returnValue(Promise.resolve());
         publicEventsServiceSpy = jasmine.createSpyObj('PublicEventsService', ['registerForEvents']);
 
+        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProviderService>(
+            'SecurityServiceProviderService',
+            [],
+            ['currentSecurityService$']
+        );
+
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
+
+        securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>('SecurityConfigSetupService', ['getIdp'], []);
+
         TestBed.configureTestingModule({
             imports: [HttpClientModule, RouterTestingModule],
             declarations: [AppComponent, HeaderStubComponent, FooterStubComponent, BetaBannerStubComponent, TranslatePipeMock],
@@ -77,7 +94,9 @@ describe('AppComponent', () => {
                 { provide: ParticipantStatusUpdateService, useValue: participantStatusUpdateServiceSpy },
                 { provide: EventsService, useValue: eventsServiceSpy },
                 { provide: TranslateService, useValue: translateServiceSpy },
-                { provide: PublicEventsService, useValue: publicEventsServiceSpy }
+                { provide: PublicEventsService, useValue: publicEventsServiceSpy },
+                { provide: SecurityConfigSetupService, useValue: securityConfigSetupServiceSpy },
+                { provide: SecurityServiceProviderService, useValue: securityServiceProviderServiceSpy }
             ]
         });
     });

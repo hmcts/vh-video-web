@@ -24,13 +24,11 @@ namespace VideoWeb.Controllers
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly ILogger<MagicLinksController> _logger;
-        private readonly IMagicLinksJwtTokenProvider _tokenProvider;
 
-        public MagicLinksController(IVideoApiClient videoApiClient, ILogger<MagicLinksController> logger, IMagicLinksJwtTokenProvider tokenProvider)
+        public MagicLinksController(IVideoApiClient videoApiClient, ILogger<MagicLinksController> logger)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
-            _tokenProvider = tokenProvider;
         }
 
         [HttpGet("GetMagicLinkParticipantRoles")]
@@ -73,7 +71,7 @@ namespace VideoWeb.Controllers
         {
             MagicLinkParticipantJoinResponse joinResponse = new MagicLinkParticipantJoinResponse()
             {
-                Jwt = _tokenProvider.GenerateToken(joinRequest.Name, AppRoles.CitizenRole, 8 * 60)
+                Jwt = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IlJvYiBCZW5uZXR0IiwiZ2l2ZW5fbmFtZSI6IlJvYiBCZW5uZXR0IiwiZmFtaWx5X25hbWUiOiJSb2IgQmVubmV0dCIsInByZWZlcnJlZF91c2VybmFtZSI6IlJvYiBCZW5uZXR0IiwibmFtZSI6IlJvYiBCZW5uZXR0Iiwicm9sZSI6IkNpdGl6ZW4iLCJuYmYiOjE2MjcyOTYzOTgsImV4cCI6MTYyNzMyNTMxOCwiaWF0IjoxNjI3Mjk2NDU4LCJpc3MiOiJodHRwczovL3ZoLXZpZGVvLXdlYi1kZXYuYXp1cmV3ZWJzaXRlcy5uZXQvOThhNWRiM2QtMGY5MS00MDNmLWI3ZGMtZDFhMjcyZjQ2ZjNiIn0.z_WADPPmGsa4_zY5YVRo3vDSvrHqcP0iS1T1orcegkDPimLi23M_ROktEgJRnhOnb1ZsXcd_qzCN9HppS1LYSQ"
             };
             
             return Ok(await Task.FromResult(joinResponse));

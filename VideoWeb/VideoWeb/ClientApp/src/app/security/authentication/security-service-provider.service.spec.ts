@@ -4,6 +4,8 @@ import { IdpProviders } from '../idp-providers';
 import { SecurityServiceProviderService } from './security-service-provider.service';
 import { ISecurityService } from './security-service.interface';
 import { MagicLinkSecurityService } from './magic-link-security.service';
+import { Subject } from 'rxjs';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 
 describe('SecurityServiceProviderService', () => {
     let service: SecurityServiceProviderService;
@@ -11,9 +13,18 @@ describe('SecurityServiceProviderService', () => {
     let securityConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
     let oidcSecurityServiceSpy: jasmine.SpyObj<ISecurityService>;
     let magicLinkSecurityServiceSpy: jasmine.SpyObj<ISecurityService>;
+    let currentIdpSubject: Subject<IdpProviders>;
 
     beforeEach(() => {
-        securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>('SecurityConfigSetupService', ['getIdp']);
+        securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>(
+            'SecurityConfigSetupService',
+            ['getIdp'],
+            ['currentIdp$']
+        );
+
+        currentIdpSubject = new Subject<IdpProviders>();
+        getSpiedPropertyGetter(securityConfigSetupServiceSpy, 'currentIdp$').and.returnValue(currentIdpSubject.asObservable());
+
         oidcSecurityServiceSpy = jasmine.createSpyObj<ISecurityService>('OidcSecurityService', ['getToken']);
         magicLinkSecurityServiceSpy = jasmine.createSpyObj<ISecurityService>('MagicLinkSecurityService', ['getToken']);
 

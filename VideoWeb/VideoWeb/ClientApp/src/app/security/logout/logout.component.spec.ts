@@ -1,50 +1,77 @@
 import { ProfileService } from 'src/app/services/api/profile.service';
-import { MockOidcSecurityService } from '../../testing/mocks/mock-oidc-security.service';
 import { LogoutComponent } from './logout.component';
 import { SessionStorage } from '../../services/session-storage';
 import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
+import { of, Subject } from 'rxjs';
+import { SecurityServiceProviderService } from '../authentication/security-service-provider.service';
+import { ISecurityService } from '../authentication/security-service.interface';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
+import { fakeAsync, flush } from '@angular/core/testing';
 
 describe('LogoutComponent', () => {
     let component: LogoutComponent;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
-    const mockOidcSecurityService = new MockOidcSecurityService();
-    let oidcSecurityService;
+    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProviderService>;
+    let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
+    let isAuthenticatedSubject: Subject<boolean>;
 
     beforeAll(() => {
-        oidcSecurityService = mockOidcSecurityService;
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['clearUserProfile']);
     });
 
     beforeEach(() => {
-        component = new LogoutComponent(oidcSecurityService, profileServiceSpy);
+        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProviderService>(
+            'SecurityServiceProviderService',
+            [],
+            ['currentSecurityService$']
+        );
+
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['logoffAndRevokeTokens'], ['isAuthenticated$']);
+        isAuthenticatedSubject = new Subject<boolean>();
+        getSpiedPropertyGetter(securityServiceSpy, 'isAuthenticated$').and.returnValue(isAuthenticatedSubject.asObservable());
+
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
+
+        component = new LogoutComponent(securityServiceProviderServiceSpy, profileServiceSpy);
     });
 
-    it('should call logout if authenticated', () => {
+    it('should call logout if authenticated', fakeAsync(() => {
         const sessionStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
         sessionStorage.set(['one', 'tow']);
-        oidcSecurityService.setAuthenticated(true);
-        spyOn(oidcSecurityService, 'logoffAndRevokeTokens').and.callFake(() => {});
+
         component.ngOnInit();
-        expect(oidcSecurityService.logoffAndRevokeTokens).toHaveBeenCalled();
+        isAuthenticatedSubject.next(true);
+        flush();
+
+        expect(securityServiceSpy.logoffAndRevokeTokens).toHaveBeenCalled();
         expect(sessionStorage.get()).toBeNull();
-    });
+    }));
 
-    it('should not call logout if unauthenticated', () => {
-        oidcSecurityService.setAuthenticated(false);
-        spyOn(oidcSecurityService, 'logoffAndRevokeTokens').and.callFake(() => {});
+    it('should not call logout if unauthenticated', fakeAsync(() => {
         component.ngOnInit();
-        expect(oidcSecurityService.logoffAndRevokeTokens).toHaveBeenCalledTimes(0);
-    });
+        isAuthenticatedSubject.next(false);
+        flush();
 
-    it('should return true for "loggedIn" when authenticated', async () => {
-        mockOidcSecurityService.setAuthenticated(true);
-        const loggedIn = await component.loggedIn.toPromise();
+        expect(securityServiceSpy.logoffAndRevokeTokens).toHaveBeenCalledTimes(0);
+    }));
+
+    it('should return true for "loggedIn" when authenticated', fakeAsync(() => {
+        let loggedIn = false;
+        component.loggedIn.subscribe(isLoggedIn => (loggedIn = isLoggedIn));
+
+        isAuthenticatedSubject.next(true);
+        flush();
+
         expect(loggedIn).toBeTruthy();
-    });
+    }));
 
-    it('should return false for "loggedIn" when not authenticated', async () => {
-        mockOidcSecurityService.setAuthenticated(false);
-        const loggedIn = await component.loggedIn.toPromise();
+    it('should return false for "loggedIn" when not authenticated', fakeAsync(() => {
+        let loggedIn = true;
+        component.loggedIn.subscribe(isLoggedIn => (loggedIn = isLoggedIn));
+
+        isAuthenticatedSubject.next(false);
+        flush();
+
         expect(loggedIn).toBeFalsy();
-    });
+    }));
 });

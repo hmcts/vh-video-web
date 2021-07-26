@@ -10,22 +10,25 @@ import { BehaviorSubject, Observable } from 'rxjs';
     providedIn: 'root'
 })
 export class SecurityServiceProviderService {
-    private securityServiceSubject;
+    private idpSubject: BehaviorSubject<IdpProviders>;
+    private securityServiceSubject: BehaviorSubject<ISecurityService>;
 
     constructor(
         private securityConfigSetupService: SecurityConfigSetupService,
         private magicLinkSecurityService: MagicLinkSecurityService,
         private oidcSecurityService: OidcSecurityService
     ) {
-        this.securityConfigSetupService.currentIdp$.subscribe(() => {
-            this.securityServiceSubject.next(this.getSecurityService());
+        this.securityConfigSetupService.currentIdp$.subscribe(idp => {
+            this.idpSubject.next(idp);
+            this.securityServiceSubject.next(this.getSecurityService(idp));
         });
 
+        this.idpSubject = new BehaviorSubject<IdpProviders>(this.securityConfigSetupService.getIdp());
         this.securityServiceSubject = new BehaviorSubject<ISecurityService>(this.getSecurityService());
     }
 
-    getSecurityService(): ISecurityService {
-        switch (this.securityConfigSetupService.getIdp()) {
+    getSecurityService(idp: IdpProviders = null): ISecurityService {
+        switch (idp ?? this.securityConfigSetupService.getIdp()) {
             default:
                 return null;
 

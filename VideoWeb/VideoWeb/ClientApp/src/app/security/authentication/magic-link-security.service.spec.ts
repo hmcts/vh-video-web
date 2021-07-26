@@ -26,7 +26,7 @@ describe('MagicLinkSecurityService', () => {
 
             // Act
             const jwt =
-                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+                'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkpvaG4gRG9lIiwiZ2l2ZW5fbmFtZSI6IkpvaG4gRG9lIiwiZmFtaWx5X25hbWUiOiJKb2huIERvZSIsInByZWZlcnJlZF91c2VybmFtZSI6IkpvaG4gRG9lIiwicm9sZSI6IkNpdGl6ZW4iLCJuYmYiOjE2MjcyOTQwMzcsImV4cCI6MTYyNzMyMjk1NywiaWF0IjoxNjI3Mjk0MDk3LCJpc3MiOiJodHRwczovL3ZoLXZpZGVvLXdlYi1kZXYuYXp1cmV3ZWJzaXRlcy5uZXQvOThhNWRiM2QtMGY5MS00MDNmLWI3ZGMtZDFhMjcyZjQ2ZjNiIn0.NyH-9u3Vg2wSC-B2rxkqjbAbKvdvoCyyFAgBsfeP9ff9mQTxn6PfJHdtkp8sANnQHpsLdqW8VnAp9a9bTfTVDA';
             service.authorize(null, jwt);
 
             // Assert
@@ -40,12 +40,12 @@ describe('MagicLinkSecurityService', () => {
 
             // Act
             let isAuthenticated = false;
-            service.isAuthenticated$().subscribe(authenticated => {
+            service.isAuthenticated$.subscribe(authenticated => {
                 isAuthenticated = authenticated;
             });
 
             const jwt =
-                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+                'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkpvaG4gRG9lIiwiZ2l2ZW5fbmFtZSI6IkpvaG4gRG9lIiwiZmFtaWx5X25hbWUiOiJKb2huIERvZSIsInByZWZlcnJlZF91c2VybmFtZSI6IkpvaG4gRG9lIiwicm9sZSI6IkNpdGl6ZW4iLCJuYmYiOjE2MjcyOTQwMzcsImV4cCI6MTYyNzMyMjk1NywiaWF0IjoxNjI3Mjk0MDk3LCJpc3MiOiJodHRwczovL3ZoLXZpZGVvLXdlYi1kZXYuYXp1cmV3ZWJzaXRlcy5uZXQvOThhNWRiM2QtMGY5MS00MDNmLWI3ZGMtZDFhMjcyZjQ2ZjNiIn0.NyH-9u3Vg2wSC-B2rxkqjbAbKvdvoCyyFAgBsfeP9ff9mQTxn6PfJHdtkp8sANnQHpsLdqW8VnAp9a9bTfTVDA';
             service.authorize(null, jwt);
             checkAuthSubject.next(true);
             flush();
@@ -62,12 +62,12 @@ describe('MagicLinkSecurityService', () => {
 
             // Act
             let isAuthenticated = true;
-            service.isAuthenticated$().subscribe(authenticated => {
+            service.isAuthenticated$.subscribe(authenticated => {
                 isAuthenticated = authenticated;
             });
 
             const jwt =
-                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+                'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkpvaG4gRG9lIiwiZ2l2ZW5fbmFtZSI6IkpvaG4gRG9lIiwiZmFtaWx5X25hbWUiOiJKb2huIERvZSIsInByZWZlcnJlZF91c2VybmFtZSI6IkpvaG4gRG9lIiwicm9sZSI6IkNpdGl6ZW4iLCJuYmYiOjE2MjcyOTQwMzcsImV4cCI6MTYyNzMyMjk1NywiaWF0IjoxNjI3Mjk0MDk3LCJpc3MiOiJodHRwczovL3ZoLXZpZGVvLXdlYi1kZXYuYXp1cmV3ZWJzaXRlcy5uZXQvOThhNWRiM2QtMGY5MS00MDNmLWI3ZGMtZDFhMjcyZjQ2ZjNiIn0.NyH-9u3Vg2wSC-B2rxkqjbAbKvdvoCyyFAgBsfeP9ff9mQTxn6PfJHdtkp8sANnQHpsLdqW8VnAp9a9bTfTVDA';
             service.authorize(null, jwt);
             checkAuthSubject.next(false);
             flush();
@@ -85,12 +85,12 @@ describe('MagicLinkSecurityService', () => {
 
             // Act
             let userData: MagicLinkJwtBody = null;
-            service.userData$().subscribe(data => {
+            service.userData$.subscribe(data => {
                 userData = data;
             });
 
             const jwt =
-                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+                'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkpvaG4gRG9lIiwiZ2l2ZW5fbmFtZSI6IkpvaG4gRG9lIiwiZmFtaWx5X25hbWUiOiJKb2huIERvZSIsInByZWZlcnJlZF91c2VybmFtZSI6IkpvaG4gRG9lIiwicm9sZSI6IkNpdGl6ZW4iLCJuYmYiOjE2MjcyOTQwMzcsImV4cCI6MTYyNzMyMjk1NywiaWF0IjoxNjI3Mjk0MDk3LCJpc3MiOiJodHRwczovL3ZoLXZpZGVvLXdlYi1kZXYuYXp1cmV3ZWJzaXRlcy5uZXQvOThhNWRiM2QtMGY5MS00MDNmLWI3ZGMtZDFhMjcyZjQ2ZjNiIn0.NyH-9u3Vg2wSC-B2rxkqjbAbKvdvoCyyFAgBsfeP9ff9mQTxn6PfJHdtkp8sANnQHpsLdqW8VnAp9a9bTfTVDA';
             service.authorize(null, jwt);
             checkAuthSubject.next(true);
             flush();
@@ -110,12 +110,12 @@ describe('MagicLinkSecurityService', () => {
 
             // Act
             let userData: MagicLinkJwtBody = null;
-            service.userData$().subscribe(data => {
+            service.userData$.subscribe(data => {
                 userData = data;
             });
 
             const jwt =
-                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+                'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkpvaG4gRG9lIiwiZ2l2ZW5fbmFtZSI6IkpvaG4gRG9lIiwiZmFtaWx5X25hbWUiOiJKb2huIERvZSIsInByZWZlcnJlZF91c2VybmFtZSI6IkpvaG4gRG9lIiwicm9sZSI6IkNpdGl6ZW4iLCJuYmYiOjE2MjcyOTQwMzcsImV4cCI6MTYyNzMyMjk1NywiaWF0IjoxNjI3Mjk0MDk3LCJpc3MiOiJodHRwczovL3ZoLXZpZGVvLXdlYi1kZXYuYXp1cmV3ZWJzaXRlcy5uZXQvOThhNWRiM2QtMGY5MS00MDNmLWI3ZGMtZDFhMjcyZjQ2ZjNiIn0.NyH-9u3Vg2wSC-B2rxkqjbAbKvdvoCyyFAgBsfeP9ff9mQTxn6PfJHdtkp8sANnQHpsLdqW8VnAp9a9bTfTVDA';
             service.authorize(null, jwt);
             checkAuthSubject.next(false);
             flush();
@@ -178,7 +178,7 @@ describe('MagicLinkSecurityService', () => {
 
             // Act
             let isAuthenticated = true;
-            service.isAuthenticated$().subscribe(authenticated => (isAuthenticated = authenticated));
+            service.isAuthenticated$.subscribe(authenticated => (isAuthenticated = authenticated));
             service.logoffAndRevokeTokens().subscribe();
             revokeTokenSubject.next();
             flush();

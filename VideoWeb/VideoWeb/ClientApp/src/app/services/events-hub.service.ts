@@ -3,6 +3,8 @@ import * as signalR from '@microsoft/signalr';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { ReplaySubject, Subject, Observable } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
+import { SecurityServiceProviderService } from '../security/authentication/security-service-provider.service';
+import { ISecurityService } from '../security/authentication/security-service.interface';
 import { ConfigService } from './api/config.service';
 import { ConnectionStatusService } from './connection-status.service';
 import { ErrorService } from './error.service';
@@ -12,6 +14,7 @@ import { Logger } from './logging/logger-base';
     providedIn: 'root'
 })
 export class EventsHubService {
+    private securityService: ISecurityService;
     private eventHubDisconnectSubject = new Subject<number>();
     private eventHubReconnectSubject = new Subject();
 
@@ -61,12 +64,13 @@ export class EventsHubService {
     }
 
     constructor(
+        securityServiceProviderService: SecurityServiceProviderService,
         configService: ConfigService,
         private connectionStatusService: ConnectionStatusService,
-        private oidcSecurityService: OidcSecurityService,
         private logger: Logger,
         private errorService: ErrorService
     ) {
+        securityServiceProviderService.currentSecurityService$.subscribe(securityService => (this.securityService = securityService));
         configService.getClientSettings().subscribe(clientSettings => {
             this._connection = this.buildConnection(clientSettings.event_hub_path);
             this.configureConnection();
@@ -83,7 +87,7 @@ export class EventsHubService {
             .configureLogging(signalR.LogLevel.Debug)
             .withAutomaticReconnect(this.reconnectionTimes)
             .withUrl(eventHubPath, {
-                accessTokenFactory: () => this.oidcSecurityService.getToken()
+                accessTokenFactory: () => this.securityService.getToken()
             })
             .build();
     }
