@@ -1,7 +1,7 @@
 <div class="chat-input-group">
     <div [ngClass]="isInputInvalid ? '' : 'govuk-form-group  govuk-!-margin-bottom-2'"
          class="chat-input-text-button-group govuk-!-margin-left-2">
-         <label for="new-message-box"></label>
+         <label for="new-message-box" class="govuk-visually-hidden">{{chat-input-box.type-a-message | translate}}</label>
         <textarea class="govuk-textarea chat-input"
                   [ngClass]="{ 'govuk-textarea--error': isInputInvalid }"
                   required
