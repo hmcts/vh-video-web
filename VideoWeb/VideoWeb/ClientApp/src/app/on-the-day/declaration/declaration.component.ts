@@ -5,12 +5,15 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { BackNavigationService } from 'src/app/shared/back-navigation/back-navigation.service';
 
 @Component({
     selector: 'app-declaration',
-    templateUrl: './declaration.component.html'
+    templateUrl: './declaration.component.html',
 })
 export class DeclarationComponent extends ParticipantStatusBaseDirective implements OnInit {
+    backLinkText: string;
+    backLinkPath: string;
     declarationForm: FormGroup;
     submitted = false;
     conferenceId: string;
@@ -20,15 +23,17 @@ export class DeclarationComponent extends ParticipantStatusBaseDirective impleme
         protected route: ActivatedRoute,
         private fb: FormBuilder,
         protected participantStatusUpdateService: ParticipantStatusUpdateService,
+        protected backNavigationService: BackNavigationService,
         protected logger: Logger
     ) {
-        super(participantStatusUpdateService, logger);
+        super(participantStatusUpdateService, backNavigationService, logger);
         this.declarationForm = this.fb.group({
-            declare: [false, [Validators.required, Validators.requiredTrue]]
+            declare: [false, [Validators.required, Validators.requiredTrue]],
         });
     }
 
     ngOnInit() {
+        super.ngOnInit();
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
     }
 

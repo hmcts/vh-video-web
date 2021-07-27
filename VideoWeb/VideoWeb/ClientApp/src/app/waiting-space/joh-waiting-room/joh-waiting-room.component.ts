@@ -15,6 +15,7 @@ import { ConferenceStatusMessage } from 'src/app/services/models/conference-stat
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { BackNavigationService } from 'src/app/shared/back-navigation/back-navigation.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
@@ -22,6 +23,7 @@ import { NotificationToastrService } from '../services/notification-toastr.servi
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
     selector: 'app-joh-waiting-room',
@@ -29,6 +31,8 @@ import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-ba
     styleUrls: ['../waiting-room-global-styles.scss', './joh-waiting-room.component.scss']
 })
 export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
+    backLinkText = 'judge-waiting-room.return-to-video-hearing-list';
+    backLinkPath = pageUrls.JudgeHearingList;
     private readonly loggerPrefixJOH = '[JOH WR] -';
     private destroyedSubject = new Subject();
 
@@ -51,6 +55,7 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         protected clockService: ClockService,
         protected translateService: TranslateService,
         protected consultationInvitiationService: ConsultationInvitationService,
+        protected backNavigationService: BackNavigationService,
         private unloadDetectorService: UnloadDetectorService
     ) {
         super(
@@ -70,11 +75,13 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
             notificationToastrService,
             roomClosingToastrService,
             clockService,
-            consultationInvitiationService
+            consultationInvitiationService,
+            backNavigationService
         );
     }
 
     ngOnInit(): void {
+        super.ngOnInit();
         this.init();
     }
 
@@ -139,6 +146,7 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
     }
 
     ngOnDestroy(): void {
+        super.ngOnDestroy();
         this.cleanUp();
     }
 

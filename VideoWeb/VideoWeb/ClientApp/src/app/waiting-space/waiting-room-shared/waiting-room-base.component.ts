@@ -1,4 +1,4 @@
-import { Directive, ElementRef, ViewChild } from '@angular/core';
+import { Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
@@ -32,6 +32,8 @@ import { HearingTransfer, TransferDirection } from 'src/app/services/models/hear
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { BackNavigationService } from 'src/app/shared/back-navigation/back-navigation.service';
+import { HasBackNavigationDirective } from 'src/app/shared/back-navigation/has-back-navigation.directive';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
@@ -58,7 +60,7 @@ import { VideoCallService } from '../services/video-call.service';
 declare var HeartbeatFactory: any;
 
 @Directive()
-export abstract class WaitingRoomBaseDirective {
+export abstract class WaitingRoomBaseDirective extends HasBackNavigationDirective implements OnInit, OnDestroy {
     maxBandwidth = null;
     audioOnly: boolean;
     hearingStartingAnnounced: boolean;
@@ -122,14 +124,25 @@ export abstract class WaitingRoomBaseDirective {
         protected notificationToastrService: NotificationToastrService,
         protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService,
-        protected consultationInvitiationService: ConsultationInvitationService
+        protected consultationInvitiationService: ConsultationInvitationService,
+        protected backNavigationService: BackNavigationService
     ) {
+        super(backNavigationService);
         this.isAdminConsultation = false;
         this.loadingData = true;
         this.showVideo = false;
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
         this.errorCount = 0;
+    }
+
+    ngOnInit() {
+        super.ngOnInit();
+        console.log('WaitingRoomBaseDirective');
+    }
+
+    ngOnDestroy() {
+        super.ngOnDestroy();
     }
 
     isParticipantInCorrectWaitingRoomState(): boolean {

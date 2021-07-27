@@ -24,6 +24,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { take, takeUntil } from 'rxjs/operators';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
+import { BackNavigationService } from 'src/app/shared/back-navigation/back-navigation.service';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -31,6 +32,8 @@ import { UnloadDetectorService } from 'src/app/services/unload-detector.service'
     styleUrls: ['../waiting-room-global-styles.scss', './participant-waiting-room.component.scss']
 })
 export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
+    backLinkText = 'judge-waiting-room.return-to-video-hearing-list';
+    backLinkPath = pageUrls.ParticipantHearingList;
     private readonly loggerPrefixParticipant = '[Participant WR] -';
     private destroyedSubject = new Subject();
 
@@ -58,6 +61,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         protected clockService: ClockService,
         protected translateService: TranslateService,
         protected consultationInvitiationService: ConsultationInvitationService,
+        protected backNavigationService: BackNavigationService,
         private unloadDetectorService: UnloadDetectorService
     ) {
         super(
@@ -77,11 +81,14 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             notificationToastrService,
             roomClosingToastrService,
             clockService,
-            consultationInvitiationService
+            consultationInvitiationService,
+            backNavigationService
         );
     }
 
     ngOnInit() {
+        console.log('ParticipantWaitingRoomComponent');
+        super.ngOnInit();
         this.init();
     }
 
@@ -113,6 +120,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     }
 
     ngOnDestroy(): void {
+        super.ngOnDestroy();
         this.cleanUp();
     }
 

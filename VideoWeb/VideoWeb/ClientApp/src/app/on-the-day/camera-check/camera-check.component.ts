@@ -9,12 +9,16 @@ import { VideoWebService } from '../../services/api/video-web.service';
 import { EquipmentCheckBaseComponentDirective } from '../abstract/equipment-check-base.component';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { TranslateService } from '@ngx-translate/core';
+import { BackNavigationService } from 'src/app/shared/back-navigation/back-navigation.service';
 
 @Component({
     selector: 'app-camera-check',
-    templateUrl: './camera-check.component.html'
+    templateUrl: './camera-check.component.html',
 })
 export class CameraCheckComponent extends EquipmentCheckBaseComponentDirective implements OnInit {
+    backLinkText: string;
+    backLinkPath: string;
+
     constructor(
         protected router: Router,
         protected route: ActivatedRoute,
@@ -23,12 +27,14 @@ export class CameraCheckComponent extends EquipmentCheckBaseComponentDirective i
         protected errorService: ErrorService,
         protected logger: Logger,
         protected participantStatusUpdateService: ParticipantStatusUpdateService,
-        protected translateService: TranslateService
+        protected translateService: TranslateService,
+        protected backNavigationService: BackNavigationService
     ) {
-        super(router, route, fb, videoWebService, errorService, logger, participantStatusUpdateService);
+        super(router, route, fb, videoWebService, errorService, logger, participantStatusUpdateService, backNavigationService);
     }
 
     ngOnInit() {
+        super.ngOnInit();
         this.getConference();
         this.initForm();
     }

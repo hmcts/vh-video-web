@@ -10,12 +10,15 @@ import { vhContactDetails } from 'src/app/shared/contact-information';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
+import { BackNavigationService } from 'src/app/shared/back-navigation/back-navigation.service';
 
 @Component({
     selector: 'app-switch-on-camera-microphone',
-    templateUrl: './switch-on-camera-microphone.component.html'
+    templateUrl: './switch-on-camera-microphone.component.html',
 })
 export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDirective implements OnInit {
+    backLinkText: string;
+    backLinkPath: string;
     mediaAccepted: boolean;
     userPrompted: boolean;
     isJudge: boolean;
@@ -25,7 +28,7 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
     conferenceId: string;
 
     contact = {
-        phone: vhContactDetails.phone
+        phone: vhContactDetails.phone,
     };
 
     constructor(
@@ -36,15 +39,17 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
         private profileService: ProfileService,
         private errorService: ErrorService,
         protected logger: Logger,
-        protected participantStatusUpdateService: ParticipantStatusUpdateService
+        protected participantStatusUpdateService: ParticipantStatusUpdateService,
+        protected backNavigationService: BackNavigationService
     ) {
-        super(participantStatusUpdateService, logger);
+        super(participantStatusUpdateService, backNavigationService, logger);
         this.userPrompted = false;
         this.mediaAccepted = false;
         this.isJudge = false;
     }
 
     ngOnInit() {
+        super.ngOnInit();
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         this.retrieveProfile().then(() => {
             if (this.conferenceId) {
@@ -77,7 +82,7 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
         if (!this.mediaAccepted) {
             this.logger.warn(`[SwitchOnCameraMicrophone] - ${this.participantName} denied access to camera.`, {
                 conference: this.conferenceId,
-                participant: this.participantName
+                participant: this.participantName,
             });
             this.postPermissionDeniedAlert();
         }
@@ -99,7 +104,7 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
     async postPermissionDeniedAlert() {
         const payload = {
             conference: this.conferenceId,
-            participant: this.participantName
+            participant: this.participantName,
         };
         this.logger.debug('[SwitchOnCameraMicrophone] - Raising media permission denied alert', payload);
         try {

@@ -21,6 +21,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { BackNavigationService } from 'src/app/shared/back-navigation/back-navigation.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -39,6 +40,8 @@ import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-ba
     styleUrls: ['./judge-waiting-room.component.scss', '../waiting-room-global-styles.scss']
 })
 export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
+    backLinkText = 'judge-waiting-room.return-to-video-hearing-list';
+    backLinkPath = pageUrls.JudgeHearingList;
     private readonly loggerPrefixJudge = '[Judge WR] -';
     private destroyedSubject = new Subject();
 
@@ -87,6 +90,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected participantService: ParticipantService,
         protected videoControlService: VideoControlService,
         protected videoControlCacheService: VideoControlCacheService,
+        protected backNavigationService: BackNavigationService,
         private unloadDetectorService: UnloadDetectorService
     ) {
         super(
@@ -106,13 +110,15 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             notificationToastrService,
             roomClosingToastrService,
             clockService,
-            consultationInvitiationService
+            consultationInvitiationService,
+            backNavigationService
         );
         this.displayConfirmStartHearingPopup = false;
         this.hearingStartingAnnounced = true; // no need to play announcements for a judge
     }
 
     ngOnInit() {
+        super.ngOnInit();
         this.init();
     }
 
@@ -298,6 +304,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     ngOnDestroy(): void {
+        super.ngOnDestroy();
         this.cleanUp();
     }
 

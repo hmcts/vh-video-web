@@ -1,13 +1,20 @@
-import { Location } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
+import { BackNavigationService } from './back-navigation.service';
 
 @Component({
     selector: 'app-back-navigation',
-    templateUrl: './back-navigation.component.html'
+    templateUrl: './back-navigation.component.html',
 })
-export class BackNavigationComponent {
-    constructor(private location: Location) {}
-    navigateBack() {
-        this.location.back();
+export class BackNavigationComponent implements OnInit {
+    linkText$: Observable<string>;
+    constructor(private backNavigationService: BackNavigationService) {}
+
+    ngOnInit(): void {
+        this.linkText$ = this.backNavigationService.linkText$;
+    }
+
+    navigate() {
+        this.backNavigationService.navigate();
     }
 }

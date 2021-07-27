@@ -6,13 +6,16 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { BackNavigationService } from 'src/app/shared/back-navigation/back-navigation.service';
 
 @Component({
     selector: 'app-introduction',
     templateUrl: './introduction.component.html',
-    styleUrls: ['./introduction.component.scss']
+    styleUrls: ['./introduction.component.scss'],
 })
 export class IntroductionComponent extends ParticipantStatusBaseDirective implements OnInit {
+    backLinkText: string;
+    backLinkPath: string;
     conferenceId: string;
     conference: ConferenceLite;
 
@@ -21,12 +24,14 @@ export class IntroductionComponent extends ParticipantStatusBaseDirective implem
         protected route: ActivatedRoute,
         private videoWebService: VideoWebService,
         protected participantStatusUpdateService: ParticipantStatusUpdateService,
-        protected logger: Logger
+        protected logger: Logger,
+        protected backNavigationService: BackNavigationService
     ) {
-        super(participantStatusUpdateService, logger);
+        super(participantStatusUpdateService, backNavigationService, logger);
     }
 
     ngOnInit() {
+        super.ngOnInit();
         this.getConference();
     }
 

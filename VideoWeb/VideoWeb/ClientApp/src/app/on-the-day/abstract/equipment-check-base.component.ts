@@ -9,6 +9,7 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { Directive } from '@angular/core';
+import { BackNavigationService } from 'src/app/shared/back-navigation/back-navigation.service';
 
 @Directive()
 export abstract class EquipmentCheckBaseComponentDirective extends ParticipantStatusBaseDirective {
@@ -27,9 +28,10 @@ export abstract class EquipmentCheckBaseComponentDirective extends ParticipantSt
         protected videoWebService: VideoWebService,
         protected errorService: ErrorService,
         protected logger: Logger,
-        protected participantStatusUpdateService: ParticipantStatusUpdateService
+        protected participantStatusUpdateService: ParticipantStatusUpdateService,
+        protected backNavigationService: BackNavigationService
     ) {
-        super(participantStatusUpdateService, logger);
+        super(participantStatusUpdateService, backNavigationService, logger);
     }
 
     abstract getEquipmentCheck(): string;
@@ -38,7 +40,7 @@ export abstract class EquipmentCheckBaseComponentDirective extends ParticipantSt
 
     initForm() {
         this.form = this.fb.group({
-            equipmentCheck: [false, Validators.pattern('Yes')]
+            equipmentCheck: [false, Validators.pattern('Yes')],
         });
     }
 
@@ -54,7 +56,7 @@ export abstract class EquipmentCheckBaseComponentDirective extends ParticipantSt
     checkEquipmentAgain() {
         this.logger.info(`[${this.getEquipmentCheck()} check] - Requested check equipment again.`, {
             conference: this.conferenceId,
-            participant: this.participantId
+            participant: this.participantId,
         });
         this.router.navigate([pageUrls.EquipmentCheck, this.conferenceId]);
     }
@@ -66,7 +68,7 @@ export abstract class EquipmentCheckBaseComponentDirective extends ParticipantSt
     async onSubmit() {
         const logPayload = {
             conference: this.conference.id,
-            participant: this.participantId
+            participant: this.participantId,
         };
         this.submitted = true;
         if (this.form.pristine) {
@@ -81,7 +83,7 @@ export abstract class EquipmentCheckBaseComponentDirective extends ParticipantSt
             await this.videoWebService.raiseSelfTestFailureEvent(
                 this.conferenceId,
                 new AddSelfTestFailureEventRequest({
-                    self_test_failure_reason: this.getFailureReason()
+                    self_test_failure_reason: this.getFailureReason(),
                 })
             );
             this.logger.info(
