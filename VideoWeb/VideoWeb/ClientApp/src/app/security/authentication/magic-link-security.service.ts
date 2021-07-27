@@ -4,6 +4,7 @@ import { AuthOptions } from 'angular-auth-oidc-client/lib/login/auth-options';
 import { ReplaySubject, Observable } from 'rxjs';
 import { take, tap } from 'rxjs/operators';
 import { ApiClient } from 'src/app/services/clients/api-client';
+import { SessionStorage } from 'src/app/services/session-storage';
 import { DecodedJWT, JWTBody } from './models/decoded-jwt.model';
 import { ISecurityService } from './security-service.interface';
 
@@ -20,20 +21,43 @@ export class MagicLinkJwtBody extends JWTBody {
 })
 export class MagicLinkSecurityService implements ISecurityService {
     private token: string;
-    decodedToken: DecodedJWT<MagicLinkJwtBody>;
+    private tokenSessionStorageKey = 'MAGIC_LINKS_JWT';
+    private tokenSessionStorage: SessionStorage<string>;
     private isAuthenticatedSubject = new ReplaySubject<boolean>(1);
     private userDataSubject = new ReplaySubject<any>(1);
 
-    constructor(private apiClient: ApiClient) {}
+    decodedToken: DecodedJWT<MagicLinkJwtBody>;
+
+    constructor(private apiClient: ApiClient) {
+        this.tokenSessionStorage = new SessionStorage<string>(this.tokenSessionStorageKey);
+        this.token = this.tokenSessionStorage.get();
+    }
 
     authorize(authOptions?: AuthOptions, token?: string): void {
-        this.token = token;
-        this.decodedToken = new DecodedJWT(token, body => new MagicLinkJwtBody(body));
+        this.setToken(token);
+
+        this.decodedToken = new DecodedJWT(this.token, body => new MagicLinkJwtBody(body));
+
         this.checkAuth().subscribe(authenticated => {
             this.isAuthenticatedSubject.next(authenticated);
 
-            if (authenticated) this.userDataSubject.next(this.decodedToken?.body);
+            if (authenticated) {
+                this.userDataSubject.next(this.decodedToken?.body);
+            } else {
+                this.clearToken();
+            }
         });
+    }
+
+    private clearToken() {
+        this.setToken(null);
+    }
+
+    private setToken(token: string | null) {
+        if (token === null) {
+            this.token = token;
+            this.tokenSessionStorage.clear();
+        }
     }
 
     checkAuth(): Observable<boolean> {

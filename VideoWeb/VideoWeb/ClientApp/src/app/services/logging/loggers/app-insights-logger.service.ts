@@ -46,7 +46,7 @@ export class AppInsightsLoggerService implements LogAdapter {
                     }
                 });
                 this.appInsights.loadAppInsights();
-                securityService.userData$.subscribe(ud => {
+                securityService?.userData$.subscribe(ud => {
                     this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
                         envelope.tags['ai.cloud.role'] = 'vh-video-web';
                         envelope.tags['ai.user.id'] = ud.preferred_username.toLowerCase();
@@ -57,7 +57,7 @@ export class AppInsightsLoggerService implements LogAdapter {
     }
 
     private checkIfVho(securityService: ISecurityService) {
-        securityService.isAuthenticated$.pipe(filter(Boolean)).subscribe(() => {
+        securityService?.isAuthenticated$.pipe(filter(Boolean)).subscribe(() => {
             this.profileService.getUserProfile().then(profile => {
                 this.isVHO = profile.role === Role.VideoHearingsOfficer;
             });

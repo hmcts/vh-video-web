@@ -29,6 +29,7 @@ import localeCy from '@angular/common/locales/cy';
 import { AuthConfigModule } from './auth-config.module';
 import { NavigatorComponent } from './home/navigator/navigator.component';
 import { ProfileService } from './services/api/profile.service';
+import { SecurityServiceProviderService } from './security/authentication/security-service-provider.service';
 
 export function createTranslateLoader() {
     // We cant inject a httpClient because it has a race condition with adal
@@ -75,7 +76,7 @@ export function getLocale() {
             provide: LOG_ADAPTER,
             useClass: AppInsightsLoggerService,
             multi: true,
-            deps: [ConfigService, Router, ProfileService]
+            deps: [SecurityServiceProviderService, ConfigService, Router, ProfileService]
         },
         { provide: API_BASE_URL, useFactory: () => '.' },
         { provide: LOCALE_ID, useFactory: getLocale },

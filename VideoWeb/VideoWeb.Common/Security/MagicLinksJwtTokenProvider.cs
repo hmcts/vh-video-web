@@ -10,13 +10,14 @@ namespace VideoWeb.Common.Security
     public class MagicLinksJwtTokenProvider : IMagicLinksJwtTokenProvider
     {
         private readonly MagicLinksConfiguration _magicLinksConfiguration;
+        private const int _expiryTimeInMinutes = 60 * 8;
 
         public MagicLinksJwtTokenProvider(IOptions<MagicLinksConfiguration> magicLinksConfiguration)
         {
             _magicLinksConfiguration = magicLinksConfiguration.Value;
         }
 
-        public string GenerateToken(string name, string userName, string role, int expiresInMinutes)
+        public string GenerateToken(string name, string userName, string role)
         {
             var key = Convert.FromBase64String(_magicLinksConfiguration.JwtProviderSecret);
 
@@ -30,7 +31,7 @@ namespace VideoWeb.Common.Security
                 new Claim(ClaimTypes.Role, role) // MagicLinkParticipant / MagicLinkObserver
             });
             
-            return BuildToken(claims, expiresInMinutes, key);
+            return BuildToken(claims, _expiryTimeInMinutes, key);
         }
 
         private string BuildToken(ClaimsIdentity claims, int expiresInMinutes, byte[] key)

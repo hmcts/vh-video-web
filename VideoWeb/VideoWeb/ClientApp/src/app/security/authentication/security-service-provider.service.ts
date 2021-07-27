@@ -18,13 +18,13 @@ export class SecurityServiceProviderService {
         private magicLinkSecurityService: MagicLinkSecurityService,
         private oidcSecurityService: OidcSecurityService
     ) {
+        this.idpSubject = new BehaviorSubject<IdpProviders>(this.securityConfigSetupService.getIdp());
+        this.securityServiceSubject = new BehaviorSubject<ISecurityService>(this.getSecurityService());
+
         this.securityConfigSetupService.currentIdp$.subscribe(idp => {
             this.idpSubject.next(idp);
             this.securityServiceSubject.next(this.getSecurityService(idp));
         });
-
-        this.idpSubject = new BehaviorSubject<IdpProviders>(this.securityConfigSetupService.getIdp());
-        this.securityServiceSubject = new BehaviorSubject<ISecurityService>(this.getSecurityService());
     }
 
     getSecurityService(idp: IdpProviders = null): ISecurityService {
