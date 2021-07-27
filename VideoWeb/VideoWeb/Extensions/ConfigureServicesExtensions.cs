@@ -100,7 +100,6 @@ namespace VideoWeb.Extensions
             services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
             services.AddScoped<ITokenProvider, TokenProvider>();
             services.AddScoped<IKinlyJwtTokenProvider, KinlyJwtTokenProvider>();
-            services.AddScoped<IMagicLinksJwtTokenProvider, MagicLinksJwtTokenProvider>();
             services.AddScoped<IHashGenerator, HashGenerator>();
             services.AddScoped<AdUserProfileService>();
             services.AddScoped<IUserProfileService, CachedProfileService>();

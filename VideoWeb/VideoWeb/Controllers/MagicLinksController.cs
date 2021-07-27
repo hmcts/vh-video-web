@@ -9,6 +9,7 @@ using System.Net;
 using System.Threading.Tasks;
 using VideoApi.Client;
 using VideoApi.Contract.Enums;
+using VideoApi.Contract.Requests;
 using VideoWeb.Common.Models;
 using VideoWeb.Common.Security;
 using VideoWeb.Contract.Request;
@@ -24,13 +25,11 @@ namespace VideoWeb.Controllers
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly ILogger<MagicLinksController> _logger;
-        private readonly IMagicLinksJwtTokenProvider _jwtTokenProvider;
 
-        public MagicLinksController(IVideoApiClient videoApiClient, ILogger<MagicLinksController> logger, IMagicLinksJwtTokenProvider jwtTokenProvider)
+        public MagicLinksController(IVideoApiClient videoApiClient, ILogger<MagicLinksController> logger)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
-            _jwtTokenProvider = jwtTokenProvider;
         }
 
         [HttpGet("GetMagicLinkParticipantRoles")]
@@ -55,7 +54,8 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                return Ok(true);
+                var response = await _videoApiClient.ValidateMagicLinkAsync(hearingId);
+                return Ok(response);
             }
             catch(VideoApiException e)
             {
@@ -71,12 +71,24 @@ namespace VideoWeb.Controllers
         public async Task<IActionResult> Join(Guid hearingId,
             [FromBody] MagicLinkParticipantJoinRequest joinRequest)
         {
+            var roleAsUserRole = (UserRole)Enum.Parse(typeof(UserRole), joinRequest.Role.ToString());
+
+            if (roleAsUserRole != UserRole.MagicLinkObserver && roleAsUserRole != UserRole.MagicLinkParticipant)
+            {
+                throw new NotSupportedException(
+                    $"Can only join as a magic user if the roles are MagicLinkParticipant or MagicLinkObserver. The Role was {roleAsUserRole}");
+            }
+            
             MagicLinkParticipantJoinResponse joinResponse = new MagicLinkParticipantJoinResponse()
             {
-                Jwt = _jwtTokenProvider.GenerateToken(joinRequest.Name, joinRequest.Name, joinRequest.Role.ToString())
+                Jwt = await _videoApiClient.AddMagicLinkParticipantAsync(hearingId, new AddMagicLinkParticipantRequest()
+                {
+                    Name = joinRequest.Name,
+                    UserRole = roleAsUserRole
+                })
             };
             
-            return Ok(await Task.FromResult(joinResponse));
+            return Ok(joinResponse);
         }
         
         [HttpGet("isMagicLinkParticipantAuthorised")]

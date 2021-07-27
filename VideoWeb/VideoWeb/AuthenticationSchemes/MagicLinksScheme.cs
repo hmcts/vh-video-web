@@ -20,12 +20,11 @@ namespace VideoWeb.AuthenticationSchemes
 
         public override void SetJwtBearerOptions(JwtBearerOptions options)
         {
-            options.Audience = _idpConfiguration.ClientId;
-            
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = false,
                 ValidateAudience = false,
+                NameClaimType = "preferred_username",
                 IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(_idpConfiguration.JwtProviderSecret))
             };
         }
