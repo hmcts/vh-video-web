@@ -60,7 +60,8 @@
     "send": "Send",
     "char-count": "Character count",
     "maximum": "maximum allowed",
-    "unable-send": "Unable to send message."
+    "unable-send": "Unable to send message.",
+    "type-a-message":"Type a message"
   },
   "contact-us": {
     "contact-video-hearings": "Contact the video hearings service",
@@ -1015,7 +1016,7 @@
     },
     "participant-added": {
       "title": "{{name}}",
-      "message": "{{role}}({{party}}) has been added to the hearing.",
+      "message": "{{role}} ({{party}}) has been added to the hearing.",
       "dismiss": "Dismiss"
     }
   },

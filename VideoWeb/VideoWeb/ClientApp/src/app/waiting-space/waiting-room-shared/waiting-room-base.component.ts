@@ -479,7 +479,8 @@ export abstract class WaitingRoomBaseDirective extends HasBackNavigationDirectiv
                     this.logger.debug(`[WR] - Participant added, showing notification`, participant);
                     this.notificationToastrService.showParticipantAdded(
                         participant,
-                        this.participant.status === ParticipantStatus.InHearing
+                        this.participant.status === ParticipantStatus.InHearing ||
+                            this.participant.status === ParticipantStatus.InConsultation
                     );
                 });
 
