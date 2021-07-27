@@ -16,13 +16,12 @@ namespace VideoWeb.AuthenticationSchemes
             _idpConfiguration = idpConfiguration as MagicLinksConfiguration;
         }
         
-        public bool BelongsToScheme(JwtSecurityToken jwtSecurityToken) => jwtSecurityToken.Issuer.Contains(_idpConfiguration.TenantId, StringComparison.InvariantCultureIgnoreCase);
+        public bool BelongsToScheme(JwtSecurityToken jwtSecurityToken) => jwtSecurityToken.Issuer.Contains(_idpConfiguration.Issuer, StringComparison.InvariantCultureIgnoreCase);
 
         public override void SetJwtBearerOptions(JwtBearerOptions options)
         {
             options.TokenValidationParameters = new TokenValidationParameters
             {
-                ValidateIssuer = false,
                 ValidateAudience = false,
                 NameClaimType = "preferred_username",
                 IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(_idpConfiguration.JwtProviderSecret))
