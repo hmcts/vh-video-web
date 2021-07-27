@@ -3,7 +3,6 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router';
 import { MagicLinksService } from 'src/app/services/api/magic-links.service';
 import { Role } from 'src/app/services/clients/api-client';
-import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { CustomValidators } from 'src/app/shared/custom-validators';
 import { pageUrls } from 'src/app/shared/page-url.constants';
