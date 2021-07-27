@@ -1,3 +1,4 @@
+import { fakeAsync, flush } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { of, Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
@@ -28,7 +29,7 @@ describe('authguard', () => {
     });
 
     describe('when logged in with successful authentication', () => {
-        it('canActivate should return true', async () => {
+        it('canActivate should return true', fakeAsync(() => {
             // Arrange
             const isAuthenticatedSubject = new Subject<boolean>();
             getSpiedPropertyGetter(securityServiceSpy, 'isAuthenticated$').and.returnValue(isAuthenticatedSubject.asObservable());
@@ -37,14 +38,15 @@ describe('authguard', () => {
             let result = false;
             authGuard.canActivate(null, null).subscribe(canActivate => (result = canActivate));
             isAuthenticatedSubject.next(true);
+            flush();
 
             // Assert
             expect(result).toBeTruthy();
-        });
+        }));
     });
 
     describe('when login failed with unsuccessful authentication', () => {
-        it('canActivate should return false', async () => {
+        it('canActivate should return false', fakeAsync(() => {
             // Arrange
             const isAuthenticatedSubject = new Subject<boolean>();
             getSpiedPropertyGetter(securityServiceSpy, 'isAuthenticated$').and.returnValue(isAuthenticatedSubject.asObservable());
@@ -53,9 +55,10 @@ describe('authguard', () => {
             let result = true;
             authGuard.canActivate(null, null).subscribe(canActivate => (result = canActivate));
             isAuthenticatedSubject.next(false);
+            flush();
 
             // Assert
             expect(result).toBeFalsy();
-        });
+        }));
     });
 });
