@@ -163,7 +163,12 @@ export class AppComponent implements OnInit, OnDestroy {
     async retrieveProfileRole(): Promise<void> {
         try {
             const profile = await this.profileService.getUserProfile();
-            if (profile.role === Role.Representative || profile.role === Role.Individual) {
+            if (
+                profile.role === Role.Representative ||
+                profile.role === Role.Individual ||
+                profile.role === Role.MagicLinkParticipant ||
+                profile.role === Role.MagicLinkObserver
+            ) {
                 this.isRepresentativeOrIndividual = true;
             }
         } catch (error) {

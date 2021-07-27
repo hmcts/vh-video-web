@@ -102,8 +102,9 @@ export class MagicLinksComponent implements OnInit {
                         this.logger.info(`${this.loggerPrefix} Joined conference as magic link participant`, {
                             apiResponse: response
                         });
+
                         setTimeout(() => {
-                            this.router.navigate([pageUrls.ParticipantHearingList]);
+                            this.router.navigate([pageUrls.Navigator]);
                         }, 500);
                     },
                     error => console.log(this.loggerPrefix, error)

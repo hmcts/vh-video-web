@@ -51,6 +51,7 @@ export class SecurityConfigSetupService {
         const provider = this.getIdp();
         this.configSetup$.pipe(filter(Boolean)).subscribe(() => {
             this.oidcConfigService.withConfig(this.config[provider]);
+            this.currentIdpSubject.next(provider);
         });
     }
 
@@ -58,8 +59,8 @@ export class SecurityConfigSetupService {
         window.sessionStorage.setItem(this.IdpProvidersSessionStorageKey, provider);
         this.configSetup$.pipe(filter(Boolean)).subscribe(() => {
             if (provider !== IdpProviders.magicLink) this.oidcConfigService.withConfig(this.config[provider]);
+            this.currentIdpSubject.next(provider);
         });
-        this.currentIdpSubject.next(provider);
     }
 
     getIdp(): IdpProviders {

@@ -9,14 +9,12 @@ import { SecurityServiceProviderService } from 'src/app/security/authentication/
 @Injectable({
     providedIn: 'root'
 })
-export class MagicLinksService /* extends BaseApiService */ {
+export class MagicLinksService {
     constructor(
         private apiClient: ApiClient,
         private securityConfigSetupService: SecurityConfigSetupService,
         private securityServiceProviderService: SecurityServiceProviderService
-    ) {
-        // super(http, baseUrl);
-    }
+    ) {}
 
     getMagicLinkParticipantRoles(): Observable<Role[]> {
         return this.apiClient.getMagicLinkParticipantRoles();

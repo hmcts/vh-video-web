@@ -73,7 +73,7 @@ namespace VideoWeb.Controllers
         {
             MagicLinkParticipantJoinResponse joinResponse = new MagicLinkParticipantJoinResponse()
             {
-                Jwt = _jwtTokenProvider.GenerateToken(joinRequest.Name, Guid.NewGuid() + "@magic.links.com", joinRequest.Role.ToString())
+                Jwt = _jwtTokenProvider.GenerateToken(joinRequest.Name, joinRequest.Name, joinRequest.Role.ToString())
             };
             
             return Ok(await Task.FromResult(joinResponse));
@@ -84,15 +84,6 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.Forbidden)]
         public IActionResult IsAuthorised()
-        {
-            return Ok();
-        }
-        
-        [HttpGet("revokeMagicLinkUserToken")]
-        [SwaggerOperation("revokeMagicLinkUserToken")]
-        [ProducesResponseType((int) HttpStatusCode.OK)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        public IActionResult RevokeToken()
         {
             return Ok();
         }

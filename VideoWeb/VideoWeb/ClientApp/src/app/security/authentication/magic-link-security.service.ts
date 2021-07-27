@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { PublicConfiguration } from 'angular-auth-oidc-client';
 import { AuthOptions } from 'angular-auth-oidc-client/lib/login/auth-options';
-import { ReplaySubject, Observable } from 'rxjs';
-import { take, tap } from 'rxjs/operators';
+import { ReplaySubject, Observable, BehaviorSubject, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { ApiClient } from 'src/app/services/clients/api-client';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { DecodedJWT, JWTBody } from './models/decoded-jwt.model';
@@ -20,10 +20,11 @@ export class MagicLinkJwtBody extends JWTBody {
     providedIn: 'root'
 })
 export class MagicLinkSecurityService implements ISecurityService {
+    private loggerPrefix = '[MagicLinkSecurityService] -';
     private token: string;
     private tokenSessionStorageKey = 'MAGIC_LINKS_JWT';
     private tokenSessionStorage: SessionStorage<string>;
-    private isAuthenticatedSubject = new ReplaySubject<boolean>(1);
+    private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
     private userDataSubject = new ReplaySubject<any>(1);
 
     decodedToken: DecodedJWT<MagicLinkJwtBody>;
@@ -35,18 +36,7 @@ export class MagicLinkSecurityService implements ISecurityService {
 
     authorize(authOptions?: AuthOptions, token?: string): void {
         this.setToken(token);
-
-        this.decodedToken = new DecodedJWT(this.token, body => new MagicLinkJwtBody(body));
-
-        this.checkAuth().subscribe(authenticated => {
-            this.isAuthenticatedSubject.next(authenticated);
-
-            if (authenticated) {
-                this.userDataSubject.next(this.decodedToken?.body);
-            } else {
-                this.clearToken();
-            }
-        });
+        this.checkAuth().subscribe(() => {});
     }
 
     private clearToken() {
@@ -55,8 +45,13 @@ export class MagicLinkSecurityService implements ISecurityService {
 
     private setToken(token: string | null) {
         if (token === null) {
-            this.token = token;
+            this.token = null;
+            this.decodedToken = null;
             this.tokenSessionStorage.clear();
+        } else {
+            this.token = token;
+            this.decodedToken = new DecodedJWT(this.token, body => new MagicLinkJwtBody(body));
+            this.tokenSessionStorage.set(token);
         }
     }
 
@@ -76,7 +71,20 @@ export class MagicLinkSecurityService implements ISecurityService {
                 });
             });
 
-        return this.apiClient.isMagicLinkParticipantAuthorised().pipe(take(1), toIsAuthorisedResult);
+        return this.apiClient.isMagicLinkParticipantAuthorised().pipe(
+            toIsAuthorisedResult,
+            tap(authenticated => {
+                this.isAuthenticatedSubject.next(authenticated);
+
+                if (authenticated) {
+                    console.debug(`${this.loggerPrefix} Check auth passed. User is authenticated.`);
+                    this.userDataSubject.next(this.decodedToken?.body);
+                } else {
+                    console.warn(`${this.loggerPrefix} Check auth FAILED. User is NOT authenticated. Clearing token.`);
+                    this.clearToken();
+                }
+            })
+        );
     }
 
     getToken(): string {
@@ -84,12 +92,7 @@ export class MagicLinkSecurityService implements ISecurityService {
     }
 
     logoffAndRevokeTokens(): Observable<any> {
-        return this.apiClient.revokeMagicLinkUserToken().pipe(
-            tap(() => {
-                this.isAuthenticatedSubject.next(false);
-                this.userDataSubject.next(null);
-            })
-        );
+        return of(this.clearToken());
     }
 
     get isAuthenticated$(): Observable<boolean> {
