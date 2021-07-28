@@ -24,6 +24,8 @@ namespace VideoWeb.AuthenticationSchemes
             {
                 ValidateAudience = false,
                 NameClaimType = "preferred_username",
+                ValidateIssuer = true,
+                ValidIssuer = _idpConfiguration.Issuer,
                 IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(_idpConfiguration.JwtProviderSecret))
             };
         }
