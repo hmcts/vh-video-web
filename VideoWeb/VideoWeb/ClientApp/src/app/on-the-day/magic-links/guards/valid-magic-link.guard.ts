@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { MagicLinksService } from 'src/app/services/api/magic-links.service';
@@ -9,7 +10,11 @@ import { ErrorService } from 'src/app/services/error.service';
     providedIn: 'root'
 })
 export class ValidMagicLinkGuard implements CanActivate {
-    constructor(private magicLinksService: MagicLinksService, private errorService: ErrorService) {}
+    constructor(
+        private magicLinksService: MagicLinksService,
+        private errorService: ErrorService,
+        private translationService: TranslateService
+    ) {}
 
     canActivate(
         routeSnapshot: ActivatedRouteSnapshot,
@@ -19,8 +24,8 @@ export class ValidMagicLinkGuard implements CanActivate {
             tap(isValid => {
                 if (!isValid) {
                     this.errorService.goToServiceError(
-                        `The link you've used can't be recognised`,
-                        `Please check the link you were sent. If it still doesn't work, call 0300 303 0655 for immediate contact with a video hearings officer.`,
+                        this.translationService.instant('magic-participant-errors.invalid-page.heading'),
+                        this.translationService.instant('magic-participant-errors.invalid-page.body'),
                         false
                     );
                 }
