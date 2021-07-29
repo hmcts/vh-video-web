@@ -9,6 +9,7 @@ import { DecodedJWT, JWTBody } from './models/decoded-jwt.model';
 import { ISecurityService } from './security-service.interface';
 
 export class MagicLinkJwtBody extends JWTBody {
+    // tslint:disable-next-line: variable-name
     preferred_username: string;
 
     constructor(body: any) {

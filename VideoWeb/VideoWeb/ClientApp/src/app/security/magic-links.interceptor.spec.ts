@@ -58,8 +58,8 @@ describe('MagicLinksInterceptor', () => {
             let sentRequest: HttpRequest<any> = null;
 
             const nextHandler: HttpHandler = {
-                handle: (request: HttpRequest<any>): Observable<HttpEvent<any>> => {
-                    sentRequest = request;
+                handle: (requestToHandle: HttpRequest<any>): Observable<HttpEvent<any>> => {
+                    sentRequest = requestToHandle;
                     return of(new HttpResponse());
                 }
             };
@@ -84,8 +84,8 @@ describe('MagicLinksInterceptor', () => {
             let sentRequest: HttpRequest<any> = null;
 
             const nextHandler: HttpHandler = {
-                handle: (request: HttpRequest<any>): Observable<HttpEvent<any>> => {
-                    sentRequest = request;
+                handle: (requestToHandle: HttpRequest<any>): Observable<HttpEvent<any>> => {
+                    sentRequest = requestToHandle;
                     return of(new HttpResponse());
                 }
             };
@@ -106,8 +106,8 @@ describe('MagicLinksInterceptor', () => {
             let sentRequest: HttpRequest<any> = null;
 
             const nextHandler: HttpHandler = {
-                handle: (request: HttpRequest<any>): Observable<HttpEvent<any>> => {
-                    sentRequest = request;
+                handle: (requestToHandle: HttpRequest<any>): Observable<HttpEvent<any>> => {
+                    sentRequest = requestToHandle;
                     return of(new HttpResponse());
                 }
             };
@@ -125,8 +125,8 @@ describe('MagicLinksInterceptor', () => {
             let sentRequest: HttpRequest<any> = null;
 
             const nextHandler: HttpHandler = {
-                handle: (request: HttpRequest<any>): Observable<HttpEvent<any>> => {
-                    sentRequest = request;
+                handle: (requestToHandle: HttpRequest<any>): Observable<HttpEvent<any>> => {
+                    sentRequest = requestToHandle;
                     return of(new HttpResponse());
                 }
             };

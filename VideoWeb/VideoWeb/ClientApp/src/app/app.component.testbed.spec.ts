@@ -73,6 +73,7 @@ describe('AppComponent', () => {
             ['currentSecurityService$']
         );
 
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', []);
         getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
 
         securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>('SecurityConfigSetupService', ['getIdp'], []);

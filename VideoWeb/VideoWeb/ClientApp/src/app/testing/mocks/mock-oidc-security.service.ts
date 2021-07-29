@@ -13,7 +13,6 @@ interface UserData {
 }
 
 export class MockOidcSecurityService implements ISecurityService {
-
     get userData$(): Observable<UserData> {
         return of(this.userData);
     }
