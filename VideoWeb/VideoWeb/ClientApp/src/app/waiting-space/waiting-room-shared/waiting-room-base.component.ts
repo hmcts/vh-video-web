@@ -32,8 +32,6 @@ import { HearingTransfer, TransferDirection } from 'src/app/services/models/hear
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
-import { BackNavigationService } from 'src/app/shared/back-navigation/back-navigation.service';
-import { HasBackNavigationDirective } from 'src/app/shared/back-navigation/has-back-navigation.directive';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
@@ -60,7 +58,7 @@ import { VideoCallService } from '../services/video-call.service';
 declare var HeartbeatFactory: any;
 
 @Directive()
-export abstract class WaitingRoomBaseDirective extends HasBackNavigationDirective {
+export abstract class WaitingRoomBaseDirective {
     maxBandwidth = null;
     audioOnly: boolean;
     hearingStartingAnnounced: boolean;
@@ -124,10 +122,8 @@ export abstract class WaitingRoomBaseDirective extends HasBackNavigationDirectiv
         protected notificationToastrService: NotificationToastrService,
         protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService,
-        protected consultationInvitiationService: ConsultationInvitationService,
-        protected backNavigationService: BackNavigationService
+        protected consultationInvitiationService: ConsultationInvitationService
     ) {
-        super(backNavigationService);
         this.isAdminConsultation = false;
         this.loadingData = true;
         this.showVideo = false;

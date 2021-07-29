@@ -20,6 +20,7 @@ import { JudgeSelfTestComponent } from './judge-self-test/judge-self-test.compon
 import { IndependentSelfTestComponent } from './independent-self-test/independent-self-test.component';
 import { UnsupportedDeviceComponent } from '../shared/unsupported-device/unsupported-device.component';
 import { ParticipantStatusGuard } from '../security/participant-status.guard';
+import { BackLinkDetails } from '../shared/models/back-link-details';
 
 export const routes: Routes = [
     {
@@ -37,45 +38,45 @@ export const routes: Routes = [
     {
         path: `${pageUrls.Declaration}/:conferenceId`,
         component: DeclarationComponent,
-        data: { title: 'Declaration' },
+        data: { title: 'Declaration', backLink: new BackLinkDetails() },
         canActivate: [ParticipantStatusGuard]
     },
     {
         path: `${pageUrls.HearingRules}/:conferenceId`,
         component: HearingRulesComponent,
-        data: { title: 'Hearing rules' },
+        data: { title: 'Hearing rules', backLink: new BackLinkDetails() },
         canActivate: [ParticipantStatusGuard]
     },
     {
         path: `${pageUrls.EquipmentCheck}/:conferenceId`,
         component: EquipmentCheckComponent,
-        data: { title: 'Equipment check' },
+        data: { title: 'Equipment check', backLink: new BackLinkDetails() },
         canActivate: [ParticipantStatusGuard]
     },
     { path: `${pageUrls.EquipmentCheck}`, component: EquipmentCheckComponent },
     {
         path: `${pageUrls.CameraWorking}/:conferenceId`,
         component: CameraCheckComponent,
-        data: { title: 'Camera working' },
+        data: { title: 'Camera working', backLink: new BackLinkDetails() },
         canActivate: [ParticipantStatusGuard]
     },
     {
         path: `${pageUrls.MicrophoneWorking}/:conferenceId`,
         component: MicrophoneCheckComponent,
-        data: { title: 'Microphone working' },
+        data: { title: 'Microphone working', backLink: new BackLinkDetails() },
         canActivate: [ParticipantStatusGuard]
     },
     {
         path: `${pageUrls.VideoWorking}/:conferenceId`,
         component: VideoCheckComponent,
-        data: { title: 'See and hear video' },
+        data: { title: 'See and hear video', backLink: new BackLinkDetails() },
         canActivate: [ParticipantStatusGuard]
     },
     { path: `${pageUrls.CameraAndMicrophone}/:conferenceId`, component: CameraAndMicrophoneComponent },
     {
         path: `${pageUrls.SwitchOnCameraMicrophone}/:conferenceId`,
         component: SwitchOnCameraMicrophoneComponent,
-        data: { title: 'Switch on camera and microphone' },
+        data: { title: 'Switch on camera and microphone', backLink: new BackLinkDetails() },
         canActivate: [ParticipantStatusGuard]
     },
     {
@@ -85,7 +86,7 @@ export const routes: Routes = [
     {
         path: `${pageUrls.ParticipantSelfTestVideo}/:conferenceId`,
         component: ParticipantSelfTestComponent,
-        data: { title: 'Practice video hearing' },
+        data: { title: 'Practice video hearing', backLink: new BackLinkDetails() },
         canActivate: [ParticipantStatusGuard]
     },
     { path: `${pageUrls.JudgeSelfTestVideo}/:conferenceId`, component: JudgeSelfTestComponent },
@@ -95,7 +96,7 @@ export const routes: Routes = [
     {
         path: `${pageUrls.Introduction}/:conferenceId`,
         component: IntroductionComponent,
-        data: { title: 'Introduction' },
+        data: { title: 'Introduction', backLink: new BackLinkDetails() },
         canActivate: [ParticipantStatusGuard]
     }
 ];

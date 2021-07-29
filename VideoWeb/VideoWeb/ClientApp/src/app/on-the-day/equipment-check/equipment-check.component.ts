@@ -4,11 +4,10 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { BackNavigationService } from 'src/app/shared/back-navigation/back-navigation.service';
 
 @Component({
     selector: 'app-equipment-check',
-    templateUrl: './equipment-check.component.html',
+    templateUrl: './equipment-check.component.html'
 })
 export class EquipmentCheckComponent extends ParticipantStatusBaseDirective implements OnInit {
     backLinkText: string;
@@ -19,14 +18,12 @@ export class EquipmentCheckComponent extends ParticipantStatusBaseDirective impl
         private router: Router,
         protected route: ActivatedRoute,
         protected participantStatusUpdateService: ParticipantStatusUpdateService,
-        protected backNavigationService: BackNavigationService,
         protected logger: Logger
     ) {
-        super(participantStatusUpdateService, backNavigationService, logger);
+        super(participantStatusUpdateService, logger);
     }
 
     ngOnInit() {
-        super.ngOnInit();
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
     }
 

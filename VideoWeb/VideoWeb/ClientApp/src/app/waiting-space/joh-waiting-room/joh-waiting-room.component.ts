@@ -75,13 +75,11 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
             notificationToastrService,
             roomClosingToastrService,
             clockService,
-            consultationInvitiationService,
-            backNavigationService
+            consultationInvitiationService
         );
     }
 
     ngOnInit(): void {
-        super.ngOnInit();
         this.init();
     }
 
@@ -146,7 +144,6 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
     }
 
     ngOnDestroy(): void {
-        super.ngOnDestroy();
         this.cleanUp();
     }
 

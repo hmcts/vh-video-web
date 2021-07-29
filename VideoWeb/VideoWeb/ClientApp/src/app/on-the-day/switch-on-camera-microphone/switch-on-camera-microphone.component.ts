@@ -14,7 +14,7 @@ import { BackNavigationService } from 'src/app/shared/back-navigation/back-navig
 
 @Component({
     selector: 'app-switch-on-camera-microphone',
-    templateUrl: './switch-on-camera-microphone.component.html',
+    templateUrl: './switch-on-camera-microphone.component.html'
 })
 export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDirective implements OnInit {
     backLinkText: string;
@@ -28,7 +28,7 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
     conferenceId: string;
 
     contact = {
-        phone: vhContactDetails.phone,
+        phone: vhContactDetails.phone
     };
 
     constructor(
@@ -42,14 +42,13 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
         protected participantStatusUpdateService: ParticipantStatusUpdateService,
         protected backNavigationService: BackNavigationService
     ) {
-        super(participantStatusUpdateService, backNavigationService, logger);
+        super(participantStatusUpdateService, logger);
         this.userPrompted = false;
         this.mediaAccepted = false;
         this.isJudge = false;
     }
 
     ngOnInit() {
-        super.ngOnInit();
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         this.retrieveProfile().then(() => {
             if (this.conferenceId) {
@@ -82,7 +81,7 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
         if (!this.mediaAccepted) {
             this.logger.warn(`[SwitchOnCameraMicrophone] - ${this.participantName} denied access to camera.`, {
                 conference: this.conferenceId,
-                participant: this.participantName,
+                participant: this.participantName
             });
             this.postPermissionDeniedAlert();
         }
@@ -104,7 +103,7 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
     async postPermissionDeniedAlert() {
         const payload = {
             conference: this.conferenceId,
-            participant: this.participantName,
+            participant: this.participantName
         };
         this.logger.debug('[SwitchOnCameraMicrophone] - Raising media permission denied alert', payload);
         try {

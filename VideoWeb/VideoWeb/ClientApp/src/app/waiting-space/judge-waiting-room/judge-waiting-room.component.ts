@@ -21,7 +21,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
-import { BackNavigationService } from 'src/app/shared/back-navigation/back-navigation.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -90,7 +89,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected participantService: ParticipantService,
         protected videoControlService: VideoControlService,
         protected videoControlCacheService: VideoControlCacheService,
-        protected backNavigationService: BackNavigationService,
         private unloadDetectorService: UnloadDetectorService
     ) {
         super(
@@ -110,15 +108,13 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             notificationToastrService,
             roomClosingToastrService,
             clockService,
-            consultationInvitiationService,
-            backNavigationService
+            consultationInvitiationService
         );
         this.displayConfirmStartHearingPopup = false;
         this.hearingStartingAnnounced = true; // no need to play announcements for a judge
     }
 
     ngOnInit() {
-        super.ngOnInit();
         this.init();
     }
 
@@ -304,7 +300,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     ngOnDestroy(): void {
-        super.ngOnDestroy();
         this.cleanUp();
     }
 
