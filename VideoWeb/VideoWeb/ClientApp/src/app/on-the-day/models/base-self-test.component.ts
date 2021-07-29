@@ -36,7 +36,6 @@ export abstract class BaseSelfTestComponentDirective implements OnInit {
     }
 
     ngOnInit() {
-        console.log('Faz - BaseSelfTestComponentDirective');
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         if (this.conferenceId) {
             this.logger.debug('[SelfTest] - Conference id found, initialising test from conference details');

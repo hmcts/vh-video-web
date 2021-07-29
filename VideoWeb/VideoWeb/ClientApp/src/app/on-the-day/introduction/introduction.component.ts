@@ -13,8 +13,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
     styleUrls: ['./introduction.component.scss']
 })
 export class IntroductionComponent extends ParticipantStatusBaseDirective implements OnInit {
-    backLinkText: string;
-    backLinkPath: string;
     conferenceId: string;
     conference: ConferenceLite;
 

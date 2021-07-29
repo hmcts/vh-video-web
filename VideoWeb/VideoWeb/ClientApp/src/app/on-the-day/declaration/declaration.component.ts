@@ -11,8 +11,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
     templateUrl: './declaration.component.html'
 })
 export class DeclarationComponent extends ParticipantStatusBaseDirective implements OnInit {
-    backLinkText: string;
-    backLinkPath: string;
     declarationForm: FormGroup;
     submitted = false;
     conferenceId: string;

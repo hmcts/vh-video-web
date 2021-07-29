@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
@@ -13,13 +13,12 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { BaseSelfTestComponentDirective } from '../models/base-self-test.component';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
-import { BackNavigationService } from 'src/app/shared/back-navigation/back-navigation.service';
 
 @Component({
     selector: 'app-participant-self-test',
     templateUrl: './participant-self-test.component.html'
 })
-export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective implements OnInit, OnDestroy {
+export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective {
     selfTestCompleted = false;
     continueClicked: boolean;
     constructor(
@@ -28,19 +27,9 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective
         protected videoWebService: VideoWebService,
         protected errorService: ErrorService,
         protected logger: Logger,
-        private participantStatusUpdateService: ParticipantStatusUpdateService,
-        private backNavigationService: BackNavigationService
+        private participantStatusUpdateService: ParticipantStatusUpdateService
     ) {
         super(route, videoWebService, errorService, logger);
-    }
-
-    ngOnInit(): void {
-        this.backNavigationService.setLink('back-navigation.back', null);
-        super.ngOnInit();
-    }
-
-    ngOnDestroy(): void {
-        this.backNavigationService.clear();
     }
 
     onSelfTestCompleted(testcallScore: TestCallScoreResponse): void {

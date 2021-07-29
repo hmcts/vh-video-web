@@ -15,8 +15,6 @@ import { TranslateService } from '@ngx-translate/core';
     templateUrl: './video-check.component.html'
 })
 export class VideoCheckComponent extends EquipmentCheckBaseComponentDirective implements OnInit {
-    backLinkText: string;
-    backLinkPath: string;
     constructor(
         protected router: Router,
         protected route: ActivatedRoute,

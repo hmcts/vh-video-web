@@ -10,8 +10,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
     templateUrl: './equipment-check.component.html'
 })
 export class EquipmentCheckComponent extends ParticipantStatusBaseDirective implements OnInit {
-    backLinkText: string;
-    backLinkPath: string;
     conferenceId: string;
 
     constructor(

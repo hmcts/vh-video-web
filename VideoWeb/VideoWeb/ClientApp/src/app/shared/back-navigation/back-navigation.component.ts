@@ -41,26 +41,6 @@ export class BackNavigationComponent implements OnInit, OnDestroy {
                     this.linkPath$.next(backLink?.path);
                 }
             });
-        // this.routerEventSubscription = this.router.events.subscribe(event => {
-        //     console.log('Faz - Nav router events', event);
-        //     if (event instanceof NavigationEnd) {
-        //         console.log('Faz - root', this.router.routerState.root);
-        //         console.log('Faz - data', this.router.routerState.root.data);
-        //         const backLinkDetails: BackLinkDetails = this.router.routerState.root.data['backLink'];
-        //         console.log('Faz - backLinkDetails', backLinkDetails);
-        //         if (backLinkDetails) {
-        //             console.log('Faz - backLinkDetails is something');
-        //             this.linkText$.next(backLinkDetails.text);
-        //             this.linkPath$.next(backLinkDetails.path);
-        //         } else {
-        //             console.log('Faz - backLinkDetails is nothing');
-        //             this.linkText$.next(null);
-        //             this.linkPath$.next(null);
-        //         }
-        //         console.log('Faz - linkText$', this.linkText$.value);
-        //         console.log('Faz - linkText$', this.linkPath$.value);
-        //     }
-        // });
     }
 
     navigate() {

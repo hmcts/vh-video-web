@@ -15,8 +15,6 @@ import { TranslateService } from '@ngx-translate/core';
     templateUrl: './microphone-check.component.html'
 })
 export class MicrophoneCheckComponent extends EquipmentCheckBaseComponentDirective implements OnInit {
-    backLinkText: string;
-    backLinkPath: string;
     constructor(
         protected router: Router,
         protected route: ActivatedRoute,

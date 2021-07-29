@@ -37,7 +37,6 @@ export class AppComponent implements OnInit, OnDestroy {
     loggedIn: boolean;
     isRepresentativeOrIndividual: boolean;
     pageTitle = 'Video Hearings - ';
-    showVideoHearingListLink = false;
 
     subscriptions = new Subscription();
     constructor(
@@ -112,21 +111,12 @@ export class AppComponent implements OnInit, OnDestroy {
             this.router.events.subscribe({
                 next: (event: NavigationEnd) => {
                     if (event instanceof NavigationEnd) {
-                        this.showVideoHearingListLink = event.url.includes('waiting-room');
                         // If the connection has failed and passed the max number of retries, we need to trigger a manual reconnect attempt.
                         this.scrollToTop();
                     }
                 }
             })
         );
-    }
-
-    // get showVideoHearingListLink(): boolean {
-    //     return this.router.url.includes('waiting-room');
-    // }
-
-    goToHearingList() {
-        this.router.navigate([pageUrls.JudgeHearingList]);
     }
 
     ngOnDestroy(): void {

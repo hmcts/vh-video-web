@@ -11,8 +11,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
     styleUrls: ['./hearing-rules.component.scss']
 })
 export class HearingRulesComponent extends ParticipantStatusBaseDirective implements OnInit {
-    backLinkText: string;
-    backLinkPath: string;
     conferenceId: string;
 
     constructor(

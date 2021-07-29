@@ -10,15 +10,12 @@ import { vhContactDetails } from 'src/app/shared/contact-information';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
-import { BackNavigationService } from 'src/app/shared/back-navigation/back-navigation.service';
 
 @Component({
     selector: 'app-switch-on-camera-microphone',
     templateUrl: './switch-on-camera-microphone.component.html'
 })
 export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDirective implements OnInit {
-    backLinkText: string;
-    backLinkPath: string;
     mediaAccepted: boolean;
     userPrompted: boolean;
     isJudge: boolean;
@@ -39,8 +36,7 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
         private profileService: ProfileService,
         private errorService: ErrorService,
         protected logger: Logger,
-        protected participantStatusUpdateService: ParticipantStatusUpdateService,
-        protected backNavigationService: BackNavigationService
+        protected participantStatusUpdateService: ParticipantStatusUpdateService
     ) {
         super(participantStatusUpdateService, logger);
         this.userPrompted = false;
