@@ -15,7 +15,7 @@ import { Hearing } from '../models/hearing';
 import { ChatBaseComponent } from './chat-base.component';
 import { TranslateService } from '@ngx-translate/core';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
-import { SecurityServiceProviderService } from 'src/app/security/authentication/security-service-provider.service';
+import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
 import { getSpiedPropertyGetter } from '../jasmine-helpers/property-helpers';
 import { of, Subject } from 'rxjs';
@@ -30,7 +30,7 @@ class ChatBaseTest extends ChatBaseComponent {
         protected profileService: ProfileService,
         protected eventService: EventsService,
         protected logger: Logger,
-        protected securityServiceProviderService: SecurityServiceProviderService,
+        protected securityServiceProviderService: SecurityServiceProvider,
         protected imHelper: ImHelper,
         protected translateService: TranslateService
     ) {
@@ -66,7 +66,7 @@ describe('ChatBaseComponent', () => {
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
     let isAuthenticatedSubject: Subject<boolean>;
     let userDataSubject: Subject<boolean>;
-    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProviderService>;
+    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
 
     beforeAll(() => {
         conference = new ConferenceTestData().getConferenceDetailFuture();
@@ -89,7 +89,7 @@ describe('ChatBaseComponent', () => {
         getSpiedPropertyGetter(securityServiceSpy, 'isAuthenticated$').and.returnValue(isAuthenticatedSubject.asObservable());
         getSpiedPropertyGetter(securityServiceSpy, 'userData$').and.returnValue(userDataSubject.asObservable());
 
-        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProviderService>(
+        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
             [],
             ['currentSecurityService$']

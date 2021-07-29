@@ -4,20 +4,20 @@ import { PublicConfiguration } from 'angular-auth-oidc-client';
 import { of, Subject } from 'rxjs';
 import { Logger } from '../services/logging/logger-base';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
-import { SecurityServiceProviderService } from './authentication/security-service-provider.service';
+import { SecurityServiceProvider } from './authentication/security-provider.service';
 import { ISecurityService } from './authentication/security-service.interface';
 import { IdpProviders } from './idp-providers';
 import { RefreshTokenParameterInterceptor } from './refresh-token-parameter.interceptor';
 
 describe('RefreshTokenParameterInterceptor', () => {
     let sut: RefreshTokenParameterInterceptor;
-    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProviderService>;
+    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
     let currentIdpSubject: Subject<IdpProviders>;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
     let loggerSpy: jasmine.SpyObj<Logger>;
 
     beforeEach(() => {
-        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProviderService>(
+        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
             ['getSecurityService'],
             ['currentIdp$']

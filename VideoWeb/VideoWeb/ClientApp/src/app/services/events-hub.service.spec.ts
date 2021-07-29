@@ -1,7 +1,7 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import * as signalR from '@microsoft/signalr';
 import { Observable, of, ReplaySubject, Subject } from 'rxjs';
-import { SecurityServiceProviderService } from '../security/authentication/security-service-provider.service';
+import { SecurityServiceProvider } from '../security/authentication/security-provider.service';
 import { ISecurityService } from '../security/authentication/security-service.interface';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
 import { ConfigService } from './api/config.service';
@@ -15,7 +15,7 @@ describe('EventsHubService', () => {
     let serviceUnderTest: EventsHubService;
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
     let connectionStatusServiceSpy: jasmine.SpyObj<ConnectionStatusService>;
-    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProviderService>;
+    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
     let errorServiceSpy: jasmine.SpyObj<ErrorService>;
     const loggerSpy = jasmine.createSpyObj<Logger>('Logger', ['info', 'warn', 'error', 'debug']);
     let clientSettings$: Subject<ClientSettingsResponse>;
@@ -28,7 +28,7 @@ describe('EventsHubService', () => {
         spyOn(clientSettings$, 'subscribe').and.callThrough();
         configServiceSpy.getClientSettings.and.returnValue(clientSettings$);
 
-        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProviderService>(
+        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
             [],
             ['currentSecurityService$']

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { PublicConfiguration } from 'angular-auth-oidc-client';
 import { AuthOptions } from 'angular-auth-oidc-client/lib/login/auth-options';
-import { ReplaySubject, Observable, BehaviorSubject, of } from 'rxjs';
+import { ReplaySubject, Observable, BehaviorSubject, of, EMPTY } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiClient } from 'src/app/services/clients/api-client';
 import { SessionStorage } from 'src/app/services/session-storage';
@@ -92,7 +92,9 @@ export class MagicLinkSecurityService implements ISecurityService {
     }
 
     logoffAndRevokeTokens(): Observable<any> {
-        return of(this.clearToken());
+        this.clearToken();
+        this.isAuthenticatedSubject.next(false);
+        return EMPTY;
     }
 
     get isAuthenticated$(): Observable<boolean> {

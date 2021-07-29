@@ -23,7 +23,7 @@ import { ChatBaseComponent } from 'src/app/shared/chat/chat-base.component';
 import { ImHelper } from 'src/app/shared/im-helper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { TranslateService } from '@ngx-translate/core';
-import { SecurityServiceProviderService } from 'src/app/security/authentication/security-service-provider.service';
+import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 
 @Injectable()
 export abstract class ChatWindowBaseComponent extends ChatBaseComponent implements OnInit, OnDestroy, AfterViewChecked {
@@ -45,7 +45,7 @@ export abstract class ChatWindowBaseComponent extends ChatBaseComponent implemen
         protected profileService: ProfileService,
         protected eventService: EventsService,
         protected logger: Logger,
-        securityServiceProviderService: SecurityServiceProviderService,
+        securityServiceProviderService: SecurityServiceProvider,
         protected imHelper: ImHelper,
         protected route: ActivatedRoute,
         protected translateService: TranslateService

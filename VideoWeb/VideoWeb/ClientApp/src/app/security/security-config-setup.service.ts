@@ -17,7 +17,7 @@ export class SecurityConfigSetupService {
     private IdpProvidersSessionStorageKey = 'IdpProviders';
     private defaultProvider = IdpProviders.vhaad;
     private configSetup$ = new BehaviorSubject(false);
-    private currentIdpSubject = new ReplaySubject<IdpProviders>(1);
+    private currentIdpSubject = new BehaviorSubject<IdpProviders>(IdpProviders.vhaad);
 
     constructor(private oidcConfigService: OidcConfigService, configService: ConfigService) {
         configService.getClientSettings().subscribe(clientSettings => {
@@ -58,7 +58,9 @@ export class SecurityConfigSetupService {
     setIdp(provider: IdpProviders) {
         window.sessionStorage.setItem(this.IdpProvidersSessionStorageKey, provider);
         this.configSetup$.pipe(filter(Boolean)).subscribe(() => {
-            if (provider !== IdpProviders.magicLink) this.oidcConfigService.withConfig(this.config[provider]);
+            if (provider !== IdpProviders.magicLink) {
+                this.oidcConfigService.withConfig(this.config[provider]);
+            }
             this.currentIdpSubject.next(provider);
         });
     }

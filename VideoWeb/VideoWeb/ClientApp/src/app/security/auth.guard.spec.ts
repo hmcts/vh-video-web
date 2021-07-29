@@ -4,18 +4,18 @@ import { of, Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
 import { pageUrls } from '../shared/page-url.constants';
 import { AuthGuard } from './auth.guard';
-import { SecurityServiceProviderService } from './authentication/security-service-provider.service';
+import { SecurityServiceProvider } from './authentication/security-provider.service';
 import { ISecurityService } from './authentication/security-service.interface';
 
 describe('authguard', () => {
     let authGuard: AuthGuard;
-    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProviderService>;
+    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
     let router: jasmine.SpyObj<Router>;
 
     beforeAll(() => {
         securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', [], ['isAuthenticated$']);
-        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProviderService>(
+        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
             [],
             ['currentSecurityService$']

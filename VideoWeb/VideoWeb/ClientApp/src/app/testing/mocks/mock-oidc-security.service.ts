@@ -13,11 +13,13 @@ interface UserData {
 }
 
 export class MockOidcSecurityService implements ISecurityService {
-    authorize(authOptions?: AuthOptions, token?: string): void {
-        throw new Error('Method not implemented.');
+
+    get userData$(): Observable<UserData> {
+        return of(this.userData);
     }
-    logoffAndRevokeTokens(urlHandler?: (url: string) => any): Observable<any> {
-        throw new Error('Method not implemented.');
+
+    get isAuthenticated$(): Observable<boolean> {
+        return from([false, this.authenticated]);
     }
     userData: UserData;
     authenticated: boolean;
@@ -27,20 +29,18 @@ export class MockOidcSecurityService implements ISecurityService {
             secureRoutes: ['.']
         }
     } as PublicConfiguration;
+    authorize(authOptions?: AuthOptions, token?: string): void {
+        throw new Error('Method not implemented.');
+    }
+    logoffAndRevokeTokens(urlHandler?: (url: string) => any): Observable<any> {
+        throw new Error('Method not implemented.');
+    }
 
     setAuthenticated(authenticated: boolean) {
         this.authenticated = authenticated;
     }
     setUserData(userData: UserData) {
         this.userData = userData;
-    }
-
-    get userData$(): Observable<UserData> {
-        return of(this.userData);
-    }
-
-    get isAuthenticated$(): Observable<boolean> {
-        return from([false, this.authenticated]);
     }
 
     getToken(): string {

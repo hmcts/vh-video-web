@@ -3,13 +3,13 @@ import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { pageUrls } from '../shared/page-url.constants';
-import { SecurityServiceProviderService } from './authentication/security-service-provider.service';
+import { SecurityServiceProvider } from './authentication/security-provider.service';
 import { ISecurityService } from './authentication/security-service.interface';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
     private securityService: ISecurityService;
-    constructor(securityServiceProviderService: SecurityServiceProviderService, private router: Router) {
+    constructor(securityServiceProviderService: SecurityServiceProvider, private router: Router) {
         securityServiceProviderService.currentSecurityService$.subscribe(securityService => (this.securityService = securityService));
     }
 

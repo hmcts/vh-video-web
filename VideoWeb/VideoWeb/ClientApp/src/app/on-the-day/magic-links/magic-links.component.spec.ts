@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
@@ -26,7 +26,6 @@ describe('MagicLinksComponent', () => {
         });
         magicLinksServiceSpy = jasmine.createSpyObj('magicLinksService', {
             getMagicLinkParticipantRoles: of(magicLinkParticipantRoles),
-            validateMagicLink: of(true),
             joinHearing: of({})
         });
 
@@ -84,25 +83,9 @@ describe('MagicLinksComponent', () => {
             expect(spy.calls.count()).toBe(1);
         });
 
-        it('should call magic links service to validate the magic link', () => {
-            expect(magicLinksServiceSpy.validateMagicLink.calls.count()).toBe(1);
-        });
-
         it('should call magic links service to get participant roles if magic link is valid', () => {
             expect(magicLinksServiceSpy.getMagicLinkParticipantRoles.calls.count()).toBe(1);
             expect(component.magicLinkParticipantRoles).toEqual(magicLinkParticipantRoles);
-        });
-
-        it('should call error service if the magic link is invalid', async () => {
-            magicLinksServiceSpy.validateMagicLink.and.returnValue(of(false));
-            component.ngOnInit();
-
-            expect(errorServiceSpy.goToServiceError.calls.count()).toBe(1);
-            expect(errorServiceSpy.goToServiceError).toHaveBeenCalledWith(
-                `The link you've used can't be recognised`,
-                `Please check the link you were sent. If it still doesn't work, call 0300 303 0655 for immediate contact with a video hearings officer.`,
-                false
-            );
         });
     });
 
@@ -162,27 +145,33 @@ describe('MagicLinksComponent', () => {
 
     describe('onSubmit', () => {
         it('should reset errors', () => {
-            const spy = spyOn(component, 'resetErrors');
+            const resetErrorsSpy = spyOn(component, 'resetErrors');
 
             component.onSubmit();
 
-            expect(spy).toHaveBeenCalledTimes(1);
+            expect(resetErrorsSpy).toHaveBeenCalledTimes(1);
         });
 
         it('should validate the form', () => {
-            const spy = spyOn(component, 'validateForm');
+            const validateFormSpy = spyOn(component, 'validateForm');
 
             component.onSubmit();
 
-            expect(spy).toHaveBeenCalledTimes(1);
+            expect(validateFormSpy).toHaveBeenCalledTimes(1);
         });
 
-        it('should try and join the conference', () => {
-            const spy = spyOn(component, 'validateForm');
+        it('should try and join the conference if the form is valid', () => {
+            const validateFormSpy = spyOn(component, 'validateForm');
+            component.isFormValid = true;
 
             component.onSubmit();
 
-            expect(spy).toHaveBeenCalledTimes(1);
+            expect(validateFormSpy).toHaveBeenCalledTimes(1);
+            expect(magicLinksServiceSpy.joinHearing).toHaveBeenCalledOnceWith(
+                component.hearingId,
+                component.magicLinkNameFormControl.value,
+                component.magicLinkRoleFormControl.value
+            );
         });
     });
 });

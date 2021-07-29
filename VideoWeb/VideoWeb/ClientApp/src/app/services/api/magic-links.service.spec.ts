@@ -1,7 +1,7 @@
 import { MagicLinksService } from './magic-links.service';
 import { ApiClient, MagicLinkParticipantJoinRequest, MagicLinkParticipantJoinResponse, Role } from '../clients/api-client';
 import { SecurityConfigSetupService } from 'src/app/security/security-config-setup.service';
-import { SecurityServiceProviderService } from 'src/app/security/authentication/security-service-provider.service';
+import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 import { fakeAsync, flush } from '@angular/core/testing';
 import { IdpProviders } from 'src/app/security/idp-providers';
 import { MagicLinkSecurityService } from 'src/app/security/authentication/magic-link-security.service';
@@ -13,7 +13,7 @@ describe('MagicLinksService', () => {
     let apiClientSpy: jasmine.SpyObj<ApiClient>;
     let securityConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
     let magicLinkSecurityServiceSpy: jasmine.SpyObj<MagicLinkSecurityService>;
-    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProviderService>;
+    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
 
     beforeEach(() => {
         apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', [
@@ -23,7 +23,7 @@ describe('MagicLinksService', () => {
         ]);
         securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>('SecurityConfigSetupService', ['setIdp']);
         magicLinkSecurityServiceSpy = jasmine.createSpyObj<MagicLinkSecurityService>('MagicLinkSecurityService', ['authorize']);
-        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProviderService>('SecurityServiceProviderService', [
+        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>('SecurityServiceProviderService', [
             'getSecurityService'
         ]);
 

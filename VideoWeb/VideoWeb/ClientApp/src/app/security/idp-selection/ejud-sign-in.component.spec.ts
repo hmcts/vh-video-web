@@ -1,5 +1,6 @@
 import { Router } from '@angular/router';
 import { pageUrls } from 'src/app/shared/page-url.constants';
+import { IdpProviders } from '../idp-providers';
 import { SecurityConfigSetupService } from '../security-config-setup.service';
 import { EjudSignInComponent } from './ejud-sign-in.component';
 
@@ -20,7 +21,7 @@ describe('EjudSignInComponent', () => {
 
     it('should go to login when called', async () => {
         component.ngOnInit();
-        expect(securityConfigSetupServiceSpy.setIdp).toHaveBeenCalled();
-        expect(router.navigate).toHaveBeenCalledWith([`/${pageUrls.Login}`]);
+        expect(securityConfigSetupServiceSpy.setIdp).toHaveBeenCalledOnceWith(IdpProviders.ejud);
+        expect(router.navigate).toHaveBeenCalledOnceWith([`/${pageUrls.Login}`]);
     });
 });

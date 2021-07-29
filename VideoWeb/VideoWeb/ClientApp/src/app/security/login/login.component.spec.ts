@@ -6,7 +6,7 @@ import { LoginComponent } from './login.component';
 import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { Observable, of, Subject } from 'rxjs';
-import { SecurityServiceProviderService } from '../authentication/security-service-provider.service';
+import { SecurityServiceProvider } from '../authentication/security-provider.service';
 import { ISecurityService } from '../authentication/security-service.interface';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 
@@ -15,7 +15,7 @@ describe('LoginComponent', () => {
     const returnUrlService = new ReturnUrlService();
     let router: jasmine.SpyObj<Router>;
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
-    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProviderService>;
+    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
     let isAuthenticatedSubject: Subject<boolean>;
 
@@ -25,7 +25,7 @@ describe('LoginComponent', () => {
     });
 
     beforeEach(() => {
-        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProviderService>(
+        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
             [],
             ['currentSecurityService$']

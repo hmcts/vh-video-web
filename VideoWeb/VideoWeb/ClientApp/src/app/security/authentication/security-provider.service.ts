@@ -9,7 +9,7 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 @Injectable({
     providedIn: 'root'
 })
-export class SecurityServiceProviderService {
+export class SecurityServiceProvider {
     private idpSubject: BehaviorSubject<IdpProviders>;
     private securityServiceSubject: BehaviorSubject<ISecurityService>;
 

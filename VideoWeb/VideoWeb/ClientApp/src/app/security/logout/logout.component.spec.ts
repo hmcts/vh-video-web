@@ -3,7 +3,7 @@ import { LogoutComponent } from './logout.component';
 import { SessionStorage } from '../../services/session-storage';
 import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
 import { of, Subject } from 'rxjs';
-import { SecurityServiceProviderService } from '../authentication/security-service-provider.service';
+import { SecurityServiceProvider } from '../authentication/security-provider.service';
 import { ISecurityService } from '../authentication/security-service.interface';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { fakeAsync, flush } from '@angular/core/testing';
@@ -11,7 +11,7 @@ import { fakeAsync, flush } from '@angular/core/testing';
 describe('LogoutComponent', () => {
     let component: LogoutComponent;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
-    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProviderService>;
+    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
     let isAuthenticatedSubject: Subject<boolean>;
 
@@ -20,7 +20,7 @@ describe('LogoutComponent', () => {
     });
 
     beforeEach(() => {
-        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProviderService>(
+        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
             [],
             ['currentSecurityService$']

@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { SecurityConfigSetupService } from 'src/app/security/security-config-setup.service';
 import { IdpProviders } from 'src/app/security/idp-providers';
-import { SecurityServiceProviderService } from 'src/app/security/authentication/security-service-provider.service';
+import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 
 @Injectable({
     providedIn: 'root'
@@ -13,7 +13,7 @@ export class MagicLinksService {
     constructor(
         private apiClient: ApiClient,
         private securityConfigSetupService: SecurityConfigSetupService,
-        private securityServiceProviderService: SecurityServiceProviderService
+        private securityServiceProviderService: SecurityServiceProvider
     ) {}
 
     getMagicLinkParticipantRoles(): Observable<Role[]> {

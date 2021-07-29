@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { ReplaySubject, Subject, Observable } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
-import { SecurityServiceProviderService } from '../security/authentication/security-service-provider.service';
+import { SecurityServiceProvider } from '../security/authentication/security-provider.service';
 import { ISecurityService } from '../security/authentication/security-service.interface';
 import { ConfigService } from './api/config.service';
 import { ConnectionStatusService } from './connection-status.service';
@@ -63,7 +63,7 @@ export class EventsHubService {
     }
 
     constructor(
-        securityServiceProviderService: SecurityServiceProviderService,
+        securityServiceProviderService: SecurityServiceProvider,
         configService: ConfigService,
         private connectionStatusService: ConnectionStatusService,
         private logger: Logger,

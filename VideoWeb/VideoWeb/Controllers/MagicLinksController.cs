@@ -71,24 +71,32 @@ namespace VideoWeb.Controllers
         public async Task<IActionResult> Join(Guid hearingId,
             [FromBody] MagicLinkParticipantJoinRequest joinRequest)
         {
-            var roleAsUserRole = (UserRole)Enum.Parse(typeof(UserRole), joinRequest.Role.ToString());
+            try
+            {
+                var roleAsUserRole = (UserRole)Enum.Parse(typeof(UserRole), joinRequest.Role.ToString());
 
-            if (roleAsUserRole != UserRole.MagicLinkObserver && roleAsUserRole != UserRole.MagicLinkParticipant)
-            {
-                throw new NotSupportedException(
-                    $"Can only join as a magic user if the roles are MagicLinkParticipant or MagicLinkObserver. The Role was {roleAsUserRole}");
-            }
-            
-            MagicLinkParticipantJoinResponse joinResponse = new MagicLinkParticipantJoinResponse()
-            {
-                Jwt = await _videoApiClient.AddMagicLinkParticipantAsync(hearingId, new AddMagicLinkParticipantRequest()
+                if (roleAsUserRole != UserRole.MagicLinkObserver && roleAsUserRole != UserRole.MagicLinkParticipant)
                 {
-                    Name = joinRequest.Name,
-                    UserRole = roleAsUserRole
-                })
-            };
+                    throw new NotSupportedException(
+                        $"Can only join as a magic user if the roles are MagicLinkParticipant or MagicLinkObserver. The Role was {roleAsUserRole}");
+                }
             
-            return Ok(joinResponse);
+                MagicLinkParticipantJoinResponse joinResponse = new MagicLinkParticipantJoinResponse()
+                {
+                    Jwt = await _videoApiClient.AddMagicLinkParticipantAsync(hearingId, new AddMagicLinkParticipantRequest()
+                    {
+                        Name = joinRequest.Name,
+                        UserRole = roleAsUserRole
+                    })
+                };
+            
+                return Ok(joinResponse);
+            }
+            catch (VideoApiException e)
+            {
+                _logger.LogError(e, $"Unable to join hearing: {hearingId} {joinRequest.Name} {joinRequest.Role}");
+                return StatusCode(e.StatusCode, e.Response);
+            }
         }
         
         [HttpGet("isMagicLinkParticipantAuthorised")]

@@ -24,7 +24,7 @@ import {
     ValidationResult
 } from 'angular-auth-oidc-client';
 import { MockLogger } from './testing/mocks/mock-logger';
-import { SecurityServiceProviderService } from './security/authentication/security-service-provider.service';
+import { SecurityServiceProvider } from './security/authentication/security-provider.service';
 import { SecurityConfigSetupService } from './security/security-config-setup.service';
 import { getSpiedPropertyGetter } from './shared/jasmine-helpers/property-helpers';
 import { ISecurityService } from './security/authentication/security-service.interface';
@@ -40,7 +40,7 @@ describe('AppComponent', () => {
     let connectionStatusServiceSpy: jasmine.SpyObj<ConnectionStatusService>;
     let pageTrackerServiceSpy: jasmine.SpyObj<PageTrackerService>;
     let testLanguageServiceSpy: jasmine.SpyObj<TestLanguageService>;
-    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProviderService>;
+    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
     let securityConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
 
@@ -79,7 +79,7 @@ describe('AppComponent', () => {
     });
 
     beforeEach(() => {
-        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProviderService>(
+        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
             [],
             ['currentSecurityService$']

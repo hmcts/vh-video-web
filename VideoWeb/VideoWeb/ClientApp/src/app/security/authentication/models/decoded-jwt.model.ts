@@ -3,8 +3,8 @@ export class JWTHeader {
     private typ: string;
 
     constructor(body: any) {
-        for (var property in body) {
-            if (body.hasOwnProperty(property)) (<any>this)[property] = (<any>body)[property];
+        for (const property in body) {
+            if (body.hasOwnProperty(property)) { (<any>this)[property] = (<any>body)[property]; }
         }
     }
 
@@ -19,8 +19,8 @@ export class JWTHeader {
 
 export class JWTBody {
     constructor(body: any) {
-        for (var property in body) {
-            if (body.hasOwnProperty(property)) (<any>this)[property] = (<any>body)[property];
+        for (const property in body) {
+            if (body.hasOwnProperty(property)) { (<any>this)[property] = (<any>body)[property]; }
         }
     }
 }
@@ -30,8 +30,8 @@ export class DecodedJWT<TBody extends JWTBody> {
     body: TBody;
 
     parseBase64UrlEncoding(base64Url: string): any {
-        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        var jsonPayload = decodeURIComponent(
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
             atob(base64)
                 .split('')
                 .map(function (c) {

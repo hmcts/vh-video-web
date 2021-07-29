@@ -9,7 +9,7 @@ import { InstantMessage } from 'src/app/services/models/instant-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ImHelper } from '../im-helper';
 import { TranslateService } from '@ngx-translate/core';
-import { SecurityServiceProviderService } from 'src/app/security/authentication/security-service-provider.service';
+import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
 
 export abstract class ChatBaseComponent {
@@ -29,7 +29,7 @@ export abstract class ChatBaseComponent {
         protected profileService: ProfileService,
         protected eventService: EventsService,
         protected logger: Logger,
-        securityServiceProviderService: SecurityServiceProviderService,
+        securityServiceProviderService: SecurityServiceProvider,
         protected imHelper: ImHelper,
         protected translateService: TranslateService
     ) {

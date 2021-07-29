@@ -1,19 +1,19 @@
 import { Injectable } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpEvent, HttpHeaders } from '@angular/common/http';
-import { SecurityServiceProviderService } from './authentication/security-service-provider.service';
+import { SecurityServiceProvider } from './authentication/security-provider.service';
 import { SecurityConfigSetupService } from './security-config-setup.service';
 import { IdpProviders } from './idp-providers';
 import { Logger } from '../services/logging/logger-base';
 import { Observable } from 'rxjs';
 
 @Injectable()
-export class AuthenticationInterceptor {
+export class MagicLinksInterceptor {
     private loggerPrefix = '[AuthenticationInterceptor] -';
     private currentIdp: IdpProviders;
 
     constructor(
         private securityConfigSetupService: SecurityConfigSetupService,
-        private securityServiceProviderService: SecurityServiceProviderService,
+        private securityServiceProviderService: SecurityServiceProvider,
         private logger: Logger
     ) {
         this.securityConfigSetupService.currentIdp$.subscribe(newIdp => (this.currentIdp = newIdp));

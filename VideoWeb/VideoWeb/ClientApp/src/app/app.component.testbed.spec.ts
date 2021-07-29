@@ -23,7 +23,7 @@ import { translateServiceSpy } from './testing/mocks/mock-translation.service';
 import { TranslatePipeMock } from './testing/mocks/mock-translation-pipe';
 import { of } from 'rxjs';
 import { PublicEventsService } from 'angular-auth-oidc-client';
-import { SecurityServiceProviderService } from './security/authentication/security-service-provider.service';
+import { SecurityServiceProvider } from './security/authentication/security-provider.service';
 import { ISecurityService } from './security/authentication/security-service.interface';
 import { SecurityConfigSetupService } from './security/security-config-setup.service';
 import { getSpiedPropertyGetter } from './shared/jasmine-helpers/property-helpers';
@@ -46,7 +46,7 @@ describe('AppComponent', () => {
     let component: AppComponent;
     let fixture: ComponentFixture<AppComponent>;
     let router: Router;
-    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProviderService>;
+    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
     let securityConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
 
@@ -67,7 +67,7 @@ describe('AppComponent', () => {
         participantStatusUpdateServiceSpy.postParticipantStatus.and.returnValue(Promise.resolve());
         publicEventsServiceSpy = jasmine.createSpyObj('PublicEventsService', ['registerForEvents']);
 
-        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProviderService>(
+        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
             [],
             ['currentSecurityService$']
@@ -93,7 +93,7 @@ describe('AppComponent', () => {
                 { provide: TranslateService, useValue: translateServiceSpy },
                 { provide: PublicEventsService, useValue: publicEventsServiceSpy },
                 { provide: SecurityConfigSetupService, useValue: securityConfigSetupServiceSpy },
-                { provide: SecurityServiceProviderService, useValue: securityServiceProviderServiceSpy }
+                { provide: SecurityServiceProvider, useValue: securityServiceProviderServiceSpy }
             ]
         });
     });

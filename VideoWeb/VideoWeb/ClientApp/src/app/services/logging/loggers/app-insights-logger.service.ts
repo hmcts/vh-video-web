@@ -3,7 +3,7 @@ import { ActivatedRouteSnapshot, ResolveEnd, Router, RouterEvent } from '@angula
 import { ApplicationInsights, ITelemetryItem, SeverityLevel } from '@microsoft/applicationinsights-web';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
-import { SecurityServiceProviderService } from 'src/app/security/authentication/security-service-provider.service';
+import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
 import { ConfigService } from '../../api/config.service';
 import { ProfileService } from '../../api/profile.service';
@@ -22,7 +22,7 @@ export class AppInsightsLoggerService implements LogAdapter {
     userData;
 
     constructor(
-        securityServiceProviderService: SecurityServiceProviderService,
+        securityServiceProviderService: SecurityServiceProvider,
         configService: ConfigService,
         router: Router,
         private profileService: ProfileService

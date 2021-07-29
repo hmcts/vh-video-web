@@ -4,17 +4,17 @@ import { Observable, of, Subject } from 'rxjs';
 import { Logger } from '../services/logging/logger-base';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
 
-import { AuthenticationInterceptor } from './authentication.interceptor';
-import { SecurityServiceProviderService } from './authentication/security-service-provider.service';
+import { MagicLinksInterceptor } from './magic-links.interceptor';
+import { SecurityServiceProvider } from './authentication/security-provider.service';
 import { ISecurityService } from './authentication/security-service.interface';
 import { IdpProviders } from './idp-providers';
 import { SecurityConfigSetupService } from './security-config-setup.service';
 
-describe('AuthenticationInterceptor', () => {
-    let sut: AuthenticationInterceptor;
+describe('MagicLinksInterceptor', () => {
+    let sut: MagicLinksInterceptor;
     let securityConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
     let currentIdpSubject: Subject<IdpProviders>;
-    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProviderService>;
+    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
     let loggerSpy: jasmine.SpyObj<Logger>;
 
     beforeEach(() => {
@@ -22,22 +22,22 @@ describe('AuthenticationInterceptor', () => {
         currentIdpSubject = new Subject<IdpProviders>();
         getSpiedPropertyGetter(securityConfigSetupServiceSpy, 'currentIdp$').and.returnValue(currentIdpSubject);
 
-        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProviderService>('SecurityServiceProviderService', [
+        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>('SecurityServiceProviderService', [
             'getSecurityService'
         ]);
         loggerSpy = jasmine.createSpyObj<Logger>('Logger', ['warn', 'debug']);
 
         TestBed.configureTestingModule({
             providers: [
-                AuthenticationInterceptor,
+                MagicLinksInterceptor,
                 { provide: SecurityConfigSetupService, useValue: securityConfigSetupServiceSpy },
-                { provide: SecurityServiceProviderService, useValue: securityServiceProviderServiceSpy },
+                { provide: SecurityServiceProvider, useValue: securityServiceProviderServiceSpy },
                 { provide: Logger, useValue: loggerSpy }
             ],
             imports: [HttpClientModule]
         });
 
-        sut = TestBed.inject(AuthenticationInterceptor);
+        sut = TestBed.inject(MagicLinksInterceptor);
     });
 
     describe('intercept', () => {

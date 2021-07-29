@@ -16,7 +16,7 @@ import { pageUrls } from './shared/page-url.constants';
 import { TestLanguageService } from './shared/test-language.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { IdpProviders } from './security/idp-providers';
-import { SecurityServiceProviderService } from './security/authentication/security-service-provider.service';
+import { SecurityServiceProvider } from './security/authentication/security-provider.service';
 import { SecurityConfigSetupService } from './security/security-config-setup.service';
 import { ISecurityService } from './security/authentication/security-service.interface';
 
@@ -53,7 +53,7 @@ export class AppComponent implements OnInit, OnDestroy {
         private configService: ConfigService,
         private eventService: PublicEventsService,
         private logger: Logger,
-        securityServiceProviderService: SecurityServiceProviderService,
+        securityServiceProviderService: SecurityServiceProvider,
         private securityConfigSetupService: SecurityConfigSetupService
     ) {
         this.loggedIn = false;

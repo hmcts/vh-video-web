@@ -1,14 +1,14 @@
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { SecurityConfigSetupService } from '../security-config-setup.service';
 import { IdpProviders } from '../idp-providers';
-import { SecurityServiceProviderService } from './security-service-provider.service';
+import { SecurityServiceProvider } from './security-provider.service';
 import { ISecurityService } from './security-service.interface';
 import { MagicLinkSecurityService } from './magic-link-security.service';
 import { Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 
 describe('SecurityServiceProviderService', () => {
-    let service: SecurityServiceProviderService;
+    let service: SecurityServiceProvider;
 
     let securityConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
     let oidcSecurityServiceSpy: jasmine.SpyObj<ISecurityService>;
@@ -28,7 +28,7 @@ describe('SecurityServiceProviderService', () => {
         oidcSecurityServiceSpy = jasmine.createSpyObj<ISecurityService>('OidcSecurityService', ['getToken']);
         magicLinkSecurityServiceSpy = jasmine.createSpyObj<ISecurityService>('MagicLinkSecurityService', ['getToken']);
 
-        service = new SecurityServiceProviderService(
+        service = new SecurityServiceProvider(
             securityConfigSetupServiceSpy,
             (magicLinkSecurityServiceSpy as unknown) as MagicLinkSecurityService,
             (oidcSecurityServiceSpy as unknown) as OidcSecurityService
@@ -62,7 +62,7 @@ describe('SecurityServiceProviderService', () => {
             expect(securityService).toBe(oidcSecurityServiceSpy);
         });
 
-        it('should return null when the selected IDP is magicLink', () => {
+        it('should return the magicLinkSecurityService when the selected IDP is magicLink', () => {
             // Arrange
             securityConfigSetupServiceSpy.getIdp.and.returnValue(IdpProviders.magicLink);
 
