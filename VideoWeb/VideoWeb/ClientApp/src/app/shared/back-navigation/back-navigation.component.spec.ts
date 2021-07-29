@@ -5,7 +5,7 @@ import { By } from '@angular/platform-browser';
 import { TranslatePipeMock } from 'src/app/testing/mocks/mock-translation-pipe';
 import { BackNavigationComponent } from './back-navigation.component';
 
-fdescribe('BackNavigationComponent', () => {
+describe('BackNavigationComponent', () => {
     let fixture: ComponentFixture<BackNavigationComponent>;
     let component: BackNavigationComponent;
 
