@@ -1,7 +1,7 @@
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { ActiveToast } from 'ngx-toastr';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import {
     ConferenceResponse,
     ConferenceStatus,
@@ -40,6 +40,8 @@ import {
 } from '../../waiting-room-shared/tests/waiting-room-base-setup';
 import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let component: ParticipantWaitingRoomComponent;
@@ -47,6 +49,9 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let logged: LoggedParticipantResponse;
     let activatedRoute: ActivatedRoute;
     const translateService = translateServiceSpy;
+    let unloadDetectorServiceSpy: jasmine.SpyObj<UnloadDetectorService>;
+    let shouldUnloadSubject: Subject<void>;
+    let shouldReloadSubject: Subject<void>;
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -69,6 +74,16 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     });
 
     beforeEach(() => {
+        unloadDetectorServiceSpy = jasmine.createSpyObj<UnloadDetectorService>(
+            'UnloadDetectorService',
+            [],
+            ['shouldUnload', 'shouldReload']
+        );
+        shouldUnloadSubject = new Subject<void>();
+        shouldReloadSubject = new Subject<void>();
+        getSpiedPropertyGetter(unloadDetectorServiceSpy, 'shouldUnload').and.returnValue(shouldUnloadSubject.asObservable());
+        getSpiedPropertyGetter(unloadDetectorServiceSpy, 'shouldReload').and.returnValue(shouldReloadSubject.asObservable());
+
         consultationService.consultationNameToString.calls.reset();
         logged = new LoggedParticipantResponse({
             participant_id: globalParticipant.id,
@@ -97,7 +112,8 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             roomClosingToastrService,
             clockService,
             translateService,
-            consultationInvitiationService
+            consultationInvitiationService,
+            unloadDetectorServiceSpy
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));

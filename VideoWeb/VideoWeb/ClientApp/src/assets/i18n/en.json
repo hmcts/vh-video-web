@@ -60,7 +60,8 @@
     "send": "Send",
     "char-count": "Character count",
     "maximum": "maximum allowed",
-    "unable-send": "Unable to send message."
+    "unable-send": "Unable to send message.",
+    "type-a-message":"Type a message"
   },
   "contact-us": {
     "contact-video-hearings": "Contact the video hearings service",
@@ -145,10 +146,9 @@
     "change-camera-mic": "Change camera or microphone"
   },
   "unsupported-browser": {
-    "using-unsupported-browser": "You've signed in using an unsupported browser",
-    "it-looks-like": "It looks like you've signed in using",
-    "unfortunately-this-browser": "Unfortunately this browser is not currently supported.",
-    "please-sign-out": "Please sign out and sign in again using any of the following.",
+    "using-unsupported-browser": "Unsupported browser",
+    "unfortunately-this-browser": "You're using a browser that is not supported by the Video Hearings service.",
+    "please-try-again": "Please try again using one of the browsers listed below. If you are still having problems, please contact the video hearings team.",
     "supported-browser-alt": "{{browserName}} browser logo"
   },
   "unsupported-device": {
@@ -640,6 +640,7 @@
     "interpreter": "Interpreter",
     "judge": "Judge",
     "litigant-in-person": "Litigant in person",
+    "litigation-friend": "Litigation friend",
     "macKenzie-friend": "MacKenzie friend",
     "observer": "Observer",
     "panel-member": "Panel Member",
@@ -1015,7 +1016,7 @@
     },
     "participant-added": {
       "title": "{{name}}",
-      "message": "{{role}}({{party}}) has been added to the hearing.",
+      "message": "{{role}} ({{party}}) has been added to the hearing.",
       "dismiss": "Dismiss"
     }
   },

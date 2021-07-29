@@ -35,6 +35,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { TestLanguageService } from './test-language.service';
 import { MultilinePipe } from './pipes/multiline.pipe';
 import { NgxDatePipe } from './pipes/ngx-date.pipe';
+import { ParticipantPanelModelMapper } from './mappers/participant-panel-model-mapper';
 
 @NgModule({
     imports: [
@@ -80,7 +81,7 @@ import { NgxDatePipe } from './pipes/ngx-date.pipe';
         MultilinePipe,
         NgxDatePipe
     ],
-    providers: [WindowScrolling, ScreenHelper, TestLanguageService, DatePipe],
+    providers: [WindowScrolling, ScreenHelper, TestLanguageService, DatePipe, ParticipantPanelModelMapper],
     exports: [
         HeaderComponent,
         FooterComponent,

@@ -23,9 +23,8 @@ export class ParticipantService {
     private conferenceSubscriptions: Subscription[] = [];
 
     //#region Getters and Event Observables
-    private _participants: ParticipantModel[] = [];
     public get participants(): ParticipantModel[] {
-        return this._participants;
+        return [...this.nonEndpointParticipants, ...this.endpointParticipants];
     }
 
     private _loggedInParticipant: ReplaySubject<ParticipantModel> = new ReplaySubject<ParticipantModel>(1);
@@ -33,20 +32,17 @@ export class ParticipantService {
         return this._loggedInParticipant.asObservable();
     }
 
+    private _nonEndpointParticipants: ParticipantModel[] = [];
     public get nonEndpointParticipants(): ParticipantModel[] {
-        const participants = this.participants.filter(x => !x.isEndPoint);
-        if (participants.length < 1) {
-            throw invalidNumberOfNonEndpointParticipantsError();
-        }
-
-        return participants;
+        return this._nonEndpointParticipants;
     }
 
+    private _endpointParticipants: ParticipantModel[] = [];
     public get endpointParticipants(): ParticipantModel[] {
-        return this.participants.filter(x => x.isEndPoint);
+        return this._endpointParticipants;
     }
 
-    private _virtualMeetingRooms: VirtualMeetingRoomModel[];
+    private _virtualMeetingRooms: VirtualMeetingRoomModel[] = [];
     public get virtualMeetingRooms(): VirtualMeetingRoomModel[] {
         return this._virtualMeetingRooms;
     }
@@ -96,6 +92,10 @@ export class ParticipantService {
         return this.participantHandRaisedStatusChangedSubject.asObservable();
     }
 
+    private participantsUpdatedSubject = new Subject<boolean>();
+    get onParticipantsUpdated$(): Observable<boolean> {
+        return this.participantsUpdatedSubject.asObservable();
+    }
     //#endregion
 
     constructor(
@@ -150,23 +150,26 @@ export class ParticipantService {
                 conference: conference
             });
 
-            this._participants = [];
+            this._endpointParticipants = [];
+            this._nonEndpointParticipants = [];
             this._virtualMeetingRooms = [];
-            this.loadParticipants().subscribe(participants => {
-                this.logger.info(`${this.loggerPrefix} new participant list retrieved`, {
-                    oldValue: this.participants,
-                    newValue: participants
+
+            zip(
+                this.conferenceService.getParticipantsForConference(conference.id),
+                this.conferenceService.getEndpointsForConference(conference.id)
+            )
+                .pipe(take(1))
+                .subscribe(participantsArrays => {
+                    this._virtualMeetingRooms = [];
+                    this._nonEndpointParticipants = participantsArrays[0];
+                    this._endpointParticipants = participantsArrays[1];
+
+                    this.populateVirtualMeetingRooms();
+
+                    this.restoreCachedVideoControlState();
+
+                    this.participantsLoadedSubject.next(this.participants);
                 });
-
-                this._virtualMeetingRooms = [];
-                this._participants = participants;
-
-                this.populateVirtualMeetingRooms();
-
-                this.restoreCachedVideoControlState();
-
-                this.participantsLoadedSubject.next(this.participants);
-            });
 
             this.subscribeToConferenceEvents(conference);
         });
@@ -255,6 +258,19 @@ export class ParticipantService {
                     tap(participantStatusMessage => this.checkForNewVmrsOnParticipantAvailable(participantStatusMessage))
                 )
                 .subscribe(participantStatusMessage => this.handleParticipantStatusUpdate(participantStatusMessage))
+        );
+
+        this.conferenceSubscriptions.push(
+            this.eventsService
+                .getParticipantsUpdated()
+                .pipe(
+                    filter(message => message.conferenceId === conference.id),
+                    map(message => message.participants.map(x => ParticipantModel.fromParticipantResponseVho(x)))
+                )
+                .subscribe(participants => {
+                    this._nonEndpointParticipants = participants;
+                    this.participantsUpdatedSubject.next(true);
+                })
         );
     }
 

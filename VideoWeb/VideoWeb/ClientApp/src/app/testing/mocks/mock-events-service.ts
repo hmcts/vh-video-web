@@ -6,13 +6,13 @@ import { ConsultationRequestResponseMessage } from 'src/app/services/models/cons
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 import { HearingTransfer } from 'src/app/services/models/hearing-transfer';
 import { InstantMessage } from 'src/app/services/models/instant-message';
-import { ParticipantAddedMessage } from 'src/app/services/models/participant-added-message';
 import { ParticipantHeartbeat } from 'src/app/services/models/participant-heartbeat';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
 import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-hand-raised-message';
 import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
 import { ParticipantRemoteMuteMessage } from 'src/app/shared/models/participant-remote-mute-message';
+import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { Room } from '../../shared/models/room';
 import { RoomTransfer } from '../../shared/models/room-transfer';
 
@@ -37,7 +37,7 @@ export const roomTransferSubjectMock = new Subject<RoomTransfer>();
 export const adminAnsweredChatSubjectMock = new Subject<ConferenceMessageAnswered>();
 export const onEventsHubReadySubjectMock = new Subject<boolean>();
 export let eventHubIsConnectedMock: boolean;
-export const getParticipantAddedSubjectMock = new Subject<ParticipantAddedMessage>();
+export const getParticipantsUpdatedSubjectMock = new Subject<ParticipantsUpdatedMessage>();
 
 eventsServiceSpy = jasmine.createSpyObj<EventsService>(
     'EventsService',
@@ -68,7 +68,7 @@ eventsServiceSpy = jasmine.createSpyObj<EventsService>(
         'publishParticipantHandRaisedStatus',
         'publishRemoteMuteStatus',
         'onEventsHubReady',
-        'getParticipantAdded'
+        'getParticipantsUpdated'
     ],
     ['eventHubIsConnected']
 );
@@ -91,4 +91,4 @@ eventsServiceSpy.getRoomUpdate.and.returnValue(roomUpdateSubjectMock.asObservabl
 eventsServiceSpy.getRoomTransfer.and.returnValue(roomTransferSubjectMock.asObservable());
 eventsServiceSpy.getAdminAnsweredChat.and.returnValue(adminAnsweredChatSubjectMock.asObservable());
 eventsServiceSpy.onEventsHubReady.and.returnValue(onEventsHubReadySubjectMock.asObservable());
-eventsServiceSpy.getParticipantAdded.and.returnValue(getParticipantAddedSubjectMock.asObservable());
+eventsServiceSpy.getParticipantsUpdated.and.returnValue(getParticipantsUpdatedSubjectMock.asObservable());

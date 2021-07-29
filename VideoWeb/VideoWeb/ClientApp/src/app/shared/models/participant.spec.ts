@@ -4,11 +4,6 @@ import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { Participant } from './participant';
 
 describe('Participant', () => {
-    it('should throw an error if passing an invlid type', () => {
-        const p = new ConferenceTestData().getConferenceFuture().participants[0];
-        expect(() => new Participant(p)).toThrowError();
-    });
-
     it('should map participant info', () => {
         const p = new ConferenceTestData().getConferenceDetailFuture().participants.find(x => x.name === 'Mr James Green');
         const participant = new Participant(p);

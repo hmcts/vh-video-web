@@ -294,19 +294,23 @@ export class NotificationToastrService {
     }
 
     showParticipantAdded(participant: ParticipantResponse, inHearing: boolean = false): VhToastComponent {
-        let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant(
+        let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${this.translateService.instant(
             'notification-toastr.participant-added.title',
             {
                 name: participant.name
             }
         )}</span>`;
-        message += `<br/>${this.translateService.instant('notification-toastr.participant-added.message', {
-            role: this.translateHearingRole(participant.hearing_role),
-            party: this.translateCaseRole(participant.case_type_group)
-        })}<br/>`;
+        message += `<span class="toast-content toast-body">${this.translateService.instant(
+            'notification-toastr.participant-added.message',
+            {
+                role: this.translateHearingRole(participant.hearing_role),
+                party: this.translateCaseRole(participant.case_type_group)
+            }
+        )}</span>`;
 
         const toast = this.toastr.show('', '', {
             timeOut: 0,
+            extendedTimeOut: 0,
             tapToDismiss: false,
             toastComponent: VhToastComponent
         });

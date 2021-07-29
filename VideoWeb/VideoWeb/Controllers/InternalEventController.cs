@@ -17,6 +17,8 @@ using VideoApi.Contract.Requests;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using Task = System.Threading.Tasks.Task;
 using VideoWeb.Contract.Responses;
+using VideoWeb.Helpers;
+using System.Text.Json;
 
 namespace VideoWeb.Controllers
 {
@@ -46,15 +48,17 @@ namespace VideoWeb.Controllers
             _mapperFactory = mapperFactory;
         }
 
-        [HttpPost("ParticipantsAdded")]
-        [SwaggerOperation(OperationId = "ParticipantsAdded")]
+        [HttpPost("ParticipantsUpdated")]
+        [SwaggerOperation(OperationId = "ParticipantsUpdated")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> ParticipantsAdded(Guid conferenceId, AddParticipantsToConferenceRequest request)
+        public async Task<IActionResult> ParticipantsUpdated(Guid conferenceId, UpdateConferenceParticipantsRequest request)
         {
-            var participantMapper = _mapperFactory.Get<ParticipantRequest, Participant>();
-            var participantResponseMapper = _mapperFactory.Get<Participant, ParticipantResponse>();
-            List<Participant> participantsAdded = request.Participants.Select(participant => participantMapper.Map(participant)).ToList();
+            _logger.LogDebug($"ParticipantsUpdated called. ConferenceId: {conferenceId}, Request {JsonSerializer.Serialize(request)}");
+
+            var requestToParticipantMapper = _mapperFactory.Get<ParticipantRequest, IEnumerable<Participant>, Participant>();
+            var updateParticipantRequestToUpdateParticipantMapper = _mapperFactory.Get<UpdateParticipantRequest, IEnumerable<Participant>, UpdateParticipant>();
+            var participantsToResponseMapper = _mapperFactory.Get<Participant, Conference, ParticipantResponse>();
 
             try
             {
@@ -63,26 +67,47 @@ namespace VideoWeb.Controllers
                     _logger.LogTrace("Retrieving conference details for conference: {ConferenceId}", conferenceId);
                     return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
                 });
-                _logger.LogDebug("ParticipantsAdded called. ConferenceId: {ConferenceId}, ParticipantCount: {ParticipantCount}",
-                    conferenceId, request.Participants.Count);
 
-                
-                foreach (var participant in participantsAdded)
+                _logger.LogTrace($"Initial conference details: {conference}");
+
+                request.NewParticipants.ToList().ForEach(participant =>
                 {
-                    conference.AddParticipant(participant);
+                    _logger.LogTrace($"Mapping new participant: {JsonSerializer.Serialize(participant)}");
+                    var mappedParticipant = requestToParticipantMapper.Map(participant, conference.Participants);
+                    _logger.LogTrace($"Adding participant to conference: {JsonSerializer.Serialize(mappedParticipant)}");
+                    conference.AddParticipant(mappedParticipant);
+                });
 
-                    CallbackEvent callbackEvent = new CallbackEvent() 
-                    { 
-                        ConferenceId = conferenceId, 
-                        EventType = EventType.ParticipantAdded, 
-                        TimeStampUtc = DateTime.UtcNow, 
-                        ParticipantAdded = participantResponseMapper.Map(participant)
-                    };
-                    await PublishEventToUi(callbackEvent);
-                }
+                request.RemovedParticipants.ToList().ForEach(referenceId =>
+                {
+                    _logger.LogTrace($"Removing participant from conference. ReferenceID: {referenceId}");
+                    conference.RemoveParticipant(referenceId);
+                });
 
+                request.ExistingParticipants.ToList().ForEach(updateRequest =>
+                {
+                    _logger.LogTrace($"Mapping existing participant update: {JsonSerializer.Serialize(updateRequest)}");
+                    var mappedUpdateParticipant = updateParticipantRequestToUpdateParticipantMapper.Map(updateRequest, conference.Participants);
+                    _logger.LogTrace($"Updating existing participant in conference: {JsonSerializer.Serialize(mappedUpdateParticipant)}");
+                    conference.UpdateParticipant(mappedUpdateParticipant);
+                });
+
+
+                CallbackEvent callbackEvent = new CallbackEvent() 
+                { 
+                    ConferenceId = conferenceId, 
+                    EventType = EventType.ParticipantsUpdated, 
+                    TimeStampUtc = DateTime.UtcNow,
+                    Participants = conference.Participants.Select(participant => participantsToResponseMapper.Map(participant, conference)).ToList()
+                };
+
+                _logger.LogTrace($"Updating conference in cache: {JsonSerializer.Serialize(conference)}");
                 await _conferenceCache.UpdateConferenceAsync(conference);
 
+                _logger.LogTrace($"Publishing event to UI: {JsonSerializer.Serialize(callbackEvent)}");
+                await PublishEventToUi(callbackEvent);
+
+                _logger.LogDebug($"ParticipantsUpdated finished. ConferenceId: {conferenceId}");
                 return NoContent();
             }
             catch (VideoApiException e)

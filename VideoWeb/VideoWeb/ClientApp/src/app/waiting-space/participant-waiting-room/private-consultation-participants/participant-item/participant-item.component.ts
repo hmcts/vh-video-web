@@ -4,12 +4,13 @@ import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { ConsultationAnswer, ParticipantResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
 
 @Component({
-    selector: 'app-joh-participant-item',
-    templateUrl: './joh-participant-item.component.html',
-    styleUrls: ['./joh-participant-item.component.scss']
+    selector: 'app-participant-item',
+    templateUrl: './participant-item.component.html',
+    styleUrls: ['./participant-item.component.scss']
 })
-export class JohParticipantItemComponent {
+export class ParticipantItemComponent {
     @Input() participant: ParticipantResponse;
+    @Input() interpreter: ParticipantResponse;
     @Input() participantCallStatuses: any = {};
     @Input() roomLabel: string;
     @Input() conferenceId: string;

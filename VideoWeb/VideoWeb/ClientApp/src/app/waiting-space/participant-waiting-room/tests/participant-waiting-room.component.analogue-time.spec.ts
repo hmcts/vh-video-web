@@ -24,16 +24,25 @@ import {
 } from '../../waiting-room-shared/tests/waiting-room-base-setup';
 import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
+import { Subject } from 'rxjs';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 
 describe('ParticipantWaitingRoomComponent message and clock', () => {
     let component: ParticipantWaitingRoomComponent;
     const translateService = translateServiceSpy;
+    let unloadDetectorServiceSpy: jasmine.SpyObj<UnloadDetectorService>;
+    let shouldUnloadSubject: Subject<void>;
 
     beforeAll(() => {
         initAllWRDependencies();
     });
 
     beforeEach(() => {
+        unloadDetectorServiceSpy = jasmine.createSpyObj<UnloadDetectorService>('UnloadDetectorService', [], ['shouldUnload']);
+        shouldUnloadSubject = new Subject<void>();
+        getSpiedPropertyGetter(unloadDetectorServiceSpy, 'shouldUnload').and.returnValue(shouldUnloadSubject.asObservable());
+
         component = new ParticipantWaitingRoomComponent(
             activatedRoute,
             videoWebService,
@@ -52,7 +61,8 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
             roomClosingToastrService,
             clockService,
             translateService,
-            consultationInvitiationService
+            consultationInvitiationService,
+            unloadDetectorServiceSpy
         );
     });
 

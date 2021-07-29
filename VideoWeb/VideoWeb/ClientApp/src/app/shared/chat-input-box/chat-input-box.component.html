@@ -12,7 +12,9 @@
                   #newMessageBox
                   type="text"
                   (keydown.enter)="$event.preventDefault()"
-                  (keydown)="onKeydown($event)"></textarea>
+                  (keydown)="onKeydown($event)"
+                  attr.aria-label="{{'chat-input-box.type-a-message' | translate}}">
+        </textarea>
         <button [disabled]="isSendingBlocked"
                 (click)="sendMessage()"
                 id="send-new-message-btn"

@@ -560,7 +560,7 @@
     },
     "participant-added": {
       "title": "Mae {{name}}",
-      "message": "{{role}}({{party}}) wedi cael ei (h)ychwanegu at y gwrandawiad.",
+      "message": "{{role}} ({{party}}) wedi cael ei (h)ychwanegu at y gwrandawiad.",
       "dismiss": "Gwrthod"
     }
   },
@@ -881,9 +881,8 @@
   },
   "unsupported-browser": {
     "using-unsupported-browser": "Rydych wedi mewngofnodi gan ddefnyddio porwr nas gefnogir",
-    "it-looks-like": "Mae'n ymddangos eich bod wedi mewngofnodi gan ddefnyddio",
-    "unfortunately-this-browser": "Yn anffodus, ni chefnogir y porwr hwn ar hyn o bryd.",
-    "please-sign-out": "Allgofnodwch os gwelwch yn dda, a mewngofnodwch unwaith eto gan ddefnyddio un o'r canlynol.",
+    "unfortunately-this-browser": "Rydych yn defnyddio porwr nas gefnogir gan y gwasanaeth gwrandawiadau fideo.",
+    "please-try-again": "Rhowch gynnig arall arni gan ddefnyddio un o’r porwyr a restrir isod. Os ydych dal i gael problemau, cysylltwch â’r tîm gwrandawiadau fideo.",
     "supported-browser-alt": "{{browserName}} logo'r porwr"
   },
   "unsupported-device": {
@@ -931,6 +930,7 @@
     "observer": "Sylwebydd",
     "macKenzie-friend": "Cyfaill Mackenzie",
     "litigant-in-person": "Ymgyfreithiwr drosto'i hun",
+    "litigation-friend": "Cyfaill cyfreitha",
     "judge": "Barnwr",
     "interpreter": "Cyfieithydd",
     "expert": "Arbenigwr",

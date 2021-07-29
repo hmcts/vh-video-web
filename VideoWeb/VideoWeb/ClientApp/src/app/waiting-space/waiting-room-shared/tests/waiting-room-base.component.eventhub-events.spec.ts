@@ -8,7 +8,8 @@ import {
     LoggedParticipantResponse,
     EndpointStatus,
     ParticipantResponse,
-    ParticipantStatus
+    ParticipantStatus,
+    RoomSummaryResponse
 } from 'src/app/services/clients/api-client';
 import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
@@ -30,7 +31,7 @@ import {
     hearingCountdownCompleteSubjectMock,
     onEventsHubReadySubjectMock,
     eventsServiceSpy,
-    getParticipantAddedSubjectMock
+    getParticipantsUpdatedSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import {
     clockService,
@@ -78,8 +79,8 @@ import { NotificationToastrService } from '../../services/notification-toastr.se
 import { RoomClosingToastrService } from '../../services/room-closing-toast.service';
 import { ClockService } from 'src/app/services/clock.service';
 import { Participant } from 'src/app/shared/models/participant';
-import { ParticipantAddedMessage } from 'src/app/services/models/participant-added-message';
 import { createTrue } from 'typescript';
+import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 
 describe('WaitingRoomComponent EventHub Call', () => {
     let fixture: ComponentFixture<WRTestComponent>;
@@ -1472,33 +1473,124 @@ describe('WaitingRoomComponent EventHub Call', () => {
         }));
     });
 
-    describe('getParticipantAdded', () => {
+    describe('getParticipantsUpdated', () => {
         const testConferenceId = 'TestConferenceId';
         const testParticipant = new ParticipantResponse();
         testParticipant.id = 'TestId';
         testParticipant.display_name = 'TestDisplayName';
-        const testParticipantMessage = new ParticipantAddedMessage(testConferenceId, testParticipant);
+        const testParticipantMessage = new ParticipantsUpdatedMessage(testConferenceId, [testParticipant]);
+
+        beforeEach(() => {
+            component.conference.participants = [];
+            spyOn(component, 'getLoggedParticipant');
+        });
+
+        afterEach(() => {
+            expect(component.getLoggedParticipant).toHaveBeenCalledTimes(1);
+        });
 
         it('should show toast for in hearing', () => {
             // Arrange
             component.participant.status = ParticipantStatus.InHearing;
 
             // Act
-            getParticipantAddedSubjectMock.next(testParticipantMessage);
+            getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
 
             // Assert
             expect(notificationToastrService.showParticipantAdded).toHaveBeenCalledWith(testParticipant, true);
         });
 
-        it('should show toast for not in hearing', () => {
+        it('should show toast for in consultation', () => {
+            // Arrange
+            component.participant.status = ParticipantStatus.InConsultation;
+
+            // Act
+            getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
+
+            // Assert
+            expect(notificationToastrService.showParticipantAdded).toHaveBeenCalledWith(testParticipant, true);
+        });
+
+        it('should show toast for not in hearing or consultation', () => {
             // Arrange
             component.participant.status = ParticipantStatus.Available;
 
             // Act
-            getParticipantAddedSubjectMock.next(testParticipantMessage);
+            getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
 
             // Assert
             expect(notificationToastrService.showParticipantAdded).toHaveBeenCalledWith(testParticipant, false);
+        });
+
+        describe('when message participant already exists', () => {
+            let existingParticipant: ParticipantResponse;
+            beforeEach(() => {
+                existingParticipant = new ParticipantResponse();
+                existingParticipant.id = testParticipant.id;
+                component.conference.participants = [existingParticipant];
+            });
+
+            it('should keep current room', () => {
+                // Arrange
+                const existingRoom = new RoomSummaryResponse();
+                existingRoom.id = 'ExistingRoomId';
+                existingRoom.label = 'ExistingRoomLabel';
+                existingParticipant.current_room = existingRoom;
+
+                // Act
+                getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
+
+                // Assert
+                const updatedParticipant = component.conference.participants.find(x => x.id === testParticipant.id);
+                expect(updatedParticipant.display_name).toBe(testParticipant.display_name);
+                expect(updatedParticipant.current_room).toBe(existingRoom);
+            });
+
+            it('should keep current status', () => {
+                // Arrange
+                const existingStatus = ParticipantStatus.Joining;
+                existingParticipant.status = existingStatus;
+
+                // Act
+                getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
+
+                // Assert
+                const updatedParticipant = component.conference.participants.find(x => x.id === testParticipant.id);
+                expect(updatedParticipant.display_name).toBe(testParticipant.display_name);
+                expect(updatedParticipant.status).toBe(existingStatus);
+            });
+        });
+
+        describe('when participant is new', () => {
+            it('should set current room to null if NOT already in in hearing', () => {
+                // Arrange
+                const sentRoom = new RoomSummaryResponse();
+                sentRoom.id = 'SentRoomId';
+                sentRoom.label = 'SentRoomLabel';
+                testParticipant.current_room = sentRoom;
+
+                // Act
+                getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
+
+                // Assert
+                const updatedParticipant = component.conference.participants.find(x => x.id === testParticipant.id);
+                expect(updatedParticipant.display_name).toBe(testParticipant.display_name);
+                expect(updatedParticipant.current_room).toBeNull();
+            });
+
+            it('should set status to NotSignedIn if NOT already in in hearing', () => {
+                // Arrange
+                const sentStatus = ParticipantStatus.Available;
+                testParticipant.id = 'Not available';
+                testParticipant.status = sentStatus;
+                // Act
+                getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
+
+                // Assert
+                const updatedParticipant = component.conference.participants.find(x => x.id === testParticipant.id);
+                expect(updatedParticipant.display_name).toBe(testParticipant.display_name);
+                expect(updatedParticipant.status).toBe(ParticipantStatus.NotSignedIn);
+            });
         });
     });
 });
