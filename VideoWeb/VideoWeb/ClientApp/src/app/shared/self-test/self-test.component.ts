@@ -20,7 +20,6 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 import { BackNavigationService } from '../back-navigation/back-navigation.service';
-import { HasBackNavigationDirective } from '../back-navigation/has-back-navigation.directive';
 import { SelectedUserMediaDevice } from '../models/selected-user-media-device';
 
 @Component({
