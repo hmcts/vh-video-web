@@ -50,11 +50,9 @@ export class UserMediaService {
 
     async updateAvailableDevicesList(): Promise<void> {
         if (!this.navigator.mediaDevices || !this.navigator.mediaDevices.enumerateDevices) {
-            const erroMessage = 'enumerateDevices() not supported.';
-            const error = new Error(erroMessage);
-            this.logger.error(`${this.loggerPrefix} enumerateDevices() not supported.`, error);
-            throw error;
+            this.logger.error(`${this.loggerPrefix} enumerateDevices() not supported.`, new Error('enumerateDevices() not supported.'));
         }
+        
         this.logger.debug(`${this.loggerPrefix} Attempting to update available media devices.`);
         let updatedDevices: MediaDeviceInfo[] = [];
         const stream: MediaStream = await this.navigator.mediaDevices.getUserMedia({ audio: true, video: true });
