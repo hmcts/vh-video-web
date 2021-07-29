@@ -19,7 +19,6 @@ import { UserMediaStreamService } from 'src/app/services/user-media-stream.servi
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
-import { BackNavigationService } from '../back-navigation/back-navigation.service';
 import { SelectedUserMediaDevice } from '../models/selected-user-media-device';
 
 @Component({
@@ -64,8 +63,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         private errorService: ErrorService,
         private userMediaService: UserMediaService,
         private userMediaStreamService: UserMediaStreamService,
-        private videoCallService: VideoCallService,
-        protected backNavigationService: BackNavigationService
+        private videoCallService: VideoCallService
     ) {
         this.didTestComplete = false;
     }

@@ -39,8 +39,6 @@ import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-ba
     styleUrls: ['./judge-waiting-room.component.scss', '../waiting-room-global-styles.scss']
 })
 export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
-    backLinkText = 'judge-waiting-room.return-to-video-hearing-list';
-    backLinkPath = pageUrls.JudgeHearingList;
     private readonly loggerPrefixJudge = '[Judge WR] -';
     private destroyedSubject = new Subject();
 

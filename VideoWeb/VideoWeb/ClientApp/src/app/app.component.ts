@@ -9,7 +9,7 @@ import {
     OidcSecurityService,
     PublicEventsService
 } from 'angular-auth-oidc-client';
-import { NEVER, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, NEVER, Observable, Subscription } from 'rxjs';
 import { catchError, filter, map } from 'rxjs/operators';
 import { ConfigService } from './services/api/config.service';
 import { ProfileService } from './services/api/profile.service';
@@ -21,6 +21,7 @@ import { PageTrackerService } from './services/page-tracker.service';
 import { pageUrls } from './shared/page-url.constants';
 import { TestLanguageService } from './shared/test-language.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { BackLinkDetails } from './shared/models/back-link-details';
 
 @Component({
     selector: 'app-root',
@@ -39,6 +40,8 @@ export class AppComponent implements OnInit, OnDestroy {
     pageTitle = 'Video Hearings - ';
 
     subscriptions = new Subscription();
+    backLinkDetails$ = new BehaviorSubject<BackLinkDetails>(null);
+
     constructor(
         private router: Router,
         private deviceTypeService: DeviceTypeService,
@@ -101,7 +104,7 @@ export class AppComponent implements OnInit, OnDestroy {
         }
 
         this.checkBrowser();
-        this.setPageTitle();
+        this.setupNavigationSubscription();
         this.setupSubscribers();
         this.connectionStatusService.start();
     }
@@ -166,7 +169,11 @@ export class AppComponent implements OnInit, OnDestroy {
         this.main.nativeElement.focus();
     }
 
-    setPageTitle(): void {
+    setPageTitle(title: string) {
+        this.titleService.setTitle(title);
+    }
+
+    setupNavigationSubscription(): void {
         const applTitle = this.titleService.getTitle() + ' - ';
         this.subscriptions.add(
             this.router.events
@@ -178,16 +185,15 @@ export class AppComponent implements OnInit, OnDestroy {
                             child = child.firstChild;
                         }
                         if (child.snapshot.data['title']) {
-                            return child.snapshot.data['title'];
+                            this.setPageTitle(applTitle + child.snapshot.data['title']);
+                        } else {
+                            this.setPageTitle(applTitle);
                         }
-                        return applTitle;
+                        console.log('Faz - child.snapshot.data.backLink', child.snapshot.data['backLink']);
+                        this.backLinkDetails$.next(child.snapshot.data['backLink']);
                     })
                 )
-                .subscribe({
-                    next: (appendTitle: string) => {
-                        this.titleService.setTitle(applTitle + appendTitle);
-                    }
-                })
+                .subscribe()
         );
     }
 

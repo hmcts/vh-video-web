@@ -31,8 +31,6 @@ import { UnloadDetectorService } from 'src/app/services/unload-detector.service'
     styleUrls: ['../waiting-room-global-styles.scss', './participant-waiting-room.component.scss']
 })
 export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
-    backLinkText = 'judge-waiting-room.return-to-video-hearing-list';
-    backLinkPath = pageUrls.ParticipantHearingList;
     private readonly loggerPrefixParticipant = '[Participant WR] -';
     private destroyedSubject = new Subject();
 

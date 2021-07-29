@@ -45,12 +45,12 @@ import { ParticipantPanelModelMapper } from './mappers/participant-panel-model-m
         HttpClientModule,
         SharedRoutingModule,
         ToastrModule.forRoot({
-            toastComponent: VhToastComponent,
+            toastComponent: VhToastComponent
         }),
         ToastrModule.forRoot({
-            toastComponent: RoomClosingToastComponent,
+            toastComponent: RoomClosingToastComponent
         }),
-        TranslateModule,
+        TranslateModule
     ],
     declarations: [
         HeaderComponent,
@@ -79,7 +79,7 @@ import { ParticipantPanelModelMapper } from './mappers/participant-panel-model-m
         VhToastComponent,
         RoomClosingToastComponent,
         MultilinePipe,
-        NgxDatePipe,
+        NgxDatePipe
     ],
     providers: [WindowScrolling, ScreenHelper, TestLanguageService, DatePipe, ParticipantPanelModelMapper],
     exports: [
@@ -106,7 +106,7 @@ import { ParticipantPanelModelMapper } from './mappers/participant-panel-model-m
         ErrorCameraMicrophoneComponent,
         TranslateModule,
         MultilinePipe,
-        NgxDatePipe,
-    ],
+        NgxDatePipe
+    ]
 })
 export class SharedModule {}

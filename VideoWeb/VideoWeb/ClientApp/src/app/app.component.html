@@ -7,7 +7,7 @@
     <app-header class="govuk-!-display-none-print" [loggedIn]="loggedIn"></app-header>
     <div class="govuk-width-container">
       <app-beta-banner *ngIf="loggedIn" [isRepresentativeOrIndividual]="isRepresentativeOrIndividual"></app-beta-banner>
-      <app-back-navigation></app-back-navigation>
+      <app-back-navigation *ngIf="backLinkDetails$ | async as backLinkDetails" [backLinkDetails]="backLinkDetails"></app-back-navigation>
     </div>
   </header>
   <div class="govuk-width-container" id="master-container">

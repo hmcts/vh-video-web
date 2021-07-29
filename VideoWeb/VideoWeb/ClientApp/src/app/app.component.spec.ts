@@ -179,7 +179,7 @@ describe('AppComponent', () => {
 
     it('should update page title is naviation event raised', fakeAsync(() => {
         const navEvent = new NavigationEnd(1, pageUrls.Login, pageUrls.AdminVenueList);
-        component.setPageTitle();
+        component.setupNavigationSubscription();
         eventsSubjects.next(navEvent);
         tick();
         flushMicrotasks();
