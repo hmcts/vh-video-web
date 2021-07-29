@@ -82,6 +82,20 @@ export class UnreadMessagesComponent extends UnreadMessagesComponentBase impleme
     handleImReceived(message: InstantMessage) {
         if (this.getHearing().id === message.conferenceId) {
             this.incrementUnreadCounter(message.conferenceId, message.from);
+
+            const messageCount = this.unreadMessages.find(x => x.participant_id === message.from);
+            if (messageCount) {
+                this.logger.debug(
+                    '[handleImReceived] ' +
+                        message.conferenceId +
+                        ' total unread ' +
+                        messageCount.number_of_unread_messages +
+                        ' from ' +
+                        message.from
+                );
+            } else {
+                this.logger.debug('[handleImReceived] ' + message.conferenceId + ' vho responded ' + message.from);
+            }
         }
     }
 
