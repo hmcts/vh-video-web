@@ -48,9 +48,4 @@ describe('HearingLayoutComponent', () => {
             expect(component.getLayoutDescription()).toContain(test.expected);
         });
     });
-    it('should emit on when layout has been selected', () => {
-        spyOn(component.selectedEvent, 'emit');
-        component.emitSelected();
-        expect(component.selectedEvent.emit).toHaveBeenCalled();
-    });
 });

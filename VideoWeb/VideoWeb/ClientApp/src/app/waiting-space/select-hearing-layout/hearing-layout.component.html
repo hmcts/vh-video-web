@@ -1,26 +1,12 @@
-<div class="govuk-radios__item layoutradio1" *ngIf="showInput">
-  <input
-    [checked]="isSelected"
-    [value]="layout"
-    (change)="emitSelected()"
-    class="govuk-radios__input"
-    id="layout-radio-button-{{layout}}"
-    name="layout"
-    type="radio"
-    attr.aria-labelledby="{{headerLayoutTitlePrefix}}{{layout}}"
-    attr.aria-describedby="{{headerLayoutDescriptionPrefix}}{{layout}}"
-  />
-  <div class="govuk-label govuk-radios__label"></div>
-</div>
 <div class="sub-layout-grid">
   <div class="layoutimg">
     <img [attr.alt]="'hearing-layout.layout-image-alt' | translate: {layout: getLayoutTitle()}" class="layout-image" [src]="getLayoutImagePath()" />
   </div>
   <div class="layouttxt">
     <div class="govuk-body f16">
-      <strong id="{{showInput ? '' : 'accordian-header-'}}{{headerLayoutTitlePrefix}}{{layout}}">{{ getLayoutTitle() }}</strong>
+      <strong>{{ getLayoutTitle() }}</strong>
       <span *ngIf="recommended" class="recommended-txt"> ({{'hearing-layout.recommended' | translate}})</span>
-      <p id="{{showInput ? '' : 'accordian-header-'}}{{headerLayoutDescriptionPrefix}}{{layout}}">{{ getLayoutDescription() }}</p>
+      <br />{{ getLayoutDescription() }}
     </div>
   </div>
 </div>

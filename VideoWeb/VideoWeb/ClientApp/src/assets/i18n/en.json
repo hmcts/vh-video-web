@@ -60,8 +60,7 @@
     "send": "Send",
     "char-count": "Character count",
     "maximum": "maximum allowed",
-    "unable-send": "Unable to send message.",
-    "type-a-message":"Type a message"
+    "unable-send": "Unable to send message."
   },
   "contact-us": {
     "contact-video-hearings": "Contact the video hearings service",
