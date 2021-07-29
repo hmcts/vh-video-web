@@ -1,4 +1,4 @@
-import { HostListener, Directive, OnInit, OnDestroy } from '@angular/core';
+import { HostListener, Directive } from '@angular/core';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { EventType } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -6,7 +6,7 @@ import { HasBackNavigationDirective } from 'src/app/shared/back-navigation/has-b
 import { BackNavigationService } from 'src/app/shared/back-navigation/back-navigation.service';
 
 @Directive()
-export abstract class ParticipantStatusBaseDirective extends HasBackNavigationDirective implements OnInit, OnDestroy {
+export abstract class ParticipantStatusBaseDirective extends HasBackNavigationDirective {
     constructor(
         protected participantStatusUpdateService: ParticipantStatusUpdateService,
         protected backNavigationService: BackNavigationService,
@@ -16,11 +16,6 @@ export abstract class ParticipantStatusBaseDirective extends HasBackNavigationDi
     }
 
     abstract conferenceId: string;
-
-    ngOnInit(): void {
-        console.log('Faz - ParticipantStatusBaseDirective');
-        super.ngOnInit();
-    }
 
     raiseNotSignedIn() {
         this.participantStatusUpdateService

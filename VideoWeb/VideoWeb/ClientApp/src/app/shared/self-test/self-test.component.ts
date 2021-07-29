@@ -11,7 +11,7 @@ import {
     SelfTestPexipResponse,
     TestCallScoreResponse,
     TestScore,
-    TokenResponse,
+    TokenResponse
 } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -26,11 +26,9 @@ import { SelectedUserMediaDevice } from '../models/selected-user-media-device';
 @Component({
     selector: 'app-self-test',
     templateUrl: './self-test.component.html',
-    styleUrls: ['./self-test.component.scss'],
+    styleUrls: ['./self-test.component.scss']
 })
-export class SelfTestComponent extends HasBackNavigationDirective implements OnInit, OnDestroy {
-    backLinkText: string;
-    backLinkPath: string;
+export class SelfTestComponent implements OnInit, OnDestroy {
     private readonly loggerPrefix = '[SelfTest] -';
     @Input() conference: ConferenceResponse;
     @Input() participant: ParticipantResponse;
@@ -70,12 +68,10 @@ export class SelfTestComponent extends HasBackNavigationDirective implements OnI
         private videoCallService: VideoCallService,
         protected backNavigationService: BackNavigationService
     ) {
-        super(backNavigationService);
         this.didTestComplete = false;
     }
 
     ngOnInit() {
-        super.ngOnInit();
         this.logger.debug(`${this.loggerPrefix} Loading self test`);
 
         this.initialiseData();
@@ -92,7 +88,7 @@ export class SelfTestComponent extends HasBackNavigationDirective implements OnI
             .catch((error: Error | MediaStreamError) => {
                 this.logger.error(`${this.loggerPrefix} Failed to initialise the self-test`, error, {
                     conference: this.conference?.id,
-                    participant: this.selfTestParticipantId,
+                    participant: this.selfTestParticipantId
                 });
                 this.errorService.handlePexipError(new CallError(error.name), this.conference?.id);
             });
@@ -106,7 +102,7 @@ export class SelfTestComponent extends HasBackNavigationDirective implements OnI
         }
         this.logger.debug(`${this.loggerPrefix} Participant id for test ${this.selfTestParticipantId}`, {
             conference: this.conference?.id,
-            participant: this.selfTestParticipantId,
+            participant: this.selfTestParticipantId
         });
         if (this.conference) {
             this.selfTestPexipNode = this.conference.pexip_self_test_node_uri;
@@ -130,14 +126,14 @@ export class SelfTestComponent extends HasBackNavigationDirective implements OnI
     async setupTestAndCall(): Promise<void> {
         this.logger.debug(`${this.loggerPrefix} Setting up pexip client and calling testCall`, {
             conference: this.conference?.id,
-            participant: this.selfTestParticipantId,
+            participant: this.selfTestParticipantId
         });
         await this.setupPexipClient();
         try {
             this.token = await this.videoWebService.getSelfTestToken(this.selfTestParticipantId);
             this.logger.debug(`${this.loggerPrefix} Retrieved token for self test`, {
                 conference: this.conference?.id,
-                participant: this.selfTestParticipantId,
+                participant: this.selfTestParticipantId
             });
             this.call();
         } catch (error) {
@@ -148,7 +144,7 @@ export class SelfTestComponent extends HasBackNavigationDirective implements OnI
     changeDevices() {
         this.logger.debug(`${this.loggerPrefix} Changing devices`, {
             conference: this.conference?.id,
-            participant: this.selfTestParticipantId,
+            participant: this.selfTestParticipantId
         });
         this.disconnect();
         this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
@@ -179,7 +175,7 @@ export class SelfTestComponent extends HasBackNavigationDirective implements OnI
     async setupPexipClient() {
         this.logger.debug(`${this.loggerPrefix} - Setting up pexip client and subscriptions`, {
             conference: this.conference?.id,
-            participant: this.selfTestParticipantId,
+            participant: this.selfTestParticipantId
         });
 
         this.videoCallSubscription$.add(this.videoCallService.onCallSetup().subscribe(setup => this.handleCallSetup(setup)));
@@ -198,7 +194,7 @@ export class SelfTestComponent extends HasBackNavigationDirective implements OnI
     handleCallSetup(callSetup: CallSetup) {
         this.logger.debug(`${this.loggerPrefix} Self test call has setup`, {
             conference: this.conference?.id,
-            participant: this.selfTestParticipantId,
+            participant: this.selfTestParticipantId
         });
         this.outgoingStream = callSetup.stream;
         this.videoCallService.connect('0000', null);
@@ -207,7 +203,7 @@ export class SelfTestComponent extends HasBackNavigationDirective implements OnI
     handleCallConnected(callConnected: ConnectedCall) {
         this.logger.debug(`${this.loggerPrefix} Self test call has connected`, {
             conference: this.conference?.id,
-            participant: this.selfTestParticipantId,
+            participant: this.selfTestParticipantId
         });
         this.incomingStream = callConnected.stream;
         this.displayFeed = true;
@@ -219,7 +215,7 @@ export class SelfTestComponent extends HasBackNavigationDirective implements OnI
         this.logger.error(`${this.loggerPrefix} Error from pexip. Reason : ${error.reason}`, new Error(error.reason), {
             conference: this.conference?.id,
             participant: this.selfTestParticipantId,
-            pexipError: error,
+            pexipError: error
         });
         this.errorService.handlePexipError(error, this.conference?.id);
     }
@@ -229,7 +225,7 @@ export class SelfTestComponent extends HasBackNavigationDirective implements OnI
         this.logger.warn(`${this.loggerPrefix} Disconnected from pexip. Reason : ${reason.reason}`, {
             conference: this.conference?.id,
             participant: this.selfTestParticipantId,
-            pexipDisconnectReason: reason,
+            pexipDisconnectReason: reason
         });
         if (reason.reason === 'Conference terminated by another participant') {
             this.retrieveSelfTestScore();
@@ -252,14 +248,14 @@ export class SelfTestComponent extends HasBackNavigationDirective implements OnI
 
         this.logger.info(`${this.loggerPrefix} Update camera and microphone selection`, {
             cameraId: cam ? cam.deviceId : null,
-            microphoneId: mic ? mic.deviceId : null,
+            microphoneId: mic ? mic.deviceId : null
         });
     }
 
     async call() {
         this.logger.debug(`${this.loggerPrefix} Starting self test call`, {
             conference: this.conference?.id,
-            participant: this.selfTestParticipantId,
+            participant: this.selfTestParticipantId
         });
         this.didTestComplete = false;
         const conferenceAlias = 'testcall2';
@@ -278,7 +274,7 @@ export class SelfTestComponent extends HasBackNavigationDirective implements OnI
     replayVideo() {
         this.logger.debug(`${this.loggerPrefix} Replaying self test video`, {
             conference: this.conference?.id,
-            participant: this.selfTestParticipantId,
+            participant: this.selfTestParticipantId
         });
         this.disconnect();
         this.updatePexipAudioVideoSource();
@@ -288,7 +284,7 @@ export class SelfTestComponent extends HasBackNavigationDirective implements OnI
     disconnect() {
         this.logger.debug(`${this.loggerPrefix} Manually disconnecting from self test`, {
             conference: this.conference?.id,
-            participant: this.selfTestParticipantId,
+            participant: this.selfTestParticipantId
         });
         try {
             this.videoCallService.disconnectFromCall();
@@ -322,7 +318,7 @@ export class SelfTestComponent extends HasBackNavigationDirective implements OnI
                     )}`,
                     {
                         conference: this.conference?.id,
-                        participant: this.selfTestParticipantId,
+                        participant: this.selfTestParticipantId
                     }
                 );
 
@@ -330,14 +326,14 @@ export class SelfTestComponent extends HasBackNavigationDirective implements OnI
             } else {
                 this.logger.debug(`${this.loggerPrefix} Retrieving independent self test score`, {
                     conference: this.conference?.id,
-                    participant: this.selfTestParticipantId,
+                    participant: this.selfTestParticipantId
                 });
                 this.testCallResult = await this.videoWebService.getIndependentTestCallScore(this.selfTestParticipantId);
             }
 
             this.logger.info(`${this.loggerPrefix} Test call score: ${this.testCallResult.score}`, {
                 conference: this.conference?.id,
-                participant: this.selfTestParticipantId,
+                participant: this.selfTestParticipantId
             });
             if (this.testCallResult.score === TestScore.Bad) {
                 await this.raiseFailedSelfTest(SelfTestFailureReason.BadScore);
@@ -346,7 +342,7 @@ export class SelfTestComponent extends HasBackNavigationDirective implements OnI
             this.logger.error(`${this.loggerPrefix} There was a problem retrieving the self test score`, err, {
                 conference: this.conference?.id,
                 participant: this.selfTestParticipantId,
-                error: err,
+                error: err
             });
         }
         this.didTestComplete = true;
@@ -356,14 +352,13 @@ export class SelfTestComponent extends HasBackNavigationDirective implements OnI
     publishTestResult(): void {
         this.logger.info(`${this.loggerPrefix} Test call completed`, {
             conference: this.conference?.id,
-            participant: this.selfTestParticipantId,
+            participant: this.selfTestParticipantId
         });
         this.testCompleted.emit(this.testCallResult);
     }
 
     @HostListener('window:beforeunload')
     async ngOnDestroy() {
-        super.ngOnDestroy();
         this.subscription.unsubscribe();
         this.videoCallSubscription$.unsubscribe();
         this.disconnect();
@@ -384,24 +379,24 @@ export class SelfTestComponent extends HasBackNavigationDirective implements OnI
 
         this.logger.info(`${this.loggerPrefix} Raising failed self test score event because ${reason}`, {
             conference: this.conference?.id,
-            participant: this.selfTestParticipantId,
+            participant: this.selfTestParticipantId
         });
         const request = new AddSelfTestFailureEventRequest({
-            self_test_failure_reason: reason,
+            self_test_failure_reason: reason
         });
         if (this.conference && this.participant.role !== Role.Judge) {
             try {
                 await this.videoWebService.raiseSelfTestFailureEvent(this.conference.id, request);
                 this.logger.info(`${this.loggerPrefix} Notified failed self test because of ${reason}`, {
                     conference: this.conference?.id,
-                    participant: this.selfTestParticipantId,
+                    participant: this.selfTestParticipantId
                 });
                 this.scoreSent = true;
             } catch (err) {
                 this.logger.error(`${this.loggerPrefix} There was a problem raising a failed self test event`, err, {
                     conference: this.conference?.id,
                     participant: this.selfTestParticipantId,
-                    error: err,
+                    error: err
                 });
             }
         }

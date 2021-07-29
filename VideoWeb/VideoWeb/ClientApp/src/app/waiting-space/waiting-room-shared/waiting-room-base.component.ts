@@ -1,4 +1,4 @@
-import { Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Directive, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
@@ -60,7 +60,7 @@ import { VideoCallService } from '../services/video-call.service';
 declare var HeartbeatFactory: any;
 
 @Directive()
-export abstract class WaitingRoomBaseDirective extends HasBackNavigationDirective implements OnInit, OnDestroy {
+export abstract class WaitingRoomBaseDirective extends HasBackNavigationDirective {
     maxBandwidth = null;
     audioOnly: boolean;
     hearingStartingAnnounced: boolean;
@@ -134,15 +134,6 @@ export abstract class WaitingRoomBaseDirective extends HasBackNavigationDirectiv
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
         this.errorCount = 0;
-    }
-
-    ngOnInit() {
-        super.ngOnInit();
-        console.log('WaitingRoomBaseDirective');
-    }
-
-    ngOnDestroy() {
-        super.ngOnDestroy();
     }
 
     isParticipantInCorrectWaitingRoomState(): boolean {
