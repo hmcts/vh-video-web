@@ -10,7 +10,7 @@ import {
     PublicEventsService
 } from 'angular-auth-oidc-client';
 import { BehaviorSubject, NEVER, Observable, Subscription } from 'rxjs';
-import { catchError, filter, map } from 'rxjs/operators';
+import { catchError, filter } from 'rxjs/operators';
 import { ConfigService } from './services/api/config.service';
 import { ProfileService } from './services/api/profile.service';
 import { Role } from './services/clients/api-client';
@@ -22,6 +22,7 @@ import { pageUrls } from './shared/page-url.constants';
 import { TestLanguageService } from './shared/test-language.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { BackLinkDetails } from './shared/models/back-link-details';
+import { Location } from '@angular/common';
 
 @Component({
     selector: 'app-root',
@@ -56,6 +57,7 @@ export class AppComponent implements OnInit, OnDestroy {
         private oidcSecurityService: OidcSecurityService,
         private configService: ConfigService,
         private eventService: PublicEventsService,
+        private location: Location,
         private logger: Logger
     ) {
         this.loggedIn = false;
@@ -169,36 +171,38 @@ export class AppComponent implements OnInit, OnDestroy {
         this.main.nativeElement.focus();
     }
 
-    setPageTitle(title: string) {
+    private setPageTitle(title: string) {
         this.titleService.setTitle(title);
     }
 
     setupNavigationSubscription(): void {
         const applTitle = this.titleService.getTitle() + ' - ';
         this.subscriptions.add(
-            this.router.events
-                .pipe(
-                    filter(event => event instanceof NavigationEnd),
-                    map(() => {
-                        let child = this.activatedRoute.firstChild;
-                        while (child.firstChild) {
-                            child = child.firstChild;
-                        }
-                        if (child.snapshot.data['title']) {
-                            this.setPageTitle(applTitle + child.snapshot.data['title']);
-                        } else {
-                            this.setPageTitle(applTitle);
-                        }
-                        console.log('Faz - child.snapshot.data.backLink', child.snapshot.data['backLink']);
-                        this.backLinkDetails$.next(child.snapshot.data['backLink']);
-                    })
-                )
-                .subscribe()
+            this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
+                let child = this.activatedRoute.firstChild;
+                while (child.firstChild) {
+                    child = child.firstChild;
+                }
+                if (child.snapshot.data['title']) {
+                    this.setPageTitle(applTitle + child.snapshot.data['title']);
+                } else {
+                    this.setPageTitle(applTitle);
+                }
+                this.backLinkDetails$.next(child.snapshot.data['backLink']);
+            })
         );
     }
 
     scrollToTop() {
         window.scroll(0, 0);
         this.skipLinkDiv.nativeElement.focus();
+    }
+
+    navigateBack(path: string) {
+        if (!path) {
+            this.location.back();
+        } else {
+            this.router.navigate([path]);
+        }
     }
 }
