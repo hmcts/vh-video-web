@@ -4,6 +4,7 @@ import { IdpProviders } from '../idp-providers';
 import { MagicLinkSecurityService } from './magic-link-security.service';
 import { ISecurityService } from './security-service.interface';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Injectable({
     providedIn: 'root'
@@ -14,7 +15,8 @@ export class SecurityServiceProviderService {
 
     constructor(
         private securityConfigSetupService: SecurityConfigSetupService,
-        private magicLinkSecurityService: MagicLinkSecurityService
+        private magicLinkSecurityService: MagicLinkSecurityService,
+        private oidcSecurityService: OidcSecurityService
     ) {
         this.idpSubject = new BehaviorSubject<IdpProviders>(this.securityConfigSetupService.getIdp());
         this.securityServiceSubject = new BehaviorSubject<ISecurityService>(this.getSecurityService());
@@ -35,7 +37,7 @@ export class SecurityServiceProviderService {
 
             case IdpProviders.vhaad:
             case IdpProviders.ejud:
-                return null;
+                return this.oidcSecurityService;
         }
     }
 
