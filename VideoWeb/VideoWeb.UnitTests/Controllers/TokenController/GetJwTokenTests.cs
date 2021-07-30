@@ -19,7 +19,7 @@ namespace VideoWeb.UnitTests.Controllers.TokenController
             var tokenResponse = (TokenResponse)typedResult.Value;
             tokenResponse.Token.Should().Be(token);
             tokenResponse.ExpiresOn.Length.Should().Be(19);
-            customJwtTokenProvider.Verify(v => v.GenerateToken(It.IsAny<string>(), It.IsAny<int>()), Times.Once);
+            kinlyJwtTokenProvider.Verify(v => v.GenerateToken(It.IsAny<string>(), It.IsAny<int>()), Times.Once);
         }
     }
 }

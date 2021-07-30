@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { LogLevel, OidcConfigService, OpenIdConfiguration } from 'angular-auth-oidc-client';
-import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { ConfigService } from '../services/api/config.service';
 import { IdpSettingsResponse } from '../services/clients/api-client';

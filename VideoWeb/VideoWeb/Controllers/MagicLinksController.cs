@@ -10,10 +10,13 @@ using System.Threading.Tasks;
 using VideoApi.Client;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
+using VideoApi.Contract.Responses;
+using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Common.Security;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
+using VideoWeb.Mappings;
 
 namespace VideoWeb.Controllers
 {
@@ -24,11 +27,15 @@ namespace VideoWeb.Controllers
     public class MagicLinksController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;
+        private readonly IConferenceCache _conferenceCache;
+        private readonly IMapperFactory _mapperFactory;
         private readonly ILogger<MagicLinksController> _logger;
 
-        public MagicLinksController(IVideoApiClient videoApiClient, ILogger<MagicLinksController> logger)
+        public MagicLinksController(IVideoApiClient videoApiClient, IConferenceCache conferenceCache, IMapperFactory mapperFactory, ILogger<MagicLinksController> logger)
         {
             _videoApiClient = videoApiClient;
+            _conferenceCache = conferenceCache;
+            _mapperFactory = mapperFactory;
             _logger = logger;
         }
 
@@ -73,24 +80,35 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var roleAsUserRole = (UserRole)Enum.Parse(typeof(UserRole), joinRequest.Role.ToString());
+                var roleAsUserRole = (UserRole) Enum.Parse(typeof(UserRole), joinRequest.Role.ToString());
 
                 if (roleAsUserRole != UserRole.MagicLinkObserver && roleAsUserRole != UserRole.MagicLinkParticipant)
                 {
                     throw new NotSupportedException(
                         $"Can only join as a magic user if the roles are MagicLinkParticipant or MagicLinkObserver. The Role was {roleAsUserRole}");
                 }
-            
-                MagicLinkParticipantJoinResponse joinResponse = new MagicLinkParticipantJoinResponse()
-                {
-                    Jwt = await _videoApiClient.AddMagicLinkParticipantAsync(hearingId, new AddMagicLinkParticipantRequest()
+
+                var response = await _videoApiClient.AddMagicLinkParticipantAsync(hearingId,
+                    new AddMagicLinkParticipantRequest()
                     {
                         Name = joinRequest.Name,
                         UserRole = roleAsUserRole
-                    })
-                };
-            
-                return Ok(joinResponse);
+                    });
+                
+                var conference = await _conferenceCache.GetOrAddConferenceAsync(response.ConferenceId, () => _videoApiClient.GetConferenceDetailsByIdAsync(response.ConferenceId));
+                
+                var requestToParticipantMapper = _mapperFactory.Get<ParticipantDetailsResponse, Participant>();
+                conference.AddParticipant(requestToParticipantMapper.Map(response.Participant));
+                await _conferenceCache.UpdateConferenceAsync(conference);
+
+                return Ok(new MagicLinkParticipantJoinResponse
+                {
+                    Jwt = response.Token
+                });
+            }
+            catch (NotSupportedException e)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, e.Message);
             }
             catch (VideoApiException e)
             {

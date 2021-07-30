@@ -91,5 +91,35 @@ namespace VideoWeb.UnitTests.Controllers.MagicLinkController
             _mocker.Mock<IVideoApiClient>().Verify(x => x.AddMagicLinkParticipantAsync(It.Is<Guid>(y => y == hearingId),
                 It.Is<AddMagicLinkParticipantRequest>(y => y.Name == name && y.UserRole == userRole)), Times.Once);
         }
+        
+        [TestCase(Role.Individual)]
+        [TestCase(Role.Judge)]
+        [TestCase(Role.None)]
+        [TestCase(Role.Representative)]
+        [TestCase(Role.CaseAdmin)]
+        [TestCase(Role.HearingFacilitationSupport)]
+        [TestCase(Role.JudicialOfficeHolder)]
+        [TestCase(Role.VideoHearingsOfficer)]
+        public async Task Should_return_a_bad_request_code_when_invalid_role(Role role)
+        {
+            // Arrange
+            var hearingId = Guid.NewGuid();
+            var name = "First Last";
+            var statusCode = StatusCodes.Status400BadRequest;
+
+            // Act
+            var result = await _controller.Join(hearingId, new MagicLinkParticipantJoinRequest
+            {
+                Name = name,
+                Role = role
+            });
+
+            // Assert
+            var objectResult = result.Should().BeAssignableTo<ObjectResult>().Which;
+            objectResult.StatusCode.Should().Be(statusCode);
+            objectResult.Value.Should().BeAssignableTo<string>().Which.Should().NotBeEmpty();
+            _mocker.Mock<IVideoApiClient>().Verify(x => x.AddMagicLinkParticipantAsync(It.IsAny<Guid>(),
+                It.IsAny<AddMagicLinkParticipantRequest>()), Times.Never);
+        }
     }
 }
