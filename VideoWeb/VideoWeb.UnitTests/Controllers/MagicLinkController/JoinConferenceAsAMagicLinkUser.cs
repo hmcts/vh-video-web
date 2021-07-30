@@ -20,6 +20,8 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
+using VideoWeb.Mappings;
+using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.UnitTests.Controllers.MagicLinkController
 {
@@ -35,42 +37,9 @@ namespace VideoWeb.UnitTests.Controllers.MagicLinkController
 
             _controller = _mocker.Create<MagicLinksController>();
         }
-
-        [Test]
-        public async Task Should_return_a_jwt_token()
-        {
-            // Arrange
-            var hearingId = Guid.NewGuid();
-            var conferenceId = Guid.NewGuid();
-            var name = "First Last";
-            var role = Role.MagicLinkParticipant;
-            var userRole = UserRole.MagicLinkParticipant;
-            var jwt = "JWT";
-            
-            _mocker.Mock<IVideoApiClient>().Setup(x => x.AddMagicLinkParticipantAsync(It.Is<Guid>(y => y == hearingId),
-                It.Is<AddMagicLinkParticipantRequest>(y => y.Name == name && y.UserRole == userRole))).ReturnsAsync(new AddMagicLinkParticipantResponse
-            {
-                Participant = new ParticipantDetailsResponse(),
-                Token = jwt,
-                ConferenceId = conferenceId
-            });
-
-            // Act
-            var result = await _controller.Join(hearingId, new MagicLinkParticipantJoinRequest
-            {
-                Name = name,
-                Role = role
-            });
-
-            // Assert
-            var objectResult = result.Should().BeAssignableTo<OkObjectResult>().Which.Value.Should().BeAssignableTo<MagicLinkParticipantJoinResponse>().Which;
-            objectResult.Jwt.Should().Be(jwt);            
-            _mocker.Mock<IVideoApiClient>().Verify(x => x.AddMagicLinkParticipantAsync(It.Is<Guid>(y => y == hearingId),
-                It.Is<AddMagicLinkParticipantRequest>(y => y.Name == name && y.UserRole == userRole)), Times.Once);
-        }
         
         [Test]
-        public async Task Should_update_conference_cache_token()
+        public async Task Should_update_conference_cache_and_return_a_token()
         {
             // Arrange
             var hearingId = Guid.NewGuid();
@@ -80,16 +49,25 @@ namespace VideoWeb.UnitTests.Controllers.MagicLinkController
             var userRole = UserRole.MagicLinkParticipant;
             var jwt = "JWT";
             var conference = new Conference();
+            var participant = new Participant();
+            var participantDetails = new ParticipantDetailsResponse();
             
             _mocker.Mock<IVideoApiClient>().Setup(x => x.AddMagicLinkParticipantAsync(It.Is<Guid>(y => y == hearingId),
                 It.Is<AddMagicLinkParticipantRequest>(y => y.Name == name && y.UserRole == userRole))).ReturnsAsync(new AddMagicLinkParticipantResponse
             {
-                Participant = new ParticipantDetailsResponse(),
+                Participant = participantDetails,
                 Token = jwt,
                 ConferenceId = conferenceId
             });
 
-            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.IsAny<Guid>(), It.IsAny<Func<Task<ConferenceDetailsResponse>>()))
+            _mocker.Mock<IConferenceCache>().Setup(x =>
+                x.GetOrAddConferenceAsync(It.IsAny<Guid>(), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ReturnsAsync(conference);
+
+            _mocker.Mock<IMapTo<ParticipantDetailsResponse, Participant>>()
+                .Setup(x => x.Map(It.Is<ParticipantDetailsResponse>(x => x == participantDetails)))
+                .Returns(participant);
+            
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantDetailsResponse, Participant>()).Returns(_mocker.Mock<IMapTo<ParticipantDetailsResponse, Participant>>().Object);
             
             // Act
             var result = await _controller.Join(hearingId, new MagicLinkParticipantJoinRequest
@@ -102,6 +80,8 @@ namespace VideoWeb.UnitTests.Controllers.MagicLinkController
             var objectResult = result.Should().BeAssignableTo<OkObjectResult>().Which.Value.Should().BeAssignableTo<MagicLinkParticipantJoinResponse>().Which;
             objectResult.Jwt.Should().Be(jwt);      
             
+            _mocker.Mock<IConferenceCache>().Verify(x =>
+                x.GetOrAddConferenceAsync(It.Is<Guid>(y => y == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>()));
             _mocker.Mock<IConferenceCache>().Verify(x => x.UpdateConferenceAsync(It.Is<Conference>(y => y == conference)), Times.Once());
             _mocker.Mock<IVideoApiClient>().Verify(x => x.AddMagicLinkParticipantAsync(It.Is<Guid>(y => y == hearingId),
                 It.Is<AddMagicLinkParticipantRequest>(y => y.Name == name && y.UserRole == userRole)), Times.Once);

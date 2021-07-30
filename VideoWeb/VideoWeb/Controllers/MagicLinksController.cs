@@ -94,12 +94,8 @@ namespace VideoWeb.Controllers
                         Name = joinRequest.Name,
                         UserRole = roleAsUserRole
                     });
-                
-                var conference = await _conferenceCache.GetOrAddConferenceAsync(response.ConferenceId, () => _videoApiClient.GetConferenceDetailsByIdAsync(response.ConferenceId));
-                
-                var requestToParticipantMapper = _mapperFactory.Get<ParticipantDetailsResponse, Participant>();
-                conference.AddParticipant(requestToParticipantMapper.Map(response.Participant));
-                await _conferenceCache.UpdateConferenceAsync(conference);
+
+                await AddMagicLinkParticipantToConferenceCache(response);
 
                 return Ok(new MagicLinkParticipantJoinResponse
                 {
@@ -124,6 +120,16 @@ namespace VideoWeb.Controllers
         public IActionResult IsAuthorised()
         {
             return Ok();
+        }
+
+        private async Task AddMagicLinkParticipantToConferenceCache(AddMagicLinkParticipantResponse response)
+        {
+            var conference = await _conferenceCache.GetOrAddConferenceAsync(response.ConferenceId, () => _videoApiClient.GetConferenceDetailsByIdAsync(response.ConferenceId));
+                
+            var requestToParticipantMapper = _mapperFactory.Get<ParticipantDetailsResponse, Participant>();
+            conference.AddParticipant(requestToParticipantMapper.Map(response.Participant));
+            
+            await _conferenceCache.UpdateConferenceAsync(conference);
         }
     }
 }
