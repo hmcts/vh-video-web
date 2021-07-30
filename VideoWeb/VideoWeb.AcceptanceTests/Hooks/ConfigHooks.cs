@@ -159,6 +159,9 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
             context.Tokens.CallbackBearerToken = GenerateTemporaryTokens.SetCustomJwTokenForCallback(context.VideoWebConfig.VideoWebKinlyConfiguration);
             context.Tokens.CallbackBearerToken.Should().NotBeNullOrEmpty();
+
+            context.Tokens.BookingsApiBearerToken = await tokenProvider.GetClientAccessToken(context.VideoWebConfig.AzureAdConfiguration.ClientId, context.VideoWebConfig.AzureAdConfiguration.ClientSecret, context.VideoWebConfig.VhServices.BookingsApiResourceId);
+            context.Tokens.BookingsApiBearerToken.Should().NotBeNullOrEmpty();
         }
 
         private static string GetTargetTestEnvironment()

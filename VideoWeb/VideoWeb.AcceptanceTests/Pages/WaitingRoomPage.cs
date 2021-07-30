@@ -29,5 +29,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static readonly By ContinueButton = By.Id("continue-btn");
         public static readonly By ConsultationRoomText = CommonLocators.ElementContainingText("The consultation room is available for up to ");
         public static By ConsultationRoomCloseText(string closeTime) => CommonLocators.ElementContainingText($"The consultation room will close at {closeTime}");
+
+        public static By ToastAlert = By.Id("toast-container");
     }
 }
