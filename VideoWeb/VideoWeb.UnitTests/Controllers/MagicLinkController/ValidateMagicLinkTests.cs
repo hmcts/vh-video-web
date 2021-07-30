@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Autofac.Extras.Moq;
 using VideoApi.Client;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Responses;
@@ -19,20 +20,19 @@ namespace VideoWeb.UnitTests.Controllers.MagicLinkController
         private Guid _hearingId;
 
         private MagicLinksController _controller;
-        private Mock<IVideoApiClient> _videoApiClientMock;
-        private Mock<ILogger<MagicLinksController>> _mockLogger;
+        private AutoMock _mocker;
 
         [SetUp]
         public void SetUp()
         {
-            _videoApiClientMock = new Mock<IVideoApiClient>();
-
+            _mocker = AutoMock.GetLoose();
+            _controller = _mocker.Create<MagicLinksController>();
+            
             _hearingId = Guid.NewGuid();
-            _videoApiClientMock.Setup(x => x.ValidateMagicLinkAsync(_hearingId))
+            _mocker.Mock<IVideoApiClient>().Setup(x => x.ValidateMagicLinkAsync(_hearingId))
                 .ReturnsAsync(true);
 
-            _mockLogger = new Mock<ILogger<MagicLinksController>>();
-            _controller = new MagicLinksController(_videoApiClientMock.Object, _mockLogger.Object);
+            _controller = _mocker.Create<MagicLinksController>();
         }
 
         [Test]
@@ -42,7 +42,7 @@ namespace VideoWeb.UnitTests.Controllers.MagicLinkController
             await _controller.ValidateMagicLink(_hearingId);
 
             //Assert
-            _videoApiClientMock.Verify(x => x.ValidateMagicLinkAsync(_hearingId), Times.Once);
+            _mocker.Mock<IVideoApiClient>().Verify(x => x.ValidateMagicLinkAsync(_hearingId), Times.Once);
         }
 
         [Test]
@@ -61,7 +61,7 @@ namespace VideoWeb.UnitTests.Controllers.MagicLinkController
         {
             //Arrange
             var exception = new VideoApiException("", 500, "response", null, null);
-            _videoApiClientMock.Setup(x => x.ValidateMagicLinkAsync(_hearingId))
+            _mocker.Mock<IVideoApiClient>().Setup(x => x.ValidateMagicLinkAsync(_hearingId))
                 .ThrowsAsync(exception);
 
             //Act

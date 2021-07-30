@@ -14,6 +14,8 @@ using Microsoft.AspNetCore.Http;
 using VideoApi.Client;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
+using VideoApi.Contract.Responses;
+using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
@@ -39,13 +41,19 @@ namespace VideoWeb.UnitTests.Controllers.MagicLinkController
         {
             // Arrange
             var hearingId = Guid.NewGuid();
+            var conferenceId = Guid.NewGuid();
             var name = "First Last";
             var role = Role.MagicLinkParticipant;
             var userRole = UserRole.MagicLinkParticipant;
             var jwt = "JWT";
             
             _mocker.Mock<IVideoApiClient>().Setup(x => x.AddMagicLinkParticipantAsync(It.Is<Guid>(y => y == hearingId),
-                It.Is<AddMagicLinkParticipantRequest>(y => y.Name == name && y.UserRole == userRole))).ReturnsAsync(jwt);
+                It.Is<AddMagicLinkParticipantRequest>(y => y.Name == name && y.UserRole == userRole))).ReturnsAsync(new AddMagicLinkParticipantResponse
+            {
+                Participant = new ParticipantDetailsResponse(),
+                Token = jwt,
+                ConferenceId = conferenceId
+            });
 
             // Act
             var result = await _controller.Join(hearingId, new MagicLinkParticipantJoinRequest
@@ -57,6 +65,44 @@ namespace VideoWeb.UnitTests.Controllers.MagicLinkController
             // Assert
             var objectResult = result.Should().BeAssignableTo<OkObjectResult>().Which.Value.Should().BeAssignableTo<MagicLinkParticipantJoinResponse>().Which;
             objectResult.Jwt.Should().Be(jwt);            
+            _mocker.Mock<IVideoApiClient>().Verify(x => x.AddMagicLinkParticipantAsync(It.Is<Guid>(y => y == hearingId),
+                It.Is<AddMagicLinkParticipantRequest>(y => y.Name == name && y.UserRole == userRole)), Times.Once);
+        }
+        
+        [Test]
+        public async Task Should_update_conference_cache_token()
+        {
+            // Arrange
+            var hearingId = Guid.NewGuid();
+            var conferenceId = Guid.NewGuid();
+            var name = "First Last";
+            var role = Role.MagicLinkParticipant;
+            var userRole = UserRole.MagicLinkParticipant;
+            var jwt = "JWT";
+            var conference = new Conference();
+            
+            _mocker.Mock<IVideoApiClient>().Setup(x => x.AddMagicLinkParticipantAsync(It.Is<Guid>(y => y == hearingId),
+                It.Is<AddMagicLinkParticipantRequest>(y => y.Name == name && y.UserRole == userRole))).ReturnsAsync(new AddMagicLinkParticipantResponse
+            {
+                Participant = new ParticipantDetailsResponse(),
+                Token = jwt,
+                ConferenceId = conferenceId
+            });
+
+            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.IsAny<Guid>(), It.IsAny<Func<Task<ConferenceDetailsResponse>>()))
+            
+            // Act
+            var result = await _controller.Join(hearingId, new MagicLinkParticipantJoinRequest
+            {
+                Name = name,
+                Role = role
+            });
+
+            // Assert
+            var objectResult = result.Should().BeAssignableTo<OkObjectResult>().Which.Value.Should().BeAssignableTo<MagicLinkParticipantJoinResponse>().Which;
+            objectResult.Jwt.Should().Be(jwt);      
+            
+            _mocker.Mock<IConferenceCache>().Verify(x => x.UpdateConferenceAsync(It.Is<Conference>(y => y == conference)), Times.Once());
             _mocker.Mock<IVideoApiClient>().Verify(x => x.AddMagicLinkParticipantAsync(It.Is<Guid>(y => y == hearingId),
                 It.Is<AddMagicLinkParticipantRequest>(y => y.Name == name && y.UserRole == userRole)), Times.Once);
         }
@@ -88,6 +134,7 @@ namespace VideoWeb.UnitTests.Controllers.MagicLinkController
             var objectResult = result.Should().BeAssignableTo<ObjectResult>().Which;
             objectResult.StatusCode.Should().Be(statusCode);
             objectResult.Value.Should().BeAssignableTo<string>().Which.Should().Be(response);
+            _mocker.Mock<IConferenceCache>().Verify(x => x.UpdateConferenceAsync(It.IsAny<Conference>()), Times.Never());
             _mocker.Mock<IVideoApiClient>().Verify(x => x.AddMagicLinkParticipantAsync(It.Is<Guid>(y => y == hearingId),
                 It.Is<AddMagicLinkParticipantRequest>(y => y.Name == name && y.UserRole == userRole)), Times.Once);
         }
@@ -118,6 +165,7 @@ namespace VideoWeb.UnitTests.Controllers.MagicLinkController
             var objectResult = result.Should().BeAssignableTo<ObjectResult>().Which;
             objectResult.StatusCode.Should().Be(statusCode);
             objectResult.Value.Should().BeAssignableTo<string>().Which.Should().NotBeEmpty();
+            _mocker.Mock<IConferenceCache>().Verify(x => x.UpdateConferenceAsync(It.IsAny<Conference>()), Times.Never());
             _mocker.Mock<IVideoApiClient>().Verify(x => x.AddMagicLinkParticipantAsync(It.IsAny<Guid>(),
                 It.IsAny<AddMagicLinkParticipantRequest>()), Times.Never);
         }

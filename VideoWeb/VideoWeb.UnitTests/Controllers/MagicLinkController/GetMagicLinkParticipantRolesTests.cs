@@ -4,6 +4,7 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Autofac.Extras.Moq;
 using VideoApi.Client;
 using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
@@ -13,16 +14,13 @@ namespace VideoWeb.UnitTests.Controllers.MagicLinkController
     public class GetMagicLinkParticipantRolesTests
     {
         private MagicLinksController _controller;
-        private Mock<IVideoApiClient> _videoApiClientMock;
-        private Mock<ILogger<MagicLinksController>> _loggerMock;
+        private AutoMock _mocker;
 
         [SetUp]
         public void SetUp()
         {
-            _videoApiClientMock = new Mock<IVideoApiClient>();
-            _loggerMock = new Mock<ILogger<MagicLinksController>>();
-            
-            _controller = new MagicLinksController(_videoApiClientMock.Object, _loggerMock.Object);
+            _mocker = AutoMock.GetLoose();
+            _controller = _mocker.Create<MagicLinksController>();
         }
 
         [Test]

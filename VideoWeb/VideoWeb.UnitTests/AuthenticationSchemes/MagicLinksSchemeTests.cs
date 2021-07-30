@@ -15,27 +15,25 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
 {
     public class MagicLinksSchemeTest
     {
-        private VhAadScheme sut;
-
-        private AzureAdConfiguration configuration;
+        private MagicLinksScheme _sut;
+        private MagicLinksConfiguration _configuration;
 
         [SetUp]
         public void SetUp()
         {
-            configuration = new AzureAdConfiguration
+            _configuration = new MagicLinksConfiguration
             {
-                TenantId = "tenantId",
-                Authority = "authority",
-                ClientId = "clientId"                
+                Issuer = "issuer",
+                JwtProviderSecret = "x4p5Kxsygx3dYAso0JKZljK0PL926mxppc5gGqeV9aRydc++gSNx4UITuZ1G6YJX7KgymQnQiEsaG/XIUKTPPA=="
             };
-            sut = new VhAadScheme(configuration, "eventHubPath");
+            _sut = new MagicLinksScheme(_configuration, "eventHubPath");
         }
 
         [Test]
         public void ShouldReturnCorrectProvider()
         {
             // Act
-            var provider = sut.Provider;
+            var provider = _sut.Provider;
 
             // Assert
             provider.Should().Be(AuthProvider.VHAAD);
@@ -45,7 +43,7 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
         public void ShouldSetSchemeNameToProvider()
         {
             // Act
-            var schemeName = sut.SchemeName;
+            var schemeName = _sut.SchemeName;
 
             // Assert
             schemeName.Should().Be(AuthProvider.VHAAD.ToString());
@@ -55,22 +53,22 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
         public void ShouldSetEventHubSchemeNameToProvider()
         {
             // Act
-            var schemeName = sut.EventHubSchemeName;
+            var schemeName = _sut.EventHubSchemeName;
 
             // Assert
-            schemeName.Should().Be($"EventHub{AuthProvider.VHAAD}");
+            schemeName.Should().Be($"EventHub{AuthProvider.MagicLinks}");
         }
 
         [Test]
         public void ShouldGetCorrectScheme()
         {
             // Act
-            var scheme = (sut as IProviderSchemes).GetScheme(false);
-            var eventHubScheme = (sut as IProviderSchemes).GetScheme(true);
+            var scheme = (_sut as IProviderSchemes).GetScheme(false);
+            var eventHubScheme = (_sut as IProviderSchemes).GetScheme(true);
 
             // Assert
-            scheme.Should().Be(sut.SchemeName);
-            eventHubScheme.Should().Be(sut.EventHubSchemeName);
+            scheme.Should().Be(_sut.SchemeName);
+            eventHubScheme.Should().Be(_sut.EventHubSchemeName);
         }
 
         [Test]
@@ -80,11 +78,10 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
             var jwtBearerOptions = new JwtBearerOptions();
 
             // Act
-            sut.SetJwtBearerOptions(jwtBearerOptions);
+            _sut.SetJwtBearerOptions(jwtBearerOptions);
 
             // Assert
-            jwtBearerOptions.Authority.Should().Be($"{configuration.Authority}{configuration.TenantId}/v2.0");
-            jwtBearerOptions.Audience.Should().Be(configuration.ClientId);
+            jwtBearerOptions.Authority.Should().Be($"{_configuration.Issuer}");
             jwtBearerOptions.TokenValidationParameters.NameClaimType.Should().Be("preferred_username");
             jwtBearerOptions.TokenValidationParameters.ValidateLifetime.Should().BeTrue();
             jwtBearerOptions.TokenValidationParameters.ClockSkew.Should().Be(TimeSpan.Zero);
@@ -93,11 +90,11 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
         [Test]
         public void ShouldReturnFalseIfDoesntBelongsToScheme()
         {
-            // Arange
-            var token = new JwtSecurityToken(issuer: "Issuer");
+            // Arrange
+            var token = new JwtSecurityToken(issuer: _configuration.Issuer);
 
             // Act
-            var belongs = sut.BelongsToScheme(token);
+            var belongs = _sut.BelongsToScheme(token);
 
             // Assert
             belongs.Should().BeFalse();
@@ -106,11 +103,11 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
         [Test]
         public void ShouldReturnTrueIfDoesntBelongsToScheme()
         {
-            // Arange
-            var token = new JwtSecurityToken(issuer: configuration.TenantId.ToUpper());
+            // Arrange
+            var token = new JwtSecurityToken(issuer: _configuration.TenantId.ToUpper());
 
             // Act
-            var belongs = sut.BelongsToScheme(token);
+            var belongs = _sut.BelongsToScheme(token);
 
             // Assert
             belongs.Should().BeTrue();
