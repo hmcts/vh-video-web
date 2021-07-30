@@ -1,5 +1,5 @@
 import { ElementRef } from '@angular/core';
-import { fakeAsync, flushMicrotasks, tick, flush, TestBed, ComponentFixture, async, waitForAsync } from '@angular/core/testing';
+import { fakeAsync, flushMicrotasks, tick, flush, TestBed, ComponentFixture, waitForAsync } from '@angular/core/testing';
 import { By, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Event, NavigationEnd, Router } from '@angular/router';
 import { of, Subject, Subscription } from 'rxjs';
@@ -25,13 +25,17 @@ import {
 } from 'angular-auth-oidc-client';
 import { MockLogger } from './testing/mocks/mock-logger';
 import { Location } from '@angular/common';
-import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { Logger } from './services/logging/logger-base';
 import { pageUrls } from './shared/page-url.constants';
 import { BackLinkDetails } from './shared/models/back-link-details';
 import { BackNavigationComponent } from './shared/back-navigation/back-navigation.component';
 import { MockComponent, ngMocks } from 'ng-mocks';
 import { TranslatePipeMock } from './testing/mocks/mock-translation-pipe';
+import { HeaderComponent } from './shared/header/header.component';
+import { FooterComponent } from './shared/footer/footer.component';
+import { RouterModule } from '@angular/router';
+import { BetaBannerComponent } from './shared/beta-banner/beta-banner.component';
 
 describe('AppComponent', () => {
     let fixture: ComponentFixture<AppComponent>;
@@ -60,6 +64,11 @@ describe('AppComponent', () => {
     const eventsSubjects = new Subject<Event>();
     const dummyElement = document.createElement('div');
     const testTitle = 'test-title';
+    const eventValue: OidcClientNotification<AuthorizationResult> = {
+        type: EventTypes.NewAuthorizationResult,
+        value: { isRenewProcess: false, authorizationState: AuthorizedState.Authorized, validationResult: ValidationResult.Ok }
+    };
+
     beforeAll(() => {
         activatedRouteMock = {
             firstChild: { snapshot: { data: { title: testTitle } } }
@@ -107,7 +116,15 @@ describe('AppComponent', () => {
                         useValue: activatedRouteMock
                     }
                 ],
-                declarations: [AppComponent, TranslatePipeMock, MockComponent(BackNavigationComponent)]
+                declarations: [
+                    AppComponent,
+                    TranslatePipeMock,
+                    MockComponent(BackNavigationComponent),
+                    MockComponent(HeaderComponent),
+                    MockComponent(FooterComponent),
+                    MockComponent(BetaBannerComponent)
+                ],
+                imports: [RouterModule.forRoot([])]
             }).compileComponents();
 
             fixture = TestBed.createComponent(AppComponent);
@@ -121,6 +138,7 @@ describe('AppComponent', () => {
             routerSpy.navigate.calls.reset();
             routerSpy.navigateByUrl.calls.reset();
             profileServiceSpy.getUserProfile.calls.reset();
+            publicEventsServiceSpy.registerForEvents.and.returnValue(of(eventValue));
         })
     );
 
@@ -129,11 +147,6 @@ describe('AppComponent', () => {
     });
 
     it('should start connection status service if authenticated oninit', fakeAsync(() => {
-        const eventValue: OidcClientNotification<AuthorizationResult> = {
-            type: EventTypes.NewAuthorizationResult,
-            value: { isRenewProcess: false, authorizationState: AuthorizedState.Authorized, validationResult: ValidationResult.Ok }
-        };
-        publicEventsServiceSpy.registerForEvents.and.returnValue(of(eventValue));
         mockOidcSecurityService.setAuthenticated(true);
         component.ngOnInit();
         flush();

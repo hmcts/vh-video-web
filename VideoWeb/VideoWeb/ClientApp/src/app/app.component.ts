@@ -85,7 +85,6 @@ export class AppComponent implements OnInit, OnDestroy {
                 await this.postAuthSetup(loggedIn, false);
             }
         });
-
         this.eventService
             .registerForEvents()
             .pipe(filter(notification => notification.type === EventTypes.NewAuthorizationResult))
