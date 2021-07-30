@@ -53,7 +53,11 @@ export const routes: Routes = [
         data: { title: 'Equipment check', backLink: new BackLinkDetails() },
         canActivate: [ParticipantStatusGuard]
     },
-    { path: `${pageUrls.EquipmentCheck}`, component: EquipmentCheckComponent },
+    {
+        path: `${pageUrls.EquipmentCheck}`,
+        component: EquipmentCheckComponent,
+        data: { title: 'Equipment check', backLink: new BackLinkDetails() }
+    },
     {
         path: `${pageUrls.CameraWorking}/:conferenceId`,
         component: CameraCheckComponent,
@@ -72,7 +76,10 @@ export const routes: Routes = [
         data: { title: 'See and hear video', backLink: new BackLinkDetails() },
         canActivate: [ParticipantStatusGuard]
     },
-    { path: `${pageUrls.CameraAndMicrophone}/:conferenceId`, component: CameraAndMicrophoneComponent },
+    {
+        path: `${pageUrls.CameraAndMicrophone}/:conferenceId`,
+        component: CameraAndMicrophoneComponent
+    },
     {
         path: `${pageUrls.SwitchOnCameraMicrophone}/:conferenceId`,
         component: SwitchOnCameraMicrophoneComponent,
@@ -81,7 +88,8 @@ export const routes: Routes = [
     },
     {
         path: `${pageUrls.SwitchOnCameraMicrophone}`,
-        component: SwitchOnCameraMicrophoneComponent
+        component: SwitchOnCameraMicrophoneComponent,
+        data: { title: 'Switch on camera and microphone', backLink: new BackLinkDetails() }
     },
     {
         path: `${pageUrls.ParticipantSelfTestVideo}/:conferenceId`,
@@ -89,8 +97,16 @@ export const routes: Routes = [
         data: { title: 'Practice video hearing', backLink: new BackLinkDetails() },
         canActivate: [ParticipantStatusGuard]
     },
-    { path: `${pageUrls.JudgeSelfTestVideo}/:conferenceId`, component: JudgeSelfTestComponent },
-    { path: `${pageUrls.IndependentSelfTestVideo}`, component: IndependentSelfTestComponent },
+    {
+        path: `${pageUrls.JudgeSelfTestVideo}/:conferenceId`,
+        component: JudgeSelfTestComponent,
+        data: { title: 'Practice video hearing', backLink: new BackLinkDetails() }
+    },
+    {
+        path: `${pageUrls.IndependentSelfTestVideo}`,
+        component: IndependentSelfTestComponent,
+        data: { title: 'Practice video hearing', backLink: new BackLinkDetails() }
+    },
     { path: `${pageUrls.GetHelp}`, component: EquipmentProblemComponent, data: { title: 'Get help' } },
     { path: `${pageUrls.UnsupportedDevice}`, component: UnsupportedDeviceComponent },
     {
