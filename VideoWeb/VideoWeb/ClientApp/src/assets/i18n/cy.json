@@ -517,7 +517,8 @@
     "send": "Anfon",
     "char-count": "Nifer o nodau",
     "maximum": "caniateir hyd at",
-    "unable-send": "Methu anfon y neges"
+    "unable-send": "Methu anfon y neges",
+    "type-a-message":"Teipiwch neges"
   },
   "start-private-consultation": {
     "invite": "Gwahodd eraill i gyfarfod preifat",
