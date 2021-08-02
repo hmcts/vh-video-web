@@ -3,8 +3,8 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthorizationResult, EventTypes, OidcClientNotification, PublicEventsService } from 'angular-auth-oidc-client';
-import { NEVER, Observable, Subscription } from 'rxjs';
-import { catchError, filter, map } from 'rxjs/operators';
+import { BehaviorSubject, NEVER, Observable, Subscription } from 'rxjs';
+import { catchError, filter } from 'rxjs/operators';
 import { ConfigService } from './services/api/config.service';
 import { ProfileService } from './services/api/profile.service';
 import { Role } from './services/clients/api-client';
@@ -19,6 +19,8 @@ import { IdpProviders } from './security/idp-providers';
 import { SecurityServiceProvider } from './security/authentication/security-provider.service';
 import { SecurityConfigSetupService } from './security/security-config-setup.service';
 import { ISecurityService } from './security/authentication/security-service.interface';
+import { BackLinkDetails } from './shared/models/back-link-details';
+import { Location } from '@angular/common';
 
 @Component({
     selector: 'app-root',
@@ -38,6 +40,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     subscriptions = new Subscription();
     securityService: ISecurityService;
+    backLinkDetails$ = new BehaviorSubject<BackLinkDetails>(null);
 
     constructor(
         private router: Router,
@@ -52,9 +55,10 @@ export class AppComponent implements OnInit, OnDestroy {
         translate: TranslateService,
         private configService: ConfigService,
         private eventService: PublicEventsService,
-        private logger: Logger,
         securityServiceProviderService: SecurityServiceProvider,
-        private securityConfigSetupService: SecurityConfigSetupService
+        private securityConfigSetupService: SecurityConfigSetupService,
+        private location: Location,
+        private logger: Logger
     ) {
         this.loggedIn = false;
         this.isRepresentativeOrIndividual = false;
@@ -87,7 +91,6 @@ export class AppComponent implements OnInit, OnDestroy {
                 await this.postAuthSetup(loggedIn, false);
             }
         });
-
         this.eventService
             .registerForEvents()
             .pipe(filter(notification => notification.type === EventTypes.NewAuthorizationResult))
@@ -116,7 +119,7 @@ export class AppComponent implements OnInit, OnDestroy {
         }
 
         this.checkBrowser();
-        this.setPageTitle();
+        this.setupNavigationSubscription();
         this.setupSubscribers();
         this.connectionStatusService.start();
     }
@@ -186,33 +189,38 @@ export class AppComponent implements OnInit, OnDestroy {
         this.main.nativeElement.focus();
     }
 
-    setPageTitle(): void {
+    private setPageTitle(title: string) {
+        this.titleService.setTitle(title);
+    }
+
+    setupNavigationSubscription(): void {
         const applTitle = this.titleService.getTitle() + ' - ';
         this.subscriptions.add(
-            this.router.events
-                .pipe(
-                    filter(event => event instanceof NavigationEnd),
-                    map(() => {
-                        let child = this.activatedRoute.firstChild;
-                        while (child.firstChild) {
-                            child = child.firstChild;
-                        }
-                        if (child.snapshot.data['title']) {
-                            return child.snapshot.data['title'];
-                        }
-                        return applTitle;
-                    })
-                )
-                .subscribe({
-                    next: (appendTitle: string) => {
-                        this.titleService.setTitle(applTitle + appendTitle);
-                    }
-                })
+            this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
+                let child = this.activatedRoute.firstChild;
+                while (child.firstChild) {
+                    child = child.firstChild;
+                }
+                if (child.snapshot.data['title']) {
+                    this.setPageTitle(applTitle + child.snapshot.data['title']);
+                } else {
+                    this.setPageTitle(applTitle);
+                }
+                this.backLinkDetails$.next(child.snapshot.data['backLink']);
+            })
         );
     }
 
     scrollToTop() {
         window.scroll(0, 0);
         this.skipLinkDiv.nativeElement.focus();
+    }
+
+    navigateBack(path: string) {
+        if (!path) {
+            this.location.back();
+        } else {
+            this.router.navigate([path]);
+        }
     }
 }

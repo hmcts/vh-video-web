@@ -1,7 +1,7 @@
 import { ElementRef } from '@angular/core';
-import { fakeAsync, flushMicrotasks, tick, flush } from '@angular/core/testing';
-import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, convertToParamMap, Event, NavigationEnd, Router } from '@angular/router';
+import { fakeAsync, flushMicrotasks, tick, flush, ComponentFixture } from '@angular/core/testing';
+import { By, Title } from '@angular/platform-browser';
+import { Event, NavigationEnd, Router } from '@angular/router';
 import { of, Subject, Subscription } from 'rxjs';
 import { AppComponent } from './app.component';
 import { ConfigService } from './services/api/config.service';
@@ -11,8 +11,6 @@ import { DeviceTypeService } from './services/device-type.service';
 import { ErrorService } from './services/error.service';
 import { PageTrackerService } from './services/page-tracker.service';
 import { ConnectionStatusService } from './services/connection-status.service';
-import { pageUrls } from './shared/page-url.constants';
-import { MockOidcSecurityService } from './testing/mocks/mock-oidc-security.service';
 import { TestLanguageService } from './shared/test-language.service';
 import { translateServiceSpy } from './testing/mocks/mock-translation.service';
 import {
@@ -28,8 +26,16 @@ import { SecurityServiceProvider } from './security/authentication/security-prov
 import { SecurityConfigSetupService } from './security/security-config-setup.service';
 import { getSpiedPropertyGetter } from './shared/jasmine-helpers/property-helpers';
 import { ISecurityService } from './security/authentication/security-service.interface';
+import { Location } from '@angular/common';
+import { pageUrls } from './shared/page-url.constants';
+import { BackLinkDetails } from './shared/models/back-link-details';
+import { BackNavigationComponent } from './shared/back-navigation/back-navigation.component';
+import { ngMocks } from 'ng-mocks';
 
 describe('AppComponent', () => {
+    let fixture: ComponentFixture<AppComponent>;
+    let component: AppComponent;
+
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
     let deviceTypeServiceSpy: jasmine.SpyObj<DeviceTypeService>;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
@@ -44,21 +50,26 @@ describe('AppComponent', () => {
     let securityConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
 
+    let locationSpy: jasmine.SpyObj<Location>;
     const clientSettings = new ClientSettingsResponse({
         event_hub_path: 'evenhub',
         join_by_phone_from_date: '2020-09-01',
         app_insights_instrumentation_key: 'appinsights'
     });
 
-    let component: AppComponent;
-    let activatedRoute: ActivatedRoute;
+    let activatedRouteMock: any;
     const eventsSubjects = new Subject<Event>();
     const dummyElement = document.createElement('div');
+    const testTitle = 'test-title';
+    const eventValue: OidcClientNotification<AuthorizationResult> = {
+        type: EventTypes.NewAuthorizationResult,
+        value: { isRenewProcess: false, authorizationState: AuthorizedState.Authorized, validationResult: ValidationResult.Ok }
+    };
 
     beforeAll(() => {
-        activatedRoute = jasmine.createSpyObj<ActivatedRoute>('ActivatedRoute', [], {
-            firstChild: <any>{ snapshot: { data: convertToParamMap({ title: 'test-title' }) } }
-        });
+        activatedRouteMock = {
+            firstChild: { snapshot: { data: { title: testTitle } } }
+        };
 
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings', 'loadConfig']);
         configServiceSpy.getClientSettings.and.returnValue(of(clientSettings));
@@ -95,16 +106,17 @@ describe('AppComponent', () => {
             profileServiceSpy,
             errorServiceSpy,
             titleServiceSpy,
-            activatedRoute,
+            activatedRouteMock,
             connectionStatusServiceSpy,
             pageTrackerServiceSpy,
             testLanguageServiceSpy,
             translateServiceSpy,
             configServiceSpy,
             publicEventsServiceSpy,
-            new MockLogger(),
             securityServiceProviderServiceSpy,
-            securityConfigSetupServiceSpy
+            securityConfigSetupServiceSpy,
+            locationSpy,
+            new MockLogger()
         );
 
         document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(dummyElement);
@@ -195,14 +207,39 @@ describe('AppComponent', () => {
         expect(profileServiceSpy.getUserProfile).toHaveBeenCalledTimes(0);
     });
 
-    it('should update page title is naviation event raised', fakeAsync(() => {
-        const navEvent = new NavigationEnd(1, pageUrls.Login, pageUrls.AdminVenueList);
-        component.setPageTitle();
-        eventsSubjects.next(navEvent);
-        tick();
-        flushMicrotasks();
-        expect(titleServiceSpy.setTitle).toHaveBeenCalled();
-    }));
+    describe('NavigationEndEvent', () => {
+        const navEvent = new NavigationEnd(1, 'url', 'urlAfterRedirects');
+
+        it('should update page title is naviation event raised', fakeAsync(() => {
+            const testTitlePrefix = 'Test Title Prefix';
+            titleServiceSpy.getTitle.and.returnValue(testTitlePrefix);
+            component.setupNavigationSubscription();
+            eventsSubjects.next(navEvent);
+            tick();
+            flushMicrotasks();
+            expect(titleServiceSpy.setTitle).toHaveBeenCalledWith(testTitlePrefix + ' - ' + testTitle);
+        }));
+
+        describe('backLinkDetails$', () => {
+            it('should update backLinkDetails$ value as undefined when none present', fakeAsync(() => {
+                component.setupNavigationSubscription();
+                eventsSubjects.next(navEvent);
+                tick();
+                flushMicrotasks();
+                expect(component.backLinkDetails$.value).toBe(undefined);
+            }));
+
+            it('should update backLinkDetails$ value as null when none present', fakeAsync(() => {
+                const testBackLinkDetails = new BackLinkDetails();
+                activatedRouteMock.firstChild.snapshot.data['backLink'] = testBackLinkDetails;
+                component.setupNavigationSubscription();
+                eventsSubjects.next(navEvent);
+                tick();
+                flushMicrotasks();
+                expect(component.backLinkDetails$.value).toBe(testBackLinkDetails);
+            }));
+        });
+    });
 
     it('should clear subscriptions on destory', () => {
         const sub = jasmine.createSpyObj<Subscription>('Subscription', ['add', 'unsubscribe']);
@@ -215,5 +252,49 @@ describe('AppComponent', () => {
         spyOn(dummyElement, 'focus');
         component.skipToContent();
         expect(dummyElement.focus).toHaveBeenCalled();
+    });
+
+    describe('navigateBack', () => {
+        it('should call location back when called with falsy value', () => {
+            component.navigateBack(null);
+            expect(locationSpy.back).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call location back when called with falsy value', () => {
+            const testPath = 'testPath';
+            component.navigateBack(testPath);
+            expect(routerSpy.navigate).toHaveBeenCalledWith([testPath]);
+        });
+    });
+
+    describe('backNavigationComponent', () => {
+        const element = 'app-back-navigation';
+
+        it('should not have component when value is null', () => {
+            component.backLinkDetails$.next(null);
+            fixture.detectChanges();
+            expect(fixture.debugElement.query(By.css(element))).toBeFalsy();
+        });
+
+        describe('when has value', () => {
+            const testLinkText = 'testLinkText';
+            const testLinkPath = 'testLinkPath';
+            const testBackLinkDetails = new BackLinkDetails(testLinkText, testLinkPath);
+            let backNavigationComponent: BackNavigationComponent;
+            beforeEach(() => {
+                component.backLinkDetails$.next(testBackLinkDetails);
+                fixture.detectChanges();
+                backNavigationComponent = ngMocks.find<BackNavigationComponent>('app-back-navigation').componentInstance;
+            });
+            it('sends the correct value to the child input', () => {
+                expect(backNavigationComponent.linkText).toEqual(testBackLinkDetails.text);
+            });
+
+            it('navigateBack output should call function correctly', () => {
+                spyOn(component, 'navigateBack');
+                backNavigationComponent.navigateBack.emit();
+                expect(component.navigateBack).toHaveBeenCalledWith(testBackLinkDetails.path);
+            });
+        });
     });
 });
