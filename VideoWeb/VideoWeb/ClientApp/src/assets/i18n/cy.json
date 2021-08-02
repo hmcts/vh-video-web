@@ -941,7 +941,9 @@
     "appellant-lip": "Ymgyfreithiwr drosto'i hun yr Apelydd",
     "app-advocate": "Eiriolwr yr Apelydd",
     "app": "Apelydd",
-    "video-access-point": "Pwynt mynediad fideo"
+    "video-access-point": "Pwynt mynediad fideo",
+    "solicitor": "Cyfreithiwr",
+    "barrister": "Bargyfreithiwr"
   },
   "case-type-group": {
     "respondent": "Atebydd",
