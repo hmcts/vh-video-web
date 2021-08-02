@@ -15,6 +15,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             context.Apis = new Apis
             {
                 TestApi = new TestApiManager(context.VideoWebConfig.VhServices.TestApiUrl, context.Tokens.TestApiBearerToken),
+                BookingsApi = new BookingsApiManager(context.VideoWebConfig.VhServices.BookingsApiUrl, context.Tokens.BookingsApiBearerToken),
                 VideoWebApi = new VideoWebApiManager(context.VideoWebConfig.VhServices.VideoWebApiUrl, context.Tokens.CallbackBearerToken)
             };
             ConfigurationManager.VerifyConfigValuesSet(context.Apis);

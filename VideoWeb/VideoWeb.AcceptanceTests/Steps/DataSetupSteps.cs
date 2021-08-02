@@ -16,6 +16,8 @@ using BookingsApi.Contract.Requests;
 using BookingsApi.Contract.Requests.Enums;
 using VideoApi.Contract.Responses;
 using BookingsApi.Contract.Responses;
+using FizzWare.NBuilder;
+using Faker;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -164,6 +166,12 @@ namespace VideoWeb.AcceptanceTests.Steps
             GivenIHaveAHearingWithUser(user);
         }
 
+        [When("I add a participant to the hearing")]
+        public void WhenIAddAParticipantToTheHearing()
+        {
+            AddParticipantToHearing();
+        }
+
         private void GivenIHaveAHearing(int minutes = 0, string venue = DEFAULT_VENUE, bool audioRecordingRequired = false)
         {
             var request = new HearingRequestBuilder()
@@ -174,6 +182,28 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .Build();
 
             SendTheHearingRequest(request);
+        }
+
+        private void AddParticipantToHearing()
+        {
+            var participantsRequest = Builder<ParticipantRequest>.CreateNew()
+                .With(x => x.CaseRoleName = "Observer")
+                .With(x => x.HearingRoleName = "Observer")
+                .With(x => x.Title = Name.Prefix())
+                .With(x => x.FirstName = $"Automation_{Name.First()}")
+                .With(x => x.LastName = $"Automation_{Name.Last()}")
+                .With(x => x.Username = $"Automation_{RandomNumber.Next()}@hmcts.net")
+                .With(x => x.ContactEmail = $"Automation_{RandomNumber.Next()}@hmcts.net")
+                .With(x => x.TelephoneNumber = Phone.Number())
+                .Build();
+
+            var participant =  new AddParticipantsToHearingRequest
+            {
+                Participants = new List<ParticipantRequest> { participantsRequest }
+            };
+
+            var response = _c.Apis.BookingsApi.AddParticipantsToHearing(_c.Test.NewHearingId, participant);
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
 
         private void SendTheHearingRequest(CreateHearingRequest request)
