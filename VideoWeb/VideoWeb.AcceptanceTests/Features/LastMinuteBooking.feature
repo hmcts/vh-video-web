@@ -5,7 +5,7 @@ Feature: LastMinuteBooking
 
 @VIH-8055 @HearingTest @Smoketest-Extended
 Scenario: Alert the participants in the hearing
-	Given I have a hearing in 20 minutes time with Observer
+	Given I have a hearing in 20 minutes time
 	And the first Individual user has progressed to the Waiting Room page for the existing hearing
 	When I add a participant to the hearing
 	Then the participant in the waiting room must see the toast alert

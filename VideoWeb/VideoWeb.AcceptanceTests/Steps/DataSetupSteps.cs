@@ -187,8 +187,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         private void AddParticipantToHearing()
         {
             var participantsRequest = Builder<ParticipantRequest>.CreateNew()
-                .With(x => x.CaseRoleName = "Respondent")
-                .With(x => x.HearingRoleName = "Litigant in person")
+                .With(x => x.CaseRoleName = "Observer")
+                .With(x => x.HearingRoleName = "Observer")
                 .With(x => x.Title = Name.Prefix())
                 .With(x => x.FirstName = $"Automation_{Name.First()}")
                 .With(x => x.LastName = $"Automation_{Name.Last()}")

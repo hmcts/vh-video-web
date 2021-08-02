@@ -2,6 +2,7 @@ using AcceptanceTests.Common.Driver.Drivers;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
 using System.Collections.Generic;
+using System.Linq;
 using TechTalk.SpecFlow;
 using TestApi.Contract.Dtos;
 using VideoWeb.AcceptanceTests.Helpers;
@@ -25,6 +26,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheParticipantInTheWaitingRoomMustSeeToastAlert()
         {
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(WaitingRoomPage.ToastAlert).Displayed.Should().BeTrue();
+            var particpantElement = _browsers[_c.CurrentUser].Driver.FindElements(WaitingRoomPage.Heading).ToList().Where(element => element.Text.Contains("Observers"));
+
+            particpantElement.Count().Should().Be(1);
         }
     }
 }

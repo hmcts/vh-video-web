@@ -31,5 +31,6 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By ConsultationRoomCloseText(string closeTime) => CommonLocators.ElementContainingText($"The consultation room will close at {closeTime}");
 
         public static By ToastAlert = By.Id("toast-container");
+        public static By Heading = By.CssSelector("h2.govuk-heading-s");
     }
 }
