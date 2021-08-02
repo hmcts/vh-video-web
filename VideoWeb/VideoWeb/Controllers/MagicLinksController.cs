@@ -88,12 +88,13 @@ namespace VideoWeb.Controllers
                         $"Can only join as a magic user if the roles are MagicLinkParticipant or MagicLinkObserver. The Role was {roleAsUserRole}");
                 }
 
-                var response = await _videoApiClient.AddMagicLinkParticipantAsync(hearingId,
-                    new AddMagicLinkParticipantRequest()
-                    {
-                        Name = joinRequest.Name,
-                        UserRole = roleAsUserRole
-                    });
+                var request = new AddMagicLinkParticipantRequest
+                {
+                    Name = joinRequest.Name,
+                    UserRole = roleAsUserRole
+                };
+                
+                var response = await _videoApiClient.AddMagicLinkParticipantAsync(hearingId, request);
 
                 await AddMagicLinkParticipantToConferenceCache(response);
 
@@ -127,7 +128,7 @@ namespace VideoWeb.Controllers
             var conference = await _conferenceCache.GetOrAddConferenceAsync(response.ConferenceId, () => _videoApiClient.GetConferenceDetailsByIdAsync(response.ConferenceId));
                 
             var requestToParticipantMapper = _mapperFactory.Get<ParticipantDetailsResponse, Participant>();
-            conference.AddParticipant(requestToParticipantMapper.Map(response.Participant));
+            conference.AddParticipant(requestToParticipantMapper.Map(response.ParticipantDetails));
             
             await _conferenceCache.UpdateConferenceAsync(conference);
         }
