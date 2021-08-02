@@ -38,7 +38,8 @@
     "contact-us": "If you think this is a mistake and you need to speak to someone, please contact us using the options below."
   },
   "back-navigation": {
-    "back": "Back"
+    "back": "Back",
+    "return-to-video-hearing-list": "Return to video hearing list"
   },
   "beta-banner": {
     "beta": "beta",
@@ -409,7 +410,6 @@
     "loading-please-wait": "Loading please wait...",
     "browser-support-message": "Your browser does not support Video",
     "switch-to-main-screen": "Switch to main screen",
-    "return-to-video-hearing-list": "Return to video hearing list",
     "choose-camera-and-microphone": "Choose camera and microphone",
     "choose-camera-and-microphone-dialog": "Choose camera and microphone dialog",
     "details-of-the-hearing": "Details of the hearing",
@@ -694,6 +694,7 @@
     "grc---professional-regulations": "GRC - Professional Regulations",
     "grc---query-jurisdiction": "GRC - Query Jurisdiction",
     "grc---welfare-of-animals": "GRC - Welfare of Animals",
+    "grc---ej": "GRC - EJ",
     "housing-&-planning-act": "Housing & Planning Act",
     "housing-act": "Housing Act",
     "immigration-and-asylum": "Immigration and Asylum",
