@@ -55,7 +55,7 @@ namespace VideoWeb.UnitTests.Controllers.MagicLinkController
             _mocker.Mock<IVideoApiClient>().Setup(x => x.AddMagicLinkParticipantAsync(It.Is<Guid>(y => y == hearingId),
                 It.Is<AddMagicLinkParticipantRequest>(y => y.Name == name && y.UserRole == userRole))).ReturnsAsync(new AddMagicLinkParticipantResponse
             {
-                Participant = participantDetails,
+                ParticipantDetails = participantDetails,
                 Token = jwt,
                 ConferenceId = conferenceId
             });
