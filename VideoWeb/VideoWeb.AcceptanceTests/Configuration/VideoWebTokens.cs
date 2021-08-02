@@ -4,5 +4,6 @@ namespace VideoWeb.AcceptanceTests.Configuration
     {
         public string CallbackBearerToken { get; set; }
         public string TestApiBearerToken { get; set; }
+        public string BookingsApiBearerToken { get; set; }
     }
 }
