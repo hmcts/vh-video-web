@@ -279,7 +279,8 @@
     "continue": "Parhau"
   },
   "back-navigation": {
-    "back": "Yn ôl"
+    "back": "Yn ôl",
+    "return-to-video-hearing-list": "Dychwelyd i'r rhestr gwrandawiadau fideo "
   },
   "introduction": {
     "hm-courts-and-tribunals-service-crest": "Arwyddlun Gwasanaeth Llysoedd a Thribiwnlysoedd EM",
@@ -516,7 +517,8 @@
     "send": "Anfon",
     "char-count": "Nifer o nodau",
     "maximum": "caniateir hyd at",
-    "unable-send": "Methu anfon y neges"
+    "unable-send": "Methu anfon y neges",
+    "type-a-message":"Teipiwch neges"
   },
   "start-private-consultation": {
     "invite": "Gwahodd eraill i gyfarfod preifat",
@@ -596,7 +598,6 @@
   "judge-waiting-room": {
     "switch-to-main-screen": "Dychwelyd i'r brif sgrin",
     "loading-please-wait": "Wrthi'n llwytho...",
-    "return-to-video-hearing-list": "Dychwelyd i'r rhestr gwrandawiadau fideo ",
     "hearing": "Gwrandawiad",
     "choose-camera-and-microphone": "Dewis camera a microffon",
     "choose-camera-and-microphone-dialog": "Blwch deialog dewis camera a microffon",
@@ -982,6 +983,7 @@
     "grc---dvsa": "GRC - DVSA",
     "grc---crb": "GRC - CRB",
     "grc---charity": "GRC - Elusennau",
+    "grc---ej": "GRC - EJ",
     "generic": "Cyffredinol",
     "financial-remedy": "Rhwymedi Ariannol",
     "family-law-act": "Deddf Cyfraith Teulu",
