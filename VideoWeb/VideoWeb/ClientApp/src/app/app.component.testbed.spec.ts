@@ -28,7 +28,7 @@ import { ISecurityService } from './security/authentication/security-service.int
 import { SecurityConfigSetupService } from './security/security-config-setup.service';
 import { getSpiedPropertyGetter } from './shared/jasmine-helpers/property-helpers';
 
-describe('AppComponent', () => {
+describe('AppComponent - Testbed', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
     let deviceTypeServiceSpy: jasmine.SpyObj<DeviceTypeService>;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
@@ -73,10 +73,10 @@ describe('AppComponent', () => {
             ['currentSecurityService$']
         );
 
-        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', []);
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['authorize']);
         getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
 
-        securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>('SecurityConfigSetupService', ['getIdp'], []);
+        securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>('SecurityConfigSetupService', ['getIdp']);
 
         TestBed.configureTestingModule({
             imports: [HttpClientModule, RouterTestingModule],

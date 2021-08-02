@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { JwtHelperService } from '@auth0/angular-jwt';
+import { JwtModule } from '@auth0/angular-jwt';
 import { SharedModule } from '../shared/shared.module';
 import { EjudSignInComponent } from './idp-selection/ejud-sign-in.component';
 import { IdpSelectionComponent } from './idp-selection/idp-selection.component';
@@ -11,8 +11,8 @@ import { SecurityRoutingModule } from './security-routing.module';
 import { UnauthorisedComponent } from './unauthorised/unauthorised.component';
 
 @NgModule({
-    imports: [CommonModule, SharedModule, SecurityRoutingModule],
+    imports: [CommonModule, SharedModule, SecurityRoutingModule, JwtModule],
     declarations: [LoginComponent, LogoutComponent, UnauthorisedComponent, IdpSelectionComponent, EjudSignInComponent, VhSignInComponent],
-    exports: [LoginComponent, LogoutComponent, IdpSelectionComponent, JwtHelperService]
+    exports: [LoginComponent, LogoutComponent, IdpSelectionComponent]
 })
 export class SecurityModule {}
