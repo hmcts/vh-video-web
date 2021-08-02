@@ -91,10 +91,6 @@
   </div>
 </div>
 <div *ngIf="!loadingData && conference" [ngClass]="{ 'no-mass': showVideo }">
-  <a id="back-to-hearing-list-link" href="javascript:void(0)" (click)="goToJudgeHearingList()" class="govuk-back-link">
-    {{ 'judge-waiting-room.return-to-video-hearing-list' | translate }}
-  </a>
-
   <div class="govuk-grid-row govuk-!-margin-top-5" *ngIf="!showVideo">
     <div class="govuk-grid-column-one-third">
       <button
