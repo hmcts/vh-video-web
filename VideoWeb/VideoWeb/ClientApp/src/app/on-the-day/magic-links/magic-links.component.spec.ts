@@ -182,7 +182,7 @@ describe('MagicLinksComponent', () => {
             );
         });
 
-        fit('should navigate to the navigator when joined is returned', fakeAsync(() => {
+        it('should navigate to the navigator when joined is returned', fakeAsync(() => {
             spyOn(component, 'validateForm');
             component.isFormValid = true;
 
