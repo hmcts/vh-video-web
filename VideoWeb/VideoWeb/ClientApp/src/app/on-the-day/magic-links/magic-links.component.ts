@@ -92,8 +92,6 @@ export class MagicLinksComponent implements OnInit {
                             apiResponse: response
                         });
 
-                        console.log('response');
-
                         this.router.navigate([pageUrls.Navigator]);
                     },
                     error => console.log(this.loggerPrefix, error)
