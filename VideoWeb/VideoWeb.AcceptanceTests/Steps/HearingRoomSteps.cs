@@ -176,8 +176,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             var interpretee = _c.Test.ConferenceParticipants.Single(x => x.Id == interpreter.LinkedParticipants.Single().LinkedId);
             _browsers[_c.CurrentUser].Driver.WaitUntilElementExists(HearingRoomPage.ParticipantPanel, 60);            
             _browsers[_c.CurrentUser].Driver.WaitUntilElementExists(HearingRoomPage.InterpreteeName(interpretee.DisplayName), 60);
-            var interpreterText = _browsers[_c.CurrentUser].TextOf(HearingRoomPage.InterpreteeName(interpretee.DisplayName));
-            interpreterText.Should().Contain($"{interpreter.DisplayName}");
+            var interpreteeText = _browsers[_c.CurrentUser].TextOf(HearingRoomPage.InterpreteeName(interpretee.DisplayName));
+            interpreteeText.Should().Contain($"{interpreter.DisplayName}");
         }
 
         [Then(@"the Judge can see interpreter hand (.*)")]
