@@ -41,8 +41,6 @@ describe('MagicLinkSecurityService', () => {
 
             service['token'] = jwt;
 
-            debugger;
-
             // Act
             let isAuthenticated = true;
             service['isAuthenticatedSubject'].next(true);

@@ -105,7 +105,9 @@ export class MagicLinkSecurityService implements ISecurityService {
     }
 
     private isTokenValid(): boolean {
-        if (!this.token) return false;
+        if (!this.token) {
+            return false;
+        }
 
         return !this.hasTokenExpired(this.token);
     }

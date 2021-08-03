@@ -68,7 +68,7 @@ describe('AppComponent', () => {
     const eventsSubjects = new Subject<Event>();
     const dummyElement = document.createElement('div');
     const testTitle = 'test-title';
-    const eventValue: OidcClientNotification<AuthorizationResult> = {
+    let eventValue: OidcClientNotification<AuthorizationResult> = {
         type: EventTypes.NewAuthorizationResult,
         value: { isRenewProcess: false, authorizationState: AuthorizedState.Authorized, validationResult: ValidationResult.Ok }
     };
@@ -162,7 +162,7 @@ describe('AppComponent', () => {
         const checkAuthSubject = new Subject<boolean>();
         securityServiceSpy.checkAuth.and.returnValue(checkAuthSubject.asObservable());
 
-        const eventValue: OidcClientNotification<AuthorizationResult> = {
+        eventValue = {
             type: EventTypes.NewAuthorizationResult,
             value: { isRenewProcess: false, authorizationState: AuthorizedState.Authorized, validationResult: ValidationResult.Ok }
         };
