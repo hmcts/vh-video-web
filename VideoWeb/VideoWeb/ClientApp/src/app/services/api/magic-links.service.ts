@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApiClient, MagicLinkParticipantJoinRequest, MagicLinkParticipantJoinResponse, Role } from 'src/app/services/clients/api-client';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { filter, mergeMap, take, tap } from 'rxjs/operators';
 import { SecurityConfigSetupService } from 'src/app/security/security-config-setup.service';
 import { IdpProviders } from 'src/app/security/idp-providers';
 import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
@@ -24,7 +24,7 @@ export class MagicLinksService {
         return this.apiClient.validateMagicLink(hearingId);
     }
 
-    joinHearing(hearingId: string, name: string, role: Role): Observable<object> {
+    joinHearing(hearingId: string, name: string, role: Role): Observable<boolean> {
         return this.apiClient
             .joinConferenceAsAMagicLinkUser(
                 hearingId,
@@ -37,7 +37,13 @@ export class MagicLinksService {
                 tap((response: MagicLinkParticipantJoinResponse) => {
                     this.securityConfigSetupService.setIdp(IdpProviders.magicLink);
                     this.securityServiceProviderService.getSecurityService().authorize(null, response.jwt);
-                })
+                }),
+                mergeMap(() =>
+                    this.securityServiceProviderService.getSecurityService().isAuthenticated$.pipe(
+                        take(1),
+                        filter(authenticated => authenticated)
+                    )
+                )
             );
     }
 }

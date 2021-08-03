@@ -92,9 +92,9 @@ export class MagicLinksComponent implements OnInit {
                             apiResponse: response
                         });
 
-                        setTimeout(() => {
-                            this.router.navigate([pageUrls.Navigator]);
-                        }, 500);
+                        console.log('response');
+
+                        this.router.navigate([pageUrls.Navigator]);
                     },
                     error => console.log(this.loggerPrefix, error)
                 );

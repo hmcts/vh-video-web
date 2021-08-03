@@ -6,6 +6,7 @@ import { fakeAsync, flush } from '@angular/core/testing';
 import { IdpProviders } from 'src/app/security/idp-providers';
 import { MagicLinkSecurityService } from 'src/app/security/authentication/magic-link-security.service';
 import { Subject } from 'rxjs';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 
 describe('MagicLinksService', () => {
     let service: MagicLinksService;
@@ -15,14 +16,26 @@ describe('MagicLinksService', () => {
     let magicLinkSecurityServiceSpy: jasmine.SpyObj<MagicLinkSecurityService>;
     let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
 
+    let isAuthenticatedSubject: Subject<boolean>;
+
     beforeEach(() => {
         apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', [
             'joinConferenceAsAMagicLinkUser',
             'validateMagicLink',
             'getMagicLinkParticipantRoles'
         ]);
+
         securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>('SecurityConfigSetupService', ['setIdp']);
-        magicLinkSecurityServiceSpy = jasmine.createSpyObj<MagicLinkSecurityService>('MagicLinkSecurityService', ['authorize']);
+
+        magicLinkSecurityServiceSpy = jasmine.createSpyObj<MagicLinkSecurityService>(
+            'MagicLinkSecurityService',
+            ['authorize'],
+            ['isAuthenticated$']
+        );
+
+        isAuthenticatedSubject = new Subject<boolean>();
+        getSpiedPropertyGetter(magicLinkSecurityServiceSpy, 'isAuthenticated$').and.returnValue(isAuthenticatedSubject.asObservable());
+
         securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>('SecurityServiceProviderService', [
             'getSecurityService'
         ]);
@@ -99,12 +112,82 @@ describe('MagicLinksService', () => {
             });
             joinSubject.next(expectedResponse);
             flush();
+            isAuthenticatedSubject.next(true);
+            flush();
 
             // Assert
-            expect(result).toBe(expectedResponse);
+            expect(result).toBe(true);
             expect(apiClientSpy.joinConferenceAsAMagicLinkUser).toHaveBeenCalledOnceWith(hearingId, expectedRequest);
             expect(securityConfigSetupServiceSpy.setIdp).toHaveBeenCalledOnceWith(IdpProviders.magicLink);
-            expect(securityServiceProviderServiceSpy.getSecurityService).toHaveBeenCalledTimes(1);
+            expect(securityServiceProviderServiceSpy.getSecurityService).toHaveBeenCalledTimes(2);
+            expect(magicLinkSecurityServiceSpy.authorize).toHaveBeenCalledOnceWith(null, expectedResponse.jwt);
+        }));
+
+        it('should return the is authenticated observable and filter false', fakeAsync(() => {
+            // Arrange
+            const hearingId = 'hearing-id';
+            const name = 'name';
+            const role = Role.Judge;
+            const expectedRequest = new MagicLinkParticipantJoinRequest({
+                name: name,
+                role: role
+            });
+            const expectedResponse = new MagicLinkParticipantJoinResponse({
+                jwt: 'jwt'
+            });
+
+            const joinSubject = new Subject<MagicLinkParticipantJoinResponse>();
+            apiClientSpy.joinConferenceAsAMagicLinkUser.and.returnValue(joinSubject.asObservable());
+
+            // Act
+            let result = null;
+            service.joinHearing(hearingId, name, role).subscribe(response => {
+                result = response;
+            });
+            joinSubject.next(expectedResponse);
+            flush();
+            isAuthenticatedSubject.next(false);
+            flush();
+
+            // Assert
+            expect(result).toBeNull();
+            expect(apiClientSpy.joinConferenceAsAMagicLinkUser).toHaveBeenCalledOnceWith(hearingId, expectedRequest);
+            expect(securityConfigSetupServiceSpy.setIdp).toHaveBeenCalledOnceWith(IdpProviders.magicLink);
+            expect(securityServiceProviderServiceSpy.getSecurityService).toHaveBeenCalledTimes(2);
+            expect(magicLinkSecurityServiceSpy.authorize).toHaveBeenCalledOnceWith(null, expectedResponse.jwt);
+        }));
+
+        it('should return the is authenticated observable and emit true', fakeAsync(() => {
+            // Arrange
+            const hearingId = 'hearing-id';
+            const name = 'name';
+            const role = Role.Judge;
+            const expectedRequest = new MagicLinkParticipantJoinRequest({
+                name: name,
+                role: role
+            });
+            const expectedResponse = new MagicLinkParticipantJoinResponse({
+                jwt: 'jwt'
+            });
+
+            const joinSubject = new Subject<MagicLinkParticipantJoinResponse>();
+            apiClientSpy.joinConferenceAsAMagicLinkUser.and.returnValue(joinSubject.asObservable());
+
+            // Act
+            let result = null;
+            service.joinHearing(hearingId, name, role).subscribe(response => {
+                result = response;
+            });
+            joinSubject.next(expectedResponse);
+            flush();
+            isAuthenticatedSubject.next(true);
+            flush();
+
+            // Assert
+            expect(result).toBeTrue();
+            expect(apiClientSpy.joinConferenceAsAMagicLinkUser).toHaveBeenCalledOnceWith(hearingId, expectedRequest);
+            expect(securityConfigSetupServiceSpy.setIdp).toHaveBeenCalledOnceWith(IdpProviders.magicLink);
+            expect(securityServiceProviderServiceSpy.getSecurityService).toHaveBeenCalledTimes(2);
             expect(magicLinkSecurityServiceSpy.authorize).toHaveBeenCalledOnceWith(null, expectedResponse.jwt);
         }));
     });

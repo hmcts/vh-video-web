@@ -1,7 +1,7 @@
 import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { of, Subject } from 'rxjs';
 import { MagicLinksService } from 'src/app/services/api/magic-links.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { MockComponent, MockPipe } from 'ng-mocks';
@@ -11,6 +11,7 @@ import { Role } from 'src/app/services/clients/api-client';
 import { ContactUsFoldingComponent } from 'src/app/shared/contact-us-folding/contact-us-folding.component';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { RouterTestingModule } from '@angular/router/testing';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 
 describe('MagicLinksComponent', () => {
     const magicLinkParticipantRoles = [Role.MagicLinkObserver, Role.MagicLinkParticipant];
@@ -19,15 +20,19 @@ describe('MagicLinksComponent', () => {
     let fixture: ComponentFixture<MagicLinksComponent>;
     let errorServiceSpy: jasmine.SpyObj<ErrorService>;
     let magicLinksServiceSpy: jasmine.SpyObj<MagicLinksService>;
+    let routerSpy: jasmine.SpyObj<Router>;
 
     beforeEach(async () => {
         errorServiceSpy = jasmine.createSpyObj('errorServiceSpy', {
             goToServiceError: () => {}
         });
+
         magicLinksServiceSpy = jasmine.createSpyObj('magicLinksService', {
             getMagicLinkParticipantRoles: of(magicLinkParticipantRoles),
             joinHearing: of({})
         });
+
+        routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate']);
 
         await TestBed.configureTestingModule({
             declarations: [MagicLinksComponent, MockComponent(ContactUsFoldingComponent), MockPipe(TranslatePipeMock)],
@@ -37,6 +42,10 @@ describe('MagicLinksComponent', () => {
                     useValue: {
                         info: () => {}
                     }
+                },
+                {
+                    provide: Router,
+                    useValue: routerSpy
                 },
                 {
                     provide: ActivatedRoute,
@@ -161,17 +170,31 @@ describe('MagicLinksComponent', () => {
         });
 
         it('should try and join the conference if the form is valid', () => {
-            const validateFormSpy = spyOn(component, 'validateForm');
+            spyOn(component, 'validateForm');
             component.isFormValid = true;
 
             component.onSubmit();
 
-            expect(validateFormSpy).toHaveBeenCalledTimes(1);
             expect(magicLinksServiceSpy.joinHearing).toHaveBeenCalledOnceWith(
                 component.hearingId,
                 component.magicLinkNameFormControl.value,
                 component.magicLinkRoleFormControl.value
             );
         });
+
+        fit('should navigate to the navigator when joined is returned', fakeAsync(() => {
+            spyOn(component, 'validateForm');
+            component.isFormValid = true;
+
+            const hearingJoinedSubject = new Subject<boolean>();
+
+            magicLinksServiceSpy.joinHearing.and.returnValue(hearingJoinedSubject.asObservable());
+
+            component.onSubmit();
+            hearingJoinedSubject.next(true);
+            flush();
+
+            expect(routerSpy.navigate).toHaveBeenCalledOnceWith([pageUrls.Navigator]);
+        }));
     });
 });
