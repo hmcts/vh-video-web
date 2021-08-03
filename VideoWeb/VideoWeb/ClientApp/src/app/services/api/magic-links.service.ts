@@ -40,8 +40,8 @@ export class MagicLinksService {
                 }),
                 mergeMap(() =>
                     this.securityServiceProviderService.getSecurityService().isAuthenticated$.pipe(
-                        take(1),
-                        filter(authenticated => authenticated)
+                        filter(authenticated => authenticated),
+                        take(1)
                     )
                 )
             );
