@@ -174,10 +174,10 @@ namespace VideoWeb.AcceptanceTests.Steps
             interpreter.Should().NotBeNull();
             interpreter.LinkedParticipants.Should().NotBeNullOrEmpty();
             var interpretee = _c.Test.ConferenceParticipants.Single(x => x.Id == interpreter.LinkedParticipants.Single().LinkedId);
-            _browsers[_c.CurrentUser].Driver.WaitUntilElementExists(HearingRoomPage.ParticipantPanel, 60);
-            _browsers[_c.CurrentUser].Driver.WaitUntilElementExists(HearingRoomPage.InterPreterName(interpreter.DisplayName), 60);
-            var interpreterText = _browsers[_c.CurrentUser].TextOf(HearingRoomPage.InterPreterName(interpreter.DisplayName));
-            interpreterText.Should().Contain($"{interpretee.DisplayName}");
+            _browsers[_c.CurrentUser].Driver.WaitUntilElementExists(HearingRoomPage.ParticipantPanel, 60);            
+            _browsers[_c.CurrentUser].Driver.WaitUntilElementExists(HearingRoomPage.InterpreteeName(interpretee.DisplayName), 60);
+            var interpreterText = _browsers[_c.CurrentUser].TextOf(HearingRoomPage.InterpreteeName(interpretee.DisplayName));
+            interpreterText.Should().Contain($"{interpreter.DisplayName}");
         }
 
         [Then(@"the Judge can see interpreter hand (.*)")]
