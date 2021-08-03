@@ -1,7 +1,7 @@
 import { fakeAsync, flush } from '@angular/core/testing';
-import { JwtHelperService } from '@auth0/angular-jwt';
 import { Subject } from 'rxjs';
 import { ApiClient } from 'src/app/services/clients/api-client';
+import { JwtHelperService } from '../jwt-helper.service';
 import { MagicLinkJwtBody, MagicLinkSecurityService } from './magic-link-security.service';
 
 describe('MagicLinkSecurityService', () => {

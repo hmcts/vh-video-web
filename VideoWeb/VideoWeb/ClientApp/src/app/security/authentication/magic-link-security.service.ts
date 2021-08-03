@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { JwtHelperService } from '@auth0/angular-jwt';
 import { PublicConfiguration } from 'angular-auth-oidc-client';
 import { AuthOptions } from 'angular-auth-oidc-client/lib/login/auth-options';
 import { ReplaySubject, Observable, EMPTY } from 'rxjs';
@@ -7,6 +6,7 @@ import { map, tap } from 'rxjs/operators';
 import { ApiClient } from 'src/app/services/clients/api-client';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { JWTBody } from '../idp-selection/models/jwt-body.model';
+import { JwtHelperService } from '../jwt-helper.service';
 import { ISecurityService } from './security-service.interface';
 
 export class MagicLinkJwtBody extends JWTBody {
@@ -36,7 +36,8 @@ export class MagicLinkSecurityService implements ISecurityService {
 
     decodedTokenBody: MagicLinkJwtBody;
 
-    constructor(private apiClient: ApiClient, private jwtHelper: JwtHelperService) {
+    constructor(private apiClient: ApiClient, private jwtHelper: JwtHelperService = null) {
+        jwtHelper = jwtHelper ?? new JwtHelperService();
         this.tokenSessionStorage = new SessionStorage<string>(this.tokenSessionStorageKey);
         this.token = this.tokenSessionStorage.get();
     }
