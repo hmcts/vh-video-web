@@ -9,5 +9,8 @@ export class CustomValidators extends Validators {
         }
 
         return null;
-    }
+
+        // Disabling next line as prettier and ng lint are arguing over the semi-colon
+        // tslint:disable-next-line
+    };
 }
