@@ -35,7 +35,11 @@
               "src/scripts/IEPF.js",
               "src/scripts/Heartbeat.js",
               "node_modules/govuk-frontend/govuk/all.js",
-              "node_modules/chart.js/dist/Chart.js"
+              "node_modules/chart.js/dist/Chart.js",
+              "node_modules/@mediapipe/camera_utils/camera_utils.js",
+              "node_modules/@mediapipe/control_utils/control_utils.js",
+              "node_modules/@mediapipe/drawing_utils/drawing_utils.js",
+              "node_modules/@mediapipe/selfie_segmentation/selfie_segmentation.js"
             ],
             "aot": true
           },

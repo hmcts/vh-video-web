@@ -7,6 +7,10 @@ declare interface PexRTC {
     PexRTC(): PexipClient;
 }
 
+interface HTMLCanvasElement {
+    captureStream(frameRate?: number): MediaStream;
+}
+
 declare interface PexipClient {
     video_source: any;
     audio_source: any;
