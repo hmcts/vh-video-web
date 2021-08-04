@@ -24,6 +24,7 @@ export class SecurityConfigSetupService {
             this.config[IdpProviders.ejud] = this.initOidcConfig(clientSettings.e_jud_idp_settings);
             this.config[IdpProviders.vhaad] = this.initOidcConfig(clientSettings.vh_idp_settings);
 
+            this.oidcConfigService.withConfig(this.config[this.defaultProvider]);
             this.configSetup$.next(true);
         });
     }
@@ -49,10 +50,12 @@ export class SecurityConfigSetupService {
 
     restoreConfig() {
         const provider = this.getIdp();
-        this.configSetup$.pipe(filter(Boolean)).subscribe(() => {
-            this.oidcConfigService.withConfig(this.config[provider]);
-            this.currentIdpSubject.next(provider);
-        });
+        if (provider !== IdpProviders.magicLink) {
+            this.configSetup$.pipe(filter(Boolean)).subscribe(() => {
+                this.oidcConfigService.withConfig(this.config[provider]);
+                this.currentIdpSubject.next(provider);
+            });
+        }
     }
 
     setIdp(provider: IdpProviders) {

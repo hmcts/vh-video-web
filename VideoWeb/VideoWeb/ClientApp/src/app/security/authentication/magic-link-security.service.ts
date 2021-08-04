@@ -39,7 +39,8 @@ export class MagicLinkSecurityService implements ISecurityService {
     constructor(private apiClient: ApiClient, private jwtHelper: JwtHelperService = null) {
         jwtHelper = jwtHelper ?? new JwtHelperService();
         this.tokenSessionStorage = new SessionStorage<string>(this.tokenSessionStorageKey);
-        this.token = this.tokenSessionStorage.get();
+
+        this.authorizeFromSessionStorage();
     }
 
     authorize(authOptions?: AuthOptions, token?: string): void {
@@ -103,6 +104,14 @@ export class MagicLinkSecurityService implements ISecurityService {
         this.clearToken();
         this.isAuthenticatedSubject.next(false);
         return EMPTY;
+    }
+
+    private authorizeFromSessionStorage() {
+        const token = this.tokenSessionStorage.get();
+
+        if (token) {
+            this.authorize(null, token);
+        }
     }
 
     private isTokenValid(): boolean {
