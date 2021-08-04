@@ -134,6 +134,12 @@ parameters:
           - name: UsingEjud
             value: $(UsingEjud)
 
+          # Magic Links Configuration
+          - name: MagicLinks:Issuer
+            value: $(video_api_url)
+          - name: MagicLinks:JwtProviderSecret
+            value: $(JwtProviderSecret)
+
     - name: appSettings
       type: object
       default:
@@ -210,6 +216,12 @@ parameters:
             value: $(EmailReformDomain)
           - name: VhServices:InternalEventSecret
             value: $(internal_event_secret)
+
+          # Magic Links Configuration
+          - name: MagicLinks:Issuer
+            value: $(video_api_url)
+          - name: MagicLinks:JwtProviderSecret
+            value: $(JwtProviderSecret)
 
 variables:
     - group: vh-domains-and-urls

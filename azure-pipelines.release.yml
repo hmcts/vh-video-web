@@ -160,6 +160,28 @@ stages:
             env:
               - Prod
               - Preprod
+
+          - group: MagicLinks_Dev
+            env:
+             - Dev
+          - group: MagicLinks_Preprod
+            env:
+             - Preprod
+          - group: MagicLinks_Prod
+            env:
+             - Prod
+          - group: MagicLinks_Test
+            env:
+             - Test1
+          - group: MagicLinks_Aat
+            env:
+             - Aat
+          - group: MagicLinks_Demo
+            env:
+             - Demo
+          - group: MagicLinks_Sandbox
+            env:
+             - Sandbox
         appSettings:
           - name: ApplicationInsights:InstrumentationKey
             value: vh-core-infra-AppInsightsKey
