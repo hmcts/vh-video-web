@@ -10,9 +10,9 @@ namespace VideoWeb.AuthenticationSchemes
     {
         private readonly MagicLinksConfiguration _idpConfiguration;
 
-        public MagicLinksScheme(IdpConfiguration idpConfiguration, string eventhubPath) : base(eventhubPath)
+        public MagicLinksScheme(MagicLinksConfiguration idpConfiguration, string eventhubPath) : base(eventhubPath)
         {
-            _idpConfiguration = idpConfiguration as MagicLinksConfiguration;
+            _idpConfiguration = idpConfiguration;
         }
         
         public bool BelongsToScheme(JwtSecurityToken jwtSecurityToken) => jwtSecurityToken.Issuer.Contains(_idpConfiguration.Issuer, StringComparison.InvariantCultureIgnoreCase);

@@ -24,8 +24,7 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
             _configuration = new MagicLinksConfiguration
             {
                 Issuer = "issuer",
-                JwtProviderSecret = "x4p5Kxsygx3dYAso0JKZljK0PL926mxppc5gGqeV9aRydc++gSNx4UITuZ1G6YJX7KgymQnQiEsaG/XIUKTPPA==",
-                TenantId = "tenantId"
+                JwtProviderSecret = "x4p5Kxsygx3dYAso0JKZljK0PL926mxppc5gGqeV9aRydc++gSNx4UITuZ1G6YJX7KgymQnQiEsaG/XIUKTPPA=="
             };
             _sut = new MagicLinksScheme(_configuration, "eventHubPath");
         }
@@ -88,19 +87,6 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
             jwtBearerOptions.TokenValidationParameters.ValidateIssuer.Should().BeTrue();
             jwtBearerOptions.TokenValidationParameters.ValidateAudience.Should().BeFalse();
             jwtBearerOptions.TokenValidationParameters.ClockSkew.Should().Be(TimeSpan.Zero);
-        }
-
-        [Test]
-        public void ShouldReturnFalseIfDoesntBelongsToScheme()
-        {
-            // Arrange
-            var token = new JwtSecurityToken(issuer: _configuration.TenantId);
-
-            // Act
-            var belongs = _sut.BelongsToScheme(token);
-
-            // Assert
-            belongs.Should().BeFalse();
         }
 
         [Test]
