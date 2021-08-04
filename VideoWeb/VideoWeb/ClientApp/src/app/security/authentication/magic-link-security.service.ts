@@ -29,7 +29,7 @@ export class MagicLinkJwtBody extends JWTBody {
 export class MagicLinkSecurityService implements ISecurityService {
     private loggerPrefix = '[MagicLinkSecurityService] -';
     private token: string;
-    private tokenSessionStorageKey = 'MAGIC_LINKS_JWT';
+    tokenSessionStorageKey = 'MAGIC_LINKS_JWT';
     private tokenSessionStorage: SessionStorage<string>;
     private isAuthenticatedSubject = new ReplaySubject<boolean>(1);
     private userDataSubject = new ReplaySubject<any>(1);
@@ -106,9 +106,10 @@ export class MagicLinkSecurityService implements ISecurityService {
         return EMPTY;
     }
 
-    private authorizeFromSessionStorage() {
+    authorizeFromSessionStorage() {
         const token = this.tokenSessionStorage.get();
 
+        console.log('TOKEN', token);
         if (token) {
             this.authorize(null, token);
         }
