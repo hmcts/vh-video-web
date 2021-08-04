@@ -59,4 +59,21 @@ fdescribe('AlreadyAuthenticatedGuard', () => {
         expect(routerSpy.navigate).not.toHaveBeenCalled();
         expect(canActivate).toBeTrue();
     }));
+
+    it('should only take one emitted value', fakeAsync(() => {
+        // Act
+        let canActivate = true;
+        guard.canActivate().subscribe(activate => (canActivate = activate));
+        flush();
+        isAuthenticatedSubject.next(false);
+        flush();
+        isAuthenticatedSubject.next(true);
+        flush();
+        isAuthenticatedSubject.next(true);
+        flush();
+
+        // Assert
+        expect(routerSpy.navigate).not.toHaveBeenCalled();
+        expect(canActivate).toBeTrue();
+    }));
 });
