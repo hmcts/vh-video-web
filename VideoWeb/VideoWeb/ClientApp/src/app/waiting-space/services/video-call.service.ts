@@ -431,4 +431,20 @@ export class VideoCallService {
 
         return this.apiClient.getParticipantRoomForParticipant(conferenceId, participantId, 'Judicial').toPromise();
     }
+
+    updateAudioOnlyPreference(audioOnly: boolean) {
+        const videoCallPrefs = this.retrieveVideoCallPreferences();
+        videoCallPrefs.audioOnly = audioOnly;
+        this.updateVideoCallPreferences(videoCallPrefs);
+    }
+
+    async updatePexipAudioVideoSource(cam: UserMediaDevice, mic: UserMediaDevice) {
+        if (cam) {
+            this.updateCameraForCall(cam);
+        }
+        if (mic) {
+            this.updateMicrophoneForCall(mic);
+        }
+        this.logger.info(`${this.loggerPrefix} Update camera and microphone selection`, { cameraId: cam.deviceId, microphoneId: mic.deviceId });
+    }
 }

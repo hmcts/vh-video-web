@@ -1,5 +1,4 @@
 import { Component, OnInit, Output, EventEmitter, OnDestroy, Input } from '@angular/core';
-import { SelectedUserMediaDevice } from 'src/app/shared/models/selected-user-media-device';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { FormBuilder, FormGroup, AbstractControl, Validators } from '@angular/forms';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
@@ -8,6 +7,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 
 @Component({
     selector: 'app-select-media-devices',
@@ -17,7 +17,7 @@ import { takeUntil } from 'rxjs/operators';
 export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     private readonly loggerPrefix = '[SelectMediaDevices] -';
     @Output() cancelMediaDeviceChange = new EventEmitter();
-    @Output() acceptMediaDeviceChange = new EventEmitter<SelectedUserMediaDevice>();
+    @Output() acceptMediaDeviceChange = new EventEmitter();
     @Input() waitingRoomMode = false;
     @Input() showAudioOnlySetting = false;
     @Input() cameraOn = true;
@@ -39,7 +39,8 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         private userMediaStreamService: UserMediaStreamService,
         private formBuilder: FormBuilder,
         private logger: Logger,
-        private translateService: TranslateService
+        private translateService: TranslateService,
+        private videoCallService:  VideoCallService
     ) {}
 
     ngOnInit() {
@@ -134,7 +135,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         this.saveSelectedDevices();
     }
 
-    saveSelectedDevices() {
+    async saveSelectedDevices() {
         // save on select device
         const selectedCam = this.getSelectedCamera();
         const selectedMic = this.getSelectedMicrophone();
@@ -152,7 +153,8 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         this.userMediaService.updatePreferredCamera(selectedCam);
         this.userMediaService.updatePreferredMicrophone(selectedMic);
         this.logger.debug(`${this.loggerPrefix} Accepting new media device change`);
-        this.acceptMediaDeviceChange.emit(new SelectedUserMediaDevice(selectedCam, selectedMic, audioOnly));
+        await this.callWithNewDevices(selectedCam, selectedMic, audioOnly);
+        this.acceptMediaDeviceChange.emit();
     }
 
     onSubmit() {
@@ -162,6 +164,16 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         this.saveSelectedDevices();
         this.logger.debug(`${this.loggerPrefix} Cancelling media device change`);
         this.cancelMediaDeviceChange.emit();
+    }
+
+    async callWithNewDevices(cam: UserMediaDevice, mic: UserMediaDevice, audioOnly: boolean) {
+        
+        this.videoCallService.updateAudioOnlyPreference(audioOnly);
+        await this.videoCallService.updatePexipAudioVideoSource(cam, mic);
+        this.videoCallService.reconnectToCallWithNewDevices();
+        if (audioOnly) {
+            this.videoCallService.switchToAudioOnlyCall();
+        }
     }
 
     toggleSwitch() {

@@ -19,7 +19,6 @@ import { UserMediaStreamService } from 'src/app/services/user-media-stream.servi
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
-import { SelectedUserMediaDevice } from '../models/selected-user-media-device';
 
 @Component({
     selector: 'app-self-test',
@@ -151,13 +150,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
     onMediaDeviceChangeCancelled() {
         this.displayDeviceChangeModal = false;
-        this.call();
-    }
-
-    async onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
-        this.userMediaService.updatePreferredCamera(selectedMediaDevice.selectedCamera);
-        this.userMediaService.updatePreferredMicrophone(selectedMediaDevice.selectedMicrophone);
-        await this.updatePexipAudioVideoSource();
         this.call();
     }
 

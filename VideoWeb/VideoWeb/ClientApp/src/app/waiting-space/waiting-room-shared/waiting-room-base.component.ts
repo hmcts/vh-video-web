@@ -37,7 +37,6 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
 import { Room } from 'src/app/shared/models/room';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
 import { HearingRole } from '../models/hearing-role-model';
 import {
     CallError,
@@ -1116,17 +1115,7 @@ export abstract class WaitingRoomBaseDirective {
         this.displayDeviceChangeModal = false;
     }
 
-    async onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
-        this.logger.debug(`${this.loggerPrefix} Updated device settings`, { selectedMediaDevice });
-        this.userMediaService.updatePreferredCamera(selectedMediaDevice.selectedCamera);
-        this.userMediaService.updatePreferredMicrophone(selectedMediaDevice.selectedMicrophone);
-        this.audioOnly = selectedMediaDevice.audioOnly;
-        this.updateAudioOnlyPreference(this.audioOnly);
-        await this.updatePexipAudioVideoSource();
-        this.videoCallService.reconnectToCallWithNewDevices();
-        if (this.audioOnly) {
-            this.videoCallService.switchToAudioOnlyCall();
-        }
+    async onMediaDeviceChangeAccepted() {
         if (this.hearingControls) {
             await this.publishMediaDeviceStatus();
         }
@@ -1137,27 +1126,6 @@ export abstract class WaitingRoomBaseDirective {
         await this.hearingControls.publishMediaDeviceStatus();
     }
 
-    protected updateAudioOnlyPreference(audioOnly: boolean) {
-        const videoCallPrefs = this.videoCallService.retrieveVideoCallPreferences();
-        videoCallPrefs.audioOnly = audioOnly;
-        this.videoCallService.updateVideoCallPreferences(videoCallPrefs);
-    }
-
-    private async updatePexipAudioVideoSource() {
-        const cam = await this.userMediaService.getPreferredCamera();
-        if (cam) {
-            this.videoCallService.updateCameraForCall(cam);
-        }
-
-        const mic = await this.userMediaService.getPreferredMicrophone();
-        if (mic) {
-            this.videoCallService.updateMicrophoneForCall(mic);
-        }
-        this.logger.info(`${this.loggerPrefix} Update camera and microphone selection`, {
-            cameraId: cam.deviceId,
-            microphoneId: mic.deviceId
-        });
-    }
 
     get showExtraContent(): boolean {
         return !this.showVideo && !this.isTransferringIn;
