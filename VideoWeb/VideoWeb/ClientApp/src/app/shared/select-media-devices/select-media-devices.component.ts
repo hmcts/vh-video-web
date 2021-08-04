@@ -24,7 +24,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
 
     availableCameraDevices: UserMediaDevice[] = [];
     availableMicrophoneDevices: UserMediaDevice[] = [];
-
+    mediaDeviceChange = new Subject();
     preferredCameraStream: MediaStream;
     preferredMicrophoneStream: MediaStream;
     connectWithCameraOn: boolean;
@@ -45,12 +45,10 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.connectWithCameraOn = this.cameraOn;
-        this.logger.debug(`${this.loggerPrefix} Initialising media device selection`);
         return this.requestMedia().then(permissionGranted => {
             if (!permissionGranted) {
                 this.logger.warn(`${this.loggerPrefix} Could not get all media permissions. Check logs`);
             }
-            this.logger.debug(`${this.loggerPrefix} Updating device list`);
             this.updateDeviceList()
                 .then(async () => {
                     this.selectedMediaDevicesForm = await this.initNewDeviceSelectionForm();
@@ -63,9 +61,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     }
 
     private async updateDeviceList() {
-        this.availableCameraDevices = await this.userMediaService.getListOfVideoDevices();
-        this.availableMicrophoneDevices = await this.userMediaService.getListOfMicrophoneDevices();
-
+        this.logger.debug(`${this.loggerPrefix} Updating device list`);
         this.userMediaService.connectedDevices.pipe(takeUntil(this.destroyedSubject)).subscribe(async () => {
             this.availableCameraDevices = await this.userMediaService.getListOfVideoDevices();
             this.availableMicrophoneDevices = await this.userMediaService.getListOfMicrophoneDevices();
@@ -76,13 +72,15 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         const preferredMicrophone = await this.userMediaService.getPreferredMicrophone();
         this.preferredCameraStream = await this.userMediaStreamService.getStreamForCam(preferredCamera);
         this.preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(preferredMicrophone);
-    }
+    }                                                                                                     
 
     async requestMedia() {
+        this.logger.debug(`${this.loggerPrefix} Initialising media device selection`);
         return this.userMediaStreamService.requestAccess();
     }
 
     private async initNewDeviceSelectionForm(): Promise<FormGroup> {
+        this.logger.debug(`${this.loggerPrefix} Initialising new device selection form`);
         let cam = this.availableCameraDevices[0];
         const preferredCamera = await this.userMediaService.getPreferredCamera();
         if (preferredCamera) {
@@ -131,38 +129,18 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         return this.selectedMediaDevicesForm.get('microphone');
     }
 
-    onChangeDevice() {
-        this.saveSelectedDevices();
-    }
-
-    async saveSelectedDevices() {
-        // save on select device
-        const selectedCam = this.getSelectedCamera();
-        const selectedMic = this.getSelectedMicrophone();
-        const audioOnly = !this.connectWithCameraOn;
-
-        if ((!selectedCam && !audioOnly) || !selectedMic) {
-            this.logger.warn(`${this.loggerPrefix} Selected camera or microphone was falsey.`, {
-                selectedCam: selectedCam,
-                selectedMic: selectedMic,
-                audioOnly: audioOnly
-            });
-            return;
-        }
-
-        this.userMediaService.updatePreferredCamera(selectedCam);
-        this.userMediaService.updatePreferredMicrophone(selectedMic);
-        this.logger.debug(`${this.loggerPrefix} Accepting new media device change`);
-        await this.callWithNewDevices(selectedCam, selectedMic, audioOnly);
-        this.acceptMediaDeviceChange.emit();
-    }
-
-    onSubmit() {
+    async onSubmit() {
         // close dialog and stop streams
         this.userMediaStreamService.stopStream(this.preferredCameraStream);
         this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
-        this.saveSelectedDevices();
+        // this.saveSelectedDevices();
+        const selectedCam = this.getSelectedCamera();
+        const selectedMic = this.getSelectedMicrophone();
+        const audioOnly = !this.connectWithCameraOn;
+        
         this.logger.debug(`${this.loggerPrefix} Cancelling media device change`);
+        this.mediaDeviceChange.next();
+        await this.callWithNewDevices(selectedCam, selectedMic, audioOnly);
         this.cancelMediaDeviceChange.emit();
     }
 
@@ -179,8 +157,6 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     toggleSwitch() {
         this.connectWithCameraOn = !this.connectWithCameraOn;
         this.logger.debug(`${this.loggerPrefix} Toggle camera switch to ${this.connectWithCameraOn ? 'on' : 'off'}`);
-
-        this.saveSelectedDevices();
     }
 
     getSelectedCamera(): UserMediaDevice {
@@ -202,6 +178,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     }
 
     private async updateCameraStream(newCam: UserMediaDevice) {
+        this.logger.debug(`${this.loggerPrefix} Updating camera stream`);
         if (this.preferredCameraStream) {
             this.userMediaStreamService.stopStream(this.preferredCameraStream);
         }
@@ -211,14 +188,13 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     }
 
     private async updateMicrophoneStream(newMic: UserMediaDevice) {
+        this.logger.debug(`${this.loggerPrefix} Updating mic stream`);
         if (this.preferredMicrophoneStream) {
             this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
         }
+        this.userMediaService.updatePreferredMicrophone(newMic);
         this.preferredMicrophoneStream = null;
         this.preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(newMic);
-        if (this.preferredMicrophoneStream) {
-            this.userMediaService.updatePreferredMicrophone(newMic);
-        }
     }
 
     transitionstart() {

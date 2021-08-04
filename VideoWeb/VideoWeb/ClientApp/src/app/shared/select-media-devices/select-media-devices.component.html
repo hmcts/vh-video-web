@@ -32,8 +32,7 @@
 
                             <select class="govuk-select govuk-!-width-two-thirds"
                                     id="available-cam-list"
-                                    formControlName="camera"
-                                    (change)="onChangeDevice()">
+                                    formControlName="camera">
                                 <option *ngFor="let availableCam of availableCameraDevices" [ngValue]="availableCam">
                                     {{ availableCam.label }}
                                 </option>
@@ -53,8 +52,7 @@
 
                             <select class="govuk-select govuk-!-width-two-thirds"
                                     id="available-mics-list"
-                                    formControlName="microphone"
-                                    (change)="onChangeDevice()">
+                                    formControlName="microphone">
                                 <option *ngFor="let availableMic of availableMicrophoneDevices" [ngValue]="availableMic">
                                     {{ availableMic.label }}
                                 </option>
