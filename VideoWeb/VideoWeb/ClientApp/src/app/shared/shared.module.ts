@@ -36,6 +36,7 @@ import { TestLanguageService } from './test-language.service';
 import { MultilinePipe } from './pipes/multiline.pipe';
 import { NgxDatePipe } from './pipes/ngx-date.pipe';
 import { ParticipantPanelModelMapper } from './mappers/participant-panel-model-mapper';
+import { VideoFilterComponent } from './video-filter/video-filter.component';
 
 @NgModule({
     imports: [
@@ -79,7 +80,8 @@ import { ParticipantPanelModelMapper } from './mappers/participant-panel-model-m
         VhToastComponent,
         RoomClosingToastComponent,
         MultilinePipe,
-        NgxDatePipe
+        NgxDatePipe,
+        VideoFilterComponent
     ],
     providers: [WindowScrolling, ScreenHelper, TestLanguageService, DatePipe, ParticipantPanelModelMapper],
     exports: [

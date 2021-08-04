@@ -1,5 +1,5 @@
 export enum BackgroundEffect {
-    blur,
-    architecture,
-    pyramid
+    blur = 'blur',
+    architecture = 'architecture',
+    pyramid = 'pyramid'
 }

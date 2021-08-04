@@ -17,6 +17,7 @@ import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { VirtualBackgroundService } from 'src/app/services/virtual-background-service.service';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 import { SelectedUserMediaDevice } from '../models/selected-user-media-device';
@@ -63,7 +64,8 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         private errorService: ErrorService,
         private userMediaService: UserMediaService,
         private userMediaStreamService: UserMediaStreamService,
-        private videoCallService: VideoCallService
+        private videoCallService: VideoCallService,
+        private vBgService: VirtualBackgroundService
     ) {
         this.didTestComplete = false;
     }
@@ -167,6 +169,13 @@ export class SelfTestComponent implements OnInit, OnDestroy {
                 this.hasMultipleDevices = await this.userMediaService.hasMultipleDevices();
             })
         );
+        this.vBgService.onFilterChanged.subscribe(async filter => {
+            if (filter) {
+                await this.applyFilter();
+            } else {
+                this.removeFilter();
+            }
+        });
     }
 
     async setupPexipClient() {
@@ -194,6 +203,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             participant: this.selfTestParticipantId
         });
         this.outgoingStream = callSetup.stream;
+        this.vBgService.originalOutgoingStream = callSetup.stream;
         this.videoCallService.connect('0000', null);
     }
 
@@ -260,12 +270,30 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         if (navigator.userAgent.toLowerCase().indexOf('firefox') !== -1) {
             this.videoCallService.enableH264(false);
         }
+
+        if (this.vBgService.filterOn) {
+            await this.applyFilter();
+        }
+
         this.videoCallService.makeCall(
             this.selfTestPexipNode,
             `${conferenceAlias};${tokenOptions}`,
             this.selfTestParticipantId,
             this.maxBandwidth
         );
+    }
+
+    removeFilter() {
+        this.videoCallService.pexipAPI.user_media_stream = null;
+        this.videoCallService.pexipAPI.video_source = this.vBgService.originalVideoSource;
+        this.videoCallService.pexipAPI.audio_source = this.vBgService.originalAudioSource;
+        this.outgoingStream = this.vBgService.originalOutgoingStream;
+    }
+
+    async applyFilter() {
+        this.outgoingStream;
+        const filteredStream = await this.vBgService.applyFilter();
+        this.outgoingStream = filteredStream;
     }
 
     replayVideo() {
