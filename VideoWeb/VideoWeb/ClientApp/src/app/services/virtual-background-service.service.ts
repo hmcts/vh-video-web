@@ -1,24 +1,18 @@
 import { Injectable } from '@angular/core';
-
-import { Results, SelfieSegmentation } from '@mediapipe/selfie_segmentation';
 import { Camera } from '@mediapipe/camera_utils';
-import { BackgroundFilter } from './models/background-filter';
-import { UserMediaStreamService } from './user-media-stream.service';
-import { Logger } from './logging/logger-base';
-import { UserMediaService } from './user-media.service';
+import { Results, SelfieSegmentation } from '@mediapipe/selfie_segmentation';
 import { Observable, Subject } from 'rxjs';
 import { VideoCallService } from '../waiting-space/services/video-call.service';
+import { Logger } from './logging/logger-base';
+import { BackgroundFilter } from './models/background-filter';
+import { UserMediaStreamService } from './user-media-stream.service';
+import { UserMediaService } from './user-media.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class VirtualBackgroundService {
     private readonly loggerPrefix = '[VirtualBackgroundService] -';
-
-    // private _onFilterChanged = new Subject<BackgroundFilter | null>();
-    // get onFilterChanged(): Observable<BackgroundFilter | null> {
-    //     return this._onFilterChanged.asObservable();
-    // }
 
     private _onStreamFiltered = new Subject<MediaStream | URL>();
     get onStreamFiltered(): Observable<MediaStream | URL> {
@@ -42,9 +36,6 @@ export class VirtualBackgroundService {
     private originalVideoSource: MediaStream;
     originalOutgoingStream: MediaStream | URL;
 
-    /**
-     *
-     */
     constructor(
         private userMediaStreamService: UserMediaStreamService,
         private userMediaService: UserMediaService,
@@ -73,33 +64,35 @@ export class VirtualBackgroundService {
             selfieMode: false
         });
 
-        this.userMediaService.onPreferredCameraChanged$.subscribe(async () => {
-            this.logger.debug(`${this.loggerPrefix} preferred camera changed, updating stream`);
-            this.currentUnfilteredCameraStream = await this.getStreamForPreferredCamera();
-            this._onStreamFiltered.next(this.currentUnfilteredCameraStream);
-        });
+        // this.userMediaService.onPreferredCameraChanged$.subscribe(async () => {
+        //     this.logger.debug(`${this.loggerPrefix} preferred camera changed, updating stream`);
+        //     this.currentUnfilteredCameraStream = await this.getStreamForPreferredCamera();
+        //     this._onStreamFiltered.next(this.currentUnfilteredCameraStream);
+        // });
     }
 
-    // async startFilteredStream(): Promise<MediaStream> {
     async startFilteredStream() {
         this.logger.debug(`${this.loggerPrefix} starting image segmentation`);
         if (!this.currentUnfilteredCameraStream) {
             this.logger.debug(`${this.loggerPrefix} no camera stream found, retrieving stream for preferred camera`);
             this.currentUnfilteredCameraStream = await this.getStreamForPreferredCamera();
         }
-        if (this.currentFilteredCameraStream) {
-            this.logger.debug(`${this.loggerPrefix} filtered stream alreadt started`);
-            return;
-        }
+        // if (this.currentFilteredCameraStream) {
+        //     this.logger.debug(`${this.loggerPrefix} filtered stream already started`);
+        //     return;
+        // }
 
         this.selfieSegmentation.onResults(results => this.onSelfieSegmentationResults(results));
 
+        this.applyFilterToCameraStream();
+    }
+
+    private applyFilterToCameraStream() {
         const camera = new Camera(this.videoElement, {
             onFrame: async () => {
                 await this.selfieSegmentation.send({ image: this.videoElement });
             }
         });
-
         camera.start();
         const stream = this.canvasElement.captureStream();
         this.currentUnfilteredCameraStream.getAudioTracks().forEach(track => {
@@ -128,9 +121,8 @@ export class VirtualBackgroundService {
         // this._onFilterChanged.next(this.activeFilter);
     }
 
-    // async applyFilterToPreferredCamera(): Promise<MediaStream | URL> {
     private async replacePexipWithFilteredStream() {
-        await this.startFilteredStream();
+        this.applyFilterToCameraStream();
 
         this.videoCallService.pexipAPI.video_source = null;
         this.videoCallService.pexipAPI.audio_source = null;
@@ -139,7 +131,6 @@ export class VirtualBackgroundService {
         // return filteredStream;
     }
 
-    // removeFilter(): MediaStream | URL {
     private replacePexipWithOriginalStream() {
         this.videoCallService.pexipAPI.user_media_stream = null;
         this.videoCallService.pexipAPI.video_source = this.originalVideoSource;

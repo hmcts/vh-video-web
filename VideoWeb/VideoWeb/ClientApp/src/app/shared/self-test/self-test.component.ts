@@ -169,13 +169,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
                 this.hasMultipleDevices = await this.userMediaService.hasMultipleDevices();
             })
         );
-        // this.vBgService.onFilterChanged.subscribe(async filter => {
-        //     if (filter) {
-        //         await this.applyFilter();
-        //     } else {
-        //         this.removeFilter();
-        //     }
-        // });
         this.subscription.add(
             this.vBgService.onStreamFiltered.subscribe(stream => {
                 this.logger.debug(`${this.loggerPrefix} new stream provided from background service`);
@@ -190,7 +183,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             participant: this.selfTestParticipantId
         });
 
-        this.videoCallSubscription$.add(this.videoCallService.onCallSetup().subscribe(setup => this.handleCallSetup(setup)));
+        this.videoCallSubscription$.add(this.videoCallService.onCallSetup().subscribe(async setup => await this.handleCallSetup(setup)));
         this.videoCallSubscription$.add(
             this.videoCallService.onCallConnected().subscribe(callConnected => this.handleCallConnected(callConnected))
         );
@@ -203,14 +196,15 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         this.updatePexipAudioVideoSource();
     }
 
-    handleCallSetup(callSetup: CallSetup) {
+    async handleCallSetup(callSetup: CallSetup) {
         this.logger.debug(`${this.loggerPrefix} Self test call has setup`, {
             conference: this.conference?.id,
             participant: this.selfTestParticipantId
         });
         this.outgoingStream = callSetup.stream;
         this.vBgService.originalOutgoingStream = callSetup.stream;
-        this.vBgService.startFilteredStream();
+        this.vBgService.currentUnfilteredCameraStream = callSetup.stream as MediaStream;
+        await this.vBgService.startFilteredStream();
         this.videoCallService.connect('0000', null);
     }
 
@@ -278,11 +272,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             this.videoCallService.enableH264(false);
         }
 
-        // if (this.vBgService.filterOn) {
-        // this.vBgService.startFilteredStream();
-        // await this.applyFilter();
-        // }
-
         this.videoCallService.makeCall(
             this.selfTestPexipNode,
             `${conferenceAlias};${tokenOptions}`,
@@ -290,16 +279,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             this.maxBandwidth
         );
     }
-
-    // removeFilter() {
-    //     const originalStream = this.vBgService.removeFilter();
-    //     this.outgoingStream = originalStream;
-    // }
-
-    // async applyFilter() {
-    //     const filteredStream = await this.vBgService.applyFilterToPreferredCamera();
-    //     this.outgoingStream = filteredStream;
-    // }
 
     replayVideo() {
         this.logger.debug(`${this.loggerPrefix} Replaying self test video`, {
