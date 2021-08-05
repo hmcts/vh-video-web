@@ -1,14 +1,13 @@
-import { Component, OnInit, Output, EventEmitter, OnDestroy, Input } from '@angular/core';
-import { SelectedUserMediaDevice } from 'src/app/shared/models/selected-user-media-device';
-import { UserMediaService } from 'src/app/services/user-media.service';
-import { FormBuilder, FormGroup, AbstractControl, Validators } from '@angular/forms';
-import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
-import { Logger } from 'src/app/services/logging/logger-base';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { VirtualBackgroundService } from 'src/app/services/virtual-background-service.service';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { UserMediaService } from 'src/app/services/user-media.service';
+import { SelectedUserMediaDevice } from 'src/app/shared/models/selected-user-media-device';
+import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 
 @Component({
     selector: 'app-select-media-devices',
@@ -40,8 +39,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         private userMediaStreamService: UserMediaStreamService,
         private formBuilder: FormBuilder,
         private logger: Logger,
-        private translateService: TranslateService,
-        private vBgService: VirtualBackgroundService
+        private translateService: TranslateService
     ) {}
 
     ngOnInit() {
@@ -65,13 +63,13 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     }
 
     private setupSubscribers() {
-        this.vBgService.onFilterChanged.subscribe(async filter => {
-            if (filter) {
-                await this.applyFilter();
-            } else {
-                this.removeFilter();
-            }
-        });
+        // this.vBgService.onFilterChanged.subscribe(async filter => {
+        //     if (filter) {
+        //         await this.applyFilter();
+        //     } else {
+        //         this.removeFilter();
+        //     }
+        // });
     }
 
     private async updateDeviceList() {
@@ -246,13 +244,13 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         this.preferredMicrophoneStream = null;
     }
 
-    removeFilter() {
-        const originalStream = this.vBgService.removeFilter();
-        this.preferredCameraStream = originalStream as MediaStream;
-    }
+    // removeFilter() {
+    //     const originalStream = this.vBgService.removeFilter();
+    //     this.preferredCameraStream = originalStream as MediaStream;
+    // }
 
-    async applyFilter() {
-        const filteredStream = await this.vBgService.applyFilter();
-        this.preferredCameraStream = filteredStream as MediaStream;
-    }
+    // async applyFilter() {
+    //     const filteredStream = await this.vBgService.applyFilterToPreferredCamera();
+    //     this.preferredCameraStream = filteredStream as MediaStream;
+    // }
 }

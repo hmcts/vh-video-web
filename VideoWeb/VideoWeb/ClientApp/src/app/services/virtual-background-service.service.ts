@@ -15,9 +15,14 @@ import { VideoCallService } from '../waiting-space/services/video-call.service';
 export class VirtualBackgroundService {
     private readonly loggerPrefix = '[VirtualBackgroundService] -';
 
-    private _onFilterChanged = new Subject<BackgroundFilter | null>();
-    get onFilterChanged(): Observable<BackgroundFilter | null> {
-        return this._onFilterChanged.asObservable();
+    // private _onFilterChanged = new Subject<BackgroundFilter | null>();
+    // get onFilterChanged(): Observable<BackgroundFilter | null> {
+    //     return this._onFilterChanged.asObservable();
+    // }
+
+    private _onStreamFiltered = new Subject<MediaStream | URL>();
+    get onStreamFiltered(): Observable<MediaStream | URL> {
+        return this._onStreamFiltered.asObservable();
     }
 
     videoElement: HTMLVideoElement;
@@ -31,8 +36,8 @@ export class VirtualBackgroundService {
     activeFilter: BackgroundFilter;
     imgs: Map<BackgroundFilter, HTMLImageElement> = new Map();
 
-    currentStream: MediaStream;
-
+    currentUnfilteredCameraStream: MediaStream;
+    private currentFilteredCameraStream: MediaStream;
     private originalAudioSource: MediaStream;
     private originalVideoSource: MediaStream;
     originalOutgoingStream: MediaStream | URL;
@@ -51,7 +56,7 @@ export class VirtualBackgroundService {
         this.initElementsAndCtx();
     }
 
-    initElementsAndCtx() {
+    private initElementsAndCtx() {
         this.videoElement = document.createElement('video');
         this.canvasElement = document.createElement('canvas');
 
@@ -67,52 +72,24 @@ export class VirtualBackgroundService {
             modelSelection: 1,
             selfieMode: false
         });
+
+        this.userMediaService.onPreferredCameraChanged$.subscribe(async () => {
+            this.logger.debug(`${this.loggerPrefix} preferred camera changed, updating stream`);
+            this.currentUnfilteredCameraStream = await this.getStreamForPreferredCamera();
+            this._onStreamFiltered.next(this.currentUnfilteredCameraStream);
+        });
     }
 
-    updateFilter(filter: BackgroundFilter | null) {
-        console.warn('[VBG Service] updating filter to ' + filter);
-        if (filter) {
-            this.activeFilter = filter;
-            this.filterOn = true;
-            console.warn('[VBG Service] filter on ');
-        } else {
-            this.activeFilter = null;
-            this.filterOn = false;
-            console.warn('[VBG Service] filter off ');
-        }
-
-        this._onFilterChanged.next(this.activeFilter);
-    }
-
-    async applyFilter(): Promise<MediaStream | URL> {
-        const filteredStream = await this.getFilteredStream();
-        this.videoCallService.pexipAPI.video_source = null;
-        this.videoCallService.pexipAPI.audio_source = null;
-        this.videoCallService.pexipAPI.user_media_stream = filteredStream;
-        return filteredStream;
-    }
-
-    removeFilter(): MediaStream | URL {
-        this.videoCallService.pexipAPI.user_media_stream = null;
-        this.videoCallService.pexipAPI.video_source = this.originalVideoSource;
-        this.videoCallService.pexipAPI.audio_source = this.originalAudioSource;
-        return this.originalOutgoingStream;
-    }
-
-    private async getCameraStream(): Promise<MediaStream> {
-        const preferredCamera = await this.userMediaService.getPreferredCamera();
-        this.logger.debug(`${this.loggerPrefix} using preferred camera ${preferredCamera?.label}`);
-        const camStream = await this.userMediaStreamService.getStreamForCam(preferredCamera);
-        return camStream;
-    }
-
-    async getFilteredStream(): Promise<MediaStream> {
+    // async startFilteredStream(): Promise<MediaStream> {
+    async startFilteredStream() {
         this.logger.debug(`${this.loggerPrefix} starting image segmentation`);
-        if (!this.videoElement || !this.canvasElement || !this.canvasCtx) {
-            throw new Error(`Background Service context not initialised`);
+        if (!this.currentUnfilteredCameraStream) {
+            this.logger.debug(`${this.loggerPrefix} no camera stream found, retrieving stream for preferred camera`);
+            this.currentUnfilteredCameraStream = await this.getStreamForPreferredCamera();
         }
-        if (!this.currentStream) {
-            this.currentStream = await this.getCameraStream();
+        if (this.currentFilteredCameraStream) {
+            this.logger.debug(`${this.loggerPrefix} filtered stream alreadt started`);
+            return;
         }
 
         this.selfieSegmentation.onResults(results => this.onSelfieSegmentationResults(results));
@@ -125,17 +102,64 @@ export class VirtualBackgroundService {
 
         camera.start();
         const stream = this.canvasElement.captureStream();
-        this.currentStream.getAudioTracks().forEach(track => {
+        this.currentUnfilteredCameraStream.getAudioTracks().forEach(track => {
             stream.addTrack(track);
         });
-        return stream;
+        this.currentFilteredCameraStream = stream;
     }
 
-    onWebGlSelfieSegmentationResults(results: Results): void {
-        // this.canvasWebGlCtx.
+    updateFilter(filter: BackgroundFilter | null) {
+        this.logger.debug(`${this.loggerPrefix} Updating filter to ${filter}`);
+        if (filter) {
+            this.activeFilter = filter;
+            this.filterOn = true;
+            this.logger.debug(`${this.loggerPrefix} Filter on`);
+            this.replacePexipWithFilteredStream();
+            this._onStreamFiltered.next(this.currentFilteredCameraStream);
+        } else {
+            this.activeFilter = null;
+            this.filterOn = false;
+            this.logger.debug(`${this.loggerPrefix} Filter off`);
+            this.replacePexipWithOriginalStream();
+            this.logger.debug(`${this.loggerPrefix} publishing original stream`);
+            this._onStreamFiltered.next(this.originalOutgoingStream);
+        }
+
+        // this._onFilterChanged.next(this.activeFilter);
     }
 
-    onSelfieSegmentationResults(results: Results): void {
+    // async applyFilterToPreferredCamera(): Promise<MediaStream | URL> {
+    private async replacePexipWithFilteredStream() {
+        await this.startFilteredStream();
+
+        this.videoCallService.pexipAPI.video_source = null;
+        this.videoCallService.pexipAPI.audio_source = null;
+        this.videoCallService.pexipAPI.user_media_stream = this.currentFilteredCameraStream;
+        this.logger.info(`${this.loggerPrefix} pexip client updated to use custom media stream`);
+        // return filteredStream;
+    }
+
+    // removeFilter(): MediaStream | URL {
+    private replacePexipWithOriginalStream() {
+        this.videoCallService.pexipAPI.user_media_stream = null;
+        this.videoCallService.pexipAPI.video_source = this.originalVideoSource;
+        this.videoCallService.pexipAPI.audio_source = this.originalAudioSource;
+        this.logger.info(`${this.loggerPrefix} pexip client updated to use original sources`);
+        // return this.originalOutgoingStream;
+    }
+
+    private async getStreamForPreferredCamera(): Promise<MediaStream> {
+        const preferredCamera = await this.userMediaService.getPreferredCamera();
+        this.logger.debug(`${this.loggerPrefix} using preferred camera ${preferredCamera?.label}`);
+        const camStream = await this.userMediaStreamService.getStreamForCam(preferredCamera);
+        return camStream;
+    }
+
+    // private onWebGlSelfieSegmentationResults(results: Results): void {
+    //     // this.canvasWebGlCtx.
+    // }
+
+    private onSelfieSegmentationResults(results: Results): void {
         // Draw the overlays.
         this.canvasCtx.save();
         this.canvasCtx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
@@ -153,7 +177,7 @@ export class VirtualBackgroundService {
         this.canvasCtx.restore();
     }
 
-    applyEffect(results: Results) {
+    private applyEffect(results: Results) {
         switch (this.activeFilter) {
             case BackgroundFilter.HMCTS:
             case BackgroundFilter.SCTS:
@@ -165,12 +189,12 @@ export class VirtualBackgroundService {
         }
     }
 
-    applyBlurEffect(results: Results) {
+    private applyBlurEffect(results: Results) {
         this.canvasCtx.filter = 'blur(10px)';
         this.canvasCtx.drawImage(results.image, 0, 0, this.canvasElement.width, this.canvasElement.height);
     }
 
-    applyVirtualBackgroundEffect() {
+    private applyVirtualBackgroundEffect() {
         const imageObject = this.getImageForBackground();
         this.canvasCtx.imageSmoothingEnabled = true;
         this.canvasCtx.drawImage(imageObject, 0, 0, this.canvasElement.width, this.canvasElement.height);

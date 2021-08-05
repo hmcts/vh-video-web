@@ -169,13 +169,19 @@ export class SelfTestComponent implements OnInit, OnDestroy {
                 this.hasMultipleDevices = await this.userMediaService.hasMultipleDevices();
             })
         );
-        this.vBgService.onFilterChanged.subscribe(async filter => {
-            if (filter) {
-                await this.applyFilter();
-            } else {
-                this.removeFilter();
-            }
-        });
+        // this.vBgService.onFilterChanged.subscribe(async filter => {
+        //     if (filter) {
+        //         await this.applyFilter();
+        //     } else {
+        //         this.removeFilter();
+        //     }
+        // });
+        this.subscription.add(
+            this.vBgService.onStreamFiltered.subscribe(stream => {
+                this.logger.debug(`${this.loggerPrefix} new stream provided from background service`);
+                this.outgoingStream = stream;
+            })
+        );
     }
 
     async setupPexipClient() {
@@ -204,6 +210,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         });
         this.outgoingStream = callSetup.stream;
         this.vBgService.originalOutgoingStream = callSetup.stream;
+        this.vBgService.startFilteredStream();
         this.videoCallService.connect('0000', null);
     }
 
@@ -271,9 +278,10 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             this.videoCallService.enableH264(false);
         }
 
-        if (this.vBgService.filterOn) {
-            await this.applyFilter();
-        }
+        // if (this.vBgService.filterOn) {
+        // this.vBgService.startFilteredStream();
+        // await this.applyFilter();
+        // }
 
         this.videoCallService.makeCall(
             this.selfTestPexipNode,
@@ -283,15 +291,15 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         );
     }
 
-    removeFilter() {
-        const originalStream = this.vBgService.removeFilter();
-        this.outgoingStream = originalStream;
-    }
+    // removeFilter() {
+    //     const originalStream = this.vBgService.removeFilter();
+    //     this.outgoingStream = originalStream;
+    // }
 
-    async applyFilter() {
-        const filteredStream = await this.vBgService.applyFilter();
-        this.outgoingStream = filteredStream;
-    }
+    // async applyFilter() {
+    //     const filteredStream = await this.vBgService.applyFilterToPreferredCamera();
+    //     this.outgoingStream = filteredStream;
+    // }
 
     replayVideo() {
         this.logger.debug(`${this.loggerPrefix} Replaying self test video`, {

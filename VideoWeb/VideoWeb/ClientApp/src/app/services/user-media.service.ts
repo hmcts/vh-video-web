@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import 'webrtc-adapter';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Logger } from './logging/logger-base';
@@ -22,6 +22,11 @@ export class UserMediaService {
     availableDeviceList: UserMediaDevice[];
 
     connectedDevices: BehaviorSubject<UserMediaDevice[]> = new BehaviorSubject([]);
+
+    private _onPreferredCameraChanged = new Subject<UserMediaDevice>();
+    get onPreferredCameraChanged$(): Observable<UserMediaDevice> {
+        return this._onPreferredCameraChanged.asObservable();
+    }
 
     constructor(private logger: Logger, private errorService: ErrorService) {
         this.preferredCamCache = new SessionStorage(this.PREFERRED_CAMERA_KEY);
@@ -110,6 +115,7 @@ export class UserMediaService {
     updatePreferredCamera(camera: UserMediaDevice) {
         this.preferredCamCache.set(camera);
         this.logger.info(`${this.loggerPrefix} Updating preferred camera to ${camera.label}`);
+        this._onPreferredCameraChanged.next(camera);
     }
 
     updatePreferredMicrophone(microphone: UserMediaDevice) {
