@@ -1,5 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 import { ConferenceResponse, HearingLayout } from 'src/app/services/clients/api-client';
 import { VideoCallService } from '../services/video-call.service';
 
@@ -13,6 +14,7 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
     accordionOpenAllElement: HTMLButtonElement;
     currentButtonContentKey: string;
     @Input() conference: ConferenceResponse;
+    subscriptions = new Subscription();
     constructor(private videoCallService: VideoCallService, protected translateService: TranslateService) {}
 
     ngOnInit(): void {
@@ -32,7 +34,7 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
         this.accordionOpenAllElement.onclick = e => this.setAccordionText(e);
         this.setAccordionText({} as MouseEvent);
 
-        this.translateService.onLangChange.subscribe(event => {
+        this.subscriptions.add(this.translateService.onLangChange.subscribe(() => {
             const updatedHeadingElement = document.getElementById('accordion-choose-layout-heading');
             const currentHeaderText = updatedHeadingElement.innerText;
             const updatedHeaderText = this.translateService.instant('select-hearing-layout.choose-hearing-layout');
@@ -41,11 +43,11 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
             const currentTextValue = this.accordionOpenAllElement.innerText.split('\n')[0];
             const translatedElement = this.translateService.instant(`select-hearing-layout.${this.currentButtonContentKey}`);
             this.accordionOpenAllElement.innerHTML = this.accordionOpenAllElement.innerHTML.replace(currentTextValue, translatedElement);
-        });
+        }));
     }
 
     ngOnDestroy(): void {
-        this.translateService.onLangChange.unsubscribe();
+        this.subscriptions.unsubscribe();
     }
 
     setAccordionText(event: MouseEvent) {
