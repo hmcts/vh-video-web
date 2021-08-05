@@ -8,12 +8,20 @@ import { VirtualBackgroundService } from 'src/app/services/virtual-background-se
     styleUrls: ['./video-filter.component.css']
 })
 export class VideoFilterComponent {
-    filters = BackgroundFilter;
+    filters = [
+        { name: 'blur', value: BackgroundFilter.blur },
+        { name: 'HMCTS', value: BackgroundFilter.HMCTS },
+        { name: 'SCTS', value: BackgroundFilter.SCTS }
+    ];
 
     constructor(private vBgService: VirtualBackgroundService) {}
 
     backgroundChanged(e: Event) {
+        console.warn('[VBG Service] filter dropdown changed ' + e);
+        console.warn(e);
+        console.warn(e.target);
         const filter = BackgroundFilter[(e.target as HTMLInputElement).value];
+        console.warn('[VBG Service] filter dropdown changed ' + filter);
         this.vBgService.updateFilter(filter);
     }
 }

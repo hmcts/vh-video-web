@@ -8,6 +8,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { VirtualBackgroundService } from 'src/app/services/virtual-background-service.service';
 
 @Component({
     selector: 'app-select-media-devices',
@@ -39,7 +40,8 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         private userMediaStreamService: UserMediaStreamService,
         private formBuilder: FormBuilder,
         private logger: Logger,
-        private translateService: TranslateService
+        private translateService: TranslateService,
+        private vBgService: VirtualBackgroundService
     ) {}
 
     ngOnInit() {
@@ -54,10 +56,21 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
                 .then(async () => {
                     this.selectedMediaDevicesForm = await this.initNewDeviceSelectionForm();
                     this.subscribeToDeviceSelectionChange();
+                    this.setupSubscribers();
                 })
                 .catch(error => {
                     this.logger.error(`${this.loggerPrefix} Failed to update device selection`, error);
                 });
+        });
+    }
+
+    private setupSubscribers() {
+        this.vBgService.onFilterChanged.subscribe(async filter => {
+            if (filter) {
+                await this.applyFilter();
+            } else {
+                this.removeFilter();
+            }
         });
     }
 
@@ -231,5 +244,15 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
             this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
         }
         this.preferredMicrophoneStream = null;
+    }
+
+    removeFilter() {
+        const originalStream = this.vBgService.removeFilter();
+        this.preferredCameraStream = originalStream as MediaStream;
+    }
+
+    async applyFilter() {
+        const filteredStream = await this.vBgService.applyFilter();
+        this.preferredCameraStream = filteredStream as MediaStream;
     }
 }

@@ -1,6 +1,4 @@
 <select id="background" (change)="this.backgroundChanged($event)">
   <option value="none">none</option>
-  <option value="{{ filters.blur }}">blur</option>
-  <option value="{{ filters.architecture }}">architecture</option>
-  <option value="{{ filters.pyramid }}">pyramid</option>
+  <option [value]="f.value" *ngFor="let f of filters">{{ f.name }}</option>
 </select>

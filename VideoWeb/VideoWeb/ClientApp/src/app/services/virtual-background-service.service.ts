@@ -28,7 +28,7 @@ export class VirtualBackgroundService {
 
     filterOn: boolean;
     selfieSegmentation: SelfieSegmentation;
-    activeEffect: BackgroundFilter;
+    activeFilter: BackgroundFilter;
     imgs: Map<BackgroundFilter, HTMLImageElement> = new Map();
 
     currentStream: MediaStream;
@@ -47,7 +47,7 @@ export class VirtualBackgroundService {
         private logger: Logger
     ) {
         this.filterOn = false;
-        this.activeEffect = BackgroundFilter.architecture;
+        this.activeFilter = BackgroundFilter.blur;
         this.initElementsAndCtx();
     }
 
@@ -70,15 +70,18 @@ export class VirtualBackgroundService {
     }
 
     updateFilter(filter: BackgroundFilter | null) {
+        console.warn('[VBG Service] updating filter to ' + filter);
         if (filter) {
-            this.activeEffect = filter;
+            this.activeFilter = filter;
             this.filterOn = true;
+            console.warn('[VBG Service] filter on ');
         } else {
-            this.activeEffect = null;
+            this.activeFilter = null;
             this.filterOn = false;
+            console.warn('[VBG Service] filter off ');
         }
 
-        this._onFilterChanged.next(this.activeEffect);
+        this._onFilterChanged.next(this.activeFilter);
     }
 
     async applyFilter(): Promise<MediaStream | URL> {
@@ -151,9 +154,9 @@ export class VirtualBackgroundService {
     }
 
     applyEffect(results: Results) {
-        switch (this.activeEffect) {
-            case BackgroundFilter.architecture:
-            case BackgroundFilter.pyramid:
+        switch (this.activeFilter) {
+            case BackgroundFilter.HMCTS:
+            case BackgroundFilter.SCTS:
                 this.applyVirtualBackgroundEffect();
                 break;
             default:
@@ -174,16 +177,24 @@ export class VirtualBackgroundService {
     }
 
     private getImageForBackground(): HTMLImageElement {
-        if (this.imgs.has(this.activeEffect)) {
-            return this.imgs.get(this.activeEffect);
+        if (this.imgs.has(this.activeFilter)) {
+            return this.imgs.get(this.activeFilter);
         }
 
-        const imageName = this.activeEffect.toString().toLowerCase();
+        let imageName = '';
+        if (this.activeFilter === BackgroundFilter.HMCTS) {
+            imageName = 'VhBgFilterHMCTS';
+        } else if (this.activeFilter === BackgroundFilter.SCTS) {
+            imageName = 'VhBgFilterSCTS';
+        }
         const imagePath = `/assets/images/${imageName}.jpg`;
+
+        this.logger.debug(`${this.loggerPrefix} retrieving image for filter ${this.activeFilter} from ${imagePath}`);
+
         // With Background image
         const imageObject = new Image();
         imageObject.src = imagePath;
-        this.imgs.set(this.activeEffect, imageObject);
+        this.imgs.set(this.activeFilter, imageObject);
         return imageObject;
     }
 }
