@@ -284,14 +284,11 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     }
 
     removeFilter() {
-        this.videoCallService.pexipAPI.user_media_stream = null;
-        this.videoCallService.pexipAPI.video_source = this.vBgService.originalVideoSource;
-        this.videoCallService.pexipAPI.audio_source = this.vBgService.originalAudioSource;
-        this.outgoingStream = this.vBgService.originalOutgoingStream;
+        const originalStream = this.vBgService.removeFilter();
+        this.outgoingStream = originalStream;
     }
 
     async applyFilter() {
-        this.outgoingStream;
         const filteredStream = await this.vBgService.applyFilter();
         this.outgoingStream = filteredStream;
     }

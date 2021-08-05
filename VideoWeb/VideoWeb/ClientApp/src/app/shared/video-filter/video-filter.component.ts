@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { BackgroundEffect } from 'src/app/services/models/background-effect';
+import { BackgroundFilter } from 'src/app/services/models/background-filter';
 import { VirtualBackgroundService } from 'src/app/services/virtual-background-service.service';
 
 @Component({
@@ -8,12 +8,12 @@ import { VirtualBackgroundService } from 'src/app/services/virtual-background-se
     styleUrls: ['./video-filter.component.css']
 })
 export class VideoFilterComponent {
-    filters = BackgroundEffect;
+    filters = BackgroundFilter;
 
     constructor(private vBgService: VirtualBackgroundService) {}
 
     backgroundChanged(e: Event) {
-        const filter = BackgroundEffect[(e.target as HTMLInputElement).value];
+        const filter = BackgroundFilter[(e.target as HTMLInputElement).value];
         this.vBgService.updateFilter(filter);
     }
 }

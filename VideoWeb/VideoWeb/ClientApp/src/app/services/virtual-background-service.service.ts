@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { Results, SelfieSegmentation } from '@mediapipe/selfie_segmentation';
 import { Camera } from '@mediapipe/camera_utils';
-import { BackgroundEffect } from './models/background-effect';
+import { BackgroundFilter } from './models/background-filter';
 import { UserMediaStreamService } from './user-media-stream.service';
 import { Logger } from './logging/logger-base';
 import { UserMediaService } from './user-media.service';
@@ -15,8 +15,8 @@ import { VideoCallService } from '../waiting-space/services/video-call.service';
 export class VirtualBackgroundService {
     private readonly loggerPrefix = '[VirtualBackgroundService] -';
 
-    private _onFilterChanged = new Subject<BackgroundEffect | null>();
-    get onFilterChanged(): Observable<BackgroundEffect | null> {
+    private _onFilterChanged = new Subject<BackgroundFilter | null>();
+    get onFilterChanged(): Observable<BackgroundFilter | null> {
         return this._onFilterChanged.asObservable();
     }
 
@@ -24,16 +24,17 @@ export class VirtualBackgroundService {
     canvasElement: HTMLCanvasElement;
 
     canvasCtx: CanvasRenderingContext2D;
+    canvasWebGlCtx: WebGL2RenderingContext;
 
     filterOn: boolean;
     selfieSegmentation: SelfieSegmentation;
-    activeEffect: BackgroundEffect;
-    imgs: Map<BackgroundEffect, HTMLImageElement> = new Map();
+    activeEffect: BackgroundFilter;
+    imgs: Map<BackgroundFilter, HTMLImageElement> = new Map();
 
     currentStream: MediaStream;
 
-    originalAudioSource: MediaStream;
-    originalVideoSource: MediaStream;
+    private originalAudioSource: MediaStream;
+    private originalVideoSource: MediaStream;
     originalOutgoingStream: MediaStream | URL;
 
     /**
@@ -46,7 +47,7 @@ export class VirtualBackgroundService {
         private logger: Logger
     ) {
         this.filterOn = false;
-        this.activeEffect = BackgroundEffect.architecture;
+        this.activeEffect = BackgroundFilter.architecture;
         this.initElementsAndCtx();
     }
 
@@ -55,6 +56,7 @@ export class VirtualBackgroundService {
         this.canvasElement = document.createElement('canvas');
 
         this.canvasCtx = this.canvasElement.getContext('2d');
+        this.canvasWebGlCtx = this.canvasElement.getContext('webgl2');
 
         this.selfieSegmentation = new SelfieSegmentation({
             locateFile: file => {
@@ -67,7 +69,7 @@ export class VirtualBackgroundService {
         });
     }
 
-    updateFilter(filter: BackgroundEffect | null) {
+    updateFilter(filter: BackgroundFilter | null) {
         if (filter) {
             this.activeEffect = filter;
             this.filterOn = true;
@@ -85,6 +87,13 @@ export class VirtualBackgroundService {
         this.videoCallService.pexipAPI.audio_source = null;
         this.videoCallService.pexipAPI.user_media_stream = filteredStream;
         return filteredStream;
+    }
+
+    removeFilter(): MediaStream | URL {
+        this.videoCallService.pexipAPI.user_media_stream = null;
+        this.videoCallService.pexipAPI.video_source = this.originalVideoSource;
+        this.videoCallService.pexipAPI.audio_source = this.originalAudioSource;
+        return this.originalOutgoingStream;
     }
 
     private async getCameraStream(): Promise<MediaStream> {
@@ -119,6 +128,10 @@ export class VirtualBackgroundService {
         return stream;
     }
 
+    onWebGlSelfieSegmentationResults(results: Results): void {
+        // this.canvasWebGlCtx.
+    }
+
     onSelfieSegmentationResults(results: Results): void {
         // Draw the overlays.
         this.canvasCtx.save();
@@ -139,8 +152,8 @@ export class VirtualBackgroundService {
 
     applyEffect(results: Results) {
         switch (this.activeEffect) {
-            case BackgroundEffect.architecture:
-            case BackgroundEffect.pyramid:
+            case BackgroundFilter.architecture:
+            case BackgroundFilter.pyramid:
                 this.applyVirtualBackgroundEffect();
                 break;
             default:

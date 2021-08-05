@@ -1,4 +1,4 @@
-export enum BackgroundEffect {
+export enum BackgroundFilter {
     blur = 'blur',
     architecture = 'architecture',
     pyramid = 'pyramid'
