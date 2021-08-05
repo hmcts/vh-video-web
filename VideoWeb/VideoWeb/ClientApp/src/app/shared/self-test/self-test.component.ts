@@ -15,9 +15,10 @@ import {
 } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { IVideoFilterer } from 'src/app/services/models/background-filter';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
-import { VirtualBackgroundService } from 'src/app/services/virtual-background-service.service';
+import { VideoFilterService } from 'src/app/services/video-filter.service';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 import { SelectedUserMediaDevice } from '../models/selected-user-media-device';
@@ -27,7 +28,7 @@ import { SelectedUserMediaDevice } from '../models/selected-user-media-device';
     templateUrl: './self-test.component.html',
     styleUrls: ['./self-test.component.scss']
 })
-export class SelfTestComponent implements OnInit, OnDestroy {
+export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
     private readonly loggerPrefix = '[SelfTest] -';
     @Input() conference: ConferenceResponse;
     @Input() participant: ParticipantResponse;
@@ -65,9 +66,16 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         private userMediaService: UserMediaService,
         private userMediaStreamService: UserMediaStreamService,
         private videoCallService: VideoCallService,
-        private vBgService: VirtualBackgroundService
+        // private vBgService: VirtualBackgroundService
+        private videoFilterService: VideoFilterService
     ) {
         this.didTestComplete = false;
+    }
+    retrieveVideoElement(): HTMLVideoElement {
+        return document.getElementById('outgoingStream') as HTMLVideoElement;
+    }
+    retrieveCanvasElement(): HTMLCanvasElement {
+        return document.getElementById('outputCanvas') as HTMLCanvasElement;
     }
 
     ngOnInit() {
@@ -170,9 +178,12 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             })
         );
         this.subscription.add(
-            this.vBgService.onStreamFiltered.subscribe(stream => {
-                this.logger.debug(`${this.loggerPrefix} new stream provided from background service`);
-                this.outgoingStream = stream;
+            this.videoFilterService.onFilterChanged.subscribe(filter => {
+                this.logger.debug(`${this.loggerPrefix} filter applied ${filter ? filter : 'off'}`);
+                if (filter) {
+                    this.videoFilterService.initFilterStream(this);
+                    this.videoFilterService.startFilteredStream();
+                }
             })
         );
     }
@@ -202,9 +213,9 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             participant: this.selfTestParticipantId
         });
         this.outgoingStream = callSetup.stream;
-        this.vBgService.originalOutgoingStream = callSetup.stream;
-        this.vBgService.currentUnfilteredCameraStream = callSetup.stream as MediaStream;
-        await this.vBgService.startFilteredStream();
+        // this.vBgService.originalOutgoingStream = callSetup.stream;
+        // this.vBgService.currentUnfilteredCameraStream = callSetup.stream as MediaStream;
+        // await this.vBgService.startFilteredStream();
         this.videoCallService.connect('0000', null);
     }
 

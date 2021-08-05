@@ -3,3 +3,8 @@ export enum BackgroundFilter {
     HMCTS = 'HMCTS',
     SCTS = 'SCTS'
 }
+
+export interface IVideoFilterer {
+    retrieveVideoElement(): HTMLVideoElement;
+    retrieveCanvasElement(): HTMLCanvasElement;
+}
