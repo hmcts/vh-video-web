@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import 'webrtc-adapter';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Logger } from './logging/logger-base';
@@ -19,7 +19,6 @@ export class UserMediaService {
     private readonly preferredMicCache: SessionStorage<UserMediaDevice>;
     private readonly audioOnlyCache: SessionStorage<boolean>;
 
-    preferredCamSubject$ = new ReplaySubject();
     readonly PREFERRED_CAMERA_KEY = 'vh.preferred.camera';
     readonly PREFERRED_MICROPHONE_KEY = 'vh.preferred.microphone';
     availableDeviceList: UserMediaDevice[];
@@ -32,6 +31,7 @@ export class UserMediaService {
 
         this.navigator.mediaDevices.ondevicechange = async () => {
             await this.updateAvailableDevicesList();
+            await this.setDevicesInCache();
         };
     }
 
@@ -55,10 +55,10 @@ export class UserMediaService {
         if (!this.navigator.mediaDevices || !this.navigator.mediaDevices.enumerateDevices) {
             this.logger.error(`${this.loggerPrefix} enumerateDevices() not supported.`, new Error('enumerateDevices() not supported.'));
         }
-        
+
         this.logger.debug(`${this.loggerPrefix} Attempting to update available media devices.`);
         let updatedDevices: MediaDeviceInfo[] = [];
-        const stream: MediaStream = await this.navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+        const stream: MediaStream = await this.userMediaStreamService.getStream();
         if (stream && stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0) {
             updatedDevices = await this.navigator.mediaDevices.enumerateDevices();
         }
@@ -67,11 +67,7 @@ export class UserMediaService {
             updatedDevices,
             device => new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)
         );
-        if (stream) {
-            stream.getTracks().forEach(track => {
-                track.stop();
-            });
-        }
+        this.userMediaStreamService.stopStream(stream);
         this.connectedDevices.next(this.availableDeviceList);
     }
 
@@ -82,13 +78,13 @@ export class UserMediaService {
     }
 
     getPreferredCamera() {
-        return this.getCachedDeviceIfStillConnected(this.preferredCamCache);
+        return this.getCachedDevice(this.preferredCamCache);
     }
 
     getPreferredMicrophone() {
-        return this.getCachedDeviceIfStillConnected(this.preferredMicCache);
+        return this.getCachedDevice(this.preferredMicCache);
     }
-    
+
     updatePreferredCamera(camera: UserMediaDevice) {
         this.preferredCamCache.set(camera);
         this.logger.info(`${this.loggerPrefix} Updating preferred camera to ${camera.label}`);
@@ -107,29 +103,18 @@ export class UserMediaService {
         return this.audioOnlyCache.get();
     }
 
-    private async getCachedDeviceIfStillConnected(cache: SessionStorage<UserMediaDevice>): Promise<UserMediaDevice> {
-        const device = cache.get();
-        if (!device) {
-            return null;
-        }
-
+    private async getCachedDevice(cache: SessionStorage<UserMediaDevice>) {
+        return cache.get();
+    }
+    private async isDeviceStillConnected(device: UserMediaDevice) {
         await this.checkDeviceListIsReady();
-
-        const stillConnected = this.availableDeviceList.find(x => x.label === device.label);
-        if (stillConnected) {
-            return device;
-        } else {
-            this.logger.warn(`${this.loggerPrefix} Preferred device ${device.label} is no longer connected`);
-            cache.clear();
-            this.errorService.handlePexipError(new CallError('Preferred device is no longer connected'), null);
-            return null;
-        }
+        return this.availableDeviceList.find(x => x.label === device.label);
     }
 
-    async setDefaultDevicesInCache() {
+    async setDevicesInCache() {
         try {
             const cam = await this.getPreferredCamera();
-            if (!cam) {
+            if (!cam || !(await this.isDeviceStillConnected(cam))) {
                 const cams = await this.getListOfVideoDevices();
                 // set first camera in the list as preferred camera if cache is empty
                 const firstCam = cams.find(x => x.label.length > 0);
@@ -138,8 +123,9 @@ export class UserMediaService {
                     this.updatePreferredCamera(firstCam);
                 }
             }
+
             const mic = await this.getPreferredMicrophone();
-            if (!mic) {
+            if (!mic || !(await this.isDeviceStillConnected(mic))) {
                 const mics = await this.getListOfMicrophoneDevices();
                 // set first microphone in the list as preferred microphone if cache is empty
                 const firstMic = mics.find(x => x.label.length > 0);

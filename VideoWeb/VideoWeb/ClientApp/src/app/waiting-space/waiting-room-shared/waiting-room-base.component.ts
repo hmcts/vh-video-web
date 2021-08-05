@@ -547,6 +547,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     async onConsultationAccepted(roomLabel: string) {
+        //Zijian Todo
         this.displayStartPrivateConsultationModal = false;
         this.displayJoinPrivateConsultationModal = false;
         this.privateConsultationAccordianExpanded = false;

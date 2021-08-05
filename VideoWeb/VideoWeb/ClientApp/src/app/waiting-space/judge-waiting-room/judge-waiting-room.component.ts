@@ -129,7 +129,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.initialiseVideoControlCacheLogic();
 
         this.userMediaService
-            .setDefaultDevicesInCache()
+            .setDevicesInCache()
             .then(() => {
                 this.logger.debug(`${this.loggerPrefixJudge} Defined default devices in cache`);
                 this.connected = false;

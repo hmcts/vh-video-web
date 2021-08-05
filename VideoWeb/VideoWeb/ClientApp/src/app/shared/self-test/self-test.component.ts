@@ -73,7 +73,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         this.initialiseData();
 
         this.userMediaService
-            .setDefaultDevicesInCache()
+            .setDevicesInCache()
             .then(() => {
                 this.displayFeed = false;
                 this.displayDeviceChangeModal = false;
@@ -143,9 +143,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             participant: this.selfTestParticipantId
         });
         this.disconnect();
-        this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
-        this.preferredMicrophoneStream = null;
-        this.displayDeviceChangeModal = true;
     }
 
     onMediaDeviceChangeCancelled() {
@@ -222,6 +219,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     }
 
     async updatePexipAudioVideoSource() {
+        //Zijian Todo double check this method
         this.hasMultipleDevices = await this.userMediaService.hasMultipleDevices();
 
         const cam = await this.userMediaService.getPreferredCamera();
@@ -282,7 +280,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
                 `${this.loggerPrefix} Attempted to disconnect from pexip before the client had initialised. Moving on from self-test`
             );
         } finally {
-            this.closeStreams();
+            this.closeMicStreams();
             this.incomingStream = null;
             this.outgoingStream = null;
             this.didTestComplete = true;
@@ -290,7 +288,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         }
     }
 
-    closeStreams() {
+    closeMicStreams() {
         if (this.preferredMicrophoneStream) {
             this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
             this.preferredMicrophoneStream = null;

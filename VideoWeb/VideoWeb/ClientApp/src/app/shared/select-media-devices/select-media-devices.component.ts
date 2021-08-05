@@ -17,14 +17,12 @@ import { VideoCallService } from 'src/app/waiting-space/services/video-call.serv
 export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     private readonly loggerPrefix = '[SelectMediaDevices] -';
     @Output() cancelMediaDeviceChange = new EventEmitter();
-    @Output() acceptMediaDeviceChange = new EventEmitter();
     @Input() waitingRoomMode = false;
     @Input() showAudioOnlySetting = false;
     @Input() cameraOn = true;
 
     availableCameraDevices: UserMediaDevice[] = [];
     availableMicrophoneDevices: UserMediaDevice[] = [];
-    mediaDeviceChange = new Subject();
     preferredCameraStream: MediaStream;
     preferredMicrophoneStream: MediaStream;
     connectWithCameraOn: boolean;
@@ -40,7 +38,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         private formBuilder: FormBuilder,
         private logger: Logger,
         private translateService: TranslateService,
-        private videoCallService:  VideoCallService
+        private videoCallService: VideoCallService
     ) {}
 
     ngOnInit() {
@@ -72,7 +70,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         const preferredMicrophone = await this.userMediaService.getPreferredMicrophone();
         this.preferredCameraStream = await this.userMediaStreamService.getStreamForCam(preferredCamera);
         this.preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(preferredMicrophone);
-    }                                                                                                     
+    }
 
     async requestMedia() {
         this.logger.debug(`${this.loggerPrefix} Initialising media device selection`);
@@ -133,19 +131,15 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         // close dialog and stop streams
         this.userMediaStreamService.stopStream(this.preferredCameraStream);
         this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
-        // this.saveSelectedDevices();
         const selectedCam = this.getSelectedCamera();
         const selectedMic = this.getSelectedMicrophone();
         const audioOnly = !this.connectWithCameraOn;
-        
         this.logger.debug(`${this.loggerPrefix} Cancelling media device change`);
-        this.mediaDeviceChange.next();
         await this.callWithNewDevices(selectedCam, selectedMic, audioOnly);
         this.cancelMediaDeviceChange.emit();
     }
 
     async callWithNewDevices(cam: UserMediaDevice, mic: UserMediaDevice, audioOnly: boolean) {
-        
         this.videoCallService.updateAudioOnlyPreference(audioOnly);
         await this.videoCallService.updatePexipAudioVideoSource(cam, mic);
         this.videoCallService.reconnectToCallWithNewDevices();
