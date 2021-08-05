@@ -34,16 +34,21 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
         this.accordionOpenAllElement.onclick = e => this.setAccordionText(e);
         this.setAccordionText({} as MouseEvent);
 
-        this.subscriptions.add(this.translateService.onLangChange.subscribe(() => {
-            const updatedHeadingElement = document.getElementById('accordion-choose-layout-heading');
-            const currentHeaderText = updatedHeadingElement.innerText;
-            const updatedHeaderText = this.translateService.instant('select-hearing-layout.choose-hearing-layout');
+        this.subscriptions.add(
+            this.translateService.onLangChange.subscribe(() => {
+                const updatedHeadingElement = document.getElementById('accordion-choose-layout-heading');
+                const currentHeaderText = updatedHeadingElement.innerText;
+                const updatedHeaderText = this.translateService.instant('select-hearing-layout.choose-hearing-layout');
 
-            updatedHeadingElement.innerHTML = updatedHeadingElement.innerHTML.replace(currentHeaderText, updatedHeaderText);
-            const currentTextValue = this.accordionOpenAllElement.innerText.split('\n')[0];
-            const translatedElement = this.translateService.instant(`select-hearing-layout.${this.currentButtonContentKey}`);
-            this.accordionOpenAllElement.innerHTML = this.accordionOpenAllElement.innerHTML.replace(currentTextValue, translatedElement);
-        }));
+                updatedHeadingElement.innerHTML = updatedHeadingElement.innerHTML.replace(currentHeaderText, updatedHeaderText);
+                const currentTextValue = this.accordionOpenAllElement.innerText.split('\n')[0];
+                const translatedElement = this.translateService.instant(`select-hearing-layout.${this.currentButtonContentKey}`);
+                this.accordionOpenAllElement.innerHTML = this.accordionOpenAllElement.innerHTML.replace(
+                    currentTextValue,
+                    translatedElement
+                );
+            })
+        );
     }
 
     ngOnDestroy(): void {
