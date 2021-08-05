@@ -63,7 +63,7 @@ export class VirtualBackgroundService {
         });
         this.selfieSegmentation.setOptions({
             modelSelection: 1,
-            selfieMode: true
+            selfieMode: false
         });
     }
 
