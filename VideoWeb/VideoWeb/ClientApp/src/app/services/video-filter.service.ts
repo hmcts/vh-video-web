@@ -51,7 +51,7 @@ export class VideoFilterService {
         });
     }
 
-    async startFilteredStream() {
+    async startFilteredStream(skipAudio?: boolean) {
         this.logger.debug(`${this.loggerPrefix} starting filtered stream`);
         this.selfieSegmentation.onResults(results => this.onSelfieSegmentationResults(results));
 
@@ -63,9 +63,11 @@ export class VideoFilterService {
 
         camera.start();
         const canvasStream = this.canvasElement.captureStream();
-        (this.videoElement.srcObject as MediaStream).getAudioTracks().forEach(track => {
-            canvasStream.addTrack(track);
-        });
+        if (!skipAudio) {
+            (this.videoElement.srcObject as MediaStream).getAudioTracks().forEach(track => {
+                canvasStream.addTrack(track);
+            });
+        }
         return canvasStream;
     }
 

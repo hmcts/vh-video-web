@@ -10,9 +10,17 @@
         <!-- Left hand side -->
         <div class="govuk-grid-column-one-half">
           <div class="govuk-grid-column-full" [ngClass]="connectWithCameraOn ? 'vh-fade-in' : 'vh-fade-out'">
-            <video id="preferredCameraStream" [srcObject]="preferredCameraStream" autoplay width="100%" height="auto">
+            <video
+              id="preferredCameraStream"
+              [srcObject]="preferredCameraStream"
+              autoplay
+              width="100%"
+              height="auto"
+              [ngClass]="{ 'filter-enabled': hideOriginalStream }"
+            >
               {{ 'select-media-devices.browser-support' | translate }}
             </video>
+            <canvas #outputCanvas id="outputCanvas" [ngClass]="{ 'filter-enabled': !hideOriginalStream }"></canvas>
           </div>
           <div class="govuk-grid-column-full">
             <app-mic-visualiser *ngIf="preferredMicrophoneStream" [stream]="preferredMicrophoneStream"> </app-mic-visualiser>

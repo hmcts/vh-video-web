@@ -80,6 +80,7 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
     retrieveVideoElement(): HTMLVideoElement {
         return document.getElementById('outgoingStream') as HTMLVideoElement;
     }
+
     retrieveCanvasElement(): HTMLCanvasElement {
         return this.outputCanvas.nativeElement;
     }
@@ -185,6 +186,9 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
         );
         this.subscription.add(
             this.videoFilterService.onFilterChanged.subscribe(async filter => {
+                if (this.displayDeviceChangeModal) {
+                    return;
+                }
                 this.logger.debug(`${this.loggerPrefix} filter applied ${filter ? filter : 'off'}`);
                 if (filter) {
                     this.videoFilterService.initFilterStream(this);

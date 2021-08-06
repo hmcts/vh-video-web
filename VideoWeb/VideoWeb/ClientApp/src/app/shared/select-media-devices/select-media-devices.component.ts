@@ -1,11 +1,13 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { IVideoFilterer } from 'src/app/services/models/background-filter';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { VideoFilterService } from 'src/app/services/video-filter.service';
 import { SelectedUserMediaDevice } from 'src/app/shared/models/selected-user-media-device';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 
@@ -14,13 +16,15 @@ import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
     templateUrl: './select-media-devices.component.html',
     styleUrls: ['./select-media-devices.component.scss']
 })
-export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
+export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFilterer {
     private readonly loggerPrefix = '[SelectMediaDevices] -';
     @Output() cancelMediaDeviceChange = new EventEmitter();
     @Output() acceptMediaDeviceChange = new EventEmitter<SelectedUserMediaDevice>();
     @Input() waitingRoomMode = false;
     @Input() showAudioOnlySetting = false;
     @Input() cameraOn = true;
+
+    @ViewChild('outputCanvas', { static: false }) outputCanvas: ElementRef<HTMLCanvasElement>;
 
     availableCameraDevices: UserMediaDevice[] = [];
     availableMicrophoneDevices: UserMediaDevice[] = [];
@@ -33,13 +37,15 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     selectedMediaDevicesForm: FormGroup;
     deviceIsChanged = false;
     private destroyedSubject = new Subject();
+    hideOriginalStream: boolean;
 
     constructor(
         private userMediaService: UserMediaService,
         private userMediaStreamService: UserMediaStreamService,
         private formBuilder: FormBuilder,
         private logger: Logger,
-        private translateService: TranslateService
+        private translateService: TranslateService,
+        private videoFilterService: VideoFilterService
     ) {}
 
     ngOnInit() {
@@ -62,14 +68,26 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         });
     }
 
+    retrieveVideoElement(): HTMLVideoElement {
+        return document.getElementById('preferredCameraStream') as HTMLVideoElement;
+    }
+
+    retrieveCanvasElement(): HTMLCanvasElement {
+        return this.outputCanvas.nativeElement;
+    }
+
     private setupSubscribers() {
-        // this.vBgService.onFilterChanged.subscribe(async filter => {
-        //     if (filter) {
-        //         await this.applyFilter();
-        //     } else {
-        //         this.removeFilter();
-        //     }
-        // });
+        this.videoFilterService.onFilterChanged.subscribe(async filter => {
+            this.logger.debug(`${this.loggerPrefix} filter applied ${filter ? filter : 'off'}`);
+            if (filter) {
+                this.videoFilterService.initFilterStream(this);
+                await this.videoFilterService.startFilteredStream(true);
+                this.hideOriginalStream = true;
+            } else {
+                this.hideOriginalStream = false;
+                this.videoFilterService.stopStream();
+            }
+        });
     }
 
     private async updateDeviceList() {
