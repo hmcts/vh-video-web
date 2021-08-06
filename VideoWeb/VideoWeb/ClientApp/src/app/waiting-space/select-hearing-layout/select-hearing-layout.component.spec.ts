@@ -6,7 +6,7 @@ import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.serv
 import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
 import { SelectHearingLayoutComponent } from './select-hearing-layout.component';
 
-describe('SelectHearingLayoutComponent', () => {
+fdescribe('SelectHearingLayoutComponent', () => {
     let component: SelectHearingLayoutComponent;
     const videoCallService = videoCallServiceSpy;
     let conference: ConferenceResponse;
@@ -179,9 +179,10 @@ describe('SelectHearingLayoutComponent', () => {
             expect(headingButton.innerHTML).toContain(expectedTranslatedContentForHeader);
         });
 
-        it('should unsubscribe from onLangChange', () => {
+        it('should unsubscribe subscriptions', () => {
+            spyOn(component.subscriptions, 'unsubscribe');
             component.ngOnDestroy();
-            expect(translateServiceSpy.onLangChange.closed).toBeTruthy();
+            expect(component.subscriptions.unsubscribe).toHaveBeenCalledTimes(1);
         });
     });
 });
