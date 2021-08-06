@@ -105,7 +105,7 @@ export class ParticipantService {
         private videoControlCacheService: VideoControlCacheService,
         private logger: LoggerService
     ) {
-        this.logger.warn(`${this.loggerPrefix} Constructor called.`);
+        this.logger.debug(`${this.loggerPrefix} Constructor called.`);
         this.initialise();
     }
 

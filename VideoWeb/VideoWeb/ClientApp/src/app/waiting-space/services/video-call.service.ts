@@ -438,8 +438,8 @@ export class VideoCallService {
     }
 
     applyUserStream(stream: MediaStream) {
-        this.pexipAPI.audio_source = false;
-        this.pexipAPI.video_source = false;
+        this.pexipAPI.audio_source = null;
+        this.pexipAPI.video_source = null;
         this.pexipAPI.user_media_stream = stream;
     }
 

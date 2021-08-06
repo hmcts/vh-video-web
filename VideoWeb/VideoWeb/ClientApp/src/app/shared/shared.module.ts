@@ -108,7 +108,8 @@ import { VideoFilterComponent } from './video-filter/video-filter.component';
         ErrorCameraMicrophoneComponent,
         TranslateModule,
         MultilinePipe,
-        NgxDatePipe
+        NgxDatePipe,
+        VideoFilterComponent
     ]
 })
 export class SharedModule {}

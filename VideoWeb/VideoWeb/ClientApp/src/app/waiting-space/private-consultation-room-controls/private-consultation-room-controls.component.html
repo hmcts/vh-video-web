@@ -62,6 +62,10 @@
       <span class="far fa-sliders-h"></span>
     </div>
 
+    <div class="icon-button">
+      <app-video-filter></app-video-filter>
+    </div>
+
     <div
       class="icon-button"
       id="toggle-self-view-img"
@@ -195,7 +199,13 @@
 
 <div class="outgoing-video-container">
   <video
-    [ngClass]="{ 'vh-fade-in': selfViewOpen, 'vh-fade-out': !selfViewOpen, 'vh-spotlight-self-view-outline': isSpotlighted }"
+    #outgoingVideo
+    [ngClass]="{
+      'vh-fade-in': selfViewOpen,
+      'vh-fade-out': !selfViewOpen,
+      'vh-spotlight-self-view-outline': isSpotlighted,
+      'filter-enabled': hideOriginalStream
+    }"
     id="outgoingFeedVideo"
     [muted]="true"
     [srcObject]="this.outgoingStream"
@@ -204,6 +214,7 @@
   >
     {{ 'private-consultation-room-controls.browser-support' | translate }}
   </video>
+  <canvas #outputCanvas id="outputCanvas" [ngClass]="{ 'filter-enabled': !hideOriginalStream }"></canvas>
 </div>
 <div class="outgoing-present-video-container">
   <video

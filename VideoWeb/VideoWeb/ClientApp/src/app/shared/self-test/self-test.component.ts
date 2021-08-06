@@ -231,9 +231,6 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
             participant: this.selfTestParticipantId
         });
         this.outgoingStream = callSetup.stream;
-        // this.vBgService.originalOutgoingStream = callSetup.stream;
-        // this.vBgService.currentUnfilteredCameraStream = callSetup.stream as MediaStream;
-        // await this.vBgService.startFilteredStream();
         this.videoCallService.connect('0000', null);
     }
 
