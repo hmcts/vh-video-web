@@ -16,10 +16,19 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-quarter">
-    <video *ngIf="streamsActive" id="outgoingStream" [muted]="true" [srcObject]="this.outgoingStream" autoplay width="270" height="auto">
+    <video
+      *ngIf="streamsActive"
+      id="outgoingStream"
+      [muted]="true"
+      [srcObject]="this.outgoingStream"
+      autoplay
+      width="270"
+      height="auto"
+      [ngClass]="{ 'filter-enabled': filteredStream }"
+    >
       {{ 'self-test.browser-not-support' | translate }}
     </video>
-    <canvas id="outputCanvas" width="270" height="auto"></canvas>
+    <canvas #outputCanvas id="outputCanvas" width="270" height="auto"></canvas>
   </div>
 
   <div class="govuk-grid-column-full">
@@ -39,7 +48,7 @@
   </div>
 </div>
 
-<app-video-filter></app-video-filter>
+<app-video-filter *ngIf="streamsActive"></app-video-filter>
 
 <app-select-media-devices
   *ngIf="displayDeviceChangeModal"

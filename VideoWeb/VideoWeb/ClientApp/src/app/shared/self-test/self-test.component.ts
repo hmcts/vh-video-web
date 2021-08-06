@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -37,6 +37,8 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
     @Output() testStarted = new EventEmitter();
     @Output() testCompleted = new EventEmitter<TestCallScoreResponse>();
 
+    @ViewChild('outputCanvas', { static: false }) outputCanvas: ElementRef<HTMLCanvasElement>;
+
     token: TokenResponse;
     incomingStream: MediaStream | URL;
     outgoingStream: MediaStream | URL;
@@ -59,6 +61,10 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
     subscription: Subscription = new Subscription();
     videoCallSubscription$ = new Subscription();
 
+    filteredStream: MediaStream;
+    originalAudioSource;
+    originalVideoSource;
+
     constructor(
         private logger: Logger,
         private videoWebService: VideoWebService,
@@ -66,16 +72,16 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
         private userMediaService: UserMediaService,
         private userMediaStreamService: UserMediaStreamService,
         private videoCallService: VideoCallService,
-        // private vBgService: VirtualBackgroundService
         private videoFilterService: VideoFilterService
     ) {
         this.didTestComplete = false;
     }
+
     retrieveVideoElement(): HTMLVideoElement {
         return document.getElementById('outgoingStream') as HTMLVideoElement;
     }
     retrieveCanvasElement(): HTMLCanvasElement {
-        return document.getElementById('outputCanvas') as HTMLCanvasElement;
+        return this.outputCanvas.nativeElement;
     }
 
     ngOnInit() {
@@ -178,11 +184,16 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
             })
         );
         this.subscription.add(
-            this.videoFilterService.onFilterChanged.subscribe(filter => {
+            this.videoFilterService.onFilterChanged.subscribe(async filter => {
                 this.logger.debug(`${this.loggerPrefix} filter applied ${filter ? filter : 'off'}`);
                 if (filter) {
                     this.videoFilterService.initFilterStream(this);
-                    this.videoFilterService.startFilteredStream();
+                    this.filteredStream = await this.videoFilterService.startFilteredStream();
+                    this.videoCallService.applyUserStream(this.filteredStream);
+                } else {
+                    this.videoCallService.removeUserStream();
+                    this.filteredStream = null;
+                    this.videoFilterService.stopStream();
                 }
             })
         );

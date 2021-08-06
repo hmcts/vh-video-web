@@ -26,10 +26,6 @@ export class VideoFilterService {
     activeFilter: BackgroundFilter;
     imgs: Map<BackgroundFilter, HTMLImageElement> = new Map();
 
-    // currentUnfilteredCameraStream: MediaStream;
-    // private currentFilteredCameraStream: MediaStream;
-    // originalOutgoingStream: MediaStream | URL;
-
     constructor(private logger: Logger) {
         this.filterOn = false;
         this.activeFilter = BackgroundFilter.blur;
@@ -66,10 +62,18 @@ export class VideoFilterService {
         });
 
         camera.start();
+        const canvasStream = this.canvasElement.captureStream();
+        (this.videoElement.srcObject as MediaStream).getAudioTracks().forEach(track => {
+            canvasStream.addTrack(track);
+        });
+        return canvasStream;
     }
 
     stopStream() {
         this.selfieSegmentation.close();
+        this.videoElement = null;
+        this.canvasCtx.save();
+        this.canvasCtx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
     }
 
     updateFilter(filter: BackgroundFilter | null) {
@@ -111,6 +115,7 @@ export class VideoFilterService {
             case BackgroundFilter.SCTS:
                 this.applyVirtualBackgroundEffect();
                 break;
+            case BackgroundFilter.blur:
             default:
                 this.applyBlurEffect(results);
                 break;

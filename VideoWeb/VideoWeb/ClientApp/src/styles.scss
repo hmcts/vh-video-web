@@ -208,6 +208,10 @@ video {
   display: block;
 }
 
-.vh-no-pointer{
+.vh-no-pointer {
   pointer-events: none;
+}
+
+.filter-enabled {
+  display: none;
 }
