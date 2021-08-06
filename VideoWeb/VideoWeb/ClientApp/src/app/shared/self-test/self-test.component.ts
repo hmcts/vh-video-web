@@ -61,6 +61,7 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
     subscription: Subscription = new Subscription();
     videoCallSubscription$ = new Subscription();
 
+    hideOriginalStream: boolean;
     filteredStream: MediaStream;
     originalAudioSource;
     originalVideoSource;
@@ -194,10 +195,12 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
                     this.videoFilterService.initFilterStream(this);
                     this.filteredStream = await this.videoFilterService.startFilteredStream();
                     this.videoCallService.applyUserStream(this.filteredStream);
+                    this.hideOriginalStream = true;
                 } else {
                     this.videoCallService.removeUserStream();
                     this.filteredStream = null;
                     this.videoFilterService.stopStream();
+                    this.hideOriginalStream = false;
                 }
             })
         );

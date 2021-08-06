@@ -32,7 +32,7 @@ export class VideoFilterService {
     }
 
     initFilterStream(page: IVideoFilterer) {
-        if (this.videoElement && this.videoElement === page.retrieveVideoElement()) {
+        if (this.videoElement && this.videoElement.id === page.retrieveVideoElement().id) {
             return;
         }
         this.logger.debug(`${this.loggerPrefix} initialising stream for filter`);

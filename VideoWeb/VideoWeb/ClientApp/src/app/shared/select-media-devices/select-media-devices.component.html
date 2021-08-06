@@ -100,7 +100,7 @@
         </div>
 
         <div class="govuk-grid-column-full">
-          <app-video-filter></app-video-filter>
+          <app-video-filter *ngIf="preferredCameraStream"></app-video-filter>
         </div>
 
         <div class="govuk-grid-column-full">

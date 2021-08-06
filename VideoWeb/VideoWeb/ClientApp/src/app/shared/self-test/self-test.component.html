@@ -24,11 +24,11 @@
       autoplay
       width="270"
       height="auto"
-      [ngClass]="{ 'filter-enabled': filteredStream }"
+      [ngClass]="{ 'filter-enabled': hideOriginalStream }"
     >
       {{ 'self-test.browser-not-support' | translate }}
     </video>
-    <canvas #outputCanvas id="outputCanvas" width="270" height="auto"></canvas>
+    <canvas #outputCanvas id="outputCanvas" width="270" height="auto" [ngClass]="{ 'filter-enabled': !hideOriginalStream }"></canvas>
   </div>
 
   <div class="govuk-grid-column-full">
