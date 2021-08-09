@@ -1128,7 +1128,6 @@ export abstract class WaitingRoomBaseDirective {
         await this.hearingControls.publishMediaDeviceStatus();
     }
 
-
     get showExtraContent(): boolean {
         return !this.showVideo && !this.isTransferringIn;
     }

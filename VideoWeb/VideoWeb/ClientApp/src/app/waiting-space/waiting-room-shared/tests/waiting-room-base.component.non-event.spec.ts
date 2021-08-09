@@ -311,7 +311,6 @@ describe('WaitingRoomComponent message and clock', () => {
         expect(component.displayDeviceChangeModal).toBe(false);
     });
 
-
     it('should not announce hearing is starting when already announced', () => {
         spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => Promise.resolve());
         component.hearingStartingAnnounced = true;

@@ -13,7 +13,7 @@ describe('SelectMediaDevicesComponent', () => {
     let component: SelectMediaDevicesComponent;
     let userMediaService: jasmine.SpyObj<UserMediaService>;
     let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
-    let videoCallService: jasmine.SpyObj<VideoCallService>
+    let videoCallService: jasmine.SpyObj<VideoCallService>;
 
     const fb = new FormBuilder();
     const testData = new MediaDeviceTestData();
@@ -35,7 +35,6 @@ describe('SelectMediaDevicesComponent', () => {
             'updatePexipAudioVideoSource',
             'reconnectToCallWithNewDevices',
             'switchToAudioOnlyCall'
-
         ]);
         userMediaService = jasmine.createSpyObj<UserMediaService>(
             'UserMediaService',
@@ -57,8 +56,15 @@ describe('SelectMediaDevicesComponent', () => {
     });
 
     beforeEach(fakeAsync(() => {
-        userMediaService.selectDevicesChangesubject =  new Subject();
-        component = new SelectMediaDevicesComponent(userMediaService, userMediaStreamService, fb, new MockLogger(), translateServiceSpy, videoCallService);
+        userMediaService.selectDevicesChangesubject = new Subject();
+        component = new SelectMediaDevicesComponent(
+            userMediaService,
+            userMediaStreamService,
+            fb,
+            new MockLogger(),
+            translateServiceSpy,
+            videoCallService
+        );
         component.cameraOn = false;
         component.ngOnInit();
         tick();
@@ -118,7 +124,7 @@ describe('SelectMediaDevicesComponent', () => {
         component.onSubmit();
         expect(videoCallService.switchToAudioOnlyCall).toHaveBeenCalled();
     });
-     it('should not switch to audio only call', async () => {
+    it('should not switch to audio only call', async () => {
         spyOn(component.cancelMediaDeviceChange, 'emit');
         component.connectWithCameraOn = true;
         component.onSubmit();

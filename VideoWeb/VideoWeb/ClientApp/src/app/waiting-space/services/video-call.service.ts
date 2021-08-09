@@ -445,6 +445,9 @@ export class VideoCallService {
         if (mic) {
             this.updateMicrophoneForCall(mic);
         }
-        this.logger.info(`${this.loggerPrefix} Update camera and microphone selection`, { cameraId: cam.deviceId, microphoneId: mic.deviceId });
+        this.logger.info(`${this.loggerPrefix} Update camera and microphone selection`, {
+            cameraId: cam.deviceId,
+            microphoneId: mic.deviceId
+        });
     }
 }
