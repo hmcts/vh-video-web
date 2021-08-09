@@ -35,7 +35,7 @@ describe('UnreadMessagesComponent', () => {
                 new UnreadAdminMessageResponse({
                     number_of_unread_messages: 5,
                     participant_id: p.id,
-                    conference_id : conference.id
+                    conference_id: conference.id
                 })
         );
         unreadConferenceResponse = new UnreadInstantMessageConferenceCountResponse({
@@ -104,7 +104,11 @@ describe('UnreadMessagesComponent', () => {
 
     it('should return IM image if are unread messages', () => {
         component.unreadMessages = [
-            new UnreadAdminMessageResponse({ participant_id: conference.participants[0].id, number_of_unread_messages: 5, conference_id: conference.id })
+            new UnreadAdminMessageResponse({
+                participant_id: conference.participants[0].id,
+                number_of_unread_messages: 5,
+                conference_id: conference.id
+            })
         ];
         expect(component.getIMStatus()).toBe('IM_icon.png');
     });
