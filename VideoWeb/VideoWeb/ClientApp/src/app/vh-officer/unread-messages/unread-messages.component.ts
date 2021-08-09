@@ -47,9 +47,9 @@ export class UnreadMessagesComponent extends UnreadMessagesComponentBase impleme
         if (!Array.isArray(this.unreadMessages) || this.unreadMessages.length < 1) {
             return 0;
         }
-        let unreadTotalList: UnreadAdminMessageResponse[] = this.unreadMessages.filter(i => i.conference_id === this.hearing.id);
+        const unreadTotalList: UnreadAdminMessageResponse[] = this.unreadMessages.filter(i => i.conference_id === this.hearing.id);
 
-        let unreadTotal: number = 0;
+        let unreadTotal = 0;
 
         if (unreadTotalList.length > 0) {
             unreadTotal = unreadTotalList.map(m => m.number_of_unread_messages).reduce((a, b) => a + b);
