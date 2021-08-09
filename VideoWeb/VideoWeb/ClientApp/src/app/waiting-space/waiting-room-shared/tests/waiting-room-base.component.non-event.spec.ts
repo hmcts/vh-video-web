@@ -311,50 +311,6 @@ describe('WaitingRoomComponent message and clock', () => {
         expect(component.displayDeviceChangeModal).toBe(false);
     });
 
-    it('should change device on select device', async () => {
-        const device = new SelectedUserMediaDevice(
-            new UserMediaDevice('camera1', 'id3445', 'videoinput', '1'),
-            new UserMediaDevice('microphone', 'id123', 'audioinput', '1')
-        );
-        await component.onMediaDeviceChangeAccepted(device);
-        expect(userMediaService.updatePreferredCamera).toHaveBeenCalled();
-        expect(userMediaService.updatePreferredMicrophone).toHaveBeenCalled();
-        expect(videoCallService.reconnectToCallWithNewDevices);
-    });
-
-    it('should switch to only only call when user has selected to turn camera off', async () => {
-        const device = new SelectedUserMediaDevice(
-            new UserMediaDevice('camera1', 'id3445', 'videoinput', '1'),
-            new UserMediaDevice('microphone', 'id123', 'audioinput', '1'),
-            true
-        );
-
-        await component.onMediaDeviceChangeAccepted(device);
-
-        expect(videoCallService.switchToAudioOnlyCall).toHaveBeenCalled();
-    });
-
-    it('should publish media device status changes when switching call type mid hearing or consultation', async () => {
-        // arrange
-        component.audioOnly = true;
-        const device = new SelectedUserMediaDevice(
-            new UserMediaDevice('camera1', 'id3445', 'videoinput', '1'),
-            new UserMediaDevice('microphone', 'id123', 'audioinput', '1'),
-            false
-        );
-        const controls = jasmine.createSpyObj<PrivateConsultationRoomControlsComponent>(
-            'PrivateConsultationRoomControlsComponent',
-            ['publishMediaDeviceStatus'],
-            { audioOnly: true }
-        );
-        component.hearingControls = controls;
-
-        // act
-        await component.onMediaDeviceChangeAccepted(device);
-
-        // assert
-        expect(controls.publishMediaDeviceStatus).toHaveBeenCalled();
-    });
 
     it('should not announce hearing is starting when already announced', () => {
         spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => Promise.resolve());

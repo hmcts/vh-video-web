@@ -143,6 +143,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             participant: this.selfTestParticipantId
         });
         this.disconnect();
+        this.displayDeviceChangeModal = true;
     }
 
     onMediaDeviceChangeCancelled() {

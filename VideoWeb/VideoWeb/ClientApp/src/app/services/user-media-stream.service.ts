@@ -4,23 +4,20 @@ import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Logger } from './logging/logger-base';
 import { ErrorService } from '../services/error.service';
 import { CallError } from '../waiting-space/models/video-call-models';
-import { DeviceTypeService } from './device-type.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class UserMediaStreamService {
-    readonly permissionConstraints = { audio: true, video: true };
-    readonly tabletPermissionConstraints = { audio: true, video: { facingMode: "user" }};
+    readonly defaultStreamConstraints = { audio: true, video: true };
     readonly defaultDesktopCamConstraints = { audio: false, video: true };
     readonly defaultMicConstraints = { audio: true, video: false };
-    readonly defaultTabletCamConstraints = { audio: false, video: { facingMode: "user" }};
     navigator = <any>navigator;
     private readonly loggerPrefix = '[UserMediaStreamService] -';
 
     private requestStream: MediaStream;
 
-    constructor(private logger: Logger, private errorService: ErrorService, private deviceTypeService: DeviceTypeService) {
+    constructor(private logger: Logger, private errorService: ErrorService) {
         this.navigator.getUserMedia = this.navigator.getUserMedia || this.navigator.webkitGetUserMedia || this.navigator.msGetUserMedia;
     }
 
@@ -44,7 +41,7 @@ export class UserMediaStreamService {
             this.stopStream(this.requestStream);
         }
         try {
-            this.requestStream = await this.navigator.mediaDevices.getUserMedia(this.permissionConstraints);
+            this.requestStream = await this.navigator.mediaDevices.getUserMedia(this.defaultStreamConstraints);
             return this.requestStream;
         } catch (error) {
             this.logger.error(`${this.loggerPrefix} Could not get media stream`, error);
@@ -70,13 +67,8 @@ export class UserMediaStreamService {
             if (device) {
                 return await this.navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId } } });
             } else {
-                if (this.deviceTypeService.isDesktop) {
-                    this.logger.debug(`${this.loggerPrefix} Attempt to get desktop video stream for camera`);
-                    return this.getDefaultCamStream();
-                } else {
-                    this.logger.debug(`${this.loggerPrefix} Attempt to get tablet video stream for camera`);
-                    return this.getDefaultTabletCamStream();
-                }
+                this.logger.debug(`${this.loggerPrefix} Attempt to get desktop video stream for camera`);
+                return this.getDefaultCamStream();
             }
         } catch (error) {
             this.logger.error(`${this.loggerPrefix} Could not get video stream for camera`, error);
@@ -87,9 +79,7 @@ export class UserMediaStreamService {
     private async getDefaultCamStream(): Promise<MediaStream> {
         return this.navigator.mediaDevices.getUserMedia(this.defaultDesktopCamConstraints);
     }
-    private async getDefaultTabletCamStream(): Promise<MediaStream> {
-        return this.navigator.mediaDevices.getUserMedia(this.defaultTabletCamConstraints);
-    }
+
     private async getDefaultMicStream(): Promise<MediaStream> {
         return await this.navigator.mediaDevices.getUserMedia(this.defaultMicConstraints);
     }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import 'webrtc-adapter';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Logger } from './logging/logger-base';
@@ -21,15 +21,21 @@ export class UserMediaService {
 
     readonly PREFERRED_CAMERA_KEY = 'vh.preferred.camera';
     readonly PREFERRED_MICROPHONE_KEY = 'vh.preferred.microphone';
+    readonly AUDIO_ONLY_STATE_KEY = 'vh.audio.only.state';
+
     availableDeviceList: UserMediaDevice[];
+    selectDevicesChangesubject = new Subject();
 
     connectedDevices: BehaviorSubject<UserMediaDevice[]> = new BehaviorSubject([]);
 
     constructor(private logger: Logger, private errorService: ErrorService, private userMediaStreamService: UserMediaStreamService) {
         this.preferredCamCache = new SessionStorage(this.PREFERRED_CAMERA_KEY);
         this.preferredMicCache = new SessionStorage(this.PREFERRED_MICROPHONE_KEY);
+        this.audioOnlyCache = new SessionStorage(this.AUDIO_ONLY_STATE_KEY);
 
         this.navigator.mediaDevices.ondevicechange = async () => {
+            this.selectDevicesChangesubject.next();
+            this.selectDevicesChangesubject.complete();
             await this.updateAvailableDevicesList();
             await this.setDevicesInCache();
         };
@@ -53,12 +59,14 @@ export class UserMediaService {
 
     async updateAvailableDevicesList(): Promise<void> {
         if (!this.navigator.mediaDevices || !this.navigator.mediaDevices.enumerateDevices) {
-            this.logger.error(`${this.loggerPrefix} enumerateDevices() not supported.`, new Error('enumerateDevices() not supported.'));
+            const error = new Error('enumerateDevices() not supported.');
+            this.logger.error(`${this.loggerPrefix} enumerateDevices() not supported.`, error);
+            throw error;
         }
 
         this.logger.debug(`${this.loggerPrefix} Attempting to update available media devices.`);
         let updatedDevices: MediaDeviceInfo[] = [];
-        const stream: MediaStream = await this.userMediaStreamService.getStream();
+        const stream: MediaStream = await this.navigator.mediaDevices.getUserMedia(this.userMediaStreamService.defaultStreamConstraints);
         if (stream && stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0) {
             updatedDevices = await this.navigator.mediaDevices.enumerateDevices();
         }
@@ -103,7 +111,7 @@ export class UserMediaService {
         return this.audioOnlyCache.get();
     }
 
-    private async getCachedDevice(cache: SessionStorage<UserMediaDevice>) {
+    async getCachedDevice(cache: SessionStorage<UserMediaDevice>) {
         return cache.get();
     }
     private async isDeviceStillConnected(device: UserMediaDevice) {
@@ -133,6 +141,10 @@ export class UserMediaService {
                     this.logger.info(`${this.loggerPrefix} Setting default microphone to ${firstMic.label}`);
                     this.updatePreferredMicrophone(firstMic);
                 }
+            }
+            const isAudioOnly = await this.getAudioOnlyState();
+            if (isAudioOnly === null) {
+                this.updateAudioOnlyState(false);
             }
         } catch (error) {
             this.logger.error(`${this.loggerPrefix} Failed to set default devices in cache.`, error);

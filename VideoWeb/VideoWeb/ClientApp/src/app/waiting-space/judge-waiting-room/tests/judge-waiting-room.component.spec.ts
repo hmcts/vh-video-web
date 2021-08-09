@@ -211,7 +211,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         ]);
         videoControlCacheServiceSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', ['setSpotlightStatus']);
 
-        userMediaService.setDefaultDevicesInCache.and.returnValue(Promise.resolve());
+        userMediaService.setDevicesInCache.and.returnValue(Promise.resolve());
         component = new JudgeWaitingRoomComponent(
             activatedRoute,
             videoWebService,
@@ -277,7 +277,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     it('should handle error when unable to setup default devices', fakeAsync(() => {
         errorService.handlePexipError.calls.reset();
         const error = new Error('Permission error');
-        userMediaService.setDefaultDevicesInCache.and.rejectWith(error);
+        userMediaService.setDevicesInCache.and.rejectWith(error);
         component.ngOnInit();
         flushMicrotasks();
         expect(errorService.handlePexipError).toHaveBeenCalledTimes(1);

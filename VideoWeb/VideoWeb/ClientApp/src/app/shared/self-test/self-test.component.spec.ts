@@ -78,7 +78,7 @@ describe('SelfTestComponent', () => {
                 'hasMultipleDevices',
                 'getPreferredCamera',
                 'getPreferredMicrophone',
-                'setDefaultDevicesInCache'
+                'setDevicesInCache'
             ],
             { connectedDevices: new BehaviorSubject(mediaTestData.getListOfDevices()) }
         );
@@ -96,7 +96,7 @@ describe('SelfTestComponent', () => {
     });
 
     beforeEach(() => {
-        userMediaService.setDefaultDevicesInCache.and.returnValue(Promise.resolve());
+        userMediaService.setDevicesInCache.and.returnValue(Promise.resolve());
         conference = testData.getConferenceDetailFuture();
         component = new SelfTestComponent(
             logger,
@@ -136,7 +136,7 @@ describe('SelfTestComponent', () => {
     }));
 
     it('should handle error when unable to setup devices', fakeAsync(() => {
-        userMediaService.setDefaultDevicesInCache.and.rejectWith(new Error('NotAllowedError'));
+        userMediaService.setDevicesInCache.and.rejectWith(new Error('NotAllowedError'));
         component.ngOnInit();
         flushMicrotasks();
         expect(errorService.handlePexipError).toHaveBeenCalled();
@@ -157,9 +157,7 @@ describe('SelfTestComponent', () => {
         const mockMicStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getAudioTracks']);
         component.preferredMicrophoneStream = mockMicStream;
         component.displayDeviceChangeModal = false;
-
         component.changeDevices();
-
         expect(userMediaStreamService.stopStream).toHaveBeenCalledWith(mockMicStream);
         expect(component.displayDeviceChangeModal).toBeTruthy();
     });
@@ -168,17 +166,6 @@ describe('SelfTestComponent', () => {
         component.displayDeviceChangeModal = true;
         component.onMediaDeviceChangeCancelled();
         expect(component.displayDeviceChangeModal).toBeFalsy();
-    });
-
-    it('should update preferred devices', async () => {
-        component.displayDeviceChangeModal = true;
-        const selectedDevices = new SelectedUserMediaDevice(mediaTestData.getListOfCameras()[0], mediaTestData.getListOfMicrophones()[0]);
-
-        await component.onMediaDeviceChangeAccepted(selectedDevices);
-
-        expect(userMediaService.updatePreferredCamera).toHaveBeenCalledWith(selectedDevices.selectedCamera);
-        expect(userMediaService.updatePreferredMicrophone).toHaveBeenCalledWith(selectedDevices.selectedMicrophone);
-        expect(component.displayDeviceChangeModal).toBeTruthy();
     });
 
     it('should emit test complete event', () => {
