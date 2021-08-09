@@ -71,6 +71,7 @@ export class UserMediaService {
             updatedDevices,
             device => new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)
         );
+        this.logger.debug(`${this.loggerPrefix} devices updated`, { devices: updatedDevices });
         if (stream) {
             stream.getTracks().forEach(track => {
                 track.stop();

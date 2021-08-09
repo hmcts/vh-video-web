@@ -175,8 +175,10 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
     async onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
         this.userMediaService.updatePreferredCamera(selectedMediaDevice.selectedCamera);
         this.userMediaService.updatePreferredMicrophone(selectedMediaDevice.selectedMicrophone);
-        await this.updatePexipAudioVideoSource();
-        this.call();
+        if (this.displayDeviceChangeModal) {
+            await this.updatePexipAudioVideoSource();
+            this.call();
+        }
     }
 
     setupSubscribers() {
@@ -194,10 +196,10 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
                 if (filter) {
                     this.videoFilterService.initFilterStream(this);
                     this.filteredStream = await this.videoFilterService.startFilteredStream();
-                    this.videoCallService.applyUserStream(this.filteredStream);
+                    // this.videoCallService.applyUserStream(this.filteredStream);
                     this.hideOriginalStream = true;
                 } else {
-                    this.videoCallService.removeUserStream();
+                    // this.videoCallService.removeUserStream();
                     this.filteredStream = null;
                     this.videoFilterService.stopStream();
                     this.hideOriginalStream = false;

@@ -58,8 +58,12 @@ export class UserMediaStreamService {
     async getStreamForMic(device: UserMediaDevice): Promise<MediaStream> {
         try {
             if (device) {
+                this.logger.debug(`${this.loggerPrefix} Getting stream for microphone device ${device.label}`);
                 return await this.navigator.mediaDevices.getUserMedia({ audio: { deviceId: { exact: device.deviceId } } });
             } else {
+                this.logger.debug(
+                    `${this.loggerPrefix} No device provided, getting a default stream for microphone device ${device.label}`
+                );
                 return this.getDefaultMicStream();
             }
         } catch (error) {
@@ -71,8 +75,10 @@ export class UserMediaStreamService {
     async getStreamForCam(device: UserMediaDevice): Promise<MediaStream> {
         try {
             if (device) {
+                this.logger.debug(`${this.loggerPrefix} Getting stream for camera device ${device.label}`);
                 return await this.navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId } } });
             } else {
+                this.logger.debug(`${this.loggerPrefix} No device provided, getting a default stream for camera device ${device.label}`);
                 return this.getDefaultCamStream();
             }
         } catch (error) {
@@ -96,6 +102,7 @@ export class UserMediaStreamService {
     }
 
     async getSreamForPreferredDevices(cam: UserMediaDevice, mic: UserMediaDevice): Promise<MediaStream> {
+        this.logger.debug(`${this.loggerPrefix} Getting stream for preferrerd devices`, { cam, mic });
         return await this.navigator.mediaDevices.getUserMedia({
             video: { deviceId: { exact: cam.deviceId } },
             audio: { deviceId: { exact: mic.deviceId } }

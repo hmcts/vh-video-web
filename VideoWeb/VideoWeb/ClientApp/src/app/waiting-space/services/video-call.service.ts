@@ -103,7 +103,7 @@ export class VideoCallService {
 
         this.pexipAPI.onDisconnect = function (reason) {
             self.onDisconnected.next(new DisconnectedCall(reason));
-            self.userMediaStreamService.stopStream(self.pexipAPI.user_media_stream);
+            // self.userMediaStreamService.stopStream(self.pexipAPI.user_media_stream);
         };
 
         this.pexipAPI.onParticipantUpdate = function (participantUpdate) {
@@ -178,6 +178,8 @@ export class VideoCallService {
         const cam = await this.userMediaService.getPreferredCamera();
         const mic = await this.userMediaService.getPreferredMicrophone();
         const preferredDeviceStream = await this.userMediaStreamService.getSreamForPreferredDevices(cam, mic);
+        this.pexipAPI.audio_source = null;
+        this.pexipAPI.video_source = null;
         this.pexipAPI.user_media_stream = preferredDeviceStream;
         this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, null);
     }

@@ -2,7 +2,7 @@ import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, 
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, tap } from 'rxjs/operators';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { IVideoFilterer } from 'src/app/services/models/background-filter';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
@@ -61,6 +61,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
                     this.selectedMediaDevicesForm = await this.initNewDeviceSelectionForm();
                     this.subscribeToDeviceSelectionChange();
                     this.setupSubscribers();
+                    await this.videoFilterService.initFilterStream(this);
                 })
                 .catch(error => {
                     this.logger.error(`${this.loggerPrefix} Failed to update device selection`, error);
@@ -77,11 +78,20 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
     }
 
     private setupSubscribers() {
-        this.videoFilterService.onFilterChanged.subscribe(async filter => {
+        // this.videoFilterService.onFilterChanged.pipe(takeUntil(this.destroyedSubject)).subscribe(async filter => {
+        //     this.logger.debug(`${this.loggerPrefix} filter applied ${filter ? filter : 'off'}`);
+        //     if (filter) {
+        //         this.videoFilterService.startFilteredStream(true);
+        //         this.hideOriginalStream = true;
+        //     } else {
+        //         this.hideOriginalStream = false;
+        //         this.videoFilterService.stopStream();
+        //     }
+        // });
+        this.videoFilterService.onFilterChanged.pipe().subscribe(async filter => {
             this.logger.debug(`${this.loggerPrefix} filter applied ${filter ? filter : 'off'}`);
             if (filter) {
-                this.videoFilterService.initFilterStream(this);
-                await this.videoFilterService.startFilteredStream(true);
+                this.videoFilterService.startFilteredStream(true);
                 this.hideOriginalStream = true;
             } else {
                 this.hideOriginalStream = false;
@@ -160,6 +170,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
     }
 
     onChangeDevice() {
+        this.logger.debug(`${this.loggerPrefix} device changed...`);
         this.saveSelectedDevices();
     }
 
@@ -209,16 +220,27 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
     }
 
     private subscribeToDeviceSelectionChange() {
-        this.selectedCamera.valueChanges.pipe(takeUntil(this.destroyedSubject)).subscribe(newCamera => {
-            this.updateCameraStream(newCamera);
-        });
+        this.selectedCamera.valueChanges
+            .pipe(
+                tap(x => this.logger.debug(`${this.loggerPrefix} selected camera has been changed`)),
+                takeUntil(this.destroyedSubject)
+            )
+            .subscribe(newCamera => {
+                this.updateCameraStream(newCamera);
+            });
 
-        this.selectedMicrophone.valueChanges.pipe(takeUntil(this.destroyedSubject)).subscribe(newMicrophone => {
-            this.updateMicrophoneStream(newMicrophone);
-        });
+        this.selectedMicrophone.valueChanges
+            .pipe(
+                tap(x => this.logger.debug(`${this.loggerPrefix} selected microphone has been changed`)),
+                takeUntil(this.destroyedSubject)
+            )
+            .subscribe(newMicrophone => {
+                this.updateMicrophoneStream(newMicrophone);
+            });
     }
 
     private async updateCameraStream(newCam: UserMediaDevice) {
+        this.logger.debug(`${this.loggerPrefix} updating camera stream`, newCam);
         if (this.preferredCameraStream) {
             this.userMediaStreamService.stopStream(this.preferredCameraStream);
         }
@@ -228,6 +250,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
     }
 
     private async updateMicrophoneStream(newMic: UserMediaDevice) {
+        this.logger.debug(`${this.loggerPrefix} updating microphone stream`, newMic);
         if (this.preferredMicrophoneStream) {
             this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
         }

@@ -31,7 +31,7 @@ export class VideoFilterService {
         this.activeFilter = BackgroundFilter.blur;
     }
 
-    initFilterStream(page: IVideoFilterer) {
+    async initFilterStream(page: IVideoFilterer) {
         if (this.videoElement && this.videoElement.id === page?.retrieveVideoElement()?.id) {
             return;
         }
@@ -49,9 +49,7 @@ export class VideoFilterService {
             modelSelection: 1,
             selfieMode: true
         });
-    }
 
-    async startFilteredStream(skipAudio?: boolean) {
         this.logger.debug(`${this.loggerPrefix} starting filtered stream`);
         this.selfieSegmentation.onResults(results => this.onSelfieSegmentationResults(results));
 
@@ -61,6 +59,9 @@ export class VideoFilterService {
             }
         });
         camera.start();
+    }
+
+    startFilteredStream(skipAudio?: boolean) {
         const canvasStream = this.canvasElement.captureStream();
         if (!skipAudio) {
             (this.videoElement.srcObject as MediaStream).getAudioTracks().forEach(track => {
@@ -71,8 +72,6 @@ export class VideoFilterService {
     }
 
     stopStream() {
-        this.selfieSegmentation.close();
-        this.videoElement = null;
         this.canvasCtx.save();
         this.canvasCtx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
     }
