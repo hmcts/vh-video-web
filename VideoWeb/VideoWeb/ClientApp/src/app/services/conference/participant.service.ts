@@ -105,7 +105,6 @@ export class ParticipantService {
         private videoControlCacheService: VideoControlCacheService,
         private logger: LoggerService
     ) {
-        this.logger.warn(`${this.loggerPrefix} Constructor called.`);
         this.initialise();
     }
 
@@ -149,6 +148,11 @@ export class ParticipantService {
             this.logger.info(`${this.loggerPrefix} new conference`, {
                 conference: conference
             });
+
+            if (!conference) {
+                this.logger.warn(`${this.loggerPrefix} no conference loaded; skipping initialisation.`);
+                return;
+            }
 
             this._endpointParticipants = [];
             this._nonEndpointParticipants = [];

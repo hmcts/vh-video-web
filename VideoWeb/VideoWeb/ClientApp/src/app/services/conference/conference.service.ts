@@ -136,9 +136,12 @@ export class ConferenceService {
 
         if (!this._currentConferenceId) {
             this.logger.warn(`${this.loggerPrefix} Could not get conference id from the route parameters: ${params?.get('conferenceId')}`, {
-                routeParams: params,
-                route: this.activatedRoute
+                routeParams: params
             });
+
+            this.currentConferenceSubject.next(null);
+            this.onCurrentConferenceStatusChangedSubject.next({ newStatus: null, oldStatus: null });
+
             return;
         }
 

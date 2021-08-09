@@ -18,6 +18,11 @@ export class VideoControlCacheService {
         private logger: LoggerService
     ) {
         this.conferenceService.currentConference$.subscribe(conference => {
+            if (!conference) {
+                this.logger.warn(`${this.loggerPrefix} No conference loaded. Skipping loading of hearing state for conference`);
+                return;
+            }
+
             this.storageService.loadHearingStateForConference(conference.id).subscribe(state => {
                 this.hearingControlStates = state;
             });
