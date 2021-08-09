@@ -37,6 +37,7 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
     @Output() testStarted = new EventEmitter();
     @Output() testCompleted = new EventEmitter<TestCallScoreResponse>();
 
+    @ViewChild('selfView', { static: false }) selfView: ElementRef<HTMLVideoElement>;
     @ViewChild('outputCanvas', { static: false }) outputCanvas: ElementRef<HTMLCanvasElement>;
 
     token: TokenResponse;
@@ -62,9 +63,6 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
     videoCallSubscription$ = new Subscription();
 
     hideOriginalStream: boolean;
-    filteredStream: MediaStream;
-    originalAudioSource;
-    originalVideoSource;
 
     constructor(
         private logger: Logger,
@@ -79,7 +77,7 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
     }
 
     retrieveVideoElement(): HTMLVideoElement {
-        return document.getElementById('outgoingStream') as HTMLVideoElement;
+        return this.selfView.nativeElement;
     }
 
     retrieveCanvasElement(): HTMLCanvasElement {
@@ -165,6 +163,7 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
         this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
         this.preferredMicrophoneStream = null;
         this.displayDeviceChangeModal = true;
+        this.hideOriginalStream = false;
     }
 
     onMediaDeviceChangeCancelled() {
@@ -181,6 +180,14 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
         }
     }
 
+    async applyVideoFilterIfNeeded() {
+        await this.videoFilterService.initFilterStream(this);
+        if (this.videoFilterService.filterOn) {
+            this.videoFilterService.startFilteredStream(true);
+            this.hideOriginalStream = true;
+        }
+    }
+
     setupSubscribers() {
         this.subscription.add(
             this.userMediaService.connectedDevices.subscribe(async () => {
@@ -194,15 +201,11 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
                 }
                 this.logger.debug(`${this.loggerPrefix} filter applied ${filter ? filter : 'off'}`);
                 if (filter) {
-                    this.videoFilterService.initFilterStream(this);
-                    this.filteredStream = await this.videoFilterService.startFilteredStream();
-                    // this.videoCallService.applyUserStream(this.filteredStream);
+                    await this.videoFilterService.startFilteredStream();
                     this.hideOriginalStream = true;
                 } else {
-                    // this.videoCallService.removeUserStream();
-                    this.filteredStream = null;
-                    this.videoFilterService.stopStream();
                     this.hideOriginalStream = false;
+                    this.videoFilterService.stopStream();
                 }
             })
         );
@@ -244,6 +247,16 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
         this.incomingStream = callConnected.stream;
         this.displayFeed = true;
         this.testStarted.emit();
+
+        // TOOD: find a better way to trigger this
+        setTimeout(() => {
+            this.applyVideoFilterIfNeeded().catch(err => {
+                this.logger.error(`${this.loggerPrefix} Failed to apply video filter`, err, {
+                    conference: this.conference?.id,
+                    participant: this.selfTestParticipantId
+                });
+            });
+        }, 1000);
     }
 
     handleCallError(error: CallError) {

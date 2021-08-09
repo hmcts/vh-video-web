@@ -61,12 +61,20 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
                     this.selectedMediaDevicesForm = await this.initNewDeviceSelectionForm();
                     this.subscribeToDeviceSelectionChange();
                     this.setupSubscribers();
-                    await this.videoFilterService.initFilterStream(this);
+                    await this.applyVideoFilterIfNeeded();
                 })
                 .catch(error => {
                     this.logger.error(`${this.loggerPrefix} Failed to update device selection`, error);
                 });
         });
+    }
+
+    async applyVideoFilterIfNeeded() {
+        await this.videoFilterService.initFilterStream(this);
+        if (this.videoFilterService.filterOn) {
+            this.videoFilterService.startFilteredStream(true);
+            this.hideOriginalStream = true;
+        }
     }
 
     retrieveVideoElement(): HTMLVideoElement {

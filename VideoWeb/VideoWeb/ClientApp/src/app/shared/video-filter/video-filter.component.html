@@ -1,4 +1,3 @@
 <select id="background" (change)="this.backgroundChanged($event)">
-  <option value="none">none</option>
-  <option [value]="f.value" *ngFor="let f of filters">{{ f.name }}</option>
+  <option [selected]="f.selected" [value]="f.value" *ngFor="let f of filters">{{ f.name }}</option>
 </select>
