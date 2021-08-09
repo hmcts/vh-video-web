@@ -78,17 +78,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
     }
 
     private setupSubscribers() {
-        // this.videoFilterService.onFilterChanged.pipe(takeUntil(this.destroyedSubject)).subscribe(async filter => {
-        //     this.logger.debug(`${this.loggerPrefix} filter applied ${filter ? filter : 'off'}`);
-        //     if (filter) {
-        //         this.videoFilterService.startFilteredStream(true);
-        //         this.hideOriginalStream = true;
-        //     } else {
-        //         this.hideOriginalStream = false;
-        //         this.videoFilterService.stopStream();
-        //     }
-        // });
-        this.videoFilterService.onFilterChanged.pipe().subscribe(async filter => {
+        this.videoFilterService.onFilterChanged.subscribe(async filter => {
             this.logger.debug(`${this.loggerPrefix} filter applied ${filter ? filter : 'off'}`);
             if (filter) {
                 this.videoFilterService.startFilteredStream(true);
@@ -284,14 +274,4 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
         }
         this.preferredMicrophoneStream = null;
     }
-
-    // removeFilter() {
-    //     const originalStream = this.vBgService.removeFilter();
-    //     this.preferredCameraStream = originalStream as MediaStream;
-    // }
-
-    // async applyFilter() {
-    //     const filteredStream = await this.vBgService.applyFilterToPreferredCamera();
-    //     this.preferredCameraStream = filteredStream as MediaStream;
-    // }
 }
