@@ -149,6 +149,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     onMediaDeviceChangeCancelled() {
         this.displayDeviceChangeModal = false;
         this.call();
+        this.updatePexipAudioVideoSource();
     }
 
     setupSubscribers() {
@@ -220,18 +221,9 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     }
 
     async updatePexipAudioVideoSource() {
-        //Zijian Todo double check this method
         this.hasMultipleDevices = await this.userMediaService.hasMultipleDevices();
-
         const cam = await this.userMediaService.getPreferredCamera();
-        if (cam) {
-            this.videoCallService.updateCameraForCall(cam);
-        }
-
         const mic = await this.userMediaService.getPreferredMicrophone();
-        if (mic) {
-            this.videoCallService.updateMicrophoneForCall(mic);
-        }
         this.preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(mic);
 
         this.logger.info(`${this.loggerPrefix} Update camera and microphone selection`, {

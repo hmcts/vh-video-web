@@ -104,6 +104,26 @@ describe('SelectMediaDevicesComponent', () => {
         component.onSubmit();
         expect(component.cancelMediaDeviceChange.emit).toHaveBeenCalled();
     });
+    it('should update video call service', async () => {
+        spyOn(component.cancelMediaDeviceChange, 'emit');
+        component.onSubmit();
+        expect(videoCallService.updateAudioOnlyPreference).toHaveBeenCalled();
+        expect(videoCallService.updatePexipAudioVideoSource).toHaveBeenCalled();
+        expect(videoCallService.reconnectToCallWithNewDevices).toHaveBeenCalled();
+    });
+
+    it('should switch to audio only call', async () => {
+        spyOn(component.cancelMediaDeviceChange, 'emit');
+        component.connectWithCameraOn = false;
+        component.onSubmit();
+        expect(videoCallService.switchToAudioOnlyCall).toHaveBeenCalled();
+    });
+     it('should not switch to audio only call', async () => {
+        spyOn(component.cancelMediaDeviceChange, 'emit');
+        component.connectWithCameraOn = true;
+        component.onSubmit();
+        expect(videoCallService.switchToAudioOnlyCall).not.toHaveBeenCalled();
+    });
 
     it('should update microphone stream on device change', () => {
         const device = component.availableMicrophoneDevices[1];

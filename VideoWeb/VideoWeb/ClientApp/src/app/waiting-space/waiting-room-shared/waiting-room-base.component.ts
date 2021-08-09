@@ -547,23 +547,15 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     async onConsultationAccepted(roomLabel: string) {
-        //Zijian Todo
         this.displayStartPrivateConsultationModal = false;
         this.displayJoinPrivateConsultationModal = false;
         this.privateConsultationAccordianExpanded = false;
 
         if (this.displayDeviceChangeModal) {
             this.logger.debug(`${this.loggerPrefix} Participant accepted a consultation. Closing change device modal.`);
-            const preferredCamera = await this.userMediaService.getPreferredCamera();
-            const preferredMicrophone = await this.userMediaService.getPreferredMicrophone();
-            const preferredCameraStream = await this.userMediaStreamService.getStreamForCam(preferredCamera);
-            const preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(preferredMicrophone);
-
-            this.userMediaStreamService.stopStream(preferredCameraStream);
-            this.userMediaStreamService.stopStream(preferredMicrophoneStream);
+            await this.stopVideoAudioStream();
             this.displayDeviceChangeModal = false;
         }
-
         const invitation = this.consultationInvitiationService.getInvitation(roomLabel);
         if (invitation.answer === ConsultationAnswer.Rejected) {
             return;
@@ -573,7 +565,16 @@ export abstract class WaitingRoomBaseDirective {
 
         this.createOrUpdateWaitingOnLinkedParticipantsNotification(invitation);
     }
+    private async stopVideoAudioStream() {
+        // close dialog and stop streams
+        const preferredCamera = await this.userMediaService.getPreferredCamera();
+        const preferredMicrophone = await this.userMediaService.getPreferredMicrophone();
+        const preferredCameraStream = await this.userMediaStreamService.getStreamForCam(preferredCamera);
+        const preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(preferredMicrophone);
 
+        this.userMediaStreamService.stopStream(preferredCameraStream);
+        this.userMediaStreamService.stopStream(preferredMicrophoneStream);
+    }
     createOrUpdateWaitingOnLinkedParticipantsNotification(invitation: ConsultationInvitation) {
         const waitingOnLinkedParticipants: string[] = [];
         for (const linkedParticipantId in invitation.linkedParticipantStatuses) {

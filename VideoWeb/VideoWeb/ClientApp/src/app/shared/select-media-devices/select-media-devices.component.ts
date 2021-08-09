@@ -129,8 +129,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
 
     async onSubmit() {
         // close dialog and stop streams
-        this.userMediaStreamService.stopStream(this.preferredCameraStream);
-        this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
+        this.stopVideoAudioStream();
         const selectedCam = this.getSelectedCamera();
         const selectedMic = this.getSelectedMicrophone();
         const audioOnly = !this.connectWithCameraOn;
@@ -138,11 +137,16 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         this.cancelMediaDeviceChange.emit();
         await this.callWithNewDevices(selectedCam, selectedMic, audioOnly);
     }
+    private stopVideoAudioStream() {
+        this.userMediaStreamService.stopStream(this.preferredCameraStream);
+        this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
+    }
 
     async callWithNewDevices(cam: UserMediaDevice, mic: UserMediaDevice, audioOnly: boolean) {
         this.videoCallService.updateAudioOnlyPreference(audioOnly);
         await this.videoCallService.updatePexipAudioVideoSource(cam, mic);
         this.videoCallService.reconnectToCallWithNewDevices();
+        debugger;
         if (audioOnly) {
             this.videoCallService.switchToAudioOnlyCall();
         }
