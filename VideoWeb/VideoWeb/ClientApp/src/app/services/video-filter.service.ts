@@ -32,7 +32,7 @@ export class VideoFilterService {
     }
 
     initFilterStream(page: IVideoFilterer) {
-        if (this.videoElement && this.videoElement.id === page.retrieveVideoElement().id) {
+        if (this.videoElement && this.videoElement.id === page?.retrieveVideoElement()?.id) {
             return;
         }
         this.logger.debug(`${this.loggerPrefix} initialising stream for filter`);
@@ -42,7 +42,7 @@ export class VideoFilterService {
 
         this.selfieSegmentation = new SelfieSegmentation({
             locateFile: file => {
-                return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1.1622680987/${file}`;
+                return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1.1628007100/${file}`;
             }
         });
         this.selfieSegmentation.setOptions({
@@ -60,7 +60,6 @@ export class VideoFilterService {
                 await this.selfieSegmentation.send({ image: this.videoElement });
             }
         });
-
         camera.start();
         const canvasStream = this.canvasElement.captureStream();
         if (!skipAudio) {

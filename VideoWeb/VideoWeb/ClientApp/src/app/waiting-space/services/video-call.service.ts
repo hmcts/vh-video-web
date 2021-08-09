@@ -5,6 +5,7 @@ import { ConfigService } from 'src/app/services/api/config.service';
 import { ApiClient, HearingLayout, SharedParticipantRoom, StartHearingRequest } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import {
@@ -60,6 +61,7 @@ export class VideoCallService {
     constructor(
         private logger: Logger,
         private userMediaService: UserMediaService,
+        private userMediaStreamService: UserMediaStreamService,
         private apiClient: ApiClient,
         private configService: ConfigService
     ) {
@@ -101,6 +103,7 @@ export class VideoCallService {
 
         this.pexipAPI.onDisconnect = function (reason) {
             self.onDisconnected.next(new DisconnectedCall(reason));
+            self.userMediaStreamService.stopStream(self.pexipAPI.user_media_stream);
         };
 
         this.pexipAPI.onParticipantUpdate = function (participantUpdate) {
@@ -170,8 +173,12 @@ export class VideoCallService {
         }
     }
 
-    makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number) {
+    async makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number) {
         this.initCallTag();
+        const cam = await this.userMediaService.getPreferredCamera();
+        const mic = await this.userMediaService.getPreferredMicrophone();
+        const preferredDeviceStream = await this.userMediaStreamService.getSreamForPreferredDevices(cam, mic);
+        this.pexipAPI.user_media_stream = preferredDeviceStream;
         this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, null);
     }
 
@@ -237,12 +244,12 @@ export class VideoCallService {
     }
 
     updateCameraForCall(camera: UserMediaDevice) {
-        this.pexipAPI.video_source = camera.deviceId;
+        this.pexipAPI.video_source = false;
         this.logger.info(`${this.loggerPrefix}  Using preferred camera: ${camera.label}`);
     }
 
     updateMicrophoneForCall(microphone: UserMediaDevice) {
-        this.pexipAPI.audio_source = microphone.deviceId;
+        this.pexipAPI.audio_source = false;
         this.logger.info(`${this.loggerPrefix} Using preferred microphone: ${microphone.label}`);
     }
 

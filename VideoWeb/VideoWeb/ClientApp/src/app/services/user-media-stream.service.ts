@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import 'webrtc-adapter';
-import { UserMediaDevice } from '../shared/models/user-media-device';
-import { Logger } from './logging/logger-base';
 import { ErrorService } from '../services/error.service';
+import { UserMediaDevice } from '../shared/models/user-media-device';
 import { CallError } from '../waiting-space/models/video-call-models';
+import { Logger } from './logging/logger-base';
 
 @Injectable({
     providedIn: 'root'
@@ -92,6 +92,13 @@ export class UserMediaStreamService {
         return await this.navigator.mediaDevices.getUserMedia({
             audio: true,
             video: false
+        });
+    }
+
+    async getSreamForPreferredDevices(cam: UserMediaDevice, mic: UserMediaDevice): Promise<MediaStream> {
+        return await this.navigator.mediaDevices.getUserMedia({
+            video: { deviceId: { exact: cam.deviceId } },
+            audio: { deviceId: { exact: mic.deviceId } }
         });
     }
 
