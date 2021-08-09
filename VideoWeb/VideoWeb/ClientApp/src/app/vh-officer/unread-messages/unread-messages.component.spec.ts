@@ -10,6 +10,8 @@ import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { InstantMessage } from '../../services/models/instant-message';
 import { Hearing } from '../../shared/models/hearing';
 import { UnreadMessagesComponent } from './unread-messages.component';
+import { UnreadAdminMessageModelMapper } from 'src/app/shared/mappers/unread-messages-model-mapper';
+import { UnreadAdminMessageModel } from 'src/app/waiting-space/models/unread-admin-message-model';
 
 describe('UnreadMessagesComponent', () => {
     let component: UnreadMessagesComponent;
@@ -18,6 +20,9 @@ describe('UnreadMessagesComponent', () => {
     let eventbus: jasmine.SpyObj<EventBusService>;
     const conference = new ConferenceTestData().getConferenceDetailNow();
     let logger: MockLogger;
+
+    let unreadAdminMessageModelSpy: jasmine.SpyObj<UnreadAdminMessageModelMapper>;
+    const mapper = new UnreadAdminMessageModelMapper();
 
     let unreadConferenceResponse: UnreadInstantMessageConferenceCountResponse;
 
@@ -32,20 +37,29 @@ describe('UnreadMessagesComponent', () => {
     beforeEach(() => {
         const unreadMessages = conference.participants.map(
             p =>
-                new UnreadAdminMessageResponse({
-                    number_of_unread_messages: 5,
-                    participant_id: p.id,
-                    conference_id: conference.id
-                })
+                new UnreadAdminMessageModel(
+                    new UnreadAdminMessageResponse({
+                        number_of_unread_messages: 5,
+                        participant_id: p.id
+                    }),
+                    conference.id
+                )
         );
         unreadConferenceResponse = new UnreadInstantMessageConferenceCountResponse({
             number_of_unread_messages_conference: unreadMessages
         });
         videoWebServiceSpy.getUnreadMessageCountForConference.and.callFake(() => Promise.resolve(unreadConferenceResponse));
 
-        component = new UnreadMessagesComponent(videoWebServiceSpy, eventsService, logger, eventbus);
-        component.unreadMessages = unreadMessages;
+        unreadAdminMessageModelSpy = jasmine.createSpyObj<UnreadAdminMessageModelMapper>('UnreadAdminMessageModelMapper', [
+            'mapUnreadMessageResponseArray',
+            'mapFromMessageResponse'
+        ]);
+
+        component = new UnreadMessagesComponent(videoWebServiceSpy, eventsService, logger, eventbus, unreadAdminMessageModelSpy);
+
         component.hearing = new Hearing(conference);
+
+        component.unreadMessages = unreadMessages;
     });
 
     afterAll(() => {
@@ -54,9 +68,13 @@ describe('UnreadMessagesComponent', () => {
 
     it('should init unread message count', fakeAsync(() => {
         const expectedCount = 5 * conference.participants.length;
-        component.unreadMessages = undefined;
+
+        const mappedUnreadMessages = mapper.mapUnreadMessageResponseArray(component.unreadMessages, conference.id);
+        unreadAdminMessageModelSpy.mapUnreadMessageResponseArray.and.returnValue(mappedUnreadMessages);
+
         component.ngOnInit();
         tick();
+
         expect(component.unreadCount).toBe(expectedCount);
     }));
 
@@ -104,11 +122,13 @@ describe('UnreadMessagesComponent', () => {
 
     it('should return IM image if are unread messages', () => {
         component.unreadMessages = [
-            new UnreadAdminMessageResponse({
-                participant_id: conference.participants[0].id,
-                number_of_unread_messages: 5,
-                conference_id: conference.id
-            })
+            new UnreadAdminMessageModel(
+                new UnreadAdminMessageResponse({
+                    number_of_unread_messages: 5,
+                    participant_id: conference.participants[0].id
+                }),
+                conference.id
+            )
         ];
         expect(component.getIMStatus()).toBe('IM_icon.png');
     });

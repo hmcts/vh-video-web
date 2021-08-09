@@ -8,6 +8,8 @@ import { Hearing } from '../../shared/models/hearing';
 import { UnreadMessagesComponentBase } from '../unread-messages-shared/unread-message-base.component';
 import { EventBusService, EmitEvent, VHEventType } from 'src/app/services/event-bus.service';
 import { InstantMessage } from 'src/app/services/models/instant-message';
+import { UnreadAdminMessageModelMapper } from 'src/app/shared/mappers/unread-messages-model-mapper';
+import { UnreadAdminMessageModel } from 'src/app/waiting-space/models/unread-admin-message-model';
 
 @Component({
     selector: 'app-unread-messages',
@@ -18,13 +20,14 @@ export class UnreadMessagesComponent extends UnreadMessagesComponentBase impleme
     @Input() hearing: Hearing;
 
     messagesSubscription$: Subscription = new Subscription();
-    unreadMessages: UnreadAdminMessageResponse[] = [];
+    unreadMessages: UnreadAdminMessageModel[] = [];
 
     constructor(
         private videoWebService: VideoWebService,
         protected eventsService: EventsService,
         protected logger: Logger,
-        private eventbus: EventBusService
+        private eventbus: EventBusService,
+        private mapper: UnreadAdminMessageModelMapper
     ) {
         super(eventsService, logger);
     }
@@ -35,10 +38,10 @@ export class UnreadMessagesComponent extends UnreadMessagesComponentBase impleme
         this.videoWebService
             .getUnreadMessageCountForConference(this.hearing.id)
             .then(response => {
-                this.unreadMessages = response.number_of_unread_messages_conference.map(obj => {
-                    obj.conference_id = this.hearing.id;
-                    return obj;
-                });
+                this.unreadMessages = this.mapper.mapUnreadMessageResponseArray(
+                    response.number_of_unread_messages_conference,
+                    this.hearing.id
+                );
             })
             .catch(err => this.logger.error(`[UnreadMessages] - Failed to get unread vho messages for ${this.hearing.id}`, err));
     }
@@ -47,7 +50,7 @@ export class UnreadMessagesComponent extends UnreadMessagesComponentBase impleme
         if (!Array.isArray(this.unreadMessages) || this.unreadMessages.length < 1) {
             return 0;
         }
-        const unreadTotalList: UnreadAdminMessageResponse[] = this.unreadMessages.filter(i => i.conference_id === this.hearing.id);
+        const unreadTotalList: UnreadAdminMessageModel[] = this.unreadMessages.filter(i => i.conferenceId === this.hearing.id);
 
         let unreadTotal = 0;
 
@@ -81,11 +84,13 @@ export class UnreadMessagesComponent extends UnreadMessagesComponentBase impleme
                     return;
                 }
                 this.unreadMessages.push(
-                    new UnreadAdminMessageResponse({
-                        number_of_unread_messages: 1,
-                        participant_id: participantId,
-                        conference_id: conferenceId
-                    })
+                    new UnreadAdminMessageModel(
+                        new UnreadAdminMessageResponse({
+                            number_of_unread_messages: 1,
+                            participant_id: participantId
+                        }),
+                        conferenceId
+                    )
                 );
             }
         }
