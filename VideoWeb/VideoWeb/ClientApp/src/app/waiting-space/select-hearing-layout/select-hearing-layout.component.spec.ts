@@ -179,9 +179,10 @@ describe('SelectHearingLayoutComponent', () => {
             expect(headingButton.innerHTML).toContain(expectedTranslatedContentForHeader);
         });
 
-        it('should unsubscribe from onLangChange', () => {
+        it('should unsubscribe subscriptions', () => {
+            spyOn(component.subscriptions, 'unsubscribe');
             component.ngOnDestroy();
-            expect(translateServiceSpy.onLangChange.closed).toBeTruthy();
+            expect(component.subscriptions.unsubscribe).toHaveBeenCalledTimes(1);
         });
     });
 });
