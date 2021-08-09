@@ -34,7 +34,12 @@ export class UnreadMessagesComponent extends UnreadMessagesComponentBase impleme
         this.logger.debug('[UnreadMessages] - Getting unread message count for conference', { conference: this.hearing.id });
         this.videoWebService
             .getUnreadMessageCountForConference(this.hearing.id)
-            .then(response => (this.unreadMessages = response.number_of_unread_messages_conference))
+            .then(response => {
+                this.unreadMessages = response.number_of_unread_messages_conference.map(obj => {
+                    obj.conference_id = this.hearing.id;
+                    return obj;
+                });
+            })
             .catch(err => this.logger.error(`[UnreadMessages] - Failed to get unread vho messages for ${this.hearing.id}`, err));
     }
 
@@ -42,7 +47,13 @@ export class UnreadMessagesComponent extends UnreadMessagesComponentBase impleme
         if (!Array.isArray(this.unreadMessages) || this.unreadMessages.length < 1) {
             return 0;
         }
-        const unreadTotal: number = this.unreadMessages.map(m => m.number_of_unread_messages).reduce((a, b) => a + b);
+        let unreadTotalList: UnreadAdminMessageResponse[] = this.unreadMessages.filter(i => i.conference_id === this.hearing.id);
+
+        let unreadTotal: number = 0;
+
+        if (unreadTotalList.length > 0) {
+            unreadTotal = unreadTotalList.map(m => m.number_of_unread_messages).reduce((a, b) => a + b);
+        }
         return unreadTotal;
     }
 
@@ -72,7 +83,8 @@ export class UnreadMessagesComponent extends UnreadMessagesComponentBase impleme
                 this.unreadMessages.push(
                     new UnreadAdminMessageResponse({
                         number_of_unread_messages: 1,
-                        participant_id: participantId
+                        participant_id: participantId,
+                        conference_id: conferenceId
                     })
                 );
             }
@@ -82,20 +94,6 @@ export class UnreadMessagesComponent extends UnreadMessagesComponentBase impleme
     handleImReceived(message: InstantMessage) {
         if (this.getHearing().id === message.conferenceId) {
             this.incrementUnreadCounter(message.conferenceId, message.from);
-
-            const messagesPendingToRead = this.unreadMessages.find(x => x.participant_id === message.from);
-            if (messagesPendingToRead) {
-                this.logger.debug(
-                    '[handleImReceived] ' +
-                        message.conferenceId +
-                        ' total unread ' +
-                        messagesPendingToRead.number_of_unread_messages +
-                        ' from ' +
-                        message.from
-                );
-            } else {
-                this.logger.debug('[handleImReceived] ' + message.conferenceId + ' vho responded ' + message.from);
-            }
         }
     }
 

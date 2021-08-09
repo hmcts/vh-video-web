@@ -5968,6 +5968,7 @@ export class UnreadAdminMessageResponse implements IUnreadAdminMessageResponse {
     participant_username?: string | undefined;
     number_of_unread_messages?: number;
     participant_id?: string;
+    conference_id?: string;
 
     constructor(data?: IUnreadAdminMessageResponse) {
         if (data) {
@@ -6005,6 +6006,7 @@ export interface IUnreadAdminMessageResponse {
     participant_username?: string | undefined;
     number_of_unread_messages?: number;
     participant_id?: string;
+    conference_id?: string;
 }
 
 export class UnreadInstantMessageConferenceCountResponse implements IUnreadInstantMessageConferenceCountResponse {
