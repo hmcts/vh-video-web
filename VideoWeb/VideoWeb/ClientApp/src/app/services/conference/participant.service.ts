@@ -149,14 +149,14 @@ export class ParticipantService {
                 conference: conference
             });
 
+            this._endpointParticipants = [];
+            this._nonEndpointParticipants = [];
+            this._virtualMeetingRooms = [];
+
             if (!conference) {
                 this.logger.warn(`${this.loggerPrefix} no conference loaded; skipping initialisation.`);
                 return;
             }
-
-            this._endpointParticipants = [];
-            this._nonEndpointParticipants = [];
-            this._virtualMeetingRooms = [];
 
             zip(
                 this.conferenceService.getParticipantsForConference(conference.id),
