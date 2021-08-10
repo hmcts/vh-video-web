@@ -3,7 +3,7 @@ import { SecurityConfigSetupService } from '../security-config-setup.service';
 import { IdpProviders } from '../idp-providers';
 import { SecurityServiceProvider } from './security-provider.service';
 import { ISecurityService } from './security-service.interface';
-import { MagicLinkSecurityService } from './magic-link-security.service';
+import { QuickLinkSecurityService } from './quick-link-security.service';
 import { Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 
@@ -12,7 +12,7 @@ describe('SecurityServiceProviderService', () => {
 
     let securityConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
     let oidcSecurityServiceSpy: jasmine.SpyObj<ISecurityService>;
-    let magicLinkSecurityServiceSpy: jasmine.SpyObj<ISecurityService>;
+    let quickLinkSecurityServiceSpy: jasmine.SpyObj<ISecurityService>;
     let currentIdpSubject: Subject<IdpProviders>;
 
     beforeEach(() => {
@@ -26,11 +26,11 @@ describe('SecurityServiceProviderService', () => {
         getSpiedPropertyGetter(securityConfigSetupServiceSpy, 'currentIdp$').and.returnValue(currentIdpSubject.asObservable());
 
         oidcSecurityServiceSpy = jasmine.createSpyObj<ISecurityService>('OidcSecurityService', ['getToken']);
-        magicLinkSecurityServiceSpy = jasmine.createSpyObj<ISecurityService>('MagicLinkSecurityService', ['getToken']);
+        quickLinkSecurityServiceSpy = jasmine.createSpyObj<ISecurityService>('QuickLinkSecurityService', ['getToken']);
 
         service = new SecurityServiceProvider(
             securityConfigSetupServiceSpy,
-            (magicLinkSecurityServiceSpy as unknown) as MagicLinkSecurityService,
+            (quickLinkSecurityServiceSpy as unknown) as QuickLinkSecurityService,
             (oidcSecurityServiceSpy as unknown) as OidcSecurityService
         );
     });
@@ -62,15 +62,15 @@ describe('SecurityServiceProviderService', () => {
             expect(securityService).toBe(oidcSecurityServiceSpy);
         });
 
-        it('should return the magicLinkSecurityService when the selected IDP is magicLink', () => {
+        it('should return the quickLinkSecurityService when the selected IDP is quickLink', () => {
             // Arrange
-            securityConfigSetupServiceSpy.getIdp.and.returnValue(IdpProviders.magicLink);
+            securityConfigSetupServiceSpy.getIdp.and.returnValue(IdpProviders.quickLink);
 
             // Act
             const securityService = service.getSecurityService();
 
             // Assert
-            expect(securityService).toBe(magicLinkSecurityServiceSpy);
+            expect(securityService).toBe(quickLinkSecurityServiceSpy);
         });
     });
 });

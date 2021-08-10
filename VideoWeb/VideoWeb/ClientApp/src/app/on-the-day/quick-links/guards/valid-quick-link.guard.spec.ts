@@ -2,31 +2,31 @@ import { fakeAsync, flush } from '@angular/core/testing';
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
-import { MagicLinksService } from 'src/app/services/api/magic-links.service';
+import { QuickLinksService } from 'src/app/services/api/quick-links.service';
 import { ErrorService } from 'src/app/services/error.service';
-import { ValidMagicLinkGuard } from './valid-magic-link.guard';
+import { ValidQuickLinkGuard } from './valid-quick-link.guard';
 
-describe('ValidMagicLinkGuard', () => {
-    const headingKey = 'magic-participant-errors.invalid-page.heading';
-    const bodyKey = 'magic-participant-errors.invalid-page.body';
+describe('ValidQuickLinkGuard', () => {
+    const headingKey = 'quick-participant-errors.invalid-page.heading';
+    const bodyKey = 'quick-participant-errors.invalid-page.body';
 
-    let guard: ValidMagicLinkGuard;
-    let magicLinksServiceSpy: jasmine.SpyObj<MagicLinksService>;
-    let validateMagicLinkSubject: Subject<boolean>;
+    let guard: ValidQuickLinkGuard;
+    let quickLinksServiceSpy: jasmine.SpyObj<QuickLinksService>;
+    let validateQuickLinkSubject: Subject<boolean>;
     let errorServiceSpy: jasmine.SpyObj<ErrorService>;
     let translateServiceSpy: jasmine.SpyObj<TranslateService>;
 
     beforeEach(() => {
-        magicLinksServiceSpy = jasmine.createSpyObj<MagicLinksService>('MagicLinksService', ['validateMagicLink']);
-        validateMagicLinkSubject = new Subject<boolean>();
-        magicLinksServiceSpy.validateMagicLink.and.returnValue(validateMagicLinkSubject.asObservable());
+        quickLinksServiceSpy = jasmine.createSpyObj<QuickLinksService>('QuickLinksService', ['validateQuickLink']);
+        validateQuickLinkSubject = new Subject<boolean>();
+        quickLinksServiceSpy.validateQuickLink.and.returnValue(validateQuickLinkSubject.asObservable());
 
         errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError']);
 
         translateServiceSpy = jasmine.createSpyObj<TranslateService>('TranslateService', ['instant']);
         translateServiceSpy.instant.and.callFake(key => key);
 
-        guard = new ValidMagicLinkGuard(magicLinksServiceSpy, errorServiceSpy, translateServiceSpy);
+        guard = new ValidQuickLinkGuard(quickLinksServiceSpy, errorServiceSpy, translateServiceSpy);
     });
 
     it('should be created', () => {
@@ -45,11 +45,11 @@ describe('ValidMagicLinkGuard', () => {
 
             // Act
             guard.canActivate(routeSnapshot).subscribe(() => {});
-            validateMagicLinkSubject.next(false);
+            validateQuickLinkSubject.next(false);
             flush();
 
             // Expect
-            expect(magicLinksServiceSpy.validateMagicLink).toHaveBeenCalledOnceWith(headingId);
+            expect(quickLinksServiceSpy.validateQuickLink).toHaveBeenCalledOnceWith(headingId);
             expect(translateServiceSpy.instant).toHaveBeenCalledTimes(2);
             expect(translateServiceSpy.instant).toHaveBeenCalledWith(headingKey);
             expect(translateServiceSpy.instant).toHaveBeenCalledWith(bodyKey);
@@ -67,11 +67,11 @@ describe('ValidMagicLinkGuard', () => {
 
             // Act
             guard.canActivate(routeSnapshot).subscribe(() => {});
-            validateMagicLinkSubject.next(true);
+            validateQuickLinkSubject.next(true);
             flush();
 
             // Expect
-            expect(magicLinksServiceSpy.validateMagicLink).toHaveBeenCalledOnceWith(headingId);
+            expect(quickLinksServiceSpy.validateQuickLink).toHaveBeenCalledOnceWith(headingId);
             expect(translateServiceSpy.instant).not.toHaveBeenCalled();
             expect(errorServiceSpy.goToServiceError).not.toHaveBeenCalled();
         }));

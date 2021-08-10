@@ -17,8 +17,8 @@ export class ParticipantGuard implements CanActivate {
             if (
                 profile.role === Role.Representative ||
                 profile.role === Role.Individual ||
-                profile.role === Role.MagicLinkParticipant ||
-                profile.role === Role.MagicLinkObserver
+                profile.role === Role.QuickLinkParticipant ||
+                profile.role === Role.QuickLinkObserver
             ) {
                 this.logger.debug(`[ParticipantGuard] User is a representative or individual.`);
                 return true;

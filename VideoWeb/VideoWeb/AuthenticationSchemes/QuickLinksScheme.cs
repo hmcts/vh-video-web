@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -6,11 +6,11 @@ using VideoWeb.Common.Configuration;
 
 namespace VideoWeb.AuthenticationSchemes
 {
-    public class MagicLinksScheme : ProviderSchemeBase, IProviderSchemes
+    public class QuickLinksScheme : ProviderSchemeBase, IProviderSchemes
     {
-        private readonly MagicLinksConfiguration _idpConfiguration;
+        private readonly QuickLinksConfiguration _idpConfiguration;
 
-        public MagicLinksScheme(MagicLinksConfiguration idpConfiguration, string eventhubPath) : base(eventhubPath)
+        public QuickLinksScheme(QuickLinksConfiguration idpConfiguration, string eventhubPath) : base(eventhubPath)
         {
             _idpConfiguration = idpConfiguration;
         }
@@ -30,6 +30,6 @@ namespace VideoWeb.AuthenticationSchemes
             };
         }
 
-        public override AuthProvider Provider => AuthProvider.MagicLinks;
+        public override AuthProvider Provider => AuthProvider.QuickLinks;
     }
 }

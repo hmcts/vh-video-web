@@ -4,7 +4,7 @@ import { AuthInterceptor, AuthModule } from 'angular-auth-oidc-client';
 import { SecurityConfigSetupService } from './security/security-config-setup.service';
 import { RefreshTokenParameterInterceptor } from './security/refresh-token-parameter.interceptor';
 import { ConfigService } from './services/api/config.service';
-import { MagicLinksInterceptor } from './security/magic-links.interceptor';
+import { QuickLinksInterceptor } from './security/quick-links.interceptor';
 
 export function loadConfig(securityConfigSetupService: SecurityConfigSetupService): Function {
     return () => {
@@ -24,7 +24,7 @@ export function loadConfig(securityConfigSetupService: SecurityConfigSetupServic
             multi: true
         },
         { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-        { provide: HTTP_INTERCEPTORS, useClass: MagicLinksInterceptor, multi: true },
+        { provide: HTTP_INTERCEPTORS, useClass: QuickLinksInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: RefreshTokenParameterInterceptor, multi: true }
     ],
     exports: [AuthModule]

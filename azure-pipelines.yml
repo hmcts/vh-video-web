@@ -134,10 +134,10 @@ parameters:
           - name: UsingEjud
             value: $(UsingEjud)
 
-          # Magic Links Configuration
-          - name: MagicLinks:Issuer
+          # Quick Links Configuration
+          - name: QuickLinks:Issuer
             value: $(video_api_url)
-          - name: MagicLinks:JwtProviderSecret
+          - name: QuickLinks:JwtProviderSecret
             value: $(JwtProviderSecret)
 
     - name: appSettings
@@ -217,10 +217,10 @@ parameters:
           - name: VhServices:InternalEventSecret
             value: $(internal_event_secret)
 
-          # Magic Links Configuration
-          - name: MagicLinks:Issuer
+          # Quick Links Configuration
+          - name: QuickLinks:Issuer
             value: $(video_api_url)
-          - name: MagicLinks:JwtProviderSecret
+          - name: QuickLinks:JwtProviderSecret
             value: $(JwtProviderSecret)
 
 variables:
@@ -233,6 +233,7 @@ variables:
     - group: Saucelabs
     - group: vh-wowza-dev
     - group: KinlyConfiguration_Test
+    - group: QuickLinks_Dev
 
 trigger:
     branches:

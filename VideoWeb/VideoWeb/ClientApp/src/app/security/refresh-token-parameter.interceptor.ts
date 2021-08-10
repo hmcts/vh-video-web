@@ -17,7 +17,7 @@ export class RefreshTokenParameterInterceptor implements HttpInterceptor {
         securityServiceProviderService.currentIdp$
             .pipe(
                 tap(idp => (this.idp = idp)),
-                map(idp => (idp === IdpProviders.magicLink ? null : securityServiceProviderService.getSecurityService(idp)))
+                map(idp => (idp === IdpProviders.quickLink ? null : securityServiceProviderService.getSecurityService(idp)))
             )
             .subscribe(securityService => (this.securityService = securityService));
     }

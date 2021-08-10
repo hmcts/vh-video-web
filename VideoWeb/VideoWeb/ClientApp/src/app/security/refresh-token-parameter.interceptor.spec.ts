@@ -160,7 +160,7 @@ describe('RefreshTokenParameterInterceptor', () => {
         });
     }
 
-    describe(`when provider is ${IdpProviders.magicLink.toString()}`, () => {
+    describe(`when provider is ${IdpProviders.quickLink.toString()}`, () => {
         it('should NOT modify the request', fakeAsync(() => {
             // Arrange
             const next = jasmine.createSpyObj<HttpHandler>('HttpHandler', ['handle']);
@@ -171,7 +171,7 @@ describe('RefreshTokenParameterInterceptor', () => {
             });
             const request = new HttpRequest<any>('POST', '/oauth2/v2.0/token', 'params1');
 
-            currentIdpSubject.next(IdpProviders.magicLink);
+            currentIdpSubject.next(IdpProviders.quickLink);
             flush();
 
             // Act

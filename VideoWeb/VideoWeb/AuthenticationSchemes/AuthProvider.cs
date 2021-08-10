@@ -1,9 +1,9 @@
-﻿namespace VideoWeb.AuthenticationSchemes
+namespace VideoWeb.AuthenticationSchemes
 {
     public enum AuthProvider
     {
         VHAAD,
         EJudiciary,
-        MagicLinks
+        QuickLinks
     }
 }

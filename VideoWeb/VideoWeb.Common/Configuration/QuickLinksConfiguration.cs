@@ -1,6 +1,6 @@
-﻿namespace VideoWeb.Common.Configuration
+namespace VideoWeb.Common.Configuration
 {
-    public class MagicLinksConfiguration
+    public class QuickLinksConfiguration
     {
         public string JwtProviderSecret { get; set; }
         public string Issuer { get; set; }

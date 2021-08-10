@@ -76,8 +76,8 @@ export class AppComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.configService.getClientSettings().subscribe({
             next: async () => {
-                if (this.securityConfigSetupService.getIdp() === IdpProviders.magicLink) {
-                    this.postConfigSetupMagicLinks();
+                if (this.securityConfigSetupService.getIdp() === IdpProviders.quickLink) {
+                    this.postConfigSetupQuickLinks();
                 } else {
                     this.postConfigSetupOidc();
                 }
@@ -100,7 +100,7 @@ export class AppComponent implements OnInit, OnDestroy {
             });
     }
 
-    private postConfigSetupMagicLinks() {
+    private postConfigSetupQuickLinks() {
         this.checkAuth().subscribe({
             next: async (loggedIn: boolean) => {
                 await this.postAuthSetup(loggedIn, false);
@@ -169,8 +169,8 @@ export class AppComponent implements OnInit, OnDestroy {
             if (
                 profile.role === Role.Representative ||
                 profile.role === Role.Individual ||
-                profile.role === Role.MagicLinkParticipant ||
-                profile.role === Role.MagicLinkObserver
+                profile.role === Role.QuickLinkParticipant ||
+                profile.role === Role.QuickLinkObserver
             ) {
                 this.isRepresentativeOrIndividual = true;
             }

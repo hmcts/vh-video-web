@@ -1,10 +1,5 @@
-using Autofac;
-using Autofac.Extras.Moq;
 using FluentAssertions;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.DependencyInjection;
-using Moq;
 using NUnit.Framework;
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -13,20 +8,20 @@ using VideoWeb.Common.Configuration;
 
 namespace VideoWeb.UnitTests.AuthenticationSchemes
 {
-    public class MagicLinksSchemeTest
+    public class QuickLinksSchemeTest
     {
-        private MagicLinksScheme _sut;
-        private MagicLinksConfiguration _configuration;
+        private QuickLinksScheme _sut;
+        private QuickLinksConfiguration _configuration;
 
         [SetUp]
         public void SetUp()
         {
-            _configuration = new MagicLinksConfiguration
+            _configuration = new QuickLinksConfiguration
             {
                 Issuer = "issuer",
                 JwtProviderSecret = "x4p5Kxsygx3dYAso0JKZljK0PL926mxppc5gGqeV9aRydc++gSNx4UITuZ1G6YJX7KgymQnQiEsaG/XIUKTPPA=="
             };
-            _sut = new MagicLinksScheme(_configuration, "eventHubPath");
+            _sut = new QuickLinksScheme(_configuration, "eventHubPath");
         }
 
         [Test]
@@ -36,7 +31,7 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
             var provider = _sut.Provider;
 
             // Assert
-            provider.Should().Be(AuthProvider.MagicLinks);
+            provider.Should().Be(AuthProvider.QuickLinks);
         }
 
         [Test]
@@ -46,7 +41,7 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
             var schemeName = _sut.SchemeName;
 
             // Assert
-            schemeName.Should().Be(AuthProvider.MagicLinks.ToString());
+            schemeName.Should().Be(AuthProvider.QuickLinks.ToString());
         }
 
         [Test]
@@ -56,7 +51,7 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
             var schemeName = _sut.EventHubSchemeName;
 
             // Assert
-            schemeName.Should().Be($"EventHub{AuthProvider.MagicLinks}");
+            schemeName.Should().Be($"EventHub{AuthProvider.QuickLinks}");
         }
 
         [Test]

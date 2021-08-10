@@ -49,14 +49,14 @@ namespace VideoWeb.Mappings
                 return Role.Individual;
             }
             
-            if (user.IsInRole(AppRoles.MagicLinkObserver))
+            if (user.IsInRole(AppRoles.QuickLinkObserver))
             {
-                return Role.MagicLinkObserver;
+                return Role.QuickLinkObserver;
             }
             
-            if (user.IsInRole(AppRoles.MagicLinkParticipant))
+            if (user.IsInRole(AppRoles.QuickLinkParticipant))
             {
-                return Role.MagicLinkParticipant;
+                return Role.QuickLinkParticipant;
             }
             
             if (user.IsInRole(AppRoles.CaseAdminRole))

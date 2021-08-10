@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 
 namespace VideoWeb.Contract.Responses
 {
-    public class MagicLinkParticipantJoinResponse
+    public class QuickLinkParticipantJoinResponse
     {
         public string Jwt { get; set; }
     }

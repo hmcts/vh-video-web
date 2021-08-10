@@ -6,8 +6,8 @@ import { environment } from 'src/environments/environment';
 import { AdminGuard } from './security/admin.guard';
 import { AuthGuard } from './security/auth.guard';
 import { NavigatorComponent } from './home/navigator/navigator.component';
-import { MagicLinksComponent } from './on-the-day/magic-links/magic-links.component';
-import { ValidMagicLinkGuard } from './on-the-day/magic-links/guards/valid-magic-link.guard';
+import { QuickLinksComponent } from './on-the-day/quick-links/quick-links.component';
+import { ValidQuickLinkGuard } from './on-the-day/quick-links/guards/valid-quick-link.guard';
 import { AlreadyAuthenticatedGuard } from './security/guards/already-authenticated.guard';
 
 export const routes: Routes = [
@@ -18,7 +18,7 @@ export const routes: Routes = [
         loadChildren: () => import('./vh-officer/vh-officer.module').then(m => m.VhOfficerModule)
     },
     { path: `${pageUrls.Home}`, component: HomeComponent },
-    { path: `${pageUrls.MagicLinks}`, component: MagicLinksComponent, canActivate: [AlreadyAuthenticatedGuard, ValidMagicLinkGuard] },
+    { path: `${pageUrls.QuickLinks}`, component: QuickLinksComponent, canActivate: [AlreadyAuthenticatedGuard, ValidQuickLinkGuard] },
     { path: `${pageUrls.Navigator}`, component: NavigatorComponent, canActivate: [AuthGuard] },
     { path: '**', redirectTo: `${pageUrls.NotFound}`, pathMatch: 'full' }
 ];

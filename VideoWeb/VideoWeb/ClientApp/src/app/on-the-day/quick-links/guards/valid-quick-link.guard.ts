@@ -17,9 +17,13 @@ export class ValidQuickLinkGuard implements CanActivate {
     ) {}
 
     canActivate(routeSnapshot: ActivatedRouteSnapshot): Observable<boolean> {
+        console.log('Can activate', routeSnapshot);
         return this.quickLinksService.validateQuickLink(routeSnapshot.paramMap.get('hearingId')).pipe(
             tap(isValid => {
+                console.log('validate', isValid);
                 if (!isValid) {
+                    console.log('was not valid', isValid);
+
                     this.errorService.goToServiceError(
                         this.translationService.instant('quick-participant-errors.invalid-page.heading'),
                         this.translationService.instant('quick-participant-errors.invalid-page.body'),

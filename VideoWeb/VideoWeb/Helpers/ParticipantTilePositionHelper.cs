@@ -22,7 +22,7 @@ namespace VideoWeb.Helpers
             {
                 prefix = "JUDGE";
             }
-            else if (participant.HearingRole?.ToLower().Trim() == "witness" || participant.Role == Role.MagicLinkObserver)
+            else if (participant.HearingRole?.ToLower().Trim() == "witness" || participant.Role == Role.QuickLinkObserver)
             {
                 prefix = "WITNESS";
             }

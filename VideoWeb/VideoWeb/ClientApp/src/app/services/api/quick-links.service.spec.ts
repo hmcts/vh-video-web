@@ -1,70 +1,70 @@
-import { MagicLinksService } from './magic-links.service';
-import { ApiClient, MagicLinkParticipantJoinRequest, MagicLinkParticipantJoinResponse, Role } from '../clients/api-client';
+import { QuickLinksService } from './quick-links.service';
+import { ApiClient, QuickLinkParticipantJoinRequest, QuickLinkParticipantJoinResponse, Role } from '../clients/api-client';
 import { SecurityConfigSetupService } from 'src/app/security/security-config-setup.service';
 import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 import { fakeAsync, flush } from '@angular/core/testing';
 import { IdpProviders } from 'src/app/security/idp-providers';
-import { MagicLinkSecurityService } from 'src/app/security/authentication/magic-link-security.service';
+import { QuickLinkSecurityService } from 'src/app/security/authentication/quick-link-security.service';
 import { Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 
-describe('MagicLinksService', () => {
-    let service: MagicLinksService;
+describe('QuickLinksService', () => {
+    let service: QuickLinksService;
 
     let apiClientSpy: jasmine.SpyObj<ApiClient>;
     let securityConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
-    let magicLinkSecurityServiceSpy: jasmine.SpyObj<MagicLinkSecurityService>;
+    let quickLinkSecurityServiceSpy: jasmine.SpyObj<QuickLinkSecurityService>;
     let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
 
     let isAuthenticatedSubject: Subject<boolean>;
 
     beforeEach(() => {
         apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', [
-            'joinConferenceAsAMagicLinkUser',
-            'validateMagicLink',
-            'getMagicLinkParticipantRoles'
+            'joinConferenceAsAQuickLinkUser',
+            'validateQuickLink',
+            'getQuickLinkParticipantRoles'
         ]);
 
         securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>('SecurityConfigSetupService', ['setIdp']);
 
-        magicLinkSecurityServiceSpy = jasmine.createSpyObj<MagicLinkSecurityService>(
-            'MagicLinkSecurityService',
+        quickLinkSecurityServiceSpy = jasmine.createSpyObj<QuickLinkSecurityService>(
+            'QuickLinkSecurityService',
             ['authorize'],
             ['isAuthenticated$']
         );
 
         isAuthenticatedSubject = new Subject<boolean>();
-        getSpiedPropertyGetter(magicLinkSecurityServiceSpy, 'isAuthenticated$').and.returnValue(isAuthenticatedSubject.asObservable());
+        getSpiedPropertyGetter(quickLinkSecurityServiceSpy, 'isAuthenticated$').and.returnValue(isAuthenticatedSubject.asObservable());
 
         securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>('SecurityServiceProviderService', [
             'getSecurityService'
         ]);
 
-        securityServiceProviderServiceSpy.getSecurityService.and.returnValue(magicLinkSecurityServiceSpy);
+        securityServiceProviderServiceSpy.getSecurityService.and.returnValue(quickLinkSecurityServiceSpy);
 
-        service = new MagicLinksService(apiClientSpy, securityConfigSetupServiceSpy, securityServiceProviderServiceSpy);
+        service = new QuickLinksService(apiClientSpy, securityConfigSetupServiceSpy, securityServiceProviderServiceSpy);
     });
 
-    describe('getMagicLinkParticipantRoles', () => {
-        it('should call the api to get magic link participant roles', () => {
+    describe('getQuickLinkParticipantRoles', () => {
+        it('should call the api to get quick link participant roles', () => {
             // Act
-            service.getMagicLinkParticipantRoles();
+            service.getQuickLinkParticipantRoles();
 
             // Assert
-            expect(apiClientSpy.getMagicLinkParticipantRoles).toHaveBeenCalledTimes(1);
+            expect(apiClientSpy.getQuickLinkParticipantRoles).toHaveBeenCalledTimes(1);
         });
     });
 
-    describe('validateMagicLink', () => {
+    describe('validateQuickLink', () => {
         it('should call the api for validation', () => {
             // Arrange
             const hearingId = 'hearing-id';
 
             // Act
-            service.validateMagicLink(hearingId);
+            service.validateQuickLink(hearingId);
 
             // Assert
-            expect(apiClientSpy.validateMagicLink).toHaveBeenCalledOnceWith(hearingId);
+            expect(apiClientSpy.validateQuickLink).toHaveBeenCalledOnceWith(hearingId);
         });
     });
 
@@ -74,19 +74,19 @@ describe('MagicLinksService', () => {
             const hearingId = 'hearing-id';
             const name = 'name';
             const role = Role.Judge;
-            const expectedRequest = new MagicLinkParticipantJoinRequest({
+            const expectedRequest = new QuickLinkParticipantJoinRequest({
                 name: name,
                 role: role
             });
 
-            const joinSubject = new Subject<MagicLinkParticipantJoinResponse>();
-            apiClientSpy.joinConferenceAsAMagicLinkUser.and.returnValue(joinSubject.asObservable());
+            const joinSubject = new Subject<QuickLinkParticipantJoinResponse>();
+            apiClientSpy.joinConferenceAsAQuickLinkUser.and.returnValue(joinSubject.asObservable());
 
             // Act
             service.joinHearing(hearingId, name, role);
 
             // Assert
-            expect(apiClientSpy.joinConferenceAsAMagicLinkUser).toHaveBeenCalledOnceWith(hearingId, expectedRequest);
+            expect(apiClientSpy.joinConferenceAsAQuickLinkUser).toHaveBeenCalledOnceWith(hearingId, expectedRequest);
         });
 
         it('should perform side effects when the observable is subscribed to', fakeAsync(() => {
@@ -94,16 +94,16 @@ describe('MagicLinksService', () => {
             const hearingId = 'hearing-id';
             const name = 'name';
             const role = Role.Judge;
-            const expectedRequest = new MagicLinkParticipantJoinRequest({
+            const expectedRequest = new QuickLinkParticipantJoinRequest({
                 name: name,
                 role: role
             });
-            const expectedResponse = new MagicLinkParticipantJoinResponse({
+            const expectedResponse = new QuickLinkParticipantJoinResponse({
                 jwt: 'jwt'
             });
 
-            const joinSubject = new Subject<MagicLinkParticipantJoinResponse>();
-            apiClientSpy.joinConferenceAsAMagicLinkUser.and.returnValue(joinSubject.asObservable());
+            const joinSubject = new Subject<QuickLinkParticipantJoinResponse>();
+            apiClientSpy.joinConferenceAsAQuickLinkUser.and.returnValue(joinSubject.asObservable());
 
             // Act
             let result = null;
@@ -117,10 +117,10 @@ describe('MagicLinksService', () => {
 
             // Assert
             expect(result).toBe(true);
-            expect(apiClientSpy.joinConferenceAsAMagicLinkUser).toHaveBeenCalledOnceWith(hearingId, expectedRequest);
-            expect(securityConfigSetupServiceSpy.setIdp).toHaveBeenCalledOnceWith(IdpProviders.magicLink);
+            expect(apiClientSpy.joinConferenceAsAQuickLinkUser).toHaveBeenCalledOnceWith(hearingId, expectedRequest);
+            expect(securityConfigSetupServiceSpy.setIdp).toHaveBeenCalledOnceWith(IdpProviders.quickLink);
             expect(securityServiceProviderServiceSpy.getSecurityService).toHaveBeenCalledTimes(2);
-            expect(magicLinkSecurityServiceSpy.authorize).toHaveBeenCalledOnceWith(null, expectedResponse.jwt);
+            expect(quickLinkSecurityServiceSpy.authorize).toHaveBeenCalledOnceWith(null, expectedResponse.jwt);
         }));
 
         it('should return the is authenticated observable and filter false', fakeAsync(() => {
@@ -128,16 +128,16 @@ describe('MagicLinksService', () => {
             const hearingId = 'hearing-id';
             const name = 'name';
             const role = Role.Judge;
-            const expectedRequest = new MagicLinkParticipantJoinRequest({
+            const expectedRequest = new QuickLinkParticipantJoinRequest({
                 name: name,
                 role: role
             });
-            const expectedResponse = new MagicLinkParticipantJoinResponse({
+            const expectedResponse = new QuickLinkParticipantJoinResponse({
                 jwt: 'jwt'
             });
 
-            const joinSubject = new Subject<MagicLinkParticipantJoinResponse>();
-            apiClientSpy.joinConferenceAsAMagicLinkUser.and.returnValue(joinSubject.asObservable());
+            const joinSubject = new Subject<QuickLinkParticipantJoinResponse>();
+            apiClientSpy.joinConferenceAsAQuickLinkUser.and.returnValue(joinSubject.asObservable());
 
             // Act
             let result = null;
@@ -151,10 +151,10 @@ describe('MagicLinksService', () => {
 
             // Assert
             expect(result).toBeNull();
-            expect(apiClientSpy.joinConferenceAsAMagicLinkUser).toHaveBeenCalledOnceWith(hearingId, expectedRequest);
-            expect(securityConfigSetupServiceSpy.setIdp).toHaveBeenCalledOnceWith(IdpProviders.magicLink);
+            expect(apiClientSpy.joinConferenceAsAQuickLinkUser).toHaveBeenCalledOnceWith(hearingId, expectedRequest);
+            expect(securityConfigSetupServiceSpy.setIdp).toHaveBeenCalledOnceWith(IdpProviders.quickLink);
             expect(securityServiceProviderServiceSpy.getSecurityService).toHaveBeenCalledTimes(2);
-            expect(magicLinkSecurityServiceSpy.authorize).toHaveBeenCalledOnceWith(null, expectedResponse.jwt);
+            expect(quickLinkSecurityServiceSpy.authorize).toHaveBeenCalledOnceWith(null, expectedResponse.jwt);
         }));
 
         it('should return the is authenticated observable and emit true', fakeAsync(() => {
@@ -162,16 +162,16 @@ describe('MagicLinksService', () => {
             const hearingId = 'hearing-id';
             const name = 'name';
             const role = Role.Judge;
-            const expectedRequest = new MagicLinkParticipantJoinRequest({
+            const expectedRequest = new QuickLinkParticipantJoinRequest({
                 name: name,
                 role: role
             });
-            const expectedResponse = new MagicLinkParticipantJoinResponse({
+            const expectedResponse = new QuickLinkParticipantJoinResponse({
                 jwt: 'jwt'
             });
 
-            const joinSubject = new Subject<MagicLinkParticipantJoinResponse>();
-            apiClientSpy.joinConferenceAsAMagicLinkUser.and.returnValue(joinSubject.asObservable());
+            const joinSubject = new Subject<QuickLinkParticipantJoinResponse>();
+            apiClientSpy.joinConferenceAsAQuickLinkUser.and.returnValue(joinSubject.asObservable());
 
             // Act
             let result = null;
@@ -185,10 +185,10 @@ describe('MagicLinksService', () => {
 
             // Assert
             expect(result).toBeTrue();
-            expect(apiClientSpy.joinConferenceAsAMagicLinkUser).toHaveBeenCalledOnceWith(hearingId, expectedRequest);
-            expect(securityConfigSetupServiceSpy.setIdp).toHaveBeenCalledOnceWith(IdpProviders.magicLink);
+            expect(apiClientSpy.joinConferenceAsAQuickLinkUser).toHaveBeenCalledOnceWith(hearingId, expectedRequest);
+            expect(securityConfigSetupServiceSpy.setIdp).toHaveBeenCalledOnceWith(IdpProviders.quickLink);
             expect(securityServiceProviderServiceSpy.getSecurityService).toHaveBeenCalledTimes(2);
-            expect(magicLinkSecurityServiceSpy.authorize).toHaveBeenCalledOnceWith(null, expectedResponse.jwt);
+            expect(quickLinkSecurityServiceSpy.authorize).toHaveBeenCalledOnceWith(null, expectedResponse.jwt);
         }));
     });
 });

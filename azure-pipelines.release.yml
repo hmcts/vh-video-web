@@ -161,25 +161,25 @@ stages:
               - Prod
               - Preprod
 
-          - group: MagicLinks_Dev
+          - group: QuickLinks_Dev
             env:
              - Dev
-          - group: MagicLinks_Preprod
+          - group: QuickLinks_Preprod
             env:
              - Preprod
-          - group: MagicLinks_Prod
+          - group: QuickLinks_Prod
             env:
              - Prod
-          - group: MagicLinks_Test
+          - group: QuickLinks_Test
             env:
              - Test1
-          - group: MagicLinks_Aat
+          - group: QuickLinks_Aat
             env:
              - Aat
-          - group: MagicLinks_Demo
+          - group: QuickLinks_Demo
             env:
              - Demo
-          - group: MagicLinks_Sandbox
+          - group: QuickLinks_Sandbox
             env:
              - Sandbox
         appSettings:

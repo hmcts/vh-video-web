@@ -21,7 +21,7 @@ import { IndependentSelfTestComponent } from './independent-self-test/independen
 import { PluraliseTextPipe } from '../shared/pipes/pluraliseText.pipe';
 import { SelfTestActionsComponent } from './self-test-actions/self-test-actions.component';
 import { UnsupportedDeviceComponent } from '../shared/unsupported-device/unsupported-device.component';
-import { MagicLinksComponent } from './magic-links/magic-links.component';
+import { QuickLinksComponent } from './quick-links/quick-links.component';
 
 @NgModule({
     imports: [CommonModule, SharedModule, OnTheDayRoutingModule],
@@ -45,7 +45,7 @@ import { MagicLinksComponent } from './magic-links/magic-links.component';
         IndependentSelfTestComponent,
         PluraliseTextPipe,
         SelfTestActionsComponent,
-        MagicLinksComponent
+        QuickLinksComponent
     ],
     exports: [DeclarationComponent]
 })

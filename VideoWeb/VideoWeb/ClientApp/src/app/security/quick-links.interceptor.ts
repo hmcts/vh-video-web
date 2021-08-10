@@ -7,7 +7,7 @@ import { Logger } from '../services/logging/logger-base';
 import { Observable } from 'rxjs';
 
 @Injectable()
-export class MagicLinksInterceptor {
+export class QuickLinksInterceptor {
     private loggerPrefix = '[AuthenticationInterceptor] -';
     private currentIdp: IdpProviders;
 
@@ -22,9 +22,9 @@ export class MagicLinksInterceptor {
     intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
         if (this.currentIdp) {
             switch (this.currentIdp) {
-                case IdpProviders.magicLink:
-                    this.logger.debug(`${this.loggerPrefix} IDP is ${this.currentIdp}. Using Magic Links intercepter.`);
-                    return next.handle(this.attachMagicLinkUsersToken(request));
+                case IdpProviders.quickLink:
+                    this.logger.debug(`${this.loggerPrefix} IDP is ${this.currentIdp}. Using Quick Links intercepter.`);
+                    return next.handle(this.attachQuickLinkUsersToken(request));
             }
         } else {
             this.logger.warn(`${this.loggerPrefix} Current IDP is not defined. Cannot intercept request.`);
@@ -50,7 +50,7 @@ export class MagicLinksInterceptor {
         });
     }
 
-    private attachMagicLinkUsersToken(request: HttpRequest<unknown>): HttpRequest<unknown> {
+    private attachQuickLinkUsersToken(request: HttpRequest<unknown>): HttpRequest<unknown> {
         const token = this.securityServiceProviderService.getSecurityService().getToken();
 
         const newRequest = this.cloneOldRequestAndAddNewHeaders(request, headers => {
@@ -58,7 +58,7 @@ export class MagicLinksInterceptor {
             headers['Content-Type'] = 'application/json';
         });
 
-        this.logger.debug(`${this.loggerPrefix} Attached magic links token.`, {
+        this.logger.debug(`${this.loggerPrefix} Attached quick links token.`, {
             token: token,
             requestUrl: newRequest.url,
             requestHeaders: newRequest.headers

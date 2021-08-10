@@ -4,14 +4,14 @@ import { Observable, of, Subject } from 'rxjs';
 import { Logger } from '../services/logging/logger-base';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
 
-import { MagicLinksInterceptor } from './magic-links.interceptor';
+import { QuickLinksInterceptor } from './quick-links.interceptor';
 import { SecurityServiceProvider } from './authentication/security-provider.service';
 import { ISecurityService } from './authentication/security-service.interface';
 import { IdpProviders } from './idp-providers';
 import { SecurityConfigSetupService } from './security-config-setup.service';
 
-describe('MagicLinksInterceptor', () => {
-    let sut: MagicLinksInterceptor;
+describe('QuickLinksInterceptor', () => {
+    let sut: QuickLinksInterceptor;
     let securityConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
     let currentIdpSubject: Subject<IdpProviders>;
     let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
@@ -29,7 +29,7 @@ describe('MagicLinksInterceptor', () => {
 
         TestBed.configureTestingModule({
             providers: [
-                MagicLinksInterceptor,
+                QuickLinksInterceptor,
                 { provide: SecurityConfigSetupService, useValue: securityConfigSetupServiceSpy },
                 { provide: SecurityServiceProvider, useValue: securityServiceProviderServiceSpy },
                 { provide: Logger, useValue: loggerSpy }
@@ -37,11 +37,11 @@ describe('MagicLinksInterceptor', () => {
             imports: [HttpClientModule]
         });
 
-        sut = TestBed.inject(MagicLinksInterceptor);
+        sut = TestBed.inject(QuickLinksInterceptor);
     });
 
     describe('intercept', () => {
-        it('should add token to requests for magic link participants', fakeAsync(() => {
+        it('should add token to requests for quick link participants', fakeAsync(() => {
             // Arrange
             const expectedToken = 'token';
             const expectedBearerToken = `Bearer ${expectedToken}`;
@@ -51,7 +51,7 @@ describe('MagicLinksInterceptor', () => {
             securityServiceSpy.getToken.and.returnValue(expectedToken);
             securityServiceProviderServiceSpy.getSecurityService.and.returnValue(securityServiceSpy);
 
-            currentIdpSubject.next(IdpProviders.magicLink);
+            currentIdpSubject.next(IdpProviders.quickLink);
             flush();
 
             const request = new HttpRequest('GET', 'testUrl');

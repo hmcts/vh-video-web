@@ -2,13 +2,12 @@ import { fakeAsync, flush } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 import { ApiClient } from 'src/app/services/clients/api-client';
 import { JwtHelperService } from '../jwt-helper.service';
-import { MagicLinkJwtBody, MagicLinkSecurityService } from './magic-link-security.service';
+import { QuickLinkJwtBody, QuickLinkSecurityService } from './quick-link-security.service';
 
-describe('MagicLinkSecurityService', () => {
-    let service: MagicLinkSecurityService;
+describe('QuickLinkSecurityService', () => {
+    let service: QuickLinkSecurityService;
     let apiClientSpy: jasmine.SpyObj<ApiClient>;
     let jwtHelperSpy: jasmine.SpyObj<JwtHelperService>;
-
     const jwt =
         'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkpvaG4gRG9lIiwiZ2l2ZW5fbmFtZSI6IkpvaG4gRG9lIiwiZmFtaWx5X25hbWUiOiJKb2huIERvZSIsInByZWZlcnJlZF91c2VybmFtZSI6IkpvaG4gRG9lIiwicm9sZSI6IkNpdGl6ZW4iLCJuYmYiOjE2MjcyOTQwMzcsImV4cCI6MTYyNzMyMjk1NywiaWF0IjoxNjI3Mjk0MDk3LCJpc3MiOiJodHRwczovL3ZoLXZpZGVvLXdlYi1kZXYuYXp1cmV3ZWJzaXRlcy5uZXQvOThhNWRiM2QtMGY5MS00MDNmLWI3ZGMtZDFhMjcyZjQ2ZjNiIn0.NyH-9u3Vg2wSC-B2rxkqjbAbKvdvoCyyFAgBsfeP9ff9mQTxn6PfJHdtkp8sANnQHpsLdqW8VnAp9a9bTfTVDA';
     const decodedJwt = {
@@ -24,54 +23,15 @@ describe('MagicLinkSecurityService', () => {
     };
 
     beforeEach(() => {
-        apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', ['isMagicLinkParticipantAuthorised']);
-
+        apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', ['isQuickLinkParticipantAuthorised']);
         jwtHelperSpy = jasmine.createSpyObj<JwtHelperService>('JwtHelperService', ['decodeToken', 'isTokenExpired']);
         jwtHelperSpy.decodeToken.and.returnValue(decodedJwt);
 
-        service = new MagicLinkSecurityService(apiClientSpy, jwtHelperSpy);
+        service = new QuickLinkSecurityService(apiClientSpy, jwtHelperSpy);
     });
 
-    afterEach(() => {
-        window.sessionStorage.clear();
-    });
-
-    describe('construction', () => {
-        let authorizeFromSessionStorageSpy: jasmine.Spy<any>;
-        beforeEach(() => {
-            authorizeFromSessionStorageSpy = spyOn(MagicLinkSecurityService.prototype, 'authorizeFromSessionStorage');
-            service = new MagicLinkSecurityService(apiClientSpy, jwtHelperSpy);
-        });
-
-        it('should be created', () => {
-            expect(service).toBeTruthy();
-            expect(authorizeFromSessionStorageSpy).toHaveBeenCalledTimes(1);
-        });
-    });
-
-    describe('authorizeFromSessionStorage', () => {
-        it('should call authorize if the token is retrieved from session storage', () => {
-            // Arrange
-            const authorizeSpy = spyOn(service, 'authorize');
-            window.sessionStorage.setItem(service.tokenSessionStorageKey, JSON.stringify(jwt));
-
-            // Act
-            service.authorizeFromSessionStorage();
-
-            // Assert
-            expect(authorizeSpy).toHaveBeenCalledOnceWith(null, jwt);
-        });
-
-        it('should NOT call authorize if the token is NOT retrieved from session storage', () => {
-            // Arrange
-            const authorizeSpy = spyOn(service, 'authorize');
-
-            // Act
-            service.authorizeFromSessionStorage();
-
-            // Assert
-            expect(authorizeSpy).not.toHaveBeenCalled();
-        });
+    it('should be created', () => {
+        expect(service).toBeTruthy();
     });
 
     describe('isAuthenticated$', () => {
@@ -113,32 +73,20 @@ describe('MagicLinkSecurityService', () => {
     describe('authorize', () => {
         it('should check the token is valid', () => {
             // Arrange
-            const isMagicLinkParticipantAuthorisedSubject = new Subject<void>();
-            apiClientSpy.isMagicLinkParticipantAuthorised.and.returnValue(isMagicLinkParticipantAuthorisedSubject.asObservable());
+            const isQuickLinkParticipantAuthorisedSubject = new Subject<void>();
+            apiClientSpy.isQuickLinkParticipantAuthorised.and.returnValue(isQuickLinkParticipantAuthorisedSubject.asObservable());
 
             // Act
             service.authorize(null, jwt);
 
             // Assert
-            expect(apiClientSpy.isMagicLinkParticipantAuthorised).toHaveBeenCalledTimes(1);
-        });
-
-        it('should store the token in session storage', () => {
-            // Arrange
-            const isMagicLinkParticipantAuthorisedSubject = new Subject<void>();
-            apiClientSpy.isMagicLinkParticipantAuthorised.and.returnValue(isMagicLinkParticipantAuthorisedSubject.asObservable());
-
-            // Act
-            service.authorize(null, jwt);
-
-            // Assert
-            expect(window.sessionStorage.getItem(service.tokenSessionStorageKey)).toBe(JSON.stringify(jwt));
+            expect(apiClientSpy.isQuickLinkParticipantAuthorised).toHaveBeenCalledTimes(1);
         });
 
         it('should emit isAuthenticated true when checkAuth returns true', fakeAsync(() => {
             // Arrange
-            const isMagicLinkParticipantAuthorisedSubject = new Subject<void>();
-            apiClientSpy.isMagicLinkParticipantAuthorised.and.returnValue(isMagicLinkParticipantAuthorisedSubject.asObservable());
+            const isQuickLinkParticipantAuthorisedSubject = new Subject<void>();
+            apiClientSpy.isQuickLinkParticipantAuthorised.and.returnValue(isQuickLinkParticipantAuthorisedSubject.asObservable());
             jwtHelperSpy.isTokenExpired.and.returnValue(false);
 
             // Act
@@ -148,18 +96,18 @@ describe('MagicLinkSecurityService', () => {
             });
 
             service.authorize(null, jwt);
-            isMagicLinkParticipantAuthorisedSubject.next();
+            isQuickLinkParticipantAuthorisedSubject.next();
             flush();
 
             // Assert
-            expect(apiClientSpy.isMagicLinkParticipantAuthorised).toHaveBeenCalledTimes(1);
+            expect(apiClientSpy.isQuickLinkParticipantAuthorised).toHaveBeenCalledTimes(1);
             expect(isAuthenticated).toBeTrue();
         }));
 
         it('should emit isAuthenticated false when checkAuth returns false', fakeAsync(() => {
             // Arrange
-            const isMagicLinkParticipantAuthorisedSubject = new Subject<void>();
-            apiClientSpy.isMagicLinkParticipantAuthorised.and.returnValue(isMagicLinkParticipantAuthorisedSubject.asObservable());
+            const isQuickLinkParticipantAuthorisedSubject = new Subject<void>();
+            apiClientSpy.isQuickLinkParticipantAuthorised.and.returnValue(isQuickLinkParticipantAuthorisedSubject.asObservable());
             jwtHelperSpy.isTokenExpired.and.returnValue(false);
 
             // Act
@@ -169,53 +117,55 @@ describe('MagicLinkSecurityService', () => {
             });
 
             service.authorize(null, jwt);
-            isMagicLinkParticipantAuthorisedSubject.error('error');
+            isQuickLinkParticipantAuthorisedSubject.error('error');
             flush();
 
             // Assert
-            expect(apiClientSpy.isMagicLinkParticipantAuthorised).toHaveBeenCalledTimes(1);
+            expect(apiClientSpy.isQuickLinkParticipantAuthorised).toHaveBeenCalledTimes(1);
             expect(isAuthenticated).toBeFalse();
         }));
 
         it('should emit userData when checkAuth returns true', fakeAsync(() => {
             // Arrange
             const expectedPreferredUsername = 'John Doe';
-            const isMagicLinkParticipantAuthorisedSubject = new Subject<void>();
-            apiClientSpy.isMagicLinkParticipantAuthorised.and.returnValue(isMagicLinkParticipantAuthorisedSubject.asObservable());
+            const isQuickLinkParticipantAuthorisedSubject = new Subject<void>();
+            apiClientSpy.isQuickLinkParticipantAuthorised.and.returnValue(isQuickLinkParticipantAuthorisedSubject.asObservable());
 
             // Act
-            let userData: MagicLinkJwtBody = null;
+            let userData: QuickLinkJwtBody = null;
             service.userData$.subscribe(data => {
                 userData = data;
             });
 
             service.authorize(null, jwt);
-            isMagicLinkParticipantAuthorisedSubject.next();
+            isQuickLinkParticipantAuthorisedSubject.next();
             flush();
 
             // Assert
-            expect(apiClientSpy.isMagicLinkParticipantAuthorised).toHaveBeenCalledTimes(1);
+            expect(apiClientSpy.isQuickLinkParticipantAuthorised).toHaveBeenCalledTimes(1);
             expect(userData).not.toBeFalsy();
+            console.log(userData);
+            console.log(service.decodedTokenBody);
             expect(userData.preferred_username).toEqual(expectedPreferredUsername);
         }));
 
         it('should NOT emit userData when checkAuth returns false', fakeAsync(() => {
             // Arrange
-            const isMagicLinkParticipantAuthorisedSubject = new Subject<void>();
-            apiClientSpy.isMagicLinkParticipantAuthorised.and.returnValue(isMagicLinkParticipantAuthorisedSubject.asObservable());
+            const isQuickLinkParticipantAuthorisedSubject = new Subject<void>();
+            apiClientSpy.isQuickLinkParticipantAuthorised.and.returnValue(isQuickLinkParticipantAuthorisedSubject.asObservable());
 
             // Act
-            let userData: MagicLinkJwtBody = null;
+            let userData: QuickLinkJwtBody = null;
             service.userData$.subscribe(data => {
                 userData = data;
             });
 
             service.authorize(null, jwt);
-            isMagicLinkParticipantAuthorisedSubject.error('error');
+            isQuickLinkParticipantAuthorisedSubject.error('error');
             flush();
 
             // Assert
-            expect(apiClientSpy.isMagicLinkParticipantAuthorised).toHaveBeenCalledTimes(1);
+            expect(apiClientSpy.isQuickLinkParticipantAuthorised).toHaveBeenCalledTimes(1);
             expect(userData).toBeNull();
         }));
     });
@@ -224,7 +174,7 @@ describe('MagicLinkSecurityService', () => {
         it('should return true when NO error is thrown', fakeAsync(() => {
             // Arrange
             const isAuthorisedSubject = new Subject<void>();
-            apiClientSpy.isMagicLinkParticipantAuthorised.and.returnValue(isAuthorisedSubject.asObservable());
+            apiClientSpy.isQuickLinkParticipantAuthorised.and.returnValue(isAuthorisedSubject.asObservable());
 
             // Act
             let result = false;
@@ -239,7 +189,7 @@ describe('MagicLinkSecurityService', () => {
         it('should return false when an error is thrown', fakeAsync(() => {
             // Arrange
             const isAuthorisedSubject = new Subject<void>();
-            apiClientSpy.isMagicLinkParticipantAuthorised.and.returnValue(isAuthorisedSubject.asObservable());
+            apiClientSpy.isQuickLinkParticipantAuthorised.and.returnValue(isAuthorisedSubject.asObservable());
 
             // Act
             let result = false;
@@ -262,15 +212,6 @@ describe('MagicLinkSecurityService', () => {
 
             // Assert
             expect(isAuthenticated).toBeFalse();
-        }));
-
-        it('should clear the token from session storage', fakeAsync(() => {
-            // Act
-            service.logoffAndRevokeTokens().subscribe();
-            flush();
-
-            // Assert
-            expect(window.sessionStorage.getItem(service.tokenSessionStorageKey)).toBeFalsy();
         }));
     });
 });

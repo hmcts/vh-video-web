@@ -9,7 +9,7 @@ import { JWTBody } from '../idp-selection/models/jwt-body.model';
 import { JwtHelperService } from '../jwt-helper.service';
 import { ISecurityService } from './security-service.interface';
 
-export class MagicLinkJwtBody extends JWTBody {
+export class QuickLinkJwtBody extends JWTBody {
     // tslint:disable-next-line: variable-name
     preferred_username: string;
     private exp: number;
@@ -26,21 +26,20 @@ export class MagicLinkJwtBody extends JWTBody {
 @Injectable({
     providedIn: 'root'
 })
-export class MagicLinkSecurityService implements ISecurityService {
-    private loggerPrefix = '[MagicLinkSecurityService] -';
+export class QuickLinkSecurityService implements ISecurityService {
+    private loggerPrefix = '[QuickLinkSecurityService] -';
     private token: string;
-    tokenSessionStorageKey = 'MAGIC_LINKS_JWT';
+    private tokenSessionStorageKey = 'QUICK_LINKS_JWT';
     private tokenSessionStorage: SessionStorage<string>;
     private isAuthenticatedSubject = new ReplaySubject<boolean>(1);
     private userDataSubject = new ReplaySubject<any>(1);
 
-    decodedTokenBody: MagicLinkJwtBody;
+    decodedTokenBody: QuickLinkJwtBody;
 
     constructor(private apiClient: ApiClient, private jwtHelper: JwtHelperService = null) {
         jwtHelper = jwtHelper ?? new JwtHelperService();
         this.tokenSessionStorage = new SessionStorage<string>(this.tokenSessionStorageKey);
-
-        this.authorizeFromSessionStorage();
+        this.token = this.tokenSessionStorage.get();
     }
 
     authorize(authOptions?: AuthOptions, token?: string): void {
@@ -80,7 +79,7 @@ export class MagicLinkSecurityService implements ISecurityService {
                 });
             });
 
-        return this.apiClient.isMagicLinkParticipantAuthorised().pipe(
+        return this.apiClient.isQuickLinkParticipantAuthorised().pipe(
             toIsAuthorisedResult,
             tap(authenticated => {
                 this.isAuthenticatedSubject.next(authenticated);
@@ -106,15 +105,6 @@ export class MagicLinkSecurityService implements ISecurityService {
         return EMPTY;
     }
 
-    authorizeFromSessionStorage() {
-        const token = this.tokenSessionStorage.get();
-
-        console.log('TOKEN', token);
-        if (token) {
-            this.authorize(null, token);
-        }
-    }
-
     private isTokenValid(): boolean {
         if (!this.token) {
             return false;
@@ -127,8 +117,8 @@ export class MagicLinkSecurityService implements ISecurityService {
         return this.jwtHelper.isTokenExpired(token);
     }
 
-    private decodeTokenBody(token: string): MagicLinkJwtBody {
-        return new MagicLinkJwtBody(this.jwtHelper.decodeToken(token));
+    private decodeTokenBody(token: string): QuickLinkJwtBody {
+        return new QuickLinkJwtBody(this.jwtHelper.decodeToken(token));
     }
 
     get isAuthenticated$(): Observable<boolean> {

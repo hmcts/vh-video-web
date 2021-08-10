@@ -11,7 +11,7 @@ export class SecurityConfigSetupService {
     config = {
         ejud: {} as OpenIdConfiguration,
         vhaad: {} as OpenIdConfiguration,
-        magicLink: {}
+        quickLink: {}
     };
 
     private idpProvidersSessionStorageKey = 'IdpProviders';
@@ -50,7 +50,7 @@ export class SecurityConfigSetupService {
 
     restoreConfig() {
         const provider = this.getIdp();
-        if (provider !== IdpProviders.magicLink) {
+        if (provider !== IdpProviders.quickLink) {
             this.configSetup$.pipe(filter(Boolean)).subscribe(() => {
                 this.oidcConfigService.withConfig(this.config[provider]);
                 this.currentIdpSubject.next(provider);
@@ -61,7 +61,7 @@ export class SecurityConfigSetupService {
     setIdp(provider: IdpProviders) {
         window.sessionStorage.setItem(this.idpProvidersSessionStorageKey, provider);
         this.configSetup$.pipe(filter(Boolean)).subscribe(() => {
-            if (provider !== IdpProviders.magicLink) {
+            if (provider !== IdpProviders.quickLink) {
                 this.oidcConfigService.withConfig(this.config[provider]);
             }
             this.currentIdpSubject.next(provider);

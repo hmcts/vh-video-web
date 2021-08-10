@@ -1,19 +1,18 @@
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
 using VideoApi.Client;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
-using VideoWeb.Common.Security;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
@@ -24,14 +23,14 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("quickjoin")]
-    public class MagicLinksController : Controller
+    public class QuickLinksController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly IConferenceCache _conferenceCache;
         private readonly IMapperFactory _mapperFactory;
-        private readonly ILogger<MagicLinksController> _logger;
+        private readonly ILogger<QuickLinksController> _logger;
 
-        public MagicLinksController(IVideoApiClient videoApiClient, IConferenceCache conferenceCache, IMapperFactory mapperFactory, ILogger<MagicLinksController> logger)
+        public QuickLinksController(IVideoApiClient videoApiClient, IConferenceCache conferenceCache, IMapperFactory mapperFactory, ILogger<QuickLinksController> logger)
         {
             _videoApiClient = videoApiClient;
             _conferenceCache = conferenceCache;
@@ -39,29 +38,29 @@ namespace VideoWeb.Controllers
             _logger = logger;
         }
 
-        [HttpGet("GetMagicLinkParticipantRoles")]
+        [HttpGet("GetQuickLinkParticipantRoles")]
         [AllowAnonymous]
-        [SwaggerOperation(OperationId = "GetMagicLinkParticipantRoles")]
+        [SwaggerOperation(OperationId = "GetQuickLinkParticipantRoles")]
         [ProducesResponseType(typeof(List<Role>), StatusCodes.Status200OK)]
-        public IActionResult GetMagicLinkParticipantRoles()
+        public IActionResult GetQuickLinkParticipantRoles()
         {
-            var magicParticipantRoles = new List<Role>
+            var quickParticipantRoles = new List<Role>
             {
-                Role.MagicLinkParticipant, Role.MagicLinkObserver
+                Role.QuickLinkParticipant, Role.QuickLinkObserver
             };
 
-            return Ok(magicParticipantRoles);
+            return Ok(quickParticipantRoles);
         }
 
-        [HttpGet("ValidateMagicLink/{hearingId}")]
+        [HttpGet("ValidateQuickLink/{hearingId}")]
         [AllowAnonymous]
-        [SwaggerOperation(OperationId = "ValidateMagicLink")]
+        [SwaggerOperation(OperationId = "ValidateQuickLink")]
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
-        public async Task<IActionResult> ValidateMagicLink(Guid hearingId)
+        public async Task<IActionResult> ValidateQuickLink(Guid hearingId)
         {
             try
             {
-                var response = await _videoApiClient.ValidateMagicLinkAsync(hearingId);
+                var response = await _videoApiClient.ValidateQuickLinkAsync(hearingId);
                 return Ok(response);
             }
             catch(VideoApiException e)
@@ -71,34 +70,34 @@ namespace VideoWeb.Controllers
             }
         }
 
-        [HttpPost("joinConferenceAsAMagicLinkUser/${hearingId}")]
+        [HttpPost("joinConferenceAsAQuickLinkUser/${hearingId}")]
         [AllowAnonymous]
-        [SwaggerOperation("joinConferenceAsAMagicLinkUser")]
-        [ProducesResponseType(typeof(MagicLinkParticipantJoinResponse), (int) HttpStatusCode.OK)]
+        [SwaggerOperation("joinConferenceAsAQuickLinkUser")]
+        [ProducesResponseType(typeof(QuickLinkParticipantJoinResponse), (int) HttpStatusCode.OK)]
         public async Task<IActionResult> Join(Guid hearingId,
-            [FromBody] MagicLinkParticipantJoinRequest joinRequest)
+            [FromBody] QuickLinkParticipantJoinRequest joinRequest)
         {
             try
             {
                 var roleAsUserRole = (UserRole) Enum.Parse(typeof(UserRole), joinRequest.Role.ToString());
 
-                if (roleAsUserRole != UserRole.MagicLinkObserver && roleAsUserRole != UserRole.MagicLinkParticipant)
+                if (roleAsUserRole != UserRole.QuickLinkObserver && roleAsUserRole != UserRole.QuickLinkParticipant)
                 {
                     throw new NotSupportedException(
-                        $"Can only join as a magic user if the roles are MagicLinkParticipant or MagicLinkObserver. The Role was {roleAsUserRole}");
+                        $"Can only join as a quick link user if the roles are QuickLinkParticipant or QuickLinkObserver. The Role was {roleAsUserRole}");
                 }
 
-                var request = new AddMagicLinkParticipantRequest
+                var request = new AddQuickLinkParticipantRequest
                 {
                     Name = joinRequest.Name,
                     UserRole = roleAsUserRole
                 };
                 
-                var response = await _videoApiClient.AddMagicLinkParticipantAsync(hearingId, request);
+                var response = await _videoApiClient.AddQuickLinkParticipantAsync(hearingId, request);
 
-                await AddMagicLinkParticipantToConferenceCache(response);
+                await AddQuickLinkParticipantToConferenceCache(response);
 
-                return Ok(new MagicLinkParticipantJoinResponse
+                return Ok(new QuickLinkParticipantJoinResponse
                 {
                     Jwt = response.Token
                 });
@@ -114,8 +113,8 @@ namespace VideoWeb.Controllers
             }
         }
         
-        [HttpGet("isMagicLinkParticipantAuthorised")]
-        [SwaggerOperation("joinConferenceAsAMagicLinkUser")]
+        [HttpGet("isQuickLinkParticipantAuthorised")]
+        [SwaggerOperation("joinConferenceAsAQuickLinkUser")]
         [ProducesResponseType((int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.Forbidden)]
         public IActionResult IsAuthorised()
@@ -123,7 +122,7 @@ namespace VideoWeb.Controllers
             return Ok();
         }
 
-        private async Task AddMagicLinkParticipantToConferenceCache(AddMagicLinkParticipantResponse response)
+        private async Task AddQuickLinkParticipantToConferenceCache(AddQuickLinkParticipantResponse response)
         {
             var conference = await _conferenceCache.GetOrAddConferenceAsync(response.ConferenceId, () => _videoApiClient.GetConferenceDetailsByIdAsync(response.ConferenceId));
                 

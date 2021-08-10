@@ -1,18 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MagicLinksService } from 'src/app/services/api/magic-links.service';
+import { QuickLinksService } from 'src/app/services/api/quick-links.service';
 import { Role } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { CustomValidators } from 'src/app/shared/custom-validators';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
-    selector: 'app-magic-links',
-    templateUrl: './magic-links.component.html'
+    selector: 'app-quick-links',
+    templateUrl: './quick-links.component.html'
 })
-export class MagicLinksComponent implements OnInit {
-    private loggerPrefix = '[MagicLinksComponent] -';
+export class QuickLinksComponent implements OnInit {
+    private loggerPrefix = '[QuickLinksComponent] -';
 
     error: {
         nameError: String;
@@ -21,17 +21,17 @@ export class MagicLinksComponent implements OnInit {
 
     isFormValid = false;
     role = Role;
-    magicLinkForm: FormGroup;
+    quickLinkForm: FormGroup;
     hearingId: string;
-    magicLinkNameFormControl: FormControl;
-    magicLinkRoleFormControl: FormControl;
-    magicLinkParticipantRoles: Role[] = [];
+    quickLinkNameFormControl: FormControl;
+    quickLinkRoleFormControl: FormControl;
+    quickLinkParticipantRoles: Role[] = [];
 
     constructor(
         private logger: Logger,
         private router: Router,
         private formBuilder: FormBuilder,
-        private readonly magicLinksService: MagicLinksService,
+        private readonly quickLinksService: QuickLinksService,
         private route: ActivatedRoute
     ) {}
 
@@ -42,28 +42,28 @@ export class MagicLinksComponent implements OnInit {
     }
 
     initialiseForm() {
-        this.magicLinkNameFormControl = this.formBuilder.control('', [Validators.required, CustomValidators.notEmptyOrWhitespaceValidator]);
-        this.magicLinkRoleFormControl = this.formBuilder.control('', Validators.required);
+        this.quickLinkNameFormControl = this.formBuilder.control('', [Validators.required, CustomValidators.notEmptyOrWhitespaceValidator]);
+        this.quickLinkRoleFormControl = this.formBuilder.control('', Validators.required);
 
-        this.magicLinksService.getMagicLinkParticipantRoles().subscribe(roles => {
-            this.magicLinkParticipantRoles = roles;
+        this.quickLinksService.getQuickLinkParticipantRoles().subscribe(roles => {
+            this.quickLinkParticipantRoles = roles;
         });
 
-        this.magicLinkForm = this.formBuilder.group({
-            name: this.magicLinkNameFormControl,
-            magicLinkParticipantRole: this.magicLinkRoleFormControl
+        this.quickLinkForm = this.formBuilder.group({
+            name: this.quickLinkNameFormControl,
+            quickLinkParticipantRole: this.quickLinkRoleFormControl
         });
     }
 
     validateForm() {
         let errorsFound = false;
 
-        if (this.magicLinkNameFormControl.invalid) {
+        if (this.quickLinkNameFormControl.invalid) {
             this.error.nameError = 'Please enter your full name';
             errorsFound = true;
         }
 
-        if (this.magicLinkRoleFormControl.invalid) {
+        if (this.quickLinkRoleFormControl.invalid) {
             this.error.roleError = 'Please choose your role in the hearing';
             errorsFound = true;
         }
@@ -84,11 +84,11 @@ export class MagicLinksComponent implements OnInit {
         this.validateForm();
 
         if (this.isFormValid) {
-            this.magicLinksService
-                .joinHearing(this.hearingId, this.magicLinkNameFormControl.value, this.magicLinkRoleFormControl.value)
+            this.quickLinksService
+                .joinHearing(this.hearingId, this.quickLinkNameFormControl.value, this.quickLinkRoleFormControl.value)
                 .subscribe(
                     response => {
-                        this.logger.info(`${this.loggerPrefix} Joined conference as magic link participant`, {
+                        this.logger.info(`${this.loggerPrefix} Joined conference as quick link participant`, {
                             apiResponse: response
                         });
 

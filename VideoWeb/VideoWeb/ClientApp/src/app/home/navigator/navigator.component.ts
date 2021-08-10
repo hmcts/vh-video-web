@@ -37,8 +37,8 @@ export class NavigatorComponent implements OnInit {
         } else if (
             userProfile.role === Role.Representative ||
             userProfile.role === Role.Individual ||
-            userProfile.role === Role.MagicLinkParticipant ||
-            userProfile.role === Role.MagicLinkObserver
+            userProfile.role === Role.QuickLinkParticipant ||
+            userProfile.role === Role.QuickLinkObserver
         ) {
             this.router.navigate([pageUrls.ParticipantHearingList]);
         } else {

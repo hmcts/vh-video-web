@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ApiClient, MagicLinkParticipantJoinRequest, MagicLinkParticipantJoinResponse, Role } from 'src/app/services/clients/api-client';
+import { ApiClient, QuickLinkParticipantJoinRequest, QuickLinkParticipantJoinResponse, Role } from 'src/app/services/clients/api-client';
 import { Observable } from 'rxjs';
 import { filter, mergeMap, take, tap } from 'rxjs/operators';
 import { SecurityConfigSetupService } from 'src/app/security/security-config-setup.service';
@@ -9,33 +9,33 @@ import { SecurityServiceProvider } from 'src/app/security/authentication/securit
 @Injectable({
     providedIn: 'root'
 })
-export class MagicLinksService {
+export class QuickLinksService {
     constructor(
         private apiClient: ApiClient,
         private securityConfigSetupService: SecurityConfigSetupService,
         private securityServiceProviderService: SecurityServiceProvider
     ) {}
 
-    getMagicLinkParticipantRoles(): Observable<Role[]> {
-        return this.apiClient.getMagicLinkParticipantRoles();
+    getQuickLinkParticipantRoles(): Observable<Role[]> {
+        return this.apiClient.getQuickLinkParticipantRoles();
     }
 
-    validateMagicLink(hearingId: string): Observable<boolean> {
-        return this.apiClient.validateMagicLink(hearingId);
+    validateQuickLink(hearingId: string): Observable<boolean> {
+        return this.apiClient.validateQuickLink(hearingId);
     }
 
     joinHearing(hearingId: string, name: string, role: Role): Observable<boolean> {
         return this.apiClient
-            .joinConferenceAsAMagicLinkUser(
+            .joinConferenceAsAQuickLinkUser(
                 hearingId,
-                new MagicLinkParticipantJoinRequest({
+                new QuickLinkParticipantJoinRequest({
                     name: name,
                     role: role
                 })
             )
             .pipe(
-                tap((response: MagicLinkParticipantJoinResponse) => {
-                    this.securityConfigSetupService.setIdp(IdpProviders.magicLink);
+                tap((response: QuickLinkParticipantJoinResponse) => {
+                    this.securityConfigSetupService.setIdp(IdpProviders.quickLink);
                     this.securityServiceProviderService.getSecurityService().authorize(null, response.jwt);
                 }),
                 mergeMap(() =>
