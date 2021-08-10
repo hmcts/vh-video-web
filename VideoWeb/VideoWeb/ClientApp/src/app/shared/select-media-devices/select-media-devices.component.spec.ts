@@ -30,10 +30,7 @@ describe('SelectMediaDevicesComponent', () => {
         userMediaStreamService.requestAccess.and.resolveTo(true);
         userMediaStreamService.getStreamForCam.and.resolveTo(mockCamStream);
         userMediaStreamService.getStreamForMic.and.resolveTo(mockMicStream);
-        videoCallService = jasmine.createSpyObj<VideoCallService>('VideoCallService', [
-            'isAudioOnly',
-            'callWithNewDevices'
-        ]);
+        videoCallService = jasmine.createSpyObj<VideoCallService>('VideoCallService', ['isAudioOnly', 'callWithNewDevices']);
         videoCallService.isAudioOnly.and.returnValue(true);
         userMediaService = jasmine.createSpyObj<UserMediaService>(
             'UserMediaService',

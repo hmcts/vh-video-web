@@ -141,7 +141,6 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
     }
 
-
     toggleSwitch() {
         this.connectWithCameraOn = !this.connectWithCameraOn;
         this.logger.debug(`${this.loggerPrefix} Toggle camera switch to ${this.connectWithCameraOn ? 'on' : 'off'}`);
