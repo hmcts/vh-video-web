@@ -12,6 +12,7 @@ import { Hearing } from '../../shared/models/hearing';
 import { UnreadMessagesComponent } from './unread-messages.component';
 import { UnreadAdminMessageModelMapper } from 'src/app/shared/mappers/unread-messages-model-mapper';
 import { UnreadAdminMessageModel } from 'src/app/waiting-space/models/unread-admin-message-model';
+import { concatMap } from 'rxjs/operators';
 
 describe('UnreadMessagesComponent', () => {
     let component: UnreadMessagesComponent;
@@ -20,6 +21,7 @@ describe('UnreadMessagesComponent', () => {
     let eventbus: jasmine.SpyObj<EventBusService>;
     const conference = new ConferenceTestData().getConferenceDetailNow();
     let logger: MockLogger;
+    const unreadMessagesCount = 5;
 
     let unreadAdminMessageModelSpy: jasmine.SpyObj<UnreadAdminMessageModelMapper>;
     const mapper = new UnreadAdminMessageModelMapper();
@@ -39,7 +41,7 @@ describe('UnreadMessagesComponent', () => {
             p =>
                 new UnreadAdminMessageModel(
                     new UnreadAdminMessageResponse({
-                        number_of_unread_messages: 5,
+                        number_of_unread_messages: unreadMessagesCount,
                         participant_id: p.id
                     }),
                     conference.id
@@ -73,6 +75,7 @@ describe('UnreadMessagesComponent', () => {
         unreadAdminMessageModelSpy.mapUnreadMessageResponseArray.and.returnValue(mappedUnreadMessages);
 
         component.ngOnInit();
+
         tick();
 
         expect(component.unreadCount).toBe(expectedCount);
@@ -124,7 +127,7 @@ describe('UnreadMessagesComponent', () => {
         component.unreadMessages = [
             new UnreadAdminMessageModel(
                 new UnreadAdminMessageResponse({
-                    number_of_unread_messages: 5,
+                    number_of_unread_messages: unreadMessagesCount,
                     participant_id: conference.participants[0].id
                 }),
                 conference.id
