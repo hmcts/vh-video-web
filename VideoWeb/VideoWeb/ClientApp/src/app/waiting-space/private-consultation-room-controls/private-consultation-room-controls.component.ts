@@ -1,6 +1,5 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { pairwise, startWith } from 'rxjs/operators';
 import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
@@ -32,8 +31,6 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
 
     hideOriginalStream: boolean;
     filteredStream: MediaStream;
-    originalAudioSource;
-    originalVideoSource;
 
     constructor(
         protected videoCallService: VideoCallService,
@@ -66,24 +63,40 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         super.setupEventhubSubscribers();
 
         this.videoCallSubscription$.add(
-            this.videoFilterService.onFilterChanged.pipe(startWith(null), pairwise()).subscribe(async values => {
+            this.videoFilterService.onFilterChanged.subscribe(async values => {
                 const filter = values[1];
+                const wasPreviouslyFiltered = !!values[0];
                 this.logger.debug(`${this.loggerPrefix} filter applied ${filter ? filter : 'off'}`);
-                if (filter) {
-                    this.videoFilterService.initFilterStream(this);
-                    this.filteredStream = await this.videoFilterService.startFilteredStream();
-                    this.videoCallService.applyUserStream(this.filteredStream);
-                    this.hideOriginalStream = true;
-                } else {
-                    this.videoCallService.removeUserStream();
-                    this.filteredStream = null;
-                    this.videoFilterService.stopStream();
-                    this.hideOriginalStream = false;
-                }
-                if (!values[0] || !values[1]) {
-                    this.videoCallService.reconnectToCallWithNewDevices();
+                if (filter && !wasPreviouslyFiltered) {
+                    this.updatePexipStreamAndHideOriginalStream();
+                } else if (!filter) {
+                    this.revertToUnfilteredStream();
                 }
             })
         );
+
+        // TOOD: find a better way to trigger this
+        setTimeout(() => {
+            this.applyVideoFilterIfNeeded().catch(err => {
+                this.logger.error(`${this.loggerPrefix} Failed to apply video filter`, err, {
+                    conference: this.conferenceId,
+                    participant: this.participant.id
+                });
+            });
+        }, 1000);
     }
+
+    async applyVideoFilterIfNeeded() {
+        await this.videoFilterService.initFilterStream(this);
+        this.logger.debug(`${this.loggerPrefix} ${this.videoFilterService.activeFilter} filter previously selected, applying to stream`);
+        this.filteredStream = this.videoFilterService.startFilteredStream(true);
+        this.videoCallService.applyUserStream(this.filteredStream);
+        this.videoCallService.reconnectToCallWithNewDevices();
+    }
+
+    async updatePexipStreamAndHideOriginalStream() {
+        this.logger.debug(`${this.loggerPrefix} starting filter stream and updating pexip client`);
+    }
+
+    revertToUnfilteredStream() {}
 }

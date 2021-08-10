@@ -203,8 +203,7 @@
     [ngClass]="{
       'vh-fade-in': selfViewOpen,
       'vh-fade-out': !selfViewOpen,
-      'vh-spotlight-self-view-outline': isSpotlighted,
-      'filter-enabled': hideOriginalStream
+      'vh-spotlight-self-view-outline': isSpotlighted
     }"
     id="outgoingFeedVideo"
     [muted]="true"
@@ -214,7 +213,15 @@
   >
     {{ 'private-consultation-room-controls.browser-support' | translate }}
   </video>
-  <canvas #outputCanvas id="outputCanvas" [ngClass]="{ 'filter-enabled': !hideOriginalStream }"></canvas>
+  <canvas
+    #outputCanvas
+    id="outputCanvas"
+    [ngClass]="{
+      'vh-fade-in': selfViewOpen,
+      'vh-fade-out': !selfViewOpen,
+      'vh-spotlight-self-view-outline': isSpotlighted
+    }"
+  ></canvas>
 </div>
 <div class="outgoing-present-video-container">
   <video

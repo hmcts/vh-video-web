@@ -51,12 +51,10 @@ export class VideoCallService {
 
     pexipAPI: PexipClient;
     localOutgoingStream: any;
+    preferredDeviceStream: MediaStream;
     get isAudioOnlyCall(): boolean {
         return this.pexipAPI.call_type === this.callTypeAudioOnly || this.pexipAPI.video_source === false;
     }
-
-    originalAudioSource;
-    originalVideoSource;
 
     constructor(
         private logger: Logger,
@@ -89,8 +87,6 @@ export class VideoCallService {
 
         this.pexipAPI.onSetup = function (stream, pinStatus, conferenceExtension) {
             self.onSetupSubject.next(new CallSetup(stream));
-            self.originalAudioSource = self.pexipAPI.audio_source;
-            self.originalVideoSource = self.pexipAPI.video_source;
         };
 
         this.pexipAPI.onConnect = function (stream) {
@@ -177,10 +173,10 @@ export class VideoCallService {
         this.initCallTag();
         const cam = await this.userMediaService.getPreferredCamera();
         const mic = await this.userMediaService.getPreferredMicrophone();
-        const preferredDeviceStream = await this.userMediaStreamService.getSreamForPreferredDevices(cam, mic);
+        this.preferredDeviceStream = await this.userMediaStreamService.getSreamForPreferredDevices(cam, mic);
         this.pexipAPI.audio_source = null;
         this.pexipAPI.video_source = null;
-        this.pexipAPI.user_media_stream = preferredDeviceStream;
+        this.pexipAPI.user_media_stream = this.preferredDeviceStream;
         this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, null);
     }
 
@@ -446,15 +442,11 @@ export class VideoCallService {
         return this.apiClient.getParticipantRoomForParticipant(conferenceId, participantId, 'Judicial').toPromise();
     }
 
-    applyUserStream(stream: MediaStream) {
-        this.pexipAPI.audio_source = null;
-        this.pexipAPI.video_source = null;
-        this.pexipAPI.user_media_stream = stream;
+    applyUserStream(newStream: MediaStream) {
+        this.pexipAPI.user_media_stream = newStream;
     }
 
     removeUserStream() {
-        this.pexipAPI.user_media_stream = null;
-        this.pexipAPI.video_source = this.originalVideoSource;
-        this.pexipAPI.audio_source = this.originalAudioSource;
+        this.pexipAPI.user_media_stream = this.preferredDeviceStream;
     }
 }

@@ -28,7 +28,7 @@ export class VideoFilterService {
 
     constructor(private logger: Logger) {
         this.filterOn = false;
-        this.activeFilter = BackgroundFilter.blur;
+        this.activeFilter = null;
     }
 
     async initFilterStream(page: IVideoFilterer) {
@@ -116,14 +116,18 @@ export class VideoFilterService {
                 this.applyVirtualBackgroundEffect();
                 break;
             case BackgroundFilter.blur:
+                this.applyBlurEffect(results, true);
+                break;
             default:
-                this.applyBlurEffect(results);
+                this.applyBlurEffect(results, false);
                 break;
         }
     }
 
-    private applyBlurEffect(results: Results) {
-        this.canvasCtx.filter = 'blur(10px)';
+    private applyBlurEffect(results: Results, withBlur: boolean) {
+        if (withBlur) {
+            this.canvasCtx.filter = 'blur(10px)';
+        }
         this.canvasCtx.drawImage(results.image, 0, 0, this.canvasElement.width, this.canvasElement.height);
     }
 
