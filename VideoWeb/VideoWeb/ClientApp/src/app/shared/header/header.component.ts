@@ -26,8 +26,4 @@ export class HeaderComponent implements OnInit {
     ngOnInit() {
         this.topMenuItems = topMenuItems;
     }
-
-    navigateToLogout() {
-        this.router.navigate([pageUrls.Logout]);
-    }
 }
