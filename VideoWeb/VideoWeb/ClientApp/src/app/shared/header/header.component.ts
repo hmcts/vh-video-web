@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { pageUrls } from '../page-url.constants';
 import { topMenuItems } from './topMenuItems';
 
 @Component({
@@ -24,5 +25,9 @@ export class HeaderComponent implements OnInit {
 
     ngOnInit() {
         this.topMenuItems = topMenuItems;
+    }
+
+    navigateToLogout() {
+        this.router.navigate([pageUrls.Logout]);
     }
 }
