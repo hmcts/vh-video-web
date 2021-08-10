@@ -146,7 +146,6 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         this.videoCallService.updateAudioOnlyPreference(audioOnly);
         await this.videoCallService.updatePexipAudioVideoSource(cam, mic);
         this.videoCallService.reconnectToCallWithNewDevices();
-        debugger;
         if (audioOnly) {
             this.videoCallService.switchToAudioOnlyCall();
         }
