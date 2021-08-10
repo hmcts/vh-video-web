@@ -19,7 +19,7 @@ export class ConferenceService {
     private subscriptions: Subscription[] = [];
     constructor(
         router: Router,
-        private activatedRoute: ActivatedRoute,
+        activatedRoute: ActivatedRoute,
         private eventService: EventsService,
         private apiClient: ApiClient,
         private logger: LoggerService
