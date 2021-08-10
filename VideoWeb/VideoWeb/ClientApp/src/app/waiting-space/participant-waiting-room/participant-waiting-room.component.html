@@ -308,7 +308,6 @@
   *ngIf="displayDeviceChangeModal"
   [waitingRoomMode]="true"
   [showAudioOnlySetting]="true"
-  [cameraOn]="!audioOnly"
   (cancelMediaDeviceChange)="onMediaDeviceChangeCancelled()"
   #selectMediaDevices
 ></app-select-media-devices>

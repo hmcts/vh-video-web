@@ -363,6 +363,9 @@ export class VideoCallService {
     retrieveVideoCallPreferences(): VideoCallPreferences {
         return this.videoCallPreferences.get();
     }
+    isAudioOnly(): boolean {
+        return this.videoCallPreferences.get().audioOnly;
+    }
 
     updateVideoCallPreferences(updatedPreferences: VideoCallPreferences) {
         this.videoCallPreferences.set(updatedPreferences);
@@ -436,6 +439,15 @@ export class VideoCallService {
         const videoCallPrefs = this.retrieveVideoCallPreferences();
         videoCallPrefs.audioOnly = audioOnly;
         this.updateVideoCallPreferences(videoCallPrefs);
+    }
+
+    async callWithNewDevices(cam: UserMediaDevice, mic: UserMediaDevice, audioOnly: boolean) {
+        this.updateAudioOnlyPreference(audioOnly);
+        await this.updatePexipAudioVideoSource(cam, mic);
+        this.reconnectToCallWithNewDevices();
+        if (audioOnly) {
+            this.switchToAudioOnlyCall();
+        }
     }
 
     async updatePexipAudioVideoSource(cam: UserMediaDevice, mic: UserMediaDevice) {

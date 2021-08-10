@@ -17,11 +17,9 @@ export class UserMediaService {
 
     private readonly preferredCamCache: SessionStorage<UserMediaDevice>;
     private readonly preferredMicCache: SessionStorage<UserMediaDevice>;
-    private readonly audioOnlyCache: SessionStorage<boolean>;
 
     readonly PREFERRED_CAMERA_KEY = 'vh.preferred.camera';
     readonly PREFERRED_MICROPHONE_KEY = 'vh.preferred.microphone';
-    readonly AUDIO_ONLY_STATE_KEY = 'vh.audio.only.state';
 
     availableDeviceList: UserMediaDevice[];
     selectDevicesChangesubject = new Subject();
@@ -31,7 +29,6 @@ export class UserMediaService {
     constructor(private logger: Logger, private errorService: ErrorService, private userMediaStreamService: UserMediaStreamService) {
         this.preferredCamCache = new SessionStorage(this.PREFERRED_CAMERA_KEY);
         this.preferredMicCache = new SessionStorage(this.PREFERRED_MICROPHONE_KEY);
-        this.audioOnlyCache = new SessionStorage(this.AUDIO_ONLY_STATE_KEY);
 
         this.navigator.mediaDevices.ondevicechange = async () => {
             this.selectDevicesChangesubject.next();
@@ -102,15 +99,6 @@ export class UserMediaService {
         this.preferredMicCache.set(microphone);
         this.logger.info(`${this.loggerPrefix} Updating preferred microphone to ${microphone.label}`);
     }
-
-    updateAudioOnlyState(isAudioOnly: boolean) {
-        this.audioOnlyCache.set(isAudioOnly);
-    }
-
-    getAudioOnlyState() {
-        return this.audioOnlyCache.get();
-    }
-
     async getCachedDevice(cache: SessionStorage<UserMediaDevice>) {
         return cache.get();
     }
@@ -141,10 +129,6 @@ export class UserMediaService {
                     this.logger.info(`${this.loggerPrefix} Setting default microphone to ${firstMic.label}`);
                     this.updatePreferredMicrophone(firstMic);
                 }
-            }
-            const isAudioOnly = await this.getAudioOnlyState();
-            if (isAudioOnly === null) {
-                this.updateAudioOnlyState(false);
             }
         } catch (error) {
             this.logger.error(`${this.loggerPrefix} Failed to set default devices in cache.`, error);

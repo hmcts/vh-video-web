@@ -31,11 +31,10 @@ describe('SelectMediaDevicesComponent', () => {
         userMediaStreamService.getStreamForCam.and.resolveTo(mockCamStream);
         userMediaStreamService.getStreamForMic.and.resolveTo(mockMicStream);
         videoCallService = jasmine.createSpyObj<VideoCallService>('VideoCallService', [
-            'updateAudioOnlyPreference',
-            'updatePexipAudioVideoSource',
-            'reconnectToCallWithNewDevices',
-            'switchToAudioOnlyCall'
+            'isAudioOnly',
+            'callWithNewDevices'
         ]);
+        videoCallService.isAudioOnly.and.returnValue(true);
         userMediaService = jasmine.createSpyObj<UserMediaService>(
             'UserMediaService',
             [
@@ -65,7 +64,6 @@ describe('SelectMediaDevicesComponent', () => {
             translateServiceSpy,
             videoCallService
         );
-        component.cameraOn = false;
         component.ngOnInit();
         tick();
     }));
@@ -110,25 +108,11 @@ describe('SelectMediaDevicesComponent', () => {
         component.onSubmit();
         expect(component.cancelMediaDeviceChange.emit).toHaveBeenCalled();
     });
+
     it('should update video call service', async () => {
         spyOn(component.cancelMediaDeviceChange, 'emit');
         component.onSubmit();
-        expect(videoCallService.updateAudioOnlyPreference).toHaveBeenCalled();
-        expect(videoCallService.updatePexipAudioVideoSource).toHaveBeenCalled();
-        expect(videoCallService.reconnectToCallWithNewDevices).toHaveBeenCalled();
-    });
-
-    it('should switch to audio only call', async () => {
-        spyOn(component.cancelMediaDeviceChange, 'emit');
-        component.connectWithCameraOn = false;
-        component.onSubmit();
-        expect(videoCallService.switchToAudioOnlyCall).toHaveBeenCalled();
-    });
-    it('should not switch to audio only call', async () => {
-        spyOn(component.cancelMediaDeviceChange, 'emit');
-        component.connectWithCameraOn = true;
-        component.onSubmit();
-        expect(videoCallService.switchToAudioOnlyCall).not.toHaveBeenCalled();
+        expect(videoCallService.callWithNewDevices).toHaveBeenCalled();
     });
 
     it('should update microphone stream on device change', () => {

@@ -19,7 +19,6 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     @Output() cancelMediaDeviceChange = new EventEmitter();
     @Input() waitingRoomMode = false;
     @Input() showAudioOnlySetting = false;
-    @Input() cameraOn = true;
 
     availableCameraDevices: UserMediaDevice[] = [];
     availableMicrophoneDevices: UserMediaDevice[] = [];
@@ -42,7 +41,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit() {
-        this.connectWithCameraOn = this.cameraOn;
+        this.connectWithCameraOn = !this.videoCallService.isAudioOnly();
         return this.requestMedia().then(permissionGranted => {
             if (!permissionGranted) {
                 this.logger.warn(`${this.loggerPrefix} Could not get all media permissions. Check logs`);
@@ -135,21 +134,13 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         const audioOnly = !this.connectWithCameraOn;
         this.logger.debug(`${this.loggerPrefix} Cancelling media device change`);
         this.cancelMediaDeviceChange.emit();
-        await this.callWithNewDevices(selectedCam, selectedMic, audioOnly);
+        await this.videoCallService.callWithNewDevices(selectedCam, selectedMic, audioOnly);
     }
     private stopVideoAudioStream() {
         this.userMediaStreamService.stopStream(this.preferredCameraStream);
         this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
     }
 
-    async callWithNewDevices(cam: UserMediaDevice, mic: UserMediaDevice, audioOnly: boolean) {
-        this.videoCallService.updateAudioOnlyPreference(audioOnly);
-        await this.videoCallService.updatePexipAudioVideoSource(cam, mic);
-        this.videoCallService.reconnectToCallWithNewDevices();
-        if (audioOnly) {
-            this.videoCallService.switchToAudioOnlyCall();
-        }
-    }
 
     toggleSwitch() {
         this.connectWithCameraOn = !this.connectWithCameraOn;
