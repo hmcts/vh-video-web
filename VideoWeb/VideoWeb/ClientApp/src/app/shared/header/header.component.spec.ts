@@ -70,4 +70,14 @@ describe('Header component template file', () => {
 
         expect(logoutButton.nativeElement.pathname).toBe(`/${pageUrls.Logout}`);
     });
+
+    it('hides logout button when logged in is false', () => {
+        component.loggedIn = false;
+
+        fixture.detectChanges();
+
+        const logoutButton = debugElement.query(By.css('#logout_link'));
+
+        expect(logoutButton).toBeNull();
+    });
 });
