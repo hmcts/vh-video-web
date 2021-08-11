@@ -1,6 +1,7 @@
 import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Guid } from 'guid-typescript';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     AddSelfTestFailureEventRequest,
@@ -55,6 +56,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     private maxBandwidth = 1280;
     subscription: Subscription = new Subscription();
     videoCallSubscription$ = new Subscription();
+    private destroyedSubject = new Subject();
 
     constructor(
         private logger: Logger,
@@ -154,8 +156,8 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
     setupSubscribers() {
         this.subscription.add(
-            this.userMediaService.connectedDevices.subscribe(async () => {
-                this.hasMultipleDevices = await this.userMediaService.hasMultipleDevices();
+            this.userMediaService.hasMultipleDevices().pipe(takeUntil(this.destroyedSubject)).subscribe((result) => {
+                this.hasMultipleDevices = result;
             })
         );
     }
@@ -221,7 +223,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     }
 
     async updatePexipAudioVideoSource() {
-        this.hasMultipleDevices = await this.userMediaService.hasMultipleDevices();
         const cam = await this.userMediaService.getPreferredCamera();
         const mic = await this.userMediaService.getPreferredMicrophone();
         this.preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(mic);
@@ -343,6 +344,8 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         this.videoCallSubscription$.unsubscribe();
         this.disconnect();
 
+        this.destroyedSubject.next();
+        this.destroyedSubject.complete();
         if (this.conference) {
             let reason: SelfTestFailureReason;
             if (this.testCallResult && this.testCallResult.score === TestScore.Bad) {

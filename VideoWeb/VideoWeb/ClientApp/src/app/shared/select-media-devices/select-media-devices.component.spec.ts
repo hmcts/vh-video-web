@@ -1,6 +1,6 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, of, Subject } from 'rxjs';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
@@ -9,6 +9,7 @@ import { SelectMediaDevicesComponent } from './select-media-devices.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
+import { getSpiedPropertyGetter } from '../jasmine-helpers/property-helpers';
 describe('SelectMediaDevicesComponent', () => {
     let component: SelectMediaDevicesComponent;
     let userMediaService: jasmine.SpyObj<UserMediaService>;
@@ -35,24 +36,24 @@ describe('SelectMediaDevicesComponent', () => {
         userMediaService = jasmine.createSpyObj<UserMediaService>(
             'UserMediaService',
             [
-                'getListOfVideoDevices',
-                'getListOfMicrophoneDevices',
                 'getPreferredCamera',
                 'getPreferredMicrophone',
                 'updatePreferredCamera',
                 'updatePreferredMicrophone'
             ],
-            { connectedDevices: new BehaviorSubject(testData.getListOfDevices()) }
+            ['connectedDevices',
+            'connectedVideoDevices',
+            'connectedMicrophoneDevices']
         );
 
-        userMediaService.getListOfVideoDevices.and.resolveTo(testData.getListOfCameras());
-        userMediaService.getListOfMicrophoneDevices.and.resolveTo(testData.getListOfMicrophones());
+        getSpiedPropertyGetter(userMediaService,'connectedVideoDevices').and.returnValue(of(testData.getListOfCameras()));
+        getSpiedPropertyGetter(userMediaService,'connectedMicrophoneDevices').and.returnValue(of(testData.getListOfMicrophones()));
+        getSpiedPropertyGetter(userMediaService,'connectedDevices').and.returnValue(of(testData.getListOfDevices()));
         userMediaService.getPreferredCamera.and.resolveTo(testData.getListOfCameras()[0]);
         userMediaService.getPreferredMicrophone.and.resolveTo(testData.getListOfMicrophones()[0]);
     });
 
     beforeEach(fakeAsync(() => {
-        userMediaService.selectDevicesChangeSubject = new Subject();
         component = new SelectMediaDevicesComponent(
             userMediaService,
             userMediaStreamService,

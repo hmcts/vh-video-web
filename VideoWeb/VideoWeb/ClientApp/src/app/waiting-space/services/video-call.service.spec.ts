@@ -11,6 +11,7 @@ import {
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
@@ -44,22 +45,26 @@ describe('VideoCallService', () => {
         ]);
 
         userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
-            'getListOfVideoDevices',
-            'getListOfMicrophoneDevices',
             'getPreferredCamera',
             'getPreferredMicrophone',
             'updatePreferredCamera',
             'updatePreferredMicrophone',
             'selectScreenToShare'
-        ]);
+        ],
+         ['connectedDevices',
+            'connectedVideoDevices',
+            'connectedMicrophoneDevices']
+        );
+
+        getSpiedPropertyGetter(userMediaService,'connectedVideoDevices').and.returnValue(of(testData.getListOfCameras()));
+        getSpiedPropertyGetter(userMediaService,'connectedMicrophoneDevices').and.returnValue(of(testData.getListOfMicrophones()));
+        getSpiedPropertyGetter(userMediaService,'connectedDevices').and.returnValue(of(testData.getListOfDevices()));
 
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getConfig']);
         configServiceSpy.getConfig.and.returnValue(config);
 
         preferredCamera = testData.getListOfCameras()[0];
         preferredMicrophone = testData.getListOfMicrophones()[0];
-        userMediaService.getListOfVideoDevices.and.resolveTo(testData.getListOfCameras());
-        userMediaService.getListOfMicrophoneDevices.and.resolveTo(testData.getListOfMicrophones());
         userMediaService.getPreferredCamera.and.resolveTo(preferredCamera);
         userMediaService.getPreferredMicrophone.and.resolveTo(preferredMicrophone);
     });

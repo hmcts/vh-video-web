@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, zip } from 'rxjs';
 import 'webrtc-adapter';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Logger } from './logging/logger-base';
@@ -7,6 +7,7 @@ import { SessionStorage } from './session-storage';
 import { ErrorService } from '../services/error.service';
 import { CallError } from '../waiting-space/models/video-call-models';
 import { UserMediaStreamService } from './user-media-stream.service';
+import { filter, map, take } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root'
@@ -21,37 +22,34 @@ export class UserMediaService {
     readonly PREFERRED_CAMERA_KEY = 'vh.preferred.camera';
     readonly PREFERRED_MICROPHONE_KEY = 'vh.preferred.microphone';
 
-    availableDeviceList: UserMediaDevice[];
-    selectDevicesChangeSubject = new Subject();
-
-    connectedDevices: BehaviorSubject<UserMediaDevice[]> = new BehaviorSubject([]);
+    private connectedDevicesSubject: BehaviorSubject<UserMediaDevice[]> = new BehaviorSubject([]);
 
     constructor(private logger: Logger, private errorService: ErrorService, private userMediaStreamService: UserMediaStreamService) {
         this.preferredCamCache = new SessionStorage(this.PREFERRED_CAMERA_KEY);
         this.preferredMicCache = new SessionStorage(this.PREFERRED_MICROPHONE_KEY);
 
         this.navigator.mediaDevices.ondevicechange = async () => {
-            this.selectDevicesChangeSubject.next();
-            this.selectDevicesChangeSubject.complete();
             await this.updateAvailableDevicesList();
             await this.setDevicesInCache();
         };
     }
 
-    async getListOfVideoDevices(): Promise<UserMediaDevice[]> {
-        await this.checkDeviceListIsReady();
-        return this.availableDeviceList.filter(x => x.kind === 'videoinput');
+    get connectedDevices():  Observable<UserMediaDevice[]> {
+        return this.connectedDevicesSubject.asObservable();
     }
-
-    async getListOfMicrophoneDevices(): Promise<UserMediaDevice[]> {
-        await this.checkDeviceListIsReady();
-        return this.availableDeviceList.filter(x => x.kind === 'audioinput' && x.deviceId !== 'communications');
+    get connectedVideoDevices(): Observable<UserMediaDevice[]> {
+        return this.connectedDevicesSubject.pipe(
+            map(devices => {
+                return devices.filter(x => x.kind === 'videoinput');
+            })
+        );
     }
-
-    async checkDeviceListIsReady() {
-        if (!this.availableDeviceList || this.availableDeviceList.length === 0) {
-            await this.updateAvailableDevicesList();
-        }
+    get connectedMicrophoneDevices():  Observable<UserMediaDevice[]> {
+        return this.connectedDevicesSubject.pipe(
+            map(devices => {
+                return devices.filter(x => x.kind === 'audioinput' && x.deviceId !== 'communications');
+            })
+        );
     }
 
     async updateAvailableDevicesList(): Promise<void> {
@@ -68,18 +66,20 @@ export class UserMediaService {
             updatedDevices = await this.navigator.mediaDevices.enumerateDevices();
         }
         updatedDevices = updatedDevices.filter(x => x.deviceId !== 'default' && x.kind !== 'audiooutput');
-        this.availableDeviceList = Array.from(
+        var availableDeviceList = Array.from(
             updatedDevices,
             device => new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)
         );
         this.userMediaStreamService.stopStream(stream);
-        this.connectedDevices.next(this.availableDeviceList);
+        this.connectedDevicesSubject.next(availableDeviceList);
     }
 
-    async hasMultipleDevices(): Promise<boolean> {
-        const camDevices = await this.getListOfVideoDevices();
-        const micDevices = await this.getListOfMicrophoneDevices();
-        return micDevices.length > 1 || camDevices.length > 1;
+    hasMultipleDevices(): Observable<boolean> {
+        return zip(this.connectedVideoDevices, this.connectedMicrophoneDevices).pipe(take(1), map(
+            (deviceList) => {
+                return deviceList[0].length > 1 || deviceList[1].length > 1;
+            }
+        ));
     }
 
     getPreferredCamera() {
@@ -102,16 +102,17 @@ export class UserMediaService {
     async getCachedDevice(cache: SessionStorage<UserMediaDevice>) {
         return cache.get();
     }
-    async isDeviceStillConnected(device: UserMediaDevice) {
-        await this.checkDeviceListIsReady();
-        return this.availableDeviceList.find(x => x.label === device.label);
+    isDeviceStillConnected(device: UserMediaDevice) {
+        return this.connectedDevices.pipe(take(1), map(connectedDevices => {
+            return !!connectedDevices.find(x => x.label === device.label);
+        }));
     }
 
     async setDevicesInCache() {
         try {
             const cam = await this.getPreferredCamera();
             if (!cam || !(await this.isDeviceStillConnected(cam))) {
-                const cams = await this.getListOfVideoDevices();
+                const cams = await this.connectedVideoDevices.toPromise();
                 // set first camera in the list as preferred camera if cache is empty
                 const firstCam = cams.find(x => x.label.length > 0);
                 if (firstCam) {
@@ -122,7 +123,7 @@ export class UserMediaService {
 
             const mic = await this.getPreferredMicrophone();
             if (!mic || !(await this.isDeviceStillConnected(mic))) {
-                const mics = await this.getListOfMicrophoneDevices();
+                const mics = await this.connectedMicrophoneDevices.toPromise();
                 // set first microphone in the list as preferred microphone if cache is empty
                 const firstMic = mics.find(x => x.label.length > 0);
                 if (firstMic) {
