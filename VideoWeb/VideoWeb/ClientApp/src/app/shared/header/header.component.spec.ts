@@ -1,4 +1,9 @@
+import { DebugElement } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { TranslatePipeMock } from 'src/app/testing/mocks/mock-translation-pipe';
 import { pageUrls } from '../page-url.constants';
 import { HeaderComponent } from './header.component';
 import { topMenuItems } from './topMenuItems';
@@ -36,8 +41,33 @@ describe('HeaderComponent', () => {
         component.selectMenuItem(0);
         expect(router.navigate).toHaveBeenCalledWith([component.topMenuItems[0].url]);
     });
+});
 
-    it('has a property for logout route', () => {
-        expect(component.logoutRoute).toBe(pageUrls.Logout);
+describe('Header component template file', () => {
+    let fixture: ComponentFixture<HeaderComponent>;
+    let component: HeaderComponent;
+    let debugElement: DebugElement;
+
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [RouterTestingModule],
+            declarations: [HeaderComponent, TranslatePipeMock]
+        }).compileComponents();
+    });
+
+    beforeEach(() => {
+        fixture = TestBed.createComponent(HeaderComponent);
+        component = fixture.componentInstance;
+        debugElement = fixture.debugElement;
+    });
+
+    it('logout button should route to logout page', () => {
+        component.loggedIn = true;
+
+        fixture.detectChanges();
+
+        const logoutButton = debugElement.query(By.css('.govuk-header__link'));
+
+        expect(logoutButton.nativeElement.pathname).toBe(`/${pageUrls.Logout}`);
     });
 });
