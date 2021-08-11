@@ -14,7 +14,7 @@ import { UnreadAdminMessageModelMapper } from 'src/app/shared/mappers/unread-mes
 import { UnreadAdminMessageModel } from 'src/app/waiting-space/models/unread-admin-message-model';
 import { concatMap } from 'rxjs/operators';
 
-fdescribe('UnreadMessagesComponent', () => {
+describe('UnreadMessagesComponent', () => {
     let component: UnreadMessagesComponent;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     const eventsService = eventsServiceSpy;
