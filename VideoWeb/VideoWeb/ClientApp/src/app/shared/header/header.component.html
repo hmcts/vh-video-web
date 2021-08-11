@@ -22,7 +22,7 @@
       <nav class="hmcts-header__navigation" [attr.aria-label]="'account-navigation-label' | translate">
         <ul class="hmcts-header__navigation-list">
           <li *ngIf="loggedIn" class="hmcts-header__navigation-item">
-            <a class="govuk-header__link" [routerLink]="logoutRoute">
+            <a id="logout_link" class="govuk-header__link" [routerLink]="logoutRoute">
              {{'header.sign-out' | translate}}
             </a>
           </li>

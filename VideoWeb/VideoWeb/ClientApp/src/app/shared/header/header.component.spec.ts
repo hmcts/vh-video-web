@@ -66,7 +66,7 @@ describe('Header component template file', () => {
 
         fixture.detectChanges();
 
-        const logoutButton = debugElement.query(By.css('.govuk-header__link'));
+        const logoutButton = debugElement.query(By.css('#logout_link'));
 
         expect(logoutButton.nativeElement.pathname).toBe(`/${pageUrls.Logout}`);
     });
