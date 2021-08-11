@@ -1,4 +1,5 @@
 import { Router } from '@angular/router';
+import { pageUrls } from '../page-url.constants';
 import { HeaderComponent } from './header.component';
 import { topMenuItems } from './topMenuItems';
 
@@ -34,5 +35,9 @@ describe('HeaderComponent', () => {
         component.ngOnInit();
         component.selectMenuItem(0);
         expect(router.navigate).toHaveBeenCalledWith([component.topMenuItems[0].url]);
+    });
+
+    it('has a property for logout route', () => {
+        expect(component.logoutRoute).toBe(pageUrls.Logout);
     });
 });
