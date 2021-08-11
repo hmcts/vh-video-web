@@ -26,7 +26,7 @@ import { VideoCallService } from '../services/video-call.service';
     outputs: ['leaveConsultation', 'lockConsultation', 'togglePanel', 'changeDeviceToggle']
 })
 export class PrivateConsultationRoomControlsComponent extends HearingControlsBaseComponent {
-    @ViewChild('outputCanvas', { static: false }) outputCanvas: ElementRef<HTMLCanvasElement>;
+    @ViewChild('outputCanvas') outputCanvas: ElementRef<HTMLCanvasElement>;
 
     constructor(
         protected videoCallService: VideoCallService,
