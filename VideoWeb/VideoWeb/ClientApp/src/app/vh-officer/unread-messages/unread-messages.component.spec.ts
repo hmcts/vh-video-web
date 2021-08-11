@@ -14,7 +14,7 @@ import { UnreadAdminMessageModelMapper } from 'src/app/shared/mappers/unread-mes
 import { UnreadAdminMessageModel } from 'src/app/waiting-space/models/unread-admin-message-model';
 import { concatMap } from 'rxjs/operators';
 
-describe('UnreadMessagesComponent', () => {
+fdescribe('UnreadMessagesComponent', () => {
     let component: UnreadMessagesComponent;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     const eventsService = eventsServiceSpy;
@@ -23,8 +23,7 @@ describe('UnreadMessagesComponent', () => {
     let logger: MockLogger;
     const unreadMessagesCount = 5;
 
-    let unreadAdminMessageModelSpy: jasmine.SpyObj<UnreadAdminMessageModelMapper>;
-    const mapper = new UnreadAdminMessageModelMapper();
+    let unreadAdminMessageModelSpy: jasmine.SpyObj<UnreadAdminMessageModelMapper>;    
 
     let unreadConferenceResponse: UnreadInstantMessageConferenceCountResponse;
 
@@ -47,6 +46,7 @@ describe('UnreadMessagesComponent', () => {
                     conference.id
                 )
         );
+
         unreadConferenceResponse = new UnreadInstantMessageConferenceCountResponse({
             number_of_unread_messages_conference: unreadMessages
         });
@@ -56,6 +56,8 @@ describe('UnreadMessagesComponent', () => {
             'mapUnreadMessageResponseArray',
             'mapFromMessageResponse'
         ]);
+
+        unreadAdminMessageModelSpy.mapUnreadMessageResponseArray.and.returnValue(unreadMessages);
 
         component = new UnreadMessagesComponent(videoWebServiceSpy, eventsService, logger, eventbus, unreadAdminMessageModelSpy);
 
@@ -69,10 +71,7 @@ describe('UnreadMessagesComponent', () => {
     });
 
     it('should init unread message count', fakeAsync(() => {
-        const expectedCount = 5 * conference.participants.length;
-
-        const mappedUnreadMessages = mapper.mapUnreadMessageResponseArray(component.unreadMessages, conference.id);
-        unreadAdminMessageModelSpy.mapUnreadMessageResponseArray.and.returnValue(mappedUnreadMessages);
+        const expectedCount = unreadMessagesCount * conference.participants.length;
 
         component.ngOnInit();
 
