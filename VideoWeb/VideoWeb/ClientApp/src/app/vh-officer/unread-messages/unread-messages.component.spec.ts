@@ -23,7 +23,7 @@ describe('UnreadMessagesComponent', () => {
     let logger: MockLogger;
     const unreadMessagesCount = 5;
 
-    let unreadAdminMessageModelSpy: jasmine.SpyObj<UnreadAdminMessageModelMapper>;    
+    let unreadAdminMessageModelSpy: jasmine.SpyObj<UnreadAdminMessageModelMapper>;
 
     let unreadConferenceResponse: UnreadInstantMessageConferenceCountResponse;
 
