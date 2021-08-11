@@ -27,7 +27,6 @@ export class LogoutComponent implements OnInit {
                 this.profileService.clearUserProfile();
                 this.judgeAllocationStorage.clear();
                 this.securityService.logoffAndRevokeTokens();
-                console.log('success');
             }
         });
     }
