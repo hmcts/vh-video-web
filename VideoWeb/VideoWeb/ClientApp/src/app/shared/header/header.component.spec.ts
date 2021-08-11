@@ -66,7 +66,7 @@ describe('Header component template file', () => {
 
         fixture.detectChanges();
 
-        const logoutButton = debugElement.query(By.css('#logout_link'));
+        const logoutButton = debugElement.query(By.css('#logout-link'));
 
         expect(logoutButton.nativeElement.pathname).toBe(`/${pageUrls.Logout}`);
     });
@@ -76,7 +76,7 @@ describe('Header component template file', () => {
 
         fixture.detectChanges();
 
-        const logoutButton = debugElement.query(By.css('#logout_link'));
+        const logoutButton = debugElement.query(By.css('#logout-link'));
 
         expect(logoutButton).toBeNull();
     });
