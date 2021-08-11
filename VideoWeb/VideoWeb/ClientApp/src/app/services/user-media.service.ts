@@ -22,7 +22,7 @@ export class UserMediaService {
     readonly PREFERRED_MICROPHONE_KEY = 'vh.preferred.microphone';
 
     availableDeviceList: UserMediaDevice[];
-    selectDevicesChangesubject = new Subject();
+    selectDevicesChangeSubject = new Subject();
 
     connectedDevices: BehaviorSubject<UserMediaDevice[]> = new BehaviorSubject([]);
 
@@ -31,8 +31,8 @@ export class UserMediaService {
         this.preferredMicCache = new SessionStorage(this.PREFERRED_MICROPHONE_KEY);
 
         this.navigator.mediaDevices.ondevicechange = async () => {
-            this.selectDevicesChangesubject.next();
-            this.selectDevicesChangesubject.complete();
+            this.selectDevicesChangeSubject.next();
+            this.selectDevicesChangeSubject.complete();
             await this.updateAvailableDevicesList();
             await this.setDevicesInCache();
         };
@@ -102,7 +102,7 @@ export class UserMediaService {
     async getCachedDevice(cache: SessionStorage<UserMediaDevice>) {
         return cache.get();
     }
-    private async isDeviceStillConnected(device: UserMediaDevice) {
+    async isDeviceStillConnected(device: UserMediaDevice) {
         await this.checkDeviceListIsReady();
         return this.availableDeviceList.find(x => x.label === device.label);
     }

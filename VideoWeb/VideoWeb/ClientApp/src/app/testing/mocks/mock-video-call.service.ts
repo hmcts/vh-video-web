@@ -66,7 +66,6 @@ videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>(
         'callParticipantIntoHearing',
         'dismissParticipantFromHearing',
         'retrieveVideoCallPreferences',
-        'updateVideoCallPreferences',
         'reconnectToCallWithNewDevices',
         'switchToAudioOnlyCall',
         'onScreenshareConnected',
@@ -81,7 +80,10 @@ videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>(
         'selectScreen',
         'retrieveInterpreterRoom',
         'retrieveWitnessInterpreterRoom',
-        'retrieveJudicialRoom'
+        'retrieveJudicialRoom',
+        'isAudioOnly',
+        'updateAudioOnlyPreference',
+        'callWithNewDevices'
     ],
     {
         pexipAPI: pexipApiMock
@@ -101,3 +103,4 @@ videoCallServiceSpy.onScreenshareStopped.and.returnValue(onScreenshareStoppedMoc
 videoCallServiceSpy.onPresentationConnected.and.returnValue(onPresentationConnectedMock.asObservable());
 videoCallServiceSpy.onPresentationDisconnected.and.returnValue(onPresentationDisconnectedMock.asObservable());
 videoCallServiceSpy.onPresentation.and.returnValue(onPresentationMock.asObservable());
+

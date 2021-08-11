@@ -367,10 +367,6 @@ export class VideoCallService {
         return this.videoCallPreferences.get().audioOnly;
     }
 
-    updateVideoCallPreferences(updatedPreferences: VideoCallPreferences) {
-        this.videoCallPreferences.set(updatedPreferences);
-    }
-
     reconnectToCallWithNewDevices() {
         this.pexipAPI.disconnectCall();
         this.pexipAPI.addCall(null);
@@ -438,7 +434,7 @@ export class VideoCallService {
     updateAudioOnlyPreference(audioOnly: boolean) {
         const videoCallPrefs = this.retrieveVideoCallPreferences();
         videoCallPrefs.audioOnly = audioOnly;
-        this.updateVideoCallPreferences(videoCallPrefs);
+        this.videoCallPreferences.set(videoCallPrefs);
     }
 
     async callWithNewDevices(cam: UserMediaDevice, mic: UserMediaDevice, audioOnly: boolean) {

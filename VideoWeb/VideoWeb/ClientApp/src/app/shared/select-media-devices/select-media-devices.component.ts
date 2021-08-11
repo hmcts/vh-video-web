@@ -155,11 +155,11 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     }
 
     private subscribeToDeviceSelectionChange() {
-        this.selectedCamera.valueChanges.pipe(takeUntil(this.userMediaService.selectDevicesChangesubject)).subscribe(newCamera => {
+        this.selectedCamera.valueChanges.pipe(takeUntil(this.userMediaService.selectDevicesChangeSubject)).subscribe(newCamera => {
             this.updateCameraStream(newCamera);
         });
 
-        this.selectedMicrophone.valueChanges.pipe(takeUntil(this.userMediaService.selectDevicesChangesubject)).subscribe(newMicrophone => {
+        this.selectedMicrophone.valueChanges.pipe(takeUntil(this.userMediaService.selectDevicesChangeSubject)).subscribe(newMicrophone => {
             this.updateMicrophoneStream(newMicrophone);
         });
     }
@@ -195,8 +195,8 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     private unsubscription() {
         this.destroyedSubject.next();
         this.destroyedSubject.complete();
-        this.userMediaService.selectDevicesChangesubject.next();
-        this.userMediaService.selectDevicesChangesubject.complete();
+        this.userMediaService.selectDevicesChangeSubject.next();
+        this.userMediaService.selectDevicesChangeSubject.complete();
     }
     private cleanStream() {
         if (this.preferredCameraStream) {

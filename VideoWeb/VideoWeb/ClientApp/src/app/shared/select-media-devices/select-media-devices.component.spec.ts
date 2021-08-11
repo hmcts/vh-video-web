@@ -8,7 +8,7 @@ import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { SelectMediaDevicesComponent } from './select-media-devices.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
-
+import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
 describe('SelectMediaDevicesComponent', () => {
     let component: SelectMediaDevicesComponent;
     let userMediaService: jasmine.SpyObj<UserMediaService>;
@@ -31,7 +31,7 @@ describe('SelectMediaDevicesComponent', () => {
         userMediaStreamService.getStreamForCam.and.resolveTo(mockCamStream);
         userMediaStreamService.getStreamForMic.and.resolveTo(mockMicStream);
         videoCallService = jasmine.createSpyObj<VideoCallService>('VideoCallService', ['isAudioOnly', 'callWithNewDevices']);
-        videoCallService.isAudioOnly.and.returnValue(true);
+        videoCallServiceSpy.isAudioOnly.and.returnValue(true);
         userMediaService = jasmine.createSpyObj<UserMediaService>(
             'UserMediaService',
             [
@@ -52,14 +52,14 @@ describe('SelectMediaDevicesComponent', () => {
     });
 
     beforeEach(fakeAsync(() => {
-        userMediaService.selectDevicesChangesubject = new Subject();
+        userMediaService.selectDevicesChangeSubject = new Subject();
         component = new SelectMediaDevicesComponent(
             userMediaService,
             userMediaStreamService,
             fb,
             new MockLogger(),
             translateServiceSpy,
-            videoCallService
+            videoCallServiceSpy
         );
         component.ngOnInit();
         tick();
@@ -108,8 +108,9 @@ describe('SelectMediaDevicesComponent', () => {
 
     it('should update video call service', async () => {
         spyOn(component.cancelMediaDeviceChange, 'emit');
+        videoCallServiceSpy.callWithNewDevices.and.callThrough();
         component.onSubmit();
-        expect(videoCallService.callWithNewDevices).toHaveBeenCalled();
+        expect(videoCallServiceSpy.callWithNewDevices).toHaveBeenCalled();
     });
 
     it('should update microphone stream on device change', () => {

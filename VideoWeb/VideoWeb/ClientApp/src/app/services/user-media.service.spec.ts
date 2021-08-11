@@ -180,4 +180,19 @@ describe('UserMediaService', () => {
         expect(resultStream).toBe(null);
         expect(getDisplayMediaSpy).toHaveBeenCalledTimes(1);
     });
+    
+    it('should return device is disconnected', async () => {
+        debugger;
+        let device = testData.getListOfCameras()[0];
+        device.label = "camera"
+        let isConnected = await userMediaService.isDeviceStillConnected(device);
+        expect(isConnected).toBeFalsy();
+    });
+
+    it('should return device is connected', async () => {
+        debugger;
+        let device = testData.getListOfCameras()[0];
+        let isConnected = await userMediaService.isDeviceStillConnected(device);
+        expect(isConnected).toBeTruthy();
+    });
 });

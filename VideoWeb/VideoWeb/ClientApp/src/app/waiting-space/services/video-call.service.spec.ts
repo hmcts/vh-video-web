@@ -256,11 +256,14 @@ describe('VideoCallService', () => {
     });
 
     it('should return updated video call preferences', () => {
-        const prefs = new VideoCallPreferences({
-            audioOnly: true
-        });
-        service.updateVideoCallPreferences(prefs);
-        expect(service.retrieveVideoCallPreferences().audioOnly).toEqual(prefs.audioOnly);
+        service.updateAudioOnlyPreference(true);
+        expect(service.retrieveVideoCallPreferences().audioOnly).toEqual(true);
+
+    });
+
+    it('should return updated video call preferences', () => {
+        service.updateAudioOnlyPreference(false);
+        expect(service.retrieveVideoCallPreferences().audioOnly).toEqual(false);
     });
 
     it('should disconnect from call and reconnect when connecting with new devices', () => {
@@ -365,5 +368,18 @@ describe('VideoCallService', () => {
         await service.retrieveJudicialRoom(conferenceId, participantId);
 
         expect(apiClient.getParticipantRoomForParticipant).toHaveBeenCalledWith(conferenceId, participantId, 'Judicial');
+    });
+    it('should update Cam for Call', () => {
+        service.updateCameraForCall(testData.getListOfCameras()[0]);
+        expect(service.pexipAPI.video_source).toEqual(testData.getListOfCameras()[0].deviceId);
+    });
+    it('should update Mic for Call', () => {
+        service.updateMicrophoneForCall(testData.getListOfMicrophones()[0]);
+        expect(service.pexipAPI.audio_source).toEqual(testData.getListOfMicrophones()[0].deviceId);
+    });
+    it('should update video and Mic for Call', () => {
+        service.updatePexipAudioVideoSource(testData.getListOfCameras()[0], testData.getListOfMicrophones()[0]);
+        expect(service.pexipAPI.video_source).toEqual(testData.getListOfCameras()[0].deviceId);
+        expect(service.pexipAPI.audio_source).toEqual(testData.getListOfMicrophones()[0].deviceId);
     });
 });

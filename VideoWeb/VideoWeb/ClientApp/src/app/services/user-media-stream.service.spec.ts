@@ -25,4 +25,14 @@ describe('UserMediaStreamService', () => {
         await service.getStreamForCam(new UserMediaDevice('label', 'id123', 'video', null));
         expect(errrorServiceSpy.handlePexipError).toHaveBeenCalled();
     });
+    it('should get default stream for camera', async () => {
+        var spy = spyOn(navigator.mediaDevices, 'getUserMedia').and.callThrough();
+        await service.getStreamForCam(null);
+        expect(spy).toHaveBeenCalledWith(service.defaultCamConstraints);
+    });
+    it('should not get default stream for camera', async () => {
+        var spy = spyOn(navigator.mediaDevices, 'getUserMedia').and.callThrough();
+        await service.getStreamForCam(new UserMediaDevice('label', 'id123', 'video', null));
+        expect(spy).not.toHaveBeenCalledWith(service.defaultCamConstraints);
+    });
 });

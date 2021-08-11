@@ -10,7 +10,7 @@ import { CallError } from '../waiting-space/models/video-call-models';
 })
 export class UserMediaStreamService {
     readonly defaultStreamConstraints = { audio: true, video: true };
-    readonly defaultDesktopCamConstraints = { audio: false, video: true };
+    readonly defaultCamConstraints = { audio: false, video: true };
     readonly defaultMicConstraints = { audio: true, video: false };
     navigator = <any>navigator;
     private readonly loggerPrefix = '[UserMediaStreamService] -';
@@ -27,7 +27,7 @@ export class UserMediaStreamService {
             If a user grants access a stream is returned, which needs to be closed
             rather than being returned to the client.
             */
-            await this.getStream();
+            await this.getDefaultStream();
             this.stopStream(this.requestStream);
             return true;
         } catch (exception) {
@@ -36,7 +36,7 @@ export class UserMediaStreamService {
         }
     }
 
-    async getStream(): Promise<MediaStream> {
+    async getDefaultStream(): Promise<MediaStream> {
         if (this.requestStream) {
             this.stopStream(this.requestStream);
         }
@@ -77,11 +77,11 @@ export class UserMediaStreamService {
     }
 
     private async getDefaultCamStream(): Promise<MediaStream> {
-        return this.navigator.mediaDevices.getUserMedia(this.defaultDesktopCamConstraints);
+        return this.navigator.mediaDevices.getUserMedia(this.defaultCamConstraints);
     }
 
     private async getDefaultMicStream(): Promise<MediaStream> {
-        return await this.navigator.mediaDevices.getUserMedia(this.defaultMicConstraints);
+        return this.navigator.mediaDevices.getUserMedia(this.defaultMicConstraints);
     }
 
     stopStream(stream: MediaStream) {
