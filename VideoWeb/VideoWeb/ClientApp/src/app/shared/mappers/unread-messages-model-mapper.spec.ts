@@ -1,5 +1,4 @@
 import { UnreadAdminMessageResponse } from 'src/app/services/clients/api-client';
-import { UnreadAdminMessageModel } from '../../waiting-space/models/unread-admin-message-model';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { UnreadAdminMessageModelMapper } from './unread-messages-model-mapper';
 
@@ -16,14 +15,11 @@ describe('ParticipantPanelModelMapper', () => {
         // arrange
         const unreadMessages = conference.participants.map(
             p =>
-                new UnreadAdminMessageModel(
-                    new UnreadAdminMessageResponse({
-                        number_of_unread_messages: unreadMessagesCount,
-                        participant_id: p.id,
-                        participant_username: p.name
-                    }),
-                    conference.id
-                )
+                new UnreadAdminMessageResponse({
+                    number_of_unread_messages: unreadMessagesCount,
+                    participant_id: p.id,
+                    participant_username: p.name
+                })
         );
 
         // act
@@ -37,6 +33,12 @@ describe('ParticipantPanelModelMapper', () => {
             expect(x.number_of_unread_messages).toBeTruthy();
             expect(x.participant_id).toBeTruthy();
             expect(x.participant_username).toBeTruthy();
+
+            const participantUnreadMessage = unreadMessages.find(p => p.participant_id === x.participant_id);
+
+            expect(x.number_of_unread_messages).toEqual(participantUnreadMessage.number_of_unread_messages);
+            expect(x.participant_id).toEqual(participantUnreadMessage.participant_id);
+            expect(x.participant_username).toEqual(participantUnreadMessage.participant_username);
         });
     });
 });

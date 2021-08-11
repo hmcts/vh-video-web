@@ -11,7 +11,7 @@ export class UnreadAdminMessageModelMapper {
         return unreadMessages;
     }
 
-    mapFromMessageResponse(unreadMessagesReponse: UnreadAdminMessageResponse, conferenceId: string): UnreadAdminMessageModel {
+    private mapFromMessageResponse(unreadMessagesReponse: UnreadAdminMessageResponse, conferenceId: string): UnreadAdminMessageModel {
         return new UnreadAdminMessageModel(unreadMessagesReponse, conferenceId);
     }
 }

@@ -53,8 +53,7 @@ describe('UnreadMessagesComponent', () => {
         videoWebServiceSpy.getUnreadMessageCountForConference.and.callFake(() => Promise.resolve(unreadConferenceResponse));
 
         unreadAdminMessageModelSpy = jasmine.createSpyObj<UnreadAdminMessageModelMapper>('UnreadAdminMessageModelMapper', [
-            'mapUnreadMessageResponseArray',
-            'mapFromMessageResponse'
+            'mapUnreadMessageResponseArray'
         ]);
 
         unreadAdminMessageModelSpy.mapUnreadMessageResponseArray.and.returnValue(unreadMessages);
