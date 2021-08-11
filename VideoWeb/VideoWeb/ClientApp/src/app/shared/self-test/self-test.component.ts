@@ -37,8 +37,8 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
     @Output() testStarted = new EventEmitter();
     @Output() testCompleted = new EventEmitter<TestCallScoreResponse>();
 
-    @ViewChild('selfView', { static: false }) selfView: ElementRef<HTMLVideoElement>;
-    @ViewChild('outputCanvas', { static: false }) outputCanvas: ElementRef<HTMLCanvasElement>;
+    @ViewChild('selfView') selfView: ElementRef<HTMLVideoElement>;
+    @ViewChild('outputCanvas') outputCanvas: ElementRef<HTMLCanvasElement>;
 
     token: TokenResponse;
     incomingStream: MediaStream | URL;
@@ -182,31 +182,15 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
 
     async applyVideoFilterIfNeeded() {
         await this.videoFilterService.initFilterStream(this);
-        if (this.videoFilterService.filterOn) {
-            this.videoFilterService.startFilteredStream(true);
-            this.hideOriginalStream = true;
-        }
+        const filteredStream = this.videoFilterService.startFilteredStream(true);
+        this.videoCallService.updateStreamDevices(filteredStream);
+        this.hideOriginalStream = true;
     }
 
     setupSubscribers() {
         this.subscription.add(
             this.userMediaService.connectedDevices.subscribe(async () => {
                 this.hasMultipleDevices = await this.userMediaService.hasMultipleDevices();
-            })
-        );
-        this.subscription.add(
-            this.videoFilterService.onFilterChanged.subscribe(async filter => {
-                if (this.displayDeviceChangeModal) {
-                    return;
-                }
-                this.logger.debug(`${this.loggerPrefix} filter applied ${filter ? filter : 'off'}`);
-                if (filter) {
-                    await this.videoFilterService.startFilteredStream();
-                    this.hideOriginalStream = true;
-                } else {
-                    this.hideOriginalStream = false;
-                    this.videoFilterService.stopStream();
-                }
             })
         );
     }

@@ -7,7 +7,9 @@ import { ParticipantService } from 'src/app/services/conference/participant.serv
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { IVideoFilterer } from 'src/app/services/models/background-filter';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { VideoFilterService } from 'src/app/services/video-filter.service';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-hand-raised-message';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
@@ -17,7 +19,7 @@ import { ConnectedScreenshare, ParticipantUpdated, StoppedScreenshare } from '..
 import { VideoCallService } from '../services/video-call.service';
 
 @Injectable()
-export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy {
+export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy, IVideoFilterer {
     protected readonly loggerPrefix = '[HearingControlsBase] -';
 
     @Input() public participant: ParticipantResponse;
@@ -49,13 +51,17 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     participantSpotlightUpdateSubscription: Subscription;
     isSpotlighted: boolean;
 
+    filteredStream: MediaStream;
+    hideOriginalStream: boolean;
+
     protected constructor(
         protected videoCallService: VideoCallService,
         protected eventService: EventsService,
         protected deviceTypeService: DeviceTypeService,
         protected logger: Logger,
         protected participantService: ParticipantService,
-        protected translateService: TranslateService
+        protected translateService: TranslateService,
+        protected videoFilterService: VideoFilterService
     ) {
         this.handRaised = false;
         this.remoteMuted = false;
@@ -63,6 +69,9 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.isSpotlighted = false;
         this.displayConfirmPopup = false;
     }
+
+    abstract retrieveVideoElement(): HTMLVideoElement;
+    abstract retrieveCanvasElement(): HTMLCanvasElement;
 
     get canShowScreenShareButton(): boolean {
         const isNotTablet = !this.deviceTypeService.isTablet();
@@ -102,6 +111,16 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             this.toggleView();
         }
         this.initialiseMuteStatus();
+
+        // TOOD: find a better way to trigger this
+        setTimeout(() => {
+            this.applyVideoFilterIfNeeded().catch(err => {
+                this.logger.error(`${this.loggerPrefix} Failed to apply video filter`, err, {
+                    conference: this.conferenceId,
+                    participant: this.participant.id
+                });
+            });
+        }, 1000);
     }
 
     onLoggedInParticipantChanged(participant: ParticipantModel): void {
@@ -368,5 +387,12 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     changeDeviceSelected() {
         this.changeDeviceToggle.emit();
+    }
+
+    async applyVideoFilterIfNeeded() {
+        await this.videoFilterService.initFilterStream(this);
+        this.filteredStream = this.videoFilterService.startFilteredStream(true);
+        this.videoCallService.updateStreamDevices(this.filteredStream);
+        this.videoCallService.reconnectToCallWithNewDevices();
     }
 }

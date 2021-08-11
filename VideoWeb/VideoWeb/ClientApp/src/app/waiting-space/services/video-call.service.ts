@@ -379,8 +379,8 @@ export class VideoCallService {
     }
 
     reconnectToCallWithNewDevices() {
-        this.pexipAPI.disconnectCall();
-        this.pexipAPI.addCall(null);
+        // this.pexipAPI.disconnectCall();
+        // this.pexipAPI.addCall(null);
     }
 
     switchToAudioOnlyCall() {
@@ -442,11 +442,13 @@ export class VideoCallService {
         return this.apiClient.getParticipantRoomForParticipant(conferenceId, participantId, 'Judicial').toPromise();
     }
 
-    applyUserStream(newStream: MediaStream) {
-        this.pexipAPI.user_media_stream = newStream;
-    }
+    updateStreamDevices(newStream: MediaStream) {
+        this.pexipAPI.user_media_stream.getTracks().forEach(x => {
+            this.pexipAPI.user_media_stream.removeTrack(x);
+        });
 
-    removeUserStream() {
-        this.pexipAPI.user_media_stream = this.preferredDeviceStream;
+        newStream.getTracks().forEach(x => {
+            this.pexipAPI.user_media_stream.addTrack(x);
+        });
     }
 }

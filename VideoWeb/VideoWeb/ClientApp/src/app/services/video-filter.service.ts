@@ -56,7 +56,9 @@ export class VideoFilterService {
         const camera = new Camera(this.videoElement, {
             onFrame: async () => {
                 await this.selfieSegmentation.send({ image: this.videoElement });
-            }
+            },
+            width: 1280,
+            height: 720
         });
         camera.start();
     }
