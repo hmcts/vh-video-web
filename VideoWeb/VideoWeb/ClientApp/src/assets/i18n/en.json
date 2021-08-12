@@ -62,7 +62,7 @@
     "char-count": "Character count",
     "maximum": "maximum allowed",
     "unable-send": "Unable to send message.",
-    "type-a-message":"Type a message"
+    "type-a-message": "Type a message"
   },
   "contact-us": {
     "contact-video-hearings": "Contact the video hearings service",
@@ -147,8 +147,7 @@
     "change-camera-mic": "Change camera or microphone"
   },
   "unsupported-browser": {
-    "using-unsupported-browser": "Unsupported browser",
-    "unfortunately-this-browser": "You're using a browser that is not supported by the Video Hearings service.",
+    "using-unsupported-browser": "You're using an unsupported browser",
     "please-try-again": "Please try again using one of the browsers listed below. If you are still having problems, please contact the video hearings team.",
     "supported-browser-alt": "{{browserName}} browser logo"
   },
