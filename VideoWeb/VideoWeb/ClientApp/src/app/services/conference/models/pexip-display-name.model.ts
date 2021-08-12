@@ -1,9 +1,5 @@
-export enum HeartbeatMode {
-    Heartbeat = 'HEARTBEAT',
-    NoHeartbeat = 'NO HEARTBEAT'
-}
-
-export const InvalidPexipDisplayNameFormatError = pexipDisplayName => new Error(`Invalid pexip display name format ${pexipDisplayName}`);
+import { InvalidPexipDisplayNameFormatError } from '../errors/invalid-pexip-display-name-format.error';
+import { HeartbeatMode } from './heartbeat-mode.model';
 
 /*
 <Type>;<Participant Name>;<Participant Id>

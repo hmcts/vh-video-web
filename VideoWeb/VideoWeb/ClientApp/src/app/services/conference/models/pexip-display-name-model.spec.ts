@@ -1,4 +1,6 @@
-import { HeartbeatMode, InvalidPexipDisplayNameFormatError, PexipDisplayNameModel } from './pexip-display-name.model';
+import { InvalidPexipDisplayNameFormatError } from '../errors/invalid-pexip-display-name-format.error';
+import { HeartbeatMode } from './heartbeat-mode.model';
+import { PexipDisplayNameModel } from './pexip-display-name.model';
 
 describe('PexipDisplayNameModel', () => {
     describe('fromString', () => {
