@@ -1043,20 +1043,6 @@
     "alt": "Eicon copïo rhif adnabod (ID) y gynhadledd"
   },
   "quick-participant-landing-page": {
-    "page-title": "Enter your details to join your hearing",
-    "paragraph1": "Please tell us your name and your role in the hearing.",
-    "name-label": "Your full name",
-    "name-error": "Please enter your full name",
-    "role-label": "What is your role in the hearing?",
-    "role-error": "Please choose your role in the hearing",
-    "participant": {
-      "role": "Participant",
-      "description": "You have been called to take part in the hearing."
-    },
-    "observer": {
-      "role": "Observer",
-      "description": "You are observing the hearing, but not taking part."
-    },
     "button-continue": "Parhau"
   }
 }

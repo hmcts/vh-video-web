@@ -12,6 +12,7 @@ import { ContactUsFoldingComponent } from 'src/app/shared/contact-us-folding/con
 import { Logger } from 'src/app/services/logging/logger-base';
 import { RouterTestingModule } from '@angular/router/testing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
+import { By } from '@angular/platform-browser';
 
 describe('QuickLinksComponent', () => {
     const quickLinkParticipantRoles = [Role.QuickLinkObserver, Role.QuickLinkParticipant];
@@ -77,6 +78,7 @@ describe('QuickLinksComponent', () => {
         fixture = TestBed.createComponent(QuickLinksComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
+        console.log(fixture);
     });
 
     describe('ngOnInit', () => {
@@ -195,5 +197,19 @@ describe('QuickLinksComponent', () => {
 
             expect(routerSpy.navigate).toHaveBeenCalledOnceWith([pageUrls.Navigator]);
         }));
+    });
+
+    describe('continue button', () => {
+        let buttonElement;
+
+        beforeEach(() => {
+            buttonElement = fixture.debugElement.query(By.css('#continue-button'));
+        });
+
+        it('should submit form when clicked', () => {
+            spyOn(component, 'onSubmit');
+            buttonElement.nativeElement.click();
+            expect(component.onSubmit).toHaveBeenCalledTimes(1);
+        });
     });
 });
