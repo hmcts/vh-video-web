@@ -9,29 +9,15 @@ using FluentAssertions;
 
 namespace VideoWeb.UnitTests.Helpers
 {
+    [TestFixture]
     public class ParticipantTilePositionHelperTest
     {
-        [Test]
-        public void Should_set_tailed_display_names_for_non_judge_participants_number_participant()
+        private List<ParticipantResponse> _participants;
+
+        [SetUp]
+        public void SetUp()
         {
-            var participants = GetParticipantResponses();
-            ParticipantTilePositionHelper.AssignTilePositions(participants);
-
-
-            participants[0].TiledDisplayName.Should().Contain("JUDGE;");
-            participants[1].TiledDisplayName.Should().Contain("CIVILIAN;");
-            participants[2].TiledDisplayName.Should().Contain("CIVILIAN;");
-            participants[3].TiledDisplayName.Should().Contain("CIVILIAN;");
-            participants[4].TiledDisplayName.Should().Contain("CIVILIAN;");
-            participants[5].TiledDisplayName.Should().Contain("CIVILIAN;");
-            participants[6].TiledDisplayName.Should().Contain("WITNESS;");
-            participants[7].TiledDisplayName.Should().Contain("CIVILIAN;");
-
-        }
-
-        private List<ParticipantResponse> GetParticipantResponses()
-        {
-            var participants = new List<ParticipantResponse>
+            _participants = new List<ParticipantResponse>
             {
                 new ParticipantResponse{Id= Guid.NewGuid(), Role=Role.Judge,DisplayName = "Judge", HearingRole = "judge"},
                 new ParticipantResponse{Id=Guid.NewGuid(), Role=Role.Individual, DisplayName = "Part1", CaseTypeGroup = "group1", HearingRole = "Applicant"},
@@ -42,8 +28,22 @@ namespace VideoWeb.UnitTests.Helpers
                 new ParticipantResponse { Id = Guid.NewGuid(), Role = Role.JudicialOfficeHolder, DisplayName = "Part6", CaseTypeGroup = "group1", HearingRole = "Witness" },
                 new ParticipantResponse { Id = Guid.NewGuid(), Role = Role.Individual, DisplayName = "Part7", CaseTypeGroup = "group1", HearingRole = "Applicant" }
             };
+        }
 
-            return participants;
+        [Test]
+        public void Should_set_tailed_display_names_for_non_judge_participants_number_participant()
+        {
+            ParticipantTilePositionHelper.AssignTilePositions(_participants);
+
+            _participants[0].TiledDisplayName.Should().Be($"JUDGE;HEARTBEAT;{_participants[0].DisplayName};{_participants[0].Id}");
+            _participants[1].TiledDisplayName.Should().Be($"CIVILIAN;NO HEARTBEAT;{_participants[1].DisplayName};{_participants[1].Id}");
+            _participants[2].TiledDisplayName.Should().Be($"CIVILIAN;NO HEARTBEAT;{_participants[2].DisplayName};{_participants[2].Id}");
+            _participants[3].TiledDisplayName.Should().Be($"CIVILIAN;NO HEARTBEAT;{_participants[3].DisplayName};{_participants[3].Id}");
+            _participants[4].TiledDisplayName.Should().Be($"CIVILIAN;NO HEARTBEAT;{_participants[4].DisplayName};{_participants[4].Id}");
+            _participants[5].TiledDisplayName.Should().Be($"CIVILIAN;NO HEARTBEAT;{_participants[5].DisplayName};{_participants[5].Id}");
+            _participants[6].TiledDisplayName.Should().Be($"WITNESS;NO HEARTBEAT;{_participants[6].DisplayName};{_participants[6].Id}");
+            _participants[7].TiledDisplayName.Should().Be($"CIVILIAN;NO HEARTBEAT;{_participants[7].DisplayName};{_participants[7].Id}");
+
         }
     }
 }

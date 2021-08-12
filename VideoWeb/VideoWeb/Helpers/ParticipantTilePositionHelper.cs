@@ -18,9 +18,11 @@ namespace VideoWeb.Helpers
         public static string GetTiledDisplayName(ParticipantResponse participant)
         {
             var prefix = "";
+            var heartbeatMode = "NO HEARTBEAT";
             if (participant.Role == Role.Judge)
             {
                 prefix = "JUDGE";
+                heartbeatMode = "HEARTBEAT";
             }
             else if (participant.HearingRole.ToLower().Trim() == "witness")
             {
@@ -31,7 +33,7 @@ namespace VideoWeb.Helpers
                 prefix = "CIVILIAN";
             }
 
-            return $"{prefix};{participant.DisplayName};{participant.Id}";
+            return $"{prefix};{heartbeatMode};{participant.DisplayName};{participant.Id}";
         }
     }
 }
