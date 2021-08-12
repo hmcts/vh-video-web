@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { take } from 'rxjs/operators';
 import { LoggerService } from '../logging/logger.service';
 import { ConferenceService } from './conference.service';
 import { VideoControlCacheLocalStorageService } from './video-control-cache-local-storage.service';
@@ -23,9 +24,12 @@ export class VideoControlCacheService {
                 return;
             }
 
-            this.storageService.loadHearingStateForConference(conference.id).subscribe(state => {
-                this.hearingControlStates = state;
-            });
+            this.storageService
+                .loadHearingStateForConference(conference.id)
+                .pipe(take(1))
+                .subscribe(state => {
+                    this.hearingControlStates = state;
+                });
         });
     }
 
