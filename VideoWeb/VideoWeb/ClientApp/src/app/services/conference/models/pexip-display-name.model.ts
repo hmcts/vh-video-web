@@ -1,4 +1,4 @@
-import { InvalidPexipDisplayNameFormatError } from '../errors/invalid-pexip-display-name-format.error';
+import { invalidPexipDisplayNameFormatError } from '../errors/invalid-pexip-display-name-format.error';
 import { HeartbeatMode } from './heartbeat-mode.model';
 
 /*
@@ -26,7 +26,7 @@ export class PexipDisplayNameModel {
                 parts[1] === HeartbeatMode.Heartbeat ? HeartbeatMode.Heartbeat : HeartbeatMode.NoHeartbeat
             );
         } else {
-            throw InvalidPexipDisplayNameFormatError(pexipDisplayName);
+            throw invalidPexipDisplayNameFormatError(pexipDisplayName);
         }
     }
 

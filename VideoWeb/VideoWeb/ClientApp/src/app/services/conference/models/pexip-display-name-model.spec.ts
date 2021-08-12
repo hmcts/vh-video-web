@@ -1,4 +1,4 @@
-import { InvalidPexipDisplayNameFormatError } from '../errors/invalid-pexip-display-name-format.error';
+import { invalidPexipDisplayNameFormatError } from '../errors/invalid-pexip-display-name-format.error';
 import { HeartbeatMode } from './heartbeat-mode.model';
 import { PexipDisplayNameModel } from './pexip-display-name.model';
 
@@ -27,7 +27,7 @@ describe('PexipDisplayNameModel', () => {
             const pexipDisplayName = `A;B`;
 
             // Act & Assert
-            expect(() => PexipDisplayNameModel.fromString(pexipDisplayName)).toThrow(InvalidPexipDisplayNameFormatError(pexipDisplayName));
+            expect(() => PexipDisplayNameModel.fromString(pexipDisplayName)).toThrow(invalidPexipDisplayNameFormatError(pexipDisplayName));
         });
 
         it('should parse the string into the model when heartbeat is set', () => {
