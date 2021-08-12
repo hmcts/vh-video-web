@@ -5,8 +5,9 @@ import { ConfigService } from 'src/app/services/api/config.service';
 import { ApiClient, HearingLayout, SharedParticipantRoom, StartHearingRequest } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
-import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
+
 import {
     CallError,
     CallSetup,
@@ -57,6 +58,7 @@ export class VideoCallService {
     constructor(
         private logger: Logger,
         private userMediaService: UserMediaService,
+        private userMediaStreamService: UserMediaStreamService,
         private apiClient: ApiClient,
         private configService: ConfigService
     ) {
@@ -77,10 +79,11 @@ export class VideoCallService {
     async setupClient() {
         const self = this;
         this.pexipAPI = new PexRTC();
-        await this.retrievePreferredDevices();
         this.initCallTag();
         this.initTurnServer();
         this.pexipAPI.screenshare_fps = 30;
+        
+        this.userMediaStreamService.currentStream$.subscribe(stream => this.onCurrentStreamChanged(stream));
 
         this.pexipAPI.onSetup = function (stream, pinStatus, conferenceExtension) {
             self.onSetupSubject.next(new CallSetup(stream));
@@ -135,6 +138,13 @@ export class VideoCallService {
             self.onStoppedScreenshareSubject.next(new StoppedScreenshare(reason));
         };
     }
+
+    private onCurrentStreamChanged(stream: MediaStream) {
+        const shouldReconnect = !this.pexipAPI.user_media_stream;
+        this.pexipAPI.user_media_stream = stream;
+        if (shouldReconnect) this.reconnectToCallWithNewStream();
+    }
+
     initTurnServer() {
         const config = this.configService.getConfig();
         const turnServerObj = {
@@ -147,22 +157,6 @@ export class VideoCallService {
 
     initCallTag() {
         this.pexipAPI.call_tag = Guid.create().toString();
-    }
-
-    private async retrievePreferredDevices() {
-        const preferredCam = await this.userMediaService.getPreferredCamera();
-        if (preferredCam) {
-            this.updateCameraForCall(preferredCam);
-        } else {
-            this.logger.warn(`${this.loggerPrefix} prefered camera was falsey.`);
-        }
-
-        const preferredMic = await this.userMediaService.getPreferredMicrophone();
-        if (preferredMic) {
-            this.updateMicrophoneForCall(preferredMic);
-        } else {
-            this.logger.warn(`${this.loggerPrefix} prefered mic was falsey.`);
-        }
     }
 
     makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number) {
@@ -229,16 +223,6 @@ export class VideoCallService {
 
     onScreenshareStopped(): Observable<StoppedScreenshare> {
         return this.onStoppedScreenshareSubject.asObservable();
-    }
-
-    updateCameraForCall(camera: UserMediaDevice) {
-        this.pexipAPI.video_source = camera.deviceId;
-        this.logger.info(`${this.loggerPrefix}  Using preferred camera: ${camera.label}`);
-    }
-
-    updateMicrophoneForCall(microphone: UserMediaDevice) {
-        this.pexipAPI.audio_source = microphone.deviceId;
-        this.logger.info(`${this.loggerPrefix} Using preferred microphone: ${microphone.label}`);
     }
 
     toggleMute(conferenceId: string, participantId: string): boolean {
@@ -367,7 +351,7 @@ export class VideoCallService {
         return this.videoCallPreferences.get().audioOnly;
     }
 
-    reconnectToCallWithNewDevices() {
+    reconnectToCallWithNewStream() {
         this.pexipAPI.disconnectCall();
         this.pexipAPI.addCall(null);
     }
@@ -435,27 +419,5 @@ export class VideoCallService {
         const videoCallPrefs = this.retrieveVideoCallPreferences();
         videoCallPrefs.audioOnly = audioOnly;
         this.videoCallPreferences.set(videoCallPrefs);
-    }
-
-    async callWithNewDevices(cam: UserMediaDevice, mic: UserMediaDevice, audioOnly: boolean) {
-        this.updateAudioOnlyPreference(audioOnly);
-        await this.updatePexipAudioVideoSource(cam, mic);
-        this.reconnectToCallWithNewDevices();
-        if (audioOnly) {
-            this.switchToAudioOnlyCall();
-        }
-    }
-
-    async updatePexipAudioVideoSource(cam: UserMediaDevice, mic: UserMediaDevice) {
-        if (cam) {
-            this.updateCameraForCall(cam);
-        }
-        if (mic) {
-            this.updateMicrophoneForCall(mic);
-        }
-        this.logger.info(`${this.loggerPrefix} Update camera and microphone selection`, {
-            cameraId: cam.deviceId,
-            microphoneId: mic.deviceId
-        });
     }
 }

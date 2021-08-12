@@ -107,10 +107,10 @@ export function initAllWRDependencies() {
         'getStreamForCam',
         'getStreamForMic'
     ]);
-    userMediaStreamService.getStreamForCam.and.resolveTo(mockCamStream);
-    userMediaStreamService.getStreamForMic.and.resolveTo(mockMicStream);
-    userMediaService.getPreferredCamera.and.resolveTo(testDataDevice.getListOfCameras()[0]);
-    userMediaService.getPreferredMicrophone.and.resolveTo(testDataDevice.getListOfMicrophones()[0]);
+    userMediaStreamService.getStreamForCam.and.returnValue(of(mockCamStream));
+    userMediaStreamService.getStreamForMic.and.returnValue(of(mockMicStream));
+    userMediaService.getPreferredCamera.and.returnValue(testDataDevice.getListOfCameras()[0]);
+    userMediaService.getPreferredMicrophone.and.returnValue(testDataDevice.getListOfMicrophones()[0]);
     userMediaService.setDevicesInCache.and.returnValue(Promise.resolve());
     notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', [
         'playHearingAlertSound',

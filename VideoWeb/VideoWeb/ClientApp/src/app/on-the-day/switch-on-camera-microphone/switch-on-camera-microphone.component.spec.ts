@@ -135,22 +135,6 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
         });
     });
 
-    it('should raise permission denied event on media access rejection', async () => {
-        userMediaStreamService.requestAccess.and.returnValue(Promise.resolve(false));
-
-        await component.requestMedia();
-        expect(component.mediaAccepted).toBeFalsy();
-        expect(videoWebService.raiseMediaEvent).toHaveBeenCalledWith(conference.id, new AddMediaEventRequest());
-    });
-
-    it('should not raise permission denied event on media access acceptance', async () => {
-        userMediaStreamService.requestAccess.and.returnValue(Promise.resolve(true));
-
-        await component.requestMedia();
-        expect(component.mediaAccepted).toBeTruthy();
-        expect(videoWebService.raiseMediaEvent).toHaveBeenCalledTimes(0);
-    });
-
     it('should log error when raising event fails', async () => {
         const error = new Error('unit test error');
         videoWebService.raiseMediaEvent.and.callFake(() => Promise.reject(error));

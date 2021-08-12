@@ -82,15 +82,13 @@ describe('SelfTestComponent', () => {
             { connectedDevices: new BehaviorSubject(mediaTestData.getListOfDevices()) }
         );
 
-        userMediaService.getPreferredCamera.and.resolveTo(mediaTestData.getListOfCameras()[0]);
-        userMediaService.getPreferredMicrophone.and.resolveTo(mediaTestData.getListOfMicrophones()[0]);
+        userMediaService.getPreferredCamera.and.returnValue(mediaTestData.getListOfCameras()[0]);
+        userMediaService.getPreferredMicrophone.and.returnValue(mediaTestData.getListOfMicrophones()[0]);
         userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>('UserMediaStreamService', [
-            'requestAccess',
             'stopStream',
             'getStreamForCam',
             'getStreamForMic'
         ]);
-        userMediaStreamService.requestAccess.and.returnValue(Promise.resolve(true));
         userMediaStreamService.stopStream.and.callFake(() => {});
     });
 
@@ -366,8 +364,8 @@ describe('SelfTestComponent', () => {
         expect(logger.info).toHaveBeenCalled();
     });
     it('should log the trace message if mic and cam were updated with null value', async () => {
-        userMediaService.getPreferredCamera.and.returnValue(Promise.resolve(null));
-        userMediaService.getPreferredCamera.and.returnValue(Promise.resolve(null));
+        userMediaService.getPreferredCamera.and.returnValue(null);
+        userMediaService.getPreferredCamera.and.returnValue(null);
         spyOn(logger, 'info');
         await component.updatePexipAudioVideoSource();
         expect(logger.info).toHaveBeenCalled();

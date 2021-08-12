@@ -10,12 +10,12 @@ import {
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { VideoCallPreferences } from './video-call-preferences.mode';
 import { VideoCallService } from './video-call.service';
 
 const config = new ClientSettingsResponse({
@@ -29,6 +29,7 @@ describe('VideoCallService', () => {
     let apiClient: jasmine.SpyObj<ApiClient>;
     const logger: Logger = new MockLogger();
     let userMediaService: jasmine.SpyObj<UserMediaService>;
+    let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
     const testData = new MediaDeviceTestData();
     let preferredCamera: UserMediaDevice;
     let preferredMicrophone: UserMediaDevice;
@@ -65,8 +66,8 @@ describe('VideoCallService', () => {
 
         preferredCamera = testData.getListOfCameras()[0];
         preferredMicrophone = testData.getListOfMicrophones()[0];
-        userMediaService.getPreferredCamera.and.resolveTo(preferredCamera);
-        userMediaService.getPreferredMicrophone.and.resolveTo(preferredMicrophone);
+        userMediaService.getPreferredCamera.and.returnValue(preferredCamera);
+        userMediaService.getPreferredMicrophone.and.returnValue(preferredMicrophone);
     });
 
     beforeEach(async () => {
@@ -88,7 +89,7 @@ describe('VideoCallService', () => {
             'getPresentation',
             'stopPresentation'
         ]);
-        service = new VideoCallService(logger, userMediaService, apiClient, configServiceSpy);
+        service = new VideoCallService(logger, userMediaService, userMediaStreamService, apiClient, configServiceSpy);
         await service.setupClient();
     });
 
@@ -119,8 +120,8 @@ describe('VideoCallService', () => {
     });
 
     it('should use default devices on setup if no preferred devices found', async () => {
-        userMediaService.getPreferredCamera.and.resolveTo(null);
-        userMediaService.getPreferredMicrophone.and.resolveTo(null);
+        userMediaService.getPreferredCamera.and.returnValue(null);
+        userMediaService.getPreferredMicrophone.and.returnValue(null);
 
         await service.setupClient();
 
@@ -274,7 +275,7 @@ describe('VideoCallService', () => {
     it('should disconnect from call and reconnect when connecting with new devices', () => {
         service.pexipAPI = pexipSpy;
 
-        service.reconnectToCallWithNewDevices();
+        service.reconnectToCallWithNewStream();
 
         expect(pexipSpy.disconnectCall).toHaveBeenCalled();
         expect(pexipSpy.addCall).toHaveBeenCalledWith(null);
@@ -374,17 +375,8 @@ describe('VideoCallService', () => {
 
         expect(apiClient.getParticipantRoomForParticipant).toHaveBeenCalledWith(conferenceId, participantId, 'Judicial');
     });
-    it('should update Cam for Call', () => {
-        service.updateCameraForCall(testData.getListOfCameras()[0]);
-        expect(service.pexipAPI.video_source).toEqual(testData.getListOfCameras()[0].deviceId);
-    });
-    it('should update Mic for Call', () => {
-        service.updateMicrophoneForCall(testData.getListOfMicrophones()[0]);
-        expect(service.pexipAPI.audio_source).toEqual(testData.getListOfMicrophones()[0].deviceId);
-    });
-    it('should update video and Mic for Call', () => {
-        service.updatePexipAudioVideoSource(testData.getListOfCameras()[0], testData.getListOfMicrophones()[0]);
-        expect(service.pexipAPI.video_source).toEqual(testData.getListOfCameras()[0].deviceId);
-        expect(service.pexipAPI.audio_source).toEqual(testData.getListOfMicrophones()[0].deviceId);
+
+    describe('setupClient', () => {
+        it
     });
 });

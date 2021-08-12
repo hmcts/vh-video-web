@@ -75,7 +75,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         this.initialiseData();
 
         this.userMediaService
-            .setDevicesInCache()
+            .updateAvailableDevicesList()
             .then(() => {
                 this.displayFeed = false;
                 this.displayDeviceChangeModal = false;
@@ -225,7 +225,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     async updatePexipAudioVideoSource() {
         const cam = await this.userMediaService.getPreferredCamera();
         const mic = await this.userMediaService.getPreferredMicrophone();
-        this.preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(mic);
+        this.preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(mic).toPromise();
 
         this.logger.info(`${this.loggerPrefix} Update camera and microphone selection`, {
             cameraId: cam ? cam.deviceId : null,

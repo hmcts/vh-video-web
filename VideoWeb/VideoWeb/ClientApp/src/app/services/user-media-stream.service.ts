@@ -4,84 +4,77 @@ import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Logger } from './logging/logger-base';
 import { ErrorService } from '../services/error.service';
 import { CallError } from '../waiting-space/models/video-call-models';
+import { from, Observable, ReplaySubject, zip } from 'rxjs';
+import { UserMediaService } from './user-media.service';
+import { take } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root'
 })
 export class UserMediaStreamService {
-    readonly defaultStreamConstraints = { audio: true, video: true };
-    readonly defaultCamConstraints = { audio: false, video: true };
-    readonly defaultMicConstraints = { audio: true, video: false };
-    navigator = <any>navigator;
+
+    navigator: Navigator = navigator;
     private readonly loggerPrefix = '[UserMediaStreamService] -';
 
-    private requestStream: MediaStream;
-
-    constructor(private logger: Logger, private errorService: ErrorService) {
-        this.navigator.getUserMedia = this.navigator.getUserMedia || this.navigator.webkitGetUserMedia || this.navigator.msGetUserMedia;
+    private currentStream: MediaStream;
+    private currentStreamSubject = new ReplaySubject<MediaStream>(1);
+    get currentStream$() {
+        return this.currentStreamSubject.asObservable()
     }
 
-    async requestAccess(): Promise<boolean> {
-        try {
-            /*
-            If a user grants access a stream is returned, which needs to be closed
-            rather than being returned to the client.
-            */
-            await this.getDefaultStream();
-            this.stopStream(this.requestStream);
-            return true;
-        } catch (exception) {
-            this.logger.error(`${this.loggerPrefix} Could not get cam and mic access`, exception);
-            return false;
-        }
+    constructor(private logger: Logger, private errorService: ErrorService, private userMediaService :UserMediaService) {
+        this.navigator.getUserMedia = this.navigator.getUserMedia || (this.navigator as any).webkitGetUserMedia || (this.navigator as any).msGetUserMedia;
+        zip(userMediaService.activeVideoDevice, userMediaService.activeMicrophoneDevice).pipe(take(1)).subscribe((activeDevices => {
+            this.initialiseCurrentStream(activeDevices[0], activeDevices[1]);
+        }));
+    }
+    private initialiseCurrentStream(videoDevice: UserMediaDevice, microphone:UserMediaDevice) {
+        this.getStreamForCam(videoDevice).pipe(take(1)).subscribe(stream => {
+            this.currentStream = stream;
+            this.activeMicrophoneChanged(microphone);
+        });
+        this.userMediaService.activeVideoDevice.subscribe(videoDevice => {
+            this.activeCameraChanged(videoDevice);
+        });
+        this.userMediaService.activeMicrophoneDevice.subscribe(microphoneDevice => {
+            this.activeMicrophoneChanged(microphoneDevice);
+        });
+    }
+    private activeCameraChanged(videoDevice: UserMediaDevice) {
+        this.getStreamForCam(videoDevice).pipe(take(1)).subscribe(stream => {
+            this.currentStream.getVideoTracks().forEach(track => this.currentStream.removeTrack(track));
+            stream.getTracks().forEach(track => {
+            this.currentStream.addTrack(track);
+            });
+        })
+    }
+    private activeMicrophoneChanged(microphoneDevice: UserMediaDevice) {
+        this.getStreamForMic(microphoneDevice).pipe(take(1)).subscribe(stream => {
+            this.currentStream.getAudioTracks().forEach(track => this.currentStream.removeTrack(track));
+            stream.getTracks().forEach(track => {
+            this.currentStream.addTrack(track);
+            });
+        })
+
     }
 
-    async getDefaultStream(): Promise<MediaStream> {
-        if (this.requestStream) {
-            this.stopStream(this.requestStream);
-        }
+    getStreamForMic(device: UserMediaDevice): Observable<MediaStream> {
         try {
-            this.requestStream = await this.navigator.mediaDevices.getUserMedia(this.defaultStreamConstraints);
-            return this.requestStream;
-        } catch (error) {
-            this.logger.error(`${this.loggerPrefix} Could not get media stream`, error);
-            this.errorService.handlePexipError(new CallError(error.name), null);
-        }
-    }
-
-    async getStreamForMic(device: UserMediaDevice): Promise<MediaStream> {
-        try {
-            if (device) {
-                return await this.navigator.mediaDevices.getUserMedia({ audio: { deviceId: { exact: device.deviceId } } });
-            } else {
-                return this.getDefaultMicStream();
-            }
+            return from(this.navigator.mediaDevices.getUserMedia({ audio: { deviceId: { exact: device.deviceId } } }));
         } catch (error) {
             this.logger.error(`${this.loggerPrefix} Could not get audio stream for microphone`, error);
             this.errorService.handlePexipError(new CallError(error.name), null);
         }
     }
 
-    async getStreamForCam(device: UserMediaDevice): Promise<MediaStream> {
+    getStreamForCam(device: UserMediaDevice): Observable<MediaStream> {
         try {
-            if (device) {
-                return await this.navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId } } });
-            } else {
-                this.logger.debug(`${this.loggerPrefix} Attempt to get desktop video stream for camera`);
-                return this.getDefaultCamStream();
-            }
+            return from(this.navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId } } }));
+            
         } catch (error) {
             this.logger.error(`${this.loggerPrefix} Could not get video stream for camera`, error);
             this.errorService.handlePexipError(new CallError(error.name), null);
         }
-    }
-
-    private async getDefaultCamStream(): Promise<MediaStream> {
-        return this.navigator.mediaDevices.getUserMedia(this.defaultCamConstraints);
-    }
-
-    private async getDefaultMicStream(): Promise<MediaStream> {
-        return this.navigator.mediaDevices.getUserMedia(this.defaultMicConstraints);
     }
 
     stopStream(stream: MediaStream) {

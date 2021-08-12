@@ -42,19 +42,14 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.connectWithCameraOn = !this.videoCallService.isAudioOnly();
-        return this.requestMedia().then(permissionGranted => {
-            if (!permissionGranted) {
-                this.logger.warn(`${this.loggerPrefix} Could not get all media permissions. Check logs`);
-            }
-            this.updateDeviceList()
-                .then(async () => {
-                    this.selectedMediaDevicesForm = await this.initNewDeviceSelectionForm();
-                    this.subscribeToDeviceSelectionChange();
-                })
-                .catch(error => {
-                    this.logger.error(`${this.loggerPrefix} Failed to update device selection`, error);
-                });
-        });
+        this.updateDeviceList()
+            .then(async () => {
+                this.selectedMediaDevicesForm = await this.initNewDeviceSelectionForm();
+                this.subscribeToDeviceSelectionChange();
+            })
+            .catch(error => {
+                this.logger.error(`${this.loggerPrefix} Failed to update device selection`, error);
+            });
     }
 
     private async updateDeviceList() {
@@ -67,13 +62,8 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
 
         const preferredCamera = await this.userMediaService.getPreferredCamera();
         const preferredMicrophone = await this.userMediaService.getPreferredMicrophone();
-        this.preferredCameraStream = await this.userMediaStreamService.getStreamForCam(preferredCamera);
-        this.preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(preferredMicrophone);
-    }
-
-    async requestMedia() {
-        this.logger.debug(`${this.loggerPrefix} Initialising media device selection`);
-        return this.userMediaStreamService.requestAccess();
+        this.preferredCameraStream = await this.userMediaStreamService.getStreamForCam(preferredCamera).toPromise();
+        this.preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(preferredMicrophone).toPromise();
     }
 
     private async initNewDeviceSelectionForm(): Promise<FormGroup> {
@@ -129,13 +119,12 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     async onSubmit() {
         // close dialog and stop streams
         this.stopVideoAudioStream();
-        const selectedCam = this.getSelectedCamera();
-        const selectedMic = this.getSelectedMicrophone();
-        const audioOnly = !this.connectWithCameraOn;
+        this.userMediaService.setActiveCamera(this.getSelectedCamera());
+        this.userMediaService.setActiveMicrophone(this.getSelectedMicrophone());
         this.logger.debug(`${this.loggerPrefix} Cancelling media device change`);
         this.cancelMediaDeviceChange.emit();
-        await this.videoCallService.callWithNewDevices(selectedCam, selectedMic, audioOnly);
     }
+
     private stopVideoAudioStream() {
         this.userMediaStreamService.stopStream(this.preferredCameraStream);
         this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
@@ -171,7 +160,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         }
         this.userMediaService.updatePreferredCamera(newCam);
         this.preferredCameraStream = null;
-        this.preferredCameraStream = await this.userMediaStreamService.getStreamForCam(newCam);
+        this.preferredCameraStream = await this.userMediaStreamService.getStreamForCam(newCam).toPromise();
     }
 
     private async updateMicrophoneStream(newMic: UserMediaDevice) {
@@ -181,7 +170,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         }
         this.userMediaService.updatePreferredMicrophone(newMic);
         this.preferredMicrophoneStream = null;
-        this.preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(newMic);
+        this.preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(newMic).toPromise();
     }
 
     transitionstart() {

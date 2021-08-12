@@ -1,6 +1,5 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
-import { BehaviorSubject, of, Subject } from 'rxjs';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
@@ -10,6 +9,7 @@ import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.serv
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
 import { getSpiedPropertyGetter } from '../jasmine-helpers/property-helpers';
+import { from, of } from 'rxjs';
 describe('SelectMediaDevicesComponent', () => {
     let component: SelectMediaDevicesComponent;
     let userMediaService: jasmine.SpyObj<UserMediaService>;
@@ -23,15 +23,13 @@ describe('SelectMediaDevicesComponent', () => {
 
     beforeAll(() => {
         userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>('UserMediaStreamService', [
-            'requestAccess',
             'stopStream',
             'getStreamForCam',
             'getStreamForMic'
         ]);
-        userMediaStreamService.requestAccess.and.resolveTo(true);
-        userMediaStreamService.getStreamForCam.and.resolveTo(mockCamStream);
-        userMediaStreamService.getStreamForMic.and.resolveTo(mockMicStream);
-        videoCallService = jasmine.createSpyObj<VideoCallService>('VideoCallService', ['isAudioOnly', 'callWithNewDevices']);
+        userMediaStreamService.getStreamForCam.and.returnValue(of(mockCamStream));
+        userMediaStreamService.getStreamForMic.and.returnValue(of(mockMicStream));
+        videoCallService = jasmine.createSpyObj<VideoCallService>('VideoCallService', ['isAudioOnly']);
         videoCallServiceSpy.isAudioOnly.and.returnValue(true);
         userMediaService = jasmine.createSpyObj<UserMediaService>(
             'UserMediaService',
@@ -49,8 +47,8 @@ describe('SelectMediaDevicesComponent', () => {
         getSpiedPropertyGetter(userMediaService,'connectedVideoDevices').and.returnValue(of(testData.getListOfCameras()));
         getSpiedPropertyGetter(userMediaService,'connectedMicrophoneDevices').and.returnValue(of(testData.getListOfMicrophones()));
         getSpiedPropertyGetter(userMediaService,'connectedDevices').and.returnValue(of(testData.getListOfDevices()));
-        userMediaService.getPreferredCamera.and.resolveTo(testData.getListOfCameras()[0]);
-        userMediaService.getPreferredMicrophone.and.resolveTo(testData.getListOfMicrophones()[0]);
+        userMediaService.getPreferredCamera.and.returnValue(testData.getListOfCameras()[0]);
+        userMediaService.getPreferredMicrophone.and.returnValue(testData.getListOfMicrophones()[0]);
     });
 
     beforeEach(fakeAsync(() => {
@@ -109,9 +107,9 @@ describe('SelectMediaDevicesComponent', () => {
 
     it('should update video call service', async () => {
         spyOn(component.cancelMediaDeviceChange, 'emit');
-        videoCallServiceSpy.callWithNewDevices.and.callThrough();
+        videoCallServiceSpy.reconnectToCallWithNewStream.and.callThrough();
         component.onSubmit();
-        expect(videoCallServiceSpy.callWithNewDevices).toHaveBeenCalled();
+        expect(videoCallServiceSpy.reconnectToCallWithNewStream).toHaveBeenCalled();
     });
 
     it('should update microphone stream on device change', () => {

@@ -5,7 +5,6 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { AddMediaEventRequest, ConferenceResponse, Role } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { vhContactDetails } from 'src/app/shared/contact-information';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
@@ -32,7 +31,6 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
         private router: Router,
         protected route: ActivatedRoute,
         private videoWebService: VideoWebService,
-        private userMediaStreamService: UserMediaStreamService,
         private profileService: ProfileService,
         private errorService: ErrorService,
         protected logger: Logger,
@@ -68,18 +66,6 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
         } catch (error) {
             this.logger.error('[SwitchOnCameraMicrophone] - Failed to retrieve conference', error, { conference: this.conferenceId });
             this.errorService.handleApiError(error);
-        }
-    }
-
-    async requestMedia() {
-        this.mediaAccepted = await this.userMediaStreamService.requestAccess();
-        this.userPrompted = true;
-        if (!this.mediaAccepted) {
-            this.logger.warn(`[SwitchOnCameraMicrophone] - ${this.participantName} denied access to camera.`, {
-                conference: this.conferenceId,
-                participant: this.participantName
-            });
-            this.postPermissionDeniedAlert();
         }
     }
 

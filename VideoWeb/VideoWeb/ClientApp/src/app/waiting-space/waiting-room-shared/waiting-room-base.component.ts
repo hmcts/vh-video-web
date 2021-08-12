@@ -553,7 +553,6 @@ export abstract class WaitingRoomBaseDirective {
 
         if (this.displayDeviceChangeModal) {
             this.logger.debug(`${this.loggerPrefix} Participant accepted a consultation. Closing change device modal.`);
-            await this.stopVideoAudioStream();
             this.displayDeviceChangeModal = false;
         }
         const invitation = this.consultationInvitiationService.getInvitation(roomLabel);
@@ -565,16 +564,7 @@ export abstract class WaitingRoomBaseDirective {
 
         this.createOrUpdateWaitingOnLinkedParticipantsNotification(invitation);
     }
-    private async stopVideoAudioStream() {
-        // close dialog and stop streams
-        const preferredCamera = await this.userMediaService.getPreferredCamera();
-        const preferredMicrophone = await this.userMediaService.getPreferredMicrophone();
-        const preferredCameraStream = await this.userMediaStreamService.getStreamForCam(preferredCamera);
-        const preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(preferredMicrophone);
 
-        this.userMediaStreamService.stopStream(preferredCameraStream);
-        this.userMediaStreamService.stopStream(preferredMicrophoneStream);
-    }
     createOrUpdateWaitingOnLinkedParticipantsNotification(invitation: ConsultationInvitation) {
         const waitingOnLinkedParticipants: string[] = [];
         for (const linkedParticipantId in invitation.linkedParticipantStatuses) {

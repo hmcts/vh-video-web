@@ -1,41 +1,46 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, zip } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject, zip } from 'rxjs';
 import 'webrtc-adapter';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Logger } from './logging/logger-base';
 import { SessionStorage } from './session-storage';
 import { ErrorService } from '../services/error.service';
 import { CallError } from '../waiting-space/models/video-call-models';
-import { UserMediaStreamService } from './user-media-stream.service';
-import { filter, map, take } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
+import { LocalStorageService } from './conference/local-storage.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class UserMediaService {
     private readonly loggerPrefix = '[UserMediaService] -';
+    readonly defaultStreamConstraints = { audio: true, video: true };
     navigator: Navigator = navigator;
 
-    private readonly preferredCamCache: SessionStorage<UserMediaDevice>;
-    private readonly preferredMicCache: SessionStorage<UserMediaDevice>;
+    private activeVideoSubject = new ReplaySubject<UserMediaDevice>(1);
+    private activeMicrophoneSubject =new ReplaySubject<UserMediaDevice>(1);
 
     readonly PREFERRED_CAMERA_KEY = 'vh.preferred.camera';
     readonly PREFERRED_MICROPHONE_KEY = 'vh.preferred.microphone';
 
     private connectedDevicesSubject: BehaviorSubject<UserMediaDevice[]> = new BehaviorSubject([]);
 
-    constructor(private logger: Logger, private errorService: ErrorService, private userMediaStreamService: UserMediaStreamService) {
-        this.preferredCamCache = new SessionStorage(this.PREFERRED_CAMERA_KEY);
-        this.preferredMicCache = new SessionStorage(this.PREFERRED_MICROPHONE_KEY);
-
+    constructor(private logger: Logger, private errorService: ErrorService, private localStorageService: LocalStorageService) {
         this.navigator.mediaDevices.ondevicechange = async () => {
             await this.updateAvailableDevicesList();
             await this.setDevicesInCache();
         };
+        this.updateAvailableDevicesList();
     }
-
     get connectedDevices():  Observable<UserMediaDevice[]> {
         return this.connectedDevicesSubject.asObservable();
+    }
+
+    get activeVideoDevice():  Observable<UserMediaDevice> {
+        return this.activeVideoSubject.asObservable();
+    }
+    get activeMicrophoneDevice():  Observable<UserMediaDevice> {
+        return this.activeMicrophoneSubject.asObservable();
     }
     get connectedVideoDevices(): Observable<UserMediaDevice[]> {
         return this.connectedDevicesSubject.pipe(
@@ -61,7 +66,7 @@ export class UserMediaService {
 
         this.logger.debug(`${this.loggerPrefix} Attempting to update available media devices.`);
         let updatedDevices: MediaDeviceInfo[] = [];
-        const stream: MediaStream = await this.navigator.mediaDevices.getUserMedia(this.userMediaStreamService.defaultStreamConstraints);
+        const stream: MediaStream = await this.navigator.mediaDevices.getUserMedia(this.defaultStreamConstraints);
         if (stream && stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0) {
             updatedDevices = await this.navigator.mediaDevices.enumerateDevices();
         }
@@ -70,8 +75,16 @@ export class UserMediaService {
             updatedDevices,
             device => new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)
         );
-        this.userMediaStreamService.stopStream(stream);
+        // this.userMediaStreamService.stopStream(stream);
         this.connectedDevicesSubject.next(availableDeviceList);
+        await this.setDevicesInCache();
+    }
+
+    setActiveMicrophone(microhoneDevice: UserMediaDevice) {
+        this.activeMicrophoneSubject.next(microhoneDevice);
+    }
+    setActiveCamera(videoDevice: UserMediaDevice) {
+        this.activeVideoSubject.next(videoDevice);
     }
 
     hasMultipleDevices(): Observable<boolean> {
@@ -82,21 +95,21 @@ export class UserMediaService {
         ));
     }
 
-    getPreferredCamera() {
-        return this.getCachedDevice(this.preferredCamCache);
+    getPreferredCamera(): UserMediaDevice {
+        return this.localStorageService.load(this.PREFERRED_CAMERA_KEY);
     }
 
-    getPreferredMicrophone() {
-        return this.getCachedDevice(this.preferredMicCache);
+    getPreferredMicrophone(): UserMediaDevice {
+        return this.localStorageService.load(this.PREFERRED_MICROPHONE_KEY);
     }
 
     updatePreferredCamera(camera: UserMediaDevice) {
-        this.preferredCamCache.set(camera);
+        this.localStorageService.save(this.PREFERRED_CAMERA_KEY, camera,true);
         this.logger.info(`${this.loggerPrefix} Updating preferred camera to ${camera.label}`);
     }
 
     updatePreferredMicrophone(microphone: UserMediaDevice) {
-        this.preferredMicCache.set(microphone);
+        this.localStorageService.save(this.PREFERRED_MICROPHONE_KEY, microphone, true);
         this.logger.info(`${this.loggerPrefix} Updating preferred microphone to ${microphone.label}`);
     }
     async getCachedDevice(cache: SessionStorage<UserMediaDevice>) {
@@ -112,7 +125,7 @@ export class UserMediaService {
         try {
             const cam = await this.getPreferredCamera();
             if (!cam || !(await this.isDeviceStillConnected(cam))) {
-                const cams = await this.connectedVideoDevices.toPromise();
+                const cams = await this.connectedVideoDevices.pipe(take(1)).toPromise();
                 // set first camera in the list as preferred camera if cache is empty
                 const firstCam = cams.find(x => x.label.length > 0);
                 if (firstCam) {
@@ -123,7 +136,7 @@ export class UserMediaService {
 
             const mic = await this.getPreferredMicrophone();
             if (!mic || !(await this.isDeviceStillConnected(mic))) {
-                const mics = await this.connectedMicrophoneDevices.toPromise();
+                const mics = await this.connectedMicrophoneDevices.pipe(take(1)).toPromise();
                 // set first microphone in the list as preferred microphone if cache is empty
                 const firstMic = mics.find(x => x.label.length > 0);
                 if (firstMic) {
