@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { pageUrls } from '../page-url.constants';
 import { topMenuItems } from './topMenuItems';
 
 @Component({
@@ -9,6 +10,7 @@ import { topMenuItems } from './topMenuItems';
 })
 export class HeaderComponent implements OnInit {
     topMenuItems = [];
+    logoutRoute = pageUrls.Logout;
 
     @Input() loggedIn: boolean;
 
