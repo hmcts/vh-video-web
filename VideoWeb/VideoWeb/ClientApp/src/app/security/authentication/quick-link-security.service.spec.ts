@@ -144,8 +144,6 @@ describe('QuickLinkSecurityService', () => {
             // Assert
             expect(apiClientSpy.isQuickLinkParticipantAuthorised).toHaveBeenCalledTimes(1);
             expect(userData).not.toBeFalsy();
-            console.log(userData);
-            console.log(service.decodedTokenBody);
             expect(userData.preferred_username).toEqual(expectedPreferredUsername);
         }));
 

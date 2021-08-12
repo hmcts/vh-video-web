@@ -148,7 +148,6 @@ describe('QuickLinksComponent', () => {
             component.error.nameError = component.error.roleError = 'error';
             component.resetErrors();
             expect(component.error.nameError).toBe('');
-            expect(component.error.nameError).toBe('');
         });
     });
 

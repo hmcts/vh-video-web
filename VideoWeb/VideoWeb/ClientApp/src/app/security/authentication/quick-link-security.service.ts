@@ -124,7 +124,6 @@ export class QuickLinkSecurityService implements ISecurityService {
     get isAuthenticated$(): Observable<boolean> {
         return this.isAuthenticatedSubject.asObservable().pipe(
             map(isAuthenticated => (isAuthenticated ? this.isTokenValid() : false)),
-            tap(console.log),
             tap(isAuthenticated => {
                 if (!isAuthenticated) {
                     this.clearToken();
