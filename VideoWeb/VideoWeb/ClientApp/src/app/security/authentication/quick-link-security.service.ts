@@ -43,7 +43,7 @@ export class QuickLinkSecurityService implements ISecurityService {
 
     authorize(authOptions?: AuthOptions, token?: string): void {
         this.setToken(token);
-        this.checkAuth().subscribe(() => {});
+        this.checkAuth().subscribe();
     }
 
     private clearToken() {
