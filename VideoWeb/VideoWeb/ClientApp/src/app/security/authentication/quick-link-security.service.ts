@@ -36,8 +36,7 @@ export class QuickLinkSecurityService implements ISecurityService {
 
     decodedTokenBody: QuickLinkJwtBody;
 
-    constructor(private apiClient: ApiClient, private jwtHelper: JwtHelperService = null) {
-        jwtHelper = jwtHelper ?? new JwtHelperService();
+    constructor(private apiClient: ApiClient, private jwtHelper: JwtHelperService) {
         this.tokenSessionStorage = new SessionStorage<string>(this.tokenSessionStorageKey);
         this.token = this.tokenSessionStorage.get();
     }
