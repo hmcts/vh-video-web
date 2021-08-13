@@ -25,7 +25,6 @@ import { invalidNumberOfNonEndpointParticipantsError, ParticipantService } from 
 import { IHearingControlsState, IParticipantControlsState } from './video-control-cache-storage.service.interface';
 import { VideoControlCacheService } from './video-control-cache.service';
 import { ParticipantsUpdatedMessage } from '../../shared/models/participants-updated-message';
-import { component } from 'src/app/waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
 
 describe('ParticipantService', () => {
     const asParticipantModelsFromUserResponse = (participants: ParticipantForUserResponse[]) =>

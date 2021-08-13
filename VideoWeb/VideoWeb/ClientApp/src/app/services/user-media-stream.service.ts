@@ -12,7 +12,6 @@ import { take } from 'rxjs/operators';
     providedIn: 'root'
 })
 export class UserMediaStreamService {
-    navigator: Navigator = navigator;
     private readonly loggerPrefix = '[UserMediaStreamService] -';
 
     private currentStream: MediaStream;
@@ -23,7 +22,12 @@ export class UserMediaStreamService {
         return this.currentStreamSubject.asObservable();
     }
 
-    constructor(private logger: Logger, private errorService: ErrorService, private userMediaService: UserMediaService) {
+    constructor(
+        private logger: Logger,
+        private errorService: ErrorService,
+        private userMediaService: UserMediaService,
+        private navigator: Navigator
+    ) {
         this.navigator.getUserMedia =
             this.navigator.getUserMedia || (this.navigator as any).webkitGetUserMedia || (this.navigator as any).msGetUserMedia;
 

@@ -1103,12 +1103,6 @@ export abstract class WaitingRoomBaseDirective {
         this.displayDeviceChangeModal = false;
     }
 
-    async onMediaDeviceChangeAccepted() {
-        if (this.hearingControls) {
-            await this.publishMediaDeviceStatus();
-        }
-    }
-
     async publishMediaDeviceStatus() {
         this.hearingControls.audioOnly = this.audioOnly;
         await this.hearingControls.publishMediaDeviceStatus();

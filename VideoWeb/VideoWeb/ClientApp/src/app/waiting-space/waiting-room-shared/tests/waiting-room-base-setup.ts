@@ -95,13 +95,7 @@ export function initAllWRDependencies() {
     consultationService = consultationServiceSpyFactory();
 
     logger = jasmine.createSpyObj<Logger>('Logger', ['debug', 'info', 'warn', 'event', 'error']);
-    userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
-        'updatePreferredCamera',
-        'updatePreferredMicrophone',
-        'getPreferredCamera',
-        'getPreferredMicrophone',
-        'setDevicesInCache'
-    ]);
+    userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', []);
     userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>('UserMediaStreamService', [
         'stopStream',
         'getStreamForCam',
@@ -109,9 +103,7 @@ export function initAllWRDependencies() {
     ]);
     userMediaStreamService.getStreamForCam.and.returnValue(of(mockCamStream));
     userMediaStreamService.getStreamForMic.and.returnValue(of(mockMicStream));
-    userMediaService.getPreferredCamera.and.returnValue(testDataDevice.getListOfCameras()[0]);
-    userMediaService.getPreferredMicrophone.and.returnValue(testDataDevice.getListOfMicrophones()[0]);
-    userMediaService.setDevicesInCache.and.returnValue(Promise.resolve());
+
     notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', [
         'playHearingAlertSound',
         'initHearingAlertSound',

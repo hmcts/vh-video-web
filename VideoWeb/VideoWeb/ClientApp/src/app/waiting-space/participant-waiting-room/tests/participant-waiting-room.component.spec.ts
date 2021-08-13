@@ -105,8 +105,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             deviceTypeService,
             router,
             consultationService,
-            userMediaService,
-            userMediaStreamService,
             notificationSoundsService,
             notificationToastrService,
             roomClosingToastrService,

@@ -71,8 +71,6 @@ describe('JohWaitingRoomComponent', () => {
             deviceTypeService,
             router,
             consultationService,
-            userMediaService,
-            userMediaStreamService,
             notificationSoundsService,
             notificationToastrService,
             roomClosingToastrService,

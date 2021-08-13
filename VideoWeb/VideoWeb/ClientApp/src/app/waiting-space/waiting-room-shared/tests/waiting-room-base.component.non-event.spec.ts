@@ -83,8 +83,6 @@ describe('WaitingRoomComponent message and clock', () => {
             deviceTypeService,
             router,
             consultationService,
-            userMediaService,
-            userMediaStreamService,
             notificationSoundsService,
             notificationToastrService,
             roomClosingToastrService,
@@ -215,9 +213,9 @@ describe('WaitingRoomComponent message and clock', () => {
         expect(component.displayDeviceChangeModal).toBeTruthy();
     });
 
-    it('should set displayDeviceChangeModal to false onMediaDeviceChangeCancelled', () => {
+    it('should set displayDeviceChangeModal to false onSelectMediaDeviceShouldClose', () => {
         component.displayDeviceChangeModal = true;
-        component.onMediaDeviceChangeCancelled();
+        component.onSelectMediaDeviceShouldClose();
         expect(component.displayDeviceChangeModal).toBeFalsy();
     });
 
@@ -307,7 +305,7 @@ describe('WaitingRoomComponent message and clock', () => {
 
     it('should hide change device popup on close popup', () => {
         component.displayDeviceChangeModal = true;
-        component.onMediaDeviceChangeCancelled();
+        component.onSelectMediaDeviceShouldClose();
         expect(component.displayDeviceChangeModal).toBe(false);
     });
 

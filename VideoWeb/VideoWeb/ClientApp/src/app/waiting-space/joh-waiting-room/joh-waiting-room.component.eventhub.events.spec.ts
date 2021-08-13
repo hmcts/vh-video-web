@@ -60,8 +60,6 @@ describe('JohWaitingRoomComponent eventhub events', () => {
             deviceTypeService,
             router,
             consultationService,
-            userMediaService,
-            userMediaStreamService,
             notificationSoundsService,
             notificationToastrService,
             roomClosingToastrService,
