@@ -22,7 +22,7 @@ export class UserMediaService {
     readonly PREFERRED_MICROPHONE_KEY = 'vh.preferred.microphone';
 
     private connectedDevicesSubject: BehaviorSubject<UserMediaDevice[]> = new BehaviorSubject([]);
-    get connectedDevices(): Observable<UserMediaDevice[]> {
+    get connectedDevices$(): Observable<UserMediaDevice[]> {
         return this.connectedDevicesSubject.asObservable();
     }
 
@@ -206,7 +206,7 @@ export class UserMediaService {
     }
 
     isDeviceStillConnected(device: UserMediaDevice): Observable<boolean> {
-        return this.connectedDevices.pipe(
+        return this.connectedDevices$.pipe(
             take(1),
             map(connectedDevices => {
                 return !!connectedDevices.find(x => x.deviceId === device.deviceId);

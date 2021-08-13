@@ -1103,7 +1103,7 @@ export abstract class WaitingRoomBaseDirective {
         this.displayDeviceChangeModal = true;
     }
 
-    onMediaDeviceChangeCancelled() {
+    onSelectMediaDeviceShouldClose() {
         this.displayDeviceChangeModal = false;
     }
 

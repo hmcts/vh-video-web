@@ -74,7 +74,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
         this.initialiseData();
 
-        this.userMediaService.connectedDevices.subscribe({
+        this.userMediaService.connectedDevices$.subscribe({
             next: connectedDevices => {
                 this.displayFeed = false;
                 this.displayDeviceChangeModal = false;
@@ -89,6 +89,11 @@ export class SelfTestComponent implements OnInit, OnDestroy {
                 });
                 this.errorService.handlePexipError(new CallError(error.name), this.conference?.id);
             }
+        });
+
+        this.userMediaService.activeVideoDevice$.subscribe(() => {
+            this.disconnect();
+            this.call();
         });
 
         this.userMediaService.activeMicrophoneDevice$.subscribe(mic =>
@@ -148,14 +153,11 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             conference: this.conference?.id,
             participant: this.selfTestParticipantId
         });
-        this.disconnect();
         this.displayDeviceChangeModal = true;
     }
 
-    onMediaDeviceChangeCancelled() {
+    onSelectMediaDeviceShouldClose() {
         this.displayDeviceChangeModal = false;
-        this.call();
-        // this.updatePexipAudioVideoSource();
     }
 
     setupSubscribers() {

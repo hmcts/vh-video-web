@@ -62,7 +62,7 @@
     "char-count": "Character count",
     "maximum": "maximum allowed",
     "unable-send": "Unable to send message.",
-    "type-a-message":"Type a message"
+    "type-a-message": "Type a message"
   },
   "contact-us": {
     "contact-video-hearings": "Contact the video hearings service",
@@ -134,7 +134,8 @@
     "change-microphone": "Change microphone",
     "green-bar": "Make sure the green bar moves when you speak",
     "permission-switch-off-camera": "You need permission from the court to switch off your camera",
-    "button-close": "Close",
+    "button-save": "Save",
+    "button-cancel": "Cancel",
     "on": "ON",
     "off": "OFF",
     "warning": "Warning",
@@ -657,7 +658,7 @@
     "winger": "Winger",
     "witness": "Witness",
     "intermediary": "Intermediary",
-    "video-access-point":"Video access point"
+    "video-access-point": "Video access point"
   },
   "case-role": {
     "appellant": "Appellant",
@@ -1006,10 +1007,10 @@
       "decline": "Decline"
     },
     "linked-participants": {
-        "waiting-single": "Waiting for {{name}} to accept the invitation from {{invitedBy}}.",
-        "waiting-multiple": "Waiting for {{number}} other participants to accept the invitation from {{invitedBy}}.",
-        "rejected": "{{rejector}} rejected the invitation from {{invitedBy}}.",
-        "button-close": "Close"
+      "waiting-single": "Waiting for {{name}} to accept the invitation from {{invitedBy}}.",
+      "waiting-multiple": "Waiting for {{number}} other participants to accept the invitation from {{invitedBy}}.",
+      "rejected": "{{rejector}} rejected the invitation from {{invitedBy}}.",
+      "button-close": "Close"
     },
     "poor-connection": {
       "title": "Alert",

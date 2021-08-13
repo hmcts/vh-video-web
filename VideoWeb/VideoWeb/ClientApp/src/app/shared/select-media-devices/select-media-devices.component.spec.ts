@@ -33,20 +33,13 @@ describe('SelectMediaDevicesComponent', () => {
         videoCallServiceSpy.isAudioOnly.and.returnValue(true);
         userMediaService = jasmine.createSpyObj<UserMediaService>(
             'UserMediaService',
-            [
-                'getPreferredCamera',
-                'getPreferredMicrophone',
-                'updatePreferredCamera',
-                'updatePreferredMicrophone'
-            ],
-            ['connectedDevices',
-            'connectedVideoDevices',
-            'connectedMicrophoneDevices']
+            ['getPreferredCamera', 'getPreferredMicrophone', 'updatePreferredCamera', 'updatePreferredMicrophone'],
+            ['connectedDevices', 'connectedVideoDevices', 'connectedMicrophoneDevices']
         );
 
-        getSpiedPropertyGetter(userMediaService,'connectedVideoDevices').and.returnValue(of(testData.getListOfCameras()));
-        getSpiedPropertyGetter(userMediaService,'connectedMicrophoneDevices').and.returnValue(of(testData.getListOfMicrophones()));
-        getSpiedPropertyGetter(userMediaService,'connectedDevices').and.returnValue(of(testData.getListOfDevices()));
+        getSpiedPropertyGetter(userMediaService, 'connectedVideoDevices').and.returnValue(of(testData.getListOfCameras()));
+        getSpiedPropertyGetter(userMediaService, 'connectedMicrophoneDevices').and.returnValue(of(testData.getListOfMicrophones()));
+        getSpiedPropertyGetter(userMediaService, 'connectedDevices').and.returnValue(of(testData.getListOfDevices()));
         userMediaService.getPreferredCamera.and.returnValue(testData.getListOfCameras()[0]);
         userMediaService.getPreferredMicrophone.and.returnValue(testData.getListOfMicrophones()[0]);
     });
@@ -73,8 +66,8 @@ describe('SelectMediaDevicesComponent', () => {
     });
 
     it('should initialise the device form on init', async () => {
-        expect(component.selectedMediaDevicesForm).toBeDefined();
-        expect(component.selectedMediaDevicesForm.valid).toBeTruthy();
+        expect(component.selectMediaDevicesForm).toBeDefined();
+        expect(component.selectMediaDevicesForm.valid).toBeTruthy();
     });
 
     it('should return true when only one camera is available', () => {
@@ -147,14 +140,14 @@ describe('SelectMediaDevicesComponent', () => {
     });
 
     it('should set block click to true when transition starts', () => {
-        component.blockClicks = false;
+        component.blockToggleClicks = false;
         component.transitionstart();
-        expect(component.blockClicks).toBeTruthy();
+        expect(component.blockToggleClicks).toBeTruthy();
     });
 
     it('should set block click to false when transition ends', () => {
-        component.blockClicks = true;
+        component.blockToggleClicks = true;
         component.transitionEnd();
-        expect(component.blockClicks).toBeFalsy();
+        expect(component.blockToggleClicks).toBeFalsy();
     });
 });
