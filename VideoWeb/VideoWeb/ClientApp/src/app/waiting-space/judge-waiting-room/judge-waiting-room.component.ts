@@ -19,8 +19,6 @@ import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
-import { UserMediaService } from 'src/app/services/user-media.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -75,8 +73,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected router: Router,
         protected consultationService: ConsultationService,
         private audioRecordingService: AudioRecordingService,
-        protected userMediaService: UserMediaService,
-        protected userMediaStreamService: UserMediaStreamService,
         protected notificationSoundsService: NotificationSoundsService,
         protected notificationToastrService: NotificationToastrService,
         protected roomClosingToastrService: RoomClosingToastrService,
@@ -100,8 +96,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             deviceTypeService,
             router,
             consultationService,
-            userMediaService,
-            userMediaStreamService,
             notificationSoundsService,
             notificationToastrService,
             roomClosingToastrService,
