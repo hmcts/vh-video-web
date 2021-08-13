@@ -180,7 +180,7 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
         }
     }
 
-    async applyVideoFilterIfNeeded() {
+    async applyAndUseFilterStream() {
         await this.videoFilterService.initFilterStream(this);
         const filteredStream = this.videoFilterService.startFilteredStream(true);
         this.videoCallService.updateStreamDevices(filteredStream);
@@ -234,7 +234,7 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
 
         // TOOD: find a better way to trigger this
         setTimeout(() => {
-            this.applyVideoFilterIfNeeded().catch(err => {
+            this.applyAndUseFilterStream().catch(err => {
                 this.logger.error(`${this.loggerPrefix} Failed to apply video filter`, err, {
                     conference: this.conference?.id,
                     participant: this.selfTestParticipantId

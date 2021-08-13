@@ -18,18 +18,23 @@
   <div class="govuk-grid-column-one-quarter">
     <video
       #selfView
-      *ngIf="streamsActive"
       id="outgoingStream"
       [muted]="true"
       [srcObject]="this.outgoingStream"
-      autoplay
       width="270"
       height="auto"
       [ngClass]="{ 'filter-enabled': hideOriginalStream }"
     >
       {{ 'self-test.browser-not-support' | translate }}
     </video>
-    <canvas #outputCanvas id="outputCanvas" width="270" height="auto" [ngClass]="{ 'filter-enabled': !hideOriginalStream }"></canvas>
+    <canvas
+      *ngIf="displayFeed"
+      #outputCanvas
+      id="outputCanvas"
+      width="270"
+      height="auto"
+      [ngClass]="{ 'filter-enabled': !hideOriginalStream }"
+    ></canvas>
   </div>
 
   <div class="govuk-grid-column-full">
