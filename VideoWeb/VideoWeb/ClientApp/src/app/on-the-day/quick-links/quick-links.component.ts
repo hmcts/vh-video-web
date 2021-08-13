@@ -19,8 +19,6 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
         nameError: String;
         roleError: String;
     };
-
-    isFormValid = false;
     role = Role;
     quickLinkForm: FormGroup;
     hearingId: string;
@@ -70,8 +68,7 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
             errorsFound = true;
         }
 
-        this.isFormValid = !errorsFound;
-        return this.isFormValid;
+        return !errorsFound;
     }
 
     resetErrors() {
@@ -83,9 +80,8 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
 
     onSubmit() {
         this.resetErrors();
-        this.validateForm();
 
-        if (this.isFormValid) {
+        if (this.validateForm()) {
             this.quickLinkSubscriptions.add(
                 this.quickLinksService
                     .joinHearing(this.hearingId, this.quickLinkNameFormControl.value, this.quickLinkRoleFormControl.value)

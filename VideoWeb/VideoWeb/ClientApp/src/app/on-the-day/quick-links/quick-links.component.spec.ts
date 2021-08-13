@@ -13,6 +13,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { RouterTestingModule } from '@angular/router/testing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { By } from '@angular/platform-browser';
+import { TranslatePipe } from '@ngx-translate/core';
 
 describe('QuickLinksComponent', () => {
     const quickLinkParticipantRoles = [Role.QuickLinkObserver, Role.QuickLinkParticipant];
@@ -36,7 +37,7 @@ describe('QuickLinksComponent', () => {
         routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate']);
 
         await TestBed.configureTestingModule({
-            declarations: [QuickLinksComponent, MockComponent(ContactUsFoldingComponent), MockPipe(TranslatePipeMock)],
+            declarations: [QuickLinksComponent, MockComponent(ContactUsFoldingComponent), MockPipe(TranslatePipe)],
             providers: [
                 {
                     provide: Logger,
@@ -113,35 +114,28 @@ describe('QuickLinksComponent', () => {
 
     describe('validateForm', () => {
         it('should set name error and mark form as invalid if name is not populated', () => {
-            component.isFormValid = true;
             component.error.nameError = '';
             component.quickLinkForm.controls['name'].setValue('');
 
-            component.validateForm();
-
-            expect(component.isFormValid).toBeFalse();
+            expect(component.validateForm()).toBeFalse();
             expect(component.error.nameError).toBe('Please enter your full name');
         });
 
-        it('should set role error and mark form as invalid if name is not populated', () => {
-            component.isFormValid = true;
+        it('should set role error and mark form as invalid if role is not selected', () => {
             component.error.roleError = '';
             component.quickLinkForm.controls['quickLinkParticipantRole'].setValue('');
 
             component.validateForm();
 
-            expect(component.isFormValid).toBeFalse();
+            expect(component.validateForm()).toBeFalse();
             expect(component.error.roleError).toBe('Please choose your role in the hearing');
         });
 
         it('should mark form as valid if form validations are all passed', () => {
-            component.isFormValid = false;
             component.quickLinkForm.controls['name'].setValue('name');
             component.quickLinkForm.controls['quickLinkParticipantRole'].setValue('quickLinkParticipantRole');
 
-            component.validateForm();
-
-            expect(component.isFormValid).toBeTrue();
+            expect(component.validateForm()).toBeTrue();
         });
     });
 
@@ -150,53 +144,70 @@ describe('QuickLinksComponent', () => {
             component.error.nameError = component.error.roleError = 'error';
             component.resetErrors();
             expect(component.error.nameError).toBe('');
+            expect(component.error.roleError).toBe('');
         });
     });
 
     describe('onSubmit', () => {
-        it('should reset errors', () => {
-            const resetErrorsSpy = spyOn(component, 'resetErrors');
+        let validateFormSpy: jasmine.Spy;
+        let resetErrorsSpy: jasmine.Spy;
 
+        beforeEach(() => {
+            validateFormSpy = spyOn(component, 'validateForm');
+            resetErrorsSpy = spyOn(component, 'resetErrors');
+        });
+
+        it('should reset errors', () => {
             component.onSubmit();
 
             expect(resetErrorsSpy).toHaveBeenCalledTimes(1);
         });
 
         it('should validate the form', () => {
-            const validateFormSpy = spyOn(component, 'validateForm');
-
             component.onSubmit();
 
             expect(validateFormSpy).toHaveBeenCalledTimes(1);
         });
 
-        it('should try and join the conference if the form is valid', () => {
-            spyOn(component, 'validateForm');
-            component.isFormValid = true;
+        describe('when form is valid', () => {
+            beforeEach(() => {
+                validateFormSpy.and.returnValue(true);
+            });
 
-            component.onSubmit();
+            it('should try and join the conference', () => {
+                component.onSubmit();
 
-            expect(quickLinksServiceSpy.joinHearing).toHaveBeenCalledOnceWith(
-                component.hearingId,
-                component.quickLinkNameFormControl.value,
-                component.quickLinkRoleFormControl.value
-            );
+                expect(quickLinksServiceSpy.joinHearing).toHaveBeenCalledOnceWith(
+                    component.hearingId,
+                    component.quickLinkNameFormControl.value,
+                    component.quickLinkRoleFormControl.value
+                );
+            });
+
+            it('should navigate to the navigator when joined is returned', fakeAsync(() => {
+                validateFormSpy.and.returnValue(true);
+
+                const hearingJoinedSubject = new Subject<boolean>();
+
+                quickLinksServiceSpy.joinHearing.and.returnValue(hearingJoinedSubject.asObservable());
+
+                component.onSubmit();
+                hearingJoinedSubject.next(true);
+                flush();
+
+                expect(routerSpy.navigate).toHaveBeenCalledOnceWith([pageUrls.Navigator]);
+            }));
+
+            describe('when form is NOT valid', () => {
+                beforeEach(() => {
+                    validateFormSpy.and.returnValue(false);
+                });
+                it('should NOT try and join the conference', () => {
+                    component.onSubmit();
+                    expect(quickLinksServiceSpy.joinHearing).not.toHaveBeenCalled();
+                });
+            });
         });
-
-        it('should navigate to the navigator when joined is returned', fakeAsync(() => {
-            spyOn(component, 'validateForm');
-            component.isFormValid = true;
-
-            const hearingJoinedSubject = new Subject<boolean>();
-
-            quickLinksServiceSpy.joinHearing.and.returnValue(hearingJoinedSubject.asObservable());
-
-            component.onSubmit();
-            hearingJoinedSubject.next(true);
-            flush();
-
-            expect(routerSpy.navigate).toHaveBeenCalledOnceWith([pageUrls.Navigator]);
-        }));
     });
 
     describe('continue button', () => {
