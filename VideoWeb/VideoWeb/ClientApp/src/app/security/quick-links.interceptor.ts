@@ -21,10 +21,9 @@ export class QuickLinksInterceptor {
 
     intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
         if (this.currentIdp) {
-            switch (this.currentIdp) {
-                case IdpProviders.quickLink:
-                    this.logger.debug(`${this.loggerPrefix} IDP is ${this.currentIdp}. Using Quick Links intercepter.`);
-                    return next.handle(this.attachQuickLinkUsersToken(request));
+            if (this.currentIdp === IdpProviders.quickLink) {
+                this.logger.debug(`${this.loggerPrefix} IDP is ${this.currentIdp}. Using Quick Links intercepter.`);
+                return next.handle(this.attachQuickLinkUsersToken(request));
             }
         } else {
             this.logger.warn(`${this.loggerPrefix} Current IDP is not defined. Cannot intercept request.`);
