@@ -18,7 +18,7 @@ export class UserMediaService {
     navigator: Navigator = navigator;
 
     private activeVideoSubject = new ReplaySubject<UserMediaDevice>(1);
-    private activeMicrophoneSubject =new ReplaySubject<UserMediaDevice>(1);
+    private activeMicrophoneSubject = new ReplaySubject<UserMediaDevice>(1);
 
     readonly PREFERRED_CAMERA_KEY = 'vh.preferred.camera';
     readonly PREFERRED_MICROPHONE_KEY = 'vh.preferred.microphone';
@@ -30,16 +30,17 @@ export class UserMediaService {
             await this.updateAvailableDevicesList();
             await this.setDevicesInCache();
         };
-        this.updateAvailableDevicesList();
+
+        this.updateAvailableDevicesList(true);
     }
-    get connectedDevices():  Observable<UserMediaDevice[]> {
+    get connectedDevices(): Observable<UserMediaDevice[]> {
         return this.connectedDevicesSubject.asObservable();
     }
 
-    get activeVideoDevice():  Observable<UserMediaDevice> {
+    get activeVideoDevice(): Observable<UserMediaDevice> {
         return this.activeVideoSubject.asObservable();
     }
-    get activeMicrophoneDevice():  Observable<UserMediaDevice> {
+    get activeMicrophoneDevice(): Observable<UserMediaDevice> {
         return this.activeMicrophoneSubject.asObservable();
     }
     get connectedVideoDevices(): Observable<UserMediaDevice[]> {
@@ -49,7 +50,7 @@ export class UserMediaService {
             })
         );
     }
-    get connectedMicrophoneDevices():  Observable<UserMediaDevice[]> {
+    get connectedMicrophoneDevices(): Observable<UserMediaDevice[]> {
         return this.connectedDevicesSubject.pipe(
             map(devices => {
                 return devices.filter(x => x.kind === 'audioinput' && x.deviceId !== 'communications');
@@ -57,7 +58,7 @@ export class UserMediaService {
         );
     }
 
-    async updateAvailableDevicesList(): Promise<void> {
+    async updateAvailableDevicesList(first: boolean = false): Promise<void> {
         if (!this.navigator.mediaDevices || !this.navigator.mediaDevices.enumerateDevices) {
             const error = new Error('enumerateDevices() not supported.');
             this.logger.error(`${this.loggerPrefix} enumerateDevices() not supported.`, error);
@@ -78,21 +79,35 @@ export class UserMediaService {
         // this.userMediaStreamService.stopStream(stream);
         this.connectedDevicesSubject.next(availableDeviceList);
         await this.setDevicesInCache();
+        if (first) {
+            this.activeVideoSubject.next(this.getPreferredCamera());
+            this.activeMicrophoneSubject.next(this.getPreferredMicrophone());
+        }
     }
 
     setActiveMicrophone(microhoneDevice: UserMediaDevice) {
-        this.activeMicrophoneSubject.next(microhoneDevice);
+        this.activeMicrophoneDevice.pipe(take(1)).subscribe(mic => {
+            if (mic.deviceId !== microhoneDevice.deviceId) {
+                this.activeMicrophoneSubject.next(microhoneDevice);
+            }
+        });
     }
+
     setActiveCamera(videoDevice: UserMediaDevice) {
-        this.activeVideoSubject.next(videoDevice);
+        this.activeVideoDevice.pipe(take(1)).subscribe(cam => {
+            if (cam.deviceId !== videoDevice.deviceId) {
+                this.activeVideoSubject.next(videoDevice);
+            }
+        });
     }
 
     hasMultipleDevices(): Observable<boolean> {
-        return zip(this.connectedVideoDevices, this.connectedMicrophoneDevices).pipe(take(1), map(
-            (deviceList) => {
+        return zip(this.connectedVideoDevices, this.connectedMicrophoneDevices).pipe(
+            take(1),
+            map(deviceList => {
                 return deviceList[0].length > 1 || deviceList[1].length > 1;
-            }
-        ));
+            })
+        );
     }
 
     getPreferredCamera(): UserMediaDevice {
@@ -104,7 +119,7 @@ export class UserMediaService {
     }
 
     updatePreferredCamera(camera: UserMediaDevice) {
-        this.localStorageService.save(this.PREFERRED_CAMERA_KEY, camera,true);
+        this.localStorageService.save(this.PREFERRED_CAMERA_KEY, camera, true);
         this.logger.info(`${this.loggerPrefix} Updating preferred camera to ${camera.label}`);
     }
 
@@ -116,9 +131,12 @@ export class UserMediaService {
         return cache.get();
     }
     isDeviceStillConnected(device: UserMediaDevice) {
-        return this.connectedDevices.pipe(take(1), map(connectedDevices => {
-            return !!connectedDevices.find(x => x.label === device.label);
-        }));
+        return this.connectedDevices.pipe(
+            take(1),
+            map(connectedDevices => {
+                return !!connectedDevices.find(x => x.label === device.label);
+            })
+        );
     }
 
     async setDevicesInCache() {

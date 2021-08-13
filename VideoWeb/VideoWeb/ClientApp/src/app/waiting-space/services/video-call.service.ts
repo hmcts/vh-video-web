@@ -82,7 +82,7 @@ export class VideoCallService {
         this.initCallTag();
         this.initTurnServer();
         this.pexipAPI.screenshare_fps = 30;
-        
+
         this.userMediaStreamService.currentStream$.subscribe(stream => this.onCurrentStreamChanged(stream));
 
         this.pexipAPI.onSetup = function (stream, pinStatus, conferenceExtension) {
@@ -140,8 +140,18 @@ export class VideoCallService {
     }
 
     private onCurrentStreamChanged(stream: MediaStream) {
-        const shouldReconnect = !this.pexipAPI.user_media_stream;
-        this.pexipAPI.user_media_stream = stream;
+        const shouldReconnect = !!this.pexipAPI.user_media_stream;
+
+        if (stream !== this.pexipAPI.user_media_stream) {
+            console.warn(`${this.loggerPrefix} AUDIO B4`, this.pexipAPI.user_media_stream?.getAudioTracks());
+            console.warn(`${this.loggerPrefix} VIDEO B4`, this.pexipAPI.user_media_stream?.getVideoTracks());
+
+            this.pexipAPI.user_media_stream = stream;
+        }
+
+        console.warn(`${this.loggerPrefix} AUDIO`, this.pexipAPI.user_media_stream.getAudioTracks());
+        console.warn(`${this.loggerPrefix} VIDEO`, this.pexipAPI.user_media_stream.getVideoTracks());
+
         if (shouldReconnect) this.reconnectToCallWithNewStream();
     }
 

@@ -62,6 +62,7 @@ declare interface PexipClient {
 
     makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number, callType: string);
     connect(pin: string, extension: string);
+    renegotiate();
 
     /**
      * Escalate existing call to add video/presentation/screensharing. Typically used when currently in a call_type of "none" (roster-only view).

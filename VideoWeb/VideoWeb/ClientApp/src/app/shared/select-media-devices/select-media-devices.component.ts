@@ -54,11 +54,13 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
 
     private async updateDeviceList() {
         this.logger.debug(`${this.loggerPrefix} Updating device list`);
-        zip(this.userMediaService.connectedVideoDevices, this.userMediaService.connectedMicrophoneDevices).pipe(takeUntil(this.destroyedSubject)).subscribe(async (deviceLists) => {
-            this.availableCameraDevices = deviceLists[0];
-            this.availableMicrophoneDevices = deviceLists[1];
-            this.selectedMediaDevicesForm = await this.initNewDeviceSelectionForm();
-        });
+        zip(this.userMediaService.connectedVideoDevices, this.userMediaService.connectedMicrophoneDevices)
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(async deviceLists => {
+                this.availableCameraDevices = deviceLists[0];
+                this.availableMicrophoneDevices = deviceLists[1];
+                this.selectedMediaDevicesForm = await this.initNewDeviceSelectionForm();
+            });
 
         const preferredCamera = await this.userMediaService.getPreferredCamera();
         const preferredMicrophone = await this.userMediaService.getPreferredMicrophone();
@@ -120,7 +122,9 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         // close dialog and stop streams
         this.stopVideoAudioStream();
         this.userMediaService.setActiveCamera(this.getSelectedCamera());
+
         this.userMediaService.setActiveMicrophone(this.getSelectedMicrophone());
+
         this.logger.debug(`${this.loggerPrefix} Cancelling media device change`);
         this.cancelMediaDeviceChange.emit();
     }
