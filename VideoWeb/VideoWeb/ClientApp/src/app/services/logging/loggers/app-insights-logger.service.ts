@@ -31,14 +31,15 @@ export class AppInsightsLoggerService implements LogAdapter {
     ) {
         this.router = router;
         this.currentSecurityServiceSubscription.add(
-            securityServiceProviderService.currentSecurityService$.subscribe(securityService => 
-                (this.securityService = securityService)));
+            securityServiceProviderService.currentSecurityService$.subscribe(securityService => (this.securityService = securityService))
+        );
 
         this.appInsightsSubscription.add(
             this.setupAppInsights(configService, this.securityService).subscribe(() => {
                 this.checkIfVho(this.securityService);
                 this.trackNavigation();
-            }));
+            })
+        );
     }
 
     private setupAppInsights(configService: ConfigService, securityService: ISecurityService): Observable<void> {

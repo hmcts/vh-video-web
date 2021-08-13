@@ -98,7 +98,7 @@ export class QuickLinksComponent implements OnInit {
                             this.router.navigate([pageUrls.Navigator]);
                         },
                         error => this.logger.error('[Login] - Redirect Failed', error)
-                )
+                    )
             );
         }
     }
