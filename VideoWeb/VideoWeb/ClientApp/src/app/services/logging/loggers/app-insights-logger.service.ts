@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveEnd, Router, RouterEvent } from '@angular/router';
 import { ApplicationInsights, ITelemetryItem, SeverityLevel } from '@microsoft/applicationinsights-web';
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
@@ -20,8 +20,6 @@ export class AppInsightsLoggerService implements LogAdapter {
     appInsights: ApplicationInsights;
     isVHO: boolean;
     userData;
-    currentSecurityServiceSubscription: Subscription = new Subscription();
-    appInsightsSubscription: Subscription = new Subscription();
 
     constructor(
         securityServiceProviderService: SecurityServiceProvider,
@@ -30,16 +28,12 @@ export class AppInsightsLoggerService implements LogAdapter {
         private profileService: ProfileService
     ) {
         this.router = router;
-        this.currentSecurityServiceSubscription.add(
-            securityServiceProviderService.currentSecurityService$.subscribe(securityService => (this.securityService = securityService))
-        );
+        securityServiceProviderService.currentSecurityService$.subscribe(securityService => (this.securityService = securityService));
 
-        this.appInsightsSubscription.add(
-            this.setupAppInsights(configService, this.securityService).subscribe(() => {
-                this.checkIfVho(this.securityService);
-                this.trackNavigation();
-            })
-        );
+        this.setupAppInsights(configService, this.securityService).subscribe(() => {
+            this.checkIfVho(this.securityService);
+            this.trackNavigation();
+        });
     }
 
     private setupAppInsights(configService: ConfigService, securityService: ISecurityService): Observable<void> {
@@ -154,10 +148,5 @@ export class AppInsightsLoggerService implements LogAdapter {
         if (properties && this.isVHO) {
             properties.isVho = this.isVHO;
         }
-    }
-
-    ngOnDestroy(): void {
-        this.currentSecurityServiceSubscription.unsubscribe();
-        this.appInsightsSubscription.unsubscribe();
     }
 }

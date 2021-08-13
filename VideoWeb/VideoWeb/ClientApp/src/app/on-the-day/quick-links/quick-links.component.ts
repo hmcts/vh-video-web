@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -12,7 +12,7 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
     selector: 'app-quick-links',
     templateUrl: './quick-links.component.html'
 })
-export class QuickLinksComponent implements OnInit {
+export class QuickLinksComponent implements OnInit, OnDestroy {
     private loggerPrefix = '[QuickLinksComponent] -';
 
     error: {
