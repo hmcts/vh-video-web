@@ -128,25 +128,22 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
         this.initialiseVideoControlCacheLogic();
 
-        this.userMediaService
-            .setDevicesInCache()
-            .then(() => {
-                this.logger.debug(`${this.loggerPrefixJudge} Defined default devices in cache`);
-                this.connected = false;
-                this.getConference().then(() => {
-                    this.subscribeToClock();
-                    this.startEventHubSubscribers();
-                    this.getJwtokenAndConnectToPexip();
-                    if (this.conference.audio_recording_required) {
-                        this.initAudioRecordingInterval();
-                    }
-                });
-            })
-            .catch((error: Error | MediaStreamError) => {
-                this.logger.error(`${this.loggerPrefixJudge} Failed to initialise the judge waiting room`, error);
-                const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-                this.errorService.handlePexipError(new CallError(error.name), conferenceId);
+        try {
+            this.logger.debug(`${this.loggerPrefixJudge} Defined default devices in cache`);
+            this.connected = false;
+            this.getConference().then(() => {
+                this.subscribeToClock();
+                this.startEventHubSubscribers();
+                this.getJwtokenAndConnectToPexip();
+                if (this.conference.audio_recording_required) {
+                    this.initAudioRecordingInterval();
+                }
             });
+        } catch (error) {
+            this.logger.error(`${this.loggerPrefixJudge} Failed to initialise the judge waiting room`, error);
+            const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+            this.errorService.handlePexipError(new CallError(error.name), conferenceId);
+        }
     }
 
     private onShouldReload(): void {

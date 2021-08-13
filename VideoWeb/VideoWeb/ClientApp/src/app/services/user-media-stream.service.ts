@@ -26,7 +26,8 @@ export class UserMediaStreamService {
     constructor(private logger: Logger, private errorService: ErrorService, private userMediaService: UserMediaService) {
         this.navigator.getUserMedia =
             this.navigator.getUserMedia || (this.navigator as any).webkitGetUserMedia || (this.navigator as any).msGetUserMedia;
-        zip(userMediaService.activeVideoDevice, userMediaService.activeMicrophoneDevice)
+
+        zip(userMediaService.activeVideoDevice$, userMediaService.activeMicrophoneDevice$)
             .pipe(take(1))
             .subscribe(activeDevices => {
                 this.initialiseCurrentStream(activeDevices[0], activeDevices[1]);
@@ -37,6 +38,8 @@ export class UserMediaStreamService {
         this.getStreamForCam(videoDevice)
             .pipe(take(1))
             .subscribe(cameraStream => {
+                console.warn(`${this.loggerPrefix} INIT`, cameraStream);
+
                 this.currentStream = new MediaStream(cameraStream.getTracks());
                 this.activateCameraStream = cameraStream;
 
@@ -46,34 +49,40 @@ export class UserMediaStreamService {
                     });
 
                     this.activateMicrophoneStream = microphoneStream;
+                    console.warn(`${this.loggerPrefix} INIT`, microphoneStream);
                     this.currentStreamSubject.next(this.currentStream);
+
+                    this.userMediaService.activeVideoDevice$.subscribe(videoDevice => {
+                        this.activeCameraChanged(videoDevice);
+                    });
+
+                    this.userMediaService.activeMicrophoneDevice$.subscribe(microphoneDevice => {
+                        this.activeMicrophoneChanged(microphoneDevice);
+                    });
                 });
             });
-
-        this.userMediaService.activeVideoDevice.subscribe(videoDevice => {
-            this.activeCameraChanged(videoDevice);
-        });
-
-        this.userMediaService.activeMicrophoneDevice.subscribe(microphoneDevice => {
-            this.activeMicrophoneChanged(microphoneDevice);
-        });
     }
 
     private activeCameraChanged(videoDevice: UserMediaDevice) {
         this.getStreamForCam(videoDevice)
             .pipe(take(1))
-            .subscribe(videoStream => {
+            .subscribe(cameraStream => {
+                if (!this.activateCameraStream) {
+                    console.error(`${this.loggerPrefix} NO ACTIVE CAM`);
+                }
                 this.activateCameraStream?.getTracks().forEach(track => {
                     this.currentStream.removeTrack(track);
                     track.stop();
                 });
 
-                videoStream.getTracks().forEach(track => {
+                cameraStream.getTracks().forEach(track => {
                     this.currentStream.addTrack(track);
                 });
 
-                console.warn(`${this.loggerPrefix} VIDEO`, this.currentStream.getTracks());
-                this.activateCameraStream = videoStream;
+                console.warn(`${this.loggerPrefix} VIDEO`, this.currentStream.getVideoTracks());
+                console.warn(`${this.loggerPrefix} ACTIVE CAM`, cameraStream);
+
+                this.activateCameraStream = cameraStream;
                 this.currentStreamSubject.next(this.currentStream);
             });
     }
@@ -82,6 +91,10 @@ export class UserMediaStreamService {
         this.getStreamForMic(microphoneDevice)
             .pipe(take(1))
             .subscribe(microphoneStream => {
+                if (!this.activateMicrophoneStream) {
+                    console.error(`${this.loggerPrefix} NO ACTIVE MIC`);
+                }
+
                 this.activateMicrophoneStream?.getTracks().forEach(track => {
                     this.currentStream.removeTrack(track);
                     track.stop();
@@ -91,7 +104,9 @@ export class UserMediaStreamService {
                     this.currentStream.addTrack(track);
                 });
 
-                console.warn(`${this.loggerPrefix} AUDIO`, this.currentStream.getTracks());
+                console.warn(`${this.loggerPrefix} AUDIO`, this.currentStream.getAudioTracks());
+                console.warn(`${this.loggerPrefix} ACTIVE MIC`, microphoneStream);
+
                 this.activateMicrophoneStream = microphoneStream;
                 this.currentStreamSubject.next(this.currentStream);
             });

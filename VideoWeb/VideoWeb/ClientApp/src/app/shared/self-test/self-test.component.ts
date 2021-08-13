@@ -74,22 +74,26 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
         this.initialiseData();
 
-        this.userMediaService
-            .updateAvailableDevicesList()
-            .then(() => {
+        this.userMediaService.connectedDevices.subscribe({
+            next: connectedDevices => {
                 this.displayFeed = false;
                 this.displayDeviceChangeModal = false;
                 this.scoreSent = false;
                 this.setupSubscribers();
                 this.setupTestAndCall();
-            })
-            .catch((error: Error | MediaStreamError) => {
+            },
+            error: error => {
                 this.logger.error(`${this.loggerPrefix} Failed to initialise the self-test`, error, {
                     conference: this.conference?.id,
                     participant: this.selfTestParticipantId
                 });
                 this.errorService.handlePexipError(new CallError(error.name), this.conference?.id);
-            });
+            }
+        });
+
+        this.userMediaService.activeMicrophoneDevice$.subscribe(mic =>
+            this.userMediaStreamService.getStreamForMic(mic).subscribe(micStream => (this.preferredMicrophoneStream = micStream))
+        );
     }
 
     initialiseData(): void {
@@ -151,14 +155,17 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     onMediaDeviceChangeCancelled() {
         this.displayDeviceChangeModal = false;
         this.call();
-        this.updatePexipAudioVideoSource();
+        // this.updatePexipAudioVideoSource();
     }
 
     setupSubscribers() {
         this.subscription.add(
-            this.userMediaService.hasMultipleDevices().pipe(takeUntil(this.destroyedSubject)).subscribe((result) => {
-                this.hasMultipleDevices = result;
-            })
+            this.userMediaService
+                .hasMultipleDevices()
+                .pipe(takeUntil(this.destroyedSubject))
+                .subscribe(result => {
+                    this.hasMultipleDevices = result;
+                })
         );
     }
 
@@ -178,7 +185,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         );
 
         await this.videoCallService.setupClient();
-        this.updatePexipAudioVideoSource();
+        // this.updatePexipAudioVideoSource();
     }
 
     handleCallSetup(callSetup: CallSetup) {
@@ -222,16 +229,14 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         }
     }
 
-    async updatePexipAudioVideoSource() {
-        const cam = await this.userMediaService.getPreferredCamera();
-        const mic = await this.userMediaService.getPreferredMicrophone();
-        this.preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(mic).toPromise();
+    // async updatePexipAudioVideoSource() {
+    //     this.preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(mic).toPromise();
 
-        this.logger.info(`${this.loggerPrefix} Update camera and microphone selection`, {
-            cameraId: cam ? cam.deviceId : null,
-            microphoneId: mic ? mic.deviceId : null
-        });
-    }
+    //     this.logger.info(`${this.loggerPrefix} Update camera and microphone selection`, {
+    //         cameraId: cam ? cam.deviceId : null,
+    //         microphoneId: mic ? mic.deviceId : null
+    //     });
+    // }
 
     async call() {
         this.logger.debug(`${this.loggerPrefix} Starting self test call`, {
@@ -258,7 +263,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             participant: this.selfTestParticipantId
         });
         this.disconnect();
-        this.updatePexipAudioVideoSource();
+        // this.updatePexipAudioVideoSource();
         this.call();
     }
 

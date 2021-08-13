@@ -6,7 +6,7 @@ import { UserMediaStreamService } from 'src/app/services/user-media-stream.servi
 import { Logger } from 'src/app/services/logging/logger-base';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject, zip } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { take, takeUntil } from 'rxjs/operators';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 
 @Component({
@@ -62,25 +62,28 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
                 this.selectedMediaDevicesForm = await this.initNewDeviceSelectionForm();
             });
 
-        const preferredCamera = await this.userMediaService.getPreferredCamera();
-        const preferredMicrophone = await this.userMediaService.getPreferredMicrophone();
-        this.preferredCameraStream = await this.userMediaStreamService.getStreamForCam(preferredCamera).toPromise();
-        this.preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(preferredMicrophone).toPromise();
+        this.userMediaService.activeVideoDevice$.pipe(take(1)).subscribe(async activeCamera => {
+            this.preferredCameraStream = await this.userMediaStreamService.getStreamForCam(activeCamera).toPromise();
+        });
+
+        this.userMediaService.activeMicrophoneDevice$.pipe(take(1)).subscribe(async activeMicrophone => {
+            this.preferredCameraStream = await this.userMediaStreamService.getStreamForMic(activeMicrophone).toPromise();
+        });
     }
 
     private async initNewDeviceSelectionForm(): Promise<FormGroup> {
         this.logger.debug(`${this.loggerPrefix} Initialising new device selection form`);
         let cam = this.availableCameraDevices[0];
-        const preferredCamera = await this.userMediaService.getPreferredCamera();
-        if (preferredCamera) {
-            cam = this.availableCameraDevices.find(x => x.label === preferredCamera.label);
-        }
+        // const preferredCamera = await this.userMediaService.getPreferredCamera();
+        // if (preferredCamera) {
+        //     cam = this.availableCameraDevices.find(x => x.label === preferredCamera.label);
+        // }
 
         let mic = this.availableMicrophoneDevices[0];
-        const preferredMicrophone = await this.userMediaService.getPreferredMicrophone();
-        if (preferredMicrophone) {
-            mic = this.availableMicrophoneDevices.find(x => x.label === preferredMicrophone.label);
-        }
+        // const preferredMicrophone = await this.userMediaService.getPreferredMicrophone();
+        // if (preferredMicrophone) {
+        //     mic = this.availableMicrophoneDevices.find(x => x.label === preferredMicrophone.label);
+        // }
         return this.formBuilder.group({
             camera: [cam, Validators.required],
             microphone: [mic, Validators.required]
@@ -121,9 +124,9 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     async onSubmit() {
         // close dialog and stop streams
         this.stopVideoAudioStream();
-        this.userMediaService.setActiveCamera(this.getSelectedCamera());
+        this.userMediaService.updateActiveCamera(this.getSelectedCamera());
 
-        this.userMediaService.setActiveMicrophone(this.getSelectedMicrophone());
+        this.userMediaService.updateActiveMicrophone(this.getSelectedMicrophone());
 
         this.logger.debug(`${this.loggerPrefix} Cancelling media device change`);
         this.cancelMediaDeviceChange.emit();
@@ -162,7 +165,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         if (this.preferredCameraStream) {
             this.userMediaStreamService.stopStream(this.preferredCameraStream);
         }
-        this.userMediaService.updatePreferredCamera(newCam);
+        // this.userMediaService.updatePreferredCamera(newCam);
         this.preferredCameraStream = null;
         this.preferredCameraStream = await this.userMediaStreamService.getStreamForCam(newCam).toPromise();
     }
@@ -172,7 +175,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         if (this.preferredMicrophoneStream) {
             this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
         }
-        this.userMediaService.updatePreferredMicrophone(newMic);
+        // this.userMediaService.updatePreferredMicrophone(newMic);
         this.preferredMicrophoneStream = null;
         this.preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(newMic).toPromise();
     }
