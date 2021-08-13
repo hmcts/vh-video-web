@@ -29,15 +29,13 @@ export class SecurityServiceProvider {
 
     getSecurityService(idp: IdpProviders = null): ISecurityService {
         switch (idp ?? this.securityConfigSetupService.getIdp()) {
-            default:
-                return null;
-
             case IdpProviders.quickLink:
                 return this.quickLinkSecurityService;
-
             case IdpProviders.vhaad:
             case IdpProviders.ejud:
                 return this.oidcSecurityService;
+            default:
+                return null;
         }
     }
 
