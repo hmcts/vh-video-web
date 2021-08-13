@@ -16,8 +16,8 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
     private loggerPrefix = '[QuickLinksComponent] -';
 
     error: {
-        nameError: String;
-        roleError: String;
+        nameError: string;
+        roleError: string;
     };
     role = Role;
     quickLinkForm: FormGroup;
