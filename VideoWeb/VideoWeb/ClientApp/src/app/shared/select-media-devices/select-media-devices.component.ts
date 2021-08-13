@@ -18,6 +18,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     private readonly loggerPrefix = '[SelectMediaDevices] -';
     @Output('onShouldClose') closeEventEmitter = new EventEmitter();
     @Input() showAudioOnlySetting = false;
+    @Input() waitingRoomMode = false;
 
     availableCameraDevices: UserMediaDevice[] = [];
     hasOnlyOneAvailableCameraDevice: boolean = false;
@@ -143,118 +144,4 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         this.userMediaStreamService.stopStream(this.selectedCameraStream);
         this.userMediaStreamService.stopStream(this.selectedMicrophoneStream);
     }
-
-    // private async updateDeviceList() {
-    //     this.logger.debug(`${this.loggerPrefix} Updating device list`);
-    //     zip(this.userMediaService.connectedVideoDevices, this.userMediaService.connectedMicrophoneDevices)
-    //         .pipe(takeUntil(this.destroyedSubject))
-    //         .subscribe(async deviceLists => {
-    //             this.availableCameraDevices = deviceLists[0];
-    //             this.availableMicrophoneDevices = deviceLists[1];
-    //             this.selectedMediaDevicesForm = await this.initNewDeviceSelectionForm();
-    //         });
-
-    //     this.userMediaService.activeVideoDevice$.pipe(take(1)).subscribe(async activeCamera => {
-    //         this.preferredCameraStream = await this.userMediaStreamService.getStreamForCam(activeCamera).toPromise();
-    //     });
-
-    //     this.userMediaService.activeMicrophoneDevice$.pipe(take(1)).subscribe(async activeMicrophone => {
-    //         this.preferredCameraStream = await this.userMediaStreamService.getStreamForMic(activeMicrophone).toPromise();
-    //     });
-    // }
-
-    // get hasSingleCameraConncted(): boolean {
-    //     return this.availableCameraDevices.length === 1;
-    // }
-
-    // get singleCameraName(): string {
-    //     return this.availableCameraDevices[0].label;
-    // }
-
-    // get singleMicrophoneName(): string {
-    //     return this.availableMicrophoneDevices[0].label;
-    // }
-
-    // get hasSingleMicrophoneConncted(): boolean {
-    //     return this.availableMicrophoneDevices.length === 1;
-    // }
-
-    // get selectedCamera(): AbstractControl {
-    //     return this.selectedMediaDevicesForm.get('camera');
-    // }
-
-    // get selectedMicrophone(): AbstractControl {
-    //     return this.selectedMediaDevicesForm.get('microphone');
-    // }
-
-    // async onSubmit() {
-    //     // close dialog and stop streams
-    //     this.stopVideoAudioStream();
-    //     this.userMediaService.updateActiveCamera(this.getSelectedCamera());
-
-    //     this.userMediaService.updateActiveMicrophone(this.getSelectedMicrophone());
-
-    //     this.logger.debug(`${this.loggerPrefix} Cancelling media device change`);
-    //     this.cancelMediaDeviceChange.emit();
-    // }
-
-    // private stopVideoAudioStream() {
-    //     this.userMediaStreamService.stopStream(this.preferredCameraStream);
-    //     this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
-    // }
-
-    // getSelectedCamera(): UserMediaDevice {
-    //     return this.availableCameraDevices.find(x => x === this.selectedCamera.value);
-    // }
-
-    // getSelectedMicrophone(): UserMediaDevice {
-    //     return this.availableMicrophoneDevices.find(x => x === this.selectedMicrophone.value);
-    // }
-
-    // private subscribeToDeviceSelectionChange() {
-    //     this.selectedCamera.valueChanges.pipe(takeUntil(this.destroyedSubject)).subscribe(newCamera => {
-    //         this.updateCameraStream(newCamera);
-    //     });
-
-    //     this.selectedMicrophone.valueChanges.pipe(takeUntil(this.destroyedSubject)).subscribe(newMicrophone => {
-    //         this.updateMicrophoneStream(newMicrophone);
-    //     });
-    // }
-
-    // private async updateCameraStream(newCam: UserMediaDevice) {
-    //     this.logger.debug(`${this.loggerPrefix} Updating camera stream`);
-    //     if (this.preferredCameraStream) {
-    //         this.userMediaStreamService.stopStream(this.preferredCameraStream);
-    //     }
-    //     // this.userMediaService.updatePreferredCamera(newCam);
-    //     this.preferredCameraStream = null;
-    //     this.preferredCameraStream = await this.userMediaStreamService.getStreamForCam(newCam).toPromise();
-    // }
-
-    // private async updateMicrophoneStream(newMic: UserMediaDevice) {
-    //     this.logger.debug(`${this.loggerPrefix} Updating mic stream`);
-    //     if (this.preferredMicrophoneStream) {
-    //         this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
-    //     }
-    //     // this.userMediaService.updatePreferredMicrophone(newMic);
-    //     this.preferredMicrophoneStream = null;
-    //     this.preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(newMic).toPromise();
-    // }
-
-    // private unsubscription() {
-    //     this.destroyedSubject.next();
-    //     this.destroyedSubject.complete();
-    // }
-    // private cleanStream() {
-    //     if (this.preferredCameraStream) {
-    //         this.logger.debug(`${this.loggerPrefix} Closing camera stream`);
-    //         this.userMediaStreamService.stopStream(this.preferredCameraStream);
-    //     }
-    //     this.preferredCameraStream = null;
-    //     if (this.preferredMicrophoneStream) {
-    //         this.logger.debug(`${this.loggerPrefix} Closing microphone stream`);
-    //         this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
-    //     }
-    //     this.preferredMicrophoneStream = null;
-    // }
 }
