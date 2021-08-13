@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { QuickLinksService } from 'src/app/services/api/quick-links.service';
 import { Role } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -26,6 +27,7 @@ export class QuickLinksComponent implements OnInit {
     quickLinkNameFormControl: FormControl;
     quickLinkRoleFormControl: FormControl;
     quickLinkParticipantRoles: Role[] = [];
+    quickLinkSubscriptions: Subscription = new Subscription();
 
     constructor(
         private logger: Logger,
@@ -84,18 +86,24 @@ export class QuickLinksComponent implements OnInit {
         this.validateForm();
 
         if (this.isFormValid) {
-            this.quickLinksService
-                .joinHearing(this.hearingId, this.quickLinkNameFormControl.value, this.quickLinkRoleFormControl.value)
-                .subscribe(
-                    response => {
-                        this.logger.info(`${this.loggerPrefix} Joined conference as quick link participant`, {
-                            apiResponse: response
-                        });
+            this.quickLinkSubscriptions.add(
+                this.quickLinksService
+                    .joinHearing(this.hearingId, this.quickLinkNameFormControl.value, this.quickLinkRoleFormControl.value)
+                    .subscribe(
+                        response => {
+                            this.logger.info(`${this.loggerPrefix} Joined conference as quick link participant`, {
+                                apiResponse: response
+                            });
 
-                        this.router.navigate([pageUrls.Navigator]);
-                    },
-                    error => this.logger.error('[Login] - Redirect Failed', error)
-                );
+                            this.router.navigate([pageUrls.Navigator]);
+                        },
+                        error => this.logger.error('[Login] - Redirect Failed', error)
+                )
+            );
         }
+    }
+
+    ngOnDestroy(): void {
+        this.quickLinkSubscriptions.unsubscribe();
     }
 }
