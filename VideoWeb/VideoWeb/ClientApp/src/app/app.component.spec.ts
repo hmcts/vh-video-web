@@ -160,7 +160,7 @@ describe('AppComponent', () => {
     it('should start connection status service if authenticated oninit', fakeAsync(() => {
         // Arrange
         const checkAuthSubject = new Subject<boolean>();
-        securityServiceSpy.checkIsAuthenticated.and.returnValue(checkAuthSubject.asObservable());
+        securityServiceSpy.checkAuth.and.returnValue(checkAuthSubject.asObservable());
 
         eventValue = {
             type: EventTypes.NewAuthorizationResult,

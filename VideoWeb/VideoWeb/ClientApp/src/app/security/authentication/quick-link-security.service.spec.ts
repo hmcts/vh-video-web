@@ -176,7 +176,7 @@ describe('QuickLinkSecurityService', () => {
 
             // Act
             let result = false;
-            service.checkIsAuthenticated().subscribe(isAuthorised => (result = isAuthorised));
+            service.checkAuth().subscribe(isAuthorised => (result = isAuthorised));
             isAuthorisedSubject.next();
             flush();
 
@@ -191,7 +191,7 @@ describe('QuickLinkSecurityService', () => {
 
             // Act
             let result = false;
-            service.checkIsAuthenticated().subscribe(isAuthorised => (result = isAuthorised));
+            service.checkAuth().subscribe(isAuthorised => (result = isAuthorised));
             isAuthorisedSubject.error('');
             flush();
 
