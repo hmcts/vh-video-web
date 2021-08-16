@@ -16,16 +16,21 @@ export class SecurityConfigSetupService {
 
     private idpProvidersSessionStorageKey = 'IdpProviders';
     private defaultProvider = IdpProviders.vhaad;
-    private configSetup$ = new BehaviorSubject(false);
+    private _configSetupSubject = new BehaviorSubject(false);
+    get configSetup$() {
+        return this._configSetupSubject.asObservable();
+    }
     private currentIdpSubject = new BehaviorSubject<IdpProviders>(IdpProviders.vhaad);
 
-    constructor(private oidcConfigService: OidcConfigService, configService: ConfigService) {
-        configService.getClientSettings().subscribe(clientSettings => {
+    constructor(private oidcConfigService: OidcConfigService, private configService: ConfigService) {}
+
+    setupConfig() {
+        this.configService.getClientSettings().subscribe(clientSettings => {
             this.config[IdpProviders.ejud] = this.initOidcConfig(clientSettings.e_jud_idp_settings);
             this.config[IdpProviders.vhaad] = this.initOidcConfig(clientSettings.vh_idp_settings);
 
             this.oidcConfigService.withConfig(this.config[this.defaultProvider]);
-            this.configSetup$.next(true);
+            this._configSetupSubject.next(true);
         });
     }
 
@@ -51,7 +56,7 @@ export class SecurityConfigSetupService {
     restoreConfig() {
         const provider = this.getIdp();
         if (provider !== IdpProviders.quickLink) {
-            this.configSetup$.pipe(filter(Boolean)).subscribe(() => {
+            this._configSetupSubject.pipe(filter(Boolean)).subscribe(() => {
                 this.oidcConfigService.withConfig(this.config[provider]);
                 this.currentIdpSubject.next(provider);
             });
@@ -60,7 +65,7 @@ export class SecurityConfigSetupService {
 
     setIdp(provider: IdpProviders) {
         window.sessionStorage.setItem(this.idpProvidersSessionStorageKey, provider);
-        this.configSetup$.pipe(filter(Boolean)).subscribe(() => {
+        this._configSetupSubject.pipe(filter(Boolean)).subscribe(() => {
             if (provider !== IdpProviders.quickLink) {
                 this.oidcConfigService.withConfig(this.config[provider]);
             }
