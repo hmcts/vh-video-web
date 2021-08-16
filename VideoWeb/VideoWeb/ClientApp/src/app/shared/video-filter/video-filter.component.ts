@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
-import { startWith, takeUntil, tap } from 'rxjs/operators';
+import { startWith, takeUntil } from 'rxjs/operators';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { BackgroundFilter } from 'src/app/services/models/background-filter';
 import { VideoFilterService } from 'src/app/services/video-filter.service';
