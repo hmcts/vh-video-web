@@ -36,7 +36,7 @@ namespace VideoWeb.Controllers
         [HttpGet("courts", Name = "GetCourts")]
         [ProducesResponseType(typeof(IList<HearingVenueResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [SwaggerOperation(OperationId = "GetVenues ")]
+        [SwaggerOperation(OperationId = "GetVenues")]
         public async Task<ActionResult<IList<HearingVenueResponse>>> GetVenues()
         {
             _logger.LogDebug("GetVenues");
