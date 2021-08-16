@@ -48,6 +48,24 @@ describe('VideoControlCacheService', () => {
     });
 
     describe('initialisation', () => {
+        it('should NOT load the hearing state if there is no current conference', fakeAsync(() => {
+            // Arrange
+            const conferenceId = 'conference-id';
+            const conference = { id: conferenceId } as ConferenceResponse;
+
+            const hearingControlsState: IHearingControlsState = { participantStates: {} };
+
+            // Act
+            currentConferenceSubject.next(null);
+            flush();
+            loadHearingStateForConferenceSubject.next(hearingControlsState);
+            flush();
+
+            // Assert
+            expect(videoControlCacheStorageServiceSpy.loadHearingStateForConference).not.toHaveBeenCalled();
+            expect(service['hearingControlStates']).toBeFalsy();
+        }));
+
         it('should load the hearing state for the current conference', fakeAsync(() => {
             // Arrange
             const conferenceId = 'conference-id';
