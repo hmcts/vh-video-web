@@ -1,6 +1,7 @@
 import { fakeAsync, flush } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 import { ApiClient } from 'src/app/services/clients/api-client';
+import { Logger } from 'src/app/services/logging/logger-base';
 import { JwtHelperService } from '../jwt-helper.service';
 import { QuickLinkJwtBody, QuickLinkSecurityService } from './quick-link-security.service';
 
@@ -8,6 +9,8 @@ describe('QuickLinkSecurityService', () => {
     let service: QuickLinkSecurityService;
     let apiClientSpy: jasmine.SpyObj<ApiClient>;
     let jwtHelperSpy: jasmine.SpyObj<JwtHelperService>;
+    let loggerSpy: jasmine.SpyObj<Logger>;
+
     const jwt =
         'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkpvaG4gRG9lIiwiZ2l2ZW5fbmFtZSI6IkpvaG4gRG9lIiwiZmFtaWx5X25hbWUiOiJKb2huIERvZSIsInByZWZlcnJlZF91c2VybmFtZSI6IkpvaG4gRG9lIiwicm9sZSI6IkNpdGl6ZW4iLCJuYmYiOjE2MjcyOTQwMzcsImV4cCI6MTYyNzMyMjk1NywiaWF0IjoxNjI3Mjk0MDk3LCJpc3MiOiJodHRwczovL3ZoLXZpZGVvLXdlYi1kZXYuYXp1cmV3ZWJzaXRlcy5uZXQvOThhNWRiM2QtMGY5MS00MDNmLWI3ZGMtZDFhMjcyZjQ2ZjNiIn0.NyH-9u3Vg2wSC-B2rxkqjbAbKvdvoCyyFAgBsfeP9ff9mQTxn6PfJHdtkp8sANnQHpsLdqW8VnAp9a9bTfTVDA';
     const decodedJwt = {
@@ -25,9 +28,10 @@ describe('QuickLinkSecurityService', () => {
     beforeEach(() => {
         apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', ['isQuickLinkParticipantAuthorised']);
         jwtHelperSpy = jasmine.createSpyObj<JwtHelperService>('JwtHelperService', ['decodeToken', 'isTokenExpired']);
+        loggerSpy = jasmine.createSpyObj<Logger>('Logger', ['debug', 'warn']);
         jwtHelperSpy.decodeToken.and.returnValue(decodedJwt);
 
-        service = new QuickLinkSecurityService(apiClientSpy, jwtHelperSpy);
+        service = new QuickLinkSecurityService(apiClientSpy, jwtHelperSpy, loggerSpy);
     });
 
     it('should be created', () => {
