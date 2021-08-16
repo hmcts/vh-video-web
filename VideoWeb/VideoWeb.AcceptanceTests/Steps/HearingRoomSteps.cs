@@ -134,8 +134,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var response = _c.Apis.TestApi.GetAudioRecordingLink(_c.Test.NewHearingId);
             var audioLink = RequestHelper.Deserialise<AudioRecordingResponse>(response.Content);
-//            audioLink.AudioFileLinks.Should().NotBeNullOrEmpty();
-//            audioLink.AudioFileLinks.First().ToLower().Should().Contain(_c.Test.NewHearingId.ToString().ToLower());
         }
 
         [Then(@"the VHO can see that (.*) is in the Waiting Room")]
@@ -174,10 +172,12 @@ namespace VideoWeb.AcceptanceTests.Steps
             interpreter.Should().NotBeNull();
             interpreter.LinkedParticipants.Should().NotBeNullOrEmpty();
             var interpretee = _c.Test.ConferenceParticipants.Single(x => x.Id == interpreter.LinkedParticipants.Single().LinkedId);
-            _browsers[_c.CurrentUser].Driver.WaitUntilElementExists(HearingRoomPage.ParticipantPanel, 60);
-            _browsers[_c.CurrentUser].Driver.WaitUntilElementExists(HearingRoomPage.InterPreterName(interpreter.DisplayName), 60);
+            NUnit.Framework.TestContext.WriteLine($"Interpretee found: {interpretee.DisplayName}");
+            var ele1 = HearingRoomPage.InterPreterName(interpreter.DisplayName);
+            NUnit.Framework.TestContext.WriteLine($"looking for {interpreter.DisplayName}");
+            var ele2 = _browsers[_c.CurrentUser].Driver.WaitUntilElementExists(HearingRoomPage.InterPreterName(interpreter.DisplayName), 60);
             var interpreterText = _browsers[_c.CurrentUser].TextOf(HearingRoomPage.InterPreterName(interpreter.DisplayName));
-            interpreterText.Should().Contain($"{interpretee.DisplayName}");
+            interpreterText.Should().Contain($"{interpreter.DisplayName}");
         }
 
         [Then(@"the Judge can see interpreter hand (.*)")]

@@ -4,7 +4,7 @@ Feature: Hearing Room
 	As a registered user
 	I want to be able to access the video hearing room and interact with the controls
 
-@VIH-4610 @VIH-4615 @HearingTest @Smoketest-Extended @DisableLogging
+@VIH-4610 @VIH-4615 @HearingTest @Smoketest-Extended
 Scenario: Judge pauses and closes hearing
 	Given the first Individual user has progressed to the Waiting Room page
 	And the Judge user has progressed to the Judge Waiting Room page for the existing hearing
@@ -33,7 +33,7 @@ Scenario: Judge pauses and closes hearing
   Then the judge waiting room displays consultation room is available
 	And the hearing status changed to Closed
 
-@HearingTest @Smoketest-Extended @DisableLogging
+@HearingTest @Smoketest-Extended
 Scenario: Interpreter And Interpretee joins hearing
   Given I have a hearing with an Interpreter
   And the first Individual user has progressed to the Waiting Room page for the existing hearing
@@ -58,7 +58,7 @@ Scenario: Interpreter And Interpretee joins hearing
 	When in the first Individual's browser
 	Then the participants waiting room displays the closed status
 
-@HearingTest @Smoketest-Extended @DisableLogging
+@HearingTest @Smoketest-Extended
 Scenario: Four participants join hearing
 	Given the first Individual user has progressed to the Waiting Room page
 	And the first Representative user has progressed to the Waiting Room page for the existing hearing
@@ -81,7 +81,7 @@ Scenario: Four participants join hearing
 	When in the first Individual's browser
 	Then the participants waiting room displays the closed status
 
-  @HearingTest @Smoketest-Extended @Smoketest-Prod @AudioRecording @DisableLogging
+  @HearingTest @Smoketest-Extended @Smoketest-Prod @AudioRecording
 Scenario: Audio Recording
   Given I have a hearing with audio recording enabled
   And the first Individual user has progressed to the Waiting Room page for the existing hearing
@@ -93,7 +93,7 @@ Scenario: Audio Recording
 	Then the user is on the Waiting Room page
 	And the hearing status changed to Closed
 
-@HearingTest @Smoketest-Extended @DisableLogging
+@HearingTest @Smoketest-Extended
 Scenario: VHO Monitors Hearing
   Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	Then the VHO can see the Judge status is Unavailable
@@ -119,7 +119,7 @@ Scenario: VHO Monitors Hearing
   And the VHO can see the status of participant the first Individual's is Available
   And the VHO can see that the first Individual's is in the Waiting Room
 
-@HearingTest @Smoketest-Extended @DisableLogging
+@HearingTest @Smoketest-Extended
 Scenario: Observer and Panel Member join hearing
   Given I have a hearing with an Observer and Panel Member
 	And the Observer user has progressed to the Waiting Room page for the existing hearing
@@ -139,7 +139,7 @@ Scenario: Observer and Panel Member join hearing
 	When in the Observer's browser
 	Then the participants waiting room displays the closed status
 
-@HearingTest @Smoketest-Extended @DisableLogging
+@HearingTest @Smoketest-Extended
 Scenario: Winger joins hearing
   Given I have a CACD hearing with a Winger
 	And the Winger user has progressed to the Judge Waiting Room page for the existing hearing
@@ -157,7 +157,7 @@ Scenario: Winger joins hearing
 	When in the Winger's browser
 	Then the participants waiting room displays the closed status
   
-@HearingTest @DisableLogging
+@HearingTest
 Scenario: Judge opens a closed hearing
 	Given the Judge user has progressed to the Judge Waiting Room page
 	Then the user is on the Waiting Room page
