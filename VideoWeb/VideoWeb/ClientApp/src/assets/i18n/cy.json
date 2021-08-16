@@ -1043,6 +1043,28 @@
     "alt": "Eicon copïo rhif adnabod (ID) y gynhadledd"
   },
   "quick-participant-landing-page": {
+    "page-title": "Rhowch eich manylion i ymuno â'ch gwrandawiad",
+    "paragraph1": "Dywedwch wrthym eich enw a'ch rôl yn y gwrandawiad.",
+    "name-label": "Eich enw llawn",
+    "name-error": "Rhowch eich enw llawn",
+    "role-label": "Beth yw eich rôl yn y gwrandawiad?",
+    "role-error": "Dewiswch eich rôl yn y gwrandawiad",
+    "roles": {
+      "QuickLinkParticipant": {
+        "title": "Cyfranogwr",
+        "description": "Rydych wedi cael eich galw i gymryd rhan yn y gwrandawiad."
+      },
+      "QuickLinkObserver": {
+        "title": "Sylwedydd",
+        "description": "Rydych yn arsylwi'r gwrandawiad, ond nid ydych yn cymryd rhan."
+      }
+    },
     "button-continue": "Parhau"
+  },
+  "quick-participant-errors": {
+    "invalid-page": {
+      "heading": "Does dim modd cydnabod y ddolen rydych chi wedi'i defnyddio",
+      "body": "Gwiriwch y ddolen a anfonwyd atoch. Os nad yw'n gweithio o hyd, ffoniwch 0300 303 0655 i siarad â swyddog gwrandawiadau fideo."
+    }
   }
 }
