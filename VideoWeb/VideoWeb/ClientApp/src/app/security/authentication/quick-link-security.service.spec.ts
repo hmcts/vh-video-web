@@ -14,10 +14,10 @@ describe('QuickLinkSecurityService', () => {
     const jwt =
         'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkpvaG4gRG9lIiwiZ2l2ZW5fbmFtZSI6IkpvaG4gRG9lIiwiZmFtaWx5X25hbWUiOiJKb2huIERvZSIsInByZWZlcnJlZF91c2VybmFtZSI6IkpvaG4gRG9lIiwicm9sZSI6IkNpdGl6ZW4iLCJuYmYiOjE2MjcyOTQwMzcsImV4cCI6MTYyNzMyMjk1NywiaWF0IjoxNjI3Mjk0MDk3LCJpc3MiOiJodHRwczovL3ZoLXZpZGVvLXdlYi1kZXYuYXp1cmV3ZWJzaXRlcy5uZXQvOThhNWRiM2QtMGY5MS00MDNmLWI3ZGMtZDFhMjcyZjQ2ZjNiIn0.NyH-9u3Vg2wSC-B2rxkqjbAbKvdvoCyyFAgBsfeP9ff9mQTxn6PfJHdtkp8sANnQHpsLdqW8VnAp9a9bTfTVDA';
     const decodedJwt = {
-        unique_name: 'John Doe',
-        given_name: 'John Doe',
-        family_name: 'John Doe',
-        preferred_username: 'John Doe',
+        unique_name: 'Unique',
+        given_name: 'Given',
+        family_name: 'Family',
+        preferred_username: 'Username',
         role: 'Citizen',
         nbf: 1627294037,
         exp: 1627322957,
@@ -131,7 +131,7 @@ describe('QuickLinkSecurityService', () => {
 
         it('should emit userData when checkAuth returns true', fakeAsync(() => {
             // Arrange
-            const expectedPreferredUsername = 'John Doe';
+            const expectedPreferredUsername = decodedJwt.preferred_username;
             const isQuickLinkParticipantAuthorisedSubject = new Subject<void>();
             apiClientSpy.isQuickLinkParticipantAuthorised.and.returnValue(isQuickLinkParticipantAuthorisedSubject.asObservable());
 
