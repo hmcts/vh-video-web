@@ -1,12 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using VideoWeb.Common.Models;
-using VideoWeb.Contract.Responses;
-using VideoWeb.Mappings.Interfaces;
 using VideoApi.Contract.Responses;
-using LinkedParticipantResponse = VideoWeb.Contract.Responses.LinkedParticipantResponse;
-using VHLinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
+using VideoWeb.Common.Models;
+using VideoWeb.Mappings.Interfaces;
 using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
 
 namespace VideoWeb.Mappings
