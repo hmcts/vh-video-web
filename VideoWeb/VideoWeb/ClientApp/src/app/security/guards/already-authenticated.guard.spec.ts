@@ -8,7 +8,7 @@ import { ISecurityService } from '../authentication/security-service.interface';
 
 import { AlreadyAuthenticatedGuard } from './already-authenticated.guard';
 
-fdescribe('AlreadyAuthenticatedGuard', () => {
+describe('AlreadyAuthenticatedGuard', () => {
     let guard: AlreadyAuthenticatedGuard;
     let isAuthenticatedSubject: Subject<boolean>;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
