@@ -4,7 +4,6 @@ import { AuthOptions } from 'angular-auth-oidc-client/lib/login/auth-options';
 import { ReplaySubject, Observable, EMPTY } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { ApiClient } from 'src/app/services/clients/api-client';
-import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { JWTBody } from '../idp-selection/models/jwt-body.model';
 import { JwtHelperService } from '../jwt-helper.service';
@@ -37,7 +36,7 @@ export class QuickLinkSecurityService implements ISecurityService {
 
     decodedTokenBody: QuickLinkJwtBody;
 
-    constructor(private apiClient: ApiClient, private jwtHelper: JwtHelperService, private logger: Logger) {
+    constructor(private apiClient: ApiClient, private jwtHelper: JwtHelperService) {
         this.tokenSessionStorage = new SessionStorage<string>(this.tokenSessionStorageKey);
         this.token = this.tokenSessionStorage.get();
     }
@@ -85,10 +84,10 @@ export class QuickLinkSecurityService implements ISecurityService {
                 this.isAuthenticatedSubject.next(authenticated);
 
                 if (authenticated) {
-                    this.logger.debug(`${this.loggerPrefix} Check auth passed. User is authenticated.`);
+                    console.debug(`${this.loggerPrefix} Check auth passed. User is authenticated.`);
                     this.userDataSubject.next(this.decodedTokenBody);
                 } else {
-                    this.logger.warn(`${this.loggerPrefix} Check auth FAILED. User is NOT authenticated. Clearing token.`);
+                    console.warn(`${this.loggerPrefix} Check auth FAILED. User is NOT authenticated. Clearing token.`);
                     this.clearToken();
                 }
             })
