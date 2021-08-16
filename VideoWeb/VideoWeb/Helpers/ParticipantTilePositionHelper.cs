@@ -12,7 +12,7 @@ namespace VideoWeb.Helpers
             foreach (var participant in participants)
             {
                 participant.TiledDisplayName = GetTiledDisplayName(participant);
-            }        
+            }
         }
 
         public static string GetTiledDisplayName(ParticipantResponse participant)
@@ -22,7 +22,7 @@ namespace VideoWeb.Helpers
             {
                 prefix = "JUDGE";
             }
-            else if (participant.HearingRole?.ToLower().Trim() == "witness" || participant.Role == Role.QuickLinkObserver)
+            else if (participant.HearingRole?.ToLower().Trim() == "witness" || participant.Role == Role.QuickLinkObserver || participant.Role == Role.QuickLinkParticipant)
             {
                 prefix = "WITNESS";
             }
