@@ -279,7 +279,8 @@
     "continue": "Parhau"
   },
   "back-navigation": {
-    "back": "Yn ôl"
+    "back": "Yn ôl",
+    "return-to-video-hearing-list": "Dychwelyd i'r rhestr gwrandawiadau fideo "
   },
   "introduction": {
     "hm-courts-and-tribunals-service-crest": "Arwyddlun Gwasanaeth Llysoedd a Thribiwnlysoedd EM",
@@ -516,7 +517,8 @@
     "send": "Anfon",
     "char-count": "Nifer o nodau",
     "maximum": "caniateir hyd at",
-    "unable-send": "Methu anfon y neges"
+    "unable-send": "Methu anfon y neges",
+    "type-a-message": "Teipiwch neges"
   },
   "start-private-consultation": {
     "invite": "Gwahodd eraill i gyfarfod preifat",
@@ -560,7 +562,7 @@
     },
     "participant-added": {
       "title": "Mae {{name}}",
-      "message": "{{role}}({{party}}) wedi cael ei (h)ychwanegu at y gwrandawiad.",
+      "message": "{{role}} ({{party}}) wedi cael ei (h)ychwanegu at y gwrandawiad.",
       "dismiss": "Gwrthod"
     }
   },
@@ -596,7 +598,6 @@
   "judge-waiting-room": {
     "switch-to-main-screen": "Dychwelyd i'r brif sgrin",
     "loading-please-wait": "Wrthi'n llwytho...",
-    "return-to-video-hearing-list": "Dychwelyd i'r rhestr gwrandawiadau fideo ",
     "hearing": "Gwrandawiad",
     "choose-camera-and-microphone": "Dewis camera a microffon",
     "choose-camera-and-microphone-dialog": "Blwch deialog dewis camera a microffon",
@@ -880,8 +881,7 @@
     "redirect": "Arhoswch tra byddwn yn eich ailgyfeirio"
   },
   "unsupported-browser": {
-    "using-unsupported-browser": "Rydych wedi mewngofnodi gan ddefnyddio porwr nas gefnogir",
-    "unfortunately-this-browser": "Rydych yn defnyddio porwr nas gefnogir gan y gwasanaeth gwrandawiadau fideo.",
+    "using-unsupported-browser": "Rydych yn defnyddio porwr sydd heb ei gefnogi.",
     "please-try-again": "Rhowch gynnig arall arni gan ddefnyddio un o’r porwyr a restrir isod. Os ydych dal i gael problemau, cysylltwch â’r tîm gwrandawiadau fideo.",
     "supported-browser-alt": "{{browserName}} logo'r porwr"
   },
@@ -936,12 +936,13 @@
     "expert": "Arbenigwr",
     "defendant-lip": "Ymgyfreithiwr drosto'i hun y Diffynnydd ",
     "claimant-lip": "Ymgyfreithiwr drosto'i hun yr Hawlydd",
-    "claimaint-lip": "Ymgyfreithiwr drosto'i hun yr Hawlydd",
     "applicant-lip": "Ymgyfreithiwr drosto'i hun y Ceisydd",
     "appellant-lip": "Ymgyfreithiwr drosto'i hun yr Apelydd",
     "app-advocate": "Eiriolwr yr Apelydd",
     "app": "Apelydd",
-    "video-access-point": "Pwynt mynediad fideo"
+    "video-access-point": "Pwynt mynediad fideo",
+    "solicitor": "Cyfreithiwr",
+    "barrister": "Bargyfreithiwr"
   },
   "case-type-group": {
     "respondent": "Atebydd",
@@ -982,6 +983,7 @@
     "grc---dvsa": "GRC - DVSA",
     "grc---crb": "GRC - CRB",
     "grc---charity": "GRC - Elusennau",
+    "grc---ej": "GRC - EJ",
     "generic": "Cyffredinol",
     "financial-remedy": "Rhwymedi Ariannol",
     "family-law-act": "Deddf Cyfraith Teulu",

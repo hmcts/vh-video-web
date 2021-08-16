@@ -38,7 +38,8 @@
     "contact-us": "If you think this is a mistake and you need to speak to someone, please contact us using the options below."
   },
   "back-navigation": {
-    "back": "Back"
+    "back": "Back",
+    "return-to-video-hearing-list": "Return to video hearing list"
   },
   "beta-banner": {
     "beta": "beta",
@@ -60,7 +61,8 @@
     "send": "Send",
     "char-count": "Character count",
     "maximum": "maximum allowed",
-    "unable-send": "Unable to send message."
+    "unable-send": "Unable to send message.",
+    "type-a-message": "Type a message"
   },
   "contact-us": {
     "contact-video-hearings": "Contact the video hearings service",
@@ -145,8 +147,7 @@
     "change-camera-mic": "Change camera or microphone"
   },
   "unsupported-browser": {
-    "using-unsupported-browser": "Unsupported browser",
-    "unfortunately-this-browser": "You're using a browser that is not supported by the Video Hearings service.",
+    "using-unsupported-browser": "You're using an unsupported browser",
     "please-try-again": "Please try again using one of the browsers listed below. If you are still having problems, please contact the video hearings team.",
     "supported-browser-alt": "{{browserName}} browser logo"
   },
@@ -408,7 +409,6 @@
     "loading-please-wait": "Loading please wait...",
     "browser-support-message": "Your browser does not support Video",
     "switch-to-main-screen": "Switch to main screen",
-    "return-to-video-hearing-list": "Return to video hearing list",
     "choose-camera-and-microphone": "Choose camera and microphone",
     "choose-camera-and-microphone-dialog": "Choose camera and microphone dialog",
     "details-of-the-hearing": "Details of the hearing",
@@ -632,7 +632,7 @@
     "app-advocate": "App Advocate",
     "appellant-lip": "Appellant LIP",
     "applicant-lip": "Applicant LIP",
-    "claimaint-lip": "Claimaint LIP",
+    "barrister": "Barrister",
     "claimant-lip": "Claimant LIP",
     "defendant-lip": "Defendant LIP",
     "expert": "Expert",
@@ -651,11 +651,12 @@
     "respondent-Advocate": "Respondent Advocate",
     "respondent-lip": "Respondent LIP",
     "special-counsel": "Special Counsel",
+    "solicitor": "Solicitor",
     "state-lip": "State LIP",
     "winger": "Winger",
     "witness": "Witness",
     "intermediary": "Intermediary",
-    "video-access-point":"Video access point"
+    "video-access-point": "Video access point"
   },
   "case-role": {
     "appellant": "Appellant",
@@ -694,6 +695,7 @@
     "grc---professional-regulations": "GRC - Professional Regulations",
     "grc---query-jurisdiction": "GRC - Query Jurisdiction",
     "grc---welfare-of-animals": "GRC - Welfare of Animals",
+    "grc---ej": "GRC - EJ",
     "housing-&-planning-act": "Housing & Planning Act",
     "housing-act": "Housing Act",
     "immigration-and-asylum": "Immigration and Asylum",
@@ -1003,10 +1005,10 @@
       "decline": "Decline"
     },
     "linked-participants": {
-        "waiting-single": "Waiting for {{name}} to accept the invitation from {{invitedBy}}.",
-        "waiting-multiple": "Waiting for {{number}} other participants to accept the invitation from {{invitedBy}}.",
-        "rejected": "{{rejector}} rejected the invitation from {{invitedBy}}.",
-        "button-close": "Close"
+      "waiting-single": "Waiting for {{name}} to accept the invitation from {{invitedBy}}.",
+      "waiting-multiple": "Waiting for {{number}} other participants to accept the invitation from {{invitedBy}}.",
+      "rejected": "{{rejector}} rejected the invitation from {{invitedBy}}.",
+      "button-close": "Close"
     },
     "poor-connection": {
       "title": "Alert",
@@ -1015,7 +1017,7 @@
     },
     "participant-added": {
       "title": "{{name}}",
-      "message": "{{role}}({{party}}) has been added to the hearing.",
+      "message": "{{role}} ({{party}}) has been added to the hearing.",
       "dismiss": "Dismiss"
     }
   },
