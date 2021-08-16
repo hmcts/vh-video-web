@@ -69,9 +69,7 @@ export class SecurityConfigSetupService {
     }
 
     getIdp(): IdpProviders {
-        return (
-            (window.sessionStorage.getItem(this.idpProvidersSessionStorageKey) as IdpProviders) ?? (this.defaultProvider as IdpProviders)
-        );
+        return (window.sessionStorage.getItem(this.idpProvidersSessionStorageKey) as IdpProviders) ?? this.defaultProvider;
     }
 
     get currentIdp$(): Observable<IdpProviders> {
