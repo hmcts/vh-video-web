@@ -104,12 +104,8 @@ export class QuickLinkSecurityService implements ISecurityService {
         return EMPTY;
     }
 
-    private isTokenValid(): boolean {
-        if (!this.token) {
-            return false;
-        }
-
-        return !this.hasTokenExpired(this.token);
+    private isTokenValid(token: string): boolean {
+        return !this.hasTokenExpired(token);
     }
 
     private hasTokenExpired(token: string): boolean {
@@ -122,7 +118,7 @@ export class QuickLinkSecurityService implements ISecurityService {
 
     get isAuthenticated$(): Observable<boolean> {
         return this.isAuthenticatedSubject.asObservable().pipe(
-            map(isAuthenticated => (isAuthenticated ? this.isTokenValid() : false)),
+            map(isAuthenticated => (isAuthenticated ? this.isTokenValid(this.token) : false)),
             tap(isAuthenticated => {
                 if (!isAuthenticated) {
                     this.clearToken();
