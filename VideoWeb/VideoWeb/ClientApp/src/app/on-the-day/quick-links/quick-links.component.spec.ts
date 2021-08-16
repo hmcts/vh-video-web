@@ -31,7 +31,7 @@ describe('QuickLinksComponent', () => {
 
         quickLinksServiceSpy = jasmine.createSpyObj('quickLinksService', {
             getQuickLinkParticipantRoles: of(quickLinkParticipantRoles),
-            joinHearing: of({})
+            joinConference: of({})
         });
 
         routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate']);
@@ -177,7 +177,7 @@ describe('QuickLinksComponent', () => {
             it('should try and join the conference', () => {
                 component.onSubmit();
 
-                expect(quickLinksServiceSpy.joinHearing).toHaveBeenCalledOnceWith(
+                expect(quickLinksServiceSpy.joinConference).toHaveBeenCalledOnceWith(
                     component.hearingId,
                     component.quickLinkNameFormControl.value,
                     component.quickLinkRoleFormControl.value
@@ -189,7 +189,7 @@ describe('QuickLinksComponent', () => {
 
                 const hearingJoinedSubject = new Subject<boolean>();
 
-                quickLinksServiceSpy.joinHearing.and.returnValue(hearingJoinedSubject.asObservable());
+                quickLinksServiceSpy.joinConference.and.returnValue(hearingJoinedSubject.asObservable());
 
                 component.onSubmit();
                 hearingJoinedSubject.next(true);
@@ -204,7 +204,7 @@ describe('QuickLinksComponent', () => {
                 });
                 it('should NOT try and join the conference', () => {
                     component.onSubmit();
-                    expect(quickLinksServiceSpy.joinHearing).not.toHaveBeenCalled();
+                    expect(quickLinksServiceSpy.joinConference).not.toHaveBeenCalled();
                 });
             });
         });

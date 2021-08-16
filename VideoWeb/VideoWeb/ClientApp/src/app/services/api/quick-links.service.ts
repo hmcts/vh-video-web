@@ -24,7 +24,7 @@ export class QuickLinksService {
         return this.apiClient.validateQuickLink(hearingId);
     }
 
-    joinHearing(hearingId: string, name: string, role: Role): Observable<boolean> {
+    joinConference(hearingId: string, name: string, role: Role): Observable<boolean> {
         return this.apiClient
             .joinConferenceAsAQuickLinkUser(
                 hearingId,

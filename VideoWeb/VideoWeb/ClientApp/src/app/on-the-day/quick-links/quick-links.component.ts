@@ -84,7 +84,7 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
         if (this.validateForm()) {
             this.quickLinkSubscriptions.add(
                 this.quickLinksService
-                    .joinHearing(this.hearingId, this.quickLinkNameFormControl.value, this.quickLinkRoleFormControl.value)
+                    .joinConference(this.hearingId, this.quickLinkNameFormControl.value, this.quickLinkRoleFormControl.value)
                     .subscribe(
                         response => {
                             this.logger.info(`${this.loggerPrefix} Joined conference as quick link participant`, {

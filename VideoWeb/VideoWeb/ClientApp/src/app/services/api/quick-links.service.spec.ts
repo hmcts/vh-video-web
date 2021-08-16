@@ -83,7 +83,7 @@ describe('QuickLinksService', () => {
             apiClientSpy.joinConferenceAsAQuickLinkUser.and.returnValue(joinSubject.asObservable());
 
             // Act
-            service.joinHearing(hearingId, name, role);
+            service.joinConference(hearingId, name, role);
 
             // Assert
             expect(apiClientSpy.joinConferenceAsAQuickLinkUser).toHaveBeenCalledOnceWith(hearingId, expectedRequest);
@@ -107,7 +107,7 @@ describe('QuickLinksService', () => {
 
             // Act
             let result = null;
-            service.joinHearing(hearingId, name, role).subscribe(response => {
+            service.joinConference(hearingId, name, role).subscribe(response => {
                 result = response;
             });
             joinSubject.next(expectedResponse);
@@ -141,7 +141,7 @@ describe('QuickLinksService', () => {
 
             // Act
             let result = null;
-            service.joinHearing(hearingId, name, role).subscribe(response => {
+            service.joinConference(hearingId, name, role).subscribe(response => {
                 result = response;
             });
             joinSubject.next(expectedResponse);
@@ -175,7 +175,7 @@ describe('QuickLinksService', () => {
 
             // Act
             let result = null;
-            service.joinHearing(hearingId, name, role).subscribe(response => {
+            service.joinConference(hearingId, name, role).subscribe(response => {
                 result = response;
             });
             joinSubject.next(expectedResponse);
