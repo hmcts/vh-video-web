@@ -46,7 +46,7 @@ export class MockOidcSecurityService implements ISecurityService {
         return 'MockToken';
     }
 
-    checkAuth(url?: string): Observable<boolean> {
+    checkIsAuthenticated(url?: string): Observable<boolean> {
         return of(this.authenticated);
     }
 }

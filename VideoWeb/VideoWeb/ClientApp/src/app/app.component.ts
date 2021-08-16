@@ -148,7 +148,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     checkAuth(): Observable<boolean> {
-        return this.securityService.checkAuth().pipe(
+        return this.securityService.checkIsAuthenticated().pipe(
             catchError(err => {
                 console.error('[AppComponent] - Check Auth Error', err);
                 if (!this.isSignInUrl) {

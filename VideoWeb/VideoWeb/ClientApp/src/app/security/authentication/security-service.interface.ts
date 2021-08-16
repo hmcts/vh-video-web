@@ -7,7 +7,7 @@ export interface ISecurityService {
     userData$: Observable<any>;
     configuration: PublicConfiguration;
     authorize(authOptions?: AuthOptions, token?: string): void;
-    checkAuth(url?: string): Observable<boolean>;
+    checkIsAuthenticated(url?: string): Observable<boolean>;
     getToken(): string;
     logoffAndRevokeTokens(urlHandler?: (url: string) => any): Observable<any>;
 }

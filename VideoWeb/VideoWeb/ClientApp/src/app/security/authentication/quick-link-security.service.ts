@@ -43,7 +43,7 @@ export class QuickLinkSecurityService implements ISecurityService {
 
     authorize(authOptions?: AuthOptions, token?: string): void {
         this.setToken(token);
-        this.checkAuth().subscribe();
+        this.checkIsAuthenticated().subscribe();
     }
 
     private clearToken() {
@@ -62,8 +62,8 @@ export class QuickLinkSecurityService implements ISecurityService {
         }
     }
 
-    checkAuth(): Observable<boolean> {
-        const toIsAuthorisedResult = source =>
+    checkIsAuthenticated(): Observable<boolean> {
+        const tokenIsAuthorisedResult = source =>
             new Observable<boolean>(subscriber => {
                 return source.subscribe({
                     next() {
@@ -79,7 +79,7 @@ export class QuickLinkSecurityService implements ISecurityService {
             });
 
         return this.apiClient.isQuickLinkParticipantAuthorised().pipe(
-            toIsAuthorisedResult,
+            tokenIsAuthorisedResult,
             tap(authenticated => {
                 this.isAuthenticatedSubject.next(authenticated);
 
