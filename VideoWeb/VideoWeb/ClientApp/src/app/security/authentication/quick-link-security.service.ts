@@ -83,6 +83,7 @@ export class QuickLinkSecurityService implements ISecurityService {
             tap(authenticated => {
                 this.isAuthenticatedSubject.next(authenticated);
 
+                // TODO: Due to AppInsightsLoggerService provided in app.module injecting Logger causes a circular dependency. This should be refactored
                 if (authenticated) {
                     console.debug(`${this.loggerPrefix} Check auth passed. User is authenticated.`);
                     this.userDataSubject.next(this.decodedTokenBody);

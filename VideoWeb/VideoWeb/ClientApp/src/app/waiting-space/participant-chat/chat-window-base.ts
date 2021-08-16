@@ -119,6 +119,7 @@ export abstract class ChatWindowBaseComponent extends ChatBaseComponent implemen
         if (this.chatHubSubscription) {
             this.chatHubSubscription.unsubscribe();
         }
+        super.ngOnDestroy();
     }
 
     handleIncomingOtherMessage(message: InstantMessage) {

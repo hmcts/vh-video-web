@@ -1,5 +1,5 @@
-import { ElementRef } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, ElementRef, OnDestroy } from '@angular/core';
+import { Subject, Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { LoggedParticipantResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
@@ -11,10 +11,16 @@ import { ImHelper } from '../im-helper';
 import { TranslateService } from '@ngx-translate/core';
 import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
+import { takeUntil } from 'rxjs/operators';
 
-export abstract class ChatBaseComponent {
+@Component({
+    selector: 'app-chat-base-component',
+    template: ''
+})
+export abstract class ChatBaseComponent implements OnDestroy {
     protected hearing: Hearing;
     protected securityService: ISecurityService;
+    private destroyed$ = new Subject();
 
     messages: InstantMessage[] = [];
     pendingMessages: Map<string, InstantMessage[]> = new Map<string, InstantMessage[]>();
@@ -33,7 +39,12 @@ export abstract class ChatBaseComponent {
         protected imHelper: ImHelper,
         protected translateService: TranslateService
     ) {
-        securityServiceProviderService.currentSecurityService$.subscribe(securityService => (this.securityService = securityService));
+        securityServiceProviderService.currentSecurityService$
+            .pipe(takeUntil(this.destroyed$))
+            .subscribe(securityService => (this.securityService = securityService));
+    }
+    ngOnDestroy(): void {
+        this.destroyed$.next();
     }
 
     abstract content: ElementRef<HTMLElement>;
@@ -70,7 +81,7 @@ export abstract class ChatBaseComponent {
             return;
         }
 
-        this.securityService.userData$.subscribe(async ud => {
+        this.securityService.userData$.pipe(takeUntil(this.destroyed$)).subscribe(async ud => {
             const from = message.from.toUpperCase();
             const username =
                 this.loggedInUser && this.loggedInUser.participant_id && this.loggedInUser.participant_id !== this.emptyGuid
