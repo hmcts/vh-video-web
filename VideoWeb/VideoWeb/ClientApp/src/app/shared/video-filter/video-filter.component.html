@@ -1,3 +1,86 @@
-<select id="background" (change)="this.backgroundChanged($event)">
-  <option [selected]="f.selected" [value]="f.value" *ngFor="let f of filters">{{ f.name }}</option>
-</select>
+<div class="govuk-accordion vh-accordion" data-module="govuk-accordion" id="select-video-background">
+  <div class="govuk-accordion__section">
+    <div class="govuk-accordion__section-header">
+      <h2 class="govuk-accordion__section-heading">
+        <span class="govuk-accordion__section-button" id="select-video-background-heading-1"> Choose a custom background </span>
+      </h2>
+    </div>
+    <div
+      id="select-video-background-content-1"
+      class="govuk-accordion__section-content"
+      aria-labelledby="select-video-background-heading-1"
+    >
+      <div class="v-bg-panel">
+        <div class="govuk-body" style="font-size: 1.1em; margin-bottom: 4px">Blur your background</div>
+        <div>
+          <input
+            type="radio"
+            class="input-hidden"
+            name="backgrounds"
+            id="blur-bg"
+            [checked]="activeFilter === vBG.blur"
+            [value]="vBG.blur"
+            (change)="this.backgroundChanged($event)"
+          />
+          <label for="blur-bg">
+            <img src="/assets/images/VhBgFilterBlur.jpg" width="120px" style="cursor: pointer" />
+          </label>
+        </div>
+        <div class="govuk-body" style="font-size: 1.1em; margin-bottom: 4px; margin-top: 20px">Choose a background image</div>
+        <div class="bg-grid">
+          <div class="bg-img1">
+            <input
+              type="radio"
+              class="input-hidden"
+              name="backgrounds"
+              id="no-bg"
+              [checked]="!activeFilter"
+              [value]="null"
+              (change)="this.backgroundChanged($event)"
+            />
+            <label for="no-bg">
+              <img src="/assets/images/VhBgFilterNone.jpg" width="120px" style="cursor: pointer" />
+            </label>
+          </div>
+          <div class="bg-name1">
+            <div class="govuk-hint" style="font-size: 1em; margin-left: 4px">No background</div>
+          </div>
+          <div class="bg-img2">
+            <input
+              type="radio"
+              class="input-hidden"
+              name="backgrounds"
+              id="bg1"
+              [checked]="activeFilter === vBG.HMCTS"
+              [value]="vBG.HMCTS"
+              (change)="this.backgroundChanged($event)"
+            />
+            <label for="bg1">
+              <img src="/assets/images/VhBgFilterHMCTS.jpg" width="120px" style="margin-left: 4px" />
+            </label>
+          </div>
+          <div class="bg-name2">
+            <div class="govuk-hint" style="font-size: 1em; margin-left: 4px">HMCTS crest</div>
+          </div>
+          <div class="bg-img3">
+            <input
+              type="radio"
+              class="input-hidden"
+              name="backgrounds"
+              id="bg-scot"
+              [checked]="activeFilter === vBG.SCTS"
+              [value]="vBG.SCTS"
+              (change)="this.backgroundChanged($event)"
+            />
+            <label for="bg-scot">
+              <img src="/assets/images/VhBgFilterSCTS.jpg" width="120px" style="margin-left: 4px" />
+            </label>
+          </div>
+          <div class="bg-name3">
+            <div class="govuk-hint" style="font-size: 1em; margin-left: 4px">SCTS crest</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

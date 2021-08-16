@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil, tap } from 'rxjs/operators';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { BackgroundFilter } from 'src/app/services/models/background-filter';
 import { VideoFilterService } from 'src/app/services/video-filter.service';
@@ -6,25 +8,37 @@ import { VideoFilterService } from 'src/app/services/video-filter.service';
 @Component({
     selector: 'app-video-filter',
     templateUrl: './video-filter.component.html',
-    styleUrls: ['./video-filter.component.css']
+    styleUrls: ['./video-filter.component.scss']
 })
-export class VideoFilterComponent implements OnInit {
+export class VideoFilterComponent implements OnInit, OnDestroy {
+    destroy$: Subject<boolean> = new Subject<boolean>();
     private readonly loggerPrefix = '[VideoFilter] -';
-    filters: FilterDto[] = [
-        new FilterDto('none', 'none'),
-        new FilterDto('blur', BackgroundFilter.blur),
-        new FilterDto('HMCTS', BackgroundFilter.HMCTS),
-        new FilterDto('SCTS', BackgroundFilter.SCTS)
-    ];
+    vBG = BackgroundFilter;
+    activeFilter: BackgroundFilter | null;
 
     constructor(private videoFilterService: VideoFilterService, private logger: Logger) {}
 
     ngOnInit(): void {
-        if (this.videoFilterService.filterOn) {
-            this.filters.find(x => x.value === this.videoFilterService.activeFilter).selected = true;
-        } else {
-            this.filters[0].selected = true;
-        }
+        (<any>window).GOVUKFrontend.initAll();
+        this.initCurrentFilter();
+    }
+
+    private initCurrentFilter() {
+        this.activeFilter = this.videoFilterService.activeFilter;
+
+        this.videoFilterService.onFilterChanged
+            .pipe(
+                takeUntil(this.destroy$),
+                tap(x => console.log(`${this.loggerPrefix} Current filter selected ${x}`))
+            )
+            .subscribe(newFilter => {
+                this.activeFilter = newFilter;
+            });
+    }
+
+    ngOnDestroy() {
+        this.destroy$.next(true);
+        this.destroy$.unsubscribe();
     }
 
     backgroundChanged(e: Event) {

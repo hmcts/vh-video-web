@@ -60,6 +60,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
                 .then(async () => {
                     this.selectedMediaDevicesForm = await this.initNewDeviceSelectionForm();
                     this.subscribeToDeviceSelectionChange();
+                    // TODO: Get rid of this!
                     this.setupSubscribers();
                     await this.applyVideoFilterIfNeeded();
                 })
@@ -93,7 +94,6 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
                 this.hideOriginalStream = true;
             } else {
                 this.hideOriginalStream = false;
-                this.videoFilterService.stopStream();
             }
         });
     }

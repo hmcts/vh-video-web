@@ -61,9 +61,7 @@ export class UserMediaStreamService {
                 this.logger.debug(`${this.loggerPrefix} Getting stream for microphone device ${device.label}`);
                 return await this.navigator.mediaDevices.getUserMedia({ audio: { deviceId: { exact: device.deviceId } } });
             } else {
-                this.logger.debug(
-                    `${this.loggerPrefix} No device provided, getting a default stream for microphone device ${device.label}`
-                );
+                this.logger.debug(`${this.loggerPrefix} No device provided, getting a default stream for microphone device`);
                 return this.getDefaultMicStream();
             }
         } catch (error) {
@@ -78,7 +76,7 @@ export class UserMediaStreamService {
                 this.logger.debug(`${this.loggerPrefix} Getting stream for camera device ${device.label}`);
                 return await this.navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId } } });
             } else {
-                this.logger.debug(`${this.loggerPrefix} No device provided, getting a default stream for camera device ${device.label}`);
+                this.logger.debug(`${this.loggerPrefix} No device provided, getting a default stream for camera device`);
                 return this.getDefaultCamStream();
             }
         } catch (error) {

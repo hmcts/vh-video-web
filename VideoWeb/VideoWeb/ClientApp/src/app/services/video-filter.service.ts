@@ -73,11 +73,6 @@ export class VideoFilterService {
         return canvasStream;
     }
 
-    stopStream() {
-        this.canvasCtx.save();
-        this.canvasCtx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
-    }
-
     updateFilter(filter: BackgroundFilter | null) {
         this.logger.debug(`${this.loggerPrefix} Updating filter to ${filter}`);
         if (filter) {
