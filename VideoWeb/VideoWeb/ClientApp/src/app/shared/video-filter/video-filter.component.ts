@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil, tap } from 'rxjs/operators';
+import { startWith, takeUntil, tap } from 'rxjs/operators';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { BackgroundFilter } from 'src/app/services/models/background-filter';
 import { VideoFilterService } from 'src/app/services/video-filter.service';
@@ -14,7 +14,8 @@ export class VideoFilterComponent implements OnInit, OnDestroy {
     destroy$: Subject<boolean> = new Subject<boolean>();
     private readonly loggerPrefix = '[VideoFilter] -';
     vBG = BackgroundFilter;
-    activeFilter: BackgroundFilter | null;
+    activeFilter: BackgroundFilter;
+    filterOn: boolean;
 
     constructor(private videoFilterService: VideoFilterService, private logger: Logger) {}
 
@@ -24,15 +25,15 @@ export class VideoFilterComponent implements OnInit, OnDestroy {
     }
 
     private initCurrentFilter() {
-        this.activeFilter = this.videoFilterService.activeFilter;
-
         this.videoFilterService.onFilterChanged
-            .pipe(
-                takeUntil(this.destroy$),
-                tap(x => console.log(`${this.loggerPrefix} Current filter selected ${x}`))
-            )
+            .pipe(startWith(this.videoFilterService.activeFilter), takeUntil(this.destroy$))
             .subscribe(newFilter => {
-                this.activeFilter = newFilter;
+                if (newFilter) {
+                    this.activeFilter = newFilter;
+                    this.filterOn = true;
+                } else {
+                    this.filterOn = false;
+                }
             });
     }
 
@@ -46,8 +47,4 @@ export class VideoFilterComponent implements OnInit, OnDestroy {
         this.logger.info(`${this.loggerPrefix} filter dropdown changed ${filter}`);
         this.videoFilterService.updateFilter(filter);
     }
-}
-
-class FilterDto {
-    constructor(public name: string, public value: any, public selected = false) {}
 }

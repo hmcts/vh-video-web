@@ -1,3 +1,5 @@
+@import '~govuk-frontend/govuk/base';
+
 .bg-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -17,14 +19,24 @@
   box-shadow: inset 0px 0px 8px rgb(0 0 0 / 5%);
 }
 
+.bg-option-text {
+  font-size: 1.1em;
+  margin-bottom: 4px;
+}
+
+.bg-option-img {
+  width: 120px;
+  cursor: pointer;
+}
+
 .vh-accordion {
   font-family: 'GDS Transport', Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-weight: 400;
   font-size: 1.2em;
-  background-color: #ffffff;
-  color: #0b0c0c;
+  background-color: govuk-colour('white');
+  color: govuk-colour('black');
   cursor: pointer;
   width: 100%;
   border: none;
@@ -39,7 +51,7 @@
 }
 
 input[type='radio']:checked + label > img {
-  border: 4px solid #ffdd00;
+  border: 4px solid govuk-colour('yellow');
 }
 
 //Grid for background images

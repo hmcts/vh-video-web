@@ -11,7 +11,7 @@
       aria-labelledby="select-video-background-heading-1"
     >
       <div class="v-bg-panel">
-        <div class="govuk-body" style="font-size: 1.1em; margin-bottom: 4px">Blur your background</div>
+        <div class="govuk-body bg-option-text">Blur your background</div>
         <div>
           <input
             type="radio"
@@ -23,10 +23,10 @@
             (change)="this.backgroundChanged($event)"
           />
           <label for="blur-bg">
-            <img src="/assets/images/VhBgFilterBlur.jpg" width="120px" style="cursor: pointer" />
+            <img src="/assets/images/VhBgFilterBlur.jpg" class="bg-option-img" />
           </label>
         </div>
-        <div class="govuk-body" style="font-size: 1.1em; margin-bottom: 4px; margin-top: 20px">Choose a background image</div>
+        <div class="govuk-body bg-option-text govuk-!-margin-top-4">Choose a background image</div>
         <div class="bg-grid">
           <div class="bg-img1">
             <input
@@ -34,16 +34,16 @@
               class="input-hidden"
               name="backgrounds"
               id="no-bg"
-              [checked]="!activeFilter"
+              [checked]="!filterOn"
               [value]="null"
               (change)="this.backgroundChanged($event)"
             />
             <label for="no-bg">
-              <img src="/assets/images/VhBgFilterNone.jpg" width="120px" style="cursor: pointer" />
+              <img src="/assets/images/VhBgFilterNone.jpg" class="bg-option-img" />
             </label>
           </div>
           <div class="bg-name1">
-            <div class="govuk-hint" style="font-size: 1em; margin-left: 4px">No background</div>
+            <div class="govuk-hint bg-option-text">No background</div>
           </div>
           <div class="bg-img2">
             <input
@@ -56,11 +56,11 @@
               (change)="this.backgroundChanged($event)"
             />
             <label for="bg1">
-              <img src="/assets/images/VhBgFilterHMCTS.jpg" width="120px" style="margin-left: 4px" />
+              <img src="/assets/images/VhBgFilterHMCTS.jpg" class="bg-option-img" />
             </label>
           </div>
           <div class="bg-name2">
-            <div class="govuk-hint" style="font-size: 1em; margin-left: 4px">HMCTS crest</div>
+            <div class="govuk-hint bg-option-text">HMCTS crest</div>
           </div>
           <div class="bg-img3">
             <input
@@ -73,11 +73,11 @@
               (change)="this.backgroundChanged($event)"
             />
             <label for="bg-scot">
-              <img src="/assets/images/VhBgFilterSCTS.jpg" width="120px" style="margin-left: 4px" />
+              <img src="/assets/images/VhBgFilterSCTS.jpg" class="bg-option-img" />
             </label>
           </div>
           <div class="bg-name3">
-            <div class="govuk-hint" style="font-size: 1em; margin-left: 4px">SCTS crest</div>
+            <div class="govuk-hint bg-option-text">SCTS crest</div>
           </div>
         </div>
       </div>
