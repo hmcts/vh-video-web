@@ -2,12 +2,12 @@ import { Component, OnInit, Output, EventEmitter, OnDestroy, Input } from '@angu
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
+import { MediaStreamService } from 'src/app/services/media-stream.service';
 
 @Component({
     selector: 'app-select-media-devices',
@@ -37,7 +37,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
 
     constructor(
         private userMediaService: UserMediaService,
-        private userMediaStreamService: UserMediaStreamService,
+        private mediaStreamService: MediaStreamService,
         private formBuilder: FormBuilder,
         private logger: Logger,
         private translateService: TranslateService,
@@ -77,7 +77,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     }
 
     private updateStreamForSelectedCamera() {
-        this.userMediaStreamService
+        this.mediaStreamService
             .getStreamForCam(this.selectedCameraDevice)
             .pipe(take(1))
             .subscribe(cameraStream => (this.selectedCameraStream = cameraStream));
@@ -89,7 +89,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     }
 
     private updateStreamForSelectedMicrophone() {
-        this.userMediaStreamService
+        this.mediaStreamService
             .getStreamForMic(this.selectedMicrophoneDevice)
             .pipe(take(1))
             .subscribe(microphoneStream => (this.selectedMicrophoneStream = microphoneStream));
@@ -141,7 +141,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         this.destroyedSubject.next();
         this.destroyedSubject.complete();
 
-        this.userMediaStreamService.stopStream(this.selectedCameraStream);
-        this.userMediaStreamService.stopStream(this.selectedMicrophoneStream);
+        this.mediaStreamService.stopStream(this.selectedCameraStream);
+        this.mediaStreamService.stopStream(this.selectedMicrophoneStream);
     }
 }

@@ -16,7 +16,7 @@ import {
 } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { MediaStreamService } from 'src/app/services/media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
@@ -63,7 +63,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         private videoWebService: VideoWebService,
         private errorService: ErrorService,
         private userMediaService: UserMediaService,
-        private userMediaStreamService: UserMediaStreamService,
+        private mediaStreamService: MediaStreamService,
         private videoCallService: VideoCallService
     ) {
         this.didTestComplete = false;
@@ -97,7 +97,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         });
 
         this.userMediaService.activeMicrophoneDevice$.subscribe(mic =>
-            this.userMediaStreamService.getStreamForMic(mic).subscribe(micStream => (this.preferredMicrophoneStream = micStream))
+            this.mediaStreamService.getStreamForMic(mic).subscribe(micStream => (this.preferredMicrophoneStream = micStream))
         );
     }
 
@@ -291,7 +291,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
     closeMicStreams() {
         if (this.preferredMicrophoneStream) {
-            this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
+            this.mediaStreamService.stopStream(this.preferredMicrophoneStream);
             this.preferredMicrophoneStream = null;
         }
         this.preferredMicrophoneStream = null;
