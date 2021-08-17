@@ -6,7 +6,7 @@ import { ErrorService } from './error.service';
 import { Logger } from './logging/logger-base';
 import { MediaStreamService } from './media-stream.service';
 
-fdescribe('MediaStreamService', () => {
+describe('MediaStreamService', () => {
     const cameraDevice = new UserMediaDevice('Camera 1', Guid.create().toString(), 'videoinput', '');
     const cameraConstraintBuilder = (device: UserMediaDevice) => {
         return {

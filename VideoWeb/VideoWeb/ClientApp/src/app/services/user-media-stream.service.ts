@@ -5,7 +5,7 @@ import { Logger } from './logging/logger-base';
 import { Observable, ReplaySubject, Subject, zip } from 'rxjs';
 import { UserMediaService } from './user-media.service';
 import { take } from 'rxjs/operators';
-import { MediaServiceService } from './media-service.service';
+import { MediaStreamService } from './media-stream.service';
 
 export const mustProvideAMicrophoneDeviceError = () => new Error('A microphone device must be provided');
 
@@ -29,7 +29,7 @@ export class UserMediaStreamService {
         return this.streamModifiedSubject.asObservable();
     }
 
-    constructor(private logger: Logger, private userMediaService: UserMediaService, private mediaStreamService: MediaServiceService) {
+    constructor(private logger: Logger, private userMediaService: UserMediaService, private mediaStreamService: MediaStreamService) {
         this.logger.debug(
             `${this.loggerPrefix} Constructor called. Attempting to get active devices from userMediaService to initialise the stream.`
         );

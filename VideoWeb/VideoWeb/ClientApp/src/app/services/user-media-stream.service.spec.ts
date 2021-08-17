@@ -4,11 +4,11 @@ import { of, Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Logger } from './logging/logger-base';
-import { MediaServiceService } from './media-service.service';
+import { MediaStreamService } from './media-stream.service';
 import { mustProvideAMicrophoneDeviceError, UserMediaStreamService } from './user-media-stream.service';
 import { UserMediaService } from './user-media.service';
 
-fdescribe('UserMediaStreamService', () => {
+describe('UserMediaStreamService', () => {
     const mediaStreamBuilder = (device: UserMediaDevice) => {
         const stream = jasmine.createSpyObj<MediaStream>(['addTrack', 'removeTrack', 'getTracks']);
         const track = jasmine.createSpyObj<MediaStreamTrack>(['stop'], ['label', 'id']);
@@ -41,7 +41,7 @@ fdescribe('UserMediaStreamService', () => {
     let activeMicrophoneDeviceSubject: Subject<UserMediaDevice>;
     let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
 
-    let mediaStreamServiceSpy: jasmine.SpyObj<MediaServiceService>;
+    let mediaStreamServiceSpy: jasmine.SpyObj<MediaStreamService>;
 
     beforeEach(fakeAsync(() => {
         loggerSpy = jasmine.createSpyObj<Logger>(['debug', 'info', 'warn', 'error']);
@@ -55,7 +55,7 @@ fdescribe('UserMediaStreamService', () => {
             activeMicrophoneDeviceSubject.asObservable()
         );
 
-        mediaStreamServiceSpy = jasmine.createSpyObj<MediaServiceService>(['initialiseNewStream', 'getStreamForCam', 'getStreamForMic']);
+        mediaStreamServiceSpy = jasmine.createSpyObj<MediaStreamService>(['initialiseNewStream', 'getStreamForCam', 'getStreamForMic']);
 
         const newStreamTracks = [];
         const newStreamSpy = jasmine.createSpyObj<MediaStream>(['addTrack', 'removeTrack', 'getTracks']);
