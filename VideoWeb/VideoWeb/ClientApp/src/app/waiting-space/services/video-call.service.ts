@@ -242,13 +242,41 @@ export class VideoCallService {
     }
 
     updateCameraForCall(camera: UserMediaDevice) {
-        this.pexipAPI.video_source = false;
+        this.pexipAPI.video_source = null;
         this.logger.info(`${this.loggerPrefix}  Using preferred camera: ${camera.label}`);
+        if (!this.preferredDeviceStream) {
+            return;
+        }
+        this.userMediaStreamService.getStreamForCam(camera).then(newCameraStream => {
+            this.preferredDeviceStream.getVideoTracks().forEach(x => {
+                this.preferredDeviceStream.removeTrack(x);
+            });
+
+            newCameraStream.getVideoTracks().forEach(x => {
+                this.preferredDeviceStream.addTrack(x);
+            });
+        });
+        this.updateStreamDevices(this.preferredDeviceStream);
     }
 
     updateMicrophoneForCall(microphone: UserMediaDevice) {
-        this.pexipAPI.audio_source = false;
+        this.pexipAPI.audio_source = null;
         this.logger.info(`${this.loggerPrefix} Using preferred microphone: ${microphone.label}`);
+        if (!this.preferredDeviceStream) {
+            return;
+        }
+
+        this.userMediaStreamService.getStreamForMic(microphone).then(newMicrophoneStream => {
+            this.preferredDeviceStream.getAudioTracks().forEach(x => {
+                this.preferredDeviceStream.removeTrack(x);
+            });
+
+            newMicrophoneStream.getAudioTracks().forEach(x => {
+                this.preferredDeviceStream.addTrack(x);
+            });
+        });
+
+        this.updateStreamDevices(this.preferredDeviceStream);
     }
 
     toggleMute(conferenceId: string, participantId: string): boolean {

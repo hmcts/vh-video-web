@@ -29,16 +29,6 @@ export class VideoFilterService {
     constructor(private logger: Logger) {
         this.filterOn = false;
         this.activeFilter = null;
-    }
-
-    async initFilterStream(page: IVideoFilterer) {
-        if (this.videoElement && this.videoElement.id === page?.retrieveVideoElement()?.id) {
-            return;
-        }
-        this.logger.debug(`${this.loggerPrefix} initialising stream for filter`);
-        this.videoElement = page.retrieveVideoElement();
-        this.canvasElement = page.retrieveCanvasElement();
-        this.canvasCtx = this.canvasElement.getContext('2d');
 
         this.selfieSegmentation = new SelfieSegmentation({
             locateFile: file => {
@@ -49,6 +39,16 @@ export class VideoFilterService {
             modelSelection: 1,
             selfieMode: true
         });
+    }
+
+    async initFilterStream(page: IVideoFilterer) {
+        if (this.videoElement && this.videoElement.id === page?.retrieveVideoElement()?.id) {
+            return;
+        }
+        this.logger.debug(`${this.loggerPrefix} initialising stream for filter`);
+        this.videoElement = page.retrieveVideoElement();
+        this.canvasElement = page.retrieveCanvasElement();
+        this.canvasCtx = this.canvasElement.getContext('2d');
 
         this.logger.debug(`${this.loggerPrefix} starting filtered stream`);
         this.selfieSegmentation.onResults(results => this.onSelfieSegmentationResults(results));

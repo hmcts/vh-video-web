@@ -63,6 +63,7 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
     videoCallSubscription$ = new Subscription();
 
     hideOriginalStream: boolean;
+    filteredStream: MediaStream;
 
     constructor(
         private logger: Logger,
@@ -174,7 +175,7 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
     async onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
         this.userMediaService.updatePreferredCamera(selectedMediaDevice.selectedCamera);
         this.userMediaService.updatePreferredMicrophone(selectedMediaDevice.selectedMicrophone);
-        if (this.displayDeviceChangeModal) {
+        if (!this.displayDeviceChangeModal) {
             await this.updatePexipAudioVideoSource();
             this.call();
         }
@@ -182,8 +183,8 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
 
     async applyAndUseFilterStream() {
         await this.videoFilterService.initFilterStream(this);
-        const filteredStream = this.videoFilterService.startFilteredStream(true);
-        this.videoCallService.updateStreamDevices(filteredStream);
+        this.filteredStream = this.videoFilterService.startFilteredStream(true);
+        this.videoCallService.updateStreamDevices(this.filteredStream);
         this.hideOriginalStream = true;
     }
 
@@ -191,6 +192,17 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
         this.subscription.add(
             this.userMediaService.connectedDevices.subscribe(async () => {
                 this.hasMultipleDevices = await this.userMediaService.hasMultipleDevices();
+            })
+        );
+        this.subscription.add(
+            this.videoFilterService.onFilterChanged.subscribe(async filter => {
+                this.logger.debug(`${this.loggerPrefix} filter applied ${filter ? filter : 'off'}`);
+                if (filter) {
+                    this.videoFilterService.startFilteredStream(true);
+                    this.hideOriginalStream = true;
+                } else {
+                    this.hideOriginalStream = false;
+                }
             })
         );
     }
