@@ -98,7 +98,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
     }
 
     private setupSubscribers() {
-        this.videoFilterService.onFilterChanged.subscribe(async filter => {
+        this.videoFilterService.onFilterChanged.pipe(takeUntil(this.destroyedSubject)).subscribe(async filter => {
             this.logger.debug(`${this.loggerPrefix} filter applied ${filter ? filter : 'off'}`);
             if (filter) {
                 this.videoFilterService.startFilteredStream(true);

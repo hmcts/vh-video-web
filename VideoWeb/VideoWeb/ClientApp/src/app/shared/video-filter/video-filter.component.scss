@@ -64,31 +64,41 @@ input[type='radio']:checked + label > img {
 }
 
 .bg-img1 {
-  grid-column: 1 / 1;
-  grid-row: 1 / 1;
-}
-
-.bg-img2 {
-  grid-column: 2 / 2;
-  grid-row: 1 / 1;
-}
-
-.bg-img3 {
-  grid-column: 3 / 3;
-  grid-row: 1 / 1;
+  grid-column: 1;
+  grid-row: 1;
 }
 
 .bg-name1 {
-  grid-column: 1 / 1;
-  grid-row: 2 / 2;
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.bg-img2 {
+  grid-column: 2;
+  grid-row: 1;
 }
 
 .bg-name2 {
-  grid-column: 2 / 2;
-  grid-row: 2 / 2;
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.bg-img3 {
+  grid-column: 3;
+  grid-row: 1;
 }
 
 .bg-name3 {
-  grid-column: 3 / 3;
-  grid-row: 3 / 3;
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.bg-img4 {
+  grid-column: 4;
+  grid-row: 1;
+}
+
+.bg-name4 {
+  grid-column: 4;
+  grid-row: 2;
 }

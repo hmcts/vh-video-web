@@ -16,11 +16,12 @@ export class VideoFilterComponent implements OnInit, OnDestroy {
     vBG = BackgroundFilter;
     activeFilter: BackgroundFilter;
     filterOn: boolean;
+    showOptions: boolean;
 
     constructor(private videoFilterService: VideoFilterService, private logger: Logger) {}
 
     ngOnInit(): void {
-        (<any>window).GOVUKFrontend.initAll();
+        this.showOptions = false;
         this.initCurrentFilter();
     }
 
@@ -46,5 +47,9 @@ export class VideoFilterComponent implements OnInit, OnDestroy {
         const filter = BackgroundFilter[(e.target as HTMLInputElement).value];
         this.logger.info(`${this.loggerPrefix} filter dropdown changed ${filter}`);
         this.videoFilterService.updateFilter(filter);
+    }
+
+    toggleDisplayOptions() {
+        this.showOptions = !this.showOptions;
     }
 }

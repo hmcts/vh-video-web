@@ -55,7 +55,11 @@ export class VideoFilterService {
 
         const camera = new Camera(this.videoElement, {
             onFrame: async () => {
-                await this.selfieSegmentation.send({ image: this.videoElement });
+                try {
+                    await this.selfieSegmentation.send({ image: this.videoElement });
+                } catch (err) {
+                    this.logger.error(`${this.loggerPrefix} failed to send image to self segmentation mask`, err);
+                }
             },
             width: 1280,
             height: 720
