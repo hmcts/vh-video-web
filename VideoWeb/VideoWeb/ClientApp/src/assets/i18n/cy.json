@@ -212,7 +212,8 @@
     "all-content-availabe-under": "Mae'r holl gynnwys ar gael dan y ",
     "open-government-license": "Drwydded Llywodraeth Agored f3.0,",
     "except": " oni bai pan nodir fel arall",
-    "copyright": "© Hawlfraint y Goron"
+    "copyright": "© Hawlfraint y Goron",
+    "copyright-info-link-label": "Gwybodaeth Hawlfraint"
   },
   "participant-hearings": {
     "loading-please-wait": "Wrthi'n llwytho...",
@@ -518,7 +519,7 @@
     "char-count": "Nifer o nodau",
     "maximum": "caniateir hyd at",
     "unable-send": "Methu anfon y neges",
-    "type-a-message":"Teipiwch neges"
+    "type-a-message": "Teipiwch neges"
   },
   "start-private-consultation": {
     "invite": "Gwahodd eraill i gyfarfod preifat",
@@ -881,8 +882,7 @@
     "redirect": "Arhoswch tra byddwn yn eich ailgyfeirio"
   },
   "unsupported-browser": {
-    "using-unsupported-browser": "Rydych wedi mewngofnodi gan ddefnyddio porwr nas gefnogir",
-    "unfortunately-this-browser": "Rydych yn defnyddio porwr nas gefnogir gan y gwasanaeth gwrandawiadau fideo.",
+    "using-unsupported-browser": "Rydych yn defnyddio porwr sydd heb ei gefnogi.",
     "please-try-again": "Rhowch gynnig arall arni gan ddefnyddio un o’r porwyr a restrir isod. Os ydych dal i gael problemau, cysylltwch â’r tîm gwrandawiadau fideo.",
     "supported-browser-alt": "{{browserName}} logo'r porwr"
   },

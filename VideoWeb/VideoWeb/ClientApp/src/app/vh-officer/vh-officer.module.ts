@@ -30,6 +30,7 @@ import { VhoHearingListComponent } from './vho-hearing-list/vho-hearing-list.com
 import { VhoHearingsFilterComponent } from './vho-hearings-filter/vho-hearings-filter.component';
 import { CourtRoomsFiltersComponent } from './court-rooms-filters/court-rooms-filters.component';
 import { CopyTelephoneIdComponent } from './copy-telephone-id/copy-telephone-id.component';
+import { UnreadAdminMessageModelMapper } from '../shared/mappers/unread-messages-model-mapper';
 
 @NgModule({
     declarations: [
@@ -57,7 +58,7 @@ import { CopyTelephoneIdComponent } from './copy-telephone-id/copy-telephone-id.
         CopyTelephoneIdComponent
     ],
     imports: [CommonModule, SharedModule, ChartsModule, ClipboardModule, VhOfficerRoutingModule, NgSelectModule],
-    providers: [HearingsFilterOptionsService, ParticipantStatusReader, VhoQueryService],
+    providers: [HearingsFilterOptionsService, ParticipantStatusReader, VhoQueryService, UnreadAdminMessageModelMapper],
     exports: [MonitoringGraphComponent, HearingHeaderComponent, HearingStatusComponent]
 })
 export class VhOfficerModule {}
