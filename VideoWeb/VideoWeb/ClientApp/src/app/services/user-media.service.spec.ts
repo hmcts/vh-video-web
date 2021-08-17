@@ -6,7 +6,7 @@ import { of, Subject } from 'rxjs';
 import { fakeAsync, flush } from '@angular/core/testing';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 
-fdescribe('UserMediaService', () => {
+describe('UserMediaService', () => {
     const testData = new MediaDeviceTestData();
     let userMediaService: UserMediaService;
     let localStorageServiceSpy: jasmine.SpyObj<LocalStorageService>;
