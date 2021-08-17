@@ -28,14 +28,30 @@ export class MediaDeviceTestData {
     }
     
     getDisconnctedCamera(): UserMediaDevice {
-        return new UserMediaDevice('cameraN', 'camIdN', 'videoinput', 'groupN');
+        return new UserMediaDevice('cameraD', 'camIdD', 'videoinput', 'groupD');
+    }
+
+    getActiveCamera(): UserMediaDevice {
+        return this.getListOfCameras()[0];
+    }
+
+    getActiveMicrophone(): UserMediaDevice {
+        return this.getSingleMicrophone()[0];
     }
     
     getDisconnectedMicphone(): UserMediaDevice[] {
         const testData: UserMediaDevice[] = [];
-        const device = new UserMediaDevice('micN', 'micIdN', 'audioinput', 'groupN');
+        const device = new UserMediaDevice('micD', 'micIdD', 'audioinput', 'groupD');
         testData.push(device);
         return testData;
+    }
+
+    getSelectedCamera(): UserMediaDevice {
+        return this.getListOfCameras()[1];
+    }
+
+    getSelectedMicphone(): UserMediaDevice {
+        return this.getSingleMicrophone()[1];
     }
 
     getListOfCameras(): UserMediaDevice[] {
