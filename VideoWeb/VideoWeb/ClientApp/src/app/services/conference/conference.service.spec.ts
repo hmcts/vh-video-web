@@ -21,6 +21,7 @@ import { LoggerService } from '../logging/logger.service';
 import { ConferenceStatusMessage } from '../models/conference-status-message';
 
 import { ConferenceService } from './conference.service';
+import { ConferenceStatusChanged } from './models/conference-status-changed.model';
 
 describe('ConferenceService', () => {
     const participantOneId = Guid.create().toString();
@@ -195,9 +196,6 @@ describe('ConferenceService', () => {
                 id: conferenceId
             });
 
-            let result = null;
-            sut.currentConference$.subscribe(conference => (result = conference));
-
             // Act
             eventsSubject.next(new NavigationEnd(0, 'url', 'url-redirects'));
             flush();
@@ -208,7 +206,58 @@ describe('ConferenceService', () => {
             // Assert
             expect(apiClientSpy.getConferenceById).not.toHaveBeenCalled();
             expect(getConference$.subscribe).not.toHaveBeenCalled();
-            expect(result).toBeFalsy();
+        }));
+
+        it('should emit null for the conference if the conference id is NOT in the url', fakeAsync(() => {
+            // Arrange
+            const conferenceId = 'conference-id';
+            const routeSnapshotSpy = jasmine.createSpyObj<ActivatedRouteSnapshot>(
+                'ActivatedRouteSnapshot',
+                ['toString'],
+                ['firstChild', 'paramMap']
+            );
+            getSpiedPropertyGetter(activatedRouteSpy, 'snapshot').and.returnValue(routeSnapshotSpy);
+            getSpiedPropertyGetter(routeSnapshotSpy, 'paramMap').and.returnValue(
+                convertToParamMap({
+                    notConferenceId: conferenceId
+                })
+            );
+            let result = null;
+            sut.currentConference$.subscribe(conference => (result = conference));
+
+            // Act
+            eventsSubject.next(new NavigationEnd(0, 'url', 'url-redirects'));
+            flush();
+
+            // Assert
+            expect(result).toBeNull();
+        }));
+
+        it('should emit null for the old status and new if the conference id is NOT in the url', fakeAsync(() => {
+            // Arrange
+            const conferenceId = 'conference-id';
+            const routeSnapshotSpy = jasmine.createSpyObj<ActivatedRouteSnapshot>(
+                'ActivatedRouteSnapshot',
+                ['toString'],
+                ['firstChild', 'paramMap']
+            );
+            getSpiedPropertyGetter(activatedRouteSpy, 'snapshot').and.returnValue(routeSnapshotSpy);
+            getSpiedPropertyGetter(routeSnapshotSpy, 'paramMap').and.returnValue(
+                convertToParamMap({
+                    notConferenceId: conferenceId
+                })
+            );
+
+            const expectedResult: ConferenceStatusChanged = { oldStatus: null, newStatus: null };
+            let result: ConferenceStatusChanged = null;
+            sut.onCurrentConferenceStatusChanged$.subscribe(status => (result = status));
+
+            // Act
+            eventsSubject.next(new NavigationEnd(0, 'url', 'url-redirects'));
+            flush();
+
+            // Assert
+            expect(result).toEqual(expectedResult);
         }));
     });
 
