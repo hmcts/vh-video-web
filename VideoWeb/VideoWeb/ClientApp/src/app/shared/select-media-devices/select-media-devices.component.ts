@@ -3,6 +3,8 @@ import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/fo
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
+import { ProfileService } from 'src/app/services/api/profile.service';
+import { Role, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { IVideoFilterer } from 'src/app/services/models/background-filter';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
@@ -38,6 +40,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
     deviceIsChanged = false;
     private destroyedSubject = new Subject();
     hideOriginalStream: boolean;
+    showBackgroundFilter: boolean;
 
     constructor(
         private userMediaService: UserMediaService,
@@ -45,12 +48,16 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
         private formBuilder: FormBuilder,
         private logger: Logger,
         private translateService: TranslateService,
-        private videoFilterService: VideoFilterService
+        private videoFilterService: VideoFilterService,
+        private profileService: ProfileService
     ) {}
 
     ngOnInit() {
         this.connectWithCameraOn = this.cameraOn;
         this.logger.debug(`${this.loggerPrefix} Initialising media device selection`);
+        this.profileService.getUserProfile().then(profile => {
+            this.determineFilterSelectionVisibility(profile);
+        });
         return this.requestMedia().then(permissionGranted => {
             if (!permissionGranted) {
                 this.logger.warn(`${this.loggerPrefix} Could not get all media permissions. Check logs`);
@@ -68,6 +75,10 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
                     this.logger.error(`${this.loggerPrefix} Failed to update device selection`, error);
                 });
         });
+    }
+
+    determineFilterSelectionVisibility(profile: UserProfileResponse) {
+        this.showBackgroundFilter = profile.role === Role.JudicialOfficeHolder || profile.role === Role.Judge;
     }
 
     async applyVideoFilterIfNeeded() {
