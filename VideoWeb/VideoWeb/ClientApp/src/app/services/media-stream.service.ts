@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, from, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { CallError } from '../waiting-space/models/video-call-models';
 import { ErrorService } from './error.service';
@@ -23,6 +23,7 @@ export class MediaStreamService {
 
     getStreamForMic(device: UserMediaDevice): Observable<MediaStream> {
         return from(this.navigator.mediaDevices.getUserMedia({ audio: { deviceId: { exact: device.deviceId } } })).pipe(
+            map(stream => stream.clone()),
             catchError(error => {
                 this.logger.error(`${this.loggerPrefix} Could not get audio stream for microphone`, error);
                 this.errorService.handlePexipError(new CallError(error.name), null);
@@ -33,6 +34,7 @@ export class MediaStreamService {
 
     getStreamForCam(device: UserMediaDevice): Observable<MediaStream> {
         return from(this.navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId } } })).pipe(
+            map(stream => stream.clone()),
             catchError(error => {
                 this.logger.error(`${this.loggerPrefix} Could not get audio stream for microphone`, error);
                 this.errorService.handlePexipError(new CallError(error.name), null);
