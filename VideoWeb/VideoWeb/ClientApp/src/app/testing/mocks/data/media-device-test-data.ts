@@ -26,6 +26,17 @@ export class MediaDeviceTestData {
         testData.push(device);
         return testData;
     }
+    
+    getDisconnctedCamera(): UserMediaDevice {
+        return new UserMediaDevice('cameraN', 'camIdN', 'videoinput', 'groupN');
+    }
+    
+    getDisconnectedMicphone(): UserMediaDevice[] {
+        const testData: UserMediaDevice[] = [];
+        const device = new UserMediaDevice('micN', 'micIdN', 'audioinput', 'groupN');
+        testData.push(device);
+        return testData;
+    }
 
     getListOfCameras(): UserMediaDevice[] {
         const testData: UserMediaDevice[] = [];

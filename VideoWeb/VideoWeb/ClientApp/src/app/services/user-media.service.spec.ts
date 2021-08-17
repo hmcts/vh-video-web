@@ -1,160 +1,179 @@
-import { UserMediaDevice } from '../shared/models/user-media-device';
 import { MediaDeviceTestData } from '../testing/mocks/data/media-device-test-data';
 import { MockLogger } from '../testing/mocks/mock-logger';
-import { SessionStorage } from './session-storage';
 import { UserMediaService } from './user-media.service';
-import { ErrorService } from '../services/error.service';
-import { UserMediaStreamService } from './user-media-stream.service';
+import { LocalStorageService } from './conference/local-storage.service';
+import { of, Subject } from 'rxjs';
+import { fakeAsync, flush } from '@angular/core/testing';
+import { UserMediaDevice } from '../shared/models/user-media-device';
 
-describe('UserMediaService', () => {
-    // const testData = new MediaDeviceTestData();
-    // let userMediaService: UserMediaService;
-    // let errrorServiceSpy: jasmine.SpyObj<ErrorService>;
-    // let userMediaStreamServiceSpy: UserMediaStreamService;
-    // beforeEach(() => {
-    //     errrorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['handlePexipError']);
-    //     userMediaStreamServiceSpy = new UserMediaStreamService(new MockLogger(), errrorServiceSpy);
-    //     userMediaService = new UserMediaService(new MockLogger(), errrorServiceSpy, userMediaStreamServiceSpy);
-    //     userMediaService.availableDeviceList = testData.getListOfDevices();
-    // });
-    // it('should return only video devices', async () => {
-    //     const devices = await userMediaService.getListOfVideoDevices();
-    //     const unexpectedDevices = devices.filter(x => x.kind !== 'videoinput');
-    //     expect(unexpectedDevices.length).toBe(0);
-    // });
-    // it('should return only microphone devices', async () => {
-    //     const devices = await userMediaService.getListOfMicrophoneDevices();
-    //     const unexpectedDevices = devices.filter(x => x.kind !== 'audioinput');
-    //     expect(unexpectedDevices.length).toBe(0);
-    // });
-    // it('should update device list if empty', async () => {
-    //     userMediaService.availableDeviceList = [];
-    //     spyOn(userMediaService, 'updateAvailableDevicesList').and.callFake(() => {
-    //         userMediaService.availableDeviceList = testData.getListOfDevices();
-    //         return Promise.resolve();
-    //     });
-    //     await userMediaService.checkDeviceListIsReady();
-    //     expect(userMediaService.updateAvailableDevicesList).toHaveBeenCalled();
-    // });
-    // it('should return true when multiple inputs are detected', async () => {
-    //     spyOn(userMediaService, 'getListOfVideoDevices').and.returnValue(Promise.resolve(testData.getListOfCameras()));
-    //     spyOn(userMediaService, 'getListOfMicrophoneDevices').and.returnValue(Promise.resolve(testData.getListOfMicrophones()));
-    //     const multipleDevices = await userMediaService.hasMultipleDevices();
-    //     expect(multipleDevices).toBeTruthy();
-    // });
-    // it('should return false when single inputs are detected', async () => {
-    //     spyOn(userMediaService, 'getListOfVideoDevices').and.returnValue(Promise.resolve(testData.getSingleCamera()));
-    //     spyOn(userMediaService, 'getListOfMicrophoneDevices').and.returnValue(Promise.resolve(testData.getSingleMicrophone()));
-    //     const multipleDevices = await userMediaService.hasMultipleDevices();
-    //     expect(multipleDevices).toBeFalsy();
-    // });
-    // it('should update the device list', async () => {
-    //     spyOn(userMediaService, 'updateAvailableDevicesList').and.callFake(() => {
-    //         userMediaService.availableDeviceList = testData.getListOfDevices();
-    //         return Promise.resolve();
-    //     });
-    //     await userMediaService.updateAvailableDevicesList();
-    //     expect(userMediaService.availableDeviceList.length).toBeGreaterThan(0);
-    // });
-    // it('should return null when cached device is not set', async () => {
-    //     const sessionStorage = new SessionStorage<UserMediaDevice>(userMediaService.PREFERRED_CAMERA_KEY);
-    //     sessionStorage.clear();
-    //     const result = await userMediaService.getCachedDevice(sessionStorage);
-    //     expect(result).toBeNull();
-    // });
-    // it('should get cached device if still connected', async () => {
-    //     const sessionStorage = new SessionStorage<UserMediaDevice>(userMediaService.PREFERRED_CAMERA_KEY);
-    //     const cachedCamDevice = testData.getListOfCameras()[0];
-    //     userMediaService.updatePreferredCamera(cachedCamDevice);
-    //     const result = await userMediaService.getCachedDevice(sessionStorage);
-    //     expect(result.deviceId).toBe(cachedCamDevice.deviceId);
-    // });
-    // it('should update cache with preferred cam', async () => {
-    //     const sessionStorage = new SessionStorage<UserMediaDevice>(userMediaService.PREFERRED_CAMERA_KEY);
-    //     sessionStorage.clear();
-    //     const cachedDevice = testData.getListOfCameras()[0];
-    //     userMediaService.updatePreferredCamera(cachedDevice);
-    //     expect(sessionStorage.get().deviceId).toBe(cachedDevice.deviceId);
-    // });
-    // it('should update cache with preferred mic', async () => {
-    //     const sessionStorage = new SessionStorage<UserMediaDevice>(userMediaService.PREFERRED_MICROPHONE_KEY);
-    //     sessionStorage.clear();
-    //     const cachedDevice = testData.getListOfMicrophones()[0];
-    //     userMediaService.updatePreferredMicrophone(cachedDevice);
-    //     expect(sessionStorage.get().deviceId).toBe(cachedDevice.deviceId);
-    // });
-    // it('should update available device list', async () => {
-    //     userMediaService.availableDeviceList = undefined;
-    //     spyOn(navigator.mediaDevices, 'getUserMedia');
-    //     spyOn(userMediaService.connectedDevicesSubject, 'next');
-    //     await userMediaService.updateAvailableDevicesList();
-    //     expect(userMediaService.availableDeviceList).toBeDefined();
-    //     expect(navigator.mediaDevices.getUserMedia).toHaveBeenCalled();
-    //     expect(userMediaService.connectedDevicesSubject.next).toHaveBeenCalledWith(userMediaService.availableDeviceList);
-    // });
-    // it('should throw error when media api is not available', async () => {
-    //     userMediaService.navigator.mediaDevices.enumerateDevices = null;
-    //     const message = 'enumerateDevices() not supported.';
-    //     await expectAsync(userMediaService.updateAvailableDevicesList()).toBeRejectedWithError(message);
-    // });
-    // it('should update cache with default preferred mic and cam if it was not set', async () => {
-    //     const sessionStorageMic = new SessionStorage<UserMediaDevice>(userMediaService.PREFERRED_MICROPHONE_KEY);
-    //     const sessionStorageCam = new SessionStorage<UserMediaDevice>(userMediaService.PREFERRED_CAMERA_KEY);
-    //     sessionStorageCam.clear();
-    //     sessionStorageMic.clear();
-    //     const cachedMics = testData.getListOfMicrophones();
-    //     const cachedCams = testData.getListOfCameras();
-    //     spyOn(userMediaService, 'getListOfVideoDevices').and.returnValue(Promise.resolve(cachedCams));
-    //     spyOn(userMediaService, 'getListOfMicrophoneDevices').and.returnValue(Promise.resolve(cachedMics));
-    //     await userMediaService.setDevicesInCache();
-    //     expect(sessionStorageCam.get().label).toBe(cachedCams[0].label);
-    //     expect(sessionStorageMic.get().label).toBe(cachedMics[0].label);
-    // });
-    // it('should update cache with default preferred mic and cam and throw exception if no devices available', async () => {
-    //     const sessionStorageMic = new SessionStorage<UserMediaDevice>(userMediaService.PREFERRED_MICROPHONE_KEY);
-    //     const sessionStorageCam = new SessionStorage<UserMediaDevice>(userMediaService.PREFERRED_CAMERA_KEY);
-    //     sessionStorageCam.clear();
-    //     sessionStorageMic.clear();
-    //     const cachedMics = testData.getListOfMicrophones();
-    //     spyOn(userMediaService, 'getListOfVideoDevices').and.throwError(new Error('Could not get access to camera/microphone'));
-    //     spyOn(userMediaService, 'getListOfMicrophoneDevices').and.returnValue(Promise.resolve(cachedMics));
-    //     await userMediaService.setDevicesInCache();
-    //     expect(errrorServiceSpy.handlePexipError).toHaveBeenCalled();
-    // });
-    // it('should return stream of selected device when selecting screen to share', async () => {
-    //     // Arrange
-    //     const stream = <any>{};
-    //     const getDisplayMediaSpy = spyOn(navigator.mediaDevices as any, 'getDisplayMedia')
-    //         .withArgs({ video: true, audio: true })
-    //         .and.returnValue(stream);
-    //     // Act
-    //     const resultStream = await userMediaService.selectScreenToShare();
-    //     // Assert
-    //     expect(resultStream).toBe(stream);
-    //     expect(getDisplayMediaSpy).toHaveBeenCalledTimes(1);
-    // });
-    // it('should return null if exception is throw when selecting stream to share', async () => {
-    //     // Arrange
-    //     const getDisplayMediaSpy = spyOn(navigator.mediaDevices as any, 'getDisplayMedia')
-    //         .withArgs({ video: true, audio: true })
-    //         .and.throwError('testException');
-    //     // Act
-    //     const resultStream = await userMediaService.selectScreenToShare();
-    //     // Assert
-    //     expect(resultStream).toBe(null);
-    //     expect(getDisplayMediaSpy).toHaveBeenCalledTimes(1);
-    // });
-    // it('should return device is disconnected', async () => {
-    //     debugger;
-    //     let device = testData.getListOfCameras()[0];
-    //     device.label = "camera"
-    //     let isConnected = await userMediaService.isDeviceStillConnected(device);
-    //     expect(isConnected).toBeFalsy();
-    // });
-    // it('should return device is connected', async () => {
-    //     debugger;
-    //     let device = testData.getListOfCameras()[0];
-    //     let isConnected = await userMediaService.isDeviceStillConnected(device);
-    //     expect(isConnected).toBeTruthy();
-    // });
+fdescribe('UserMediaService', () => {
+    const testData = new MediaDeviceTestData();
+    let userMediaService: UserMediaService;
+    let localStorageServiceSpy: jasmine.SpyObj<LocalStorageService>;
+    let getCameraAndMicrophoneDevicesSubject: Subject<UserMediaDevice[]>;
+    beforeEach(() => {
+        localStorageServiceSpy = jasmine.createSpyObj<LocalStorageService>('LocalStorageService', ['load', 'save']);
+        getCameraAndMicrophoneDevicesSubject = new Subject<UserMediaDevice[]>();
+        userMediaService = new UserMediaService(new MockLogger(), localStorageServiceSpy);
+    });
+    
+    it('should return true when multiple inputs are detected', fakeAsync (() => {
+        spyOnProperty(userMediaService, 'connectedVideoDevices').and.returnValue(of(testData.getListOfCameras()));
+        spyOnProperty(userMediaService, 'connectedMicrophoneDevices').and.returnValue(of(testData.getListOfMicrophones()));
+        flush();
+        let result = new Boolean;
+        userMediaService.hasMultipleDevices().subscribe(hasMultipleDevices => (result = hasMultipleDevices));
+        expect(result).toBeTrue();
+    }));
+
+    it('should return false when single inputs are detected', fakeAsync (() => {
+        spyOnProperty(userMediaService, 'connectedVideoDevices').and.returnValue(of(testData.getSingleCamera()));
+        spyOnProperty(userMediaService, 'connectedMicrophoneDevices').and.returnValue(of(testData.getSingleMicrophone()));
+        flush();
+        let result = new Boolean;
+        userMediaService.hasMultipleDevices().subscribe(multipleDevices => {
+            result = multipleDevices;
+        });
+        expect(result).toBeFalse();
+    }));
+
+    it('should update active microphone', fakeAsync(() => {
+        spyOn<any>(userMediaService, 'setActiveMicrophone').and.callFake(function () {});
+        spyOnProperty(userMediaService, 'activeMicrophoneDevice$').and.returnValue(of(testData.getListOfMicrophones()[0]));
+        flush();
+        const mic = testData.getListOfMicrophones()[1];
+        userMediaService.updateActiveMicrophone(mic);
+        flush();
+        expect(userMediaService['setActiveMicrophone']).toHaveBeenCalledWith(testData.getListOfMicrophones()[1]);
+    }));
+
+    it('should not update active microphone', fakeAsync(() => {
+        spyOn<any>(userMediaService, 'setActiveMicrophone').and.callFake(function () {});
+        spyOnProperty(userMediaService, 'activeMicrophoneDevice$').and.returnValue(of(testData.getListOfMicrophones()[0]));
+        flush();
+        const mic = testData.getListOfMicrophones()[0];
+        userMediaService.updateActiveMicrophone(mic);
+        flush();
+        expect(userMediaService['setActiveMicrophone']).not.toHaveBeenCalled();
+    }));
+
+    it('should return stream of selected device when selecting screen to share', async () => {
+        const stream = <any>{};
+        const getDisplayMediaSpy = spyOn(navigator.mediaDevices as any, 'getDisplayMedia')
+            .withArgs({ video: true, audio: true })
+            .and.returnValue(stream);
+        const resultStream = await userMediaService.selectScreenToShare();
+        expect(resultStream).toBe(stream);
+        expect(getDisplayMediaSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return null if exception is throw when selecting stream to share', async () => {
+        const getDisplayMediaSpy = spyOn(navigator.mediaDevices as any, 'getDisplayMedia')
+            .withArgs({ video: true, audio: true })
+            .and.throwError('testException');
+        const resultStream = await userMediaService.selectScreenToShare();
+        expect(resultStream).toBe(null);
+        expect(getDisplayMediaSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should update active camera', fakeAsync (() => {
+        spyOn<any>(userMediaService, 'setActiveCamera').and.callFake(function () {});
+        spyOnProperty(userMediaService, 'activeVideoDevice$').and.returnValue(of(testData.getListOfCameras()[0]));
+        flush();
+        userMediaService.updateActiveCamera(testData.getListOfCameras()[1]);
+        expect(userMediaService['setActiveCamera']).toHaveBeenCalledWith(testData.getListOfCameras()[1]);
+    }));
+
+    it('should not update active camera', fakeAsync (() => {
+        spyOn<any>(userMediaService, 'setActiveCamera').and.callFake(function () {});
+        spyOnProperty(userMediaService, 'activeVideoDevice$').and.returnValue(of(testData.getListOfCameras()[0]));
+        flush();
+        userMediaService.updateActiveCamera(testData.getListOfCameras()[0]);
+        expect(userMediaService['setActiveCamera']).not.toHaveBeenCalled();
+    }));
+
+    it('should return fase when device is disconnected', fakeAsync(() => {
+        spyOnProperty(userMediaService, 'connectedDevices$').and.returnValue(of(testData.getListOfDevices()));
+        const disconnectedDevice = testData.getDisconnctedCamera();
+        let result;
+        userMediaService.isDeviceStillConnected(disconnectedDevice).subscribe(devices => (result = devices));
+        flush();
+        expect(result).toBeFalse();
+    }));
+    it('should return device when device is still connected', fakeAsync(() => {
+        spyOnProperty(userMediaService, 'connectedDevices$').and.returnValue(of(testData.getListOfDevices()));
+        const connectedDevice = testData.getListOfDevices()[0];
+        let result;
+        userMediaService.isDeviceStillConnected(connectedDevice).subscribe(devices => (result = devices));
+        flush();
+        expect(result).toBeTruthy();
+    }));
+
+    describe('Construction', () => {
+        beforeEach(() => {
+            spyOn(UserMediaService.prototype, 'getCameraAndMicrophoneDevices').and.returnValue(getCameraAndMicrophoneDevicesSubject.asObservable());
+            spyOn(UserMediaService.prototype, 'hasValidCameraAndMicAvailable').and.returnValue(of(true));
+            userMediaService = new UserMediaService(new MockLogger(), localStorageServiceSpy);
+        });
+
+        it('should handle device change', fakeAsync(() => {
+            spyOn<any>(userMediaService, 'initialiseActiveDevicesFromCache').and.callFake(function () {});
+            spyOn<any>(userMediaService, 'checkActiveDevicesAreStillConnected').and.callFake(function () { });
+            getCameraAndMicrophoneDevicesSubject.next(testData.getListOfDevices());
+            flush();
+            expect(userMediaService['initialiseActiveDevicesFromCache']).toHaveBeenCalledWith(testData.getListOfDevices());
+            expect(userMediaService['checkActiveDevicesAreStillConnected']).toHaveBeenCalledWith(testData.getListOfDevices());
+        }));
+
+        it('should return list of devices', fakeAsync(() => {
+            getCameraAndMicrophoneDevicesSubject.next(testData.getListOfDevices());
+            flush();
+            let result = [];
+            userMediaService.connectedDevices$.subscribe(devices => (result = devices));
+            flush();
+            expect(result.length).toBe(6);
+        }));
+
+        it('should return only microphone devices', fakeAsync(() => {
+            getCameraAndMicrophoneDevicesSubject.next(testData.getListOfDevices());
+            flush();
+            let result = [];
+            userMediaService.connectedVideoDevices.subscribe(devices => (result = devices));
+            flush();
+            expect(result.length).toBe(3);
+        }));
+
+        it('should return only video devices', fakeAsync(() => {
+            getCameraAndMicrophoneDevicesSubject.next(testData.getListOfDevices());
+            flush();
+            let result = [];
+            userMediaService.connectedVideoDevices.subscribe(devices => (result = devices));
+            flush();
+            expect(result.length).toBe(3);
+        }));
+
+        it('should set default cam to cache', fakeAsync(() => {
+            localStorageServiceSpy.load.and.returnValue(null);
+            spyOn<any>(userMediaService, 'setActiveCamera').and.callFake(function () {});
+            spyOn<any>(userMediaService, 'loadDefaultCamera').and.callThrough();
+
+            getCameraAndMicrophoneDevicesSubject.next(testData.getListOfDevices());
+            flush();
+            expect(userMediaService['setActiveCamera']).toHaveBeenCalledOnceWith(testData.getListOfCameras()[0]);
+            expect(userMediaService['loadDefaultCamera']).toHaveBeenCalledOnceWith(testData.getListOfDevices());
+        }));
+        
+        it('should set default mic to cache', fakeAsync(() => {
+            localStorageServiceSpy.load.and.returnValue(null);
+            spyOn<any>(userMediaService, 'setActiveMicrophone').and.callFake(function () {});
+            spyOn<any>(userMediaService, 'loadDefaultMicrophone').and.callThrough();
+
+            getCameraAndMicrophoneDevicesSubject.next(testData.getListOfDevices());
+            flush();
+            expect(userMediaService['setActiveMicrophone']).toHaveBeenCalledOnceWith(testData.getListOfMicrophones()[0]);
+            expect(userMediaService['loadDefaultMicrophone']).toHaveBeenCalledOnceWith(testData.getListOfDevices());
+        }));
+    });
 });
+
+

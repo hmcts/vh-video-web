@@ -21,7 +21,7 @@ export class UserMediaService {
     readonly PREFERRED_CAMERA_KEY = 'vh.preferred.camera';
     readonly PREFERRED_MICROPHONE_KEY = 'vh.preferred.microphone';
 
-    private connectedDevicesSubject: BehaviorSubject<UserMediaDevice[]> = new BehaviorSubject([]);
+    private connectedDevicesSubject: ReplaySubject<UserMediaDevice[]> = new ReplaySubject(1);
     get connectedDevices$(): Observable<UserMediaDevice[]> {
         return this.connectedDevicesSubject.asObservable();
     }
