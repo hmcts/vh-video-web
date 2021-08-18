@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
 import { Observable, Subject } from 'rxjs';
-import { skip } from 'rxjs/operators';
+import { skip, take, takeUntil } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ApiClient, HearingLayout, SharedParticipantRoom, StartHearingRequest } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -48,6 +48,8 @@ export class VideoCallService {
     private onConnectedPresentationSubject = new Subject<ConnectedPresentation>();
     private onDisconnectedPresentationSubject = new Subject<DisconnectedPresentation>();
 
+    private hasDisconnected$ = new Subject();
+
     pexipAPI: PexipClient;
     localOutgoingStream: any;
 
@@ -76,11 +78,23 @@ export class VideoCallService {
         this.initTurnServer();
         this.pexipAPI.screenshare_fps = 30;
 
+        this.userMediaStreamService.currentStream$.pipe(take(1)).subscribe(stream => {
+            this.pexipAPI.user_media_stream = stream;
+            this.userMediaStreamService.currentStream$.pipe(skip(1)).subscribe(stream => this.onCurrentStreamChanged(stream));
+        });
+
         this.pexipAPI.onSetup = function (stream) {
             self.onSetupSubject.next(new CallSetup(stream));
         };
 
         this.pexipAPI.onConnect = function (stream) {
+            self.hasDisconnected$ = new Subject();
+
+            self.userMediaService.isAudioOnly$.pipe(skip(1), takeUntil(self.hasDisconnected$)).subscribe(isAudioOnly => {
+                self.onIsAudioOnlyChanged(isAudioOnly);
+            });
+            self.userMediaStreamService.streamModified$.pipe(takeUntil(self.hasDisconnected$)).subscribe(() => self.onStreamModified());
+
             self.onConnectedSubject.next(new ConnectedCall(stream));
         };
 
@@ -89,6 +103,9 @@ export class VideoCallService {
         };
 
         this.pexipAPI.onDisconnect = function (reason) {
+            this.hasDisconnected$.next();
+            this.hasDisconnected$.complete();
+
             self.onDisconnected.next(new DisconnectedCall(reason));
         };
 
@@ -128,16 +145,10 @@ export class VideoCallService {
             self.logger.info(`${self.loggerPrefix} Screenshare stopped : ${JSON.stringify(reason)}`);
             self.onStoppedScreenshareSubject.next(new StoppedScreenshare(reason));
         };
-
-        this.userMediaService.isAudioOnly$.pipe(skip(1)).subscribe(isAudioOnly => {
-            this.onIsAudioOnlyChanged(isAudioOnly);
-        });
-        this.userMediaStreamService.currentStream$.subscribe(stream => this.onCurrentStreamChanged(stream));
-        this.userMediaStreamService.streamModified$.subscribe(() => this.onStreamModified());
     }
 
     private onCurrentStreamChanged(stream: MediaStream) {
-        const shouldReconnect = !this.pexipAPI.user_media_stream && stream !== this.pexipAPI.user_media_stream;
+        const shouldReconnect = !!this.pexipAPI.user_media_stream && stream !== this.pexipAPI.user_media_stream;
         this.pexipAPI.user_media_stream = stream;
 
         if (shouldReconnect) {
@@ -146,11 +157,11 @@ export class VideoCallService {
     }
 
     private onStreamModified() {
-        // this.reconnectToCall();
+        this.reconnectToCall();
     }
 
     private onIsAudioOnlyChanged(audioOnly: boolean) {
-        // this.reconnectToCall(audioOnly ? 'video' : null);
+        this.reconnectToCall(audioOnly ? 'video' : null);
     }
 
     initTurnServer() {
@@ -352,7 +363,7 @@ export class VideoCallService {
         return this.apiClient.dismissWitness(conferenceId, participantId).toPromise();
     }
 
-    reconnectToCall(callType: string | null = null) {
+    reconnectToCall(callType: string = null) {
         this.pexipAPI.disconnectCall();
         this.pexipAPI.addCall(callType);
     }
