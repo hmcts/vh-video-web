@@ -3,7 +3,27 @@ import { HeartbeatMode } from './heartbeat-mode.model';
 import { PexipDisplayNameModel } from './pexip-display-name.model';
 
 describe('PexipDisplayNameModel', () => {
-    beforeEach(() => {});
+    beforeEach(() => {
+        return;
+    });
+
+    it('should parse the string into the model when no heartbeat is set', () => {
+        // Arrange
+        const role = 'ROLE';
+        const heartbeat = HeartbeatMode.NoHeartbeat;
+        const displayName = 'DISPLAY_NAME';
+        const id = 'ID';
+        const toParse = `${role};${heartbeat};${displayName};${id}`;
+
+        // Act
+        const model = PexipDisplayNameModel.fromString(toParse);
+
+        // Assert
+        expect(model.pexipRole).toEqual(role);
+        expect(model.heartbeatMode).toEqual(heartbeat);
+        expect(model.displayName).toEqual(displayName);
+        expect(model.participantOrVmrId).toEqual(id);
+    });
 
     describe('fromString', () => {
         it('should parse the string into the model when no heartbeat is set', () => {
