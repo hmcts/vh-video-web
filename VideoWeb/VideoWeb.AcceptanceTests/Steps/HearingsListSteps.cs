@@ -167,8 +167,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the new hearing isn't available to join yet")]
         public void ThenTheNewHearingIsnTAvailableToJoinYet()
         {
-            _browsers[_c.CurrentUser].TextOf(ParticipantHearingListPage.SignInDate(_c.Test.Conference.Id)).Should().Contain("Today");
-            var signInTime = _browsers[_c.CurrentUser].TextOf(ParticipantHearingListPage.SignInTime(_c.Test.Conference.Id));
+            var ele = _browsers[_c.CurrentUser].TextOf(JudgeHearingListPage.Date(_c.Test.Hearing.ConfirmedDate.ToString()));
+            _browsers[_c.CurrentUser].TextOf(JudgeHearingListPage.Date(_c.Test.Hearing.ConfirmedDate.ToString())).Should().Contain("Today");
+            var signInTime = _browsers[_c.CurrentUser].TextOf(JudgeHearingListPage.Time(_c.Test.Conference.Id));
             signInTime = signInTime.Replace("from ", "");
             CheckIfHearingTimeIsWithinTolerance(signInTime);
         }

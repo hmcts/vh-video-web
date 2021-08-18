@@ -126,9 +126,6 @@ Scenario: Panel Member has a hearing more than 30 minutes in the future
 	When they attempt to login with valid credentials
 	Then the user is on the Judge Hearing List page
 	And the new hearing isn't available to join yet
-	And when the hearing is ready to start the hearing button appears
-	When the user clicks on the Start Hearing button
-	Then the user is on the Waiting Room page
 
 @VIH-6420
   Scenario: Winger has 1 or more hearings
