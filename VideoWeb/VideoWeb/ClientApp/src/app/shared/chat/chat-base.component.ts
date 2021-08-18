@@ -43,9 +43,6 @@ export abstract class ChatBaseComponent implements OnDestroy {
             .pipe(takeUntil(this.destroyed$))
             .subscribe(securityService => (this.securityService = securityService));
     }
-    ngOnDestroy(): void {
-        this.destroyed$.next();
-    }
 
     abstract content: ElementRef<HTMLElement>;
     abstract sendMessage(messageBody: string): void;
@@ -57,6 +54,10 @@ export abstract class ChatBaseComponent implements OnDestroy {
         } else {
             return [];
         }
+    }
+
+    ngOnDestroy(): void {
+        this.destroyed$.next();
     }
 
     async setupChatSubscription(): Promise<Subscription> {
