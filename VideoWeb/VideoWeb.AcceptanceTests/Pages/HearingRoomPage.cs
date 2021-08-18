@@ -15,6 +15,6 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static readonly By ToggleHandRaised = By.Id("toggle-hand-raised-img");
         public static readonly By HandRaised = By.ClassName($"fa-hand-paper");
         public static readonly By ParticipantPanel = By.Id($"panelList");
-        public static By InterPreterName(string displayName) => By.XPath($"//span[contains(text(),'{displayName}')]");
+        public static By InterPreterName(string displayName) => By.XPath($"//span[contains(text()[2], '{displayName}')]");
     }
 }
