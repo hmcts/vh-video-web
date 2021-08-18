@@ -2,8 +2,9 @@ import { invalidPexipDisplayNameFormatError } from '../errors/invalid-pexip-disp
 import { HeartbeatMode } from './heartbeat-mode.model';
 
 /*
-<Type>;<Participant Name>;<Participant Id>
-<Type>;HEARTBEAT/NO_HEARTBEAT;<Participant Name>;<Participant Id>
+Formats:
+OLD - <Type>;<Participant Name>;<Participant Id>
+NEW - <Type>;HEARTBEAT/NO_HEARTBEAT;<Participant Name>;<Participant Id>
 */
 export class PexipDisplayNameModel {
     constructor(
