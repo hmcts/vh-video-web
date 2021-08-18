@@ -21,7 +21,8 @@
     "all-content-availabe-under": "All content is available under the ",
     "open-government-license": "Open Government Licence v3.0",
     "except": " except where otherwise stated",
-    "copyright": "© Crown copyright"
+    "copyright": "© Crown copyright",
+    "copyright-info-link-label": "Copyright Information"
   },
   "login": {
     "redirect": "Please wait while we redirect"
