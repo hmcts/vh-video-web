@@ -1421,28 +1421,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
             expect(component.onLinkedParticiantRejectedConsultationInvite).not.toHaveBeenCalled();
         }));
 
-        // it('should close start and join modal set preferred devices when participant accepts consultation', fakeAsync(async () => {
-        //     component.displayDeviceChangeModal = true;
-        //     const message = new ConsultationRequestResponseMessage(
-        //         globalConference.id,
-        //         invitationId,
-        //         'ConsultationRoom',
-        //         globalParticipant.id,
-        //         ConsultationAnswer.Accepted,
-        //         globalParticipant.id
-        //     );
-        //     component.participant = globalParticipant;
-        //     consultationRequestResponseMessageSubject.next(message);
-        //     tick();
-        //     expect(component.displayStartPrivateConsultationModal).toBeFalsy();
-        //     expect(component.displayJoinPrivateConsultationModal).toBeFalsy();
-        //     expect(userMediaService.getPreferredCamera).toHaveBeenCalled();
-        //     expect(userMediaService.getPreferredMicrophone).toHaveBeenCalled();
-        //     expect(userMediaStreamService.getStreamForCam).toHaveBeenCalled();
-        //     expect(userMediaStreamService.getStreamForMic).toHaveBeenCalled();
-        //     expect(component.displayDeviceChangeModal).toBeFalsy();
-        // }));
-
         it('should call onTransferingToConsultation if a transfering message is recieved for the active participant', fakeAsync(() => {
             // Arrange
             spyOn(component, 'onTransferingToConsultation');

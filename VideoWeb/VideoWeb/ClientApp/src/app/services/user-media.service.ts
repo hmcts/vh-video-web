@@ -50,13 +50,15 @@ export class UserMediaService {
         return this.activeMicrophoneDeviceSubject.asObservable();
     }
 
-    private isAudioOnly: boolean = false;
+    private isAudioOnly = false;
     private isAudioOnlySubject = new ReplaySubject<boolean>(1);
     get isAudioOnly$(): Observable<boolean> {
         return this.isAudioOnlySubject.asObservable();
     }
 
     constructor(private logger: Logger, /*private errorService: ErrorService,*/ private localStorageService: LocalStorageService) {
+        this.logger.debug(`${this.loggerPrefix} Constructor called. attempting to initialise active devices.`);
+
         this.handleDeviceChange();
 
         this.navigator.mediaDevices.ondevicechange = () => {
@@ -65,6 +67,7 @@ export class UserMediaService {
     }
 
     private handleDeviceChange() {
+        this.logger.debug(`${this.loggerPrefix} handle device change`);
         this.updateAvailableDeviceList().subscribe(availableDevices => {
             this.connectedDevicesSubject.next(availableDevices);
 
@@ -74,9 +77,12 @@ export class UserMediaService {
     }
 
     private initialiseActiveDevicesFromCache(availableDevices: UserMediaDevice[]) {
+        this.logger.debug(`${this.loggerPrefix} initialise active devices from cache`);
+
         if (!this.activeVideoDevice) {
             let camera: UserMediaDevice = this.localStorageService.load(this.PREFERRED_CAMERA_KEY);
             if (!camera) {
+                this.logger.debug(`${this.loggerPrefix} no camera cached. Attempting to load default camera`, { camera });
                 camera = this.loadDefaultCamera(availableDevices);
             }
 
@@ -86,6 +92,7 @@ export class UserMediaService {
         if (!this.activeMicrophoneDevice) {
             let microphone: UserMediaDevice = this.localStorageService.load(this.PREFERRED_MICROPHONE_KEY);
             if (!microphone) {
+                this.logger.debug(`${this.loggerPrefix} no microphone cached. Attempting to load default microphone`, { microphone });
                 microphone = this.loadDefaultMicrophone(availableDevices);
             }
 
@@ -103,6 +110,10 @@ export class UserMediaService {
                     filter(stillConnected => !stillConnected)
                 )
                 .subscribe(() => {
+                    this.logger.debug(`${this.loggerPrefix} camera disconnected. Attempting to set default camera to cache`, {
+                        activeCamera
+                    });
+
                     const camera = this.loadDefaultCamera(availableDevices);
                     this.setActiveCamera(camera);
                 })
@@ -115,6 +126,10 @@ export class UserMediaService {
                     filter(stillConnected => !stillConnected)
                 )
                 .subscribe(() => {
+                    this.logger.debug(`${this.loggerPrefix} microphone disconnected. Attempting to set default camera to cache`, {
+                        activeMicrophone
+                    });
+
                     const microphone = this.loadDefaultMicrophone(availableDevices);
                     this.setActiveMicrophone(microphone);
                 })
@@ -153,14 +168,6 @@ export class UserMediaService {
         );
     }
 
-    getCameraDevices(): Observable<UserMediaDevice[]> {
-        return this.getCameraAndMicrophoneDevices().pipe(map(devices => devices.filter(device => device.kind === 'videoinput')));
-    }
-
-    getMicrophoneDevices(): Observable<UserMediaDevice[]> {
-        return this.getCameraAndMicrophoneDevices().pipe(map(devices => devices.filter(device => device.kind === 'audioinput')));
-    }
-
     hasValidCameraAndMicAvailable(): Observable<boolean> {
         // TODO: Have a look at switching to audio only when the video camera is unavailable?
         return from(this.navigator.mediaDevices.getUserMedia(this.defaultStreamConstraints)).pipe(
@@ -171,6 +178,8 @@ export class UserMediaService {
     }
 
     updateActiveMicrophone(microhoneDevice: UserMediaDevice) {
+        this.logger.debug(`${this.loggerPrefix} Attempting to update available active microphone.`);
+
         this.activeMicrophoneDevice$.pipe(take(1)).subscribe(mic => {
             if (mic.deviceId !== microhoneDevice.deviceId) {
                 this.setActiveMicrophone(microhoneDevice);
@@ -180,6 +189,8 @@ export class UserMediaService {
 
     private setActiveMicrophone(microhoneDevice: UserMediaDevice) {
         if (microhoneDevice) {
+            this.logger.debug(`${this.loggerPrefix} Attempting to set active microhone.`, { microhoneDevice });
+
             this.activeMicrophoneDevice = microhoneDevice;
             this.activeMicrophoneDeviceSubject.next(microhoneDevice);
             this.localStorageService.save(this.PREFERRED_MICROPHONE_KEY, microhoneDevice);
@@ -187,6 +198,8 @@ export class UserMediaService {
     }
 
     updateActiveCamera(cameraDevice: UserMediaDevice) {
+        this.logger.debug(`${this.loggerPrefix} Attempting to update available active camera.`);
+
         this.activeVideoDevice$.pipe(take(1)).subscribe(cam => {
             if (cam.deviceId !== cameraDevice.deviceId) {
                 this.setActiveCamera(cameraDevice);
@@ -196,6 +209,8 @@ export class UserMediaService {
 
     private setActiveCamera(cameraDevice: UserMediaDevice) {
         if (cameraDevice) {
+            this.logger.debug(`${this.loggerPrefix} Attempting to set active camera.`, { cameraDevice });
+
             this.activeVideoDevice = cameraDevice;
             this.activeVideoDeviceSubject.next(cameraDevice);
             this.localStorageService.save(this.PREFERRED_CAMERA_KEY, cameraDevice);
@@ -209,6 +224,8 @@ export class UserMediaService {
     }
 
     private setIsAudioOnly(audioOnly: boolean) {
+        this.logger.debug(`${this.loggerPrefix} Attempting to set audioOnly.`, { audioOnly });
+
         this.isAudioOnly = audioOnly;
         this.isAudioOnlySubject.next(this.isAudioOnly.valueOf());
     }

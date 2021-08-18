@@ -41,7 +41,11 @@ describe('UnreadMessagesParticipantComponent', () => {
     });
 
     afterAll(() => {
-        component.ngOnDestroy();
+        try {
+            component.ngOnDestroy();
+        } catch (error) {
+            console.error(error);
+        }
     });
 
     it('should init unread message count', fakeAsync(() => {

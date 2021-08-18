@@ -35,8 +35,6 @@ describe('VideoCallService', () => {
     let streamModifiedSubject: Subject<void>;
 
     const testData = new MediaDeviceTestData();
-    let preferredCamera: UserMediaDevice;
-    let preferredMicrophone: UserMediaDevice;
     let pexipSpy: jasmine.SpyObj<PexipClient>;
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
 
@@ -50,7 +48,11 @@ describe('VideoCallService', () => {
             'getParticipantRoomForParticipant'
         ]);
 
-        userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', ['selectScreenToShare']);
+        userMediaService = jasmine.createSpyObj<UserMediaService>(
+            'UserMediaService',
+            ['selectScreenToShare'],
+            ['connectedVideoDevices', 'connectedMicrophoneDevices']
+        );
 
         userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>([], ['currentStream$', 'streamModified$']);
         currentStreamSubject = new Subject<MediaStream>();
@@ -84,37 +86,6 @@ describe('VideoCallService', () => {
         ]);
         service = new VideoCallService(logger, userMediaService, userMediaStreamService, apiClient, configServiceSpy);
         await service.setupClient();
-    });
-
-    it('should init pexip and set pexip client', async () => {
-        await service.setupClient();
-        expect(service.pexipAPI).toBeDefined();
-        expect(service.pexipAPI.audio_source).toEqual(preferredMicrophone.deviceId);
-        expect(service.pexipAPI.video_source).toEqual(preferredCamera.deviceId);
-
-        expect(service.onCallSetup()).toBeDefined();
-        expect(service.onCallConnected()).toBeDefined();
-        expect(service.onCallDisconnected()).toBeDefined();
-        expect(service.onError()).toBeDefined();
-        expect(service.onParticipantUpdated()).toBeDefined();
-        expect(service.onConferenceUpdated()).toBeDefined();
-        expect(service.onCallTransferred()).toBeDefined();
-        expect(service.onPresentation()).toBeDefined();
-        expect(service.onPresentationConnected()).toBeDefined();
-        expect(service.onPresentationDisconnected()).toBeDefined();
-        expect(service.onScreenshareConnected()).toBeDefined();
-        expect(service.onScreenshareStopped()).toBeDefined();
-        expect(service.pexipAPI.turn_server).toBeDefined();
-        expect(service.pexipAPI.turn_server.url).toContain(config.kinly_turn_server);
-        expect(service.pexipAPI.turn_server.username).toContain(config.kinly_turn_server_user);
-        expect(service.pexipAPI.turn_server.credential).toContain(config.kinly_turn_server_credential);
-    });
-
-    it('should use default devices on setup if no preferred devices found', async () => {
-        await service.setupClient();
-
-        expect(service.pexipAPI.audio_source).toBeFalse();
-        expect(service.pexipAPI.video_source).toBeFalse();
     });
 
     it('should toggle mute', () => {
@@ -345,6 +316,25 @@ describe('VideoCallService', () => {
     });
 
     describe('setupClient', () => {
-        it;
+        it('should init pexip and set pexip client', async () => {
+            await service.setupClient();
+            expect(service.pexipAPI).toBeDefined();
+            expect(service.onCallSetup()).toBeDefined();
+            expect(service.onCallConnected()).toBeDefined();
+            expect(service.onCallDisconnected()).toBeDefined();
+            expect(service.onError()).toBeDefined();
+            expect(service.onParticipantUpdated()).toBeDefined();
+            expect(service.onConferenceUpdated()).toBeDefined();
+            expect(service.onCallTransferred()).toBeDefined();
+            expect(service.onPresentation()).toBeDefined();
+            expect(service.onPresentationConnected()).toBeDefined();
+            expect(service.onPresentationDisconnected()).toBeDefined();
+            expect(service.onScreenshareConnected()).toBeDefined();
+            expect(service.onScreenshareStopped()).toBeDefined();
+            expect(service.pexipAPI.turn_server).toBeDefined();
+            expect(service.pexipAPI.turn_server.url).toContain(config.kinly_turn_server);
+            expect(service.pexipAPI.turn_server.username).toContain(config.kinly_turn_server_user);
+            expect(service.pexipAPI.turn_server.credential).toContain(config.kinly_turn_server_credential);
+        });
     });
 });

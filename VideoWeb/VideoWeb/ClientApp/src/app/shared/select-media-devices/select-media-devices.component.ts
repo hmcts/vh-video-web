@@ -15,7 +15,7 @@ import { MediaStreamService } from 'src/app/services/media-stream.service';
 })
 export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     private readonly loggerPrefix = '[SelectMediaDevices] -';
-    @Output() closeEventEmitter = new EventEmitter();
+    @Output() shouldClose = new EventEmitter();
     @Input() showAudioOnlySetting = false;
 
     availableCameraDevices: UserMediaDevice[] = [];
@@ -121,11 +121,11 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         this.userMediaService.updateActiveMicrophone(this.selectedMicrophoneDevice);
         this.userMediaService.updateIsAudioOnly(!this.connectWithCameraOn);
 
-        this.closeEventEmitter.emit();
+        this.shouldClose.emit();
     }
 
     onCancel() {
-        this.closeEventEmitter.emit();
+        this.shouldClose.emit();
     }
 
     get audioOnlyToggleText(): string {

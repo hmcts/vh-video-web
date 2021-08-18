@@ -80,7 +80,7 @@ export class VideoCallService {
 
         this.userMediaStreamService.currentStream$.pipe(take(1)).subscribe(stream => {
             this.pexipAPI.user_media_stream = stream;
-            this.userMediaStreamService.currentStream$.pipe(skip(1)).subscribe(stream => this.onCurrentStreamChanged(stream));
+            this.userMediaStreamService.currentStream$.pipe(skip(1)).subscribe(currentStream => this.onCurrentStreamChanged(currentStream));
         });
 
         this.pexipAPI.onSetup = function (stream) {

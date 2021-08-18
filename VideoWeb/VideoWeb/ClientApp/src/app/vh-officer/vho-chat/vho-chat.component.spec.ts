@@ -45,7 +45,11 @@ describe('VhoChatComponent', () => {
     });
 
     afterAll(() => {
-        component.ngOnDestroy();
+        try {
+            component.ngOnDestroy();
+        } catch (error) {
+            console.error(error);
+        }
     });
 
     beforeEach(() => {

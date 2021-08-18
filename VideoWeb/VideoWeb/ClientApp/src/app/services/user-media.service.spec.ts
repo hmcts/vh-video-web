@@ -11,6 +11,7 @@ describe('UserMediaService', () => {
     let userMediaService: UserMediaService;
     let localStorageServiceSpy: jasmine.SpyObj<LocalStorageService>;
     let getCameraAndMicrophoneDevicesSubject: Subject<UserMediaDevice[]>;
+
     beforeEach(() => {
         localStorageServiceSpy = jasmine.createSpyObj<LocalStorageService>('LocalStorageService', ['load', 'save']);
         getCameraAndMicrophoneDevicesSubject = new Subject<UserMediaDevice[]>();
@@ -204,14 +205,6 @@ describe('UserMediaService', () => {
             flush();
             expect(userMediaService['setActiveMicrophone']).toHaveBeenCalledOnceWith(testData.getListOfMicrophones()[0]);
             expect(userMediaService['loadDefaultMicrophone']).toHaveBeenCalledOnceWith(testData.getListOfDevices());
-        }));
-
-        it('should set isAudioOnly to false', fakeAsync(() => {
-            let audioOnly = null;
-            userMediaService.isAudioOnly$.subscribe(isAudioOnly => (audioOnly = isAudioOnly));
-
-            expect(userMediaService['isAudioOnly']).toBeFalse();
-            expect(audioOnly).toBeFalse();
         }));
     });
 });

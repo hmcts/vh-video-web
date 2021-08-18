@@ -114,15 +114,15 @@ describe('SelectMediaDevicesComponent', () => {
     });
 
     it('should emit cancelled event onSave', async () => {
-        spyOn(component.closeEventEmitter, 'emit');
+        spyOn(component.shouldClose, 'emit');
         component.onSave();
-        expect(component.closeEventEmitter.emit).toHaveBeenCalled();
+        expect(component.shouldClose.emit).toHaveBeenCalled();
     });
 
     it('should emit cancelled event onCancel', async () => {
-        spyOn(component.closeEventEmitter, 'emit');
+        spyOn(component.shouldClose, 'emit');
         component.onCancel();
-        expect(component.closeEventEmitter.emit).toHaveBeenCalled();
+        expect(component.shouldClose.emit).toHaveBeenCalled();
     });
 
     it('should update connectWithCameraOn to false', async () => {
