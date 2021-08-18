@@ -41,14 +41,14 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
     preferredMicrophoneStream: MediaStream;
 
-    didTestComplete: boolean = false;
-    displayFeed: boolean = false;
+    didTestComplete = false;
+    displayFeed = false;
 
-    displayDeviceChangeModal: boolean = false;
-    hasMultipleDevices: boolean = false;
+    displayDeviceChangeModal = false;
+    hasMultipleDevices = false;
 
     testCallResult: TestCallScoreResponse = null;
-    scoreSent: boolean = false;
+    scoreSent = false;
 
     selfTestParticipantId: string;
     selfTestPexipNode: string;

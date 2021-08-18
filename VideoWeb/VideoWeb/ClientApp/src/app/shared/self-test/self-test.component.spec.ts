@@ -431,7 +431,6 @@ describe('SelfTestComponent', () => {
         it('should disconnect from the call and clean up', () => {
             // Arrange
             const closeMicStreamSpy = spyOn(component, 'closeMicStreams');
-            videoCallServiceSpy.disconnectFromCall;
 
             // Act
             component.disconnect();
