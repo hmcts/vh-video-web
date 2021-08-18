@@ -18,7 +18,7 @@ namespace VideoWeb.Helpers
         public static string GetTiledDisplayName(ParticipantResponse participant)
         {
             var prefix = "";
-            var heartbeatMode = "NO HEARTBEAT";
+            var heartbeatMode = "NO_HEARTBEAT";
             if (participant.Role == Role.Judge)
             {
                 prefix = "JUDGE";

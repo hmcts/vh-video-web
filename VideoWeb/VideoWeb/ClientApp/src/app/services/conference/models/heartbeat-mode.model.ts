@@ -1,4 +1,4 @@
 export enum HeartbeatMode {
     Heartbeat = 'HEARTBEAT',
-    NoHeartbeat = 'NO HEARTBEAT'
+    NoHeartbeat = 'NO_HEARTBEAT'
 }
