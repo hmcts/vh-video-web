@@ -45,7 +45,6 @@ import {
 import { WRTestComponent } from './WRTestComponent';
 import { HearingRole } from '../../models/hearing-role-model';
 import { ElementRef } from '@angular/core';
-import { PrivateConsultationRoomControlsComponent } from '../../private-consultation-room-controls/private-consultation-room-controls.component';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 
 describe('WaitingRoomComponent message and clock', () => {
@@ -65,8 +64,6 @@ describe('WaitingRoomComponent message and clock', () => {
         roomClosingToastrService.clearToasts.and.callFake(() => {
             roomClosingToastrService.currentToast = null;
         });
-
-        videoCallService.retrieveVideoCallPreferences.and.returnValue(new VideoCallPreferences());
     });
 
     beforeEach(() => {

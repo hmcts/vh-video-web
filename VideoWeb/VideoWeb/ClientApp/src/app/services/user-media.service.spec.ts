@@ -109,6 +109,36 @@ describe('UserMediaService', () => {
         expect(result).toBeTruthy();
     }));
 
+    describe('updateIsAudioOnly', () => {
+        it('should update isAudioOnly if the values are different', fakeAsync(() => {
+            // Arrange
+            userMediaService['isAudioOnly'] = false;
+
+            // Act
+            let audioOnly = null;
+            userMediaService.isAudioOnly$.subscribe(isAudioOnly => (audioOnly = isAudioOnly));
+            userMediaService.updateIsAudioOnly(true);
+            flush();
+
+            // Assert
+            expect(audioOnly).toBeTrue();
+        }));
+
+        it('should NOT update isAudioOnly if the values are the same', fakeAsync(() => {
+            // Arrange
+            userMediaService['isAudioOnly'] = false;
+
+            // Act
+            let audioOnly = null;
+            userMediaService.isAudioOnly$.subscribe(isAudioOnly => (audioOnly = isAudioOnly));
+            userMediaService.updateIsAudioOnly(false);
+            flush();
+
+            // Assert
+            expect(audioOnly).toBeNull();
+        }));
+    });
+
     describe('Construction', () => {
         beforeEach(() => {
             spyOn(UserMediaService.prototype, 'getCameraAndMicrophoneDevices').and.returnValue(
@@ -174,6 +204,14 @@ describe('UserMediaService', () => {
             flush();
             expect(userMediaService['setActiveMicrophone']).toHaveBeenCalledOnceWith(testData.getListOfMicrophones()[0]);
             expect(userMediaService['loadDefaultMicrophone']).toHaveBeenCalledOnceWith(testData.getListOfDevices());
+        }));
+
+        it('should set isAudioOnly to false', fakeAsync(() => {
+            let audioOnly = null;
+            userMediaService.isAudioOnly$.subscribe(isAudioOnly => (audioOnly = isAudioOnly));
+
+            expect(userMediaService['isAudioOnly']).toBeFalse();
+            expect(audioOnly).toBeFalse();
         }));
     });
 });

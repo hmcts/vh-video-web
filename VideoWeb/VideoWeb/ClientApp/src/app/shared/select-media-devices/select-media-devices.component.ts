@@ -3,7 +3,6 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
@@ -18,7 +17,6 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     private readonly loggerPrefix = '[SelectMediaDevices] -';
     @Output() closeEventEmitter = new EventEmitter();
     @Input() showAudioOnlySetting = false;
-    @Input() waitingRoomMode = false;
 
     availableCameraDevices: UserMediaDevice[] = [];
     hasOnlyOneAvailableCameraDevice = false;
@@ -40,18 +38,19 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         private mediaStreamService: MediaStreamService,
         private formBuilder: FormBuilder,
         private logger: Logger,
-        private translateService: TranslateService,
-        private videoCallService: VideoCallService
+        private translateService: TranslateService
     ) {}
 
     ngOnInit() {
-        this.connectWithCameraOn = !this.videoCallService.isAudioOnly();
-
         this.userMediaService.connectedDevices$.pipe(takeUntil(this.destroyedSubject)).subscribe(connectedDevices => {
             this.availableCameraDevices = connectedDevices.filter(device => device.kind === 'videoinput');
             this.availableMicrophoneDevices = connectedDevices.filter(device => device.kind === 'audioinput');
 
             this.selectMediaDevicesForm = this.initNewDeviceSelectionForm();
+        });
+
+        this.userMediaService.isAudioOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(isAudioOnly => {
+            this.connectWithCameraOn = !isAudioOnly;
         });
 
         this.userMediaService.activeVideoDevice$.pipe(takeUntil(this.destroyedSubject)).subscribe(cameraDevice => {
@@ -120,6 +119,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     onSave() {
         this.userMediaService.updateActiveCamera(this.selectedCameraDevice);
         this.userMediaService.updateActiveMicrophone(this.selectedMicrophoneDevice);
+        this.userMediaService.updateIsAudioOnly(!this.connectWithCameraOn);
 
         this.closeEventEmitter.emit();
     }

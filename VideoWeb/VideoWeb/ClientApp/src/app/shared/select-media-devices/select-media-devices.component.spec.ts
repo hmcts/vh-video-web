@@ -11,12 +11,12 @@ import { getSpiedPropertyGetter } from '../jasmine-helpers/property-helpers';
 import { from, Observable, of, Subject } from 'rxjs';
 import { MediaStreamService } from 'src/app/services/media-stream.service';
 import { UserMediaDevice } from '../models/user-media-device';
+import { Guid } from 'guid-typescript';
 
 describe('SelectMediaDevicesComponent', () => {
     let component: SelectMediaDevicesComponent;
     let userMediaService: jasmine.SpyObj<UserMediaService>;
     let mediaStreamService: jasmine.SpyObj<MediaStreamService>;
-    let videoCallService: jasmine.SpyObj<VideoCallService>;
 
     const fb = new FormBuilder();
     const testData = new MediaDeviceTestData();
@@ -25,6 +25,7 @@ describe('SelectMediaDevicesComponent', () => {
     let connectedDevicesSubject: Subject<UserMediaDevice[]>;
     let activeVideoDeviceSubject: Subject<UserMediaDevice>;
     let activeMicrophoneDeviceSubject: Subject<UserMediaDevice>;
+    let isAudioOnlySubject: Subject<boolean>;
 
     beforeAll(() => {
         mediaStreamService = jasmine.createSpyObj<MediaStreamService>('MediaStreamService', [
@@ -34,31 +35,25 @@ describe('SelectMediaDevicesComponent', () => {
         ]);
         mediaStreamService.getStreamForCam.and.returnValue(of(mockCamStream));
         mediaStreamService.getStreamForMic.and.returnValue(of(mockMicStream));
-        videoCallService = jasmine.createSpyObj<VideoCallService>('VideoCallService', ['isAudioOnly']);
-        videoCallServiceSpy.isAudioOnly.and.returnValue(true);
     });
 
     beforeEach(fakeAsync(() => {
         userMediaService = jasmine.createSpyObj<UserMediaService>(
             'UserMediaService',
-            ['updateActiveCamera', 'updateActiveMicrophone'],
-            ['activeVideoDevice$', 'activeMicrophoneDevice$', 'connectedDevices$']
+            ['updateActiveCamera', 'updateActiveMicrophone', 'updateIsAudioOnly'],
+            ['activeVideoDevice$', 'activeMicrophoneDevice$', 'connectedDevices$', 'isAudioOnly$']
         );
         connectedDevicesSubject = new Subject<UserMediaDevice[]>();
         activeVideoDeviceSubject = new Subject<UserMediaDevice>();
         activeMicrophoneDeviceSubject = new Subject<UserMediaDevice>();
+        isAudioOnlySubject = new Subject<boolean>();
 
         getSpiedPropertyGetter(userMediaService, 'activeVideoDevice$').and.returnValue(activeVideoDeviceSubject.asObservable());
         getSpiedPropertyGetter(userMediaService, 'activeMicrophoneDevice$').and.returnValue(activeMicrophoneDeviceSubject.asObservable());
         getSpiedPropertyGetter(userMediaService, 'connectedDevices$').and.returnValue(connectedDevicesSubject.asObservable());
-        component = new SelectMediaDevicesComponent(
-            userMediaService,
-            mediaStreamService,
-            fb,
-            new MockLogger(),
-            translateServiceSpy,
-            videoCallServiceSpy
-        );
+        getSpiedPropertyGetter(userMediaService, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
+
+        component = new SelectMediaDevicesComponent(userMediaService, mediaStreamService, fb, new MockLogger(), translateServiceSpy);
         component.availableCameraDevices = testData.getListOfCameras();
     }));
 
@@ -100,6 +95,23 @@ describe('SelectMediaDevicesComponent', () => {
         flush();
         expect(component.selectedMicrophoneDevice).toEqual(testData.getSelectedMicphone());
     }));
+
+    it('should update settings in user media service onSave', () => {
+        const cameraDevice = (component.selectedCameraDevice = new UserMediaDevice('camera', Guid.create().toString(), 'videoinput', null));
+        const microphoneDevice = (component.selectedMicrophoneDevice = new UserMediaDevice(
+            'microphone',
+            Guid.create().toString(),
+            'audioinput',
+            null
+        ));
+        const isAudioOnly = !(component.connectWithCameraOn = false);
+
+        component.onSave();
+
+        expect(userMediaService.updateActiveCamera).toHaveBeenCalledWith(cameraDevice);
+        expect(userMediaService.updateActiveMicrophone).toHaveBeenCalledWith(microphoneDevice);
+        expect(userMediaService.updateIsAudioOnly).toHaveBeenCalledWith(isAudioOnly);
+    });
 
     it('should emit cancelled event onSave', async () => {
         spyOn(component.closeEventEmitter, 'emit');

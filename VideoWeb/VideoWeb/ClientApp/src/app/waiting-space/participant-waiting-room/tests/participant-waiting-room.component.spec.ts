@@ -68,7 +68,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
         const preferences = new VideoCallPreferences();
         preferences.audioOnly = false;
-        videoCallService.retrieveVideoCallPreferences.and.returnValue(preferences);
     });
 
     beforeEach(() => {

@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceStatus } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
@@ -98,6 +98,14 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
             this.startEventHubSubscribers();
             this.getJwtokenAndConnectToPexip();
         });
+    }
+
+    get allowAudioOnlyToggle(): boolean {
+        return (
+            !!this.conference &&
+            this.participant?.status !== ParticipantStatus.InConsultation &&
+            this.participant?.status !== ParticipantStatus.InHearing
+        );
     }
 
     getConferenceStatusText(): string {

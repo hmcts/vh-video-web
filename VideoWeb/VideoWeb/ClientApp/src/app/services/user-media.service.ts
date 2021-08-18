@@ -3,7 +3,6 @@ import { from, Observable, ReplaySubject, zip } from 'rxjs';
 import 'webrtc-adapter';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Logger } from './logging/logger-base';
-// import { ErrorService } from '../services/error.service';
 import { filter, map, mergeMap, retry, take } from 'rxjs/operators';
 import { LocalStorageService } from './conference/local-storage.service';
 
@@ -14,9 +13,6 @@ export class UserMediaService {
     private readonly loggerPrefix = '[UserMediaService] -';
     readonly defaultStreamConstraints = { audio: true, video: true };
     navigator: Navigator = navigator;
-
-    private activeVideoSubject = new ReplaySubject<UserMediaDevice>(1);
-    private activeMicrophoneSubject = new ReplaySubject<UserMediaDevice>(1);
 
     readonly PREFERRED_CAMERA_KEY = 'vh.preferred.camera';
     readonly PREFERRED_MICROPHONE_KEY = 'vh.preferred.microphone';
@@ -43,13 +39,21 @@ export class UserMediaService {
     }
 
     private activeVideoDevice: UserMediaDevice;
+    private activeVideoDeviceSubject = new ReplaySubject<UserMediaDevice>(1);
     get activeVideoDevice$(): Observable<UserMediaDevice> {
-        return this.activeVideoSubject.asObservable();
+        return this.activeVideoDeviceSubject.asObservable();
     }
 
     private activeMicrophoneDevice: UserMediaDevice;
+    private activeMicrophoneDeviceSubject = new ReplaySubject<UserMediaDevice>(1);
     get activeMicrophoneDevice$(): Observable<UserMediaDevice> {
-        return this.activeMicrophoneSubject.asObservable();
+        return this.activeMicrophoneDeviceSubject.asObservable();
+    }
+
+    private isAudioOnly: boolean = false;
+    private isAudioOnlySubject = new ReplaySubject<boolean>(1);
+    get isAudioOnly$(): Observable<boolean> {
+        return this.isAudioOnlySubject.asObservable();
     }
 
     constructor(private logger: Logger, /*private errorService: ErrorService,*/ private localStorageService: LocalStorageService) {
@@ -87,6 +91,8 @@ export class UserMediaService {
 
             this.setActiveMicrophone(microphone);
         }
+
+        this.setIsAudioOnly(false);
     }
 
     private checkActiveDevicesAreStillConnected(availableDevices: UserMediaDevice[]): void {
@@ -175,7 +181,7 @@ export class UserMediaService {
     private setActiveMicrophone(microhoneDevice: UserMediaDevice) {
         if (microhoneDevice) {
             this.activeMicrophoneDevice = microhoneDevice;
-            this.activeMicrophoneSubject.next(microhoneDevice);
+            this.activeMicrophoneDeviceSubject.next(microhoneDevice);
             this.localStorageService.save(this.PREFERRED_MICROPHONE_KEY, microhoneDevice);
         }
     }
@@ -191,9 +197,20 @@ export class UserMediaService {
     private setActiveCamera(cameraDevice: UserMediaDevice) {
         if (cameraDevice) {
             this.activeVideoDevice = cameraDevice;
-            this.activeVideoSubject.next(cameraDevice);
+            this.activeVideoDeviceSubject.next(cameraDevice);
             this.localStorageService.save(this.PREFERRED_CAMERA_KEY, cameraDevice);
         }
+    }
+
+    updateIsAudioOnly(audioOnly: boolean) {
+        if (this.isAudioOnly !== audioOnly) {
+            this.setIsAudioOnly(audioOnly);
+        }
+    }
+
+    private setIsAudioOnly(audioOnly: boolean) {
+        this.isAudioOnly = audioOnly;
+        this.isAudioOnlySubject.next(this.isAudioOnly.valueOf());
     }
 
     hasMultipleDevices(): Observable<boolean> {

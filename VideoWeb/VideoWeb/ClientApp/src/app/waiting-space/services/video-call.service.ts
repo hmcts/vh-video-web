@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
 import { Observable, Subject } from 'rxjs';
+import { skip } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ApiClient, HearingLayout, SharedParticipantRoom, StartHearingRequest } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -21,7 +22,6 @@ import {
     Presentation,
     StoppedScreenshare
 } from '../models/video-call-models';
-import { VideoCallPreferences } from './video-call-preferences.mode';
 
 declare var PexRTC: any;
 
@@ -29,7 +29,6 @@ declare var PexRTC: any;
 export class VideoCallService {
     private readonly loggerPrefix = '[VideoCallService] -';
     private readonly preferredLayoutCache: SessionStorage<Record<string, HearingLayout>>;
-    private readonly videoCallPreferences: SessionStorage<VideoCallPreferences>;
     readonly VIDEO_CALL_PREFERENCE_KEY = 'vh.videocall.preferences';
     readonly PREFERRED_LAYOUT_KEY = 'vh.preferred.layout';
 
@@ -51,9 +50,6 @@ export class VideoCallService {
 
     pexipAPI: PexipClient;
     localOutgoingStream: any;
-    get isAudioOnlyCall(): boolean {
-        return this.pexipAPI.call_type === this.callTypeAudioOnly || this.pexipAPI.video_source === false;
-    }
 
     constructor(
         private logger: Logger,
@@ -63,12 +59,9 @@ export class VideoCallService {
         private configService: ConfigService
     ) {
         this.preferredLayoutCache = new SessionStorage(this.PREFERRED_LAYOUT_KEY);
-        this.videoCallPreferences = new SessionStorage(this.VIDEO_CALL_PREFERENCE_KEY);
+
         if (!this.preferredLayoutCache.get()) {
             this.preferredLayoutCache.set({});
-        }
-        if (!this.videoCallPreferences.get()) {
-            this.videoCallPreferences.set(new VideoCallPreferences());
         }
     }
 
@@ -83,9 +76,7 @@ export class VideoCallService {
         this.initTurnServer();
         this.pexipAPI.screenshare_fps = 30;
 
-        this.userMediaStreamService.currentStream$.subscribe(stream => this.onCurrentStreamChanged(stream));
-
-        this.pexipAPI.onSetup = function (stream, pinStatus, conferenceExtension) {
+        this.pexipAPI.onSetup = function (stream) {
             self.onSetupSubject.next(new CallSetup(stream));
         };
 
@@ -137,24 +128,29 @@ export class VideoCallService {
             self.logger.info(`${self.loggerPrefix} Screenshare stopped : ${JSON.stringify(reason)}`);
             self.onStoppedScreenshareSubject.next(new StoppedScreenshare(reason));
         };
+
+        this.userMediaService.isAudioOnly$.pipe(skip(1)).subscribe(isAudioOnly => {
+            this.onIsAudioOnlyChanged(isAudioOnly);
+        });
+        this.userMediaStreamService.currentStream$.subscribe(stream => this.onCurrentStreamChanged(stream));
+        this.userMediaStreamService.streamModified$.subscribe(() => this.onStreamModified());
     }
 
     private onCurrentStreamChanged(stream: MediaStream) {
-        const shouldReconnect = !!this.pexipAPI.user_media_stream;
-
-        if (stream !== this.pexipAPI.user_media_stream) {
-            console.warn(`${this.loggerPrefix} AUDIO B4`, this.pexipAPI.user_media_stream?.getAudioTracks());
-            console.warn(`${this.loggerPrefix} VIDEO B4`, this.pexipAPI.user_media_stream?.getVideoTracks());
-
-            this.pexipAPI.user_media_stream = stream;
-        }
-
-        console.warn(`${this.loggerPrefix} AUDIO`, this.pexipAPI.user_media_stream.getAudioTracks());
-        console.warn(`${this.loggerPrefix} VIDEO`, this.pexipAPI.user_media_stream.getVideoTracks());
+        const shouldReconnect = !this.pexipAPI.user_media_stream && stream !== this.pexipAPI.user_media_stream;
+        this.pexipAPI.user_media_stream = stream;
 
         if (shouldReconnect) {
-            this.reconnectToCallWithNewStream();
+            this.reconnectToCall();
         }
+    }
+
+    private onStreamModified() {
+        // this.reconnectToCall();
+    }
+
+    private onIsAudioOnlyChanged(audioOnly: boolean) {
+        // this.reconnectToCall(audioOnly ? 'video' : null);
     }
 
     initTurnServer() {
@@ -356,23 +352,9 @@ export class VideoCallService {
         return this.apiClient.dismissWitness(conferenceId, participantId).toPromise();
     }
 
-    retrieveVideoCallPreferences(): VideoCallPreferences {
-        return this.videoCallPreferences.get();
-    }
-    isAudioOnly(): boolean {
-        return this.videoCallPreferences.get().audioOnly;
-    }
-
-    reconnectToCallWithNewStream() {
+    reconnectToCall(callType: string | null = null) {
         this.pexipAPI.disconnectCall();
-        this.pexipAPI.addCall(null);
-    }
-
-    switchToAudioOnlyCall() {
-        this.pexipAPI.disconnectCall();
-        this.localOutgoingStream = this.pexipAPI.video_source;
-        this.pexipAPI.video_source = false;
-        this.pexipAPI.addCall('video');
+        this.pexipAPI.addCall(callType);
     }
 
     async selectScreen() {
@@ -425,11 +407,5 @@ export class VideoCallService {
         });
 
         return this.apiClient.getParticipantRoomForParticipant(conferenceId, participantId, 'Judicial').toPromise();
-    }
-
-    updateAudioOnlyPreference(audioOnly: boolean) {
-        const videoCallPrefs = this.retrieveVideoCallPreferences();
-        videoCallPrefs.audioOnly = audioOnly;
-        this.videoCallPreferences.set(videoCallPrefs);
     }
 }

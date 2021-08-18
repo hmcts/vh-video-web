@@ -89,7 +89,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     ngOnInit(): void {
         this.audioMuted = this.videoCallService.pexipAPI.call.mutedAudio;
-        this.videoMuted = this.videoCallService.pexipAPI.call.mutedVideo || this.videoCallService.isAudioOnlyCall;
+        this.videoMuted = this.videoCallService.pexipAPI.call.mutedVideo;
         this.logger.info(`${this.loggerPrefix} initialising hearing controls`, this.logPayload);
         this.setupVideoCallSubscribers();
         this.setupEventhubSubscribers();
