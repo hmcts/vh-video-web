@@ -778,7 +778,7 @@ describe('SelfTestComponent', () => {
             expect(retrieveSelfTestScoreSpy).not.toHaveBeenCalled();
         }));
 
-        it("should retrieve self test score when disconnect reason is Conference terminated by another participant", fakeAsync(() => {
+        it('should retrieve self test score when disconnect reason is Conference terminated by another participant', fakeAsync(() => {
             // Arrange
             const reason = 'Conference terminated by another participant';
 
