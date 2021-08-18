@@ -19,8 +19,6 @@ import {
     notificationToastrService,
     roomClosingToastrService,
     router,
-    userMediaService,
-    userMediaStreamService,
     videoCallService,
     videoWebService
 } from '../waiting-room-shared/tests/waiting-room-base-setup';

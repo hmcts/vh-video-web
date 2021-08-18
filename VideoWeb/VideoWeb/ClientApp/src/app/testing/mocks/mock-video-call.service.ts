@@ -100,4 +100,3 @@ videoCallServiceSpy.onScreenshareStopped.and.returnValue(onScreenshareStoppedMoc
 videoCallServiceSpy.onPresentationConnected.and.returnValue(onPresentationConnectedMock.asObservable());
 videoCallServiceSpy.onPresentationDisconnected.and.returnValue(onPresentationDisconnectedMock.asObservable());
 videoCallServiceSpy.onPresentation.and.returnValue(onPresentationMock.asObservable());
-

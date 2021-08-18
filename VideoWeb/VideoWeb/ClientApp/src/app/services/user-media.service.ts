@@ -173,11 +173,11 @@ export class UserMediaService {
     }
 
     private setActiveMicrophone(microhoneDevice: UserMediaDevice) {
-        if (!microhoneDevice) return;
-
-        this.activeMicrophoneDevice = microhoneDevice;
-        this.activeMicrophoneSubject.next(microhoneDevice);
-        this.localStorageService.save(this.PREFERRED_MICROPHONE_KEY, microhoneDevice);
+        if (microhoneDevice) {
+            this.activeMicrophoneDevice = microhoneDevice;
+            this.activeMicrophoneSubject.next(microhoneDevice);
+            this.localStorageService.save(this.PREFERRED_MICROPHONE_KEY, microhoneDevice);
+        }
     }
 
     updateActiveCamera(cameraDevice: UserMediaDevice) {
@@ -189,11 +189,11 @@ export class UserMediaService {
     }
 
     private setActiveCamera(cameraDevice: UserMediaDevice) {
-        if (!cameraDevice) return;
-
-        this.activeVideoDevice = cameraDevice;
-        this.activeVideoSubject.next(cameraDevice);
-        this.localStorageService.save(this.PREFERRED_CAMERA_KEY, cameraDevice);
+        if (cameraDevice) {
+            this.activeVideoDevice = cameraDevice;
+            this.activeVideoSubject.next(cameraDevice);
+            this.localStorageService.save(this.PREFERRED_CAMERA_KEY, cameraDevice);
+        }
     }
 
     hasMultipleDevices(): Observable<boolean> {

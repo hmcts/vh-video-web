@@ -52,8 +52,6 @@ import {
     participantsLinked,
     roomClosingToastrService,
     router,
-    userMediaService,
-    userMediaStreamService,
     videoWebService,
     videoCallService
 } from './waiting-room-base-setup';

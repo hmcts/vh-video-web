@@ -55,8 +55,6 @@ export let notificationToastrService: jasmine.SpyObj<NotificationToastrService>;
 export let roomClosingToastrService: jasmine.SpyObj<RoomClosingToastrService>;
 export let toastrService: jasmine.SpyObj<ToastrService>;
 export let logger: jasmine.SpyObj<Logger>;
-export let userMediaService: jasmine.SpyObj<UserMediaService>;
-export let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
 export const mockCamStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
 export const mockMicStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getAudioTracks']);
 export const testDataDevice = new MediaDeviceTestData();
@@ -95,14 +93,6 @@ export function initAllWRDependencies() {
     consultationService = consultationServiceSpyFactory();
 
     logger = jasmine.createSpyObj<Logger>('Logger', ['debug', 'info', 'warn', 'event', 'error']);
-    userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', []);
-    userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>('UserMediaStreamService', [
-        'stopStream',
-        'getStreamForCam',
-        'getStreamForMic'
-    ]);
-    userMediaStreamService.getStreamForCam.and.returnValue(of(mockCamStream));
-    userMediaStreamService.getStreamForMic.and.returnValue(of(mockMicStream));
 
     notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', [
         'playHearingAlertSound',

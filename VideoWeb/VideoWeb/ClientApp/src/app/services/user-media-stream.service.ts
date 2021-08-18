@@ -78,8 +78,8 @@ export class UserMediaStreamService {
                             this.onActiveCameraChanged(videoDevice);
                         });
 
-                        this.userMediaService.activeMicrophoneDevice$.subscribe(microphoneDevice => {
-                            this.onActiveMicrophoneChanged(microphoneDevice);
+                        this.userMediaService.activeMicrophoneDevice$.subscribe(activeMicrophoneDevice => {
+                            this.onActiveMicrophoneChanged(activeMicrophoneDevice);
                         });
                     });
             });

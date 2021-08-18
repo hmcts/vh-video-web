@@ -16,14 +16,14 @@ import { MediaStreamService } from 'src/app/services/media-stream.service';
 })
 export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     private readonly loggerPrefix = '[SelectMediaDevices] -';
-    @Output('onShouldClose') closeEventEmitter = new EventEmitter();
+    @Output() closeEventEmitter = new EventEmitter();
     @Input() showAudioOnlySetting = false;
     @Input() waitingRoomMode = false;
 
     availableCameraDevices: UserMediaDevice[] = [];
-    hasOnlyOneAvailableCameraDevice: boolean = false;
+    hasOnlyOneAvailableCameraDevice = false;
     availableMicrophoneDevices: UserMediaDevice[] = [];
-    hasOnlyOneAvailableMicrophoneDevice: boolean = false;
+    hasOnlyOneAvailableMicrophoneDevice = false;
 
     selectMediaDevicesForm: FormGroup;
     selectedCameraDevice: UserMediaDevice;

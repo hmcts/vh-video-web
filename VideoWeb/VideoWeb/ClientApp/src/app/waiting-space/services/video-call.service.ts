@@ -152,7 +152,9 @@ export class VideoCallService {
         console.warn(`${this.loggerPrefix} AUDIO`, this.pexipAPI.user_media_stream.getAudioTracks());
         console.warn(`${this.loggerPrefix} VIDEO`, this.pexipAPI.user_media_stream.getVideoTracks());
 
-        if (shouldReconnect) this.reconnectToCallWithNewStream();
+        if (shouldReconnect) {
+            this.reconnectToCallWithNewStream();
+        }
     }
 
     initTurnServer() {

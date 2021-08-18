@@ -26,17 +26,16 @@ describe('SelectMediaDevicesComponent', () => {
     let activeVideoDeviceSubject: Subject<UserMediaDevice>;
     let activeMicrophoneDeviceSubject: Subject<UserMediaDevice>;
 
-
     beforeAll(() => {
-        mediaStreamService = jasmine.createSpyObj<MediaStreamService>(
-            'MediaStreamService',
-            ['stopStream', 'getStreamForCam', 'getStreamForMic']
-        );
+        mediaStreamService = jasmine.createSpyObj<MediaStreamService>('MediaStreamService', [
+            'stopStream',
+            'getStreamForCam',
+            'getStreamForMic'
+        ]);
         mediaStreamService.getStreamForCam.and.returnValue(of(mockCamStream));
         mediaStreamService.getStreamForMic.and.returnValue(of(mockMicStream));
         videoCallService = jasmine.createSpyObj<VideoCallService>('VideoCallService', ['isAudioOnly']);
         videoCallServiceSpy.isAudioOnly.and.returnValue(true);
-       
     });
 
     beforeEach(fakeAsync(() => {
@@ -126,13 +125,13 @@ describe('SelectMediaDevicesComponent', () => {
         expect(component.connectWithCameraOn).toBeTrue();
     });
 
-    it('should update camera stream on device change', async() => {
+    it('should update camera stream on device change', async () => {
         component.selectedCameraStream = null;
         component.onSelectedCameraDeviceChange();
         expect(component.selectedCameraStream).toEqual(mockCamStream);
     });
 
-    it('should update microphone stream on device change', async() => {
+    it('should update microphone stream on device change', async () => {
         component.selectedCameraStream = null;
         component.onSelectedMicrophoneDeviceChange();
         expect(component.selectedMicrophoneStream).toEqual(mockMicStream);

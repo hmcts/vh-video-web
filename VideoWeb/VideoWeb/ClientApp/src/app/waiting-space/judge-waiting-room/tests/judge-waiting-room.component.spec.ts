@@ -30,8 +30,6 @@ import {
     notificationToastrService,
     roomClosingToastrService,
     router,
-    userMediaService,
-    userMediaStreamService,
     videoCallService,
     videoWebService
 } from '../../waiting-room-shared/tests/waiting-room-base-setup';
@@ -549,15 +547,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         component.displayDeviceChangeModal = false;
         component.showChooseCameraDialog();
         expect(component.displayDeviceChangeModal).toBe(true);
-    });
-
-    it('should on consultation accept stop streams for devices and close choose device popup', async () => {
-        component.displayDeviceChangeModal = true;
-        await component.onConsultationAccepted('');
-        expect(component.displayDeviceChangeModal).toBe(false);
-        expect(userMediaStreamService.getStreamForMic).toHaveBeenCalled();
-        expect(userMediaStreamService.getStreamForCam).toHaveBeenCalled();
-        expect(userMediaStreamService.stopStream).toHaveBeenCalled();
     });
     it('should hide change device popup on close popup', () => {
         component.displayDeviceChangeModal = true;
