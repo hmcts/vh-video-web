@@ -4,7 +4,7 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthorizationResult, EventTypes, OidcClientNotification, PublicEventsService } from 'angular-auth-oidc-client';
 import { BehaviorSubject, NEVER, Observable, Subscription } from 'rxjs';
-import { catchError, filter } from 'rxjs/operators';
+import { catchError, filter, first } from 'rxjs/operators';
 import { ConfigService } from './services/api/config.service';
 import { ProfileService } from './services/api/profile.service';
 import { Role } from './services/clients/api-client';
@@ -74,15 +74,18 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.configService.getClientSettings().subscribe({
-            next: async () => {
-                if (this.securityConfigSetupService.getIdp() === IdpProviders.quickLink) {
-                    this.postConfigSetupQuickLinks();
-                } else {
-                    this.postConfigSetupOidc();
+        this.configService
+            .getClientSettings()
+            .pipe(first())
+            .subscribe({
+                next: async () => {
+                    if (this.securityConfigSetupService.getIdp() === IdpProviders.quickLink) {
+                        this.postConfigSetupQuickLinks();
+                    } else {
+                        this.postConfigSetupOidc();
+                    }
                 }
-            }
-        });
+            });
     }
 
     private postConfigSetupOidc() {

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { take, tap, map } from 'rxjs/operators';
+import { take, tap, map, timeout } from 'rxjs/operators';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { SecurityServiceProvider } from '../authentication/security-provider.service';
 
@@ -12,14 +12,19 @@ export class AlreadyAuthenticatedGuard implements CanActivate {
     constructor(private securityServiceProvider: SecurityServiceProvider, private router: Router) {}
 
     canActivate(): Observable<boolean> {
-        return this.securityServiceProvider.getSecurityService().isAuthenticated$.pipe(
+        const securityService = this.securityServiceProvider.getSecurityService();
+        const currentIdp = this.securityServiceProvider.currentIdp;
+        return securityService.isAuthenticated$.pipe(
+            timeout(30000),
             take(1),
             tap(authenticated => {
                 if (authenticated) {
                     this.router.navigate([pageUrls.Logout]);
                 }
             }),
-            map(authenticated => !authenticated)
+            map(authenticated => {
+                return !authenticated;
+            })
         );
     }
 }

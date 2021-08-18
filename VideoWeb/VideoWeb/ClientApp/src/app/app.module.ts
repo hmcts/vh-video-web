@@ -1,4 +1,4 @@
-import { HttpClient, HttpClientModule, HttpXhrBackend } from '@angular/common/http';
+import { HttpClient, HttpXhrBackend } from '@angular/common/http';
 import { APP_INITIALIZER, ErrorHandler, LOCALE_ID, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule, Title } from '@angular/platform-browser';
@@ -8,7 +8,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { OnTheDayModule } from './on-the-day/on-the-day.module';
-import { AuthGuard } from './security/auth.guard';
 import { SecurityModule } from './security/security.module';
 import { ConfigService } from './services/api/config.service';
 import { API_BASE_URL } from './services/clients/api-client';
@@ -51,7 +50,6 @@ export function getLocale() {
     declarations: [AppComponent, HomeComponent, NavigatorComponent],
     imports: [
         BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
-        HttpClientModule,
         FormsModule,
         SharedModule,
         SecurityModule,
@@ -82,7 +80,6 @@ export function getLocale() {
         { provide: LOCALE_ID, useFactory: getLocale },
         { provide: ErrorHandler, useClass: GlobalErrorHandler },
         ConfigService,
-        AuthGuard,
         Title,
         PageTrackerService,
         ParticipantStatusUpdateService

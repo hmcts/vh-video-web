@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { PublicConfiguration } from 'angular-auth-oidc-client';
 import { AuthOptions } from 'angular-auth-oidc-client/lib/login/auth-options';
-import { ReplaySubject, Observable, EMPTY } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { ReplaySubject, Observable, EMPTY, BehaviorSubject } from 'rxjs';
+import { map, take, tap } from 'rxjs/operators';
 import { ApiClient } from 'src/app/services/clients/api-client';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { JWTBody } from '../idp-selection/models/jwt-body.model';
@@ -31,7 +31,7 @@ export class QuickLinkSecurityService implements ISecurityService {
     private token: string;
     private tokenSessionStorageKey = 'QUICK_LINKS_JWT';
     private tokenSessionStorage: SessionStorage<string>;
-    private isAuthenticatedSubject = new ReplaySubject<boolean>(1);
+    private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
     private userDataSubject = new ReplaySubject<any>(1);
 
     decodedTokenBody: QuickLinkJwtBody;
@@ -39,11 +39,14 @@ export class QuickLinkSecurityService implements ISecurityService {
     constructor(private apiClient: ApiClient, private jwtHelper: JwtHelperService) {
         this.tokenSessionStorage = new SessionStorage<string>(this.tokenSessionStorageKey);
         this.token = this.tokenSessionStorage.get();
+        if (this.isTokenValid(this.token)) {
+            this.isAuthenticatedSubject.next(true);
+        }
     }
 
     authorize(authOptions?: AuthOptions, token?: string): void {
         this.setToken(token);
-        this.checkAuth().subscribe();
+        this.checkAuth().pipe(take(1)).subscribe();
     }
 
     private clearToken() {
@@ -55,6 +58,7 @@ export class QuickLinkSecurityService implements ISecurityService {
             this.token = null;
             this.decodedTokenBody = null;
             this.tokenSessionStorage.clear();
+            this.isAuthenticatedSubject.next(false);
         } else {
             this.token = token;
             this.decodedTokenBody = this.decodeTokenBody(this.token);
@@ -77,7 +81,6 @@ export class QuickLinkSecurityService implements ISecurityService {
                     }
                 });
             });
-
         return this.apiClient.isQuickLinkParticipantAuthorised().pipe(
             tokenIsAuthorisedResult,
             tap(authenticated => {
@@ -119,11 +122,15 @@ export class QuickLinkSecurityService implements ISecurityService {
 
     get isAuthenticated$(): Observable<boolean> {
         return this.isAuthenticatedSubject.asObservable().pipe(
-            map(isAuthenticated => (isAuthenticated ? this.isTokenValid(this.token) : false)),
-            tap(isAuthenticated => {
+            map(isAuthenticated => {
                 if (!isAuthenticated) {
+                    return false;
+                }
+                const isValid = this.isTokenValid(this.token);
+                if (!isValid) {
                     this.clearToken();
                 }
+                return isValid;
             })
         );
     }

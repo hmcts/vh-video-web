@@ -20,9 +20,11 @@ export class SecurityConfigSetupService {
     get configSetup$() {
         return this._configSetupSubject.asObservable();
     }
-    private currentIdpSubject = new BehaviorSubject<IdpProviders>(IdpProviders.vhaad);
+    private currentIdpSubject = new BehaviorSubject<IdpProviders>(null);
 
-    constructor(private oidcConfigService: OidcConfigService, private configService: ConfigService) {}
+    constructor(private oidcConfigService: OidcConfigService, private configService: ConfigService) {
+        this.currentIdpSubject.next(this.getIdp());
+    }
 
     setupConfig() {
         this.configService.getClientSettings().subscribe(clientSettings => {
@@ -65,11 +67,11 @@ export class SecurityConfigSetupService {
 
     setIdp(provider: IdpProviders) {
         window.sessionStorage.setItem(this.idpProvidersSessionStorageKey, provider);
+        this.currentIdpSubject.next(provider);
         this._configSetupSubject.pipe(filter(Boolean)).subscribe(() => {
             if (provider !== IdpProviders.quickLink) {
                 this.oidcConfigService.withConfig(this.config[provider]);
             }
-            this.currentIdpSubject.next(provider);
         });
     }
 

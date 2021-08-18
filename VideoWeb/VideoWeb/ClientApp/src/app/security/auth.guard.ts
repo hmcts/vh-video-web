@@ -10,7 +10,9 @@ import { ISecurityService } from './authentication/security-service.interface';
 export class AuthGuard implements CanActivate {
     private securityService: ISecurityService;
     constructor(securityServiceProviderService: SecurityServiceProvider, private router: Router) {
-        securityServiceProviderService.currentSecurityService$.subscribe(securityService => (this.securityService = securityService));
+        securityServiceProviderService.currentSecurityService$.subscribe(securityService => {
+            this.securityService = securityService;
+        });
     }
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {

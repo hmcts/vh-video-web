@@ -114,7 +114,7 @@ namespace VideoWeb.Controllers
         }
         
         [HttpGet("isQuickLinkParticipantAuthorised")]
-        [SwaggerOperation("joinConferenceAsAQuickLinkUser")]
+        [SwaggerOperation("isQuickLinkParticipantAuthorised")]
         [ProducesResponseType((int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.Forbidden)]
         public IActionResult IsAuthorised()

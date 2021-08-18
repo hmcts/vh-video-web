@@ -1,5 +1,5 @@
 import { HttpInterceptor, HttpHandler, HttpEvent, HttpRequest } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { Logger } from '../services/logging/logger-base';
@@ -13,7 +13,7 @@ export class RefreshTokenParameterInterceptor implements HttpInterceptor {
     private securityService: ISecurityService;
     private idp: IdpProviders;
 
-    constructor(securityServiceProviderService: SecurityServiceProvider, private logger: Logger) {
+    constructor(securityServiceProviderService: SecurityServiceProvider, private injector: Injector) {
         securityServiceProviderService.currentIdp$
             .pipe(
                 tap(idp => (this.idp = idp)),
@@ -25,7 +25,8 @@ export class RefreshTokenParameterInterceptor implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         if (req.method === 'POST' && req.url.endsWith('/oauth2/v2.0/token')) {
             if (!this.securityService) {
-                this.logger.debug(`${this.loggerPrefix} security service is falsey. Not using refresh tokens.`, {
+                const logger = this.injector.get(Logger);
+                logger.debug(`${this.loggerPrefix} security service is falsey. Not using refresh tokens.`, {
                     Idp: this.idp
                 });
                 return next.handle(req);

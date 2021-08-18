@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpEvent, HttpHeaders } from '@angular/common/http';
 import { SecurityServiceProvider } from './authentication/security-provider.service';
 import { SecurityConfigSetupService } from './security-config-setup.service';
@@ -14,19 +14,20 @@ export class QuickLinksInterceptor {
     constructor(
         private securityConfigSetupService: SecurityConfigSetupService,
         private securityServiceProviderService: SecurityServiceProvider,
-        private logger: Logger
+        private injector: Injector
     ) {
         this.securityConfigSetupService.currentIdp$.subscribe(newIdp => (this.currentIdp = newIdp));
     }
 
     intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+        const logger = this.injector.get(Logger);
         if (this.currentIdp) {
             if (this.currentIdp === IdpProviders.quickLink) {
-                this.logger.debug(`${this.loggerPrefix} IDP is ${this.currentIdp}. Using Quick Links intercepter.`);
+                logger.debug(`${this.loggerPrefix} IDP is ${this.currentIdp}. Using Quick Links intercepter.`);
                 return next.handle(this.attachQuickLinkUsersToken(request));
             }
         } else {
-            this.logger.warn(`${this.loggerPrefix} Current IDP is not defined. Cannot intercept request.`);
+            logger.warn(`${this.loggerPrefix} Current IDP is not defined. Cannot intercept request.`);
         }
 
         return next.handle(request);
@@ -51,13 +52,12 @@ export class QuickLinksInterceptor {
 
     private attachQuickLinkUsersToken(request: HttpRequest<unknown>): HttpRequest<unknown> {
         const token = this.securityServiceProviderService.getSecurityService().getToken();
-
         const newRequest = this.cloneOldRequestAndAddNewHeaders(request, headers => {
             headers['Authorization'] = `Bearer ${token}`;
             headers['Content-Type'] = 'application/json';
         });
-
-        this.logger.debug(`${this.loggerPrefix} Attached quick links token.`, {
+        const logger = this.injector.get(Logger);
+        logger.debug(`${this.loggerPrefix} Attached quick links token.`, {
             token: token,
             requestUrl: newRequest.url,
             requestHeaders: newRequest.headers

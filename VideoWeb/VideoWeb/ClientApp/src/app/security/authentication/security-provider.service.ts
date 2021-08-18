@@ -46,4 +46,8 @@ export class SecurityServiceProvider {
     get currentIdp$(): Observable<IdpProviders> {
         return this.idpSubject.asObservable();
     }
+
+    get currentIdp(): IdpProviders {
+        return this.idpSubject.value;
+    }
 }

@@ -5,6 +5,11 @@ import { SecurityConfigSetupService } from './security/security-config-setup.ser
 import { RefreshTokenParameterInterceptor } from './security/refresh-token-parameter.interceptor';
 import { ConfigService } from './services/api/config.service';
 import { QuickLinksInterceptor } from './security/quick-links.interceptor';
+import { AuthGuard } from './security/auth.guard';
+
+export function setupSecurity(securityConfigService: SecurityConfigSetupService) {
+    return () => securityConfigService.setupConfig();
+}
 
 export function loadConfig(securityConfigSetupService: SecurityConfigSetupService): Function {
     return () => {
@@ -17,6 +22,7 @@ export function loadConfig(securityConfigSetupService: SecurityConfigSetupServic
     providers: [
         SecurityConfigSetupService,
         ConfigService,
+        { provide: APP_INITIALIZER, useFactory: setupSecurity, deps: [SecurityConfigSetupService], multi: true },
         {
             provide: APP_INITIALIZER,
             useFactory: loadConfig,
@@ -25,7 +31,8 @@ export function loadConfig(securityConfigSetupService: SecurityConfigSetupServic
         },
         { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: QuickLinksInterceptor, multi: true },
-        { provide: HTTP_INTERCEPTORS, useClass: RefreshTokenParameterInterceptor, multi: true }
+        { provide: HTTP_INTERCEPTORS, useClass: RefreshTokenParameterInterceptor, multi: true },
+        AuthGuard
     ],
     exports: [AuthModule]
 })

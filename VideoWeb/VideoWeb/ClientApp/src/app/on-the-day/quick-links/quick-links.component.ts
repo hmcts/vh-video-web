@@ -1,7 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { QuickLinksService } from 'src/app/services/api/quick-links.service';
 import { Role } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -25,7 +26,8 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
     quickLinkNameFormControl: FormControl;
     quickLinkRoleFormControl: FormControl;
     quickLinkParticipantRoles: Role[] = [];
-    quickLinkSubscriptions: Subscription = new Subscription();
+
+    private destroyed$ = new Subject();
 
     constructor(
         private logger: Logger,
@@ -82,24 +84,23 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
         this.resetErrors();
 
         if (this.validateForm()) {
-            this.quickLinkSubscriptions.add(
-                this.quickLinksService
-                    .joinConference(this.hearingId, this.quickLinkNameFormControl.value, this.quickLinkRoleFormControl.value)
-                    .subscribe(
-                        response => {
-                            this.logger.info(`${this.loggerPrefix} Joined conference as quick link participant`, {
-                                apiResponse: response
-                            });
+            this.quickLinksService
+                .joinConference(this.hearingId, this.quickLinkNameFormControl.value, this.quickLinkRoleFormControl.value)
+                .pipe(takeUntil(this.destroyed$))
+                .subscribe(
+                    response => {
+                        this.logger.info(`${this.loggerPrefix} Joined conference as quick link participant`, {
+                            apiResponse: response
+                        });
 
-                            this.router.navigate([pageUrls.Navigator]);
-                        },
-                        error => this.logger.error('[Login] - Redirect Failed', error)
-                    )
-            );
+                        this.router.navigate([pageUrls.Navigator]);
+                    },
+                    error => this.logger.error('[Login] - Redirect Failed', error)
+                );
         }
     }
 
     ngOnDestroy(): void {
-        this.quickLinkSubscriptions.unsubscribe();
+        this.destroyed$.next();
     }
 }
