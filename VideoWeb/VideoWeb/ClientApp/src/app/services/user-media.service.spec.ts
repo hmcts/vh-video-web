@@ -163,13 +163,13 @@ describe('UserMediaService', () => {
     });
 
     describe('Construction', () => {
-        beforeEach(() => {
-            spyOn(UserMediaService.prototype, 'getCameraAndMicrophoneDevices').and.returnValue(
-                getCameraAndMicrophoneDevicesSubject.asObservable()
-            );
-            spyOn(UserMediaService.prototype, 'hasValidCameraAndMicAvailable').and.returnValue(of(true));
-            userMediaService = new UserMediaService(new MockLogger(), localStorageServiceSpy);
-        });
+        // beforeEach(() => {
+        //     spyOn(UserMediaService.prototype, 'getCameraAndMicrophoneDevices').and.returnValue(
+        //         getCameraAndMicrophoneDevicesSubject.asObservable()
+        //     );
+        //     spyOn(UserMediaService.prototype, 'hasValidCameraAndMicAvailable').and.returnValue(of(true));
+        //     userMediaService = new UserMediaService(new MockLogger(), localStorageServiceSpy);
+        // });
 
         // it('should handle device change', fakeAsync(() => {
         //     spyOn<any>(userMediaService, 'initialiseActiveDevicesFromCache').and.callFake(function () {});
