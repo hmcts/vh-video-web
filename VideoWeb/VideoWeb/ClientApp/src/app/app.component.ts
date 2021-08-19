@@ -4,7 +4,7 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthorizationResult, EventTypes, OidcClientNotification, PublicEventsService } from 'angular-auth-oidc-client';
 import { BehaviorSubject, NEVER, Observable, Subject, Subscription } from 'rxjs';
-import { catchError, filter, first, takeUntil } from 'rxjs/operators';
+import { catchError, delay, filter, first, takeUntil } from 'rxjs/operators';
 import { ConfigService } from './services/api/config.service';
 import { ProfileService } from './services/api/profile.service';
 import { Role } from './services/clients/api-client';
@@ -34,7 +34,7 @@ export class AppComponent implements OnInit, OnDestroy {
     @ViewChild('skipLink', { static: true })
     skipLinkDiv: ElementRef;
 
-    loggedIn: boolean;
+    loggedIn = false;
     isRepresentativeOrIndividual: boolean;
     pageTitle = 'Video Hearings - ';
 
@@ -63,7 +63,6 @@ export class AppComponent implements OnInit, OnDestroy {
         private location: Location,
         private logger: Logger
     ) {
-        this.loggedIn = false;
         this.isRepresentativeOrIndividual = false;
 
         const language = localStorage.getItem('language') ?? 'en';
@@ -75,6 +74,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        this.checkBrowser();
         this.setupSecurityServiceProviderSubscription();
         this.configService
             .getClientSettings()
@@ -119,17 +119,31 @@ export class AppComponent implements OnInit, OnDestroy {
         }
         this.loggedIn = loggedIn;
 
-        if (this.loggedIn || this.isSignInUrl) {
+        if (loggedIn || this.isSignInUrl) {
             await this.retrieveProfileRole();
         }
 
-        this.checkBrowser();
-        this.setupNavigationSubscription();
-        this.setupSubscribers();
+        this.setupNavigationSubscriptions();
         this.connectionStatusService.start();
     }
 
-    private setupSubscribers() {
+    private setupNavigationSubscriptions() {
+        const applTitle = this.titleService.getTitle() + ' - ';
+        this.subscriptions.add(
+            this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
+                let child = this.activatedRoute.firstChild;
+                while (child.firstChild) {
+                    child = child.firstChild;
+                }
+                if (child.snapshot.data['title']) {
+                    this.setPageTitle(applTitle + child.snapshot.data['title']);
+                } else {
+                    this.setPageTitle(applTitle);
+                }
+                this.backLinkDetails$.next(child.snapshot.data['backLink']);
+            })
+        );
+
         this.subscriptions.add(
             this.router.events.subscribe({
                 next: (event: NavigationEnd) => {
@@ -147,9 +161,11 @@ export class AppComponent implements OnInit, OnDestroy {
             this.securityService = service;
             this.serviceChanged$.next();
 
-            service.isAuthenticated$.pipe(takeUntil(this.serviceChanged$), takeUntil(this.destroyed$)).subscribe(authenticated => {
-                this.loggedIn = authenticated;
-            });
+            service.isAuthenticated$
+                .pipe(takeUntil(this.serviceChanged$), takeUntil(this.destroyed$), delay(0)) // delay(0) pipe is to prevent angular ExpressionChangedAfterItHasBeenCheckedError
+                .subscribe(authenticated => {
+                    this.loggedIn = authenticated;
+                });
         });
     }
 
@@ -198,7 +214,6 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     logOut() {
-        console.log('Faz - logOut');
         this.loggedIn = false;
         sessionStorage.clear();
         this.securityService.logoffAndRevokeTokens();
@@ -210,24 +225,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
     private setPageTitle(title: string) {
         this.titleService.setTitle(title);
-    }
-
-    setupNavigationSubscription(): void {
-        const applTitle = this.titleService.getTitle() + ' - ';
-        this.subscriptions.add(
-            this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
-                let child = this.activatedRoute.firstChild;
-                while (child.firstChild) {
-                    child = child.firstChild;
-                }
-                if (child.snapshot.data['title']) {
-                    this.setPageTitle(applTitle + child.snapshot.data['title']);
-                } else {
-                    this.setPageTitle(applTitle);
-                }
-                this.backLinkDetails$.next(child.snapshot.data['backLink']);
-            })
-        );
     }
 
     scrollToTop() {

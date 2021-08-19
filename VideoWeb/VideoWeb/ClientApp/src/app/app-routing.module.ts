@@ -18,7 +18,12 @@ export const routes: Routes = [
         loadChildren: () => import('./vh-officer/vh-officer.module').then(m => m.VhOfficerModule)
     },
     { path: `${pageUrls.Home}`, component: HomeComponent },
-    { path: `${pageUrls.QuickLinks}`, component: QuickLinksComponent, canActivate: [AlreadyAuthenticatedGuard, ValidQuickLinkGuard] },
+    {
+        path: `${pageUrls.QuickLinks}`,
+        component: QuickLinksComponent,
+        canActivate: [AlreadyAuthenticatedGuard, ValidQuickLinkGuard],
+        data: { title: 'Quick join' }
+    },
     { path: `${pageUrls.Navigator}`, component: NavigatorComponent, canActivate: [AuthGuard] },
     { path: '**', redirectTo: `${pageUrls.NotFound}`, pathMatch: 'full' }
 ];
