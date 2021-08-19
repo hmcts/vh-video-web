@@ -10,12 +10,14 @@
                 <!-- Left hand side -->
                 <div class="govuk-grid-column-one-half">
                     <div class="govuk-grid-column-full" [ngClass]="connectWithCameraOn ? 'vh-fade-in' : 'vh-fade-out'">
-                        <video id="preferredCameraStream" [srcObject]="selectedCameraStream" autoplay width="100%" height="auto">
+                        <video id="preferredCameraStream" [srcObject]="selectedCameraStream" autoplay width="100%"
+                            height="auto">
                             {{'select-media-devices.browser-support' | translate}}
                         </video>
                     </div>
                     <div class="govuk-grid-column-full">
-                        <app-mic-visualiser *ngIf="selectedMicrophoneStream" [stream]="selectedMicrophoneStream"> </app-mic-visualiser>
+                        <app-mic-visualiser *ngIf="selectedMicrophoneStream" [stream]="selectedMicrophoneStream">
+                        </app-mic-visualiser>
                     </div>
                 </div>
                 <!-- Right hand side -->
@@ -28,11 +30,12 @@
                         </div>
 
                         <div *ngIf="!hasOnlyOneAvailableCameraDevice" class="govuk-!-margin-bottom-9">
-                            <label class="govuk-label govuk-!-font-weight-bold" for="available-cam-list"> {{'select-media-devices.change-camera' | translate}}</label>
+                            <label class="govuk-label govuk-!-font-weight-bold" for="available-cam-list">
+                                {{'select-media-devices.change-camera' | translate}}</label>
 
-                            <select [(ngModel)]="selectedCameraDevice" (ngModelChange)="onSelectedCameraDeviceChange()" class="govuk-select govuk-!-width-two-thirds"
-                                    id="available-cam-list"
-                                    formControlName="camera">
+                            <select [(ngModel)]="selectedCameraDevice" (ngModelChange)="onSelectedCameraDeviceChange()"
+                                class="govuk-select govuk-!-width-two-thirds" id="available-cam-list"
+                                formControlName="camera">
                                 <option *ngFor="let availableCam of availableCameraDevices" [ngValue]="availableCam">
                                     {{ availableCam.label }}
                                 </option>
@@ -46,14 +49,18 @@
                         </div>
 
                         <div *ngIf="!hasOnlyOneAvailableMicrophoneDevice">
-                            <label class="govuk-label govuk-!-font-weight-bold" for="available-mics-list">{{'select-media-devices.change-microphone' | translate}}</label>
+                            <label class="govuk-label govuk-!-font-weight-bold"
+                                for="available-mics-list">{{'select-media-devices.change-microphone' |
+                                translate}}</label>
 
                             <span class="govuk-hint">{{'select-media-devices.green-bar' | translate}}</span>
 
-                            <select [(ngModel)]="selectedMicrophoneDevice" (ngModelChange)="onSelectedMicrophoneDeviceChange()" class="govuk-select govuk-!-width-two-thirds"
-                                    id="available-mics-list"
-                                    formControlName="microphone">
-                                <option *ngFor="let availableMic of availableMicrophoneDevices" [ngValue]="availableMic">
+                            <select [(ngModel)]="selectedMicrophoneDevice"
+                                (ngModelChange)="onSelectedMicrophoneDeviceChange()"
+                                class="govuk-select govuk-!-width-two-thirds" id="available-mics-list"
+                                formControlName="microphone">
+                                <option *ngFor="let availableMic of availableMicrophoneDevices"
+                                    [ngValue]="availableMic">
                                     {{ availableMic.label }}
                                 </option>
                             </select>
@@ -61,43 +68,41 @@
                     </form>
                 </div>
 
-                <div>
-                    <div ng class="govuk-!-margin-top-6">
-                        <button id="change-device-btn"
-                            class="govuk-button wr-ml"
-                            data-module="govuk-button"
-                            (click)="onSave()">
-                            {{'select-media-devices.button-save' | translate}}
-                        </button>
-
-                        <button id="change-device-btn"
-                                class="govuk-button govuk-button--secondary wr-ml"
-                                data-module="govuk-button"
-                                (click)="onCancel()">
-                            {{'select-media-devices.button-cancel' | translate}}
-                        </button>
-                    </div>
-                </div>
-
                 <div *ngIf="showAudioOnlySetting" class="govuk-grid-column-full">
                     <div class="govuk-warning-text">
                         <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
                         <strong class="govuk-warning-text__text">
-                            <span class="govuk-warning-text__assistive">{{'select-media-devices.warning' | translate}}</span>
+                            <span class="govuk-warning-text__assistive">{{'select-media-devices.warning' |
+                                translate}}</span>
                             {{'select-media-devices.permission-switch-off-camera' | translate}}
                         </strong>
                     </div>
 
-                    <label class="govuk-label camSwitchTitle">{{'select-media-devices.join-with-camera-on-off' | translate}}</label>
+                    <label class="govuk-label camSwitchTitle">{{'select-media-devices.join-with-camera-on-off' |
+                        translate}}</label>
                     <label class="switch camSwitchToggle" [ngClass]="{ 'avoid-clicks': blockToggleClicks }">
                         <input type="checkbox" id="toggle" [checked]="connectWithCameraOn" (click)="toggleSwitch()" />
-                        <span class="slider round" (transitionstart)="transitionstart()" (transitionend)="transitionEnd()">
-                            <span class="govuk-heading-m" id="toggletextON" class="govuk-label govuk-!-font-weight-bold toggle-text">
+                        <span class="slider round" (transitionstart)="transitionstart()"
+                            (transitionend)="transitionEnd()">
+                            <span class="govuk-heading-m" id="toggletextON"
+                                class="govuk-label govuk-!-font-weight-bold toggle-text">
                                 {{ audioOnlyToggleText }}
                             </span>
                         </span>
                     </label>
                 </div>
+
+                <div class="govuk-grid-column-full">
+                    <div ng class="govuk-!-margin-top-6">
+                        <button id="change-device-btn"
+                                class="govuk-button wr-ml"
+                                data-module="govuk-button"
+                                (click)="onClose()">
+                            {{'select-media-devices.button-close' | translate}}
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

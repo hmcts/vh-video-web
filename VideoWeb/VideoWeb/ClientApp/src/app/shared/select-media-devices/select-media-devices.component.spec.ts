@@ -96,7 +96,7 @@ describe('SelectMediaDevicesComponent', () => {
         expect(component.selectedMicrophoneDevice).toEqual(testData.getSelectedMicphone());
     }));
 
-    it('should update settings in user media service onSave', () => {
+    it('should update settings in user media service onClose', () => {
         const cameraDevice = (component.selectedCameraDevice = new UserMediaDevice('camera', Guid.create().toString(), 'videoinput', null));
         const microphoneDevice = (component.selectedMicrophoneDevice = new UserMediaDevice(
             'microphone',
@@ -106,7 +106,7 @@ describe('SelectMediaDevicesComponent', () => {
         ));
         const isAudioOnly = !(component.connectWithCameraOn = false);
 
-        component.onSave();
+        component.onClose();
 
         expect(userMediaService.updateActiveCamera).toHaveBeenCalledWith(cameraDevice);
         expect(userMediaService.updateActiveMicrophone).toHaveBeenCalledWith(microphoneDevice);
@@ -115,13 +115,7 @@ describe('SelectMediaDevicesComponent', () => {
 
     it('should emit cancelled event onSave', async () => {
         spyOn(component.shouldClose, 'emit');
-        component.onSave();
-        expect(component.shouldClose.emit).toHaveBeenCalled();
-    });
-
-    it('should emit cancelled event onCancel', async () => {
-        spyOn(component.shouldClose, 'emit');
-        component.onCancel();
+        component.onClose();
         expect(component.shouldClose.emit).toHaveBeenCalled();
     });
 

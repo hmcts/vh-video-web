@@ -116,15 +116,11 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         this.blockToggleClicks = false;
     }
 
-    onSave() {
+    onClose() {
         this.userMediaService.updateActiveCamera(this.selectedCameraDevice);
         this.userMediaService.updateActiveMicrophone(this.selectedMicrophoneDevice);
         this.userMediaService.updateIsAudioOnly(!this.connectWithCameraOn);
 
-        this.shouldClose.emit();
-    }
-
-    onCancel() {
         this.shouldClose.emit();
     }
 
