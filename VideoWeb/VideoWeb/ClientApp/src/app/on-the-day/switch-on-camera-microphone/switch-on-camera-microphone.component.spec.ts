@@ -9,15 +9,18 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone.component';
-import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { fakeAsync, flush, flushMicrotasks } from '@angular/core/testing';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
+import { Subject } from 'rxjs';
+import { mockCamStream } from 'src/app/waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 
 describe('SwitchOnCameraMicrophoneComponent', () => {
     let component: SwitchOnCameraMicrophoneComponent;
 
     const conference = new ConferenceTestData().getConferenceDetailFuture();
     const profile = new UserProfileResponse({ role: Role.Judge });
-
+    let currentStreamSubject: Subject<MediaStream>;
     let router: jasmine.SpyObj<Router>;
     let profileService: jasmine.SpyObj<ProfileService>;
     let activatedRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
@@ -27,7 +30,12 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
     const logger: Logger = new MockLogger();
     let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
 
-    beforeAll(() => {
+    beforeEach(async () => {
+        userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>('UserMediaStreamService', [], ['currentStream$']);
+        currentStreamSubject = new Subject<MediaStream>();
+
+        getSpiedPropertyGetter(userMediaStreamService, 'currentStream$').and.returnValue(currentStreamSubject.asObservable());
+
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
             'getConferencesForIndividual',
             'setActiveIndividualConference',
@@ -48,9 +56,7 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
 
         participantStatusUpdateService = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
-    });
 
-    beforeEach(async () => {
         component = new SwitchOnCameraMicrophoneComponent(
             router,
             activatedRoute,
@@ -143,4 +149,12 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
         expect(logSpy.calls.mostRecent().args[0]).toMatch('Failed to post media permission denied alert');
         expect(logSpy.calls.mostRecent().args[1]).toBe(error);
     });
+
+    it('should request media', fakeAsync(() => {
+        component.requestMedia();
+        currentStreamSubject.next(mockCamStream);
+        flush();
+        expect(component.userPrompted).toBeTrue();
+        expect(component.userPrompted).toBeTrue();
+    }));
 });
