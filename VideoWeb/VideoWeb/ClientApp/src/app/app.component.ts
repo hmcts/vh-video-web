@@ -3,8 +3,8 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthorizationResult, EventTypes, OidcClientNotification, PublicEventsService } from 'angular-auth-oidc-client';
-import { BehaviorSubject, NEVER, Observable, Subscription } from 'rxjs';
-import { catchError, filter, first } from 'rxjs/operators';
+import { BehaviorSubject, NEVER, Observable, Subject, Subscription } from 'rxjs';
+import { catchError, filter, first, takeUntil } from 'rxjs/operators';
 import { ConfigService } from './services/api/config.service';
 import { ProfileService } from './services/api/profile.service';
 import { Role } from './services/clients/api-client';
@@ -42,6 +42,9 @@ export class AppComponent implements OnInit, OnDestroy {
     securityService: ISecurityService;
     backLinkDetails$ = new BehaviorSubject<BackLinkDetails>(null);
 
+    private destroyed$ = new Subject();
+    private serviceChanged$ = new Subject();
+
     constructor(
         private router: Router,
         private deviceTypeService: DeviceTypeService,
@@ -55,7 +58,7 @@ export class AppComponent implements OnInit, OnDestroy {
         translate: TranslateService,
         private configService: ConfigService,
         private eventService: PublicEventsService,
-        securityServiceProviderService: SecurityServiceProvider,
+        private securityServiceProviderService: SecurityServiceProvider,
         private securityConfigSetupService: SecurityConfigSetupService,
         private location: Location,
         private logger: Logger
@@ -69,11 +72,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
         testLanguageService.setupSubscriptions();
         pageTracker.trackPreviousPage(router);
-
-        securityServiceProviderService.currentSecurityService$.subscribe(service => (this.securityService = service));
     }
 
     ngOnInit() {
+        this.setupSecurityServiceProviderSubscription();
         this.configService
             .getClientSettings()
             .pipe(first())
@@ -140,8 +142,20 @@ export class AppComponent implements OnInit, OnDestroy {
         );
     }
 
+    private setupSecurityServiceProviderSubscription() {
+        this.securityServiceProviderService.currentSecurityService$.pipe(takeUntil(this.destroyed$)).subscribe(service => {
+            this.securityService = service;
+            this.serviceChanged$.next();
+
+            service.isAuthenticated$.pipe(takeUntil(this.serviceChanged$), takeUntil(this.destroyed$)).subscribe(authenticated => {
+                this.loggedIn = authenticated;
+            });
+        });
+    }
+
     ngOnDestroy(): void {
         this.subscriptions.unsubscribe();
+        this.destroyed$.next();
     }
 
     checkBrowser(): void {
@@ -151,6 +165,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     checkAuth(): Observable<boolean> {
+        console.log('Faz - this.securityService', this.securityService);
         return this.securityService.checkAuth().pipe(
             catchError(err => {
                 console.error('[AppComponent] - Check Auth Error', err);
@@ -183,6 +198,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     logOut() {
+        console.log('Faz - logOut');
         this.loggedIn = false;
         sessionStorage.clear();
         this.securityService.logoffAndRevokeTokens();
