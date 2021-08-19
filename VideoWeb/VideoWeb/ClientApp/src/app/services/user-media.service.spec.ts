@@ -93,22 +93,23 @@ describe('UserMediaService', () => {
         expect(userMediaService['setActiveCamera']).not.toHaveBeenCalled();
     }));
 
-    it('should return fase when device is disconnected', fakeAsync(() => {
-        spyOnProperty(userMediaService, 'connectedDevices$').and.returnValue(of(testData.getListOfDevices()));
-        const disconnectedDevice = testData.getDisconnctedCamera();
-        let result;
-        userMediaService.isDeviceStillConnected(disconnectedDevice).subscribe(devices => (result = devices));
-        flush();
-        expect(result).toBeFalse();
-    }));
-    it('should return device when device is still connected', fakeAsync(() => {
-        spyOnProperty(userMediaService, 'connectedDevices$').and.returnValue(of(testData.getListOfDevices()));
-        const connectedDevice = testData.getListOfDevices()[0];
-        let result;
-        userMediaService.isDeviceStillConnected(connectedDevice).subscribe(devices => (result = devices));
-        flush();
-        expect(result).toBeTruthy();
-    }));
+    // it('should return flase when device is disconnected', fakeAsync(() => {
+    //     spyOnProperty(userMediaService, 'connectedDevices$').and.returnValue(of(testData.getListOfDevices()));
+    //     const disconnectedDevice = testData.getDisconnctedCamera();
+    //     let result;
+    //     userMediaService.isDeviceStillConnected(disconnectedDevice).subscribe(devices => (result = devices));
+    //     flush();
+    //     expect(result).toBeFalse();
+    // }));
+
+    // it('should return device when device is still connected', fakeAsync(() => {
+    //     spyOnProperty(userMediaService, 'connectedDevices$').and.returnValue(of(testData.getListOfDevices()));
+    //     const connectedDevice = testData.getListOfDevices()[0];
+    //     let result;
+    //     userMediaService.isDeviceStillConnected(connectedDevice).subscribe(devices => (result = devices));
+    //     flush();
+    //     expect(result).toBeTruthy();
+    // }));
 
     // describe('updateIsAudioOnly', () => {
     //     it('should update isAudioOnly if the values are different', fakeAsync(() => {
