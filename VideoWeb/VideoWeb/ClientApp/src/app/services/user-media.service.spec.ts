@@ -18,128 +18,128 @@ describe('UserMediaService', () => {
         userMediaService = new UserMediaService(new MockLogger(), localStorageServiceSpy);
     });
 
-    // it('should return true when multiple inputs are detected', fakeAsync(() => {
-    //     spyOnProperty(userMediaService, 'connectedVideoDevices').and.returnValue(of(testData.getListOfCameras()));
-    //     spyOnProperty(userMediaService, 'connectedMicrophoneDevices').and.returnValue(of(testData.getListOfMicrophones()));
-    //     flush();
-    //     let result;
-    //     userMediaService.hasMultipleDevices().subscribe(hasMultipleDevices => (result = hasMultipleDevices));
-    //     expect(result).toBeTrue();
-    // }));
+    it('should return true when multiple inputs are detected', fakeAsync(() => {
+        spyOnProperty(userMediaService, 'connectedVideoDevices').and.returnValue(of(testData.getListOfCameras()));
+        spyOnProperty(userMediaService, 'connectedMicrophoneDevices').and.returnValue(of(testData.getListOfMicrophones()));
+        flush();
+        let result;
+        userMediaService.hasMultipleDevices().subscribe(hasMultipleDevices => (result = hasMultipleDevices));
+        expect(result).toBeTrue();
+    }));
 
-    // it('should return false when single inputs are detected', fakeAsync(() => {
-    //     spyOnProperty(userMediaService, 'connectedVideoDevices').and.returnValue(of(testData.getSingleCamera()));
-    //     spyOnProperty(userMediaService, 'connectedMicrophoneDevices').and.returnValue(of(testData.getSingleMicrophone()));
-    //     flush();
-    //     let result;
-    //     userMediaService.hasMultipleDevices().subscribe(multipleDevices => {
-    //         result = multipleDevices;
-    //     });
-    //     expect(result).toBeFalse();
-    // }));
+    it('should return false when single inputs are detected', fakeAsync(() => {
+        spyOnProperty(userMediaService, 'connectedVideoDevices').and.returnValue(of(testData.getSingleCamera()));
+        spyOnProperty(userMediaService, 'connectedMicrophoneDevices').and.returnValue(of(testData.getSingleMicrophone()));
+        flush();
+        let result;
+        userMediaService.hasMultipleDevices().subscribe(multipleDevices => {
+            result = multipleDevices;
+        });
+        expect(result).toBeFalse();
+    }));
 
-    // it('should update active microphone', fakeAsync(() => {
-    //     spyOn<any>(userMediaService, 'setActiveMicrophone').and.callFake(function () {});
-    //     spyOnProperty(userMediaService, 'activeMicrophoneDevice$').and.returnValue(of(testData.getListOfMicrophones()[0]));
-    //     flush();
-    //     const mic = testData.getListOfMicrophones()[1];
-    //     userMediaService.updateActiveMicrophone(mic);
-    //     flush();
-    //     expect(userMediaService['setActiveMicrophone']).toHaveBeenCalledWith(testData.getListOfMicrophones()[1]);
-    // }));
+    it('should update active microphone', fakeAsync(() => {
+        spyOn<any>(userMediaService, 'setActiveMicrophone').and.callFake(function () {});
+        spyOnProperty(userMediaService, 'activeMicrophoneDevice$').and.returnValue(of(testData.getListOfMicrophones()[0]));
+        flush();
+        const mic = testData.getListOfMicrophones()[1];
+        userMediaService.updateActiveMicrophone(mic);
+        flush();
+        expect(userMediaService['setActiveMicrophone']).toHaveBeenCalledWith(testData.getListOfMicrophones()[1]);
+    }));
 
-    // it('should not update active microphone', fakeAsync(() => {
-    //     spyOn<any>(userMediaService, 'setActiveMicrophone').and.callFake(function () {});
-    //     spyOnProperty(userMediaService, 'activeMicrophoneDevice$').and.returnValue(of(testData.getListOfMicrophones()[0]));
-    //     flush();
-    //     const mic = testData.getListOfMicrophones()[0];
-    //     userMediaService.updateActiveMicrophone(mic);
-    //     flush();
-    //     expect(userMediaService['setActiveMicrophone']).not.toHaveBeenCalled();
-    // }));
+    it('should not update active microphone', fakeAsync(() => {
+        spyOn<any>(userMediaService, 'setActiveMicrophone').and.callFake(function () {});
+        spyOnProperty(userMediaService, 'activeMicrophoneDevice$').and.returnValue(of(testData.getListOfMicrophones()[0]));
+        flush();
+        const mic = testData.getListOfMicrophones()[0];
+        userMediaService.updateActiveMicrophone(mic);
+        flush();
+        expect(userMediaService['setActiveMicrophone']).not.toHaveBeenCalled();
+    }));
 
-    // it('should return stream of selected device when selecting screen to share', async () => {
-    //     const stream = <any>{};
-    //     const getDisplayMediaSpy = spyOn(navigator.mediaDevices as any, 'getDisplayMedia')
-    //         .withArgs({ video: true, audio: true })
-    //         .and.returnValue(stream);
-    //     const resultStream = await userMediaService.selectScreenToShare();
-    //     expect(resultStream).toBe(stream);
-    //     expect(getDisplayMediaSpy).toHaveBeenCalledTimes(1);
-    // });
+    it('should return stream of selected device when selecting screen to share', async () => {
+        const stream = <any>{};
+        const getDisplayMediaSpy = spyOn(navigator.mediaDevices as any, 'getDisplayMedia')
+            .withArgs({ video: true, audio: true })
+            .and.returnValue(stream);
+        const resultStream = await userMediaService.selectScreenToShare();
+        expect(resultStream).toBe(stream);
+        expect(getDisplayMediaSpy).toHaveBeenCalledTimes(1);
+    });
 
-    // it('should return null if exception is throw when selecting stream to share', async () => {
-    //     const getDisplayMediaSpy = spyOn(navigator.mediaDevices as any, 'getDisplayMedia')
-    //         .withArgs({ video: true, audio: true })
-    //         .and.throwError('testException');
-    //     const resultStream = await userMediaService.selectScreenToShare();
-    //     expect(resultStream).toBe(null);
-    //     expect(getDisplayMediaSpy).toHaveBeenCalledTimes(1);
-    // });
+    it('should return null if exception is throw when selecting stream to share', async () => {
+        const getDisplayMediaSpy = spyOn(navigator.mediaDevices as any, 'getDisplayMedia')
+            .withArgs({ video: true, audio: true })
+            .and.throwError('testException');
+        const resultStream = await userMediaService.selectScreenToShare();
+        expect(resultStream).toBe(null);
+        expect(getDisplayMediaSpy).toHaveBeenCalledTimes(1);
+    });
 
-    // it('should update active camera', fakeAsync(() => {
-    //     spyOn<any>(userMediaService, 'setActiveCamera').and.callFake(function () {});
-    //     spyOnProperty(userMediaService, 'activeVideoDevice$').and.returnValue(of(testData.getListOfCameras()[0]));
-    //     flush();
-    //     userMediaService.updateActiveCamera(testData.getListOfCameras()[1]);
-    //     expect(userMediaService['setActiveCamera']).toHaveBeenCalledWith(testData.getListOfCameras()[1]);
-    // }));
+    it('should update active camera', fakeAsync(() => {
+        spyOn<any>(userMediaService, 'setActiveCamera').and.callFake(function () {});
+        spyOnProperty(userMediaService, 'activeVideoDevice$').and.returnValue(of(testData.getListOfCameras()[0]));
+        flush();
+        userMediaService.updateActiveCamera(testData.getListOfCameras()[1]);
+        expect(userMediaService['setActiveCamera']).toHaveBeenCalledWith(testData.getListOfCameras()[1]);
+    }));
 
-    // it('should not update active camera', fakeAsync(() => {
-    //     spyOn<any>(userMediaService, 'setActiveCamera').and.callFake(function () {});
-    //     spyOnProperty(userMediaService, 'activeVideoDevice$').and.returnValue(of(testData.getListOfCameras()[0]));
-    //     flush();
-    //     userMediaService.updateActiveCamera(testData.getListOfCameras()[0]);
-    //     expect(userMediaService['setActiveCamera']).not.toHaveBeenCalled();
-    // }));
+    it('should not update active camera', fakeAsync(() => {
+        spyOn<any>(userMediaService, 'setActiveCamera').and.callFake(function () {});
+        spyOnProperty(userMediaService, 'activeVideoDevice$').and.returnValue(of(testData.getListOfCameras()[0]));
+        flush();
+        userMediaService.updateActiveCamera(testData.getListOfCameras()[0]);
+        expect(userMediaService['setActiveCamera']).not.toHaveBeenCalled();
+    }));
 
-    // it('should return flase when device is disconnected', fakeAsync(() => {
-    //     spyOnProperty(userMediaService, 'connectedDevices$').and.returnValue(of(testData.getListOfDevices()));
-    //     const disconnectedDevice = testData.getDisconnctedCamera();
-    //     let result;
-    //     userMediaService.isDeviceStillConnected(disconnectedDevice).subscribe(devices => (result = devices));
-    //     flush();
-    //     expect(result).toBeFalse();
-    // }));
+    it('should return flase when device is disconnected', fakeAsync(() => {
+        spyOnProperty(userMediaService, 'connectedDevices$').and.returnValue(of(testData.getListOfDevices()));
+        const disconnectedDevice = testData.getDisconnctedCamera();
+        let result;
+        userMediaService.isDeviceStillConnected(disconnectedDevice).subscribe(devices => (result = devices));
+        flush();
+        expect(result).toBeFalse();
+    }));
 
-    // it('should return device when device is still connected', fakeAsync(() => {
-    //     spyOnProperty(userMediaService, 'connectedDevices$').and.returnValue(of(testData.getListOfDevices()));
-    //     const connectedDevice = testData.getListOfDevices()[0];
-    //     let result;
-    //     userMediaService.isDeviceStillConnected(connectedDevice).subscribe(devices => (result = devices));
-    //     flush();
-    //     expect(result).toBeTruthy();
-    // }));
+    it('should return device when device is still connected', fakeAsync(() => {
+        spyOnProperty(userMediaService, 'connectedDevices$').and.returnValue(of(testData.getListOfDevices()));
+        const connectedDevice = testData.getListOfDevices()[0];
+        let result;
+        userMediaService.isDeviceStillConnected(connectedDevice).subscribe(devices => (result = devices));
+        flush();
+        expect(result).toBeTruthy();
+    }));
 
-    // describe('updateIsAudioOnly', () => {
-    //     it('should update isAudioOnly if the values are different', fakeAsync(() => {
-    //         // Arrange
-    //         userMediaService['isAudioOnly'] = false;
+    describe('updateIsAudioOnly', () => {
+        it('should update isAudioOnly if the values are different', fakeAsync(() => {
+            // Arrange
+            userMediaService['isAudioOnly'] = false;
 
-    //         // Act
-    //         let audioOnly = null;
-    //         userMediaService.isAudioOnly$.subscribe(isAudioOnly => (audioOnly = isAudioOnly));
-    //         userMediaService.updateIsAudioOnly(true);
-    //         flush();
+            // Act
+            let audioOnly = null;
+            userMediaService.isAudioOnly$.subscribe(isAudioOnly => (audioOnly = isAudioOnly));
+            userMediaService.updateIsAudioOnly(true);
+            flush();
 
-    //         // Assert
-    //         expect(audioOnly).toBeTrue();
-    //     }));
+            // Assert
+            expect(audioOnly).toBeTrue();
+        }));
 
-    //     it('should NOT update isAudioOnly if the values are the same', fakeAsync(() => {
-    //         // Arrange
-    //         userMediaService['isAudioOnly'] = false;
+        it('should NOT update isAudioOnly if the values are the same', fakeAsync(() => {
+            // Arrange
+            userMediaService['isAudioOnly'] = false;
 
-    //         // Act
-    //         let audioOnly = null;
-    //         userMediaService.isAudioOnly$.subscribe(isAudioOnly => (audioOnly = isAudioOnly));
-    //         userMediaService.updateIsAudioOnly(false);
-    //         flush();
+            // Act
+            let audioOnly = null;
+            userMediaService.isAudioOnly$.subscribe(isAudioOnly => (audioOnly = isAudioOnly));
+            userMediaService.updateIsAudioOnly(false);
+            flush();
 
-    //         // Assert
-    //         expect(audioOnly).toBeNull();
-    //     }));
-    // });
+            // Assert
+            expect(audioOnly).toBeNull();
+        }));
+    });
 
     describe('Construction', () => {
         beforeEach(() => {
