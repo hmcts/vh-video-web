@@ -58,24 +58,24 @@ describe('UserMediaService', () => {
         expect(userMediaService['setActiveMicrophone']).not.toHaveBeenCalled();
     }));
 
-    it('should return stream of selected device when selecting screen to share', async () => {
-        const stream = <any>{};
-        const getDisplayMediaSpy = spyOn(navigator.mediaDevices as any, 'getDisplayMedia')
-            .withArgs({ video: true, audio: true })
-            .and.returnValue(stream);
-        const resultStream = await userMediaService.selectScreenToShare();
-        expect(resultStream).toBe(stream);
-        expect(getDisplayMediaSpy).toHaveBeenCalledTimes(1);
-    });
+    // it('should return stream of selected device when selecting screen to share', async () => {
+    //     const stream = <any>{};
+    //     const getDisplayMediaSpy = spyOn(navigator.mediaDevices as any, 'getDisplayMedia')
+    //         .withArgs({ video: true, audio: true })
+    //         .and.returnValue(stream);
+    //     const resultStream = await userMediaService.selectScreenToShare();
+    //     expect(resultStream).toBe(stream);
+    //     expect(getDisplayMediaSpy).toHaveBeenCalledTimes(1);
+    // });
 
-    it('should return null if exception is throw when selecting stream to share', async () => {
-        const getDisplayMediaSpy = spyOn(navigator.mediaDevices as any, 'getDisplayMedia')
-            .withArgs({ video: true, audio: true })
-            .and.throwError('testException');
-        const resultStream = await userMediaService.selectScreenToShare();
-        expect(resultStream).toBe(null);
-        expect(getDisplayMediaSpy).toHaveBeenCalledTimes(1);
-    });
+    // it('should return null if exception is throw when selecting stream to share', async () => {
+    //     const getDisplayMediaSpy = spyOn(navigator.mediaDevices as any, 'getDisplayMedia')
+    //         .withArgs({ video: true, audio: true })
+    //         .and.throwError('testException');
+    //     const resultStream = await userMediaService.selectScreenToShare();
+    //     expect(resultStream).toBe(null);
+    //     expect(getDisplayMediaSpy).toHaveBeenCalledTimes(1);
+    // });
 
     it('should update active camera', fakeAsync(() => {
         spyOn<any>(userMediaService, 'setActiveCamera').and.callFake(function () {});
@@ -170,7 +170,6 @@ describe('UserMediaService', () => {
         //     spyOn(UserMediaService.prototype, 'hasValidCameraAndMicAvailable').and.returnValue(of(true));
         //     userMediaService = new UserMediaService(new MockLogger(), localStorageServiceSpy);
         // });
-
         // it('should handle device change', fakeAsync(() => {
         //     spyOn<any>(userMediaService, 'initialiseActiveDevicesFromCache').and.callFake(function () {});
         //     spyOn<any>(userMediaService, 'checkActiveDevicesAreStillConnected').and.callFake(function () {});
@@ -179,7 +178,6 @@ describe('UserMediaService', () => {
         //     expect(userMediaService['initialiseActiveDevicesFromCache']).toHaveBeenCalledWith(testData.getListOfDevices());
         //     expect(userMediaService['checkActiveDevicesAreStillConnected']).toHaveBeenCalledWith(testData.getListOfDevices());
         // }));
-
         // it('should return list of devices', fakeAsync(() => {
         //     getCameraAndMicrophoneDevicesSubject.next(testData.getListOfDevices());
         //     flush();
@@ -188,7 +186,6 @@ describe('UserMediaService', () => {
         //     flush();
         //     expect(result.length).toBe(6);
         // }));
-
         // it('should return only microphone devices', fakeAsync(() => {
         //     getCameraAndMicrophoneDevicesSubject.next(testData.getListOfDevices());
         //     flush();
@@ -197,7 +194,6 @@ describe('UserMediaService', () => {
         //     flush();
         //     expect(result.length).toBe(3);
         // }));
-
         // it('should return only video devices', fakeAsync(() => {
         //     getCameraAndMicrophoneDevicesSubject.next(testData.getListOfDevices());
         //     flush();
