@@ -111,35 +111,35 @@ describe('UserMediaService', () => {
     //     expect(result).toBeTruthy();
     // }));
 
-    describe('updateIsAudioOnly', () => {
-        it('should update isAudioOnly if the values are different', fakeAsync(() => {
-            // Arrange
-            userMediaService['isAudioOnly'] = false;
+    // describe('updateIsAudioOnly', () => {
+    //     it('should update isAudioOnly if the values are different', fakeAsync(() => {
+    //         // Arrange
+    //         userMediaService['isAudioOnly'] = false;
 
-            // Act
-            let audioOnly = null;
-            userMediaService.isAudioOnly$.subscribe(isAudioOnly => (audioOnly = isAudioOnly));
-            userMediaService.updateIsAudioOnly(true);
-            flush();
+    //         // Act
+    //         let audioOnly = null;
+    //         userMediaService.isAudioOnly$.subscribe(isAudioOnly => (audioOnly = isAudioOnly));
+    //         userMediaService.updateIsAudioOnly(true);
+    //         flush();
 
-            // Assert
-            expect(audioOnly).toBeTrue();
-        }));
+    //         // Assert
+    //         expect(audioOnly).toBeTrue();
+    //     }));
 
-        it('should NOT update isAudioOnly if the values are the same', fakeAsync(() => {
-            // Arrange
-            userMediaService['isAudioOnly'] = false;
+    //     it('should NOT update isAudioOnly if the values are the same', fakeAsync(() => {
+    //         // Arrange
+    //         userMediaService['isAudioOnly'] = false;
 
-            // Act
-            let audioOnly = null;
-            userMediaService.isAudioOnly$.subscribe(isAudioOnly => (audioOnly = isAudioOnly));
-            userMediaService.updateIsAudioOnly(false);
-            flush();
+    //         // Act
+    //         let audioOnly = null;
+    //         userMediaService.isAudioOnly$.subscribe(isAudioOnly => (audioOnly = isAudioOnly));
+    //         userMediaService.updateIsAudioOnly(false);
+    //         flush();
 
-            // Assert
-            expect(audioOnly).toBeNull();
-        }));
-    });
+    //         // Assert
+    //         expect(audioOnly).toBeNull();
+    //     }));
+    // });
 
     describe('Construction', () => {
         beforeEach(() => {
