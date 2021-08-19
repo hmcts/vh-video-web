@@ -58,24 +58,24 @@ describe('UserMediaService', () => {
     //     expect(userMediaService['setActiveMicrophone']).not.toHaveBeenCalled();
     // }));
 
-    it('should return stream of selected device when selecting screen to share', async () => {
-        const stream = <any>{};
-        const getDisplayMediaSpy = spyOn(navigator.mediaDevices as any, 'getDisplayMedia')
-            .withArgs({ video: true, audio: true })
-            .and.returnValue(stream);
-        const resultStream = await userMediaService.selectScreenToShare();
-        expect(resultStream).toBe(stream);
-        expect(getDisplayMediaSpy).toHaveBeenCalledTimes(1);
-    });
+    // it('should return stream of selected device when selecting screen to share', async () => {
+    //     const stream = <any>{};
+    //     const getDisplayMediaSpy = spyOn(navigator.mediaDevices as any, 'getDisplayMedia')
+    //         .withArgs({ video: true, audio: true })
+    //         .and.returnValue(stream);
+    //     const resultStream = await userMediaService.selectScreenToShare();
+    //     expect(resultStream).toBe(stream);
+    //     expect(getDisplayMediaSpy).toHaveBeenCalledTimes(1);
+    // });
 
-    it('should return null if exception is throw when selecting stream to share', async () => {
-        const getDisplayMediaSpy = spyOn(navigator.mediaDevices as any, 'getDisplayMedia')
-            .withArgs({ video: true, audio: true })
-            .and.throwError('testException');
-        const resultStream = await userMediaService.selectScreenToShare();
-        expect(resultStream).toBe(null);
-        expect(getDisplayMediaSpy).toHaveBeenCalledTimes(1);
-    });
+    // it('should return null if exception is throw when selecting stream to share', async () => {
+    //     const getDisplayMediaSpy = spyOn(navigator.mediaDevices as any, 'getDisplayMedia')
+    //         .withArgs({ video: true, audio: true })
+    //         .and.throwError('testException');
+    //     const resultStream = await userMediaService.selectScreenToShare();
+    //     expect(resultStream).toBe(null);
+    //     expect(getDisplayMediaSpy).toHaveBeenCalledTimes(1);
+    // });
 
     it('should update active camera', fakeAsync(() => {
         spyOn<any>(userMediaService, 'setActiveCamera').and.callFake(function () {});
