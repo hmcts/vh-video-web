@@ -206,6 +206,5 @@ describe('UserMediaService', () => {
         //     flush();
         //     expect(result.length).toBe(3);
         // }));
-
     });
 });
