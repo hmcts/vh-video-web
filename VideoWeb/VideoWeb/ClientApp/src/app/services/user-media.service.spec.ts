@@ -77,21 +77,21 @@ describe('UserMediaService', () => {
         expect(getDisplayMediaSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('should update active camera', fakeAsync(() => {
-        spyOn<any>(userMediaService, 'setActiveCamera').and.callFake(function () {});
-        spyOnProperty(userMediaService, 'activeVideoDevice$').and.returnValue(of(testData.getListOfCameras()[0]));
-        flush();
-        userMediaService.updateActiveCamera(testData.getListOfCameras()[1]);
-        expect(userMediaService['setActiveCamera']).toHaveBeenCalledWith(testData.getListOfCameras()[1]);
-    }));
+    // it('should update active camera', fakeAsync(() => {
+    //     spyOn<any>(userMediaService, 'setActiveCamera').and.callFake(function () {});
+    //     spyOnProperty(userMediaService, 'activeVideoDevice$').and.returnValue(of(testData.getListOfCameras()[0]));
+    //     flush();
+    //     userMediaService.updateActiveCamera(testData.getListOfCameras()[1]);
+    //     expect(userMediaService['setActiveCamera']).toHaveBeenCalledWith(testData.getListOfCameras()[1]);
+    // }));
 
-    it('should not update active camera', fakeAsync(() => {
-        spyOn<any>(userMediaService, 'setActiveCamera').and.callFake(function () {});
-        spyOnProperty(userMediaService, 'activeVideoDevice$').and.returnValue(of(testData.getListOfCameras()[0]));
-        flush();
-        userMediaService.updateActiveCamera(testData.getListOfCameras()[0]);
-        expect(userMediaService['setActiveCamera']).not.toHaveBeenCalled();
-    }));
+    // it('should not update active camera', fakeAsync(() => {
+    //     spyOn<any>(userMediaService, 'setActiveCamera').and.callFake(function () {});
+    //     spyOnProperty(userMediaService, 'activeVideoDevice$').and.returnValue(of(testData.getListOfCameras()[0]));
+    //     flush();
+    //     userMediaService.updateActiveCamera(testData.getListOfCameras()[0]);
+    //     expect(userMediaService['setActiveCamera']).not.toHaveBeenCalled();
+    // }));
 
     // it('should return flase when device is disconnected', fakeAsync(() => {
     //     spyOnProperty(userMediaService, 'connectedDevices$').and.returnValue(of(testData.getListOfDevices()));
