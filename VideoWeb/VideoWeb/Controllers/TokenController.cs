@@ -44,23 +44,5 @@ namespace VideoWeb.Controllers
             var tokenResponse = new TokenResponse {ExpiresOn = expiresOn, Token = token};
             return Ok(tokenResponse);
         }
-
-        [HttpGet("{participantId}/jwtoken")]
-        [SwaggerOperation(OperationId = "GetJwtoken")]
-        [ProducesResponseType(typeof(TokenResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public IActionResult GetJwToken(Guid participantId)
-        {
-            if (participantId == Guid.Empty)
-            {
-                ModelState.AddModelError(nameof(participantId), $"Please provide a valid {nameof(participantId)}");
-                return BadRequest(ModelState);
-            }
-
-            var expiresOn = DateTime.UtcNow.AddMinutes(_kinlyConfiguration.ExpiresInMinutes).ToUniversalTime().ToString(CultureInfo.InvariantCulture);
-            var token = _customJwtTokenProvider.GenerateToken(participantId.ToString(), _kinlyConfiguration.ExpiresInMinutes);
-            var tokenResponse = new TokenResponse {ExpiresOn = expiresOn, Token = token}; 
-            return Ok(tokenResponse);
-        }
     }
 }
