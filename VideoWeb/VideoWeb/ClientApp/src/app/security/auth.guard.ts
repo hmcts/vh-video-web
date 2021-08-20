@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { Logger } from '../services/logging/logger-base';
 import { pageUrls } from '../shared/page-url.constants';
 import { SecurityServiceProvider } from './authentication/security-provider.service';
 import { ISecurityService } from './authentication/security-service.interface';
@@ -9,7 +10,7 @@ import { ISecurityService } from './authentication/security-service.interface';
 @Injectable()
 export class AuthGuard implements CanActivate {
     private securityService: ISecurityService;
-    constructor(securityServiceProviderService: SecurityServiceProvider, private router: Router) {
+    constructor(securityServiceProviderService: SecurityServiceProvider, private router: Router, private logger: Logger) {
         securityServiceProviderService.currentSecurityService$.subscribe(securityService => {
             this.securityService = securityService;
         });
@@ -18,8 +19,7 @@ export class AuthGuard implements CanActivate {
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
         return this.securityService.isAuthenticated$.pipe(
             map((isAuthorized: boolean) => {
-                console.log('AuthorizationGuard, canActivate isAuthorized: ' + isAuthorized);
-
+                this.logger.debug('AuthorizationGuard, canActivate isAuthorized: ' + isAuthorized);
                 if (!isAuthorized) {
                     this.router.navigate([`/${pageUrls.IdpSelection}`]);
                     return false;
