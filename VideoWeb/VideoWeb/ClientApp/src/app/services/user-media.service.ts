@@ -169,15 +169,11 @@ export class UserMediaService {
     }
 
     hasValidCameraAndMicAvailable(): Observable<boolean> {
-        // TODO: Have a look at switching to audio only when the video camera is unavailable?
         return from(this.navigator.mediaDevices.getUserMedia(this.defaultStreamConstraints)).pipe(
             retry(3),
             take(1),
             map(stream => !!stream && stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0),
-            catchError(error => {
-                this.logger.error(`${this.loggerPrefix} get user media failed.`, error);
-                return of(false);
-            })
+            catchError(error => of(false))
         );
     }
 
