@@ -10,8 +10,7 @@ describe('QuickLinkSecurityService', () => {
     let apiClientSpy: jasmine.SpyObj<ApiClient>;
     let jwtHelperSpy: jasmine.SpyObj<JwtHelperService>;
 
-    const jwt =
-        'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkpvaG4gRG9lIiwiZ2l2ZW5fbmFtZSI6IkpvaG4gRG9lIiwiZmFtaWx5X25hbWUiOiJKb2huIERvZSIsInByZWZlcnJlZF91c2VybmFtZSI6IkpvaG4gRG9lIiwicm9sZSI6IkNpdGl6ZW4iLCJuYmYiOjE2MjcyOTQwMzcsImV4cCI6MTYyNzMyMjk1NywiaWF0IjoxNjI3Mjk0MDk3LCJpc3MiOiJodHRwczovL3ZoLXZpZGVvLXdlYi1kZXYuYXp1cmV3ZWJzaXRlcy5uZXQvOThhNWRiM2QtMGY5MS00MDNmLWI3ZGMtZDFhMjcyZjQ2ZjNiIn0.NyH-9u3Vg2wSC-B2rxkqjbAbKvdvoCyyFAgBsfeP9ff9mQTxn6PfJHdtkp8sANnQHpsLdqW8VnAp9a9bTfTVDA';
+    const jwt = 'jwt';
     const decodedJwt = {
         unique_name: 'Unique',
         given_name: 'Given',
@@ -21,7 +20,7 @@ describe('QuickLinkSecurityService', () => {
         nbf: 1627294037,
         exp: 1627322957,
         iat: 1627294097,
-        iss: 'https://vh-video-web-dev.azurewebsites.net/98a5db3d-0f91-403f-b7dc-d1a272f46f3b'
+        iss: 'Iss'
     };
 
     beforeEach(() => {
