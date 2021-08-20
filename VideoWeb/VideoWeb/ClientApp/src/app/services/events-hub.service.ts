@@ -81,6 +81,7 @@ export class EventsHubService implements OnDestroy {
     }
     ngOnDestroy(): void {
         this.destroyed$.next();
+        this.destroyed$.complete();
     }
 
     createConnectionBuilder(): signalR.HubConnectionBuilder {

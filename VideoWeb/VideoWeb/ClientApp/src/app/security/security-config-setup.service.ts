@@ -20,7 +20,7 @@ export class SecurityConfigSetupService {
     get configSetup$() {
         return this._configSetupSubject.asObservable();
     }
-    private currentIdpSubject = new BehaviorSubject<IdpProviders>(null);
+    private currentIdpSubject = new BehaviorSubject<IdpProviders>(null); // TODO try replay subject?
 
     constructor(private oidcConfigService: OidcConfigService, private configService: ConfigService) {
         this.currentIdpSubject.next(this.getIdp());

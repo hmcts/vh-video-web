@@ -172,6 +172,7 @@ export class AppComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.subscriptions.unsubscribe();
         this.destroyed$.next();
+        this.destroyed$.complete();
     }
 
     checkBrowser(): void {

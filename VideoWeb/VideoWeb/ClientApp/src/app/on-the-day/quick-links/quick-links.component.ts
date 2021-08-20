@@ -124,5 +124,6 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.destroyed$.next();
+        this.destroyed$.complete();
     }
 }

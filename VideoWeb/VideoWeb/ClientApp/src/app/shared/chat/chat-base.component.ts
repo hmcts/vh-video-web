@@ -58,6 +58,7 @@ export abstract class ChatBaseComponent implements OnDestroy {
 
     ngOnDestroy(): void {
         this.destroyed$.next();
+        this.destroyed$.complete();
     }
 
     async setupChatSubscription(): Promise<Subscription> {
