@@ -27,7 +27,7 @@ namespace VideoWeb.Controllers
         }
         
         [HttpGet("GetHeartbeatConfigForParticipant/{participantId}")]
-        [SwaggerOperation(OperationId = "GetConfigForParticipant")]
+        [SwaggerOperation(OperationId = "GetHeartbeatConfigForParticipant")]
         [ProducesResponseType(typeof(HeartbeatConfigurationResponse), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         public IActionResult GetConfigurationForParticipant(Guid participantId)

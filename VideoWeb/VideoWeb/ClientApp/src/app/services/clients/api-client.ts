@@ -2034,7 +2034,7 @@ export class ApiClient {
     /**
      * @return Success
      */
-    getConfigForParticipant(participantId: string): Observable<HeartbeatConfigurationResponse> {
+    getHeartbeatConfigForParticipant(participantId: string): Observable<HeartbeatConfigurationResponse> {
         let url_ = this.baseUrl + '/heartbeat/GetHeartbeatConfigForParticipant/{participantId}';
         if (participantId === undefined || participantId === null) throw new Error("The parameter 'participantId' must be defined.");
         url_ = url_.replace('{participantId}', encodeURIComponent('' + participantId));
@@ -2052,14 +2052,14 @@ export class ApiClient {
             .request('get', url_, options_)
             .pipe(
                 _observableMergeMap((response_: any) => {
-                    return this.processGetConfigForParticipant(response_);
+                    return this.processGetHeartbeatConfigForParticipant(response_);
                 })
             )
             .pipe(
                 _observableCatch((response_: any) => {
                     if (response_ instanceof HttpResponseBase) {
                         try {
-                            return this.processGetConfigForParticipant(<any>response_);
+                            return this.processGetHeartbeatConfigForParticipant(<any>response_);
                         } catch (e) {
                             return <Observable<HeartbeatConfigurationResponse>>(<any>_observableThrow(e));
                         }
@@ -2068,7 +2068,7 @@ export class ApiClient {
             );
     }
 
-    protected processGetConfigForParticipant(response: HttpResponseBase): Observable<HeartbeatConfigurationResponse> {
+    protected processGetHeartbeatConfigForParticipant(response: HttpResponseBase): Observable<HeartbeatConfigurationResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
