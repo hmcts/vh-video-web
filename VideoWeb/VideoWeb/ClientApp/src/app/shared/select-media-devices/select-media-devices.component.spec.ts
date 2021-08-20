@@ -11,7 +11,7 @@ import { MediaStreamService } from 'src/app/services/media-stream.service';
 import { UserMediaDevice } from '../models/user-media-device';
 import { Guid } from 'guid-typescript';
 
-fdescribe('SelectMediaDevicesComponent', () => {
+describe('SelectMediaDevicesComponent', () => {
     let component: SelectMediaDevicesComponent;
     let userMediaService: jasmine.SpyObj<UserMediaService>;
     let mediaStreamService: jasmine.SpyObj<MediaStreamService>;
