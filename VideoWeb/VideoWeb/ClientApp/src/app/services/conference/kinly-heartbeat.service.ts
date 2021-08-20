@@ -43,7 +43,7 @@ export class KinlyHeartbeatService {
             return;
         }
 
-        this.apiClient.getConfigForParticipant(this.currentParticipant.id).subscribe({
+        this.apiClient.getHeartbeatConfigForParticipant(this.currentParticipant.id).subscribe({
             next: heartbeatConfiguration => {
                 this.logger.info(`${this.loggerPrefix} got heartbeat configuration`, {
                     heartbeatBaseUrl: heartbeatConfiguration.heartbeat_url_base,

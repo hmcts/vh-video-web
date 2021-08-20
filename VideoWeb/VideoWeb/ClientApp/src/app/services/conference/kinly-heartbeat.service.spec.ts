@@ -48,9 +48,9 @@ describe('KinlyHeartbeatService', () => {
     let loggerSpy: jasmine.SpyObj<Logger>;
 
     beforeEach(() => {
-        apiClientSpy = jasmine.createSpyObj<ApiClient>(['getConfigForParticipant'], []);
+        apiClientSpy = jasmine.createSpyObj<ApiClient>(['getHeartbeatConfigForParticipant'], []);
         heartbeatConfigSubject = new Subject<HeartbeatConfigurationResponse>();
-        apiClientSpy.getConfigForParticipant.and.returnValue(heartbeatConfigSubject.asObservable());
+        apiClientSpy.getHeartbeatConfigForParticipant.and.returnValue(heartbeatConfigSubject.asObservable());
 
         participantServiceSpy = jasmine.createSpyObj<ParticipantService>([], ['loggedInParticipant$']);
         loggedInParticipantSubject = new Subject<ParticipantModel>();
@@ -92,7 +92,7 @@ describe('KinlyHeartbeatService', () => {
 
             // Assert
             expect(sut.heartbeat).toBeFalsy();
-            expect(apiClientSpy.getConfigForParticipant).not.toHaveBeenCalled();
+            expect(apiClientSpy.getHeartbeatConfigForParticipant).not.toHaveBeenCalled();
         }));
 
         it('should do nothing if the current conference is null', fakeAsync(() => {
@@ -107,7 +107,7 @@ describe('KinlyHeartbeatService', () => {
 
             // Assert
             expect(sut.heartbeat).toBeFalsy();
-            expect(apiClientSpy.getConfigForParticipant).not.toHaveBeenCalled();
+            expect(apiClientSpy.getHeartbeatConfigForParticipant).not.toHaveBeenCalled();
         }));
 
         it('should do nothing if the current participant is undefined', fakeAsync(() => {
@@ -122,7 +122,7 @@ describe('KinlyHeartbeatService', () => {
 
             // Assert
             expect(sut.heartbeat).toBeFalsy();
-            expect(apiClientSpy.getConfigForParticipant).not.toHaveBeenCalled();
+            expect(apiClientSpy.getHeartbeatConfigForParticipant).not.toHaveBeenCalled();
         }));
 
         it('should do nothing if the current participant is null', fakeAsync(() => {
@@ -137,7 +137,7 @@ describe('KinlyHeartbeatService', () => {
 
             // Assert
             expect(sut.heartbeat).toBeFalsy();
-            expect(apiClientSpy.getConfigForParticipant).not.toHaveBeenCalled();
+            expect(apiClientSpy.getHeartbeatConfigForParticipant).not.toHaveBeenCalled();
         }));
 
         it('should get the heartbeat configuration for the participant and initialise the heartbeat', fakeAsync(() => {
@@ -155,7 +155,7 @@ describe('KinlyHeartbeatService', () => {
 
             // Assert
             expect(sut.heartbeat).toBeTruthy();
-            expect(apiClientSpy.getConfigForParticipant).toHaveBeenCalledOnceWith(participant.id);
+            expect(apiClientSpy.getHeartbeatConfigForParticipant).toHaveBeenCalledOnceWith(participant.id);
 
             // Cleanup
             sut.heartbeat?.kill();
@@ -163,7 +163,7 @@ describe('KinlyHeartbeatService', () => {
             discardPeriodicTasks();
         }));
 
-        it('should catch errors from getConfigForParticipant', fakeAsync(() => {
+        it('should catch errors from getHeartbeatConfigForParticipant', fakeAsync(() => {
             // Arrange
             currentConferenceSubject.next(conference);
             loggedInParticipantSubject.next(participant);
@@ -178,7 +178,7 @@ describe('KinlyHeartbeatService', () => {
 
             // Assert
             expect(sut.heartbeat).toBeFalsy();
-            expect(apiClientSpy.getConfigForParticipant).toHaveBeenCalledOnceWith(participant.id);
+            expect(apiClientSpy.getHeartbeatConfigForParticipant).toHaveBeenCalledOnceWith(participant.id);
         }));
     });
 
