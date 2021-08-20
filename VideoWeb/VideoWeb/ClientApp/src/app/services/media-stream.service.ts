@@ -36,7 +36,7 @@ export class MediaStreamService {
         return from(this.navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId } } })).pipe(
             map(stream => stream.clone()),
             catchError(error => {
-                this.logger.error(`${this.loggerPrefix} Could not get audio stream for microphone`, error);
+                this.logger.error(`${this.loggerPrefix} Could not get cam stream for microphone`, error);
                 this.errorService.handlePexipError(new CallError(error.name), null);
                 return of(null);
             })
