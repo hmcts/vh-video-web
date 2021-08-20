@@ -1066,5 +1066,6 @@
       "heading": "The link you've used can't be recognised",
       "body": "Please check the link you were sent. If it still doesn't work, call 0300 303 0655 for immediate contact with a video hearings officer."
     }
-  }
+  },
+  "loading": "Loading please wait..."
 }

@@ -74,6 +74,8 @@ describe('AppComponent', () => {
     };
 
     beforeAll(() => {
+        jasmine.getEnv().allowRespy(true);
+
         activatedRouteMock = {
             firstChild: { snapshot: { data: { title: testTitle } } }
         };
@@ -93,7 +95,15 @@ describe('AppComponent', () => {
         pageTrackerServiceSpy = jasmine.createSpyObj('PageTrackerService', ['trackNavigation', 'trackPreviousPage']);
         testLanguageServiceSpy = jasmine.createSpyObj('TestLanguageService', ['setupSubscriptions']);
         publicEventsServiceSpy = jasmine.createSpyObj('PublicEventsService', ['registerForEvents']);
-        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['checkAuth', 'logoffAndRevokeTokens']);
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>(
+            'ISecurityService',
+            ['checkAuth', 'logoffAndRevokeTokens'],
+            ['isAuthenticated$']
+        );
+    });
+
+    afterAll(() => {
+        jasmine.getEnv().allowRespy(false);
     });
 
     beforeEach(
@@ -104,6 +114,7 @@ describe('AppComponent', () => {
                 ['currentSecurityService$']
             );
 
+            spyOnProperty(securityServiceSpy, 'isAuthenticated$', 'get').and.returnValue(of(true));
             getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
 
             securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>('SecurityConfigSetupService', ['getIdp'], []);
@@ -171,6 +182,7 @@ describe('AppComponent', () => {
 
         // Act
         component.ngOnInit();
+        tick();
         flush();
 
         // Assert
@@ -190,6 +202,7 @@ describe('AppComponent', () => {
     });
 
     it('should log out of adal', () => {
+        component.securityService = securityServiceSpy;
         component.logOut();
         expect(component.loggedIn).toBeFalsy();
         expect(securityServiceSpy.logoffAndRevokeTokens).toHaveBeenCalled();
@@ -229,6 +242,7 @@ describe('AppComponent', () => {
     });
 
     it('should not check auth or get profile on logout', async () => {
+        component.securityService = securityServiceSpy;
         await component.checkAuth();
         expect(routerSpy.navigate).toHaveBeenCalledTimes(0);
         expect(profileServiceSpy.getUserProfile).toHaveBeenCalledTimes(0);
@@ -240,7 +254,7 @@ describe('AppComponent', () => {
         it('should update page title is naviation event raised', fakeAsync(() => {
             const testTitlePrefix = 'Test Title Prefix';
             titleServiceSpy.getTitle.and.returnValue(testTitlePrefix);
-            component.setupNavigationSubscription();
+            component.setupNavigationSubscriptions();
             eventsSubjects.next(navEvent);
             tick();
             flushMicrotasks();
@@ -249,7 +263,7 @@ describe('AppComponent', () => {
 
         describe('backLinkDetails$', () => {
             it('should update backLinkDetails$ value as undefined when none present', fakeAsync(() => {
-                component.setupNavigationSubscription();
+                component.setupNavigationSubscriptions();
                 eventsSubjects.next(navEvent);
                 tick();
                 flushMicrotasks();
@@ -259,7 +273,7 @@ describe('AppComponent', () => {
             it('should update backLinkDetails$ value as null when none present', fakeAsync(() => {
                 const testBackLinkDetails = new BackLinkDetails();
                 activatedRouteMock.firstChild.snapshot.data['backLink'] = testBackLinkDetails;
-                component.setupNavigationSubscription();
+                component.setupNavigationSubscriptions();
                 eventsSubjects.next(navEvent);
                 tick();
                 flushMicrotasks();

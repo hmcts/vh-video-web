@@ -1,50 +1,56 @@
-<h1 class="govuk-heading-xl govuk-!-margin-top-8">{{ 'quick-participant-landing-page.page-title' | translate }}</h1>
+<ng-container *ngIf="hearingValidated; else loading">
+  <h1 class="govuk-heading-xl govuk-!-margin-top-8">{{ 'quick-participant-landing-page.page-title' | translate }}</h1>
 
-<p>{{ 'quick-participant-landing-page.paragraph1' | translate }}</p>
+  <p>{{ 'quick-participant-landing-page.paragraph1' | translate }}</p>
 
-<form [formGroup]="quickLinkForm" class="govuk-form-group" (ngSubmit)="onSubmit()">
-  <div [ngClass]="{ 'govuk-form-group--error': error.nameError }" class="govuk-!-margin-bottom-5">
-    <p *ngIf="error.nameError" class="govuk-error-message">{{ 'quick-participant-landing-page.name-error' | translate }}</p>
-    <label class="govuk-label" for="full-name">
-      {{ 'quick-participant-landing-page.name-label' | translate }}
-    </label>
-    <input formControlName="name" class="govuk-input" id="full-name" name="full-name" type="text" spellcheck="false" autocomplete="name">
-  </div>
+  <form [formGroup]="quickLinkForm" class="govuk-form-group" (ngSubmit)="onSubmit()">
+    <div [ngClass]="{ 'govuk-form-group--error': error.nameError }" class="govuk-!-margin-bottom-5">
+      <p *ngIf="error.nameError" class="govuk-error-message">{{ 'quick-participant-landing-page.name-error' | translate }}</p>
+      <label class="govuk-label" for="full-name">
+        {{ 'quick-participant-landing-page.name-label' | translate }}
+      </label>
+      <input formControlName="name" class="govuk-input" id="full-name" name="full-name" type="text" spellcheck="false" autocomplete="name">
+    </div>
 
-  <div [ngClass]="{ 'govuk-form-group--error': error.roleError }">
-    <p *ngIf="error.roleError" class="govuk-error-message">{{ 'quick-participant-landing-page.role-error' | translate }}</p>
-    <fieldset class="govuk-fieldset">
-      <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-        <p>{{ 'quick-participant-landing-page.role-label' | translate }}</p>
-      </legend>
-      <div *ngFor="let quickLinkParticipantRole of quickLinkParticipantRoles" class="govuk-radios__item">
-        <input
-          [id]="quickLinkParticipantRole"
-          formControlName="quickLinkParticipantRole"
-          class="govuk-radios__input"
-          name="quickLinkParticipantRole"
-          type="radio"
-          [value]="quickLinkParticipantRole"
-          [attr.aria-describedby]="quickLinkParticipantRole + '-item-hint'">
-        <label class="govuk-label govuk-radios__label" [attr.for]="quickLinkParticipantRole" [id]="quickLinkParticipantRole + '-item-title'">
-          {{ 'quick-participant-landing-page.roles.' + quickLinkParticipantRole + '.title' | translate }}
-        </label>
-        <div [id]="quickLinkParticipantRole + '-item-hint'"  class="govuk-hint govuk-radios__hint">
-          {{ 'quick-participant-landing-page.roles.' + quickLinkParticipantRole + '.description' | translate }}
+    <div [ngClass]="{ 'govuk-form-group--error': error.roleError }">
+      <p *ngIf="error.roleError" class="govuk-error-message">{{ 'quick-participant-landing-page.role-error' | translate }}</p>
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <p>{{ 'quick-participant-landing-page.role-label' | translate }}</p>
+        </legend>
+        <div *ngFor="let quickLinkParticipantRole of quickLinkParticipantRoles" class="govuk-radios__item">
+          <input
+            [id]="quickLinkParticipantRole"
+            formControlName="quickLinkParticipantRole"
+            class="govuk-radios__input"
+            name="quickLinkParticipantRole"
+            type="radio"
+            [value]="quickLinkParticipantRole"
+            [attr.aria-describedby]="quickLinkParticipantRole + '-item-hint'">
+          <label class="govuk-label govuk-radios__label" [attr.for]="quickLinkParticipantRole" [id]="quickLinkParticipantRole + '-item-title'">
+            {{ 'quick-participant-landing-page.roles.' + quickLinkParticipantRole + '.title' | translate }}
+          </label>
+          <div [id]="quickLinkParticipantRole + '-item-hint'"  class="govuk-hint govuk-radios__hint">
+            {{ 'quick-participant-landing-page.roles.' + quickLinkParticipantRole + '.description' | translate }}
+          </div>
         </div>
-      </div>
-    </fieldset>
-  </div>
+      </fieldset>
+    </div>
 
-  <button
-    id="continue-button"
-    class="govuk-button govuk-!-margin-top-6"
-    data-module="govuk-button"
-    type="submit"
-    [attr.aria-label]="'quick-participant-landing-page.button-continue' | translate"
-  >
-  {{ 'quick-participant-landing-page.button-continue' | translate }}
-  </button>
-</form>
+    <button
+      id="continue-button"
+      class="govuk-button govuk-!-margin-top-6"
+      data-module="govuk-button"
+      type="submit"
+      [attr.aria-label]="'quick-participant-landing-page.button-continue' | translate"
+    >
+    {{ 'quick-participant-landing-page.button-continue' | translate }}
+    </button>
+  </form>
 
-<app-contact-us-folding></app-contact-us-folding>
+  <app-contact-us-folding></app-contact-us-folding>
+</ng-container>
+
+<ng-template #loading>
+  <app-loading></app-loading>
+</ng-template>

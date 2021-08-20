@@ -1,4 +1,5 @@
 import { HttpEvent, HttpHandler, HttpRequest } from '@angular/common/http';
+import { Injector } from '@angular/core';
 import { fakeAsync, flush } from '@angular/core/testing';
 import { PublicConfiguration } from 'angular-auth-oidc-client';
 import { of, Subject } from 'rxjs';
@@ -15,6 +16,7 @@ describe('RefreshTokenParameterInterceptor', () => {
     let currentIdpSubject: Subject<IdpProviders>;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
     let loggerSpy: jasmine.SpyObj<Logger>;
+    let injectorSpy: jasmine.SpyObj<Injector>;
 
     beforeEach(() => {
         securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
@@ -37,8 +39,10 @@ describe('RefreshTokenParameterInterceptor', () => {
         securityServiceProviderServiceSpy.getSecurityService.and.returnValue(securityServiceSpy);
 
         loggerSpy = jasmine.createSpyObj<Logger>('Logger', ['debug']);
+        injectorSpy = jasmine.createSpyObj<Injector>('Injector', ['get']);
+        injectorSpy.get.and.returnValue(loggerSpy);
 
-        sut = new RefreshTokenParameterInterceptor(securityServiceProviderServiceSpy, loggerSpy);
+        sut = new RefreshTokenParameterInterceptor(securityServiceProviderServiceSpy, injectorSpy);
     });
 
     for (const provider of [IdpProviders.ejud, IdpProviders.vhaad]) {

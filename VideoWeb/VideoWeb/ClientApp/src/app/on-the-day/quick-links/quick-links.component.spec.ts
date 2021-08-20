@@ -1,19 +1,19 @@
 import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot, Router } from '@angular/router';
 import { of, Subject } from 'rxjs';
 import { QuickLinksService } from 'src/app/services/api/quick-links.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { MockComponent, MockPipe } from 'ng-mocks';
 import { QuickLinksComponent } from './quick-links.component';
-import { TranslatePipeMock } from '../../testing/mocks/mock-translation-pipe';
 import { Role } from 'src/app/services/clients/api-client';
 import { ContactUsFoldingComponent } from 'src/app/shared/contact-us-folding/contact-us-folding.component';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { RouterTestingModule } from '@angular/router/testing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { By } from '@angular/platform-browser';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { LoadingComponent } from 'src/app/shared/loading/loading.component';
 
 describe('QuickLinksComponent', () => {
     const quickLinkParticipantRoles = [Role.QuickLinkObserver, Role.QuickLinkParticipant];
@@ -23,6 +23,11 @@ describe('QuickLinksComponent', () => {
     let errorServiceSpy: jasmine.SpyObj<ErrorService>;
     let quickLinksServiceSpy: jasmine.SpyObj<QuickLinksService>;
     let routerSpy: jasmine.SpyObj<Router>;
+    let translateServiceSpy: jasmine.SpyObj<TranslateService>;
+
+    let validateQuickLinkSubject: Subject<boolean>;
+
+    const testHearingId = 'testHearingId';
 
     beforeEach(async () => {
         errorServiceSpy = jasmine.createSpyObj('errorServiceSpy', {
@@ -36,8 +41,26 @@ describe('QuickLinksComponent', () => {
 
         routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate']);
 
+        quickLinksServiceSpy = jasmine.createSpyObj<QuickLinksService>('QuickLinksService', [
+            'validateQuickLink',
+            'getQuickLinkParticipantRoles',
+            'joinConference'
+        ]);
+        quickLinksServiceSpy.getQuickLinkParticipantRoles.and.returnValue(of(quickLinkParticipantRoles));
+        quickLinksServiceSpy.joinConference.and.returnValue(of(true));
+
+        errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError']);
+
+        translateServiceSpy = jasmine.createSpyObj<TranslateService>('TranslateService', ['instant']);
+        translateServiceSpy.instant.and.callFake(key => key);
+
         await TestBed.configureTestingModule({
-            declarations: [QuickLinksComponent, MockComponent(ContactUsFoldingComponent), MockPipe(TranslatePipe)],
+            declarations: [
+                QuickLinksComponent,
+                MockComponent(ContactUsFoldingComponent),
+                MockComponent(LoadingComponent),
+                MockPipe(TranslatePipe)
+            ],
             providers: [
                 {
                     provide: Logger,
@@ -55,7 +78,7 @@ describe('QuickLinksComponent', () => {
                         snapshot: {
                             paramMap: {
                                 get(param: string) {
-                                    return 'd1faff56-aa5e-45d5-8ec5-67e7840b1f6d';
+                                    return testHearingId;
                                 }
                             }
                         }
@@ -69,6 +92,10 @@ describe('QuickLinksComponent', () => {
                 {
                     provide: QuickLinksService,
                     useValue: quickLinksServiceSpy
+                },
+                {
+                    provide: TranslateService,
+                    useValue: translateServiceSpy
                 }
             ],
             imports: [ReactiveFormsModule, RouterTestingModule]
@@ -76,23 +103,34 @@ describe('QuickLinksComponent', () => {
     });
 
     beforeEach(() => {
+        validateQuickLinkSubject = new Subject<boolean>();
+        quickLinksServiceSpy.validateQuickLink.and.returnValue(validateQuickLinkSubject.asObservable());
+
         fixture = TestBed.createComponent(QuickLinksComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-        console.log(fixture);
     });
 
     describe('ngOnInit', () => {
-        it('should call method to initialise errors', () => {
-            const spy = spyOn(component, 'resetErrors');
-            component.ngOnInit();
-            expect(spy.calls.count()).toBe(1);
+        let resetErrorsSpy: jasmine.SpyObj<any>;
+        let initializeFormSpy: jasmine.SpyObj<any>;
+
+        beforeEach(() => {
+            resetErrorsSpy = spyOn(component, 'resetErrors');
+            initializeFormSpy = spyOn(component, 'initializeForm');
+            resetErrorsSpy.and.callThrough();
+            initializeFormSpy.and.callThrough();
+
+            validateQuickLinkSubject.next(true);
+            fixture.detectChanges();
         });
 
-        it('should call method to initialise the form', () => {
-            const spy = spyOn(component, 'initialiseForm');
-            component.ngOnInit();
-            expect(spy.calls.count()).toBe(1);
+        it('should call method to reset errors', () => {
+            expect(resetErrorsSpy.calls.count()).toBe(1);
+        });
+
+        it('should call method to initialize the form', () => {
+            expect(initializeFormSpy.calls.count()).toBe(1);
         });
 
         it('should call quick links service to get participant roles if quick link is valid', () => {
@@ -101,126 +139,170 @@ describe('QuickLinksComponent', () => {
         });
     });
 
-    describe('initialiseForm', () => {
-        it('should initialise the form', () => {
-            component.initialiseForm();
-
-            expect(component.quickLinkForm.controls['name'].value).toBe('');
-            expect(component.quickLinkForm.controls['name'].valid).toBeFalse();
-            expect(component.quickLinkForm.controls['quickLinkParticipantRole'].value).toBe('');
-            expect(component.quickLinkForm.controls['quickLinkParticipantRole'].valid).toBeFalse();
-        });
-    });
-
-    describe('validateForm', () => {
-        it('should set name error and mark form as invalid if name is not populated', () => {
-            component.error.nameError = '';
-            component.quickLinkForm.controls['name'].setValue('');
-
-            expect(component.validateForm()).toBeFalse();
-            expect(component.error.nameError).toBe('Please enter your full name');
-        });
-
-        it('should set role error and mark form as invalid if role is not selected', () => {
-            component.error.roleError = '';
-            component.quickLinkForm.controls['quickLinkParticipantRole'].setValue('');
-
-            component.validateForm();
-
-            expect(component.validateForm()).toBeFalse();
-            expect(component.error.roleError).toBe('Please choose your role in the hearing');
-        });
-
-        it('should mark form as valid if form validations are all passed', () => {
-            component.quickLinkForm.controls['name'].setValue('name');
-            component.quickLinkForm.controls['quickLinkParticipantRole'].setValue('quickLinkParticipantRole');
-
-            expect(component.validateForm()).toBeTrue();
-        });
-    });
-
-    describe('resetErrors', () => {
-        it('should resets errors', () => {
-            component.error.nameError = component.error.roleError = 'error';
-            component.resetErrors();
-            expect(component.error.nameError).toBe('');
-            expect(component.error.roleError).toBe('');
-        });
-    });
-
-    describe('onSubmit', () => {
-        let validateFormSpy: jasmine.Spy;
-        let resetErrorsSpy: jasmine.Spy;
-
+    describe('when hearing is validated', () => {
         beforeEach(() => {
-            validateFormSpy = spyOn(component, 'validateForm');
-            resetErrorsSpy = spyOn(component, 'resetErrors');
+            validateQuickLinkSubject.next(true);
+            fixture.detectChanges();
         });
 
-        it('should reset errors', () => {
-            component.onSubmit();
+        describe('initializeForm', () => {
+            it('should initialize the form', () => {
+                component.initializeForm();
 
-            expect(resetErrorsSpy).toHaveBeenCalledTimes(1);
+                expect(component.quickLinkForm.controls['name'].value).toBe('');
+                expect(component.quickLinkForm.controls['name'].valid).toBeFalse();
+                expect(component.quickLinkForm.controls['quickLinkParticipantRole'].value).toBe('');
+                expect(component.quickLinkForm.controls['quickLinkParticipantRole'].valid).toBeFalse();
+            });
         });
 
-        it('should validate the form', () => {
-            component.onSubmit();
+        describe('validateForm', () => {
+            it('should set name error and mark form as invalid if name is not populated', () => {
+                component.error.nameError = false;
+                component.quickLinkForm.controls['name'].setValue('');
 
-            expect(validateFormSpy).toHaveBeenCalledTimes(1);
+                expect(component.validateForm()).toBeFalse();
+                expect(component.error.nameError).toBeTrue();
+            });
+
+            it('should set role error and mark form as invalid if role is not selected', () => {
+                component.error.roleError = false;
+                component.quickLinkForm.controls['quickLinkParticipantRole'].setValue('');
+
+                component.validateForm();
+
+                expect(component.validateForm()).toBeFalse();
+                expect(component.error.roleError).toBeTrue();
+            });
+
+            it('should mark form as valid if form validations are all passed', () => {
+                component.quickLinkForm.controls['name'].setValue('name');
+                component.quickLinkForm.controls['quickLinkParticipantRole'].setValue('quickLinkParticipantRole');
+
+                expect(component.validateForm()).toBeTrue();
+            });
         });
 
-        describe('when form is valid', () => {
+        describe('resetErrors', () => {
+            it('should resets errors', () => {
+                component.error.nameError = component.error.roleError = true;
+                component.resetErrors();
+                expect(component.error.nameError).toBeFalse();
+                expect(component.error.roleError).toBeFalse();
+            });
+        });
+
+        describe('onSubmit', () => {
+            let validateFormSpy: jasmine.Spy;
+            let resetErrorsSpy: jasmine.Spy;
+
             beforeEach(() => {
-                validateFormSpy.and.returnValue(true);
+                validateFormSpy = spyOn(component, 'validateForm');
+                resetErrorsSpy = spyOn(component, 'resetErrors');
             });
 
-            it('should try and join the conference', () => {
+            it('should reset errors', () => {
                 component.onSubmit();
 
-                expect(quickLinksServiceSpy.joinConference).toHaveBeenCalledOnceWith(
-                    component.hearingId,
-                    component.quickLinkNameFormControl.value,
-                    component.quickLinkRoleFormControl.value
-                );
+                expect(resetErrorsSpy).toHaveBeenCalledTimes(1);
             });
 
-            it('should navigate to the navigator when joined is returned', fakeAsync(() => {
-                validateFormSpy.and.returnValue(true);
-
-                const hearingJoinedSubject = new Subject<boolean>();
-
-                quickLinksServiceSpy.joinConference.and.returnValue(hearingJoinedSubject.asObservable());
-
+            it('should validate the form', () => {
                 component.onSubmit();
-                hearingJoinedSubject.next(true);
-                flush();
 
-                expect(routerSpy.navigate).toHaveBeenCalledOnceWith([pageUrls.Navigator]);
-            }));
+                expect(validateFormSpy).toHaveBeenCalledTimes(1);
+            });
 
-            describe('when form is NOT valid', () => {
+            describe('when form is valid', () => {
                 beforeEach(() => {
-                    validateFormSpy.and.returnValue(false);
+                    validateFormSpy.and.returnValue(true);
                 });
-                it('should NOT try and join the conference', () => {
+
+                it('should try and join the conference', () => {
                     component.onSubmit();
-                    expect(quickLinksServiceSpy.joinConference).not.toHaveBeenCalled();
+
+                    expect(quickLinksServiceSpy.joinConference).toHaveBeenCalledOnceWith(
+                        component.hearingId,
+                        component.quickLinkNameFormControl.value,
+                        component.quickLinkRoleFormControl.value
+                    );
                 });
+
+                it('should navigate to the navigator when joined is returned', fakeAsync(() => {
+                    validateFormSpy.and.returnValue(true);
+
+                    const hearingJoinedSubject = new Subject<boolean>();
+
+                    quickLinksServiceSpy.joinConference.and.returnValue(hearingJoinedSubject.asObservable());
+
+                    component.onSubmit();
+                    hearingJoinedSubject.next(true);
+                    flush();
+
+                    expect(routerSpy.navigate).toHaveBeenCalledOnceWith([pageUrls.Navigator]);
+                }));
+
+                describe('when form is NOT valid', () => {
+                    beforeEach(() => {
+                        validateFormSpy.and.returnValue(false);
+                    });
+                    it('should NOT try and join the conference', () => {
+                        component.onSubmit();
+                        expect(quickLinksServiceSpy.joinConference).not.toHaveBeenCalled();
+                    });
+                });
+            });
+        });
+
+        describe('continue button', () => {
+            let buttonElement;
+
+            beforeEach(() => {
+                buttonElement = fixture.debugElement.query(By.css('#continue-button'));
+            });
+
+            it('should be present', () => {
+                expect(buttonElement).toBeTruthy();
+            });
+
+            it('should submit form when clicked', () => {
+                spyOn(component, 'onSubmit');
+                buttonElement.nativeElement.click();
+                expect(component.onSubmit).toHaveBeenCalledTimes(1);
             });
         });
     });
 
-    describe('continue button', () => {
-        let buttonElement;
+    describe('validate hearing', () => {
+        const headingKey = 'quick-participant-errors.invalid-page.heading';
+        const bodyKey = 'quick-participant-errors.invalid-page.body';
 
-        beforeEach(() => {
-            buttonElement = fixture.debugElement.query(By.css('#continue-button'));
-        });
+        beforeEach(() => {});
 
-        it('should submit form when clicked', () => {
-            spyOn(component, 'onSubmit');
-            buttonElement.nativeElement.click();
-            expect(component.onSubmit).toHaveBeenCalledTimes(1);
-        });
+        it('should call goToServiceError if the link is NOT valid', fakeAsync(() => {
+            validateQuickLinkSubject.next(false);
+
+            // Act
+            flush();
+
+            // Expect
+            expect(quickLinksServiceSpy.validateQuickLink).toHaveBeenCalledOnceWith(testHearingId);
+            expect(translateServiceSpy.instant).toHaveBeenCalledTimes(2);
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith(headingKey);
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith(bodyKey);
+            expect(errorServiceSpy.goToServiceError).toHaveBeenCalledOnceWith(headingKey, bodyKey, false);
+        }));
+
+        it('should NOT call goToServiceError if the link is valid', fakeAsync(() => {
+            validateQuickLinkSubject.next(true);
+
+            // Act
+            flush();
+
+            // Expect
+            expect(quickLinksServiceSpy.validateQuickLink).toHaveBeenCalledOnceWith(testHearingId);
+            expect(translateServiceSpy.instant).not.toHaveBeenCalled();
+            expect(errorServiceSpy.goToServiceError).not.toHaveBeenCalled();
+        }));
     });
 });

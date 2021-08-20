@@ -12,6 +12,7 @@ describe('SecurityConfigSetupService', () => {
         window.sessionStorage.clear();
         oidcConfigServiceSpy = jasmine.createSpyObj<OidcConfigService>('OidcConfigService', ['withConfig']);
         sut = new SecurityConfigSetupService(oidcConfigServiceSpy, configService as any);
+        sut.setupConfig();
     });
 
     it('should get default idp if not set', async () => {

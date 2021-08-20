@@ -127,7 +127,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.connectionStatusService.start();
     }
 
-    private setupNavigationSubscriptions() {
+    setupNavigationSubscriptions() {
         const applTitle = this.titleService.getTitle() + ' - ';
         this.subscriptions.add(
             this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
@@ -181,10 +181,9 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     checkAuth(): Observable<boolean> {
-        console.log('Faz - this.securityService', this.securityService);
         return this.securityService.checkAuth().pipe(
             catchError(err => {
-                console.error('[AppComponent] - Check Auth Error', err);
+                this.logger.error('[AppComponent] - Check Auth Error', err);
                 if (!this.isSignInUrl) {
                     this.router.navigate(['/']);
                 }

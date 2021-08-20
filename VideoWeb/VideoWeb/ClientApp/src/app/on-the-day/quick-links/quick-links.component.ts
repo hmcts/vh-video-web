@@ -1,10 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { first, map, takeUntil } from 'rxjs/operators';
 import { QuickLinksService } from 'src/app/services/api/quick-links.service';
 import { Role } from 'src/app/services/clients/api-client';
+import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { CustomValidators } from 'src/app/shared/custom-validators';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -17,8 +19,8 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
     private loggerPrefix = '[QuickLinksComponent] -';
 
     error: {
-        nameError: string;
-        roleError: string;
+        nameError: boolean;
+        roleError: boolean;
     };
     role = Role;
     quickLinkForm: FormGroup;
@@ -26,6 +28,7 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
     quickLinkNameFormControl: FormControl;
     quickLinkRoleFormControl: FormControl;
     quickLinkParticipantRoles: Role[] = [];
+    hearingValidated = false;
 
     private destroyed$ = new Subject();
 
@@ -34,16 +37,35 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
         private router: Router,
         private formBuilder: FormBuilder,
         private readonly quickLinksService: QuickLinksService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private errorService: ErrorService,
+        private translationService: TranslateService
     ) {}
 
     ngOnInit(): void {
-        this.resetErrors();
-        this.initialiseForm();
         this.hearingId = this.route.snapshot.paramMap.get('hearingId');
+        this.quickLinksService
+            .validateQuickLink(this.hearingId)
+            .pipe(
+                takeUntil(this.destroyed$),
+                first(),
+                map(isValid => {
+                    if (!isValid) {
+                        this.errorService.goToServiceError(
+                            this.translationService.instant('quick-participant-errors.invalid-page.heading'),
+                            this.translationService.instant('quick-participant-errors.invalid-page.body'),
+                            false
+                        );
+                    }
+                    this.resetErrors();
+                    this.initializeForm();
+                    this.hearingValidated = true;
+                })
+            )
+            .subscribe();
     }
 
-    initialiseForm() {
+    initializeForm() {
         this.quickLinkNameFormControl = this.formBuilder.control('', [Validators.required, CustomValidators.notEmptyOrWhitespaceValidator]);
         this.quickLinkRoleFormControl = this.formBuilder.control('', Validators.required);
 
@@ -61,12 +83,12 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
         let errorsFound = false;
 
         if (this.quickLinkNameFormControl.invalid) {
-            this.error.nameError = 'Please enter your full name';
+            this.error.nameError = true;
             errorsFound = true;
         }
 
         if (this.quickLinkRoleFormControl.invalid) {
-            this.error.roleError = 'Please choose your role in the hearing';
+            this.error.roleError = true;
             errorsFound = true;
         }
 
@@ -75,8 +97,8 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
 
     resetErrors() {
         this.error = {
-            nameError: '',
-            roleError: ''
+            nameError: false,
+            roleError: false
         };
     }
 
