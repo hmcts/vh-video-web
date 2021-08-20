@@ -212,7 +212,8 @@
     "all-content-availabe-under": "Mae'r holl gynnwys ar gael dan y ",
     "open-government-license": "Drwydded Llywodraeth Agored f3.0,",
     "except": " oni bai pan nodir fel arall",
-    "copyright": "© Hawlfraint y Goron"
+    "copyright": "© Hawlfraint y Goron",
+    "copyright-info-link-label": "Gwybodaeth Hawlfraint"
   },
   "participant-hearings": {
     "loading-please-wait": "Wrthi'n llwytho...",

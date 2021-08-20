@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -181,6 +182,9 @@ namespace VideoWeb.AcceptanceTests.Steps
             journeys[userJourney].VerifyDestinationIsInThatJourney(endPage);
             if (userJourney == Journey.JudgeSelftest || userJourney == Journey.SelfTest) _c.Test.SelfTestJourney = true;           
             var journey = journeys[userJourney].Journey();
+            StringBuilder strb = new StringBuilder().Append("The journey is ");
+            foreach (var page in journey) { strb.Append(page.Name).Append("; "); }
+            NUnit.Framework.TestContext.WriteLine($"The journey is {strb} ");
             var steps = Steps();
             foreach (var page in journey)
             {
