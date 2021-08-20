@@ -2032,6 +2032,88 @@ export class ApiClient {
     }
 
     /**
+     * @return Success
+     */
+    getConfigForParticipant(participantId: string): Observable<HeartbeatConfigurationResponse> {
+        let url_ = this.baseUrl + '/heartbeat/GetHeartbeatConfigForParticipant/{participantId}';
+        if (participantId === undefined || participantId === null) throw new Error("The parameter 'participantId' must be defined.");
+        url_ = url_.replace('{participantId}', encodeURIComponent('' + participantId));
+        url_ = url_.replace(/[?&]$/, '');
+
+        let options_: any = {
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({
+                Accept: 'application/json'
+            })
+        };
+
+        return this.http
+            .request('get', url_, options_)
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processGetConfigForParticipant(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processGetConfigForParticipant(<any>response_);
+                        } catch (e) {
+                            return <Observable<HeartbeatConfigurationResponse>>(<any>_observableThrow(e));
+                        }
+                    } else return <Observable<HeartbeatConfigurationResponse>>(<any>_observableThrow(response_));
+                })
+            );
+    }
+
+    protected processGetConfigForParticipant(response: HttpResponseBase): Observable<HeartbeatConfigurationResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result200: any = null;
+                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result200 = HeartbeatConfigurationResponse.fromJS(resultData200);
+                    return _observableOf(result200);
+                })
+            );
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result400: any = null;
+                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result400 = ProblemDetails.fromJS(resultData400);
+                    return throwException('Bad Request', status, _responseText, _headers, result400);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<HeartbeatConfigurationResponse>(<any>null);
+    }
+
+    /**
      * Get all the instant messages for a conference for a participant
      * @param conferenceId Id of the conference
      * @param participantId the participant in the conference
@@ -2281,6 +2363,90 @@ export class ApiClient {
             );
         }
         return _observableOf<UnreadAdminMessageResponse>(<any>null);
+    }
+
+    /**
+     * @param conferenceId (optional)
+     * @param body (optional)
+     * @return Success
+     */
+    participantsUpdated(conferenceId: string | undefined, body: UpdateConferenceParticipantsRequest | undefined): Observable<void> {
+        let url_ = this.baseUrl + '/internalevent/ParticipantsUpdated?';
+        if (conferenceId === null) throw new Error("The parameter 'conferenceId' cannot be null.");
+        else if (conferenceId !== undefined) url_ += 'conferenceId=' + encodeURIComponent('' + conferenceId) + '&';
+        url_ = url_.replace(/[?&]$/, '');
+
+        const content_ = JSON.stringify(body);
+
+        let options_: any = {
+            body: content_,
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({
+                'Content-Type': 'application/json-patch+json'
+            })
+        };
+
+        return this.http
+            .request('post', url_, options_)
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processParticipantsUpdated(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processParticipantsUpdated(<any>response_);
+                        } catch (e) {
+                            return <Observable<void>>(<any>_observableThrow(e));
+                        }
+                    } else return <Observable<void>>(<any>_observableThrow(response_));
+                })
+            );
+    }
+
+    protected processParticipantsUpdated(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return _observableOf<void>(<any>null);
+                })
+            );
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result400: any = null;
+                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result400 = resultData400 !== undefined ? resultData400 : <any>null;
+                    return throwException('Bad Request', status, _responseText, _headers, result400);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<void>(<any>null);
     }
 
     /**
@@ -3658,88 +3824,6 @@ export class ApiClient {
     }
 
     /**
-     * @return Success
-     */
-    getJwtoken(participantId: string): Observable<TokenResponse> {
-        let url_ = this.baseUrl + '/participants/{participantId}/jwtoken';
-        if (participantId === undefined || participantId === null) throw new Error("The parameter 'participantId' must be defined.");
-        url_ = url_.replace('{participantId}', encodeURIComponent('' + participantId));
-        url_ = url_.replace(/[?&]$/, '');
-
-        let options_: any = {
-            observe: 'response',
-            responseType: 'blob',
-            headers: new HttpHeaders({
-                Accept: 'application/json'
-            })
-        };
-
-        return this.http
-            .request('get', url_, options_)
-            .pipe(
-                _observableMergeMap((response_: any) => {
-                    return this.processGetJwtoken(response_);
-                })
-            )
-            .pipe(
-                _observableCatch((response_: any) => {
-                    if (response_ instanceof HttpResponseBase) {
-                        try {
-                            return this.processGetJwtoken(<any>response_);
-                        } catch (e) {
-                            return <Observable<TokenResponse>>(<any>_observableThrow(e));
-                        }
-                    } else return <Observable<TokenResponse>>(<any>_observableThrow(response_));
-                })
-            );
-    }
-
-    protected processGetJwtoken(response: HttpResponseBase): Observable<TokenResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {};
-        if (response.headers) {
-            for (let key of response.headers.keys()) {
-                _headers[key] = response.headers.get(key);
-            }
-        }
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result200: any = null;
-                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result200 = TokenResponse.fromJS(resultData200);
-                    return _observableOf(result200);
-                })
-            );
-        } else if (status === 400) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result400: any = null;
-                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = ProblemDetails.fromJS(resultData400);
-                    return throwException('Bad Request', status, _responseText, _headers, result400);
-                })
-            );
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('Unauthorized', status, _responseText, _headers);
-                })
-            );
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
-                })
-            );
-        }
-        return _observableOf<TokenResponse>(<any>null);
-    }
-
-    /**
      * Get Court rooms accounts (judges)
      * @param hearingVenueNames (optional)
      * @return Success
@@ -3839,6 +3923,7 @@ export class ApiClient {
     getVenues(): Observable<HearingVenueResponse[]> {
         let url_ = this.baseUrl + '/hearing-venues/courts';
         url_ = url_.replace(/[?&]$/, '');
+
         let options_: any = {
             observe: 'response',
             responseType: 'blob',
@@ -3846,6 +3931,7 @@ export class ApiClient {
                 Accept: 'application/json'
             })
         };
+
         return this.http
             .request('get', url_, options_)
             .pipe(
@@ -3865,10 +3951,12 @@ export class ApiClient {
                 })
             );
     }
+
     protected processGetVenues(response: HttpResponseBase): Observable<HearingVenueResponse[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
         let _headers: any = {};
         if (response.headers) {
             for (let key of response.headers.keys()) {
@@ -5895,6 +5983,45 @@ export interface IHealthCheckResponse {
     app_version?: ApplicationVersion | undefined;
 }
 
+export class HeartbeatConfigurationResponse implements IHeartbeatConfigurationResponse {
+    heartbeat_url_base?: string | undefined;
+    heartbeat_jwt?: string | undefined;
+
+    constructor(data?: IHeartbeatConfigurationResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.heartbeat_url_base = _data['heartbeat_url_base'];
+            this.heartbeat_jwt = _data['heartbeat_jwt'];
+        }
+    }
+
+    static fromJS(data: any): HeartbeatConfigurationResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new HeartbeatConfigurationResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['heartbeat_url_base'] = this.heartbeat_url_base;
+        data['heartbeat_jwt'] = this.heartbeat_jwt;
+        return data;
+    }
+}
+
+export interface IHeartbeatConfigurationResponse {
+    heartbeat_url_base?: string | undefined;
+    heartbeat_jwt?: string | undefined;
+}
+
 export class ChatResponse implements IChatResponse {
     /** Message UUID */
     readonly id?: string;
@@ -6047,6 +6174,301 @@ export class UnreadInstantMessageConferenceCountResponse implements IUnreadInsta
 
 export interface IUnreadInstantMessageConferenceCountResponse {
     number_of_unread_messages_conference?: UnreadAdminMessageResponse[] | undefined;
+}
+
+export class LinkedParticipantRequest implements ILinkedParticipantRequest {
+    participant_ref_id?: string;
+    linked_ref_id?: string;
+    type?: LinkedParticipantType;
+
+    constructor(data?: ILinkedParticipantRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.participant_ref_id = _data['participant_ref_id'];
+            this.linked_ref_id = _data['linked_ref_id'];
+            this.type = _data['type'];
+        }
+    }
+
+    static fromJS(data: any): LinkedParticipantRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new LinkedParticipantRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['participant_ref_id'] = this.participant_ref_id;
+        data['linked_ref_id'] = this.linked_ref_id;
+        data['type'] = this.type;
+        return data;
+    }
+}
+
+export interface ILinkedParticipantRequest {
+    participant_ref_id?: string;
+    linked_ref_id?: string;
+    type?: LinkedParticipantType;
+}
+
+export class UpdateParticipantRequest implements IUpdateParticipantRequest {
+    participant_ref_id?: string;
+    fullname?: string | undefined;
+    first_name?: string | undefined;
+    last_name?: string | undefined;
+    display_name?: string | undefined;
+    representee?: string | undefined;
+    contact_email?: string | undefined;
+    contact_telephone?: string | undefined;
+    username?: string | undefined;
+    linked_participants?: LinkedParticipantRequest[] | undefined;
+
+    constructor(data?: IUpdateParticipantRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.participant_ref_id = _data['participant_ref_id'];
+            this.fullname = _data['fullname'];
+            this.first_name = _data['first_name'];
+            this.last_name = _data['last_name'];
+            this.display_name = _data['display_name'];
+            this.representee = _data['representee'];
+            this.contact_email = _data['contact_email'];
+            this.contact_telephone = _data['contact_telephone'];
+            this.username = _data['username'];
+            if (Array.isArray(_data['linked_participants'])) {
+                this.linked_participants = [] as any;
+                for (let item of _data['linked_participants']) this.linked_participants!.push(LinkedParticipantRequest.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): UpdateParticipantRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateParticipantRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['participant_ref_id'] = this.participant_ref_id;
+        data['fullname'] = this.fullname;
+        data['first_name'] = this.first_name;
+        data['last_name'] = this.last_name;
+        data['display_name'] = this.display_name;
+        data['representee'] = this.representee;
+        data['contact_email'] = this.contact_email;
+        data['contact_telephone'] = this.contact_telephone;
+        data['username'] = this.username;
+        if (Array.isArray(this.linked_participants)) {
+            data['linked_participants'] = [];
+            for (let item of this.linked_participants) data['linked_participants'].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IUpdateParticipantRequest {
+    participant_ref_id?: string;
+    fullname?: string | undefined;
+    first_name?: string | undefined;
+    last_name?: string | undefined;
+    display_name?: string | undefined;
+    representee?: string | undefined;
+    contact_email?: string | undefined;
+    contact_telephone?: string | undefined;
+    username?: string | undefined;
+    linked_participants?: LinkedParticipantRequest[] | undefined;
+}
+
+export enum UserRole {
+    None = 'None',
+    CaseAdmin = 'CaseAdmin',
+    VideoHearingsOfficer = 'VideoHearingsOfficer',
+    HearingFacilitationSupport = 'HearingFacilitationSupport',
+    Judge = 'Judge',
+    Individual = 'Individual',
+    Representative = 'Representative',
+    JudicialOfficeHolder = 'JudicialOfficeHolder'
+}
+
+export class ParticipantRequest implements IParticipantRequest {
+    id?: string;
+    participant_ref_id?: string;
+    name?: string | undefined;
+    display_name?: string | undefined;
+    username?: string | undefined;
+    first_name?: string | undefined;
+    last_name?: string | undefined;
+    contact_email?: string | undefined;
+    contact_telephone?: string | undefined;
+    user_role?: UserRole;
+    hearing_role?: string | undefined;
+    case_type_group?: string | undefined;
+    representee?: string | undefined;
+    linked_participants?: LinkedParticipantRequest[] | undefined;
+
+    constructor(data?: IParticipantRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data['id'];
+            this.participant_ref_id = _data['participant_ref_id'];
+            this.name = _data['name'];
+            this.display_name = _data['display_name'];
+            this.username = _data['username'];
+            this.first_name = _data['first_name'];
+            this.last_name = _data['last_name'];
+            this.contact_email = _data['contact_email'];
+            this.contact_telephone = _data['contact_telephone'];
+            this.user_role = _data['user_role'];
+            this.hearing_role = _data['hearing_role'];
+            this.case_type_group = _data['case_type_group'];
+            this.representee = _data['representee'];
+            if (Array.isArray(_data['linked_participants'])) {
+                this.linked_participants = [] as any;
+                for (let item of _data['linked_participants']) this.linked_participants!.push(LinkedParticipantRequest.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ParticipantRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new ParticipantRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['id'] = this.id;
+        data['participant_ref_id'] = this.participant_ref_id;
+        data['name'] = this.name;
+        data['display_name'] = this.display_name;
+        data['username'] = this.username;
+        data['first_name'] = this.first_name;
+        data['last_name'] = this.last_name;
+        data['contact_email'] = this.contact_email;
+        data['contact_telephone'] = this.contact_telephone;
+        data['user_role'] = this.user_role;
+        data['hearing_role'] = this.hearing_role;
+        data['case_type_group'] = this.case_type_group;
+        data['representee'] = this.representee;
+        if (Array.isArray(this.linked_participants)) {
+            data['linked_participants'] = [];
+            for (let item of this.linked_participants) data['linked_participants'].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IParticipantRequest {
+    id?: string;
+    participant_ref_id?: string;
+    name?: string | undefined;
+    display_name?: string | undefined;
+    username?: string | undefined;
+    first_name?: string | undefined;
+    last_name?: string | undefined;
+    contact_email?: string | undefined;
+    contact_telephone?: string | undefined;
+    user_role?: UserRole;
+    hearing_role?: string | undefined;
+    case_type_group?: string | undefined;
+    representee?: string | undefined;
+    linked_participants?: LinkedParticipantRequest[] | undefined;
+}
+
+export class UpdateConferenceParticipantsRequest implements IUpdateConferenceParticipantsRequest {
+    existing_participants?: UpdateParticipantRequest[] | undefined;
+    new_participants?: ParticipantRequest[] | undefined;
+    removed_participants?: string[] | undefined;
+    linked_participants?: LinkedParticipantRequest[] | undefined;
+
+    constructor(data?: IUpdateConferenceParticipantsRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data['existing_participants'])) {
+                this.existing_participants = [] as any;
+                for (let item of _data['existing_participants']) this.existing_participants!.push(UpdateParticipantRequest.fromJS(item));
+            }
+            if (Array.isArray(_data['new_participants'])) {
+                this.new_participants = [] as any;
+                for (let item of _data['new_participants']) this.new_participants!.push(ParticipantRequest.fromJS(item));
+            }
+            if (Array.isArray(_data['removed_participants'])) {
+                this.removed_participants = [] as any;
+                for (let item of _data['removed_participants']) this.removed_participants!.push(item);
+            }
+            if (Array.isArray(_data['linked_participants'])) {
+                this.linked_participants = [] as any;
+                for (let item of _data['linked_participants']) this.linked_participants!.push(LinkedParticipantRequest.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): UpdateConferenceParticipantsRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateConferenceParticipantsRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.existing_participants)) {
+            data['existing_participants'] = [];
+            for (let item of this.existing_participants) data['existing_participants'].push(item.toJSON());
+        }
+        if (Array.isArray(this.new_participants)) {
+            data['new_participants'] = [];
+            for (let item of this.new_participants) data['new_participants'].push(item.toJSON());
+        }
+        if (Array.isArray(this.removed_participants)) {
+            data['removed_participants'] = [];
+            for (let item of this.removed_participants) data['removed_participants'].push(item);
+        }
+        if (Array.isArray(this.linked_participants)) {
+            data['linked_participants'] = [];
+            for (let item of this.linked_participants) data['linked_participants'].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IUpdateConferenceParticipantsRequest {
+    existing_participants?: UpdateParticipantRequest[] | undefined;
+    new_participants?: ParticipantRequest[] | undefined;
+    removed_participants?: string[] | undefined;
+    linked_participants?: LinkedParticipantRequest[] | undefined;
 }
 
 export enum EventType {
@@ -6767,6 +7189,7 @@ export interface ICourtRoomsAccountResponse {
 export class HearingVenueResponse implements IHearingVenueResponse {
     id?: number;
     name?: string | undefined;
+
     constructor(data?: IHearingVenueResponse) {
         if (data) {
             for (var property in data) {
@@ -6774,18 +7197,21 @@ export class HearingVenueResponse implements IHearingVenueResponse {
             }
         }
     }
+
     init(_data?: any) {
         if (_data) {
             this.id = _data['id'];
             this.name = _data['name'];
         }
     }
+
     static fromJS(data: any): HearingVenueResponse {
         data = typeof data === 'object' ? data : {};
         let result = new HearingVenueResponse();
         result.init(data);
         return result;
     }
+
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data['id'] = this.id;
@@ -6793,6 +7219,7 @@ export class HearingVenueResponse implements IHearingVenueResponse {
         return data;
     }
 }
+
 export interface IHearingVenueResponse {
     id?: number;
     name?: string | undefined;

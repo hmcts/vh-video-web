@@ -8,12 +8,14 @@ import {
     SharedParticipantRoom,
     StartHearingRequest
 } from 'src/app/services/clients/api-client';
+import { KinlyHeartbeatService } from 'src/app/services/conference/kinly-heartbeat.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
+import { VideoCallEventsService } from './video-call-events.service';
 import { VideoCallPreferences } from './video-call-preferences.mode';
 import { VideoCallService } from './video-call.service';
 
@@ -33,6 +35,8 @@ describe('VideoCallService', () => {
     let preferredMicrophone: UserMediaDevice;
     let pexipSpy: jasmine.SpyObj<PexipClient>;
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
+    let kinlyHeartbeatServiceSpy: jasmine.SpyObj<KinlyHeartbeatService>;
+    let videoCallEventsServiceSpy: jasmine.SpyObj<VideoCallEventsService>;
     beforeAll(() => {
         apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
             'startOrResumeVideoHearing',
@@ -53,6 +57,8 @@ describe('VideoCallService', () => {
             'selectScreenToShare'
         ]);
 
+        kinlyHeartbeatServiceSpy = jasmine.createSpyObj<KinlyHeartbeatService>(['initialiseHeartbeat', 'stopHeartbeat']);
+
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getConfig']);
         configServiceSpy.getConfig.and.returnValue(config);
 
@@ -65,6 +71,8 @@ describe('VideoCallService', () => {
     });
 
     beforeEach(async () => {
+        videoCallEventsServiceSpy = jasmine.createSpyObj<VideoCallEventsService>(['handleParticipantUpdated']);
+
         pexipSpy = jasmine.createSpyObj<PexipClient>('PexipClient', [
             'connect',
             'makeCall',
@@ -83,7 +91,14 @@ describe('VideoCallService', () => {
             'getPresentation',
             'stopPresentation'
         ]);
-        service = new VideoCallService(logger, userMediaService, apiClient, configServiceSpy);
+        service = new VideoCallService(
+            logger,
+            userMediaService,
+            apiClient,
+            configServiceSpy,
+            kinlyHeartbeatServiceSpy,
+            videoCallEventsServiceSpy
+        );
         await service.setupClient();
     });
 

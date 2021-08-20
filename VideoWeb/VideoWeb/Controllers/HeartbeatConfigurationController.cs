@@ -26,7 +26,7 @@ namespace VideoWeb.Controllers
             _kinlyConfiguration = kinlyConfiguration.Value;
         }
         
-        [HttpGet("GetConfigForParticipant/{participantId}")]
+        [HttpGet("GetHeartbeatConfigForParticipant/{participantId}")]
         [SwaggerOperation(OperationId = "GetConfigForParticipant")]
         [ProducesResponseType(typeof(HeartbeatConfigurationResponse), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
