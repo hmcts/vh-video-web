@@ -19,10 +19,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     @Input() showAudioOnlySetting = false;
 
     availableCameraDevices: UserMediaDevice[] = [];
-    hasOnlyOneAvailableCameraDevice = false;
     availableMicrophoneDevices: UserMediaDevice[] = [];
-    hasOnlyOneAvailableMicrophoneDevice = false;
-
     selectMediaDevicesForm: FormGroup;
     selectedCameraDevice: UserMediaDevice;
     selectedCameraStream: MediaStream;

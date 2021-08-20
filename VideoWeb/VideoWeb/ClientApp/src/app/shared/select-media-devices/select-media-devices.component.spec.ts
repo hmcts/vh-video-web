@@ -5,15 +5,13 @@ import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-tes
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { SelectMediaDevicesComponent } from './select-media-devices.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
-import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
-import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
 import { getSpiedPropertyGetter } from '../jasmine-helpers/property-helpers';
-import { from, Observable, of, Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { MediaStreamService } from 'src/app/services/media-stream.service';
 import { UserMediaDevice } from '../models/user-media-device';
 import { Guid } from 'guid-typescript';
 
-describe('SelectMediaDevicesComponent', () => {
+fdescribe('SelectMediaDevicesComponent', () => {
     let component: SelectMediaDevicesComponent;
     let userMediaService: jasmine.SpyObj<UserMediaService>;
     let mediaStreamService: jasmine.SpyObj<MediaStreamService>;
@@ -76,23 +74,31 @@ describe('SelectMediaDevicesComponent', () => {
         flush();
         expect(component.selectMediaDevicesForm).toBeDefined();
         expect(component.selectMediaDevicesForm.valid).toBeDefined();
+        expect(component.availableCameraDevices).toBeDefined();
+        expect(component.availableMicrophoneDevices).toBeDefined();
     }));
 
     it('should update selected cam', fakeAsync(() => {
+        spyOn<any>(component, 'updateSelectedCamera').and.callThrough();
+
         component.availableCameraDevices = testData.getListOfCameras();
         component.ngOnInit();
         flushMicrotasks();
         activeVideoDeviceSubject.next(testData.getSelectedCamera());
         flush();
+        expect(component['updateSelectedCamera']).toHaveBeenCalled();
         expect(component.selectedCameraDevice).toEqual(testData.getSelectedCamera());
     }));
 
     it('should update selected mic', fakeAsync(() => {
+        spyOn<any>(component, 'updateSelectedMicrophone').and.callThrough();
+
         component.availableCameraDevices = testData.getListOfCameras();
         component.ngOnInit();
         flushMicrotasks();
         activeMicrophoneDeviceSubject.next(testData.getSelectedMicphone());
         flush();
+        expect(component['updateSelectedMicrophone']).toHaveBeenCalled();
         expect(component.selectedMicrophoneDevice).toEqual(testData.getSelectedMicphone());
     }));
 
