@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { from, Observable, ReplaySubject, zip } from 'rxjs';
+import { from, Observable, of, ReplaySubject, zip } from 'rxjs';
 import 'webrtc-adapter';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Logger } from './logging/logger-base';
-import { filter, map, mergeMap, retry, take } from 'rxjs/operators';
+import { catchError, filter, map, mergeMap, retry, take } from 'rxjs/operators';
 import { LocalStorageService } from './conference/local-storage.service';
 
 @Injectable({
@@ -171,9 +171,13 @@ export class UserMediaService {
     hasValidCameraAndMicAvailable(): Observable<boolean> {
         // TODO: Have a look at switching to audio only when the video camera is unavailable?
         return from(this.navigator.mediaDevices.getUserMedia(this.defaultStreamConstraints)).pipe(
-            retry(10),
+            retry(3),
             take(1),
-            map(stream => !!stream && stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0)
+            map(stream => !!stream && stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0),
+            catchError(error => {
+                this.logger.error(`${this.loggerPrefix} get user media failed.`, error);
+                return of(false);
+            })
         );
     }
 
