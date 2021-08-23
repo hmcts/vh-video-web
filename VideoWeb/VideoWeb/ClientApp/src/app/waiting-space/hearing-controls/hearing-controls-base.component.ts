@@ -8,6 +8,7 @@ import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { UserMediaService } from 'src/app/services/user-media.service';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-hand-raised-message';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
@@ -22,7 +23,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     @Input() public participant: ParticipantResponse;
     @Input() public isPrivateConsultation: boolean;
-    @Input() public audioOnly: boolean;
     @Input() public outgoingStream: MediaStream | URL;
     @Input() public conferenceId: string;
     @Input() public isSupportedBrowserForNetworkHealth: boolean;
@@ -34,6 +34,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     @Output() public togglePanel = new EventEmitter<string>();
     @Output() public changeDeviceToggle = new EventEmitter();
 
+    audioOnly: boolean = false;
     videoCallSubscription$ = new Subscription();
     eventhubSubscription$ = new Subscription();
 
@@ -55,7 +56,8 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         protected deviceTypeService: DeviceTypeService,
         protected logger: Logger,
         protected participantService: ParticipantService,
-        protected translateService: TranslateService
+        protected translateService: TranslateService,
+        protected userMediaService: UserMediaService
     ) {
         this.handRaised = false;
         this.remoteMuted = false;
@@ -89,7 +91,13 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     ngOnInit(): void {
         this.audioMuted = this.videoCallService.pexipAPI.call.mutedAudio;
-        this.videoMuted = this.videoCallService.pexipAPI.call.mutedVideo;
+        this.videoMuted = this.videoCallService.pexipAPI.call.mutedVideo || this.audioOnly;
+
+        this.userMediaService.isAudioOnly$.subscribe(audioOnly => {
+            this.audioOnly = audioOnly;
+            this.videoMuted = this.videoCallService.pexipAPI.call.mutedVideo || this.audioOnly;
+        });
+
         this.logger.info(`${this.loggerPrefix} initialising hearing controls`, this.logPayload);
         this.setupVideoCallSubscribers();
         this.setupEventhubSubscribers();
