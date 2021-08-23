@@ -36,13 +36,13 @@ namespace VideoWeb.UnitTests.Helpers
             ParticipantTilePositionHelper.AssignTilePositions(_participants);
 
             _participants[0].TiledDisplayName.Should().Be($"JUDGE;HEARTBEAT;{_participants[0].DisplayName};{_participants[0].Id}");
-            _participants[1].TiledDisplayName.Should().Be($"CIVILIAN;NO HEARTBEAT;{_participants[1].DisplayName};{_participants[1].Id}");
-            _participants[2].TiledDisplayName.Should().Be($"CIVILIAN;NO HEARTBEAT;{_participants[2].DisplayName};{_participants[2].Id}");
-            _participants[3].TiledDisplayName.Should().Be($"CIVILIAN;NO HEARTBEAT;{_participants[3].DisplayName};{_participants[3].Id}");
-            _participants[4].TiledDisplayName.Should().Be($"CIVILIAN;NO HEARTBEAT;{_participants[4].DisplayName};{_participants[4].Id}");
-            _participants[5].TiledDisplayName.Should().Be($"CIVILIAN;NO HEARTBEAT;{_participants[5].DisplayName};{_participants[5].Id}");
-            _participants[6].TiledDisplayName.Should().Be($"WITNESS;NO HEARTBEAT;{_participants[6].DisplayName};{_participants[6].Id}");
-            _participants[7].TiledDisplayName.Should().Be($"CIVILIAN;NO HEARTBEAT;{_participants[7].DisplayName};{_participants[7].Id}");
+            _participants[1].TiledDisplayName.Should().Be($"CIVILIAN;NO_HEARTBEAT;{_participants[1].DisplayName};{_participants[1].Id}");
+            _participants[2].TiledDisplayName.Should().Be($"CIVILIAN;NO_HEARTBEAT;{_participants[2].DisplayName};{_participants[2].Id}");
+            _participants[3].TiledDisplayName.Should().Be($"CIVILIAN;NO_HEARTBEAT;{_participants[3].DisplayName};{_participants[3].Id}");
+            _participants[4].TiledDisplayName.Should().Be($"CIVILIAN;NO_HEARTBEAT;{_participants[4].DisplayName};{_participants[4].Id}");
+            _participants[5].TiledDisplayName.Should().Be($"CIVILIAN;NO_HEARTBEAT;{_participants[5].DisplayName};{_participants[5].Id}");
+            _participants[6].TiledDisplayName.Should().Be($"WITNESS;NO_HEARTBEAT;{_participants[6].DisplayName};{_participants[6].Id}");
+            _participants[7].TiledDisplayName.Should().Be($"CIVILIAN;NO_HEARTBEAT;{_participants[7].DisplayName};{_participants[7].Id}");
 
         }
     }
