@@ -329,17 +329,6 @@ describe('VideoCallService', () => {
             discardPeriodicTasks();
             expect(service['reconnectToCall']).toHaveBeenCalled();
         }));
-
-        it('should call onIsAudioOnlyChanged', fakeAsync(() => {
-            spyOn<any>(service, 'onIsAudioOnlyChanged').and.callThrough();
-            service.pexipAPI.onConnect(mockCamStream);
-            flush();
-            isAudioOnlySubject.next(true);
-            isAudioOnlySubject.next(true);
-            flush();
-            discardPeriodicTasks();
-            expect(service['onIsAudioOnlyChanged']).toHaveBeenCalledWith(true);
-        }));
     });
 
     describe('SetupClient', () => {

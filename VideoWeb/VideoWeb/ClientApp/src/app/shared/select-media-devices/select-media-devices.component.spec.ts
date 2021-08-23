@@ -16,7 +16,6 @@ describe('SelectMediaDevicesComponent', () => {
     let userMediaService: jasmine.SpyObj<UserMediaService>;
     let mediaStreamService: jasmine.SpyObj<MediaStreamService>;
 
-    const fb = new FormBuilder();
     const testData = new MediaDeviceTestData();
     const mockCamStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
     const mockMicStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getAudioTracks']);
@@ -51,7 +50,7 @@ describe('SelectMediaDevicesComponent', () => {
         getSpiedPropertyGetter(userMediaService, 'connectedDevices$').and.returnValue(connectedDevicesSubject.asObservable());
         getSpiedPropertyGetter(userMediaService, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
 
-        component = new SelectMediaDevicesComponent(userMediaService, mediaStreamService, fb, new MockLogger(), translateServiceSpy);
+        component = new SelectMediaDevicesComponent(userMediaService, mediaStreamService, new MockLogger(), translateServiceSpy);
         component.availableCameraDevices = testData.getListOfCameras();
     }));
 
@@ -72,8 +71,6 @@ describe('SelectMediaDevicesComponent', () => {
         flushMicrotasks();
         connectedDevicesSubject.next(testData.getListOfDevices());
         flush();
-        expect(component.selectMediaDevicesForm).toBeDefined();
-        expect(component.selectMediaDevicesForm.valid).toBeDefined();
         expect(component.availableCameraDevices).toBeDefined();
         expect(component.availableMicrophoneDevices).toBeDefined();
     }));

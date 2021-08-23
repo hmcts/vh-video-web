@@ -72,13 +72,19 @@ export class VideoCallService {
      * the user's preferred camera and microphone (if selected)
      */
     async setupClient() {
+        this.hasDisconnected$ = new Subject();
+
         const self = this;
         this.pexipAPI = new PexRTC();
         this.initCallTag();
         this.initTurnServer();
         this.pexipAPI.screenshare_fps = 30;
+        this.pexipAPI.video_source = false;
+        this.pexipAPI.audio_source = false;
+
         this.userMediaStreamService.currentStream$.pipe(take(1)).subscribe(stream => {
             this.pexipAPI.user_media_stream = stream;
+
             this.userMediaStreamService.currentStream$.pipe(skip(1)).subscribe(currentStream => this.onCurrentStreamChanged(currentStream));
         });
 
@@ -87,11 +93,7 @@ export class VideoCallService {
         };
 
         this.pexipAPI.onConnect = function (stream) {
-            self.hasDisconnected$ = new Subject();
-
-            self.userMediaService.isAudioOnly$.pipe(skip(1), takeUntil(self.hasDisconnected$)).subscribe(isAudioOnly => {
-                self.onIsAudioOnlyChanged(isAudioOnly);
-            });
+            self.logger.info(`${this.loggerPrefix} connected`);
             self.userMediaStreamService.streamModified$.pipe(takeUntil(self.hasDisconnected$)).subscribe(() => self.onStreamModified());
 
             self.onConnectedSubject.next(new ConnectedCall(stream));
@@ -157,10 +159,6 @@ export class VideoCallService {
 
     private onStreamModified() {
         this.reconnectToCall();
-    }
-
-    private onIsAudioOnlyChanged(audioOnly: boolean) {
-        this.reconnectToCall(audioOnly ? 'video' : null);
     }
 
     initTurnServer() {

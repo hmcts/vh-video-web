@@ -1,6 +1,5 @@
 import { Component, OnInit, Output, EventEmitter, OnDestroy, Input } from '@angular/core';
 import { UserMediaService } from 'src/app/services/user-media.service';
-import { FormGroup } from '@angular/forms';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Subject } from 'rxjs';

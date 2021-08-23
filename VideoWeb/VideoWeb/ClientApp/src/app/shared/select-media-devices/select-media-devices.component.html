@@ -22,7 +22,7 @@
                 </div>
                 <!-- Right hand side -->
                 <div class="govuk-grid-column-one-half">
-                    <form *ngIf="selectMediaDevicesForm" [formGroup]="selectMediaDevicesForm" class="govuk-form-group">
+                    <form class="govuk-form-group">
                         <div *ngIf="hasOnlyOneAvailableCameraDevice">
                             <p class="govuk-body">
                                 {{ selectedCameraDevice.label }}
@@ -33,9 +33,8 @@
                             <label class="govuk-label govuk-!-font-weight-bold" for="available-cam-list">
                                 {{'select-media-devices.change-camera' | translate}}</label>
 
-                            <select [(ngModel)]="selectedCameraDevice" (ngModelChange)="onSelectedCameraDeviceChange()"
-                                class="govuk-select govuk-!-width-two-thirds" id="available-cam-list"
-                                formControlName="camera">
+                            <select required name='camera' [(ngModel)]="selectedCameraDevice" (ngModelChange)="onSelectedCameraDeviceChange()"
+                                class="govuk-select govuk-!-width-two-thirds" id="available-cam-list">
                                 <option *ngFor="let availableCam of availableCameraDevices" [ngValue]="availableCam">
                                     {{ availableCam.label }}
                                 </option>
@@ -55,10 +54,9 @@
 
                             <span class="govuk-hint">{{'select-media-devices.green-bar' | translate}}</span>
 
-                            <select [(ngModel)]="selectedMicrophoneDevice"
+                            <select required name='microphone' [(ngModel)]="selectedMicrophoneDevice"
                                 (ngModelChange)="onSelectedMicrophoneDeviceChange()"
-                                class="govuk-select govuk-!-width-two-thirds" id="available-mics-list"
-                                formControlName="microphone">
+                                class="govuk-select govuk-!-width-two-thirds" id="available-mics-list">
                                 <option *ngFor="let availableMic of availableMicrophoneDevices"
                                     [ngValue]="availableMic">
                                     {{ availableMic.label }}

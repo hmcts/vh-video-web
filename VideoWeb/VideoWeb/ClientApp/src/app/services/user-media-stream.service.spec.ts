@@ -39,6 +39,7 @@ describe('UserMediaStreamService', () => {
 
     let activeCameraDeviceSubject: Subject<UserMediaDevice>;
     let activeMicrophoneDeviceSubject: Subject<UserMediaDevice>;
+    let isAudioOnlySubject: Subject<boolean>;
     let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
 
     let mediaStreamServiceSpy: jasmine.SpyObj<MediaStreamService>;
@@ -48,12 +49,14 @@ describe('UserMediaStreamService', () => {
 
         activeCameraDeviceSubject = new Subject<UserMediaDevice>();
         activeMicrophoneDeviceSubject = new Subject<UserMediaDevice>();
-        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>([], ['activeVideoDevice$', 'activeMicrophoneDevice$']);
+        isAudioOnlySubject = new Subject<boolean>();
+        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>([], ['isAudioOnly$', 'activeVideoDevice$', 'activeMicrophoneDevice$']);
 
         getSpiedPropertyGetter(userMediaServiceSpy, 'activeVideoDevice$').and.returnValue(activeCameraDeviceSubject.asObservable());
         getSpiedPropertyGetter(userMediaServiceSpy, 'activeMicrophoneDevice$').and.returnValue(
             activeMicrophoneDeviceSubject.asObservable()
         );
+        getSpiedPropertyGetter(userMediaServiceSpy, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
 
         mediaStreamServiceSpy = jasmine.createSpyObj<MediaStreamService>(['initialiseNewStream', 'getStreamForCam', 'getStreamForMic']);
 
@@ -111,8 +114,39 @@ describe('UserMediaStreamService', () => {
 
     describe('on active camera change', () => {
         it('should add the new tracks to the active stream from the new camera and remove the old tracks from the previously active camera', fakeAsync(() => {
-            // Act
+            // Arrange
             const expectedNumberOfTracks = 2;
+
+            // Act
+            activeCameraDeviceSubject.next(cameraTwoDevice);
+            flush();
+
+            let currentStream: MediaStream | null = null;
+            sut.currentStream$.subscribe(stream => (currentStream = stream));
+            flush();
+
+            // Assert
+            expect(mediaStreamServiceSpy.getStreamForCam).toHaveBeenCalledWith(cameraTwoDevice);
+            cameraOneStream.getTracks().forEach(track => {
+                expect(currentStream.removeTrack).toHaveBeenCalledWith(track);
+                expect(track.stop).toHaveBeenCalled();
+            });
+
+            const currentStreamTracks = currentStream.getTracks();
+            expect(currentStreamTracks).toBeTruthy();
+            expect(currentStreamTracks.length).toEqual(expectedNumberOfTracks);
+            expect(currentStreamTracks.find(track => track.label === cameraOneDevice.label)).toBeFalsy();
+            expect(currentStreamTracks.find(track => track.label === cameraTwoDevice.label)).toBeTruthy();
+            expect(currentStreamTracks.find(track => track.label === microphoneOneDevice.label)).toBeTruthy();
+        }));
+
+        it('should NOT add the new tracks to the active stream from the new camera when it is audio only', fakeAsync(() => {
+            // Arrange
+            const expectedNumberOfTracks = 1; // Only audio track
+            isAudioOnlySubject.next(true);
+            flush();
+
+            // Act
             activeCameraDeviceSubject.next(cameraTwoDevice);
             flush();
 
@@ -132,7 +166,7 @@ describe('UserMediaStreamService', () => {
             expect(currentStreamTracks).toBeTruthy();
             expect(currentStreamTracks.length).toEqual(expectedNumberOfTracks);
             expect(currentStreamTracks.find(track => track.label === cameraOneDevice.label)).toBeFalsy();
-            expect(currentStreamTracks.find(track => track.label === cameraTwoDevice.label)).toBeTruthy();
+            expect(currentStreamTracks.find(track => track.label === cameraTwoDevice.label)).toBeFalsy();
             expect(currentStreamTracks.find(track => track.label === microphoneOneDevice.label)).toBeTruthy();
         }));
 
@@ -146,6 +180,95 @@ describe('UserMediaStreamService', () => {
 
             // Assert
             expect(wasModified).toBeTrue();
+        }));
+    });
+
+    describe('on active camera change during audio only; then audio only is turned off', () => {
+        it('should add the tracks for the new active camera when audio only is turned off', fakeAsync(() => {
+            // Arrange
+            const expectedNumberOfTracks = 2;
+            isAudioOnlySubject.next(true);
+            flush();
+
+            // Act
+            let currentStream: MediaStream | null = null;
+            sut.currentStream$.subscribe(stream => (currentStream = stream));
+            flush();
+
+            activeCameraDeviceSubject.next(cameraTwoDevice);
+            flush();
+
+            isAudioOnlySubject.next(false);
+            flush();
+
+            // Assert
+            expect(mediaStreamServiceSpy.getStreamForCam).toHaveBeenCalledWith(cameraTwoDevice);
+            cameraOneStream.getTracks().forEach(track => {
+                expect(currentStream.removeTrack).toHaveBeenCalledWith(track);
+                expect(track.stop).toHaveBeenCalled();
+            });
+
+            const currentStreamTracks = currentStream.getTracks();
+            expect(currentStreamTracks).toBeTruthy();
+            expect(currentStreamTracks.length).toEqual(expectedNumberOfTracks);
+            expect(currentStreamTracks.find(track => track.label === cameraOneDevice.label)).toBeFalsy();
+            expect(currentStreamTracks.find(track => track.label === cameraTwoDevice.label)).toBeTruthy();
+            expect(currentStreamTracks.find(track => track.label === microphoneOneDevice.label)).toBeTruthy();
+        }));
+    });
+
+    describe('on is audio only changed', () => {
+        it('should remove the existing tracks for the active video camera when audio only is true', fakeAsync(() => {
+            // Arrange
+            const expectedNumberOfTracks = 1; // Only audio track
+
+            // Act
+            let currentStream: MediaStream | null = null;
+            sut.currentStream$.subscribe(stream => (currentStream = stream));
+            flush();
+
+            isAudioOnlySubject.next(true);
+            flush();
+
+            // Assert
+            cameraOneStream.getTracks().forEach(track => {
+                expect(currentStream.removeTrack).toHaveBeenCalledWith(track);
+                expect(track.stop).toHaveBeenCalled();
+            });
+
+            const currentStreamTracks = currentStream.getTracks();
+            expect(currentStreamTracks).toBeTruthy();
+            expect(currentStreamTracks.length).toEqual(expectedNumberOfTracks);
+            expect(currentStreamTracks.find(track => track.label === cameraOneDevice.label)).toBeFalsy();
+            expect(currentStreamTracks.find(track => track.label === microphoneOneDevice.label)).toBeTruthy();
+        }));
+
+        it('should add the tracks for the active video camera when audio only is changed back to false', fakeAsync(() => {
+            // Arrange
+            const expectedNumberOfTracks = 2; // Only audio track
+
+            isAudioOnlySubject.next(true);
+            flush();
+
+            // Act
+            let currentStream: MediaStream | null = null;
+            sut.currentStream$.subscribe(stream => (currentStream = stream));
+            flush();
+
+            isAudioOnlySubject.next(false);
+            flush();
+
+            // Assert
+            cameraOneStream.getTracks().forEach(track => {
+                expect(currentStream.removeTrack).toHaveBeenCalledWith(track);
+                expect(track.stop).toHaveBeenCalled();
+            });
+
+            const currentStreamTracks = currentStream.getTracks();
+            expect(currentStreamTracks).toBeTruthy();
+            expect(currentStreamTracks.length).toEqual(expectedNumberOfTracks);
+            expect(currentStreamTracks.find(track => track.label === cameraOneDevice.label)).toBeTruthy();
+            expect(currentStreamTracks.find(track => track.label === microphoneOneDevice.label)).toBeTruthy();
         }));
     });
 

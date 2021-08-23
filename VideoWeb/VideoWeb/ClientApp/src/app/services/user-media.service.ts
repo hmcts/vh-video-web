@@ -227,7 +227,7 @@ export class UserMediaService {
         this.logger.debug(`${this.loggerPrefix} Attempting to set audioOnly.`, { audioOnly });
 
         this.isAudioOnly = audioOnly;
-        this.isAudioOnlySubject.next(this.isAudioOnly.valueOf());
+        this.isAudioOnlySubject.next(this.isAudioOnly);
     }
 
     hasMultipleDevices(): Observable<boolean> {
