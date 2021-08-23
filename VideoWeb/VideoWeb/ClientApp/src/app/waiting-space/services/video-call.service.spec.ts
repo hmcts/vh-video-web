@@ -36,7 +36,6 @@ describe('VideoCallService', () => {
     let streamModifiedSubject: Subject<void>;
     let isAudioOnlySubject: Subject<boolean>;
 
-
     const testData = new MediaDeviceTestData();
     let pexipSpy: jasmine.SpyObj<PexipClient>;
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
@@ -67,7 +66,6 @@ describe('VideoCallService', () => {
         getSpiedPropertyGetter(userMediaService, 'connectedVideoDevices').and.returnValue(of(testData.getListOfCameras()));
         getSpiedPropertyGetter(userMediaService, 'connectedMicrophoneDevices').and.returnValue(of(testData.getListOfMicrophones()));
         getSpiedPropertyGetter(userMediaService, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
-
 
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getConfig']);
         configServiceSpy.getConfig.and.returnValue(config);
@@ -322,7 +320,7 @@ describe('VideoCallService', () => {
     });
 
     describe('PexipAPI onConnect', () => {
-        it('should call reconnectToCall', fakeAsync (() => {
+        it('should call reconnectToCall', fakeAsync(() => {
             spyOn<any>(service, 'reconnectToCall').and.callThrough();
             service.pexipAPI.onConnect(mockCamStream);
             flush();
@@ -332,7 +330,7 @@ describe('VideoCallService', () => {
             expect(service['reconnectToCall']).toHaveBeenCalled();
         }));
 
-        it('should call onIsAudioOnlyChanged', fakeAsync (() => {
+        it('should call onIsAudioOnlyChanged', fakeAsync(() => {
             spyOn<any>(service, 'onIsAudioOnlyChanged').and.callThrough();
             service.pexipAPI.onConnect(mockCamStream);
             flush();
@@ -386,7 +384,6 @@ describe('VideoCallService', () => {
             flush();
             discardPeriodicTasks();
             expect(service['reconnectToCall']).toHaveBeenCalled();
-
         }));
     });
 });
