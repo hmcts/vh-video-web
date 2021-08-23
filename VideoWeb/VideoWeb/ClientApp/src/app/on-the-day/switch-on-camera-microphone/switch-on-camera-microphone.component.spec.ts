@@ -11,7 +11,7 @@ import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone.component';
 import { fakeAsync, flush, flushMicrotasks } from '@angular/core/testing';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
-import { Subject } from 'rxjs';
+import { Subject, throwError } from 'rxjs';
 import { mockCamStream } from 'src/app/waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 
@@ -33,8 +33,6 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
     beforeEach(async () => {
         userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>('UserMediaStreamService', [], ['currentStream$']);
         currentStreamSubject = new Subject<MediaStream>();
-
-        getSpiedPropertyGetter(userMediaStreamService, 'currentStream$').and.returnValue(currentStreamSubject.asObservable());
 
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
             'getConferencesForIndividual',
@@ -150,11 +148,23 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
         expect(logSpy.calls.mostRecent().args[1]).toBe(error);
     });
 
-    it('should request media', fakeAsync(() => {
+    it('should update mediaAccepted and userPrompted to true when request media', fakeAsync(() => {
+        getSpiedPropertyGetter(userMediaStreamService, 'currentStream$').and.returnValue(currentStreamSubject.asObservable());
+
         component.requestMedia();
         currentStreamSubject.next(mockCamStream);
         flush();
         expect(component.userPrompted).toBeTrue();
-        expect(component.userPrompted).toBeTrue();
+        expect(component.mediaAccepted).toBeTrue();
+    }));
+
+    it('should update mediaAccepted and userPrompted to false when request media throw an error', fakeAsync(() => {
+        getSpiedPropertyGetter(userMediaStreamService, 'currentStream$').and.callFake(() => {
+            return throwError(new Error('Fake error'));
+        });
+        component.requestMedia();
+        flush();
+        expect(component.userPrompted).toBeFalse();
+        expect(component.mediaAccepted).toBeFalse();
     }));
 });

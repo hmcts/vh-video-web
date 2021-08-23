@@ -1,6 +1,12 @@
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
-import { ConferenceResponse, ConferenceStatus, LoggedParticipantResponse, ParticipantResponse } from 'src/app/services/clients/api-client';
+import {
+    ConferenceResponse,
+    ConferenceStatus,
+    LoggedParticipantResponse,
+    ParticipantResponse,
+    ParticipantStatus
+} from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import {
@@ -91,6 +97,14 @@ describe('JohWaitingRoomComponent', () => {
             component.ngOnDestroy();
         }
     });
+
+    it('should show audio only toggle', fakeAsync(() => {
+        component.conference = globalConference;
+        component.participant.status = ParticipantStatus.Available;
+        const result = component.allowAudioOnlyToggle;
+
+        expect(result).toBeTrue();
+    }));
 
     it('should init hearing alert and subscribers', fakeAsync(() => {
         component.ngOnInit();

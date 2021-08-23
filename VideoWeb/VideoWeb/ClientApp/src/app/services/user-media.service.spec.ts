@@ -110,6 +110,15 @@ describe('UserMediaService', () => {
         expect(result).toBeTruthy();
     }));
 
+    it('should get camera and microphone devices', fakeAsync(() => {
+        spyOn(navigator.mediaDevices as any, 'enumerateDevices').and.resolveTo(testData.getListOfDevices());
+
+        let result;
+        userMediaService.getCameraAndMicrophoneDevices().subscribe(devices => (result = devices));
+        flush();
+        expect(result.length).toBeGreaterThan(0);
+    }));
+
     describe('updateIsAudioOnly', () => {
         it('should update isAudioOnly if the values are different', fakeAsync(() => {
             // Arrange
@@ -148,6 +157,7 @@ describe('UserMediaService', () => {
             spyOn(UserMediaService.prototype, 'hasValidCameraAndMicAvailable').and.returnValue(of(true));
             userMediaService = new UserMediaService(new MockLogger(), localStorageServiceSpy);
         });
+
         it('should handle device change', fakeAsync(() => {
             spyOn<any>(userMediaService, 'initialiseActiveDevicesFromCache').and.callFake(function () {});
             spyOn<any>(userMediaService, 'checkActiveDevicesAreStillConnected').and.callFake(function () {});
@@ -156,6 +166,25 @@ describe('UserMediaService', () => {
             expect(userMediaService['initialiseActiveDevicesFromCache']).toHaveBeenCalledWith(testData.getListOfDevices());
             expect(userMediaService['checkActiveDevicesAreStillConnected']).toHaveBeenCalledWith(testData.getListOfDevices());
         }));
+
+        it('should handle device change', fakeAsync(() => {
+            spyOn<any>(userMediaService, 'setActiveCamera').and.callThrough();
+            spyOn<any>(userMediaService, 'loadDefaultCamera').and.callThrough();
+            spyOn<any>(userMediaService, 'setActiveMicrophone').and.callThrough();
+            spyOn<any>(userMediaService, 'loadDefaultMicrophone').and.callThrough();
+
+            spyOn<any>(userMediaService, 'checkActiveDevicesAreStillConnected').and.callThrough();
+            spyOn(userMediaService, 'isDeviceStillConnected').and.returnValue(of(false));
+
+            getCameraAndMicrophoneDevicesSubject.next(testData.getListOfDevices());
+            flush();
+
+            expect(userMediaService['setActiveCamera']).toHaveBeenCalled();
+            expect(userMediaService['loadDefaultCamera']).toHaveBeenCalled();
+            expect(userMediaService['setActiveMicrophone']).toHaveBeenCalled();
+            expect(userMediaService['loadDefaultMicrophone']).toHaveBeenCalled();
+        }));
+
         it('should return list of devices', fakeAsync(() => {
             getCameraAndMicrophoneDevicesSubject.next(testData.getListOfDevices());
             flush();
@@ -164,6 +193,7 @@ describe('UserMediaService', () => {
             flush();
             expect(result.length).toBe(6);
         }));
+
         it('should return only microphone devices', fakeAsync(() => {
             getCameraAndMicrophoneDevicesSubject.next(testData.getListOfDevices());
             flush();
@@ -172,6 +202,7 @@ describe('UserMediaService', () => {
             flush();
             expect(result.length).toBe(3);
         }));
+
         it('should return only video devices', fakeAsync(() => {
             getCameraAndMicrophoneDevicesSubject.next(testData.getListOfDevices());
             flush();
@@ -180,6 +211,7 @@ describe('UserMediaService', () => {
             flush();
             expect(result.length).toBe(3);
         }));
+
         it('should set default cam to cache', fakeAsync(() => {
             localStorageServiceSpy.load.and.returnValue(null);
             spyOn<any>(userMediaService, 'setActiveCamera').and.callFake(function () {});
@@ -189,6 +221,7 @@ describe('UserMediaService', () => {
             expect(userMediaService['setActiveCamera']).toHaveBeenCalledOnceWith(testData.getListOfCameras()[0]);
             expect(userMediaService['loadDefaultCamera']).toHaveBeenCalledOnceWith(testData.getListOfDevices());
         }));
+
         it('should set default mic to cache', fakeAsync(() => {
             localStorageServiceSpy.load.and.returnValue(null);
             spyOn<any>(userMediaService, 'setActiveMicrophone').and.callFake(function () {});
