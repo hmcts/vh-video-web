@@ -100,7 +100,7 @@ export class UserMediaStreamService {
     }
 
     async getSreamForPreferredDevices(cam: UserMediaDevice, mic: UserMediaDevice): Promise<MediaStream> {
-        this.logger.debug(`${this.loggerPrefix} Getting stream for preferrerd devices`, { cam, mic });
+        this.logger.debug(`${this.loggerPrefix} Getting stream for preferred devices`, { cam, mic });
         return await this.navigator.mediaDevices.getUserMedia({
             video: { deviceId: { exact: cam?.deviceId } },
             audio: { deviceId: { exact: mic?.deviceId } }

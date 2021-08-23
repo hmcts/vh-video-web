@@ -41,7 +41,9 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
     private destroyedSubject = new Subject();
     hideOriginalStream: boolean;
     showBackgroundFilter: boolean;
-    usingPexipStream: boolean;
+    get usingPexipStream(): boolean {
+        return !!this.videoFilterService.canvasStream;
+    }
 
     constructor(
         private userMediaService: UserMediaService,
@@ -87,12 +89,12 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
     }
 
     async applyVideoFilterIfNeeded() {
-        if (this.videoFilterService.canvasStream) {
+        if (this.usingPexipStream) {
             this.preferredCameraStream = this.videoFilterService.canvasStream;
-            this.usingPexipStream = true;
+            // this.usingPexipStream = true;
             this.hideOriginalStream = false;
         } else {
-            this.usingPexipStream = false;
+            // this.usingPexipStream = false;
             await this.videoFilterService.initFilterStream(this);
             this.videoFilterService.startFilteredStream();
             this.hideOriginalStream = true;
@@ -222,7 +224,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
 
     onSubmit() {
         // close dialog and stop streams
-        this.userMediaStreamService.stopStream(this.preferredCameraStream);
+        // this.userMediaStreamService.stopStream(this.preferredCameraStream);
         this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
         this.saveSelectedDevices();
         this.logger.debug(`${this.loggerPrefix} Cancelling media device change`);
@@ -266,7 +268,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
 
     private async updateCameraStream(newCam: UserMediaDevice) {
         this.logger.debug(`${this.loggerPrefix} updating camera stream`, newCam);
-        if (this.preferredCameraStream) {
+        if (this.preferredCameraStream && !this.usingPexipStream) {
             this.userMediaStreamService.stopStream(this.preferredCameraStream);
         }
         this.userMediaService.updatePreferredCamera(newCam);
@@ -298,12 +300,12 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
         this.logger.debug(`${this.loggerPrefix} Closing select media device change`);
         this.destroyedSubject.next();
         this.destroyedSubject.complete();
-        if (this.preferredCameraStream) {
+        if (this.preferredCameraStream && !this.usingPexipStream) {
             this.logger.debug(`${this.loggerPrefix} Closing camera stream`);
             this.userMediaStreamService.stopStream(this.preferredCameraStream);
         }
         this.preferredCameraStream = null;
-        if (this.preferredMicrophoneStream) {
+        if (this.preferredMicrophoneStream && !this.usingPexipStream) {
             this.logger.debug(`${this.loggerPrefix} Closing microphone stream`);
             this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
         }

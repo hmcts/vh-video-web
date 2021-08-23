@@ -184,7 +184,7 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
     async applyAndUseFilterStream() {
         await this.videoFilterService.initFilterStream(this);
         this.filteredStream = this.videoFilterService.startFilteredStream();
-        this.videoCallService.updateStreamDevices(this.filteredStream);
+        this.videoCallService.updatePexipCameraStream(this.filteredStream);
         this.hideOriginalStream = true;
     }
 

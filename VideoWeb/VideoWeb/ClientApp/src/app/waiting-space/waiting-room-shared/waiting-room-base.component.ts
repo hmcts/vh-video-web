@@ -1118,7 +1118,7 @@ export abstract class WaitingRoomBaseDirective {
 
     async onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
         this.logger.debug(`${this.loggerPrefix} Updated device settings`, { selectedMediaDevice });
-        this.userMediaService.updatePreferredCamera(selectedMediaDevice.selectedCamera);
+        // this.userMediaService.updatePreferredCamera(selectedMediaDevice.selectedCamera);
         this.userMediaService.updatePreferredMicrophone(selectedMediaDevice.selectedMicrophone);
         this.audioOnly = selectedMediaDevice.audioOnly;
         this.updateAudioOnlyPreference(this.audioOnly);
@@ -1146,7 +1146,7 @@ export abstract class WaitingRoomBaseDirective {
     private async updatePexipAudioVideoSource() {
         const cam = await this.userMediaService.getPreferredCamera();
         if (cam) {
-            this.videoCallService.updateCameraForCall(cam);
+            // this.videoCallService.updateCameraForCall(cam);
         }
 
         const mic = await this.userMediaService.getPreferredMicrophone();

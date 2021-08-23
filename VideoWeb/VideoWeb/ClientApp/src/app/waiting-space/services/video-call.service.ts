@@ -180,6 +180,7 @@ export class VideoCallService {
         this.pexipAPI.audio_source = null;
         this.pexipAPI.video_source = null;
         this.pexipAPI.user_media_stream = this.preferredDeviceStream;
+        this.logger.info(`${this.loggerPrefix} Updated pexip user media stream, now making call`);
         this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, null);
     }
 
@@ -249,8 +250,9 @@ export class VideoCallService {
             return;
         }
         this.pexipAPI.video_source = null;
-        this.logger.info(`${this.loggerPrefix}  Using preferred camera: ${camera.label}`);
+        this.logger.info(`${this.loggerPrefix} Using preferred camera: ${camera.label}`);
         if (!this.preferredDeviceStream) {
+            this.logger.info(`${this.loggerPrefix} preferred stream not set, skipping update`);
             return;
         }
         this.userMediaStreamService.getStreamForCam(camera).then(newCameraStream => {
@@ -265,13 +267,14 @@ export class VideoCallService {
                 this.preferredDeviceStream.addTrack(x);
             });
         });
-        this.updateStreamDevices(this.preferredDeviceStream);
+        this.updatePexipCameraStream(this.preferredDeviceStream);
     }
 
     updateMicrophoneForCall(microphone: UserMediaDevice) {
         this.pexipAPI.audio_source = null;
         this.logger.info(`${this.loggerPrefix} Using preferred microphone: ${microphone.label}`);
         if (!this.preferredDeviceStream) {
+            this.logger.info(`${this.loggerPrefix} preferred stream not set, skipping update`);
             return;
         }
 
@@ -284,8 +287,6 @@ export class VideoCallService {
                 this.preferredDeviceStream.addTrack(x);
             });
         });
-
-        this.updateStreamDevices(this.preferredDeviceStream);
     }
 
     toggleMute(conferenceId: string, participantId: string): boolean {
@@ -479,10 +480,10 @@ export class VideoCallService {
         return this.apiClient.getParticipantRoomForParticipant(conferenceId, participantId, 'Judicial').toPromise();
     }
 
-    updateStreamDevices(newStream: MediaStream) {
+    updatePexipCameraStream(newStream: MediaStream) {
         if (this.pexipAPI?.user_media_stream && newStream?.getVideoTracks().length) {
+            this.logger.debug(`${this.loggerPrefix} Updating video tracks for pexip stream`);
             this.pexipAPI.user_media_stream.getVideoTracks().forEach(x => {
-                x.stop();
                 this.pexipAPI.user_media_stream.removeTrack(x);
             });
 

@@ -2378,7 +2378,7 @@ function PexRTC() {
     self.onStageUpdate = null;
     self.onMicActivity = null;
     self.onLog = function () {
-        console.log.apply(console, arguments);
+        // console.log.apply(console, arguments);
     };
     self.stats = new PexRTCStatistics();
     self.stats.parent = self;
