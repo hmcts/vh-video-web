@@ -3,10 +3,6 @@ import { HeartbeatMode } from './heartbeat-mode.model';
 import { PexipDisplayNameModel } from './pexip-display-name.model';
 
 describe('PexipDisplayNameModel', () => {
-    beforeEach(() => {
-        return;
-    });
-
     it('should parse the string into the model when no heartbeat is set', () => {
         // Arrange
         const role = 'ROLE';
