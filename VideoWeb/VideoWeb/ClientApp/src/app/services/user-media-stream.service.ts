@@ -18,7 +18,7 @@ export class UserMediaStreamService {
     private currentStream: MediaStream;
     private activateCameraStream: MediaStream;
     private activateMicrophoneStream: MediaStream;
-    private isAudioOnly: boolean = false;
+    private isAudioOnly = false;
 
     private currentStreamSubject = new ReplaySubject<MediaStream>(1);
     get currentStream$() {
