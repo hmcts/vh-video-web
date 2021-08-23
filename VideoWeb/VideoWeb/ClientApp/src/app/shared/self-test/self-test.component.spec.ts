@@ -6,7 +6,7 @@ import { SelfTestComponent } from './self-test.component';
 import { MediaStreamService } from 'src/app/services/media-stream.service';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 import { UserMediaDevice } from '../models/user-media-device';
-import { Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from '../jasmine-helpers/property-helpers';
 import { fakeAsync, flush } from '@angular/core/testing';
 import {
@@ -23,6 +23,8 @@ import {
 import { Guid } from 'guid-typescript';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
+import { mockMicStream, testDataDevice } from 'src/app/waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
+import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 
 describe('SelfTestComponent', () => {
     let component: SelfTestComponent;
@@ -38,6 +40,7 @@ describe('SelfTestComponent', () => {
     let mediaStreamServiceSpy: jasmine.SpyObj<MediaStreamService>;
     let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
     let navigatorSpy: jasmine.SpyObj<Navigator>;
+    const testData = new MediaDeviceTestData();
 
     const token = new TokenResponse({
         expires_on: '02.06.2020-21:06Z',
@@ -65,7 +68,7 @@ describe('SelfTestComponent', () => {
         connectedDevicesSubject = new Subject<UserMediaDevice[]>();
         activatedMicrophoneSubject = new Subject<UserMediaDevice>();
         getSpiedPropertyGetter(userMediaServiceSpy, 'connectedDevices$').and.returnValue(connectedDevicesSubject.asObservable());
-        getSpiedPropertyGetter(userMediaServiceSpy, 'activeMicrophoneDevice$').and.returnValue(activatedMicrophoneSubject);
+        getSpiedPropertyGetter(userMediaServiceSpy, 'activeMicrophoneDevice$').and.returnValue(activatedMicrophoneSubject.asObservable());
 
         mediaStreamServiceSpy = jasmine.createSpyObj<MediaStreamService>(['getStreamForMic', 'stopStream']);
 

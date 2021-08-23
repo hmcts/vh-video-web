@@ -1,4 +1,4 @@
-import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
+import { fakeAsync, flush, flushMicrotasks, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { ActiveToast } from 'ngx-toastr';
 import { Subject, Subscription } from 'rxjs';
@@ -9,6 +9,7 @@ import {
     LinkType,
     LoggedParticipantResponse,
     ParticipantResponse,
+    ParticipantStatus,
     Role
 } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
@@ -123,17 +124,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     afterEach(() => {
         component.ngOnDestroy();
     });
-
-    it('should init hearing alert and subscribers', fakeAsync(() => {
-        component.ngOnInit();
-        flushMicrotasks();
-        tick(100);
-        expect(component.clockSubscription$).toBeDefined();
-        expect(component.eventHubSubscription$).toBeDefined();
-        expect(component.videoCallSubscription$).toBeDefined();
-        expect(component.displayDeviceChangeModal).toBeFalsy();
-        expect(notificationSoundsService.initHearingAlertSound).toHaveBeenCalled();
-    }));
 
     it('should start with "What is a private meeting?" accordian collapsed', fakeAsync(() => {
         expect(component.privateConsultationAccordianExpanded).toBeFalsy();
@@ -436,5 +426,43 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
         expect(roomClosingToastrService.showRoomClosingAlert).toHaveBeenCalledWith(component.hearing, date);
         expect(roomClosingToastrService.currentToast).toBeTruthy();
+    });
+
+    it('should return allowAudioOnlyToggle true', async () => {
+        component.conference = globalConference;
+        component.participant.status = ParticipantStatus.Available;
+        expect(component.allowAudioOnlyToggle).toBeTrue();
+    });
+    describe('Construction', () => {
+        it('should init hearing alert and subscribers', fakeAsync(() => {
+            component.ngOnInit();
+            flushMicrotasks();
+            tick(100);
+            expect(component.clockSubscription$).toBeDefined();
+            expect(component.eventHubSubscription$).toBeDefined();
+            expect(component.videoCallSubscription$).toBeDefined();
+            expect(component.displayDeviceChangeModal).toBeFalsy();
+            expect(notificationSoundsService.initHearingAlertSound).toHaveBeenCalled();
+        }));
+
+        it('should onShouldUnload', fakeAsync(() => {
+            spyOn<any>(component, 'onShouldUnload').and.callThrough();
+            component.ngOnInit();
+            flushMicrotasks();
+            tick(100);
+            shouldUnloadSubject.next();
+            flush();
+            expect(component['onShouldUnload']).toHaveBeenCalled();
+        }));
+
+        it('should call onShouldReload', fakeAsync(() => {
+            spyOn<any>(component, 'onShouldReload').and.callFake(() => {});
+            component.ngOnInit();
+            flushMicrotasks();
+            tick(100);
+            shouldReloadSubject.next();
+            flush();
+            expect(component['onShouldReload']).toHaveBeenCalled();
+        }));
     });
 });

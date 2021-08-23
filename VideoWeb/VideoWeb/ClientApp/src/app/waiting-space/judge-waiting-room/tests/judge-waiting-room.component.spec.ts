@@ -269,14 +269,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.eventHubSubscription$).toBeDefined();
         expect(videoWebService.getJwToken).toHaveBeenCalledTimes(1);
     }));
-    // it('should handle error when unable to setup default devices', fakeAsync(() => {
-    //     errorService.handlePexipError.calls.reset();
-    //     const error = new Error('Permission error');
-    //     userMediaService.setDevicesInCache.and.rejectWith(error);
-    //     component.ngOnInit();
-    //     flushMicrotasks();
-    //     expect(errorService.handlePexipError).toHaveBeenCalledTimes(1);
-    // }));
+
     it('should init hearing alert and subscribers', fakeAsync(() => {
         component.ngOnInit();
         flushMicrotasks();
