@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, OnDestroy, Input } from '@angular/core';
 import { UserMediaService } from 'src/app/services/user-media.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Subject } from 'rxjs';
@@ -20,7 +20,6 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
 
     availableCameraDevices: UserMediaDevice[] = [];
     availableMicrophoneDevices: UserMediaDevice[] = [];
-    selectMediaDevicesForm: FormGroup;
     selectedCameraDevice: UserMediaDevice;
     selectedCameraStream: MediaStream;
     selectedMicrophoneDevice: UserMediaDevice;
@@ -33,7 +32,6 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     constructor(
         private userMediaService: UserMediaService,
         private mediaStreamService: MediaStreamService,
-        private formBuilder: FormBuilder,
         private logger: Logger,
         private translateService: TranslateService
     ) {}
@@ -42,8 +40,6 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         this.userMediaService.connectedDevices$.pipe(takeUntil(this.destroyedSubject)).subscribe(connectedDevices => {
             this.availableCameraDevices = connectedDevices.filter(device => device.kind === 'videoinput');
             this.availableMicrophoneDevices = connectedDevices.filter(device => device.kind === 'audioinput');
-
-            this.selectMediaDevicesForm = this.initNewDeviceSelectionForm();
         });
 
         this.userMediaService.isAudioOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(isAudioOnly => {
@@ -89,15 +85,6 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
             .getStreamForMic(this.selectedMicrophoneDevice)
             .pipe(take(1))
             .subscribe(microphoneStream => (this.selectedMicrophoneStream = microphoneStream));
-    }
-
-    private initNewDeviceSelectionForm(): FormGroup {
-        this.logger.debug(`${this.loggerPrefix} Initialising new device selection form`);
-
-        return this.formBuilder.group({
-            camera: [Validators.required],
-            microphone: [Validators.required]
-        });
     }
 
     toggleSwitch() {
