@@ -490,7 +490,7 @@ describe('ParticipantsPanelComponent', () => {
                 '',
                 '',
                 '',
-                'ROLE;NO HEARTBEAT;DISPLAY NAME;ID',
+                null,
                 null,
                 null,
                 null,
