@@ -1,3 +1,5 @@
+import { areAllEquivalent } from '@angular/compiler/src/output/output_ast';
+import { fakeAsync, flush } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { of } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
@@ -15,6 +17,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
+import { ParticipantUpdated } from '../models/video-call-models';
 import { VideoCallEventsService } from './video-call-events.service';
 import { VideoCallPreferences } from './video-call-preferences.mode';
 import { VideoCallService } from './video-call.service';
@@ -380,5 +383,42 @@ describe('VideoCallService', () => {
         await service.retrieveJudicialRoom(conferenceId, participantId);
 
         expect(apiClient.getParticipantRoomForParticipant).toHaveBeenCalledWith(conferenceId, participantId, 'Judicial');
+    });
+
+    describe('handleParticipantUpdate', () => {
+        it('should raise the event through video call events service', fakeAsync(() => {
+            // Arrange
+            const pexipParticipant: PexipParticipant = {
+                buzz_time: 0,
+                is_muted: 'is_muted',
+                display_name: 'display_name',
+                local_alias: 'local_alias',
+                start_time: 0,
+                uuid: 'uuid',
+                spotlight: 0,
+                mute_supported: 'mute_supported',
+                is_external: false,
+                external_node_uuid: 'external_node_uuid',
+                has_media: false,
+                call_tag: 'call_tag',
+                is_audio_only_call: 'is_audio_only_call',
+                is_video_call: 'is_video_call',
+                protocol: 'protocol'
+            };
+
+            const expectedUpdate = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+
+            // Act
+            let result: ParticipantUpdated | null = null;
+            service.onParticipantUpdated().subscribe(update => (result = update));
+
+            service.pexipAPI.onParticipantUpdate(pexipParticipant);
+            flush();
+
+            // Assert
+            expect(result).toBeTruthy();
+            expect(result).toEqual(expectedUpdate);
+            expect(videoCallEventsServiceSpy.handleParticipantUpdated).toHaveBeenCalledOnceWith(expectedUpdate);
+        }));
     });
 });

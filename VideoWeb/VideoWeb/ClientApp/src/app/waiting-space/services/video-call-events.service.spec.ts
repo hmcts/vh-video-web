@@ -1,4 +1,4 @@
-import { fakeAsync } from '@angular/core/testing';
+import { fakeAsync, flush } from '@angular/core/testing';
 import { ParticipantUpdated } from '../models/video-call-models';
 import { VideoCallEventsService } from './video-call-events.service';
 
@@ -19,6 +19,7 @@ describe('VideoCallEventsService', () => {
             sut.participantUpdated$.subscribe(participantUpdate => (result = participantUpdate));
 
             sut.handleParticipantUpdated(update);
+            flush();
 
             // Assert
             expect(result).toBeTruthy();

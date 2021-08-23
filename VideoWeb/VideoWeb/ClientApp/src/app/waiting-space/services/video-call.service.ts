@@ -96,10 +96,7 @@ export class VideoCallService {
 
         this.pexipAPI.onDisconnect = this.handleDisconnect.bind(this);
 
-        this.pexipAPI.onParticipantUpdate = function (participantUpdate) {
-            self.videoCallEventsService.handleParticipantUpdated(ParticipantUpdated.fromPexipParticipant(participantUpdate));
-            self.onParticipantUpdatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
-        };
+        this.pexipAPI.onParticipantUpdate = this.handleParticipantUpdate.bind(this);
 
         this.pexipAPI.onConferenceUpdate = function (conferenceUpdate) {
             self.onConferenceUpdatedSubject.next(new ConferenceUpdated(conferenceUpdate.guests_muted));
@@ -153,6 +150,11 @@ export class VideoCallService {
         this.kinlyHeartbeatService.initialiseHeartbeat(this.pexipAPI);
 
         this.onConnectedSubject.next(new ConnectedCall(stream));
+    }
+
+    private handleParticipantUpdate(participantUpdate: PexipParticipant) {
+        this.videoCallEventsService.handleParticipantUpdated(ParticipantUpdated.fromPexipParticipant(participantUpdate));
+        this.onParticipantUpdatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
     }
 
     private handleError(error: string) {
