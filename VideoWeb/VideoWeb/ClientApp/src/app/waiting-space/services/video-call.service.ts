@@ -102,8 +102,8 @@ export class VideoCallService {
         };
 
         this.pexipAPI.onDisconnect = function (reason) {
-            this.hasDisconnected$.next();
-            this.hasDisconnected$.complete();
+            self.hasDisconnected$.next();
+            self.hasDisconnected$.complete();
 
             self.onDisconnected.next(new DisconnectedCall(reason));
         };
