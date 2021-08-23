@@ -128,6 +128,14 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         return result.toUpperCase();
     }
 
+    get hasOnlyOneAvailableCameraDevice(): boolean {
+        return this.availableCameraDevices.length === 1;
+    }
+
+    get hasOnlyOneAvailableMicrophoneDevice(): boolean {
+        return this.availableMicrophoneDevices.length === 1;
+    }
+
     ngOnDestroy() {
         this.logger.debug(`${this.loggerPrefix} Closing select media device change`);
 
