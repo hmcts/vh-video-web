@@ -91,17 +91,24 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     private postConfigSetupOidc() {
-        this.checkAuth().subscribe({
-            next: async (loggedIn: boolean) => {
-                await this.postAuthSetup(loggedIn, false);
-            }
-        });
-        this.eventService
-            .registerForEvents()
-            .pipe(filter(notification => notification.type === EventTypes.NewAuthorizationResult))
-            .subscribe(async (value: OidcClientNotification<AuthorizationResult>) => {
-                this.logger.info('[AppComponent] - OidcClientNotification event received with value ', value);
-                await this.postAuthSetup(true, value.value.isRenewProcess);
+        this.securityConfigSetupService.configRestored$
+            .pipe(
+                filter(configRestored => configRestored),
+                first()
+            )
+            .subscribe(() => {
+                this.checkAuth().subscribe({
+                    next: async (loggedIn: boolean) => {
+                        await this.postAuthSetup(loggedIn, false);
+                    }
+                });
+                this.eventService
+                    .registerForEvents()
+                    .pipe(filter(notification => notification.type === EventTypes.NewAuthorizationResult))
+                    .subscribe(async (value: OidcClientNotification<AuthorizationResult>) => {
+                        this.logger.info('[AppComponent] - OidcClientNotification event received with value ', value);
+                        await this.postAuthSetup(true, value.value.isRenewProcess);
+                    });
             });
     }
 
@@ -172,7 +179,6 @@ export class AppComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.subscriptions.unsubscribe();
         this.destroyed$.next();
-        this.destroyed$.complete();
     }
 
     checkBrowser(): void {

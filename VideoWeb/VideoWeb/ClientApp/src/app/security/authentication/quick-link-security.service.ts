@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { PublicConfiguration } from 'angular-auth-oidc-client';
-import { AuthOptions } from 'angular-auth-oidc-client/lib/login/auth-options';
+import { AuthOptions, PublicConfiguration } from 'angular-auth-oidc-client';
 import { ReplaySubject, Observable, EMPTY, BehaviorSubject } from 'rxjs';
 import { map, take, tap } from 'rxjs/operators';
 import { ApiClient } from 'src/app/services/clients/api-client';

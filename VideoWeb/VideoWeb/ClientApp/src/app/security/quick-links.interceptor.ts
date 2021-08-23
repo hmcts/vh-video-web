@@ -52,6 +52,11 @@ export class QuickLinksInterceptor {
 
     private attachQuickLinkUsersToken(request: HttpRequest<unknown>): HttpRequest<unknown> {
         const token = this.securityServiceProviderService.getSecurityService().getToken();
+
+        if (!token) {
+            return request;
+        }
+
         const newRequest = this.cloneOldRequestAndAddNewHeaders(request, headers => {
             headers['Authorization'] = `Bearer ${token}`;
             headers['Content-Type'] = 'application/json';

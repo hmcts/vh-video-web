@@ -1,6 +1,7 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import * as signalR from '@microsoft/signalr';
-import { Observable, of, ReplaySubject, Subject } from 'rxjs';
+import { IHttpConnectionOptions } from '@microsoft/signalr';
+import { BehaviorSubject, Observable, of, ReplaySubject, Subject } from 'rxjs';
 import { SecurityServiceProvider } from '../security/authentication/security-provider.service';
 import { ISecurityService } from '../security/authentication/security-service.interface';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
@@ -21,6 +22,8 @@ describe('EventsHubService', () => {
     let clientSettings$: Subject<ClientSettingsResponse>;
     let connectionStatusChanged$: jasmine.SpyObj<Subject<boolean>>;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
+    const testToken = 'testToken';
+    let securityServiceSubject$: BehaviorSubject<jasmine.SpyObj<ISecurityService>>;
 
     beforeEach(() => {
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings']);
@@ -42,8 +45,13 @@ describe('EventsHubService', () => {
         connectionStatusChanged$ = jasmine.createSpyObj<Subject<boolean>>('Subject', ['subscribe']);
         connectionStatusServiceSpy.onConnectionStatusChange.and.returnValue(connectionStatusChanged$);
 
-        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('SecurityServiceProviderService', [], ['isAuthenticated$']);
-        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['getToken'], ['isAuthenticated$']);
+        securityServiceSpy.getToken.and.returnValue(testToken);
+        securityServiceSubject$ = new BehaviorSubject(securityServiceSpy);
+
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(
+            securityServiceSubject$.asObservable()
+        );
 
         errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError']);
 
@@ -109,13 +117,21 @@ describe('EventsHubService', () => {
     });
 
     describe('buildConnection', () => {
-        it('should build and return SignalR connection.', () => {
-            // Arrange
-            const expectedEventHubPath = 'test-event-hub-path';
-            const expectedReconnectionTimes = [1, 2, 4, 8];
-            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['start']);
+        let expectedSecurityServiceSpy: jasmine.SpyObj<ISecurityService>;
+        let hubConnectionBuilderSpy: jasmine.SpyObj<signalR.HubConnectionBuilder>;
+        let connectionSpy: jasmine.SpyObj<signalR.HubConnection>;
+        const expectedEventHubPath = 'test-event-hub-path';
+        const expectedReconnectionTimes = [1, 2, 4, 8];
+        const updatedSecurityServiceSpy = jasmine.createSpyObj<ISecurityService>(
+            'SecurityServiceProviderService',
+            ['getToken'],
+            ['isAuthenticated$']
+        );
 
-            const hubConnectionBuilderSpy = jasmine.createSpyObj<signalR.HubConnectionBuilder>('HubConnectionBuilder', [
+        beforeEach(() => {
+            connectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['start']);
+
+            hubConnectionBuilderSpy = jasmine.createSpyObj<signalR.HubConnectionBuilder>('HubConnectionBuilder', [
                 'configureLogging',
                 'withAutomaticReconnect',
                 'withUrl',
@@ -123,18 +139,43 @@ describe('EventsHubService', () => {
             ]);
             hubConnectionBuilderSpy.configureLogging.and.returnValue(hubConnectionBuilderSpy);
             hubConnectionBuilderSpy.withAutomaticReconnect.and.returnValue(hubConnectionBuilderSpy);
-            hubConnectionBuilderSpy.withUrl.and.returnValue(hubConnectionBuilderSpy);
+            hubConnectionBuilderSpy.withUrl.and.callFake(function (path: string, options: any = null) {
+                if (options && options['accessTokenFactory']) {
+                    options['accessTokenFactory']();
+                }
+                return hubConnectionBuilderSpy;
+            });
             hubConnectionBuilderSpy.build.and.returnValue(connectionSpy);
 
             spyOnProperty(serviceUnderTest, 'reconnectionTimes', 'get').and.returnValue(expectedReconnectionTimes);
             spyOn(serviceUnderTest, 'createConnectionBuilder').and.returnValue(hubConnectionBuilderSpy);
 
-            // Act
-            const connection = serviceUnderTest.buildConnection(expectedEventHubPath);
+            updatedSecurityServiceSpy.getToken.and.returnValue('updatedToken');
+        });
 
-            // Assert
+        it('should build and return SignalR connection.', () => {
+            // Arrange
+            expectedSecurityServiceSpy = securityServiceSpy;
+        });
+
+        it('should build and return SignalR connection with correct security service when it has changed', () => {
+            // Arrange
+            expectedSecurityServiceSpy = updatedSecurityServiceSpy;
+            securityServiceSubject$.next(updatedSecurityServiceSpy);
+        });
+
+        it('security service should not have changed after component is destroyed', () => {
+            serviceUnderTest.ngOnDestroy();
+            expectedSecurityServiceSpy = securityServiceSpy;
+            securityServiceSubject$.next(updatedSecurityServiceSpy);
+        });
+
+        afterEach(() => {
+            const connection = serviceUnderTest.buildConnection(expectedEventHubPath);
             expect(hubConnectionBuilderSpy.withAutomaticReconnect).toHaveBeenCalledOnceWith(expectedReconnectionTimes);
             expect(hubConnectionBuilderSpy.withUrl).toHaveBeenCalledTimes(1);
+            expect(hubConnectionBuilderSpy.withUrl).toHaveBeenCalledWith(expectedEventHubPath, jasmine.any(Object));
+            expect(expectedSecurityServiceSpy.getToken).toHaveBeenCalledTimes(1);
             expect(hubConnectionBuilderSpy.build).toHaveBeenCalledTimes(1);
             expect(connection).toBe(connectionSpy);
         });

@@ -1,5 +1,5 @@
 import { HttpClient, HttpXhrBackend } from '@angular/common/http';
-import { APP_INITIALIZER, ErrorHandler, LOCALE_ID, NgModule } from '@angular/core';
+import { ErrorHandler, LOCALE_ID, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -30,10 +30,6 @@ export function createTranslateLoader() {
     return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
 }
 
-export function getSettings(configService: ConfigService) {
-    return () => configService.loadConfig();
-}
-
 export function getLocale() {
     const language = localStorage.getItem('language') ?? 'en';
     return language === 'tl' ? 'cy' : language;
@@ -60,7 +56,6 @@ export function getLocale() {
         AuthConfigModule
     ],
     providers: [
-        { provide: APP_INITIALIZER, useFactory: getSettings, deps: [ConfigService], multi: true },
         { provide: API_BASE_URL, useFactory: () => '.' },
         { provide: LOCALE_ID, useFactory: getLocale },
         { provide: ErrorHandler, useClass: GlobalErrorHandler },

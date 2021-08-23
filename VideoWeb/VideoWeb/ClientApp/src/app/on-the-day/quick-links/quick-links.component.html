@@ -43,6 +43,9 @@
       data-module="govuk-button"
       type="submit"
       [attr.aria-label]="'quick-participant-landing-page.button-continue' | translate"
+      data-prevent-double-click="true"
+      [disabled]="pending$ | async"
+      [attr.aria-disabled]="pending$ | async"
     >
     {{ 'quick-participant-landing-page.button-continue' | translate }}
     </button>

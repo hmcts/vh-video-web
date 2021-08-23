@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { ConfigService } from '../services/api/config.service';
-import { SharedModule } from '../shared/shared.module';
+import { getSettings, restoreConfig, setupSecurity, SharedModule } from '../shared/shared.module';
 import { EjudSignInComponent } from './idp-selection/ejud-sign-in.component';
 import { IdpSelectionComponent } from './idp-selection/idp-selection.component';
 import { VhSignInComponent } from './idp-selection/vh-sign-in.component';
@@ -10,16 +10,7 @@ import { LogoutComponent } from './logout/logout.component';
 import { SecurityConfigSetupService } from './security-config-setup.service';
 import { SecurityRoutingModule } from './security-routing.module';
 import { UnauthorisedComponent } from './unauthorised/unauthorised.component';
-
-// export function setupSecurity(securityConfigService: SecurityConfigSetupService) {
-//     return () => securityConfigService.setupConfig();
-// }
-
-// export function restoreConfig(securityConfigSetupService: SecurityConfigSetupService): Function {
-//     return () => {
-//         securityConfigSetupService.restoreConfig();
-//     };
-// }
+import { JwtHelperService as Auth0JwtHelperService } from '@auth0/angular-jwt';
 
 @NgModule({
     imports: [CommonModule, SharedModule, SecurityRoutingModule],
@@ -27,14 +18,16 @@ import { UnauthorisedComponent } from './unauthorised/unauthorised.component';
     exports: [LoginComponent, LogoutComponent, IdpSelectionComponent],
     providers: [
         ConfigService,
-        SecurityConfigSetupService
-        // { provide: APP_INITIALIZER, useFactory: setupSecurity, deps: [SecurityConfigSetupService], multi: true },
-        // {
-        //     provide: APP_INITIALIZER,
-        //     useFactory: restoreConfig,
-        //     deps: [SecurityConfigSetupService],
-        //     multi: true
-        // }
+        SecurityConfigSetupService,
+        { provide: APP_INITIALIZER, useFactory: getSettings, deps: [ConfigService], multi: true },
+        { provide: APP_INITIALIZER, useFactory: setupSecurity, deps: [SecurityConfigSetupService], multi: true },
+        {
+            provide: APP_INITIALIZER,
+            useFactory: restoreConfig,
+            deps: [SecurityConfigSetupService],
+            multi: true
+        },
+        Auth0JwtHelperService
     ]
 })
 export class SecurityModule {}

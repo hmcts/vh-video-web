@@ -1,8 +1,8 @@
 import { fakeAsync, flush } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { of, Subject } from 'rxjs';
+import { Logger } from '../services/logging/logger-base';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
-import { pageUrls } from '../shared/page-url.constants';
 import { AuthGuard } from './auth.guard';
 import { SecurityServiceProvider } from './authentication/security-provider.service';
 import { ISecurityService } from './authentication/security-service.interface';
@@ -12,6 +12,7 @@ describe('authguard', () => {
     let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
     let router: jasmine.SpyObj<Router>;
+    let loggerSpy: jasmine.SpyObj<Logger>;
 
     beforeAll(() => {
         securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', [], ['isAuthenticated$']);
@@ -22,10 +23,11 @@ describe('authguard', () => {
         );
         getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
+        loggerSpy = jasmine.createSpyObj<Logger>('Logger', ['debug']);
     });
 
     beforeEach(() => {
-        authGuard = new AuthGuard(securityServiceProviderServiceSpy, router);
+        authGuard = new AuthGuard(securityServiceProviderServiceSpy, router, loggerSpy);
     });
 
     describe('when logged in with successful authentication', () => {

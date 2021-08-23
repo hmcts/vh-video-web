@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { LogLevel, OidcConfigService, OpenIdConfiguration } from 'angular-auth-oidc-client';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
+import { filter, first, map } from 'rxjs/operators';
 import { ConfigService } from '../services/api/config.service';
 import { IdpSettingsResponse } from '../services/clients/api-client';
 import { IdpProviders } from './idp-providers';
@@ -17,23 +17,31 @@ export class SecurityConfigSetupService {
     private idpProvidersSessionStorageKey = 'IdpProviders';
     private defaultProvider = IdpProviders.vhaad;
     private _configSetupSubject = new BehaviorSubject(false);
+    private _configRestoredSubject = new BehaviorSubject(false);
     get configSetup$() {
         return this._configSetupSubject.asObservable();
     }
-    private currentIdpSubject = new BehaviorSubject<IdpProviders>(null); // TODO try replay subject?
 
-    constructor(private oidcConfigService: OidcConfigService, private configService: ConfigService) {
-        this.currentIdpSubject.next(this.getIdp());
+    get configRestored$() {
+        return this._configRestoredSubject.asObservable();
     }
+    private currentIdpSubject = new ReplaySubject<IdpProviders>(1);
 
-    setupConfig() {
-        this.configService.getClientSettings().subscribe(clientSettings => {
-            this.config[IdpProviders.ejud] = this.initOidcConfig(clientSettings.e_jud_idp_settings);
-            this.config[IdpProviders.vhaad] = this.initOidcConfig(clientSettings.vh_idp_settings);
+    constructor(private oidcConfigService: OidcConfigService, private configService: ConfigService) {}
 
-            this.oidcConfigService.withConfig(this.config[this.defaultProvider]);
-            this._configSetupSubject.next(true);
-        });
+    setupConfig(): Observable<OpenIdConfiguration[]> {
+        return this.configService.getClientSettings().pipe(
+            first(),
+            map(clientSettings => {
+                this.config[IdpProviders.ejud] = this.initOidcConfig(clientSettings.e_jud_idp_settings);
+                this.config[IdpProviders.vhaad] = this.initOidcConfig(clientSettings.vh_idp_settings);
+                this.oidcConfigService.withConfig(this.config[this.defaultProvider]);
+
+                this._configSetupSubject.next(true);
+
+                return [this.config[IdpProviders.ejud], this.config[IdpProviders.vhaad]];
+            })
+        );
     }
 
     initOidcConfig(idpSettings: IdpSettingsResponse): OpenIdConfiguration {
@@ -58,10 +66,11 @@ export class SecurityConfigSetupService {
     restoreConfig() {
         const provider = this.getIdp();
         if (provider !== IdpProviders.quickLink) {
-            this._configSetupSubject.pipe(filter(Boolean)).subscribe(() => {
+            this._configSetupSubject.pipe(filter(Boolean), first()).subscribe(() => {
                 this.oidcConfigService.withConfig(this.config[provider]);
-                this.currentIdpSubject.next(provider);
             });
+            this.currentIdpSubject.next(provider);
+            this._configRestoredSubject.next(true);
         }
     }
 

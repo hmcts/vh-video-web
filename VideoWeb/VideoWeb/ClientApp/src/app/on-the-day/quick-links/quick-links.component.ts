@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { first, map, takeUntil } from 'rxjs/operators';
 import { QuickLinksService } from 'src/app/services/api/quick-links.service';
 import { Role } from 'src/app/services/clients/api-client';
@@ -30,6 +30,7 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
     quickLinkParticipantRoles: Role[] = [];
     hearingValidated = false;
 
+    pending$ = new BehaviorSubject(false);
     private destroyed$ = new Subject();
 
     constructor(
@@ -106,9 +107,10 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
         this.resetErrors();
 
         if (this.validateForm()) {
+            this.pending$.next(true);
             this.quickLinksService
                 .joinConference(this.hearingId, this.quickLinkNameFormControl.value, this.quickLinkRoleFormControl.value)
-                .pipe(takeUntil(this.destroyed$))
+                .pipe(first(), takeUntil(this.destroyed$))
                 .subscribe(
                     response => {
                         this.logger.info(`${this.loggerPrefix} Joined conference as quick link participant`, {
@@ -117,13 +119,15 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
 
                         this.router.navigate([pageUrls.Navigator]);
                     },
-                    error => this.logger.error('[Login] - Redirect Failed', error)
+                    error => {
+                        this.logger.error('[Login] - Redirect Failed', error);
+                        this.pending$.next(false);
+                    }
                 );
         }
     }
 
     ngOnDestroy(): void {
         this.destroyed$.next();
-        this.destroyed$.complete();
     }
 }

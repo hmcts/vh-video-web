@@ -2,7 +2,7 @@ import { ElementRef } from '@angular/core';
 import { fakeAsync, flushMicrotasks, tick, flush, ComponentFixture, waitForAsync, TestBed } from '@angular/core/testing';
 import { By, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Event, NavigationEnd, Router } from '@angular/router';
-import { of, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, of, Subject, Subscription } from 'rxjs';
 import { AppComponent } from './app.component';
 import { ConfigService } from './services/api/config.service';
 import { ProfileService } from './services/api/profile.service';
@@ -72,6 +72,7 @@ describe('AppComponent', () => {
         type: EventTypes.NewAuthorizationResult,
         value: { isRenewProcess: false, authorizationState: AuthorizedState.Authorized, validationResult: ValidationResult.Ok }
     };
+    const configRestoredSubject = new BehaviorSubject(true);
 
     beforeAll(() => {
         jasmine.getEnv().allowRespy(true);
@@ -117,7 +118,12 @@ describe('AppComponent', () => {
             spyOnProperty(securityServiceSpy, 'isAuthenticated$', 'get').and.returnValue(of(true));
             getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
 
-            securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>('SecurityConfigSetupService', ['getIdp'], []);
+            securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>(
+                'SecurityConfigSetupService',
+                ['getIdp'],
+                ['configRestored$']
+            );
+            spyOnProperty(securityConfigSetupServiceSpy, 'configRestored$').and.returnValue(configRestoredSubject.asObservable());
             locationSpy = jasmine.createSpyObj<Location>('Location', ['back']);
 
             TestBed.configureTestingModule({

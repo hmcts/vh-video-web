@@ -1,5 +1,4 @@
-import { PublicConfiguration } from 'angular-auth-oidc-client';
-import { AuthOptions } from 'angular-auth-oidc-client/lib/login/auth-options';
+import { AuthOptions, PublicConfiguration } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
 
 export interface ISecurityService {

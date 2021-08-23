@@ -74,7 +74,6 @@ describe('LocalStorageService', () => {
             const result = service.save(key, value, false);
 
             // Assert
-            console.log(window.localStorage.getItem(key));
             expect(result).toBeFalse();
             expect(window.localStorage.getItem(key)).toEqual(initialValue);
         });
