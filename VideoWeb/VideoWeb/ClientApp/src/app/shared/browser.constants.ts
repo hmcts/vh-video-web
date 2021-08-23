@@ -7,5 +7,5 @@ export const browsers = {
     Samsung: 'Samsung',
     Opera: 'Opera',
     Brave: 'Brave',
-    MSIE: 'MSIE'
+    MSInternetExplorer: 'MSIE'
 };

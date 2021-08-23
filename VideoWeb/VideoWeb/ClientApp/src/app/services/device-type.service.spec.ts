@@ -106,7 +106,7 @@ describe('DeviceType', () => {
         { browser: browsers.MSEdgeChromium, expected: true },
         { browser: browsers.Opera, expected: false },
         { browser: browsers.Brave, expected: false },
-        { browser: browsers.MSIE, expected: false }
+        { browser: browsers.MSInternetExplorer, expected: false }
     ];
 
     isSupportedBrowserTestCases.forEach(test => {
