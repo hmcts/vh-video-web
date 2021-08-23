@@ -486,18 +486,7 @@ describe('ParticipantsPanelComponent', () => {
             const panelModel = component.participants[1];
             panelModel.updateParticipant(false, false, false);
 
-            const participantModel = new ParticipantModel(
-                '',
-                '',
-                '',
-                null,
-                null,
-                null,
-                null,
-                false,
-                null,
-                null
-            );
+            const participantModel = new ParticipantModel('', '', '', null, null, null, null, false, null, null);
 
             participantServiceSpy.getParticipantOrVirtualMeetingRoomById.and.returnValue(participantModel);
 
