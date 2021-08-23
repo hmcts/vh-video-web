@@ -10,7 +10,7 @@ import { LogoutComponent } from './logout/logout.component';
 import { SecurityConfigSetupService } from './security-config-setup.service';
 import { SecurityRoutingModule } from './security-routing.module';
 import { UnauthorisedComponent } from './unauthorised/unauthorised.component';
-import { JwtHelperService as Auth0JwtHelperService } from '@auth0/angular-jwt';
+import { JwtHelperService as Auth0JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 
 @NgModule({
     imports: [CommonModule, SharedModule, SecurityRoutingModule],
@@ -27,6 +27,7 @@ import { JwtHelperService as Auth0JwtHelperService } from '@auth0/angular-jwt';
             deps: [SecurityConfigSetupService],
             multi: true
         },
+        { provide: JWT_OPTIONS, useValue: JWT_OPTIONS },
         Auth0JwtHelperService
     ]
 })
