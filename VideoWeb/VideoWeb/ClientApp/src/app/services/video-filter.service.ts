@@ -18,6 +18,7 @@ export class VideoFilterService {
 
     videoElement: HTMLVideoElement;
     canvasElement: HTMLCanvasElement;
+    canvasStream: MediaStream;
 
     canvasCtx: CanvasRenderingContext2D;
 
@@ -42,9 +43,9 @@ export class VideoFilterService {
     }
 
     async initFilterStream(page: IVideoFilterer) {
-        if (this.videoElement && this.videoElement.id === page?.retrieveVideoElement()?.id) {
-            return;
-        }
+        // if (this.videoElement && this.videoElement.id === page?.retrieveVideoElement()?.id) {
+        //     return;
+        // }
         this.logger.debug(`${this.loggerPrefix} initialising stream for filter`);
         this.videoElement = page.retrieveVideoElement();
         this.canvasElement = page.retrieveCanvasElement();
@@ -56,8 +57,13 @@ export class VideoFilterService {
         const camera = new Camera(this.videoElement, {
             onFrame: async () => {
                 try {
-                    await this.selfieSegmentation.send({ image: this.videoElement });
+                    if (this.videoElement) {
+                        await this.selfieSegmentation.send({ image: this.videoElement });
+                    }
                 } catch (err) {
+                    console.warn(
+                        `${this.loggerPrefix} sending image failed from video ${this.videoElement.id} to canvas ${this.canvasElement.id}`
+                    );
                     this.logger.error(`${this.loggerPrefix} failed to send image to self segmentation mask`, err);
                 }
             },
@@ -67,14 +73,9 @@ export class VideoFilterService {
         camera.start();
     }
 
-    startFilteredStream(skipAudio?: boolean) {
-        const canvasStream = this.canvasElement.captureStream();
-        if (!skipAudio) {
-            (this.videoElement.srcObject as MediaStream).getAudioTracks().forEach(track => {
-                canvasStream.addTrack(track);
-            });
-        }
-        return canvasStream;
+    startFilteredStream() {
+        this.canvasStream = this.canvasElement.captureStream();
+        return this.canvasStream;
     }
 
     updateFilter(filter: BackgroundFilter | null) {

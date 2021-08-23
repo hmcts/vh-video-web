@@ -183,7 +183,7 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
 
     async applyAndUseFilterStream() {
         await this.videoFilterService.initFilterStream(this);
-        this.filteredStream = this.videoFilterService.startFilteredStream(true);
+        this.filteredStream = this.videoFilterService.startFilteredStream();
         this.videoCallService.updateStreamDevices(this.filteredStream);
         this.hideOriginalStream = true;
     }
@@ -198,7 +198,7 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
             this.videoFilterService.onFilterChanged.subscribe(async filter => {
                 this.logger.debug(`${this.loggerPrefix} filter applied ${filter ? filter : 'off'}`);
                 if (filter) {
-                    this.videoFilterService.startFilteredStream(true);
+                    this.videoFilterService.startFilteredStream();
                     this.hideOriginalStream = true;
                 } else {
                     this.hideOriginalStream = false;

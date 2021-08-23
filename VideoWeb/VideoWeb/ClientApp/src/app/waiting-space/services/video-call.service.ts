@@ -245,12 +245,18 @@ export class VideoCallService {
     }
 
     updateCameraForCall(camera: UserMediaDevice) {
+        if (!camera) {
+            return;
+        }
         this.pexipAPI.video_source = null;
         this.logger.info(`${this.loggerPrefix}  Using preferred camera: ${camera.label}`);
         if (!this.preferredDeviceStream) {
             return;
         }
         this.userMediaStreamService.getStreamForCam(camera).then(newCameraStream => {
+            if (!newCameraStream) {
+                return;
+            }
             this.preferredDeviceStream.getVideoTracks().forEach(x => {
                 this.preferredDeviceStream.removeTrack(x);
             });
@@ -474,12 +480,13 @@ export class VideoCallService {
     }
 
     updateStreamDevices(newStream: MediaStream) {
-        if (this.pexipAPI?.user_media_stream) {
-            this.pexipAPI.user_media_stream.getTracks().forEach(x => {
+        if (this.pexipAPI?.user_media_stream && newStream?.getVideoTracks().length) {
+            this.pexipAPI.user_media_stream.getVideoTracks().forEach(x => {
+                x.stop();
                 this.pexipAPI.user_media_stream.removeTrack(x);
             });
 
-            newStream.getTracks().forEach(x => {
+            newStream.getVideoTracks().forEach(x => {
                 this.pexipAPI.user_media_stream.addTrack(x);
             });
         }

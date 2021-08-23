@@ -41,6 +41,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
     private destroyedSubject = new Subject();
     hideOriginalStream: boolean;
     showBackgroundFilter: boolean;
+    usingPexipStream: boolean;
 
     constructor(
         private userMediaService: UserMediaService,
@@ -86,9 +87,16 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
     }
 
     async applyVideoFilterIfNeeded() {
-        await this.videoFilterService.initFilterStream(this);
-        this.videoFilterService.startFilteredStream(true);
-        this.hideOriginalStream = true;
+        if (this.videoFilterService.canvasStream) {
+            this.preferredCameraStream = this.videoFilterService.canvasStream;
+            this.usingPexipStream = true;
+            this.hideOriginalStream = false;
+        } else {
+            this.usingPexipStream = false;
+            await this.videoFilterService.initFilterStream(this);
+            this.videoFilterService.startFilteredStream();
+            this.hideOriginalStream = true;
+        }
     }
 
     retrieveVideoElement(): HTMLVideoElement {
@@ -102,8 +110,14 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
     private setupSubscribers() {
         this.videoFilterService.onFilterChanged.pipe(takeUntil(this.destroyedSubject)).subscribe(async filter => {
             this.logger.debug(`${this.loggerPrefix} filter applied ${filter ? filter : 'off'}`);
+
+            // do not override external stream
+            if (this.usingPexipStream) {
+                return;
+            }
+
             if (filter) {
-                this.videoFilterService.startFilteredStream(true);
+                this.videoFilterService.startFilteredStream();
                 this.hideOriginalStream = true;
             } else {
                 this.hideOriginalStream = false;
