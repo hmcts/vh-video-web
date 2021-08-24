@@ -22,6 +22,7 @@ import { VideoFilterService } from 'src/app/services/video-filter.service';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 import { SelectedUserMediaDevice } from '../models/selected-user-media-device';
+import { UserMediaDevice } from '../models/user-media-device';
 
 @Component({
     selector: 'app-self-test',
@@ -167,8 +168,9 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
         this.hideOriginalStream = false;
     }
 
-    onMediaDeviceChangeCancelled() {
+    async onMediaDeviceChangeCancelled() {
         this.displayDeviceChangeModal = false;
+        this.startMicrophoneStream();
         this.call();
     }
 
@@ -289,12 +291,20 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
         if (mic) {
             this.videoCallService.updateMicrophoneForCall(mic);
         }
-        this.preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(mic);
+
+        await this.startMicrophoneStream(mic);
 
         this.logger.info(`${this.loggerPrefix} Update camera and microphone selection`, {
             cameraId: cam ? cam.deviceId : null,
             microphoneId: mic ? mic.deviceId : null
         });
+    }
+
+    private async startMicrophoneStream(mic?: UserMediaDevice) {
+        if (!mic) {
+            mic = await this.userMediaService.getPreferredMicrophone();
+        }
+        this.preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(mic);
     }
 
     async call() {

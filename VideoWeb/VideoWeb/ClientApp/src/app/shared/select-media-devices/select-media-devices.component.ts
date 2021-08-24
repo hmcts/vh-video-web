@@ -41,6 +41,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
     private destroyedSubject = new Subject();
     hideOriginalStream: boolean;
     showBackgroundFilter: boolean;
+
     get usingPexipStream(): boolean {
         return !!this.videoFilterService.canvasStream;
     }
@@ -89,7 +90,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
     }
 
     async applyVideoFilterIfNeeded() {
-        if (this.usingPexipStream) {
+        if (this.waitingRoomMode && this.usingPexipStream) {
             this.preferredCameraStream = this.videoFilterService.canvasStream;
             // this.usingPexipStream = true;
             this.hideOriginalStream = false;
@@ -225,7 +226,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
     onSubmit() {
         // close dialog and stop streams
         // this.userMediaStreamService.stopStream(this.preferredCameraStream);
-        this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
+        // this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
         this.saveSelectedDevices();
         this.logger.debug(`${this.loggerPrefix} Cancelling media device change`);
         this.cancelMediaDeviceChange.emit();
