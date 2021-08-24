@@ -198,9 +198,9 @@ describe('UserMediaService', () => {
             getCameraAndMicrophoneDevicesSubject.next(testData.getListOfDevices());
             flush();
             let result = [];
-            userMediaService.connectedVideoDevices.subscribe(devices => (result = devices));
+            userMediaService.connectedMicrophoneDevices.subscribe(devices => (result = devices));
             flush();
-            expect(result.length).toBe(3);
+            expect(result.length).toBe(2);
         }));
 
         it('should return only video devices', fakeAsync(() => {

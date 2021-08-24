@@ -241,6 +241,18 @@ describe('SelfTestComponent', () => {
             expect(component.streamsActive).toBeFalsy();
         });
 
+        it('should return false when no streams are active', () => {
+            component.outgoingStream = undefined;
+            component.incomingStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
+            expect(component.streamsActive).toBeFalsy();
+        });
+
+        it('should return false when no streams are active', () => {
+            component.outgoingStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
+            component.incomingStream = undefined;
+            expect(component.streamsActive).toBeFalsy();
+        });
+
         it('should return true when streams are active', () => {
             component.outgoingStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
             component.incomingStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
