@@ -10,7 +10,7 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
-import { take, timeout } from 'rxjs/operators';
+import { first, timeout } from 'rxjs/operators';
 
 @Component({
     selector: 'app-switch-on-camera-microphone',
@@ -74,7 +74,7 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
 
     async requestMedia() {
         this.userMediaStreamService.currentStream$
-            .pipe(take(1))
+            .pipe(first())
             .pipe(timeout(300))
             .subscribe({
                 next: stream => {

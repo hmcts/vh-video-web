@@ -111,7 +111,7 @@ describe('HearingControlsBaseComponent', () => {
         component.ngOnDestroy();
     });
 
-    fdescribe('on audio only changed', () => {
+    describe('on audio only changed', () => {
         beforeEach(() => {
             component.ngOnInit();
         });
