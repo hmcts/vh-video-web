@@ -94,7 +94,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.setupVideoCallSubscribers();
         this.setupEventhubSubscribers();
 
-        this.loggedInUserSubscription = this.participantService.loggedInParticipant
+        this.loggedInUserSubscription = this.participantService.loggedInParticipant$
             .pipe(filter(participant => participant && participant.role === Role.Judge))
             .subscribe(participant => this.onLoggedInParticipantChanged(participant));
 

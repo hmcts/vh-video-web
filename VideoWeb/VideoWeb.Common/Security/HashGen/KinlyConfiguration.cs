@@ -13,5 +13,6 @@ namespace VideoWeb.Common.Security.HashGen
         public string TurnServer { get; set; }
         public string TurnServerUser { get; set; }
         public string TurnServerCredential { get; set; }
+        public string HeartbeatUrlBase { get; set; }
     }
 }
