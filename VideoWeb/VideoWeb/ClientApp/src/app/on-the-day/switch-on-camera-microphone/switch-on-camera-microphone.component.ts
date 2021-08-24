@@ -75,7 +75,7 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
     async requestMedia() {
         this.userMediaStreamService.currentStream$
             .pipe(first())
-            .pipe(timeout(300))
+            .pipe(timeout(1000))
             .subscribe({
                 next: stream => {
                     this.mediaAccepted = true;
