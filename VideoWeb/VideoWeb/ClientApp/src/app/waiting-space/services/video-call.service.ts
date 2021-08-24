@@ -3,6 +3,7 @@ import { Guid } from 'guid-typescript';
 import { Observable, Subject } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ApiClient, HearingLayout, SharedParticipantRoom, StartHearingRequest } from 'src/app/services/clients/api-client';
+import { KinlyHeartbeatService } from 'src/app/services/conference/kinly-heartbeat.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { UserMediaService } from 'src/app/services/user-media.service';
@@ -20,6 +21,7 @@ import {
     Presentation,
     StoppedScreenshare
 } from '../models/video-call-models';
+import { VideoCallEventsService } from './video-call-events.service';
 import { VideoCallPreferences } from './video-call-preferences.mode';
 
 declare var PexRTC: any;
@@ -58,7 +60,9 @@ export class VideoCallService {
         private logger: Logger,
         private userMediaService: UserMediaService,
         private apiClient: ApiClient,
-        private configService: ConfigService
+        private configService: ConfigService,
+        private kinlyHeartbeatService: KinlyHeartbeatService,
+        private videoCallEventsService: VideoCallEventsService
     ) {
         this.preferredLayoutCache = new SessionStorage(this.PREFERRED_LAYOUT_KEY);
         this.videoCallPreferences = new SessionStorage(this.VIDEO_CALL_PREFERENCE_KEY);
@@ -86,21 +90,13 @@ export class VideoCallService {
             self.onSetupSubject.next(new CallSetup(stream));
         };
 
-        this.pexipAPI.onConnect = function (stream) {
-            self.onConnectedSubject.next(new ConnectedCall(stream));
-        };
+        this.pexipAPI.onConnect = this.handleConnect.bind(this);
 
-        this.pexipAPI.onError = function (error) {
-            self.onErrorSubject.next(new CallError(error));
-        };
+        this.pexipAPI.onError = this.handleError.bind(this);
 
-        this.pexipAPI.onDisconnect = function (reason) {
-            self.onDisconnected.next(new DisconnectedCall(reason));
-        };
+        this.pexipAPI.onDisconnect = this.handleDisconnect.bind(this);
 
-        this.pexipAPI.onParticipantUpdate = function (participantUpdate) {
-            self.onParticipantUpdatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
-        };
+        this.pexipAPI.onParticipantUpdate = this.handleParticipantUpdate.bind(this);
 
         this.pexipAPI.onConferenceUpdate = function (conferenceUpdate) {
             self.onConferenceUpdatedSubject.next(new ConferenceUpdated(conferenceUpdate.guests_muted));
@@ -135,6 +131,7 @@ export class VideoCallService {
             self.onStoppedScreenshareSubject.next(new StoppedScreenshare(reason));
         };
     }
+
     initTurnServer() {
         const config = this.configService.getConfig();
         const turnServerObj = {
@@ -147,6 +144,29 @@ export class VideoCallService {
 
     initCallTag() {
         this.pexipAPI.call_tag = Guid.create().toString();
+    }
+
+    private handleConnect(stream: MediaStream | URL) {
+        this.kinlyHeartbeatService.initialiseHeartbeat(this.pexipAPI);
+
+        this.onConnectedSubject.next(new ConnectedCall(stream));
+    }
+
+    private handleParticipantUpdate(participantUpdate: PexipParticipant) {
+        this.videoCallEventsService.handleParticipantUpdated(ParticipantUpdated.fromPexipParticipant(participantUpdate));
+        this.onParticipantUpdatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
+    }
+
+    private handleError(error: string) {
+        this.kinlyHeartbeatService.stopHeartbeat();
+
+        this.onErrorSubject.next(new CallError(error));
+    }
+
+    private handleDisconnect(reason: string) {
+        this.kinlyHeartbeatService.stopHeartbeat();
+
+        this.onDisconnected.next(new DisconnectedCall(reason));
     }
 
     private async retrievePreferredDevices() {

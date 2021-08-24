@@ -108,8 +108,7 @@ describe('WaitingRoomComponent Video Call', () => {
     it('should get token and connect to video call', async () => {
         videoCallService.makeCall.calls.reset();
 
-        await component.getJwtokenAndConnectToPexip();
-        expect(component.token).toBeDefined();
+        await component.connectToPexip();
         expect(videoCallService.makeCall).toHaveBeenCalled();
     });
 
@@ -131,7 +130,6 @@ describe('WaitingRoomComponent Video Call', () => {
         const mockedDocElement = document.createElement('div');
         document.getElementById = jasmine.createSpy('incomingFeed').and.returnValue(mockedDocElement);
 
-        spyOn(component, 'setupParticipantHeartbeat').and.callFake(() => (component.heartbeat = mockHeartbeat));
         spyOn(component, 'assignStream');
         const incomingStream = <any>{};
         const payload = new ConnectedCall(incomingStream);
@@ -141,13 +139,10 @@ describe('WaitingRoomComponent Video Call', () => {
         expect(component.stream).toBeDefined();
         expect(component.errorCount).toBe(0);
         expect(component.connected).toBeTruthy();
-        expect(component.setupParticipantHeartbeat).toHaveBeenCalled();
         expect(component.assignStream).toHaveBeenCalled();
-        expect(component.heartbeat).toBeTruthy();
     });
 
     it('should not define incoming stream when video call has connected but not stream if given', () => {
-        spyOn(component, 'setupParticipantHeartbeat').and.callFake(() => (component.heartbeat = mockHeartbeat));
         spyOn(component, 'assignStream');
         const incomingStream = null;
         const payload = new ConnectedCall(incomingStream);
@@ -157,14 +152,11 @@ describe('WaitingRoomComponent Video Call', () => {
         expect(component.stream).toBeDefined();
         expect(component.errorCount).toBe(0);
         expect(component.connected).toBeTruthy();
-        expect(component.setupParticipantHeartbeat).toHaveBeenCalled();
         expect(component.assignStream).toHaveBeenCalledTimes(0);
-        expect(component.heartbeat).toBeTruthy();
     });
 
     it('should toggle video mute when call connects as a full video but camera is still muted', fakeAsync(() => {
         // arrange
-        spyOn(component, 'setupParticipantHeartbeat').and.callFake(() => (component.heartbeat = mockHeartbeat));
         component.audioOnly = false;
         const controls = jasmine.createSpyObj<PrivateConsultationRoomControlsComponent>(
             'PrivateConsultationRoomControlsComponent',
@@ -187,26 +179,21 @@ describe('WaitingRoomComponent Video Call', () => {
     it('should hide video when video call failed', () => {
         const currentErrorCount = (component.errorCount = 0);
         const payload = new CallError('test failure intentional');
-        component.heartbeat = mockHeartbeat;
 
         onErrorSubject.next(payload);
 
         expect(component.connected).toBeFalsy();
-        expect(component.heartbeat.kill).toHaveBeenCalled();
         expect(component.errorCount).toBeGreaterThan(currentErrorCount);
         expect(component.showVideo).toBeFalsy();
         expect(errorService.handlePexipError).toHaveBeenCalledWith(payload, component.conference.id);
     });
 
     it('should hide video when video call has disconnected and attempt to connect again', () => {
-        component.heartbeat = mockHeartbeat;
         const payload = new DisconnectedCall('test failure intentional');
-        component.heartbeat = mockHeartbeat;
 
         onDisconnectedSubject.next(payload);
 
         expect(component.connected).toBeFalsy();
-        expect(component.heartbeat.kill).toHaveBeenCalled();
         expect(component.showVideo).toBeFalsy();
         expect(component.callbackTimeout).toBeDefined();
     });
@@ -220,14 +207,11 @@ describe('WaitingRoomComponent Video Call', () => {
         component.hearing = new Hearing(c);
         component.conference = c;
 
-        component.heartbeat = mockHeartbeat;
         const payload = new DisconnectedCall('test failure intentional');
-        component.heartbeat = mockHeartbeat;
 
         onDisconnectedSubject.next(payload);
 
         expect(component.connected).toBeFalsy();
-        expect(component.heartbeat.kill).toHaveBeenCalled();
         expect(component.showVideo).toBeFalsy();
         expect(component.callbackTimeout).toBeUndefined();
     });
@@ -237,14 +221,6 @@ describe('WaitingRoomComponent Video Call', () => {
         component.stream = incomingStream;
         onTransferSubject.next('new_room');
         expect(component.stream).toBeNull();
-    });
-
-    it('should setup participant heartbeat', () => {
-        component.conference.pexip_node_uri = 'sip.urifortest';
-        component.token = new TokenResponse({ token: 'tokenvvvvvv' });
-        component.setupParticipantHeartbeat();
-
-        expect(component.heartbeat).toBeDefined();
     });
 
     it('should retrieve presentation if started', () => {
