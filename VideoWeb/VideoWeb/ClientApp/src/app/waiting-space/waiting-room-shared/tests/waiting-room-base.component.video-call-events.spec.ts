@@ -108,7 +108,7 @@ describe('WaitingRoomComponent Video Call', () => {
     it('should get token and connect to video call', async () => {
         videoCallService.makeCall.calls.reset();
 
-        await component.getConnectToPexip();
+        await component.connectToPexip();
         expect(videoCallService.makeCall).toHaveBeenCalled();
     });
 

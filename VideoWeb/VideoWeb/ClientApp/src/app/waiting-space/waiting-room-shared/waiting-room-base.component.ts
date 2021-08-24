@@ -622,7 +622,7 @@ export abstract class WaitingRoomBaseDirective {
         return unsupportedBrowsers.findIndex(x => x.toUpperCase() === browser.toUpperCase()) < 0;
     }
 
-    async getConnectToPexip(): Promise<void> {
+    async connectToPexip(): Promise<void> {
         const logPayload = {
             conference: this.conferenceId,
             participant: this.participant.id
