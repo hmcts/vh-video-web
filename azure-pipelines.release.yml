@@ -161,6 +161,9 @@ stages:
               - Prod
               - Preprod
 
+          - group: QuickLinks_Preview
+            env:
+              - Preview
           - group: QuickLinks_Dev
             env:
              - Dev

@@ -233,7 +233,7 @@ variables:
     - group: Saucelabs
     - group: vh-wowza-dev
     - group: KinlyConfiguration_Test
-    - group: QuickLinks_Dev
+    - group: QuickLinks_Preview
 
 trigger:
     branches:
