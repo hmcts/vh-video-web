@@ -393,19 +393,10 @@ describe('WaitingRoomComponent message and clock', () => {
             beforeEach(() => {
                 videoCallService.makeCall.calls.reset();
                 spyOnProperty(eventsServiceSpy, 'eventHubIsConnected').and.returnValue(false);
-                component.token = undefined;
             });
 
-            it('should not call when event hub is not connected and token is not set', () => {
+            it('should not call when event hub is not connected', () => {
                 // Setup handled in beforeEach. Left blank intentionally.
-            });
-
-            it('should not call when event hub is not connected and token is set', () => {
-                component.token = new TokenResponse();
-            });
-
-            it('should not call when event hub is connected and token is not set', () => {
-                spyOnProperty(eventsServiceSpy, 'eventHubIsConnected').and.returnValue(true);
             });
 
             afterEach(async () => {
@@ -417,7 +408,6 @@ describe('WaitingRoomComponent message and clock', () => {
         describe('when eventHubIsConnected and token is set', () => {
             beforeEach(() => {
                 spyOnProperty(eventsServiceSpy, 'eventHubIsConnected').and.returnValue(true);
-                component.token = new TokenResponse();
             });
             it('should use interpreter room when participant has links', async () => {
                 component.participant.linked_participants = [

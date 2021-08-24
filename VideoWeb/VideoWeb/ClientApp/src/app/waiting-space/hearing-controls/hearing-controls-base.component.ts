@@ -98,8 +98,11 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         });
 
         this.logger.info(`${this.loggerPrefix} initialising hearing controls`, this.logPayload);
+
         this.setupVideoCallSubscribers();
-        this.participantService.loggedInParticipant
+        this.setupEventhubSubscribers();
+
+        this.participantService.loggedInParticipant$
             .pipe(
                 takeUntil(this.destroyedSubject),
                 filter(participant => participant && participant.role === Role.Judge)

@@ -80,12 +80,12 @@ describe('HearingControlsBaseComponent', () => {
         participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
             'ParticipantService',
             ['getParticipantOrVirtualMeetingRoomById'],
-            ['loggedInParticipant', 'onParticipantSpotlightStatusChanged$']
+            ['loggedInParticipant$', 'onParticipantSpotlightStatusChanged$']
         );
         const loggedInParticipantSubject = new BehaviorSubject<ParticipantModel>(
             ParticipantModel.fromParticipantForUserResponse(participantOne)
         );
-        getSpiedPropertyGetter(participantServiceSpy, 'loggedInParticipant').and.returnValue(loggedInParticipantSubject.asObservable());
+        getSpiedPropertyGetter(participantServiceSpy, 'loggedInParticipant$').and.returnValue(loggedInParticipantSubject.asObservable());
 
         userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>([], ['isAudioOnly$']);
         isAudioOnlySubject = new Subject<boolean>();

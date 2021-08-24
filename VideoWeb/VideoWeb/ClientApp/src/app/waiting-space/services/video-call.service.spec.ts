@@ -1,4 +1,4 @@
-import { discardPeriodicTasks, fakeAsync, flush, flushMicrotasks, tick } from '@angular/core/testing';
+import { discardPeriodicTasks, fakeAsync, flush } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { of, Subject } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
@@ -9,6 +9,7 @@ import {
     SharedParticipantRoom,
     StartHearingRequest
 } from 'src/app/services/clients/api-client';
+import { KinlyHeartbeatService } from 'src/app/services/conference/kinly-heartbeat.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
@@ -17,6 +18,9 @@ import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { mockCamStream, mockMicStream } from '../waiting-room-shared/tests/waiting-room-base-setup';
+import { ParticipantUpdated } from '../models/video-call-models';
+import { VideoCallEventsService } from './video-call-events.service';
+import { VideoCallPreferences } from './video-call-preferences.mode';
 import { VideoCallService } from './video-call.service';
 
 const config = new ClientSettingsResponse({
@@ -39,6 +43,8 @@ describe('VideoCallService', () => {
     const testData = new MediaDeviceTestData();
     let pexipSpy: jasmine.SpyObj<PexipClient>;
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
+    let kinlyHeartbeatServiceSpy: jasmine.SpyObj<KinlyHeartbeatService>;
+    let videoCallEventsServiceSpy: jasmine.SpyObj<VideoCallEventsService>;
 
     beforeEach(async () => {
         apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
@@ -67,8 +73,12 @@ describe('VideoCallService', () => {
         getSpiedPropertyGetter(userMediaService, 'connectedMicrophoneDevices').and.returnValue(of(testData.getListOfMicrophones()));
         getSpiedPropertyGetter(userMediaService, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
 
+        kinlyHeartbeatServiceSpy = jasmine.createSpyObj<KinlyHeartbeatService>(['initialiseHeartbeat', 'stopHeartbeat']);
+
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getConfig']);
         configServiceSpy.getConfig.and.returnValue(config);
+
+        videoCallEventsServiceSpy = jasmine.createSpyObj<VideoCallEventsService>(['handleParticipantUpdated']);
 
         pexipSpy = jasmine.createSpyObj<PexipClient>('PexipClient', [
             'connect',
@@ -88,7 +98,17 @@ describe('VideoCallService', () => {
             'getPresentation',
             'stopPresentation'
         ]);
-        service = new VideoCallService(logger, userMediaService, userMediaStreamService, apiClient, configServiceSpy);
+
+        service = new VideoCallService(
+            logger,
+            userMediaService,
+            userMediaStreamService,
+            apiClient,
+            configServiceSpy,
+            kinlyHeartbeatServiceSpy,
+            videoCallEventsServiceSpy
+        );
+
         await service.setupClient();
     });
 
@@ -373,6 +393,43 @@ describe('VideoCallService', () => {
             flush();
             discardPeriodicTasks();
             expect(service['reconnectToCall']).toHaveBeenCalled();
+        }));
+    });
+
+    describe('handleParticipantUpdate', () => {
+        it('should raise the event through video call events service', fakeAsync(() => {
+            // Arrange
+            const pexipParticipant: PexipParticipant = {
+                buzz_time: 0,
+                is_muted: 'is_muted',
+                display_name: 'display_name',
+                local_alias: 'local_alias',
+                start_time: 0,
+                uuid: 'uuid',
+                spotlight: 0,
+                mute_supported: 'mute_supported',
+                is_external: false,
+                external_node_uuid: 'external_node_uuid',
+                has_media: false,
+                call_tag: 'call_tag',
+                is_audio_only_call: 'is_audio_only_call',
+                is_video_call: 'is_video_call',
+                protocol: 'protocol'
+            };
+
+            const expectedUpdate = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+
+            // Act
+            let result: ParticipantUpdated | null = null;
+            service.onParticipantUpdated().subscribe(update => (result = update));
+
+            service.pexipAPI.onParticipantUpdate(pexipParticipant);
+            flush();
+
+            // Assert
+            expect(result).toBeTruthy();
+            expect(result).toEqual(expectedUpdate);
+            expect(videoCallEventsServiceSpy.handleParticipantUpdated).toHaveBeenCalledOnceWith(expectedUpdate);
         }));
     });
 });

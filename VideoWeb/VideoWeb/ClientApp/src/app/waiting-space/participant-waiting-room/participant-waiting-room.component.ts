@@ -110,7 +110,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         this.getConference().then(() => {
             this.subscribeToClock();
             this.startEventHubSubscribers();
-            this.getJwtokenAndConnectToPexip();
+            this.connectToPexip();
         });
     }
 
