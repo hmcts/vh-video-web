@@ -140,6 +140,21 @@ describe('SelfTestComponent', () => {
                 // Assert
                 expect(errorServiceSpy.handlePexipError).toHaveBeenCalledTimes(1);
             }));
+
+            it('should setup subscribers', fakeAsync(() => {
+                // Arrange
+                mediaStreamServiceSpy.getStreamForMic.and.returnValue(of(mockMicStream));
+                userMediaServiceSpy.hasMultipleDevices.and.returnValue(of(true));
+
+                // Act
+                component.setupSubscribers();
+                activatedMicrophoneSubject.next(testData.getActiveMicrophone());
+                flush();
+
+                // Assert
+                expect(component.preferredMicrophoneStream).toEqual(mockMicStream);
+                expect(component.hasMultipleDevices).toBeTrue();
+            }));
         });
     });
 
@@ -328,34 +343,25 @@ describe('SelfTestComponent', () => {
         describe('on activeMicrophoneDevice$', () => {
             it('should get the stream for the new microphone and update the preferredMicrophoneStream; it should only do it once', fakeAsync(() => {
                 // Arrange
-                const label = 'label';
-                const deviceId = Guid.create().toString();
-                const kind = 'kind';
-                const groupId = Guid.create().toString();
-
                 spyOn(component, 'call');
 
                 const micStreamSubject = new Subject<MediaStream>();
                 mediaStreamServiceSpy.getStreamForMic.and.returnValue(micStreamSubject.asObservable());
-                const mediaStream = new MediaStream();
 
                 // Act
                 component.onSelectMediaDeviceShouldClose();
-                const device = new UserMediaDevice(label, deviceId, kind, groupId);
-                activatedMicrophoneSubject.next(device);
+                activatedMicrophoneSubject.next(testData.getActiveMicrophone());
                 flush();
                 activatedMicrophoneSubject.next(new UserMediaDevice(null, null, null, null));
                 flush();
-
-                micStreamSubject.next(mediaStream);
+                micStreamSubject.next(mockMicStream);
                 flush();
-
                 micStreamSubject.next(new MediaStream());
                 flush();
 
                 // Assert
-                expect(mediaStreamServiceSpy.getStreamForMic).toHaveBeenCalledOnceWith(device);
-                expect(component.preferredMicrophoneStream).toBe(mediaStream);
+                expect(mediaStreamServiceSpy.getStreamForMic).toHaveBeenCalledOnceWith(testData.getActiveMicrophone());
+                expect(component.preferredMicrophoneStream).toBe(mockMicStream);
             }));
         });
     });
