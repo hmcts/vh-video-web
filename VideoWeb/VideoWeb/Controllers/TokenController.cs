@@ -15,15 +15,12 @@ namespace VideoWeb.Controllers
     public class TokenController : ControllerBase
     {
         private readonly IHashGenerator _hashGenerator;
-        private readonly ICustomJwtTokenProvider _customJwtTokenProvider;
         private readonly KinlyConfiguration _kinlyConfiguration;
 
         public TokenController(IHashGenerator hashGenerator, 
-            ICustomJwtTokenProvider customJwtTokenProvider,
             KinlyConfiguration kinlyConfiguration)
         {
             _hashGenerator = hashGenerator;
-            _customJwtTokenProvider = customJwtTokenProvider;
             _kinlyConfiguration = kinlyConfiguration;
         }
 

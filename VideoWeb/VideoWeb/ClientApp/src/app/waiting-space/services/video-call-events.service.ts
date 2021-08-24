@@ -6,8 +6,6 @@ import { ParticipantUpdated } from '../models/video-call-models';
     providedIn: 'root'
 })
 export class VideoCallEventsService {
-    constructor() {}
-
     private participantUpdatedSubject = new Subject<ParticipantUpdated>();
     get participantUpdated$() {
         return this.participantUpdatedSubject.asObservable();
