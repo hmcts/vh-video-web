@@ -1,11 +1,22 @@
-import { Component, Input, OnInit, OnDestroy, HostListener } from '@angular/core';
+import {
+    Component,
+    Input,
+    OnInit,
+    OnDestroy,
+    HostListener,
+    ViewChild,
+    ElementRef,
+    AfterViewChecked,
+    ChangeDetectorRef
+} from '@angular/core';
 import 'webrtc-adapter';
 
 @Component({
     selector: 'app-mic-visualiser',
-    templateUrl: './mic-visualiser.component.html'
+    templateUrl: './mic-visualiser.component.html',
+    styleUrls: ['./mic-visualiser.scss']
 })
-export class MicVisualiserComponent implements OnInit, OnDestroy {
+export class MicVisualiserComponent implements OnInit, OnDestroy, AfterViewChecked {
     canvasContext: CanvasRenderingContext2D;
     audioContext: AudioContext;
     source: MediaStreamAudioSourceNode;
@@ -14,7 +25,11 @@ export class MicVisualiserComponent implements OnInit, OnDestroy {
     dataArray: Uint8Array;
     rafId: number;
 
-    constructor() {}
+    @ViewChild('meter') meter: ElementRef;
+    @ViewChild('container') meterContainer: ElementRef;
+    meterWidth = 0;
+
+    constructor(private changeDetector: ChangeDetectorRef) {}
 
     @Input() stream: MediaStream;
     @Input() incomingStream: MediaStream;
@@ -27,6 +42,11 @@ export class MicVisualiserComponent implements OnInit, OnDestroy {
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
         cancelAnimationFrame(this.rafId);
+    }
+
+    ngAfterViewChecked() {
+        this.meterWidth = this.meterContainer.nativeElement.offsetWidth;
+        this.changeDetector.detectChanges();
     }
 
     setupStream() {
@@ -67,11 +87,15 @@ export class MicVisualiserComponent implements OnInit, OnDestroy {
     }
 
     fillMeter(feedback: number) {
-        const width = 270;
-        const height = 50;
+        const scaleMax = 255;
+        const scaleMultiplier = 1.75;
+
+        const width = this.meter.nativeElement.scrollWidth;
+        const height = this.meter.nativeElement.scrollHeight;
+
         this.canvasContext.clearRect(0, 0, width, height);
         this.canvasContext.fillStyle = 'green';
-        this.canvasContext.fillRect(0, 0, feedback * 1.75, height);
+        this.canvasContext.fillRect(0, 0, (feedback / scaleMax) * scaleMultiplier * width, height);
     }
 
     tick() {
