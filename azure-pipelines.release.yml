@@ -42,12 +42,12 @@ variables:
     - ${{ if containsValue(parameters.prodEnvs, parameters.environment) }}:
       - group: vh-prod
     - ${{ if not(containsValue(parameters.prodEnvs, parameters.environment)) }}:
-      - group: vh-preview
+      - group: vh-aat
   - ${{ if eq(variables['Build.Reason'], 'ResourceTrigger') }}:
     - ${{ if or(startswith(variables['Build.SourceBranch'], 'refs/heads/release/'), startswith(variables['Build.SourceBranch'], 'refs/heads/hotfix/')) }}:
       - group: vh-prod
     - ${{ if not(or(startswith(variables['Build.SourceBranch'], 'refs/heads/release/'), startswith(variables['Build.SourceBranch'], 'refs/heads/hotfix/'))) }}:
-      - group: vh-preview
+      - group: vh-aat
 
 trigger: none
 pr: none
