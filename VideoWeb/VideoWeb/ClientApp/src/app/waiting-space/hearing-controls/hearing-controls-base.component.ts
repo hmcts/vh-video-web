@@ -34,7 +34,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     @Output() public togglePanel = new EventEmitter<string>();
     @Output() public changeDeviceToggle = new EventEmitter();
 
-    audioOnly: boolean = false;
+    audioOnly = false;
     videoCallSubscription$ = new Subscription();
     eventhubSubscription$ = new Subscription();
 
