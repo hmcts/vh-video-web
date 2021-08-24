@@ -125,6 +125,107 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         component.ngOnDestroy();
     });
 
+    fdescribe('get allowAudioOnlyToggle', () => {
+        it('should return false if the conference is null', () => {
+            // Arrange
+            component.conference = null;
+
+            // Act
+            const result = component.allowAudioOnlyToggle;
+
+            // Arrange
+            expect(result).toBeFalse();
+        });
+
+        it('should return false if the conference is undefined', () => {
+            // Arrange
+            component.conference = undefined;
+
+            // Act
+            const result = component.allowAudioOnlyToggle;
+
+            // Arrange
+            expect(result).toBeFalse();
+        });
+
+        it('should return false if the participant is null', () => {
+            // Arrange
+            component.participant = null;
+
+            // Act
+            const result = component.allowAudioOnlyToggle;
+
+            // Arrange
+            expect(result).toBeFalse();
+        });
+
+        it('should return false if the participant is undefined', () => {
+            // Arrange
+            component.participant = undefined;
+
+            // Act
+            const result = component.allowAudioOnlyToggle;
+
+            // Arrange
+            expect(result).toBeFalse();
+        });
+
+        it('should return false if the participant is InConsultation', () => {
+            // Arrange
+            component.participant.status = ParticipantStatus.InConsultation;
+
+            // Act
+            const result = component.allowAudioOnlyToggle;
+
+            // Arrange
+            expect(result).toBeFalse();
+        });
+
+        it('should return false if the participant is InHearing', () => {
+            // Arrange
+            component.participant.status = ParticipantStatus.InHearing;
+
+            // Act
+            const result = component.allowAudioOnlyToggle;
+
+            // Arrange
+            expect(result).toBeFalse();
+        });
+
+        it('should return true if the participant is Joining', () => {
+            // Arrange
+            component.participant.status = ParticipantStatus.Joining;
+
+            // Act
+            const result = component.allowAudioOnlyToggle;
+
+            // Arrange
+            expect(result).toBeTrue();
+        });
+
+        it('should return true if the participant is Available', () => {
+            // Arrange
+            component.participant.status = ParticipantStatus.Available;
+
+            // Act
+            const result = component.allowAudioOnlyToggle;
+
+            // Arrange
+            expect(result).toBeTrue();
+        });
+
+        it('should return true if the participant is Disconnected', () => {
+            // Arrange
+            component.participant.status = ParticipantStatus.Disconnected;
+
+            // Act
+            const result = component.allowAudioOnlyToggle;
+
+            // Arrange
+            expect(result).toBeTrue();
+        });
+    });
+
     it('should start with "What is a private meeting?" accordian collapsed', fakeAsync(() => {
         expect(component.privateConsultationAccordianExpanded).toBeFalsy();
     }));

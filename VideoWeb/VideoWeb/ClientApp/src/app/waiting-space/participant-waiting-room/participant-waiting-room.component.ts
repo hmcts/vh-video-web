@@ -82,6 +82,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     get allowAudioOnlyToggle(): boolean {
         return (
             !!this.conference &&
+            !!this.participant &&
             this.participant?.status !== ParticipantStatus.InConsultation &&
             this.participant?.status !== ParticipantStatus.InHearing
         );
