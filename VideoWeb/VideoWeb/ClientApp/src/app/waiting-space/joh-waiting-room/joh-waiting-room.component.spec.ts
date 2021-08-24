@@ -92,7 +92,7 @@ describe('JohWaitingRoomComponent', () => {
         videoWebService.getConferenceById.calls.reset();
     });
 
-    fdescribe('get allowAudioOnlyToggle', () => {
+    describe('get allowAudioOnlyToggle', () => {
         it('should return false if the conference is null', () => {
             // Arrange
             component.conference = null;

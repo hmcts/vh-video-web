@@ -125,7 +125,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         component.ngOnDestroy();
     });
 
-    fdescribe('get allowAudioOnlyToggle', () => {
+    describe('get allowAudioOnlyToggle', () => {
         it('should return false if the conference is null', () => {
             // Arrange
             component.conference = null;
