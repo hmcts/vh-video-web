@@ -1,11 +1,11 @@
-import { Component, Input, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, HostListener, OnChanges } from '@angular/core';
 import 'webrtc-adapter';
 
 @Component({
     selector: 'app-mic-visualiser',
     templateUrl: './mic-visualiser.component.html'
 })
-export class MicVisualiserComponent implements OnInit, OnDestroy {
+export class MicVisualiserComponent implements OnInit, OnChanges, OnDestroy {
     canvasContext: CanvasRenderingContext2D;
     audioContext: AudioContext;
     source: MediaStreamAudioSourceNode;
@@ -21,6 +21,10 @@ export class MicVisualiserComponent implements OnInit, OnDestroy {
     ngOnInit() {
         const canvas = <HTMLCanvasElement>document.getElementById('meter');
         this.canvasContext = canvas.getContext('2d');
+        this.setupStream();
+    }
+
+    ngOnChanges(): void {
         this.setupStream();
     }
 
