@@ -1,6 +1,7 @@
 import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Guid } from 'guid-typescript';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
+import { take, takeUntil } from 'rxjs/operators';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     AddSelfTestFailureEventRequest,
@@ -15,11 +16,10 @@ import {
 } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { MediaStreamService } from 'src/app/services/media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
-import { SelectedUserMediaDevice } from '../models/selected-user-media-device';
 
 @Component({
     selector: 'app-self-test',
@@ -41,54 +41,54 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
     preferredMicrophoneStream: MediaStream;
 
-    didTestComplete: boolean;
-    displayFeed: boolean;
+    didTestComplete = false;
+    displayFeed = false;
 
-    displayDeviceChangeModal: boolean;
-    hasMultipleDevices: boolean;
+    displayDeviceChangeModal = false;
+    hasMultipleDevices = false;
 
     testCallResult: TestCallScoreResponse = null;
-    scoreSent: boolean;
+    scoreSent = false;
 
     selfTestParticipantId: string;
     selfTestPexipNode: string;
 
-    private maxBandwidth = 1280;
+    maxBandwidth = 1280;
     subscription: Subscription = new Subscription();
     videoCallSubscription$ = new Subscription();
+    private destroyedSubject = new Subject();
 
     constructor(
         private logger: Logger,
         private videoWebService: VideoWebService,
         private errorService: ErrorService,
         private userMediaService: UserMediaService,
-        private userMediaStreamService: UserMediaStreamService,
-        private videoCallService: VideoCallService
-    ) {
-        this.didTestComplete = false;
-    }
+        private mediaStreamService: MediaStreamService,
+        private videoCallService: VideoCallService,
+        private navigator: Navigator
+    ) {}
 
     ngOnInit() {
         this.logger.debug(`${this.loggerPrefix} Loading self test`);
 
         this.initialiseData();
 
-        this.userMediaService
-            .setDefaultDevicesInCache()
-            .then(() => {
+        this.userMediaService.connectedDevices$.pipe(take(1)).subscribe({
+            next: () => {
                 this.displayFeed = false;
                 this.displayDeviceChangeModal = false;
                 this.scoreSent = false;
                 this.setupSubscribers();
                 this.setupTestAndCall();
-            })
-            .catch((error: Error | MediaStreamError) => {
+            },
+            error: error => {
                 this.logger.error(`${this.loggerPrefix} Failed to initialise the self-test`, error, {
                     conference: this.conference?.id,
                     participant: this.selfTestParticipantId
                 });
                 this.errorService.handlePexipError(new CallError(error.name), this.conference?.id);
-            });
+            }
+        });
     }
 
     initialiseData(): void {
@@ -143,30 +143,38 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             conference: this.conference?.id,
             participant: this.selfTestParticipantId
         });
+
         this.disconnect();
-        this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
-        this.preferredMicrophoneStream = null;
+
         this.displayDeviceChangeModal = true;
     }
 
-    onMediaDeviceChangeCancelled() {
-        this.displayDeviceChangeModal = false;
+    onSelectMediaDeviceShouldClose() {
         this.call();
-    }
 
-    async onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
-        this.userMediaService.updatePreferredCamera(selectedMediaDevice.selectedCamera);
-        this.userMediaService.updatePreferredMicrophone(selectedMediaDevice.selectedMicrophone);
-        await this.updatePexipAudioVideoSource();
-        this.call();
+        this.userMediaService.activeMicrophoneDevice$.pipe(take(1)).subscribe(mic =>
+            this.mediaStreamService
+                .getStreamForMic(mic)
+                .pipe(take(1))
+                .subscribe(micStream => (this.preferredMicrophoneStream = micStream))
+        );
+
+        this.displayDeviceChangeModal = false;
     }
 
     setupSubscribers() {
-        this.subscription.add(
-            this.userMediaService.connectedDevices.subscribe(async () => {
-                this.hasMultipleDevices = await this.userMediaService.hasMultipleDevices();
-            })
-        );
+        this.userMediaService.activeMicrophoneDevice$
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(mic =>
+                this.mediaStreamService.getStreamForMic(mic).subscribe(micStream => (this.preferredMicrophoneStream = micStream))
+            );
+
+        this.userMediaService
+            .hasMultipleDevices()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(result => {
+                this.hasMultipleDevices = result;
+            });
     }
 
     async setupPexipClient() {
@@ -185,7 +193,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         );
 
         await this.videoCallService.setupClient();
-        this.updatePexipAudioVideoSource();
     }
 
     handleCallSetup(callSetup: CallSetup) {
@@ -225,28 +232,8 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             pexipDisconnectReason: reason
         });
         if (reason.reason === 'Conference terminated by another participant') {
-            this.retrieveSelfTestScore();
+            await this.retrieveSelfTestScore();
         }
-    }
-
-    async updatePexipAudioVideoSource() {
-        this.hasMultipleDevices = await this.userMediaService.hasMultipleDevices();
-
-        const cam = await this.userMediaService.getPreferredCamera();
-        if (cam) {
-            this.videoCallService.updateCameraForCall(cam);
-        }
-
-        const mic = await this.userMediaService.getPreferredMicrophone();
-        if (mic) {
-            this.videoCallService.updateMicrophoneForCall(mic);
-        }
-        this.preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(mic);
-
-        this.logger.info(`${this.loggerPrefix} Update camera and microphone selection`, {
-            cameraId: cam ? cam.deviceId : null,
-            microphoneId: mic ? mic.deviceId : null
-        });
     }
 
     async call() {
@@ -257,7 +244,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         this.didTestComplete = false;
         const conferenceAlias = 'testcall2';
         const tokenOptions = btoa(`${this.token.expires_on};${this.selfTestParticipantId};${this.token.token}`);
-        if (navigator.userAgent.toLowerCase().indexOf('firefox') !== -1) {
+        if (this.navigator.userAgent.toLowerCase().indexOf('firefox') !== -1) {
             this.videoCallService.enableH264(false);
         }
         this.videoCallService.makeCall(
@@ -274,7 +261,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             participant: this.selfTestParticipantId
         });
         this.disconnect();
-        this.updatePexipAudioVideoSource();
         this.call();
     }
 
@@ -290,7 +276,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
                 `${this.loggerPrefix} Attempted to disconnect from pexip before the client had initialised. Moving on from self-test`
             );
         } finally {
-            this.closeStreams();
+            this.closeMicStreams();
             this.incomingStream = null;
             this.outgoingStream = null;
             this.didTestComplete = true;
@@ -298,11 +284,8 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         }
     }
 
-    closeStreams() {
-        if (this.preferredMicrophoneStream) {
-            this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
-            this.preferredMicrophoneStream = null;
-        }
+    closeMicStreams() {
+        this.mediaStreamService.stopStream(this.preferredMicrophoneStream);
         this.preferredMicrophoneStream = null;
     }
 
@@ -360,6 +343,8 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         this.videoCallSubscription$.unsubscribe();
         this.disconnect();
 
+        this.destroyedSubject.next();
+        this.destroyedSubject.complete();
         if (this.conference) {
             let reason: SelfTestFailureReason;
             if (this.testCallResult && this.testCallResult.score === TestScore.Bad) {

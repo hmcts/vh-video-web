@@ -59,6 +59,7 @@ export function getLocale() {
         { provide: API_BASE_URL, useFactory: () => '.' },
         { provide: LOCALE_ID, useFactory: getLocale },
         { provide: ErrorHandler, useClass: GlobalErrorHandler },
+        { provide: Navigator, useValue: window.navigator },
         ConfigService,
         Title,
         PageTrackerService,
