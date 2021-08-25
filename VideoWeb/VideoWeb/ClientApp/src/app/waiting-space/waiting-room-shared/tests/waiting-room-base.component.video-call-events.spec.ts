@@ -1,7 +1,10 @@
-import { fakeAsync, tick } from '@angular/core/testing';
+import { fakeAsync, flush, tick } from '@angular/core/testing';
+import { Subject } from 'rxjs';
 import { ConferenceResponse, ConferenceStatus, ParticipantResponse, TokenResponse } from 'src/app/services/clients/api-client';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import {
     onSetupSubjectMock,
     onConnectedSubjectMock,
@@ -101,12 +104,20 @@ describe('WaitingRoomComponent Video Call', () => {
         }
     });
 
-    it('should get token and connect to video call', async () => {
+    it('should get token and connect to video call', fakeAsync(() => {
         videoCallService.makeCall.calls.reset();
 
-        await component.connectToPexip();
+        const eventsHubReadySubject = new Subject<any>();
+        eventsServiceSpy.onEventsHubReady.and.returnValue(eventsHubReadySubject.asObservable());
+
+        component.connectToPexip();
+        flush();
+
+        eventsHubReadySubject.next();
+        flush();
+
         expect(videoCallService.makeCall).toHaveBeenCalled();
-    });
+    }));
 
     it('should init pexip setup to be called on start', () => {
         expect(videoCallService.setupClient).toHaveBeenCalled();

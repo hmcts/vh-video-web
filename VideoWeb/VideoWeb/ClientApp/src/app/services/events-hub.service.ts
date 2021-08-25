@@ -18,7 +18,7 @@ export class EventsHubService implements OnDestroy {
     private eventHubReconnectSubject = new Subject();
     private destroyed$ = new Subject();
 
-    private eventsHubReady = new ReplaySubject<void>();
+    private eventsHubReady = new ReplaySubject<void>(1);
     get onEventsHubReady(): Observable<void> {
         return this.eventsHubReady.asObservable();
     }
