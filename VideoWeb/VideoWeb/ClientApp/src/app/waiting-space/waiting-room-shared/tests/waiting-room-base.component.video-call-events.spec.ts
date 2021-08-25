@@ -42,8 +42,6 @@ import {
     notificationToastrService,
     roomClosingToastrService,
     router,
-    userMediaService,
-    userMediaStreamService,
     videoCallService,
     videoWebService
 } from './waiting-room-base-setup';
@@ -80,8 +78,6 @@ describe('WaitingRoomComponent Video Call', () => {
             deviceTypeService,
             router,
             consultationService,
-            userMediaService,
-            userMediaStreamService,
             notificationSoundsService,
             notificationToastrService,
             roomClosingToastrService,

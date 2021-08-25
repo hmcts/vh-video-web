@@ -5,6 +5,7 @@ import { ParticipantService } from 'src/app/services/conference/participant.serv
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { UserMediaService } from 'src/app/services/user-media.service';
 import { HearingControlsBaseComponent } from '../hearing-controls/hearing-controls-base.component';
 import { VideoCallService } from '../services/video-call.service';
 
@@ -15,7 +16,6 @@ import { VideoCallService } from '../services/video-call.service';
     inputs: [
         'conferenceId',
         'participant',
-        'audioOnly',
         'isPrivateConsultation',
         'outgoingStream',
         'isSupportedBrowserForNetworkHealth',
@@ -31,9 +31,10 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         protected deviceTypeService: DeviceTypeService,
         protected logger: Logger,
         protected participantService: ParticipantService,
-        protected translateService: TranslateService
+        protected translateService: TranslateService,
+        protected userMediaService: UserMediaService
     ) {
-        super(videoCallService, eventService, deviceTypeService, logger, participantService, translateService);
+        super(videoCallService, eventService, deviceTypeService, logger, participantService, translateService, userMediaService);
     }
 
     canCloseOrPauseHearing() {

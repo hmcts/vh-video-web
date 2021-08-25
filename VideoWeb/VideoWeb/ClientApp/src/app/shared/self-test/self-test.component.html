@@ -1,6 +1,6 @@
 <div>
   <h1 class="govuk-heading-xl mb-2">
-    {{'self-test.testing-equipment' | translate}} 
+    {{'self-test.testing-equipment' | translate}}
   </h1>
 </div>
 <div class="govuk-grid-row">
@@ -9,7 +9,7 @@
   </div>
   <div *ngIf="displayFeed" class="govuk-grid-column-full">
     <video *ngIf="streamsActive" id="incomingStream" [srcObject]="this.incomingStream" autoplay width="65%" height="auto">
-      {{'self-test.browser-not-support' | translate}} 
+      {{'self-test.browser-not-support' | translate}}
     </video>
   </div>
 </div>
@@ -40,6 +40,5 @@
 
 <app-select-media-devices
   *ngIf="displayDeviceChangeModal"
-  (cancelMediaDeviceChange)="onMediaDeviceChangeCancelled()"
-  (acceptMediaDeviceChange)="onMediaDeviceChangeAccepted($event)"
+  (shouldClose)="onSelectMediaDeviceShouldClose()"
 ></app-select-media-devices>
