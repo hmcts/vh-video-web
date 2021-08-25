@@ -19,7 +19,7 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
             _configuration = new QuickLinksConfiguration
             {
                 Issuer = "issuer",
-                JwtProviderSecret = "JwtProviderSecret"
+                JwtProviderSecret = "x4p5Kxsygx3dYAso0JKZljK0PL926mxppc5gGqeV9aRydc++gSNx4UITuZ1G6YJX7KgymQnQiEsaG/XIUKTPPA=="
             };
             _sut = new QuickLinksScheme(_configuration, "eventHubPath");
         }
