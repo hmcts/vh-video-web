@@ -197,7 +197,6 @@
   <video
     #outgoingVideo
     [ngClass]="{
-      'filter-enabled': !hideOriginalStream,
       'vh-fade-in': selfViewOpen,
       'vh-fade-out': !selfViewOpen,
       'vh-spotlight-self-view-outline': isSpotlighted
@@ -207,6 +206,7 @@
     [srcObject]="this.outgoingStream"
     autoplay
     height="auto"
+    style="display: none"
   >
     {{ 'private-consultation-room-controls.browser-support' | translate }}
   </video>
@@ -214,7 +214,6 @@
     #outputCanvas
     id="outputCanvas"
     [ngClass]="{
-      'filter-enabled': hideOriginalStream,
       'vh-fade-in': selfViewOpen,
       'vh-fade-out': !selfViewOpen,
       'vh-spotlight-self-view-outline': isSpotlighted
