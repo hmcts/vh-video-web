@@ -70,10 +70,6 @@ export class VideoWebService implements IVideoWebApiService {
         return this.apiClient.getSelfTestToken(participantId).toPromise();
     }
 
-    getJwToken(participantId: string): Promise<TokenResponse> {
-        return this.apiClient.getJwtoken(participantId).toPromise();
-    }
-
     raiseParticipantEvent(conferenceId: string, updateParticipantStatusEventRequest: UpdateParticipantStatusEventRequest): Promise<void> {
         return this.apiClient.updateParticipantStatus(conferenceId, updateParticipantStatusEventRequest).toPromise();
     }

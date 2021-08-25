@@ -78,7 +78,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
             'ParticipantService',
             ['getParticipantOrVirtualMeetingRoomById'],
-            ['loggedInParticipant']
+            ['loggedInParticipant$']
         );
 
         userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>([], ['isAudioOnly$']);
@@ -88,7 +88,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         const loggedInParticipantSubject = new BehaviorSubject<ParticipantModel>(
             ParticipantModel.fromParticipantForUserResponse(participantOne)
         );
-        getSpiedPropertyGetter(participantServiceSpy, 'loggedInParticipant').and.returnValue(loggedInParticipantSubject.asObservable());
+        getSpiedPropertyGetter(participantServiceSpy, 'loggedInParticipant$').and.returnValue(loggedInParticipantSubject.asObservable());
 
         component = new PrivateConsultationRoomControlsComponent(
             videoCallService,

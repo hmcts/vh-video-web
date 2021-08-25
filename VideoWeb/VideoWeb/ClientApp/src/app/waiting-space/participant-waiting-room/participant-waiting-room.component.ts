@@ -82,6 +82,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     get allowAudioOnlyToggle(): boolean {
         return (
             !!this.conference &&
+            !!this.participant &&
             this.participant?.status !== ParticipantStatus.InConsultation &&
             this.participant?.status !== ParticipantStatus.InHearing
         );
@@ -109,7 +110,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         this.getConference().then(() => {
             this.subscribeToClock();
             this.startEventHubSubscribers();
-            this.getJwtokenAndConnectToPexip();
+            this.connectToPexip();
         });
     }
 
