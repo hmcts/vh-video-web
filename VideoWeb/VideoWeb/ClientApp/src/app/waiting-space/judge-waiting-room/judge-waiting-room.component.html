@@ -18,7 +18,6 @@
             <app-private-consultation-room-controls
               [conferenceId]="conference.id"
               [participant]="participant"
-              [audioOnly]="audioOnly"
               [isPrivateConsultation]="isPrivateConsultation"
               [outgoingStream]="outgoingStream"
               [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
@@ -250,9 +249,7 @@
 
 <app-select-media-devices
   *ngIf="displayDeviceChangeModal"
-  [waitingRoomMode]="true"
-  (cancelMediaDeviceChange)="onMediaDeviceChangeCancelled()"
-  (acceptMediaDeviceChange)="onMediaDeviceChangeAccepted($event)"
+  (shouldClose)="onSelectMediaDeviceShouldClose()"
   #selectMediaDevices
 ></app-select-media-devices>
 

@@ -27,6 +27,7 @@ import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { fakeAsync, flush } from '@angular/core/testing';
 import { Subject } from 'rxjs';
+import { UserMediaService } from 'src/app/services/user-media.service';
 
 describe('HearingControlsBaseComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -70,6 +71,9 @@ describe('HearingControlsBaseComponent', () => {
 
     let participantServiceSpy: jasmine.SpyObj<ParticipantService>;
 
+    let isAudioOnlySubject: Subject<boolean>;
+    let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
+
     beforeEach(() => {
         translateService.instant.calls.reset();
 
@@ -83,13 +87,18 @@ describe('HearingControlsBaseComponent', () => {
         );
         getSpiedPropertyGetter(participantServiceSpy, 'loggedInParticipant$').and.returnValue(loggedInParticipantSubject.asObservable());
 
+        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>([], ['isAudioOnly$']);
+        isAudioOnlySubject = new Subject<boolean>();
+        getSpiedPropertyGetter(userMediaServiceSpy, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
+
         component = new PrivateConsultationRoomControlsComponent(
             videoCallService,
             eventsService,
             deviceTypeService,
             logger,
             participantServiceSpy,
-            translateService
+            translateService,
+            userMediaServiceSpy
         );
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;
@@ -100,6 +109,52 @@ describe('HearingControlsBaseComponent', () => {
 
     afterEach(() => {
         component.ngOnDestroy();
+    });
+
+    describe('on audio only changed', () => {
+        beforeEach(() => {
+            component.ngOnInit();
+        });
+
+        describe('when changed to true', () => {
+            it('should set audio only to true', fakeAsync(() => {
+                // Act
+                isAudioOnlySubject.next(true);
+                flush();
+
+                // Assert
+                expect(component.audioOnly).toBeTrue();
+            }));
+
+            it('should set video muted to true', fakeAsync(() => {
+                // Act
+                isAudioOnlySubject.next(true);
+                flush();
+
+                // Assert
+                expect(component.videoMuted).toBeTrue();
+            }));
+        });
+
+        describe('when changed to false', () => {
+            it('should set audio only to false', fakeAsync(() => {
+                // Act
+                isAudioOnlySubject.next(false);
+                flush();
+
+                // Assert
+                expect(component.audioOnly).toBeFalse();
+            }));
+
+            it('should set video muted to false', fakeAsync(() => {
+                // Act
+                isAudioOnlySubject.next(false);
+                flush();
+
+                // Assert
+                expect(component.videoMuted).toBeFalse();
+            }));
+        });
     });
 
     describe('onLoggedInParticipantChanged', () => {
