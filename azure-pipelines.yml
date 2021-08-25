@@ -136,11 +136,11 @@ parameters:
       - name: UsingEjud
         value: $(UsingEjud)
 
-          # Quick Links Configuration
-          - name: QuickLinks:Issuer
-            value: $(video_api_url)
-          - name: QuickLinks:JwtProviderSecret
-            value: $(JwtProviderSecret)
+      # Quick Links Configuration
+      - name: QuickLinks:Issuer
+        value: $(video_api_url)
+      - name: QuickLinks:JwtProviderSecret
+        value: $(JwtProviderSecret)
 
     - name: appSettings
       type: object
@@ -151,15 +151,6 @@ parameters:
           - name: ConnectionStrings:SignalR
             value: signalr-connection-str
             secret: true
-  - name: appSettings
-    type: object
-    default:
-      - name: ApplicationInsights:InstrumentationKey
-        value: vh-core-infra-AppInsightsKey
-        secret: true
-      - name: ConnectionStrings:SignalR
-        value: signalr-connection-str
-        secret: true
 
       # AzureAd
       - name: AzureAd:ClientId
@@ -230,11 +221,11 @@ parameters:
       - name: VhServices:InternalEventSecret
         value: $(internal_event_secret)
 
-          # Quick Links Configuration
-          - name: QuickLinks:Issuer
-            value: $(video_api_url)
-          - name: QuickLinks:JwtProviderSecret
-            value: $(JwtProviderSecret)
+      # Quick Links Configuration
+      - name: QuickLinks:Issuer
+        value: $(video_api_url)
+      - name: QuickLinks:JwtProviderSecret
+        value: $(JwtProviderSecret)
 
 variables:
     - group: vh-domains-and-urls
