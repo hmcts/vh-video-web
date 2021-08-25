@@ -1,4 +1,4 @@
-<div class="moj-header" role="banner">
+<div class="moj-header" role="banner" data-module="header">
 
   <div class="moj-header__container">
 
@@ -21,8 +21,8 @@
 
         <ul class="moj-header__navigation-list">
 
-          <li class="moj-header__navigation-item">
-            <a class="moj-header__navigation-link"  [routerLink]="logoutRoute">
+          <li *ngIf="loggedIn" class="moj-header__navigation-item">
+            <a id="logout-link" class="moj-header__navigation-link"  [routerLink]="logoutRoute">
               {{'header.sign-out' | translate}}</a>
           </li>
         </ul>
