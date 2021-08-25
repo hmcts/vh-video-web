@@ -157,9 +157,12 @@ describe('WaitingRoomComponent EventHub Call', () => {
     });
 
     describe('event hub status changes', () => {
-        beforeEach(() => {
+        beforeEach(fakeAsync(() => {
             spyOn(component, 'callAndUpdateShowVideo');
-        });
+            spyOn(component, 'setupPexipEventSubscriptionAndClient');
+            component.connectToPexip();
+            flush();
+        }));
 
         afterEach(() => {
             expect(component.callAndUpdateShowVideo).toHaveBeenCalledTimes(1);
