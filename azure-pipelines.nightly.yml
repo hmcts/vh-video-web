@@ -1,105 +1,105 @@
 parameters:
-- name: deploymentBranch
-  displayName: Branch to Deploy
-  type: string
-  default: refs/heads/master
+  - name: deploymentBranch
+    displayName: Branch to Deploy
+    type: string
+    default: refs/heads/master
 
-- name: environment
-  displayName: Environment
-  type: string
-  default: AAT
-  values:
-  - Preview
-  - Dev
-  - AAT
-  - Sandbox
-  - Test1
-  - Test2
-  - Demo
-  - Preprod
-  - Prod
-  
-- name: dotnetTestMaxRetries
-  type: number
-  default: 4  
+  - name: environment
+    displayName: Environment
+    type: string
+    default: AAT
+    values:
+      - Preview
+      - Dev
+      - AAT
+      - Sandbox
+      - Test1
+      - Test2
+      - Demo
+      - Preprod
+      - Prod
 
-- name: deviceConfiguration
-  displayName: Device Configurations
-  type: object
-  default:
-    - OS: Windows
-      Browser: Chrome
-      BrowserVersion: Latest
-      DeviceType: Desktop
-      DeviceName:
-      TestCaseFilter: TestCategory!~Unsupported
-    - OS: Windows
-      Browser: Firefox
-      BrowserVersion: Latest
-      DeviceType: Desktop
-      DeviceName:
-      TestCaseFilter: TestCategory=Smoketest-Extended
-    - OS: Windows
-      Browser: EdgeChromium
-      BrowserVersion: Latest
-      DeviceType: Desktop
-      DeviceName:
-      TestCaseFilter: TestCategory=Smoketest-Extended
-    - OS: MacOS
-      Browser: Safari
-      BrowserVersion: Latest
-      DeviceType: Desktop
-      DeviceName:
-      TestCaseFilter: TestCategory=Smoketest-Extended
-    - OS: MacOS
-      Browser: Chrome
-      BrowserVersion: Latest
-      DeviceType: Desktop
-      DeviceName:
-      TestCaseFilter: TestCategory=Smoketest-Extended
-    - OS: MacOS
-      Browser: Firefox
-      BrowserVersion: Latest
-      DeviceType: Desktop
-      DeviceName:
-      TestCaseFilter: TestCategory=Smoketest-Extended
-    - OS: MacOS
-      Browser: EdgeChromium
-      BrowserVersion: Latest
-      DeviceType: Desktop
-      DeviceName:
-      TestCaseFilter: TestCategory=Smoketest-Extended      
-    - OS: Windows
-      Browser: Ie11
-      BrowserVersion: Latest
-      DeviceType: Desktop
-      DeviceName:
-      TestCaseFilter: TestCategory=UnsupportedBrowser
-    - OS: Android
-      Browser: Chrome
-      BrowserVersion:
-      DeviceType: Tablet
-      DeviceName:
-      TestCaseFilter: TestCategory=UnsupportedDeviceTablet
-    - OS: iOS
-      Browser: Safari
-      BrowserVersion:
-      DeviceType: Mobile
-      DeviceName:
-      TestCaseFilter: TestCategory=UnsupportedDeviceMobile
-    - OS: Android
-      Browser: Chrome
-      BrowserVersion:
-      DeviceType: Mobile
-      DeviceName:
-      TestCaseFilter: TestCategory=UnsupportedDeviceMobile      
+  - name: dotnetTestMaxRetries
+    type: number
+    default: 4
 
-- name: prodEnvs
-  displayName: Environments Using Prod Subscription
-  type: object
-  default:
-    - Prod
-    - Preprod
+  - name: deviceConfiguration
+    displayName: Device Configurations
+    type: object
+    default:
+      - OS: Windows
+        Browser: Chrome
+        BrowserVersion: Latest
+        DeviceType: Desktop
+        DeviceName:
+        TestCaseFilter: TestCategory!~Unsupported
+      - OS: Windows
+        Browser: Firefox
+        BrowserVersion: Latest
+        DeviceType: Desktop
+        DeviceName:
+        TestCaseFilter: TestCategory=Smoketest-Extended
+      - OS: Windows
+        Browser: EdgeChromium
+        BrowserVersion: Latest
+        DeviceType: Desktop
+        DeviceName:
+        TestCaseFilter: TestCategory=Smoketest-Extended
+      - OS: MacOS
+        Browser: Safari
+        BrowserVersion: Latest
+        DeviceType: Desktop
+        DeviceName:
+        TestCaseFilter: TestCategory=Smoketest-Extended
+      - OS: MacOS
+        Browser: Chrome
+        BrowserVersion: Latest
+        DeviceType: Desktop
+        DeviceName:
+        TestCaseFilter: TestCategory=Smoketest-Extended
+      - OS: MacOS
+        Browser: Firefox
+        BrowserVersion: Latest
+        DeviceType: Desktop
+        DeviceName:
+        TestCaseFilter: TestCategory=Smoketest-Extended
+      - OS: MacOS
+        Browser: EdgeChromium
+        BrowserVersion: Latest
+        DeviceType: Desktop
+        DeviceName:
+        TestCaseFilter: TestCategory=Smoketest-Extended
+      - OS: Windows
+        Browser: Ie11
+        BrowserVersion: Latest
+        DeviceType: Desktop
+        DeviceName:
+        TestCaseFilter: TestCategory=UnsupportedBrowser
+      - OS: Android
+        Browser: Chrome
+        BrowserVersion:
+        DeviceType: Tablet
+        DeviceName:
+        TestCaseFilter: TestCategory=UnsupportedDeviceTablet
+      - OS: iOS
+        Browser: Safari
+        BrowserVersion:
+        DeviceType: Mobile
+        DeviceName:
+        TestCaseFilter: TestCategory=UnsupportedDeviceMobile
+      - OS: Android
+        Browser: Chrome
+        BrowserVersion:
+        DeviceType: Mobile
+        DeviceName:
+        TestCaseFilter: TestCategory=UnsupportedDeviceMobile
+
+  - name: prodEnvs
+    displayName: Environments Using Prod Subscription
+    type: object
+    default:
+      - Prod
+      - Preprod
 
 # Set variables once
 variables:
@@ -110,19 +110,19 @@ variables:
   - group: vh test users
   - group: Saucelabs
   - ${{ if containsValue(parameters.prodEnvs, parameters.environment) }}:
-    - group: vh-prod
+      - group: vh-prod
   - ${{ if not(containsValue(parameters.prodEnvs, parameters.environment)) }}:
-    - group: vh-preview
+      - group: vh-preview
 
 trigger: none
 pr: none
 schedules:
-- cron: "0 0 * * *"
-  displayName: Daily midnight build
-  always: true
-  branches:
-    include:
-    - master
+  - cron: "0 0 * * *"
+    displayName: Daily midnight build
+    always: true
+    branches:
+      include:
+        - master
 
 resources:
   repositories:
@@ -132,8 +132,8 @@ resources:
       ref: refs/heads/master
       endpoint: hmcts
   pipelines:
-  - pipeline: CI
-    source: hmcts.vh-video-web
+    - pipeline: CI
+      source: hmcts.vh-video-web
 
 stages:
   - template: templates/vh-release.yml@templates
@@ -152,53 +152,53 @@ stages:
         testCaseFilter: TestCategory=smoketest
         dotnetTestMaxRetries: 1
         dependentApps:
-        - name: vh-user-api-$(environment)
-          resourceGroup: vh-user-api-$(environment)
-          healthEndpoint: $(user_api_url)healthcheck/health
-        - name: vh-bookings-api-$(environment)
-          resourceGroup: vh-bookings-api-$(environment)
-          healthEndpoint: $(bookings_api_url)healthcheck/health
-        - name: vh-video-api-$(environment)
-          resourceGroup: vh-video-api-$(environment)
-          healthEndpoint: $(video_api_url)healthcheck/health
-        - name: vh-test-api-$(environment)
-          resourceGroup: vh-test-api-$(environment)
-          healthEndpoint: $(test_api_url)health/health
+          - name: vh-user-api-$(environment)
+            resourceGroup: vh-user-api-$(environment)
+            healthEndpoint: $(user_api_url)healthcheck/health
+          - name: vh-bookings-api-$(environment)
+            resourceGroup: vh-bookings-api-$(environment)
+            healthEndpoint: $(bookings_api_url)healthcheck/health
+          - name: vh-video-api-$(environment)
+            resourceGroup: vh-video-api-$(environment)
+            healthEndpoint: $(video_api_url)healthcheck/health
+          - name: vh-test-api-$(environment)
+            resourceGroup: vh-test-api-$(environment)
+            healthEndpoint: $(test_api_url)health/health
         variables:
           - group: vh-wowza-dev
             env:
-             - Preview
-             - Dev
-             - AAT
-             - Sandbox
-             - Test1
-             - Test2
+              - Preview
+              - Dev
+              - AAT
+              - Sandbox
+              - Test1
+              - Test2
           - group: vh-wowza-demo
             env:
-             - Demo
+              - Demo
           - group: vh-wowza-preprod
             env:
-             - Preprod
+              - Preprod
           - group: vh-wowza-prod
             env:
-             - Prod
+              - Prod
           - group: KinlyConfiguration_Test
             env:
-             - Preview
-             - Dev
-             - AAT
-             - Sandbox
-             - Test1
-             - Test2
+              - Preview
+              - Dev
+              - AAT
+              - Sandbox
+              - Test1
+              - Test2
           - group: KinlyConfiguration_Test2
             env:
-             - Demo
+              - Demo
           - group: KinlyConfiguration_Preprod
             env:
-             - Preprod
+              - Preprod
           - group: KinlyConfiguration_Prod
             env:
-             - Prod
+              - Prod
         appSettings:
           - name: ApplicationInsights:InstrumentationKey
             value: vh-core-infra-AppInsightsKey
@@ -233,7 +233,7 @@ stages:
             value: vh-video-web-identifieruris
             secret: true
 
-        # EJudAd
+          # EJudAd
           - name: EJudAd:ClientId
             value: ejud-appid
             secret: true
@@ -268,7 +268,9 @@ stages:
             value: $(TurnServerUser)
           - name: KinlyConfiguration:TurnServerCredential
             value: $(TurnServerCredential)
-            
+          - name: KinlyConfiguration:HeartbeatUrlBase
+            value: $(HeartbeatUrlBase)
+
           # VhServices
           - name: VhServices:BookingsApiResourceId
             value: vh-bookings-api-identifieruris
@@ -364,7 +366,9 @@ stages:
             value: $(SelfTestApiKey)
           - name: KinlyConfiguration:JoinByPhoneFromDate
             value: $(JoinByPhoneFromDate)
-            
+          - name: KinlyConfiguration:HeartbeatUrlBase
+            value: $(HeartbeatUrlBase)
+
           # SauceLabs
           - name: Saucelabs:Username
             value: $(Saucelabs:Username)
@@ -380,7 +384,7 @@ stages:
             value: $(wowza_storageAccountKey)
           - name: WowzaConfiguration:StorageContainerName
             value: $(wowza_storageContainerName)
-            
+
           # Ejud - test setting only
           - name: UsingEjud
             value: $(UsingEjud)

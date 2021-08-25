@@ -1,3 +1,5 @@
+import { areAllEquivalent } from '@angular/compiler/src/output/output_ast';
+import { fakeAsync, flush } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { of } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
@@ -8,12 +10,15 @@ import {
     SharedParticipantRoom,
     StartHearingRequest
 } from 'src/app/services/clients/api-client';
+import { KinlyHeartbeatService } from 'src/app/services/conference/kinly-heartbeat.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
+import { ParticipantUpdated } from '../models/video-call-models';
+import { VideoCallEventsService } from './video-call-events.service';
 import { VideoCallPreferences } from './video-call-preferences.mode';
 import { VideoCallService } from './video-call.service';
 
@@ -33,6 +38,8 @@ describe('VideoCallService', () => {
     let preferredMicrophone: UserMediaDevice;
     let pexipSpy: jasmine.SpyObj<PexipClient>;
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
+    let kinlyHeartbeatServiceSpy: jasmine.SpyObj<KinlyHeartbeatService>;
+    let videoCallEventsServiceSpy: jasmine.SpyObj<VideoCallEventsService>;
     beforeAll(() => {
         apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
             'startOrResumeVideoHearing',
@@ -53,6 +60,8 @@ describe('VideoCallService', () => {
             'selectScreenToShare'
         ]);
 
+        kinlyHeartbeatServiceSpy = jasmine.createSpyObj<KinlyHeartbeatService>(['initialiseHeartbeat', 'stopHeartbeat']);
+
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getConfig']);
         configServiceSpy.getConfig.and.returnValue(config);
 
@@ -65,6 +74,8 @@ describe('VideoCallService', () => {
     });
 
     beforeEach(async () => {
+        videoCallEventsServiceSpy = jasmine.createSpyObj<VideoCallEventsService>(['handleParticipantUpdated']);
+
         pexipSpy = jasmine.createSpyObj<PexipClient>('PexipClient', [
             'connect',
             'makeCall',
@@ -83,7 +94,14 @@ describe('VideoCallService', () => {
             'getPresentation',
             'stopPresentation'
         ]);
-        service = new VideoCallService(logger, userMediaService, apiClient, configServiceSpy);
+        service = new VideoCallService(
+            logger,
+            userMediaService,
+            apiClient,
+            configServiceSpy,
+            kinlyHeartbeatServiceSpy,
+            videoCallEventsServiceSpy
+        );
         await service.setupClient();
     });
 
@@ -365,5 +383,42 @@ describe('VideoCallService', () => {
         await service.retrieveJudicialRoom(conferenceId, participantId);
 
         expect(apiClient.getParticipantRoomForParticipant).toHaveBeenCalledWith(conferenceId, participantId, 'Judicial');
+    });
+
+    describe('handleParticipantUpdate', () => {
+        it('should raise the event through video call events service', fakeAsync(() => {
+            // Arrange
+            const pexipParticipant: PexipParticipant = {
+                buzz_time: 0,
+                is_muted: 'is_muted',
+                display_name: 'display_name',
+                local_alias: 'local_alias',
+                start_time: 0,
+                uuid: 'uuid',
+                spotlight: 0,
+                mute_supported: 'mute_supported',
+                is_external: false,
+                external_node_uuid: 'external_node_uuid',
+                has_media: false,
+                call_tag: 'call_tag',
+                is_audio_only_call: 'is_audio_only_call',
+                is_video_call: 'is_video_call',
+                protocol: 'protocol'
+            };
+
+            const expectedUpdate = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+
+            // Act
+            let result: ParticipantUpdated | null = null;
+            service.onParticipantUpdated().subscribe(update => (result = update));
+
+            service.pexipAPI.onParticipantUpdate(pexipParticipant);
+            flush();
+
+            // Assert
+            expect(result).toBeTruthy();
+            expect(result).toEqual(expectedUpdate);
+            expect(videoCallEventsServiceSpy.handleParticipantUpdated).toHaveBeenCalledOnceWith(expectedUpdate);
+        }));
     });
 });

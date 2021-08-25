@@ -70,13 +70,11 @@ export function initAllWRDependencies() {
     videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
         'getConferenceById',
         'getObfuscatedName',
-        'getJwToken',
         'getCurrentParticipant',
         'getAllowedEndpointsForConference'
     ]);
     videoWebService.getConferenceById.and.resolveTo(globalConference);
     videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
-    videoWebService.getJwToken.and.resolveTo(jwToken);
     videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(new LoggedParticipantResponse({})));
     errorService = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError', 'handleApiError', 'handlePexipError']);
 

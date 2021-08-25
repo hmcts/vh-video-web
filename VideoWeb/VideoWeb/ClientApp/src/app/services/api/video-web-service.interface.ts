@@ -25,7 +25,6 @@ export interface IVideoWebApiService {
     getTestCallScore(conferenceId: string, participantId: string): Promise<TestCallScoreResponse>;
     getIndependentTestCallScore(participantId: string): Promise<TestCallScoreResponse>;
     getSelfTestToken(participantId: string): Promise<TokenResponse>;
-    getJwToken(participantId: string): Promise<TokenResponse>;
     raiseParticipantEvent(conferenceId: string, updateParticipantStatusEventRequest: UpdateParticipantStatusEventRequest): Promise<void>;
     raiseSelfTestFailureEvent(conferenceId: string, addSelfTestFailureEventRequest: AddSelfTestFailureEventRequest): Promise<void>;
     getPexipConfig(): Promise<SelfTestPexipResponse>;
