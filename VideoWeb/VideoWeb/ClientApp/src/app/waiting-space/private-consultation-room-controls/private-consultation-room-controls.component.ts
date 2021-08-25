@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
