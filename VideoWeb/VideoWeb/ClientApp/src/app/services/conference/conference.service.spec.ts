@@ -119,7 +119,7 @@ describe('ConferenceService', () => {
         apiClientSpy.getVideoEndpointsForConference.and.returnValue(getEndpointsByConferenceIdSubject.asObservable());
         apiClientSpy.getCurrentParticipant.and.returnValue(getLoggedParticipantForConferenceSubject.asObservable());
 
-        loggerSpy = jasmine.createSpyObj<LoggerService>('Logger', ['error', 'warn', 'info']);
+        loggerSpy = jasmine.createSpyObj<LoggerService>('Logger', ['error', 'warn', 'info', 'debug']);
 
         sut = new ConferenceService(routerSpy, activatedRouteSpy, eventsServiceSpy, apiClientSpy, loggerSpy);
     });

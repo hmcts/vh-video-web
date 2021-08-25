@@ -7,7 +7,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ImHelper } from 'src/app/shared/im-helper';
 import { ChatWindowBaseComponent } from '../participant-chat/chat-window-base';
 import { TranslateService } from '@ngx-translate/core';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 
 @Component({
     selector: 'app-chat-panel',
@@ -25,11 +25,11 @@ export class ChatPanelComponent extends ChatWindowBaseComponent {
         protected profileService: ProfileService,
         protected eventService: EventsService,
         protected logger: Logger,
-        protected oidcSecurityService: OidcSecurityService,
+        securityServiceProviderService: SecurityServiceProvider,
         protected imHelper: ImHelper,
         protected route: ActivatedRoute,
         protected translateService: TranslateService
     ) {
-        super(videoWebService, profileService, eventService, logger, oidcSecurityService, imHelper, route, translateService);
+        super(videoWebService, profileService, eventService, logger, securityServiceProviderService, imHelper, route, translateService);
     }
 }

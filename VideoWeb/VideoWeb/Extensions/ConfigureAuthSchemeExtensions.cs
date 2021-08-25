@@ -22,6 +22,7 @@ namespace VideoWeb.Extensions
         {
             var kinlyConfiguration = configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
             var azureAdConfiguration = configuration.GetSection("AzureAd").Get<AzureAdConfiguration>();
+            var quickLinksConfiguration = configuration.GetSection("QuickLinks").Get<QuickLinksConfiguration>();
             var eJudAdConfiguration = configuration.GetSection("EJudAd").Get<EJudAdConfiguration>();
             var kinlyCallbackSecret = Convert.FromBase64String(kinlyConfiguration.CallbackSecret);
          
@@ -32,7 +33,8 @@ namespace VideoWeb.Extensions
             var providerSchemes = new List<IProviderSchemes>
             {
                 new VhAadScheme(azureAdConfiguration, eventhubPath),
-                new EJudiciaryScheme(eventhubPath, eJudAdConfiguration)
+                new EJudiciaryScheme(eventhubPath, eJudAdConfiguration),
+                new QuickLinksScheme(quickLinksConfiguration, eventhubPath)
             };
 
             var authenticationBuilder = serviceCollection.AddAuthentication(options =>
@@ -116,7 +118,7 @@ namespace VideoWeb.Extensions
                 [AppRoles.JudgeRole] = new[] { AppRoles.JudgeRole },
                 [AppRoles.VhOfficerRole] = new[] { AppRoles.VhOfficerRole },
                 ["Judicial"] = new[] { AppRoles.JudgeRole, AppRoles.JudicialOfficeHolderRole },
-                ["Individual"] = new[] { AppRoles.CitizenRole, AppRoles.RepresentativeRole },
+                ["Individual"] = new[] { AppRoles.CitizenRole, AppRoles.RepresentativeRole, AppRoles.QuickLinkParticipant, AppRoles.QuickLinkObserver },
                 [AppRoles.RepresentativeRole] = new[] { AppRoles.RepresentativeRole },
                 [AppRoles.CitizenRole] = new[] { AppRoles.CitizenRole }
             };

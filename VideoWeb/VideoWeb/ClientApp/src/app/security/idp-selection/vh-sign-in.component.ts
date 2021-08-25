@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { OidcConfigSetupService } from '../oidc-config-setup.service';
+import { SecurityConfigSetupService } from '../security-config-setup.service';
+import { IdpProviders } from '../idp-providers';
 
 @Component({
     selector: 'app-vh-sign-in',
@@ -9,10 +10,10 @@ import { OidcConfigSetupService } from '../oidc-config-setup.service';
     styles: []
 })
 export class VhSignInComponent implements OnInit {
-    constructor(private router: Router, private oidcConfigSetupService: OidcConfigSetupService) {}
+    constructor(private router: Router, private securityConfigSetupService: SecurityConfigSetupService) {}
 
     ngOnInit(): void {
-        this.oidcConfigSetupService.setIdp('vhaad');
+        this.securityConfigSetupService.setIdp(IdpProviders.vhaad);
         this.router.navigate([`/${pageUrls.Login}`]);
     }
 }

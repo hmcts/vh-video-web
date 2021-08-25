@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveEnd, Router, RouterEvent } from '@angular/router';
 import { ApplicationInsights, ITelemetryItem, SeverityLevel } from '@microsoft/applicationinsights-web';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
+import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
+import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
 import { ConfigService } from '../../api/config.service';
 import { ProfileService } from '../../api/profile.service';
 import { Role } from '../../clients/api-client';
@@ -13,6 +14,7 @@ import { LogAdapter } from '../log-adapter';
     providedIn: 'root'
 })
 export class AppInsightsLoggerService implements LogAdapter {
+    private securityService: ISecurityService;
     errorInfo: any;
     router: Router;
     appInsights: ApplicationInsights;
@@ -20,19 +22,21 @@ export class AppInsightsLoggerService implements LogAdapter {
     userData;
 
     constructor(
+        securityServiceProviderService: SecurityServiceProvider,
         configService: ConfigService,
         router: Router,
-        oidcSecurityService: OidcSecurityService,
         private profileService: ProfileService
     ) {
         this.router = router;
-        this.setupAppInsights(configService, oidcSecurityService).subscribe(() => {
-            this.checkIfVho(oidcSecurityService);
+        securityServiceProviderService.currentSecurityService$.subscribe(securityService => (this.securityService = securityService));
+
+        this.setupAppInsights(configService, this.securityService).subscribe(() => {
+            this.checkIfVho(this.securityService);
             this.trackNavigation();
         });
     }
 
-    private setupAppInsights(configService: ConfigService, oidcSecurityService: OidcSecurityService): Observable<void> {
+    private setupAppInsights(configService: ConfigService, securityService: ISecurityService): Observable<void> {
         configService.loadConfig();
         return configService.getClientSettings().pipe(
             map(configSettings => {
@@ -43,7 +47,7 @@ export class AppInsightsLoggerService implements LogAdapter {
                     }
                 });
                 this.appInsights.loadAppInsights();
-                oidcSecurityService.userData$.subscribe(ud => {
+                securityService?.userData$.subscribe(ud => {
                     this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
                         envelope.tags['ai.cloud.role'] = 'vh-video-web';
                         envelope.tags['ai.user.id'] = ud.preferred_username.toLowerCase();
@@ -53,8 +57,8 @@ export class AppInsightsLoggerService implements LogAdapter {
         );
     }
 
-    private checkIfVho(oidcSecurityService: OidcSecurityService) {
-        oidcSecurityService.isAuthenticated$.pipe(filter(Boolean)).subscribe(() => {
+    private checkIfVho(securityService: ISecurityService) {
+        securityService?.isAuthenticated$.pipe(filter(Boolean)).subscribe(() => {
             this.profileService.getUserProfile().then(profile => {
                 this.isVHO = profile.role === Role.VideoHearingsOfficer;
             });

@@ -6,17 +6,11 @@ using VideoWeb.Common.Security.HashGen;
 
 namespace VideoWeb.Common.Security
 {
-    public interface ICustomJwtTokenProvider
-    {
-        string GenerateTokenForCallbackEndpoint(string claims, int expiresInMinutes);
-        string GenerateToken(string claims, int expiresInMinutes);
-    }
-
-    public class CustomJwtTokenProvider : ICustomJwtTokenProvider
+    public class KinlyJwtTokenProvider : IKinlyJwtTokenProvider
     {
         private readonly KinlyConfiguration _kinlyConfiguration;
 
-        public CustomJwtTokenProvider(KinlyConfiguration kinlyConfiguration)
+        public KinlyJwtTokenProvider(KinlyConfiguration kinlyConfiguration)
         {
             _kinlyConfiguration = kinlyConfiguration;
         }

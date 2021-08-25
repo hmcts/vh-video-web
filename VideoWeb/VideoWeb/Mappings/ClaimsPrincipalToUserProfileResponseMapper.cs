@@ -48,7 +48,17 @@ namespace VideoWeb.Mappings
             {
                 return Role.Individual;
             }
-
+            
+            if (user.IsInRole(AppRoles.QuickLinkObserver))
+            {
+                return Role.QuickLinkObserver;
+            }
+            
+            if (user.IsInRole(AppRoles.QuickLinkParticipant))
+            {
+                return Role.QuickLinkParticipant;
+            }
+            
             if (user.IsInRole(AppRoles.CaseAdminRole))
             {
                 return Role.CaseAdmin;

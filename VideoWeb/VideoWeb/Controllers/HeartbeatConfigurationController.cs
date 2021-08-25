@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Net;
 using System.Threading.Tasks;
@@ -16,10 +16,10 @@ namespace VideoWeb.Controllers
     [Route("heartbeat")]
     public class HeartbeatConfigurationController : ControllerBase
     {
-        private readonly ICustomJwtTokenProvider _customJwtTokenProvider;
+        private readonly IKinlyJwtTokenProvider _customJwtTokenProvider;
         private readonly KinlyConfiguration _kinlyConfiguration;
         
-        public HeartbeatConfigurationController(ICustomJwtTokenProvider customJwtTokenProvider,
+        public HeartbeatConfigurationController(IKinlyJwtTokenProvider customJwtTokenProvider,
             IOptions<KinlyConfiguration> kinlyConfiguration)
         {
             _customJwtTokenProvider = customJwtTokenProvider;

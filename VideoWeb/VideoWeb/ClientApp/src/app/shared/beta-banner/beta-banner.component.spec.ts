@@ -12,10 +12,8 @@ import { ConferenceStatusMessage } from 'src/app/services/models/conference-stat
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { eventsServiceSpy, hearingStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
-import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-security.service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { BetaBannerComponent } from './beta-banner.component';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({ selector: 'app-mock-component', template: '' })
 class Mock1Component {}
@@ -32,7 +30,6 @@ describe('BetaBannerComponent', () => {
     let component: BetaBannerComponent;
     let fixture: ComponentFixture<BetaBannerComponent>;
     let router: Router;
-    let oidcSecurityService: MockOidcSecurityService;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
     profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
     const profile = new UserProfileResponse({ role: Role.Representative });
@@ -51,7 +48,6 @@ describe('BetaBannerComponent', () => {
                     { provide: ProfileService, useValue: profileServiceSpy },
                     { provide: Logger, useClass: MockLogger },
                     { provide: VideoWebService, useValue: videoWebServiceSpy },
-                    { provide: OidcSecurityService, useClass: MockOidcSecurityService },
                     { provide: TranslateService, useValue: translateServiceSpy },
                     { provide: EventsService, useValue: eventsServiceSpy }
                 ],
@@ -61,7 +57,6 @@ describe('BetaBannerComponent', () => {
     );
 
     beforeEach(() => {
-        oidcSecurityService = TestBed.inject<MockOidcSecurityService>(OidcSecurityService as any);
         router = TestBed.inject(Router);
         fixture = TestBed.createComponent(BetaBannerComponent);
         component = fixture.componentInstance;

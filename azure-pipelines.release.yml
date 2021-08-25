@@ -160,6 +160,31 @@ stages:
             env:
               - Prod
               - Preprod
+
+          - group: QuickLinks_Preview
+            env:
+              - Preview
+          - group: QuickLinks_Dev
+            env:
+             - Dev
+          - group: QuickLinks_Preprod
+            env:
+             - Preprod
+          - group: QuickLinks_Prod
+            env:
+             - Prod
+          - group: QuickLinks_Test
+            env:
+             - Test1
+          - group: QuickLinks_Aat
+            env:
+             - Aat
+          - group: QuickLinks_Demo
+            env:
+             - Demo
+          - group: QuickLinks_Sandbox
+            env:
+             - Sandbox
         appSettings:
           - name: ApplicationInsights:InstrumentationKey
             value: vh-core-infra-AppInsightsKey
