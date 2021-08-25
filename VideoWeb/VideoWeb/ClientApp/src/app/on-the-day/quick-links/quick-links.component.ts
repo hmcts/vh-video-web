@@ -118,6 +118,7 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
                         });
 
                         this.router.navigate([pageUrls.Navigator]);
+                        this.pending$.next(false);
                     },
                     error => {
                         this.logger.error('[Login] - Redirect Failed', error);
