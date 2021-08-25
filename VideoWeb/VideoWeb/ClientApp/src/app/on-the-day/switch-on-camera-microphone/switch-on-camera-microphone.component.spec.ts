@@ -1,7 +1,7 @@
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { AddMediaEventRequest, Role, UserProfileResponse } from 'src/app/services/clients/api-client';
+import { Role, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
@@ -9,15 +9,18 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone.component';
-import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { fakeAsync, flush, flushMicrotasks } from '@angular/core/testing';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
+import { Subject, throwError } from 'rxjs';
+import { mockCamStream } from 'src/app/waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 
 describe('SwitchOnCameraMicrophoneComponent', () => {
     let component: SwitchOnCameraMicrophoneComponent;
 
     const conference = new ConferenceTestData().getConferenceDetailFuture();
     const profile = new UserProfileResponse({ role: Role.Judge });
-
+    let currentStreamSubject: Subject<MediaStream>;
     let router: jasmine.SpyObj<Router>;
     let profileService: jasmine.SpyObj<ProfileService>;
     let activatedRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
@@ -27,7 +30,10 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
     const logger: Logger = new MockLogger();
     let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
 
-    beforeAll(() => {
+    beforeEach(async () => {
+        userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>('UserMediaStreamService', [], ['currentStream$']);
+        currentStreamSubject = new Subject<MediaStream>();
+
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
             'getConferencesForIndividual',
             'setActiveIndividualConference',
@@ -35,8 +41,6 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
             'getObfuscatedName'
         ]);
         videoWebService.getObfuscatedName.and.returnValue('test username');
-
-        userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>('UserMediaStreamService', ['requestAccess']);
 
         errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
             'goToServiceError',
@@ -50,18 +54,16 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
 
         participantStatusUpdateService = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
-    });
 
-    beforeEach(async () => {
         component = new SwitchOnCameraMicrophoneComponent(
             router,
             activatedRoute,
             videoWebService,
-            userMediaStreamService,
             profileService,
             errorService,
             logger,
-            participantStatusUpdateService
+            participantStatusUpdateService,
+            userMediaStreamService
         );
         component.conference = conference;
         component.conferenceId = conference.id;
@@ -83,11 +85,11 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
             router,
             activatedRoute,
             videoWebService,
-            userMediaStreamService,
             profileService,
             errorService,
             logger,
-            participantStatusUpdateService
+            participantStatusUpdateService,
+            userMediaStreamService
         );
 
         component.ngOnInit();
@@ -135,22 +137,6 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
         });
     });
 
-    it('should raise permission denied event on media access rejection', async () => {
-        userMediaStreamService.requestAccess.and.returnValue(Promise.resolve(false));
-
-        await component.requestMedia();
-        expect(component.mediaAccepted).toBeFalsy();
-        expect(videoWebService.raiseMediaEvent).toHaveBeenCalledWith(conference.id, new AddMediaEventRequest());
-    });
-
-    it('should not raise permission denied event on media access acceptance', async () => {
-        userMediaStreamService.requestAccess.and.returnValue(Promise.resolve(true));
-
-        await component.requestMedia();
-        expect(component.mediaAccepted).toBeTruthy();
-        expect(videoWebService.raiseMediaEvent).toHaveBeenCalledTimes(0);
-    });
-
     it('should log error when raising event fails', async () => {
         const error = new Error('unit test error');
         videoWebService.raiseMediaEvent.and.callFake(() => Promise.reject(error));
@@ -161,4 +147,24 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
         expect(logSpy.calls.mostRecent().args[0]).toMatch('Failed to post media permission denied alert');
         expect(logSpy.calls.mostRecent().args[1]).toBe(error);
     });
+
+    it('should update mediaAccepted and userPrompted to true when request media', fakeAsync(() => {
+        getSpiedPropertyGetter(userMediaStreamService, 'currentStream$').and.returnValue(currentStreamSubject.asObservable());
+
+        component.requestMedia();
+        currentStreamSubject.next(mockCamStream);
+        flush();
+        expect(component.userPrompted).toBeTrue();
+        expect(component.mediaAccepted).toBeTrue();
+    }));
+
+    it('should update mediaAccepted and userPrompted to false when request media throw an error', fakeAsync(() => {
+        getSpiedPropertyGetter(userMediaStreamService, 'currentStream$').and.callFake(() => {
+            return throwError(new Error('Fake error'));
+        });
+        component.requestMedia();
+        flush();
+        expect(component.userPrompted).toBeFalse();
+        expect(component.mediaAccepted).toBeFalse();
+    }));
 });

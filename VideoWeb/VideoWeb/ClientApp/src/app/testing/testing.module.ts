@@ -19,7 +19,6 @@ import {
     IndividualParticipantStatusListStubComponent,
     JudgeParticipantStatusListStubComponent
 } from './stubs/participant-status-list-stub';
-import { SelectMediaDevicesStubComponent } from './stubs/select-media-devices-stub';
 import { SelfTestStubComponent } from './stubs/self-test-stub';
 import { UnsupportedBrowserStubComponent } from './stubs/unsupported-browser-stub';
 
@@ -40,7 +39,6 @@ import { UnsupportedBrowserStubComponent } from './stubs/unsupported-browser-stu
         AnalogueClockStubComponent,
         MicVisualiserStubComponent,
         SelfTestStubComponent,
-        SelectMediaDevicesStubComponent,
         IndividualParticipantStatusListStubComponent,
         BetaBannerStubComponent,
         BackNavigationStubComponent,

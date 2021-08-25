@@ -12,7 +12,6 @@ import { Hearing } from '../../shared/models/hearing';
 import { UnreadMessagesComponent } from './unread-messages.component';
 import { UnreadAdminMessageModelMapper } from 'src/app/shared/mappers/unread-messages-model-mapper';
 import { UnreadAdminMessageModel } from 'src/app/waiting-space/models/unread-admin-message-model';
-import { concatMap } from 'rxjs/operators';
 
 describe('UnreadMessagesComponent', () => {
     let component: UnreadMessagesComponent;
