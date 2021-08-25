@@ -2022,6 +2022,88 @@ export class ApiClient {
     }
 
     /**
+     * @return Success
+     */
+    getHeartbeatConfigForParticipant(participantId: string): Observable<HeartbeatConfigurationResponse> {
+        let url_ = this.baseUrl + '/heartbeat/GetHeartbeatConfigForParticipant/{participantId}';
+        if (participantId === undefined || participantId === null) throw new Error("The parameter 'participantId' must be defined.");
+        url_ = url_.replace('{participantId}', encodeURIComponent('' + participantId));
+        url_ = url_.replace(/[?&]$/, '');
+
+        let options_: any = {
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({
+                Accept: 'application/json'
+            })
+        };
+
+        return this.http
+            .request('get', url_, options_)
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processGetHeartbeatConfigForParticipant(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processGetHeartbeatConfigForParticipant(<any>response_);
+                        } catch (e) {
+                            return <Observable<HeartbeatConfigurationResponse>>(<any>_observableThrow(e));
+                        }
+                    } else return <Observable<HeartbeatConfigurationResponse>>(<any>_observableThrow(response_));
+                })
+            );
+    }
+
+    protected processGetHeartbeatConfigForParticipant(response: HttpResponseBase): Observable<HeartbeatConfigurationResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result200: any = null;
+                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result200 = HeartbeatConfigurationResponse.fromJS(resultData200);
+                    return _observableOf(result200);
+                })
+            );
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result400: any = null;
+                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result400 = ProblemDetails.fromJS(resultData400);
+                    return throwException('Bad Request', status, _responseText, _headers, result400);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<HeartbeatConfigurationResponse>(<any>null);
+    }
+
+    /**
      * Get all the instant messages for a conference for a participant
      * @param conferenceId Id of the conference
      * @param participantId the participant in the conference
@@ -4121,7 +4203,7 @@ export class ApiClient {
      * Get available courts
      * @return Success
      */
-    getVenues_(): Observable<HearingVenueResponse[]> {
+    getVenues(): Observable<HearingVenueResponse[]> {
         let url_ = this.baseUrl + '/hearing-venues/courts';
         url_ = url_.replace(/[?&]$/, '');
 
@@ -4137,14 +4219,14 @@ export class ApiClient {
             .request('get', url_, options_)
             .pipe(
                 _observableMergeMap((response_: any) => {
-                    return this.processGetVenues_(response_);
+                    return this.processGetVenues(response_);
                 })
             )
             .pipe(
                 _observableCatch((response_: any) => {
                     if (response_ instanceof HttpResponseBase) {
                         try {
-                            return this.processGetVenues_(<any>response_);
+                            return this.processGetVenues(<any>response_);
                         } catch (e) {
                             return <Observable<HearingVenueResponse[]>>(<any>_observableThrow(e));
                         }
@@ -4153,7 +4235,7 @@ export class ApiClient {
             );
     }
 
-    protected processGetVenues_(response: HttpResponseBase): Observable<HearingVenueResponse[]> {
+    protected processGetVenues(response: HttpResponseBase): Observable<HearingVenueResponse[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
@@ -4496,7 +4578,9 @@ export enum Role {
     Judge = 'Judge',
     Individual = 'Individual',
     Representative = 'Representative',
-    JudicialOfficeHolder = 'JudicialOfficeHolder'
+    JudicialOfficeHolder = 'JudicialOfficeHolder',
+    QuickLinkParticipant = 'QuickLinkParticipant',
+    QuickLinkObserver = 'QuickLinkObserver'
 }
 
 export class ParticipantForJudgeResponse implements IParticipantForJudgeResponse {
@@ -7191,6 +7275,80 @@ export interface IUserProfileResponse {
     last_name?: string | undefined;
     display_name?: string | undefined;
     username?: string | undefined;
+}
+
+export class QuickLinkParticipantJoinRequest implements IQuickLinkParticipantJoinRequest {
+    name?: string | undefined;
+    role?: Role;
+
+    constructor(data?: IQuickLinkParticipantJoinRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data['name'];
+            this.role = _data['role'];
+        }
+    }
+
+    static fromJS(data: any): QuickLinkParticipantJoinRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new QuickLinkParticipantJoinRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['name'] = this.name;
+        data['role'] = this.role;
+        return data;
+    }
+}
+
+export interface IQuickLinkParticipantJoinRequest {
+    name?: string | undefined;
+    role?: Role;
+}
+
+export class QuickLinkParticipantJoinResponse implements IQuickLinkParticipantJoinResponse {
+    jwt?: string | undefined;
+
+    constructor(data?: IQuickLinkParticipantJoinResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.jwt = _data['jwt'];
+        }
+    }
+
+    static fromJS(data: any): QuickLinkParticipantJoinResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new QuickLinkParticipantJoinResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['jwt'] = this.jwt;
+        return data;
+    }
+}
+
+export interface IQuickLinkParticipantJoinResponse {
+    jwt?: string | undefined;
 }
 
 export class SelfTestPexipResponse implements ISelfTestPexipResponse {
