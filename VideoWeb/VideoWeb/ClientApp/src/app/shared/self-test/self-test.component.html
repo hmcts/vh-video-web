@@ -19,7 +19,18 @@
     <video #selfView id="outgoingStream" [muted]="true" [srcObject]="this.outgoingStream" width="270" height="auto" style="display: none">
       {{ 'self-test.browser-not-support' | translate }}
     </video>
-    <canvas *ngIf="displayFeed" #outputCanvas id="outputCanvas" width="270" height="auto"></canvas>
+
+    <video
+      *ngIf="displayFeed"
+      id="outgoingFilteredStream"
+      [muted]="true"
+      [srcObject]="this.filteredStream"
+      width="270"
+      height="auto"
+      autoplay
+    >
+      {{ 'self-test.browser-not-support' | translate }}
+    </video>
   </div>
 
   <div class="govuk-grid-column-full">

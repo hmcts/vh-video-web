@@ -173,6 +173,7 @@ export class VideoCallService {
 
         // this.userMediaStreamService.stopStream(this.pexipAPI.user_media_stream);
         this.pexipAPI.user_media_stream = null;
+        this.userMediaStreamService.stopStream(this.preferredDeviceStream);
         this.preferredDeviceStream = null;
     }
 

@@ -71,7 +71,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy,
     }
 
     abstract retrieveVideoElement(): HTMLVideoElement;
-    abstract retrieveCanvasElement(): HTMLCanvasElement;
 
     get canShowScreenShareButton(): boolean {
         const isNotTablet = !this.deviceTypeService.isTablet();

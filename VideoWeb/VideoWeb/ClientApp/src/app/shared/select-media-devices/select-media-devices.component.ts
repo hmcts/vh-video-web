@@ -26,8 +26,6 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
     @Input() showAudioOnlySetting = false;
     @Input() cameraOn = true;
 
-    @ViewChild('outputCanvas', { static: false }) outputCanvas: ElementRef<HTMLCanvasElement>;
-
     availableCameraDevices: UserMediaDevice[] = [];
     availableMicrophoneDevices: UserMediaDevice[] = [];
 
@@ -41,6 +39,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
     private destroyedSubject = new Subject();
     hideOriginalStream: boolean;
     showBackgroundFilter: boolean;
+    filteredStream: MediaStream;
 
     get usingPexipStream(): boolean {
         return !!this.videoFilterService.canvasStream;
@@ -97,17 +96,13 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
         } else {
             // this.usingPexipStream = false;
             await this.videoFilterService.initFilterStream(this);
-            this.videoFilterService.startFilteredStream();
+            this.filteredStream = this.videoFilterService.startFilteredStream();
             this.hideOriginalStream = true;
         }
     }
 
     retrieveVideoElement(): HTMLVideoElement {
         return document.getElementById('preferredCameraStream') as HTMLVideoElement;
-    }
-
-    retrieveCanvasElement(): HTMLCanvasElement {
-        return this.outputCanvas.nativeElement;
     }
 
     private setupSubscribers() {
@@ -120,7 +115,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
             }
 
             if (filter) {
-                this.videoFilterService.startFilteredStream();
+                this.filteredStream = this.videoFilterService.startFilteredStream();
                 this.hideOriginalStream = true;
             } else {
                 this.hideOriginalStream = false;

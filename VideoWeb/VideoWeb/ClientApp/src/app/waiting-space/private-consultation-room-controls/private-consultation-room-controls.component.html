@@ -210,15 +210,22 @@
   >
     {{ 'private-consultation-room-controls.browser-support' | translate }}
   </video>
-  <canvas
-    #outputCanvas
-    id="outputCanvas"
+
+  <video
+    #outgoingFilteredVideo
     [ngClass]="{
       'vh-fade-in': selfViewOpen,
       'vh-fade-out': !selfViewOpen,
       'vh-spotlight-self-view-outline': isSpotlighted
     }"
-  ></canvas>
+    id="outgoingFilteredFeedVideo"
+    [muted]="true"
+    [srcObject]="this.filteredStream"
+    autoplay
+    height="auto"
+  >
+    {{ 'private-consultation-room-controls.browser-support' | translate }}
+  </video>
 </div>
 <div class="outgoing-present-video-container">
   <video

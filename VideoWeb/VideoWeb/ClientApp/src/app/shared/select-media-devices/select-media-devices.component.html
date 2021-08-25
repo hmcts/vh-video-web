@@ -13,7 +13,10 @@
             <video id="preferredCameraStream" [srcObject]="preferredCameraStream" autoplay width="100%" height="auto" style="display: none">
               {{ 'select-media-devices.browser-support' | translate }}
             </video>
-            <canvas #outputCanvas id="outputCanvas"></canvas>
+
+            <video id="preferredFilteredCameraStream" [srcObject]="filteredStream" autoplay width="100%" height="auto">
+              {{ 'select-media-devices.browser-support' | translate }}
+            </video>
           </div>
           <div class="govuk-grid-column-full">
             <app-mic-visualiser *ngIf="preferredMicrophoneStream" [stream]="preferredMicrophoneStream"> </app-mic-visualiser>

@@ -6,5 +6,4 @@ export enum BackgroundFilter {
 
 export interface IVideoFilterer {
     retrieveVideoElement(): HTMLVideoElement;
-    retrieveCanvasElement(): HTMLCanvasElement;
 }

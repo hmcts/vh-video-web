@@ -26,8 +26,6 @@ import { VideoCallService } from '../services/video-call.service';
     outputs: ['leaveConsultation', 'lockConsultation', 'togglePanel', 'changeDeviceToggle']
 })
 export class PrivateConsultationRoomControlsComponent extends HearingControlsBaseComponent {
-    @ViewChild('outputCanvas') outputCanvas: ElementRef<HTMLCanvasElement>;
-
     constructor(
         protected videoCallService: VideoCallService,
         protected eventService: EventsService,
@@ -42,9 +40,6 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
 
     retrieveVideoElement(): HTMLVideoElement {
         return document.getElementById('outgoingFeedVideo') as HTMLVideoElement;
-    }
-    retrieveCanvasElement(): HTMLCanvasElement {
-        return this.outputCanvas.nativeElement;
     }
 
     canCloseOrPauseHearing() {

@@ -43,12 +43,11 @@ export class VideoFilterService {
     }
 
     async initFilterStream(page: IVideoFilterer) {
-        // if (this.videoElement && this.videoElement.id === page?.retrieveVideoElement()?.id) {
-        //     return;
-        // }
         this.logger.debug(`${this.loggerPrefix} initialising stream for filter`);
         this.videoElement = page.retrieveVideoElement();
-        this.canvasElement = page.retrieveCanvasElement();
+        this.canvasElement = document.createElement('canvas');
+        this.canvasElement.width = 1280;
+        this.canvasElement.height = 720;
         this.canvasCtx = this.canvasElement.getContext('2d');
 
         this.logger.debug(`${this.loggerPrefix} starting filtered stream`);
@@ -128,7 +127,7 @@ export class VideoFilterService {
 
     private applyBlurEffect(results: Results, withBlur: boolean) {
         if (withBlur) {
-            this.canvasCtx.filter = 'blur(10px)';
+            this.canvasCtx.filter = 'blur(20px)';
         }
         this.canvasCtx.drawImage(results.image, 0, 0, this.canvasElement.width, this.canvasElement.height);
     }

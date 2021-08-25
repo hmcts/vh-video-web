@@ -39,7 +39,6 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
     @Output() testCompleted = new EventEmitter<TestCallScoreResponse>();
 
     @ViewChild('selfView') selfView: ElementRef<HTMLVideoElement>;
-    @ViewChild('outputCanvas') outputCanvas: ElementRef<HTMLCanvasElement>;
 
     token: TokenResponse;
     incomingStream: MediaStream | URL;
@@ -62,8 +61,6 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
     private maxBandwidth = 1280;
     subscription: Subscription = new Subscription();
     videoCallSubscription$ = new Subscription();
-
-    hideOriginalStream: boolean;
     filteredStream: MediaStream;
 
     constructor(
@@ -80,10 +77,6 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
 
     retrieveVideoElement(): HTMLVideoElement {
         return this.selfView.nativeElement;
-    }
-
-    retrieveCanvasElement(): HTMLCanvasElement {
-        return this.outputCanvas.nativeElement;
     }
 
     ngOnInit() {
@@ -165,7 +158,6 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
         this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
         this.preferredMicrophoneStream = null;
         this.displayDeviceChangeModal = true;
-        this.hideOriginalStream = false;
     }
 
     async onMediaDeviceChangeCancelled() {
@@ -187,7 +179,6 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
         await this.videoFilterService.initFilterStream(this);
         this.filteredStream = this.videoFilterService.startFilteredStream();
         this.videoCallService.updatePexipCameraStream(this.filteredStream);
-        this.hideOriginalStream = true;
     }
 
     setupSubscribers() {
@@ -200,10 +191,7 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
             this.videoFilterService.onFilterChanged.subscribe(async filter => {
                 this.logger.debug(`${this.loggerPrefix} filter applied ${filter ? filter : 'off'}`);
                 if (filter) {
-                    this.videoFilterService.startFilteredStream();
-                    this.hideOriginalStream = true;
-                } else {
-                    this.hideOriginalStream = false;
+                    this.filteredStream = this.videoFilterService.startFilteredStream();
                 }
             })
         );
@@ -363,6 +351,10 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
             this.preferredMicrophoneStream = null;
         }
         this.preferredMicrophoneStream = null;
+
+        if (this.videoCallService.preferredDeviceStream) {
+            this.userMediaStreamService.stopStream(this.videoCallService.preferredDeviceStream);
+        }
     }
 
     async retrieveSelfTestScore() {

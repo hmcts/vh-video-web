@@ -55,7 +55,7 @@ export class KinlyHeartbeatService {
                     `${heartbeatConfiguration.heartbeat_url_base}/${this.currentConference.id}`,
                     this.currentConference.id,
                     this.currentParticipant.id,
-                    heartbeatConfiguration.heartbeat_jwt,
+                    `Bearer ${heartbeatConfiguration.heartbeat_jwt}`,
                     this.handleHeartbeat.bind(this)
                 );
             },
