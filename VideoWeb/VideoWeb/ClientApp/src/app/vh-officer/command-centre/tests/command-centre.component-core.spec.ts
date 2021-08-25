@@ -67,11 +67,7 @@ describe('CommandCentreComponent - Core', () => {
     });
 
     afterAll(() => {
-        try {
-            TestFixtureHelper.clearVenues();
-        } catch (error) {
-            console.error(error);
-        }
+        TestFixtureHelper.clearVenues();
     });
 
     beforeEach(() => {

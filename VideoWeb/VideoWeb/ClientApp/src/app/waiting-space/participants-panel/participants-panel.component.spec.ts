@@ -72,11 +72,7 @@ describe('ParticipantsPanelComponent', () => {
         jasmine.getEnv().allowRespy(true);
     });
     afterAll(() => {
-        try {
-            jasmine.getEnv().allowRespy(false);
-        } catch (error) {
-            console.error(error);
-        }
+        jasmine.getEnv().allowRespy(false);
     });
     beforeEach(() => {
         videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', ['setSpotlightStatus']);

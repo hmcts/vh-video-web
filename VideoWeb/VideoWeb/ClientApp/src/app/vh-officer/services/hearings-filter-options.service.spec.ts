@@ -9,11 +9,7 @@ describe('HearingFilterOptionsService', () => {
     });
 
     afterAll(() => {
-        try {
-            TestFixtureHelper.clearHearingFilters();
-        } catch (error) {
-            console.error(error);
-        }
+        TestFixtureHelper.clearHearingFilters();
     });
 
     it('should get hearings filter object with number selected options 0', async () => {
