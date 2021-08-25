@@ -2032,6 +2032,88 @@ export class ApiClient {
     }
 
     /**
+     * @return Success
+     */
+    getHeartbeatConfigForParticipant(participantId: string): Observable<HeartbeatConfigurationResponse> {
+        let url_ = this.baseUrl + '/heartbeat/GetHeartbeatConfigForParticipant/{participantId}';
+        if (participantId === undefined || participantId === null) throw new Error("The parameter 'participantId' must be defined.");
+        url_ = url_.replace('{participantId}', encodeURIComponent('' + participantId));
+        url_ = url_.replace(/[?&]$/, '');
+
+        let options_: any = {
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({
+                Accept: 'application/json'
+            })
+        };
+
+        return this.http
+            .request('get', url_, options_)
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processGetHeartbeatConfigForParticipant(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processGetHeartbeatConfigForParticipant(<any>response_);
+                        } catch (e) {
+                            return <Observable<HeartbeatConfigurationResponse>>(<any>_observableThrow(e));
+                        }
+                    } else return <Observable<HeartbeatConfigurationResponse>>(<any>_observableThrow(response_));
+                })
+            );
+    }
+
+    protected processGetHeartbeatConfigForParticipant(response: HttpResponseBase): Observable<HeartbeatConfigurationResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result200: any = null;
+                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result200 = HeartbeatConfigurationResponse.fromJS(resultData200);
+                    return _observableOf(result200);
+                })
+            );
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result400: any = null;
+                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result400 = ProblemDetails.fromJS(resultData400);
+                    return throwException('Bad Request', status, _responseText, _headers, result400);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<HeartbeatConfigurationResponse>(<any>null);
+    }
+
+    /**
      * Get all the instant messages for a conference for a participant
      * @param conferenceId Id of the conference
      * @param participantId the participant in the conference
@@ -2281,6 +2363,90 @@ export class ApiClient {
             );
         }
         return _observableOf<UnreadAdminMessageResponse>(<any>null);
+    }
+
+    /**
+     * @param conferenceId (optional)
+     * @param body (optional)
+     * @return Success
+     */
+    participantsUpdated(conferenceId: string | undefined, body: UpdateConferenceParticipantsRequest | undefined): Observable<void> {
+        let url_ = this.baseUrl + '/internalevent/ParticipantsUpdated?';
+        if (conferenceId === null) throw new Error("The parameter 'conferenceId' cannot be null.");
+        else if (conferenceId !== undefined) url_ += 'conferenceId=' + encodeURIComponent('' + conferenceId) + '&';
+        url_ = url_.replace(/[?&]$/, '');
+
+        const content_ = JSON.stringify(body);
+
+        let options_: any = {
+            body: content_,
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({
+                'Content-Type': 'application/json-patch+json'
+            })
+        };
+
+        return this.http
+            .request('post', url_, options_)
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processParticipantsUpdated(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processParticipantsUpdated(<any>response_);
+                        } catch (e) {
+                            return <Observable<void>>(<any>_observableThrow(e));
+                        }
+                    } else return <Observable<void>>(<any>_observableThrow(response_));
+                })
+            );
+    }
+
+    protected processParticipantsUpdated(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return _observableOf<void>(<any>null);
+                })
+            );
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result400: any = null;
+                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result400 = resultData400 !== undefined ? resultData400 : <any>null;
+                    return throwException('Bad Request', status, _responseText, _headers, result400);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<void>(<any>null);
     }
 
     /**
@@ -4004,88 +4170,6 @@ export class ApiClient {
     }
 
     protected processGetSelfTestToken(response: HttpResponseBase): Observable<TokenResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {};
-        if (response.headers) {
-            for (let key of response.headers.keys()) {
-                _headers[key] = response.headers.get(key);
-            }
-        }
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result200: any = null;
-                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result200 = TokenResponse.fromJS(resultData200);
-                    return _observableOf(result200);
-                })
-            );
-        } else if (status === 400) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result400: any = null;
-                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = ProblemDetails.fromJS(resultData400);
-                    return throwException('Bad Request', status, _responseText, _headers, result400);
-                })
-            );
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('Unauthorized', status, _responseText, _headers);
-                })
-            );
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
-                })
-            );
-        }
-        return _observableOf<TokenResponse>(<any>null);
-    }
-
-    /**
-     * @return Success
-     */
-    getJwtoken(participantId: string): Observable<TokenResponse> {
-        let url_ = this.baseUrl + '/participants/{participantId}/jwtoken';
-        if (participantId === undefined || participantId === null) throw new Error("The parameter 'participantId' must be defined.");
-        url_ = url_.replace('{participantId}', encodeURIComponent('' + participantId));
-        url_ = url_.replace(/[?&]$/, '');
-
-        let options_: any = {
-            observe: 'response',
-            responseType: 'blob',
-            headers: new HttpHeaders({
-                Accept: 'application/json'
-            })
-        };
-
-        return this.http
-            .request('get', url_, options_)
-            .pipe(
-                _observableMergeMap((response_: any) => {
-                    return this.processGetJwtoken(response_);
-                })
-            )
-            .pipe(
-                _observableCatch((response_: any) => {
-                    if (response_ instanceof HttpResponseBase) {
-                        try {
-                            return this.processGetJwtoken(<any>response_);
-                        } catch (e) {
-                            return <Observable<TokenResponse>>(<any>_observableThrow(e));
-                        }
-                    } else return <Observable<TokenResponse>>(<any>_observableThrow(response_));
-                })
-            );
-    }
-
-    protected processGetJwtoken(response: HttpResponseBase): Observable<TokenResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
@@ -6292,6 +6376,45 @@ export interface IHealthCheckResponse {
     app_version?: ApplicationVersion | undefined;
 }
 
+export class HeartbeatConfigurationResponse implements IHeartbeatConfigurationResponse {
+    heartbeat_url_base?: string | undefined;
+    heartbeat_jwt?: string | undefined;
+
+    constructor(data?: IHeartbeatConfigurationResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.heartbeat_url_base = _data['heartbeat_url_base'];
+            this.heartbeat_jwt = _data['heartbeat_jwt'];
+        }
+    }
+
+    static fromJS(data: any): HeartbeatConfigurationResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new HeartbeatConfigurationResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['heartbeat_url_base'] = this.heartbeat_url_base;
+        data['heartbeat_jwt'] = this.heartbeat_jwt;
+        return data;
+    }
+}
+
+export interface IHeartbeatConfigurationResponse {
+    heartbeat_url_base?: string | undefined;
+    heartbeat_jwt?: string | undefined;
+}
+
 export class ChatResponse implements IChatResponse {
     /** Message UUID */
     readonly id?: string;
@@ -6574,9 +6697,7 @@ export enum UserRole {
     Judge = 'Judge',
     Individual = 'Individual',
     Representative = 'Representative',
-    JudicialOfficeHolder = 'JudicialOfficeHolder',
-    QuickLinkParticipant = 'QuickLinkParticipant',
-    QuickLinkObserver = 'QuickLinkObserver'
+    JudicialOfficeHolder = 'JudicialOfficeHolder'
 }
 
 export class ParticipantRequest implements IParticipantRequest {

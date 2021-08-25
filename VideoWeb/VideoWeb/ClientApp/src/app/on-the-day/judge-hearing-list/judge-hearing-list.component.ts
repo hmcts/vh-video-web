@@ -92,7 +92,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
     }
 
     hasHearings() {
-        return this.conferences !== undefined && this.conferences.length > 0;
+        return !!this.conferences && this.conferences.length > 0;
     }
 
     onConferenceSelected(conference: ConferenceForJudgeResponse) {

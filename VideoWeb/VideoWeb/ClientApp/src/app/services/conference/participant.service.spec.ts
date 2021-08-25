@@ -21,11 +21,10 @@ import { LoggerService } from '../logging/logger.service';
 import { ParticipantStatusMessage } from '../models/participant-status-message';
 import { ConferenceService } from './conference.service';
 import { VirtualMeetingRoomModel } from './models/virtual-meeting-room.model';
-import { invalidNumberOfNonEndpointParticipantsError, ParticipantService } from './participant.service';
-import { IHearingControlsState, IParticipantControlsState } from './video-control-cache-storage.service.interface';
+import { ParticipantService } from './participant.service';
 import { VideoControlCacheService } from './video-control-cache.service';
 import { ParticipantsUpdatedMessage } from '../../shared/models/participants-updated-message';
-import { component } from 'src/app/waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
+import { VideoCallEventsService } from 'src/app/waiting-space/services/video-call-events.service';
 
 describe('ParticipantService', () => {
     const asParticipantModelsFromUserResponse = (participants: ParticipantForUserResponse[]) =>
@@ -135,9 +134,9 @@ describe('ParticipantService', () => {
     let currentConferenceSubject: Subject<ConferenceResponse>;
     let currentConference$: Observable<ConferenceResponse>;
 
-    let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
+    let videoCallEventsServiceSpy: jasmine.SpyObj<VideoCallEventsService>;
     let participantUpdatedSubject: Subject<ParticipantUpdated>;
-    let participantUpdated$: Observable<ParticipantUpdated>;
+    let participantUpdatedObservable: Observable<ParticipantUpdated>;
 
     let eventsServiceSpy: jasmine.SpyObj<EventsService>;
     let participantStatusUpdateSubject: Subject<ParticipantStatusMessage>;
@@ -167,12 +166,12 @@ describe('ParticipantService', () => {
         spyOn(currentConference$, 'subscribe').and.callThrough();
         getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference$').and.returnValue(currentConference$);
 
-        videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>('VideoCallService', ['onParticipantUpdated']);
+        videoCallEventsServiceSpy = jasmine.createSpyObj<VideoCallEventsService>([], ['participantUpdated$']);
 
         participantUpdatedSubject = new Subject<ParticipantUpdated>();
-        participantUpdated$ = participantUpdatedSubject.asObservable();
-        spyOn(participantUpdated$, 'subscribe').and.callThrough();
-        videoCallServiceSpy.onParticipantUpdated.and.returnValue(participantUpdated$);
+        participantUpdatedObservable = participantUpdatedSubject.asObservable();
+        spyOn(participantUpdatedObservable, 'subscribe').and.callThrough();
+        getSpiedPropertyGetter(videoCallEventsServiceSpy, 'participantUpdated$').and.returnValue(participantUpdatedObservable);
 
         eventsServiceSpy = jasmine.createSpyObj<EventsService>('EventsService', ['getParticipantStatusMessage', 'getParticipantsUpdated']);
 
@@ -188,7 +187,13 @@ describe('ParticipantService', () => {
 
         loggerSpy = jasmine.createSpyObj<LoggerService>('Logger', ['error', 'warn', 'info']);
 
-        sut = new ParticipantService(conferenceServiceSpy, videoCallServiceSpy, eventsServiceSpy, videoControlCacheServiceSpy, loggerSpy);
+        sut = new ParticipantService(
+            conferenceServiceSpy,
+            videoCallEventsServiceSpy,
+            eventsServiceSpy,
+            videoControlCacheServiceSpy,
+            loggerSpy
+        );
     });
 
     describe('construction', () => {
@@ -283,9 +288,6 @@ describe('ParticipantService', () => {
         }));
 
         it('should subscribe to onParticipantUpdated', fakeAsync(() => {
-            // Arrange
-            videoCallServiceSpy.onParticipantUpdated.and.returnValue(participantUpdated$);
-
             // Act
             const participantResponses = [participantOne, participantTwo];
             getParticipantsForConferenceSubject.next(asParticipantModelsFromUserResponse(participantResponses));
@@ -293,8 +295,7 @@ describe('ParticipantService', () => {
             flush();
 
             // Assert
-            expect(videoCallServiceSpy.onParticipantUpdated).toHaveBeenCalledTimes(1);
-            expect(participantUpdated$.subscribe).toHaveBeenCalledTimes(1);
+            expect(participantUpdatedObservable.subscribe).toHaveBeenCalledTimes(1);
         }));
 
         it('should subscribe to currentConference$', fakeAsync(() => {
@@ -429,7 +430,7 @@ describe('ParticipantService', () => {
             'TestId1',
             'TestName1',
             'TestDisplayName1',
-            'TestPexipDisplayName1',
+            'ROLE;HEARTBEAT;DISPLAY NAME;ID',
             'TestCaseGroup1',
             Role.JudicialOfficeHolder,
             'TestHearingRole1',
@@ -449,7 +450,7 @@ describe('ParticipantService', () => {
             'TestId2',
             'TestName2',
             'TestDisplayName2',
-            'TestPexipDisplayName2',
+            'ROLE;HEARTBEAT;DISPLAY NAME;ID',
             'TestCaseGroup2',
             Role.JudicialOfficeHolder,
             'TestHearingRole2',

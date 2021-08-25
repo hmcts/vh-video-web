@@ -267,12 +267,10 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     });
 
     it('should init hearing alert and setup Client', fakeAsync(() => {
-        videoWebService.getJwToken.calls.reset();
         component.ngOnInit();
         flushMicrotasks();
         tick(100);
         expect(component.eventHubSubscription$).toBeDefined();
-        expect(videoWebService.getJwToken).toHaveBeenCalledTimes(1);
     }));
     it('should handle error when unable to setup default devices', fakeAsync(() => {
         errorService.handlePexipError.calls.reset();

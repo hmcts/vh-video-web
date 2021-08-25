@@ -1,35 +1,35 @@
 parameters:
-- name: deploymentBranch
-  displayName: Branch to Deploy
-  type: string
-  default: refs/heads/master
+  - name: deploymentBranch
+    displayName: Branch to Deploy
+    type: string
+    default: refs/heads/master
 
-- name: environment
-  displayName: Environment
-  type: string
-  default: Sandbox
-  values:
-  - Preview
-  - Dev
-  - AAT
-  - Sandbox
-  - Test1
-  - Test2
-  - Demo
-  - Preprod
-  - Prod
+  - name: environment
+    displayName: Environment
+    type: string
+    default: Sandbox
+    values:
+      - Preview
+      - Dev
+      - AAT
+      - Sandbox
+      - Test1
+      - Test2
+      - Demo
+      - Preprod
+      - Prod
 
-- name: RunZap
-  displayName: Execute ZAP Tests
-  type: boolean
-  default: false
+  - name: RunZap
+    displayName: Execute ZAP Tests
+    type: boolean
+    default: false
 
-- name: prodEnvs
-  displayName: Environments Using Prod Subscription
-  type: object
-  default:
-    - Prod
-    - Preprod
+  - name: prodEnvs
+    displayName: Environments Using Prod Subscription
+    type: object
+    default:
+      - Prod
+      - Preprod
 
 # Set variables once
 variables:
@@ -39,15 +39,15 @@ variables:
   - group: vh test users
   - group: Saucelabs
   - ${{ if ne(variables['Build.Reason'], 'ResourceTrigger') }}:
-    - ${{ if containsValue(parameters.prodEnvs, parameters.environment) }}:
-      - group: vh-prod
-    - ${{ if not(containsValue(parameters.prodEnvs, parameters.environment)) }}:
-      - group: vh-preview
+      - ${{ if containsValue(parameters.prodEnvs, parameters.environment) }}:
+          - group: vh-prod
+      - ${{ if not(containsValue(parameters.prodEnvs, parameters.environment)) }}:
+          - group: vh-preview
   - ${{ if eq(variables['Build.Reason'], 'ResourceTrigger') }}:
-    - ${{ if or(startswith(variables['Build.SourceBranch'], 'refs/heads/release/'), startswith(variables['Build.SourceBranch'], 'refs/heads/hotfix/')) }}:
-      - group: vh-prod
-    - ${{ if not(or(startswith(variables['Build.SourceBranch'], 'refs/heads/release/'), startswith(variables['Build.SourceBranch'], 'refs/heads/hotfix/'))) }}:
-      - group: vh-preview
+      - ${{ if or(startswith(variables['Build.SourceBranch'], 'refs/heads/release/'), startswith(variables['Build.SourceBranch'], 'refs/heads/hotfix/')) }}:
+          - group: vh-prod
+      - ${{ if not(or(startswith(variables['Build.SourceBranch'], 'refs/heads/release/'), startswith(variables['Build.SourceBranch'], 'refs/heads/hotfix/'))) }}:
+          - group: vh-preview
 
 trigger: none
 pr: none
@@ -60,13 +60,13 @@ resources:
       ref: refs/heads/master
       endpoint: hmcts
   pipelines:
-  - pipeline: CI
-    source: hmcts.vh-video-web
-    trigger: 
-      branches:
-      - master
-      - hotfix/*
-      - release/*
+    - pipeline: CI
+      source: hmcts.vh-video-web
+      trigger:
+        branches:
+          - master
+          - hotfix/*
+          - release/*
 
 stages:
   - template: templates/vh-release.yml@templates
@@ -88,73 +88,73 @@ stages:
         resourceGroup: vh-video-web-$(environment)
         testCaseFilter: TestCategory=smoketest
         dependentApps:
-        - name: vh-user-api-$(environment)
-          resourceGroup: vh-user-api-$(environment)
-          healthEndpoint: $(user_api_url)healthcheck/health
-        - name: vh-bookings-api-$(environment)
-          resourceGroup: vh-bookings-api-$(environment)
-          healthEndpoint: $(bookings_api_url)healthcheck/health
-        - name: vh-video-api-$(environment)
-          resourceGroup: vh-video-api-$(environment)
-          healthEndpoint: $(video_api_url)healthcheck/health
-        - name: vh-test-api-$(environment)
-          resourceGroup: vh-test-api-$(environment)
-          healthEndpoint: $(test_api_url)health/health
+          - name: vh-user-api-$(environment)
+            resourceGroup: vh-user-api-$(environment)
+            healthEndpoint: $(user_api_url)healthcheck/health
+          - name: vh-bookings-api-$(environment)
+            resourceGroup: vh-bookings-api-$(environment)
+            healthEndpoint: $(bookings_api_url)healthcheck/health
+          - name: vh-video-api-$(environment)
+            resourceGroup: vh-video-api-$(environment)
+            healthEndpoint: $(video_api_url)healthcheck/health
+          - name: vh-test-api-$(environment)
+            resourceGroup: vh-test-api-$(environment)
+            healthEndpoint: $(test_api_url)health/health
         variables:
           - group: vh-wowza-dev
             env:
-             - Preview
-             - Dev
-             - AAT
-             - Sandbox
-             - Test1
-             - Test2
+              - Preview
+              - Dev
+              - AAT
+              - Sandbox
+              - Test1
+              - Test2
           - group: vh-wowza-demo
             env:
-             - Demo
+              - Demo
           - group: vh-wowza-preprod
             env:
-             - Preprod
+              - Preprod
           - group: vh-wowza-prod
             env:
-             - Prod
+              - Prod
           - group: KinlyConfiguration_Dev
             env:
-             - Sandbox
+              - Sandbox
           - group: KinlyConfiguration_Test
             env:
-             - Preview
-             - Dev
-             - AAT
-             - Test1
-             - Test2
+              - Preview
+              - Dev
+              - AAT
+              - Test1
+              - Test2
           - group: KinlyConfiguration_Test2
             env:
-             - Demo
+              - Demo
           - group: KinlyConfiguration_Preprod
             env:
-             - Preprod
+              - Preprod
           - group: KinlyConfiguration_Prod
             env:
-             - Prod
+              - Prod
           - name: AppUri
             value: $(AppUri_Prod)
             env:
-             - Prod
+              - Prod
           - group: vh-video-web-nonprod
             env:
-             - Preview
-             - Dev
-             - AAT
-             - Sandbox
-             - Test1
-             - Test2
+              - Preview
+              - Dev
+              - AAT
+              - Sandbox
+              - Test1
+              - Test2
           - group: vh-video-web-preprod
             env:
-             - Preprod
+              - Preprod
           - group: vh-video-web-prod
             env:
-             - Prod
+              - Prod
           - name: VanityUrl
             value: $(video_web_domain_prod)
             env:
@@ -219,7 +219,7 @@ stages:
             value: vh-video-web-identifieruris
             secret: true
 
-         # EJudAd
+          # EJudAd
           - name: EJudAd:ClientId
             value: ejud-appid
             secret: true
@@ -254,7 +254,9 @@ stages:
             value: $(TurnServerUser)
           - name: KinlyConfiguration:TurnServerCredential
             value: $(TurnServerCredential)
-            
+          - name: KinlyConfiguration:HeartbeatUrlBase
+            value: $(HeartbeatUrlBase)
+
           # VhServices
           - name: VhServices:BookingsApiResourceId
             value: vh-bookings-api-identifieruris
@@ -275,7 +277,7 @@ stages:
             value: $(EmailReformDomain)
           - name: VhServices:InternalEventSecret
             value: $(internal_event_secret)
-            
+
         acceptanceTestSettings:
           - name: ConnectionStrings:SignalR
             value: signalr-connection-str
@@ -306,7 +308,7 @@ stages:
             value: $(video_web_url)
           - name: VhServices:VideoWebUrl
             value: $(video_web_url)
-            
+
           # AzureAd
           - name: AzureAd:TenantId
             value: tenantid
@@ -350,7 +352,9 @@ stages:
             value: $(SelfTestApiKey)
           - name: KinlyConfiguration:JoinByPhoneFromDate
             value: $(JoinByPhoneFromDate)
-            
+          - name: KinlyConfiguration:HeartbeatUrlBase
+            value: $(HeartbeatUrlBase)
+
           # SauceLabs
           - name: Saucelabs:Username
             value: $(Saucelabs:Username)
@@ -366,7 +370,7 @@ stages:
             value: $(wowza_storageAccountKey)
           - name: WowzaConfiguration:StorageContainerName
             value: $(wowza_storageContainerName)
-            
+
           # Ejud - test setting only
           - name: UsingEjud
             value: $(UsingEjud)

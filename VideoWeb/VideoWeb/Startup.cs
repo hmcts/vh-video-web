@@ -66,6 +66,7 @@ namespace VideoWeb
             });
             
             var customTokenSettings = Configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
+            services.Configure<KinlyConfiguration>(Configuration.GetSection("KinlyConfiguration"));
             services.AddSingleton(customTokenSettings);
 
             var connectionStrings = Configuration.GetSection("ConnectionStrings").Get<ConnectionStrings>();
