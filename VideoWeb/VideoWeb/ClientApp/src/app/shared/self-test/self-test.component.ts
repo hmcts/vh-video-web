@@ -176,7 +176,7 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
     }
 
     async applyAndUseFilterStream() {
-        await this.videoFilterService.initFilterStream(this);
+        await this.videoFilterService.initFilterFromMediaStream(this.outgoingStream as MediaStream);
         this.filteredStream = this.videoFilterService.startFilteredStream();
         this.videoCallService.updatePexipCameraStream(this.filteredStream);
     }
@@ -223,6 +223,12 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
         });
         this.outgoingStream = callSetup.stream;
         this.videoCallService.connect('0000', null);
+        this.applyAndUseFilterStream().catch(err => {
+            this.logger.error(`${this.loggerPrefix} Failed to apply video filter`, err, {
+                conference: this.conference?.id,
+                participant: this.selfTestParticipantId
+            });
+        });
     }
 
     handleCallConnected(callConnected: ConnectedCall) {
@@ -233,16 +239,6 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
         this.incomingStream = callConnected.stream;
         this.displayFeed = true;
         this.testStarted.emit();
-
-        // TOOD: find a better way to trigger this
-        setTimeout(() => {
-            this.applyAndUseFilterStream().catch(err => {
-                this.logger.error(`${this.loggerPrefix} Failed to apply video filter`, err, {
-                    conference: this.conference?.id,
-                    participant: this.selfTestParticipantId
-                });
-            });
-        }, 1000);
     }
 
     handleCallError(error: CallError) {

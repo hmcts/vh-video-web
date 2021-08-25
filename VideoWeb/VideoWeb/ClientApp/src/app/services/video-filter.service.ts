@@ -42,6 +42,38 @@ export class VideoFilterService {
         });
     }
 
+    async initFilterFromMediaStream(stream: MediaStream) {
+        this.logger.debug(`${this.loggerPrefix} initialising stream for filter`);
+        this.videoElement = document.createElement('video');
+        this.videoElement.srcObject = stream;
+
+        this.canvasElement = document.createElement('canvas');
+        this.canvasElement.width = 1280;
+        this.canvasElement.height = 720;
+        this.canvasCtx = this.canvasElement.getContext('2d');
+
+        this.logger.debug(`${this.loggerPrefix} starting filtered stream`);
+        this.selfieSegmentation.onResults(results => this.onSelfieSegmentationResults(results));
+
+        const camera = new Camera(this.videoElement, {
+            onFrame: async () => {
+                try {
+                    if (this.videoElement) {
+                        await this.selfieSegmentation.send({ image: this.videoElement });
+                    }
+                } catch (err) {
+                    console.warn(
+                        `${this.loggerPrefix} sending image failed from video ${this.videoElement.id} to canvas ${this.canvasElement.id}`
+                    );
+                    this.logger.error(`${this.loggerPrefix} failed to send image to self segmentation mask`, err);
+                }
+            },
+            width: 1280,
+            height: 720
+        });
+        camera.start();
+    }
+
     async initFilterStream(page: IVideoFilterer) {
         this.logger.debug(`${this.loggerPrefix} initialising stream for filter`);
         this.videoElement = page.retrieveVideoElement();
