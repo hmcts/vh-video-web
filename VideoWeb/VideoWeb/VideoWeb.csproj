@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -65,7 +65,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="5.0.0" />
     <PackageReference Include="UserApi.Client" Version="1.24.3" />
     <PackageReference Include="VH.Core.Configuration" Version="0.1.12" />
-    <PackageReference Include="VideoApi.Client" Version="1.27.6-pullrequest0404-0003" />
+      <PackageReference Include="VideoApi.Client" Version="1.27.6-pullrequest0404-0002" />
   </ItemGroup>
 
   <ItemGroup>
