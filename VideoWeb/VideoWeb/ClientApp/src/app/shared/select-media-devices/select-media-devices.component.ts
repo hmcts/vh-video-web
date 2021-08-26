@@ -6,6 +6,9 @@ import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { MediaStreamService } from 'src/app/services/media-stream.service';
+import { VideoFilterService } from 'src/app/services/video-filter.service';
+import { ProfileService } from 'src/app/services/api/profile.service';
+import { Role, UserProfileResponse } from 'src/app/services/clients/api-client';
 
 @Component({
     selector: 'app-select-media-devices',
@@ -25,6 +28,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     selectedMicrophoneStream: MediaStream;
     connectWithCameraOn: boolean;
     blockToggleClicks: boolean;
+    showBackgroundFilter: boolean;
 
     private destroyedSubject = new Subject<any>();
 
@@ -32,13 +36,19 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         private userMediaService: UserMediaService,
         private mediaStreamService: MediaStreamService,
         private logger: Logger,
-        private translateService: TranslateService
+        private translateService: TranslateService,
+        private videoFilterService: VideoFilterService,
+        private profileService: ProfileService
     ) {}
 
     ngOnInit() {
         this.userMediaService.connectedDevices$.pipe(takeUntil(this.destroyedSubject)).subscribe(connectedDevices => {
             this.availableCameraDevices = connectedDevices.filter(device => device.kind === 'videoinput');
             this.availableMicrophoneDevices = connectedDevices.filter(device => device.kind === 'audioinput');
+        });
+
+        this.profileService.getUserProfile().then(profile => {
+            this.determineFilterSelectionVisibility(profile);
         });
 
         this.userMediaService.isAudioOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(isAudioOnly => {
@@ -52,6 +62,10 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         this.userMediaService.activeMicrophoneDevice$.pipe(takeUntil(this.destroyedSubject)).subscribe(microphoneDevice => {
             this.updateSelectedMicrophone(microphoneDevice);
         });
+    }
+
+    determineFilterSelectionVisibility(profile: UserProfileResponse) {
+        this.showBackgroundFilter = profile.role === Role.JudicialOfficeHolder || profile.role === Role.Judge;
     }
 
     onSelectedCameraDeviceChange() {

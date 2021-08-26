@@ -1,0 +1,84 @@
+<button class="vh-accordion" (click)="toggleDisplayOptions()">
+  <span class="govuk-link"
+    >Choose a custom background<i
+      class="fas"
+      [ngClass]="showOptions ? 'fa-chevron-up' : 'fa-chevron-down'"
+      id="bg-icon"
+      style="margin-left: 8px"
+      aria-hidden="true"
+    ></i
+  ></span>
+</button>
+
+<div *ngIf="showOptions" class="v-bg-panel">
+  <div class="bg-grid">
+    <div class="bg-img1">
+      <input
+        type="radio"
+        class="input-hidden"
+        name="backgrounds"
+        id="bg-none"
+        [checked]="!filterOn"
+        [value]="null"
+        (change)="this.backgroundChanged($event)"
+      />
+      <label for="bg-none">
+        <img src="/assets/images/VhBgFilterNone.jpg" class="bg-option-img" />
+      </label>
+    </div>
+    <div class="bg-name1">
+      <div class="govuk-hint bg-option-text">No background</div>
+    </div>
+    <div class="bg-img2">
+      <input
+        type="radio"
+        class="input-hidden"
+        name="backgrounds"
+        id="bg-blur"
+        [checked]="activeFilter === vBG.blur"
+        [value]="vBG.blur"
+        (change)="this.backgroundChanged($event)"
+      />
+      <label for="bg-blur">
+        <img src="/assets/images/VhBgFilterBlur.jpg" class="bg-option-img" />
+      </label>
+    </div>
+    <div class="bg-name2">
+      <div class="govuk-hint bg-option-text">Blurred</div>
+    </div>
+    <div class="bg-img3">
+      <input
+        type="radio"
+        class="input-hidden"
+        name="backgrounds"
+        id="bg-hmcts"
+        [checked]="activeFilter === vBG.HMCTS"
+        [value]="vBG.HMCTS"
+        (change)="this.backgroundChanged($event)"
+      />
+      <label for="bg-hmcts">
+        <img src="/assets/images/VhBgFilterHMCTS.jpg" class="bg-option-img" />
+      </label>
+    </div>
+    <div class="bg-name3">
+      <div class="govuk-hint bg-option-text">HMCTS crest</div>
+    </div>
+    <div class="bg-img4">
+      <input
+        type="radio"
+        class="input-hidden"
+        name="backgrounds"
+        id="bg-scot"
+        [checked]="activeFilter === vBG.SCTS"
+        [value]="vBG.SCTS"
+        (change)="this.backgroundChanged($event)"
+      />
+      <label for="bg-scot">
+        <img src="/assets/images/VhBgFilterSCTS.jpg" class="bg-option-img" />
+      </label>
+    </div>
+    <div class="bg-name4">
+      <div class="govuk-hint bg-option-text">SCTS crest</div>
+    </div>
+  </div>
+</div>
