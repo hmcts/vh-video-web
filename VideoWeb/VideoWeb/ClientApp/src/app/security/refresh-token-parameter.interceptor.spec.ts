@@ -1,104 +1,191 @@
 import { HttpEvent, HttpHandler, HttpRequest } from '@angular/common/http';
-import { of } from 'rxjs';
-import { MockOidcSecurityService } from '../testing/mocks/mock-oidc-security.service';
+import { Injector } from '@angular/core';
+import { fakeAsync, flush } from '@angular/core/testing';
+import { PublicConfiguration } from 'angular-auth-oidc-client';
+import { of, Subject } from 'rxjs';
+import { Logger } from '../services/logging/logger-base';
+import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
+import { SecurityServiceProvider } from './authentication/security-provider.service';
+import { ISecurityService } from './authentication/security-service.interface';
+import { IdpProviders } from './idp-providers';
 import { RefreshTokenParameterInterceptor } from './refresh-token-parameter.interceptor';
 
 describe('RefreshTokenParameterInterceptor', () => {
     let sut: RefreshTokenParameterInterceptor;
-    const mockOidcSecurityService = new MockOidcSecurityService();
+    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
+    let currentIdpSubject: Subject<IdpProviders>;
+    let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
+    let loggerSpy: jasmine.SpyObj<Logger>;
+    let injectorSpy: jasmine.SpyObj<Injector>;
 
     beforeEach(() => {
-        sut = new RefreshTokenParameterInterceptor(mockOidcSecurityService as any);
+        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
+            'SecurityServiceProviderService',
+            ['getSecurityService'],
+            ['currentIdp$']
+        );
+
+        currentIdpSubject = new Subject<IdpProviders>();
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', [], ['configuration']);
+
+        getSpiedPropertyGetter(securityServiceSpy, 'configuration').and.returnValue({
+            configuration: {
+                scope: 'openid profile offline_access',
+                secureRoutes: ['.']
+            }
+        } as PublicConfiguration);
+
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentIdp$').and.returnValue(currentIdpSubject.asObservable());
+        securityServiceProviderServiceSpy.getSecurityService.and.returnValue(securityServiceSpy);
+
+        loggerSpy = jasmine.createSpyObj<Logger>('Logger', ['debug']);
+        injectorSpy = jasmine.createSpyObj<Injector>('Injector', ['get']);
+        injectorSpy.get.and.returnValue(loggerSpy);
+
+        sut = new RefreshTokenParameterInterceptor(securityServiceProviderServiceSpy, injectorSpy);
     });
 
-    it('should call next with updated body if token request post', async () => {
-        // Arrange
-        const next = jasmine.createSpyObj<HttpHandler>('HttpHandler', ['handle']);
-        let result: HttpRequest<any>;
-        next.handle.and.callFake(req => {
-            result = req;
-            return of({} as HttpEvent<any>);
+    for (const provider of [IdpProviders.ejud, IdpProviders.vhaad]) {
+        describe(`when provider is ${provider.toString()}`, () => {
+            it('should call next with updated body if token request post', fakeAsync(() => {
+                // Arrange
+                const next = jasmine.createSpyObj<HttpHandler>('HttpHandler', ['handle']);
+                let result: HttpRequest<any>;
+                next.handle.and.callFake(req => {
+                    result = req;
+                    return of({} as HttpEvent<any>);
+                });
+                const request = new HttpRequest<any>('POST', '/oauth2/v2.0/token', 'params1');
+
+                currentIdpSubject.next(provider);
+                flush();
+
+                // Act
+                sut.intercept(request, next).subscribe(() => {});
+                flush();
+
+                // Assert
+                expect(result.body).toBe(`${request.body}&scope=openid%20profile%20offline_access`);
+                expect(next.handle).toHaveBeenCalledTimes(1);
+            }));
+
+            it('should call next and not update body if - not post', fakeAsync(() => {
+                // Arrange
+                const next = jasmine.createSpyObj<HttpHandler>('HttpHandler', ['handle']);
+                let result: HttpRequest<any>;
+                next.handle.and.callFake(req => {
+                    result = req;
+                    return of({} as HttpEvent<any>);
+                });
+                const request = new HttpRequest<any>('GET', '/oauth2/v2.0/token');
+
+                currentIdpSubject.next(provider);
+                flush();
+
+                // Act
+                sut.intercept(request, next).subscribe(() => {});
+                flush();
+
+                // Assert
+                expect(result.body).toBe(request.body);
+                expect(next.handle).toHaveBeenCalledTimes(1);
+            }));
+
+            it('should call next and not update body if - post not matching route', fakeAsync(() => {
+                // Arrange
+                const next = jasmine.createSpyObj<HttpHandler>('HttpHandler', ['handle']);
+                let result: HttpRequest<any>;
+                next.handle.and.callFake(req => {
+                    result = req;
+                    return of({} as HttpEvent<any>);
+                });
+                const request = new HttpRequest<any>('POST', '/', 'params1');
+
+                currentIdpSubject.next(provider);
+                flush();
+
+                // Act
+                sut.intercept(request, next).subscribe(() => {});
+                flush();
+
+                // Assert
+                expect(result.body).toBe(request.body);
+                expect(next.handle).toHaveBeenCalledTimes(1);
+            }));
+
+            it('should call next and not update body if - no scope in config', fakeAsync(() => {
+                // Arrange
+                const next = jasmine.createSpyObj<HttpHandler>('HttpHandler', ['handle']);
+                let result: HttpRequest<any>;
+                next.handle.and.callFake(req => {
+                    result = req;
+                    return of({} as HttpEvent<any>);
+                });
+                const request = new HttpRequest<any>('POST', '/oauth2/v2.0/token', 'params1');
+                getSpiedPropertyGetter(securityServiceSpy, 'configuration').and.returnValue({
+                    configuration: {
+                        scope: null
+                    }
+                } as PublicConfiguration);
+
+                currentIdpSubject.next(provider);
+                flush();
+
+                // Act
+                sut.intercept(request, next).subscribe(() => {});
+                flush();
+
+                // Assert
+                expect(result.body).toBe(request.body);
+                expect(next.handle).toHaveBeenCalledTimes(1);
+            }));
+
+            it('should call next and not update body if - no body', fakeAsync(() => {
+                // Arrange
+                const next = jasmine.createSpyObj<HttpHandler>('HttpHandler', ['handle']);
+                let result: HttpRequest<any>;
+                next.handle.and.callFake(req => {
+                    result = req;
+                    return of({} as HttpEvent<any>);
+                });
+                const request = new HttpRequest<any>('POST', '/oauth2/v2.0/token', null);
+
+                currentIdpSubject.next(provider);
+                flush();
+
+                // Act
+                sut.intercept(request, next).subscribe(() => {});
+                flush();
+
+                // Assert
+                expect(result.body).toBe(request.body);
+                expect(next.handle).toHaveBeenCalledTimes(1);
+            }));
         });
-        const request = new HttpRequest<any>('POST', '/oauth2/v2.0/token', 'params1');
+    }
 
-        // Act
-        await sut.intercept(request, next).toPromise();
+    describe(`when provider is ${IdpProviders.quickLink.toString()}`, () => {
+        it('should NOT modify the request', fakeAsync(() => {
+            // Arrange
+            const next = jasmine.createSpyObj<HttpHandler>('HttpHandler', ['handle']);
+            let result: HttpRequest<any>;
+            next.handle.and.callFake(req => {
+                result = req;
+                return of({} as HttpEvent<any>);
+            });
+            const request = new HttpRequest<any>('POST', '/oauth2/v2.0/token', 'params1');
 
-        // Assert
-        expect(result.body).toBe(`${request.body}&scope=openid%20profile%20offline_access`);
-        expect(next.handle).toHaveBeenCalledTimes(1);
-    });
+            currentIdpSubject.next(IdpProviders.quickLink);
+            flush();
 
-    it('should call next and not update body if - not post', async () => {
-        // Arrange
-        const next = jasmine.createSpyObj<HttpHandler>('HttpHandler', ['handle']);
-        let result: HttpRequest<any>;
-        next.handle.and.callFake(req => {
-            result = req;
-            return of({} as HttpEvent<any>);
-        });
-        const request = new HttpRequest<any>('GET', '/oauth2/v2.0/token');
+            // Act
+            sut.intercept(request, next).subscribe(() => {});
+            flush();
 
-        // Act
-        await sut.intercept(request, next).toPromise();
-
-        // Assert
-        expect(result.body).toBe(request.body);
-        expect(next.handle).toHaveBeenCalledTimes(1);
-    });
-
-    it('should call next and not update body if - post not matching route', async () => {
-        // Arrange
-        const next = jasmine.createSpyObj<HttpHandler>('HttpHandler', ['handle']);
-        let result: HttpRequest<any>;
-        next.handle.and.callFake(req => {
-            result = req;
-            return of({} as HttpEvent<any>);
-        });
-        const request = new HttpRequest<any>('POST', '/', 'params1');
-
-        // Act
-        await sut.intercept(request, next).toPromise();
-
-        // Assert
-        expect(result.body).toBe(request.body);
-        expect(next.handle).toHaveBeenCalledTimes(1);
-    });
-
-    it('should call next and not update body if - no scope in config', async () => {
-        // Arrange
-        const next = jasmine.createSpyObj<HttpHandler>('HttpHandler', ['handle']);
-        let result: HttpRequest<any>;
-        next.handle.and.callFake(req => {
-            result = req;
-            return of({} as HttpEvent<any>);
-        });
-        const request = new HttpRequest<any>('POST', '/oauth2/v2.0/token', 'params1');
-        mockOidcSecurityService.configuration.configuration.scope = null;
-
-        // Act
-        await sut.intercept(request, next).toPromise();
-
-        // Assert
-        expect(result.body).toBe(request.body);
-        expect(next.handle).toHaveBeenCalledTimes(1);
-    });
-
-    it('should call next and not update body if - no body', async () => {
-        // Arrange
-        const next = jasmine.createSpyObj<HttpHandler>('HttpHandler', ['handle']);
-        let result: HttpRequest<any>;
-        next.handle.and.callFake(req => {
-            result = req;
-            return of({} as HttpEvent<any>);
-        });
-        const request = new HttpRequest<any>('POST', '/oauth2/v2.0/token', null);
-
-        // Act
-        await sut.intercept(request, next).toPromise();
-
-        // Assert
-        expect(result.body).toBe(request.body);
-        expect(next.handle).toHaveBeenCalledTimes(1);
+            // Assert
+            expect(result).toBe(request);
+            expect(result.body).toBe(request.body);
+            expect(next.handle).toHaveBeenCalledTimes(1);
+        }));
     });
 });

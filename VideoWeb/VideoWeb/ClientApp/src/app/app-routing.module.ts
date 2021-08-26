@@ -6,6 +6,8 @@ import { environment } from 'src/environments/environment';
 import { AdminGuard } from './security/admin.guard';
 import { AuthGuard } from './security/auth.guard';
 import { NavigatorComponent } from './home/navigator/navigator.component';
+import { QuickLinksComponent } from './on-the-day/quick-links/quick-links.component';
+import { AlreadyAuthenticatedGuard } from './security/guards/already-authenticated.guard';
 
 export const routes: Routes = [
     { path: '', redirectTo: `${pageUrls.Navigator}`, pathMatch: 'full' },
@@ -15,6 +17,12 @@ export const routes: Routes = [
         loadChildren: () => import('./vh-officer/vh-officer.module').then(m => m.VhOfficerModule)
     },
     { path: `${pageUrls.Home}`, component: HomeComponent },
+    {
+        path: `${pageUrls.QuickLinks}`,
+        component: QuickLinksComponent,
+        canActivate: [AlreadyAuthenticatedGuard],
+        data: { title: 'Quick join' }
+    },
     { path: `${pageUrls.Navigator}`, component: NavigatorComponent, canActivate: [AuthGuard] },
     { path: '**', redirectTo: `${pageUrls.NotFound}`, pathMatch: 'full' }
 ];

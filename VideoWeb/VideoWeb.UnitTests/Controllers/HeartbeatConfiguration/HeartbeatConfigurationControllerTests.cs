@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Autofac.Extras.Moq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -57,7 +57,7 @@ namespace VideoWeb.UnitTests.Controllers.HeartbeatConfiguration
             Guid participantId = Guid.NewGuid();
             const string jwt = "jwt";
             
-            _mocker.Mock<ICustomJwtTokenProvider>().Setup(x => x.GenerateToken(
+            _mocker.Mock<IKinlyJwtTokenProvider>().Setup(x => x.GenerateToken(
                 It.Is<string>(y => y == participantId.ToString()),
                 It.Is<int>(y => y == _expiresInMinutes))
                 ).Returns(jwt);
@@ -70,7 +70,7 @@ namespace VideoWeb.UnitTests.Controllers.HeartbeatConfiguration
                 .Subject.Value.Should().BeAssignableTo<HeartbeatConfigurationResponse>()
                 .Subject.HeartbeatJwt.Should().Be(jwt);
             
-            _mocker.Mock<ICustomJwtTokenProvider>().Verify(x => x.GenerateToken(
+            _mocker.Mock<IKinlyJwtTokenProvider>().Verify(x => x.GenerateToken(
                 It.Is<string>(y => y == participantId.ToString()), 
                 It.Is<int>(y => y == _expiresInMinutes)
                 ), Times.Once);

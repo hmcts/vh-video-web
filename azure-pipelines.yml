@@ -136,6 +136,12 @@ parameters:
       - name: UsingEjud
         value: $(UsingEjud)
 
+      # Quick Links Configuration
+      - name: QuickLinks:Issuer
+        value: $(video_api_url)
+      - name: QuickLinks:JwtProviderSecret
+        value: $(JwtProviderSecret)
+
   - name: appSettings
     type: object
     default:
@@ -215,16 +221,23 @@ parameters:
       - name: VhServices:InternalEventSecret
         value: $(internal_event_secret)
 
+      # Quick Links Configuration
+      - name: QuickLinks:Issuer
+        value: $(video_api_url)
+      - name: QuickLinks:JwtProviderSecret
+        value: $(JwtProviderSecret)
+
 variables:
-  - group: vh-domains-and-urls
-  - group: vh-apps-settings-generic
-  - group: vh-video-web
-  - group: vh-video-web-nonprod
-  - group: vh-preview
-  - group: vh test users
-  - group: Saucelabs
-  - group: vh-wowza-dev
-  - group: KinlyConfiguration_Test
+    - group: vh-domains-and-urls
+    - group: vh-apps-settings-generic
+    - group: vh-video-web
+    - group: vh-video-web-nonprod
+    - group: vh-preview
+    - group: vh test users
+    - group: Saucelabs
+    - group: vh-wowza-dev
+    - group: KinlyConfiguration_Test
+    - group: QuickLinks_Preview
 
 trigger:
   branches:

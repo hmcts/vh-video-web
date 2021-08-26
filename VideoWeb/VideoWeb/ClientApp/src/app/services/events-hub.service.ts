@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { ReplaySubject, Subject, Observable } from 'rxjs';
-import { filter, take } from 'rxjs/operators';
+import { filter, take, takeUntil } from 'rxjs/operators';
+import { SecurityServiceProvider } from '../security/authentication/security-provider.service';
+import { ISecurityService } from '../security/authentication/security-service.interface';
 import { ConfigService } from './api/config.service';
 import { ConnectionStatusService } from './connection-status.service';
 import { ErrorService } from './error.service';
@@ -11,11 +12,13 @@ import { Logger } from './logging/logger-base';
 @Injectable({
     providedIn: 'root'
 })
-export class EventsHubService {
+export class EventsHubService implements OnDestroy {
+    private securityService: ISecurityService;
     private eventHubDisconnectSubject = new Subject<number>();
     private eventHubReconnectSubject = new Subject();
+    private destroyed$ = new Subject();
 
-    private eventsHubReady = new ReplaySubject<void>();
+    private eventsHubReady = new ReplaySubject<void>(1);
     get onEventsHubReady(): Observable<void> {
         return this.eventsHubReady.asObservable();
     }
@@ -61,17 +64,23 @@ export class EventsHubService {
     }
 
     constructor(
+        securityServiceProviderService: SecurityServiceProvider,
         configService: ConfigService,
         private connectionStatusService: ConnectionStatusService,
-        private oidcSecurityService: OidcSecurityService,
         private logger: Logger,
         private errorService: ErrorService
     ) {
+        securityServiceProviderService.currentSecurityService$
+            .pipe(takeUntil(this.destroyed$))
+            .subscribe(securityService => (this.securityService = securityService));
         configService.getClientSettings().subscribe(clientSettings => {
             this._connection = this.buildConnection(clientSettings.event_hub_path);
             this.configureConnection();
             connectionStatusService.onConnectionStatusChange().subscribe(isConnected => this.handleConnectionStatusChanged(isConnected));
         });
+    }
+    ngOnDestroy(): void {
+        this.destroyed$.next();
     }
 
     createConnectionBuilder(): signalR.HubConnectionBuilder {
@@ -83,7 +92,7 @@ export class EventsHubService {
             .configureLogging(signalR.LogLevel.Debug)
             .withAutomaticReconnect(this.reconnectionTimes)
             .withUrl(eventHubPath, {
-                accessTokenFactory: () => this.oidcSecurityService.getToken()
+                accessTokenFactory: () => this.securityService.getToken()
             })
             .build();
     }

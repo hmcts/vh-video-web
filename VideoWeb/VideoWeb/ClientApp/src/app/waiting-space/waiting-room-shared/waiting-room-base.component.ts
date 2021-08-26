@@ -420,16 +420,6 @@ export abstract class WaitingRoomBaseDirective {
             })
         );
 
-        this.eventHubSubscription$.add(
-            this.eventService.onEventsHubReady().subscribe(async () => {
-                this.logger.info(`${this.loggerPrefix} EventHub ready`, {
-                    conference: this.conferenceId,
-                    participant: this.participant.id
-                });
-                await this.callAndUpdateShowVideo();
-            })
-        );
-
         this.logger.debug('[WR] - Subscribing to hearing transfer message');
         this.eventHubSubscription$.add(
             this.eventService.getHearingTransfer().subscribe(async message => {
@@ -616,7 +606,16 @@ export abstract class WaitingRoomBaseDirective {
         };
         try {
             await this.setupPexipEventSubscriptionAndClient();
-            await this.call();
+
+            this.eventHubSubscription$.add(
+                this.eventService.onEventsHubReady().subscribe(async () => {
+                    this.logger.info(`${this.loggerPrefix} EventHub ready`, {
+                        conference: this.conferenceId,
+                        participant: this.participant.id
+                    });
+                    await this.callAndUpdateShowVideo();
+                })
+            );
         } catch (error) {
             this.logger.error(`${this.loggerPrefix} There was an error getting a jwtoken for heartbeat`, error, logPayload);
             this.errorService.handleApiError(error);

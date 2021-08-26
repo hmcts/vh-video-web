@@ -103,7 +103,7 @@ namespace VideoWeb.Middleware
         {
             var username = context.HttpContext.User.Identity.Name;
             var participant = conference.Participants
-                .FirstOrDefault(x => x.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase));
+                .FirstOrDefault(x => x.Username?.Equals(username, StringComparison.CurrentCultureIgnoreCase) ?? false);
 
             return participant?.Id ?? Guid.Empty;
         }
