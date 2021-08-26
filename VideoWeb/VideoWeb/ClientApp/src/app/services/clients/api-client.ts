@@ -4582,7 +4582,7 @@ export enum Role {
     Representative = 'Representative',
     JudicialOfficeHolder = 'JudicialOfficeHolder',
     QuickLinkParticipant = 'QuickLinkParticipant',
-    QuickLinkObserver = 'QuickLinkObserver'
+    QuickLinkObserver = 'QuickLinkObserver',
     StaffMember = 'StaffMember'
 }
 
