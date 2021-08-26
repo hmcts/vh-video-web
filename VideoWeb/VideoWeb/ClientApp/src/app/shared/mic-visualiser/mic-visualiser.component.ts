@@ -1,13 +1,13 @@
 import {
     Component,
     Input,
-    OnInit,
     OnDestroy,
     HostListener,
     ViewChild,
     ElementRef,
     AfterViewChecked,
-    ChangeDetectorRef
+    ChangeDetectorRef,
+    AfterViewInit
 } from '@angular/core';
 import 'webrtc-adapter';
 
@@ -16,7 +16,7 @@ import 'webrtc-adapter';
     templateUrl: './mic-visualiser.component.html',
     styleUrls: ['./mic-visualiser.scss']
 })
-export class MicVisualiserComponent implements OnInit, OnDestroy, AfterViewChecked {
+export class MicVisualiserComponent implements AfterViewInit, OnDestroy, AfterViewChecked {
     canvasContext: CanvasRenderingContext2D;
     audioContext: AudioContext;
     source: MediaStreamAudioSourceNode;
@@ -33,7 +33,7 @@ export class MicVisualiserComponent implements OnInit, OnDestroy, AfterViewCheck
 
     @Input() stream: MediaStream;
     @Input() incomingStream: MediaStream;
-    ngOnInit() {
+    ngAfterViewInit() {
         this.canvasContext = this.meterCanvas.nativeElement.getContext('2d');
         this.setupStream();
     }
