@@ -206,23 +206,6 @@
     [srcObject]="this.outgoingStream"
     autoplay
     height="auto"
-    style="display: none"
-  >
-    {{ 'private-consultation-room-controls.browser-support' | translate }}
-  </video>
-
-  <video
-    #outgoingFilteredVideo
-    [ngClass]="{
-      'vh-fade-in': selfViewOpen,
-      'vh-fade-out': !selfViewOpen,
-      'vh-spotlight-self-view-outline': isSpotlighted
-    }"
-    id="outgoingFilteredFeedVideo"
-    [muted]="true"
-    [srcObject]="this.filteredStream"
-    autoplay
-    height="auto"
   >
     {{ 'private-consultation-room-controls.browser-support' | translate }}
   </video>

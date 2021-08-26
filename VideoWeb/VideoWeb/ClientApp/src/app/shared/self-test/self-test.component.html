@@ -16,19 +16,7 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-quarter">
-    <video #selfView id="outgoingStream" [muted]="true" [srcObject]="this.outgoingStream" width="270" height="auto" style="display: none">
-      {{ 'self-test.browser-not-support' | translate }}
-    </video>
-
-    <video
-      *ngIf="displayFeed"
-      id="outgoingFilteredStream"
-      [muted]="true"
-      [srcObject]="this.filteredStream"
-      width="270"
-      height="auto"
-      autoplay
-    >
+    <video #selfView id="outgoingStream" [muted]="true" autoplay [srcObject]="this.outgoingStream" width="270" height="auto">
       {{ 'self-test.browser-not-support' | translate }}
     </video>
   </div>

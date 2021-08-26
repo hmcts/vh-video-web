@@ -50,8 +50,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     participantSpotlightUpdateSubscription: Subscription;
     isSpotlighted: boolean;
 
-    filteredStream: MediaStream;
-
     protected constructor(
         protected videoCallService: VideoCallService,
         protected eventService: EventsService,
@@ -106,16 +104,12 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             this.toggleView();
         }
         this.initialiseMuteStatus();
-
-        // // TOOD: find a better way to trigger this
-        // setTimeout(() => {
         this.applyVideoFilterIfNeeded().catch(err => {
             this.logger.error(`${this.loggerPrefix} Failed to apply video filter`, err, {
                 conference: this.conferenceId,
                 participant: this.participant.id
             });
         });
-        // }, 1000);
     }
 
     onLoggedInParticipantChanged(participant: ParticipantModel): void {
@@ -386,8 +380,8 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     async applyVideoFilterIfNeeded() {
         await this.videoFilterService.initFilterFromMediaStream(this.outgoingStream as MediaStream);
-        this.filteredStream = this.videoFilterService.startFilteredStream();
-        this.videoCallService.updatePexipCameraStream(this.filteredStream);
+        this.outgoingStream = this.videoFilterService.startFilteredStream();
+        this.videoCallService.updatePexipCameraStream(this.outgoingStream);
         this.videoCallService.reconnectToCallWithNewDevices();
     }
 }

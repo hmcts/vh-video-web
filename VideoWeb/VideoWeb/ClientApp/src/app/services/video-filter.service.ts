@@ -137,7 +137,7 @@ export class VideoFilterService {
 
     private applyBlurEffect(results: Results, withBlur: boolean) {
         if (withBlur) {
-            this.canvasCtx.filter = 'blur(20px)';
+            this.canvasCtx.filter = 'blur(50px)';
         }
         this.canvasCtx.drawImage(results.image, 0, 0, this.canvasElement.width, this.canvasElement.height);
     }

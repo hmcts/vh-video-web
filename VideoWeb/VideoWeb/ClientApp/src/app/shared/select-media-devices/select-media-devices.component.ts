@@ -37,7 +37,6 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     deviceIsChanged = false;
     private destroyedSubject = new Subject();
     showBackgroundFilter: boolean;
-    filteredStream: MediaStream;
 
     get usingPexipStream(): boolean {
         return !!this.videoFilterService.canvasStream;
@@ -87,10 +86,10 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     async applyVideoFilterIfNeeded() {
         if (this.waitingRoomMode && this.usingPexipStream) {
             this.preferredCameraStream = this.videoFilterService.canvasStream;
-            this.filteredStream = this.videoFilterService.canvasStream;
+            // this.filteredStream = this.videoFilterService.canvasStream;
         } else {
             await this.videoFilterService.initFilterFromMediaStream(this.preferredCameraStream);
-            this.filteredStream = this.videoFilterService.startFilteredStream();
+            this.preferredCameraStream = this.videoFilterService.startFilteredStream();
         }
     }
 
@@ -104,7 +103,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
             }
 
             if (filter) {
-                this.filteredStream = this.videoFilterService.startFilteredStream();
+                this.preferredCameraStream = this.videoFilterService.startFilteredStream();
             }
         });
     }
