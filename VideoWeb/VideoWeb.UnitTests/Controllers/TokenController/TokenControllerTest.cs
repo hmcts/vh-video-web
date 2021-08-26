@@ -25,9 +25,7 @@ namespace VideoWeb.UnitTests.Controllers.TokenController
             hashGenerator.Setup(h => h.GenerateSelfTestTokenHash(It.IsAny<string>(), It.IsAny<string>())).Returns(token);
             customJwtTokenProvider.Setup(v => v.GenerateToken(It.IsAny<string>(), It.IsAny<int>())).Returns(token);
 
-            TokenController = new VideoWeb.Controllers.TokenController(hashGenerator.Object, 
-                                                                        customJwtTokenProvider.Object, 
-                                                                        new KinlyConfiguration() { HashExpiresInMinutes = 30, ExpiresInMinutes = 20 });
+            TokenController = new VideoWeb.Controllers.TokenController(hashGenerator.Object, new KinlyConfiguration() { HashExpiresInMinutes = 30, ExpiresInMinutes = 20 });
         }
     }
 }
