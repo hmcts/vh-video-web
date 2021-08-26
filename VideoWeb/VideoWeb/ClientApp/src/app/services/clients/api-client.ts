@@ -552,8 +552,8 @@ export class ApiClient {
      * Get conferences today for a judge or a clerk
      * @return Success
      */
-    getConferencesForJudge(): Observable<ConferenceForJudgeResponse[]> {
-        let url_ = this.baseUrl + '/conferences/judges';
+    getConferencesForHost(): Observable<ConferenceForHostResponse[]> {
+        let url_ = this.baseUrl + '/conferences/hosts';
         url_ = url_.replace(/[?&]$/, '');
 
         let options_: any = {
@@ -568,23 +568,23 @@ export class ApiClient {
             .request('get', url_, options_)
             .pipe(
                 _observableMergeMap((response_: any) => {
-                    return this.processGetConferencesForJudge(response_);
+                    return this.processGetConferencesForHost(response_);
                 })
             )
             .pipe(
                 _observableCatch((response_: any) => {
                     if (response_ instanceof HttpResponseBase) {
                         try {
-                            return this.processGetConferencesForJudge(<any>response_);
+                            return this.processGetConferencesForHost(<any>response_);
                         } catch (e) {
-                            return <Observable<ConferenceForJudgeResponse[]>>(<any>_observableThrow(e));
+                            return <Observable<ConferenceForHostResponse[]>>(<any>_observableThrow(e));
                         }
-                    } else return <Observable<ConferenceForJudgeResponse[]>>(<any>_observableThrow(response_));
+                    } else return <Observable<ConferenceForHostResponse[]>>(<any>_observableThrow(response_));
                 })
             );
     }
 
-    protected processGetConferencesForJudge(response: HttpResponseBase): Observable<ConferenceForJudgeResponse[]> {
+    protected processGetConferencesForHost(response: HttpResponseBase): Observable<ConferenceForHostResponse[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
@@ -602,7 +602,9 @@ export class ApiClient {
                     let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     if (Array.isArray(resultData200)) {
                         result200 = [] as any;
-                        for (let item of resultData200) result200!.push(ConferenceForJudgeResponse.fromJS(item));
+                        for (let item of resultData200) result200!.push(ConferenceForHostResponse.fromJS(item));
+                    } else {
+                        result200 = <any>null;
                     }
                     return _observableOf(result200);
                 })
@@ -629,7 +631,7 @@ export class ApiClient {
                 })
             );
         }
-        return _observableOf<ConferenceForJudgeResponse[]>(<any>null);
+        return _observableOf<ConferenceForHostResponse[]>(<any>null);
     }
 
     /**
@@ -4581,6 +4583,7 @@ export enum Role {
     JudicialOfficeHolder = 'JudicialOfficeHolder',
     QuickLinkParticipant = 'QuickLinkParticipant',
     QuickLinkObserver = 'QuickLinkObserver'
+    StaffMember = 'StaffMember'
 }
 
 export class ParticipantForJudgeResponse implements IParticipantForJudgeResponse {
@@ -4644,7 +4647,7 @@ export interface IParticipantForJudgeResponse {
     hearing_role?: string | undefined;
 }
 
-export class ConferenceForJudgeResponse implements IConferenceForJudgeResponse {
+export class ConferenceForHostResponse implements IConferenceForJudgeResponse {
     /** Conference UUID */
     id?: string;
     scheduled_date_time?: Date;
@@ -4685,9 +4688,9 @@ export class ConferenceForJudgeResponse implements IConferenceForJudgeResponse {
         }
     }
 
-    static fromJS(data: any): ConferenceForJudgeResponse {
+    static fromJS(data: any): ConferenceForHostResponse {
         data = typeof data === 'object' ? data : {};
-        let result = new ConferenceForJudgeResponse();
+        let result = new ConferenceForHostResponse();
         result.init(data);
         return result;
     }

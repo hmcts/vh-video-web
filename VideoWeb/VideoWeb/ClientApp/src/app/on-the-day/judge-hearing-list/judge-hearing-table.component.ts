@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { ConferenceForJudgeResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
+import { ConferenceForHostResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { JudgeHearingSummary } from 'src/app/shared/models/JudgeHearingSummary';
 import { ParticipantSummary } from 'src/app/shared/models/participant-summary';
@@ -11,15 +11,15 @@ import { ParticipantSummary } from 'src/app/shared/models/participant-summary';
     styleUrls: ['./judge-hearing-table.component.scss']
 })
 export class JudgeHearingTableComponent implements OnInit {
-    private conferenceForJudgeResponse: ConferenceForJudgeResponse[];
+    private conferenceForJudgeResponse: ConferenceForHostResponse[];
     hearings: JudgeHearingSummary[];
 
-    @Input() set conferences(conferences: ConferenceForJudgeResponse[]) {
+    @Input() set conferences(conferences: ConferenceForHostResponse[]) {
         this.conferenceForJudgeResponse = conferences;
         this.hearings = conferences.map(c => new JudgeHearingSummary(c));
     }
 
-    @Output() selectedConference = new EventEmitter<ConferenceForJudgeResponse>();
+    @Output() selectedConference = new EventEmitter<ConferenceForHostResponse>();
 
     constructor(private logger: Logger, private translate: TranslateService) {}
 

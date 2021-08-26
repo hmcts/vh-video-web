@@ -4,7 +4,7 @@ using VideoWeb.Common.Models;
 
 namespace VideoWeb.Contract.Responses
 {
-    public class ConferenceForJudgeResponse
+    public class ConferenceForHostResponse
     {
         /// <summary>
         /// Conference UUID
@@ -49,7 +49,7 @@ namespace VideoWeb.Contract.Responses
         /// <summary>
         /// The conference participants
         /// </summary>
-        public List<ParticipantForJudgeResponse> Participants { get; set; }
+        public List<ParticipantForHostResponse> Participants { get; set; }
 
         /// <summary>
         /// The number of hearing endpoints
@@ -57,7 +57,7 @@ namespace VideoWeb.Contract.Responses
         public int NumberOfEndpoints { get; set; }
     }
 
-    public class ParticipantForJudgeResponse
+    public class ParticipantForHostResponse
     {
         /// <summary>
         /// The participant Id

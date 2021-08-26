@@ -11,7 +11,7 @@ namespace VideoWeb.Common.Models
         Representative = 6,
         JudicialOfficeHolder = 7,
         QuickLinkParticipant = 8,
-        QuickLinkObserver = 9
+        QuickLinkObserver = 9,
         StaffMember = 10,
     }
 }
