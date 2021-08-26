@@ -8,7 +8,7 @@ import { MediaStreamService } from './media-stream.service';
 import { mustProvideAMicrophoneDeviceError, UserMediaStreamService } from './user-media-stream.service';
 import { UserMediaService } from './user-media.service';
 
-describe('UserMediaStreamService', () => {
+fdescribe('UserMediaStreamService', () => {
     const mediaStreamBuilder = (device: UserMediaDevice) => {
         const stream = jasmine.createSpyObj<MediaStream>(['addTrack', 'removeTrack', 'getTracks']);
         const track = jasmine.createSpyObj<MediaStreamTrack>(['stop'], ['label', 'id']);

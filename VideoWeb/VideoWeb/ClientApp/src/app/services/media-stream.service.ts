@@ -17,7 +17,7 @@ export class MediaStreamService {
         private logger: Logger,
         private errorService: ErrorService,
         private navigator: Navigator,
-        private videoFilterStreamService: VideoFilterService
+        private videoFilterService: VideoFilterService
     ) {
         this.navigator.getUserMedia =
             this.navigator.getUserMedia || (this.navigator as any).webkitGetUserMedia || (this.navigator as any).msGetUserMedia;
@@ -42,8 +42,8 @@ export class MediaStreamService {
         return from(this.navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId } } })).pipe(
             map(stream => {
                 const cloneStream = stream.clone();
-                this.videoFilterStreamService.initFilterFromMediaStream(cloneStream);
-                return this.videoFilterStreamService.startFilteredStream();
+                this.videoFilterService.initFilterFromMediaStream(cloneStream);
+                return this.videoFilterService.startFilteredStream();
             }),
             catchError(error => {
                 this.logger.error(`${this.loggerPrefix} Could not get cam stream for microphone`, error);

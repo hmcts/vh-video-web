@@ -12,7 +12,7 @@ export class VideoFilterService {
     private readonly loggerPrefix = '[VideoFilterService] -';
 
     private _onFilterChanged = new Subject<BackgroundFilter | null>();
-    get onFilterChanged(): Observable<BackgroundFilter | null> {
+    get onFilterChanged$(): Observable<BackgroundFilter | null> {
         return this._onFilterChanged.asObservable();
     }
 
@@ -77,12 +77,16 @@ export class VideoFilterService {
         });
         camera.start();
     }
+
     updateCameraStream(stream: MediaStream) {
         this.videoElement.srcObject = stream;
     }
 
     startFilteredStream(): MediaStream {
         this.canvasStream = this.canvasElement.captureStream();
+        // (this.videoElement.srcObject as MediaStream).getAudioTracks().forEach(x => {
+        //     this.canvasStream.addTrack(x);
+        // });
         return this.canvasStream;
     }
 

@@ -26,7 +26,7 @@ export class VideoFilterComponent implements OnInit, OnDestroy {
     }
 
     private initCurrentFilter() {
-        this.videoFilterService.onFilterChanged
+        this.videoFilterService.onFilterChanged$
             .pipe(startWith(this.videoFilterService.activeFilter), takeUntil(this.destroy$))
             .subscribe(newFilter => {
                 if (newFilter) {

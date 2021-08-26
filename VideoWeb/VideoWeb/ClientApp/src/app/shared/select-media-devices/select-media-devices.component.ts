@@ -8,7 +8,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { MediaStreamService } from 'src/app/services/media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
-import { Role, UserProfileResponse } from 'src/app/services/clients/api-client';
 
 @Component({
     selector: 'app-select-media-devices',
