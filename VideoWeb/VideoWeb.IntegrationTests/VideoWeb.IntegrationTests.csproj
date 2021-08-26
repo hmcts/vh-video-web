@@ -24,7 +24,7 @@
     <PackageReference Include="NUnit" Version="3.13.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
     <PackageReference Include="UserApi.Client" Version="1.24.3" />
-    <PackageReference Include="VideoApi.Client" Version="1.27.6-pullrequest0404-0002" />
+    <PackageReference Include="VideoApi.Client" Version="1.27.6" />
   </ItemGroup>
 
   <ItemGroup>
