@@ -38,10 +38,6 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         super(videoCallService, eventService, deviceTypeService, logger, participantService, translateService, videoFilterService);
     }
 
-    retrieveVideoElement(): HTMLVideoElement {
-        return document.getElementById('outgoingFeedVideo') as HTMLVideoElement;
-    }
-
     canCloseOrPauseHearing() {
         return this.participant?.status === ParticipantStatus.InHearing;
     }

@@ -7,7 +7,6 @@ import { ParticipantService } from 'src/app/services/conference/participant.serv
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { IVideoFilterer } from 'src/app/services/models/background-filter';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { VideoFilterService } from 'src/app/services/video-filter.service';
 import { ParticipantModel } from 'src/app/shared/models/participant';
@@ -19,7 +18,7 @@ import { ConnectedScreenshare, ParticipantUpdated, StoppedScreenshare } from '..
 import { VideoCallService } from '../services/video-call.service';
 
 @Injectable()
-export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy, IVideoFilterer {
+export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy {
     protected readonly loggerPrefix = '[HearingControlsBase] -';
 
     @Input() public participant: ParticipantResponse;
@@ -52,7 +51,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy,
     isSpotlighted: boolean;
 
     filteredStream: MediaStream;
-    hideOriginalStream: boolean;
 
     protected constructor(
         protected videoCallService: VideoCallService,
@@ -69,8 +67,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy,
         this.isSpotlighted = false;
         this.displayConfirmPopup = false;
     }
-
-    abstract retrieveVideoElement(): HTMLVideoElement;
 
     get canShowScreenShareButton(): boolean {
         const isNotTablet = !this.deviceTypeService.isTablet();
@@ -111,15 +107,15 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy,
         }
         this.initialiseMuteStatus();
 
-        // TOOD: find a better way to trigger this
-        setTimeout(() => {
-            this.applyVideoFilterIfNeeded().catch(err => {
-                this.logger.error(`${this.loggerPrefix} Failed to apply video filter`, err, {
-                    conference: this.conferenceId,
-                    participant: this.participant.id
-                });
+        // // TOOD: find a better way to trigger this
+        // setTimeout(() => {
+        this.applyVideoFilterIfNeeded().catch(err => {
+            this.logger.error(`${this.loggerPrefix} Failed to apply video filter`, err, {
+                conference: this.conferenceId,
+                participant: this.participant.id
             });
-        }, 1000);
+        });
+        // }, 1000);
     }
 
     onLoggedInParticipantChanged(participant: ParticipantModel): void {
@@ -389,7 +385,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy,
     }
 
     async applyVideoFilterIfNeeded() {
-        await this.videoFilterService.initFilterStream(this);
+        await this.videoFilterService.initFilterFromMediaStream(this.outgoingStream as MediaStream);
         this.filteredStream = this.videoFilterService.startFilteredStream();
         this.videoCallService.updatePexipCameraStream(this.filteredStream);
         this.videoCallService.reconnectToCallWithNewDevices();

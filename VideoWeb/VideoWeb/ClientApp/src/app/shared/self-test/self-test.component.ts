@@ -15,7 +15,6 @@ import {
 } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { IVideoFilterer } from 'src/app/services/models/background-filter';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { VideoFilterService } from 'src/app/services/video-filter.service';
@@ -29,7 +28,7 @@ import { UserMediaDevice } from '../models/user-media-device';
     templateUrl: './self-test.component.html',
     styleUrls: ['./self-test.component.scss']
 })
-export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
+export class SelfTestComponent implements OnInit, OnDestroy {
     private readonly loggerPrefix = '[SelfTest] -';
     @Input() conference: ConferenceResponse;
     @Input() participant: ParticipantResponse;
@@ -73,10 +72,6 @@ export class SelfTestComponent implements OnInit, OnDestroy, IVideoFilterer {
         private videoFilterService: VideoFilterService
     ) {
         this.didTestComplete = false;
-    }
-
-    retrieveVideoElement(): HTMLVideoElement {
-        return this.selfView.nativeElement;
     }
 
     ngOnInit() {

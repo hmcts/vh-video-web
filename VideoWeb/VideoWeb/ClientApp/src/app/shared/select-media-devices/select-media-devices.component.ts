@@ -6,7 +6,6 @@ import { takeUntil, tap } from 'rxjs/operators';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { Role, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { IVideoFilterer } from 'src/app/services/models/background-filter';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { VideoFilterService } from 'src/app/services/video-filter.service';
@@ -18,7 +17,7 @@ import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
     templateUrl: './select-media-devices.component.html',
     styleUrls: ['./select-media-devices.component.scss']
 })
-export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFilterer {
+export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     private readonly loggerPrefix = '[SelectMediaDevices] -';
     @Output() cancelMediaDeviceChange = new EventEmitter();
     @Output() acceptMediaDeviceChange = new EventEmitter<SelectedUserMediaDevice>();
@@ -37,7 +36,6 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
     selectedMediaDevicesForm: FormGroup;
     deviceIsChanged = false;
     private destroyedSubject = new Subject();
-    hideOriginalStream: boolean;
     showBackgroundFilter: boolean;
     filteredStream: MediaStream;
 
@@ -71,12 +69,10 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
                     this.selectedMediaDevicesForm = await this.initNewDeviceSelectionForm();
                     this.subscribeToDeviceSelectionChange();
                     this.setupSubscribers();
-                    // TOOD: find a better way to trigger this
-                    setTimeout(() => {
-                        this.applyVideoFilterIfNeeded().catch(err => {
-                            this.logger.error(`${this.loggerPrefix} Failed to apply video filter`, err);
-                        });
-                    }, 1000);
+
+                    this.applyVideoFilterIfNeeded().catch(err => {
+                        this.logger.error(`${this.loggerPrefix} Failed to apply video filter`, err);
+                    });
                 })
                 .catch(error => {
                     this.logger.error(`${this.loggerPrefix} Failed to update device selection`, error);
@@ -91,18 +87,11 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
     async applyVideoFilterIfNeeded() {
         if (this.waitingRoomMode && this.usingPexipStream) {
             this.preferredCameraStream = this.videoFilterService.canvasStream;
-            // this.usingPexipStream = true;
-            this.hideOriginalStream = false;
+            this.filteredStream = this.videoFilterService.canvasStream;
         } else {
-            // this.usingPexipStream = false;
-            await this.videoFilterService.initFilterStream(this);
+            await this.videoFilterService.initFilterFromMediaStream(this.preferredCameraStream);
             this.filteredStream = this.videoFilterService.startFilteredStream();
-            this.hideOriginalStream = true;
         }
-    }
-
-    retrieveVideoElement(): HTMLVideoElement {
-        return document.getElementById('preferredCameraStream') as HTMLVideoElement;
     }
 
     private setupSubscribers() {
@@ -116,9 +105,6 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, IVideoFil
 
             if (filter) {
                 this.filteredStream = this.videoFilterService.startFilteredStream();
-                this.hideOriginalStream = true;
-            } else {
-                this.hideOriginalStream = false;
             }
         });
     }

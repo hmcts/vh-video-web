@@ -3,7 +3,7 @@ import { Camera } from '@mediapipe/camera_utils';
 import { Results, SelfieSegmentation } from '@mediapipe/selfie_segmentation';
 import { Observable, Subject } from 'rxjs';
 import { Logger } from './logging/logger-base';
-import { BackgroundFilter, IVideoFilterer } from './models/background-filter';
+import { BackgroundFilter } from './models/background-filter';
 
 @Injectable({
     providedIn: 'root'
@@ -43,6 +43,9 @@ export class VideoFilterService {
     }
 
     async initFilterFromMediaStream(stream: MediaStream) {
+        if (this.canvasStream) {
+            return;
+        }
         this.logger.debug(`${this.loggerPrefix} initialising stream for filter`);
         this.videoElement = document.createElement('video');
         this.videoElement.srcObject = stream;
@@ -74,39 +77,14 @@ export class VideoFilterService {
         camera.start();
     }
 
-    async initFilterStream(page: IVideoFilterer) {
-        this.logger.debug(`${this.loggerPrefix} initialising stream for filter`);
-        this.videoElement = page.retrieveVideoElement();
-        this.canvasElement = document.createElement('canvas');
-        this.canvasElement.width = 1280;
-        this.canvasElement.height = 720;
-        this.canvasCtx = this.canvasElement.getContext('2d');
-
-        this.logger.debug(`${this.loggerPrefix} starting filtered stream`);
-        this.selfieSegmentation.onResults(results => this.onSelfieSegmentationResults(results));
-
-        const camera = new Camera(this.videoElement, {
-            onFrame: async () => {
-                try {
-                    if (this.videoElement) {
-                        await this.selfieSegmentation.send({ image: this.videoElement });
-                    }
-                } catch (err) {
-                    console.warn(
-                        `${this.loggerPrefix} sending image failed from video ${this.videoElement.id} to canvas ${this.canvasElement.id}`
-                    );
-                    this.logger.error(`${this.loggerPrefix} failed to send image to self segmentation mask`, err);
-                }
-            },
-            width: 1280,
-            height: 720
-        });
-        camera.start();
-    }
-
-    startFilteredStream() {
+    startFilteredStream(): MediaStream {
         this.canvasStream = this.canvasElement.captureStream();
         return this.canvasStream;
+    }
+
+    stopFilteredStream() {
+        this.canvasStream.getTracks().forEach(x => x.stop());
+        this.canvasStream = null;
     }
 
     updateFilter(filter: BackgroundFilter | null) {
