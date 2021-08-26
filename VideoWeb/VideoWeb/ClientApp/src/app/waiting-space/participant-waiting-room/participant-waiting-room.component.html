@@ -34,7 +34,6 @@
           #hearingControls
           [conferenceId]="conference.id"
           [participant]="participant"
-          [audioOnly]="audioOnly"
           [isPrivateConsultation]="isPrivateConsultation"
           [outgoingStream]="outgoingStream"
           [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
@@ -306,11 +305,8 @@
 
 <app-select-media-devices
   *ngIf="displayDeviceChangeModal"
-  [waitingRoomMode]="true"
-  [showAudioOnlySetting]="true"
-  [cameraOn]="!audioOnly"
-  (cancelMediaDeviceChange)="onMediaDeviceChangeCancelled()"
-  (acceptMediaDeviceChange)="onMediaDeviceChangeAccepted($event)"
+  [showAudioOnlySetting]="allowAudioOnlyToggle"
+  (shouldClose)="onSelectMediaDeviceShouldClose()"
   #selectMediaDevices
 ></app-select-media-devices>
 

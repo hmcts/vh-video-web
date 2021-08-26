@@ -199,6 +199,32 @@ stages:
           - group: KinlyConfiguration_Prod
             env:
               - Prod
+              
+          - group: QuickLinks_Preview
+            env:
+              - Preview
+          - group: QuickLinks_Dev
+            env:
+             - Dev
+          - group: QuickLinks_Preprod
+            env:
+             - Preprod
+          - group: QuickLinks_Prod
+            env:
+             - Prod
+          - group: QuickLinks_Test
+            env:
+             - Test1
+          - group: QuickLinks_Aat
+            env:
+             - Aat
+          - group: QuickLinks_Demo
+            env:
+             - Demo
+          - group: QuickLinks_Sandbox
+            env:
+             - Sandbox
+
         appSettings:
           - name: ApplicationInsights:InstrumentationKey
             value: vh-core-infra-AppInsightsKey
@@ -291,6 +317,12 @@ stages:
             value: $(EmailReformDomain)
           - name: VhServices:InternalEventSecret
             value: $(internal_event_secret)
+
+          # Quick Links Configuration
+          - name: QuickLinks:Issuer
+            value: $(video_api_url)
+          - name: QuickLinks:JwtProviderSecret
+            value: $(JwtProviderSecret)
 
         acceptanceTestSettings:
           - name: ConnectionStrings:SignalR
@@ -388,5 +420,12 @@ stages:
           # Ejud - test setting only
           - name: UsingEjud
             value: $(UsingEjud)
+
+          # Quick Links Configuration
+          - name: QuickLinks:Issuer
+            value: $(video_api_url)
+          - name: QuickLinks:JwtProviderSecret
+            value: $(JwtProviderSecret)
+
         runMultiDeviceTests: true
         deviceConfiguration: ${{ parameters.deviceConfiguration }}

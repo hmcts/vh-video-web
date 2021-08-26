@@ -13,7 +13,7 @@ namespace VideoWeb.IntegrationTests.Api
     public class TokenControllerTests : ControllerTestsBase
     {
         [Test]
-        public async Task Should_get_token_when_requested_with_correct_participant_id()
+        public async Task Should_get_token_when_requested_with_valid_participant_id()
         {
             var responseMessage = await SendGetRequestAsync($"/participants/{Guid.NewGuid()}/selftesttoken");
 
@@ -28,7 +28,7 @@ namespace VideoWeb.IntegrationTests.Api
         }
 
         [Test]
-        public async Task Should_return_bad_request_when_requested_with_incorrect_participant_id()
+        public async Task Should_return_bad_request_when_requested_with_invalid_participant_id()
         {
             var responseMessage = await SendGetRequestAsync($"/participants/{Guid.Empty}/selftesttoken");
             responseMessage.StatusCode.Should().Be(HttpStatusCode.BadRequest);
