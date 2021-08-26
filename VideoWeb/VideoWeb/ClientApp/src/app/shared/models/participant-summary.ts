@@ -1,4 +1,4 @@
-import { ParticipantForJudgeResponse, ParticipantForUserResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ParticipantForHostResponse, ParticipantForUserResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 
 export class ParticipantSummary {
@@ -7,9 +7,9 @@ export class ParticipantSummary {
 
     constructor(participant: ParticipantForUserResponse) {
         const isParticipantForUserResponse = participant instanceof ParticipantForUserResponse;
-        const isParticipantForJudgeResponse = participant instanceof ParticipantForJudgeResponse;
-        if (!(isParticipantForUserResponse || isParticipantForJudgeResponse)) {
-            throw new Error('Object not a ParticipantForUserResponse or ParticipantForJudgeResponse');
+        const isParticipantForHostResponse = participant instanceof ParticipantForHostResponse;
+        if (!(isParticipantForUserResponse || isParticipantForHostResponse)) {
+            throw new Error('Object not a ParticipantForUserResponse or ParticipantForHostResponse');
         }
         this.participant = participant;
     }

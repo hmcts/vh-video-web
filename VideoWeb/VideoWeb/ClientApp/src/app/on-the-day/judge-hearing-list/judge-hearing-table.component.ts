@@ -11,11 +11,11 @@ import { ParticipantSummary } from 'src/app/shared/models/participant-summary';
     styleUrls: ['./judge-hearing-table.component.scss']
 })
 export class JudgeHearingTableComponent implements OnInit {
-    private conferenceForJudgeResponse: ConferenceForHostResponse[];
+    private conferenceForHostResponse: ConferenceForHostResponse[];
     hearings: JudgeHearingSummary[];
 
     @Input() set conferences(conferences: ConferenceForHostResponse[]) {
-        this.conferenceForJudgeResponse = conferences;
+        this.conferenceForHostResponse = conferences;
         this.hearings = conferences.map(c => new JudgeHearingSummary(c));
     }
 
@@ -28,7 +28,7 @@ export class JudgeHearingTableComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.hearings = this.conferenceForJudgeResponse.map(c => new JudgeHearingSummary(c));
+        this.hearings = this.conferenceForHostResponse.map(c => new JudgeHearingSummary(c));
         const last = this.hearings.pop();
 
         this.hearings.push(last);
@@ -48,7 +48,7 @@ export class JudgeHearingTableComponent implements OnInit {
 
     signIntoConference(hearing: JudgeHearingSummary) {
         this.logger.debug(`[JudgeHearingList] - Selected conference ${hearing.id}`);
-        const conference = this.conferenceForJudgeResponse.find(x => x.id === hearing.id);
+        const conference = this.conferenceForHostResponse.find(x => x.id === hearing.id);
         this.selectedConference.emit(conference);
     }
 

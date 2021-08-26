@@ -77,10 +77,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Build().ToList();
 
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesTodayForJudgeByUsernameAsync(It.IsAny<string>()))
+                .Setup(x => x.GetConferencesTodayForHostAsync(It.IsAny<string>()))
                 .ReturnsAsync(conferences);
 
-            var result = await _controller.GetConferencesForJudgeAsync();
+            var result = await _controller.GetConferencesForHostAsync();
 
             var typedResult = (OkObjectResult) result.Result;
             typedResult.Should().NotBeNull();
@@ -100,10 +100,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         {
             var conferences = new List<Conference>();
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesTodayForJudgeByUsernameAsync(It.IsAny<string>()))
+                .Setup(x => x.GetConferencesTodayForHostAsync(It.IsAny<string>()))
                 .ReturnsAsync(conferences);
 
-            var result = await _controller.GetConferencesForJudgeAsync();
+            var result = await _controller.GetConferencesForHostAsync();
 
             var typedResult = (OkObjectResult) result.Result;
             typedResult.Should().NotBeNull();
@@ -118,10 +118,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
                 "Please provide a valid email", null, default, null);
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesTodayForJudgeByUsernameAsync(It.IsAny<string>()))
+                .Setup(x => x.GetConferencesTodayForHostAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetConferencesForJudgeAsync();
+            var result = await _controller.GetConferencesForHostAsync();
 
             var typedResult = (ObjectResult) result.Result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
@@ -134,10 +134,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 (int) HttpStatusCode.Unauthorized,
                 "Invalid Client ID", null, default, null);
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesTodayForJudgeByUsernameAsync(It.IsAny<string>()))
+                .Setup(x => x.GetConferencesTodayForHostAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetConferencesForJudgeAsync();
+            var result = await _controller.GetConferencesForHostAsync();
 
             var typedResult = (ObjectResult) result.Result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.Unauthorized);
@@ -150,10 +150,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesTodayForJudgeByUsernameAsync(It.IsAny<string>()))
+                .Setup(x => x.GetConferencesTodayForHostAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetConferencesForJudgeAsync();
+            var result = await _controller.GetConferencesForHostAsync();
             var typedResult = result.Value;
             typedResult.Should().BeNull();
         }

@@ -4586,7 +4586,7 @@ export enum Role {
     StaffMember = 'StaffMember'
 }
 
-export class ParticipantForJudgeResponse implements IParticipantForJudgeResponse {
+export class ParticipantForHostResponse implements IParticipantForHostResponse {
     /** The participant Id */
     id?: string;
     display_name?: string | undefined;
@@ -4597,7 +4597,7 @@ export class ParticipantForJudgeResponse implements IParticipantForJudgeResponse
     case_type_group?: string | undefined;
     hearing_role?: string | undefined;
 
-    constructor(data?: IParticipantForJudgeResponse) {
+    constructor(data?: IParticipantForHostResponse) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
@@ -4616,9 +4616,9 @@ export class ParticipantForJudgeResponse implements IParticipantForJudgeResponse
         }
     }
 
-    static fromJS(data: any): ParticipantForJudgeResponse {
+    static fromJS(data: any): ParticipantForHostResponse {
         data = typeof data === 'object' ? data : {};
-        let result = new ParticipantForJudgeResponse();
+        let result = new ParticipantForHostResponse();
         result.init(data);
         return result;
     }
@@ -4635,7 +4635,7 @@ export class ParticipantForJudgeResponse implements IParticipantForJudgeResponse
     }
 }
 
-export interface IParticipantForJudgeResponse {
+export interface IParticipantForHostResponse {
     /** The participant Id */
     id?: string;
     display_name?: string | undefined;
@@ -4647,7 +4647,7 @@ export interface IParticipantForJudgeResponse {
     hearing_role?: string | undefined;
 }
 
-export class ConferenceForHostResponse implements IConferenceForJudgeResponse {
+export class ConferenceForHostResponse implements IConferenceForHostResponse {
     /** Conference UUID */
     id?: string;
     scheduled_date_time?: Date;
@@ -4659,10 +4659,10 @@ export class ConferenceForHostResponse implements IConferenceForJudgeResponse {
     /** The current conference status */
     status?: ConferenceStatus;
     /** The conference participants */
-    participants?: ParticipantForJudgeResponse[] | undefined;
+    participants?: ParticipantForHostResponse[] | undefined;
     number_of_endpoints?: number;
 
-    constructor(data?: IConferenceForJudgeResponse) {
+    constructor(data?: IConferenceForHostResponse) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
@@ -4682,7 +4682,7 @@ export class ConferenceForHostResponse implements IConferenceForJudgeResponse {
             this.status = _data['status'];
             if (Array.isArray(_data['participants'])) {
                 this.participants = [] as any;
-                for (let item of _data['participants']) this.participants!.push(ParticipantForJudgeResponse.fromJS(item));
+                for (let item of _data['participants']) this.participants!.push(ParticipantForHostResponse.fromJS(item));
             }
             this.number_of_endpoints = _data['number_of_endpoints'];
         }
@@ -4714,7 +4714,7 @@ export class ConferenceForHostResponse implements IConferenceForJudgeResponse {
     }
 }
 
-export interface IConferenceForJudgeResponse {
+export interface IConferenceForHostResponse {
     /** Conference UUID */
     id?: string;
     scheduled_date_time?: Date;
@@ -4726,7 +4726,7 @@ export interface IConferenceForJudgeResponse {
     /** The current conference status */
     status?: ConferenceStatus;
     /** The conference participants */
-    participants?: ParticipantForJudgeResponse[] | undefined;
+    participants?: ParticipantForHostResponse[] | undefined;
     number_of_endpoints?: number;
 }
 
