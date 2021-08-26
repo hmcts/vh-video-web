@@ -3,7 +3,19 @@
     <h1 class="govuk-heading-xl">{{ 'hearing-rules.court-rules' | translate }}</h1>
   </div>
 </div>
-
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-quarter">
+    <div class="image crest">
+      <img
+        src="/assets/images/HmctsCrest.png"
+        height="180"
+        width="180"
+        class="govuk-header__logotype-crest"
+        [attr.alt]="'hearing-rules.hm-courts-and-tribunals-service-crest' | translate"
+      />
+    </div>
+  </div>
+</div>
 <div class="govuk-grid-row">
   <div class="govuk-body">
     <div class="govuk-grid-column-three-quarters">
@@ -20,17 +32,6 @@
         <li>{{ 'hearing-rules.must-be-alone-unless-you-have-the-judges-permission' | translate }}</li>
         <li>{{ 'hearing-rules.must-ask-the-judges-permission-to-move-away-from-screen' | translate }}</li>
       </ul>
-    </div>
-    <div class="govuk-grid-column-one-quarter">
-      <div class="image">
-        <img
-          src="/assets/images/HmctsCrest.png"
-          height="180"
-          width="180"
-          class="govuk-header__logotype-crest"
-          [attr.alt]="'hearing-rules.hm-courts-and-tribunals-service-crest' | translate"
-        />
-      </div>
     </div>
   </div>
 </div>
