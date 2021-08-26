@@ -113,11 +113,11 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         if (this.outgoingStream instanceof MediaStream) {
             outgoingActive = this.outgoingStream.active;
         }
-        let incomingActive = true;
-        if (this.incomingStream instanceof MediaStream) {
-            incomingActive = this.incomingStream.active;
-        }
-        return this.outgoingStream && outgoingActive && this.incomingStream && incomingActive;
+        // let incomingActive = true;
+        // if (this.incomingStream instanceof MediaStream) {
+        //     incomingActive = this.incomingStream.active;
+        // }
+        return this.outgoingStream && outgoingActive && this.incomingStream; //&& incomingActive;
     }
 
     async setupTestAndCall(): Promise<void> {

@@ -40,9 +40,14 @@ export class VideoFilterService {
             modelSelection: 1,
             selfieMode: true
         });
+        this.selfieSegmentation.onResults(results => this.onSelfieSegmentationResults(results));
     }
 
-    async initFilterFromMediaStream(stream: MediaStream) {
+    initFilterFromMediaStream(stream: MediaStream) {
+        if (this.videoElement && (this.videoElement?.srcObject as MediaStream)?.id !== stream.id) {
+            this.logger.debug(`${this.loggerPrefix} camera stream has changed`);
+            this.updateCameraStream(stream);
+        }
         if (this.canvasStream) {
             return;
         }
@@ -56,7 +61,6 @@ export class VideoFilterService {
         this.canvasCtx = this.canvasElement.getContext('2d');
 
         this.logger.debug(`${this.loggerPrefix} starting filtered stream`);
-        this.selfieSegmentation.onResults(results => this.onSelfieSegmentationResults(results));
 
         const camera = new Camera(this.videoElement, {
             onFrame: async () => {
@@ -65,9 +69,6 @@ export class VideoFilterService {
                         await this.selfieSegmentation.send({ image: this.videoElement });
                     }
                 } catch (err) {
-                    console.warn(
-                        `${this.loggerPrefix} sending image failed from video ${this.videoElement.id} to canvas ${this.canvasElement.id}`
-                    );
                     this.logger.error(`${this.loggerPrefix} failed to send image to self segmentation mask`, err);
                 }
             },
@@ -76,15 +77,13 @@ export class VideoFilterService {
         });
         camera.start();
     }
+    updateCameraStream(stream: MediaStream) {
+        this.videoElement.srcObject = stream;
+    }
 
     startFilteredStream(): MediaStream {
         this.canvasStream = this.canvasElement.captureStream();
         return this.canvasStream;
-    }
-
-    stopFilteredStream() {
-        this.canvasStream.getTracks().forEach(x => x.stop());
-        this.canvasStream = null;
     }
 
     updateFilter(filter: BackgroundFilter | null) {

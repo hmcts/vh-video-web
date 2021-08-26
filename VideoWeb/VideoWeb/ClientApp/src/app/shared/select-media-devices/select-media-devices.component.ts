@@ -1,13 +1,13 @@
-import { Component, OnInit, Output, EventEmitter, OnDestroy, Input } from '@angular/core';
-import { UserMediaService } from 'src/app/services/user-media.service';
-import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
-import { Logger } from 'src/app/services/logging/logger-base';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
-import { TranslateService } from '@ngx-translate/core';
-import { MediaStreamService } from 'src/app/services/media-stream.service';
-import { VideoFilterService } from 'src/app/services/video-filter.service';
 import { ProfileService } from 'src/app/services/api/profile.service';
+import { Role, UserProfileResponse } from 'src/app/services/clients/api-client';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { MediaStreamService } from 'src/app/services/media-stream.service';
+import { UserMediaService } from 'src/app/services/user-media.service';
+import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { Role, UserProfileResponse } from 'src/app/services/clients/api-client';
 
 @Component({
@@ -37,7 +37,6 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         private mediaStreamService: MediaStreamService,
         private logger: Logger,
         private translateService: TranslateService,
-        private videoFilterService: VideoFilterService,
         private profileService: ProfileService
     ) {}
 
