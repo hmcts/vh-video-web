@@ -14,7 +14,7 @@ import 'webrtc-adapter';
 @Component({
     selector: 'app-mic-visualiser',
     templateUrl: './mic-visualiser.component.html',
-    styleUrls: ['./mic-visualiser.scss']
+    styleUrls: ['./mic-visualiser.component.scss']
 })
 export class MicVisualiserComponent implements AfterViewInit, OnDestroy, AfterViewChecked {
     canvasContext: CanvasRenderingContext2D;
@@ -27,7 +27,8 @@ export class MicVisualiserComponent implements AfterViewInit, OnDestroy, AfterVi
 
     @ViewChild('meter') meterCanvas: ElementRef;
     @ViewChild('container') meterContainer: ElementRef;
-    meterWidth: number;
+    meterCurrentWidth: number;
+    readonly meterMaxWidth = 270;
 
     constructor(private changeDetector: ChangeDetectorRef) {}
 
@@ -44,7 +45,7 @@ export class MicVisualiserComponent implements AfterViewInit, OnDestroy, AfterVi
     }
 
     ngAfterViewChecked() {
-        this.meterWidth = this.meterContainer.nativeElement.offsetWidth;
+        this.meterCurrentWidth = this.meterContainer.nativeElement.offsetWidth;
         this.changeDetector.detectChanges();
     }
 
@@ -86,15 +87,14 @@ export class MicVisualiserComponent implements AfterViewInit, OnDestroy, AfterVi
     }
 
     fillMeter(feedback: number) {
-        const scaleMax = 255;
-        const scaleMultiplier = 1.8;
+        const scaleMultiplier = 1.75;
 
         const canvasWidth = this.meterCanvas.nativeElement.scrollWidth;
         const canvasHeight = this.meterCanvas.nativeElement.scrollHeight;
 
         this.canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
         this.canvasContext.fillStyle = 'green';
-        this.canvasContext.fillRect(0, 0, (feedback / scaleMax) * scaleMultiplier * canvasWidth, canvasHeight);
+        this.canvasContext.fillRect(0, 0, (feedback / this.meterMaxWidth) * canvasWidth * scaleMultiplier, canvasHeight);
     }
 
     tick() {
