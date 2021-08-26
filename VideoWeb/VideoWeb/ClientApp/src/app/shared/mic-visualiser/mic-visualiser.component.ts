@@ -25,17 +25,16 @@ export class MicVisualiserComponent implements OnInit, OnDestroy, AfterViewCheck
     dataArray: Uint8Array;
     rafId: number;
 
-    @ViewChild('meter') meter: ElementRef;
+    @ViewChild('meter') meterCanvas: ElementRef;
     @ViewChild('container') meterContainer: ElementRef;
-    meterWidth = 0;
+    meterWidth: number;
 
     constructor(private changeDetector: ChangeDetectorRef) {}
 
     @Input() stream: MediaStream;
     @Input() incomingStream: MediaStream;
     ngOnInit() {
-        const canvas = <HTMLCanvasElement>document.getElementById('meter');
-        this.canvasContext = canvas.getContext('2d');
+        this.canvasContext = this.meterCanvas.nativeElement.getContext('2d');
         this.setupStream();
     }
 
@@ -88,14 +87,14 @@ export class MicVisualiserComponent implements OnInit, OnDestroy, AfterViewCheck
 
     fillMeter(feedback: number) {
         const scaleMax = 255;
-        const scaleMultiplier = 1.75;
+        const scaleMultiplier = 1.8;
 
-        const width = this.meter.nativeElement.scrollWidth;
-        const height = this.meter.nativeElement.scrollHeight;
+        const canvasWidth = this.meterCanvas.nativeElement.scrollWidth;
+        const canvasHeight = this.meterCanvas.nativeElement.scrollHeight;
 
-        this.canvasContext.clearRect(0, 0, width, height);
+        this.canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
         this.canvasContext.fillStyle = 'green';
-        this.canvasContext.fillRect(0, 0, (feedback / scaleMax) * scaleMultiplier * width, height);
+        this.canvasContext.fillRect(0, 0, (feedback / scaleMax) * scaleMultiplier * canvasWidth, canvasHeight);
     }
 
     tick() {
