@@ -37,7 +37,6 @@ export class MicVisualiserComponent implements AfterViewInit, OnDestroy, AfterVi
     @Input() incomingStream: MediaStream;
     ngAfterViewInit() {
         this.canvasContext = this.meterCanvas.nativeElement.getContext('2d');
-        this.setupStream();
     }
 
     ngOnChanges(): void {
