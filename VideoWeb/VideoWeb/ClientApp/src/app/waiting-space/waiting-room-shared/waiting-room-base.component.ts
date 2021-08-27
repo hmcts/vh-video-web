@@ -754,6 +754,10 @@ export abstract class WaitingRoomBaseDirective {
         return this.videoCallService.retrieveJudicialRoom(this.conference.id, this.participant.id);
     }
 
+    isQuickLinkParticipant(): boolean {
+        return this.participant?.role.toUpperCase() === Role.QuickLinkObserver.toUpperCase() || this.participant?.role.toUpperCase() === Role.QuickLinkParticipant.toUpperCase();
+    }
+
     isOrHasWitnessLink(): boolean {
         if (this.participant?.hearing_role.toUpperCase() === HearingRole.WITNESS.toUpperCase()) {
             return true;
@@ -1008,7 +1012,7 @@ export abstract class WaitingRoomBaseDirective {
             return;
         }
 
-        if (this.hearing.isInSession() && !this.isOrHasWitnessLink()) {
+        if (this.hearing.isInSession() && !this.isOrHasWitnessLink() && !this.isQuickLinkParticipant()) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because hearing is in session';
             this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);

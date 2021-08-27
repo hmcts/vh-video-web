@@ -90,7 +90,7 @@
   </div>
 </div>
 
-<div *ngIf="isOrHasWitnessLink() && isTransferringIn">
+<div *ngIf="(isOrHasWitnessLink() || isQuickLinkParticipant()) && isTransferringIn">
   <div class="video-background">
     <div class="transferMessage">
       <img
@@ -195,7 +195,7 @@
           <p>{{ 'participant-waiting-room.hearing-status-messages.suspended-body' | translate }}</p>
         </div>
 
-        <div *ngIf="isOrHasWitnessLink() && hearing.isInSession()">
+        <div *ngIf="(isOrHasWitnessLink() || isQuickLinkParticipant()) && hearing.isInSession()">
           <h2 class="govuk-heading-m white">{{ 'participant-waiting-room.hearing-status-messages.in-session-title' | translate }}</h2>
           <p class="white">
             {{ 'participant-waiting-room.hearing-status-messages.in-session-body' | translate }}
