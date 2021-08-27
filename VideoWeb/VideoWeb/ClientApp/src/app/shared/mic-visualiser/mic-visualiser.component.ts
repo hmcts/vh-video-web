@@ -18,13 +18,13 @@ import 'webrtc-adapter';
     styleUrls: ['./mic-visualiser.component.scss']
 })
 export class MicVisualiserComponent implements AfterViewInit, OnDestroy, AfterViewChecked, OnChanges {
-    canvasContext: CanvasRenderingContext2D;
-    audioContext: AudioContext;
-    source: MediaStreamAudioSourceNode;
-    analyser: AnalyserNode;
+    private canvasContext: CanvasRenderingContext2D;
+    private audioContext: AudioContext;
+    private source: MediaStreamAudioSourceNode;
+    private analyser: AnalyserNode;
 
-    dataArray: Uint8Array;
-    rafId: number;
+    private dataArray: Uint8Array;
+    private rafId: number;
 
     @ViewChild('meter') meterCanvas: ElementRef;
     @ViewChild('container') meterContainer: ElementRef;
