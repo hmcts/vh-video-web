@@ -20,6 +20,8 @@ export const pageUrls = {
     JudgeHearingList: 'judge/hearing-list',
     JudgeWaitingRoom: 'judge/waiting-room',
     JudgeSelfTestVideo: 'judge/practice-video-hearing',
+    // Staff Member
+    StaffMemberHearingList: 'staff-member/hearing-list',
     // participant
     ParticipantHearingList: 'participant/hearing-list',
     ParticipantWaitingRoom: 'participant/waiting-room',

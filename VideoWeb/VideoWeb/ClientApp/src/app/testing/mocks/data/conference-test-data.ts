@@ -374,6 +374,17 @@ export class ConferenceTestData {
             linked_participants: []
         });
 
+        const participant10 = new ParticipantForUserResponse({
+            id: '1234-1234-1234-1234',
+            status: ParticipantStatus.NotSignedIn,
+            display_name: 'Staff Member Doe PM',
+            role: Role.StaffMember,
+            case_type_group: 'staffmember',
+            hearing_role: HearingRole.STAFF_MEMBER,
+            tiled_display_name: 'Staff Member Doe PM;1234-1234-1234-1234',
+            linked_participants: []
+        });
+
         participants.push(participant1);
         participants.push(participant2);
         participants.push(participant3);
@@ -383,6 +394,7 @@ export class ConferenceTestData {
         participants.push(participant7);
         participants.push(participant8);
         participants.push(participant9);
+        participants.push(participant10);
         return participants;
     }
 
