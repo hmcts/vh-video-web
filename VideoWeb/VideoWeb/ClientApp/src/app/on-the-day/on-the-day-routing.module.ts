@@ -21,6 +21,7 @@ import { IndependentSelfTestComponent } from './independent-self-test/independen
 import { UnsupportedDeviceComponent } from '../shared/unsupported-device/unsupported-device.component';
 import { ParticipantStatusGuard } from '../security/participant-status.guard';
 import { BackLinkDetails } from '../shared/models/back-link-details';
+import { StaffMemberGuard } from '../security/staff-member.guard';
 
 export const routes: Routes = [
     {
@@ -28,6 +29,12 @@ export const routes: Routes = [
         component: JudgeHearingListComponent,
         canActivate: [JudgeGuard],
         data: { title: 'Judge hearing list' }
+    },
+    {
+        path: `${pageUrls.StaffMemberHearingList}`,
+        component: JudgeHearingListComponent,
+        canActivate: [StaffMemberGuard],
+        data: { title: 'Staff Member hearing list' }
     },
     {
         path: `${pageUrls.ParticipantHearingList}`,
