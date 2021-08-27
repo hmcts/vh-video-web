@@ -104,7 +104,8 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         RoomClosingToastComponent,
         MultilinePipe,
         NgxDatePipe,
-        LoadingComponent
+        LoadingComponent,
+        HeaderLogoSvgComponent
     ],
     providers: [
         { provide: Logger, useClass: LoggerService },
@@ -120,8 +121,7 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         ScreenHelper,
         TestLanguageService,
         DatePipe,
-        ParticipantPanelModelMapper,
-        HeaderLogoSvgComponent
+        ParticipantPanelModelMapper
     ],
     exports: [
         HeaderComponent,
@@ -151,4 +151,4 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         LoadingComponent
     ]
 })
-export class SharedModule {}
+export class SharedModule { }
