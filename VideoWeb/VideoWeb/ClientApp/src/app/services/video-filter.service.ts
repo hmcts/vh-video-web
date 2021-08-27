@@ -84,9 +84,6 @@ export class VideoFilterService {
 
     startFilteredStream(): MediaStream {
         this.canvasStream = this.canvasElement.captureStream();
-        // (this.videoElement.srcObject as MediaStream).getAudioTracks().forEach(x => {
-        //     this.canvasStream.addTrack(x);
-        // });
         return this.canvasStream;
     }
 
