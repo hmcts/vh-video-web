@@ -118,6 +118,16 @@
           "Newtonsoft.Json": "12.0.3"
         }
       },
+      "VideoApi.Client": {
+        "type": "Direct",
+        "requested": "[1.27.4, )",
+        "resolved": "1.27.4",
+        "contentHash": "v1N+K2TUNp0cxHPzOyDjNFyCAV3kmJ7iQrr2psRI7VQzElg74HAeQtMJph3os9WcK4iJFRQcO0zor+k50ahImQ==",
+        "dependencies": {
+          "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
+          "Newtonsoft.Json": "12.0.3"
+        }
+      },
       "Autofac": {
         "type": "Transitive",
         "resolved": "6.0.0",
@@ -2342,15 +2352,6 @@
           "SonarAnalyzer.CSharp": "8.2.0.14119"
         }
       },
-      "VideoApi.Client": {
-        "type": "Transitive",
-        "resolved": "1.26.7",
-        "contentHash": "KNqVxyPVdWeAgACuUEMDyhzfoOm47BBFbbNgzH3bOOQMLgR4HFifDYnLyj9c/qUmOc5eFgpgk+3ICijgSw29og==",
-        "dependencies": {
-          "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
-          "Newtonsoft.Json": "12.0.3"
-        }
-      },
       "videoweb": {
         "type": "Project",
         "dependencies": {
@@ -2378,7 +2379,7 @@
           "Swashbuckle.AspNetCore.Newtonsoft": "5.0.0",
           "UserApi.Client": "1.24.3",
           "VH.Core.Configuration": "0.1.12",
-          "VideoApi.Client": "1.26.7",
+          "VideoApi.Client": "1.27.4",
           "VideoWeb.Common": "1.0.0",
           "VideoWeb.Contract": "1.0.0",
           "VideoWeb.EventHub": "1.0.0"
@@ -2397,7 +2398,7 @@
           "StackExchange.Redis": "2.1.28",
           "System.IdentityModel.Tokens.Jwt": "5.6.0",
           "UserApi.Client": "1.24.3",
-          "VideoApi.Client": "1.26.7"
+          "VideoApi.Client": "1.27.4"
         }
       },
       "videoweb.contract": {
@@ -2405,7 +2406,7 @@
         "dependencies": {
           "BookingsApi.Client": "1.25.8",
           "UserApi.Client": "1.24.3",
-          "VideoApi.Client": "1.26.7",
+          "VideoApi.Client": "1.27.4",
           "VideoWeb.Common": "1.0.0"
         }
       },
@@ -2418,7 +2419,7 @@
           "Microsoft.Extensions.Caching.Abstractions": "3.1.10",
           "System.Text.Json": "4.7.1",
           "UserApi.Client": "1.24.3",
-          "VideoApi.Client": "1.26.7",
+          "VideoApi.Client": "1.27.4",
           "VideoWeb.Common": "1.0.0",
           "VideoWeb.Contract": "1.0.0"
         }

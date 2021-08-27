@@ -2,26 +2,28 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from '../../shared/page-url.constants';
-import { OidcConfigSetupService } from '../oidc-config-setup.service';
+import { SecurityConfigSetupService } from '../security-config-setup.service';
+import { IdpProviders } from '../idp-providers';
 
 @Component({
     selector: 'app-idp-selection',
     templateUrl: './idp-selection.component.html'
 })
 export class IdpSelectionComponent {
-    identityProviders = {
-        ejud: {
-            url: '/' + pageUrls.Login
-        },
-        vhaad: {
-            url: '/' + pageUrls.Login
-        }
-    };
+    identityProviders = {};
 
-    selectedProvider: string;
+    selectedProvider: IdpProviders;
     submitted = false;
 
-    constructor(private router: Router, private logger: Logger, private oidcConfigSetupService: OidcConfigSetupService) {}
+    constructor(private router: Router, private logger: Logger, private securityConfigSetupService: SecurityConfigSetupService) {
+        this.identityProviders[IdpProviders.ejud] = {
+            url: '/' + pageUrls.Login
+        };
+
+        this.identityProviders[IdpProviders.vhaad] = {
+            url: '/' + pageUrls.Login
+        };
+    }
 
     showError(): boolean {
         return this.submitted && !this.selectedProvider;
@@ -31,7 +33,7 @@ export class IdpSelectionComponent {
         return Object.keys(this.identityProviders);
     }
 
-    selectProvider(provider: string) {
+    selectProvider(provider: IdpProviders) {
         this.selectedProvider = provider;
     }
 
@@ -40,13 +42,13 @@ export class IdpSelectionComponent {
         return this.redirectToLogin(this.selectedProvider);
     }
 
-    redirectToLogin(provider: string): boolean {
+    redirectToLogin(provider: IdpProviders): boolean {
         if (!this.identityProviders[provider]) {
             return false;
         }
 
         this.logger.info(`Sending to idp: ${provider}`);
-        this.oidcConfigSetupService.setIdp(provider);
+        this.securityConfigSetupService.setIdp(provider);
         this.router.navigate([this.identityProviders[provider].url]);
         return true;
     }

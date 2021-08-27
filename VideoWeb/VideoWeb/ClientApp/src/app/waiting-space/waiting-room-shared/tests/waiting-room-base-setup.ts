@@ -7,8 +7,6 @@ import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
-import { UserMediaService } from 'src/app/services/user-media.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
@@ -55,8 +53,6 @@ export let notificationToastrService: jasmine.SpyObj<NotificationToastrService>;
 export let roomClosingToastrService: jasmine.SpyObj<RoomClosingToastrService>;
 export let toastrService: jasmine.SpyObj<ToastrService>;
 export let logger: jasmine.SpyObj<Logger>;
-export let userMediaService: jasmine.SpyObj<UserMediaService>;
-export let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
 export const mockCamStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
 export const mockMicStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getAudioTracks']);
 export const testDataDevice = new MediaDeviceTestData();
@@ -70,13 +66,11 @@ export function initAllWRDependencies() {
     videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
         'getConferenceById',
         'getObfuscatedName',
-        'getJwToken',
         'getCurrentParticipant',
         'getAllowedEndpointsForConference'
     ]);
     videoWebService.getConferenceById.and.resolveTo(globalConference);
     videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
-    videoWebService.getJwToken.and.resolveTo(jwToken);
     videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(new LoggedParticipantResponse({})));
     errorService = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError', 'handleApiError', 'handlePexipError']);
 
@@ -95,23 +89,7 @@ export function initAllWRDependencies() {
     consultationService = consultationServiceSpyFactory();
 
     logger = jasmine.createSpyObj<Logger>('Logger', ['debug', 'info', 'warn', 'event', 'error']);
-    userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
-        'updatePreferredCamera',
-        'updatePreferredMicrophone',
-        'getPreferredCamera',
-        'getPreferredMicrophone',
-        'setDefaultDevicesInCache'
-    ]);
-    userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>('UserMediaStreamService', [
-        'stopStream',
-        'getStreamForCam',
-        'getStreamForMic'
-    ]);
-    userMediaStreamService.getStreamForCam.and.resolveTo(mockCamStream);
-    userMediaStreamService.getStreamForMic.and.resolveTo(mockMicStream);
-    userMediaService.getPreferredCamera.and.resolveTo(testDataDevice.getListOfCameras()[0]);
-    userMediaService.getPreferredMicrophone.and.resolveTo(testDataDevice.getListOfMicrophones()[0]);
-    userMediaService.setDefaultDevicesInCache.and.returnValue(Promise.resolve());
+
     notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', [
         'playHearingAlertSound',
         'initHearingAlertSound',

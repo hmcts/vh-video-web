@@ -1,146 +1,158 @@
-import { fakeAsync, tick } from '@angular/core/testing';
+import { fakeAsync, flush, flushMicrotasks, tick } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
-import { BehaviorSubject } from 'rxjs';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { SelectMediaDevicesComponent } from './select-media-devices.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { getSpiedPropertyGetter } from '../jasmine-helpers/property-helpers';
+import { of, Subject } from 'rxjs';
+import { MediaStreamService } from 'src/app/services/media-stream.service';
+import { UserMediaDevice } from '../models/user-media-device';
+import { Guid } from 'guid-typescript';
 
 describe('SelectMediaDevicesComponent', () => {
     let component: SelectMediaDevicesComponent;
     let userMediaService: jasmine.SpyObj<UserMediaService>;
-    let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
-    const fb = new FormBuilder();
+    let mediaStreamService: jasmine.SpyObj<MediaStreamService>;
+
     const testData = new MediaDeviceTestData();
     const mockCamStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
     const mockMicStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getAudioTracks']);
+    let connectedDevicesSubject: Subject<UserMediaDevice[]>;
+    let activeVideoDeviceSubject: Subject<UserMediaDevice>;
+    let activeMicrophoneDeviceSubject: Subject<UserMediaDevice>;
+    let isAudioOnlySubject: Subject<boolean>;
 
     beforeAll(() => {
-        userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>('UserMediaStreamService', [
-            'requestAccess',
+        mediaStreamService = jasmine.createSpyObj<MediaStreamService>('MediaStreamService', [
             'stopStream',
             'getStreamForCam',
             'getStreamForMic'
         ]);
-        userMediaStreamService.requestAccess.and.resolveTo(true);
-        userMediaStreamService.getStreamForCam.and.resolveTo(mockCamStream);
-        userMediaStreamService.getStreamForMic.and.resolveTo(mockMicStream);
-
-        userMediaService = jasmine.createSpyObj<UserMediaService>(
-            'UserMediaService',
-            [
-                'getListOfVideoDevices',
-                'getListOfMicrophoneDevices',
-                'getPreferredCamera',
-                'getPreferredMicrophone',
-                'updatePreferredCamera',
-                'updatePreferredMicrophone'
-            ],
-            { connectedDevices: new BehaviorSubject(testData.getListOfDevices()) }
-        );
-
-        userMediaService.getListOfVideoDevices.and.resolveTo(testData.getListOfCameras());
-        userMediaService.getListOfMicrophoneDevices.and.resolveTo(testData.getListOfMicrophones());
-        userMediaService.getPreferredCamera.and.resolveTo(testData.getListOfCameras()[0]);
-        userMediaService.getPreferredMicrophone.and.resolveTo(testData.getListOfMicrophones()[0]);
+        mediaStreamService.getStreamForCam.and.returnValue(of(mockCamStream));
+        mediaStreamService.getStreamForMic.and.returnValue(of(mockMicStream));
     });
 
     beforeEach(fakeAsync(() => {
-        component = new SelectMediaDevicesComponent(userMediaService, userMediaStreamService, fb, new MockLogger(), translateServiceSpy);
-        component.cameraOn = false;
-        component.ngOnInit();
-        tick();
+        userMediaService = jasmine.createSpyObj<UserMediaService>(
+            'UserMediaService',
+            ['updateActiveCamera', 'updateActiveMicrophone', 'updateIsAudioOnly'],
+            ['activeVideoDevice$', 'activeMicrophoneDevice$', 'connectedDevices$', 'isAudioOnly$']
+        );
+        connectedDevicesSubject = new Subject<UserMediaDevice[]>();
+        activeVideoDeviceSubject = new Subject<UserMediaDevice>();
+        activeMicrophoneDeviceSubject = new Subject<UserMediaDevice>();
+        isAudioOnlySubject = new Subject<boolean>();
+
+        getSpiedPropertyGetter(userMediaService, 'activeVideoDevice$').and.returnValue(activeVideoDeviceSubject.asObservable());
+        getSpiedPropertyGetter(userMediaService, 'activeMicrophoneDevice$').and.returnValue(activeMicrophoneDeviceSubject.asObservable());
+        getSpiedPropertyGetter(userMediaService, 'connectedDevices$').and.returnValue(connectedDevicesSubject.asObservable());
+        getSpiedPropertyGetter(userMediaService, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
+
+        component = new SelectMediaDevicesComponent(userMediaService, mediaStreamService, new MockLogger(), translateServiceSpy);
+        component.availableCameraDevices = testData.getListOfCameras();
     }));
 
     afterEach(() => {
         component.ngOnDestroy();
     });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
+    describe('OnInit', () => {
+        it('should initialise connectWithCameraOn with input', fakeAsync(() => {
+            component.ngOnInit();
+            expect(component.connectWithCameraOn).toBeFalsy();
+        }));
 
-    it('should init connectWithCameraOn with input', () => {
-        expect(component.connectWithCameraOn).toBeFalsy();
+        it('should initialise the device form on init', fakeAsync(() => {
+            component.ngOnInit();
+            flushMicrotasks();
+            connectedDevicesSubject.next(testData.getListOfDevices());
+            flush();
+            expect(component.availableCameraDevices).toBeDefined();
+            expect(component.availableMicrophoneDevices).toBeDefined();
+        }));
+
+        it('should initialise connectWithCameraOn to true', fakeAsync(() => {
+            component.ngOnInit();
+            flushMicrotasks();
+            isAudioOnlySubject.next(false);
+            flush();
+            expect(component.connectWithCameraOn).toBeTrue();
+        }));
+
+        it('should update selected cam', fakeAsync(() => {
+            spyOn<any>(component, 'updateSelectedCamera').and.callThrough();
+
+            component.availableCameraDevices = testData.getListOfCameras();
+            component.ngOnInit();
+            flushMicrotasks();
+            activeVideoDeviceSubject.next(testData.getSelectedCamera());
+            flush();
+            expect(component['updateSelectedCamera']).toHaveBeenCalled();
+            expect(component.selectedCameraDevice).toEqual(testData.getSelectedCamera());
+        }));
+
+        it('should update selected mic', fakeAsync(() => {
+            spyOn<any>(component, 'updateSelectedMicrophone').and.callThrough();
+
+            component.availableCameraDevices = testData.getListOfCameras();
+            component.ngOnInit();
+            flushMicrotasks();
+            activeMicrophoneDeviceSubject.next(testData.getSelectedMicphone());
+            flush();
+            expect(component['updateSelectedMicrophone']).toHaveBeenCalled();
+            expect(component.selectedMicrophoneDevice).toEqual(testData.getSelectedMicphone());
+        }));
     });
 
-    it('should initialise the device form on init', async () => {
-        expect(component.selectedMediaDevicesForm).toBeDefined();
-        expect(component.selectedMediaDevicesForm.valid).toBeTruthy();
+    it('should update settings in user media service onClose', () => {
+        const cameraDevice = (component.selectedCameraDevice = new UserMediaDevice('camera', Guid.create().toString(), 'videoinput', null));
+        const microphoneDevice = (component.selectedMicrophoneDevice = new UserMediaDevice(
+            'microphone',
+            Guid.create().toString(),
+            'audioinput',
+            null
+        ));
+        const isAudioOnly = !(component.connectWithCameraOn = false);
+
+        component.onClose();
+
+        expect(userMediaService.updateActiveCamera).toHaveBeenCalledWith(cameraDevice);
+        expect(userMediaService.updateActiveMicrophone).toHaveBeenCalledWith(microphoneDevice);
+        expect(userMediaService.updateIsAudioOnly).toHaveBeenCalledWith(isAudioOnly);
     });
 
-    it('should return true when only one camera is available', () => {
-        component.availableCameraDevices = testData.getSingleCamera();
-        expect(component.hasSingleCameraConncted).toBeTruthy();
-        expect(component.singleCameraName).toBeDefined();
+    it('should emit cancelled event onSave', async () => {
+        spyOn(component.shouldClose, 'emit');
+        component.onClose();
+        expect(component.shouldClose.emit).toHaveBeenCalled();
     });
 
-    it('should return true when multiple cameras are available', () => {
-        component.availableCameraDevices = testData.getListOfCameras();
-        expect(component.hasSingleCameraConncted).toBeFalsy();
+    it('should update connectWithCameraOn to false', async () => {
+        component.connectWithCameraOn = true;
+        component.toggleSwitch();
+        expect(component.connectWithCameraOn).toBeFalse();
     });
 
-    it('should return true when only one microphone is available', () => {
-        component.availableMicrophoneDevices = testData.getSingleMicrophone();
-        expect(component.hasSingleMicrophoneConncted).toBeTruthy();
-        expect(component.singleMicrophoneName).toBeDefined();
+    it('should update connectWithCameraOn to true', async () => {
+        component.connectWithCameraOn = false;
+        component.toggleSwitch();
+        expect(component.connectWithCameraOn).toBeTrue();
     });
 
-    it('should return true when multiple microphones are available', () => {
-        component.availableMicrophoneDevices = testData.getListOfMicrophones();
-        expect(component.hasSingleMicrophoneConncted).toBeFalsy();
+    it('should update camera stream on device change', async () => {
+        component.selectedCameraStream = null;
+        component.onSelectedCameraDeviceChange();
+        expect(component.selectedCameraStream).toEqual(mockCamStream);
     });
 
-    it('should emit cancelled event onCancel', async () => {
-        spyOn(component.cancelMediaDeviceChange, 'emit');
-        component.onSubmit();
-        expect(component.cancelMediaDeviceChange.emit).toHaveBeenCalled();
-    });
-
-    it('should not emit device updated event when form is invalid', async () => {
-        spyOn(component.acceptMediaDeviceChange, 'emit');
-        component.selectedMediaDevicesForm.setValue({ camera: '', microphone: '' });
-
-        component.onSubmit();
-
-        expect(component.acceptMediaDeviceChange.emit).toHaveBeenCalledTimes(0);
-    });
-
-    it('should emit close event when dialog is closed', async () => {
-        spyOn(component.cancelMediaDeviceChange, 'emit');
-        component.onSubmit();
-        expect(component.cancelMediaDeviceChange.emit).toHaveBeenCalled();
-    });
-
-    it('should update microphone stream on device change', () => {
-        const device = component.availableMicrophoneDevices[1];
-        component.preferredMicrophoneStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getAudioTracks']);
-
-        component.selectedMicrophone.setValue(device);
-
-        expect(userMediaStreamService.getStreamForMic).toHaveBeenCalledWith(device);
-    });
-
-    it('should update camera stream on device change', () => {
-        const device = component.availableCameraDevices[1];
-        component.preferredCameraStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
-
-        component.selectedCamera.setValue(device);
-
-        expect(userMediaStreamService.getStreamForCam).toHaveBeenCalledWith(device);
-    });
-
-    it('should clear streams on destroy', () => {
-        component.preferredCameraStream = mockCamStream;
-        component.preferredMicrophoneStream = mockMicStream;
-
-        component.ngOnDestroy();
-
-        expect(component.preferredCameraStream).toBeNull();
-        expect(component.preferredMicrophoneStream).toBeNull();
-    });
-    it('should on change device save selected devices and emit device update event', () => {
-        spyOn(component.acceptMediaDeviceChange, 'emit');
-        component.onChangeDevice();
-        expect(component.acceptMediaDeviceChange.emit).toHaveBeenCalled();
+    it('should update microphone stream on device change', async () => {
+        component.selectedCameraStream = null;
+        component.onSelectedMicrophoneDeviceChange();
+        expect(component.selectedMicrophoneStream).toEqual(mockMicStream);
     });
 
     it('should get camera text "OFF" when connectWithCameraOn is false', () => {
@@ -155,24 +167,35 @@ describe('SelectMediaDevicesComponent', () => {
         expect(component.audioOnlyToggleText).toBe('SELECT-MEDIA-DEVICES.ON');
     });
 
-    it('should publish camera setting on toggle switch', () => {
-        const spy = spyOn(component.acceptMediaDeviceChange, 'emit');
-        component.connectWithCameraOn = true;
-        component.toggleSwitch();
-        expect(component.connectWithCameraOn).toBe(false);
-        expect(component.acceptMediaDeviceChange.emit).toHaveBeenCalled();
-        expect(spy.calls.mostRecent().args[0].audioOnly).toBe(true);
-    });
-
     it('should set block click to true when transition starts', () => {
-        component.blockClicks = false;
+        component.blockToggleClicks = false;
         component.transitionstart();
-        expect(component.blockClicks).toBeTruthy();
+        expect(component.blockToggleClicks).toBeTruthy();
     });
 
     it('should set block click to false when transition ends', () => {
-        component.blockClicks = true;
+        component.blockToggleClicks = true;
         component.transitionEnd();
-        expect(component.blockClicks).toBeFalsy();
+        expect(component.blockToggleClicks).toBeFalsy();
+    });
+
+    it('should clear streams on destroy', fakeAsync(() => {
+        component.selectedCameraStream = mockCamStream;
+        component.selectedMicrophoneStream = mockMicStream;
+        mediaStreamService.stopStream.calls.reset();
+        component.ngOnDestroy();
+        flush();
+        expect(mediaStreamService.stopStream).toHaveBeenCalledWith(mockCamStream);
+        expect(mediaStreamService.stopStream).toHaveBeenCalledWith(mockMicStream);
+    }));
+
+    it('should have only one available camera device', async () => {
+        component.availableCameraDevices = testData.getSingleCamera();
+        expect(component.hasOnlyOneAvailableCameraDevice).toBeTrue();
+    });
+
+    it('should have only one available microphone device', async () => {
+        component.availableMicrophoneDevices = testData.getSingleMicrophone();
+        expect(component.hasOnlyOneAvailableMicrophoneDevice).toBeTrue();
     });
 });

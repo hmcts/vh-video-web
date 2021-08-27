@@ -145,7 +145,7 @@ export class ConferenceService {
             return;
         }
 
-        console.log(`${this.loggerPrefix} attempting to get conference details.`);
+        this.logger.debug(`${this.loggerPrefix} attempting to get conference details.`);
         this.getConferenceById(this.currentConferenceId).subscribe(conference => {
             this.logger.info(`${this.loggerPrefix} conference details retrieved.`, {
                 oldDetails: this.currentConference,

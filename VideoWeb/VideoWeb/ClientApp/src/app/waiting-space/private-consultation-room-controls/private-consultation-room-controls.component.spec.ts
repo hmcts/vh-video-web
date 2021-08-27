@@ -28,9 +28,10 @@ import { PrivateConsultationRoomControlsComponent } from './private-consultation
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, of, Subject } from 'rxjs';
 import { HearingRole } from '../models/hearing-role-model';
 import { ParticipantModel } from 'src/app/shared/models/participant';
+import { UserMediaService } from 'src/app/services/user-media.service';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -68,18 +69,26 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
     let participantServiceSpy: jasmine.SpyObj<ParticipantService>;
 
+    let isAudioOnlySubject: Subject<boolean>;
+    let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
+
     beforeEach(() => {
         translateService.instant.calls.reset();
 
         participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
             'ParticipantService',
             ['getParticipantOrVirtualMeetingRoomById'],
-            ['loggedInParticipant']
+            ['loggedInParticipant$']
         );
+
+        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>([], ['isAudioOnly$']);
+        isAudioOnlySubject = new Subject<boolean>();
+        getSpiedPropertyGetter(userMediaServiceSpy, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
+
         const loggedInParticipantSubject = new BehaviorSubject<ParticipantModel>(
             ParticipantModel.fromParticipantForUserResponse(participantOne)
         );
-        getSpiedPropertyGetter(participantServiceSpy, 'loggedInParticipant').and.returnValue(loggedInParticipantSubject.asObservable());
+        getSpiedPropertyGetter(participantServiceSpy, 'loggedInParticipant$').and.returnValue(loggedInParticipantSubject.asObservable());
 
         component = new PrivateConsultationRoomControlsComponent(
             videoCallService,
@@ -87,7 +96,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             deviceTypeService,
             logger,
             participantServiceSpy,
-            translateService
+            translateService,
+            userMediaServiceSpy
         );
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;

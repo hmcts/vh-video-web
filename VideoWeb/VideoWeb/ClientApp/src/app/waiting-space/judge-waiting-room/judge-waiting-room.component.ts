@@ -19,8 +19,6 @@ import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
-import { UserMediaService } from 'src/app/services/user-media.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -75,8 +73,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected router: Router,
         protected consultationService: ConsultationService,
         private audioRecordingService: AudioRecordingService,
-        protected userMediaService: UserMediaService,
-        protected userMediaStreamService: UserMediaStreamService,
         protected notificationSoundsService: NotificationSoundsService,
         protected notificationToastrService: NotificationToastrService,
         protected roomClosingToastrService: RoomClosingToastrService,
@@ -100,8 +96,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             deviceTypeService,
             router,
             consultationService,
-            userMediaService,
-            userMediaStreamService,
             notificationSoundsService,
             notificationToastrService,
             roomClosingToastrService,
@@ -128,25 +122,22 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
         this.initialiseVideoControlCacheLogic();
 
-        this.userMediaService
-            .setDefaultDevicesInCache()
-            .then(() => {
-                this.logger.debug(`${this.loggerPrefixJudge} Defined default devices in cache`);
-                this.connected = false;
-                this.getConference().then(() => {
-                    this.subscribeToClock();
-                    this.startEventHubSubscribers();
-                    this.getJwtokenAndConnectToPexip();
-                    if (this.conference.audio_recording_required) {
-                        this.initAudioRecordingInterval();
-                    }
-                });
-            })
-            .catch((error: Error | MediaStreamError) => {
-                this.logger.error(`${this.loggerPrefixJudge} Failed to initialise the judge waiting room`, error);
-                const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-                this.errorService.handlePexipError(new CallError(error.name), conferenceId);
+        try {
+            this.logger.debug(`${this.loggerPrefixJudge} Defined default devices in cache`);
+            this.connected = false;
+            this.getConference().then(() => {
+                this.subscribeToClock();
+                this.startEventHubSubscribers();
+                this.connectToPexip();
+                if (this.conference.audio_recording_required) {
+                    this.initAudioRecordingInterval();
+                }
             });
+        } catch (error) {
+            this.logger.error(`${this.loggerPrefixJudge} Failed to initialise the judge waiting room`, error);
+            const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+            this.errorService.handlePexipError(new CallError(error.name), conferenceId);
+        }
     }
 
     private onShouldReload(): void {

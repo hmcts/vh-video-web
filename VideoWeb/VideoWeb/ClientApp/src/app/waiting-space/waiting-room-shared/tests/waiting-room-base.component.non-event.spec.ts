@@ -39,15 +39,12 @@ import {
     notificationToastrService,
     roomClosingToastrService,
     router,
-    userMediaService,
-    userMediaStreamService,
     videoCallService,
     videoWebService
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
 import { HearingRole } from '../../models/hearing-role-model';
 import { ElementRef } from '@angular/core';
-import { PrivateConsultationRoomControlsComponent } from '../../private-consultation-room-controls/private-consultation-room-controls.component';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 
 describe('WaitingRoomComponent message and clock', () => {
@@ -67,8 +64,6 @@ describe('WaitingRoomComponent message and clock', () => {
         roomClosingToastrService.clearToasts.and.callFake(() => {
             roomClosingToastrService.currentToast = null;
         });
-
-        videoCallService.retrieveVideoCallPreferences.and.returnValue(new VideoCallPreferences());
     });
 
     beforeEach(() => {
@@ -83,8 +78,6 @@ describe('WaitingRoomComponent message and clock', () => {
             deviceTypeService,
             router,
             consultationService,
-            userMediaService,
-            userMediaStreamService,
             notificationSoundsService,
             notificationToastrService,
             roomClosingToastrService,
@@ -215,9 +208,9 @@ describe('WaitingRoomComponent message and clock', () => {
         expect(component.displayDeviceChangeModal).toBeTruthy();
     });
 
-    it('should set displayDeviceChangeModal to false onMediaDeviceChangeCancelled', () => {
+    it('should set displayDeviceChangeModal to false onSelectMediaDeviceShouldClose', () => {
         component.displayDeviceChangeModal = true;
-        component.onMediaDeviceChangeCancelled();
+        component.onSelectMediaDeviceShouldClose();
         expect(component.displayDeviceChangeModal).toBeFalsy();
     });
 
@@ -307,53 +300,8 @@ describe('WaitingRoomComponent message and clock', () => {
 
     it('should hide change device popup on close popup', () => {
         component.displayDeviceChangeModal = true;
-        component.onMediaDeviceChangeCancelled();
+        component.onSelectMediaDeviceShouldClose();
         expect(component.displayDeviceChangeModal).toBe(false);
-    });
-
-    it('should change device on select device', async () => {
-        const device = new SelectedUserMediaDevice(
-            new UserMediaDevice('camera1', 'id3445', 'videoinput', '1'),
-            new UserMediaDevice('microphone', 'id123', 'audioinput', '1')
-        );
-        await component.onMediaDeviceChangeAccepted(device);
-        expect(userMediaService.updatePreferredCamera).toHaveBeenCalled();
-        expect(userMediaService.updatePreferredMicrophone).toHaveBeenCalled();
-        expect(videoCallService.reconnectToCallWithNewDevices);
-    });
-
-    it('should switch to only only call when user has selected to turn camera off', async () => {
-        const device = new SelectedUserMediaDevice(
-            new UserMediaDevice('camera1', 'id3445', 'videoinput', '1'),
-            new UserMediaDevice('microphone', 'id123', 'audioinput', '1'),
-            true
-        );
-
-        await component.onMediaDeviceChangeAccepted(device);
-
-        expect(videoCallService.switchToAudioOnlyCall).toHaveBeenCalled();
-    });
-
-    it('should publish media device status changes when switching call type mid hearing or consultation', async () => {
-        // arrange
-        component.audioOnly = true;
-        const device = new SelectedUserMediaDevice(
-            new UserMediaDevice('camera1', 'id3445', 'videoinput', '1'),
-            new UserMediaDevice('microphone', 'id123', 'audioinput', '1'),
-            false
-        );
-        const controls = jasmine.createSpyObj<PrivateConsultationRoomControlsComponent>(
-            'PrivateConsultationRoomControlsComponent',
-            ['publishMediaDeviceStatus'],
-            { audioOnly: true }
-        );
-        component.hearingControls = controls;
-
-        // act
-        await component.onMediaDeviceChangeAccepted(device);
-
-        // assert
-        expect(controls.publishMediaDeviceStatus).toHaveBeenCalled();
     });
 
     it('should not announce hearing is starting when already announced', () => {
@@ -441,19 +389,10 @@ describe('WaitingRoomComponent message and clock', () => {
             beforeEach(() => {
                 videoCallService.makeCall.calls.reset();
                 spyOnProperty(eventsServiceSpy, 'eventHubIsConnected').and.returnValue(false);
-                component.token = undefined;
             });
 
-            it('should not call when event hub is not connected and token is not set', () => {
+            it('should not call when event hub is not connected', () => {
                 // Setup handled in beforeEach. Left blank intentionally.
-            });
-
-            it('should not call when event hub is not connected and token is set', () => {
-                component.token = new TokenResponse();
-            });
-
-            it('should not call when event hub is connected and token is not set', () => {
-                spyOnProperty(eventsServiceSpy, 'eventHubIsConnected').and.returnValue(true);
             });
 
             afterEach(async () => {
@@ -465,7 +404,6 @@ describe('WaitingRoomComponent message and clock', () => {
         describe('when eventHubIsConnected and token is set', () => {
             beforeEach(() => {
                 spyOnProperty(eventsServiceSpy, 'eventHubIsConnected').and.returnValue(true);
-                component.token = new TokenResponse();
             });
             it('should use interpreter room when participant has links', async () => {
                 component.participant.linked_participants = [

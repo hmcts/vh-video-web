@@ -1,13 +1,14 @@
 import { EventEmitter, Injectable, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { Subject, Subscription } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
 import { ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { UserMediaService } from 'src/app/services/user-media.service';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-hand-raised-message';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
@@ -22,7 +23,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     @Input() public participant: ParticipantResponse;
     @Input() public isPrivateConsultation: boolean;
-    @Input() public audioOnly: boolean;
     @Input() public outgoingStream: MediaStream | URL;
     @Input() public conferenceId: string;
     @Input() public isSupportedBrowserForNetworkHealth: boolean;
@@ -34,8 +34,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     @Output() public togglePanel = new EventEmitter<string>();
     @Output() public changeDeviceToggle = new EventEmitter();
 
-    videoCallSubscription$ = new Subscription();
-    eventhubSubscription$ = new Subscription();
+    audioOnly = false;
 
     screenShareStream: MediaStream | URL;
 
@@ -45,9 +44,10 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     remoteMuted: boolean;
     selfViewOpen: boolean;
     displayConfirmPopup: boolean;
-    loggedInUserSubscription: Subscription;
     participantSpotlightUpdateSubscription: Subscription;
     isSpotlighted: boolean;
+
+    private destroyedSubject = new Subject<void>();
 
     protected constructor(
         protected videoCallService: VideoCallService,
@@ -55,7 +55,8 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         protected deviceTypeService: DeviceTypeService,
         protected logger: Logger,
         protected participantService: ParticipantService,
-        protected translateService: TranslateService
+        protected translateService: TranslateService,
+        protected userMediaService: UserMediaService
     ) {
         this.handRaised = false;
         this.remoteMuted = false;
@@ -89,13 +90,23 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     ngOnInit(): void {
         this.audioMuted = this.videoCallService.pexipAPI.call.mutedAudio;
-        this.videoMuted = this.videoCallService.pexipAPI.call.mutedVideo || this.videoCallService.isAudioOnlyCall;
+        this.videoMuted = this.videoCallService.pexipAPI.call.mutedVideo || this.audioOnly;
+
+        this.userMediaService.isAudioOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(audioOnly => {
+            this.audioOnly = audioOnly;
+            this.videoMuted = this.videoCallService.pexipAPI.call.mutedVideo || this.audioOnly;
+        });
+
         this.logger.info(`${this.loggerPrefix} initialising hearing controls`, this.logPayload);
+
         this.setupVideoCallSubscribers();
         this.setupEventhubSubscribers();
 
-        this.loggedInUserSubscription = this.participantService.loggedInParticipant
-            .pipe(filter(participant => participant && participant.role === Role.Judge))
+        this.participantService.loggedInParticipant$
+            .pipe(
+                takeUntil(this.destroyedSubject),
+                filter(participant => participant && participant.role === Role.Judge)
+            )
             .subscribe(participant => this.onLoggedInParticipantChanged(participant));
 
         if (this.isJudge) {
@@ -126,37 +137,41 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     setupEventhubSubscribers() {
-        this.eventhubSubscription$.add(
-            this.eventService.getParticipantStatusMessage().subscribe(message => {
+        this.eventService
+            .getParticipantStatusMessage()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(message => {
                 this.handleParticipantStatusChange(message);
-            })
-        );
-        this.eventhubSubscription$.add(
-            this.eventService.getHearingCountdownCompleteMessage().subscribe(async conferenceId => {
+            });
+
+        this.eventService
+            .getHearingCountdownCompleteMessage()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(async conferenceId => {
                 await this.handleHearingCountdownComplete(conferenceId);
-            })
-        );
-        this.eventhubSubscription$.add(
-            this.eventService.getParticipantHandRaisedMessage().subscribe(async message => {
+            });
+
+        this.eventService
+            .getParticipantHandRaisedMessage()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(async message => {
                 this.handleParticipantHandRaiseChange(message);
-            })
-        );
-        this.eventhubSubscription$.add(
-            this.eventService.getParticipantRemoteMuteStatusMessage().subscribe(async message => {
+            });
+
+        this.eventService
+            .getParticipantRemoteMuteStatusMessage()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(async message => {
                 this.handleParticipantRemoteMuteChange(message);
-            })
-        );
+            });
     }
 
     ngOnDestroy(): void {
+        this.destroyedSubject.next();
+        this.destroyedSubject.complete();
+
         this.participantSpotlightUpdateSubscription?.unsubscribe();
         this.participantSpotlightUpdateSubscription = null;
-
-        this.loggedInUserSubscription?.unsubscribe();
-        this.loggedInUserSubscription = null;
-
-        this.videoCallSubscription$.unsubscribe();
-        this.eventhubSubscription$.unsubscribe();
     }
 
     get handToggleText(): string {
@@ -178,23 +193,20 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     setupVideoCallSubscribers() {
-        this.videoCallSubscription$.add(
-            this.videoCallService
-                .onParticipantUpdated()
-                .subscribe(updatedParticipant => this.handleParticipantUpdatedInVideoCall(updatedParticipant))
-        );
+        this.videoCallService
+            .onParticipantUpdated()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(updatedParticipant => this.handleParticipantUpdatedInVideoCall(updatedParticipant));
 
-        this.videoCallSubscription$.add(
-            this.videoCallService
-                .onScreenshareConnected()
-                .subscribe(connectedScreenShare => this.handleScreenShareConnected(connectedScreenShare))
-        );
+        this.videoCallService
+            .onScreenshareConnected()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(connectedScreenShare => this.handleScreenShareConnected(connectedScreenShare));
 
-        this.videoCallSubscription$.add(
-            this.videoCallService
-                .onScreenshareStopped()
-                .subscribe(discconnectedScreenShare => this.handleScreenShareStopped(discconnectedScreenShare))
-        );
+        this.videoCallService
+            .onScreenshareStopped()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(discconnectedScreenShare => this.handleScreenShareStopped(discconnectedScreenShare));
     }
 
     handleScreenShareConnected(connectedScreenShare: ConnectedScreenshare): void {

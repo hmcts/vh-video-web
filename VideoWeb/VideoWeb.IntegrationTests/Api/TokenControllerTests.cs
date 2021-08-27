@@ -13,7 +13,7 @@ namespace VideoWeb.IntegrationTests.Api
     public class TokenControllerTests : ControllerTestsBase
     {
         [Test]
-        public async Task Should_get_token_when_requested_with_correct_participant_id()
+        public async Task Should_get_token_when_requested_with_valid_participant_id()
         {
             var responseMessage = await SendGetRequestAsync($"/participants/{Guid.NewGuid()}/selftesttoken");
 
@@ -28,31 +28,9 @@ namespace VideoWeb.IntegrationTests.Api
         }
 
         [Test]
-        public async Task Should_return_bad_request_when_requested_with_incorrect_participant_id()
+        public async Task Should_return_bad_request_when_requested_with_invalid_participant_id()
         {
             var responseMessage = await SendGetRequestAsync($"/participants/{Guid.Empty}/selftesttoken");
-            responseMessage.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        }
-
-        [Test]
-        public async Task Should_get_Jwt_token_when_requested_with_correct_participant_id()
-        {
-            var responseMessage = await SendGetRequestAsync($"/participants/{Guid.NewGuid()}/jwtoken");
-
-            var receiveStream = await responseMessage.Content.ReadAsStreamAsync();
-            var readStream = new StreamReader(receiveStream, Encoding.UTF8);
-            var json = readStream.ReadToEnd();
-            var tokenResponse = ApiRequestHelper.Deserialise<TokenResponse>(json);
-
-            responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
-            tokenResponse.Should().NotBeNull();
-            tokenResponse.Token.Should().NotBeEmpty();
-        }
-
-        [Test]
-        public async Task Should_return_bad_request_when_requested_with_incorrect_participant_id_for_jwt_token()
-        {
-            var responseMessage = await SendGetRequestAsync($"/participants/{Guid.Empty}/jwtoken");
             responseMessage.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
     }

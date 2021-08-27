@@ -35,8 +35,8 @@ describe('VenueListComponent', () => {
     selectedJudgeNames.push(venueName2.name);
     selectedJudgeNames.push(venueName3.name);
 
-    const courtRoomsAccounts1 = new CourtRoomsAccountResponse({ venue: 'Birmingham', court_rooms: ['Room 01', 'Room 02'] });
-    const courtRoomsAccounts2 = new CourtRoomsAccountResponse({ venue: 'Manchester', court_rooms: ['Room 01', 'Room 02'] });
+    const courtRoomsAccounts1 = new CourtRoomsAccountResponse({ first_name: 'Birmingham', last_names: ['Room 01', 'Room 02'] });
+    const courtRoomsAccounts2 = new CourtRoomsAccountResponse({ first_name: 'Manchester', last_names: ['Room 01', 'Room 02'] });
     const courtAccounts: CourtRoomsAccountResponse[] = [];
     courtAccounts.push(courtRoomsAccounts1);
     courtAccounts.push(courtRoomsAccounts2);
@@ -97,13 +97,13 @@ describe('VenueListComponent', () => {
         expect(component.filterCourtRoomsAccounts.length).toBe(2);
         const result = roomSessionStorage.get();
         expect(result.length).toBe(2);
-        expect(result[0].venue).toBe(courtRoomsAccounts1.venue);
+        expect(result[0].venue).toBe(courtRoomsAccounts1.first_name);
         expect(result[0].selected).toBeTrue();
         expect(result[0].courtsRooms[0].courtRoom).toBe('Room 01');
         expect(result[0].courtsRooms[0].selected).toBeTrue();
         expect(result[0].courtsRooms[1].selected).toBeTrue();
 
-        expect(result[1].venue).toBe(courtRoomsAccounts2.venue);
+        expect(result[1].venue).toBe(courtRoomsAccounts2.first_name);
         expect(result[1].selected).toBeTrue();
         expect(result[1].courtsRooms[0].courtRoom).toBe('Room 01');
         expect(result[1].courtsRooms[0].selected).toBeTrue();
@@ -121,7 +121,7 @@ describe('VenueListComponent', () => {
         expect(component.filterCourtRoomsAccounts.length).toBe(2);
         const result = roomSessionStorage.get();
         expect(result.length).toBe(2);
-        expect(result[0].venue).toBe(courtRoomsAccounts1.venue);
+        expect(result[0].venue).toBe(courtRoomsAccounts1.first_name);
         expect(result[0].selected).toBeFalse();
         expect(result[0].courtsRooms[0].selected).toBeFalse();
         expect(result[0].courtsRooms[1].selected).toBeTrue();

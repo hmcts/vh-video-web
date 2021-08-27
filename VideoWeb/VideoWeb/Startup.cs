@@ -60,7 +60,13 @@ namespace VideoWeb
                 Configuration.Bind("EJudAd", options);
             });
 
+            services.Configure<QuickLinksConfiguration>(options =>
+            {
+                Configuration.Bind("QuickLinks", options);
+            });
+            
             var customTokenSettings = Configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
+            services.Configure<KinlyConfiguration>(Configuration.GetSection("KinlyConfiguration"));
             services.AddSingleton(customTokenSettings);
 
             var connectionStrings = Configuration.GetSection("ConnectionStrings").Get<ConnectionStrings>();

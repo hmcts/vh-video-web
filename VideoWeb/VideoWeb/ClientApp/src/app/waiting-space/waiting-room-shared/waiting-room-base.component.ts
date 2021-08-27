@@ -18,7 +18,6 @@ import {
     Role,
     RoomSummaryResponse,
     SharedParticipantRoom,
-    TokenResponse,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
@@ -30,14 +29,11 @@ import { ConferenceStatusMessage } from 'src/app/services/models/conference-stat
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
-import { UserMediaService } from 'src/app/services/user-media.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
 import { Room } from 'src/app/shared/models/room';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
 import { HearingRole } from '../models/hearing-role-model';
 import {
     CallError,
@@ -55,8 +51,6 @@ import { NotificationToastrService } from '../services/notification-toastr.servi
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 
-declare var HeartbeatFactory: any;
-
 @Directive()
 export abstract class WaitingRoomBaseDirective {
     maxBandwidth = null;
@@ -71,13 +65,11 @@ export abstract class WaitingRoomBaseDirective {
     conference: ConferenceResponse;
     participantEndpoints: AllowedEndpointResponse[] = [];
     conferenceRooms: Room[] = [];
-    token: TokenResponse;
 
     eventHubSubscription$ = new Subscription();
     videoCallSubscription$ = new Subscription();
     clockSubscription$: Subscription = new Subscription();
     currentTime: Date;
-    heartbeat: any;
 
     stream: MediaStream | URL;
     connected: boolean;
@@ -116,8 +108,6 @@ export abstract class WaitingRoomBaseDirective {
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,
         protected consultationService: ConsultationService,
-        protected userMediaService: UserMediaService,
-        protected userMediaStreamService: UserMediaStreamService,
         protected notificationSoundsService: NotificationSoundsService,
         protected notificationToastrService: NotificationToastrService,
         protected roomClosingToastrService: RoomClosingToastrService,
@@ -430,16 +420,6 @@ export abstract class WaitingRoomBaseDirective {
             })
         );
 
-        this.eventHubSubscription$.add(
-            this.eventService.onEventsHubReady().subscribe(async () => {
-                this.logger.info(`${this.loggerPrefix} EventHub ready`, {
-                    conference: this.conferenceId,
-                    participant: this.participant.id
-                });
-                await this.callAndUpdateShowVideo();
-            })
-        );
-
         this.logger.debug('[WR] - Subscribing to hearing transfer message');
         this.eventHubSubscription$.add(
             this.eventService.getHearingTransfer().subscribe(async message => {
@@ -554,16 +534,8 @@ export abstract class WaitingRoomBaseDirective {
 
         if (this.displayDeviceChangeModal) {
             this.logger.debug(`${this.loggerPrefix} Participant accepted a consultation. Closing change device modal.`);
-            const preferredCamera = await this.userMediaService.getPreferredCamera();
-            const preferredMicrophone = await this.userMediaService.getPreferredMicrophone();
-            const preferredCameraStream = await this.userMediaStreamService.getStreamForCam(preferredCamera);
-            const preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(preferredMicrophone);
-
-            this.userMediaStreamService.stopStream(preferredCameraStream);
-            this.userMediaStreamService.stopStream(preferredMicrophoneStream);
             this.displayDeviceChangeModal = false;
         }
-
         const invitation = this.consultationInvitiationService.getInvitation(roomLabel);
         if (invitation.answer === ConsultationAnswer.Rejected) {
             return;
@@ -618,20 +590,6 @@ export abstract class WaitingRoomBaseDirective {
         }
     }
 
-    setupParticipantHeartbeat() {
-        const baseUrl = this.conference.pexip_node_uri.replace('sip.', '');
-        const url = `https://${baseUrl}/virtual-court/api/v1/hearing/${this.conferenceId}`;
-        const bearerToken = `Bearer ${this.token.token}`;
-        this.heartbeat = new HeartbeatFactory(
-            this.videoCallService.pexipAPI,
-            url,
-            this.conferenceId,
-            this.participant.id,
-            bearerToken,
-            this.handleHeartbeat(this)
-        );
-    }
-
     get isSupportedBrowserForNetworkHealth(): boolean {
         if (!this.deviceTypeService.isSupportedBrowser()) {
             return false;
@@ -641,31 +599,23 @@ export abstract class WaitingRoomBaseDirective {
         return unsupportedBrowsers.findIndex(x => x.toUpperCase() === browser.toUpperCase()) < 0;
     }
 
-    handleHeartbeat(self: this) {
-        return async function (heartbeat) {
-            const heartbeatModel = self.heartbeatMapper.map(
-                JSON.parse(heartbeat),
-                self.deviceTypeService.getBrowserName(),
-                self.deviceTypeService.getBrowserVersion(),
-                self.deviceTypeService.getOSName(),
-                self.deviceTypeService.getOSVersion()
-            );
-
-            await self.eventService.sendHeartbeat(self.hearing.id, self.participant.id, heartbeatModel);
-        };
-    }
-
-    async getJwtokenAndConnectToPexip(): Promise<void> {
+    async connectToPexip(): Promise<void> {
         const logPayload = {
             conference: this.conferenceId,
             participant: this.participant.id
         };
         try {
-            this.logger.debug(`${this.loggerPrefix} Retrieving jwtoken for heartbeat`, logPayload);
-            this.token = await this.videoWebService.getJwToken(this.participant.id);
-            this.logger.debug(`${this.loggerPrefix} Retrieved jwtoken for heartbeat`, logPayload);
             await this.setupPexipEventSubscriptionAndClient();
-            await this.call();
+
+            this.eventHubSubscription$.add(
+                this.eventService.onEventsHubReady().subscribe(async () => {
+                    this.logger.info(`${this.loggerPrefix} EventHub ready`, {
+                        conference: this.conferenceId,
+                        participant: this.participant.id
+                    });
+                    await this.callAndUpdateShowVideo();
+                })
+            );
         } catch (error) {
             this.logger.error(`${this.loggerPrefix} There was an error getting a jwtoken for heartbeat`, error, logPayload);
             this.errorService.handleApiError(error);
@@ -733,7 +683,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     async call() {
-        if (!this.eventService.eventHubIsConnected || !this.token) {
+        if (!this.eventService.eventHubIsConnected) {
             return;
         }
 
@@ -858,14 +808,12 @@ export abstract class WaitingRoomBaseDirective {
                 this.assignStream(incomingFeedElement, callConnected.stream);
             }
         }
-        this.setupParticipantHeartbeat();
         if (this.hearingControls && !this.audioOnly && this.hearingControls.videoMuted) {
             await this.hearingControls.toggleVideoMute();
         }
     }
 
     handleCallError(error: CallError): void {
-        this.stopHeartbeat();
         this.errorCount++;
         this.connected = false;
         this.updateShowVideo();
@@ -879,7 +827,6 @@ export abstract class WaitingRoomBaseDirective {
 
     handleCallDisconnect(reason: DisconnectedCall): void {
         this.connected = false;
-        this.stopHeartbeat();
         this.updateShowVideo();
         this.logger.warn(`${this.loggerPrefix} Disconnected from pexip. Reason : ${reason.reason}`);
         if (!this.hearing.isPastClosedTime()) {
@@ -892,12 +839,6 @@ export abstract class WaitingRoomBaseDirective {
 
     handleCallTransfer(): void {
         this.stream = null;
-    }
-
-    stopHeartbeat() {
-        if (this.heartbeat) {
-            this.heartbeat.kill();
-        }
     }
 
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
@@ -1112,51 +1053,13 @@ export abstract class WaitingRoomBaseDirective {
         this.displayDeviceChangeModal = true;
     }
 
-    onMediaDeviceChangeCancelled() {
+    onSelectMediaDeviceShouldClose() {
         this.displayDeviceChangeModal = false;
-    }
-
-    async onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
-        this.logger.debug(`${this.loggerPrefix} Updated device settings`, { selectedMediaDevice });
-        this.userMediaService.updatePreferredCamera(selectedMediaDevice.selectedCamera);
-        this.userMediaService.updatePreferredMicrophone(selectedMediaDevice.selectedMicrophone);
-        this.audioOnly = selectedMediaDevice.audioOnly;
-        this.updateAudioOnlyPreference(this.audioOnly);
-        await this.updatePexipAudioVideoSource();
-        this.videoCallService.reconnectToCallWithNewDevices();
-        if (this.audioOnly) {
-            this.videoCallService.switchToAudioOnlyCall();
-        }
-        if (this.hearingControls) {
-            await this.publishMediaDeviceStatus();
-        }
     }
 
     async publishMediaDeviceStatus() {
         this.hearingControls.audioOnly = this.audioOnly;
         await this.hearingControls.publishMediaDeviceStatus();
-    }
-
-    protected updateAudioOnlyPreference(audioOnly: boolean) {
-        const videoCallPrefs = this.videoCallService.retrieveVideoCallPreferences();
-        videoCallPrefs.audioOnly = audioOnly;
-        this.videoCallService.updateVideoCallPreferences(videoCallPrefs);
-    }
-
-    private async updatePexipAudioVideoSource() {
-        const cam = await this.userMediaService.getPreferredCamera();
-        if (cam) {
-            this.videoCallService.updateCameraForCall(cam);
-        }
-
-        const mic = await this.userMediaService.getPreferredMicrophone();
-        if (mic) {
-            this.videoCallService.updateMicrophoneForCall(mic);
-        }
-        this.logger.info(`${this.loggerPrefix} Update camera and microphone selection`, {
-            cameraId: cam.deviceId,
-            microphoneId: mic.deviceId
-        });
     }
 
     get showExtraContent(): boolean {
@@ -1175,7 +1078,6 @@ export abstract class WaitingRoomBaseDirective {
             conference: this.conference?.id
         });
         clearTimeout(this.callbackTimeout);
-        this.stopHeartbeat();
         this.disconnect();
         this.eventHubSubscription$.unsubscribe();
         this.videoCallSubscription$.unsubscribe();

@@ -1,5 +1,6 @@
+import { discardPeriodicTasks, fakeAsync, flush } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import {
     ApiClient,
@@ -8,12 +9,17 @@ import {
     SharedParticipantRoom,
     StartHearingRequest
 } from 'src/app/services/clients/api-client';
+import { KinlyHeartbeatService } from 'src/app/services/conference/kinly-heartbeat.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
-import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
+import { mockCamStream, mockMicStream } from '../waiting-room-shared/tests/waiting-room-base-setup';
+import { ParticipantUpdated } from '../models/video-call-models';
+import { VideoCallEventsService } from './video-call-events.service';
 import { VideoCallPreferences } from './video-call-preferences.mode';
 import { VideoCallService } from './video-call.service';
 
@@ -28,12 +34,19 @@ describe('VideoCallService', () => {
     let apiClient: jasmine.SpyObj<ApiClient>;
     const logger: Logger = new MockLogger();
     let userMediaService: jasmine.SpyObj<UserMediaService>;
+
+    let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
+    let currentStreamSubject: Subject<MediaStream>;
+    let streamModifiedSubject: Subject<void>;
+    let isAudioOnlySubject: Subject<boolean>;
+
     const testData = new MediaDeviceTestData();
-    let preferredCamera: UserMediaDevice;
-    let preferredMicrophone: UserMediaDevice;
     let pexipSpy: jasmine.SpyObj<PexipClient>;
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
-    beforeAll(() => {
+    let kinlyHeartbeatServiceSpy: jasmine.SpyObj<KinlyHeartbeatService>;
+    let videoCallEventsServiceSpy: jasmine.SpyObj<VideoCallEventsService>;
+
+    beforeEach(async () => {
         apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
             'startOrResumeVideoHearing',
             'pauseVideoHearing',
@@ -43,28 +56,30 @@ describe('VideoCallService', () => {
             'getParticipantRoomForParticipant'
         ]);
 
-        userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
-            'getListOfVideoDevices',
-            'getListOfMicrophoneDevices',
-            'getPreferredCamera',
-            'getPreferredMicrophone',
-            'updatePreferredCamera',
-            'updatePreferredMicrophone',
-            'selectScreenToShare'
-        ]);
+        userMediaService = jasmine.createSpyObj<UserMediaService>(
+            'UserMediaService',
+            ['selectScreenToShare'],
+            ['connectedVideoDevices', 'connectedMicrophoneDevices', 'isAudioOnly$']
+        );
+
+        userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>([], ['currentStream$', 'streamModified$']);
+        currentStreamSubject = new Subject<MediaStream>();
+        getSpiedPropertyGetter(userMediaStreamService, 'currentStream$').and.returnValue(currentStreamSubject.asObservable());
+        streamModifiedSubject = new Subject<void>();
+        isAudioOnlySubject = new Subject<boolean>();
+        getSpiedPropertyGetter(userMediaStreamService, 'streamModified$').and.returnValue(streamModifiedSubject.asObservable());
+
+        getSpiedPropertyGetter(userMediaService, 'connectedVideoDevices').and.returnValue(of(testData.getListOfCameras()));
+        getSpiedPropertyGetter(userMediaService, 'connectedMicrophoneDevices').and.returnValue(of(testData.getListOfMicrophones()));
+        getSpiedPropertyGetter(userMediaService, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
+
+        kinlyHeartbeatServiceSpy = jasmine.createSpyObj<KinlyHeartbeatService>(['initialiseHeartbeat', 'stopHeartbeat']);
 
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getConfig']);
         configServiceSpy.getConfig.and.returnValue(config);
 
-        preferredCamera = testData.getListOfCameras()[0];
-        preferredMicrophone = testData.getListOfMicrophones()[0];
-        userMediaService.getListOfVideoDevices.and.resolveTo(testData.getListOfCameras());
-        userMediaService.getListOfMicrophoneDevices.and.resolveTo(testData.getListOfMicrophones());
-        userMediaService.getPreferredCamera.and.resolveTo(preferredCamera);
-        userMediaService.getPreferredMicrophone.and.resolveTo(preferredMicrophone);
-    });
+        videoCallEventsServiceSpy = jasmine.createSpyObj<VideoCallEventsService>(['handleParticipantUpdated']);
 
-    beforeEach(async () => {
         pexipSpy = jasmine.createSpyObj<PexipClient>('PexipClient', [
             'connect',
             'makeCall',
@@ -83,44 +98,18 @@ describe('VideoCallService', () => {
             'getPresentation',
             'stopPresentation'
         ]);
-        service = new VideoCallService(logger, userMediaService, apiClient, configServiceSpy);
-        await service.setupClient();
-    });
 
-    it('should init pexip and set pexip client', async () => {
-        await service.setupClient();
-        expect(service.pexipAPI).toBeDefined();
-        expect(userMediaService.getPreferredCamera).toBeDefined();
-        expect(userMediaService.getPreferredMicrophone).toBeDefined();
-        expect(service.pexipAPI.audio_source).toEqual(preferredMicrophone.deviceId);
-        expect(service.pexipAPI.video_source).toEqual(preferredCamera.deviceId);
-
-        expect(service.onCallSetup()).toBeDefined();
-        expect(service.onCallConnected()).toBeDefined();
-        expect(service.onCallDisconnected()).toBeDefined();
-        expect(service.onError()).toBeDefined();
-        expect(service.onParticipantUpdated()).toBeDefined();
-        expect(service.onConferenceUpdated()).toBeDefined();
-        expect(service.onCallTransferred()).toBeDefined();
-        expect(service.onPresentation()).toBeDefined();
-        expect(service.onPresentationConnected()).toBeDefined();
-        expect(service.onPresentationDisconnected()).toBeDefined();
-        expect(service.onScreenshareConnected()).toBeDefined();
-        expect(service.onScreenshareStopped()).toBeDefined();
-        expect(service.pexipAPI.turn_server).toBeDefined();
-        expect(service.pexipAPI.turn_server.url).toContain(config.kinly_turn_server);
-        expect(service.pexipAPI.turn_server.username).toContain(config.kinly_turn_server_user);
-        expect(service.pexipAPI.turn_server.credential).toContain(config.kinly_turn_server_credential);
-    });
-
-    it('should use default devices on setup if no preferred devices found', async () => {
-        userMediaService.getPreferredCamera.and.resolveTo(null);
-        userMediaService.getPreferredMicrophone.and.resolveTo(null);
+        service = new VideoCallService(
+            logger,
+            userMediaService,
+            userMediaStreamService,
+            apiClient,
+            configServiceSpy,
+            kinlyHeartbeatServiceSpy,
+            videoCallEventsServiceSpy
+        );
 
         await service.setupClient();
-
-        expect(service.pexipAPI.audio_source).toBeNull();
-        expect(service.pexipAPI.video_source).toBeNull();
     });
 
     it('should toggle mute', () => {
@@ -255,30 +244,13 @@ describe('VideoCallService', () => {
         expect(apiClient.dismissWitness).toHaveBeenCalledWith(conferenceId, witnessId);
     });
 
-    it('should return updated video call preferences', () => {
-        const prefs = new VideoCallPreferences({
-            audioOnly: true
-        });
-        service.updateVideoCallPreferences(prefs);
-        expect(service.retrieveVideoCallPreferences().audioOnly).toEqual(prefs.audioOnly);
-    });
-
     it('should disconnect from call and reconnect when connecting with new devices', () => {
         service.pexipAPI = pexipSpy;
 
-        service.reconnectToCallWithNewDevices();
+        service.reconnectToCall();
 
         expect(pexipSpy.disconnectCall).toHaveBeenCalled();
         expect(pexipSpy.addCall).toHaveBeenCalledWith(null);
-    });
-
-    it('should disconnect from call and reconnect when to audio only call', () => {
-        service.pexipAPI = pexipSpy;
-
-        service.switchToAudioOnlyCall();
-
-        expect(pexipSpy.disconnectCall).toHaveBeenCalled();
-        expect(pexipSpy.addCall).toHaveBeenCalledWith('video');
     });
 
     it('should select stream and set user_presentation_stream', async () => {
@@ -365,5 +337,99 @@ describe('VideoCallService', () => {
         await service.retrieveJudicialRoom(conferenceId, participantId);
 
         expect(apiClient.getParticipantRoomForParticipant).toHaveBeenCalledWith(conferenceId, participantId, 'Judicial');
+    });
+
+    describe('PexipAPI onConnect', () => {
+        it('should call reconnectToCall', fakeAsync(() => {
+            spyOn<any>(service, 'reconnectToCall').and.callThrough();
+            service.pexipAPI.onConnect(mockCamStream);
+            flush();
+            streamModifiedSubject.next();
+            flush();
+            discardPeriodicTasks();
+            expect(service['reconnectToCall']).toHaveBeenCalled();
+        }));
+    });
+
+    describe('SetupClient', () => {
+        it('should init pexip and set pexip client', async () => {
+            await service.setupClient();
+            expect(service.pexipAPI).toBeDefined();
+            expect(service.onCallSetup()).toBeDefined();
+            expect(service.onCallConnected()).toBeDefined();
+            expect(service.onCallDisconnected()).toBeDefined();
+            expect(service.onError()).toBeDefined();
+            expect(service.onParticipantUpdated()).toBeDefined();
+            expect(service.onConferenceUpdated()).toBeDefined();
+            expect(service.onCallTransferred()).toBeDefined();
+            expect(service.onPresentation()).toBeDefined();
+            expect(service.onPresentationConnected()).toBeDefined();
+            expect(service.onPresentationDisconnected()).toBeDefined();
+            expect(service.onScreenshareConnected()).toBeDefined();
+            expect(service.onScreenshareStopped()).toBeDefined();
+            expect(service.pexipAPI.turn_server).toBeDefined();
+            expect(service.pexipAPI.turn_server.url).toContain(config.kinly_turn_server);
+            expect(service.pexipAPI.turn_server.username).toContain(config.kinly_turn_server_user);
+            expect(service.pexipAPI.turn_server.credential).toContain(config.kinly_turn_server_credential);
+        });
+
+        it('should update user_media_stream', fakeAsync(() => {
+            service.pexipAPI.user_media_stream = mockMicStream;
+            service.setupClient();
+            currentStreamSubject.next(mockCamStream);
+            flush();
+            expect(service.pexipAPI.user_media_stream).toEqual(mockCamStream);
+        }));
+
+        it('should call reconnectToCall', fakeAsync(() => {
+            spyOn<any>(service, 'reconnectToCall').and.callThrough();
+            service.pexipAPI.user_media_stream = mockMicStream;
+
+            service.setupClient();
+            currentStreamSubject.next(mockCamStream);
+            currentStreamSubject.next(mockCamStream);
+            service.pexipAPI.user_media_stream = mockMicStream;
+            currentStreamSubject.next(mockCamStream);
+            flush();
+            discardPeriodicTasks();
+            expect(service['reconnectToCall']).toHaveBeenCalled();
+        }));
+    });
+
+    describe('handleParticipantUpdate', () => {
+        it('should raise the event through video call events service', fakeAsync(() => {
+            // Arrange
+            const pexipParticipant: PexipParticipant = {
+                buzz_time: 0,
+                is_muted: 'is_muted',
+                display_name: 'display_name',
+                local_alias: 'local_alias',
+                start_time: 0,
+                uuid: 'uuid',
+                spotlight: 0,
+                mute_supported: 'mute_supported',
+                is_external: false,
+                external_node_uuid: 'external_node_uuid',
+                has_media: false,
+                call_tag: 'call_tag',
+                is_audio_only_call: 'is_audio_only_call',
+                is_video_call: 'is_video_call',
+                protocol: 'protocol'
+            };
+
+            const expectedUpdate = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+
+            // Act
+            let result: ParticipantUpdated | null = null;
+            service.onParticipantUpdated().subscribe(update => (result = update));
+
+            service.pexipAPI.onParticipantUpdate(pexipParticipant);
+            flush();
+
+            // Assert
+            expect(result).toBeTruthy();
+            expect(result).toEqual(expectedUpdate);
+            expect(videoCallEventsServiceSpy.handleParticipantUpdated).toHaveBeenCalledOnceWith(expectedUpdate);
+        }));
     });
 });

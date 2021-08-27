@@ -11,7 +11,7 @@ namespace VideoWeb.UnitTests.Controllers.TokenController
     {
         public VideoWeb.Controllers.TokenController TokenController;
         protected Mock<IHashGenerator> hashGenerator;
-        protected Mock<ICustomJwtTokenProvider> customJwtTokenProvider;
+        protected Mock<IKinlyJwtTokenProvider> kinlyJwtTokenProvider;
         protected Guid participantId;
         protected string token;
 
@@ -19,15 +19,13 @@ namespace VideoWeb.UnitTests.Controllers.TokenController
         public void Setup()
         {
             hashGenerator = new Mock<IHashGenerator>();
-            customJwtTokenProvider = new Mock<ICustomJwtTokenProvider>();
+            kinlyJwtTokenProvider = new Mock<IKinlyJwtTokenProvider>();
             participantId = Guid.NewGuid();
             token = "TestToken";
             hashGenerator.Setup(h => h.GenerateSelfTestTokenHash(It.IsAny<string>(), It.IsAny<string>())).Returns(token);
-            customJwtTokenProvider.Setup(v => v.GenerateToken(It.IsAny<string>(), It.IsAny<int>())).Returns(token);
+            kinlyJwtTokenProvider.Setup(v => v.GenerateToken(It.IsAny<string>(), It.IsAny<int>())).Returns(token);
 
-            TokenController = new VideoWeb.Controllers.TokenController(hashGenerator.Object, 
-                                                                        customJwtTokenProvider.Object, 
-                                                                        new KinlyConfiguration() { HashExpiresInMinutes = 30, ExpiresInMinutes = 20 });
+            TokenController = new VideoWeb.Controllers.TokenController(hashGenerator.Object, new KinlyConfiguration() { HashExpiresInMinutes = 30, ExpiresInMinutes = 20 });
         }
     }
 }
