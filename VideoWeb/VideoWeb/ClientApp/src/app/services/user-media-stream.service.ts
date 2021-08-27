@@ -53,7 +53,7 @@ export class UserMediaStreamService {
                     isAudioOnly: this.isAudioOnly
                 });
 
-                this.currentStream = cameraStream;
+                this.currentStream = cameraStream.clone();
                 this.activeCameraStream = cameraStream;
 
                 this.mediaStreamService
