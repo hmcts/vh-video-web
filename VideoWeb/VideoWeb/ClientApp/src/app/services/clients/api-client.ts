@@ -552,8 +552,8 @@ export class ApiClient {
      * Get conferences today for a judge or a clerk
      * @return Success
      */
-    getConferencesForJudge(): Observable<ConferenceForJudgeResponse[]> {
-        let url_ = this.baseUrl + '/conferences/judges';
+    getConferencesForHost(): Observable<ConferenceForHostResponse[]> {
+        let url_ = this.baseUrl + '/conferences/hosts';
         url_ = url_.replace(/[?&]$/, '');
 
         let options_: any = {
@@ -568,23 +568,23 @@ export class ApiClient {
             .request('get', url_, options_)
             .pipe(
                 _observableMergeMap((response_: any) => {
-                    return this.processGetConferencesForJudge(response_);
+                    return this.processGetConferencesForHost(response_);
                 })
             )
             .pipe(
                 _observableCatch((response_: any) => {
                     if (response_ instanceof HttpResponseBase) {
                         try {
-                            return this.processGetConferencesForJudge(<any>response_);
+                            return this.processGetConferencesForHost(<any>response_);
                         } catch (e) {
-                            return <Observable<ConferenceForJudgeResponse[]>>(<any>_observableThrow(e));
+                            return <Observable<ConferenceForHostResponse[]>>(<any>_observableThrow(e));
                         }
-                    } else return <Observable<ConferenceForJudgeResponse[]>>(<any>_observableThrow(response_));
+                    } else return <Observable<ConferenceForHostResponse[]>>(<any>_observableThrow(response_));
                 })
             );
     }
 
-    protected processGetConferencesForJudge(response: HttpResponseBase): Observable<ConferenceForJudgeResponse[]> {
+    protected processGetConferencesForHost(response: HttpResponseBase): Observable<ConferenceForHostResponse[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
@@ -602,7 +602,9 @@ export class ApiClient {
                     let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     if (Array.isArray(resultData200)) {
                         result200 = [] as any;
-                        for (let item of resultData200) result200!.push(ConferenceForJudgeResponse.fromJS(item));
+                        for (let item of resultData200) result200!.push(ConferenceForHostResponse.fromJS(item));
+                    } else {
+                        result200 = <any>null;
                     }
                     return _observableOf(result200);
                 })
@@ -629,7 +631,7 @@ export class ApiClient {
                 })
             );
         }
-        return _observableOf<ConferenceForJudgeResponse[]>(<any>null);
+        return _observableOf<ConferenceForHostResponse[]>(<any>null);
     }
 
     /**
@@ -4580,10 +4582,11 @@ export enum Role {
     Representative = 'Representative',
     JudicialOfficeHolder = 'JudicialOfficeHolder',
     QuickLinkParticipant = 'QuickLinkParticipant',
-    QuickLinkObserver = 'QuickLinkObserver'
+    QuickLinkObserver = 'QuickLinkObserver',
+    StaffMember = 'StaffMember'
 }
 
-export class ParticipantForJudgeResponse implements IParticipantForJudgeResponse {
+export class ParticipantForHostResponse implements IParticipantForHostResponse {
     /** The participant Id */
     id?: string;
     display_name?: string | undefined;
@@ -4594,7 +4597,7 @@ export class ParticipantForJudgeResponse implements IParticipantForJudgeResponse
     case_type_group?: string | undefined;
     hearing_role?: string | undefined;
 
-    constructor(data?: IParticipantForJudgeResponse) {
+    constructor(data?: IParticipantForHostResponse) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
@@ -4613,9 +4616,9 @@ export class ParticipantForJudgeResponse implements IParticipantForJudgeResponse
         }
     }
 
-    static fromJS(data: any): ParticipantForJudgeResponse {
+    static fromJS(data: any): ParticipantForHostResponse {
         data = typeof data === 'object' ? data : {};
-        let result = new ParticipantForJudgeResponse();
+        let result = new ParticipantForHostResponse();
         result.init(data);
         return result;
     }
@@ -4632,7 +4635,7 @@ export class ParticipantForJudgeResponse implements IParticipantForJudgeResponse
     }
 }
 
-export interface IParticipantForJudgeResponse {
+export interface IParticipantForHostResponse {
     /** The participant Id */
     id?: string;
     display_name?: string | undefined;
@@ -4644,7 +4647,7 @@ export interface IParticipantForJudgeResponse {
     hearing_role?: string | undefined;
 }
 
-export class ConferenceForJudgeResponse implements IConferenceForJudgeResponse {
+export class ConferenceForHostResponse implements IConferenceForHostResponse {
     /** Conference UUID */
     id?: string;
     scheduled_date_time?: Date;
@@ -4656,10 +4659,10 @@ export class ConferenceForJudgeResponse implements IConferenceForJudgeResponse {
     /** The current conference status */
     status?: ConferenceStatus;
     /** The conference participants */
-    participants?: ParticipantForJudgeResponse[] | undefined;
+    participants?: ParticipantForHostResponse[] | undefined;
     number_of_endpoints?: number;
 
-    constructor(data?: IConferenceForJudgeResponse) {
+    constructor(data?: IConferenceForHostResponse) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
@@ -4679,15 +4682,15 @@ export class ConferenceForJudgeResponse implements IConferenceForJudgeResponse {
             this.status = _data['status'];
             if (Array.isArray(_data['participants'])) {
                 this.participants = [] as any;
-                for (let item of _data['participants']) this.participants!.push(ParticipantForJudgeResponse.fromJS(item));
+                for (let item of _data['participants']) this.participants!.push(ParticipantForHostResponse.fromJS(item));
             }
             this.number_of_endpoints = _data['number_of_endpoints'];
         }
     }
 
-    static fromJS(data: any): ConferenceForJudgeResponse {
+    static fromJS(data: any): ConferenceForHostResponse {
         data = typeof data === 'object' ? data : {};
-        let result = new ConferenceForJudgeResponse();
+        let result = new ConferenceForHostResponse();
         result.init(data);
         return result;
     }
@@ -4711,7 +4714,7 @@ export class ConferenceForJudgeResponse implements IConferenceForJudgeResponse {
     }
 }
 
-export interface IConferenceForJudgeResponse {
+export interface IConferenceForHostResponse {
     /** Conference UUID */
     id?: string;
     scheduled_date_time?: Date;
@@ -4723,7 +4726,7 @@ export interface IConferenceForJudgeResponse {
     /** The current conference status */
     status?: ConferenceStatus;
     /** The conference participants */
-    participants?: ParticipantForJudgeResponse[] | undefined;
+    participants?: ParticipantForHostResponse[] | undefined;
     number_of_endpoints?: number;
 }
 

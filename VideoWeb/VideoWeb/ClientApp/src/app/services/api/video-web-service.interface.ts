@@ -5,7 +5,7 @@ import {
     ChatResponse,
     ConferenceEventRequest,
     ConferenceForIndividualResponse,
-    ConferenceForJudgeResponse,
+    ConferenceForHostResponse,
     ConferenceResponse,
     SelfTestPexipResponse,
     TestCallScoreResponse,
@@ -17,7 +17,7 @@ import {
     VideoEndpointResponse
 } from '../clients/api-client';
 export interface IVideoWebApiService {
-    getConferencesForJudge(): Observable<ConferenceForJudgeResponse[]>;
+    getConferencesForJudge(): Observable<ConferenceForHostResponse[]>;
     getConferencesForIndividual(): Observable<ConferenceForIndividualResponse[]>;
     getConferenceById(conferenceId: string): Promise<ConferenceResponse>;
     sendEvent(request: ConferenceEventRequest): Promise<void>;

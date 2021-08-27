@@ -7,7 +7,7 @@ import {
     ChatResponse,
     ConferenceEventRequest,
     ConferenceForIndividualResponse,
-    ConferenceForJudgeResponse,
+    ConferenceForHostResponse,
     ConferenceResponse,
     ParticipantContactDetailsResponseVho,
     SelfTestPexipResponse,
@@ -38,8 +38,8 @@ export class VideoWebService implements IVideoWebApiService {
         this.activeConferencesCache = new SessionStorage<ConferenceLite>(this.ACTIVE_CONFERENCE_KEY);
     }
 
-    getConferencesForJudge(): Observable<ConferenceForJudgeResponse[]> {
-        return this.apiClient.getConferencesForJudge();
+    getConferencesForJudge(): Observable<ConferenceForHostResponse[]> {
+        return this.apiClient.getConferencesForHost();
     }
 
     getConferencesForIndividual(): Observable<ConferenceForIndividualResponse[]> {
