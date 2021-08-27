@@ -32,6 +32,8 @@ export class NavigatorComponent implements OnInit {
     navigateToHearingList(userProfile: UserProfileResponse) {
         if (userProfile.role === Role.Judge || userProfile.role === Role.JudicialOfficeHolder) {
             this.router.navigate([pageUrls.JudgeHearingList]);
+        } else if (userProfile.role === Role.StaffMember) {
+            this.router.navigate([pageUrls.StaffMemberHearingList]);
         } else if (userProfile.role === Role.VideoHearingsOfficer) {
             this.router.navigate([pageUrls.AdminVenueList]);
         } else if (

@@ -636,7 +636,8 @@ describe('HearingControlsBaseComponent', () => {
         HearingRole.PROSECUTION_ADVOCATE,
         HearingRole.REPRESENTATIVE,
         HearingRole.WINGER,
-        HearingRole.LITIGANT_IN_PERSON
+        HearingRole.LITIGANT_IN_PERSON,
+        HearingRole.STAFF_MEMBER
     ];
     allowedHearingRoles.forEach(hearingRole => {
         it(`canShowScreenShareButton() should return "true" when device is not a tablet and user has the '${hearingRole}' HearingRole`, () => {
