@@ -13,7 +13,7 @@ import {
     ConferenceForVhOfficerResponse,
     SelfTestPexipResponse,
     ParticipantHeartbeatResponse,
-    ConferenceForJudgeResponse,
+    ConferenceForHostResponse,
     UpdateParticipantDisplayNameRequest,
     ConferenceResponseVho,
     HearingVenueResponse,
@@ -60,7 +60,7 @@ export class MockVideoWebService implements IVideoWebApiService {
     getVenues(): Observable<HearingVenueResponse[]> {
         throw new Error('Method not implemented.');
     }
-    getConferencesForJudge(): Observable<ConferenceForJudgeResponse[]> {
+    getConferencesForJudge(): Observable<ConferenceForHostResponse[]> {
         return of(new ConferenceTestData().getTestData());
     }
 

@@ -64,6 +64,11 @@ namespace VideoWeb.Mappings
                 return Role.CaseAdmin;
             }
 
+            if (user.IsInRole(AppRoles.StaffMember))
+            {
+                return Role.StaffMember;
+            }
+
             throw new NotSupportedException($"Role is not supported for this application");
         }
     }

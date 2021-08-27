@@ -1,16 +1,16 @@
-import { ConferenceForJudgeResponse, ConferenceStatus, Role } from 'src/app/services/clients/api-client';
+import { ConferenceForHostResponse, ConferenceStatus, Role } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { HearingSummary } from './hearing-summary';
 import { JudgeHearingSummary } from './JudgeHearingSummary';
 
 describe('JudgeHearingSummary', () => {
-    let conference: ConferenceForJudgeResponse;
+    let conference: ConferenceForHostResponse;
     const testData = new ConferenceTestData();
 
     beforeEach(() => {
         const allParticiantTypes = testData.getListOfParticipants();
-        conference = testData.getConferenceFuture() as ConferenceForJudgeResponse;
+        conference = testData.getConferenceFuture() as ConferenceForHostResponse;
         conference.participants = allParticiantTypes;
         conference.number_of_endpoints = 2;
     });
@@ -51,6 +51,13 @@ describe('JudgeHearingSummary', () => {
         const wingers = hearing.wingers;
         expect(wingers.filter(x => x.hearingRole !== HearingRole.WINGER).length).toBe(0);
         expect(wingers.length).toBe(1);
+    });
+
+    it('should get staff members', () => {
+        const hearing = new JudgeHearingSummary(conference);
+        const staffMembers = hearing.staffMembers;
+        expect(staffMembers.filter(x => x.hearingRole !== HearingRole.STAFF_MEMBER).length).toBe(0);
+        expect(staffMembers.length).toBe(1);
     });
 
     it('should get non judicial participants, excluding observers', () => {
