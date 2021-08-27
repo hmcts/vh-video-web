@@ -25,7 +25,7 @@ namespace VideoWeb.Extensions
             var quickLinksConfiguration = configuration.GetSection("QuickLinks").Get<QuickLinksConfiguration>();
             var eJudAdConfiguration = configuration.GetSection("EJudAd").Get<EJudAdConfiguration>();
             var kinlyCallbackSecret = Convert.FromBase64String(kinlyConfiguration.CallbackSecret);
-         
+
             var videoHearingServicesConfiguration = configuration.GetSection("VhServices").Get<HearingServicesConfiguration>();
             var eventhubPath = videoHearingServicesConfiguration.EventHubPath;
             var internalEventSecret = Convert.FromBase64String(videoHearingServicesConfiguration.InternalEventSecret);
@@ -118,7 +118,7 @@ namespace VideoWeb.Extensions
                 [AppRoles.JudgeRole] = new[] { AppRoles.JudgeRole },
                 [AppRoles.VhOfficerRole] = new[] { AppRoles.VhOfficerRole },
                 ["Judicial"] = new[] { AppRoles.JudgeRole, AppRoles.JudicialOfficeHolderRole, AppRoles.StaffMember },
-                ["Individual"] = new[] { AppRoles.CitizenRole, AppRoles.RepresentativeRole },
+                ["Individual"] = new[] { AppRoles.CitizenRole, AppRoles.RepresentativeRole, AppRoles.QuickLinkParticipant, AppRoles.QuickLinkObserver },
                 [AppRoles.StaffMember] = new[] { AppRoles.StaffMember },
                 [AppRoles.RepresentativeRole] = new[] { AppRoles.RepresentativeRole },
                 [AppRoles.CitizenRole] = new[] { AppRoles.CitizenRole }
@@ -151,7 +151,7 @@ namespace VideoWeb.Extensions
                 }
 
                 options.AddPolicy(policy.Key, policyBuilder.Build());
-            }            
+            }
         }
     }
 }
