@@ -29,5 +29,6 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By PanelMembersCount(Guid conferenceId) => By.Id($"panel-member-count-{conferenceId:D}");
         public static By ObserversCount(Guid conferenceId) => By.Id($"observer-count-{conferenceId:D}");
         public static By WingersCount(Guid conferenceId) => By.Id($"winger-count-{conferenceId:D}");
+        public static By JudgeList(Guid conferenceId) => By.Id($"judges-list-{conferenceId:D}");
     }
 }

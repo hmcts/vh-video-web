@@ -32,8 +32,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the user selects the (.*) radiobutton")]
         public void WhenTheUserSelectsTheRadiobutton(string label)
         {            
+            _browsers[_c.CurrentUser].Driver.WaitUntilElementExists(CommonLocators.RadioButtonWithLabel(label));
             _browsers[_c.CurrentUser].ClickRadioButton(CommonLocators.RadioButtonWithLabel(label));
-            _browsers[_c.CurrentUser].Driver.WaitUntilElementExists(CommonLocators.RadioButtonWithLabel(label)).Selected.Should().BeTrue();
         }
 
         [When(@"the user clicks the (.*) link")]

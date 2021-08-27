@@ -345,6 +345,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var participantDetailsResponses = loggedInParticipants as ParticipantDetailsResponse[] ?? loggedInParticipants.ToArray();
             foreach (var user in participantDetailsResponses)
             {
+                NUnit.Framework.TestContext.WriteLine($"Checking the status of {user.DisplayName} - {_browsers[_c.CurrentUser].TextOf(JudgeParticipantPanel.ParticipantStatus(user.Id))}");
                 if ((user.UserRole == UserRole.Judge)) continue;
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantStatus(user.Id));
                 _browsers[_c.CurrentUser].ScrollTo(JudgeParticipantPanel.ParticipantStatus(user.Id));
