@@ -118,16 +118,16 @@
     </div>
   </div>
 
-  <div *ngIf="staffMembers.length > 0">
+  <div *ngIf="staffMember">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-          <h2 class="govuk-heading-s">{{'judge-participant-status-list.staff-members' | translate}} ({{ staffMembers.length }})</h2>
+          <h2 class="govuk-heading-s">{{'judge-participant-status-list.staff-member' | translate}}</h2>
       </div>
     </div>
     <div class="vh-border">
-      <div *ngFor="let participant of staffMembers; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
-        <div id="p-row-{{ participant.id }}-staff-member" class="govuk-grid-column-full govuk-!-margin-top-2">
-          <p id="p-{{ participant.id }}-name-staff-member" class="govuk-heading-s govuk-!-margin-bottom-3">
+      <div class="govuk-grid-row govuk-!-margin-bottom-1">
+        <div id="p-row-{{ staffMember.id }}-staff-member" class="govuk-grid-column-full govuk-!-margin-top-2">
+          <p id="p-{{ staffMember.id }}-name-staff-member" class="govuk-heading-s govuk-!-margin-bottom-3">
             {{ staffMember.display_name }}
             <span *ngIf="isStaffMember"><a href="javascript:void(0);" (click)="changeStaffMemberNameShow()" class="govuk-body govuk-link vh-ml10">{{'judge-participant-status-list.edit' | translate}}</a></span>
           </p>
@@ -159,14 +159,11 @@
           </div>
           <div class="govuk-body-s govuk-!-margin-bottom-3">
             <label
-              id="p-{{ participant.id }}-status-participant"
-              class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
-            >
-              {{ getParticipantStatus(participant) }}
+              id="p-{{ staffMember.id }}-status-participant"
+              class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(staffMember) }}">
+              {{ getParticipantStatus(staffMember) }}
             </label>
           </div>
-
-          <div class="vh-line" *ngIf="!lastItem"></div>
         </div>
       </div>
     </div>

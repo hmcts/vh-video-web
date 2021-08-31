@@ -118,6 +118,7 @@ namespace VideoWeb.Extensions
                 [AppRoles.JudgeRole] = new[] { AppRoles.JudgeRole },
                 [AppRoles.VhOfficerRole] = new[] { AppRoles.VhOfficerRole },
                 ["Judicial"] = new[] { AppRoles.JudgeRole, AppRoles.JudicialOfficeHolderRole, AppRoles.StaffMemberRole },
+                ["Individual"] = new[] { AppRoles.CitizenRole, AppRoles.RepresentativeRole, AppRoles.QuickLinkParticipant, AppRoles.QuickLinkObserver },
                 ["Individual"] = new[] { AppRoles.CitizenRole, AppRoles.RepresentativeRole },
                 [AppRoles.StaffMemberRole] = new[] { AppRoles.StaffMemberRole },
                 [AppRoles.RepresentativeRole] = new[] { AppRoles.RepresentativeRole },

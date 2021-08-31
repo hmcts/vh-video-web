@@ -116,7 +116,7 @@ describe('JudgeParticipantStatusListComponent', () => {
         expect(component.newJudgeDisplayName).toBe(newName);
     });
 
-    it('should save new judge display name in database', async () => {
+    it('should updateParticipantDetails when save judge new display name', async () => {
         const newName = 'new name';
         component.onEnterJudgeDisplayName(newName);
         await component.saveJudgeDisplayName();
@@ -143,7 +143,7 @@ describe('JudgeParticipantStatusListComponent', () => {
         expect(component.newStaffMemberDisplayName).toBe(newName);
     });
 
-    it('should save new staff member display name in database', async () => {
+    it('should updateParticipantDetails when save staff member new display name', async () => {
         videoWebService.updateParticipantDetails.calls.reset();
         const newName = 'new name';
         component.onEnterStaffMemberDisplayName(newName);

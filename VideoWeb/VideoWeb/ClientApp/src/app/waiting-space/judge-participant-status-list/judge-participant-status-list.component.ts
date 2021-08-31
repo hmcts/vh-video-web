@@ -29,7 +29,6 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
     showChangeStaffMemberDisplayName = false;
     newJudgeDisplayName: string;
     newStaffMemberDisplayName: string;
-    wingers: ParticipantResponse[];
     isUserJudge: boolean;
     isStaffMember: boolean;
 
@@ -168,14 +167,14 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         });
 
         try {
-            this.logger.debug(`[JudgeParticipantStatusList] - Attempting to update judge`, {
+            this.logger.debug(`[JudgeParticipantStatusList] - Attempting to update staff member`, {
                 staffMember: this.staffMember.id,
                 displayName: this.staffMember.display_name
             });
             await this.videoWebService.updateParticipantDetails(this.conference.id, this.staffMember.id, updateParticipantRequest);
         } catch (error) {
             this.logger.error(
-                `[JudgeParticipantStatusList] - There was an error update staffMember display name ${this.staffMember.id}`,
+                `[JudgeParticipantStatusList] - There was an error updating staff member display name ${this.staffMember.id}`,
                 error
             );
         }

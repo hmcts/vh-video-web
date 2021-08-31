@@ -85,7 +85,6 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
     }
 
     getSelectedOrPreferredLayout(): HearingLayout {
-        console.log(this.selectedLayout);
         if (this.selectedLayout) {
             return this.selectedLayout;
         } else {
