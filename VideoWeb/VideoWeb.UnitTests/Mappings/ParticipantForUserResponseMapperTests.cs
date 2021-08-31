@@ -26,6 +26,13 @@ namespace VideoWeb.UnitTests.Mappings
                     .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>())
                     .Build(),
                 Builder<ParticipantSummaryResponse>.CreateNew()
+                    .With(x => x.UserRole = UserRole.StaffMember)
+                    .With(x => x.CaseGroup = "StaffMember")
+                    .With(x => x.Status = ParticipantState.Available)
+                    .With(x => x.Id = Guid.NewGuid())
+                    .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>())
+                    .Build(),
+                Builder<ParticipantSummaryResponse>.CreateNew()
                     .With(x => x.UserRole = UserRole.Individual)
                     .With(x => x.CaseGroup = "Applicant")
                     .With(x => x.Status = ParticipantState.Joining)
@@ -95,7 +102,7 @@ namespace VideoWeb.UnitTests.Mappings
 
                 if (position[0].StartsWith("CIVILIAN") || position[0].StartsWith("WITNESS"))
                 {
-                    tiledNames.Count(x => x.StartsWith(position[0])).Should().Be(5);
+                    tiledNames.Count(x => x.StartsWith(position[0])).Should().Be(6);
                 }
             }
         }
