@@ -46,16 +46,77 @@ describe('MicVisualiserComponent', () => {
     });
 
     describe('fillMeter', () => {
+        let clearRectSpy: jasmine.SpyObj<any>;
+        let fillRectSpy: jasmine.SpyObj<any>;
+        const originalElementWidth = 100;
+        const elementHeight = 30;
+        const feedback = 1;
+
+        let fillWidth: number;
+
         beforeEach(() => {
-            spyOn(canvasContext, 'clearRect');
-            spyOn(canvasContext, 'fillRect');
+            canvasElement.style.width = `${originalElementWidth}px`;
+            canvasElement.style.height = `${elementHeight}px`;
+            clearRectSpy = spyOn(canvasContext, 'clearRect');
+            fillRectSpy = spyOn(canvasContext, 'fillRect').and.callFake((x: number, y: number, width: number, height: number) => {
+                fillWidth = width;
+            });
         });
-        it('should clear and fill canvas', () => {
-            component.fillMeter(1);
+
+        it('should clear and fill canvas with 0 width when feedback is 0', () => {
+            component.fillMeter(0);
 
             expect(canvasContext.clearRect).toHaveBeenCalledTimes(1);
-            expect(canvasContext.clearRect).toHaveBeenCalledWith(0, 0, canvasElement.scrollWidth, canvasElement.scrollHeight);
+            expect(canvasContext.clearRect).toHaveBeenCalledWith(0, 0, originalElementWidth, elementHeight);
             expect(canvasContext.fillRect).toHaveBeenCalledTimes(1);
+            expect(canvasContext.fillRect).toHaveBeenCalledWith(0, 0, 0, elementHeight);
+        });
+
+        it('should clear and fill canvas', () => {
+            component.fillMeter(feedback);
+
+            expect(canvasContext.clearRect).toHaveBeenCalledTimes(1);
+            expect(canvasContext.clearRect).toHaveBeenCalledWith(0, 0, originalElementWidth, elementHeight);
+            expect(canvasContext.fillRect).toHaveBeenCalledTimes(1);
+            expect(canvasContext.fillRect).toHaveBeenCalledWith(0, 0, jasmine.any(Number), elementHeight);
+            expect(fillWidth).toBeGreaterThan(0);
+        });
+
+        describe('different widths', () => {
+            const difference = 10;
+            let originalFillWidth: number;
+            let newElementWidth: number;
+            beforeEach(() => {
+                component.fillMeter(feedback);
+                expect(fillWidth).toBeGreaterThan(0);
+                originalFillWidth = fillWidth;
+                clearRectSpy.calls.reset();
+                fillRectSpy.calls.reset();
+            });
+
+            it('should fill a greater value when width is greater', () => {
+                newElementWidth = originalElementWidth + difference;
+                canvasElement.style.width = `${newElementWidth}px`;
+                component.fillMeter(feedback);
+
+                expect(canvasContext.clearRect).toHaveBeenCalledTimes(1);
+                expect(canvasContext.clearRect).toHaveBeenCalledWith(0, 0, newElementWidth, elementHeight);
+                expect(canvasContext.fillRect).toHaveBeenCalledTimes(1);
+                expect(canvasContext.fillRect).toHaveBeenCalledWith(0, 0, jasmine.any(Number), elementHeight);
+                expect(fillWidth).toBeGreaterThan(originalFillWidth);
+            });
+
+            it('should fill a lower value when width is lower', () => {
+                newElementWidth = originalElementWidth - difference;
+                canvasElement.style.width = `${newElementWidth}px`;
+                component.fillMeter(feedback);
+
+                expect(canvasContext.clearRect).toHaveBeenCalledTimes(1);
+                expect(canvasContext.clearRect).toHaveBeenCalledWith(0, 0, newElementWidth, elementHeight);
+                expect(canvasContext.fillRect).toHaveBeenCalledTimes(1);
+                expect(canvasContext.fillRect).toHaveBeenCalledWith(0, 0, jasmine.any(Number), elementHeight);
+                expect(fillWidth).toBeLessThan(originalFillWidth);
+            });
         });
     });
 });
