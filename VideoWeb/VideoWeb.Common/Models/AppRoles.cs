@@ -11,6 +11,5 @@ namespace VideoWeb.Common.Models
         public const string JudicialOfficeHolderRole = "JudicialOfficeHolder";
         public const string QuickLinkParticipant = "QuickLinkParticipant";
         public const string QuickLinkObserver = "QuickLinkObserver";
-        public const string StaffMember = "StaffMember";
     }
 }

@@ -99,7 +99,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
         this.logger.debug('[JudgeHearingList] - Signing into judge waiting room', { conference: conference.id });
         this.videoWebService.getCurrentParticipant(conference.id).then(x => {
             const result = conference.participants.find(
-                p => p.id === x.participant_id && (p.hearing_role === 'Judge' || p.hearing_role === 'StaffMember')
+                p => p.id === x.participant_id && (p.hearing_role === 'Judge' || p.hearing_role === 'Staff Member')
             );
             if (result) {
                 this.router.navigate([pageUrls.JudgeWaitingRoom, conference.id]);
