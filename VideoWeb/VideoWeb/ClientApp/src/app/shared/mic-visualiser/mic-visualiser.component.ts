@@ -1,27 +1,45 @@
-import { Component, Input, OnInit, OnDestroy, HostListener, OnChanges } from '@angular/core';
+import {
+    Component,
+    Input,
+    OnDestroy,
+    HostListener,
+    ViewChild,
+    ElementRef,
+    AfterViewChecked,
+    ChangeDetectorRef,
+    AfterViewInit,
+    OnChanges
+} from '@angular/core';
 import 'webrtc-adapter';
 
 @Component({
     selector: 'app-mic-visualiser',
-    templateUrl: './mic-visualiser.component.html'
+    templateUrl: './mic-visualiser.component.html',
+    styleUrls: ['./mic-visualiser.component.scss']
 })
-export class MicVisualiserComponent implements OnInit, OnChanges, OnDestroy {
-    canvasContext: CanvasRenderingContext2D;
-    audioContext: AudioContext;
-    source: MediaStreamAudioSourceNode;
-    analyser: AnalyserNode;
+export class MicVisualiserComponent implements AfterViewInit, OnDestroy, AfterViewChecked, OnChanges {
+    private canvasContext: CanvasRenderingContext2D;
+    private audioContext: AudioContext;
+    private source: MediaStreamAudioSourceNode;
+    private analyser: AnalyserNode;
 
-    dataArray: Uint8Array;
-    rafId: number;
+    private dataArray: Uint8Array;
+    private rafId: number;
 
-    constructor() {}
+    @ViewChild('meter') meterCanvas: ElementRef;
+    @ViewChild('container') meterContainer: ElementRef;
+    meterCurrentWidth: number;
+    readonly meterMaxWidth = 270;
+    readonly scaleMultiplier = 1.75;
+    readonly fillColor = 'green';
+
+    constructor(private changeDetector: ChangeDetectorRef) {}
 
     @Input() stream: MediaStream;
     @Input() incomingStream: MediaStream;
-    ngOnInit() {
-        const canvas = <HTMLCanvasElement>document.getElementById('meter');
-        this.canvasContext = canvas.getContext('2d');
-        this.setupStream();
+    ngAfterViewInit() {
+        this.canvasContext = this.meterCanvas.nativeElement.getContext('2d');
+        this.canvasContext.fillStyle = '#008000';
     }
 
     ngOnChanges(): void {
@@ -31,6 +49,11 @@ export class MicVisualiserComponent implements OnInit, OnChanges, OnDestroy {
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
         cancelAnimationFrame(this.rafId);
+    }
+
+    ngAfterViewChecked() {
+        this.meterCurrentWidth = this.meterContainer.nativeElement.offsetWidth;
+        this.changeDetector.detectChanges();
     }
 
     setupStream() {
@@ -71,11 +94,11 @@ export class MicVisualiserComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     fillMeter(feedback: number) {
-        const width = 270;
-        const height = 50;
-        this.canvasContext.clearRect(0, 0, width, height);
-        this.canvasContext.fillStyle = 'green';
-        this.canvasContext.fillRect(0, 0, feedback * 1.75, height);
+        const canvasWidth = this.meterCanvas.nativeElement.scrollWidth;
+        const canvasHeight = this.meterCanvas.nativeElement.scrollHeight;
+
+        this.canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
+        this.canvasContext.fillRect(0, 0, (feedback / this.meterMaxWidth) * canvasWidth * this.scaleMultiplier, canvasHeight);
     }
 
     tick() {
