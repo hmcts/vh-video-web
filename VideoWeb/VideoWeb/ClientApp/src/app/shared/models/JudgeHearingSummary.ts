@@ -1,10 +1,10 @@
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
-import { ConferenceForJudgeResponse, Role } from '../../services/clients/api-client';
+import { ConferenceForHostResponse, Role } from '../../services/clients/api-client';
 import { HearingSummary } from './hearing-summary';
 import { ParticipantSummary } from './participant-summary';
 
 export class JudgeHearingSummary extends HearingSummary {
-    constructor(conference: ConferenceForJudgeResponse) {
+    constructor(conference: ConferenceForHostResponse) {
         super(conference);
         this.numberOfEndpoints = conference.number_of_endpoints;
     }
@@ -26,6 +26,10 @@ export class JudgeHearingSummary extends HearingSummary {
 
     get wingers(): ParticipantSummary[] {
         return this.participants.filter(x => x.hearingRole === HearingRole.WINGER && x.role === Role.JudicialOfficeHolder);
+    }
+
+    get staffMembers(): ParticipantSummary[] {
+        return this.participants.filter(x => x.hearingRole === HearingRole.STAFF_MEMBER);
     }
 
     numberOfEndpoints: number;

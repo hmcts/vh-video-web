@@ -56,6 +56,14 @@
                   </span>
                 </p>
               </span>
+              <span *ngIf="hearing.staffMembers.length > 0">
+                <p class="govuk-!-margin-0 govuk-!-padding-0">
+                  <span id="winger-count-{{ hearing.id }}">
+                    <!-- {{ hearing.staffMembers.length }} {{ hearing.staffMembers.length > 1 ? getTranslation('wingers') : getTranslation('winger') }} -->
+                    {{ hearing.staffMembers.length }} {{ hearing.staffMembers.length > 1 ? 'Staff Members' : 'Staff Member' }}
+                  </span>
+                </p>
+              </span>
               <span *ngIf="hearing.nonJudicialParticipantsExcludingObservers.length > 0">
                 <p class="govuk-!-margin-0 govuk-!-padding-0">
                   <span id="participant-count-{{ hearing.id }}">

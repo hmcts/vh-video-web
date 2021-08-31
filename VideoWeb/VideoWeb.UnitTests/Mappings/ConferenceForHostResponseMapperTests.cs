@@ -6,22 +6,22 @@ using FluentAssertions;
 using NUnit.Framework;
 using VideoApi.Contract.Enums;
 using VideoWeb.Mappings;
-using Conference = VideoApi.Contract.Responses.ConferenceForJudgeResponse;
-using Participant = VideoApi.Contract.Responses.ParticipantForJudgeResponse;
+using Conference = VideoApi.Contract.Responses.ConferenceForHostResponse;
+using Participant = VideoApi.Contract.Responses.ParticipantForHostResponse;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class ConferenceForJudgeResponseMapperTests
+    public class ConferenceForHostResponseMapperTests
     {
         protected AutoMock _mocker;
-        protected ConferenceForJudgeResponseMapper _sut;
+        protected ConferenceForHostResponseMapper _sut;
 
         [SetUp]
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Participant, VideoWeb.Contract.Responses.ParticipantForJudgeResponse>()).Returns(_mocker.Create<ParticipantForJudgeResponseMapper>());
-            _sut = _mocker.Create<ConferenceForJudgeResponseMapper>();
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Participant, Contract.Responses.ParticipantForHostResponse>()).Returns(_mocker.Create<ParticipantForHostResponseMapper>());
+            _sut = _mocker.Create<ConferenceForHostResponseMapper>();
         }
 
         [Test]

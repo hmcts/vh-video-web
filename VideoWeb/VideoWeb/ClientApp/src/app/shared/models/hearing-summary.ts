@@ -1,6 +1,6 @@
 import {
     ConferenceForIndividualResponse,
-    ConferenceForJudgeResponse,
+    ConferenceForHostResponse,
     ConferenceForVhOfficerResponse,
     ConferenceStatus,
     Role
@@ -18,10 +18,10 @@ export class HearingSummary extends HearingBase {
         super();
         const isVhResponse = conference instanceof ConferenceForVhOfficerResponse;
         const isIndividualResponse =
-            conference instanceof ConferenceForIndividualResponse || conference instanceof ConferenceForJudgeResponse;
+            conference instanceof ConferenceForIndividualResponse || conference instanceof ConferenceForHostResponse;
 
         if (!(isVhResponse || isIndividualResponse)) {
-            throw new Error('Object not a ConferenceForIndividualResponse or ConferenceForVhOfficerResponse or ConferenceForJudgeResponse');
+            throw new Error('Object not a ConferenceForIndividualResponse or ConferenceForVhOfficerResponse or ConferenceForHostResponse');
         }
         this.conference = conference;
         this.participants = this.conference.participants.map(p => new ParticipantSummary(p));
