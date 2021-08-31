@@ -40,8 +40,6 @@ export class MicVisualiserComponent implements AfterViewInit, OnDestroy, AfterVi
     ngAfterViewInit() {
         this.canvasContext = this.meterCanvas.nativeElement.getContext('2d');
         this.canvasContext.fillStyle = '#008000';
-
-        console.log(this.canvasContext);
     }
 
     ngOnChanges(): void {
