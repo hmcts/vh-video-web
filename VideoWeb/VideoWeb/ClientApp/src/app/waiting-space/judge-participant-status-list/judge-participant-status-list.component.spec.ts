@@ -69,6 +69,7 @@ describe('JudgeParticipantStatusListComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
         expect(component.judge).toBeDefined();
+        expect(component.staffMember).toBeDefined();
         expect(component.nonJudgeParticipants).toBeDefined();
         expect(component.nonJudgeParticipants.length).toBe(2);
 
@@ -124,9 +125,38 @@ describe('JudgeParticipantStatusListComponent', () => {
 
         expect(logger.error).toHaveBeenCalled();
     });
+
+    it('should update new staff member display name with user input', () => {
+        const newName = 'new name';
+        component.onEnterStaffMemberDisplayName(newName);
+        expect(component.newStaffMemberDisplayName).toBe(newName);
+    });
+
+    it('should save new staff member display name in database', async () => {
+        videoWebService.updateParticipantDetails.calls.reset();
+        const newName = 'new name';
+        component.onEnterStaffMemberDisplayName(newName);
+        await component.saveStaffMemberDisplayName();
+        expect(component.staffMember.display_name).toBe(newName);
+        expect(component.showChangeStaffMemberDisplayName).toBe(false);
+        expect(videoWebService.updateParticipantDetails).toHaveBeenCalledTimes(1);
+    });
+
+    it('should log error when unable to save new staff member name', async () => {
+        const error = { error: 'test failure' };
+        const newName = 'new name';
+        component.onEnterStaffMemberDisplayName(newName);
+        videoWebService.updateParticipantDetails.and.rejectWith(error);
+        spyOn(logger, 'error');
+
+        await component.saveStaffMemberDisplayName();
+
+        expect(logger.error).toHaveBeenCalled();
+    });
+
     it('should get the participant count excluding judge', () => {
         const participantCount = component.participantCount;
-        const expected = component.conference.participants.filter(x => x.role !== Role.Judge).length;
+        const expected = component.conference.participants.filter(x => x.role !== Role.Judge && x.role !== Role.StaffMember).length;
         expect(participantCount).toBe(expected);
     });
 
