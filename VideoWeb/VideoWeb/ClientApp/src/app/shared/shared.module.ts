@@ -46,6 +46,7 @@ import { AppInsightsLoggerService } from '../services/logging/loggers/app-insigh
 import { ConsoleLogger } from '../services/logging/loggers/console-logger';
 import { Logger } from '../services/logging/logger-base';
 import { SecurityConfigSetupService } from '../security/security-config-setup.service';
+import { HeaderLogoSvgComponent } from './header-logo-svg/header-logo-svg.component';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -103,7 +104,8 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         RoomClosingToastComponent,
         MultilinePipe,
         NgxDatePipe,
-        LoadingComponent
+        LoadingComponent,
+        HeaderLogoSvgComponent
     ],
     providers: [
         { provide: Logger, useClass: LoggerService },
