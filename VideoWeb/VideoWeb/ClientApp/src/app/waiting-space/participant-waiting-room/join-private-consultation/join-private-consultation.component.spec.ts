@@ -59,6 +59,8 @@ describe('JoinPrivateConsultationComponent', () => {
         globalConference.participants[0].current_room = new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' });
         globalConference.participants[1].current_room = new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' });
         globalConference.participants[2].current_room = new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' });
+        globalConference.participants[3].current_room = new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' });
+
         globalConference.endpoints[0].current_room = new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' });
         globalConference.endpoints[1].current_room = new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' });
 

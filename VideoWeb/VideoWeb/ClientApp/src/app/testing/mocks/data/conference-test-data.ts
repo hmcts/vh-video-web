@@ -441,13 +441,13 @@ export class ConferenceTestData {
         });
 
         const participant4 = new ParticipantResponseVho({
-            id: '9F681318-4955-49AF-A887-DED64554429T',
+            id: '9F681318-4965-49AF-A887-DED64554429T',
             name: 'Staff Member',
             status: ParticipantStatus.Available,
             role: Role.StaffMember,
             display_name: 'Staff Member',
             case_type_group: 'Staff Member',
-            tiled_display_name: 'Staff Member;Staff Member Fudge;9F681318-4955-49AF-A887-DED64554429T',
+            tiled_display_name: 'Staff Member;Staff Member;9F681318-4965-49AF-A887-DED64554429T',
             hearing_role: HearingRole.STAFF_MEMBER,
             current_room: new RoomSummaryResponse(),
             linked_participants: []
