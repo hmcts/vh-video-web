@@ -151,4 +151,4 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         LoadingComponent
     ]
 })
-export class SharedModule { }
+export class SharedModule {}
