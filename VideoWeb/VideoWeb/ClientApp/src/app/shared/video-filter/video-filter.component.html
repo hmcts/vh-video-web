@@ -1,6 +1,7 @@
 <button class="vh-accordion" (click)="toggleDisplayOptions()">
-  <span class="govuk-link"
-    >Choose a custom background<i
+  <span class="govuk-link">
+    {{ 'video-filter.title' | translate }}
+    <i
       class="fas"
       [ngClass]="showOptions ? 'fa-chevron-up' : 'fa-chevron-down'"
       id="bg-icon"
@@ -23,11 +24,11 @@
         (change)="this.backgroundChanged($event)"
       />
       <label for="bg-none">
-        <img src="/assets/images/VhBgFilterNone.jpg" class="bg-option-img" />
+        <img src="/assets/images/VhBgFilterNone.jpg" class="bg-option-img" [attr.alt]="'video-filter.none-alt' | translate" />
       </label>
     </div>
     <div class="bg-name1">
-      <div class="govuk-hint bg-option-text">No background</div>
+      <div class="govuk-hint bg-option-text">{{ 'video-filter.none' | translate }}</div>
     </div>
     <div class="bg-img2">
       <input
@@ -40,11 +41,11 @@
         (change)="this.backgroundChanged($event)"
       />
       <label for="bg-blur">
-        <img src="/assets/images/VhBgFilterBlur.jpg" class="bg-option-img" />
+        <img src="/assets/images/VhBgFilterBlur.jpg" class="bg-option-img" [attr.alt]="'video-filter.blur-alt' | translate" />
       </label>
     </div>
     <div class="bg-name2">
-      <div class="govuk-hint bg-option-text">Blurred</div>
+      <div class="govuk-hint bg-option-text">{{ 'video-filter.blur' | translate }}</div>
     </div>
     <div class="bg-img3">
       <input
@@ -57,11 +58,11 @@
         (change)="this.backgroundChanged($event)"
       />
       <label for="bg-hmcts">
-        <img src="/assets/images/VhBgFilterHMCTS.jpg" class="bg-option-img" />
+        <img src="/assets/images/VhBgFilterHMCTS.jpg" class="bg-option-img" [attr.alt]="'video-filter.hmcts-alt' | translate" />
       </label>
     </div>
     <div class="bg-name3">
-      <div class="govuk-hint bg-option-text">HMCTS crest</div>
+      <div class="govuk-hint bg-option-text">{{ 'video-filter.hmcts' | translate }}</div>
     </div>
     <div class="bg-img4">
       <input
@@ -74,11 +75,11 @@
         (change)="this.backgroundChanged($event)"
       />
       <label for="bg-scot">
-        <img src="/assets/images/VhBgFilterSCTS.jpg" class="bg-option-img" />
+        <img src="/assets/images/VhBgFilterSCTS.jpg" class="bg-option-img" [attr.alt]="'video-filter.scts-alt' | translate" />
       </label>
     </div>
     <div class="bg-name4">
-      <div class="govuk-hint bg-option-text">SCTS crest</div>
+      <div class="govuk-hint bg-option-text">{{ 'video-filter.scts' | translate }}</div>
     </div>
   </div>
 </div>
