@@ -30,6 +30,8 @@ export class MicVisualiserComponent implements AfterViewInit, OnDestroy, AfterVi
     @ViewChild('container') meterContainer: ElementRef;
     meterCurrentWidth: number;
     readonly meterMaxWidth = 270;
+    readonly scaleMultiplier = 1.75;
+    readonly fillColor = 'green';
 
     constructor(private changeDetector: ChangeDetectorRef) {}
 
@@ -37,6 +39,9 @@ export class MicVisualiserComponent implements AfterViewInit, OnDestroy, AfterVi
     @Input() incomingStream: MediaStream;
     ngAfterViewInit() {
         this.canvasContext = this.meterCanvas.nativeElement.getContext('2d');
+        this.canvasContext.fillStyle = '#008000';
+
+        console.log(this.canvasContext);
     }
 
     ngOnChanges(): void {
@@ -91,14 +96,11 @@ export class MicVisualiserComponent implements AfterViewInit, OnDestroy, AfterVi
     }
 
     fillMeter(feedback: number) {
-        const scaleMultiplier = 1.75;
-
         const canvasWidth = this.meterCanvas.nativeElement.scrollWidth;
         const canvasHeight = this.meterCanvas.nativeElement.scrollHeight;
 
         this.canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
-        this.canvasContext.fillStyle = 'green';
-        this.canvasContext.fillRect(0, 0, (feedback / this.meterMaxWidth) * canvasWidth * scaleMultiplier, canvasHeight);
+        this.canvasContext.fillRect(0, 0, (feedback / this.meterMaxWidth) * canvasWidth * this.scaleMultiplier, canvasHeight);
     }
 
     tick() {
