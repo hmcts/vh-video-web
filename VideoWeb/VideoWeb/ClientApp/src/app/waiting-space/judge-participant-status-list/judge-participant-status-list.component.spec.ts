@@ -99,6 +99,17 @@ describe('JudgeParticipantStatusListComponent', () => {
         expect(component.showChangeJudgeDisplayName).toBe(false);
     });
 
+    it('should show input template for change staff member display name', () => {
+        component.changeStaffMemberNameShow();
+        expect(component.showChangeStaffMemberDisplayName).toBe(true);
+        expect(component.newStaffMemberDisplayName).toBe(component.staffMember.display_name);
+    });
+
+    it('should hide input template for change judge display name', () => {
+        component.cancelStaffMemberDisplayName();
+        expect(component.showChangeStaffMemberDisplayName).toBe(false);
+    });
+
     it('should update new judge display name with user input', () => {
         const newName = 'new name';
         component.onEnterJudgeDisplayName(newName);
