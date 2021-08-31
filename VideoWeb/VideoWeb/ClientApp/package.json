@@ -40,6 +40,7 @@
     "@hmcts/frontend": "^0.0.41-alpha",
     "@microsoft/applicationinsights-web": "^2.5.10",
     "@microsoft/signalr": "^3.1.11",
+    "@ministryofjustice/frontend": "^0.2.5",
     "@ng-select/ng-select": "^5.0.15",
     "@ngx-translate/core": "^13.0.0",
     "@ngx-translate/http-loader": "^6.0.0",
