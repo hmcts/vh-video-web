@@ -42,7 +42,6 @@ describe('MicVisualiserComponent', () => {
     it('should setup canvas afterViewInit', () => {
         component.ngAfterViewInit();
         fixture.detectChanges();
-        console.log(canvasContext);
         expect(canvasContext.fillStyle).toBe('#008000');
     });
 
