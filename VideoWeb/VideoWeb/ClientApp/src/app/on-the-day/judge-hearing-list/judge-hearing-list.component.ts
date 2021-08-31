@@ -12,6 +12,7 @@ import { ConferenceStatusMessage } from 'src/app/services/models/conference-stat
 import { vhContactDetails } from 'src/app/shared/contact-information';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ScreenHelper } from 'src/app/shared/screen-helper';
+import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 
 @Component({
     selector: 'app-judge-hearing-list',
@@ -99,7 +100,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
         this.logger.debug('[JudgeHearingList] - Signing into judge waiting room', { conference: conference.id });
         this.videoWebService.getCurrentParticipant(conference.id).then(x => {
             const result = conference.participants.find(
-                p => p.id === x.participant_id && (p.hearing_role === 'Judge' || p.hearing_role === 'Staff Member')
+                p => p.id === x.participant_id && (p.hearing_role === HearingRole.JUDGE || p.hearing_role === HearingRole.STAFF_MEMBER)
             );
             if (result) {
                 this.router.navigate([pageUrls.JudgeWaitingRoom, conference.id]);
