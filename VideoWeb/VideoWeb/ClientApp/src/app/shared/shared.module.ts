@@ -106,7 +106,7 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         MultilinePipe,
         NgxDatePipe,
         LoadingComponent,
-        HeaderLogoSvgComponent
+        HeaderLogoSvgComponent,
         VideoFilterComponent
     ],
     providers: [
