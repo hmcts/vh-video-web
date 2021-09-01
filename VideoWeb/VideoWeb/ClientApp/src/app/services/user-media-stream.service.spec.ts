@@ -37,16 +37,9 @@ describe('UserMediaStreamService', () => {
     };
 
     const cameraOneDevice = new UserMediaDevice('Camera 1', Guid.create().toString(), 'videoinput', '');
-    let cameraOneStream = mediaStreamBuilder(cameraOneDevice);
-
     const cameraTwoDevice = new UserMediaDevice('Camera 2', Guid.create().toString(), 'videoinput', '');
-    let cameraTwoStream = mediaStreamBuilder(cameraTwoDevice);
-
     const microphoneOneDevice = new UserMediaDevice('Microphone 1', Guid.create().toString(), 'audioinput', '');
-    let microphoneOneStream = mediaStreamBuilder(microphoneOneDevice);
-
     const microphoneTwoDevice = new UserMediaDevice('Microphone 2', Guid.create().toString(), 'audioinput', '');
-    let microphoneTwoStream = mediaStreamBuilder(microphoneTwoDevice);
 
     let sut: UserMediaStreamService;
 
@@ -60,10 +53,10 @@ describe('UserMediaStreamService', () => {
     let mediaStreamServiceSpy: jasmine.SpyObj<MediaStreamService>;
 
     beforeEach(fakeAsync(() => {
-        cameraOneStream = mediaStreamBuilder(cameraOneDevice);
-        cameraTwoStream = mediaStreamBuilder(cameraTwoDevice);
-        microphoneOneStream = mediaStreamBuilder(microphoneOneDevice);
-        microphoneTwoStream = mediaStreamBuilder(microphoneTwoDevice);
+        const cameraOneStream = mediaStreamBuilder(cameraOneDevice);
+        const cameraTwoStream = mediaStreamBuilder(cameraTwoDevice);
+        const microphoneOneStream = mediaStreamBuilder(microphoneOneDevice);
+        const microphoneTwoStream = mediaStreamBuilder(microphoneTwoDevice);
         loggerSpy = jasmine.createSpyObj<Logger>(['debug', 'info', 'warn', 'error']);
 
         activeCameraDeviceSubject = new Subject<UserMediaDevice>();
