@@ -46,6 +46,7 @@ import { AppInsightsLoggerService } from '../services/logging/loggers/app-insigh
 import { ConsoleLogger } from '../services/logging/loggers/console-logger';
 import { Logger } from '../services/logging/logger-base';
 import { SecurityConfigSetupService } from '../security/security-config-setup.service';
+import { HeaderLogoSvgComponent } from './header-logo-svg/header-logo-svg.component';
 import { VideoFilterComponent } from './video-filter/video-filter.component';
 
 export function getSettings(configService: ConfigService) {
@@ -105,6 +106,7 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         MultilinePipe,
         NgxDatePipe,
         LoadingComponent,
+        HeaderLogoSvgComponent
         VideoFilterComponent
     ],
     providers: [
