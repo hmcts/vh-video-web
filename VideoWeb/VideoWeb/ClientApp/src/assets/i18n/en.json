@@ -1018,7 +1018,8 @@
     },
     "participant-added": {
       "title": "{{name}}",
-      "message": "{{role}} ({{party}}) has been added to the hearing.",
+      "message-without-party": "{{role}} has been added to the hearing.",
+      "message-with-party": "{{role}} ({{party}}) has been added to the hearing.",
       "dismiss": "Dismiss"
     }
   },

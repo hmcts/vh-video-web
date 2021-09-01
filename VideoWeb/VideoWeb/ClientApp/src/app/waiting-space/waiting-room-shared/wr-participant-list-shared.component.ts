@@ -148,7 +148,7 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     }
 
     stringToTranslateId(str: string) {
-        return str.replace(/\s/g, '-').toLowerCase();
+        return str?.replace(/\s/g, '-').toLowerCase();
     }
 
     getInterpreteeName(interpreterId: string) {
