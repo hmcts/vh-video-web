@@ -165,7 +165,7 @@ describe('JudgeParticipantStatusListComponent', () => {
         expect(logger.error).toHaveBeenCalled();
     });
 
-    it('should get the participant count excluding judge', () => {
+    it('should get the participant count excluding judge and staff member', () => {
         const participantCount = component.participantCount;
         const expected = component.conference.participants.filter(x => x.role !== Role.Judge && x.role !== Role.StaffMember).length;
         expect(participantCount).toBe(expected);
