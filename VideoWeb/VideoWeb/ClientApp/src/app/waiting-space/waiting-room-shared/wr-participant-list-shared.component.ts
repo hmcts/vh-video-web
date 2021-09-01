@@ -26,6 +26,7 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
 
     nonJudgeParticipants: ParticipantResponse[];
     judge: ParticipantResponse;
+    staffMember: ParticipantResponse;
     endpoints: VideoEndpointResponse[];
     observers: ParticipantResponse[];
     panelMembers: ParticipantResponse[];
@@ -57,6 +58,7 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     initParticipants() {
         this.filterNonJudgeParticipants();
         this.filterJudge();
+        this.filterStaffMember();
         this.filterPanelMembers();
         this.filterObservers();
         this.filterWingers();
@@ -111,7 +113,11 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
 
     protected filterNonJudgeParticipants(): void {
         const nonJudgeParts = this.conference.participants.filter(
-            x => x.role !== Role.Judge && x.role !== Role.JudicialOfficeHolder && x.hearing_role !== HearingRole.OBSERVER
+            x =>
+                x.role !== Role.Judge &&
+                x.role !== Role.JudicialOfficeHolder &&
+                x.hearing_role !== HearingRole.OBSERVER &&
+                x.hearing_role !== HearingRole.STAFF_MEMBER
         );
 
         const interpreterList = nonJudgeParts.filter(
@@ -187,6 +193,10 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
 
     protected filterJudge(): void {
         this.judge = this.conference.participants.find(x => x.role === Role.Judge);
+    }
+
+    protected filterStaffMember(): void {
+        this.staffMember = this.conference.participants.find(x => x.role === Role.StaffMember);
     }
 
     protected filterParticipantInConsultation(): void {
