@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +17,10 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
+using VideoWeb.EventHub.Handlers.Core;
+using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
+using EventType = VideoWeb.EventHub.Enums.EventType;
 
 namespace VideoWeb.Controllers
 {
@@ -26,13 +31,15 @@ namespace VideoWeb.Controllers
     public class QuickLinksController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;
+        private readonly IEventHandlerFactory _eventHandlerFactory;
         private readonly IConferenceCache _conferenceCache;
         private readonly IMapperFactory _mapperFactory;
         private readonly ILogger<QuickLinksController> _logger;
 
-        public QuickLinksController(IVideoApiClient videoApiClient, IConferenceCache conferenceCache, IMapperFactory mapperFactory, ILogger<QuickLinksController> logger)
+        public QuickLinksController(IVideoApiClient videoApiClient, IEventHandlerFactory eventHandlerFactory, IConferenceCache conferenceCache, IMapperFactory mapperFactory, ILogger<QuickLinksController> logger)
         {
             _videoApiClient = videoApiClient;
+            _eventHandlerFactory = eventHandlerFactory;
             _conferenceCache = conferenceCache;
             _mapperFactory = mapperFactory;
             _logger = logger;
@@ -130,6 +137,29 @@ namespace VideoWeb.Controllers
             conference.AddParticipant(requestToParticipantMapper.Map(response.ParticipantDetails));
             
             await _conferenceCache.UpdateConferenceAsync(conference);
+
+            var participantsToResponseMapper = _mapperFactory.Get<Participant, Conference, ParticipantResponse>();
+            CallbackEvent callbackEvent = new CallbackEvent()
+            {
+                ConferenceId = conference.Id,
+                EventType = EventType.ParticipantsUpdated,
+                TimeStampUtc = DateTime.UtcNow,
+                Participants = conference.Participants.Select(participant => participantsToResponseMapper.Map(participant, conference)).ToList()
+            };
+
+            _logger.LogTrace($"Publishing event to UI: {JsonSerializer.Serialize(callbackEvent)}");
+            await PublishEventToUi(callbackEvent);
+        }
+
+        private Task PublishEventToUi(CallbackEvent callbackEvent)
+        {
+            if (callbackEvent == null)
+            {
+                return Task.CompletedTask;
+            }
+
+            var handler = _eventHandlerFactory.Get(callbackEvent.EventType);
+            return handler.HandleAsync(callbackEvent);
         }
     }
 }
