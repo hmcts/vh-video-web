@@ -1074,10 +1074,10 @@
     "none": "No background",
     "none-alt": "Remove all filters",
     "blur": "Blurred",
-    "blur-alt": "Apply blurred background filter",
+    "blur-alt": "Apply the blurred background filter",
     "hmcts": "HMCTS crest",
-    "hmcts-alt": "Apply background with the HMCTS crest",
+    "hmcts-alt": "Apply the background with the HMCTS crest",
     "scts": "SCTS crest",
-    "scts-alt": "Apply background with the SCTS crest"
+    "scts-alt": "Apply the background with the SCTS crest"
   }
 }
