@@ -26,6 +26,7 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
 
     nonJudgeParticipants: ParticipantResponse[];
     judge: ParticipantResponse;
+    staffMembers: ParticipantResponse[];
     endpoints: VideoEndpointResponse[];
     observers: ParticipantResponse[];
     panelMembers: ParticipantResponse[];
@@ -57,6 +58,7 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     initParticipants() {
         this.filterNonJudgeParticipants();
         this.filterJudge();
+        this.filterStaffMember();
         this.filterPanelMembers();
         this.filterObservers();
         this.filterWingers();
@@ -65,7 +67,13 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     }
 
     get participantCount(): number {
-        return this.nonJudgeParticipants.length + this.observers.length + this.panelMembers.length + this.wingers.length;
+        return (
+            this.nonJudgeParticipants.length +
+            this.observers.length +
+            this.panelMembers.length +
+            this.wingers.length +
+            this.staffMembers.length
+        );
     }
 
     isCaseTypeNone(participant: ParticipantResponse): boolean {
@@ -111,7 +119,12 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
 
     protected filterNonJudgeParticipants(): void {
         const nonJudgeParts = this.conference.participants.filter(
-            x => x.role !== Role.Judge && x.role !== Role.JudicialOfficeHolder && x.hearing_role !== HearingRole.OBSERVER
+            x =>
+                x.role !== Role.Judge &&
+                x.role !== Role.JudicialOfficeHolder &&
+                x.hearing_role !== HearingRole.OBSERVER &&
+                x.hearing_role !== HearingRole.PANEL_MEMBER &&
+                x.hearing_role !== HearingRole.STAFF_MEMBER
         );
 
         const interpreterList = nonJudgeParts.filter(
@@ -189,10 +202,15 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
         this.judge = this.conference.participants.find(x => x.role === Role.Judge);
     }
 
+    protected filterStaffMember(): void {
+        this.staffMembers = this.conference.participants.filter(x => x.role === Role.StaffMember);
+    }
+
     protected filterParticipantInConsultation(): void {
         this.participantsInConsultation = [
             this.judge,
             ...this.panelMembers,
+            ...this.staffMembers,
             ...this.wingers,
             ...this.nonJudgeParticipants,
             ...this.observers

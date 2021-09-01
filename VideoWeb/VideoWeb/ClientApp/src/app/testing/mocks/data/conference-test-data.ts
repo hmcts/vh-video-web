@@ -440,9 +440,23 @@ export class ConferenceTestData {
             linked_participants: []
         });
 
+        const participant4 = new ParticipantResponseVho({
+            id: 'e26d741d-2c6f-4de2-808b-f89b181c6d61',
+            name: 'Staff Fudge',
+            status: ParticipantStatus.Available,
+            role: Role.StaffMember,
+            display_name: 'StaffMember Fudge',
+            case_type_group: 'StaffMember',
+            tiled_display_name: 'STAFFMEMBER;Judge Fudge;e26d741d-2c6f-4de2-808b-f89b181c6d61',
+            hearing_role: HearingRole.STAFF_MEMBER,
+            current_room: new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' }),
+            linked_participants: []
+        });
+
         participants.push(participant1);
         participants.push(participant2);
         participants.push(participant3);
+        participants.push(participant4);
         return participants;
     }
 

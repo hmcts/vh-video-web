@@ -113,7 +113,7 @@ describe('SelectHearingLayoutComponent', () => {
 
     it('should return recommended layout', () => {
         component.selectedLayout = undefined;
-        expect(component.getSelectedOrPreferredLayout()).toBe(HearingLayout.Dynamic);
+        expect(component.getSelectedOrPreferredLayout()).toBe(HearingLayout.OnePlus7);
     });
 
     it('should return true when accordian is open', () => {

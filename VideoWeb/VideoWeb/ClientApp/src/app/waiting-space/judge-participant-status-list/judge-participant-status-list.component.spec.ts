@@ -78,13 +78,16 @@ describe('JudgeParticipantStatusListComponent', () => {
         expect(component.panelMembers).toBeDefined();
         expect(component.panelMembers.length).toBe(1);
 
+        expect(component.staffMembers).toBeDefined();
+        expect(component.staffMembers.length).toBe(1);
+
         expect(component.wingers).toBeDefined();
         expect(component.wingers.length).toBe(1);
 
         expect(component.endpoints).toBeDefined();
         expect(component.endpoints.length).toBe(2);
 
-        expect(component.participantCount).toBe(6);
+        expect(component.participantCount).toBe(7);
     });
 
     it('should show input template for change judge display name', () => {

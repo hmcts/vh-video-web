@@ -81,6 +81,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             response.CaseNumber.Should().Be(conference.CaseNumber);
             response.Participants[0].Role.Should().Be(UserRole.Individual);
             response.Participants.Any(x => x.Role == Role.Individual).Should().BeTrue();
+            response.Participants.Any(x => x.Role == Role.StaffMember).Should().BeTrue();
             response.Participants.Any(x => x.Role == Role.Representative).Should().BeTrue();
             response.Participants.Any(x => x.Role == Role.Judge).Should().BeTrue();
             response.Participants.SingleOrDefault(x => x.Role == Role.Judge).TiledDisplayName.Should().Be($"T{0};{judge.DisplayName};{judge.Id}");
@@ -163,6 +164,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         private static ConferenceDetailsResponse CreateValidConferenceResponse(string username = "john@hmcts.net")
         {
             var judge = new ParticipantDetailsResponseBuilder(UserRole.Judge, "Judge").Build();
+            var staffMember = new ParticipantDetailsResponseBuilder(UserRole.StaffMember, "StaffMember").Build();
             var individualDefendant = new ParticipantDetailsResponseBuilder(UserRole.Individual, "Defendant").Build();
             var individualClaimant = new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant").Build();
             var repClaimant = new ParticipantDetailsResponseBuilder(UserRole.Representative, "Claimant").Build();
@@ -170,7 +172,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 new ParticipantDetailsResponseBuilder(UserRole.JudicialOfficeHolder, "Panel Member").Build();
             var participants = new List<ParticipantDetailsResponse>()
             {
-                individualDefendant, individualClaimant, repClaimant, judge, panelMember
+                individualDefendant, individualClaimant, repClaimant, judge, panelMember, staffMember
             };
             var endpoints = Builder<EndpointResponse>.CreateListOfSize(2).Build().ToList();
             if (!string.IsNullOrWhiteSpace(username))

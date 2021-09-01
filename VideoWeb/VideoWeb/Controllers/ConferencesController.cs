@@ -254,6 +254,7 @@ namespace VideoWeb.Controllers
                 Role.Individual,
                 Role.Representative,
                 Role.JudicialOfficeHolder,
+                Role.StaffMember,
                 Role.QuickLinkParticipant,
                 Role.QuickLinkObserver
             };

@@ -277,7 +277,8 @@ namespace VideoWeb.Controllers
                 Role.Representative,
                 Role.JudicialOfficeHolder,
                 Role.QuickLinkParticipant,
-                Role.QuickLinkObserver
+                Role.QuickLinkObserver,
+                Role.StaffMember
             };
 
             try

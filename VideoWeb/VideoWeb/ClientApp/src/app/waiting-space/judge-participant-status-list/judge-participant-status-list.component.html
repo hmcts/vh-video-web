@@ -120,6 +120,33 @@
       </div>
     </div>
   </div>
+    <div *ngIf="staffMembers.length > 0">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+          <h2 class="govuk-heading-s">{{'judge-participant-status-list.staff-members' | translate}}</h2>
+      </div>
+    </div>
+    <div class="vh-border">
+      <div *ngFor="let participant of staffMembers; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
+        <div id="p-row-{{ participant.id }}-staff-member" class="govuk-grid-column-full govuk-!-margin-top-2">
+          <p id="p-{{ participant.id }}-name-staff-member" class="govuk-heading-s govuk-!-margin-bottom-3">
+            {{ participant.name }}
+          </p>
+
+          <div class="govuk-body-s govuk-!-margin-bottom-3">
+            <label
+              id="p-{{ participant.id }}-status-staff-member"
+              class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
+            >
+              {{ getParticipantStatus(participant) }}
+            </label>
+          </div>
+
+          <div class="vh-line" *ngIf="!lastItem"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
     <div *ngIf="nonJudgeParticipants.length > 0 && !hearing.isClosed()">
         <div class="govuk-grid-row">
