@@ -76,4 +76,20 @@ describe('CopyQuickLinkComponent', () => {
         expect(vhoQueryService.getConferenceByIdVHO).toHaveBeenCalledWith(component.conferenceId);
         expect(component.hearingId).toBe(expectedHearingId);
     });
+
+    it('updates tooltip text when copy to clipboard is invoked', () => {
+        component.tooltip = '';
+        component.copyToClipboard();
+        expect(component.tooltip).toBe(component.tooltipCopiedText);
+    });
+
+    it('sets the tooltip text when component is mounted', () => {
+        expect(component.tooltip).toBe(component.tooltipText);
+    });
+
+    it('resets text when reset is invoked', () => {
+        component.tooltip = component.tooltipCopiedText;
+        component.resetTooltipText();
+        expect(component.tooltip).toBe(component.tooltipText);
+    });
 });

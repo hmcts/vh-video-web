@@ -1,7 +1,12 @@
-<div
-class="icons"
+
+<span
+appTooltip
 id="copy-quick-link"
+[text]="tooltip"
+(tooltipShown)="resetTooltipText()"
+class="icons"
 (click)="copyToClipboard(); $event.stopPropagation()"
 >
-  <i class="fad fa-link"></i> Copy join by quick link details to clipboard
-</div>
+  <i class="fad fa-link"></i> 
+  <a [routerLink]="">&nbsp;Join by quick link details to clipboard</a> 
+</span>
