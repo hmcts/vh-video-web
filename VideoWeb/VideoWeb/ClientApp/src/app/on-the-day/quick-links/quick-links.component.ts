@@ -54,8 +54,8 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
                 map(isValid => {
                     if (!isValid) {
                         this.errorService.goToServiceError(
-                            this.translationService.instant('quick-participant-errors.invalid-page.heading'),
-                            this.translationService.instant('quick-participant-errors.invalid-page.body'),
+                            'quick-participant-errors.invalid-page.heading',
+                            'quick-participant-errors.invalid-page.body',
                             false
                         );
                     }

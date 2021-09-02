@@ -8,9 +8,9 @@
 <div class="govuk-grid-row govuk-!-padding-top-4" *ngIf="connectionError">
     <div class="govuk-grid-column-full">
         <div *ngIf="!isExtensionOrFirewallIssue; else firewallError">
-            <h1 *ngIf="hasInternetConnection" class="govuk-heading-xl">{{ errorMessageTitle }}</h1>
+            <h1 *ngIf="hasInternetConnection" class="govuk-heading-xl">{{ errorMessageTitle| translate}}</h1>
             <h1 *ngIf="!hasInternetConnection" class="govuk-heading-xl">{{'error.problem-with-connection' | translate}}</h1>
-            <p *ngIf="hasInternetConnection" class="govuk-body">{{ errorMessageBody }}</p>
+            <p *ngIf="hasInternetConnection" class="govuk-body">{{ errorMessageBody | translate}}</p>
             <p *ngIf="!hasInternetConnection" class="govuk-body">
                 {{'error.you-not-connected' | translate}}
             </p>

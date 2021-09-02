@@ -27,10 +27,7 @@ export class ErrorService {
             const currentPathName = this.locationService.getCurrentPathName();
             const isWaitingRoom = currentPathName.indexOf('waiting-room') > 0;
             if (!online && !isWaitingRoom) {
-                return this.goToServiceError(
-                    this.translateService.instant('error.problem-with-connection'),
-                    this.translateService.instant('error.click-reconnect')
-                );
+                return this.goToServiceError('error.problem-with-connection', 'error.click-reconnect');
             }
         });
     }
@@ -55,10 +52,7 @@ export class ErrorService {
             case 404:
                 return this.goToNotFound();
             default:
-                return this.goToServiceError(
-                    this.translateService.instant('error-service.unexpected-error'),
-                    this.translateService.instant('error-service.click-reconnect')
-                );
+                return this.goToServiceError('error-service.unexpected-error', 'error-service.click-reconnect');
         }
     }
 
@@ -122,10 +116,7 @@ export class ErrorService {
         ];
         const isConnectionError = connectionErrors.filter(x => error.reason.toLowerCase().includes(x.toLowerCase())).length > 0;
         if (isConnectionError) {
-            this.goToServiceError(
-                this.translateService.instant('error-service.problem-with-connection'),
-                this.translateService.instant('error-service.click-reconnect')
-            );
+            this.goToServiceError('error-service.problem-with-connection', 'error-service.click-reconnect');
             return;
         }
         const mediaBlockingIssues = [
@@ -159,11 +150,7 @@ export class ErrorService {
 
         const isMediaBlockingIssue = mediaBlockingIssues.filter(x => error.reason.toLowerCase().includes(x.toLowerCase())).length > 0;
         if (isMediaBlockingIssue) {
-            this.goToServiceError(
-                this.translateService.instant('error-service.camera-mic-blocked'),
-                this.translateService.instant('error-service.please-unblock'),
-                false
-            );
+            this.goToServiceError('error-service.camera-mic-blocked', 'error-service.please-unblock', false);
             return;
         }
 
@@ -179,10 +166,7 @@ export class ErrorService {
             return;
         }
 
-        return this.goToServiceError(
-            this.translateService.instant('error-service.unexpected-error'),
-            this.translateService.instant('error-service.click-reconnect')
-        );
+        return this.goToServiceError('error-service.unexpected-error', 'error-service.click-reconnect');
     }
 
     private saveToSession(title: string, body: string, showReconnect = true): void {
