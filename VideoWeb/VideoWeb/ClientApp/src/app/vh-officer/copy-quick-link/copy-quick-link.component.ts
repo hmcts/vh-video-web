@@ -15,7 +15,7 @@ export class CopyQuickLinkComponent implements OnInit {
 
     async ngOnInit() {
         const response = await this.vhoQueryService.getConferenceByIdVHO(this.conferenceId);
-        this.hearingId = response.hearing_id;
+        this.hearingId = response && response.hearing_id;
     }
 
     copyToClipboard() {

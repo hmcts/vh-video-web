@@ -36,6 +36,10 @@ describe('CopyQuickLinkComponent', () => {
         vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceData));
     });
 
+    afterEach(() => {
+        vhoQueryService.getConferenceByIdVHO.calls.reset();
+    });
+
     it('renders icon to copy to clipboard', () => {
         expect(fixture.debugElement.query(By.css('#copy-quick-link'))).toBeTruthy();
     });

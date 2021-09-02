@@ -1,3 +1,7 @@
-<div id="copy-quick-link" (click)="copyToClipboard()">
-  <em class="fad fa-address-card"></em>
+<div
+class="icons"
+id="copy-quick-link"
+(click)="copyToClipboard(); $event.stopPropagation()"
+>
+  <i class="fad fa-link"></i> Copy join by quick link details to clipboard
 </div>
