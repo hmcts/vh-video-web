@@ -8,7 +8,6 @@ import { Logger } from './logging/logger-base';
 import { SessionStorage } from './session-storage';
 import { ConnectionStatusService } from './connection-status.service';
 import { LocationService } from './location.service';
-import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
     providedIn: 'root'
@@ -18,8 +17,7 @@ export class ErrorService {
         private router: Router,
         private logger: Logger,
         private connectionStatusService: ConnectionStatusService,
-        private locationService: LocationService,
-        private translateService: TranslateService
+        private locationService: LocationService
     ) {
         this.errorMessage = new SessionStorage<ErrorMessage>(this.ERROR_MESSAGE_KEY);
         this.errorCameraMicMessage = new SessionStorage<string>(this.ERROR_CAMERA_MIC_MESSAGE_KEY);
