@@ -104,7 +104,8 @@ export class ParticipantContactDetails {
         return this.participant.case_type_group.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
             this.participant.case_type_group.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
             this.participant.case_type_group.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase() ||
-            this.participant.case_type_group.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase()
+            this.participant.case_type_group.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
+            this.participant.case_type_group.toLowerCase() === CaseTypeGroup.STAFF_MEMBER.toLowerCase()
             ? false
             : true;
     }

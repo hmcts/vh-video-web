@@ -2,5 +2,6 @@ export enum CaseTypeGroup {
     OBSERVER = 'Observer',
     PANEL_MEMBER = 'PanelMember',
     JUDGE = 'Judge',
-    NONE = 'None'
+    NONE = 'None',
+    STAFF_MEMBER = 'StaffMember'
 }
