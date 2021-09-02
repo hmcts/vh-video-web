@@ -237,15 +237,15 @@
       },
       "TestApi.Client": {
         "type": "Direct",
-        "requested": "[1.25.2, )",
-        "resolved": "1.25.2",
-        "contentHash": "wKSnUyBBmLkaG8SzX0NHteELDzTc6h/b1PYx85AS1BFnVygaf4Ng337p636QcHB8WIfjDSC7bvxI4z5Qigwfwg==",
+        "requested": "[1.27.1-pullrequest0099-0002, )",
+        "resolved": "1.27.1-pullrequest0099-0002",
+        "contentHash": "8cJA4Y/tU8jkv0FX1cJi7sQdaORFH3vvhIA228h1jA+9S5LPYdSnsC5zTVS2514ijn+11sdjBwQGkhnWZ93thg==",
         "dependencies": {
           "BookingsApi.Client": "1.24.26",
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
           "Newtonsoft.Json": "12.0.3",
-          "UserApi.Client": "1.24.3",
-          "VideoApi.Client": "1.23.57"
+          "UserApi.Client": "1.25.0",
+          "VideoApi.Client": "1.25.13"
         }
       },
       "UserApi.Client": {

@@ -49,7 +49,12 @@ namespace VideoWeb.AcceptanceTests.Hooks
         private void ClearClosedConferencesForUser(TestApiManager api)
         {
             var response = api.GetConferencesForTodayJudge(_username);
-            var todaysConferences = RequestHelper.Deserialise<List<ConferenceForHostResponse>>(response.Content);
+            string jsonstr = response.Content;
+            jsonstr = jsonstr.Replace("\\", "");
+            jsonstr = jsonstr.Replace("\"[", "[");
+            jsonstr = jsonstr.Replace("]\"", "]");
+
+            var todaysConferences = RequestHelper.Deserialise<List<ConferenceForHostResponse>>(jsonstr);
             if (todaysConferences == null) return;
 
             foreach (var conference in todaysConferences)
