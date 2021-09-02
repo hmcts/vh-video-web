@@ -165,10 +165,11 @@ export class VideoCallService {
         this.pexipAPI.call_tag = Guid.create().toString();
     }
 
-    private handleConnect(stream: MediaStream | URL) {
+    private handleConnect(stream: MediaStream) {
         this.kinlyHeartbeatService.initialiseHeartbeat(this.pexipAPI);
         this.userMediaStreamService.streamModified$.pipe(takeUntil(this.hasDisconnected$)).subscribe(() => this.onStreamModified());
 
+        this.logger.debug(`${this.loggerPrefix} outgoingStream ${stream.id}, ${stream.active}`);
         this.onConnectedSubject.next(new ConnectedCall(stream));
     }
 
