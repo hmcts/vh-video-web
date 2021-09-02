@@ -2,8 +2,6 @@
     appTooltip
     [text]="tooltip"
     (tooltipShown)="resetText()"
-    class="icons"
-    src="/assets/images/share.png"
     [attr.alt]="'copy-id.alt' | translate"
     (click)="copyToClipboard(conference); $event.stopPropagation()">
   <i class="fad fa-address-card" aria-hidden="true"></i>

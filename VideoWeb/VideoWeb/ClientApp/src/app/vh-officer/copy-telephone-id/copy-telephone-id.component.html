@@ -2,8 +2,6 @@
 appTooltip
 [text]="tooltip"
 (tooltipShown)="resetText()"
-class="icons"
-src="/assets/images/phone.png"
 [attr.alt]="'copy-telephone-id.alt' | translate"
 (click)="copyToClipboard(); $event.stopPropagation()">
   <i class="fad fa-phone" aria-hidden="true"></i>

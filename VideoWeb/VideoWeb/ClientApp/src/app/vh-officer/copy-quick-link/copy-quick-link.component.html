@@ -4,7 +4,6 @@ appTooltip
 id="copy-quick-link"
 [text]="tooltip"
 (tooltipShown)="resetTooltipText()"
-class="icons"
 (click)="copyToClipboard(); $event.stopPropagation()"
 >
   <i class="fad fa-link"></i> 
