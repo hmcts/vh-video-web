@@ -285,3 +285,39 @@
   float: left;
   padding-right: 4px;
 }
+
+/* Tooltip container */
+.copyTooltip {
+  position: relative;
+  border-bottom: 1px solid #1d70b8;
+}
+
+/* Tooltip text */
+.copyTooltip .copyTooltipText {
+  font-family: 'GDS Transport', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 16px;
+  visibility: hidden;
+  position: absolute;
+  top: -10px;
+  left: -4px;
+  width: 360px;
+  min-height: 108px;
+  line-height: 28px;
+  background-color: #fff;
+  border: #dedede solid 1px;
+  text-align: left;
+  padding: 8px 12px 12px 30px;
+  border-radius: 3px;
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 3px 6px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 7px 14px;
+  z-index: 1;
+}
+
+.copyTooltip:hover .copyTooltipText {
+  visibility: visible;
+  cursor: pointer;
+  text-decoration: none;
+}
