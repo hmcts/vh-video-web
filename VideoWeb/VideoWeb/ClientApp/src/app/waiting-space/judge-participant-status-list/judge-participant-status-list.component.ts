@@ -26,12 +26,11 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
     litigantInPerson: boolean;
     individualParticipants: ParticipantResponse[];
     showChangeJudgeDisplayName = false;
+    showChangeStaffMemberDisplayName = false;
     newJudgeDisplayName: string;
-
-    observers: ParticipantResponse[];
-    panelMembers: ParticipantResponse[];
-    wingers: ParticipantResponse[];
+    newStaffMemberDisplayName: string;
     isUserJudge: boolean;
+    isStaffMember: boolean;
 
     hearing: Hearing;
 
@@ -61,6 +60,7 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         super.initParticipants();
         this.filterRepresentatives();
         this.isUserJudge = this.loggedInUser?.role === Role.Judge;
+        this.isStaffMember = this.loggedInUser?.role === Role.StaffMember;
     }
 
     getParticipantStatus(participant: ParticipantResponse): string {
@@ -104,21 +104,41 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         this.newJudgeDisplayName = this.judge.display_name;
     }
 
+    changeStaffMemberNameShow(id: string) {
+        this.showChangeStaffMemberDisplayName = true;
+        this.newStaffMemberDisplayName = this.staffMembers.find(p => p.id === id).display_name;
+    }
+
     onEnterJudgeDisplayName(value: string) {
         this.newJudgeDisplayName = value;
+    }
+
+    onEnterStaffMemberDisplayName(value: string) {
+        this.newStaffMemberDisplayName = value;
     }
 
     async saveJudgeDisplayName() {
         this.judge.display_name = this.newJudgeDisplayName;
         this.showChangeJudgeDisplayName = false;
-        await this.updateParticipant();
+        await this.updateJudgeDisplayName();
+    }
+
+    async saveStaffMemberDisplayName(id: string) {
+        const staffMember = this.staffMembers.find(p => p.id === id);
+        staffMember.display_name = this.newStaffMemberDisplayName;
+        this.showChangeStaffMemberDisplayName = false;
+        await this.updateStaffMemberDisplayName(staffMember);
+    }
+
+    cancelStaffMemberDisplayName() {
+        this.showChangeStaffMemberDisplayName = false;
     }
 
     cancelJudgeDisplayName() {
         this.showChangeJudgeDisplayName = false;
     }
 
-    private async updateParticipant() {
+    private async updateJudgeDisplayName() {
         const updateParticipantRequest = new UpdateParticipantDisplayNameRequest({
             fullname: this.judge.name,
             display_name: this.judge.display_name,
@@ -135,6 +155,29 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
             await this.videoWebService.updateParticipantDetails(this.conference.id, this.judge.id, updateParticipantRequest);
         } catch (error) {
             this.logger.error(`[JudgeParticipantStatusList] - There was an error update judge display name ${this.judge.id}`, error);
+        }
+    }
+
+    private async updateStaffMemberDisplayName(staffMember: ParticipantResponse) {
+        const updateParticipantRequest = new UpdateParticipantDisplayNameRequest({
+            fullname: staffMember.name,
+            display_name: staffMember.display_name,
+            representee: staffMember.representee,
+            first_name: staffMember.first_name,
+            last_name: staffMember.last_name
+        });
+
+        try {
+            this.logger.debug(`[JudgeParticipantStatusList] - Attempting to update staff member`, {
+                staffMember: staffMember.id,
+                displayName: staffMember.display_name
+            });
+            await this.videoWebService.updateParticipantDetails(this.conference.id, staffMember.id, updateParticipantRequest);
+        } catch (error) {
+            this.logger.error(
+                `[JudgeParticipantStatusList] - There was an error updating staff member display name ${staffMember.id}`,
+                error
+            );
         }
     }
 }

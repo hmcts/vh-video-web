@@ -16,6 +16,7 @@ import { VideoWebService } from '../../services/api/video-web.service';
 import { Logger } from '../../services/logging/logger-base';
 import { JudgeParticipantStatusListComponent } from './judge-participant-status-list.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { HearingRole } from '../models/hearing-role-model';
 
 describe('JudgeParticipantStatusListComponent', () => {
     const testData = new ConferenceTestData();
@@ -28,6 +29,7 @@ describe('JudgeParticipantStatusListComponent', () => {
     let conference: ConferenceResponse;
     let activatedRoute: ActivatedRoute;
     const translateService = translateServiceSpy;
+    let editedStaffMember;
 
     beforeAll(() => {
         consultationService = consultationServiceSpyFactory();
@@ -59,6 +61,7 @@ describe('JudgeParticipantStatusListComponent', () => {
         );
         component.conference = conference;
         component.ngOnInit();
+        editedStaffMember = conference.participants.find(p => p.hearing_role == HearingRole.STAFF_MEMBER);
     });
 
     afterEach(() => {
@@ -101,13 +104,25 @@ describe('JudgeParticipantStatusListComponent', () => {
         expect(component.showChangeJudgeDisplayName).toBe(false);
     });
 
+    it('should show input template for change staff member display name', () => {
+        component.changeStaffMemberNameShow(editedStaffMember.id);
+        expect(component.showChangeStaffMemberDisplayName).toBe(true);
+
+        expect(component.newStaffMemberDisplayName).toBe(component.staffMembers.find(p => p.id === editedStaffMember.id).display_name);
+    });
+
+    it('should hide input template for change judge display name', () => {
+        component.cancelStaffMemberDisplayName();
+        expect(component.showChangeStaffMemberDisplayName).toBe(false);
+    });
+
     it('should update new judge display name with user input', () => {
         const newName = 'new name';
         component.onEnterJudgeDisplayName(newName);
         expect(component.newJudgeDisplayName).toBe(newName);
     });
 
-    it('should save new judge display name in database', async () => {
+    it('should updateParticipantDetails when save judge new display name', async () => {
         const newName = 'new name';
         component.onEnterJudgeDisplayName(newName);
         await component.saveJudgeDisplayName();
@@ -127,6 +142,35 @@ describe('JudgeParticipantStatusListComponent', () => {
 
         expect(logger.error).toHaveBeenCalled();
     });
+
+    it('should update new staff member display name with user input', () => {
+        const newName = 'new name';
+        component.onEnterStaffMemberDisplayName(newName);
+        expect(component.newStaffMemberDisplayName).toBe(newName);
+    });
+
+    it('should updateParticipantDetails when save staff member new display name', async () => {
+        videoWebService.updateParticipantDetails.calls.reset();
+        const newName = 'new name';
+        component.onEnterStaffMemberDisplayName(newName);
+        await component.saveStaffMemberDisplayName(editedStaffMember.id);
+        expect(component.staffMembers.find(p => p.id === editedStaffMember.id).display_name).toBe(newName);
+        expect(component.showChangeStaffMemberDisplayName).toBe(false);
+        expect(videoWebService.updateParticipantDetails).toHaveBeenCalledTimes(1);
+    });
+
+    it('should log error when unable to save new staff member name', async () => {
+        const error = { error: 'test failure' };
+        const newName = 'new name';
+        component.onEnterStaffMemberDisplayName(newName);
+        videoWebService.updateParticipantDetails.and.rejectWith(error);
+        spyOn(logger, 'error');
+
+        await component.saveStaffMemberDisplayName(editedStaffMember.id);
+
+        expect(logger.error).toHaveBeenCalled();
+    });
+
     it('should get the participant count excluding judge', () => {
         const participantCount = component.participantCount;
         const expected = component.conference.participants.filter(x => x.role !== Role.Judge).length;

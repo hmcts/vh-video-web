@@ -123,7 +123,6 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
                 x.role !== Role.Judge &&
                 x.role !== Role.JudicialOfficeHolder &&
                 x.hearing_role !== HearingRole.OBSERVER &&
-                x.hearing_role !== HearingRole.PANEL_MEMBER &&
                 x.hearing_role !== HearingRole.STAFF_MEMBER
         );
 

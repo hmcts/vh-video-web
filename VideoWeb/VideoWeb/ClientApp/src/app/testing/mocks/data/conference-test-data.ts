@@ -441,13 +441,13 @@ export class ConferenceTestData {
         });
 
         const participant4 = new ParticipantResponseVho({
-            id: 'e26d741d-2c6f-4de2-808b-f89b181c6d61',
-            name: 'Staff Fudge',
+            id: '9F681318-4965-49AF-A887-DED64554429T',
+            name: 'Staff Member',
             status: ParticipantStatus.Available,
             role: Role.StaffMember,
-            display_name: 'StaffMember Fudge',
-            case_type_group: 'StaffMember',
-            tiled_display_name: 'STAFFMEMBER;Judge Fudge;e26d741d-2c6f-4de2-808b-f89b181c6d61',
+            display_name: 'Staff Member',
+            case_type_group: 'Staff Member',
+            tiled_display_name: 'Staff Member;Staff Member;9F681318-4965-49AF-A887-DED64554429T',
             hearing_role: HearingRole.STAFF_MEMBER,
             current_room: new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' }),
             linked_participants: []

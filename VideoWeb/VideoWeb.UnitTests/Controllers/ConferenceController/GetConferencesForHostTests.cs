@@ -67,7 +67,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             {
                 Builder<Participant>.CreateNew().With(x => x.Role = UserRole.Individual).Build(),
                 Builder<Participant>.CreateNew().With(x => x.Role = UserRole.Representative).Build(),
-                Builder<Participant>.CreateNew().With(x => x.Role = UserRole.Judge).Build()
+                Builder<Participant>.CreateNew().With(x => x.Role = UserRole.Judge).Build(),
+                Builder<Participant>.CreateNew().With(x => x.Role = UserRole.StaffMember).Build()
+
             };
             var conferences = Builder<Conference>.CreateListOfSize(10).All()
                 .With(x => x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-60))
