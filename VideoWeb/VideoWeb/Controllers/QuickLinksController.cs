@@ -117,6 +117,8 @@ namespace VideoWeb.Controllers
         [SwaggerOperation("isQuickLinkParticipantAuthorised")]
         [ProducesResponseType((int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.Forbidden)]
+        [Authorize(AppRoles.QuickLinkObserver)]
+        [Authorize(AppRoles.QuickLinkParticipant)]
         public IActionResult IsAuthorised()
         {
             return Ok();

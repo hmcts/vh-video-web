@@ -912,7 +912,9 @@
     "judicial-office-holder": "Daliwr Swydd Farnwrol",
     "judge": "Barnwr",
     "individual": "Unigolyn",
-    "hearing-facilitation-support-(ctrt-clerk)": "Hwylusydd y gwrandawiad (Clerc CTRT)"
+    "hearing-facilitation-support-(ctrt-clerk)": "Hwylusydd y gwrandawiad (Clerc CTRT)",
+    "quick-link-participant": "Cyfranogwr",
+    "quick-link-observer": "Sylwedydd"
   },
   "hearing-role": {
     "intermediary": "Cyfryngwr",

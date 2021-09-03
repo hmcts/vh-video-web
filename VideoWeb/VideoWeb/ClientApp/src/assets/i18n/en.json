@@ -733,7 +733,9 @@
     "judge": "Judge",
     "individual": "Individual",
     "representative": "Representative",
-    "judicial-office-holder": "Judicial Office Holder"
+    "judicial-office-holder": "Judicial Office Holder",
+    "quick-link-participant": "Participant",
+    "quick-link-observer": "Observer"
   },
   "participant-status": {
     "none": "None",

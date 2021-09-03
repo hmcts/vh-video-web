@@ -76,6 +76,10 @@ export class ParticipantContactDetails {
         return this.participant.role === Role.Judge;
     }
 
+    get isQuickLinkUser(): boolean {
+        return this.participant.role === Role.QuickLinkParticipant || this.participant.role === Role.QuickLinkObserver;
+    }
+
     get displayName(): string {
         return this.participant.display_name;
     }
@@ -93,6 +97,10 @@ export class ParticipantContactDetails {
     }
 
     get showCaseRole(): boolean {
+        if (!this.participant.case_type_group) {
+            return false;
+        }
+
         return this.participant.case_type_group.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
             this.participant.case_type_group.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
             this.participant.case_type_group.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase() ||
