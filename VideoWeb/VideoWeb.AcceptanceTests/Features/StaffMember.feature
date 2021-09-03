@@ -3,9 +3,6 @@ Feature: StaffMember
   I want to: See the the Staff Member in the Waiting Room hearing list
   So that: I can know who is in the hearing and what their role is
 
-Background:
-	#Given I have a hearing in 20 minutes time with staffmember
-
 @Smoketest-Extended
 Scenario: Participant waiting room with StaffMember
 	Given I have a hearing in 20 minutes time

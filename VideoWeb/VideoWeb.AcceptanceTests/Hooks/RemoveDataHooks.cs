@@ -49,12 +49,8 @@ namespace VideoWeb.AcceptanceTests.Hooks
         private void ClearClosedConferencesForUser(TestApiManager api)
         {
             var response = api.GetConferencesForTodayJudge(_username);
-            string jsonstr = response.Content;
-            jsonstr = jsonstr.Replace("\\", "");
-            jsonstr = jsonstr.Replace("\"[", "[");
-            jsonstr = jsonstr.Replace("]\"", "]");
-
-            var todaysConferences = RequestHelper.Deserialise<List<ConferenceForHostResponse>>(jsonstr);
+           
+            var todaysConferences = RequestHelper.Deserialise<List<ConferenceForHostResponse>>(FormatSerializedString(response.Content));
             if (todaysConferences == null) return;
 
             foreach (var conference in todaysConferences)
@@ -67,6 +63,16 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 if (ConferenceHasNotBeenDeletedAlready(api, conference.Id))
                     DeleteTheConference(api, hearingId, conference.Id);
             }
+        }
+
+        private static string FormatSerializedString(string content)
+        {
+            var formattedContent = content;
+            formattedContent = formattedContent.Replace("\\", "");
+            formattedContent = formattedContent.Replace("\"[", "[");
+            formattedContent = formattedContent.Replace("]\"", "]");
+
+            return formattedContent;
         }
 
         private static Guid GetTheHearingIdFromTheConference(TestApiManager api, Guid conferenceId)

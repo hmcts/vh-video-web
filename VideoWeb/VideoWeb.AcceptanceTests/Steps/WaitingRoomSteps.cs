@@ -240,7 +240,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Then(@"the (participant|joh|judge) can see the list of staff members")]
-        public void ThenTheHaeringParticipantCanSeeListOfStaffMembers(string _)
+        public void ThenTheHearingParticipantCanSeeListOfStaffMembers(string _)
         {
             _browsers[_c.CurrentUser].Driver.FindElement(By.CssSelector("[id$=-staff-member]")).Displayed.Should().BeTrue();
         }
