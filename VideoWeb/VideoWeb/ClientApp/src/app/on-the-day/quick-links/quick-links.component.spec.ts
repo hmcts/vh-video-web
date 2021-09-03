@@ -12,7 +12,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { RouterTestingModule } from '@angular/router/testing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { By } from '@angular/platform-browser';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { LoadingComponent } from 'src/app/shared/loading/loading.component';
 
 describe('QuickLinksComponent', () => {
@@ -23,7 +23,6 @@ describe('QuickLinksComponent', () => {
     let errorServiceSpy: jasmine.SpyObj<ErrorService>;
     let quickLinksServiceSpy: jasmine.SpyObj<QuickLinksService>;
     let routerSpy: jasmine.SpyObj<Router>;
-    let translateServiceSpy: jasmine.SpyObj<TranslateService>;
 
     let validateQuickLinkSubject: Subject<boolean>;
 
@@ -50,9 +49,6 @@ describe('QuickLinksComponent', () => {
         quickLinksServiceSpy.joinConference.and.returnValue(of(true));
 
         errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError']);
-
-        translateServiceSpy = jasmine.createSpyObj<TranslateService>('TranslateService', ['instant']);
-        translateServiceSpy.instant.and.callFake(key => key);
 
         await TestBed.configureTestingModule({
             declarations: [
@@ -92,10 +88,6 @@ describe('QuickLinksComponent', () => {
                 {
                     provide: QuickLinksService,
                     useValue: quickLinksServiceSpy
-                },
-                {
-                    provide: TranslateService,
-                    useValue: translateServiceSpy
                 }
             ],
             imports: [ReactiveFormsModule, RouterTestingModule]
@@ -287,9 +279,6 @@ describe('QuickLinksComponent', () => {
 
             // Expect
             expect(quickLinksServiceSpy.validateQuickLink).toHaveBeenCalledOnceWith(testHearingId);
-            expect(translateServiceSpy.instant).toHaveBeenCalledTimes(2);
-            expect(translateServiceSpy.instant).toHaveBeenCalledWith(headingKey);
-            expect(translateServiceSpy.instant).toHaveBeenCalledWith(bodyKey);
             expect(errorServiceSpy.goToServiceError).toHaveBeenCalledOnceWith(headingKey, bodyKey, false);
         }));
 
@@ -301,7 +290,6 @@ describe('QuickLinksComponent', () => {
 
             // Expect
             expect(quickLinksServiceSpy.validateQuickLink).toHaveBeenCalledOnceWith(testHearingId);
-            expect(translateServiceSpy.instant).not.toHaveBeenCalled();
             expect(errorServiceSpy.goToServiceError).not.toHaveBeenCalled();
         }));
     });
