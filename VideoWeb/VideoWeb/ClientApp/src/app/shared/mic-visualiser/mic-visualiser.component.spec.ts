@@ -4,7 +4,7 @@ import { By } from '@angular/platform-browser';
 
 import { MicVisualiserComponent } from './mic-visualiser.component';
 
-fdescribe('MicVisualiserComponent', () => {
+describe('MicVisualiserComponent', () => {
     let component: MicVisualiserComponent;
     let fixture: ComponentFixture<MicVisualiserComponent>;
     let changeDetectorSpy: jasmine.SpyObj<ChangeDetectorRef>;
