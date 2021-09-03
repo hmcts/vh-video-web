@@ -4,7 +4,7 @@ import { By } from '@angular/platform-browser';
 
 import { MicVisualiserComponent } from './mic-visualiser.component';
 
-describe('MicVisualiserComponent', () => {
+fdescribe('MicVisualiserComponent', () => {
     let component: MicVisualiserComponent;
     let fixture: ComponentFixture<MicVisualiserComponent>;
     let changeDetectorSpy: jasmine.SpyObj<ChangeDetectorRef>;
@@ -39,12 +39,6 @@ describe('MicVisualiserComponent', () => {
         expect(component.setupStream).toHaveBeenCalledTimes(1);
     });
 
-    it('should setup canvas afterViewInit', () => {
-        component.ngAfterViewInit();
-        fixture.detectChanges();
-        expect(canvasContext.fillStyle).toBe('#008000');
-    });
-
     describe('fillMeter', () => {
         let clearRectSpy: jasmine.SpyObj<any>;
         let fillRectSpy: jasmine.SpyObj<any>;
@@ -61,6 +55,10 @@ describe('MicVisualiserComponent', () => {
             fillRectSpy = spyOn(canvasContext, 'fillRect').and.callFake((x: number, y: number, width: number, height: number) => {
                 fillWidth = width;
             });
+        });
+
+        afterEach(() => {
+            expect(canvasContext.fillStyle).toBe(component.fillColor);
         });
 
         it('should clear and fill canvas with 0 width when feedback is 0', () => {
