@@ -11,7 +11,6 @@ import { ConnectionStatusService } from './connection-status.service';
 import { connectionStatusServiceSpyFactory } from '../testing/mocks/mock-connection-status.service';
 import { LocationService } from './location.service';
 import { Observable, of } from 'rxjs';
-import { translateServiceSpy } from '../testing/mocks/mock-translation.service';
 import { Subject } from 'rxjs';
 
 describe('ErrorService', () => {
@@ -37,7 +36,7 @@ describe('ErrorService', () => {
     }
 
     function createService() {
-        service = new ErrorService(routerSpy, mockLogger, connectionStatusServiceSpy, localtionServiceSpy, translateServiceSpy);
+        service = new ErrorService(routerSpy, mockLogger, connectionStatusServiceSpy, localtionServiceSpy);
     }
 
     // ---------------------
@@ -158,7 +157,6 @@ describe('ErrorService', () => {
         spyOn(service, 'goToServiceError');
         const error = new CallError('Error connecting to conference');
         const conferenceId = Guid.create().toString();
-        translateServiceSpy.instant.calls.reset();
         const text1 = 'error-service.problem-with-connection';
         const text2 = 'error-service.click-reconnect';
         // act
@@ -192,7 +190,6 @@ describe('ErrorService', () => {
         const conferenceId = Guid.create().toString();
         const text1 = 'error-service.camera-mic-blocked';
         const text2 = 'error-service.please-unblock';
-        translateServiceSpy.instant.calls.reset();
 
         // act
         service.handlePexipError(error, conferenceId);
@@ -209,8 +206,6 @@ describe('ErrorService', () => {
         const conferenceId = Guid.create().toString();
         const text1 = 'error-service.unexpected-error';
         const text2 = 'error-service.click-reconnect';
-        translateServiceSpy.instant.calls.reset();
-
         // act
         service.handlePexipError(error, conferenceId);
 
