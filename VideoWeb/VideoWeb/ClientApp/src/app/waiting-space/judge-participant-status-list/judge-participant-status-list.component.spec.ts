@@ -61,7 +61,7 @@ describe('JudgeParticipantStatusListComponent', () => {
         );
         component.conference = conference;
         component.ngOnInit();
-        editedStaffMember = conference.participants.find(p => p.hearing_role == HearingRole.STAFF_MEMBER);
+        editedStaffMember = conference.participants.find(p => p.hearing_role === HearingRole.STAFF_MEMBER);
     });
 
     afterEach(() => {
