@@ -776,7 +776,7 @@
   },
   "copy-telephone-id": {
     "alt": "Copy joining by phone details to clipboard",
-    "display-text": "Copy join by telephone details to clipboard"
+    "display-text": "Copy joining by phone details to clipboard"
   },
   "participant-network-status": {
     "icon-alt": "Open instant messaging chat window arrow"
