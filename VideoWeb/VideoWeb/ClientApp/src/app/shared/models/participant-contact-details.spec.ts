@@ -1,4 +1,4 @@
-import { LinkedParticipantResponse, LinkType } from 'src/app/services/clients/api-client';
+import { LinkedParticipantResponse, LinkType, ParticipantContactDetailsResponseVho, Role } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { ParticipantContactDetails } from './participant-contact-details';
 
@@ -38,13 +38,23 @@ describe('ParticipantContactDetails', () => {
         const p = new ParticipantContactDetails(participant);
         expect(p.hearingRole).toBe('App Representative for test user');
     });
-    it('should return true if case role is none', () => {
+    it('should return false if case role is none', () => {
         const participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(
             'C7163972-A362-4167-8D33-77A64674B31C',
             'MyVenue'
         );
         const participant = participants[0];
         participant.case_type_group = 'None';
+        const p = new ParticipantContactDetails(participant);
+        expect(p.showCaseRole).toBe(false);
+    });
+    it('should return true if case role is null', () => {
+        const participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(
+            'C7163972-A362-4167-8D33-77A64674B31C',
+            'MyVenue'
+        );
+        const participant = participants[0];
+        participant.case_type_group = null;
         const p = new ParticipantContactDetails(participant);
         expect(p.showCaseRole).toBe(false);
     });
@@ -95,5 +105,26 @@ describe('ParticipantContactDetails', () => {
         participant.linked_participants = _linkedParticipants;
         const p = new ParticipantContactDetails(participant);
         expect(p.isInterpreterOrInterpretee).toBe(true);
+    });
+
+    describe('isQuickLinkUser', () => {
+        let participant: ParticipantContactDetailsResponseVho;
+        beforeEach(() => {
+            const participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(
+                'C7163972-A362-4167-8D33-77A64674B31C',
+                'MyVenue'
+            );
+            participant = participants[0];
+        });
+        const trueCases = [Role.QuickLinkParticipant, Role.QuickLinkObserver];
+        const allRoles = Object.values(Role);
+        allRoles.forEach(role => {
+            const expectation = trueCases.includes(role);
+            it(`should return ${expectation} for ${role}`, () => {
+                participant.role = role;
+                const p = new ParticipantContactDetails(participant);
+                expect(p.isQuickLinkUser).toBe(expectation);
+            });
+        });
     });
 });
