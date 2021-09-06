@@ -1,20 +1,20 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using AcceptanceTests.Common.Data.Helpers;
 using AcceptanceTests.Common.Driver.Drivers;
 using AcceptanceTests.Common.Driver.Helpers;
 using AcceptanceTests.Common.Test.Helpers;
 using FluentAssertions;
 using OpenQA.Selenium;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using TechTalk.SpecFlow;
-using VideoWeb.AcceptanceTests.Data;
-using VideoWeb.AcceptanceTests.Helpers;
-using VideoWeb.AcceptanceTests.Pages;
 using TestApi.Contract.Dtos;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Responses;
+using VideoWeb.AcceptanceTests.Data;
+using VideoWeb.AcceptanceTests.Helpers;
+using VideoWeb.AcceptanceTests.Pages;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
