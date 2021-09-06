@@ -13,7 +13,7 @@ import { VideoFilterService } from 'src/app/services/video-filter.service';
 export class VideoFilterComponent implements OnInit, OnDestroy {
     destroy$: Subject<boolean> = new Subject<boolean>();
     private readonly loggerPrefix = '[VideoFilter] -';
-    vBG = BackgroundFilter;
+    filtersAvailable = BackgroundFilter;
     activeFilter: BackgroundFilter;
     filterOn: boolean;
     showOptions: boolean;

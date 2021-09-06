@@ -1,13 +1,7 @@
 <button class="vh-accordion" (click)="toggleDisplayOptions()">
   <span class="govuk-link">
     {{ 'video-filter.title' | translate }}
-    <i
-      class="fas"
-      [ngClass]="showOptions ? 'fa-chevron-up' : 'fa-chevron-down'"
-      id="bg-icon"
-      style="margin-left: 8px"
-      aria-hidden="true"
-    ></i
+    <i class="vh-video-filter-title fas" [ngClass]="showOptions ? 'fa-chevron-up' : 'fa-chevron-down'" id="bg-icon" aria-hidden="true"></i
   ></span>
 </button>
 
@@ -36,8 +30,8 @@
         class="input-hidden"
         name="backgrounds"
         id="bg-blur"
-        [checked]="activeFilter === vBG.blur"
-        [value]="vBG.blur"
+        [checked]="activeFilter === filtersAvailable.blur"
+        [value]="filtersAvailable.blur"
         (change)="this.backgroundChanged($event)"
       />
       <label for="bg-blur">
@@ -53,8 +47,8 @@
         class="input-hidden"
         name="backgrounds"
         id="bg-hmcts"
-        [checked]="activeFilter === vBG.HMCTS"
-        [value]="vBG.HMCTS"
+        [checked]="activeFilter === filtersAvailable.HMCTS"
+        [value]="filtersAvailable.HMCTS"
         (change)="this.backgroundChanged($event)"
       />
       <label for="bg-hmcts">
@@ -70,8 +64,8 @@
         class="input-hidden"
         name="backgrounds"
         id="bg-scot"
-        [checked]="activeFilter === vBG.SCTS"
-        [value]="vBG.SCTS"
+        [checked]="activeFilter === filtersAvailable.SCTS"
+        [value]="filtersAvailable.SCTS"
         (change)="this.backgroundChanged($event)"
       />
       <label for="bg-scot">

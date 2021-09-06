@@ -12,6 +12,9 @@ import { SessionStorage } from './session-storage';
 export class VideoFilterService {
     private readonly loggerPrefix = '[VideoFilterService] -';
 
+    private readonly canvasWidth = 1280;
+    private readonly canvasHeight = 720;
+
     private readonly preferredFilterCache: SessionStorage<BackgroundFilter>;
     readonly PREFERRED_FILTER_KEY = 'vh.preferred.filter';
 
@@ -67,8 +70,8 @@ export class VideoFilterService {
         this.videoElement.srcObject = stream;
 
         this.canvasElement = document.createElement('canvas');
-        this.canvasElement.width = 1280;
-        this.canvasElement.height = 720;
+        this.canvasElement.width = this.canvasWidth;
+        this.canvasElement.height = this.canvasHeight;
         this.canvasCtx = this.canvasElement.getContext('2d');
 
         this.logger.debug(`${this.loggerPrefix} starting filtered stream`);
@@ -83,8 +86,8 @@ export class VideoFilterService {
                     this.logger.error(`${this.loggerPrefix} failed to send image to self segmentation mask`, err);
                 }
             },
-            width: 1280,
-            height: 720
+            width: this.canvasWidth,
+            height: this.canvasHeight
         });
         camera.start();
     }
