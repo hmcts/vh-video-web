@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { ClipboardService } from 'ngx-clipboard';
 import { VhoQueryService } from '../services/vho-query-service.service';
 
@@ -14,17 +15,21 @@ export class CopyQuickLinkComponent implements OnInit {
     tooltipCopiedText = 'Join by quick link details copied to clipboard';
     tooltipText = 'Copy join by quick link details to clipboard';
 
-    constructor(private clipBoardService: ClipboardService, private vhoQueryService: VhoQueryService) {}
+    constructor(
+        private clipBoardService: ClipboardService,
+        private vhoQueryService: VhoQueryService,
+        private translateService: TranslateService
+    ) {}
 
     async ngOnInit() {
-        this.tooltip = this.tooltipText;
+        this.tooltip = this.translateService.instant('copy-quick-link.display-text');
         const response = await this.vhoQueryService.getConferenceByIdVHO(this.conferenceId);
         this.hearingId = response && response.hearing_id;
     }
 
     copyToClipboard() {
         this.clipBoardService.copyFromContent(`${this.getbaseUrl()}/quickjoin/${this.hearingId}`);
-        this.tooltip = this.tooltipCopiedText;
+        this.tooltip = this.translateService.instant('copy-quick-link.tooltip-copied');
     }
 
     getbaseUrl() {
@@ -32,6 +37,6 @@ export class CopyQuickLinkComponent implements OnInit {
     }
 
     resetTooltipText() {
-        this.tooltip = this.tooltipText;
+        this.tooltip = this.translateService.instant('copy-quick-link.display-text');
     }
 }

@@ -799,6 +799,10 @@
     "alt": "Copy conference id icon",
     "display-text": "Copy hearing ID to clipboard"
   },
+  "copy-quick-link":{
+    "tooltip-copied": "Join by quick link details copied to clipboard",
+    "display-text": "Copy join by quick link details to clipboard"
+  },
   "admin-im-list": {
     "judge-icon-alt": "Judge icon",
     "representing": "Representing",

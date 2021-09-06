@@ -1,5 +1,6 @@
 import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { TranslateService } from '@ngx-translate/core';
 import { ClipboardService } from 'ngx-clipboard';
 import { ConferenceResponseVho } from 'src/app/services/clients/api-client';
 import { VhoQueryService } from '../services/vho-query-service.service';
@@ -10,16 +11,19 @@ describe('CopyQuickLinkComponent', () => {
     let fixture: ComponentFixture<CopyQuickLinkComponent>;
     let clipboardService: any;
     let vhoQueryService: any;
+    let translateService: any;
 
     beforeEach(async () => {
         const coursesServiceSpy = jasmine.createSpyObj('ClipboardService', ['copyFromContent']);
         const vhoQueryServiceSpy = jasmine.createSpyObj('VhoQueryService', ['getConferenceByIdVHO']);
+        const translateServiceSpy = jasmine.createSpyObj('TranslateService', ['instant']);
 
         await TestBed.configureTestingModule({
             declarations: [CopyQuickLinkComponent],
             providers: [
                 { provide: ClipboardService, useValue: coursesServiceSpy },
-                { provide: VhoQueryService, useValue: vhoQueryServiceSpy }
+                { provide: VhoQueryService, useValue: vhoQueryServiceSpy },
+                { provide: TranslateService, useValue: translateServiceSpy }
             ]
         }).compileComponents();
     });
@@ -30,6 +34,7 @@ describe('CopyQuickLinkComponent', () => {
         fixture.detectChanges();
         clipboardService = TestBed.inject(ClipboardService);
         vhoQueryService = TestBed.inject(VhoQueryService);
+        translateService = TestBed.inject(TranslateService);
         const conferenceData = new ConferenceResponseVho({
             hearing_id: '555555'
         });
@@ -38,6 +43,7 @@ describe('CopyQuickLinkComponent', () => {
 
     afterEach(() => {
         vhoQueryService.getConferenceByIdVHO.calls.reset();
+        translateService.instant.calls.reset();
     });
 
     it('renders icon to copy to clipboard', () => {
@@ -79,17 +85,29 @@ describe('CopyQuickLinkComponent', () => {
 
     it('updates tooltip text when copy to clipboard is invoked', () => {
         component.tooltip = '';
+        const expectedToolTipValue = 'expected value';
+        translateService.instant.and.returnValue(expectedToolTipValue);
         component.copyToClipboard();
-        expect(component.tooltip).toBe(component.tooltipCopiedText);
+        expect(component.tooltip).toBe(expectedToolTipValue);
+        expect(translateService.instant).toHaveBeenCalledWith('copy-quick-link.tooltip-copied');
     });
 
-    it('sets the tooltip text when component is mounted', () => {
-        expect(component.tooltip).toBe(component.tooltipText);
+    it('sets the tooltip text when component is mounted', async () => {
+        const expectedToolTipValue = 'expected value';
+        translateService.instant.and.returnValue(expectedToolTipValue);
+        component.ngOnInit();
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(component.tooltip).toBe(expectedToolTipValue);
+        expect(translateService.instant).toHaveBeenCalledWith('copy-quick-link.display-text');
     });
 
     it('resets text when reset is invoked', () => {
-        component.tooltip = component.tooltipCopiedText;
+        component.tooltip = 'some other text';
+        const expectedToolTipValue = 'expected value';
+        translateService.instant.and.returnValue(expectedToolTipValue);
         component.resetTooltipText();
-        expect(component.tooltip).toBe(component.tooltipText);
+        expect(component.tooltip).toBe(expectedToolTipValue);
+        expect(translateService.instant).toHaveBeenCalledWith('copy-quick-link.display-text');
     });
 });
