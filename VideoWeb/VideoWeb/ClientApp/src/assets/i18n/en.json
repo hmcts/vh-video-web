@@ -771,7 +771,8 @@
     "start": "start"
   },
   "copy-telephone-id": {
-    "alt": "Copy joining by phone details to clipboard"
+    "alt": "Copy joining by phone details to clipboard",
+    "display-text": "Copy join by telephone details to clipboard"
   },
   "participant-network-status": {
     "icon-alt": "Open instant messaging chat window arrow"
@@ -795,7 +796,8 @@
     "cancel-filters-alt": "Cancel filters"
   },
   "copy-id": {
-    "alt": "Copy conference id icon"
+    "alt": "Copy conference id icon",
+    "display-text": "Copy hearing ID to clipboard"
   },
   "admin-im-list": {
     "judge-icon-alt": "Judge icon",

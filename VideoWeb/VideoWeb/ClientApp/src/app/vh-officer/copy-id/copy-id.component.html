@@ -5,5 +5,5 @@
     [attr.alt]="'copy-id.alt' | translate"
     (click)="copyToClipboard(conference); $event.stopPropagation()">
   <em class="fad fa-address-card" aria-hidden="true"></em>
-  <a [routerLink]="">&nbsp;Copy hearing ID to clipboard</a>
+  <a [routerLink]="">{{'copy-id.display-text' | translate}}</a>
 </span>

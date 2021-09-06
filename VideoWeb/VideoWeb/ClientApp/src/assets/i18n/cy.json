@@ -1038,7 +1038,8 @@
     "cancel-filters-alt": "Canslo'r ffilteri"
   },
   "copy-telephone-id": {
-    "alt": "Copïo'r manylion ymuno dros y ffôn i'r clipfwrdd"
+    "alt": "Copïo'r manylion ymuno dros y ffôn i'r clipfwrdd",
+    "display-text": "Copy join by telephone details to clipboard"
   },
   "copy-id": {
     "alt": "Eicon copïo rhif adnabod (ID) y gynhadledd"
