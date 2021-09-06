@@ -945,7 +945,9 @@
     "app": "Apelydd",
     "video-access-point": "Pwynt mynediad fideo",
     "solicitor": "Cyfreithiwr",
-    "barrister": "Bargyfreithiwr"
+    "barrister": "Bargyfreithiwr",
+    "quick-link-participant": "Cyfranogwr",
+    "quick-link-observer": "Sylwedydd"
   },
   "case-type-group": {
     "respondent": "Atebydd",

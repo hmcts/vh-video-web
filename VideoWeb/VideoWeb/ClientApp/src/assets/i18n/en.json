@@ -658,7 +658,9 @@
     "winger": "Winger",
     "witness": "Witness",
     "intermediary": "Intermediary",
-    "video-access-point": "Video access point"
+    "video-access-point": "Video access point",
+    "quick-link-participant": "Participant",
+    "quick-link-observer": "Observer"
   },
   "case-role": {
     "appellant": "Appellant",
