@@ -124,9 +124,8 @@
                                 class="govuk-!-padding-top-1 govuk-!-padding-bottom-1 govuk-!-padding-right-2 govuk-!-padding-left-2 govuk-tag"
                                 [ngClass]="{
                   'govuk-tag--grey': hearing.isClosed(),
-                  'govuk-tag--blue': hearing.isPaused(),
-                  'govuk-tag--yellow': hearing.isSuspended(),
-                  'govuk-tag--turquoise': hearing.isInSession()
+                  'govuk-tag': hearing.isPaused() || hearing.isInSession(),
+                  'govuk-tag--red': hearing.isSuspended()
                 }">{{ 'conference-status.' + stringToTranslateId(hearing.status) | translate }}</span>
                         </div>
                     </td>
