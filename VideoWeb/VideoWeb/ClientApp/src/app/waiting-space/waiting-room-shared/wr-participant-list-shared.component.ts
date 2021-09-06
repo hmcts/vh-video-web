@@ -71,7 +71,7 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     }
 
     isCaseTypeNone(participant: ParticipantResponse): boolean {
-        return participant.case_type_group === 'None';
+        return !participant.case_type_group || participant.case_type_group === 'None';
     }
 
     executeTeardown(): void {
@@ -154,7 +154,7 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     }
 
     stringToTranslateId(str: string) {
-        return str.replace(/\s/g, '-').toLowerCase();
+        return str?.replace(/\s/g, '-').toLowerCase();
     }
 
     getInterpreteeName(interpreterId: string) {
