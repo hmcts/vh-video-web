@@ -34,11 +34,6 @@ namespace VideoWeb.Mappings
                 return Role.Judge;
             }
             
-            if (user.IsInRole(AppRoles.StaffMember))
-            {
-                return Role.StaffMember;
-            }
-            
             if (user.IsInRole(AppRoles.JudicialOfficeHolderRole))
             {
                 return Role.JudicialOfficeHolder;
