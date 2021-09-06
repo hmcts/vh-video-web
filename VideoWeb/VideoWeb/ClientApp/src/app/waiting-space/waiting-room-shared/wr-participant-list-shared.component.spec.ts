@@ -416,5 +416,21 @@ describe('WaitingRoom ParticipantList Base', () => {
 
             expect(hearingRoleText).toEqual('hearing-role.litigant-in-person');
         });
+
+        it('getHearingRole should return contain the hearing role when displaying a participant', () => {
+            const participant = new ParticipantResponse();
+            participant.hearing_role = 'Quick link participant';
+            const hearingRoleText = component.getHearingRole(participant);
+
+            expect(hearingRoleText).toEqual('hearing-role.quick-link-participant');
+        });
+
+        it('getHearingRole should return contain the hearing role when displaying a participant', () => {
+            const participant = new ParticipantResponse();
+            participant.hearing_role = 'Quick link observer';
+            const hearingRoleText = component.getHearingRole(participant);
+
+            expect(hearingRoleText).toEqual('hearing-role.quick-link-observer');
+        });
     });
 });
