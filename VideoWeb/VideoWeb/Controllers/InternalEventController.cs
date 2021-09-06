@@ -19,6 +19,7 @@ using Task = System.Threading.Tasks.Task;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
 using System.Text.Json;
+using VideoWeb.Helpers.Interfaces;
 
 namespace VideoWeb.Controllers
 {
@@ -29,20 +30,20 @@ namespace VideoWeb.Controllers
     public class InternalEventController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
-        private readonly IEventHandlerFactory _eventHandlerFactory;
+        private readonly IParticipantsUpdatedEventNotifier _participantsUpdatedEventNotifier;
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<InternalEventController> _logger;
         private readonly IMapperFactory _mapperFactory;
 
         public InternalEventController(
             IVideoApiClient videoApiClient,
-            IEventHandlerFactory eventHandlerFactory,
+            IParticipantsUpdatedEventNotifier participantsUpdatedEventNotifier,
             IConferenceCache conferenceCache,
             ILogger<InternalEventController> logger,
             IMapperFactory mapperFactory)
         {
             _videoApiClient = videoApiClient;
-            _eventHandlerFactory = eventHandlerFactory;
+            _participantsUpdatedEventNotifier = participantsUpdatedEventNotifier;
             _conferenceCache = conferenceCache;
             _logger = logger;
             _mapperFactory = mapperFactory;
@@ -92,21 +93,7 @@ namespace VideoWeb.Controllers
                     conference.UpdateParticipant(mappedUpdateParticipant);
                 });
 
-
-                CallbackEvent callbackEvent = new CallbackEvent() 
-                { 
-                    ConferenceId = conferenceId, 
-                    EventType = EventType.ParticipantsUpdated, 
-                    TimeStampUtc = DateTime.UtcNow,
-                    Participants = conference.Participants.Select(participant => participantsToResponseMapper.Map(participant, conference)).ToList()
-                };
-
-                _logger.LogTrace($"Updating conference in cache: {JsonSerializer.Serialize(conference)}");
-                await _conferenceCache.UpdateConferenceAsync(conference);
-
-                _logger.LogTrace($"Publishing event to UI: {JsonSerializer.Serialize(callbackEvent)}");
-                await PublishEventToUi(callbackEvent);
-
+                await _participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference);
                 _logger.LogDebug($"ParticipantsUpdated finished. ConferenceId: {conferenceId}");
                 return NoContent();
             }
@@ -116,16 +103,6 @@ namespace VideoWeb.Controllers
                     e.StatusCode);
                 return StatusCode(e.StatusCode, e.Response);
             }
-        }
-        private Task PublishEventToUi(CallbackEvent callbackEvent)
-        {
-            if (callbackEvent == null)
-            {
-                return Task.CompletedTask;
-            }
-
-            var handler = _eventHandlerFactory.Get(callbackEvent.EventType);
-            return handler.HandleAsync(callbackEvent);
         }
     }
 
