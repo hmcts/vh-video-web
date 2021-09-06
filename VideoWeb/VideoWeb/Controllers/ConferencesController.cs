@@ -190,7 +190,9 @@ namespace VideoWeb.Controllers
                 Role.Individual,
                 Role.Representative,
                 Role.VideoHearingsOfficer,
-                Role.JudicialOfficeHolder
+                Role.JudicialOfficeHolder,
+                Role.QuickLinkParticipant,
+                Role.QuickLinkObserver
             };
 
             conference.Participants = conference
