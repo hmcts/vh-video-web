@@ -603,8 +603,6 @@ export class ApiClient {
                     if (Array.isArray(resultData200)) {
                         result200 = [] as any;
                         for (let item of resultData200) result200!.push(ConferenceForHostResponse.fromJS(item));
-                    } else {
-                        result200 = <any>null;
                     }
                     return _observableOf(result200);
                 })
