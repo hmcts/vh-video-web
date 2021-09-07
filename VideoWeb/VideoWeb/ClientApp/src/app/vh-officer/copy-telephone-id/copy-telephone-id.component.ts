@@ -3,8 +3,7 @@ import { ClipboardService } from 'ngx-clipboard';
 
 @Component({
     selector: 'app-copy-telephone-id',
-    templateUrl: './copy-telephone-id.component.html',
-    styleUrls: ['./copy-telephone-id.component.scss']
+    templateUrl: './copy-telephone-id.component.html'
 })
 export class CopyTelephoneIdComponent implements OnInit {
     @Input() telephoneNumber: string;
