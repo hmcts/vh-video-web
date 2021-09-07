@@ -136,7 +136,8 @@ describe('ParticipantStatusComponent', () => {
     });
 
     it('should update participant status when participant same judge in different conference is in a hearing', () => {
-        participantStatusReaderSpy.inAnotherHearingText = 'In another hearing';
+        const inAnotherHearingText = 'In Another Hearing';
+        participantStatusReaderSpy.inAnotherHearingText = inAnotherHearingText;
         component.setupEventHubSubscribers();
         const judge1 = participants[2];
         const judge1InAnotherHearing = participants[3];
@@ -152,7 +153,7 @@ describe('ParticipantStatusComponent', () => {
         participantStatusSubjectMock.next(message);
 
         expect(component.participants[0].status).toBe(ParticipantStatus.Disconnected);
-        expect(component.participants[0].statusText).toBe('In another hearing');
+        expect(component.participants[0].statusText).toBe(inAnotherHearingText);
     });
 
     it('should update participant status when participant same judge is not in different hearing', () => {
@@ -249,12 +250,12 @@ describe('ParticipantStatusComponent', () => {
         expect(component.hearingVenueName).toBe('venue');
     });
 
-    fdescribe('setParticipantStatus', () => {
+    describe('setParticipantStatus', () => {
         hostRoles.forEach(role => {
             it(`should return "in another hearing text" if participant is a ${role}`, () => {
                 const participant = participants[0];
                 participant.role = role;
-                participant.judge_in_another_hearing = true;
+                participant.host_in_another_hearing = true;
                 const participantContactDetails = new ParticipantContactDetails(participant);
 
                 component.setParticipantStatus(ParticipantStatus.InHearing, participantContactDetails);
@@ -267,7 +268,7 @@ describe('ParticipantStatusComponent', () => {
             it(`should return get status for ${role} when not in a hearing`, () => {
                 const participant = participants[0];
                 participant.role = role;
-                participant.judge_in_another_hearing = false;
+                participant.host_in_another_hearing = false;
                 const participantContactDetails = new ParticipantContactDetails(participant);
 
                 component.setParticipantStatus(ParticipantStatus.InHearing, participantContactDetails);

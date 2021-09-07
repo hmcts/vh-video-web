@@ -24,7 +24,7 @@ describe('ParticipantContactDetails', () => {
         expect(participant.contact_telephone).toBe(p.contactTelephone);
         expect(p.initialedName).toBe('C Green');
         expect(participant.ref_id).toBe(p.refId);
-        expect(participant.judge_in_another_hearing).toBe(p.judgeInAnotherHearing);
+        expect(participant.host_in_another_hearing).toBe(p.hostInAnotherHearing);
         expect(p.isJudge).toBe(false);
         expect(p.showCaseRole).toBe(true);
     });

@@ -84,7 +84,7 @@ namespace VideoWeb.Contract.Responses
         /// <summary>
         /// The Judge is In Another Hearing
         /// </summary>
-        public bool JudgeInAnotherHearing { get; set; }
+        public bool HostInAnotherHearing { get; set; }
 
         /// <summary>
         /// The participant represented by the representative

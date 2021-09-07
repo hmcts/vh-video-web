@@ -19,7 +19,7 @@ describe('ParticipantInfoTooltipComponent', () => {
         component = fixture.componentInstance;
     });
 
-    fit('should show case type group', () => {
+    it('should show case type group', () => {
         const participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(
             'C7163972-A362-4167-8D33-77A64674B31C',
             'MyVenue'
@@ -35,7 +35,7 @@ describe('ParticipantInfoTooltipComponent', () => {
         expect(showCaseRoleElement).toBeTruthy();
     });
 
-    fit('should show case type group', () => {
+    it('should show case type group', () => {
         const participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(
             'C7163972-A362-4167-8D33-77A64674B31C',
             'MyVenue'

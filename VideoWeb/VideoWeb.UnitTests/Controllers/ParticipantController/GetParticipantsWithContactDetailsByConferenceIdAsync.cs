@@ -139,7 +139,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             response.ContactEmail.Should().Be(participant.ContactEmail);
             response.ContactTelephone.Should().Be(participant.ContactTelephone);
             response.HearingVenueName.Should().Be("MyVenue");
-            response.JudgeInAnotherHearing.Should().Be(isInAnotherHearing);
+            response.HostInAnotherHearing.Should().Be(isInAnotherHearing);
             response.Representee.Should().Be(participant.Representee);
         }
         
