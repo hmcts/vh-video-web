@@ -121,7 +121,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     getPrivateConsultationParticipants(): ParticipantListItem[] {
         return this.participantsInConsultation
             .filter(c => c.hearing_role !== HearingRole.WITNESS 
-                && (c => c.role.toUpperCase() !== Role.QuickLinkObserver.toUpperCase() && c.hearing_role !== HearingRole.OBSERVER))
+                && (c => c.role.toUpperCase() !== Role.QuickLinkObserver.toUpperCase() && c.hearing_role !== HearingRole.QUICK_LINK_OBSERVER))
             .filter(c => c.hearing_role !== HearingRole.INTERPRETER)
             .filter(
                 c =>
