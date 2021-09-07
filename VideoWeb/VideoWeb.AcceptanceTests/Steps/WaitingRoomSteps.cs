@@ -1,21 +1,20 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using AcceptanceTests.Common.Data.Helpers;
 using AcceptanceTests.Common.Driver.Drivers;
 using AcceptanceTests.Common.Driver.Helpers;
 using AcceptanceTests.Common.Test.Helpers;
 using FluentAssertions;
 using OpenQA.Selenium;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using TechTalk.SpecFlow;
-using VideoWeb.AcceptanceTests.Data;
-using VideoWeb.AcceptanceTests.Helpers;
-using VideoWeb.AcceptanceTests.Pages;
 using TestApi.Contract.Dtos;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Responses;
-using FluentAssertions.Execution;
+using VideoWeb.AcceptanceTests.Data;
+using VideoWeb.AcceptanceTests.Helpers;
+using VideoWeb.AcceptanceTests.Pages;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -238,6 +237,12 @@ namespace VideoWeb.AcceptanceTests.Steps
                 _browsers[_c.CurrentUser].TextOf(JudgeParticipantPanel.ParticipantStatus(participant.Id)).ToUpperInvariant().Should()
                     .BeEquivalentTo("Not signed in".ToUpperInvariant());
             }
+        }
+
+        [Then(@"the (participant|joh|judge) can see the list of staff members")]
+        public void ThenTheHearingParticipantCanSeeListOfStaffMembers(string _)
+        {
+            _browsers[_c.CurrentUser].Driver.FindElement(By.CssSelector("[id$=-staff-member]")).Displayed.Should().BeTrue();
         }
 
         [Then(@"the user can see the hearing is (.*) title")]
