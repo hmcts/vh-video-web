@@ -486,6 +486,7 @@
   "individual-participant-status-list": {
     "crest-icon-alt": "Arwyddlun Gwasanaeth Llysoedd a Thribiwnlysoedd EM",
     "panel-members": "Aelodau'r panel",
+    "staff-members": "Aelodau'r staff",
     "wingers": "Asgellwyr",
     "participants": "Cyfranogwyr",
     "for": "",
@@ -717,6 +718,7 @@
     "connected": "Wedi cysylltu",
     "wingers": "Asgellwyr",
     "panel-members": "Aelodau'r panel",
+    "staff-members": "Aelodau'r staff",
     "participants": "Cyfranogwyr",
     "video-access-points": "Pwyntiau mynediad fideo",
     "observers": "Sylwebwyr",
