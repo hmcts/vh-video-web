@@ -6,6 +6,6 @@ id="copy-quick-link"
 (tooltipShown)="resetTooltipText()"
 (click)="copyToClipboard(); $event.stopPropagation()"
 >
-  <em class="fad fa-link"></em> 
+  <i class="fad fa-link" aria-hidden="true"></i> 
   <a class="copy-link-text" [routerLink]="">{{tooltip}}</a> 
 </span>
