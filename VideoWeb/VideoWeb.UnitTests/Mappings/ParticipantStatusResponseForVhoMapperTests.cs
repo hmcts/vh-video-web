@@ -30,9 +30,9 @@ namespace VideoWeb.UnitTests.Mappings
                 judge1, judge2, judge3
             };
 
-            var judgesInHearings = new List<JudgeInHearingResponse>
+            var judgesInHearings = new List<ParticipantInHearingResponse>
             {
-                new JudgeInHearingResponse
+                new ParticipantInHearingResponse
                     {Id = judge3DifferentHearing.Id, Username = judge3.Username, Status = ParticipantState.InHearing}
             };
 
@@ -58,9 +58,9 @@ namespace VideoWeb.UnitTests.Mappings
                 judge1, judge2, judge3
             };
 
-            var judgesInHearings = new List<JudgeInHearingResponse>
+            var judgesInHearings = new List<ParticipantInHearingResponse>
             {
-                new JudgeInHearingResponse{ Id = judge3DifferentHearing.Id, Username = judge3.Username, Status = ParticipantState.InHearing }
+                new ParticipantInHearingResponse{ Id = judge3DifferentHearing.Id, Username = judge3.Username, Status = ParticipantState.InHearing }
             };
 
             var results = _sut.Map(conference, judgesInHearings).ToList();

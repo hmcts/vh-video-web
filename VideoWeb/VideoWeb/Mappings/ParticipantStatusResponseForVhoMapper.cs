@@ -9,11 +9,11 @@ using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
 
 namespace VideoWeb.Mappings
 {
-    public class ParticipantStatusResponseForVhoMapper : IMapTo<Conference, IEnumerable<JudgeInHearingResponse>, IEnumerable<ParticipantContactDetailsResponseVho>>
+    public class ParticipantStatusResponseForVhoMapper : IMapTo<Conference, IEnumerable<ParticipantInHearingResponse>, IEnumerable<ParticipantContactDetailsResponseVho>>
     {
         public IEnumerable<ParticipantContactDetailsResponseVho> Map(
             Conference conference,
-            IEnumerable<JudgeInHearingResponse> judgesInHearings)
+            IEnumerable<ParticipantInHearingResponse> judgesInHearings)
         {
             var conferenceId = conference.Id;
             var hearingVenueName = conference.HearingVenueName;
