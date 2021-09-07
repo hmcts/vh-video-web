@@ -1,5 +1,5 @@
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
-import { ParticipantResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ParticipantContactDetailsResponseVho, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { Participant } from 'src/app/shared/models/participant';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -23,10 +23,8 @@ describe('ParticipantStatusComponent', () => {
     const eventsService = eventsServiceSpy;
     let participantStatusReaderSpy: jasmine.SpyObj<ParticipantStatusReader>;
     const testData = new ConferenceTestData();
-    const participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(
-        '174DFEFB-8EF2-4093-801D-621DF852021D',
-        'MyVenue'
-    );
+    const hostRoles = [Role.Judge, Role.StaffMember];
+    let participants: ParticipantContactDetailsResponseVho[];
     let component: ParticipantStatusComponent;
 
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
@@ -39,12 +37,17 @@ describe('ParticipantStatusComponent', () => {
         'returnHomeIfUnauthorised'
     ]);
 
-    participantStatusReaderSpy = jasmine.createSpyObj<ParticipantStatusReader>('ParticipantStatusReader', [
-        'getStatusAsText',
-        'getStatusAsTextForJudge'
-    ]);
+    participantStatusReaderSpy = jasmine.createSpyObj<ParticipantStatusReader>(
+        'ParticipantStatusReader',
+        ['getStatusAsText', 'getStatusAsTextForHost'],
+        { inAnotherHearingText: 'In Another Hearing' }
+    );
 
     beforeEach(() => {
+        participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(
+            '174DFEFB-8EF2-4093-801D-621DF852021D',
+            'MyVenue'
+        );
         videoWebServiceSpy.getParticipantsWithContactDetailsByConferenceId.and.returnValue(Promise.resolve(participants));
 
         component = new ParticipantStatusComponent(
@@ -153,7 +156,7 @@ describe('ParticipantStatusComponent', () => {
     });
 
     it('should update participant status when participant same judge is not in different hearing', () => {
-        participantStatusReaderSpy.getStatusAsTextForJudge.and.returnValue('Unavailable');
+        participantStatusReaderSpy.getStatusAsTextForHost.and.returnValue('Unavailable');
         component.setupEventHubSubscribers();
         const judge1 = participants[2];
         const judge1InAnotherHearing = participants[3];
@@ -244,5 +247,33 @@ describe('ParticipantStatusComponent', () => {
     it('should set venue name', () => {
         component.hearingVenueName = 'venue';
         expect(component.hearingVenueName).toBe('venue');
+    });
+
+    fdescribe('setParticipantStatus', () => {
+        hostRoles.forEach(role => {
+            it(`should return "in another hearing text" if participant is a ${role}`, () => {
+                const participant = participants[0];
+                participant.role = role;
+                participant.judge_in_another_hearing = true;
+                const participantContactDetails = new ParticipantContactDetails(participant);
+
+                component.setParticipantStatus(ParticipantStatus.InHearing, participantContactDetails);
+
+                expect(participantContactDetails.statusText).toBe(participantStatusReaderSpy.inAnotherHearingText);
+            });
+        });
+
+        hostRoles.forEach(role => {
+            it(`should return get status for ${role} when not in a hearing`, () => {
+                const participant = participants[0];
+                participant.role = role;
+                participant.judge_in_another_hearing = false;
+                const participantContactDetails = new ParticipantContactDetails(participant);
+
+                component.setParticipantStatus(ParticipantStatus.InHearing, participantContactDetails);
+
+                expect(participantStatusReaderSpy.getStatusAsTextForHost).toHaveBeenCalled();
+            });
+        });
     });
 });
