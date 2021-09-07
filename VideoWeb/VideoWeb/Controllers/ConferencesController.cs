@@ -254,10 +254,10 @@ namespace VideoWeb.Controllers
             var displayRoles = new List<Role>
             {
                 Role.Judge,
-                Role.StaffMember,
                 Role.Individual,
                 Role.Representative,
                 Role.JudicialOfficeHolder,
+                Role.StaffMember,
                 Role.QuickLinkParticipant,
                 Role.QuickLinkObserver
             };

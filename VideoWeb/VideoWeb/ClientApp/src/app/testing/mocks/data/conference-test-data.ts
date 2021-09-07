@@ -449,7 +449,7 @@ export class ConferenceTestData {
             case_type_group: 'Staff Member',
             tiled_display_name: 'Staff Member;Staff Member;9F681318-4965-49AF-A887-DED64554429T',
             hearing_role: HearingRole.STAFF_MEMBER,
-            current_room: new RoomSummaryResponse(),
+            current_room: new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' }),
             linked_participants: []
         });
 
