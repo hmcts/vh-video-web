@@ -6,12 +6,24 @@
     (click)="selectConference(conference)"
     id="{{ conference.id }}-summary"
   >
-    <div class="shareIcon"><app-copy-id [conference]="conference"></app-copy-id></div>
-    <div class="phoneIcon" *ngIf="conference.isJoinByPhone">
-      <app-copy-telephone-id
-        [telephoneId]="conference.telephoneConferenceId"
-        [telephoneNumber]="conference.telephoneConferenceNumber"
-      ></app-copy-telephone-id>
+    <div>
+      <span class="copyTooltip" id="copyTooltip"
+        >
+        <i class="fad fa-link copy-links-wrapper" aria-hidden="true"></i>
+        <span
+          class="copyTooltipText"
+          id="copyTooltipText"
+          >
+          <div><app-copy-id [conference]="conference"></app-copy-id></div>
+          <div><app-copy-quick-link [conferenceId]="conference.id"></app-copy-quick-link></div>
+          <div *ngIf="conference.isJoinByPhone">
+            <app-copy-telephone-id
+              [telephoneId]="conference.telephoneConferenceId"
+              [telephoneNumber]="conference.telephoneConferenceNumber"
+            ></app-copy-telephone-id>
+          </div>
+        </span>
+      </span>
     </div>
     <div class="time listItem" id="{{ conference.id }}-time">{{ conference.scheduledDateTime | date: 'HH:mm' }}</div>
     <ng-container *ngIf="conference.startedDateTime">

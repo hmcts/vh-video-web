@@ -1044,10 +1044,16 @@
     "cancel-filters-alt": "Canslo'r ffilteri"
   },
   "copy-telephone-id": {
-    "alt": "Copïo'r manylion ymuno dros y ffôn i'r clipfwrdd"
+    "alt": "Copïo'r manylion ymuno dros y ffôn i'r clipfwrdd",
+    "display-text": "Copïo'r manylion ymuno dros y ffôn i'r clipfwrdd"
   },
   "copy-id": {
-    "alt": "Eicon copïo rhif adnabod (ID) y gynhadledd"
+    "alt": "Eicon copïo rhif adnabod (ID) y gynhadledd",
+    "display-text": "Copy hearing ID to clipboard"
+  },
+  "copy-quick-link":{
+    "tooltip-copied": "Join by quick link details copied to clipboard",
+    "display-text": "Copy join by quick link details to clipboard"
   },
   "quick-participant-landing-page": {
     "page-title": "Rhowch eich manylion i ymuno â'ch gwrandawiad",
