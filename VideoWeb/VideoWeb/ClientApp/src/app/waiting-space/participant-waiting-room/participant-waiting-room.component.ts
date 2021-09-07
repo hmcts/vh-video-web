@@ -216,7 +216,10 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     }
 
     isQuickLinkObserver(): boolean {
-        return (this.participant?.role.toUpperCase() === Role.QuickLinkObserver.toUpperCase()) && (this.participant?.hearing_role === HearingRole.QUICK_LINK_OBSERVER);
+        return (
+            this.participant?.role.toUpperCase() === Role.QuickLinkObserver.toUpperCase() &&
+            this.participant?.hearing_role === HearingRole.QUICK_LINK_OBSERVER
+        );
     }
 
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
@@ -251,7 +254,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     }
 
     get canStartJoinConsultation() {
-        var canStart = !this.isOrHasWitnessLink() && !this.isObserver && !this.isQuickLinkObserver() && !this.participant.linked_participants.length;
+        var canStart =
+            !this.isOrHasWitnessLink() && !this.isObserver && !this.isQuickLinkObserver() && !this.participant.linked_participants.length;
         return canStart;
     }
 

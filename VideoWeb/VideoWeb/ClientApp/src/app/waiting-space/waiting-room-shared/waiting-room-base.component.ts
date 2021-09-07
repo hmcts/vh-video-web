@@ -755,7 +755,10 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     isQuickLinkParticipant(): boolean {
-        return this.participant?.role.toUpperCase() === Role.QuickLinkObserver.toUpperCase() || this.participant?.role.toUpperCase() === Role.QuickLinkParticipant.toUpperCase();
+        return (
+            this.participant?.role.toUpperCase() === Role.QuickLinkObserver.toUpperCase() ||
+            this.participant?.role.toUpperCase() === Role.QuickLinkParticipant.toUpperCase()
+        );
     }
 
     isOrHasWitnessLink(): boolean {
