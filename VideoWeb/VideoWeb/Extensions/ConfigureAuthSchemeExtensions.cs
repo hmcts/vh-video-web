@@ -110,16 +110,16 @@ namespace VideoWeb.Extensions
             var allRoles = new[]
             {
                 AppRoles.CitizenRole, AppRoles.JudgeRole, AppRoles.RepresentativeRole, AppRoles.CaseAdminRole,
-                AppRoles.VhOfficerRole, AppRoles.JudicialOfficeHolderRole, AppRoles.StaffMemberRole
+                AppRoles.VhOfficerRole, AppRoles.JudicialOfficeHolderRole, AppRoles.StaffMember
             };
 
             var rolePolicies = new Dictionary<string, string[]>
             {
                 [AppRoles.JudgeRole] = new[] { AppRoles.JudgeRole },
                 [AppRoles.VhOfficerRole] = new[] { AppRoles.VhOfficerRole },
-                ["Judicial"] = new[] { AppRoles.JudgeRole, AppRoles.JudicialOfficeHolderRole, AppRoles.StaffMemberRole },
+                ["Judicial"] = new[] { AppRoles.JudgeRole, AppRoles.JudicialOfficeHolderRole, AppRoles.StaffMember },
                 ["Individual"] = new[] { AppRoles.CitizenRole, AppRoles.RepresentativeRole, AppRoles.QuickLinkParticipant, AppRoles.QuickLinkObserver },
-                [AppRoles.StaffMemberRole] = new[] { AppRoles.StaffMemberRole },
+                [AppRoles.StaffMember] = new[] { AppRoles.StaffMember },
                 [AppRoles.RepresentativeRole] = new[] { AppRoles.RepresentativeRole },
                 [AppRoles.CitizenRole] = new[] { AppRoles.CitizenRole }
             };

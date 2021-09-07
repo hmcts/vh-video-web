@@ -82,6 +82,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             response.CaseNumber.Should().Be(conference.CaseNumber);
             response.Participants[0].Role.Should().Be(UserRole.Individual);
             response.Participants.Any(x => x.Role == Role.Individual).Should().BeTrue();
+            response.Participants.Any(x => x.Role == Role.StaffMember).Should().BeTrue();
             response.Participants.Any(x => x.Role == Role.Representative).Should().BeTrue();
             response.Participants.Any(x => x.Role == Role.Judge).Should().BeTrue();
             response.Participants.Any(x => x.Role == Role.StaffMember).Should().BeTrue();
@@ -165,10 +166,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         private static ConferenceDetailsResponse CreateValidConferenceResponse(string username = "john@hmcts.net")
         {
             var judge = new ParticipantDetailsResponseBuilder(UserRole.Judge, "Judge").Build();
+            var staffMember = new ParticipantDetailsResponseBuilder(UserRole.StaffMember, "StaffMember").Build();
             var individualDefendant = new ParticipantDetailsResponseBuilder(UserRole.Individual, "Defendant").Build();
             var individualClaimant = new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant").Build();
             var repClaimant = new ParticipantDetailsResponseBuilder(UserRole.Representative, "Claimant").Build();
-            var staffMember = new ParticipantDetailsResponseBuilder(UserRole.StaffMember, "StaffMember").Build();
             var panelMember =
                 new ParticipantDetailsResponseBuilder(UserRole.JudicialOfficeHolder, "Panel Member").Build();
             var participants = new List<ParticipantDetailsResponse>()
