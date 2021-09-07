@@ -5,5 +5,5 @@ appTooltip
 [attr.alt]="'copy-telephone-id.alt' | translate"
 (click)="copyToClipboard(); $event.stopPropagation()">
   <em class="fad fa-phone" aria-hidden="true"></em>
-  <a [routerLink]="">{{'copy-telephone-id.display-text' | translate}}</a>
+  <a class="copy-link-text" [routerLink]="">{{'copy-telephone-id.display-text' | translate}}</a>
 </span>

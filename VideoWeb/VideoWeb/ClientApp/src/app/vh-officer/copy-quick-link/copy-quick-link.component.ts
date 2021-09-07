@@ -5,8 +5,7 @@ import { VhoQueryService } from '../services/vho-query-service.service';
 
 @Component({
     selector: 'app-copy-quick-link',
-    templateUrl: './copy-quick-link.component.html',
-    styleUrls: ['./copy-quick-link.component.scss']
+    templateUrl: './copy-quick-link.component.html'
 })
 export class CopyQuickLinkComponent implements OnInit {
     @Input() conferenceId: string;
