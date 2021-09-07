@@ -139,13 +139,17 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
 
         expect(component.observers).toBeDefined();
         expect(component.observers.length).toBe(2);
+
         expect(component.panelMembers).toBeDefined();
         expect(component.panelMembers.length).toBe(1);
+
+        expect(component.staffMembers).toBeDefined();
+        expect(component.staffMembers.length).toBe(1);
 
         expect(component.wingers).toBeDefined();
         expect(component.wingers.length).toBe(1);
 
-        expect(component.participantCount).toBe(6);
+        expect(component.participantCount).toBe(7);
         expect(component.endpoints).toBeDefined();
         expect(component.endpoints.length).toBe(2);
     });

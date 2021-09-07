@@ -26,7 +26,7 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
 
     nonJudgeParticipants: ParticipantResponse[];
     judge: ParticipantResponse;
-    staffMember: ParticipantResponse;
+    staffMembers: ParticipantResponse[];
     endpoints: VideoEndpointResponse[];
     observers: ParticipantResponse[];
     panelMembers: ParticipantResponse[];
@@ -67,7 +67,13 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     }
 
     get participantCount(): number {
-        return this.nonJudgeParticipants.length + this.observers.length + this.panelMembers.length + this.wingers.length;
+        return (
+            this.nonJudgeParticipants.length +
+            this.observers.length +
+            this.panelMembers.length +
+            this.wingers.length +
+            this.staffMembers.length
+        );
     }
 
     isCaseTypeNone(participant: ParticipantResponse): boolean {
@@ -196,13 +202,14 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     }
 
     protected filterStaffMember(): void {
-        this.staffMember = this.conference.participants.find(x => x.role === Role.StaffMember);
+        this.staffMembers = this.conference.participants.filter(x => x.role === Role.StaffMember);
     }
 
     protected filterParticipantInConsultation(): void {
         this.participantsInConsultation = [
             this.judge,
             ...this.panelMembers,
+            ...this.staffMembers,
             ...this.wingers,
             ...this.nonJudgeParticipants,
             ...this.observers
