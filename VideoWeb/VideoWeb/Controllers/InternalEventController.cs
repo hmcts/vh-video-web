@@ -59,7 +59,6 @@ namespace VideoWeb.Controllers
 
             var requestToParticipantMapper = _mapperFactory.Get<ParticipantRequest, IEnumerable<Participant>, Participant>();
             var updateParticipantRequestToUpdateParticipantMapper = _mapperFactory.Get<UpdateParticipantRequest, IEnumerable<Participant>, UpdateParticipant>();
-            var participantsToResponseMapper = _mapperFactory.Get<Participant, Conference, ParticipantResponse>();
 
             try
             {

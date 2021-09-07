@@ -8,6 +8,6 @@ namespace VideoWeb.Helpers.Interfaces
 {
     public interface IParticipantsUpdatedEventNotifier
     {
-        public async Task PushParticipantsUpdatedEvent(Conference conference) { }
+        public Task PushParticipantsUpdatedEvent(Conference conference);
     }
 }
