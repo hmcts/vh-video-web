@@ -172,6 +172,12 @@ namespace VideoWeb.AcceptanceTests.Steps
             AddParticipantToHearing();
         }
 
+        [Given("I add a staffmember to the hearing")]
+        public void GivenIAddAStaffmemberToTheHearing()
+        {
+            AddParticipantToHearing("Staff Member");
+        }
+
         private void GivenIHaveAHearing(int minutes = 0, string venue = DEFAULT_VENUE, bool audioRecordingRequired = false)
         {
             var request = new HearingRequestBuilder()
@@ -184,11 +190,11 @@ namespace VideoWeb.AcceptanceTests.Steps
             SendTheHearingRequest(request);
         }
 
-        private void AddParticipantToHearing()
+        private void AddParticipantToHearing(string hearingRole = "Observer")
         {
             var participantsRequest = Builder<ParticipantRequest>.CreateNew()
-                .With(x => x.CaseRoleName = "Observer")
-                .With(x => x.HearingRoleName = "Observer")
+                .With(x => x.CaseRoleName = hearingRole)
+                .With(x => x.HearingRoleName = hearingRole)
                 .With(x => x.Title = Name.Prefix())
                 .With(x => x.FirstName = $"Automation_{Name.First()}")
                 .With(x => x.LastName = $"Automation_{Name.Last()}")
