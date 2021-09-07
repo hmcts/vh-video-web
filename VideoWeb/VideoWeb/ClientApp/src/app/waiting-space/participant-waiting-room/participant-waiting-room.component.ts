@@ -254,9 +254,9 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     }
 
     get canStartJoinConsultation() {
-        var canStart =
-            !this.isOrHasWitnessLink() && !this.isObserver && !this.isQuickLinkObserver() && !this.participant.linked_participants.length;
-        return canStart;
+        return (
+            !this.isOrHasWitnessLink() && !this.isObserver && !this.isQuickLinkObserver() && !this.participant.linked_participants.length
+        );
     }
 
     async startPrivateConsultation(participants: string[], endpoints: string[]) {
