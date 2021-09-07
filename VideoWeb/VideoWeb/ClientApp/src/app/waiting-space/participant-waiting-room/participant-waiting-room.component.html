@@ -230,7 +230,7 @@
     <div *ngIf="canStartJoinConsultation">
       <button
         [disabled]="!connected"
-        class="govuk-button"
+        class="govuk-button govuk-!-margin-right-3"
         id="openStartPCButton"
         data-module="govuk-button"
         (click)="openStartConsultationModal()"
@@ -240,7 +240,7 @@
 
       <button
         [disabled]="!connected"
-        class="govuk-button govuk-button-blue govuk-!-margin-left-5"
+        class="govuk-button govuk-button-blue"
         id="openJoinPCButton"
         data-module="govuk-button"
         (click)="openJoinConsultationModal()"

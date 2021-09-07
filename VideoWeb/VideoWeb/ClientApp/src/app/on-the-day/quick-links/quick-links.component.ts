@@ -1,9 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { first, map, takeUntil } from 'rxjs/operators';
+import { BehaviorSubject, of, Subject } from 'rxjs';
+import { catchError, first, map, takeUntil } from 'rxjs/operators';
 import { QuickLinksService } from 'src/app/services/api/quick-links.service';
 import { Role } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
@@ -39,8 +38,7 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
         private formBuilder: FormBuilder,
         private readonly quickLinksService: QuickLinksService,
         private route: ActivatedRoute,
-        private errorService: ErrorService,
-        private translationService: TranslateService
+        private errorService: ErrorService
     ) {}
 
     ngOnInit(): void {
@@ -49,12 +47,13 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
             .validateQuickLink(this.hearingId)
             .pipe(
                 takeUntil(this.destroyed$),
+                catchError(() => of(false)),
                 first(),
                 map(isValid => {
                     if (!isValid) {
                         this.errorService.goToServiceError(
-                            this.translationService.instant('quick-participant-errors.invalid-page.heading'),
-                            this.translationService.instant('quick-participant-errors.invalid-page.body'),
+                            'quick-participant-errors.invalid-page.heading',
+                            'quick-participant-errors.invalid-page.body',
                             false
                         );
                     }

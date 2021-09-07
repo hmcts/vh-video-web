@@ -273,6 +273,7 @@ namespace VideoWeb.Controllers
             var participantsRoles = new List<Role>
             {
                 Role.Judge,
+                Role.StaffMember,
                 Role.Individual,
                 Role.Representative,
                 Role.JudicialOfficeHolder,

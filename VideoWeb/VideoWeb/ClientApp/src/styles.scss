@@ -4,6 +4,7 @@ $govuk-global-styles: true;
 @import '~govuk-frontend/govuk/all';
 @import '~@hmcts/frontend/all';
 @import '~@ng-select/ng-select/themes/default.theme.css';
+@import '~@ministryofjustice/frontend/moj/all';
 
 .grey-btn {
   background-color: govuk-colour('light-grey');
@@ -208,6 +209,6 @@ video {
   display: block;
 }
 
-.vh-no-pointer{
+.vh-no-pointer {
   pointer-events: none;
 }

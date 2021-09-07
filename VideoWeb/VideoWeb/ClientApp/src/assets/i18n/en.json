@@ -395,6 +395,7 @@
     "cancel": "Cancel",
     "wingers": "Wingers",
     "panel-members": "Panel members",
+    "staff-member": "Staff Member",
     "participants": "Participants",
     "video-access-points": "Video access points",
     "observers": "Observers",
@@ -657,7 +658,9 @@
     "winger": "Winger",
     "witness": "Witness",
     "intermediary": "Intermediary",
-    "video-access-point": "Video access point"
+    "video-access-point": "Video access point",
+    "quick-link-participant": "Participant",
+    "quick-link-observer": "Observer"
   },
   "case-role": {
     "appellant": "Appellant",
@@ -732,7 +735,9 @@
     "judge": "Judge",
     "individual": "Individual",
     "representative": "Representative",
-    "judicial-office-holder": "Judicial Office Holder"
+    "judicial-office-holder": "Judicial Office Holder",
+    "quick-link-participant": "Participant",
+    "quick-link-observer": "Observer"
   },
   "participant-status": {
     "none": "None",

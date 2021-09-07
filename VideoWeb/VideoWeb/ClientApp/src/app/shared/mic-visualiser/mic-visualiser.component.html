@@ -1,1 +1,3 @@
-<canvas id="meter" width="270" height="30" style="background-color: #f3f3f3;"></canvas>
+<div class="canvas-holder" #container [style.maxWidth.px]="meterMaxWidth">
+    <canvas id="meter" #meter [width]="meterCurrentWidth" height="30" style="background-color: #f3f3f3;"></canvas>
+</div>
