@@ -34,11 +34,6 @@ namespace VideoWeb.Mappings
                 return Role.Judge;
             }
             
-            if (user.IsInRole(AppRoles.StaffMemberRole))
-            {
-                return Role.StaffMember;
-            }
-            
             if (user.IsInRole(AppRoles.JudicialOfficeHolderRole))
             {
                 return Role.JudicialOfficeHolder;
@@ -67,6 +62,11 @@ namespace VideoWeb.Mappings
             if (user.IsInRole(AppRoles.CaseAdminRole))
             {
                 return Role.CaseAdmin;
+            }
+
+            if (user.IsInRole(AppRoles.StaffMember))
+            {
+                return Role.StaffMember;
             }
 
             throw new NotSupportedException($"Role is not supported for this application");

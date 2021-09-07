@@ -16,6 +16,7 @@ import { VideoWebService } from '../../services/api/video-web.service';
 import { Logger } from '../../services/logging/logger-base';
 import { JudgeParticipantStatusListComponent } from './judge-participant-status-list.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { HearingRole } from '../models/hearing-role-model';
 
 describe('JudgeParticipantStatusListComponent', () => {
     const testData = new ConferenceTestData();
@@ -28,6 +29,7 @@ describe('JudgeParticipantStatusListComponent', () => {
     let conference: ConferenceResponse;
     let activatedRoute: ActivatedRoute;
     const translateService = translateServiceSpy;
+    let editedStaffMember;
 
     beforeAll(() => {
         consultationService = consultationServiceSpyFactory();
@@ -59,6 +61,7 @@ describe('JudgeParticipantStatusListComponent', () => {
         );
         component.conference = conference;
         component.ngOnInit();
+        editedStaffMember = conference.participants.find(p => p.hearing_role === HearingRole.STAFF_MEMBER);
     });
 
     afterEach(() => {
@@ -69,7 +72,6 @@ describe('JudgeParticipantStatusListComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
         expect(component.judge).toBeDefined();
-        expect(component.staffMember).toBeDefined();
         expect(component.nonJudgeParticipants).toBeDefined();
         expect(component.nonJudgeParticipants.length).toBe(2);
 
@@ -79,13 +81,16 @@ describe('JudgeParticipantStatusListComponent', () => {
         expect(component.panelMembers).toBeDefined();
         expect(component.panelMembers.length).toBe(1);
 
+        expect(component.staffMembers).toBeDefined();
+        expect(component.staffMembers.length).toBe(1);
+
         expect(component.wingers).toBeDefined();
         expect(component.wingers.length).toBe(1);
 
         expect(component.endpoints).toBeDefined();
         expect(component.endpoints.length).toBe(2);
 
-        expect(component.participantCount).toBe(6);
+        expect(component.participantCount).toBe(7);
     });
 
     it('should show input template for change judge display name', () => {
@@ -100,9 +105,10 @@ describe('JudgeParticipantStatusListComponent', () => {
     });
 
     it('should show input template for change staff member display name', () => {
-        component.changeStaffMemberNameShow();
+        component.changeStaffMemberNameShow(editedStaffMember.id);
         expect(component.showChangeStaffMemberDisplayName).toBe(true);
-        expect(component.newStaffMemberDisplayName).toBe(component.staffMember.display_name);
+
+        expect(component.newStaffMemberDisplayName).toBe(component.staffMembers.find(p => p.id === editedStaffMember.id).display_name);
     });
 
     it('should hide input template for change judge display name', () => {
@@ -147,8 +153,8 @@ describe('JudgeParticipantStatusListComponent', () => {
         videoWebService.updateParticipantDetails.calls.reset();
         const newName = 'new name';
         component.onEnterStaffMemberDisplayName(newName);
-        await component.saveStaffMemberDisplayName();
-        expect(component.staffMember.display_name).toBe(newName);
+        await component.saveStaffMemberDisplayName(editedStaffMember.id);
+        expect(component.staffMembers.find(p => p.id === editedStaffMember.id).display_name).toBe(newName);
         expect(component.showChangeStaffMemberDisplayName).toBe(false);
         expect(videoWebService.updateParticipantDetails).toHaveBeenCalledTimes(1);
     });
@@ -160,14 +166,14 @@ describe('JudgeParticipantStatusListComponent', () => {
         videoWebService.updateParticipantDetails.and.rejectWith(error);
         spyOn(logger, 'error');
 
-        await component.saveStaffMemberDisplayName();
+        await component.saveStaffMemberDisplayName(editedStaffMember.id);
 
         expect(logger.error).toHaveBeenCalled();
     });
 
-    it('should get the participant count excluding judge and staff member', () => {
+    it('should get the participant count excluding judge', () => {
         const participantCount = component.participantCount;
-        const expected = component.conference.participants.filter(x => x.role !== Role.Judge && x.role !== Role.StaffMember).length;
+        const expected = component.conference.participants.filter(x => x.role !== Role.Judge).length;
         expect(participantCount).toBe(expected);
     });
 

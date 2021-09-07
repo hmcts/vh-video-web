@@ -105,16 +105,15 @@ describe('SelectHearingLayoutComponent', () => {
         expect(videoCallService.updatePreferredLayout).toHaveBeenCalledWith(component.conference.id, layout);
     });
 
-    it('should return recommended layout', () => {
-        component.selectedLayout = undefined;
-        const layout = component.getSelectedOrPreferredLayout();
-        expect(layout).toBe(HearingLayout.OnePlus7);
-    });
-
     it('should return selected layout', () => {
         const layout = HearingLayout.OnePlus7;
         component.selectedLayout = layout;
         expect(component.getSelectedOrPreferredLayout()).toBe(layout);
+    });
+
+    it('should return recommended layout', () => {
+        component.selectedLayout = undefined;
+        expect(component.getSelectedOrPreferredLayout()).toBe(HearingLayout.OnePlus7);
     });
 
     it('should return true when accordian is open', () => {
