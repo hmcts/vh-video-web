@@ -73,5 +73,10 @@ namespace VideoWeb.Contract.Responses
         /// The name of venue
         /// </summary>
         public string HearingVenueName { get; set; }
+
+        /// <summary>
+        /// The hearing id of the video hearing conference
+        /// </summary>
+        public Guid HearingId { get; set; }
     }
 }

@@ -135,6 +135,16 @@ namespace VideoWeb.UnitTests.Mappings
         }
 
         [Test]
+        public void Maps_Hearing_Id_From_Conference()
+        {
+            var conference = Builder<ConferenceDetailsResponse>.CreateNew().Build();
+
+            var response = _sut.Map(conference);
+
+            response.HearingId.Should().Be(conference.HearingId);
+        }
+
+        [Test]
         public void Should_map_all_properties_with_participants_list_null()
         {
             var expectedConferenceStatus = ConferenceStatus.Suspended;
