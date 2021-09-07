@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -51,6 +52,18 @@ namespace VideoWeb.Controllers
 
             try
             {
+                var conference = await _conferenceCache.GetOrAddConferenceAsync
+                (
+                    conferenceId,
+                    () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
+                );
+                
+                request.ParticipantsToForceTransfer = conference.Participants.
+                    Where(x => x.Role == Role.Judge || x.Role == Role.StaffMember).
+                    Select(x => x.Id.ToString());
+
+                request.MuteGuests = true;
+                
                 await _videoApiClient.StartOrResumeVideoHearingAsync(conferenceId, request);
                 _logger.LogDebug("Sent request to start / resume conference {Conference}", conferenceId);
                 return Accepted();
