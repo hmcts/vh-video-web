@@ -193,18 +193,8 @@
   </div>
 </div>
 
-<div class="outgoing-video-container">
-  <video
-    [ngClass]="{ 'vh-fade-in': selfViewOpen, 'vh-fade-out': !selfViewOpen, 'vh-spotlight-self-view-outline': isSpotlighted }"
-    id="outgoingFeedVideo"
-    [muted]="true"
-    [srcObject]="this.outgoingStream"
-    autoplay
-    height="auto"
-  >
-    {{ 'private-consultation-room-controls.browser-support' | translate }}
-  </video>
-</div>
+<app-self-view [videoSource]="outgoingStream" [showSpotlightedBorder]="isSpotlighted" [isOpen]="selfViewOpen"></app-self-view>
+
 <div class="outgoing-present-video-container">
   <video
     [ngClass]="{ 'vh-fade-in': this.screenShareStream, 'vh-fade-out': !this.screenShareStream }"
