@@ -190,7 +190,9 @@ namespace VideoWeb.Controllers
                 Role.Individual,
                 Role.Representative,
                 Role.VideoHearingsOfficer,
-                Role.JudicialOfficeHolder
+                Role.JudicialOfficeHolder,
+                Role.QuickLinkParticipant,
+                Role.QuickLinkObserver
             };
 
             conference.Participants = conference
@@ -252,10 +254,10 @@ namespace VideoWeb.Controllers
             var displayRoles = new List<Role>
             {
                 Role.Judge,
-                Role.StaffMember,
                 Role.Individual,
                 Role.Representative,
                 Role.JudicialOfficeHolder,
+                Role.StaffMember,
                 Role.QuickLinkParticipant,
                 Role.QuickLinkObserver
             };

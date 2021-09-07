@@ -19,7 +19,7 @@ namespace VideoWeb.UnitTests.Mappings
         [TestCase(AppRoles.JudicialOfficeHolderRole, Role.JudicialOfficeHolder)]
         [TestCase(AppRoles.QuickLinkObserver, Role.QuickLinkObserver)]
         [TestCase(AppRoles.QuickLinkParticipant, Role.QuickLinkParticipant)]
-        [TestCase(AppRoles.StaffMemberRole, Role.StaffMember)]
+        [TestCase(AppRoles.StaffMember, Role.StaffMember)]
         public void should_map_claim_to_profile(string role, Role expectedRole)
         {
             const string firstName = "John";
