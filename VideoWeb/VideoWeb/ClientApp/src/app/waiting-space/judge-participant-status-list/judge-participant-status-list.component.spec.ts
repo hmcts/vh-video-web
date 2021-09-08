@@ -83,6 +83,7 @@ describe('JudgeParticipantStatusListComponent', () => {
 
         expect(component.staffMembers).toBeDefined();
         expect(component.staffMembers.length).toBe(1);
+        expect(component.staffMembers[0].display_name).toBe('Staff Member');
 
         expect(component.wingers).toBeDefined();
         expect(component.wingers.length).toBe(1);
