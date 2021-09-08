@@ -543,6 +543,9 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     private getCaseRole(participant: PanelModel): string {
+        if (!participant.caseTypeGroup) {
+            return '';
+        }
         const translatedCaseTypeGroup = this.translateService.instant(
             'case-type-group.' + participant.caseTypeGroup.toLowerCase().split(' ').join('-')
         );

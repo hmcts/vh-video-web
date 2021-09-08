@@ -6,6 +6,7 @@ import {
     LinkType,
     ParticipantResponse,
     ParticipantStatus,
+    Role,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
@@ -119,7 +120,9 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
 
     getPrivateConsultationParticipants(): ParticipantListItem[] {
         return this.participantsInConsultation
-            .filter(c => c.hearing_role !== HearingRole.WITNESS && c.hearing_role !== HearingRole.OBSERVER)
+            .filter(
+                c => c.hearing_role !== HearingRole.WITNESS && c.hearing_role !== HearingRole.OBSERVER && c.role !== Role.QuickLinkObserver
+            )
             .filter(c => c.hearing_role !== HearingRole.INTERPRETER)
             .filter(
                 c =>

@@ -156,7 +156,7 @@ export abstract class PanelModel {
             return 2;
         } else if (this.caseTypeGroup.toLowerCase() === 'endpoint') {
             return 4;
-        } else if (this.hearingRole === HearingRole.OBSERVER) {
+        } else if (this.hearingRole === HearingRole.OBSERVER || this.role === Role.QuickLinkObserver) {
             return 5;
         } else {
             return 3;

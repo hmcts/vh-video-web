@@ -16,7 +16,6 @@ export class JudgeHearingTableComponent implements OnInit {
 
     @Input() set conferences(conferences: ConferenceForHostResponse[]) {
         this.conferenceForHostResponse = conferences;
-        console.log('Faz - conferences', conferences);
         this.hearings = conferences.map(c => new JudgeHearingSummary(c));
     }
 

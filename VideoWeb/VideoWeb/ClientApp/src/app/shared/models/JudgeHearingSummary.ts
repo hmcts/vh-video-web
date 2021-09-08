@@ -10,18 +10,16 @@ export class JudgeHearingSummary extends HearingSummary {
     }
 
     get nonJudicialParticipantsExcludingObservers(): ParticipantSummary[] {
-        console.log('Faz - this.participants', this.participants);
         const p = this.participants.filter(
             x =>
-                (x.role === Role.Individual || x.role === Role.Representative || x.hearingRole === HearingRole.QUICK_LINK_PARTICIPANT) &&
+                (x.role === Role.Individual || x.role === Role.Representative || x.role === Role.QuickLinkParticipant) &&
                 x.hearingRole !== HearingRole.OBSERVER
         );
-        console.log('Faz - p', p);
         return p;
     }
 
     get observers(): ParticipantSummary[] {
-        return this.participants.filter(x => x.hearingRole === HearingRole.OBSERVER || x.hearingRole === HearingRole.QUICK_LINK_OBSERVER);
+        return this.participants.filter(x => x.hearingRole === HearingRole.OBSERVER || x.role === Role.QuickLinkObserver);
     }
 
     get panelMembers(): ParticipantSummary[] {

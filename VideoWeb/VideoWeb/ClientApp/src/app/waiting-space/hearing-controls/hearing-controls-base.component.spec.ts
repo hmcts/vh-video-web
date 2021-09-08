@@ -637,7 +637,9 @@ describe('HearingControlsBaseComponent', () => {
         HearingRole.REPRESENTATIVE,
         HearingRole.WINGER,
         HearingRole.LITIGANT_IN_PERSON,
-        HearingRole.STAFF_MEMBER
+        HearingRole.STAFF_MEMBER,
+        HearingRole.QUICK_LINK_PARTICIPANT,
+        HearingRole.QUICK_LINK_OBSERVER // TODO confirm whether this should be enabled or not. Part of a different ticket, adding for tests to run.
     ];
     allowedHearingRoles.forEach(hearingRole => {
         it(`canShowScreenShareButton() should return "true" when device is not a tablet and user has the '${hearingRole}' HearingRole`, () => {
