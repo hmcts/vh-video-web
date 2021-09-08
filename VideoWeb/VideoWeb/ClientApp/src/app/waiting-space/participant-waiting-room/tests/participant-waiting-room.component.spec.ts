@@ -327,7 +327,8 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         [
             [HearingRole.REPRESENTATIVE, true],
             [HearingRole.WITNESS, false],
-            [HearingRole.OBSERVER, false]
+            [HearingRole.OBSERVER, false],
+            [HearingRole.QUICK_LINK_OBSERVER, false]
         ].forEach(([hearingRole, expected]) => {
             component.participant.hearing_role = hearingRole as HearingRole;
             component.participant.linked_participants = [];
@@ -379,6 +380,15 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         component.participant = null;
 
         expect(component.isObserver).toBeFalsy();
+    });
+    it('should return if the participant is a quick link observer or not - isQuickLinkObserver', () => {
+        [
+            [HearingRole.QUICK_LINK_OBSERVER, true],
+            [HearingRole.WITNESS, false]
+        ].forEach(([hearingRole, expected]) => {
+            component.participant.hearing_role = hearingRole as HearingRole;
+            expect(component.isQuickLinkObserver).toBe(expected as boolean);
+        });
     });
     it('should show extra content when not showing video and witness is not being transferred in', () => {
         component.isTransferringIn = false;

@@ -102,7 +102,7 @@ export abstract class PanelModel {
     }
 
     get isQuickLinkObserver(): boolean {
-        return this.role.toUpperCase() === Role.QuickLinkObserver.toUpperCase() && this.hearingRole === HearingRole.QUICK_LINK_OBSERVER;
+        return this.hearingRole === HearingRole.QUICK_LINK_OBSERVER;
     }
 
     get transferringIn(): boolean {
