@@ -57,7 +57,8 @@ export class JudgeHearingTableComponent implements OnInit {
         return (
             hearing.status === ConferenceStatus.Paused ||
             hearing.status === ConferenceStatus.Suspended ||
-            hearing.status === ConferenceStatus.Closed
+            hearing.status === ConferenceStatus.Closed ||
+            hearing.status === ConferenceStatus.InSession
         );
     }
 }

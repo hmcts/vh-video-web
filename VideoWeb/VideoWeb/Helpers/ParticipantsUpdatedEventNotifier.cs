@@ -26,7 +26,7 @@ namespace VideoWeb.Helpers
             _logger = logger;
         }
 
-        public async Task PushParticipantsUpdatedEvent(Conference conference)
+        public Task PushParticipantsUpdatedEvent(Conference conference)
         {
             var participantsToResponseMapper = _mapperFactory.Get<Participant, Conference, ParticipantResponse>();
             CallbackEvent callbackEvent = new CallbackEvent()
@@ -38,7 +38,7 @@ namespace VideoWeb.Helpers
             };
 
             _logger.LogTrace($"Publishing event to UI: {JsonSerializer.Serialize(callbackEvent)}");
-            await PublishEventToUi(callbackEvent);
+            return PublishEventToUi(callbackEvent);
         }
 
         private Task PublishEventToUi(CallbackEvent callbackEvent)
