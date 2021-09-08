@@ -821,11 +821,6 @@
     "cancel-close": "Keep hearing open",
     "cancel-close-label": "Cancel closing the hearing"
   },
-  "participant-info-tooltip":{
-    "quick-link-participant": "Participant",
-    "quick-link-observer": "Observer",
-    "joined-by-quick-link": "Joined by quick link"
-  },
   "venue-list": {
     "title": "Select your hearing lists",
     "label": "Venue name {{name}}",

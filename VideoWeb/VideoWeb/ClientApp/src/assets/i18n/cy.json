@@ -1056,11 +1056,6 @@
     "tooltip-copied": "Join by quick link details copied to clipboard",
     "display-text": "Copy join by quick link details to clipboard"
   },
-  "participant-info-tooltip":{
-    "quick-link-participant": "Participant",
-    "quick-link-observer": "Observer",
-    "joined-by-quick-link": "Joined by quick link"
-  },
   "quick-participant-landing-page": {
     "page-title": "Rhowch eich manylion i ymuno â'ch gwrandawiad",
     "paragraph1": "Dywedwch wrthym eich enw a'ch rôl yn y gwrandawiad.",
