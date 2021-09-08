@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using VideoWeb.Common.Models;
 
@@ -82,7 +82,7 @@ namespace VideoWeb.Contract.Responses
         public string HearingVenueName { get; set; }
 
         /// <summary>
-        /// The Judge is In Another Hearing
+        /// The Host is In Another Hearing
         /// </summary>
         public bool HostInAnotherHearing { get; set; }
 
