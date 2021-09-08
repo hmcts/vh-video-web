@@ -21,8 +21,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         protected Conference TestConference;
         protected ConferenceManagementController Controller;
         protected Mock<IVideoApiClient> VideoApiClientMock;
-        private Mock<ILogger<ConferenceManagementController>> _mockLogger;
-        private Mock<IConferenceCache> _conferenceCache;
+        protected Mock<ILogger<ConferenceManagementController>> MockLogger;
+        protected Mock<IConferenceCache> ConferenceCacheMock;
 
         protected ConferenceManagementController SetupControllerWithClaims(ClaimsPrincipal claimsPrincipal)
         {
@@ -35,8 +35,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 }
             };
 
-            return new ConferenceManagementController(VideoApiClientMock.Object, _mockLogger.Object,
-                _conferenceCache.Object)
+            return new ConferenceManagementController(VideoApiClientMock.Object, MockLogger.Object,
+                ConferenceCacheMock.Object)
             {
                 ControllerContext = context
             };
@@ -44,11 +44,11 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         
         private void BaseSetup()
         {
-            _conferenceCache = new Mock<IConferenceCache>();
+            ConferenceCacheMock = new Mock<IConferenceCache>();
             VideoApiClientMock = new Mock<IVideoApiClient>();
-            _mockLogger = new Mock<ILogger<ConferenceManagementController>>();
+            MockLogger = new Mock<ILogger<ConferenceManagementController>>();
 
-            _conferenceCache.Setup(x =>
+            ConferenceCacheMock.Setup(x =>
                     x.GetOrAddConferenceAsync(TestConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(TestConference);
@@ -86,7 +86,11 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.HearingRole = "Witness")
                         .With(x => x.Username = Faker.Internet.Email("witness1"))
-                        .With(x => x.Id = Guid.NewGuid()).Build()
+                        .With(x => x.Id = Guid.NewGuid()).Build(),
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.StaffMember)
+                    .With(x => x.HearingRole = "Staff Member")
+                    .With(x => x.Username = Faker.Internet.Email("witness1"))
+                    .With(x => x.Id = Guid.NewGuid()).Build()
                 }
             };
 
