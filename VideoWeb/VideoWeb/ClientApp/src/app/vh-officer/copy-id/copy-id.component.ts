@@ -4,8 +4,7 @@ import { ClipboardService } from 'ngx-clipboard';
 
 @Component({
     selector: 'app-copy-id',
-    templateUrl: './copy-id.component.html',
-    styleUrls: ['./copy-id.component.scss']
+    templateUrl: './copy-id.component.html'
 })
 export class CopyIdComponent implements OnInit {
     @Input() conference: HearingSummary;
