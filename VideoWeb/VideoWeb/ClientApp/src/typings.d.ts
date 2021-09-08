@@ -3,10 +3,6 @@ declare interface Window {
     webkitAudioContext: AudioContext;
 }
 
-interface HTMLCanvasElement {
-    captureStream(frameRate?: number): MediaStream;
-}
-
 declare interface PexRTC {
     PexRTC(): PexipClient;
 }

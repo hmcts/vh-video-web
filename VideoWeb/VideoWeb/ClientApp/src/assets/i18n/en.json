@@ -1081,16 +1081,5 @@
       "body": "Please check the link you were sent. If it still doesn't work, call 0300 303 0655 for immediate contact with a video hearings officer."
     }
   },
-  "loading": "Loading please wait...",
-  "video-filter": {
-    "title": "Choose a custom background",
-    "none": "No background",
-    "none-alt": "Remove all filters",
-    "blur": "Blurred",
-    "blur-alt": "Apply the blurred background filter",
-    "hmcts": "HMCTS crest",
-    "hmcts-alt": "Apply the background with the HMCTS crest",
-    "scts": "SCTS crest",
-    "scts-alt": "Apply the background with the SCTS crest"
-  }
+  "loading": "Loading please wait..."
 }

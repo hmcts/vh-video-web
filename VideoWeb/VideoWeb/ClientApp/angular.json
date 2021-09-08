@@ -26,8 +26,7 @@
                 "glob": "*",
                 "input": "node_modules/govuk-frontend/govuk/assets/fonts",
                 "output": "assets/fonts/"
-              },
-              "src/scripts"
+              }
             ],
             "styles": ["src/styles.css", "src/styles.scss", "node_modules/ngx-toastr/toastr.css"],
             "scripts": [
@@ -36,11 +35,7 @@
               "src/scripts/IEPF.js",
               "src/scripts/Heartbeat.js",
               "node_modules/govuk-frontend/govuk/all.js",
-              "node_modules/chart.js/dist/Chart.js",
-              "node_modules/@mediapipe/camera_utils/camera_utils.js",
-              "node_modules/@mediapipe/control_utils/control_utils.js",
-              "node_modules/@mediapipe/drawing_utils/drawing_utils.js",
-              "node_modules/@mediapipe/selfie_segmentation/selfie_segmentation.js"
+              "node_modules/chart.js/dist/Chart.js"
             ],
             "aot": true
           },

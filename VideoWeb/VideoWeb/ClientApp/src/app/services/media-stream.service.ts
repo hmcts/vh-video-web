@@ -5,7 +5,6 @@ import { UserMediaDevice } from '../shared/models/user-media-device';
 import { CallError } from '../waiting-space/models/video-call-models';
 import { ErrorService } from './error.service';
 import { Logger } from './logging/logger-base';
-import { VideoFilterService } from './video-filter.service';
 
 @Injectable({
     providedIn: 'root'
@@ -13,12 +12,7 @@ import { VideoFilterService } from './video-filter.service';
 export class MediaStreamService {
     private readonly loggerPrefix = '[MediaServiceService] -';
 
-    constructor(
-        private logger: Logger,
-        private errorService: ErrorService,
-        private navigator: Navigator,
-        private videoFilterService: VideoFilterService
-    ) {
+    constructor(private logger: Logger, private errorService: ErrorService, private navigator: Navigator) {
         this.navigator.getUserMedia =
             this.navigator.getUserMedia || (this.navigator as any).webkitGetUserMedia || (this.navigator as any).msGetUserMedia;
     }
@@ -40,11 +34,7 @@ export class MediaStreamService {
 
     getStreamForCam(device: UserMediaDevice): Observable<MediaStream> {
         return from(this.navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId } } })).pipe(
-            map(stream => {
-                const cloneStream = stream.clone();
-                this.videoFilterService.initFilterFromMediaStream(cloneStream);
-                return this.videoFilterService.startFilteredStream();
-            }),
+            map(stream => stream.clone()),
             catchError(error => {
                 this.logger.error(`${this.loggerPrefix} Could not get cam stream for microphone`, error);
                 this.errorService.handlePexipError(new CallError(error.name), null);

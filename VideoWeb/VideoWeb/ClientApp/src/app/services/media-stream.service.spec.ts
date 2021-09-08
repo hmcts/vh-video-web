@@ -5,7 +5,6 @@ import { UserMediaDevice } from '../shared/models/user-media-device';
 import { ErrorService } from './error.service';
 import { Logger } from './logging/logger-base';
 import { MediaStreamService } from './media-stream.service';
-import { VideoFilterService } from './video-filter.service';
 
 describe('MediaStreamService', () => {
     const cameraDevice = new UserMediaDevice('Camera 1', Guid.create().toString(), 'videoinput', '');
@@ -36,8 +35,6 @@ describe('MediaStreamService', () => {
     let errorServiceSpy: jasmine.SpyObj<ErrorService>;
     let mediaDevicesSpy: jasmine.SpyObj<MediaDevices>;
     let navigatorSpy: jasmine.SpyObj<Navigator>;
-    let videoFilterStreamServiceSpy: jasmine.SpyObj<VideoFilterService>;
-    let filterStream: jasmine.SpyObj<MediaStream>;
 
     beforeEach(() => {
         loggerSpy = jasmine.createSpyObj<Logger>(['info', 'error']);
@@ -45,21 +42,7 @@ describe('MediaStreamService', () => {
         mediaDevicesSpy = jasmine.createSpyObj<MediaDevices>(['getUserMedia']);
         navigatorSpy = jasmine.createSpyObj<Navigator>([], ['mediaDevices']);
         getSpiedPropertyGetter(navigatorSpy, 'mediaDevices').and.returnValue(mediaDevicesSpy);
-
-        videoFilterStreamServiceSpy = jasmine.createSpyObj<VideoFilterService>(['initFilterFromMediaStream', 'startFilteredStream']);
-        const filterStreamTracks = [];
-        filterStreamTracks.push(
-            jasmine.createSpyObj<MediaStreamTrack>(['stop'])
-        );
-        filterStreamTracks.push(
-            jasmine.createSpyObj<MediaStreamTrack>(['stop'])
-        );
-        filterStream = jasmine.createSpyObj<MediaStream>(['getTracks']);
-        filterStream.getTracks.and.returnValue(filterStreamTracks);
-
-        videoFilterStreamServiceSpy.startFilteredStream.and.returnValue(filterStream);
-
-        sut = new MediaStreamService(loggerSpy, errorServiceSpy, navigatorSpy, videoFilterStreamServiceSpy);
+        sut = new MediaStreamService(loggerSpy, errorServiceSpy, navigatorSpy);
     });
 
     describe('initialiseNewStream', () => {
@@ -152,7 +135,7 @@ describe('MediaStreamService', () => {
             // Assert
             expect(mediaDevicesSpy.getUserMedia).toHaveBeenCalledWith(cameraConstraintBuilder(cameraDevice));
 
-            expect(resultantStream).toBe(filterStream);
+            expect(resultantStream).toBe(expectedStream);
             expect(expectedStreamClone).toHaveBeenCalledTimes(1);
             expect(errorServiceSpy.handlePexipError).not.toHaveBeenCalled();
         }));
