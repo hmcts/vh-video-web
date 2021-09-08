@@ -12,8 +12,8 @@ import { SessionStorage } from './session-storage';
 export class VideoFilterService {
     private readonly loggerPrefix = '[VideoFilterService] -';
 
-    private canvasWidth = 1280;
-    private canvasHeight = 720;
+    private _canvasWidth = 1280;
+    private _canvasHeight = 720;
 
     private readonly preferredFilterCache: SessionStorage<BackgroundFilter>;
     readonly PREFERRED_FILTER_KEY = 'vh.preferred.filter';
@@ -66,16 +66,16 @@ export class VideoFilterService {
             return;
         }
 
-        this.canvasWidth = stream.getVideoTracks()[0].getSettings().width;
-        this.canvasHeight = stream.getVideoTracks()[0].getSettings().height;
+        this._canvasWidth = stream.getVideoTracks()[0].getSettings().width;
+        this._canvasHeight = stream.getVideoTracks()[0].getSettings().height;
 
         this.logger.debug(`${this.loggerPrefix} initialising stream for filter`);
         this.videoElement = document.createElement('video');
         this.videoElement.srcObject = stream;
 
         this.canvasElement = document.createElement('canvas');
-        this.canvasElement.width = this.canvasWidth;
-        this.canvasElement.height = this.canvasHeight;
+        this.canvasElement.width = this._canvasWidth;
+        this.canvasElement.height = this._canvasHeight;
         this.canvasCtx = this.canvasElement.getContext('2d');
 
         this.logger.debug(`${this.loggerPrefix} starting filtered stream`);
@@ -90,8 +90,8 @@ export class VideoFilterService {
                     this.logger.error(`${this.loggerPrefix} failed to send image to self segmentation mask`, err);
                 }
             },
-            width: this.canvasWidth,
-            height: this.canvasHeight
+            width: this._canvasWidth,
+            height: this._canvasHeight
         });
         camera.start();
     }
