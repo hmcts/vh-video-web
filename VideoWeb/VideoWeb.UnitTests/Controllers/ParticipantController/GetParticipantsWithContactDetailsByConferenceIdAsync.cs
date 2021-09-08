@@ -74,7 +74,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(conference);
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetJudgesInHearingsTodayAsync())
+                .Setup(x => x.GetHostsInHearingsTodayAsync())
                 .ReturnsAsync(judgesInHearings);
 
             var result = await _sut.GetParticipantsWithContactDetailsByConferenceIdAsync(conference.Id);
