@@ -96,7 +96,8 @@ describe('VideoCallService', () => {
             'addCall',
             'present',
             'getPresentation',
-            'stopPresentation'
+            'stopPresentation',
+            'renegotiate'
         ]);
 
         service = new VideoCallService(
@@ -244,13 +245,12 @@ describe('VideoCallService', () => {
         expect(apiClient.dismissWitness).toHaveBeenCalledWith(conferenceId, witnessId);
     });
 
-    it('should disconnect from call and reconnect when connecting with new devices', () => {
+    it('should call renegotiate', () => {
         service.pexipAPI = pexipSpy;
 
         service.reconnectToCall();
 
-        expect(pexipSpy.disconnectCall).toHaveBeenCalled();
-        expect(pexipSpy.addCall).toHaveBeenCalledWith(null);
+        expect(pexipSpy.renegotiate).toHaveBeenCalled();
     });
 
     it('should select stream and set user_presentation_stream', async () => {

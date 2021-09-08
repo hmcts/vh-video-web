@@ -161,11 +161,6 @@ export class VideoCallService {
     }
 
     private handleSetup(stream: MediaStream | URL) {
-        // if (this.renegotiating) {
-        //     this.logger.warn(`${this.loggerPrefix} Not handling pexip setup event as it was during a renegotation`);
-        //     return;
-        // }
-
         this.onSetupSubject.next(new CallSetup(stream));
     }
 
