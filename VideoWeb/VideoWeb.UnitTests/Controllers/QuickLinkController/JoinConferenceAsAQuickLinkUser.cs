@@ -15,6 +15,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
+using VideoWeb.Helpers.Interfaces;
 using VideoWeb.Mappings;
 using VideoWeb.Mappings.Interfaces;
 
@@ -80,8 +81,10 @@ namespace VideoWeb.UnitTests.Controllers.QuickLinkController
             _mocker.Mock<IConferenceCache>().Verify(x => x.UpdateConferenceAsync(It.Is<Conference>(y => y == conference)), Times.Once());
             _mocker.Mock<IVideoApiClient>().Verify(x => x.AddQuickLinkParticipantAsync(It.Is<Guid>(y => y == hearingId),
                 It.Is<AddQuickLinkParticipantRequest>(y => y.Name == name && y.UserRole == userRole)), Times.Once);
+
+            _mocker.Mock<IParticipantsUpdatedEventNotifier>().Verify(x => x.PushParticipantsUpdatedEvent(conference), Times.Once);
         }
-        
+
         [Test]
         public async Task Should_return_a_status_code_when_a_video_api_exception_is_thrown()
         {
