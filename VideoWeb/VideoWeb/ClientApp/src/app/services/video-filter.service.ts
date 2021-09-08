@@ -12,8 +12,8 @@ import { SessionStorage } from './session-storage';
 export class VideoFilterService {
     private readonly loggerPrefix = '[VideoFilterService] -';
 
-    private readonly canvasWidth = 1280;
-    private readonly canvasHeight = 720;
+    private canvasWidth = 1280;
+    private canvasHeight = 720;
 
     private readonly preferredFilterCache: SessionStorage<BackgroundFilter>;
     readonly PREFERRED_FILTER_KEY = 'vh.preferred.filter';
@@ -65,6 +65,10 @@ export class VideoFilterService {
         if (this.canvasStream) {
             return;
         }
+
+        this.canvasWidth = stream.getVideoTracks()[0].getSettings().width;
+        this.canvasHeight = stream.getVideoTracks()[0].getSettings().height;
+
         this.logger.debug(`${this.loggerPrefix} initialising stream for filter`);
         this.videoElement = document.createElement('video');
         this.videoElement.srcObject = stream;
