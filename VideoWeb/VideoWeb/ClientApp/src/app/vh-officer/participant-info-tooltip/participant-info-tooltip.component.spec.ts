@@ -60,7 +60,7 @@ describe('ParticipantInfoTooltip component', () => {
         expect(hearingRoleElement.nativeElement.innerHTML).toContain(component.quickLinkObserverDisplayText);
     });
 
-    it('returns the normal hearing role for user role other than quick link users', () => {
+    it('returns the normal hearing role for participant role other than quick link users', () => {
         const expectedDisplayText = 'Judge';
         component.participant = new ParticipantContactDetails(
             new ParticipantContactDetailsResponseVho({ role: Role.Judge, id: 'id', hearing_role: expectedDisplayText })
