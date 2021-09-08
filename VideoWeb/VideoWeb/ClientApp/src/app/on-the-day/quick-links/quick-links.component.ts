@@ -12,7 +12,8 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
     selector: 'app-quick-links',
-    templateUrl: './quick-links.component.html'
+    templateUrl: './quick-links.component.html',
+    styleUrls: ['./quick-links.component.scss']
 })
 export class QuickLinksComponent implements OnInit, OnDestroy {
     private loggerPrefix = '[QuickLinksComponent] -';
