@@ -20,6 +20,7 @@ using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
+using VideoWeb.Helpers.Interfaces;
 using VideoWeb.Mappings;
 using VideoWeb.UnitTests.Builders;
 using Endpoint = VideoWeb.Common.Models.Endpoint;
@@ -73,13 +74,11 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventControllerTests
                     It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .ReturnsAsync(mockConference.Object);
 
-            _mocker.Mock<IEventHandlerFactory>()
-                .Setup(x => x.Get(It.Is<EventType>(eventType => eventType == EventType.ParticipantsUpdated)))
-                .Returns(_mocker.Mock<IEventHandler>().Object);
+            _mocker.Mock<IParticipantsUpdatedEventNotifier>();
 
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantRequest, IEnumerable<Participant>, Participant>()).Returns(_mocker.Create<ParticipantRequestMapper>());
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<UpdateParticipantRequest, IEnumerable<Participant>, UpdateParticipant>()).Returns(_mocker.Create<UpdateParticipantRequestToUpdateParticipantMapper>());
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Participant, Conference, ParticipantResponse>()).Returns(_mocker.Create<ParticipantToParticipantResponseMapper>());
+            
         }
 
 
@@ -95,7 +94,7 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventControllerTests
             // Assert
             result.Should().BeOfType<NoContentResult>();
 
-            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == EventType.ParticipantsUpdated && c.ConferenceId == testConferenceId && c.Participants == c.Participants)), Times.Once);
+            _mocker.Mock<IParticipantsUpdatedEventNotifier>().Verify(x => x.PushParticipantsUpdatedEvent(mockConference.Object), Times.Once);
         }
     }
 }
