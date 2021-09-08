@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
 import { Observable, Subject } from 'rxjs';
-import { skip, take, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ApiClient, HearingLayout, SharedParticipantRoom, StartHearingRequest } from 'src/app/services/clients/api-client';
 import { KinlyHeartbeatService } from 'src/app/services/conference/kinly-heartbeat.service';
@@ -51,6 +51,7 @@ export class VideoCallService {
     private onDisconnectedPresentationSubject = new Subject<DisconnectedPresentation>();
 
     private hasDisconnected$ = new Subject();
+    private renegotiating = false;
 
     pexipAPI: PexipClient;
     localOutgoingStream: any;
@@ -84,15 +85,11 @@ export class VideoCallService {
         this.initTurnServer();
         this.pexipAPI.screenshare_fps = 30;
 
-        this.userMediaStreamService.currentStream$.pipe(take(1)).subscribe(stream => {
-            this.pexipAPI.user_media_stream = stream;
-
-            this.userMediaStreamService.currentStream$.pipe(skip(1)).subscribe(currentStream => this.onCurrentStreamChanged(currentStream));
+        this.userMediaStreamService.currentStream$.subscribe(currentStream => {
+            this.onCurrentStreamChanged(currentStream);
         });
 
-        this.pexipAPI.onSetup = function (stream) {
-            self.onSetupSubject.next(new CallSetup(stream));
-        };
+        this.pexipAPI.onSetup = this.handleSetup.bind(this);
 
         this.pexipAPI.onConnect = this.handleConnect.bind(this);
 
@@ -163,10 +160,23 @@ export class VideoCallService {
         this.pexipAPI.call_tag = Guid.create().toString();
     }
 
+    private handleSetup(stream: MediaStream | URL) {
+        // if (this.renegotiating) {
+        //     this.logger.warn(`${this.loggerPrefix} Not handling pexip setup event as it was during a renegotation`);
+        //     return;
+        // }
+
+        this.onSetupSubject.next(new CallSetup(stream));
+    }
+
     private handleConnect(stream: MediaStream | URL) {
+        if (this.renegotiating) {
+            this.logger.warn(`${this.loggerPrefix} Not handling pexip connect event as it was during a renegotation`);
+            return;
+        }
+
         this.kinlyHeartbeatService.initialiseHeartbeat(this.pexipAPI);
         this.userMediaStreamService.streamModified$.pipe(takeUntil(this.hasDisconnected$)).subscribe(() => this.onStreamModified());
-
         this.onConnectedSubject.next(new ConnectedCall(stream));
     }
 
@@ -375,9 +385,12 @@ export class VideoCallService {
         return this.apiClient.dismissWitness(conferenceId, participantId).toPromise();
     }
 
-    reconnectToCall(callType: string = null) {
-        this.pexipAPI.disconnectCall();
-        this.pexipAPI.addCall(callType);
+    reconnectToCall(sendUpdate: boolean = false) {
+        this.logger.info(`${this.loggerPrefix} renegotiating`);
+        this.renegotiating = true;
+        this.pexipAPI.renegotiate(sendUpdate);
+        this.renegotiating = false;
+        this.logger.info(`${this.loggerPrefix} renegotiated`);
     }
 
     async selectScreen() {
