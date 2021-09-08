@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -15,6 +17,8 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
+using VideoWeb.Helpers;
+using VideoWeb.Helpers.Interfaces;
 using VideoWeb.Mappings;
 
 namespace VideoWeb.Controllers
@@ -26,13 +30,15 @@ namespace VideoWeb.Controllers
     public class QuickLinksController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;
+        private readonly IParticipantsUpdatedEventNotifier _participantsUpdatedEventNotifier;
         private readonly IConferenceCache _conferenceCache;
         private readonly IMapperFactory _mapperFactory;
         private readonly ILogger<QuickLinksController> _logger;
 
-        public QuickLinksController(IVideoApiClient videoApiClient, IConferenceCache conferenceCache, IMapperFactory mapperFactory, ILogger<QuickLinksController> logger)
+        public QuickLinksController(IVideoApiClient videoApiClient, IParticipantsUpdatedEventNotifier participantsUpdatedEventNotifier, IConferenceCache conferenceCache, IMapperFactory mapperFactory, ILogger<QuickLinksController> logger)
         {
             _videoApiClient = videoApiClient;
+            _participantsUpdatedEventNotifier = participantsUpdatedEventNotifier;
             _conferenceCache = conferenceCache;
             _mapperFactory = mapperFactory;
             _logger = logger;
@@ -130,6 +136,7 @@ namespace VideoWeb.Controllers
             conference.AddParticipant(requestToParticipantMapper.Map(response.ParticipantDetails));
             
             await _conferenceCache.UpdateConferenceAsync(conference);
+            await _participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference);
         }
     }
 }
