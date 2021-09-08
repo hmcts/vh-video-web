@@ -294,19 +294,24 @@ export class NotificationToastrService {
     }
 
     showParticipantAdded(participant: ParticipantResponse, inHearing: boolean = false): VhToastComponent {
+        const showParty = !!participant.case_type_group;
+        const messageBody = this.translateService.instant(
+            showParty
+                ? 'notification-toastr.participant-added.message-with-party'
+                : 'notification-toastr.participant-added.message-without-party',
+            {
+                role: this.translateHearingRole(participant.hearing_role),
+                party: showParty ? this.translateCaseRole(participant.case_type_group) : null
+            }
+        );
+
         let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${this.translateService.instant(
             'notification-toastr.participant-added.title',
             {
                 name: participant.name
             }
         )}</span>`;
-        message += `<span class="toast-content toast-body">${this.translateService.instant(
-            'notification-toastr.participant-added.message',
-            {
-                role: this.translateHearingRole(participant.hearing_role),
-                party: this.translateCaseRole(participant.case_type_group)
-            }
-        )}</span>`;
+        message += `<span class="toast-content toast-body">${messageBody}</span>`;
 
         const toast = this.toastr.show('', '', {
             timeOut: 0,
