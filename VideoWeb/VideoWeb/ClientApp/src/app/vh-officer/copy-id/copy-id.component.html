@@ -1,11 +1,9 @@
-<div>
-  <img
+<span
     appTooltip
     [text]="tooltip"
     (tooltipShown)="resetText()"
-    class="icons"
-    src="/assets/images/share.png"
     [attr.alt]="'copy-id.alt' | translate"
-    (click)="copyToClipboard(conference); $event.stopPropagation()"
-  />
-</div>
+    (click)="copyToClipboard(conference); $event.stopPropagation()">
+  <i class="fad fa-address-card" aria-hidden="true"></i>
+  <a class="copy-link-text" [routerLink]="">{{'copy-id.display-text' | translate}}</a>
+</span>

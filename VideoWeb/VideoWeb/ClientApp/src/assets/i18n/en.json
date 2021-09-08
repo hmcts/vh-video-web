@@ -776,7 +776,8 @@
     "start": "start"
   },
   "copy-telephone-id": {
-    "alt": "Copy joining by phone details to clipboard"
+    "alt": "Copy joining by phone details to clipboard",
+    "display-text": "Copy joining by phone details to clipboard"
   },
   "participant-network-status": {
     "icon-alt": "Open instant messaging chat window arrow"
@@ -800,7 +801,12 @@
     "cancel-filters-alt": "Cancel filters"
   },
   "copy-id": {
-    "alt": "Copy conference id icon"
+    "alt": "Copy conference id icon",
+    "display-text": "Copy hearing ID to clipboard"
+  },
+  "copy-quick-link":{
+    "tooltip-copied": "Join by quick link details copied to clipboard",
+    "display-text": "Copy join by quick link details to clipboard"
   },
   "admin-im-list": {
     "judge-icon-alt": "Judge icon",
@@ -1024,7 +1030,8 @@
     },
     "participant-added": {
       "title": "{{name}}",
-      "message": "{{role}} ({{party}}) has been added to the hearing.",
+      "message-without-party": "{{role}} has been added to the hearing.",
+      "message-with-party": "{{role}} ({{party}}) has been added to the hearing.",
       "dismiss": "Dismiss"
     }
   },

@@ -221,7 +221,7 @@ namespace VideoWeb.Controllers
                 var judgesInHearingsToday = await _videoApiClient.GetJudgesInHearingsTodayAsync();
 
                 var participantContactDetailsResponseVhoMapper = _mapperFactory
-                    .Get<Conference, IEnumerable<JudgeInHearingResponse>,
+                    .Get<Conference, IEnumerable<ParticipantInHearingResponse>,
                         IEnumerable<ParticipantContactDetailsResponseVho>>();
                 var response = participantContactDetailsResponseVhoMapper.Map(conference, judgesInHearingsToday);
 
