@@ -62,6 +62,13 @@ describe('ParticipantPanelModel', () => {
         expect(model.isJudicialOfficeHolder).toBeFalsy();
     });
 
+    it('should return false when participant is a witness and status is in hearing', () => {
+        participant.hearing_role = HearingRole.WITNESS;
+        participant.status = ParticipantStatus.InHearing;
+        model = mapper.mapFromParticipantUserResponse(participant);
+        expect(model.isWitnessObserverReadyToJoin).toBeFalsy();
+    });
+
     it('should return false when participant is a quick link observer and status is in hearing', () => {
         participant.role = Role.QuickLinkObserver;
         participant.status = ParticipantStatus.InHearing;
@@ -70,10 +77,10 @@ describe('ParticipantPanelModel', () => {
         expect(model.isWitnessObserverReadyToJoin).toBeFalsy();
     });
 
-    it('should return false when participant is a witness and status is in hearing', () => {
-        participant.hearing_role = HearingRole.WITNESS;
-        participant.status = ParticipantStatus.InHearing;
+    it('should return false when participant is a quick link observer and status is not in hearing', () => {
+        participant.hearing_role = HearingRole.QUICK_LINK_OBSERVER;
+        participant.status = ParticipantStatus.Available;
         model = mapper.mapFromParticipantUserResponse(participant);
-        expect(model.isWitnessObserverReadyToJoin).toBeFalsy();
+        expect(model.isWitnessObserverReadyToJoin).toBeTruthy();
     });
 });
