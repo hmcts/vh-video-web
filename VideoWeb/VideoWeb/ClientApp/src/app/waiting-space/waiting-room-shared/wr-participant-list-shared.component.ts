@@ -123,15 +123,15 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
                 x.role !== Role.Judge &&
                 x.role !== Role.JudicialOfficeHolder &&
                 x.hearing_role !== HearingRole.OBSERVER &&
-                x.hearing_role !== HearingRole.QUICK_LINK_OBSERVER &&
-                x.hearing_role !== HearingRole.QUICK_LINK_PARTICIPANT &&
+                x.role !== Role.QuickLinkObserver &&
+                x.role !== Role.QuickLinkParticipant &&
                 x.hearing_role !== HearingRole.STAFF_MEMBER
         );
 
         nonJudgeParts = [
             ...nonJudgeParts,
             ...this.conference.participants
-                .filter(x => x.hearing_role === HearingRole.QUICK_LINK_PARTICIPANT)
+                .filter(x => x.role === Role.QuickLinkParticipant)
                 .sort((a, b) => a.display_name.localeCompare(b.display_name))
         ];
 
@@ -196,7 +196,7 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
 
     protected filterObservers(): void {
         this.observers = this.conference.participants
-            .filter(x => x.hearing_role === HearingRole.OBSERVER || x.hearing_role === HearingRole.QUICK_LINK_OBSERVER)
+            .filter(x => x.hearing_role === HearingRole.OBSERVER || x.role === Role.QuickLinkObserver)
             .sort((a, b) => a.display_name.localeCompare(b.display_name));
     }
 
