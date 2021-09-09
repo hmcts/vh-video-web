@@ -3,13 +3,13 @@
 
   <p>{{ 'quick-participant-landing-page.paragraph1' | translate }}</p>
 
-  <form [formGroup]="quickLinkForm" class="govuk-form-group" (ngSubmit)="onSubmit()">
+  <form [formGroup]="quickLinkForm" class="govuk-form-group govuk-!-width-one-half" (ngSubmit)="onSubmit()">
     <div [ngClass]="{ 'govuk-form-group--error': error.nameError }" class="govuk-!-margin-bottom-5">
       <p *ngIf="error.nameError" class="govuk-error-message">{{ 'quick-participant-landing-page.name-error' | translate }}</p>
       <label class="govuk-label" for="full-name">
         {{ 'quick-participant-landing-page.name-label' | translate }}
       </label>
-      <input formControlName="name" class="govuk-input full-name-text-input" id="full-name" name="full-name" type="text" spellcheck="false" autocomplete="name">
+      <input formControlName="name" class="govuk-input" id="full-name" name="full-name" type="text" spellcheck="false" autocomplete="name">
     </div>
 
     <div [ngClass]="{ 'govuk-form-group--error': error.roleError }">
