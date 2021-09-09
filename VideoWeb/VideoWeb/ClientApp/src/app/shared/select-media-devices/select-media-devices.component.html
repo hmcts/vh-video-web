@@ -10,7 +10,7 @@
         <!-- Left hand side -->
         <div class="govuk-grid-column-one-half">
           <div class="govuk-grid-column-full" [ngClass]="connectWithCameraOn ? 'vh-fade-in' : 'vh-fade-out'">
-            <video id="preferredCameraStream" [srcObject]="selectedCameraStream" autoplay width="100%" height="auto">
+            <video id="preferredCameraStream" [srcObject]="selectedCameraStream" autoplay width="100%" height="auto" class="selfie-view">
               {{ 'select-media-devices.browser-support' | translate }}
             </video>
           </div>

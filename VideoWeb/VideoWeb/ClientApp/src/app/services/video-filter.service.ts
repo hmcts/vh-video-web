@@ -39,7 +39,7 @@ export class VideoFilterService {
     imgs: Map<BackgroundFilter, HTMLImageElement> = new Map();
 
     constructor(private logger: Logger, private configService: ConfigService, private deviceTypeService: DeviceTypeService) {
-        this.configService.getClientSettings().subscribe(settings => (this.enableVideoFilters = false));
+        this.configService.getClientSettings().subscribe(settings => (this.enableVideoFilters = settings.enable_video_filters));
         this.preferredFilterCache = new SessionStorage(this.PREFERRED_FILTER_KEY);
 
         if (!this.preferredFilterCache.get()) {
@@ -57,7 +57,7 @@ export class VideoFilterService {
         });
         this.selfieSegmentation.setOptions({
             modelSelection: 1,
-            selfieMode: true
+            selfieMode: false
         });
         this.selfieSegmentation.onResults(results => this.onSelfieSegmentationResults(results));
     }
