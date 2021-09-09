@@ -80,7 +80,8 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
 
     toggleSwitch() {
         this.connectWithCameraOn = !this.connectWithCameraOn;
-        this.logger.debug(`${this.loggerPrefix} Toggle camera switch to ${this.connectWithCameraOn ? 'on' : 'off'}`);
+        this.logger.debug(`${this.loggerPrefix} Toggled camera switch to ${this.connectWithCameraOn ? 'on' : 'off'}`);
+        this.userMediaService.updateIsAudioOnly(!this.connectWithCameraOn);
     }
 
     transitionstart() {
@@ -92,7 +93,6 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     }
 
     onClose() {
-        this.userMediaService.updateIsAudioOnly(!this.connectWithCameraOn);
         this.shouldClose.emit();
     }
 

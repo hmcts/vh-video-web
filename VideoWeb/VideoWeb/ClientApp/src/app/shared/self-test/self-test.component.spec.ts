@@ -70,7 +70,7 @@ describe('SelfTestComponent', () => {
         getSpiedPropertyGetter(userMediaServiceSpy, 'connectedDevices$').and.returnValue(connectedDevicesSubject.asObservable());
         getSpiedPropertyGetter(userMediaServiceSpy, 'activeMicrophoneDevice$').and.returnValue(activatedMicrophoneSubject.asObservable());
 
-        mediaStreamServiceSpy = jasmine.createSpyObj<MediaStreamService>(['getStreamForMic', 'stopStream']);
+        mediaStreamServiceSpy = jasmine.createSpyObj<MediaStreamService>(['getStreamForMic']);
 
         videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>([
             'onCallConnected',
@@ -489,7 +489,6 @@ describe('SelfTestComponent', () => {
             component.closeMicStreams();
 
             // Assert
-            expect(mediaStreamServiceSpy.stopStream).toHaveBeenCalledOnceWith(stream);
             expect(component.preferredMicrophoneStream).toBeNull();
         });
     });

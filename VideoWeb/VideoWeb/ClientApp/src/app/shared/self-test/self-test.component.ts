@@ -285,7 +285,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     }
 
     closeMicStreams() {
-        this.mediaStreamService.stopStream(this.preferredMicrophoneStream);
         this.preferredMicrophoneStream = null;
     }
 

@@ -39,13 +39,4 @@ export class MediaStreamService {
             })
         );
     }
-
-    stopStream(stream: MediaStream) {
-        if (!stream) {
-            return;
-        }
-        stream.getTracks().forEach(track => {
-            track.stop();
-        });
-    }
 }

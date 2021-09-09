@@ -150,45 +150,4 @@ describe('MediaStreamService', () => {
             expect(errorServiceSpy.handlePexipError).toHaveBeenCalledTimes(1);
         }));
     });
-
-    describe('stopStream', () => {
-        it('should call stop on all tracks', () => {
-            // Arrange
-            const tracks = [];
-            tracks.push(
-                jasmine.createSpyObj<MediaStreamTrack>(['stop'])
-            );
-            tracks.push(
-                jasmine.createSpyObj<MediaStreamTrack>(['stop'])
-            );
-            tracks.push(
-                jasmine.createSpyObj<MediaStreamTrack>(['stop'])
-            );
-
-            const mediaStreamSpy = jasmine.createSpyObj<MediaStream>(['getTracks']);
-            mediaStreamSpy.getTracks.and.returnValue(tracks);
-
-            // Act
-            sut.stopStream(mediaStreamSpy);
-
-            // Assert
-            tracks.forEach(track => expect(track.stop).toHaveBeenCalledTimes(1));
-        });
-
-        it('should do nothing if the stream is null', () => {
-            // Act
-            sut.stopStream(null);
-
-            // Assert
-            expect(sut).toBeTruthy();
-        });
-
-        it('should do nothing if the stream is undefined', () => {
-            // Act
-            sut.stopStream(undefined);
-
-            // Assert
-            expect(sut).toBeTruthy();
-        });
-    });
 });
