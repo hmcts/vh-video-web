@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { take } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -73,7 +73,7 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
     }
 
     async requestMedia() {
-        this.userMediaStreamService.currentStream$.pipe(take(1)).subscribe({
+        this.userMediaStreamService.currentStream$.pipe(first()).subscribe({
             next: stream => {
                 this.mediaAccepted = true;
                 this.userPrompted = true;
