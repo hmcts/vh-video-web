@@ -3,6 +3,7 @@ import { Camera } from '@mediapipe/camera_utils';
 import { Results, SelfieSegmentation } from '@mediapipe/selfie_segmentation';
 import { Observable, Subject } from 'rxjs';
 import { browsers } from '../shared/browser.constants';
+import { ConfigService } from './api/config.service';
 import { DeviceTypeService } from './device-type.service';
 import { Logger } from './logging/logger-base';
 import { BackgroundFilter } from './models/background-filter';
@@ -16,6 +17,7 @@ export class VideoFilterService {
 
     private _canvasWidth = 1280;
     private _canvasHeight = 720;
+    private enableVideoFilters: boolean;
 
     private readonly preferredFilterCache: SessionStorage<BackgroundFilter>;
     readonly PREFERRED_FILTER_KEY = 'vh.preferred.filter';
@@ -36,7 +38,8 @@ export class VideoFilterService {
     activeFilter: BackgroundFilter;
     imgs: Map<BackgroundFilter, HTMLImageElement> = new Map();
 
-    constructor(private deviceTypeService: DeviceTypeService, private logger: Logger) {
+    constructor(private logger: Logger, private configService: ConfigService, private deviceTypeService: DeviceTypeService) {
+        this.configService.getClientSettings().subscribe(settings => (this.enableVideoFilters = false));
         this.preferredFilterCache = new SessionStorage(this.PREFERRED_FILTER_KEY);
 
         if (!this.preferredFilterCache.get()) {
@@ -125,7 +128,8 @@ export class VideoFilterService {
     }
 
     doesSupportVideoFiltering() {
-        return !this.deviceTypeService.isIpad() && !this.deviceTypeService.getBrowserName().includes(browsers.Safari);
+        const allowedBrowser = !this.deviceTypeService.getBrowserName().includes(browsers.Safari);
+        return this.enableVideoFilters && allowedBrowser && !this.deviceTypeService.isTablet();
     }
 
     private onSelfieSegmentationResults(results: Results): void {
