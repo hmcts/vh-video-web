@@ -4,7 +4,7 @@ using VideoWeb.Common.Models;
 
 namespace VideoWeb.Contract.Responses
 {
-    public class ConferenceForJudgeResponse
+    public class ConferenceForHostResponse
     {
         /// <summary>
         /// Conference UUID

@@ -3,24 +3,24 @@ using System.Linq;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
-using Conference = VideoApi.Contract.Responses.ConferenceForJudgeResponse;
-using ConferenceForJudgeResponse = VideoWeb.Contract.Responses.ConferenceForJudgeResponse;
-using Participant = VideoApi.Contract.Responses.ParticipantForJudgeResponse;
+using Conference = VideoApi.Contract.Responses.ConferenceForHostResponse;
+using ConferenceForHostResponse = VideoWeb.Contract.Responses.ConferenceForHostResponse;
+using Participant = VideoApi.Contract.Responses.ParticipantForHostResponse;
 
 namespace VideoWeb.Mappings
 {
-    public class ConferenceForJudgeResponseMapper : IMapTo<Conference, ConferenceForJudgeResponse>
+    public class ConferenceForHostResponseMapper : IMapTo<Conference, ConferenceForHostResponse>
     {
         private readonly IMapTo<Participant, ParticipantForJudgeResponse> _participantForJudgeResponseMapper;
 
-        public ConferenceForJudgeResponseMapper(IMapTo<Participant, ParticipantForJudgeResponse> participantForJudgeResponseMapper)
+        public ConferenceForHostResponseMapper(IMapTo<Participant, ParticipantForJudgeResponse> participantForJudgeResponseMapper)
         {
             _participantForJudgeResponseMapper = participantForJudgeResponseMapper;
         }
 
-        public ConferenceForJudgeResponse Map(Conference conference)
+        public ConferenceForHostResponse Map(Conference conference)
         {
-            return new ConferenceForJudgeResponse
+            return new ConferenceForHostResponse
             {
                 Id = conference.Id,
                 Status = Enum.Parse<ConferenceStatus>(conference.Status.ToString()),

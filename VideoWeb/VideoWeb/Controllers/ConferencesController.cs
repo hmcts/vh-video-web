@@ -15,11 +15,11 @@ using VideoWeb.Helpers;
 using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
-using JudgeConference = VideoApi.Contract.Responses.ConferenceForJudgeResponse;
+using JudgeConference = VideoApi.Contract.Responses.ConferenceForHostResponse;
 using IndividualConference = VideoApi.Contract.Responses.ConferenceForIndividualResponse;
 using ConferenceForIndividualResponse = VideoWeb.Contract.Responses.ConferenceForIndividualResponse;
-using ConferenceForJudgeResponse = VideoWeb.Contract.Responses.ConferenceForJudgeResponse;
 using VideoWeb.Middleware;
+using ConferenceForHostResponse = VideoWeb.Contract.Responses.ConferenceForHostResponse;
 
 namespace VideoWeb.Controllers
 {
@@ -50,17 +50,17 @@ namespace VideoWeb.Controllers
         /// </summary>
         /// <returns>List of conferences, if any</returns>
         [HttpGet("judges")]
-        [ProducesResponseType(typeof(List<ConferenceForJudgeResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<ConferenceForHostResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [SwaggerOperation(OperationId = "GetConferencesForJudge")]
         [Authorize("Judicial")]
-        public async Task<ActionResult<List<ConferenceForJudgeResponse>>> GetConferencesForJudgeAsync()
+        public async Task<ActionResult<List<ConferenceForHostResponse>>> GetConferencesForJudgeAsync()
         {
             _logger.LogDebug("GetConferencesForJudge");
            
             try
             {
-                var conferenceForJudgeResponseMapper = _mapperFactory.Get<JudgeConference, ConferenceForJudgeResponse>();
+                var conferenceForJudgeResponseMapper = _mapperFactory.Get<JudgeConference, ConferenceForHostResponse>();
                 var username = User.Identity.Name;
                 var conferencesForJudge = await _videoApiClient.GetConferencesTodayForJudgeByUsernameAsync(username);
                 var response = conferencesForJudge

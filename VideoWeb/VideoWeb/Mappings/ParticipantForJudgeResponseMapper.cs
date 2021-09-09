@@ -1,7 +1,7 @@
 using System;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings.Interfaces;
-using Participant = VideoApi.Contract.Responses.ParticipantForJudgeResponse;
+using Participant = VideoApi.Contract.Responses.ParticipantForHostResponse;
 using ParticipantForJudgeResponse = VideoWeb.Contract.Responses.ParticipantForJudgeResponse;
 
 namespace VideoWeb.Mappings

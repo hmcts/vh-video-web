@@ -2,11 +2,11 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Mappings;
-using Participant = VideoApi.Contract.Responses.ParticipantForJudgeResponse;
+using Participant = VideoApi.Contract.Responses.ParticipantForHostResponse;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class ParticipantForJudgeResponseMapperTests : BaseMockerSutTestSetup<ParticipantForJudgeResponseMapper>
+    public class ParticipantForHostResponseMapperTests : BaseMockerSutTestSetup<ParticipantForJudgeResponseMapper>
     {
         [Test]
         public void Should_map_all_participants()
