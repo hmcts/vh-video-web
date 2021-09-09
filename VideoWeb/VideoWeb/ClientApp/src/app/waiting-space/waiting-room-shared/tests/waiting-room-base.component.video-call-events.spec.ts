@@ -1,4 +1,4 @@
-import { fakeAsync, tick } from '@angular/core/testing';
+import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { ConferenceResponse, ConferenceStatus, ParticipantResponse, TokenResponse } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -45,6 +45,8 @@ import {
     videoWebService
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
+import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
+import { Subject } from 'rxjs';
 
 describe('WaitingRoomComponent Video Call', () => {
     let component: WRTestComponent;
@@ -105,13 +107,20 @@ describe('WaitingRoomComponent Video Call', () => {
         }
     });
 
-    it('should get token and connect to video call', async () => {
+    it('should get token and connect to video call', fakeAsync(() => {
         videoCallService.makeCall.calls.reset();
 
-        await component.connectToPexip();
+        const eventsHubReadySubject = new Subject<any>();
+        eventsServiceSpy.onEventsHubReady.and.returnValue(eventsHubReadySubject.asObservable());
+
+        component.connectToPexip();
+        flush();
+
+        eventsHubReadySubject.next();
+        flush();
 
         expect(videoCallService.makeCall).toHaveBeenCalled();
-    });
+    }));
 
     it('should init pexip setup to be called on start', () => {
         expect(videoCallService.setupClient).toHaveBeenCalled();
