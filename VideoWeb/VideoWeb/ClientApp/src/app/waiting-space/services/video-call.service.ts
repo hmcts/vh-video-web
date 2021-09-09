@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
-import { Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Observable, Subject, zip } from 'rxjs';
+import { take, tap } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ApiClient, HearingLayout, SharedParticipantRoom, StartHearingRequest } from 'src/app/services/clients/api-client';
 import { KinlyHeartbeatService } from 'src/app/services/conference/kinly-heartbeat.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 
 import {
     CallError,
@@ -59,7 +59,6 @@ export class VideoCallService {
     constructor(
         private logger: Logger,
         private userMediaService: UserMediaService,
-        private userMediaStreamService: UserMediaStreamService,
         private apiClient: ApiClient,
         private configService: ConfigService,
         private kinlyHeartbeatService: KinlyHeartbeatService,
@@ -76,7 +75,7 @@ export class VideoCallService {
      * This will initialise the pexip client and initalise the call with
      * the user's preferred camera and microphone (if selected)
      */
-    async setupClient() {
+    async setupClient(): Promise<UserMediaDevice[]> {
         this.hasDisconnected$ = new Subject();
 
         const self = this;
@@ -84,10 +83,6 @@ export class VideoCallService {
         this.initCallTag();
         this.initTurnServer();
         this.pexipAPI.screenshare_fps = 30;
-
-        this.userMediaStreamService.currentStream$.subscribe(currentStream => {
-            this.onCurrentStreamChanged(currentStream);
-        });
 
         this.pexipAPI.onSetup = this.handleSetup.bind(this);
 
@@ -131,19 +126,19 @@ export class VideoCallService {
             self.logger.info(`${self.loggerPrefix} Screenshare stopped : ${JSON.stringify(reason)}`);
             self.onStoppedScreenshareSubject.next(new StoppedScreenshare(reason));
         };
-    }
 
-    private onCurrentStreamChanged(stream: MediaStream) {
-        const shouldReconnect = !!this.pexipAPI.user_media_stream && stream !== this.pexipAPI.user_media_stream;
-        this.pexipAPI.user_media_stream = stream;
+        return zip(this.userMediaService.activeVideoDevice$, this.userMediaService.activeMicrophoneDevice$)
+            .pipe(
+                take(1),
+                tap(devices => {
+                    const videoDevice = devices[0];
+                    const microphoneDevice = devices[1];
 
-        if (shouldReconnect) {
-            this.reconnectToCall();
-        }
-    }
-
-    private onStreamModified() {
-        this.reconnectToCall();
+                    this.pexipAPI.video_source = videoDevice.deviceId;
+                    this.pexipAPI.audio_source = microphoneDevice.deviceId;
+                })
+            )
+            .toPromise();
     }
 
     initTurnServer() {
@@ -171,7 +166,6 @@ export class VideoCallService {
         }
 
         this.kinlyHeartbeatService.initialiseHeartbeat(this.pexipAPI);
-        this.userMediaStreamService.streamModified$.pipe(takeUntil(this.hasDisconnected$)).subscribe(() => this.onStreamModified());
         this.onConnectedSubject.next(new ConnectedCall(stream));
     }
 
