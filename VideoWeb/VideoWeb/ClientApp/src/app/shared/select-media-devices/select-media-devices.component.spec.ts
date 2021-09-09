@@ -9,7 +9,7 @@ import { Subject } from 'rxjs';
 import { UserMediaDevice } from '../models/user-media-device';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 
-fdescribe('SelectMediaDevicesComponent', () => {
+describe('SelectMediaDevicesComponent', () => {
     let component: SelectMediaDevicesComponent;
     let userMediaService: jasmine.SpyObj<UserMediaService>;
     let userMediaStreamServiceSpy: jasmine.SpyObj<UserMediaStreamService>;

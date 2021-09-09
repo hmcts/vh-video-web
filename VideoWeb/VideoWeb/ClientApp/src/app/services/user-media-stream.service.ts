@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import 'webrtc-adapter';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Logger } from './logging/logger-base';
-import { Observable, ReplaySubject, Subject, zip } from 'rxjs';
+import { Observable, of, ReplaySubject, Subject, zip } from 'rxjs';
 import { UserMediaService } from './user-media.service';
-import { skip, take } from 'rxjs/operators';
+import { map, skip, take } from 'rxjs/operators';
 import { MediaStreamService } from './media-stream.service';
 
 export const mustProvideAMicrophoneDeviceError = () => new Error('A microphone device must be provided');
@@ -138,6 +138,7 @@ export class UserMediaStreamService {
             });
 
             this.activeCameraStream?.getVideoTracks().forEach(track => this.currentStream.removeTrack(track));
+            this.activeCameraStreamSubject.next(null);
         } else {
             this.logger.debug(`${this.loggerPrefix} adding active camera tracks.`, {
                 audioOnly: this.isAudioOnly,
@@ -146,6 +147,7 @@ export class UserMediaStreamService {
             });
 
             this.activeCameraStream?.getVideoTracks().forEach(track => this.currentStream.addTrack(track));
+            this.activeCameraStreamSubject.next(this.activeCameraStream);
         }
 
         this.streamModifiedSubject.next();
@@ -174,7 +176,6 @@ export class UserMediaStreamService {
                 track: track
             });
         });
-        this.activeCameraStream = null;
 
         this.mediaStreamService
             .getStreamForCam(cameraDevice)
@@ -236,7 +237,6 @@ export class UserMediaStreamService {
                 track: track
             });
         });
-        this.activeMicrophoneStream = null;
 
         this.mediaStreamService
             .getStreamForMic(microphoneDevice)

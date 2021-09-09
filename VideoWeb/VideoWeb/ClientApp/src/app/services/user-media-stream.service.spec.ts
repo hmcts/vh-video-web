@@ -191,6 +191,30 @@ describe('UserMediaStreamService', () => {
             // Assert
             expect(wasModified).toBeTrue();
         }));
+
+        it('should emit the active camera stream', fakeAsync(() => {
+            // Act
+            let stream: MediaStream | null;
+            sut.activeCameraStream$.subscribe(result => (stream = result));
+
+            activeCameraDeviceSubject.next(cameraTwoDevice);
+            flush();
+
+            // Assert
+            expect(stream).toBe(cameraTwoStream);
+        }));
+
+        it('should emit the active microphone stream', fakeAsync(() => {
+            // Act
+            let stream: MediaStream | null;
+            sut.activeMicrophoneStream$.subscribe(result => (stream = result));
+
+            activeMicrophoneDeviceSubject.next(microphoneTwoDevice);
+            flush();
+
+            // Assert
+            expect(stream).toBe(microphoneTwoStream);
+        }));
     });
 
     describe('on active camera change during audio only; then audio only is turned off', () => {
@@ -228,6 +252,31 @@ describe('UserMediaStreamService', () => {
     });
 
     describe('on is audio only changed', () => {
+        it('should emit null for the active video stream when audio only', fakeAsync(() => {
+            // Act
+            let stream: MediaStream | null = new MediaStream();
+            sut.activeCameraStream$.subscribe(result => (stream = result));
+
+            isAudioOnlySubject.next(true);
+            flush();
+
+            // Assert
+            expect(stream).toBeNull();
+        }));
+
+        it('should emit stream for the active video stream when NOT audio only', fakeAsync(() => {
+            // Act
+            let stream: MediaStream | null = null;
+            sut.activeCameraStream$.subscribe(result => (stream = result));
+            flush();
+
+            isAudioOnlySubject.next(false);
+            flush();
+
+            // Assert
+            expect(stream).toBe(cameraOneStream);
+        }));
+
         it('should remove the existing tracks for the active video camera when audio only is true', fakeAsync(() => {
             // Arrange
             const expectedNumberOfTracks = 1; // Only audio track

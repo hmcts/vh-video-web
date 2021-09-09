@@ -480,7 +480,7 @@ describe('SelfTestComponent', () => {
     });
 
     describe('closeMicStreams', () => {
-        it('should call stopStream and set preferred microphone to null', () => {
+        it('should set preferred microphone to null', () => {
             // Arrange
             const stream = new MediaStream();
             component.preferredMicrophoneStream = stream;
