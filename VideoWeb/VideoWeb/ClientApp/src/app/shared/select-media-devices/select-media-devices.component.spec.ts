@@ -3,8 +3,10 @@ import { Guid } from 'guid-typescript';
 import { of, Subject } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { Role, UserProfileResponse } from 'src/app/services/clients/api-client';
+import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { MediaStreamService } from 'src/app/services/media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { VideoFilterService } from 'src/app/services/video-filter.service';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
@@ -24,6 +26,7 @@ describe('SelectMediaDevicesComponent', () => {
     let userMediaService: jasmine.SpyObj<UserMediaService>;
     let mediaStreamService: jasmine.SpyObj<MediaStreamService>;
     let profileService: jasmine.SpyObj<ProfileService>;
+    let videoFilterService: jasmine.SpyObj<VideoFilterService>;
 
     const testData = new MediaDeviceTestData();
     const mockCamStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
@@ -40,6 +43,7 @@ describe('SelectMediaDevicesComponent', () => {
             'getStreamForMic'
         ]);
         profileService = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
+        videoFilterService = jasmine.createSpyObj<VideoFilterService>('VideoFilterService', ['doesSupportVideoFiltering']);
         mediaStreamService.getStreamForCam.and.returnValue(of(mockCamStream));
         mediaStreamService.getStreamForMic.and.returnValue(of(mockMicStream));
     });
@@ -55,6 +59,7 @@ describe('SelectMediaDevicesComponent', () => {
         activeMicrophoneDeviceSubject = new Subject<UserMediaDevice>();
         isAudioOnlySubject = new Subject<boolean>();
         profileService.getUserProfile.and.returnValue(Promise.resolve(mockProfile));
+        videoFilterService.doesSupportVideoFiltering.and.returnValue(true);
 
         getSpiedPropertyGetter(userMediaService, 'activeVideoDevice$').and.returnValue(activeVideoDeviceSubject.asObservable());
         getSpiedPropertyGetter(userMediaService, 'activeMicrophoneDevice$').and.returnValue(activeMicrophoneDeviceSubject.asObservable());
@@ -66,7 +71,8 @@ describe('SelectMediaDevicesComponent', () => {
             mediaStreamService,
             new MockLogger(),
             translateServiceSpy,
-            profileService
+            profileService,
+            videoFilterService
         );
         component.availableCameraDevices = testData.getListOfCameras();
     }));

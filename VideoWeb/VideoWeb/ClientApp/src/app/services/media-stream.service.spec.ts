@@ -46,7 +46,11 @@ describe('MediaStreamService', () => {
         navigatorSpy = jasmine.createSpyObj<Navigator>([], ['mediaDevices']);
         getSpiedPropertyGetter(navigatorSpy, 'mediaDevices').and.returnValue(mediaDevicesSpy);
 
-        videoFilterStreamServiceSpy = jasmine.createSpyObj<VideoFilterService>(['initFilterFromMediaStream', 'startFilteredStream']);
+        videoFilterStreamServiceSpy = jasmine.createSpyObj<VideoFilterService>([
+            'initFilterFromMediaStream',
+            'startFilteredStream',
+            'doesSupportVideoFiltering'
+        ]);
         const filterStreamTracks = [];
         filterStreamTracks.push(
             jasmine.createSpyObj<MediaStreamTrack>(['stop'])
@@ -58,6 +62,7 @@ describe('MediaStreamService', () => {
         filterStream.getTracks.and.returnValue(filterStreamTracks);
 
         videoFilterStreamServiceSpy.startFilteredStream.and.returnValue(filterStream);
+        videoFilterStreamServiceSpy.doesSupportVideoFiltering.and.returnValue(true);
 
         sut = new MediaStreamService(loggerSpy, errorServiceSpy, navigatorSpy, videoFilterStreamServiceSpy);
     });

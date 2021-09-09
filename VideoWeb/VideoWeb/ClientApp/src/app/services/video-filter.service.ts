@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Camera } from '@mediapipe/camera_utils';
 import { Results, SelfieSegmentation } from '@mediapipe/selfie_segmentation';
 import { Observable, Subject } from 'rxjs';
+import { browsers } from '../shared/browser.constants';
+import { DeviceTypeService } from './device-type.service';
 import { Logger } from './logging/logger-base';
 import { BackgroundFilter } from './models/background-filter';
 import { SessionStorage } from './session-storage';
@@ -34,7 +36,7 @@ export class VideoFilterService {
     activeFilter: BackgroundFilter;
     imgs: Map<BackgroundFilter, HTMLImageElement> = new Map();
 
-    constructor(private logger: Logger) {
+    constructor(private deviceTypeService: DeviceTypeService, private logger: Logger) {
         this.preferredFilterCache = new SessionStorage(this.PREFERRED_FILTER_KEY);
 
         if (!this.preferredFilterCache.get()) {
@@ -120,6 +122,10 @@ export class VideoFilterService {
             this.logger.debug(`${this.loggerPrefix} Filter off`);
             this._onFilterChanged.next(null);
         }
+    }
+
+    doesSupportVideoFiltering() {
+        return !this.deviceTypeService.isIpad() && !this.deviceTypeService.getBrowserName().includes(browsers.Safari);
     }
 
     private onSelfieSegmentationResults(results: Results): void {
