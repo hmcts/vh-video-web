@@ -83,6 +83,9 @@ describe('JudgeParticipantStatusListComponent', () => {
 
         expect(component.staffMembers).toBeDefined();
         expect(component.staffMembers.length).toBe(1);
+        expect(component.staffMembers[0].display_name).toBe(
+            testData.getListOfParticipantDetails().find(p => p.hearing_role === HearingRole.STAFF_MEMBER).display_name
+        );
 
         expect(component.wingers).toBeDefined();
         expect(component.wingers.length).toBe(1);
