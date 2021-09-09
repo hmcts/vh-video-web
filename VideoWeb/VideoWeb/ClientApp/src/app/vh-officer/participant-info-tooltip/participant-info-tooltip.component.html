@@ -7,8 +7,11 @@
   </div>
   <div class="govuk-grid-column-full">
     <p id="tooltip-hearing-role-{{ participant.id }}" class="govuk-!-margin-bottom-1">
-      {{ participant.hearingRole }}
+      {{this.getHearingRole()}}
     </p>
+  </div>
+  <div class="govuk-grid-column-full" *ngIf="participant.isQuickLinkUser">
+    <p id="tooltip-joined-by-quick-link-{{ participant.id }}" class="govuk-!-margin-bottom-1">{{ joinByQuickLinkText }}</p>
   </div>
   <div class="govuk-grid-column-full">
     <p *ngIf="participant.showCaseRole" id="tooltip-case-role-{{ participant.id }}" class="govuk-!-margin-bottom-1">
