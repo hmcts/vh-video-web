@@ -10,7 +10,7 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
-import { first, timeout } from 'rxjs/operators';
+import { first, take, timeout } from 'rxjs/operators';
 
 @Component({
     selector: 'app-switch-on-camera-microphone',
@@ -73,25 +73,22 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
     }
 
     async requestMedia() {
-        this.userMediaStreamService.currentStream$
-            .pipe(first())
-            .pipe(timeout(1000))
-            .subscribe({
-                next: stream => {
-                    this.mediaAccepted = true;
-                    this.userPrompted = true;
-                },
-                error: error => {
-                    this.mediaAccepted = false;
-                    this.userPrompted = false;
-                    this.logger.warn(`[SwitchOnCameraMicrophone] - ${this.participantName} denied access to camera.`, {
-                        conference: this.conferenceId,
-                        participant: this.participantName,
-                        error: error
-                    });
-                    this.postPermissionDeniedAlert();
-                }
-            });
+        this.userMediaStreamService.currentStream$.pipe(take(1)).subscribe({
+            next: stream => {
+                this.mediaAccepted = true;
+                this.userPrompted = true;
+            },
+            error: error => {
+                this.mediaAccepted = false;
+                this.userPrompted = false;
+                this.logger.warn(`[SwitchOnCameraMicrophone] - ${this.participantName} denied access to camera.`, {
+                    conference: this.conferenceId,
+                    participant: this.participantName,
+                    error: error
+                });
+                this.postPermissionDeniedAlert();
+            }
+        });
     }
 
     goVideoTest() {
