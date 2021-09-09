@@ -47,7 +47,7 @@ class WrParticipantStatusListTest extends WRParticipantStatusListDirective imple
     }
 }
 
-describe('WaitingRoom ParticipantList Base', () => {
+fdescribe('WaitingRoom ParticipantList Base', () => {
     let component: WrParticipantStatusListTest;
     let videoWebService: jasmine.SpyObj<VideoWebService>;
     let consultationService: jasmine.SpyObj<ConsultationService>;
@@ -110,6 +110,7 @@ describe('WaitingRoom ParticipantList Base', () => {
     });
 
     it('should group type of participants', () => {
+        console.log(component.nonJudgeParticipants);
         expect(component.judge).toBeDefined();
         expect(component.nonJudgeParticipants).toBeDefined();
         expect(component.nonJudgeParticipants.length).toBe(2);
