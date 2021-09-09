@@ -63,7 +63,8 @@ export class VideoCallService {
         private apiClient: ApiClient,
         private configService: ConfigService,
         private kinlyHeartbeatService: KinlyHeartbeatService,
-        private videoCallEventsService: VideoCallEventsService
+        private videoCallEventsService: VideoCallEventsService,
+        private navigator: Navigator
     ) {
         this.preferredLayoutCache = new SessionStorage(this.PREFERRED_LAYOUT_KEY);
 
@@ -128,25 +129,54 @@ export class VideoCallService {
             self.onStoppedScreenshareSubject.next(new StoppedScreenshare(reason));
         };
 
-        this.userMediaService.activeVideoDevice$.pipe(skip(1)).subscribe(videoDevice => {
-            this.pexipAPI.video_source = videoDevice.deviceId;
+        this.userMediaService.activeVideoDevice$.pipe(skip(1)).subscribe(async videoDevice => {
+            this.pexipAPI.user_media_stream?.getVideoTracks().forEach(track => {
+                this.pexipAPI.user_media_stream.removeTrack(track);
+                track.stop();
+            });
+
+            const videoStream = await this.navigator.mediaDevices.getUserMedia({
+                video: { deviceId: { exact: videoDevice.deviceId } }
+            });
+
+            videoStream.getVideoTracks().forEach(track => this.pexipAPI.user_media_stream?.addTrack(track));
+
             this.reconnectToCall();
         });
 
-        this.userMediaService.activeMicrophoneDevice$.pipe(skip(1)).subscribe(microphoneDevice => {
-            this.pexipAPI.audio_source = microphoneDevice.deviceId;
+        this.userMediaService.activeMicrophoneDevice$.pipe(skip(1)).subscribe(async microphoneDevice => {
+            this.pexipAPI.user_media_stream?.getAudioTracks().forEach(track => {
+                this.pexipAPI.user_media_stream.removeTrack(track);
+                track.stop();
+            });
+
+            const audioStream = await this.navigator.mediaDevices.getUserMedia({
+                audio: { deviceId: { exact: microphoneDevice.deviceId } }
+            });
+
+            audioStream.getAudioTracks().forEach(track => this.pexipAPI.user_media_stream?.addTrack(track));
+
             this.reconnectToCall();
         });
 
         return zip(this.userMediaService.activeVideoDevice$, this.userMediaService.activeMicrophoneDevice$)
             .pipe(
                 take(1),
-                tap(devices => {
+                tap(async devices => {
                     const videoDevice = devices[0];
-                    const microphoneDevice = devices[1];
+                    const videoStream = await this.navigator.mediaDevices.getUserMedia({
+                        video: { deviceId: { exact: videoDevice.deviceId } }
+                    });
 
-                    this.pexipAPI.video_source = videoDevice.deviceId;
-                    this.pexipAPI.audio_source = microphoneDevice.deviceId;
+                    const microphoneDevice = devices[1];
+                    const microphoneStream = await this.navigator.mediaDevices.getUserMedia({
+                        audio: { deviceId: { exact: microphoneDevice.deviceId } }
+                    });
+
+                    this.pexipAPI.user_media_stream = new MediaStream([
+                        ...videoStream.getVideoTracks(),
+                        ...microphoneStream.getAudioTracks()
+                    ]);
                 })
             )
             .toPromise();

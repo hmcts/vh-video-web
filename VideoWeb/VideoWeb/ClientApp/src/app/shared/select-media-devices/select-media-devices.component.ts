@@ -43,11 +43,9 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
 
         this.videoCallService.onCallSetup().subscribe(callSetup => {
             const activeStream = callSetup.stream as MediaStream;
-            const cameraTrack = activeStream.getVideoTracks().find(x => x.label === this.selectedCameraDevice.label);
-            const microphoneTrack = activeStream.getAudioTracks().find(x => x.label === this.selectedMicrophoneDevice.label);
-            this.selectedCameraStream = new MediaStream([cameraTrack]);
-            this.selectedMicrophoneStream = new MediaStream([microphoneTrack]);
-            console.log('[ROB] - ', this.selectedCameraDevice, this.selectedMicrophoneDevice, activeStream, cameraTrack, microphoneTrack);
+            this.selectedCameraStream = new MediaStream(activeStream.getVideoTracks());
+            this.selectedMicrophoneStream = new MediaStream(activeStream.getAudioTracks());
+            console.log('[ROB] - ', this.selectedCameraDevice, this.selectedMicrophoneDevice, activeStream);
         });
 
         this.userMediaService.isAudioOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(isAudioOnly => {
