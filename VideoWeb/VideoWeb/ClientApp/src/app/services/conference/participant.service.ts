@@ -4,7 +4,7 @@ import { Observable, ReplaySubject, Subject, Subscription, zip } from 'rxjs';
 import { filter, map, take, tap } from 'rxjs/operators';
 import { IParticipantHearingState, ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
-import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
+import { VideoCallEventsService } from 'src/app/waiting-space/services/video-call-events.service';
 import { ConferenceResponse, ParticipantStatus } from '../clients/api-client';
 import { EventsService } from '../events.service';
 import { LoggerService } from '../logging/logger.service';
@@ -28,7 +28,7 @@ export class ParticipantService {
     }
 
     private _loggedInParticipant: ReplaySubject<ParticipantModel> = new ReplaySubject<ParticipantModel>(1);
-    get loggedInParticipant(): Observable<ParticipantModel> {
+    get loggedInParticipant$(): Observable<ParticipantModel> {
         return this._loggedInParticipant.asObservable();
     }
 
@@ -100,7 +100,7 @@ export class ParticipantService {
 
     constructor(
         private conferenceService: ConferenceService,
-        private videoCallService: VideoCallService,
+        private videoCallEventsService: VideoCallEventsService,
         private eventsService: EventsService,
         private videoControlCacheService: VideoControlCacheService,
         private logger: LoggerService
@@ -174,7 +174,7 @@ export class ParticipantService {
             this.subscribeToConferenceEvents(conference);
         });
 
-        this.videoCallService.onParticipantUpdated().subscribe(updatedParticipant => this.handlePexipUpdate(updatedParticipant));
+        this.videoCallEventsService.participantUpdated$.subscribe(updatedParticipant => this.handlePexipUpdate(updatedParticipant));
     }
 
     private restoreCachedVideoControlState() {
