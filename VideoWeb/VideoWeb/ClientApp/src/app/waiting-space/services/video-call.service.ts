@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
-import { Observable, Subject, zip } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { skip, take, tap } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ApiClient, HearingLayout, SharedParticipantRoom, StartHearingRequest } from 'src/app/services/clients/api-client';
 import { KinlyHeartbeatService } from 'src/app/services/conference/kinly-heartbeat.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
-import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 
 import {
     CallError,
@@ -60,11 +60,11 @@ export class VideoCallService {
     constructor(
         private logger: Logger,
         private userMediaService: UserMediaService,
+        private userMediaStreamService: UserMediaStreamService,
         private apiClient: ApiClient,
         private configService: ConfigService,
         private kinlyHeartbeatService: KinlyHeartbeatService,
-        private videoCallEventsService: VideoCallEventsService,
-        private navigator: Navigator
+        private videoCallEventsService: VideoCallEventsService
     ) {
         this.preferredLayoutCache = new SessionStorage(this.PREFERRED_LAYOUT_KEY);
 
@@ -77,7 +77,7 @@ export class VideoCallService {
      * This will initialise the pexip client and initalise the call with
      * the user's preferred camera and microphone (if selected)
      */
-    async setupClient(): Promise<UserMediaDevice[]> {
+    async setupClient(): Promise<MediaStream> {
         this.hasDisconnected$ = new Subject();
 
         const self = this;
@@ -129,56 +129,15 @@ export class VideoCallService {
             self.onStoppedScreenshareSubject.next(new StoppedScreenshare(reason));
         };
 
-        this.userMediaService.activeVideoDevice$.pipe(skip(1)).subscribe(async videoDevice => {
-            this.pexipAPI.user_media_stream?.getVideoTracks().forEach(track => {
-                this.pexipAPI.user_media_stream.removeTrack(track);
-                track.stop();
-            });
-
-            const videoStream = await this.navigator.mediaDevices.getUserMedia({
-                video: { deviceId: { exact: videoDevice.deviceId } }
-            });
-
-            videoStream.getVideoTracks().forEach(track => this.pexipAPI.user_media_stream?.addTrack(track));
-
+        this.userMediaStreamService.currentStream$.pipe(skip(1)).subscribe(currentStream => {
+            this.pexipAPI.user_media_stream = currentStream;
             this.reconnectToCall();
         });
 
-        this.userMediaService.activeMicrophoneDevice$.pipe(skip(1)).subscribe(async microphoneDevice => {
-            this.pexipAPI.user_media_stream?.getAudioTracks().forEach(track => {
-                this.pexipAPI.user_media_stream.removeTrack(track);
-                track.stop();
-            });
-
-            const audioStream = await this.navigator.mediaDevices.getUserMedia({
-                audio: { deviceId: { exact: microphoneDevice.deviceId } }
-            });
-
-            audioStream.getAudioTracks().forEach(track => this.pexipAPI.user_media_stream?.addTrack(track));
-
-            this.reconnectToCall();
-        });
-
-        return zip(this.userMediaService.activeVideoDevice$, this.userMediaService.activeMicrophoneDevice$)
-            .pipe(
-                take(1),
-                tap(async devices => {
-                    const videoDevice = devices[0];
-                    const videoStream = await this.navigator.mediaDevices.getUserMedia({
-                        video: { deviceId: { exact: videoDevice.deviceId } }
-                    });
-
-                    const microphoneDevice = devices[1];
-                    const microphoneStream = await this.navigator.mediaDevices.getUserMedia({
-                        audio: { deviceId: { exact: microphoneDevice.deviceId } }
-                    });
-
-                    this.pexipAPI.user_media_stream = new MediaStream([
-                        ...videoStream.getVideoTracks(),
-                        ...microphoneStream.getAudioTracks()
-                    ]);
-                })
-            )
+        return this.userMediaStreamService.currentStream$
+            .pipe(take(1))
+            .pipe(tap(currentStream => (this.pexipAPI.user_media_stream = currentStream)))
+            .pipe(tap(() => this.userMediaStreamService.streamModified$.subscribe(() => this.reconnectToCall())))
             .toPromise();
     }
 

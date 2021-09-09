@@ -5,7 +5,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
-import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 
 @Component({
     selector: 'app-select-media-devices',
@@ -30,7 +30,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
 
     constructor(
         private userMediaService: UserMediaService,
-        private videoCallService: VideoCallService,
+        private userMediaStreamSerivce: UserMediaStreamService,
         private logger: Logger,
         private translateService: TranslateService
     ) {}
@@ -41,11 +41,12 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
             this.availableMicrophoneDevices = connectedDevices.filter(device => device.kind === 'audioinput');
         });
 
-        this.videoCallService.onCallSetup().subscribe(callSetup => {
-            const activeStream = callSetup.stream as MediaStream;
-            this.selectedCameraStream = new MediaStream(activeStream.getVideoTracks());
-            this.selectedMicrophoneStream = new MediaStream(activeStream.getAudioTracks());
-            console.log('[ROB] - ', this.selectedCameraDevice, this.selectedMicrophoneDevice, activeStream);
+        this.userMediaStreamSerivce.activeCameraStream$.subscribe(activateCameraStream => {
+            this.selectedCameraStream = activateCameraStream;
+        });
+
+        this.userMediaStreamSerivce.activeMicrophoneStream$.subscribe(activateMicrophoneStream => {
+            this.selectedMicrophoneStream = activateMicrophoneStream;
         });
 
         this.userMediaService.isAudioOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(isAudioOnly => {
