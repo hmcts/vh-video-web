@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
 import { Observable, Subject } from 'rxjs';
-import { skip, take, tap } from 'rxjs/operators';
+import { skip, take, takeUntil, tap } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ApiClient, HearingLayout, SharedParticipantRoom, StartHearingRequest } from 'src/app/services/clients/api-client';
 import { KinlyHeartbeatService } from 'src/app/services/conference/kinly-heartbeat.service';
@@ -137,7 +137,6 @@ export class VideoCallService {
         return this.userMediaStreamService.currentStream$
             .pipe(take(1))
             .pipe(tap(currentStream => (this.pexipAPI.user_media_stream = currentStream)))
-            .pipe(tap(() => this.userMediaStreamService.streamModified$.subscribe(() => this.reconnectToCall())))
             .toPromise();
     }
 
@@ -167,6 +166,9 @@ export class VideoCallService {
         }
 
         this.kinlyHeartbeatService.initialiseHeartbeat(this.pexipAPI);
+
+        this.userMediaStreamService.streamModified$.pipe(takeUntil(this.hasDisconnected$)).subscribe(() => this.reconnectToCall());
+
         this.onConnectedSubject.next(new ConnectedCall(stream));
     }
 
