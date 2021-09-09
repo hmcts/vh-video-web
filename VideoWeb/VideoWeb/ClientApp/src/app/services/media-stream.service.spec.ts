@@ -84,8 +84,6 @@ describe('MediaStreamService', () => {
         it('should return a promise from getUserMedia', fakeAsync(() => {
             // Arrange
             const expectedStream = new MediaStream();
-            const expectedStreamClone = spyOn(expectedStream, 'clone');
-            expectedStreamClone.and.returnValue(expectedStream);
 
             mediaDevicesSpy.getUserMedia.and.resolveTo(expectedStream);
 
@@ -98,7 +96,6 @@ describe('MediaStreamService', () => {
             expect(mediaDevicesSpy.getUserMedia).toHaveBeenCalledWith(microphoneConstraintBuilder(microphoneDevice));
 
             expect(resultantStream).toBe(expectedStream);
-            expect(expectedStreamClone).toHaveBeenCalledTimes(1);
             expect(errorServiceSpy.handlePexipError).not.toHaveBeenCalled();
         }));
 
@@ -123,8 +120,6 @@ describe('MediaStreamService', () => {
         it('should return a promise from getUserMedia', fakeAsync(() => {
             // Arrange
             const expectedStream = new MediaStream();
-            const expectedStreamClone = spyOn(expectedStream, 'clone');
-            expectedStreamClone.and.returnValue(expectedStream);
             mediaDevicesSpy.getUserMedia.and.resolveTo(expectedStream);
 
             // Act
@@ -136,7 +131,6 @@ describe('MediaStreamService', () => {
             expect(mediaDevicesSpy.getUserMedia).toHaveBeenCalledWith(cameraConstraintBuilder(cameraDevice));
 
             expect(resultantStream).toBe(expectedStream);
-            expect(expectedStreamClone).toHaveBeenCalledTimes(1);
             expect(errorServiceSpy.handlePexipError).not.toHaveBeenCalled();
         }));
 

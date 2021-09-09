@@ -4,7 +4,7 @@ import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Logger } from './logging/logger-base';
 import { Observable, ReplaySubject, Subject, zip } from 'rxjs';
 import { UserMediaService } from './user-media.service';
-import { take } from 'rxjs/operators';
+import { skip, take } from 'rxjs/operators';
 import { MediaStreamService } from './media-stream.service';
 
 export const mustProvideAMicrophoneDeviceError = () => new Error('A microphone device must be provided');
@@ -97,21 +97,22 @@ export class UserMediaStreamService {
 
                         this.activeMicrophoneStream = microphoneStream;
 
-                        this.logger.info(`${this.loggerPrefix} Built initial stream`, {
+                        console.log(`${this.loggerPrefix} Built initial stream`, {
                             mic: microphoneDevice,
                             cam: cameraDevice,
                             stream: this.currentStream,
+                            tracks: this.currentStream.getTracks(),
                             isAudioOnly: this.isAudioOnly
                         });
 
                         this.currentStreamSubject.next(this.currentStream);
 
-                        this.logger.debug(`${this.loggerPrefix} Subscribing to active video and microphone device changes`);
-                        this.userMediaService.activeVideoDevice$.subscribe(videoDevice => {
+                        console.log(`${this.loggerPrefix} Subscribing to active video and microphone device changes`);
+                        this.userMediaService.activeVideoDevice$.pipe(skip(1)).subscribe(videoDevice => {
                             this.onActiveCameraChanged(videoDevice);
                         });
 
-                        this.userMediaService.activeMicrophoneDevice$.subscribe(activeMicrophoneDevice => {
+                        this.userMediaService.activeMicrophoneDevice$.pipe(skip(1)).subscribe(activeMicrophoneDevice => {
                             this.onActiveMicrophoneChanged(activeMicrophoneDevice);
                         });
 
@@ -136,7 +137,7 @@ export class UserMediaStreamService {
                 currentStream: this.currentStream
             });
 
-            this.activeCameraStream?.getTracks().forEach(track => this.currentStream.removeTrack(track));
+            this.activeCameraStream?.getVideoTracks().forEach(track => this.currentStream.removeTrack(track));
         } else {
             this.logger.debug(`${this.loggerPrefix} adding active camera tracks.`, {
                 audioOnly: this.isAudioOnly,
@@ -144,7 +145,7 @@ export class UserMediaStreamService {
                 currentStream: this.currentStream
             });
 
-            this.activeCameraStream?.getTracks().forEach(track => this.currentStream.addTrack(track));
+            this.activeCameraStream?.getVideoTracks().forEach(track => this.currentStream.addTrack(track));
         }
 
         this.streamModifiedSubject.next();
@@ -157,13 +158,15 @@ export class UserMediaStreamService {
     }
 
     private onActiveCameraChanged(cameraDevice: UserMediaDevice) {
-        this.logger.debug(`${this.loggerPrefix} active camera changed. Fetching stream for the new device.`, {
+        console.log(`${this.loggerPrefix} active camera changed. Fetching stream for the new device.`, {
             newCam: cameraDevice,
-            oldMicStream: this.activeCameraStream,
+            oldCamStream: this.activeCameraStream,
+            oldCamTracks: this.activeCameraStream.getVideoTracks(),
+            currentStreamTracks: this.currentStream.getTracks(),
             isAudioOnly: this.isAudioOnly
         });
 
-        this.activeCameraStream?.getTracks().forEach(track => {
+        this.activeCameraStream?.getVideoTracks().forEach(track => {
             this.currentStream.removeTrack(track);
             track.stop();
 
@@ -246,7 +249,7 @@ export class UserMediaStreamService {
                     isAudioOnly: this.isAudioOnly
                 });
 
-                microphoneStream.getTracks().forEach(track => {
+                microphoneStream.getAudioTracks().forEach(track => {
                     this.currentStream.addTrack(track);
 
                     this.logger.debug(`${this.loggerPrefix} mic changed. Added track`, {
