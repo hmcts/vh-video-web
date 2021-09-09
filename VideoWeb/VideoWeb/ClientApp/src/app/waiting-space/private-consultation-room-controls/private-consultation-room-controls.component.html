@@ -2,6 +2,18 @@
   <div class="icons-container">
     <div
       class="icon-button"
+      id="toggle-context-panel"
+      appTooltip
+      *ngIf="isJudge && !isPrivateConsultation"
+      [text]="'private-consultation-room-controls.participants-panel' | translate"
+      colour="grey"
+      (click)="togglePanelStatus('Participants')"
+    >
+      <span class="far fa-ellipsis"></span>
+    </div>
+      <div class="flexBar"></div>
+      <div
+      class="icon-button"
       id="toggle-participants-panel"
       appTooltip
       *ngIf="isJudge && !isPrivateConsultation"

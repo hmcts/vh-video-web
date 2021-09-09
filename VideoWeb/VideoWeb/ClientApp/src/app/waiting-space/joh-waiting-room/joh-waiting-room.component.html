@@ -7,13 +7,13 @@
 <div *ngIf="showVideo" class="video-background">
   <div class="header-bar">
     <div class="header-content-grid govuk-body">
-      <div class="room-title">
+      <div class="room-title govuk-grid-width-half">
         <div #roomTitleLabel class="room-title-label">{{ getCaseNameAndNumber() }}</div>
         <div *ngIf="hasCaseNameOverflowed" class="room-title-show-more" appTooltip [text]="getCaseNameAndNumber()" colour="grey">
           (show more)
         </div>
       </div>
-      <app-private-consultation-room-controls
+      <app-private-consultation-room-controls class="govuk-grid-width-half"
         #hearingControls
         [conferenceId]="conference.id"
         [participant]="participant"
