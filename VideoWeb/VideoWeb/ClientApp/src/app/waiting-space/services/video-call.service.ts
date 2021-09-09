@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
 import { Observable, Subject, zip } from 'rxjs';
-import { take, tap } from 'rxjs/operators';
+import { skip, take, tap } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ApiClient, HearingLayout, SharedParticipantRoom, StartHearingRequest } from 'src/app/services/clients/api-client';
 import { KinlyHeartbeatService } from 'src/app/services/conference/kinly-heartbeat.service';
@@ -52,6 +52,7 @@ export class VideoCallService {
 
     private hasDisconnected$ = new Subject();
     private renegotiating = false;
+    private justRenegotiated = false;
 
     pexipAPI: PexipClient;
     localOutgoingStream: any;
@@ -127,6 +128,16 @@ export class VideoCallService {
             self.onStoppedScreenshareSubject.next(new StoppedScreenshare(reason));
         };
 
+        this.userMediaService.activeVideoDevice$.pipe(skip(1)).subscribe(videoDevice => {
+            this.pexipAPI.video_source = videoDevice.deviceId;
+            this.reconnectToCall();
+        });
+
+        this.userMediaService.activeMicrophoneDevice$.pipe(skip(1)).subscribe(microphoneDevice => {
+            this.pexipAPI.audio_source = microphoneDevice.deviceId;
+            this.reconnectToCall();
+        });
+
         return zip(this.userMediaService.activeVideoDevice$, this.userMediaService.activeMicrophoneDevice$)
             .pipe(
                 take(1),
@@ -160,8 +171,9 @@ export class VideoCallService {
     }
 
     private handleConnect(stream: MediaStream | URL) {
-        if (this.renegotiating) {
+        if (this.renegotiating || this.justRenegotiated) {
             this.logger.warn(`${this.loggerPrefix} Not handling pexip connect event as it was during a renegotation`);
+            this.justRenegotiated = false;
             return;
         }
 
@@ -379,6 +391,7 @@ export class VideoCallService {
         this.renegotiating = true;
         this.pexipAPI.renegotiate(sendUpdate);
         this.renegotiating = false;
+        this.justRenegotiated = true;
         this.logger.info(`${this.loggerPrefix} renegotiated`);
     }
 
