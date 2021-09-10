@@ -38,10 +38,15 @@ namespace VideoWeb.Contract.Responses
         /// The EJudiciary IDP Settings
         /// </summary>
         public IdpSettingsResponse EJudIdpSettings { get; set; }
-        
+
         /// <summary>
         /// The VH IDP Settings
         /// </summary>
         public IdpSettingsResponse VHIdpSettings { get; set; }
+
+        /// <summary>
+        /// Enable video filters
+        /// </summary>
+        public bool EnableVideoFilters { get; set; }
     }
 }
