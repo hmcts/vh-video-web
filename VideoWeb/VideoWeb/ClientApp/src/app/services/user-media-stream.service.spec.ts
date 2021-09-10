@@ -3,9 +3,10 @@ import { Guid } from 'guid-typescript';
 import { of, ReplaySubject, Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
 import { UserMediaDevice } from '../shared/models/user-media-device';
+import { mustProvideAMicrophoneDeviceError } from './errors/must-provide-a-microphone-device.error';
 import { Logger } from './logging/logger-base';
 import { MediaStreamService } from './media-stream.service';
-import { mustProvideAMicrophoneDeviceError, UserMediaStreamService } from './user-media-stream.service';
+import { UserMediaStreamService } from './user-media-stream.service';
 import { UserMediaService } from './user-media.service';
 
 describe('UserMediaStreamService', () => {
