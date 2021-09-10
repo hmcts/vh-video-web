@@ -42,7 +42,7 @@ export class MediaStreamService {
         return from(this.navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId } } })).pipe(
             map(stream => {
                 const cloneStream = stream.clone();
-                if (this.videoFilterService.doesSupportVideoFiltering()) {
+                if (this.videoFilterService.doesSupportVideoFiltering() && this.videoFilterService.filterOn) {
                     this.videoFilterService.initFilterFromMediaStream(cloneStream);
                     return this.videoFilterService.startFilteredStream();
                 } else {
