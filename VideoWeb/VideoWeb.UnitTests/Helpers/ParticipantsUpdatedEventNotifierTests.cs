@@ -58,7 +58,7 @@ namespace VideoWeb.UnitTests.Helpers
 
 
             var response2 = new ParticipantResponse();
-            response2.Id = _participant1.Id;
+            response2.Id = _participant2.Id;
 
             var responseList = new List<ParticipantResponse> { response1, response2 };
 
