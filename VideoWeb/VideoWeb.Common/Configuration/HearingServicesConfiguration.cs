@@ -13,5 +13,6 @@ namespace VideoWeb.Common.Configuration
         public string EventHubPath { get; set; }
         public string EmailReformDomain { get; set; }
         public string InternalEventSecret { get; set; }
+        public bool EnableVideoFilters { get; set; }
     }
 }

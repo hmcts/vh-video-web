@@ -1,18 +1,30 @@
 import { fakeAsync, flush, flushMicrotasks } from '@angular/core/testing';
+import { Role, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { VideoFilterService } from 'src/app/services/video-filter.service';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { SelectMediaDevicesComponent } from './select-media-devices.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { getSpiedPropertyGetter } from '../jasmine-helpers/property-helpers';
 import { Subject } from 'rxjs';
-import { UserMediaDevice } from '../models/user-media-device';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { UserMediaDevice } from '../models/user-media-device';
+import { SelectMediaDevicesComponent } from './select-media-devices.component';
+import { ProfileService } from 'src/app/services/api/profile.service';
 
 describe('SelectMediaDevicesComponent', () => {
+    const mockProfile: UserProfileResponse = new UserProfileResponse({
+        display_name: 'John Doe',
+        first_name: 'John',
+        last_name: 'Doe',
+        role: Role.Judge
+    });
+
     let component: SelectMediaDevicesComponent;
     let userMediaService: jasmine.SpyObj<UserMediaService>;
     let userMediaStreamServiceSpy: jasmine.SpyObj<UserMediaStreamService>;
+    let profileService: jasmine.SpyObj<ProfileService>;
+    let videoFilterService: jasmine.SpyObj<VideoFilterService>;
 
     const testData = new MediaDeviceTestData();
     const mockCamStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
@@ -24,6 +36,10 @@ describe('SelectMediaDevicesComponent', () => {
 
     let activeCameraStreamSubject: Subject<MediaStream>;
     let activeMicrophoneStreamSubject: Subject<MediaStream>;
+    beforeAll(() => {
+        profileService = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
+        videoFilterService = jasmine.createSpyObj<VideoFilterService>('VideoFilterService', ['doesSupportVideoFiltering']);
+    });
 
     beforeEach(fakeAsync(() => {
         userMediaService = jasmine.createSpyObj<UserMediaService>(
@@ -35,6 +51,8 @@ describe('SelectMediaDevicesComponent', () => {
         activeVideoDeviceSubject = new Subject<UserMediaDevice>();
         activeMicrophoneDeviceSubject = new Subject<UserMediaDevice>();
         isAudioOnlySubject = new Subject<boolean>();
+        profileService.getUserProfile.and.returnValue(Promise.resolve(mockProfile));
+        videoFilterService.doesSupportVideoFiltering.and.returnValue(true);
 
         getSpiedPropertyGetter(userMediaService, 'activeVideoDevice$').and.returnValue(activeVideoDeviceSubject.asObservable());
         getSpiedPropertyGetter(userMediaService, 'activeMicrophoneDevice$').and.returnValue(activeMicrophoneDeviceSubject.asObservable());
@@ -51,7 +69,15 @@ describe('SelectMediaDevicesComponent', () => {
             activeMicrophoneStreamSubject.asObservable()
         );
 
-        component = new SelectMediaDevicesComponent(userMediaService, userMediaStreamServiceSpy, new MockLogger(), translateServiceSpy);
+        component = new SelectMediaDevicesComponent(
+            userMediaService,
+            userMediaStreamServiceSpy,
+            new MockLogger(),
+            translateServiceSpy,
+            profileService,
+            videoFilterService
+        );
+
         component.availableCameraDevices = testData.getListOfCameras();
     }));
 
@@ -82,6 +108,27 @@ describe('SelectMediaDevicesComponent', () => {
             isAudioOnlySubject.next(false);
             flush();
             expect(component.connectWithCameraOn).toBeTrue();
+        }));
+
+        it('should initialise showBackgroundFilter to true when user is judge', fakeAsync(() => {
+            component.ngOnInit();
+            flushMicrotasks();
+            flush();
+            expect(component.showBackgroundFilter).toBeTrue();
+        }));
+
+        it('should initialise showBackgroundFilter to false when user is individual', fakeAsync(() => {
+            const individualProfile: UserProfileResponse = new UserProfileResponse({
+                display_name: 'John Doe',
+                first_name: 'John',
+                last_name: 'Doe',
+                role: Role.Individual
+            });
+            profileService.getUserProfile.and.returnValue(Promise.resolve(individualProfile));
+            component.ngOnInit();
+            flushMicrotasks();
+            flush();
+            expect(component.showBackgroundFilter).toBeFalse();
         }));
 
         it('should update selected cam', fakeAsync(() => {

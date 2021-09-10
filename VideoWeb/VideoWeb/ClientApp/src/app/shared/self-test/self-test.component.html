@@ -1,24 +1,33 @@
 <div>
   <h1 class="govuk-heading-xl mb-2">
-    {{'self-test.testing-equipment' | translate}}
+    {{ 'self-test.testing-equipment' | translate }}
   </h1>
 </div>
 <div class="govuk-grid-row">
   <div *ngIf="!displayFeed && !didTestComplete" class="govuk-grid-column-full">
-    <p class="govuk-body-l">{{'self-test.to-be-connected' | translate}} </p>
+    <p class="govuk-body-l">{{ 'self-test.to-be-connected' | translate }}</p>
   </div>
   <div *ngIf="displayFeed" class="govuk-grid-column-full">
     <video *ngIf="streamsActive" id="incomingStream" [srcObject]="this.incomingStream" autoplay width="65%" height="auto">
-      {{'self-test.browser-not-support' | translate}}
+      {{ 'self-test.browser-not-support' | translate }}
     </video>
   </div>
 </div>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-quarter">
-      <video *ngIf="streamsActive" id="outgoingStream" [muted]="true" [srcObject]="this.outgoingStream" autoplay width="270" height="auto">
-          {{'self-test.browser-not-support' | translate}}
-      </video>
+    <video
+      *ngIf="streamsActive"
+      id="outgoingStream"
+      [muted]="true"
+      [srcObject]="this.outgoingStream"
+      autoplay
+      width="270"
+      height="auto"
+      class="selfie-view"
+    >
+      {{ 'self-test.browser-not-support' | translate }}
+    </video>
   </div>
 
   <div class="govuk-grid-column-full">
@@ -32,13 +41,10 @@
 
 <div class="govuk-grid-row">
   <div *ngIf="hasMultipleDevices" class="govuk-grid-column-full govuk-!-margin-bottom-6">
-    <a id="change-device-link" href="javascript:void(0);" role="button" (click)="changeDevices()" class="govuk-link"
-      >{{'self-test.change-camera-mic' | translate}}</a
-    >
+    <a id="change-device-link" href="javascript:void(0);" role="button" (click)="changeDevices()" class="govuk-link">{{
+      'self-test.change-camera-mic' | translate
+    }}</a>
   </div>
 </div>
 
-<app-select-media-devices
-  *ngIf="displayDeviceChangeModal"
-  (shouldClose)="onSelectMediaDeviceShouldClose()"
-></app-select-media-devices>
+<app-select-media-devices *ngIf="displayDeviceChangeModal" (shouldClose)="onSelectMediaDeviceShouldClose()"></app-select-media-devices>
