@@ -531,6 +531,20 @@ describe('PrivateConsultationParticipantsComponent', () => {
         expect(component.getPrivateConsultationParticipants().length).toBe(1);
     });
 
+    it('should sort quick link participants', () => {
+        const testData = new ConferenceTestData();
+        component.participantsInConsultation = [testData.quickLinkParticipant2, testData.quickLinkParticipant1];
+        const participants = component.getPrivateConsultationParticipants();
+
+        expect(participants.length).toBe(2);
+        console.log(participants);
+        expect(participants.find(x => x.display_name === testData.quickLinkParticipant1.display_name)).toBeTruthy();
+        expect(participants.find(x => x.display_name === testData.quickLinkParticipant2.display_name)).toBeTruthy();
+        expect(participants.findIndex(x => x.display_name === testData.quickLinkParticipant1.display_name)).toBeLessThan(
+            participants.findIndex(x => x.display_name === testData.quickLinkParticipant2.display_name)
+        );
+    });
+
     it('should return can call endpoint', () => {
         // Not in current room
         component.roomLabel = 'test-room';
@@ -624,5 +638,93 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
     it('should return joh Roles groups available', () => {
         expect(component.johRoles.length).toBeGreaterThan(0);
+    });
+
+    describe('getWitnessesAndObservers', () => {
+        const litigantInPerson = new ParticipantResponse({
+            id: 'litigantInPerson_id',
+            status: ParticipantStatus.Available,
+            display_name: 'litigantInPerson_display_name',
+            role: Role.Individual,
+            representee: 'litigantInPerson_representee',
+            case_type_group: 'litigantInPerson_applicant',
+            tiled_display_name: 'litigantInPerson_tiledDisplayName',
+            hearing_role: HearingRole.LITIGANT_IN_PERSON,
+            linked_participants: []
+        });
+
+        const witness = new ParticipantResponse({
+            id: 'witness_id',
+            status: ParticipantStatus.Available,
+            display_name: 'witness_display_name',
+            role: Role.Individual,
+            representee: 'witness_representee',
+            case_type_group: 'witness_applicant',
+            tiled_display_name: 'witness_tiledDisplayName',
+            hearing_role: HearingRole.WITNESS,
+            linked_participants: []
+        });
+
+        const regularObserver = new ParticipantResponse({
+            id: 'regularObserver_id',
+            status: ParticipantStatus.Available,
+            display_name: 'regularObserver_display_name',
+            role: Role.Individual,
+            representee: 'regularObserver_representee',
+            case_type_group: 'regularObserver_applicant',
+            tiled_display_name: 'regularObserver_tiledDisplayName',
+            hearing_role: HearingRole.OBSERVER,
+            linked_participants: []
+        });
+
+        const quickLinkObserver1 = new ParticipantResponse({
+            id: 'quickLinkObserver1_id',
+            status: ParticipantStatus.Available,
+            display_name: 'quickLinkObserver1_display_name',
+            role: Role.QuickLinkObserver,
+            representee: 'quickLinkObserver1_representee',
+            case_type_group: 'quickLinkObserver1_applicant',
+            tiled_display_name: 'quickLinkObserver1_tiledDisplayName',
+            hearing_role: HearingRole.QUICK_LINK_OBSERVER,
+            linked_participants: []
+        });
+
+        const quickLinkObserver2 = new ParticipantResponse({
+            id: 'quickLinkObserver2_id',
+            status: ParticipantStatus.Available,
+            display_name: 'quickLinkObserver2_display_name',
+            role: Role.QuickLinkObserver,
+            representee: 'quickLinkObserver2_representee',
+            case_type_group: 'quickLinkObserver2_applicant',
+            tiled_display_name: 'quickLinkObserver2_tiledDisplayName',
+            hearing_role: HearingRole.QUICK_LINK_OBSERVER,
+            linked_participants: []
+        });
+
+        const testParticipants = [litigantInPerson, witness, regularObserver, quickLinkObserver2, quickLinkObserver1];
+
+        beforeEach(() => {
+            component.participantsInConsultation = testParticipants;
+        });
+
+        it('should return nothing if is not joh consultation', () => {
+            spyOn(component, 'isJohConsultation').and.returnValue(false);
+            const result = component.getWitnessesAndObservers();
+            expect(result).toEqual([]);
+        });
+
+        it('should return nothing if is not joh consultation', () => {
+            spyOn(component, 'isJohConsultation').and.returnValue(true);
+            const result = component.getWitnessesAndObservers();
+
+            expect(result).not.toContain(litigantInPerson);
+            expect(result).toContain(witness);
+            expect(result).toContain(regularObserver);
+            expect(result).toContain(quickLinkObserver1);
+            expect(result).toContain(quickLinkObserver2);
+
+            expect(result.indexOf(witness)).toBeLessThan(result.indexOf(regularObserver));
+            expect(result.indexOf(quickLinkObserver1)).toBeLessThan(result.indexOf(quickLinkObserver2));
+        });
     });
 });
