@@ -78,7 +78,7 @@ describe('ParticipantPanelModel', () => {
     });
 
     it('should return false when participant is a quick link observer and status is not in hearing', () => {
-        participant.hearing_role = HearingRole.QUICK_LINK_OBSERVER;
+        participant.role = Role.QuickLinkObserver;
         participant.status = ParticipantStatus.Available;
         model = mapper.mapFromParticipantUserResponse(participant);
         expect(model.isWitnessObserverReadyToJoin).toBeTruthy();

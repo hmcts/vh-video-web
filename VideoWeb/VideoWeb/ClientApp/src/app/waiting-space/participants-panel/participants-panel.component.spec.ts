@@ -698,6 +698,13 @@ describe('ParticipantsPanelComponent', () => {
             `${p.display_name}<br/>hearing-role.litigant-in-person<br/>case-type-group.applicant`
         );
     });
+    it('should getPanelRowTooltipAdditionalText return no case role when empty', () => {
+        const p = participants[1];
+        p.status = ParticipantStatus.InHearing;
+        p.case_type_group = '';
+        const model = mapper.mapFromParticipantUserResponse(p);
+        expect(component.getPanelRowTooltipText(model)).toEqual(`${p.display_name}<br/>hearing-role.litigant-in-person`);
+    });
     it('should getPanelRowTooltipAdditionalText return hearing role and case role for a representative', () => {
         const p = participants[0];
         p.status = ParticipantStatus.InHearing;
