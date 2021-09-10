@@ -129,6 +129,8 @@ describe('ParticipantsPanelComponent', () => {
         expect(component.participants[0].caseTypeGroup.toLowerCase()).toBe('judge');
         expect(component.participants[1].caseTypeGroup.toLowerCase()).toBe('panelmember');
 
+        expect(participants.find(x => x.display_name === testData.quickLinkParticipant1.display_name)).toBeTruthy();
+        expect(participants.find(x => x.display_name === testData.quickLinkParticipant2.display_name)).toBeTruthy();
         expect(component.participants.findIndex(x => x.displayName === testData.quickLinkParticipant1.display_name)).toBeLessThan(
             component.participants.findIndex(x => x.displayName === testData.quickLinkParticipant2.display_name)
         );
