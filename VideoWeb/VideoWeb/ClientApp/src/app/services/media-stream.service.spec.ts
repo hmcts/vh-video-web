@@ -144,8 +144,6 @@ describe('MediaStreamService', () => {
         it('should return a promise from getUserMedia', fakeAsync(() => {
             // Arrange
             const expectedStream = new MediaStream();
-            const expectedStreamClone = spyOn(expectedStream, 'clone');
-            expectedStreamClone.and.returnValue(expectedStream);
             mediaDevicesSpy.getUserMedia.and.resolveTo(expectedStream);
             getSpiedPropertyGetter(videoFilterStreamServiceSpy, 'filterOn').and.returnValue(false);
 
@@ -158,15 +156,12 @@ describe('MediaStreamService', () => {
             expect(mediaDevicesSpy.getUserMedia).toHaveBeenCalledWith(cameraConstraintBuilder(cameraDevice));
 
             expect(resultantStream).toBe(expectedStream);
-            expect(expectedStreamClone).toHaveBeenCalledTimes(1);
             expect(errorServiceSpy.handlePexipError).not.toHaveBeenCalled();
         }));
 
         it('should return a filtered stream when filter is on', fakeAsync(() => {
             // Arrange
             const expectedStream = new MediaStream();
-            const expectedStreamClone = spyOn(expectedStream, 'clone');
-            expectedStreamClone.and.returnValue(expectedStream);
             mediaDevicesSpy.getUserMedia.and.resolveTo(expectedStream);
             getSpiedPropertyGetter(videoFilterStreamServiceSpy, 'filterOn').and.returnValue(true);
 
@@ -179,7 +174,6 @@ describe('MediaStreamService', () => {
             expect(mediaDevicesSpy.getUserMedia).toHaveBeenCalledWith(cameraConstraintBuilder(cameraDevice));
 
             expect(resultantStream).toBe(filterStream);
-            expect(expectedStreamClone).toHaveBeenCalledTimes(1);
             expect(errorServiceSpy.handlePexipError).not.toHaveBeenCalled();
         }));
 
