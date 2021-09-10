@@ -522,6 +522,15 @@ describe('PrivateConsultationParticipantsComponent', () => {
         expect(component.getPrivateConsultationParticipants().length).toBe(1);
     });
 
+    it('should not get quick link observers', () => {
+        const participants = new ConferenceTestData().getListOfParticipants();
+        const quicklinkobserver = participants[0];
+        quicklinkobserver.hearing_role = HearingRole.QUICK_LINK_OBSERVER;
+        const representative = participants[1];
+        component.participantsInConsultation = [quicklinkobserver, representative];
+        expect(component.getPrivateConsultationParticipants().length).toBe(1);
+    });
+
     it('should return can call endpoint', () => {
         // Not in current room
         component.roomLabel = 'test-room';

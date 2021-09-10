@@ -13,5 +13,7 @@ export enum HearingRole {
     WINGER = 'Winger',
     WITNESS = 'Witness',
     LITIGANT_IN_PERSON = 'Litigant in person',
-    STAFF_MEMBER = 'Staff Member'
+    STAFF_MEMBER = 'Staff Member',
+    QUICK_LINK_PARTICIPANT = 'Quick link participant',
+    QUICK_LINK_OBSERVER = 'Quick link observer'
 }
