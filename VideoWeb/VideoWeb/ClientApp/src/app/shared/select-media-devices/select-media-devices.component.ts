@@ -7,6 +7,7 @@ import { Role, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { MediaStreamService } from 'src/app/services/media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { VideoFilterService } from 'src/app/services/video-filter.service';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 
 @Component({
@@ -36,7 +37,8 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         private mediaStreamService: MediaStreamService,
         private logger: Logger,
         private translateService: TranslateService,
-        private profileService: ProfileService
+        private profileService: ProfileService,
+        private videoFilterService: VideoFilterService
     ) {}
 
     ngOnInit() {
@@ -63,7 +65,8 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     }
 
     determineFilterSelectionVisibility(profile: UserProfileResponse) {
-        this.showBackgroundFilter = profile.role === Role.JudicialOfficeHolder || profile.role === Role.Judge;
+        const isCorrectRole = profile.role === Role.JudicialOfficeHolder || profile.role === Role.Judge;
+        this.showBackgroundFilter = isCorrectRole && this.videoFilterService.doesSupportVideoFiltering();
     }
 
     onSelectedCameraDeviceChange() {
