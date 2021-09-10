@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import { Camera } from '@mediapipe/camera_utils';
 import { Results, SelfieSegmentation } from '@mediapipe/selfie_segmentation';
 import { Observable, Subject } from 'rxjs';
+import { browsers } from '../shared/browser.constants';
+import { ConfigService } from './api/config.service';
+import { DeviceTypeService } from './device-type.service';
 import { Logger } from './logging/logger-base';
 import { BackgroundFilter } from './models/background-filter';
 import { SessionStorage } from './session-storage';
@@ -12,8 +15,9 @@ import { SessionStorage } from './session-storage';
 export class VideoFilterService {
     private readonly loggerPrefix = '[VideoFilterService] -';
 
-    private readonly canvasWidth = 1280;
-    private readonly canvasHeight = 720;
+    private _canvasWidth = 1280;
+    private _canvasHeight = 720;
+    private enableVideoFilters: boolean;
 
     private readonly preferredFilterCache: SessionStorage<BackgroundFilter>;
     readonly PREFERRED_FILTER_KEY = 'vh.preferred.filter';
@@ -34,7 +38,8 @@ export class VideoFilterService {
     activeFilter: BackgroundFilter;
     imgs: Map<BackgroundFilter, HTMLImageElement> = new Map();
 
-    constructor(private logger: Logger) {
+    constructor(private logger: Logger, private configService: ConfigService, private deviceTypeService: DeviceTypeService) {
+        this.configService.getClientSettings().subscribe(settings => (this.enableVideoFilters = settings.enable_video_filters));
         this.preferredFilterCache = new SessionStorage(this.PREFERRED_FILTER_KEY);
 
         if (!this.preferredFilterCache.get()) {
@@ -47,12 +52,12 @@ export class VideoFilterService {
 
         this.selfieSegmentation = new SelfieSegmentation({
             locateFile: file => {
-                return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1.1628007100/${file}`;
+                return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1.1629494320/${file}`;
             }
         });
         this.selfieSegmentation.setOptions({
             modelSelection: 1,
-            selfieMode: true
+            selfieMode: false
         });
         this.selfieSegmentation.onResults(results => this.onSelfieSegmentationResults(results));
     }
@@ -65,13 +70,17 @@ export class VideoFilterService {
         if (this.canvasStream) {
             return;
         }
+
+        this._canvasWidth = stream.getVideoTracks()[0].getSettings().width;
+        this._canvasHeight = stream.getVideoTracks()[0].getSettings().height;
+
         this.logger.debug(`${this.loggerPrefix} initialising stream for filter`);
         this.videoElement = document.createElement('video');
         this.videoElement.srcObject = stream;
 
         this.canvasElement = document.createElement('canvas');
-        this.canvasElement.width = this.canvasWidth;
-        this.canvasElement.height = this.canvasHeight;
+        this.canvasElement.width = this._canvasWidth;
+        this.canvasElement.height = this._canvasHeight;
         this.canvasCtx = this.canvasElement.getContext('2d');
 
         this.logger.debug(`${this.loggerPrefix} starting filtered stream`);
@@ -86,8 +95,8 @@ export class VideoFilterService {
                     this.logger.error(`${this.loggerPrefix} failed to send image to self segmentation mask`, err);
                 }
             },
-            width: this.canvasWidth,
-            height: this.canvasHeight
+            width: this._canvasWidth,
+            height: this._canvasHeight
         });
         camera.start();
     }
@@ -116,6 +125,11 @@ export class VideoFilterService {
             this.logger.debug(`${this.loggerPrefix} Filter off`);
             this._onFilterChanged.next(null);
         }
+    }
+
+    doesSupportVideoFiltering() {
+        const allowedBrowser = !this.deviceTypeService.getBrowserName().includes(browsers.Safari);
+        return this.enableVideoFilters && allowedBrowser && !this.deviceTypeService.isTablet();
     }
 
     private onSelfieSegmentationResults(results: Results): void {
