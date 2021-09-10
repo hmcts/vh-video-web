@@ -80,7 +80,7 @@ export abstract class PanelModel {
     abstract isAvailable(): boolean;
     abstract isInConsultation(): boolean;
 
-    abstract get isWitnessReadyToJoin(): boolean;
+    abstract get isWitnessObserverReadyToJoin(): boolean;
 
     /**
      * Determines if the panel is hosting the given participant by id
@@ -99,6 +99,10 @@ export abstract class PanelModel {
 
     get isWitness(): boolean {
         return this.hearingRole === HearingRole.WITNESS;
+    }
+
+    get isQuickLinkObserver(): boolean {
+        return this.hearingRole === HearingRole.QUICK_LINK_OBSERVER;
     }
 
     get transferringIn(): boolean {
