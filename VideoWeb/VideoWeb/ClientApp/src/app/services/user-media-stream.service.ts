@@ -7,8 +7,6 @@ import { UserMediaService } from './user-media.service';
 import { skip, take } from 'rxjs/operators';
 import { MediaStreamService } from './media-stream.service';
 
-export const mustProvideAMicrophoneDeviceError = () => new Error('A microphone device must be provided');
-
 @Injectable({
     providedIn: 'root'
 })
@@ -97,7 +95,7 @@ export class UserMediaStreamService {
 
                         this.activeMicrophoneStream = microphoneStream;
 
-                        console.log(`${this.loggerPrefix} Built initial stream`, {
+                        this.logger.info(`${this.loggerPrefix} Built initial stream`, {
                             mic: microphoneDevice,
                             cam: cameraDevice,
                             stream: this.currentStream,
@@ -107,7 +105,7 @@ export class UserMediaStreamService {
 
                         this.currentStreamSubject.next(this.currentStream);
 
-                        console.log(`${this.loggerPrefix} Subscribing to active video and microphone device changes`);
+                        this.logger.debug(`${this.loggerPrefix} Subscribing to active video and microphone device changes`);
                         this.userMediaService.activeVideoDevice$.pipe(skip(1)).subscribe(videoDevice => {
                             this.onActiveCameraChanged(videoDevice);
                         });
@@ -160,7 +158,7 @@ export class UserMediaStreamService {
     }
 
     private onActiveCameraChanged(cameraDevice: UserMediaDevice) {
-        console.log(`${this.loggerPrefix} active camera changed. Fetching stream for the new device.`, {
+        this.logger.debug(`${this.loggerPrefix} active camera changed. Fetching stream for the new device.`, {
             newCam: cameraDevice,
             oldCamStream: this.activeCameraStream,
             oldCamTracks: this.activeCameraStream.getVideoTracks(),
