@@ -157,7 +157,7 @@ describe('MediaStreamService', () => {
             // Assert
             expect(mediaDevicesSpy.getUserMedia).toHaveBeenCalledWith(cameraConstraintBuilder(cameraDevice));
 
-            expect(resultantStream).toBe(filterStream);
+            expect(resultantStream).toBe(expectedStream);
             expect(expectedStreamClone).toHaveBeenCalledTimes(1);
             expect(errorServiceSpy.handlePexipError).not.toHaveBeenCalled();
         }));

@@ -3,8 +3,8 @@ import { Guid } from 'guid-typescript';
 import { of, Subject } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { Role, UserProfileResponse } from 'src/app/services/clients/api-client';
-import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { MediaStreamService } from 'src/app/services/media-stream.service';
+import { BackgroundFilter } from 'src/app/services/models/background-filter';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { VideoFilterService } from 'src/app/services/video-filter.service';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
@@ -35,6 +35,7 @@ describe('SelectMediaDevicesComponent', () => {
     let activeVideoDeviceSubject: Subject<UserMediaDevice>;
     let activeMicrophoneDeviceSubject: Subject<UserMediaDevice>;
     let isAudioOnlySubject: Subject<boolean>;
+    let filterChangedSubject: Subject<BackgroundFilter | null>;
 
     beforeAll(() => {
         mediaStreamService = jasmine.createSpyObj<MediaStreamService>('MediaStreamService', [
@@ -43,7 +44,11 @@ describe('SelectMediaDevicesComponent', () => {
             'getStreamForMic'
         ]);
         profileService = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
-        videoFilterService = jasmine.createSpyObj<VideoFilterService>('VideoFilterService', ['doesSupportVideoFiltering']);
+        videoFilterService = jasmine.createSpyObj<VideoFilterService>(
+            'VideoFilterService',
+            ['doesSupportVideoFiltering'],
+            ['onFilterChanged$']
+        );
         mediaStreamService.getStreamForCam.and.returnValue(of(mockCamStream));
         mediaStreamService.getStreamForMic.and.returnValue(of(mockMicStream));
     });
@@ -58,6 +63,7 @@ describe('SelectMediaDevicesComponent', () => {
         activeVideoDeviceSubject = new Subject<UserMediaDevice>();
         activeMicrophoneDeviceSubject = new Subject<UserMediaDevice>();
         isAudioOnlySubject = new Subject<boolean>();
+        filterChangedSubject = new Subject<BackgroundFilter | null>();
         profileService.getUserProfile.and.returnValue(Promise.resolve(mockProfile));
         videoFilterService.doesSupportVideoFiltering.and.returnValue(true);
 
@@ -65,6 +71,9 @@ describe('SelectMediaDevicesComponent', () => {
         getSpiedPropertyGetter(userMediaService, 'activeMicrophoneDevice$').and.returnValue(activeMicrophoneDeviceSubject.asObservable());
         getSpiedPropertyGetter(userMediaService, 'connectedDevices$').and.returnValue(connectedDevicesSubject.asObservable());
         getSpiedPropertyGetter(userMediaService, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
+
+        getSpiedPropertyGetter(videoFilterService, 'onFilterChanged$').and.returnValue(filterChangedSubject.asObservable());
+        filterChangedSubject.next(BackgroundFilter.blur);
 
         component = new SelectMediaDevicesComponent(
             userMediaService,
