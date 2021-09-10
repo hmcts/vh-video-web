@@ -128,7 +128,13 @@ describe('ParticipantsPanelComponent', () => {
         expect(component.participants.length).toBe(expectedCount);
         expect(component.participants[0].caseTypeGroup.toLowerCase()).toBe('judge');
         expect(component.participants[1].caseTypeGroup.toLowerCase()).toBe('panelmember');
-        expect(component.participants[component.participants.length - 1].caseTypeGroup.toLowerCase()).toBe('observer');
+
+        expect(component.participants.findIndex(x => x.displayName === testData.quickLinkParticipant1.display_name)).toBeLessThan(
+            component.participants.findIndex(x => x.displayName === testData.quickLinkParticipant2.display_name)
+        );
+
+        expect(component.participants[component.participants.length - 2].caseTypeGroup.toLowerCase()).toBe('observer');
+        expect(component.participants[component.participants.length - 1].role).toBe(Role.QuickLinkObserver);
     }));
 
     it('should log error when api returns error', async () => {

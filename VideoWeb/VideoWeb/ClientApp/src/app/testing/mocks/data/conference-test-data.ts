@@ -26,6 +26,28 @@ import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { AlertFilter, AlertsStatus, HearingsFilter, StatusFilter } from '../../../shared/models/hearings-filter';
 
 export class ConferenceTestData {
+    quickLinkParticipant1 = new ParticipantForUserResponse({
+        id: 'QuickLinkParticipant1_Id',
+        status: ParticipantStatus.NotSignedIn,
+        display_name: 'QuickLinkParticipant1_display_name',
+        role: Role.QuickLinkParticipant,
+        case_type_group: 'QuickLinkParticipant1_case_type_group',
+        hearing_role: HearingRole.QUICK_LINK_PARTICIPANT,
+        tiled_display_name: 'QuickLinkParticipant1_tiled_display_name',
+        linked_participants: []
+    });
+
+    quickLinkParticipant2 = new ParticipantForUserResponse({
+        id: 'QuickLinkParticipant2_Id',
+        status: ParticipantStatus.NotSignedIn,
+        display_name: 'QuickLinkParticipant2_display_name',
+        role: Role.QuickLinkParticipant,
+        case_type_group: 'QuickLinkParticipant2_case_type_group',
+        hearing_role: HearingRole.QUICK_LINK_PARTICIPANT,
+        tiled_display_name: 'QuickLinkParticipant2_tiled_display_name',
+        linked_participants: []
+    });
+
     asConferenceResponseVho(confResponse: ConferenceResponse): ConferenceResponseVho {
         confResponse.endpoints = undefined;
         return new ConferenceResponseVho(confResponse);
@@ -385,18 +407,10 @@ export class ConferenceTestData {
             linked_participants: []
         });
 
-        const participant11 = new ParticipantForUserResponse({
-            id: 'QuickLinkParticipant_Id',
-            status: ParticipantStatus.NotSignedIn,
-            display_name: 'QuickLinkParticipant_display_name',
-            role: Role.QuickLinkParticipant,
-            case_type_group: 'QuickLinkParticipant_case_type_group',
-            hearing_role: HearingRole.QUICK_LINK_PARTICIPANT,
-            tiled_display_name: 'QuickLinkParticipant_tiled_display_name',
-            linked_participants: []
-        });
+        const participant11 = this.quickLinkParticipant2; // Out of order to test sorting
+        const participant12 = this.quickLinkParticipant1;
 
-        const participant12 = new ParticipantForUserResponse({
+        const participant13 = new ParticipantForUserResponse({
             id: 'QuickLinkObserver_Id',
             status: ParticipantStatus.NotSignedIn,
             display_name: 'QuickLinkObserver_display_name',
@@ -419,6 +433,7 @@ export class ConferenceTestData {
         participants.push(participant10);
         participants.push(participant11);
         participants.push(participant12);
+        participants.push(participant13);
         return participants;
     }
 

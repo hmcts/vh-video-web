@@ -5,7 +5,7 @@ import { HearingSummary } from './hearing-summary';
 import { JudgeHearingSummary } from './JudgeHearingSummary';
 import { ParticipantSummary } from './participant-summary';
 
-fdescribe('JudgeHearingSummary', () => {
+describe('JudgeHearingSummary', () => {
     let conference: ConferenceForHostResponse;
     const testData = new ConferenceTestData();
 
@@ -74,7 +74,7 @@ fdescribe('JudgeHearingSummary', () => {
                     x.role !== Role.QuickLinkParticipant
             ).length
         ).toBe(0);
-        expect(participants.length).toBe(6);
+        expect(participants.length).toBe(7);
     });
 
     it('should return isExpired false when hearing is not closed', () => {

@@ -47,7 +47,7 @@ class WrParticipantStatusListTest extends WRParticipantStatusListDirective imple
     }
 }
 
-fdescribe('WaitingRoom ParticipantList Base', () => {
+describe('WaitingRoom ParticipantList Base', () => {
     let component: WrParticipantStatusListTest;
     let videoWebService: jasmine.SpyObj<VideoWebService>;
     let consultationService: jasmine.SpyObj<ConsultationService>;

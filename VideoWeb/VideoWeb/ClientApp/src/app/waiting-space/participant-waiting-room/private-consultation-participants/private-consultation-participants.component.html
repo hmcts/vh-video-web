@@ -1,24 +1,26 @@
 <div class="container">
     <h2 class="govuk-heading-s white">{{ 'private-consultation-participants.participants' | translate }}</h2>
-    <div class="participant-grid">        
-        <ng-container *ngFor="let groupMember of johRoles">
-            <ng-container *ngIf="isJohConsultation() && geMemberParticipantsByRole(groupMember).length > 0">
-                <div  class="language-icon">
-                    <img  class="small-crest" src="/assets/images/UkGovCrestWhite.png"[attr.alt]="'private-consultation-participants.crest-icon-alt' | translate" />                    
-                </div>
-                <div class="member-group">
-                    <ng-container *ngFor="let participant of geMemberParticipantsByRole(groupMember); trackBy: trackParticipant">        
-                        <app-participant-item
-                            [participant]="participant"
-                            [interpreter]="participant?.interpreter"
-                            [conferenceId]="conference.id"
-                            [roomLabel]="roomLabel"
-                            [participantCallStatuses]="participantCallStatuses"
-                            [canInvite]="canInvite"
-                            >
-                         </app-participant-item>                              
-                    </ng-container>
-                </div>
+    <div class="participant-grid">
+        <ng-container *ngIf="isJohConsultation()">
+            <ng-container *ngFor="let groupMember of johRoles">
+                <ng-container *ngIf="getMemberParticipantsByRole(groupMember).length > 0">
+                    <div  class="language-icon">
+                        <img  class="small-crest" src="/assets/images/UkGovCrestWhite.png"[attr.alt]="'private-consultation-participants.crest-icon-alt' | translate" />                    
+                    </div>
+                    <div class="member-group">
+                        <ng-container *ngFor="let participant of getMemberParticipantsByRole(groupMember); trackBy: trackParticipant">        
+                            <app-participant-item
+                                [participant]="participant"
+                                [interpreter]="participant?.interpreter"
+                                [conferenceId]="conference.id"
+                                [roomLabel]="roomLabel"
+                                [participantCallStatuses]="participantCallStatuses"
+                                [canInvite]="canInvite"
+                                >
+                            </app-participant-item>                              
+                        </ng-container>
+                    </div>
+                </ng-container>
             </ng-container>
         </ng-container>
         <ng-container  *ngFor="let participant of getPrivateConsultationParticipants(); trackBy: trackParticipant">
@@ -56,6 +58,21 @@
                         [innerHTML]="getParticipantStatus(endpoint)"></span>
                 </div>
             </div>
+        </ng-container>
+        <ng-container *ngIf="isJohConsultation()">
+            <ng-container  *ngFor="let participant of getWitnessesAndObservers(); trackBy: trackParticipant">
+                <div  class="member-group">
+                    <app-participant-item
+                                    [participant]="participant"
+                                    [interpreter]="participant?.interpreter"
+                                    [conferenceId]="conference.id"
+                                    [roomLabel]="roomLabel"
+                                    [participantCallStatuses]="participantCallStatuses"
+                                    [canInvite]="canInvite"
+                                    >
+                    </app-participant-item>
+                </div>
+            </ng-container>
         </ng-container>
     </div>
 </div>

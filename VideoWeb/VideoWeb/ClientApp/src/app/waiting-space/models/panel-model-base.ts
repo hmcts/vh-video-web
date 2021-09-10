@@ -154,10 +154,12 @@ export abstract class PanelModel {
             return 1;
         } else if (this.role === Role.JudicialOfficeHolder) {
             return 2;
-        } else if (this.caseTypeGroup.toLowerCase() === 'endpoint') {
+        } else if (this.role === Role.QuickLinkParticipant) {
             return 4;
-        } else if (this.hearingRole === HearingRole.OBSERVER || this.role === Role.QuickLinkObserver) {
+        } else if (this.caseTypeGroup.toLowerCase() === 'endpoint') {
             return 5;
+        } else if (this.hearingRole === HearingRole.OBSERVER || this.role === Role.QuickLinkObserver) {
+            return 6;
         } else {
             return 3;
         }
