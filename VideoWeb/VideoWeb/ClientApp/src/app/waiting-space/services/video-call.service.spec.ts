@@ -1,6 +1,6 @@
 import { discardPeriodicTasks, fakeAsync, flush } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { of, Subject } from 'rxjs';
+import { of, ReplaySubject, Subject } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import {
     ApiClient,
@@ -36,9 +36,9 @@ describe('VideoCallService', () => {
     let userMediaService: jasmine.SpyObj<UserMediaService>;
 
     let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
-    let currentStreamSubject: Subject<MediaStream>;
+    let currentStreamSubject: ReplaySubject<MediaStream>;
     let streamModifiedSubject: Subject<void>;
-    let isAudioOnlySubject: Subject<boolean>;
+    let isAudioOnlySubject: ReplaySubject<boolean>;
 
     const testData = new MediaDeviceTestData();
     let pexipSpy: jasmine.SpyObj<PexipClient>;
@@ -46,7 +46,7 @@ describe('VideoCallService', () => {
     let kinlyHeartbeatServiceSpy: jasmine.SpyObj<KinlyHeartbeatService>;
     let videoCallEventsServiceSpy: jasmine.SpyObj<VideoCallEventsService>;
 
-    beforeEach(async () => {
+    beforeEach(fakeAsync(() => {
         apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
             'startOrResumeVideoHearing',
             'pauseVideoHearing',
@@ -63,10 +63,10 @@ describe('VideoCallService', () => {
         );
 
         userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>([], ['currentStream$', 'streamModified$']);
-        currentStreamSubject = new Subject<MediaStream>();
+        currentStreamSubject = new ReplaySubject<MediaStream>(1);
         getSpiedPropertyGetter(userMediaStreamService, 'currentStream$').and.returnValue(currentStreamSubject.asObservable());
         streamModifiedSubject = new Subject<void>();
-        isAudioOnlySubject = new Subject<boolean>();
+        isAudioOnlySubject = new ReplaySubject<boolean>(1);
         getSpiedPropertyGetter(userMediaStreamService, 'streamModified$').and.returnValue(streamModifiedSubject.asObservable());
 
         getSpiedPropertyGetter(userMediaService, 'connectedVideoDevices').and.returnValue(of(testData.getListOfCameras()));
@@ -110,7 +110,14 @@ describe('VideoCallService', () => {
             videoCallEventsServiceSpy
         );
 
-        await service.setupClient();
+        currentStreamSubject.next(mockCamStream);
+
+        service.setupClient();
+        flush();
+    }));
+
+    it('should initialise user_media_stream', () => {
+        expect(service.pexipAPI.user_media_stream).toBe(mockCamStream);
     });
 
     it('should toggle mute', () => {

@@ -77,7 +77,7 @@ export class VideoCallService {
      * This will initialise the pexip client and initalise the call with
      * the user's preferred camera and microphone (if selected)
      */
-    async setupClient(): Promise<MediaStream> {
+    async setupClient(): Promise<void> {
         this.hasDisconnected$ = new Subject();
 
         const self = this;
@@ -134,7 +134,7 @@ export class VideoCallService {
             this.reconnectToCall();
         });
 
-        return this.userMediaStreamService.currentStream$
+        this.userMediaStreamService.currentStream$
             .pipe(take(1))
             .pipe(tap(currentStream => (this.pexipAPI.user_media_stream = currentStream)))
             .toPromise();
