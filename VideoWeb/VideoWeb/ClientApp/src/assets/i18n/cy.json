@@ -596,7 +596,8 @@
     "participants-panel": "Panel y cyfranogwyr",
     "chat-panel": "Panel sgwrsio",
     "pause": "Egwyl",
-    "close": "Cau"
+    "close": "Cau",
+    "context-menu": "Open Menu"
   },
   "judge-waiting-room": {
     "switch-to-main-screen": "Dychwelyd i'r brif sgrin",

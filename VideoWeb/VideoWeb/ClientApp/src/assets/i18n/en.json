@@ -609,7 +609,8 @@
     "start-sharing-screen": "Start sharing screen",
     "stop-sharing-my-screen": "Stop sharing my screen",
     "stop-sharing-screen": "Stop sharing screen",
-    "change-camera-mic": "Change your camera and microphone"
+    "change-camera-mic": "Change your camera and microphone",
+    "context-menu": "Open Menu"
   },
   "chat-panel": {
     "heading": "VH Officer messages",
@@ -804,7 +805,7 @@
     "alt": "Copy conference id icon",
     "display-text": "Copy hearing ID to clipboard"
   },
-  "copy-quick-link":{
+  "copy-quick-link": {
     "tooltip-copied": "Join by quick link details copied to clipboard",
     "display-text": "Copy join by quick link details to clipboard"
   },
