@@ -65,12 +65,9 @@ describe('UserMediaStreamService', () => {
         const newStreamTracks = [];
         const newStreamSpy = jasmine.createSpyObj<MediaStream>(['addTrack', 'removeTrack', 'getTracks', 'getTrackById']);
         newStreamSpy.addTrack.and.callFake(track => {
-            console.log('Add');
             newStreamTracks.push(track);
         });
         newStreamSpy.removeTrack.and.callFake(track => {
-            debugger;
-            console.log('Remove', { track: track, tracks: newStreamTracks });
             const idx = newStreamTracks.findIndex(existingTrack => existingTrack.id === track.id);
             if (idx < 0) {
                 return;
@@ -78,10 +75,9 @@ describe('UserMediaStreamService', () => {
             newStreamTracks.splice(idx, 1);
         });
         newStreamSpy.getTracks.and.returnValue(newStreamTracks);
-        newStreamSpy.getTrackById.and.callFake(trackId => newStreamTracks.find(x => x.id == trackId));
+        newStreamSpy.getTrackById.and.callFake(trackId => newStreamTracks.find(x => x.id === trackId));
 
         mediaStreamServiceSpy.initialiseNewStream.and.callFake(tracks => {
-            console.log('init', tracks.length);
             newStreamTracks.push(...tracks);
             return newStreamSpy;
         });
