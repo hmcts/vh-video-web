@@ -543,6 +543,9 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     private getCaseRole(participant: PanelModel): string {
+        if (!participant.caseTypeGroup) {
+            return '';
+        }
         const translatedCaseTypeGroup = this.translateService.instant(
             'case-type-group.' + participant.caseTypeGroup.toLowerCase().split(' ').join('-')
         );
@@ -562,7 +565,14 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     private setParticipants() {
         const combined = [...this.nonEndpointParticipants, ...this.endpointParticipants];
         combined.sort((x, z) => {
-            return x.orderInTheList === z.orderInTheList ? 0 : +(x.orderInTheList > z.orderInTheList) || -1;
+            if (x.orderInTheList === z.orderInTheList) {
+                // 3 here means regular participants and should be grouped by caseTypeGroup
+                if (x.orderInTheList !== 3 || x.caseTypeGroup === z.caseTypeGroup) {
+                    return x.displayName.localeCompare(z.displayName);
+                }
+                return x.caseTypeGroup.localeCompare(z.caseTypeGroup);
+            }
+            return x.orderInTheList > z.orderInTheList ? 1 : -1;
         });
         this.participants = combined;
     }
