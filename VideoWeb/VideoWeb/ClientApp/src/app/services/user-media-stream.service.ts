@@ -6,6 +6,7 @@ import { Observable, ReplaySubject, Subject, zip } from 'rxjs';
 import { UserMediaService } from './user-media.service';
 import { skip, take } from 'rxjs/operators';
 import { MediaStreamService } from './media-stream.service';
+import { mustProvideAMicrophoneDeviceError } from './errors/must-provide-a-microphone-device.error';
 
 @Injectable({
     providedIn: 'root'
