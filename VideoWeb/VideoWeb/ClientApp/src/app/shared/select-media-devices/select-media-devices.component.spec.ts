@@ -148,6 +148,17 @@ describe('SelectMediaDevicesComponent', () => {
             expect(component.selectedCameraDevice).toEqual(testData.getSelectedCamera());
         }));
 
+        it('should update selected cam when filter has changed', fakeAsync(() => {
+            spyOn<any>(component, 'updateSelectedCamera');
+
+            component.availableCameraDevices = testData.getListOfCameras();
+            component.ngOnInit();
+            flushMicrotasks();
+            filterChangedSubject.next(BackgroundFilter.HMCTS);
+            flush();
+            expect(component['updateSelectedCamera']).toHaveBeenCalled();
+        }));
+
         it('should update selected mic', fakeAsync(() => {
             spyOn<any>(component, 'updateSelectedMicrophone').and.callThrough();
 

@@ -46,11 +46,10 @@ describe('MediaStreamService', () => {
         navigatorSpy = jasmine.createSpyObj<Navigator>([], ['mediaDevices']);
         getSpiedPropertyGetter(navigatorSpy, 'mediaDevices').and.returnValue(mediaDevicesSpy);
 
-        videoFilterStreamServiceSpy = jasmine.createSpyObj<VideoFilterService>([
-            'initFilterFromMediaStream',
-            'startFilteredStream',
-            'doesSupportVideoFiltering'
-        ]);
+        videoFilterStreamServiceSpy = jasmine.createSpyObj<VideoFilterService>(
+            ['initFilterFromMediaStream', 'startFilteredStream', 'doesSupportVideoFiltering'],
+            ['filterOn']
+        );
         const filterStreamTracks = [];
         filterStreamTracks.push(
             jasmine.createSpyObj<MediaStreamTrack>(['stop'])
@@ -148,6 +147,7 @@ describe('MediaStreamService', () => {
             const expectedStreamClone = spyOn(expectedStream, 'clone');
             expectedStreamClone.and.returnValue(expectedStream);
             mediaDevicesSpy.getUserMedia.and.resolveTo(expectedStream);
+            getSpiedPropertyGetter(videoFilterStreamServiceSpy, 'filterOn').and.returnValue(false);
 
             // Act
             let resultantStream = null;
@@ -158,6 +158,27 @@ describe('MediaStreamService', () => {
             expect(mediaDevicesSpy.getUserMedia).toHaveBeenCalledWith(cameraConstraintBuilder(cameraDevice));
 
             expect(resultantStream).toBe(expectedStream);
+            expect(expectedStreamClone).toHaveBeenCalledTimes(1);
+            expect(errorServiceSpy.handlePexipError).not.toHaveBeenCalled();
+        }));
+
+        it('should return a filtered stream when filter is on', fakeAsync(() => {
+            // Arrange
+            const expectedStream = new MediaStream();
+            const expectedStreamClone = spyOn(expectedStream, 'clone');
+            expectedStreamClone.and.returnValue(expectedStream);
+            mediaDevicesSpy.getUserMedia.and.resolveTo(expectedStream);
+            getSpiedPropertyGetter(videoFilterStreamServiceSpy, 'filterOn').and.returnValue(true);
+
+            // Act
+            let resultantStream = null;
+            sut.getStreamForCam(cameraDevice).subscribe(stream => (resultantStream = stream));
+            flush();
+
+            // Assert
+            expect(mediaDevicesSpy.getUserMedia).toHaveBeenCalledWith(cameraConstraintBuilder(cameraDevice));
+
+            expect(resultantStream).toBe(filterStream);
             expect(expectedStreamClone).toHaveBeenCalledTimes(1);
             expect(errorServiceSpy.handlePexipError).not.toHaveBeenCalled();
         }));
