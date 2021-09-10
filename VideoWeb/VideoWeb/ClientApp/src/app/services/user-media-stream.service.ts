@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import 'webrtc-adapter';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Logger } from './logging/logger-base';
-import { Observable, of, ReplaySubject, Subject, zip } from 'rxjs';
+import { Observable, ReplaySubject, Subject, zip } from 'rxjs';
 import { UserMediaService } from './user-media.service';
-import { map, skip, take } from 'rxjs/operators';
+import { skip, take } from 'rxjs/operators';
 import { MediaStreamService } from './media-stream.service';
 
 export const mustProvideAMicrophoneDeviceError = () => new Error('A microphone device must be provided');
