@@ -1,13 +1,17 @@
 <div class="controls-container">
   <div class="icons-container">
     <div
-      class="icon-button"
+      class="icon-button dropdown"
       id="toggle-context-menu"
       appTooltip
       [text]="'private-consultation-room-controls.context-menu' | translate"
       colour="grey"
+      (click)="showContextMenu = !showContextMenu"
     >
       <span class="far fa-ellipsis-v"></span>
+      <div *ngIf="showContextMenu" class="dropdown-content">
+        <p>Hello World!</p>
+      </div>
     </div>
     <div class="flexBar"></div>
     <div
