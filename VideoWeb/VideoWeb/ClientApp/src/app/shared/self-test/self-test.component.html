@@ -16,7 +16,16 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-quarter">
-    <video *ngIf="streamsActive" id="outgoingStream" [muted]="true" [srcObject]="this.outgoingStream" autoplay width="270" height="auto">
+    <video
+      *ngIf="streamsActive"
+      id="outgoingStream"
+      [muted]="true"
+      [srcObject]="this.outgoingStream"
+      autoplay
+      width="270"
+      height="auto"
+      class="selfie-view"
+    >
       {{ 'self-test.browser-not-support' | translate }}
     </video>
   </div>

@@ -28,7 +28,8 @@ namespace VideoWeb.Mappings
                 KinlyTurnServerUser = kinlyConfiguration.TurnServerUser,
                 KinlyTurnServerCredential = kinlyConfiguration.TurnServerCredential,
                 EJudIdpSettings = ejudSettings,
-                VHIdpSettings = vhAdSettings
+                VHIdpSettings = vhAdSettings,
+                EnableVideoFilters = servicesConfiguration.EnableVideoFilters
             };
         }
 
