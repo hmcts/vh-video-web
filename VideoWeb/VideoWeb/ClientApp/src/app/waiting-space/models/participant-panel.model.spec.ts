@@ -2,6 +2,7 @@ import { ParticipantForUserResponse, ParticipantStatus, Role } from 'src/app/ser
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { ParticipantPanelModel } from './participant-panel-model';
 import { ParticipantPanelModelMapper } from '../../shared/mappers/participant-panel-model-mapper';
+import { HearingRole } from './hearing-role-model';
 
 describe('ParticipantPanelModel', () => {
     let model: ParticipantPanelModel;
@@ -59,5 +60,27 @@ describe('ParticipantPanelModel', () => {
         participant.role = Role.Individual;
         model = mapper.mapFromParticipantUserResponse(participant);
         expect(model.isJudicialOfficeHolder).toBeFalsy();
+    });
+
+    it('should return false when participant is a witness and status is in hearing', () => {
+        participant.hearing_role = HearingRole.WITNESS;
+        participant.status = ParticipantStatus.InHearing;
+        model = mapper.mapFromParticipantUserResponse(participant);
+        expect(model.isWitnessObserverReadyToJoin).toBeFalsy();
+    });
+
+    it('should return false when participant is a quick link observer and status is in hearing', () => {
+        participant.role = Role.QuickLinkObserver;
+        participant.status = ParticipantStatus.InHearing;
+        participant.hearing_role = HearingRole.QUICK_LINK_OBSERVER;
+        model = mapper.mapFromParticipantUserResponse(participant);
+        expect(model.isWitnessObserverReadyToJoin).toBeFalsy();
+    });
+
+    it('should return false when participant is a quick link observer and status is not in hearing', () => {
+        participant.hearing_role = HearingRole.QUICK_LINK_OBSERVER;
+        participant.status = ParticipantStatus.Available;
+        model = mapper.mapFromParticipantUserResponse(participant);
+        expect(model.isWitnessObserverReadyToJoin).toBeTruthy();
     });
 });
