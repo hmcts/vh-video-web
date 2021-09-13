@@ -40,7 +40,7 @@ export class LinkedParticipantPanelModel extends PanelModel {
         return this.participants.some(p => p.isWitness);
     }
 
-    get isWitnessOrOuickLinkUserReadyToJoin(): boolean {
+    get isWitnessOrQuickLinkUserReadyToJoin(): boolean {
         return this.participants.every(p => p.isAvailable()) && this.participants.some(x => x.isWitness || x.isQuickLinkUser);
     }
 

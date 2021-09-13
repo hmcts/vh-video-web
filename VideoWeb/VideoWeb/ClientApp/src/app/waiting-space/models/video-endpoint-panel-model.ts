@@ -9,7 +9,7 @@ export class VideoEndpointPanelModel extends PanelModel {
         this.status = endpoint.status;
     }
 
-    get isWitnessOrOuickLinkUserReadyToJoin(): boolean {
+    get isWitnessOrQuickLinkUserReadyToJoin(): boolean {
         return false;
     }
 

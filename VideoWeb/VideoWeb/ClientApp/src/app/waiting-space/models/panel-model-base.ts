@@ -80,7 +80,7 @@ export abstract class PanelModel {
     abstract isAvailable(): boolean;
     abstract isInConsultation(): boolean;
 
-    abstract get isWitnessOrOuickLinkUserReadyToJoin(): boolean;
+    abstract get isWitnessOrQuickLinkUserReadyToJoin(): boolean;
 
     /**
      * Determines if the panel is hosting the given participant by id
