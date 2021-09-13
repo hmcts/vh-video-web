@@ -162,7 +162,7 @@ export class UserMediaStreamService {
         this.logger.debug(`${this.loggerPrefix} active camera changed. Fetching stream for the new device.`, {
             newCam: cameraDevice,
             oldCamStream: this.activeCameraStream,
-            oldCamTracks: this.activeCameraStream.getVideoTracks(),
+            oldCamTracks: this.activeCameraStream?.getVideoTracks(),
             currentStreamTracks: this.currentStream.getTracks(),
             isAudioOnly: this.isAudioOnly
         });

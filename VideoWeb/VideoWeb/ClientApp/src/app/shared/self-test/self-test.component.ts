@@ -16,7 +16,7 @@ import {
 } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { MediaStreamService } from 'src/app/services/media-stream.service';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
@@ -63,7 +63,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         private videoWebService: VideoWebService,
         private errorService: ErrorService,
         private userMediaService: UserMediaService,
-        private mediaStreamService: MediaStreamService,
+        private userMediaStreamService: UserMediaStreamService,
         private videoCallService: VideoCallService,
         private navigator: Navigator
     ) {}
@@ -144,30 +144,17 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             participant: this.selfTestParticipantId
         });
 
-        this.disconnect();
-
         this.displayDeviceChangeModal = true;
     }
 
     onSelectMediaDeviceShouldClose() {
-        this.call();
-
-        this.userMediaService.activeMicrophoneDevice$.pipe(take(1)).subscribe(mic =>
-            this.mediaStreamService
-                .getStreamForMic(mic)
-                .pipe(take(1))
-                .subscribe(micStream => (this.preferredMicrophoneStream = micStream))
-        );
-
         this.displayDeviceChangeModal = false;
     }
 
     setupSubscribers() {
-        this.userMediaService.activeMicrophoneDevice$
+        this.userMediaStreamService.activeMicrophoneStream$
             .pipe(takeUntil(this.destroyedSubject))
-            .subscribe(mic =>
-                this.mediaStreamService.getStreamForMic(mic).subscribe(micStream => (this.preferredMicrophoneStream = micStream))
-            );
+            .subscribe(micStream => (this.preferredMicrophoneStream = micStream));
 
         this.userMediaService
             .hasMultipleDevices()

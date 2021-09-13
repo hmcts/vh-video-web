@@ -42,9 +42,18 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit() {
-        this.userMediaService.connectedDevices$.pipe(takeUntil(this.destroyedSubject)).subscribe(connectedDevices => {
-            this.availableCameraDevices = connectedDevices.filter(device => device.kind === 'videoinput');
-            this.availableMicrophoneDevices = connectedDevices.filter(device => device.kind === 'audioinput');
+        this.userMediaService.connectedVideoDevices$.pipe(takeUntil(this.destroyedSubject)).subscribe(cameraDevices => {
+            this.availableCameraDevices = null;
+            this.availableCameraDevices = cameraDevices;
+            this.selectedCameraDevice = this.availableCameraDevices.find(camera => this.selectedCameraDevice?.deviceId === camera.deviceId);
+        });
+
+        this.userMediaService.connectedMicrophoneDevices$.pipe(takeUntil(this.destroyedSubject)).subscribe(microphoneDevices => {
+            this.availableMicrophoneDevices = null;
+            this.availableMicrophoneDevices = microphoneDevices;
+            this.selectedMicrophoneDevice = this.availableMicrophoneDevices.find(
+                microphone => this.selectedMicrophoneDevice?.deviceId === microphone.deviceId
+            );
         });
 
         this.userMediaStreamSerivce.activeCameraStream$.subscribe(activateCameraStream => {
