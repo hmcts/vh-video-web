@@ -249,7 +249,7 @@ describe('JudgeContextMenuComponent', () => {
         expect(result).toBeFalsy();
     });
 
-    it('should callParticipantIntoHearing return flase when the participant is a witness and in hearing', () => {
+    it('should callParticipantIntoHearing return false when the participant is a witness and in hearing', () => {
         const p = participants[2];
         p.status = ParticipantStatus.InHearing;
         p.hearing_role = HearingRole.WITNESS;
@@ -267,7 +267,7 @@ describe('JudgeContextMenuComponent', () => {
         expect(component.callParticipantIntoHearing()).toBeTruthy();
     });
 
-    it('should callParticipantIntoHearing return flase when the participant is a quick link observer and in hearing', () => {
+    it('should callParticipantIntoHearing return false when the participant is a quick link observer and in hearing', () => {
         const p = participants[2];
         p.status = ParticipantStatus.InHearing;
         p.role = Role.QuickLinkObserver;
@@ -285,7 +285,7 @@ describe('JudgeContextMenuComponent', () => {
         expect(component.callParticipantIntoHearing()).toBeTruthy();
     });
 
-    it('should callParticipantIntoHearing return flase when the participant is a quick link participant and in hearing', () => {
+    it('should callParticipantIntoHearing return false when the participant is a quick link participant and in hearing', () => {
         const p = participants[2];
         p.status = ParticipantStatus.InHearing;
         p.role = Role.QuickLinkParticipant;
@@ -303,7 +303,7 @@ describe('JudgeContextMenuComponent', () => {
         expect(component.callParticipantIntoHearing()).toBeTruthy();
     });
 
-    it('should dismissParticipantFromHearing return flase when the participant is a witness and not in hearing', () => {
+    it('should dismissParticipantFromHearing return false when the participant is a witness and not in hearing', () => {
         const p = participants[2];
         p.status = ParticipantStatus.Available;
         p.hearing_role = HearingRole.WITNESS;
@@ -321,7 +321,7 @@ describe('JudgeContextMenuComponent', () => {
         expect(component.dismissParticipantFromHearing()).toBeTruthy();
     });
 
-    it('should dismissParticipantFromHearing return flase when the participant is a quick link observer and not in hearing', () => {
+    it('should dismissParticipantFromHearing return false when the participant is a quick link observer and not in hearing', () => {
         const p = participants[2];
         p.status = ParticipantStatus.Available;
         p.role = Role.QuickLinkObserver;
@@ -339,7 +339,7 @@ describe('JudgeContextMenuComponent', () => {
         expect(component.dismissParticipantFromHearing()).toBeTruthy();
     });
 
-    it('should dismissParticipantFromHearing return flase when the participant is a quick link participant and not in hearing', () => {
+    it('should dismissParticipantFromHearing return false when the participant is a quick link participant and not in hearing', () => {
         const p = participants[2];
         p.status = ParticipantStatus.Available;
         p.role = Role.QuickLinkParticipant;
