@@ -40,7 +40,7 @@ export class MediaStreamService {
     getStreamForCam(device: UserMediaDevice): Observable<MediaStream> {
         return from(this.navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId } } })).pipe(
             map(stream => {
-                if (this.videoFilterService.doesSupportVideoFiltering()) {
+                if (this.videoFilterService.doesSupportVideoFiltering() && this.videoFilterService.filterOn) {
                     this.videoFilterService.initFilterFromMediaStream(stream);
                     return this.videoFilterService.startFilteredStream();
                 } else {

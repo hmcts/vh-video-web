@@ -1,5 +1,6 @@
 import { fakeAsync, flush, flushMicrotasks } from '@angular/core/testing';
 import { Role, UserProfileResponse } from 'src/app/services/clients/api-client';
+import { BackgroundFilter } from 'src/app/services/models/background-filter';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { VideoFilterService } from 'src/app/services/video-filter.service';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
@@ -33,13 +34,17 @@ describe('SelectMediaDevicesComponent', () => {
     let activeVideoDeviceSubject: Subject<UserMediaDevice>;
     let activeMicrophoneDeviceSubject: Subject<UserMediaDevice>;
     let isAudioOnlySubject: Subject<boolean>;
+    let filterChangedSubject: Subject<BackgroundFilter | null>;
 
     let activeCameraStreamSubject: Subject<MediaStream>;
     let activeMicrophoneStreamSubject: Subject<MediaStream>;
     beforeAll(() => {
         profileService = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
-        videoFilterService = jasmine.createSpyObj<VideoFilterService>('VideoFilterService', ['doesSupportVideoFiltering']);
-    });
+        videoFilterService = jasmine.createSpyObj<VideoFilterService>(
+            'VideoFilterService',
+            ['doesSupportVideoFiltering'],
+            ['onFilterChanged$']
+        );
 
     beforeEach(fakeAsync(() => {
         userMediaService = jasmine.createSpyObj<UserMediaService>(
@@ -51,6 +56,7 @@ describe('SelectMediaDevicesComponent', () => {
         activeVideoDeviceSubject = new Subject<UserMediaDevice>();
         activeMicrophoneDeviceSubject = new Subject<UserMediaDevice>();
         isAudioOnlySubject = new Subject<boolean>();
+        filterChangedSubject = new Subject<BackgroundFilter | null>();
         profileService.getUserProfile.and.returnValue(Promise.resolve(mockProfile));
         videoFilterService.doesSupportVideoFiltering.and.returnValue(true);
 
@@ -68,6 +74,8 @@ describe('SelectMediaDevicesComponent', () => {
         getSpiedPropertyGetter(userMediaStreamServiceSpy, 'activeMicrophoneStream$').and.returnValue(
             activeMicrophoneStreamSubject.asObservable()
         );
+        getSpiedPropertyGetter(videoFilterService, 'onFilterChanged$').and.returnValue(filterChangedSubject.asObservable());
+        filterChangedSubject.next(BackgroundFilter.blur);
 
         component = new SelectMediaDevicesComponent(
             userMediaService,
@@ -141,6 +149,17 @@ describe('SelectMediaDevicesComponent', () => {
             flush();
             expect(component['updateSelectedCamera']).toHaveBeenCalled();
             expect(component.selectedCameraDevice).toEqual(testData.getSelectedCamera());
+        }));
+
+        it('should update selected cam when filter has changed', fakeAsync(() => {
+            spyOn<any>(component, 'updateSelectedCamera');
+
+            component.availableCameraDevices = testData.getListOfCameras();
+            component.ngOnInit();
+            flushMicrotasks();
+            filterChangedSubject.next(BackgroundFilter.HMCTS);
+            flush();
+            expect(component['updateSelectedCamera']).toHaveBeenCalled();
         }));
 
         it('should update selected mic', fakeAsync(() => {

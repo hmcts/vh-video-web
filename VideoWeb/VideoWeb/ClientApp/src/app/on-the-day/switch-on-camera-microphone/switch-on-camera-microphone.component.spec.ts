@@ -162,9 +162,13 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
         getSpiedPropertyGetter(userMediaStreamService, 'currentStream$').and.callFake(() => {
             return throwError(new Error('Fake error'));
         });
+        spyOn(component, 'postPermissionDeniedAlert');
+
         component.requestMedia();
         flush();
         expect(component.userPrompted).toBeFalse();
         expect(component.mediaAccepted).toBeFalse();
+        expect(component.postPermissionDeniedAlert).toHaveBeenCalledTimes(1);
+        expect(errorService.goToServiceError).toHaveBeenCalledTimes(1);
     }));
 });
