@@ -30,12 +30,12 @@ describe('ParticipantInfoTooltipComponent', () => {
         spyOnProperty(component.participant, 'showCaseRole', 'get').and.returnValue(true);
         fixture.detectChanges();
 
-        const showCaseRoleElement = fixture.debugElement.query(By.css('[data-case-role]'));
+        const showCaseRoleElement = fixture.debugElement.query(By.css(`#tooltip-case-role-${component.participant.id}`));
 
         expect(showCaseRoleElement).toBeTruthy();
     });
 
-    it('should show case type group', () => {
+    it('should not show case type group', () => {
         const participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(
             'C7163972-A362-4167-8D33-77A64674B31C',
             'MyVenue'
@@ -46,7 +46,7 @@ describe('ParticipantInfoTooltipComponent', () => {
         spyOnProperty(component.participant, 'showCaseRole', 'get').and.returnValue(false);
         fixture.detectChanges();
 
-        const showCaseRoleElement = fixture.debugElement.query(By.css('[data-case-role]'));
+        const showCaseRoleElement = fixture.debugElement.query(By.css(`#tooltip-case-role-${component.participant.id}`));
 
         expect(showCaseRoleElement).toBeFalsy();
     });

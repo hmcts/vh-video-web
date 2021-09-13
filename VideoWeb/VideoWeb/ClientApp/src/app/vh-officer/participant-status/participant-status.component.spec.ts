@@ -265,7 +265,8 @@ describe('ParticipantStatusComponent', () => {
         });
 
         hostRoles.forEach(role => {
-            it(`should return get status for ${role} when not in a hearing`, () => {
+            it(`should get status for ${role} when not in a hearing`, () => {
+                participantStatusReaderSpy.getStatusAsTextForHost.and.returnValue(participantStatusReaderSpy.unavailableText);
                 const participant = participants[0];
                 participant.role = role;
                 participant.host_in_another_hearing = false;
@@ -274,6 +275,7 @@ describe('ParticipantStatusComponent', () => {
                 component.setParticipantStatus(ParticipantStatus.InHearing, participantContactDetails);
 
                 expect(participantStatusReaderSpy.getStatusAsTextForHost).toHaveBeenCalled();
+                expect(participantContactDetails.statusText).toBe(participantStatusReaderSpy.unavailableText);
             });
         });
     });
