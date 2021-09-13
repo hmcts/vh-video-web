@@ -120,4 +120,12 @@ export class JudgeContextMenuComponent {
             ? this.translateService.instant('judge-context-menu.unpin')
             : this.translateService.instant('judge-context-menu.pin');
     }
+
+    callParticipantIntoHearing(): boolean {
+        return (this.participant.isWitness || this.participant.isQuickLinkUser) && !this.participant.isInHearing();
+    }
+
+    dismissParticipantFromHearing(): boolean {
+        return (this.participant.isWitness || this.participant.isQuickLinkUser) && this.participant.isInHearing();
+    }
 }
