@@ -142,16 +142,17 @@
   color: white;
 }
 
-.video-wrapper, .panel-wrapper {
+.video-wrapper,
+.panel-wrapper {
   height: calc(100% - 4.094375rem);
 }
 
 @media screen and (min-width: 40.0625em) {
-  .video-wrapper, .panel-wrapper {
+  .video-wrapper,
+  .panel-wrapper {
     height: calc(100% - 5rem);
   }
 }
-
 
 .video-wrapper {
   width: auto;
