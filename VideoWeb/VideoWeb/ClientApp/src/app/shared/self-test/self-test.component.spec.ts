@@ -40,7 +40,6 @@ describe('SelfTestComponent', () => {
     let userMediaStreamServiceSpy: jasmine.SpyObj<UserMediaStreamService>;
     let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
     let navigatorSpy: jasmine.SpyObj<Navigator>;
-    const testData = new MediaDeviceTestData();
 
     const token = new TokenResponse({
         expires_on: '02.06.2020-21:06Z',
@@ -61,6 +60,7 @@ describe('SelfTestComponent', () => {
         errorServiceSpy = jasmine.createSpyObj<ErrorService>(['handleApiError', 'handlePexipError']);
 
         userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>(['hasMultipleDevices'], ['connectedDevices$']);
+        userMediaServiceSpy.hasMultipleDevices.and.returnValue(of(true));
 
         connectedDevicesSubject = new Subject<UserMediaDevice[]>();
         activateMicrophoneSubject = new Subject<MediaStream>();
@@ -318,7 +318,7 @@ describe('SelfTestComponent', () => {
 
         describe('on activeMicrophoneStream$', () => {
             beforeEach(() => {
-                component.ngOnInit();
+                component.setupSubscribers();
             });
 
             it('should set the preferredMicrophoneStream stream', fakeAsync(() => {
@@ -327,7 +327,7 @@ describe('SelfTestComponent', () => {
                 flush();
 
                 // Assert
-                expect(component.preferredMicrophoneStream).toBe(mockMicStream);
+                expect(component.preferredMicrophoneStream).toEqual(mockMicStream);
             }));
         });
     });
