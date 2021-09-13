@@ -266,7 +266,8 @@
     "observer": "Sylwebydd",
     "observers": "Sylwebydd",
     "video-access-point": "Pwynt mynediad fideo ",
-    "video-access-points": "Pwynt mynediad fideo"
+    "video-access-points": "Pwynt mynediad fideo",
+    "conference-status-heading": "Status/Action"
   },
   "conference-status": {
     "paused": "Wedi'i atal dros dro",
