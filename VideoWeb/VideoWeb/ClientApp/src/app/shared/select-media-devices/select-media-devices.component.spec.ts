@@ -45,6 +45,7 @@ describe('SelectMediaDevicesComponent', () => {
             ['doesSupportVideoFiltering'],
             ['onFilterChanged$']
         );
+    });
 
     beforeEach(fakeAsync(() => {
         userMediaService = jasmine.createSpyObj<UserMediaService>(
@@ -95,6 +96,7 @@ describe('SelectMediaDevicesComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+
     describe('OnInit', () => {
         it('should initialise connectWithCameraOn with input', fakeAsync(() => {
             component.ngOnInit();
