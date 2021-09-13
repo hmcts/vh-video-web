@@ -41,11 +41,12 @@ export class MediaStreamService {
     getStreamForCam(device: UserMediaDevice): Observable<MediaStream> {
         return from(this.navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId } } })).pipe(
             map(stream => {
+                const cloneStream = stream.clone();
                 if (this.videoFilterService.doesSupportVideoFiltering() && this.videoFilterService.filterOn) {
-                    this.videoFilterService.initFilterFromMediaStream(stream);
+                    this.videoFilterService.initFilterFromMediaStream(cloneStream);
                     return this.videoFilterService.startFilteredStream();
                 } else {
-                    return stream;
+                    return cloneStream;
                 }
             }),
             catchError(error => {
