@@ -255,105 +255,105 @@ describe('JudgeContextMenuComponent', () => {
         p.hearing_role = HearingRole.WITNESS;
         const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
-        expect(component.callParticipantIntoHearing()).toBeFalsy();
+        expect(component.canCallParticipantIntoHearing()).toBeFalsy();
     });
 
-    it('should callParticipantIntoHearing return true when the participant is a witness and not in hearing', () => {
+    it('should canCallParticipantIntoHearing return true when the participant is a witness and not in hearing', () => {
         const p = participants[2];
         p.status = ParticipantStatus.Available;
         p.hearing_role = HearingRole.WITNESS;
         const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
-        expect(component.callParticipantIntoHearing()).toBeTruthy();
+        expect(component.canCallParticipantIntoHearing()).toBeTruthy();
     });
 
-    it('should callParticipantIntoHearing return false when the participant is a quick link observer and in hearing', () => {
+    it('should canCallParticipantIntoHearing return false when the participant is a quick link observer and in hearing', () => {
         const p = participants[2];
         p.status = ParticipantStatus.InHearing;
         p.role = Role.QuickLinkObserver;
         const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
-        expect(component.callParticipantIntoHearing()).toBeFalsy();
+        expect(component.canCallParticipantIntoHearing()).toBeFalsy();
     });
 
-    it('should callParticipantIntoHearing return true when the participant is a quick link observer and not in hearing', () => {
+    it('should canCallParticipantIntoHearing return true when the participant is a quick link observer and not in hearing', () => {
         const p = participants[2];
         p.status = ParticipantStatus.Available;
         p.role = Role.QuickLinkObserver;
         const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
-        expect(component.callParticipantIntoHearing()).toBeTruthy();
+        expect(component.canCallParticipantIntoHearing()).toBeTruthy();
     });
 
-    it('should callParticipantIntoHearing return false when the participant is a quick link participant and in hearing', () => {
+    it('should canCallParticipantIntoHearing return false when the participant is a quick link participant and in hearing', () => {
         const p = participants[2];
         p.status = ParticipantStatus.InHearing;
         p.role = Role.QuickLinkParticipant;
         const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
-        expect(component.callParticipantIntoHearing()).toBeFalsy();
+        expect(component.canCallParticipantIntoHearing()).toBeFalsy();
     });
 
-    it('should callParticipantIntoHearing return true when the participant is a quick link participant and not in hearing', () => {
+    it('should canCallParticipantIntoHearing return true when the participant is a quick link participant and not in hearing', () => {
         const p = participants[2];
         p.status = ParticipantStatus.Available;
         p.role = Role.QuickLinkParticipant;
         const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
-        expect(component.callParticipantIntoHearing()).toBeTruthy();
+        expect(component.canCallParticipantIntoHearing()).toBeTruthy();
     });
 
-    it('should dismissParticipantFromHearing return false when the participant is a witness and not in hearing', () => {
+    it('should canDismissParticipantFromHearing return false when the participant is a witness and not in hearing', () => {
         const p = participants[2];
         p.status = ParticipantStatus.Available;
         p.hearing_role = HearingRole.WITNESS;
         const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
-        expect(component.dismissParticipantFromHearing()).toBeFalsy();
+        expect(component.canDismissParticipantFromHearing()).toBeFalsy();
     });
 
-    it('should dismissParticipantFromHearing return true when the participant is a witness and in hearing', () => {
+    it('should canDismissParticipantFromHearing return true when the participant is a witness and in hearing', () => {
         const p = participants[2];
         p.status = ParticipantStatus.InHearing;
         p.hearing_role = HearingRole.WITNESS;
         const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
-        expect(component.dismissParticipantFromHearing()).toBeTruthy();
+        expect(component.canDismissParticipantFromHearing()).toBeTruthy();
     });
 
-    it('should dismissParticipantFromHearing return false when the participant is a quick link observer and not in hearing', () => {
+    it('should canDismissParticipantFromHearing return false when the participant is a quick link observer and not in hearing', () => {
         const p = participants[2];
         p.status = ParticipantStatus.Available;
         p.role = Role.QuickLinkObserver;
         const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
-        expect(component.dismissParticipantFromHearing()).toBeFalsy();
+        expect(component.canDismissParticipantFromHearing()).toBeFalsy();
     });
 
-    it('should dismissParticipantFromHearing return true when the participant is a quick link observer and in hearing', () => {
+    it('should canDismissParticipantFromHearing return true when the participant is a quick link observer and in hearing', () => {
         const p = participants[2];
         p.status = ParticipantStatus.InHearing;
         p.role = Role.QuickLinkObserver;
         const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
-        expect(component.dismissParticipantFromHearing()).toBeTruthy();
+        expect(component.canDismissParticipantFromHearing()).toBeTruthy();
     });
 
-    it('should dismissParticipantFromHearing return false when the participant is a quick link participant and not in hearing', () => {
+    it('should canDismissParticipantFromHearing return false when the participant is a quick link participant and not in hearing', () => {
         const p = participants[2];
         p.status = ParticipantStatus.Available;
         p.role = Role.QuickLinkParticipant;
         const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
-        expect(component.dismissParticipantFromHearing()).toBeFalsy();
+        expect(component.canDismissParticipantFromHearing()).toBeFalsy();
     });
 
-    it('should dismissParticipantFromHearing return true when the participant is a quick link participant and in hearing', () => {
+    it('should canDismissParticipantFromHearing return true when the participant is a quick link participant and in hearing', () => {
         const p = participants[2];
         p.status = ParticipantStatus.InHearing;
         p.role = Role.QuickLinkParticipant;
         const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
-        expect(component.dismissParticipantFromHearing()).toBeTruthy();
+        expect(component.canDismissParticipantFromHearing()).toBeTruthy();
     });
 });
