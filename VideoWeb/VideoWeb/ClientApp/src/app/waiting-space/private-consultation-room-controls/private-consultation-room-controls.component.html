@@ -196,6 +196,57 @@
             <span class='far fa-users'></span>
         </div>
     </div>
+    <div class="hearing-controls-desktop">
+        <button
+            *ngIf="!isPrivateConsultation && isJudge"
+            id="pause-hearing-desktop"
+            class="small-button blue"
+            data-module="govuk-button"
+            (click)="pause()"
+            type="button"
+            [hidden]="!canCloseOrPauseHearing()"
+        >
+            {{ 'private-consultation-room-controls.pause' | translate }}
+        </button>
+
+        <button
+            *ngIf="!isPrivateConsultation && isJudge"
+            id="end-hearing-desktop"
+            class="small-button red"
+            data-module="govuk-button"
+            (click)="displayConfirmationDialog()"
+            type="button"
+            [hidden]="!canCloseOrPauseHearing()"
+        >
+            {{ 'private-consultation-room-controls.close' | translate }}
+        </button>
+
+        <div class="flexBar" *ngIf="isPrivateConsultation && showConsultationControls"></div>
+
+        <button
+            *ngIf="isPrivateConsultation && showConsultationControls && !isJOHConsultation && !isJOHRoom"
+            id="lockButton-desktop"
+            class="small-button"
+            [class]="roomLocked ? 'greygreen' : 'greyred'"
+            data-module="govuk-button"
+            (click)="lockPrivateConsultation(!roomLocked)"
+            type="button"
+        >
+            {{ 'private-consultation-room-controls.lock-the-room-toggle-' + roomLocked | translate }}
+        </button>
+
+        <button
+            *ngIf="showConsultationControls"
+            id="leaveButton-desktop"
+            class="small-button red"
+            data-module="govuk-button"
+            (click)="leavePrivateConsultation()"
+            type="button"
+            [hidden]="!canLeaveConsultation()"
+        >
+            {{ 'private-consultation-room-controls.leave' | translate }}
+        </button>
+    </div>
 </div>
 
 <div class='outgoing-video-container'>
