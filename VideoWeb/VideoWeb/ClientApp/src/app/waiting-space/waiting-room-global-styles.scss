@@ -28,7 +28,6 @@
   left: 0;
   bottom: 0;
   right: 0;
-  overflow: auto;
   z-index: 11;
 }
 
@@ -142,10 +141,20 @@
   color: white;
 }
 
+.video-wrapper, .panel-wrapper {
+  height: calc(100% - 4.094375rem);
+}
+
+@media screen and (min-width: 40.0625em) {
+  .video-wrapper, .panel-wrapper {
+    height: calc(100% - 5rem);
+  }
+}
+
+
 .video-wrapper {
   width: auto;
   overflow: hidden;
-  height: calc(100% - 80px);
 }
 
 .hide-panel {
@@ -156,7 +165,6 @@
   width: 333px;
   float: right;
   overflow: overlay;
-  height: calc(100% - 55px);
 
   box-shadow: 0px 5px 10px 0px rgb(0 0 0 / 70%);
   box-shadow: 0px 20px 30px 0px rgb(0 0 0 / 30%);

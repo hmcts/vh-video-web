@@ -163,7 +163,7 @@ $govuk-global-styles: true;
   top: 127px;
   left: 42px;
   padding: 8px;
-  visibility: hidden;
+  display: none;
   opacity: 0.9;
 }
 
@@ -194,7 +194,7 @@ $govuk-global-styles: true;
 }
 
 .vh-tooltip-show {
-  visibility: visible;
+  display: block;
 }
 
 video {
