@@ -4,9 +4,9 @@
     ".NETCoreApp,Version=v3.1": {
       "BookingsApi.Client": {
         "type": "Direct",
-        "requested": "[1.26.8, )",
-        "resolved": "1.26.8",
-        "contentHash": "TQDEQlum3wFh1Hfhr6psBsnGhpE5rqV7Ni7ites5Y5ym2NWgqreejRDBxRM9j1m7m7MsrhQ8b6D1AuurTh7WLg==",
+        "requested": "[1.27.10, )",
+        "resolved": "1.27.10",
+        "contentHash": "oEz4Y3rPaMwhFjUILaVs8V15YhAdOZfpHNTfAs0vzsbm7TBJ/eiCClj7PHnJQNlDN8j3+01rHzdBQMyFGTDQPg==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
           "Newtonsoft.Json": "12.0.3"
@@ -250,9 +250,9 @@
       },
       "UserApi.Client": {
         "type": "Direct",
-        "requested": "[1.25.0, )",
-        "resolved": "1.25.0",
-        "contentHash": "SqKZ3RkqoxSzp4E4ygdEkUL4At9NGLD2LshKdOKJVBn8TFu++/wNAEKIiBQUi3tOSVi4Y7UIvcKPWTTzCB4mkQ==",
+        "requested": "[1.27.0, )",
+        "resolved": "1.27.0",
+        "contentHash": "yweSY3MRExJF/WaBMdn4AgpxHtVQzmvku/AkURww8kAJug8bMPqPgXuPcIu5BOs9aSgSX+BmQKusofwtRsGLJA==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
           "Newtonsoft.Json": "12.0.3"
@@ -260,9 +260,9 @@
       },
       "VH.AcceptanceTests.Common": {
         "type": "Direct",
-        "requested": "[1.21.39, )",
-        "resolved": "1.21.39",
-        "contentHash": "lOdqOUx1CRVDWLX6Cs17MpToif+7iNfUyqxQiFwnuXMBsX8FkRIqnMKtpB5nmk/mS52nS5084C7YA12JPkjvCQ==",
+        "requested": "[1.21.55, )",
+        "resolved": "1.21.55",
+        "contentHash": "QLf2aH7PxP9O8NwxJCf46ToWJ9YD0ZsLKehoZ7V0E5c+OBmSqUK+u5FC3/jVOWvQ7+5HBP6i4eWsSxYe5MHANA==",
         "dependencies": {
           "Appium.WebDriver": "4.3.1",
           "Azure.Storage.Blobs": "12.8.0",
@@ -291,7 +291,7 @@
           "Selenium.Firefox.WebDriver": "0.27.0",
           "Selenium.Support": "3.141.0",
           "Selenium.WebDriver": "3.141.0",
-          "Selenium.WebDriver.ChromeDriver": "91.0.4472.1900",
+          "Selenium.WebDriver.ChromeDriver": "92.0.4515.10700",
           "Selenium.WebDriver.IEDriver": "3.150.1.2",
           "Selenium.WebDriver.MicrosoftDriver": "17.17134.0",
           "SpecFlow": "3.6.23",
@@ -1339,8 +1339,8 @@
       },
       "Selenium.WebDriver.ChromeDriver": {
         "type": "Transitive",
-        "resolved": "91.0.4472.1900",
-        "contentHash": "H8N5+WEr6o1pEcQpq8pODJwjMeWqxU3zvMZZLBTPjMBI+rJ51OPDeWHCdOLniXo4YrawrnvkHC7luwfMp64UpA=="
+        "resolved": "92.0.4515.10700",
+        "contentHash": "1izYN4xibfIy9MgQvMpSzoNPU5TugR18aOcXptSVpVrbrgEl6pah3kgNm7WPwSknG0UX4E2u//oq0oEbqzsoqg=="
       },
       "StackExchange.Redis": {
         "type": "Transitive",
