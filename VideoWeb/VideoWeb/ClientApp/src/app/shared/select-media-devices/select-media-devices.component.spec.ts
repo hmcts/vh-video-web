@@ -30,7 +30,8 @@ describe('SelectMediaDevicesComponent', () => {
     const testData = new MediaDeviceTestData();
     const mockCamStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
     const mockMicStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getAudioTracks']);
-    let connectedDevicesSubject: Subject<UserMediaDevice[]>;
+    let connectedVideoDevicesSubject: Subject<UserMediaDevice[]>;
+    let connectedMicrophoneDevicesSubject: Subject<UserMediaDevice[]>;
     let activeVideoDeviceSubject: Subject<UserMediaDevice>;
     let activeMicrophoneDeviceSubject: Subject<UserMediaDevice>;
     let isAudioOnlySubject: Subject<boolean>;
@@ -51,9 +52,10 @@ describe('SelectMediaDevicesComponent', () => {
         userMediaService = jasmine.createSpyObj<UserMediaService>(
             'UserMediaService',
             ['updateActiveCamera', 'updateActiveMicrophone', 'updateIsAudioOnly'],
-            ['activeVideoDevice$', 'activeMicrophoneDevice$', 'connectedDevices$', 'isAudioOnly$']
+            ['activeVideoDevice$', 'activeMicrophoneDevice$', 'connectedVideoDevices$', 'connectedMicrophoneDevices$', 'isAudioOnly$']
         );
-        connectedDevicesSubject = new Subject<UserMediaDevice[]>();
+        connectedVideoDevicesSubject = new Subject<UserMediaDevice[]>();
+        connectedMicrophoneDevicesSubject = new Subject<UserMediaDevice[]>();
         activeVideoDeviceSubject = new Subject<UserMediaDevice>();
         activeMicrophoneDeviceSubject = new Subject<UserMediaDevice>();
         isAudioOnlySubject = new Subject<boolean>();
@@ -63,7 +65,10 @@ describe('SelectMediaDevicesComponent', () => {
 
         getSpiedPropertyGetter(userMediaService, 'activeVideoDevice$').and.returnValue(activeVideoDeviceSubject.asObservable());
         getSpiedPropertyGetter(userMediaService, 'activeMicrophoneDevice$').and.returnValue(activeMicrophoneDeviceSubject.asObservable());
-        getSpiedPropertyGetter(userMediaService, 'connectedDevices$').and.returnValue(connectedDevicesSubject.asObservable());
+        getSpiedPropertyGetter(userMediaService, 'connectedVideoDevices$').and.returnValue(connectedVideoDevicesSubject.asObservable());
+        getSpiedPropertyGetter(userMediaService, 'connectedMicrophoneDevices$').and.returnValue(
+            connectedMicrophoneDevicesSubject.asObservable()
+        );
         getSpiedPropertyGetter(userMediaService, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
 
         userMediaStreamServiceSpy = jasmine.createSpyObj<UserMediaStreamService>([], ['activeCameraStream$', 'activeMicrophoneStream$']);
@@ -93,6 +98,7 @@ describe('SelectMediaDevicesComponent', () => {
     afterEach(() => {
         component.ngOnDestroy();
     });
+
     it('should create', () => {
         expect(component).toBeTruthy();
     });
@@ -106,7 +112,8 @@ describe('SelectMediaDevicesComponent', () => {
         it('should initialise the device form on init', fakeAsync(() => {
             component.ngOnInit();
             flushMicrotasks();
-            connectedDevicesSubject.next(testData.getListOfDevices());
+            connectedVideoDevicesSubject.next(testData.getListOfCameras());
+            connectedMicrophoneDevicesSubject.next(testData.getListOfMicrophones());
             flush();
             expect(component.availableCameraDevices).toBeDefined();
             expect(component.availableMicrophoneDevices).toBeDefined();
