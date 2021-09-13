@@ -10,7 +10,24 @@
     >
       <span class="far fa-ellipsis-v"></span>
       <div *ngIf="showContextMenu" class="dropdown-content">
-        <p>Hello World!</p>
+          <ul>
+              <li>
+                  Hello World!
+              </li>
+          <li
+              class="icon-button"
+              id="toggle-chat-panel"
+              appTooltip
+              *ngIf="isJudge && !isPrivateConsultation"
+              [text]="'private-consultation-room-controls.chat-panel' | translate"
+              colour="grey"
+              (click)="togglePanelStatus('Chat')"
+          >
+              <span class="far fa-comment"></span>
+              <span class="badge" *ngIf="unreadMessageCount > 0">{{ unreadMessageCount > 9 ? '9+' : unreadMessageCount }}</span>
+          </li>
+
+          </ul>
       </div>
     </div>
     <div class="flexBar"></div>
@@ -25,20 +42,6 @@
     >
       <span class="far fa-users"></span>
     </div>
-
-    <div
-      class="icon-button"
-      id="toggle-chat-panel"
-      appTooltip
-      *ngIf="isJudge && !isPrivateConsultation"
-      [text]="'private-consultation-room-controls.chat-panel' | translate"
-      colour="grey"
-      (click)="togglePanelStatus('Chat')"
-    >
-      <span class="far fa-comment"></span>
-      <span class="badge" *ngIf="unreadMessageCount > 0">{{ unreadMessageCount > 9 ? '9+' : unreadMessageCount }}</span>
-    </div>
-
     <div
       class="icon-button"
       id="start-screenshare-img"
