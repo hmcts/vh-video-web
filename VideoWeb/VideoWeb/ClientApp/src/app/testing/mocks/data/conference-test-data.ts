@@ -26,6 +26,28 @@ import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { AlertFilter, AlertsStatus, HearingsFilter, StatusFilter } from '../../../shared/models/hearings-filter';
 
 export class ConferenceTestData {
+    quickLinkParticipant1 = new ParticipantForUserResponse({
+        id: 'QuickLinkParticipant1_Id',
+        status: ParticipantStatus.NotSignedIn,
+        display_name: 'QuickLinkParticipant1_display_name',
+        role: Role.QuickLinkParticipant,
+        case_type_group: 'QuickLinkParticipant1_case_type_group',
+        hearing_role: HearingRole.QUICK_LINK_PARTICIPANT,
+        tiled_display_name: 'QuickLinkParticipant1_tiled_display_name',
+        linked_participants: []
+    });
+
+    quickLinkParticipant2 = new ParticipantForUserResponse({
+        id: 'QuickLinkParticipant2_Id',
+        status: ParticipantStatus.NotSignedIn,
+        display_name: 'QuickLinkParticipant2_display_name',
+        role: Role.QuickLinkParticipant,
+        case_type_group: 'QuickLinkParticipant2_case_type_group',
+        hearing_role: HearingRole.QUICK_LINK_PARTICIPANT,
+        tiled_display_name: 'QuickLinkParticipant2_tiled_display_name',
+        linked_participants: []
+    });
+
     asConferenceResponseVho(confResponse: ConferenceResponse): ConferenceResponseVho {
         confResponse.endpoints = undefined;
         return new ConferenceResponseVho(confResponse);
@@ -385,6 +407,20 @@ export class ConferenceTestData {
             linked_participants: []
         });
 
+        const participant11 = this.quickLinkParticipant2; // Out of order to test sorting
+        const participant12 = this.quickLinkParticipant1;
+
+        const participant13 = new ParticipantForUserResponse({
+            id: 'QuickLinkObserver_Id',
+            status: ParticipantStatus.NotSignedIn,
+            display_name: 'QuickLinkObserver_display_name',
+            role: Role.QuickLinkObserver,
+            case_type_group: 'QuickLinkObserver_case_type_group',
+            hearing_role: HearingRole.QUICK_LINK_OBSERVER,
+            tiled_display_name: 'QuickLinkParticipant_tiled_display_name',
+            linked_participants: []
+        });
+
         participants.push(participant1);
         participants.push(participant2);
         participants.push(participant3);
@@ -395,6 +431,9 @@ export class ConferenceTestData {
         participants.push(participant8);
         participants.push(participant9);
         participants.push(participant10);
+        participants.push(participant11);
+        participants.push(participant12);
+        participants.push(participant13);
         return participants;
     }
 
@@ -442,10 +481,10 @@ export class ConferenceTestData {
 
         const participant4 = new ParticipantResponseVho({
             id: '9F681318-4965-49AF-A887-DED64554429T',
-            name: 'Staff Member',
+            name: 'Staff Member name',
             status: ParticipantStatus.Available,
             role: Role.StaffMember,
-            display_name: 'Staff Member',
+            display_name: 'Staff Member display name',
             case_type_group: 'Staff Member',
             tiled_display_name: 'Staff Member;Staff Member;9F681318-4965-49AF-A887-DED64554429T',
             hearing_role: HearingRole.STAFF_MEMBER,

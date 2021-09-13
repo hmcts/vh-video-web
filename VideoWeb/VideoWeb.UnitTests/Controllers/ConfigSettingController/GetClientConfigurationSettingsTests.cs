@@ -37,7 +37,7 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
                 Authority = "Authority",
                 ApplicationInsights = new ApplicationInsightsConfiguration { InstrumentationKey = "AiKey" }
             };
-            
+
             var eJudAdConfiguration = new EJudAdConfiguration()
             {
                 ClientId = "EjudClientId",
@@ -49,7 +49,8 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
 
             var servicesConfiguration = new HearingServicesConfiguration
             {
-                VideoApiUrl = "https://vh-video-api/"
+                VideoApiUrl = "https://vh-video-api/",
+                EnableVideoFilters = true
             };
 
             var kinlyConfiguration = new KinlyConfiguration
@@ -67,8 +68,8 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
 
             var result = configSettingsController.GetClientConfigurationSettings();
             result.Should().BeOfType<ActionResult<ClientSettingsResponse>>().Which.Result.Should().BeOfType<OkObjectResult>();
-            var okObjectResult = (OkObjectResult) result.Result;
-            var clientSettings = (ClientSettingsResponse) okObjectResult.Value;
+            var okObjectResult = (OkObjectResult)result.Result;
+            var clientSettings = (ClientSettingsResponse)okObjectResult.Value;
             clientSettings.JoinByPhoneFromDate.Should().Be(kinlyConfiguration.JoinByPhoneFromDate);
         }
 

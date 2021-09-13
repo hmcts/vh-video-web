@@ -335,6 +335,12 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         });
     });
 
+    it('should return false if is quick link observer', () => {
+        component.participant.role = Role.QuickLinkObserver;
+        component.participant.linked_participants = [];
+        expect(component.canStartJoinConsultation).toBe(false);
+    });
+
     it('should return false if the participant is a individual with interpreter - canStartJoinConsultation', () => {
         component.participant.hearing_role = HearingRole.LITIGANT_IN_PERSON;
         const linkedParticipant = new LinkedParticipantResponse();
@@ -379,6 +385,15 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         component.participant = null;
 
         expect(component.isObserver).toBeFalsy();
+    });
+    it('should return if the participant is a quick link observer or not - isQuickLinkObserver', () => {
+        [
+            [Role.QuickLinkObserver, true],
+            [Role.Individual, false]
+        ].forEach(([role, expected]) => {
+            component.participant.role = role as Role;
+            expect(component.isQuickLinkObserver).toBe(expected as boolean);
+        });
     });
     it('should show extra content when not showing video and witness is not being transferred in', () => {
         component.isTransferringIn = false;
