@@ -216,7 +216,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     }
 
     get isQuickLinkObserver(): boolean {
-        return this.participant?.hearing_role === HearingRole.QUICK_LINK_OBSERVER;
+        return this.participant?.role === Role.QuickLinkObserver;
     }
 
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
