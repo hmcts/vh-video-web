@@ -90,6 +90,11 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
                         error: error
                     });
                     this.postPermissionDeniedAlert();
+                    this.errorService.goToServiceError(
+                        'error-camera-microphone.problem-with-camera-mic',
+                        'error-camera-microphone.camera-mic-in-use',
+                        false
+                    );
                 }
             });
     }

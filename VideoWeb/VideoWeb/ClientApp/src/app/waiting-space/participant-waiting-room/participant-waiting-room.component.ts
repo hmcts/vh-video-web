@@ -216,7 +216,11 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     }
 
     get isQuickLinkObserver(): boolean {
-        return this.participant?.hearing_role === HearingRole.QUICK_LINK_OBSERVER;
+        return this.participant?.role === Role.QuickLinkObserver;
+    }
+
+    get isQuickLinkUser(): boolean {
+        return this.participant?.role === Role.QuickLinkObserver || this.participant?.role === Role.QuickLinkParticipant;
     }
 
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
@@ -224,7 +228,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         if (!this.validateIsForConference(message.conferenceId)) {
             return;
         }
-        if (message.status === ConferenceStatus.InSession && !this.isOrHasWitnessLink() && !this.isQuickLinkObserver) {
+        if (message.status === ConferenceStatus.InSession && !this.isOrHasWitnessLink() && !this.isQuickLinkUser) {
             this.notificationSoundsService.playHearingAlertSound();
         } else {
             this.notificationSoundsService.stopHearingAlertSound();

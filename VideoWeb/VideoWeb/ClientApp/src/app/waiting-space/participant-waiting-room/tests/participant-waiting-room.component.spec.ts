@@ -327,8 +327,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         [
             [HearingRole.REPRESENTATIVE, true],
             [HearingRole.WITNESS, false],
-            [HearingRole.OBSERVER, false],
-            [HearingRole.QUICK_LINK_OBSERVER, false]
+            [HearingRole.OBSERVER, false]
         ].forEach(([hearingRole, expected]) => {
             component.participant.hearing_role = hearingRole as HearingRole;
             component.participant.linked_participants = [];
@@ -342,6 +341,17 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         linkedParticipant.link_type = LinkType.Interpreter;
         component.participant.linked_participants = [linkedParticipant];
         expect(component.canStartJoinConsultation).toBeFalsy();
+    });
+
+    it('should return false/true if the participant is a quick link observer/participant - canStartJoinConsultation', () => {
+        [
+            [Role.QuickLinkObserver, false],
+            [Role.QuickLinkParticipant, true]
+        ].forEach(([role, expected]) => {
+            component.participant.role = role as Role;
+            component.participant.linked_participants = [];
+            expect(component.canStartJoinConsultation).toBe(expected as boolean);
+        });
     });
 
     it('should return if the participant is a witness or not - isWitness', () => {
@@ -383,10 +393,10 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     });
     it('should return if the participant is a quick link observer or not - isQuickLinkObserver', () => {
         [
-            [HearingRole.QUICK_LINK_OBSERVER, true],
-            [HearingRole.WITNESS, false]
-        ].forEach(([hearingRole, expected]) => {
-            component.participant.hearing_role = hearingRole as HearingRole;
+            [Role.QuickLinkObserver, true],
+            [Role.Individual, false]
+        ].forEach(([role, expected]) => {
+            component.participant.role = role as Role;
             expect(component.isQuickLinkObserver).toBe(expected as boolean);
         });
     });

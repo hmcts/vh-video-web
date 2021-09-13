@@ -66,7 +66,7 @@ describe('ParticipantPanelModel', () => {
         participant.hearing_role = HearingRole.WITNESS;
         participant.status = ParticipantStatus.InHearing;
         model = mapper.mapFromParticipantUserResponse(participant);
-        expect(model.isWitnessObserverReadyToJoin).toBeFalsy();
+        expect(model.isWitnessOrQuickLinkUserReadyToJoin).toBeFalsy();
     });
 
     it('should return false when participant is a quick link observer and status is in hearing', () => {
@@ -74,13 +74,27 @@ describe('ParticipantPanelModel', () => {
         participant.status = ParticipantStatus.InHearing;
         participant.hearing_role = HearingRole.QUICK_LINK_OBSERVER;
         model = mapper.mapFromParticipantUserResponse(participant);
-        expect(model.isWitnessObserverReadyToJoin).toBeFalsy();
+        expect(model.isWitnessOrQuickLinkUserReadyToJoin).toBeFalsy();
     });
 
     it('should return false when participant is a quick link observer and status is not in hearing', () => {
-        participant.hearing_role = HearingRole.QUICK_LINK_OBSERVER;
+        participant.role = Role.QuickLinkObserver;
         participant.status = ParticipantStatus.Available;
         model = mapper.mapFromParticipantUserResponse(participant);
-        expect(model.isWitnessObserverReadyToJoin).toBeTruthy();
+        expect(model.isWitnessOrQuickLinkUserReadyToJoin).toBeTruthy();
+    });
+
+    it('should return false when participant is a quick link participant and status is in hearing', () => {
+        participant.role = Role.QuickLinkParticipant;
+        participant.status = ParticipantStatus.InHearing;
+        model = mapper.mapFromParticipantUserResponse(participant);
+        expect(model.isWitnessOrQuickLinkUserReadyToJoin).toBeFalsy();
+    });
+
+    it('should return true when participant is a quick link participant and status is not in hearing', () => {
+        participant.role = Role.QuickLinkParticipant;
+        participant.status = ParticipantStatus.Available;
+        model = mapper.mapFromParticipantUserResponse(participant);
+        expect(model.isWitnessOrQuickLinkUserReadyToJoin).toBeTruthy();
     });
 });

@@ -128,7 +128,15 @@ describe('ParticipantsPanelComponent', () => {
         expect(component.participants.length).toBe(expectedCount);
         expect(component.participants[0].caseTypeGroup.toLowerCase()).toBe('judge');
         expect(component.participants[1].caseTypeGroup.toLowerCase()).toBe('panelmember');
-        expect(component.participants[component.participants.length - 1].caseTypeGroup.toLowerCase()).toBe('observer');
+
+        expect(participants.find(x => x.display_name === testData.quickLinkParticipant1.display_name)).toBeTruthy();
+        expect(participants.find(x => x.display_name === testData.quickLinkParticipant2.display_name)).toBeTruthy();
+        expect(component.participants.findIndex(x => x.displayName === testData.quickLinkParticipant1.display_name)).toBeLessThan(
+            component.participants.findIndex(x => x.displayName === testData.quickLinkParticipant2.display_name)
+        );
+
+        expect(component.participants[component.participants.length - 2].caseTypeGroup.toLowerCase()).toBe('observer');
+        expect(component.participants[component.participants.length - 1].role).toBe(Role.QuickLinkObserver);
     }));
 
     it('should log error when api returns error', async () => {
@@ -689,6 +697,13 @@ describe('ParticipantsPanelComponent', () => {
         expect(component.getPanelRowTooltipText(model)).toEqual(
             `${p.display_name}<br/>hearing-role.litigant-in-person<br/>case-type-group.applicant`
         );
+    });
+    it('should getPanelRowTooltipAdditionalText return no case role when empty', () => {
+        const p = participants[1];
+        p.status = ParticipantStatus.InHearing;
+        p.case_type_group = '';
+        const model = mapper.mapFromParticipantUserResponse(p);
+        expect(component.getPanelRowTooltipText(model)).toEqual(`${p.display_name}<br/>hearing-role.litigant-in-person`);
     });
     it('should getPanelRowTooltipAdditionalText return hearing role and case role for a representative', () => {
         const p = participants[0];
