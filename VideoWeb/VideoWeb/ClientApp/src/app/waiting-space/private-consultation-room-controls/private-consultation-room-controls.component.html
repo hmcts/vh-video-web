@@ -10,12 +10,9 @@
     >
       <span class="far fa-ellipsis-v"></span>
       <div *ngIf="showContextMenu" class="dropdown-content">
-          <ul>
-              <li>
-                  Hello World!
-              </li>
-          <li
-              class="icon-button"
+        <div>      Hello World!</div>
+          <div
+              class="icon-button-dark"
               id="toggle-chat-panel"
               appTooltip
               *ngIf="isJudge && !isPrivateConsultation"
@@ -25,9 +22,8 @@
           >
               <span class="far fa-comment"></span>
               <span class="badge" *ngIf="unreadMessageCount > 0">{{ unreadMessageCount > 9 ? '9+' : unreadMessageCount }}</span>
-          </li>
-
-          </ul>
+              <span>Hide messages list</span>
+          </div>
       </div>
     </div>
     <div class="flexBar"></div>

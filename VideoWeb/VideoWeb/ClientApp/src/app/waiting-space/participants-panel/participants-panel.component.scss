@@ -49,11 +49,19 @@
   }
 }
 
-.icon-button {
+.icon-button,
+.icon-button-dark {
   cursor: pointer;
   opacity: 0.9;
   font-size: 20px;
+}
+
+.icon-button {
   color: govuk-colour('white');
+}
+
+.icon-button-dark {
+  color: govuk-colour('black');
 }
 
 .icon-button:hover {
