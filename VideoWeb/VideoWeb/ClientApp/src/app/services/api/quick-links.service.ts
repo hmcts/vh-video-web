@@ -35,7 +35,6 @@ export class QuickLinksService {
             )
             .pipe(
                 tap((response: QuickLinkParticipantJoinResponse) => {
-                    console.log('Faz - joinConference response', response);
                     this.securityConfigSetupService.setIdp(IdpProviders.quickLink);
                     this.securityServiceProviderService.getSecurityService().authorize(null, response.jwt);
                 }),
