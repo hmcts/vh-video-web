@@ -12,21 +12,21 @@ import { pageUrls } from '../shared/page-url.constants';
 })
 export class HomeComponent implements OnInit, OnDestroy {
     previousPageUrl = '';
-    private destroyed$ = new Subject();
+    private destroyedSubject$ = new Subject();
 
     constructor(private router: Router, private eventService: PublicEventsService, private logger: Logger) {
         this.router.events
             .pipe(
                 filter(event => event instanceof NavigationEnd),
-                takeUntil(this.destroyed$)
+                takeUntil(this.destroyedSubject$)
             )
             .subscribe((event: NavigationEnd) => {
                 this.previousPageUrl = event.urlAfterRedirects;
             });
     }
     ngOnDestroy(): void {
-        this.destroyed$.next();
-        this.destroyed$.complete();
+        this.destroyedSubject$.next();
+        this.destroyedSubject$.complete();
     }
 
     ngOnInit() {
