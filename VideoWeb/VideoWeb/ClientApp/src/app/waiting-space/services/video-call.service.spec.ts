@@ -1,6 +1,6 @@
 import { discardPeriodicTasks, fakeAsync, flush } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { of, Subject } from 'rxjs';
+import { of, ReplaySubject, Subject } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import {
     ApiClient,
@@ -20,7 +20,6 @@ import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { mockCamStream, mockMicStream } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { ParticipantUpdated } from '../models/video-call-models';
 import { VideoCallEventsService } from './video-call-events.service';
-import { VideoCallPreferences } from './video-call-preferences.mode';
 import { VideoCallService } from './video-call.service';
 
 const config = new ClientSettingsResponse({
@@ -36,9 +35,9 @@ describe('VideoCallService', () => {
     let userMediaService: jasmine.SpyObj<UserMediaService>;
 
     let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
-    let currentStreamSubject: Subject<MediaStream>;
+    let currentStreamSubject: ReplaySubject<MediaStream>;
     let streamModifiedSubject: Subject<void>;
-    let isAudioOnlySubject: Subject<boolean>;
+    let isAudioOnlySubject: ReplaySubject<boolean>;
 
     const testData = new MediaDeviceTestData();
     let pexipSpy: jasmine.SpyObj<PexipClient>;
@@ -46,7 +45,7 @@ describe('VideoCallService', () => {
     let kinlyHeartbeatServiceSpy: jasmine.SpyObj<KinlyHeartbeatService>;
     let videoCallEventsServiceSpy: jasmine.SpyObj<VideoCallEventsService>;
 
-    beforeEach(async () => {
+    beforeEach(fakeAsync(() => {
         apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
             'startOrResumeVideoHearing',
             'pauseVideoHearing',
@@ -59,18 +58,18 @@ describe('VideoCallService', () => {
         userMediaService = jasmine.createSpyObj<UserMediaService>(
             'UserMediaService',
             ['selectScreenToShare'],
-            ['connectedVideoDevices', 'connectedMicrophoneDevices', 'isAudioOnly$']
+            ['connectedVideoDevices$', 'connectedMicrophoneDevices$', 'isAudioOnly$']
         );
 
         userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>([], ['currentStream$', 'streamModified$']);
-        currentStreamSubject = new Subject<MediaStream>();
+        currentStreamSubject = new ReplaySubject<MediaStream>(1);
         getSpiedPropertyGetter(userMediaStreamService, 'currentStream$').and.returnValue(currentStreamSubject.asObservable());
         streamModifiedSubject = new Subject<void>();
-        isAudioOnlySubject = new Subject<boolean>();
+        isAudioOnlySubject = new ReplaySubject<boolean>(1);
         getSpiedPropertyGetter(userMediaStreamService, 'streamModified$').and.returnValue(streamModifiedSubject.asObservable());
 
-        getSpiedPropertyGetter(userMediaService, 'connectedVideoDevices').and.returnValue(of(testData.getListOfCameras()));
-        getSpiedPropertyGetter(userMediaService, 'connectedMicrophoneDevices').and.returnValue(of(testData.getListOfMicrophones()));
+        getSpiedPropertyGetter(userMediaService, 'connectedVideoDevices$').and.returnValue(of(testData.getListOfCameras()));
+        getSpiedPropertyGetter(userMediaService, 'connectedMicrophoneDevices$').and.returnValue(of(testData.getListOfMicrophones()));
         getSpiedPropertyGetter(userMediaService, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
 
         kinlyHeartbeatServiceSpy = jasmine.createSpyObj<KinlyHeartbeatService>(['initialiseHeartbeat', 'stopHeartbeat']);
@@ -96,7 +95,8 @@ describe('VideoCallService', () => {
             'addCall',
             'present',
             'getPresentation',
-            'stopPresentation'
+            'stopPresentation',
+            'renegotiate'
         ]);
 
         service = new VideoCallService(
@@ -109,7 +109,14 @@ describe('VideoCallService', () => {
             videoCallEventsServiceSpy
         );
 
-        await service.setupClient();
+        currentStreamSubject.next(mockCamStream);
+
+        service.setupClient();
+        flush();
+    }));
+
+    it('should initialise user_media_stream', () => {
+        expect(service.pexipAPI.user_media_stream).toBe(mockCamStream);
     });
 
     it('should toggle mute', () => {
@@ -244,13 +251,12 @@ describe('VideoCallService', () => {
         expect(apiClient.dismissWitness).toHaveBeenCalledWith(conferenceId, witnessId);
     });
 
-    it('should disconnect from call and reconnect when connecting with new devices', () => {
+    it('should call renegotiate', () => {
         service.pexipAPI = pexipSpy;
 
-        service.reconnectToCall();
+        service.renegotiateCall();
 
-        expect(pexipSpy.disconnectCall).toHaveBeenCalled();
-        expect(pexipSpy.addCall).toHaveBeenCalledWith(null);
+        expect(pexipSpy.renegotiate).toHaveBeenCalled();
     });
 
     it('should select stream and set user_presentation_stream', async () => {
@@ -340,14 +346,14 @@ describe('VideoCallService', () => {
     });
 
     describe('PexipAPI onConnect', () => {
-        it('should call reconnectToCall', fakeAsync(() => {
-            spyOn<any>(service, 'reconnectToCall').and.callThrough();
+        it('should call renegotiateCall', fakeAsync(() => {
+            spyOn<any>(service, 'renegotiateCall').and.callThrough();
             service.pexipAPI.onConnect(mockCamStream);
             flush();
             streamModifiedSubject.next();
             flush();
             discardPeriodicTasks();
-            expect(service['reconnectToCall']).toHaveBeenCalled();
+            expect(service['renegotiateCall']).toHaveBeenCalled();
         }));
     });
 
@@ -381,8 +387,8 @@ describe('VideoCallService', () => {
             expect(service.pexipAPI.user_media_stream).toEqual(mockCamStream);
         }));
 
-        it('should call reconnectToCall', fakeAsync(() => {
-            spyOn<any>(service, 'reconnectToCall').and.callThrough();
+        it('should call renegotiateCall', fakeAsync(() => {
+            spyOn<any>(service, 'renegotiateCall').and.callThrough();
             service.pexipAPI.user_media_stream = mockMicStream;
 
             service.setupClient();
@@ -392,7 +398,7 @@ describe('VideoCallService', () => {
             currentStreamSubject.next(mockCamStream);
             flush();
             discardPeriodicTasks();
-            expect(service['reconnectToCall']).toHaveBeenCalled();
+            expect(service['renegotiateCall']).toHaveBeenCalled();
         }));
     });
 

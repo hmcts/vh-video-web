@@ -63,7 +63,7 @@ videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>(
         'getPreferredLayout',
         'callParticipantIntoHearing',
         'dismissParticipantFromHearing',
-        'reconnectToCall',
+        'renegotiateCall',
         'onScreenshareConnected',
         'onScreenshareStopped',
         'onPresentationConnected',
