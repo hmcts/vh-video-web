@@ -335,18 +335,23 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         });
     });
 
-    it('should return false if is quick link observer', () => {
-        component.participant.role = Role.QuickLinkObserver;
-        component.participant.linked_participants = [];
-        expect(component.canStartJoinConsultation).toBe(false);
-    });
-
     it('should return false if the participant is a individual with interpreter - canStartJoinConsultation', () => {
         component.participant.hearing_role = HearingRole.LITIGANT_IN_PERSON;
         const linkedParticipant = new LinkedParticipantResponse();
         linkedParticipant.link_type = LinkType.Interpreter;
         component.participant.linked_participants = [linkedParticipant];
         expect(component.canStartJoinConsultation).toBeFalsy();
+    });
+
+    it('should return false/true if the participant is a quick link observer/participant - canStartJoinConsultation', () => {
+        [
+            [Role.QuickLinkObserver, false],
+            [Role.QuickLinkParticipant, true]
+        ].forEach(([role, expected]) => {
+            component.participant.role = role as Role;
+            component.participant.linked_participants = [];
+            expect(component.canStartJoinConsultation).toBe(expected as boolean);
+        });
     });
 
     it('should return if the participant is a witness or not - isWitness', () => {

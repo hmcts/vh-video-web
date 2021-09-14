@@ -62,6 +62,10 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         this.userMediaService.activeMicrophoneDevice$.pipe(takeUntil(this.destroyedSubject)).subscribe(microphoneDevice => {
             this.updateSelectedMicrophone(microphoneDevice);
         });
+
+        this.videoFilterService.onFilterChanged$.pipe(takeUntil(this.destroyedSubject)).subscribe(() => {
+            this.updateSelectedCamera(this.selectedCameraDevice);
+        });
     }
 
     determineFilterSelectionVisibility(profile: UserProfileResponse) {
