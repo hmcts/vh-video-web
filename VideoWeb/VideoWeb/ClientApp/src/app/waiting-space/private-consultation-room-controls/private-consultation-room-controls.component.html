@@ -32,7 +32,7 @@
                     colour='grey'
                     (click)='startScreenShare()'
                 >
-                    <span class='fak fa-start-screen-share'> Share screen</span>
+                    <span class='fak fa-start-screen-share'><span class='context-item'>Share screen</span></span>
                 </div>
                 <div
                     *ngIf='screenShareStream'
@@ -43,7 +43,7 @@
                     colour='red'
                     (click)='stopScreenShare()'
                 >
-                    <span class='fak fa-stop-screen-share'> Stop share screen</span>
+                    <span class='fak fa-stop-screen-share'><span class='context-item'>Stop share screen</span></span>
                 </div>
                 <div
                     class='icon-button-dark'
@@ -53,7 +53,7 @@
                     colour='grey'
                     (click)='changeDeviceSelected()'
                 >
-                    <span class='far fa-sliders-h'> Change camera or microphone</span>
+                    <span class='far fa-sliders-h'><span class='context-item'>Change camera or microphone</span></span>
                 </div>
                 <div
                     class='icon-button-dark'
@@ -69,7 +69,7 @@
                     colour='grey'
                     (click)='toggleView()'
                 >
-                    <span class='far' [class]="selfViewOpen ? 'fa-eye' : 'fa-eye-slash'"> Hide self-view</span>
+                    <span class='far' [class]="selfViewOpen ? 'fa-eye' : 'fa-eye-slash'"><span class='context-item'>Hide self-view</span></span>
                 </div>
                 <div
                     class='icon-button-dark'
@@ -85,7 +85,7 @@
                     colour='grey'
                     (click)='toggleVideoMute()'
                 >
-                    <span class='far' [class]="videoMuted ? 'fa-video-slash' : 'fa-video'"> Turn off camera</span>
+                    <span class='far' [class]="videoMuted ? 'fa-video-slash' : 'fa-video'"><span class='context-item'>Turn off camera</span></span>
                 </div>
 
                 <div
@@ -103,7 +103,7 @@
                     (click)='toggleMute()'
                 >
                     <span class='far'
-                          [class]="audioMuted ? 'fa-microphone-slash' : 'fa-microphone'"> Mute microphone</span>
+                          [class]="audioMuted ? 'fa-microphone-slash' : 'fa-microphone'"><span class='context-item'>Mute microphone</span></span>
                 </div>
 
                 <div
@@ -141,7 +141,7 @@
                     [hidden]='!canCloseOrPauseHearing()'
                 >
                     <span
-                        class='far fa-pause-circle'> {{ 'private-consultation-room-controls.pause' | translate }}</span>
+                        class='far fa-pause-circle'><span class='context-item'>{{ 'private-consultation-room-controls.pause' | translate }}</span></span>
                 </div>
 
                 <div
@@ -153,7 +153,7 @@
                     [hidden]='!canCloseOrPauseHearing()'
                 >
                     <span
-                        class='far fa-stop-circle'> {{ 'private-consultation-room-controls.close' | translate }}</span>
+                        class='far fa-stop-circle'><span class='context-item'>{{ 'private-consultation-room-controls.close' | translate }}</span></span>
                 </div>
 
                 <div class='flexBar' *ngIf='isPrivateConsultation && showConsultationControls'></div>
@@ -167,7 +167,7 @@
                     (click)='lockPrivateConsultation(!roomLocked)'
                 >
                     <span
-                        class='far fa-lock-alt'> {{ 'private-consultation-room-controls.lock-the-room-toggle-' + roomLocked | translate }}</span>
+                        class='far fa-lock-alt'> <span class='context-item'>{{ 'private-consultation-room-controls.lock-the-room-toggle-' + roomLocked | translate }}</span></span>
                 </div>
                 <div
                     *ngIf='showConsultationControls'
@@ -178,7 +178,7 @@
                     [hidden]='!canLeaveConsultation()'
                 >
                     <span
-                        class='far fa-sign-out-alt'> {{ 'private-consultation-room-controls.leave' | translate }}</span>
+                        class='far fa-sign-out-alt'><span class='context-item'>{{ 'private-consultation-room-controls.leave' | translate }}</span></span>
                 </div>
             </div>
         </div>
