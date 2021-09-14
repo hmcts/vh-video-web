@@ -537,7 +537,6 @@ describe('PrivateConsultationParticipantsComponent', () => {
         const participants = component.getPrivateConsultationParticipants();
 
         expect(participants.length).toBe(2);
-        console.log(participants);
         expect(participants.find(x => x.display_name === testData.quickLinkParticipant1.display_name)).toBeTruthy();
         expect(participants.find(x => x.display_name === testData.quickLinkParticipant2.display_name)).toBeTruthy();
         expect(participants.findIndex(x => x.display_name === testData.quickLinkParticipant1.display_name)).toBeLessThan(
