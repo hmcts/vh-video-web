@@ -58,12 +58,12 @@ namespace VideoWeb.UnitTests.Mappings
                 judge1, judge2, judge3
             };
 
-            var judgesInHearings = new List<ParticipantInHearingResponse>
+            var hostsInHearings = new List<ParticipantInHearingResponse>
             {
                 new ParticipantInHearingResponse{ Id = judge3DifferentHearing.Id, Username = judge3.Username, Status = ParticipantState.InHearing }
             };
 
-            var results = _sut.Map(conference, judgesInHearings).ToList();
+            var results = _sut.Map(conference, hostsInHearings).ToList();
 
             AssertResponseItem(results.ElementAt(0), conference.Participants[0], conferenceId, false);
         }
@@ -86,7 +86,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.ContactEmail.Should().Be(participant.ContactEmail);
             response.ContactTelephone.Should().Be(participant.ContactTelephone);
             response.HearingVenueName.Should().Be("MyVenue");
-            response.JudgeInAnotherHearing.Should().Be(isInAnotherHearing);
+            response.HostInAnotherHearing.Should().Be(isInAnotherHearing);
             response.Representee.Should().Be(participant.Representee);
         }
 

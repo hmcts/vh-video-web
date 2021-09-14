@@ -211,14 +211,20 @@ describe('StartPrivateConsultationComponent', () => {
             {
                 id: '3',
                 linked_participants: []
+            },
+            {
+                id: '4',
+                Role: Role.QuickLinkObserver,
+                linked_participants: []
             }
         ];
 
         const changes: any = { participants: { currentValue: participantResponses } };
         component.ngOnChanges(changes);
-        expect(component.filteredParticipants.length).toBe(2);
+        expect(component.filteredParticipants.length).toBe(3);
         expect(component.filteredParticipants[0].id).toBe('2');
         expect(component.filteredParticipants[0].interpreter.id).toBe('1');
         expect(component.filteredParticipants[1].id).toBe('3');
+        expect(component.filteredParticipants[2].id).toBe('4');
     });
 });

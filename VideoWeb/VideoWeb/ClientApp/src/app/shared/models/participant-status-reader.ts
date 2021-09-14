@@ -20,7 +20,7 @@ export class ParticipantStatusReader {
         }
     }
 
-    getStatusAsTextForJudge(status: ParticipantStatus): string {
+    getStatusAsTextForHost(status: ParticipantStatus): string {
         switch (status) {
             case ParticipantStatus.None:
             case ParticipantStatus.NotSignedIn:

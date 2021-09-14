@@ -7128,7 +7128,7 @@ export class ParticipantContactDetailsResponseVho implements IParticipantContact
     contact_email?: string | undefined;
     contact_telephone?: string | undefined;
     hearing_venue_name?: string | undefined;
-    judge_in_another_hearing?: boolean;
+    host_in_another_hearing?: boolean;
     /** The participant represented by the representative */
     representee?: string | undefined;
     linked_participants?: LinkedParticipantResponse[] | undefined;
@@ -7158,7 +7158,7 @@ export class ParticipantContactDetailsResponseVho implements IParticipantContact
             this.contact_email = _data['contact_email'];
             this.contact_telephone = _data['contact_telephone'];
             this.hearing_venue_name = _data['hearing_venue_name'];
-            this.judge_in_another_hearing = _data['judge_in_another_hearing'];
+            this.host_in_another_hearing = _data['host_in_another_hearing'];
             this.representee = _data['representee'];
             if (Array.isArray(_data['linked_participants'])) {
                 this.linked_participants = [] as any;
@@ -7191,7 +7191,7 @@ export class ParticipantContactDetailsResponseVho implements IParticipantContact
         data['contact_email'] = this.contact_email;
         data['contact_telephone'] = this.contact_telephone;
         data['hearing_venue_name'] = this.hearing_venue_name;
-        data['judge_in_another_hearing'] = this.judge_in_another_hearing;
+        data['host_in_another_hearing'] = this.host_in_another_hearing;
         data['representee'] = this.representee;
         if (Array.isArray(this.linked_participants)) {
             data['linked_participants'] = [];
@@ -7222,7 +7222,7 @@ export interface IParticipantContactDetailsResponseVho {
     contact_email?: string | undefined;
     contact_telephone?: string | undefined;
     hearing_venue_name?: string | undefined;
-    judge_in_another_hearing?: boolean;
+    host_in_another_hearing?: boolean;
     /** The participant represented by the representative */
     representee?: string | undefined;
     linked_participants?: LinkedParticipantResponse[] | undefined;
