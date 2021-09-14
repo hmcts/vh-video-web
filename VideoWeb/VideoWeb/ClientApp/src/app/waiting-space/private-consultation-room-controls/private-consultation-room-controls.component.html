@@ -20,7 +20,7 @@
                     colour='grey'
                     (click)="togglePanelStatus('Chat')"
                 >
-                    <span class='far fa-comment'> Hide messages list</span>
+                    <span class='far fa-comment'> <span class='context-item'>Hide messages list</span></span>
                     <span class='badge'
                           *ngIf='unreadMessageCount > 0'>{{ unreadMessageCount > 9 ? '9+' : unreadMessageCount }}</span>
                 </div>
