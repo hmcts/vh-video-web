@@ -3,7 +3,6 @@ import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { SelfTestComponent } from './self-test.component';
-import { MediaStreamService } from 'src/app/services/media-stream.service';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 import { UserMediaDevice } from '../models/user-media-device';
 import { of, Subject } from 'rxjs';
@@ -23,8 +22,9 @@ import {
 import { Guid } from 'guid-typescript';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
-import { mockMicStream, testDataDevice } from 'src/app/waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
+import { mockMicStream } from 'src/app/waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 
 describe('SelfTestComponent', () => {
     let component: SelfTestComponent;
@@ -35,12 +35,11 @@ describe('SelfTestComponent', () => {
 
     let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
     let connectedDevicesSubject: Subject<UserMediaDevice[]>;
-    let activatedMicrophoneSubject: Subject<UserMediaDevice>;
+    let activateMicrophoneSubject: Subject<MediaStream>;
 
-    let mediaStreamServiceSpy: jasmine.SpyObj<MediaStreamService>;
+    let userMediaStreamServiceSpy: jasmine.SpyObj<UserMediaStreamService>;
     let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
     let navigatorSpy: jasmine.SpyObj<Navigator>;
-    const testData = new MediaDeviceTestData();
 
     const token = new TokenResponse({
         expires_on: '02.06.2020-21:06Z',
@@ -60,17 +59,17 @@ describe('SelfTestComponent', () => {
 
         errorServiceSpy = jasmine.createSpyObj<ErrorService>(['handleApiError', 'handlePexipError']);
 
-        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>(
-            ['hasMultipleDevices'],
-            ['connectedDevices$', 'activeMicrophoneDevice$']
-        );
+        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>(['hasMultipleDevices'], ['connectedDevices$']);
+        userMediaServiceSpy.hasMultipleDevices.and.returnValue(of(true));
 
         connectedDevicesSubject = new Subject<UserMediaDevice[]>();
-        activatedMicrophoneSubject = new Subject<UserMediaDevice>();
+        activateMicrophoneSubject = new Subject<MediaStream>();
         getSpiedPropertyGetter(userMediaServiceSpy, 'connectedDevices$').and.returnValue(connectedDevicesSubject.asObservable());
-        getSpiedPropertyGetter(userMediaServiceSpy, 'activeMicrophoneDevice$').and.returnValue(activatedMicrophoneSubject.asObservable());
 
-        mediaStreamServiceSpy = jasmine.createSpyObj<MediaStreamService>(['getStreamForMic', 'stopStream']);
+        userMediaStreamServiceSpy = jasmine.createSpyObj<UserMediaStreamService>([], ['activeMicrophoneStream$']);
+        getSpiedPropertyGetter(userMediaStreamServiceSpy, 'activeMicrophoneStream$').and.returnValue(
+            activateMicrophoneSubject.asObservable()
+        );
 
         videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>([
             'onCallConnected',
@@ -91,7 +90,7 @@ describe('SelfTestComponent', () => {
             videoWebServiceSpy,
             errorServiceSpy,
             userMediaServiceSpy,
-            mediaStreamServiceSpy,
+            userMediaStreamServiceSpy,
             videoCallServiceSpy,
             navigatorSpy
         );
@@ -143,12 +142,11 @@ describe('SelfTestComponent', () => {
 
             it('should setup subscribers', fakeAsync(() => {
                 // Arrange
-                mediaStreamServiceSpy.getStreamForMic.and.returnValue(of(mockMicStream));
                 userMediaServiceSpy.hasMultipleDevices.and.returnValue(of(true));
 
                 // Act
                 component.setupSubscribers();
-                activatedMicrophoneSubject.next(testData.getActiveMicrophone());
+                activateMicrophoneSubject.next(mockMicStream);
                 flush();
 
                 // Assert
@@ -294,17 +292,6 @@ describe('SelfTestComponent', () => {
     });
 
     describe('changeDevices', () => {
-        it('should call disconnect', () => {
-            // Arrange
-            const disconnectSpy = spyOn(component, 'disconnect');
-
-            // Act
-            component.changeDevices();
-
-            // Assert
-            expect(disconnectSpy).toHaveBeenCalledTimes(1);
-        });
-
         it('should set displayDeviceChangeModal to true', () => {
             // Arrange
             spyOn(component, 'disconnect');
@@ -318,17 +305,6 @@ describe('SelfTestComponent', () => {
     });
 
     describe('onSelectMediaDeviceShouldClose', () => {
-        it('should call, call', () => {
-            // Arrange
-            const callSpy = spyOn(component, 'call');
-
-            // Act
-            component.onSelectMediaDeviceShouldClose();
-
-            // Assert
-            expect(callSpy).toHaveBeenCalledTimes(1);
-        });
-
         it('should set displayDeviceChangeModal to false', () => {
             // Arrange
             spyOn(component, 'call');
@@ -340,28 +316,18 @@ describe('SelfTestComponent', () => {
             expect(component.displayDeviceChangeModal).toBeFalse();
         });
 
-        describe('on activeMicrophoneDevice$', () => {
-            it('should get the stream for the new microphone and update the preferredMicrophoneStream; it should only do it once', fakeAsync(() => {
-                // Arrange
-                spyOn(component, 'call');
+        describe('on activeMicrophoneStream$', () => {
+            beforeEach(() => {
+                component.setupSubscribers();
+            });
 
-                const micStreamSubject = new Subject<MediaStream>();
-                mediaStreamServiceSpy.getStreamForMic.and.returnValue(micStreamSubject.asObservable());
-
+            it('should set the preferredMicrophoneStream stream', fakeAsync(() => {
                 // Act
-                component.onSelectMediaDeviceShouldClose();
-                activatedMicrophoneSubject.next(testData.getActiveMicrophone());
-                flush();
-                activatedMicrophoneSubject.next(new UserMediaDevice(null, null, null, null));
-                flush();
-                micStreamSubject.next(mockMicStream);
-                flush();
-                micStreamSubject.next(new MediaStream());
+                activateMicrophoneSubject.next(mockMicStream);
                 flush();
 
                 // Assert
-                expect(mediaStreamServiceSpy.getStreamForMic).toHaveBeenCalledOnceWith(testData.getActiveMicrophone());
-                expect(component.preferredMicrophoneStream).toBe(mockMicStream);
+                expect(component.preferredMicrophoneStream).toEqual(mockMicStream);
             }));
         });
     });
@@ -480,7 +446,7 @@ describe('SelfTestComponent', () => {
     });
 
     describe('closeMicStreams', () => {
-        it('should call stopStream and set preferred microphone to null', () => {
+        it('should set preferred microphone to null', () => {
             // Arrange
             const stream = new MediaStream();
             component.preferredMicrophoneStream = stream;
@@ -489,7 +455,6 @@ describe('SelfTestComponent', () => {
             component.closeMicStreams();
 
             // Assert
-            expect(mediaStreamServiceSpy.stopStream).toHaveBeenCalledOnceWith(stream);
             expect(component.preferredMicrophoneStream).toBeNull();
         });
     });
