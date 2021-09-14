@@ -12,7 +12,7 @@ import { pageUrls } from '../shared/page-url.constants';
 import { MockLogger } from '../testing/mocks/mock-logger';
 import { HomeComponent } from './home.component';
 
-fdescribe('HomeComponent', () => {
+describe('HomeComponent', () => {
     let component: HomeComponent;
     let routerSpy: jasmine.SpyObj<Router>;
     let eventServiceSpy: jasmine.SpyObj<PublicEventsService>;
