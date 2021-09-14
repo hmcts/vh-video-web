@@ -3,7 +3,7 @@
     [text]="tooltip"
     (tooltipShown)="resetText()"
     [attr.alt]="'copy-id.alt' | translate"
-    (click)="copyToClipboard(conference); $event.stopPropagation()">
+    (click)="copyToClipboard(); $event.stopPropagation()">
   <i class="fad fa-address-card" aria-hidden="true"></i>
   <a class="copy-link-text" [routerLink]="">{{'copy-id.display-text' | translate}}</a>
 </span>

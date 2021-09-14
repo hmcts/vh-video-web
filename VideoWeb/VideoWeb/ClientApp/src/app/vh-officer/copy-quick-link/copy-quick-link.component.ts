@@ -21,7 +21,7 @@ export class CopyQuickLinkComponent implements OnInit {
     async ngOnInit() {
         this.tooltip = this.translateService.instant('copy-quick-link.display-text');
         const response = await this.vhoQueryService.getConferenceByIdVHO(this.conferenceId);
-        this.hearingId = response && response.hearing_id;
+        this.hearingId = response.hearing_id;
     }
 
     copyToClipboard() {
