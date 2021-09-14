@@ -35,6 +35,7 @@
               <select
                 required
                 name="camera"
+                [disabled]="!connectWithCameraOn"
                 [(ngModel)]="selectedCameraDevice"
                 (ngModelChange)="onSelectedCameraDeviceChange()"
                 class="govuk-select govuk-!-width-two-thirds"

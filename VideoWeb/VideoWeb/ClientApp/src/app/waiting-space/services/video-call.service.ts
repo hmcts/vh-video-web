@@ -51,6 +51,8 @@ export class VideoCallService {
     private onDisconnectedPresentationSubject = new Subject<DisconnectedPresentation>();
 
     private hasDisconnected$ = new Subject();
+    private renegotiating = false;
+    private justRenegotiated = false;
 
     pexipAPI: PexipClient;
     localOutgoingStream: any;
@@ -75,7 +77,7 @@ export class VideoCallService {
      * This will initialise the pexip client and initalise the call with
      * the user's preferred camera and microphone (if selected)
      */
-    async setupClient() {
+    async setupClient(): Promise<void> {
         this.hasDisconnected$ = new Subject();
 
         const self = this;
@@ -83,18 +85,12 @@ export class VideoCallService {
         this.initCallTag();
         this.initTurnServer();
         this.pexipAPI.screenshare_fps = 30;
-        this.pexipAPI.video_source = false;
-        this.pexipAPI.audio_source = false;
 
-        this.userMediaStreamService.currentStream$.pipe(take(1)).subscribe(stream => {
-            this.pexipAPI.user_media_stream = stream;
+        this.userMediaStreamService.currentStream$
+            .pipe(take(1))
+            .subscribe(currentStream => (this.pexipAPI.user_media_stream = currentStream));
 
-            this.userMediaStreamService.currentStream$.pipe(skip(1)).subscribe(currentStream => this.onCurrentStreamChanged(currentStream));
-        });
-
-        this.pexipAPI.onSetup = function (stream) {
-            self.onSetupSubject.next(new CallSetup(stream));
-        };
+        this.pexipAPI.onSetup = this.handleSetup.bind(this);
 
         this.pexipAPI.onConnect = this.handleConnect.bind(this);
 
@@ -136,19 +132,11 @@ export class VideoCallService {
             self.logger.info(`${self.loggerPrefix} Screenshare stopped : ${JSON.stringify(reason)}`);
             self.onStoppedScreenshareSubject.next(new StoppedScreenshare(reason));
         };
-    }
 
-    private onCurrentStreamChanged(stream: MediaStream) {
-        const shouldReconnect = !!this.pexipAPI.user_media_stream && stream !== this.pexipAPI.user_media_stream;
-        this.pexipAPI.user_media_stream = stream;
-
-        if (shouldReconnect) {
-            this.reconnectToCall();
-        }
-    }
-
-    private onStreamModified() {
-        this.reconnectToCall();
+        this.userMediaStreamService.currentStream$.pipe(skip(1)).subscribe(currentStream => {
+            this.pexipAPI.user_media_stream = currentStream;
+            this.renegotiateCall();
+        });
     }
 
     initTurnServer() {
@@ -165,9 +153,20 @@ export class VideoCallService {
         this.pexipAPI.call_tag = Guid.create().toString();
     }
 
+    private handleSetup(stream: MediaStream | URL) {
+        this.onSetupSubject.next(new CallSetup(stream));
+    }
+
     private handleConnect(stream: MediaStream | URL) {
+        if (this.renegotiating || this.justRenegotiated) {
+            this.logger.warn(`${this.loggerPrefix} Not handling pexip connect event as it was during a renegotation`);
+            this.justRenegotiated = false;
+            return;
+        }
+
         this.kinlyHeartbeatService.initialiseHeartbeat(this.pexipAPI);
-        this.userMediaStreamService.streamModified$.pipe(takeUntil(this.hasDisconnected$)).subscribe(() => this.onStreamModified());
+
+        this.userMediaStreamService.streamModified$.pipe(takeUntil(this.hasDisconnected$)).subscribe(() => this.renegotiateCall());
 
         this.onConnectedSubject.next(new ConnectedCall(stream));
     }
@@ -377,9 +376,13 @@ export class VideoCallService {
         return this.apiClient.dismissWitness(conferenceId, participantId).toPromise();
     }
 
-    reconnectToCall(callType: string = null) {
-        this.pexipAPI.disconnectCall();
-        this.pexipAPI.addCall(callType);
+    renegotiateCall(sendUpdate: boolean = false) {
+        this.logger.info(`${this.loggerPrefix} renegotiating`);
+        this.renegotiating = true;
+        this.pexipAPI.renegotiate(sendUpdate);
+        this.renegotiating = false;
+        this.justRenegotiated = true;
+        this.logger.info(`${this.loggerPrefix} renegotiated`);
     }
 
     async selectScreen() {
