@@ -15,8 +15,8 @@ export class ParticipantPanelModel extends PanelModel {
         super(id, displayName, role, caseTypeGroup, pexipDisplayName, hearingRole, representee);
     }
 
-    get isWitnessObserverReadyToJoin(): boolean {
-        return (this.isWitness || this.isQuickLinkObserver) && !this.isInHearing();
+    get isWitnessOrQuickLinkUserReadyToJoin(): boolean {
+        return (this.isWitness || this.isQuickLinkUser) && !this.isInHearing();
     }
 
     isInHearing(): boolean {

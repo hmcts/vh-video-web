@@ -554,7 +554,7 @@ export class ConferenceTestData {
             first_name: 'Judge',
             last_name: 'Fudge',
             ref_id: '9B4737C9-5D8A-4B67-8569-EF8185FFE6E3',
-            judge_in_another_hearing: true,
+            host_in_another_hearing: true,
             hearing_role: HearingRole.JUDGE,
             linked_participants: []
         });
