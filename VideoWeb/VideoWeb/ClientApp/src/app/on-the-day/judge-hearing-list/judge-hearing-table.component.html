@@ -7,7 +7,7 @@
                     <th class="govuk-table__header" scope="col">{{ 'judge-hearing-table.judge' | translate }}</th>
                     <th class="govuk-table__header" scope="col">{{ 'judge-hearing-table.hearing' | translate }}</th>
                     <th class="govuk-table__header" scope="col">{{ 'judge-hearing-table.attendees' | translate }}</th>
-                    <th class="govuk-table__header" scope="col"></th>
+                    <th class="govuk-table__header" scope="col">{{ 'judge-hearing-table.conference-status-heading' | translate }}</th>
                 </tr>
             </thead>
             <tbody class="govuk-table__body">
@@ -63,8 +63,7 @@
                             </span>
                             <span *ngIf="hearing.staffMembers.length > 0">
                                 <p class="govuk-!-margin-0 govuk-!-padding-0">
-                                    <span id="winger-count-{{ hearing.id }}">
-                                        <!-- {{ hearing.staffMembers.length }} {{ hearing.staffMembers.length > 1 ? getTranslation('wingers') : getTranslation('winger') }} -->
+                                    <span id="staff-member-count-{{ hearing.id }}">
                                         {{ hearing.staffMembers.length }} {{ hearing.staffMembers.length > 1 ? 'Staff
                                         Members' : 'Staff Member' }}
                                     </span>
