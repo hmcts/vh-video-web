@@ -69,9 +69,9 @@ export class SecurityConfigSetupService {
             this._configSetupSubject.pipe(filter(Boolean), first()).subscribe(() => {
                 this.oidcConfigService.withConfig(this.config[provider]);
             });
-            this.currentIdpSubject.next(provider);
-            this._configRestoredSubject.next(true);
         }
+        this.currentIdpSubject.next(provider);
+        this._configRestoredSubject.next(true);
     }
 
     setIdp(provider: IdpProviders) {
