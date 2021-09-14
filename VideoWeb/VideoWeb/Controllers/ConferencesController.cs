@@ -15,7 +15,7 @@ using VideoWeb.Helpers;
 using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
-using JudgeConference = VideoApi.Contract.Responses.ConferenceForHostResponse;
+using HostConference = VideoApi.Contract.Responses.ConferenceForHostResponse;
 using IndividualConference = VideoApi.Contract.Responses.ConferenceForIndividualResponse;
 using ConferenceForIndividualResponse = VideoWeb.Contract.Responses.ConferenceForIndividualResponse;
 using ConferenceForHostResponse = VideoWeb.Contract.Responses.ConferenceForHostResponse;
@@ -56,14 +56,14 @@ namespace VideoWeb.Controllers
         [Authorize("Judicial")]
         public async Task<ActionResult<List<ConferenceForHostResponse>>> GetConferencesForHostAsync()
         {
-            _logger.LogDebug("GetConferencesForJudge");
+            _logger.LogDebug("GetConferencesForHost");
            
             try
             {
-                var conferenceForHostResponseMapper = _mapperFactory.Get<JudgeConference, ConferenceForHostResponse>();
+                var conferenceForHostResponseMapper = _mapperFactory.Get<HostConference, ConferenceForHostResponse>();
                 var username = User.Identity.Name;
-                var conferencesForJudge = await _videoApiClient.GetConferencesTodayForHostAsync(username);
-                var response = conferencesForJudge
+                var conferencesForHost = await _videoApiClient.GetConferencesTodayForHostAsync(username);
+                var response = conferencesForHost
                     .Select(conferenceForHostResponseMapper.Map)
                     .ToList();
                 return Ok(response);

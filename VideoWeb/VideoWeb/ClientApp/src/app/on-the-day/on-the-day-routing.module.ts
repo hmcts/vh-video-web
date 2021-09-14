@@ -63,7 +63,8 @@ export const routes: Routes = [
     {
         path: `${pageUrls.EquipmentCheck}`,
         component: EquipmentCheckComponent,
-        data: { title: 'Equipment check', backLink: new BackLinkDetails() }
+        data: { title: 'Equipment check', backLink: new BackLinkDetails() },
+        canActivate: [ParticipantStatusGuard]
     },
     {
         path: `${pageUrls.CameraWorking}/:conferenceId`,
