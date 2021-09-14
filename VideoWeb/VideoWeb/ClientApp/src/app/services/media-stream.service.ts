@@ -29,7 +29,6 @@ export class MediaStreamService {
 
     getStreamForMic(device: UserMediaDevice): Observable<MediaStream> {
         return from(this.navigator.mediaDevices.getUserMedia({ audio: { deviceId: { exact: device.deviceId } } })).pipe(
-            map(stream => stream.clone()),
             catchError(error => {
                 this.logger.error(`${this.loggerPrefix} Could not get audio stream for microphone`, error);
                 this.errorService.handlePexipError(new CallError(error.name), null);
@@ -49,19 +48,10 @@ export class MediaStreamService {
                 }
             }),
             catchError(error => {
-                this.logger.error(`${this.loggerPrefix} Could not get cam stream for microphone`, error);
+                this.logger.error(`${this.loggerPrefix} Could not get cam stream for camera`, error);
                 this.errorService.handlePexipError(new CallError(error.name), null);
                 return of(null);
             })
         );
-    }
-
-    stopStream(stream: MediaStream) {
-        if (!stream) {
-            return;
-        }
-        stream.getTracks().forEach(track => {
-            track.stop();
-        });
     }
 }
