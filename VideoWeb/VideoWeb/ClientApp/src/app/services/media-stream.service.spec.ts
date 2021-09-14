@@ -6,7 +6,7 @@ import { UserMediaDevice } from '../shared/models/user-media-device';
 import { ErrorService } from './error.service';
 import { Logger } from './logging/logger-base';
 import { MediaStreamService } from './media-stream.service';
-import { BackgroundFilter } from './models/background-filter';
+import { boolean } from './models/background-filter';
 import { VideoFilterService } from './video-filter.service';
 
 describe('MediaStreamService', () => {
@@ -40,7 +40,7 @@ describe('MediaStreamService', () => {
     let navigatorSpy: jasmine.SpyObj<Navigator>;
     let videoFilterStreamServiceSpy: jasmine.SpyObj<VideoFilterService>;
     let filterStream: jasmine.SpyObj<MediaStream>;
-    let activeCameraFilterSubject: ReplaySubject<BackgroundFilter>;
+    let filterOnSubject: ReplaySubject<boolean>;
 
     beforeEach(() => {
         loggerSpy = jasmine.createSpyObj<Logger>(['info', 'error']);
@@ -51,7 +51,7 @@ describe('MediaStreamService', () => {
 
         videoFilterStreamServiceSpy = jasmine.createSpyObj<VideoFilterService>(
             ['initFilterFromMediaStream', 'startFilteredStream', 'doesSupportVideoFiltering'],
-            ['filterOn', 'activeCameraFilter$']
+            ['filterOn', 'filterOn$']
         );
         const filterStreamTracks = [];
         filterStreamTracks.push(
@@ -66,10 +66,8 @@ describe('MediaStreamService', () => {
         videoFilterStreamServiceSpy.startFilteredStream.and.returnValue(filterStream);
         videoFilterStreamServiceSpy.doesSupportVideoFiltering.and.returnValue(true);
 
-        activeCameraFilterSubject = new ReplaySubject<BackgroundFilter>();
-        getSpiedPropertyGetter(videoFilterStreamServiceSpy, 'activeCameraFilter$').and.returnValue(
-            activeCameraFilterSubject.asObservable()
-        );
+        filterOnSubject = new ReplaySubject<boolean>();
+        getSpiedPropertyGetter(videoFilterStreamServiceSpy, 'filterOn$').and.returnValue(filterOnSubject.asObservable());
 
         sut = new MediaStreamService(loggerSpy, errorServiceSpy, navigatorSpy, videoFilterStreamServiceSpy);
     });
@@ -168,13 +166,13 @@ describe('MediaStreamService', () => {
         });
 
         describe('when video filtering is supported', () => {
-            it('should return a filtered stream when filter is NOT null', fakeAsync(() => {
+            it('should return a filtered stream when filter is ON', fakeAsync(() => {
                 // Arrange
                 const resolvedStream = new MediaStream();
                 mediaDevicesSpy.getUserMedia.and.resolveTo(resolvedStream);
                 videoFilterStreamServiceSpy.startFilteredStream.and.returnValue(filterStream);
 
-                activeCameraFilterSubject.next(BackgroundFilter.HMCTS);
+                filterOnSubject.next(true);
 
                 // Act
                 let resultantStream = null;
@@ -190,11 +188,11 @@ describe('MediaStreamService', () => {
                 expect(errorServiceSpy.handlePexipError).not.toHaveBeenCalled();
             }));
 
-            it('should return the resolved stream when filter is null', fakeAsync(() => {
+            it('should return the resolved stream when filter OFF', fakeAsync(() => {
                 // Arrange
                 const expectedStream = new MediaStream();
                 mediaDevicesSpy.getUserMedia.and.resolveTo(expectedStream);
-                activeCameraFilterSubject.next(null);
+                filterOnSubject.next(false);
 
                 // Act
                 let resultantStream = null;

@@ -41,9 +41,9 @@ export class MediaStreamService {
         return from(this.navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId } } })).pipe(
             mergeMap(stream => {
                 if (this.videoFilterService.doesSupportVideoFiltering()) {
-                    return this.videoFilterService.activeCameraFilter$.pipe(
-                        map(filter => {
-                            if (filter) {
+                    return this.videoFilterService.filterOn$.pipe(
+                        map(filterOn => {
+                            if (filterOn) {
                                 this.videoFilterService.initFilterFromMediaStream(stream);
                                 return this.videoFilterService.startFilteredStream();
                             } else {

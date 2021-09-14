@@ -27,18 +27,27 @@ export class VideoFilterService {
         return this._onFilterChanged.asObservable();
     }
 
-    private activeCameraFilterSubject = new ReplaySubject<BackgroundFilter | null>();
-    get activeCameraFilter$(): Observable<BackgroundFilter | null> {
-        return this.activeCameraFilterSubject.asObservable();
-    }
-
     videoElement: HTMLVideoElement;
     canvasElement: HTMLCanvasElement;
     canvasStream: MediaStream;
 
     canvasCtx: CanvasRenderingContext2D;
 
-    filterOn: boolean;
+    private _filterOn = false;
+    set filterOn(on: boolean) {
+        this._filterOn = on;
+        this.filterOnSubject.next(this._filterOn);
+    }
+
+    get filterOn(): boolean {
+        return this._filterOn;
+    }
+
+    private filterOnSubject = new ReplaySubject<boolean>(1);
+    get filterOn$(): Observable<boolean> {
+        return this.filterOnSubject.asObservable();
+    }
+
     selfieSegmentation: SelfieSegmentation;
     activeFilter: BackgroundFilter;
     imgs: Map<BackgroundFilter, HTMLImageElement> = new Map();
