@@ -5,11 +5,11 @@ import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 export class ParticipantContactDetails {
     private participant: ParticipantContactDetailsResponseVho;
     private participantStatusText: string;
-    private isJudgeInAnotherHearing: boolean;
+    private isHostInAnotherHearing: boolean;
 
     constructor(participant: ParticipantContactDetailsResponseVho) {
         this.participant = participant;
-        this.isJudgeInAnotherHearing = participant.judge_in_another_hearing;
+        this.isHostInAnotherHearing = participant.host_in_another_hearing;
     }
 
     get id(): string {
@@ -88,12 +88,12 @@ export class ParticipantContactDetails {
         return this.participant.hearing_venue_name;
     }
 
-    get judgeInAnotherHearing(): boolean {
-        return this.isJudgeInAnotherHearing;
+    get hostInAnotherHearing(): boolean {
+        return this.isHostInAnotherHearing;
     }
 
-    set judgeInAnotherHearing(value: boolean) {
-        this.isJudgeInAnotherHearing = value;
+    set hostInAnotherHearing(value: boolean) {
+        this.isHostInAnotherHearing = value;
     }
 
     get showCaseRole(): boolean {
@@ -104,7 +104,8 @@ export class ParticipantContactDetails {
         return this.participant.case_type_group.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
             this.participant.case_type_group.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
             this.participant.case_type_group.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase() ||
-            this.participant.case_type_group.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase()
+            this.participant.case_type_group.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
+            this.participant.case_type_group.toLowerCase() === CaseTypeGroup.STAFF_MEMBER.toLowerCase()
             ? false
             : true;
     }
