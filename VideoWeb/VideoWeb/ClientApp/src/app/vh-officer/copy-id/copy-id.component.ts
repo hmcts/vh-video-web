@@ -7,7 +7,7 @@ import { VhoQueryService } from '../services/vho-query-service.service';
     templateUrl: './copy-id.component.html'
 })
 export class CopyIdComponent implements OnInit {
-    @Input() conference: string;
+    @Input() conferenceId: string;
     tooltip: string;
     hearingId: string;
     @ViewChild('copyID', { static: false }) copyID: ElementRef;
@@ -16,7 +16,7 @@ export class CopyIdComponent implements OnInit {
 
     async ngOnInit() {
         this.resetText();
-        const response = await this.vhoQueryService.getConferenceByIdVHO(this.conference);
+        const response = await this.vhoQueryService.getConferenceByIdVHO(this.conferenceId);
         this.hearingId = response.hearing_id;
     }
 
