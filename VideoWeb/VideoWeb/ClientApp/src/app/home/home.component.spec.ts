@@ -57,4 +57,15 @@ describe('HomeComponent', () => {
         flush();
         expect(component.previousPageUrl).toEqual('urlAfterRedirects');
     }));
+
+    it('should navigate IdpSelection page when input home page url manually', async () => {
+        component.previousPageUrl = `/${pageUrls.Home}`;
+        const eventValue: OidcClientNotification<AuthorizationResult> = {
+            type: EventTypes.ConfigLoaded
+        };
+        oidcClientNotificationSpy = jasmine.createSpyObj('OidcClientNotification', {}, eventValue);
+        eventServiceSpy.registerForEvents.and.returnValue(of(oidcClientNotificationSpy));
+        component.ngOnInit();
+        expect(routerSpy.navigate).toHaveBeenCalledWith([`/${pageUrls.IdpSelection}`]);
+    });
 });
