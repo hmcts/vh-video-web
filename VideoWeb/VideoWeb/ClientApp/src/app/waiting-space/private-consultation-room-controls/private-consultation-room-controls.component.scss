@@ -136,7 +136,10 @@
 
 .dropdown {
   position: relative;
-  display: inline-block;
+  display: none;
+    @media only screen and (min-width: 320px) and (max-width: 768px) {
+        display: inline-block;
+    }
 }
 
 .dropdown-content {
@@ -153,6 +156,9 @@
   z-index: 101;
 }
 
-.hearing-controls-desktop{
-    display: none;
+.hearing-controls-desktop {
+  display: inline-flex;
+    @media only screen and (min-width: 320px) and (max-width: 768px) {
+        display: none;
+    }
 }

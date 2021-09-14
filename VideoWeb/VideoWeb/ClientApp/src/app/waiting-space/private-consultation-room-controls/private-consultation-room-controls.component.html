@@ -138,7 +138,6 @@
                     class='icon-button-dark'
                     data-module='govuk-button'
                     (click)='pause()'
-                    type='button'
                     [hidden]='!canCloseOrPauseHearing()'
                 >
                     <span
@@ -195,8 +194,136 @@
         >
             <span class='far fa-users'></span>
         </div>
-    </div>
     <div class="hearing-controls-desktop">
+        <div
+            class="icon-button"
+            id="toggle-chat-panel-desktop"
+            appTooltip
+            *ngIf="isJudge && !isPrivateConsultation"
+            [text]="'private-consultation-room-controls.chat-panel' | translate"
+            colour="grey"
+            (click)="togglePanelStatus('Chat')"
+        >
+            <span class="far fa-comment"></span>
+            <span class="badge" *ngIf="unreadMessageCount > 0">{{ unreadMessageCount > 9 ? '9+' : unreadMessageCount }}</span>
+        </div>
+
+        <div
+            class="icon-button"
+            id="start-screenshare-img-desktop"
+            *ngIf="!screenShareStream && canShowScreenShareButton"
+            appTooltip
+            [text]="'private-consultation-room-controls.share-my-screen' | translate"
+            colour="grey"
+            (click)="startScreenShare()"
+        >
+            <span class="fak fa-start-screen-share"></span>
+        </div>
+
+        <div
+            *ngIf="screenShareStream"
+            class="icon-button"
+            id="stop-screenshare-img-desktop"
+            appTooltip
+            [text]="'private-consultation-room-controls.stop-sharing-my-screen' | translate"
+            colour="red"
+            (click)="stopScreenShare()"
+        >
+            <span class="fak fa-stop-screen-share"></span>
+        </div>
+
+        <div class="flexBar"></div>
+
+        <div
+            class="icon-button"
+            id="toggle-media-device-img-desktop"
+            appTooltip
+            [text]="'private-consultation-room-controls.change-camera-mic' | translate"
+            colour="grey"
+            (click)="changeDeviceSelected()"
+        >
+            <span class="far fa-sliders-h"></span>
+        </div>
+
+        <div
+            class="icon-button"
+            id="toggle-self-view-img-desktop"
+            appTooltip
+            *ngIf="!audioOnly"
+            [text]="
+        (selfViewOpen
+          ? 'private-consultation-room-controls.selfview-toggle-true'
+          : 'private-consultation-room-controls.selfview-toggle-false'
+        ) | translate
+      "
+            colour="grey"
+            (click)="toggleView()"
+        >
+            <span class="far" [class]="selfViewOpen ? 'fa-eye' : 'fa-eye-slash'"></span>
+        </div>
+
+        <div
+            class="icon-button"
+            id="toggle-video-mute-img-desktop"
+            appTooltip
+            *ngIf="!isJudge && !audioOnly"
+            [text]="
+        (videoMuted
+          ? 'private-consultation-room-controls.video-mute-toggle-true'
+          : 'private-consultation-room-controls.video-mute-toggle-false'
+        ) | translate
+      "
+            colour="grey"
+            (click)="toggleVideoMute()"
+        >
+            <span class="far" [class]="videoMuted ? 'fa-video-slash' : 'fa-video'"></span>
+        </div>
+
+        <div
+            class="icon-button"
+            id="toggle-audio-mute-img-desktop"
+            appTooltip
+            *ngIf="!remoteMuted || isJudge"
+            [text]="
+        (audioMuted
+          ? 'private-consultation-room-controls.audio-mute-toggle-true'
+          : 'private-consultation-room-controls.audio-mute-toggle-false'
+        ) | translate
+      "
+            colour="grey"
+            (click)="toggleMute()"
+        >
+            <span class="far" [class]="audioMuted ? 'fa-microphone-slash' : 'fa-microphone'"></span>
+        </div>
+
+        <div
+            class="icon-button"
+            id="toggle-audio-mute-locked-img-desktop"
+            appTooltip
+            *ngIf="remoteMuted && !isJudge"
+            [text]="'private-consultation-room-controls.remote-muted' | translate"
+            colour="grey"
+        >
+            <span class="far fa-microphone-slash red"></span>
+        </div>
+
+        <div
+            class="icon-button"
+            id="toggle-hand-raised-img-desktop"
+            appTooltip
+            *ngIf="!isPrivateConsultation && !isJudge"
+            [text]="
+        (handRaised
+          ? 'private-consultation-room-controls.hand-raise-toggle-true'
+          : 'private-consultation-room-controls.hand-raise-toggle-false'
+        ) | translate
+      "
+            colour="grey"
+            (click)="toggleHandRaised()"
+        >
+            <span class="far fa-hand-paper" [class]="{ yellow: handRaised }"></span>
+        </div>
+
         <button
             *ngIf="!isPrivateConsultation && isJudge"
             id="pause-hearing-desktop"
@@ -246,6 +373,7 @@
         >
             {{ 'private-consultation-room-controls.leave' | translate }}
         </button>
+    </div>
     </div>
 </div>
 
