@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ClipboardService } from 'ngx-clipboard';
 import { VhoQueryService } from '../services/vho-query-service.service';
@@ -7,7 +7,7 @@ import { VhoQueryService } from '../services/vho-query-service.service';
     selector: 'app-copy-quick-link',
     templateUrl: './copy-quick-link.component.html'
 })
-export class CopyQuickLinkComponent implements OnInit {
+export class CopyQuickLinkComponent implements OnInit, OnChanges {
     @Input() conferenceId: string;
     hearingId: string;
     tooltip: string;
@@ -20,6 +20,11 @@ export class CopyQuickLinkComponent implements OnInit {
 
     async ngOnInit() {
         this.tooltip = this.translateService.instant('copy-quick-link.display-text');
+        const response = await this.vhoQueryService.getConferenceByIdVHO(this.conferenceId);
+        this.hearingId = response.hearing_id;
+    }
+
+    async ngOnChanges(): Promise<void> {
         const response = await this.vhoQueryService.getConferenceByIdVHO(this.conferenceId);
         this.hearingId = response.hearing_id;
     }
