@@ -238,7 +238,7 @@ export class UserMediaService {
     hasMultipleDevices(): Observable<boolean> {
         return zip(this.connectedVideoDevices$, this.connectedMicrophoneDevices$).pipe(
             map(deviceList => {
-                return deviceList[0].length > 1; // || deviceList[1].length > 1;
+                return deviceList[0].length > 1 || deviceList[1].length > 1;
             })
         );
     }
