@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, from, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, mergeMap } from 'rxjs/operators';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { CallError } from '../waiting-space/models/video-call-models';
 import { ErrorService } from './error.service';
@@ -39,12 +39,20 @@ export class MediaStreamService {
 
     getStreamForCam(device: UserMediaDevice): Observable<MediaStream> {
         return from(this.navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId } } })).pipe(
-            map(stream => {
-                if (this.videoFilterService.doesSupportVideoFiltering() && this.videoFilterService.filterOn) {
-                    this.videoFilterService.initFilterFromMediaStream(stream);
-                    return this.videoFilterService.startFilteredStream();
+            mergeMap(stream => {
+                if (this.videoFilterService.doesSupportVideoFiltering()) {
+                    return this.videoFilterService.activeCameraFilter$.pipe(
+                        map(filter => {
+                            if (filter) {
+                                this.videoFilterService.initFilterFromMediaStream(stream);
+                                return this.videoFilterService.startFilteredStream();
+                            } else {
+                                return stream;
+                            }
+                        })
+                    );
                 } else {
-                    return stream;
+                    return of(stream);
                 }
             }),
             catchError(error => {

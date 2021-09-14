@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Camera } from '@mediapipe/camera_utils';
 import { Results, SelfieSegmentation } from '@mediapipe/selfie_segmentation';
-import { Observable, Subject } from 'rxjs';
+import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { browsers } from '../shared/browser.constants';
 import { ConfigService } from './api/config.service';
 import { DeviceTypeService } from './device-type.service';
@@ -25,6 +25,11 @@ export class VideoFilterService {
     private _onFilterChanged = new Subject<BackgroundFilter | null>();
     get onFilterChanged$(): Observable<BackgroundFilter | null> {
         return this._onFilterChanged.asObservable();
+    }
+
+    private activeCameraFilterSubject = new ReplaySubject<BackgroundFilter | null>();
+    get activeCameraFilter$(): Observable<BackgroundFilter | null> {
+        return this.activeCameraFilterSubject.asObservable();
     }
 
     videoElement: HTMLVideoElement;
@@ -102,6 +107,12 @@ export class VideoFilterService {
     }
 
     updateCameraStream(stream: MediaStream) {
+        this._canvasWidth = stream.getVideoTracks()[0].getSettings().width;
+        this._canvasHeight = stream.getVideoTracks()[0].getSettings().height;
+
+        this.canvasElement.width = this._canvasWidth;
+        this.canvasElement.height = this._canvasHeight;
+
         this.videoElement.srcObject = stream;
     }
 
