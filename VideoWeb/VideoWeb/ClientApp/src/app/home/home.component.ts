@@ -1,8 +1,7 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EventTypes, PublicEventsService } from 'angular-auth-oidc-client';
-import { Subject } from 'rxjs';
-import { filter, takeUntil } from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
 import { Logger } from '../services/logging/logger-base';
 import { pageUrls } from '../shared/page-url.constants';
 
@@ -10,24 +9,8 @@ import { pageUrls } from '../shared/page-url.constants';
     selector: 'app-home',
     templateUrl: './home.component.html'
 })
-export class HomeComponent implements OnInit, OnDestroy {
-    previousPageUrl = '';
-    private destroyedSubject$ = new Subject();
-
-    constructor(private router: Router, private eventService: PublicEventsService, private logger: Logger) {
-        this.router.events
-            .pipe(
-                filter(event => event instanceof NavigationEnd),
-                takeUntil(this.destroyedSubject$)
-            )
-            .subscribe((event: NavigationEnd) => {
-                this.previousPageUrl = event.urlAfterRedirects;
-            });
-    }
-    ngOnDestroy(): void {
-        this.destroyedSubject$.next();
-        this.destroyedSubject$.complete();
-    }
+export class HomeComponent implements OnInit {
+    constructor(private router: Router, private eventService: PublicEventsService, private logger: Logger, private route: ActivatedRoute) {}
 
     ngOnInit() {
         this.eventService
@@ -44,7 +27,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                     this.router.navigate([`/${pageUrls.Navigator}`]);
                 }
             });
-        if (this.previousPageUrl === `/${pageUrls.Home}`) {
+        if (this.route.snapshot.queryParamMap.get('code') === null) {
             this.router.navigate([`/${pageUrls.Login}`]);
         }
     }
