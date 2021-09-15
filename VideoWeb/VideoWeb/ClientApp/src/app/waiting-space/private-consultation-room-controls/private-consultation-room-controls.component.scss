@@ -164,6 +164,22 @@
   -webkit-font-smoothing: antialiased;
   margin-left: 4px;
 }
+.portrait {
+    display: block;
+    @media only screen and (orientation: landscape) {
+        display: none;
+    }
+}
+
+.landscape {
+    display: inline-flex;
+    @media only screen and (orientation: portrait) {
+        display: none;
+    }
+    @media only screen and (min-width: 768px) {
+        display: none;
+    }
+}
 
 .hearing-controls-desktop {
   display: inline-flex;
