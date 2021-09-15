@@ -146,7 +146,6 @@ export class VideoFilterService {
     }
 
     doesSupportVideoFiltering() {
-        return true;
         const allowedBrowser = !this.deviceTypeService.getBrowserName().includes(browsers.Safari);
         return this.enableVideoFilters && allowedBrowser && !this.deviceTypeService.isTablet();
     }
