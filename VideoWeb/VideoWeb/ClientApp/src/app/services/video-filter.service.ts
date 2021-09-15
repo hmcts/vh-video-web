@@ -35,6 +35,8 @@ export class VideoFilterService {
 
     private _filterOn = false;
     set filterOn(on: boolean) {
+        if (this._filterOn === on) return;
+
         this._filterOn = on;
         this.filterOnSubject.next(this._filterOn);
     }
@@ -63,6 +65,8 @@ export class VideoFilterService {
             this.activeFilter = this.preferredFilterCache.get();
             this.filterOn = true;
         }
+
+        this.filterOnSubject.next(this.filterOn);
 
         this.selfieSegmentation = new SelfieSegmentation({
             locateFile: file => {
@@ -116,12 +120,6 @@ export class VideoFilterService {
     }
 
     updateCameraStream(stream: MediaStream) {
-        this._canvasWidth = stream.getVideoTracks()[0].getSettings().width;
-        this._canvasHeight = stream.getVideoTracks()[0].getSettings().height;
-
-        this.canvasElement.width = this._canvasWidth;
-        this.canvasElement.height = this._canvasHeight;
-
         this.videoElement.srcObject = stream;
     }
 
@@ -148,6 +146,7 @@ export class VideoFilterService {
     }
 
     doesSupportVideoFiltering() {
+        return true;
         const allowedBrowser = !this.deviceTypeService.getBrowserName().includes(browsers.Safari);
         return this.enableVideoFilters && allowedBrowser && !this.deviceTypeService.isTablet();
     }

@@ -6,7 +6,6 @@ import { UserMediaDevice } from '../shared/models/user-media-device';
 import { ErrorService } from './error.service';
 import { Logger } from './logging/logger-base';
 import { MediaStreamService } from './media-stream.service';
-import { boolean } from './models/background-filter';
 import { VideoFilterService } from './video-filter.service';
 
 describe('MediaStreamService', () => {
