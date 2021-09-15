@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Camera } from '@mediapipe/camera_utils';
 import { Results, SelfieSegmentation } from '@mediapipe/selfie_segmentation';
-import { Observable, Subject } from 'rxjs';
+import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { browsers } from '../shared/browser.constants';
 import { ConfigService } from './api/config.service';
 import { DeviceTypeService } from './device-type.service';
@@ -33,7 +33,25 @@ export class VideoFilterService {
 
     canvasCtx: CanvasRenderingContext2D;
 
-    filterOn: boolean;
+    private _filterOn = false;
+    set filterOn(on: boolean) {
+        if (this._filterOn === on) {
+            return;
+        }
+
+        this._filterOn = on;
+        this.filterOnSubject.next(this._filterOn);
+    }
+
+    get filterOn(): boolean {
+        return this._filterOn;
+    }
+
+    private filterOnSubject = new ReplaySubject<boolean>(1);
+    get filterOn$(): Observable<boolean> {
+        return this.filterOnSubject.asObservable();
+    }
+
     selfieSegmentation: SelfieSegmentation;
     activeFilter: BackgroundFilter;
     imgs: Map<BackgroundFilter, HTMLImageElement> = new Map();
@@ -49,6 +67,8 @@ export class VideoFilterService {
             this.activeFilter = this.preferredFilterCache.get();
             this.filterOn = true;
         }
+
+        this.filterOnSubject.next(this.filterOn);
 
         this.selfieSegmentation = new SelfieSegmentation({
             locateFile: file => {

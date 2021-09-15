@@ -1,5 +1,6 @@
 import { fakeAsync, flush } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
+import { ReplaySubject } from 'rxjs';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { ErrorService } from './error.service';
@@ -38,6 +39,7 @@ describe('MediaStreamService', () => {
     let navigatorSpy: jasmine.SpyObj<Navigator>;
     let videoFilterStreamServiceSpy: jasmine.SpyObj<VideoFilterService>;
     let filterStream: jasmine.SpyObj<MediaStream>;
+    let filterOnSubject: ReplaySubject<boolean>;
 
     beforeEach(() => {
         loggerSpy = jasmine.createSpyObj<Logger>(['info', 'error']);
@@ -48,7 +50,7 @@ describe('MediaStreamService', () => {
 
         videoFilterStreamServiceSpy = jasmine.createSpyObj<VideoFilterService>(
             ['initFilterFromMediaStream', 'startFilteredStream', 'doesSupportVideoFiltering'],
-            ['filterOn']
+            ['filterOn', 'filterOn$']
         );
         const filterStreamTracks = [];
         filterStreamTracks.push(
@@ -62,6 +64,9 @@ describe('MediaStreamService', () => {
 
         videoFilterStreamServiceSpy.startFilteredStream.and.returnValue(filterStream);
         videoFilterStreamServiceSpy.doesSupportVideoFiltering.and.returnValue(true);
+
+        filterOnSubject = new ReplaySubject<boolean>();
+        getSpiedPropertyGetter(videoFilterStreamServiceSpy, 'filterOn$').and.returnValue(filterOnSubject.asObservable());
 
         sut = new MediaStreamService(loggerSpy, errorServiceSpy, navigatorSpy, videoFilterStreamServiceSpy);
     });
@@ -138,41 +143,68 @@ describe('MediaStreamService', () => {
     });
 
     describe('getStreamForCam', () => {
-        it('should return a promise from getUserMedia', fakeAsync(() => {
-            // Arrange
-            const expectedStream = new MediaStream();
-            mediaDevicesSpy.getUserMedia.and.resolveTo(expectedStream);
-            getSpiedPropertyGetter(videoFilterStreamServiceSpy, 'filterOn').and.returnValue(false);
+        describe('when video filtering is NOT supported', () => {
+            it('should return a promise from getUserMedia', fakeAsync(() => {
+                // Arrange
+                videoFilterStreamServiceSpy.doesSupportVideoFiltering.and.returnValue(false);
 
-            // Act
-            let resultantStream = null;
-            sut.getStreamForCam(cameraDevice).subscribe(stream => (resultantStream = stream));
-            flush();
+                const expectedStream = new MediaStream();
+                mediaDevicesSpy.getUserMedia.and.resolveTo(expectedStream);
 
-            // Assert
-            expect(mediaDevicesSpy.getUserMedia).toHaveBeenCalledWith(cameraConstraintBuilder(cameraDevice));
+                // Act
+                let resultantStream = null;
+                sut.getStreamForCam(cameraDevice).subscribe(stream => (resultantStream = stream));
+                flush();
 
-            expect(resultantStream).toBe(expectedStream);
-            expect(errorServiceSpy.handlePexipError).not.toHaveBeenCalled();
-        }));
+                // Assert
+                expect(mediaDevicesSpy.getUserMedia).toHaveBeenCalledWith(cameraConstraintBuilder(cameraDevice));
 
-        it('should return a filtered stream when filter is on', fakeAsync(() => {
-            // Arrange
-            const expectedStream = new MediaStream();
-            mediaDevicesSpy.getUserMedia.and.resolveTo(expectedStream);
-            getSpiedPropertyGetter(videoFilterStreamServiceSpy, 'filterOn').and.returnValue(true);
+                expect(resultantStream).toBe(expectedStream);
+                expect(errorServiceSpy.handlePexipError).not.toHaveBeenCalled();
+            }));
+        });
 
-            // Act
-            let resultantStream = null;
-            sut.getStreamForCam(cameraDevice).subscribe(stream => (resultantStream = stream));
-            flush();
+        describe('when video filtering is supported', () => {
+            it('should return a filtered stream when filter is ON', fakeAsync(() => {
+                // Arrange
+                const resolvedStream = new MediaStream();
+                mediaDevicesSpy.getUserMedia.and.resolveTo(resolvedStream);
+                videoFilterStreamServiceSpy.startFilteredStream.and.returnValue(filterStream);
 
-            // Assert
-            expect(mediaDevicesSpy.getUserMedia).toHaveBeenCalledWith(cameraConstraintBuilder(cameraDevice));
+                filterOnSubject.next(true);
 
-            expect(resultantStream).toBe(filterStream);
-            expect(errorServiceSpy.handlePexipError).not.toHaveBeenCalled();
-        }));
+                // Act
+                let resultantStream = null;
+                sut.getStreamForCam(cameraDevice).subscribe(stream => (resultantStream = stream));
+
+                flush();
+
+                // Assert
+                expect(mediaDevicesSpy.getUserMedia).toHaveBeenCalledWith(cameraConstraintBuilder(cameraDevice));
+                expect(videoFilterStreamServiceSpy.initFilterFromMediaStream).toHaveBeenCalledWith(resolvedStream);
+
+                expect(resultantStream).toBe(filterStream);
+                expect(errorServiceSpy.handlePexipError).not.toHaveBeenCalled();
+            }));
+
+            it('should return the resolved stream when filter OFF', fakeAsync(() => {
+                // Arrange
+                const expectedStream = new MediaStream();
+                mediaDevicesSpy.getUserMedia.and.resolveTo(expectedStream);
+                filterOnSubject.next(false);
+
+                // Act
+                let resultantStream = null;
+                sut.getStreamForCam(cameraDevice).subscribe(stream => (resultantStream = stream));
+                flush();
+
+                // Assert
+                expect(mediaDevicesSpy.getUserMedia).toHaveBeenCalledWith(cameraConstraintBuilder(cameraDevice));
+
+                expect(resultantStream).toBe(expectedStream);
+                expect(errorServiceSpy.handlePexipError).not.toHaveBeenCalled();
+            }));
+        });
 
         it('should catch any errors and raise this with the error service', fakeAsync(() => {
             // Arrange
