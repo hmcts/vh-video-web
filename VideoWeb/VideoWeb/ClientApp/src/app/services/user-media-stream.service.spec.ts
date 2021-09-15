@@ -1,22 +1,25 @@
 import { fakeAsync, flush } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { of, Subject } from 'rxjs';
+import { of, ReplaySubject, Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
 import { UserMediaDevice } from '../shared/models/user-media-device';
+import { mustProvideAMicrophoneDeviceError } from './errors/must-provide-a-microphone-device.error';
 import { Logger } from './logging/logger-base';
 import { MediaStreamService } from './media-stream.service';
-import { mustProvideAMicrophoneDeviceError, UserMediaStreamService } from './user-media-stream.service';
+import { UserMediaStreamService } from './user-media-stream.service';
 import { UserMediaService } from './user-media.service';
 
 describe('UserMediaStreamService', () => {
     const mediaStreamBuilder = (device: UserMediaDevice) => {
-        const stream = jasmine.createSpyObj<MediaStream>(['addTrack', 'removeTrack', 'getTracks']);
+        const stream = jasmine.createSpyObj<MediaStream>(['addTrack', 'removeTrack', 'getTracks', 'getVideoTracks', 'getAudioTracks']);
         const track = jasmine.createSpyObj<MediaStreamTrack>(['stop'], ['label', 'id']);
 
         getSpiedPropertyGetter(track, 'label').and.returnValue(device.label);
         getSpiedPropertyGetter(track, 'id').and.returnValue(Guid.create().toString());
 
         stream.getTracks.and.returnValue([track]);
+        stream.getVideoTracks.and.returnValue([track]);
+        stream.getAudioTracks.and.returnValue([track]);
 
         return stream;
     };
@@ -37,9 +40,9 @@ describe('UserMediaStreamService', () => {
 
     let loggerSpy: jasmine.SpyObj<Logger>;
 
-    let activeCameraDeviceSubject: Subject<UserMediaDevice>;
-    let activeMicrophoneDeviceSubject: Subject<UserMediaDevice>;
-    let isAudioOnlySubject: Subject<boolean>;
+    let activeCameraDeviceSubject: ReplaySubject<UserMediaDevice>;
+    let activeMicrophoneDeviceSubject: ReplaySubject<UserMediaDevice>;
+    let isAudioOnlySubject: ReplaySubject<boolean>;
     let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
 
     let mediaStreamServiceSpy: jasmine.SpyObj<MediaStreamService>;
@@ -47,9 +50,9 @@ describe('UserMediaStreamService', () => {
     beforeEach(fakeAsync(() => {
         loggerSpy = jasmine.createSpyObj<Logger>(['debug', 'info', 'warn', 'error']);
 
-        activeCameraDeviceSubject = new Subject<UserMediaDevice>();
-        activeMicrophoneDeviceSubject = new Subject<UserMediaDevice>();
-        isAudioOnlySubject = new Subject<boolean>();
+        activeCameraDeviceSubject = new ReplaySubject<UserMediaDevice>(1);
+        activeMicrophoneDeviceSubject = new ReplaySubject<UserMediaDevice>(1);
+        isAudioOnlySubject = new ReplaySubject<boolean>(1);
         userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>([], ['isAudioOnly$', 'activeVideoDevice$', 'activeMicrophoneDevice$']);
 
         getSpiedPropertyGetter(userMediaServiceSpy, 'activeVideoDevice$').and.returnValue(activeCameraDeviceSubject.asObservable());
@@ -61,16 +64,19 @@ describe('UserMediaStreamService', () => {
         mediaStreamServiceSpy = jasmine.createSpyObj<MediaStreamService>(['initialiseNewStream', 'getStreamForCam', 'getStreamForMic']);
 
         const newStreamTracks = [];
-        const newStreamSpy = jasmine.createSpyObj<MediaStream>(['addTrack', 'removeTrack', 'getTracks']);
-        newStreamSpy.addTrack.and.callFake(track => newStreamTracks.push(track));
+        const newStreamSpy = jasmine.createSpyObj<MediaStream>(['addTrack', 'removeTrack', 'getTracks', 'getTrackById']);
+        newStreamSpy.addTrack.and.callFake(track => {
+            newStreamTracks.push(track);
+        });
         newStreamSpy.removeTrack.and.callFake(track => {
             const idx = newStreamTracks.findIndex(existingTrack => existingTrack.id === track.id);
             if (idx < 0) {
-                throw new Error(`Cant find track ${track}`);
+                return;
             }
             newStreamTracks.splice(idx, 1);
         });
         newStreamSpy.getTracks.and.returnValue(newStreamTracks);
+        newStreamSpy.getTrackById.and.callFake(trackId => newStreamTracks.find(x => x.id === trackId));
 
         mediaStreamServiceSpy.initialiseNewStream.and.callFake(tracks => {
             newStreamTracks.push(...tracks);
@@ -126,11 +132,13 @@ describe('UserMediaStreamService', () => {
             flush();
 
             // Assert
-            expect(mediaStreamServiceSpy.getStreamForCam).toHaveBeenCalledWith(cameraTwoDevice);
-            cameraOneStream.getTracks().forEach(track => {
+            cameraOneStream.getVideoTracks().forEach(track => {
                 expect(currentStream.removeTrack).toHaveBeenCalledWith(track);
                 expect(track.stop).toHaveBeenCalled();
             });
+
+            expect(mediaStreamServiceSpy.getStreamForCam).toHaveBeenCalledWith(cameraTwoDevice);
+            expect(currentStream.addTrack).toHaveBeenCalledWith(cameraTwoStream.getVideoTracks()[0]);
 
             const currentStreamTracks = currentStream.getTracks();
             expect(currentStreamTracks).toBeTruthy();
@@ -156,13 +164,12 @@ describe('UserMediaStreamService', () => {
 
             // Assert
             expect(mediaStreamServiceSpy.getStreamForCam).toHaveBeenCalledWith(cameraTwoDevice);
-            cameraOneStream.getTracks().forEach(track => {
+            cameraOneStream.getVideoTracks().forEach(track => {
                 expect(currentStream.removeTrack).toHaveBeenCalledWith(track);
                 expect(track.stop).toHaveBeenCalled();
             });
 
             const currentStreamTracks = currentStream.getTracks();
-            console.log(currentStreamTracks);
             expect(currentStreamTracks).toBeTruthy();
             expect(currentStreamTracks.length).toEqual(expectedNumberOfTracks);
             expect(currentStreamTracks.find(track => track.label === cameraOneDevice.label)).toBeFalsy();
@@ -180,6 +187,30 @@ describe('UserMediaStreamService', () => {
 
             // Assert
             expect(wasModified).toBeTrue();
+        }));
+
+        it('should emit the active camera stream', fakeAsync(() => {
+            // Act
+            let stream: MediaStream | null;
+            sut.activeCameraStream$.subscribe(result => (stream = result));
+
+            activeCameraDeviceSubject.next(cameraTwoDevice);
+            flush();
+
+            // Assert
+            expect(stream).toBe(cameraTwoStream);
+        }));
+
+        it('should emit the active microphone stream', fakeAsync(() => {
+            // Act
+            let stream: MediaStream | null;
+            sut.activeMicrophoneStream$.subscribe(result => (stream = result));
+
+            activeMicrophoneDeviceSubject.next(microphoneTwoDevice);
+            flush();
+
+            // Assert
+            expect(stream).toBe(microphoneTwoStream);
         }));
     });
 
@@ -218,6 +249,31 @@ describe('UserMediaStreamService', () => {
     });
 
     describe('on is audio only changed', () => {
+        it('should emit null for the active video stream when audio only', fakeAsync(() => {
+            // Act
+            let stream: MediaStream | null = new MediaStream();
+            sut.activeCameraStream$.subscribe(result => (stream = result));
+
+            isAudioOnlySubject.next(true);
+            flush();
+
+            // Assert
+            expect(stream).toBeNull();
+        }));
+
+        it('should emit stream for the active video stream when NOT audio only', fakeAsync(() => {
+            // Act
+            let stream: MediaStream | null = null;
+            sut.activeCameraStream$.subscribe(result => (stream = result));
+            flush();
+
+            isAudioOnlySubject.next(false);
+            flush();
+
+            // Assert
+            expect(stream).toBe(cameraOneStream);
+        }));
+
         it('should remove the existing tracks for the active video camera when audio only is true', fakeAsync(() => {
             // Arrange
             const expectedNumberOfTracks = 1; // Only audio track
@@ -231,7 +287,7 @@ describe('UserMediaStreamService', () => {
             flush();
 
             // Assert
-            cameraOneStream.getTracks().forEach(track => {
+            cameraOneStream.getVideoTracks().forEach(track => {
                 expect(currentStream.removeTrack).toHaveBeenCalledWith(track);
                 expect(track.stop).toHaveBeenCalled();
             });
@@ -259,7 +315,7 @@ describe('UserMediaStreamService', () => {
             flush();
 
             // Assert
-            cameraOneStream.getTracks().forEach(track => {
+            cameraOneStream.getVideoTracks().forEach(track => {
                 expect(currentStream.removeTrack).toHaveBeenCalledWith(track);
                 expect(track.stop).toHaveBeenCalled();
             });
@@ -285,7 +341,7 @@ describe('UserMediaStreamService', () => {
 
             // Assert
             expect(mediaStreamServiceSpy.getStreamForMic).toHaveBeenCalledWith(microphoneTwoDevice);
-            microphoneOneStream.getTracks().forEach(track => {
+            microphoneOneStream.getAudioTracks().forEach(track => {
                 expect(currentStream.removeTrack).toHaveBeenCalledWith(track);
                 expect(track.stop).toHaveBeenCalled();
             });

@@ -17,7 +17,7 @@ describe('ParticipantStatusReader', () => {
         });
     });
 
-    const testCasesForgetStatusAsTextForJudge = [
+    const testCasesForgetStatusAsTextForHost = [
         { status: ParticipantStatus.None, expected: 'Unavailable' },
         { status: ParticipantStatus.NotSignedIn, expected: 'Unavailable' },
         { status: ParticipantStatus.InConsultation, expected: 'In consultation' },
@@ -25,9 +25,9 @@ describe('ParticipantStatusReader', () => {
         { status: ParticipantStatus.Available, expected: 'Available' }
     ];
 
-    testCasesForgetStatusAsTextForJudge.forEach(testCase => {
+    testCasesForgetStatusAsTextForHost.forEach(testCase => {
         it(`should get status ${testCase.status} as text for judge`, () => {
-            expect(reader.getStatusAsTextForJudge(testCase.status)).toBe(testCase.expected);
+            expect(reader.getStatusAsTextForHost(testCase.status)).toBe(testCase.expected);
         });
     });
 });

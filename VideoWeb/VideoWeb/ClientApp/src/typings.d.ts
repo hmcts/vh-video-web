@@ -3,6 +3,10 @@ declare interface Window {
     webkitAudioContext: AudioContext;
 }
 
+interface HTMLCanvasElement {
+    captureStream(frameRate?: number): MediaStream;
+}
+
 declare interface PexRTC {
     PexRTC(): PexipClient;
 }
@@ -31,6 +35,7 @@ declare interface PexipClient {
     onParticipantUpdate: (participantUpdate: PexipParticipant) => void;
     onConferenceUpdate: (conferenceUpdate: PexipConference) => void;
     onCallTransfer: (reason: any) => void;
+    renegotiate: (sendUpdate: boolean) => void;
 
     /**
      * A presentation has started or stopped.

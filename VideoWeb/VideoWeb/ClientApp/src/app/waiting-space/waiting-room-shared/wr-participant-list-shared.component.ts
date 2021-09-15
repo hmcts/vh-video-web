@@ -118,13 +118,22 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     }
 
     protected filterNonJudgeParticipants(): void {
-        const nonJudgeParts = this.conference.participants.filter(
+        let nonJudgeParts = this.conference.participants.filter(
             x =>
                 x.role !== Role.Judge &&
                 x.role !== Role.JudicialOfficeHolder &&
                 x.hearing_role !== HearingRole.OBSERVER &&
+                x.role !== Role.QuickLinkObserver &&
+                x.role !== Role.QuickLinkParticipant &&
                 x.hearing_role !== HearingRole.STAFF_MEMBER
         );
+
+        nonJudgeParts = [
+            ...nonJudgeParts,
+            ...this.conference.participants
+                .filter(x => x.role === Role.QuickLinkParticipant)
+                .sort((a, b) => a.display_name.localeCompare(b.display_name))
+        ];
 
         const interpreterList = nonJudgeParts.filter(
             x =>
@@ -186,7 +195,9 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     }
 
     protected filterObservers(): void {
-        this.observers = this.conference.participants.filter(x => x.hearing_role === HearingRole.OBSERVER);
+        this.observers = this.conference.participants
+            .filter(x => x.hearing_role === HearingRole.OBSERVER || x.role === Role.QuickLinkObserver)
+            .sort((a, b) => a.display_name.localeCompare(b.display_name));
     }
 
     private filterWingers(): void {

@@ -69,13 +69,12 @@ export class ParticipantStatusComponent implements OnInit {
     }
 
     setParticipantStatus(participantStatus: ParticipantStatus, participant: ParticipantContactDetails) {
-        const inAnotherHearing = participant.judgeInAnotherHearing && participant.status !== ParticipantStatus.InHearing;
+        const inAnotherHearing = participant.hostInAnotherHearing && participant.status !== ParticipantStatus.InHearing;
         participant.status = participantStatus;
-
-        if (participant.role === Role.Judge) {
+        if (participant.role === Role.Judge || participant.role === Role.StaffMember) {
             participant.statusText = inAnotherHearing
                 ? this.participantStatusReader.inAnotherHearingText
-                : this.participantStatusReader.getStatusAsTextForJudge(participantStatus);
+                : this.participantStatusReader.getStatusAsTextForHost(participantStatus);
         } else {
             participant.statusText = this.participantStatusReader.getStatusAsText(participantStatus);
         }
@@ -116,7 +115,7 @@ export class ParticipantStatusComponent implements OnInit {
         if (this.conferenceId !== message.conferenceId) {
             const thisJudge = this.participants.find(x => x.username === message.username);
             if (thisJudge) {
-                thisJudge.judgeInAnotherHearing = message.status === ParticipantStatus.InHearing;
+                thisJudge.hostInAnotherHearing = message.status === ParticipantStatus.InHearing;
                 this.setParticipantStatus(thisJudge.status, thisJudge);
             }
         }

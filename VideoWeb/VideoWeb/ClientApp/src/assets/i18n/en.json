@@ -255,7 +255,8 @@
     "judicial-consultation-room-open-until": "Judicial consultation room open until ",
     "sign-into-the-conference": "Sign into the conference",
     "select": "Select",
-    "not-ready-to-start": "Not ready to start"
+    "not-ready-to-start": "Not ready to start",
+    "conference-status-heading": "Status/Action"
   },
   "judge-self-test": {
     "please-wait-to-be-connected": "Please wait to be connected...",
@@ -804,7 +805,7 @@
     "alt": "Copy conference id icon",
     "display-text": "Copy hearing ID to clipboard"
   },
-  "copy-quick-link":{
+  "copy-quick-link": {
     "tooltip-copied": "Join by quick link details copied to clipboard",
     "display-text": "Copy join by quick link details to clipboard"
   },
@@ -1081,5 +1082,16 @@
       "body": "Please check the link you were sent. If it still doesn't work, call 0300 303 0655 for immediate contact with a video hearings officer."
     }
   },
-  "loading": "Loading please wait..."
+  "loading": "Loading please wait...",
+  "video-filter": {
+    "title": "Choose a custom background",
+    "none": "No background",
+    "none-alt": "Remove all filters",
+    "blur": "Blurred",
+    "blur-alt": "Apply the blurred background filter",
+    "hmcts": "HMCTS crest",
+    "hmcts-alt": "Apply the background with the HMCTS crest",
+    "scts": "SCTS crest",
+    "scts-alt": "Apply the background with the SCTS crest"
+  }
 }

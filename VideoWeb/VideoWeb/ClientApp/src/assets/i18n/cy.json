@@ -266,7 +266,8 @@
     "observer": "Sylwebydd",
     "observers": "Sylwebydd",
     "video-access-point": "Pwynt mynediad fideo ",
-    "video-access-points": "Pwynt mynediad fideo"
+    "video-access-points": "Pwynt mynediad fideo",
+    "conference-status-heading": "Status/Action"
   },
   "conference-status": {
     "paused": "Wedi'i atal dros dro",
@@ -1052,7 +1053,7 @@
     "alt": "Eicon copïo rhif adnabod (ID) y gynhadledd",
     "display-text": "Copy hearing ID to clipboard"
   },
-  "copy-quick-link":{
+  "copy-quick-link": {
     "tooltip-copied": "Join by quick link details copied to clipboard",
     "display-text": "Copy join by quick link details to clipboard"
   },
@@ -1081,5 +1082,16 @@
       "body": "Gwiriwch y ddolen a anfonwyd atoch. Os nad yw'n gweithio o hyd, ffoniwch 0300 303 0655 i siarad â swyddog gwrandawiadau fideo."
     }
   },
-  "loading": "Wrthi'n llwytho..."
+  "loading": "Wrthi'n llwytho...",
+  "video-filter": {
+    "title": "Dewis cefndir personol",
+    "none": "Dim cefndir",
+    "none-alt": "Tynnu'r holl hidlwyr",
+    "blur": "Aneglur",
+    "blur-alt": "Defnyddio hidlydd cefndir aneglur",
+    "hmcts": "Arwydd GLlTEM",
+    "hmcts-alt": "Defnyddio cefndir gydag arwydd GLlTEM",
+    "scts": "Arwydd SCTS",
+    "scts-alt": "Defnyddio cefndir gydag arwydd SCTS"
+  }
 }
