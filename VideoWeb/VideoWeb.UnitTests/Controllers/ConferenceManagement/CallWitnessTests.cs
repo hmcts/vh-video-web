@@ -34,7 +34,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.CallWitnessAsync(TestConference.Id, participant.Id);
+            var result = await Controller.CallParticipantAsync(TestConference.Id, participant.Id);
             result.Should().BeOfType<UnauthorizedObjectResult>();
             var typedResult = (UnauthorizedObjectResult) result;
             typedResult.Should().NotBeNull();
@@ -55,7 +55,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.CallWitnessAsync(TestConference.Id, Guid.NewGuid());
+            var result = await Controller.CallParticipantAsync(TestConference.Id, Guid.NewGuid());
             result.Should().BeOfType<UnauthorizedObjectResult>();
             var typedResult = (UnauthorizedObjectResult)result;
             typedResult.Should().NotBeNull();
@@ -76,7 +76,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.CallWitnessAsync(TestConference.Id, participant.Id);
+            var result = await Controller.CallParticipantAsync(TestConference.Id, participant.Id);
             result.Should().BeOfType<UnauthorizedObjectResult>();
             var typedResult = (UnauthorizedObjectResult)result;
             typedResult.Should().NotBeNull();
@@ -107,7 +107,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 x => x.TransferParticipantAsync(TestConference.Id,
                     It.IsAny<TransferParticipantRequest>())).ThrowsAsync(apiException);
 
-            var result = await Controller.CallWitnessAsync(TestConference.Id,witness.Id);
+            var result = await Controller.CallParticipantAsync(TestConference.Id,witness.Id);
             result.Should().BeOfType<ObjectResult>();
             var typedResult = (ObjectResult) result;
             typedResult.Value.Should().Be(responseMessage);
@@ -125,7 +125,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.CallWitnessAsync(TestConference.Id, witness.Id);
+            var result = await Controller.CallParticipantAsync(TestConference.Id, witness.Id);
             result.Should().BeOfType<AcceptedResult>();
             var typedResult = (AcceptedResult) result;
             typedResult.Should().NotBeNull();
@@ -147,7 +147,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.CallWitnessAsync(TestConference.Id, witness.Id);
+            var result = await Controller.CallParticipantAsync(TestConference.Id, witness.Id);
             result.Should().BeOfType<AcceptedResult>();
             var typedResult = (AcceptedResult) result;
             typedResult.Should().NotBeNull();
@@ -173,7 +173,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithRole(AppRoles.JudgeRole).Build();
             Controller = SetupControllerWithClaims(user);
             
-            var result = await Controller.CallWitnessAsync(TestConference.Id, witnessIds.First());
+            var result = await Controller.CallParticipantAsync(TestConference.Id, witnessIds.First());
             
             result.Should().BeOfType<UnauthorizedObjectResult>();
             var typedResult = (UnauthorizedObjectResult) result;

@@ -40,5 +40,15 @@ namespace VideoWeb.Common.Models
         {
             return HearingRole.Trim().Equals("witness", StringComparison.CurrentCultureIgnoreCase);
         }
+
+        public bool IsQuickLinkUser()
+        {
+            return Role == Role.QuickLinkObserver || Role == Role.QuickLinkParticipant;
+        }
+
+        public bool IsCallable()
+        {
+            return IsWitness() || IsQuickLinkUser();
+        }
     }
 }

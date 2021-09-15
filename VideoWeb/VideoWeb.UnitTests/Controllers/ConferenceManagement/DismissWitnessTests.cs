@@ -35,7 +35,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.DismissWitnessAsync(TestConference.Id, participant.Id);
+            var result = await Controller.DismissParticipantAsync(TestConference.Id, participant.Id);
             var typedResult = (UnauthorizedObjectResult) result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().Be("Participant is not a witness");
@@ -56,7 +56,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.DismissWitnessAsync(TestConference.Id, Guid.NewGuid());
+            var result = await Controller.DismissParticipantAsync(TestConference.Id, Guid.NewGuid());
             var typedResult = (UnauthorizedObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().Be("Participant is not a witness");
@@ -76,7 +76,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.DismissWitnessAsync(TestConference.Id, participant.Id);
+            var result = await Controller.DismissParticipantAsync(TestConference.Id, participant.Id);
             var typedResult = (UnauthorizedObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().Be("User must be a Judge");
@@ -106,7 +106,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 x => x.TransferParticipantAsync(TestConference.Id,
                     It.IsAny<TransferParticipantRequest>())).ThrowsAsync(apiException);
 
-            var result = await Controller.DismissWitnessAsync(TestConference.Id,witness.Id);
+            var result = await Controller.DismissParticipantAsync(TestConference.Id,witness.Id);
             result.Should().BeOfType<ObjectResult>();
             var typedResult = (ObjectResult) result;
             typedResult.Value.Should().Be(responseMessage);
@@ -124,7 +124,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.DismissWitnessAsync(TestConference.Id, witness.Id);
+            var result = await Controller.DismissParticipantAsync(TestConference.Id, witness.Id);
             var typedResult = (AcceptedResult) result;
             typedResult.Should().NotBeNull();
 
@@ -145,7 +145,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.DismissWitnessAsync(TestConference.Id, witness.Id);
+            var result = await Controller.DismissParticipantAsync(TestConference.Id, witness.Id);
             var typedResult = (AcceptedResult)result;
             typedResult.Should().NotBeNull();
 
@@ -165,7 +165,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithRole(AppRoles.JudgeRole).Build();
             Controller = SetupControllerWithClaims(user);
             
-            var result = await Controller.DismissWitnessAsync(TestConference.Id, witness.Id);
+            var result = await Controller.DismissParticipantAsync(TestConference.Id, witness.Id);
             var typedResult = (AcceptedResult)result;
             typedResult.Should().NotBeNull();
             
@@ -199,7 +199,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 x => x.AddTaskAsync(TestConference.Id,
                     It.IsAny<AddTaskRequest>())).ThrowsAsync(apiException);
 
-            var result = await Controller.DismissWitnessAsync(TestConference.Id, witness.Id);
+            var result = await Controller.DismissParticipantAsync(TestConference.Id, witness.Id);
             result.Should().BeOfType<ObjectResult>();
             var typedResult = (ObjectResult)result;
             typedResult.Value.Should().Be(responseMessage);
