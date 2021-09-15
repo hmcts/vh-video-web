@@ -3,9 +3,8 @@
         <div
             class='icon-button dropdown'
             id='toggle-context-menu'
-            appTooltip
-            [text]="'private-consultation-room-controls.context-menu' | translate"
             colour='grey'
+            [class]="{ 'dropdown-opaque': showContextMenu }"
             (click)='showContextMenu = !showContextMenu'
         >
             <span class='far fa-ellipsis-h'></span>
