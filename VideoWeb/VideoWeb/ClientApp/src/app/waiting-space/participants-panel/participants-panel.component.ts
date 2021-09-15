@@ -13,8 +13,8 @@ import { HearingTransfer, TransferDirection } from 'src/app/services/models/hear
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { ParticipantPanelModelMapper } from 'src/app/shared/mappers/participant-panel-model-mapper';
 import {
-    CallWitnessIntoHearingEvent,
-    DismissWitnessFromHearingEvent,
+    CallParticipantIntoHearingEvent,
+    DismissParticipantFromHearingEvent,
     LowerParticipantHandEvent,
     ToggleMuteParticipantEvent,
     ToggleSpotlightParticipantEvent
@@ -81,12 +81,12 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.lowerParticipantHand(e.participant);
     }
 
-    callWitnessIntoHearingEventHandler(e: CallWitnessIntoHearingEvent) {
-        this.callWitnessIntoHearing(e.participant);
+    callParticipantIntoHearingEventHandler(e: CallParticipantIntoHearingEvent) {
+        this.callParticipantIntoHearing(e.participant);
     }
 
-    dismissWitnessFromHearingEventHandler(e: DismissWitnessFromHearingEvent) {
-        this.dismissWitnessFromHearing(e.participant);
+    dismissParticipantFromHearingEventHandler(e: DismissParticipantFromHearingEvent) {
+        this.dismissParticipantFromHearing(e.participant);
     }
 
     ngOnDestroy(): void {
@@ -405,11 +405,11 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         });
     }
 
-    async callWitnessIntoHearing(participant: PanelModel) {
-        if (!participant.isAvailable() || !participant.isWitness) {
+    async callParticipantIntoHearing(participant: PanelModel) {
+        if (!participant.isWitnessOrQuickLinkUserReadyToJoin) {
             return;
         }
-        this.logger.debug(`${this.loggerPrefix} Judge is attempting to call witness into hearing`, {
+        this.logger.debug(`${this.loggerPrefix} Judge is attempting to call participant into hearing`, {
             conference: this.conferenceId,
             participant: participant.id
         });
@@ -452,12 +452,12 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         }
     }
 
-    async dismissWitnessFromHearing(participant: PanelModel) {
-        if (!participant.isInHearing() || !participant.isWitness) {
+    async dismissParticipantFromHearing(participant: PanelModel) {
+        if (!participant.isInHearing()) {
             return;
         }
 
-        this.logger.debug(`${this.loggerPrefix} Judge is attempting to dismiss witness from hearing`, {
+        this.logger.debug(`${this.loggerPrefix} Judge is attempting to dismiss participant from hearing`, {
             conference: this.conferenceId,
             participant: participant.id
         });
@@ -467,7 +467,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         try {
             let participantId = participant.id;
             if (participant instanceof LinkedParticipantPanelModel) {
-                participantId = participant.witnessParticipant.id;
+                participantId = participant.witnessParticipant.id; // TODO How to handle this?
             }
             await this.videoCallService.dismissParticipantFromHearing(this.conferenceId, participantId);
         } catch (error) {

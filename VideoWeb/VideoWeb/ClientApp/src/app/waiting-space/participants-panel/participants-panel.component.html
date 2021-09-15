@@ -114,7 +114,7 @@
               </span>
             </ng-container>
           </div>
-          <div *ngIf="participant.isWitnessReadyToJoin">
+          <div *ngIf="participant.isWitnessOrQuickLinkUserReadyToJoin">
             <span
               *ngIf="!participant.transferringIn"
               appTooltip
@@ -128,7 +128,7 @@
                 'fa-question-circle': !participant.isAvailable(),
                 'no-click': !participant.isAvailable()
               }"
-              (click)="callWitnessIntoHearing(participant); $event.stopPropagation()"
+              (click)="callParticipantIntoHearing(participant); $event.stopPropagation()"
             >
             </span>
             <div *ngIf="participant.transferringIn" class="yellow">{{ 'participants-panel.joining1' | translate }}</div>
@@ -179,8 +179,8 @@
             (toggleMuteParticipantEvent)="toggleMuteParticipantEventHandler($event)"
             (toggleSpotlightParticipantEvent)="toggleSpotlightParticipantEventHandler($event)"
             (lowerParticipantHandEvent)="lowerParticipantHandEventHandler($event)"
-            (callWitnessIntoHearingEvent)="callWitnessIntoHearingEventHandler($event)"
-            (dismissWitnessFromHearingEvent)="dismissWitnessFromHearingEventHandler($event)"
+            (callParticipantIntoHearingEvent)="callParticipantIntoHearingEventHandler($event)"
+            (dismissParticipantFromHearingEvent)="dismissParticipantFromHearingEventHandler($event)"
           >
           </app-judge-context-menu>
         </div>
