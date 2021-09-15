@@ -4,7 +4,7 @@ import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Logger } from './logging/logger-base';
 import { Observable, ReplaySubject, Subject, zip } from 'rxjs';
 import { UserMediaService } from './user-media.service';
-import { skip, take } from 'rxjs/operators';
+import { skip, take, takeUntil } from 'rxjs/operators';
 import { MediaStreamService } from './media-stream.service';
 import { mustProvideAMicrophoneDeviceError } from './errors/must-provide-a-microphone-device.error';
 
@@ -58,71 +58,52 @@ export class UserMediaStreamService {
         this.logger.debug(
             `${this.loggerPrefix} Constructor called. Attempting to get active devices from userMediaService to initialise the stream.`
         );
-        zip(userMediaService.activeVideoDevice$, userMediaService.activeMicrophoneDevice$)
-            .pipe(take(1))
-            .subscribe(activeDevices => {
-                this.initialiseCurrentStream(activeDevices[0], activeDevices[1]);
-            });
+
+        this.logger.debug(`${this.loggerPrefix} Subscribing to active video and microphone device changes`);
+
+        this.initialiseCurrentStream();
+
+        this.userMediaService.activeVideoDevice$.subscribe(videoDevice => {
+            this.onActiveCameraChanged(videoDevice);
+        });
+
+        this.userMediaService.activeMicrophoneDevice$.subscribe(activeMicrophoneDevice => {
+            this.onActiveMicrophoneChanged(activeMicrophoneDevice);
+        });
+
+        this.userMediaService.isAudioOnly$.subscribe(audioOnly => {
+            this.onIsAudioOnlyChanged(audioOnly);
+        });
     }
 
-    private initialiseCurrentStream(cameraDevice: UserMediaDevice, microphoneDevice: UserMediaDevice) {
-        this.logger.debug(`${this.loggerPrefix} Initialising initial stream`, { mic: microphoneDevice, cam: cameraDevice });
-        this.mediaStreamService
-            .getStreamForCam(cameraDevice)
+    private initialiseCurrentStream() {
+        zip(this.activeCameraStream$, this.activeMicrophoneStream$)
             .pipe(take(1))
-            .subscribe(cameraStream => {
-                this.logger.debug(`${this.loggerPrefix} Got camera stream`, {
-                    cam: cameraDevice,
-                    stream: cameraStream,
-                    isAudioOnly: this.isAudioOnly
+            .subscribe(streams => {
+                const cameraStream = streams[0];
+                const microphoneStream = streams[1];
+
+                this.logger.debug(`${this.loggerPrefix} activeCameraStream and activeMicrophoneStream created. Building current stream.`, {
+                    activeCameraStream: cameraStream ?? null,
+                    activeCameraStreamTrackLabel: cameraStream?.getVideoTracks()[0]?.label ?? null,
+                    activeMicrophoneStream: microphoneStream?.getAudioTracks()[0]?.label ?? null
                 });
 
-                this.currentStream = this.mediaStreamService.initialiseNewStream(cameraStream.getVideoTracks());
-                this.activeCameraStream = cameraStream;
+                this.currentStream = this.mediaStreamService.initialiseNewStream([
+                    ...cameraStream.getVideoTracks(),
+                    ...microphoneStream.getAudioTracks()
+                ]);
+                this.currentStreamSubject.next(this.currentStream);
 
-                this.mediaStreamService
-                    .getStreamForMic(microphoneDevice)
-                    .pipe(take(1))
-                    .subscribe(microphoneStream => {
-                        this.logger.debug(`${this.loggerPrefix} Got microphone stream`, {
-                            mic: microphoneDevice,
-                            stream: microphoneStream,
-                            isAudioOnly: this.isAudioOnly
-                        });
-
-                        microphoneStream.getAudioTracks().forEach(track => {
-                            this.currentStream.addTrack(track);
-                        });
-
-                        this.activeMicrophoneStream = microphoneStream;
-
-                        this.logger.info(`${this.loggerPrefix} Built initial stream`, {
-                            mic: microphoneDevice,
-                            cam: cameraDevice,
-                            stream: this.currentStream,
-                            tracks: this.currentStream.getTracks(),
-                            isAudioOnly: this.isAudioOnly
-                        });
-
-                        this.currentStreamSubject.next(this.currentStream);
-
-                        this.logger.debug(`${this.loggerPrefix} Subscribing to active video and microphone device changes`);
-                        this.userMediaService.activeVideoDevice$.pipe(skip(1)).subscribe(videoDevice => {
-                            this.onActiveCameraChanged(videoDevice);
-                        });
-
-                        this.userMediaService.activeMicrophoneDevice$.pipe(skip(1)).subscribe(activeMicrophoneDevice => {
-                            this.onActiveMicrophoneChanged(activeMicrophoneDevice);
-                        });
-
-                        this.userMediaService.isAudioOnly$.subscribe(audioOnly => {
-                            this.onIsAudioOnlyChanged(audioOnly);
-                        });
-                    });
+                this.logger.debug(`${this.loggerPrefix} current stream built.`);
             });
     }
 
     private onIsAudioOnlyChanged(audioOnly: boolean) {
+        if (audioOnly === this.isAudioOnly) {
+            return;
+        }
+
         this.logger.debug(`${this.loggerPrefix} is audio only changed.`, {
             newAudioOnly: audioOnly,
             oldAudioOnly: this.isAudioOnly
@@ -161,14 +142,14 @@ export class UserMediaStreamService {
     private onActiveCameraChanged(cameraDevice: UserMediaDevice) {
         this.logger.debug(`${this.loggerPrefix} active camera changed. Fetching stream for the new device.`, {
             newCam: cameraDevice,
-            oldCamStream: this.activeCameraStream,
-            oldCamTracks: this.activeCameraStream?.getVideoTracks(),
-            currentStreamTracks: this.currentStream.getTracks(),
+            oldCamStream: this.activeCameraStream ?? null,
+            oldCamTracks: this.activeCameraStream?.getVideoTracks() ?? null,
+            currentStreamTracks: this.currentStream?.getTracks() ?? null,
             isAudioOnly: this.isAudioOnly
         });
 
         this.activeCameraStream?.getVideoTracks().forEach(track => {
-            this.currentStream.removeTrack(track);
+            this.currentStream?.removeTrack(track);
             track.stop();
 
             this.logger.debug(`${this.loggerPrefix} cam changed. Removed and stopped track`, {
@@ -176,15 +157,25 @@ export class UserMediaStreamService {
             });
         });
 
+        this._activeCameraStream = null;
+
         this.mediaStreamService
             .getStreamForCam(cameraDevice)
-            .pipe(take(1))
+            .pipe(takeUntil(this.userMediaService.activeVideoDevice$.pipe(skip(1))))
             .subscribe(cameraStream => {
                 this.logger.debug(`${this.loggerPrefix} Got camera stream`, {
                     newCam: cameraDevice,
-                    newCamStream: cameraStream,
-                    oldCamStream: this.activeCameraStream,
+                    newCamStream: cameraStream ?? null,
+                    oldCamStream: this.activeCameraStream ?? null,
                     isAudioOnly: this.isAudioOnly
+                });
+
+                this.activeCameraStream?.getVideoTracks().forEach(track => {
+                    this.currentStream?.removeTrack(track);
+
+                    this.logger.debug(`${this.loggerPrefix} cam changed. Removed and stopped track`, {
+                        track: track
+                    });
                 });
 
                 if (!this.isAudioOnly) {
@@ -192,13 +183,21 @@ export class UserMediaStreamService {
                         isAudioOnly: this.isAudioOnly
                     });
 
-                    cameraStream?.getVideoTracks().forEach(track => {
-                        this.currentStream.addTrack(track);
+                    if (this.currentStream) {
+                        cameraStream?.getVideoTracks().forEach(track => {
+                            this.currentStream.addTrack(track);
 
-                        this.logger.debug(`${this.loggerPrefix} cam changed. Added track`, {
-                            track: track
+                            this.logger.debug(`${this.loggerPrefix} cam changed. Added track`, {
+                                track: track
+                            });
                         });
-                    });
+
+                        this.logger.info(`${this.loggerPrefix} Updated active camera for current stream`, {
+                            activeCamStream: this.activeCameraStream,
+                            currentStream: this.currentStream,
+                            isAudioOnly: this.isAudioOnly
+                        });
+                    }
                 } else {
                     this.logger.debug(`${this.loggerPrefix} Audio only. NOT updating current stream.`, {
                         isAudioOnly: this.isAudioOnly
@@ -206,20 +205,19 @@ export class UserMediaStreamService {
                 }
 
                 this.activeCameraStream = cameraStream;
-                this.streamModifiedSubject.next();
 
-                this.logger.info(`${this.loggerPrefix} Finished updating active camera stream`, {
-                    activeCamStream: this.activeCameraStream,
-                    currentStream: this.currentStream,
-                    isAudioOnly: this.isAudioOnly
-                });
+                if (!!this.currentStream) {
+                    this.streamModifiedSubject.next();
+                }
+
+                this.logger.debug(`${this.loggerPrefix} updated active camera stream.`);
             });
     }
 
     private onActiveMicrophoneChanged(microphoneDevice: UserMediaDevice) {
         this.logger.debug(`${this.loggerPrefix} active microphone changed. Fetching stream for the new device.`, {
             newMic: microphoneDevice,
-            oldMicStream: this.activeMicrophoneStream,
+            oldMicStream: this.activeMicrophoneStream ?? null,
             isAudioOnly: this.isAudioOnly
         });
 
@@ -229,7 +227,7 @@ export class UserMediaStreamService {
         }
 
         this.activeMicrophoneStream?.getAudioTracks().forEach(track => {
-            this.currentStream.removeTrack(track);
+            this.currentStream?.removeTrack(track);
             track.stop();
 
             this.logger.debug(`${this.loggerPrefix} mic changed. Removed and stopped track`, {
@@ -237,33 +235,42 @@ export class UserMediaStreamService {
             });
         });
 
+        this._activeMicrophoneStream = null;
+
         this.mediaStreamService
             .getStreamForMic(microphoneDevice)
             .pipe(take(1))
             .subscribe(microphoneStream => {
                 this.logger.debug(`${this.loggerPrefix} Got microphone stream`, {
                     newMic: microphoneDevice,
-                    newMicStream: microphoneStream,
-                    oldMicStream: this.activeMicrophoneStream,
+                    newMicStream: microphoneStream ?? null,
+                    oldMicStream: this.activeMicrophoneStream ?? null,
                     isAudioOnly: this.isAudioOnly
                 });
 
-                microphoneStream.getAudioTracks().forEach(track => {
-                    this.currentStream.addTrack(track);
+                if (this.currentStream) {
+                    microphoneStream.getAudioTracks().forEach(track => {
+                        this.currentStream.addTrack(track);
 
-                    this.logger.debug(`${this.loggerPrefix} mic changed. Added track`, {
-                        track: track
+                        this.logger.debug(`${this.loggerPrefix} mic changed. Added track`, {
+                            track: track
+                        });
                     });
-                });
+
+                    this.logger.info(`${this.loggerPrefix} Updated active microphone for current stream`, {
+                        activeMicStream: this.activeMicrophoneStream,
+                        currentStream: this.currentStream,
+                        isAudioOnly: this.isAudioOnly
+                    });
+                }
 
                 this.activeMicrophoneStream = microphoneStream;
-                this.streamModifiedSubject.next();
 
-                this.logger.info(`${this.loggerPrefix} Updated active microphone for current stream`, {
-                    activeMicStream: this.activeMicrophoneStream,
-                    currentStream: this.currentStream,
-                    isAudioOnly: this.isAudioOnly
-                });
+                if (!!this.currentStream) {
+                    this.streamModifiedSubject.next();
+                }
+
+                this.logger.debug(`${this.loggerPrefix} updated active microphone stream.`);
             });
     }
 }
