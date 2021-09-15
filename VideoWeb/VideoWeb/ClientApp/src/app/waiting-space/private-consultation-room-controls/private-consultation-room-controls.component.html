@@ -136,7 +136,7 @@
                 <div
                     *ngIf='!isPrivateConsultation && isJudge'
                     id='pause-hearing'
-                    class='icon-button-dark'
+                    class='icon-button-dark portrait'
                     data-module='govuk-button'
                     (click)='pause()'
                     [hidden]='!canCloseOrPauseHearing()'
@@ -148,7 +148,7 @@
                 <div
                     *ngIf='!isPrivateConsultation && isJudge'
                     id='end-hearing'
-                    class='icon-button-dark'
+                    class='icon-button-dark portrait'
                     data-module='govuk-button'
                     (click)='displayConfirmationDialog()'
                     [hidden]='!canCloseOrPauseHearing()'
@@ -156,8 +156,6 @@
                     <span
                         class='far fa-stop-circle'><span class='context-item'>{{ 'private-consultation-room-controls.close' | translate }}</span></span>
                 </div>
-
-                <div class='flexBar' *ngIf='isPrivateConsultation && showConsultationControls'></div>
 
                 <div
                     *ngIf='isPrivateConsultation && showConsultationControls && !isJOHConsultation && !isJOHRoom'
@@ -173,7 +171,7 @@
                 <div
                     *ngIf='showConsultationControls'
                     id='leaveButton'
-                    class='icon-button-dark'
+                    class='icon-button-dark portrait'
                     data-module='govuk-button'
                     (click)='leavePrivateConsultation()'
                     [hidden]='!canLeaveConsultation()'
@@ -194,6 +192,43 @@
             (click)="togglePanelStatus('Participants')"
         >
             <span class='far fa-users'></span>
+        </div>
+        <div class='landscape'>
+            <button
+                *ngIf="!isPrivateConsultation && isJudge"
+                id="pause-hearing-landscape"
+                class="small-button blue"
+                data-module="govuk-button"
+                (click)="pause()"
+                type="button"
+                [hidden]="!canCloseOrPauseHearing()"
+            >
+                {{ 'private-consultation-room-controls.pause' | translate }}
+            </button>
+
+            <button
+                *ngIf="!isPrivateConsultation && isJudge"
+                id="end-hearing-landscape"
+                class="small-button red"
+                data-module="govuk-button"
+                (click)="displayConfirmationDialog()"
+                type="button"
+                [hidden]="!canCloseOrPauseHearing()"
+            >
+                {{ 'private-consultation-room-controls.close' | translate }}
+            </button>
+
+            <button
+                *ngIf="showConsultationControls"
+                id="leaveButton-landscape"
+                class="small-button red"
+                data-module="govuk-button"
+                (click)="leavePrivateConsultation()"
+                type="button"
+                [hidden]="!canLeaveConsultation()"
+            >
+                {{ 'private-consultation-room-controls.leave' | translate }}
+            </button>
         </div>
     <div class="hearing-controls-desktop">
         <div
