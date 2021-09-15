@@ -22,7 +22,7 @@ export class UserMediaService {
         return this.connectedDevicesSubject.asObservable();
     }
 
-    get connectedVideoDevices(): Observable<UserMediaDevice[]> {
+    get connectedVideoDevices$(): Observable<UserMediaDevice[]> {
         return this.connectedDevicesSubject.pipe(
             map(devices => {
                 return devices.filter(x => x.kind === 'videoinput');
@@ -30,7 +30,7 @@ export class UserMediaService {
         );
     }
 
-    get connectedMicrophoneDevices(): Observable<UserMediaDevice[]> {
+    get connectedMicrophoneDevices$(): Observable<UserMediaDevice[]> {
         return this.connectedDevicesSubject.pipe(
             map(devices => {
                 return devices.filter(x => x.kind === 'audioinput' && x.deviceId !== 'communications');
@@ -173,7 +173,10 @@ export class UserMediaService {
             retry(3),
             take(1),
             map(stream => !!stream && stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0),
-            catchError(error => of(false))
+            catchError(error => {
+                this.logger.error(`${this.loggerPrefix} couldn't get a valid camera and microphone`, error);
+                return of(false);
+            })
         );
     }
 
@@ -188,11 +191,12 @@ export class UserMediaService {
     }
 
     private setActiveMicrophone(microhoneDevice: UserMediaDevice) {
-        if (microhoneDevice) {
-            this.logger.debug(`${this.loggerPrefix} Attempting to set active microhone.`, { microhoneDevice });
+        this.logger.debug(`${this.loggerPrefix} Attempting to set active microhone.`, { microhoneDevice });
 
+        if (microhoneDevice) {
             this.activeMicrophoneDevice = microhoneDevice;
             this.activeMicrophoneDeviceSubject.next(microhoneDevice);
+
             this.localStorageService.save(this.PREFERRED_MICROPHONE_KEY, microhoneDevice);
         }
     }
@@ -208,11 +212,12 @@ export class UserMediaService {
     }
 
     private setActiveCamera(cameraDevice: UserMediaDevice) {
-        if (cameraDevice) {
-            this.logger.debug(`${this.loggerPrefix} Attempting to set active camera.`, { cameraDevice });
+        this.logger.debug(`${this.loggerPrefix} Attempting to set active camera.`, { cameraDevice });
 
+        if (cameraDevice) {
             this.activeVideoDevice = cameraDevice;
             this.activeVideoDeviceSubject.next(cameraDevice);
+
             this.localStorageService.save(this.PREFERRED_CAMERA_KEY, cameraDevice);
         }
     }
@@ -231,8 +236,7 @@ export class UserMediaService {
     }
 
     hasMultipleDevices(): Observable<boolean> {
-        return zip(this.connectedVideoDevices, this.connectedMicrophoneDevices).pipe(
-            take(1),
+        return zip(this.connectedVideoDevices$, this.connectedMicrophoneDevices$).pipe(
             map(deviceList => {
                 return deviceList[0].length > 1 || deviceList[1].length > 1;
             })
@@ -241,7 +245,6 @@ export class UserMediaService {
 
     isDeviceStillConnected(device: UserMediaDevice): Observable<boolean> {
         return this.connectedDevices$.pipe(
-            take(1),
             map(connectedDevices => {
                 return !!connectedDevices.find(x => x.deviceId === device.deviceId);
             })
