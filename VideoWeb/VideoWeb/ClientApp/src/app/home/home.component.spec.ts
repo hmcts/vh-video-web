@@ -66,6 +66,6 @@ describe('HomeComponent', () => {
         oidcClientNotificationSpy = jasmine.createSpyObj('OidcClientNotification', {}, eventValue);
         eventServiceSpy.registerForEvents.and.returnValue(of(oidcClientNotificationSpy));
         component.ngOnInit();
-        expect(routerSpy.navigate).toHaveBeenCalledWith([`/${pageUrls.IdpSelection}`]);
+        expect(routerSpy.navigate).toHaveBeenCalledWith([`/${pageUrls.Login}`]);
     });
 });

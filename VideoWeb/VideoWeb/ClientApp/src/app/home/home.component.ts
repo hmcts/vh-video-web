@@ -45,7 +45,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                 }
             });
         if (this.previousPageUrl === `/${pageUrls.Home}`) {
-            this.router.navigate([`/${pageUrls.IdpSelection}`]);
+            this.router.navigate([`/${pageUrls.Login}`]);
         }
     }
 }
