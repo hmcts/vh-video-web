@@ -7,12 +7,15 @@ import { UnloadDetectorService } from './unload-detector.service';
 class Renderer2Mock {
     beforeUnloadCallback: (event: any) => boolean | void;
     visibiltyChangeCallback: (event: any) => boolean | void;
+    pageHideCallback: (event: any) => boolean | void;
 
     listen(target: 'window' | 'document' | 'body' | any, eventName: string, callback: (event: any) => boolean | void) {
         if (target === 'window' && eventName === 'beforeunload') {
             this.beforeUnloadCallback = callback;
         } else if (target === 'document' && eventName === 'visibilitychange') {
             this.visibiltyChangeCallback = callback;
+        } else if (target === 'window' && eventName === 'pagehide') {
+            this.pageHideCallback = callback;
         }
     }
 }
@@ -73,8 +76,10 @@ describe('UnloadDetectorService', () => {
             expect(service).toBeTruthy();
         });
 
-        it('should listen to the visibility change event', () => {
-            expect(renderer2Mock.listen).toHaveBeenCalledOnceWith('document', 'visibilitychange', jasmine.anything());
+        it('should listen to the visibility change event and pagehide event', () => {
+            expect(renderer2Mock.listen).toHaveBeenCalledTimes(2);
+            expect(renderer2Mock.listen).toHaveBeenCalledWith('document', 'visibilitychange', jasmine.anything());
+            expect(renderer2Mock.listen).toHaveBeenCalledWith('window', 'pagehide', jasmine.anything());
         });
 
         it('should emit the shouldUnload event when the visibilitychange event is recieved with the isHidden as true', fakeAsync(() => {
@@ -86,6 +91,19 @@ describe('UnloadDetectorService', () => {
 
             // Act
             renderer2Mock.visibiltyChangeCallback(undefined);
+            flush();
+
+            // Assert
+            expect(wasCalled).toBeTrue();
+        }));
+
+        it('should emit the shouldUnload event when the pageHide event is recieved', fakeAsync(() => {
+            // Arrange
+            let wasCalled = false;
+            service.shouldUnload.subscribe(() => (wasCalled = true));
+
+            // Act
+            renderer2Mock.pageHideCallback(undefined);
             flush();
 
             // Assert
