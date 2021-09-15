@@ -28,21 +28,24 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         public async Task should_return_unauthorised_if_participant_is_not_a_witness()
         {
             var judge = TestConference.GetJudge();
-            var participant = TestConference.Participants.First(x => x.Role == Role.Individual);
+            var invalidParticipants = TestConference.Participants.Where(x => !x.IsJudge() && !x.IsWitness() && !x.IsQuickLinkUser() && x.LinkedParticipants.Count == 0);
             var user = new ClaimsPrincipalBuilder()
               .WithUsername(judge.Username)
               .WithRole(AppRoles.JudgeRole).Build();
 
             Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.DismissParticipantAsync(TestConference.Id, participant.Id);
-            var typedResult = (UnauthorizedObjectResult)result;
-            typedResult.Should().NotBeNull();
-            typedResult.Value.Should().Be("Participant is not a witness");
+            foreach (var participant in invalidParticipants)
+            {
+                var result = await Controller.DismissParticipantAsync(TestConference.Id, participant.Id);
+                var typedResult = (UnauthorizedObjectResult)result;
+                typedResult.Should().NotBeNull();
+                typedResult.Value.Should().Be("Participant is not callable");
 
-            VideoApiClientMock.Verify(
-                x => x.TransferParticipantAsync(TestConference.Id,
-                    It.Is<TransferParticipantRequest>(r => r.ParticipantId == participant.Id)), Times.Never);
+                VideoApiClientMock.Verify(
+                    x => x.TransferParticipantAsync(TestConference.Id,
+                        It.Is<TransferParticipantRequest>(r => r.ParticipantId == participant.Id)), Times.Never);
+            }
         }
 
         [Test]
@@ -59,7 +62,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var result = await Controller.DismissParticipantAsync(TestConference.Id, Guid.NewGuid());
             var typedResult = (UnauthorizedObjectResult)result;
             typedResult.Should().NotBeNull();
-            typedResult.Value.Should().Be("Participant is not a witness");
+            typedResult.Value.Should().Be("Participant is not callable");
 
             VideoApiClientMock.Verify(
                 x => x.TransferParticipantAsync(TestConference.Id,
@@ -205,5 +208,29 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             typedResult.Value.Should().Be(responseMessage);
             typedResult.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
         }
+
+        [Test]
+        [TestCase(Role.QuickLinkObserver)]
+        [TestCase(Role.QuickLinkParticipant)]
+        public async Task should_return_accepted_when_participant_is_quick_link_user_and_judge_is_in_conference(Role role)
+        {
+            var judge = TestConference.GetJudge();
+            var quickLinkUser = TestConference.Participants.First(x => x.Role == role);
+            var user = new ClaimsPrincipalBuilder()
+                .WithUsername(judge.Username)
+                .WithRole(AppRoles.JudgeRole).Build();
+
+            Controller = SetupControllerWithClaims(user);
+
+            var result = await Controller.DismissParticipantAsync(TestConference.Id, quickLinkUser.Id);
+            var typedResult = (AcceptedResult)result;
+            typedResult.Should().NotBeNull();
+
+            VideoApiClientMock.Verify(
+                x => x.TransferParticipantAsync(TestConference.Id,
+                    It.Is<TransferParticipantRequest>(r =>
+                        r.ParticipantId == quickLinkUser.Id && r.TransferType == TransferType.Dismiss)), Times.Once);
+        }
+
     }
 }

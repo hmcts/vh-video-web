@@ -24,25 +24,28 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         }
 
         [Test]
-        public async Task should_return_unauthorised_if_participant_is_not_a_witness()
+        public async Task should_return_unauthorised_if_participant_is_not_a_witness_or_quick_link_user()
         {
             var judge = TestConference.GetJudge();
-            var participant = TestConference.Participants.First(x => !x.IsJudge() && !x.IsWitness());
+            var invalidParticipants = TestConference.Participants.Where(x => !x.IsJudge() && !x.IsWitness() && !x.IsQuickLinkUser() && x.LinkedParticipants.Count == 0);
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(judge.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
 
             Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.CallParticipantAsync(TestConference.Id, participant.Id);
-            result.Should().BeOfType<UnauthorizedObjectResult>();
-            var typedResult = (UnauthorizedObjectResult)result;
-            typedResult.Should().NotBeNull();
-            typedResult.Value.Should().Be("Participant is not a witness");
+            foreach(var participant in invalidParticipants)
+            {
+                var result = await Controller.CallParticipantAsync(TestConference.Id, participant.Id);
+                result.Should().BeOfType<UnauthorizedObjectResult>();
+                var typedResult = (UnauthorizedObjectResult)result;
+                typedResult.Should().NotBeNull();
+                typedResult.Value.Should().Be("Participant is not callable");
 
-            VideoApiClientMock.Verify(
-                x => x.TransferParticipantAsync(TestConference.Id,
-                    It.Is<TransferParticipantRequest>(r => r.ParticipantId == participant.Id)), Times.Never);
+                VideoApiClientMock.Verify(
+                    x => x.TransferParticipantAsync(TestConference.Id,
+                        It.Is<TransferParticipantRequest>(r => r.ParticipantId == participant.Id)), Times.Never);
+            }
         }
 
         [Test]
@@ -59,7 +62,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             result.Should().BeOfType<UnauthorizedObjectResult>();
             var typedResult = (UnauthorizedObjectResult)result;
             typedResult.Should().NotBeNull();
-            typedResult.Value.Should().Be("Participant is not a witness");
+            typedResult.Value.Should().Be("Participant is not callable");
 
             VideoApiClientMock.Verify(
                 x => x.TransferParticipantAsync(TestConference.Id,
@@ -178,7 +181,32 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             result.Should().BeOfType<UnauthorizedObjectResult>();
             var typedResult = (UnauthorizedObjectResult)result;
             typedResult.Should().NotBeNull();
-            typedResult.Value.Should().Be("Participant is not a witness");
+            typedResult.Value.Should().Be("Participant is not callable");
+        }
+
+        [Test]
+        [TestCase(Role.QuickLinkObserver)]
+        [TestCase(Role.QuickLinkParticipant)]
+        public async Task should_return_accepted_when_participant_is_quick_link_user_and_judge_is_in_conference(Role role)
+        {
+            var judge = TestConference.GetJudge();
+            var quickLinkUser = TestConference.Participants.First(x => x.Role == role);
+
+            var user = new ClaimsPrincipalBuilder()
+                .WithUsername(judge.Username)
+                .WithRole(AppRoles.JudgeRole).Build();
+
+            Controller = SetupControllerWithClaims(user);
+
+            var result = await Controller.CallParticipantAsync(TestConference.Id, quickLinkUser.Id);
+            result.Should().BeOfType<AcceptedResult>();
+            var typedResult = (AcceptedResult)result;
+            typedResult.Should().NotBeNull();
+
+            VideoApiClientMock.Verify(
+                x => x.TransferParticipantAsync(TestConference.Id,
+                    It.Is<TransferParticipantRequest>(r =>
+                        r.ParticipantId == quickLinkUser.Id && r.TransferType == TransferType.Call)), Times.Once);
         }
     }
 }
