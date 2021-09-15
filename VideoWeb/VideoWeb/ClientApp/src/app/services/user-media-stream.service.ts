@@ -155,6 +155,8 @@ export class UserMediaStreamService {
             });
         });
 
+        this._activeCameraStream = null;
+
         this.mediaStreamService
             .getStreamForCam(cameraDevice)
             .pipe(takeUntil(this.userMediaService.activeVideoDevice$.pipe(skip(1))))
@@ -228,6 +230,8 @@ export class UserMediaStreamService {
                 track: track
             });
         });
+
+        this._activeMicrophoneStream = null;
 
         this.mediaStreamService
             .getStreamForMic(microphoneDevice)
