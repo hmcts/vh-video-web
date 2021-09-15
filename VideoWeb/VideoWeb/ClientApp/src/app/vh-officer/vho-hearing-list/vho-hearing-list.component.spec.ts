@@ -72,8 +72,9 @@ describe('VhoHearingListComponent', () => {
     it('should return conference id', () => {
         const conference = new ConferenceTestData().getConferenceFuture();
         const summary = new HearingSummary(conference);
+        const index = 0;
 
-        const id = component.trackConference(summary);
+        const id = component.trackConference(index, summary);
 
         expect(id).toEqual(conference.id);
     });
