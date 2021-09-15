@@ -100,7 +100,9 @@ export class UserMediaStreamService {
     }
 
     private onIsAudioOnlyChanged(audioOnly: boolean) {
-        if (audioOnly === this.isAudioOnly) return;
+        if (audioOnly === this.isAudioOnly) {
+            return;
+        }
 
         this.logger.debug(`${this.loggerPrefix} is audio only changed.`, {
             newAudioOnly: audioOnly,
@@ -204,7 +206,9 @@ export class UserMediaStreamService {
 
                 this.activeCameraStream = cameraStream;
 
-                if (!!this.currentStream) this.streamModifiedSubject.next();
+                if (!!this.currentStream) {
+                    this.streamModifiedSubject.next();
+                }
 
                 this.logger.debug(`${this.loggerPrefix} updated active camera stream.`);
             });
@@ -262,7 +266,9 @@ export class UserMediaStreamService {
 
                 this.activeMicrophoneStream = microphoneStream;
 
-                if (!!this.currentStream) this.streamModifiedSubject.next();
+                if (!!this.currentStream) {
+                    this.streamModifiedSubject.next();
+                }
 
                 this.logger.debug(`${this.loggerPrefix} updated active microphone stream.`);
             });

@@ -35,7 +35,9 @@ export class VideoFilterService {
 
     private _filterOn = false;
     set filterOn(on: boolean) {
-        if (this._filterOn === on) return;
+        if (this._filterOn === on) {
+            return;
+        }
 
         this._filterOn = on;
         this.filterOnSubject.next(this._filterOn);
