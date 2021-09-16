@@ -33,7 +33,7 @@ export class UserMediaService {
     get connectedMicrophoneDevices$(): Observable<UserMediaDevice[]> {
         return this.connectedDevicesSubject.pipe(
             map(devices => {
-                return devices.filter(x => x.kind === 'audioinput' && x.deviceId !== 'communications');
+                return devices.filter(x => x.kind === 'audioinput');
             })
         );
     }
