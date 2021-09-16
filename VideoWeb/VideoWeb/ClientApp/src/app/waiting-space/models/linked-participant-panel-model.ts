@@ -1,13 +1,13 @@
 import { ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { HearingRole } from './hearing-role-model';
+import { IndividualPanelModel } from './individual-panel-model';
 import { PanelModel } from './panel-model-base';
-import { ParticipantPanelModel } from './participant-panel-model';
 
 export class LinkedParticipantPanelModel extends PanelModel {
-    public participants: ParticipantPanelModel[] = [];
+    public participants: IndividualPanelModel[] = [];
 
     static fromListOfPanelModels(
-        participants: ParticipantPanelModel[],
+        participants: IndividualPanelModel[],
         pexipDisplayName: string,
         roomid: string
     ): LinkedParticipantPanelModel {
@@ -24,11 +24,7 @@ export class LinkedParticipantPanelModel extends PanelModel {
         return model;
     }
 
-    static forJudicialHolders(
-        participants: ParticipantPanelModel[],
-        pexipDisplayName: string,
-        roomid: string
-    ): LinkedParticipantPanelModel {
+    static forJudicialHolders(participants: IndividualPanelModel[], pexipDisplayName: string, roomid: string): LinkedParticipantPanelModel {
         const joh = participants.find(x => x.role === Role.JudicialOfficeHolder);
         const pexipName = pexipDisplayName;
         const displayName = participants.map(x => x.displayName).join(', ');
@@ -60,7 +56,7 @@ export class LinkedParticipantPanelModel extends PanelModel {
         return this.participants.some(x => x.isCallable);
     }
 
-    get witnessParticipant(): ParticipantPanelModel {
+    get witnessParticipant(): IndividualPanelModel {
         return this.participants.find(x => x.isWitness);
     }
 
@@ -68,7 +64,7 @@ export class LinkedParticipantPanelModel extends PanelModel {
         return this.participants.some(p => p.transferringIn);
     }
 
-    private get participantsInHearing(): ParticipantPanelModel[] {
+    private get participantsInHearing(): IndividualPanelModel[] {
         return this.participants.filter(p => p.isInHearing());
     }
 

@@ -114,7 +114,7 @@
               </span>
             </ng-container>
           </div>
-          <div *ngIf="participant.isWitnessOrQuickLinkUserReadyToJoin">
+          <div *ngIf="participant.isCallableAndReadyToJoin">
             <span
               *ngIf="!participant.transferringIn"
               appTooltip

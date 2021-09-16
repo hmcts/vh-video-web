@@ -45,4 +45,21 @@ describe('VideoEndpointPanelModel', () => {
         model = new VideoEndpointPanelModel(endpoint);
         expect(model.isInConsultation()).toBeTruthy();
     });
+
+    describe('callable', () => {
+        beforeEach(() => {
+            model = new VideoEndpointPanelModel(endpoint);
+        });
+        describe('isCallable', () => {
+            expect(model.isCallable).toBe(false);
+        });
+
+        describe('isCallableAndReadyToJoin', () => {
+            expect(model.isCallableAndReadyToJoin).toBe(false);
+        });
+
+        describe('isCallableAndReadyToBeDismissed', () => {
+            expect(model.isCallableAndReadyToBeDismissed).toBe(false);
+        });
+    });
 });

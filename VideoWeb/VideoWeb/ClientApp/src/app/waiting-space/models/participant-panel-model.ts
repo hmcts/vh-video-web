@@ -1,7 +1,7 @@
 import { ParticipantStatus, Role } from '../../services/clients/api-client';
-import { PanelModel } from './panel-model-base';
+import { IndividualPanelModel } from './individual-panel-model';
 
-export class ParticipantPanelModel extends PanelModel {
+export class ParticipantPanelModel extends IndividualPanelModel {
     constructor(
         id: string,
         displayName: string,

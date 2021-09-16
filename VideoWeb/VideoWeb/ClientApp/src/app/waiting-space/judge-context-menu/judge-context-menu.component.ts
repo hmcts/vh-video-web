@@ -100,7 +100,8 @@ export class JudgeContextMenuComponent {
     }
 
     private showCaseRole() {
-        return this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
+        return !this.participant.caseTypeGroup ||
+            this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
             this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
             this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase() ||
             this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||

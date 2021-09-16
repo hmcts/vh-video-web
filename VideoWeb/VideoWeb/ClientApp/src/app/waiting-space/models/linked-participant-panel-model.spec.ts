@@ -164,6 +164,106 @@ describe('LinkedParticipantPanelModel', () => {
         expect(model.isJudicalOfficeHolder).toBeTruthy();
     });
 
+    describe('callable', () => {
+        let testModel: LinkedParticipantPanelModel;
+        let particpantPanelModel1: ParticipantPanelModel;
+        const id1 = 'id1';
+        const displayName1 = 'displayName1';
+        const role1 = Role.None;
+        const caseTypeGroup1 = 'caseTypeGroup1';
+        const pexipDisplayName1 = 'pexipDisplayName1';
+        const hearingRole1 = 'hearingRole1';
+        const representee1 = 'representsee1';
+        const status1 = ParticipantStatus.None;
+
+        let particpantPanelModel2: ParticipantPanelModel;
+        const id2 = 'id2';
+        const displayName2 = 'displayName2';
+        const role2 = Role.None;
+        const caseTypeGroup2 = 'caseTypeGroup2';
+        const pexipDisplayName2 = 'pexipDisplayName2';
+        const hearingRole2 = 'hearingRole2';
+        const representee2 = 'representsee2';
+        const status2 = ParticipantStatus.None;
+
+        beforeAll(() => {
+            jasmine.getEnv().allowRespy(true);
+        });
+        afterAll(() => {
+            jasmine.getEnv().allowRespy(false);
+        });
+
+        beforeEach(() => {
+            particpantPanelModel1 = new ParticipantPanelModel(
+                id1,
+                displayName1,
+                role1,
+                caseTypeGroup1,
+                pexipDisplayName1,
+                hearingRole1,
+                representee1,
+                status1
+            );
+            particpantPanelModel2 = new ParticipantPanelModel(
+                id2,
+                displayName2,
+                role2,
+                caseTypeGroup2,
+                pexipDisplayName2,
+                hearingRole2,
+                representee2,
+                status2
+            );
+            testModel = LinkedParticipantPanelModel.fromListOfPanelModels(
+                [particpantPanelModel1, particpantPanelModel2],
+                'pexipDisplayName',
+                'roomId'
+            );
+            testModel.participants = [particpantPanelModel1, particpantPanelModel2];
+            console.log('1', testModel);
+        });
+
+        describe('isWitness', () => {
+            beforeEach(() => {
+                console.log('2', testModel);
+                testModel.participants.forEach(particpantPanelModel => {
+                    spyOnProperty(particpantPanelModel, 'isWitness').and.returnValue(false);
+                });
+            });
+
+            it('should return false when all of the participants isWitness returns false', () => {
+                console.log('3a', testModel);
+                expect(testModel.isWitness).toBe(false);
+            });
+
+            it('should return true when any of the participants isWitness', () => {
+                testModel.participants.forEach(particpantPanelModel => {
+                    spyOnProperty(particpantPanelModel, 'isWitness').and.returnValue(true);
+                    expect(testModel.isWitness).toBe(true);
+                });
+            });
+        });
+
+        describe('isQuickLinkUser', () => {
+            beforeEach(() => {
+                testModel.participants.forEach(particpantPanelModel => {
+                    spyOnProperty(particpantPanelModel, 'isQuickLinkUser').and.returnValue(false);
+                });
+            });
+
+            it('should return false when all of the participants isQuickLinkUser returns false', () => {
+                expect(testModel.isQuickLinkUser).toBe(false);
+            });
+
+            it('should return true when any of the participants isQuickLinkUser', () => {
+                testModel.participants.forEach(particpantPanelModel => {
+                    spyOnProperty(particpantPanelModel, 'isQuickLinkUser').and.returnValue(true);
+                    expect(testModel.isQuickLinkUser).toBe(true);
+                });
+            });
+        });
+    });
+
     function createLinkedModel() {
         const pats = participants.map(p => mapper.mapFromParticipantUserResponse(p));
         const roomLabel = 'Interpreter1';
