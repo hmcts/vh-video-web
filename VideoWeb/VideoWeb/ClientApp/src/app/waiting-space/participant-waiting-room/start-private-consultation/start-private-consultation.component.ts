@@ -8,6 +8,7 @@ import {
     LinkType,
     ParticipantResponse,
     ParticipantStatus,
+    Role,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { HearingRole } from '../../models/hearing-role-model';
@@ -153,7 +154,12 @@ export class StartPrivateConsultationComponent implements OnChanges {
 
     private mapParticipants(participantResponses: ParticipantResponse[]): ParticipantListItem[] {
         return participantResponses
-            .filter(p => p.hearing_role !== HearingRole.INTERPRETER && p.hearing_role !== HearingRole.MACKENZIE_FRIEND)
+            .filter(
+                p =>
+                    p.hearing_role !== HearingRole.INTERPRETER &&
+                    p.hearing_role !== HearingRole.MACKENZIE_FRIEND &&
+                    p.role !== Role.QuickLinkObserver
+            )
             .map(p => {
                 const interpreterLink = p.linked_participants.find(x => x.link_type === LinkType.Interpreter);
                 const participant: ParticipantListItem = { ...p };

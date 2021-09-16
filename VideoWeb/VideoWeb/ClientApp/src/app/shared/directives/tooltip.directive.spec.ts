@@ -151,4 +151,77 @@ describe('TooltipDirective', () => {
         directive.onMouseMove(event);
         expect(directive.hide).toHaveBeenCalledTimes(1);
     });
+    describe('updatePosition', () => {
+        let mouseEvent: MouseEvent;
+
+        const windowHeight = 1000;
+        const windowWidth = 100;
+
+        const toolTipWidth = 10;
+        const toolTipHeight = 10;
+
+        let x: number;
+        let y: number;
+
+        beforeEach(() => {
+            spyOnProperty(window, 'innerHeight').and.returnValue(windowHeight);
+            spyOnProperty(window, 'innerWidth').and.returnValue(windowWidth);
+            directive._text = 'test';
+            const tooltip = renderer2.createElement('div');
+            spyOnProperty(tooltip, 'clientHeight').and.returnValue(toolTipHeight);
+            spyOnProperty(tooltip, 'clientWidth').and.returnValue(toolTipWidth);
+            directive.tooltip = tooltip;
+        });
+
+        describe('x position', () => {
+            beforeEach(() => {
+                y = windowHeight / 2;
+            });
+            it('should appear to the left of the mouse when on the right half of the screen', () => {
+                x = windowWidth / 2 + 1;
+
+                mouseEvent = createMouseEvent(x, y);
+                directive.updatePosition(mouseEvent);
+
+                expect(parseInt(directive.tooltip.style.left, 10)).toBeLessThan(x);
+            });
+
+            it('should appear to the right of the mouse when on the left half of the screen', () => {
+                x = windowWidth / 2 - 1;
+
+                mouseEvent = createMouseEvent(x, y);
+                directive.updatePosition(mouseEvent);
+
+                expect(parseInt(directive.tooltip.style.left, 10)).toBeGreaterThan(x);
+            });
+        });
+
+        describe('y position', () => {
+            beforeEach(() => {
+                x = windowWidth / 2;
+            });
+            it('should appear below the mouse when on the top half of the screen', () => {
+                y = windowHeight / 2 - 1;
+
+                mouseEvent = createMouseEvent(x, y);
+                directive.updatePosition(mouseEvent);
+
+                expect(parseInt(directive.tooltip.style.top, 10)).toBeGreaterThanOrEqual(y);
+            });
+
+            it('should appear above the mouse when on the bottom half of the screen', () => {
+                y = windowHeight / 2 + 1;
+
+                mouseEvent = createMouseEvent(x, y);
+                directive.updatePosition(mouseEvent);
+
+                expect(parseInt(directive.tooltip.style.top, 10)).toBeLessThan(y);
+            });
+        });
+    });
 });
+
+function createMouseEvent(x: number, y: number): MouseEvent {
+    const eventInit: MouseEventInit = { clientX: x, clientY: y };
+    return new MouseEvent('mouseover', eventInit);
+}

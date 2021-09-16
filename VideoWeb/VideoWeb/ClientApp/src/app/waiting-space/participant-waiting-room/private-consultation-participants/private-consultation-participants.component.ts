@@ -6,6 +6,7 @@ import {
     LinkType,
     ParticipantResponse,
     ParticipantStatus,
+    Role,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
@@ -118,8 +119,14 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     getPrivateConsultationParticipants(): ParticipantListItem[] {
-        return this.participantsInConsultation
-            .filter(c => c.hearing_role !== HearingRole.WITNESS && c.hearing_role !== HearingRole.OBSERVER)
+        const regularParticipants = this.participantsInConsultation
+            .filter(
+                c =>
+                    c.hearing_role !== HearingRole.WITNESS &&
+                    c.hearing_role !== HearingRole.OBSERVER &&
+                    c.role !== Role.QuickLinkObserver &&
+                    c.role !== Role.QuickLinkParticipant
+            )
             .filter(c => c.hearing_role !== HearingRole.INTERPRETER)
             .filter(
                 c =>
@@ -135,14 +142,29 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
                 }
                 return participant;
             });
+        const quickLinkParticipants = this.participantsInConsultation
+            .filter(p => p.role === Role.QuickLinkParticipant)
+            .sort((a, b) => a.display_name.localeCompare(b.display_name));
+        return [...regularParticipants, ...quickLinkParticipants];
     }
 
     get johRoles(): string[] {
         return [HearingRole.JUDGE, HearingRole.PANEL_MEMBER, HearingRole.WINGER];
     }
 
-    geMemberParticipantsByRole(role: any): ParticipantListItem[] {
+    getMemberParticipantsByRole(role: any): ParticipantListItem[] {
         return this.participantsInConsultation.filter(p => p.hearing_role === role);
+    }
+
+    getWitnessesAndObservers(): ParticipantListItem[] {
+        if (!this.isJohConsultation()) {
+            return [];
+        }
+        const witnesses = this.getMemberParticipantsByRole(HearingRole.WITNESS);
+        const observers = this.participantsInConsultation
+            .filter(p => p.hearing_role === HearingRole.OBSERVER || p.role === Role.QuickLinkObserver)
+            .sort((a, b) => a.display_name.localeCompare(b.display_name));
+        return [...witnesses, ...observers];
     }
 
     getParticipantStatus(participant: any): string {

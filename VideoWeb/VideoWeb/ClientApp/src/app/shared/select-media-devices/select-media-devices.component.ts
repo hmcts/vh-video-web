@@ -1,12 +1,13 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { takeUntil } from 'rxjs/operators';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { Role, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { MediaStreamService } from 'src/app/services/media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { VideoFilterService } from 'src/app/services/video-filter.service';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 
 @Component({
@@ -33,16 +34,32 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
 
     constructor(
         private userMediaService: UserMediaService,
-        private mediaStreamService: MediaStreamService,
+        private userMediaStreamSerivce: UserMediaStreamService,
         private logger: Logger,
         private translateService: TranslateService,
-        private profileService: ProfileService
+        private profileService: ProfileService,
+        private videoFilterService: VideoFilterService
     ) {}
 
     ngOnInit() {
-        this.userMediaService.connectedDevices$.pipe(takeUntil(this.destroyedSubject)).subscribe(connectedDevices => {
-            this.availableCameraDevices = connectedDevices.filter(device => device.kind === 'videoinput');
-            this.availableMicrophoneDevices = connectedDevices.filter(device => device.kind === 'audioinput');
+        this.userMediaService.connectedVideoDevices$.pipe(takeUntil(this.destroyedSubject)).subscribe(cameraDevices => {
+            this.availableCameraDevices = cameraDevices;
+            this.selectedCameraDevice = this.availableCameraDevices.find(camera => this.selectedCameraDevice?.deviceId === camera.deviceId);
+        });
+
+        this.userMediaService.connectedMicrophoneDevices$.pipe(takeUntil(this.destroyedSubject)).subscribe(microphoneDevices => {
+            this.availableMicrophoneDevices = microphoneDevices;
+            this.selectedMicrophoneDevice = this.availableMicrophoneDevices.find(
+                microphone => this.selectedMicrophoneDevice?.deviceId === microphone.deviceId
+            );
+        });
+
+        this.userMediaStreamSerivce.activeCameraStream$.subscribe(activateCameraStream => {
+            this.selectedCameraStream = activateCameraStream;
+        });
+
+        this.userMediaStreamSerivce.activeMicrophoneStream$.subscribe(activateMicrophoneStream => {
+            this.selectedMicrophoneStream = activateMicrophoneStream;
         });
 
         this.profileService.getUserProfile().then(profile => {
@@ -60,47 +77,37 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         this.userMediaService.activeMicrophoneDevice$.pipe(takeUntil(this.destroyedSubject)).subscribe(microphoneDevice => {
             this.updateSelectedMicrophone(microphoneDevice);
         });
+
+        this.videoFilterService.onFilterChanged$.pipe(takeUntil(this.destroyedSubject)).subscribe(() => {
+            this.updateSelectedCamera(this.selectedCameraDevice);
+        });
     }
 
     determineFilterSelectionVisibility(profile: UserProfileResponse) {
-        this.showBackgroundFilter = profile.role === Role.JudicialOfficeHolder || profile.role === Role.Judge;
+        const isCorrectRole = profile.role === Role.JudicialOfficeHolder || profile.role === Role.Judge;
+        this.showBackgroundFilter = isCorrectRole && this.videoFilterService.doesSupportVideoFiltering();
     }
 
     onSelectedCameraDeviceChange() {
-        this.updateStreamForSelectedCamera();
+        this.userMediaService.updateActiveCamera(this.selectedCameraDevice);
     }
 
     onSelectedMicrophoneDeviceChange() {
-        this.updateStreamForSelectedMicrophone();
+        this.userMediaService.updateActiveMicrophone(this.selectedMicrophoneDevice);
     }
 
     private updateSelectedCamera(camera: UserMediaDevice) {
         this.selectedCameraDevice = this.availableCameraDevices.find(device => device.deviceId === camera.deviceId);
-        this.updateStreamForSelectedCamera();
-    }
-
-    private updateStreamForSelectedCamera() {
-        this.mediaStreamService
-            .getStreamForCam(this.selectedCameraDevice)
-            .pipe(take(1))
-            .subscribe(cameraStream => (this.selectedCameraStream = cameraStream));
     }
 
     private updateSelectedMicrophone(microphone: UserMediaDevice) {
         this.selectedMicrophoneDevice = this.availableMicrophoneDevices.find(device => device.deviceId === microphone.deviceId);
-        this.updateStreamForSelectedMicrophone();
-    }
-
-    private updateStreamForSelectedMicrophone() {
-        this.mediaStreamService
-            .getStreamForMic(this.selectedMicrophoneDevice)
-            .pipe(take(1))
-            .subscribe(microphoneStream => (this.selectedMicrophoneStream = microphoneStream));
     }
 
     toggleSwitch() {
         this.connectWithCameraOn = !this.connectWithCameraOn;
-        this.logger.debug(`${this.loggerPrefix} Toggle camera switch to ${this.connectWithCameraOn ? 'on' : 'off'}`);
+        this.logger.debug(`${this.loggerPrefix} Toggled camera switch to ${this.connectWithCameraOn ? 'on' : 'off'}`);
+        this.userMediaService.updateIsAudioOnly(!this.connectWithCameraOn);
     }
 
     transitionstart() {
@@ -112,10 +119,6 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     }
 
     onClose() {
-        this.userMediaService.updateActiveCamera(this.selectedCameraDevice);
-        this.userMediaService.updateActiveMicrophone(this.selectedMicrophoneDevice);
-        this.userMediaService.updateIsAudioOnly(!this.connectWithCameraOn);
-
         this.shouldClose.emit();
     }
 
@@ -139,8 +142,5 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
 
         this.destroyedSubject.next();
         this.destroyedSubject.complete();
-
-        this.mediaStreamService.stopStream(this.selectedCameraStream);
-        this.mediaStreamService.stopStream(this.selectedMicrophoneStream);
     }
 }

@@ -215,12 +215,20 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         return this.participant?.hearing_role === HearingRole.OBSERVER;
     }
 
+    get isQuickLinkObserver(): boolean {
+        return this.participant?.role === Role.QuickLinkObserver;
+    }
+
+    get isQuickLinkUser(): boolean {
+        return this.participant?.role === Role.QuickLinkObserver || this.participant?.role === Role.QuickLinkParticipant;
+    }
+
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
         super.handleConferenceStatusChange(message);
         if (!this.validateIsForConference(message.conferenceId)) {
             return;
         }
-        if (message.status === ConferenceStatus.InSession && !this.isOrHasWitnessLink()) {
+        if (message.status === ConferenceStatus.InSession && !this.isOrHasWitnessLink() && !this.isQuickLinkUser) {
             this.notificationSoundsService.playHearingAlertSound();
         } else {
             this.notificationSoundsService.stopHearingAlertSound();
@@ -247,7 +255,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     }
 
     get canStartJoinConsultation() {
-        return !this.isOrHasWitnessLink() && !this.isObserver && !this.participant.linked_participants.length;
+        return !this.isOrHasWitnessLink() && !this.isObserver && !this.isQuickLinkObserver && !this.participant.linked_participants.length;
     }
 
     async startPrivateConsultation(participants: string[], endpoints: string[]) {

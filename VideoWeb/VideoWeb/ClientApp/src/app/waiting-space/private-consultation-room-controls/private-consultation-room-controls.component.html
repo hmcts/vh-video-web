@@ -387,17 +387,18 @@
     </div>
 </div>
 
-<div class='outgoing-video-container'>
-    <video
-        [ngClass]="{ 'vh-fade-in': selfViewOpen, 'vh-fade-out': !selfViewOpen, 'vh-spotlight-self-view-outline': isSpotlighted }"
-        id='outgoingFeedVideo'
-        [muted]='true'
-        [srcObject]='this.outgoingStream'
-        autoplay
-        height='auto'
-    >
-        {{ 'private-consultation-room-controls.browser-support' | translate }}
-    </video>
+<div class="outgoing-video-container">
+  <video
+    [ngClass]="{ 'vh-fade-in': selfViewOpen, 'vh-fade-out': !selfViewOpen, 'vh-spotlight-self-view-outline': isSpotlighted }"
+    id="outgoingFeedVideo"
+    [muted]="true"
+    [srcObject]="this.outgoingStream"
+    autoplay
+    height="auto"
+    class="selfie-view"
+  >
+    {{ 'private-consultation-room-controls.browser-support' | translate }}
+  </video>
 </div>
 <div class='outgoing-present-video-container'>
     <video

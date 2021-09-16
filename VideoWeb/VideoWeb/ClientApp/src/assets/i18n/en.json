@@ -255,7 +255,8 @@
     "judicial-consultation-room-open-until": "Judicial consultation room open until ",
     "sign-into-the-conference": "Sign into the conference",
     "select": "Select",
-    "not-ready-to-start": "Not ready to start"
+    "not-ready-to-start": "Not ready to start",
+    "conference-status-heading": "Status/Action"
   },
   "judge-self-test": {
     "please-wait-to-be-connected": "Please wait to be connected...",

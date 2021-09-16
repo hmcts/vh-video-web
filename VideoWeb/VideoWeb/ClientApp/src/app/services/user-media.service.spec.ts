@@ -19,8 +19,8 @@ describe('UserMediaService', () => {
     });
 
     it('should return true when multiple inputs are detected', fakeAsync(() => {
-        spyOnProperty(userMediaService, 'connectedVideoDevices').and.returnValue(of(testData.getListOfCameras()));
-        spyOnProperty(userMediaService, 'connectedMicrophoneDevices').and.returnValue(of(testData.getListOfMicrophones()));
+        spyOnProperty(userMediaService, 'connectedVideoDevices$').and.returnValue(of(testData.getListOfCameras()));
+        spyOnProperty(userMediaService, 'connectedMicrophoneDevices$').and.returnValue(of(testData.getListOfMicrophones()));
         flush();
         let result;
         userMediaService.hasMultipleDevices().subscribe(hasMultipleDevices => (result = hasMultipleDevices));
@@ -28,8 +28,8 @@ describe('UserMediaService', () => {
     }));
 
     it('should return false when single inputs are detected', fakeAsync(() => {
-        spyOnProperty(userMediaService, 'connectedVideoDevices').and.returnValue(of(testData.getSingleCamera()));
-        spyOnProperty(userMediaService, 'connectedMicrophoneDevices').and.returnValue(of(testData.getSingleMicrophone()));
+        spyOnProperty(userMediaService, 'connectedVideoDevices$').and.returnValue(of(testData.getSingleCamera()));
+        spyOnProperty(userMediaService, 'connectedMicrophoneDevices$').and.returnValue(of(testData.getSingleMicrophone()));
         flush();
         let result;
         userMediaService.hasMultipleDevices().subscribe(multipleDevices => {
@@ -198,7 +198,7 @@ describe('UserMediaService', () => {
             getCameraAndMicrophoneDevicesSubject.next(testData.getListOfDevices());
             flush();
             let result = [];
-            userMediaService.connectedMicrophoneDevices.subscribe(devices => (result = devices));
+            userMediaService.connectedMicrophoneDevices$.subscribe(devices => (result = devices));
             flush();
             expect(result.length).toBe(2);
         }));
@@ -207,7 +207,7 @@ describe('UserMediaService', () => {
             getCameraAndMicrophoneDevicesSubject.next(testData.getListOfDevices());
             flush();
             let result = [];
-            userMediaService.connectedVideoDevices.subscribe(devices => (result = devices));
+            userMediaService.connectedVideoDevices$.subscribe(devices => (result = devices));
             flush();
             expect(result.length).toBe(3);
         }));

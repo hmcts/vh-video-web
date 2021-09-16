@@ -1,5 +1,6 @@
 import { fakeAsync, flush } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
+import { ReplaySubject } from 'rxjs';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { ErrorService } from './error.service';
@@ -38,6 +39,7 @@ describe('MediaStreamService', () => {
     let navigatorSpy: jasmine.SpyObj<Navigator>;
     let videoFilterStreamServiceSpy: jasmine.SpyObj<VideoFilterService>;
     let filterStream: jasmine.SpyObj<MediaStream>;
+    let filterOnSubject: ReplaySubject<boolean>;
 
     beforeEach(() => {
         loggerSpy = jasmine.createSpyObj<Logger>(['info', 'error']);
@@ -46,7 +48,10 @@ describe('MediaStreamService', () => {
         navigatorSpy = jasmine.createSpyObj<Navigator>([], ['mediaDevices']);
         getSpiedPropertyGetter(navigatorSpy, 'mediaDevices').and.returnValue(mediaDevicesSpy);
 
-        videoFilterStreamServiceSpy = jasmine.createSpyObj<VideoFilterService>(['initFilterFromMediaStream', 'startFilteredStream']);
+        videoFilterStreamServiceSpy = jasmine.createSpyObj<VideoFilterService>(
+            ['initFilterFromMediaStream', 'startFilteredStream', 'doesSupportVideoFiltering'],
+            ['filterOn', 'filterOn$']
+        );
         const filterStreamTracks = [];
         filterStreamTracks.push(
             jasmine.createSpyObj<MediaStreamTrack>(['stop'])
@@ -58,6 +63,10 @@ describe('MediaStreamService', () => {
         filterStream.getTracks.and.returnValue(filterStreamTracks);
 
         videoFilterStreamServiceSpy.startFilteredStream.and.returnValue(filterStream);
+        videoFilterStreamServiceSpy.doesSupportVideoFiltering.and.returnValue(true);
+
+        filterOnSubject = new ReplaySubject<boolean>();
+        getSpiedPropertyGetter(videoFilterStreamServiceSpy, 'filterOn$').and.returnValue(filterOnSubject.asObservable());
 
         sut = new MediaStreamService(loggerSpy, errorServiceSpy, navigatorSpy, videoFilterStreamServiceSpy);
     });
@@ -101,8 +110,6 @@ describe('MediaStreamService', () => {
         it('should return a promise from getUserMedia', fakeAsync(() => {
             // Arrange
             const expectedStream = new MediaStream();
-            const expectedStreamClone = spyOn(expectedStream, 'clone');
-            expectedStreamClone.and.returnValue(expectedStream);
 
             mediaDevicesSpy.getUserMedia.and.resolveTo(expectedStream);
 
@@ -115,7 +122,6 @@ describe('MediaStreamService', () => {
             expect(mediaDevicesSpy.getUserMedia).toHaveBeenCalledWith(microphoneConstraintBuilder(microphoneDevice));
 
             expect(resultantStream).toBe(expectedStream);
-            expect(expectedStreamClone).toHaveBeenCalledTimes(1);
             expect(errorServiceSpy.handlePexipError).not.toHaveBeenCalled();
         }));
 
@@ -137,25 +143,68 @@ describe('MediaStreamService', () => {
     });
 
     describe('getStreamForCam', () => {
-        it('should return a promise from getUserMedia', fakeAsync(() => {
-            // Arrange
-            const expectedStream = new MediaStream();
-            const expectedStreamClone = spyOn(expectedStream, 'clone');
-            expectedStreamClone.and.returnValue(expectedStream);
-            mediaDevicesSpy.getUserMedia.and.resolveTo(expectedStream);
+        describe('when video filtering is NOT supported', () => {
+            it('should return a promise from getUserMedia', fakeAsync(() => {
+                // Arrange
+                videoFilterStreamServiceSpy.doesSupportVideoFiltering.and.returnValue(false);
 
-            // Act
-            let resultantStream = null;
-            sut.getStreamForCam(cameraDevice).subscribe(stream => (resultantStream = stream));
-            flush();
+                const expectedStream = new MediaStream();
+                mediaDevicesSpy.getUserMedia.and.resolveTo(expectedStream);
 
-            // Assert
-            expect(mediaDevicesSpy.getUserMedia).toHaveBeenCalledWith(cameraConstraintBuilder(cameraDevice));
+                // Act
+                let resultantStream = null;
+                sut.getStreamForCam(cameraDevice).subscribe(stream => (resultantStream = stream));
+                flush();
 
-            expect(resultantStream).toBe(filterStream);
-            expect(expectedStreamClone).toHaveBeenCalledTimes(1);
-            expect(errorServiceSpy.handlePexipError).not.toHaveBeenCalled();
-        }));
+                // Assert
+                expect(mediaDevicesSpy.getUserMedia).toHaveBeenCalledWith(cameraConstraintBuilder(cameraDevice));
+
+                expect(resultantStream).toBe(expectedStream);
+                expect(errorServiceSpy.handlePexipError).not.toHaveBeenCalled();
+            }));
+        });
+
+        describe('when video filtering is supported', () => {
+            it('should return a filtered stream when filter is ON', fakeAsync(() => {
+                // Arrange
+                const resolvedStream = new MediaStream();
+                mediaDevicesSpy.getUserMedia.and.resolveTo(resolvedStream);
+                videoFilterStreamServiceSpy.startFilteredStream.and.returnValue(filterStream);
+
+                filterOnSubject.next(true);
+
+                // Act
+                let resultantStream = null;
+                sut.getStreamForCam(cameraDevice).subscribe(stream => (resultantStream = stream));
+
+                flush();
+
+                // Assert
+                expect(mediaDevicesSpy.getUserMedia).toHaveBeenCalledWith(cameraConstraintBuilder(cameraDevice));
+                expect(videoFilterStreamServiceSpy.initFilterFromMediaStream).toHaveBeenCalledWith(resolvedStream);
+
+                expect(resultantStream).toBe(filterStream);
+                expect(errorServiceSpy.handlePexipError).not.toHaveBeenCalled();
+            }));
+
+            it('should return the resolved stream when filter OFF', fakeAsync(() => {
+                // Arrange
+                const expectedStream = new MediaStream();
+                mediaDevicesSpy.getUserMedia.and.resolveTo(expectedStream);
+                filterOnSubject.next(false);
+
+                // Act
+                let resultantStream = null;
+                sut.getStreamForCam(cameraDevice).subscribe(stream => (resultantStream = stream));
+                flush();
+
+                // Assert
+                expect(mediaDevicesSpy.getUserMedia).toHaveBeenCalledWith(cameraConstraintBuilder(cameraDevice));
+
+                expect(resultantStream).toBe(expectedStream);
+                expect(errorServiceSpy.handlePexipError).not.toHaveBeenCalled();
+            }));
+        });
 
         it('should catch any errors and raise this with the error service', fakeAsync(() => {
             // Arrange
@@ -172,46 +221,5 @@ describe('MediaStreamService', () => {
             expect(resultantStream).toBeNull();
             expect(errorServiceSpy.handlePexipError).toHaveBeenCalledTimes(1);
         }));
-    });
-
-    describe('stopStream', () => {
-        it('should call stop on all tracks', () => {
-            // Arrange
-            const tracks = [];
-            tracks.push(
-                jasmine.createSpyObj<MediaStreamTrack>(['stop'])
-            );
-            tracks.push(
-                jasmine.createSpyObj<MediaStreamTrack>(['stop'])
-            );
-            tracks.push(
-                jasmine.createSpyObj<MediaStreamTrack>(['stop'])
-            );
-
-            const mediaStreamSpy = jasmine.createSpyObj<MediaStream>(['getTracks']);
-            mediaStreamSpy.getTracks.and.returnValue(tracks);
-
-            // Act
-            sut.stopStream(mediaStreamSpy);
-
-            // Assert
-            tracks.forEach(track => expect(track.stop).toHaveBeenCalledTimes(1));
-        });
-
-        it('should do nothing if the stream is null', () => {
-            // Act
-            sut.stopStream(null);
-
-            // Assert
-            expect(sut).toBeTruthy();
-        });
-
-        it('should do nothing if the stream is undefined', () => {
-            // Act
-            sut.stopStream(undefined);
-
-            // Assert
-            expect(sut).toBeTruthy();
-        });
     });
 });

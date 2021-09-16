@@ -69,13 +69,12 @@ export class SecurityConfigSetupService {
             this._configSetupSubject.pipe(filter(Boolean), first()).subscribe(() => {
                 this.oidcConfigService.withConfig(this.config[provider]);
             });
-            this.currentIdpSubject.next(provider);
-            this._configRestoredSubject.next(true);
         }
+        this.currentIdpSubject.next(provider);
+        this._configRestoredSubject.next(true);
     }
 
     setIdp(provider: IdpProviders) {
-        console.log('Faz - Set Idp', provider);
         window.sessionStorage.setItem(this.idpProvidersSessionStorageKey, provider);
         this.currentIdpSubject.next(provider);
         this._configSetupSubject.pipe(filter(Boolean)).subscribe(() => {
