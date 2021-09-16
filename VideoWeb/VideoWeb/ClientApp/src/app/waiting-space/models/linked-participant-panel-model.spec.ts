@@ -186,6 +186,29 @@ describe('LinkedParticipantPanelModel', () => {
         const representee2 = 'representsee2';
         const status2 = ParticipantStatus.None;
 
+        particpantPanelModel1 = new ParticipantPanelModel(
+            id1,
+            displayName1,
+            role1,
+            caseTypeGroup1,
+            pexipDisplayName1,
+            hearingRole1,
+            representee1,
+            status1
+        );
+        particpantPanelModel2 = new ParticipantPanelModel(
+            id2,
+            displayName2,
+            role2,
+            caseTypeGroup2,
+            pexipDisplayName2,
+            hearingRole2,
+            representee2,
+            status2
+        );
+
+        const participantPanelModels = [particpantPanelModel1, particpantPanelModel2];
+
         beforeAll(() => {
             jasmine.getEnv().allowRespy(true);
         });
@@ -194,72 +217,95 @@ describe('LinkedParticipantPanelModel', () => {
         });
 
         beforeEach(() => {
-            particpantPanelModel1 = new ParticipantPanelModel(
-                id1,
-                displayName1,
-                role1,
-                caseTypeGroup1,
-                pexipDisplayName1,
-                hearingRole1,
-                representee1,
-                status1
-            );
-            particpantPanelModel2 = new ParticipantPanelModel(
-                id2,
-                displayName2,
-                role2,
-                caseTypeGroup2,
-                pexipDisplayName2,
-                hearingRole2,
-                representee2,
-                status2
-            );
             testModel = LinkedParticipantPanelModel.fromListOfPanelModels(
                 [particpantPanelModel1, particpantPanelModel2],
                 'pexipDisplayName',
                 'roomId'
             );
-            testModel.participants = [particpantPanelModel1, particpantPanelModel2];
-            console.log('1', testModel);
+            testModel.participants = [...participantPanelModels];
         });
 
-        describe('isWitness', () => {
+        describe('isCallable', () => {
             beforeEach(() => {
-                console.log('2', testModel);
                 testModel.participants.forEach(particpantPanelModel => {
                     spyOnProperty(particpantPanelModel, 'isWitness').and.returnValue(false);
                 });
             });
 
-            it('should return false when all of the participants isWitness returns false', () => {
-                console.log('3a', testModel);
-                expect(testModel.isWitness).toBe(false);
+            it('should return false when all of the participants isCallable returns false', () => {
+                expect(testModel.isCallable).toBe(false);
             });
 
-            it('should return true when any of the participants isWitness', () => {
-                testModel.participants.forEach(particpantPanelModel => {
-                    spyOnProperty(particpantPanelModel, 'isWitness').and.returnValue(true);
-                    expect(testModel.isWitness).toBe(true);
+            for (let i = 0; i < participantPanelModels.length; i++) {
+                it('should return true when any of the participants isCallable', () => {
+                    const particpantPanelModel = testModel.participants[i];
+                    spyOnProperty(particpantPanelModel, 'isCallable').and.returnValue(true);
+                    expect(testModel.isCallable).toBe(true);
                 });
+            }
+        });
+
+        describe('isCallableAndReadyToJoin', () => {
+            it('should return false when all of the participants isCallableAndReadyToJoin returns false', () => {
+                testModel.participants.forEach(particpantPanelModel => {
+                    spyOnProperty(particpantPanelModel, 'isCallableAndReadyToJoin').and.returnValue(false);
+                });
+                expect(testModel.isCallableAndReadyToJoin).toBe(false);
+            });
+
+            describe('when any are isCallableAndReadyToJoin', () => {
+                beforeEach(() => {
+                    testModel.participants.forEach(particpantPanelModel => {
+                        spyOnProperty(particpantPanelModel, 'isCallableAndReadyToJoin').and.returnValue(true);
+                    });
+                });
+
+                it('should return true when all of the participants isCallableAndReadyToJoin is true', () => {
+                    testModel.participants.forEach(particpantPanelModel => {
+                        spyOnProperty(particpantPanelModel, 'isCallableAndReadyToJoin').and.returnValue(true);
+                    });
+                    expect(testModel.isCallableAndReadyToJoin).toBe(true);
+                });
+
+                for (let i = 0; i < participantPanelModels.length; i++) {
+                    it('should return false when any of the participants isCallableAndReadyToJoin is false', () => {
+                        const particpantPanelModel = testModel.participants[i];
+                        spyOnProperty(particpantPanelModel, 'isCallableAndReadyToJoin').and.returnValue(true);
+                        expect(testModel.isCallableAndReadyToJoin).toBe(true);
+                    });
+                }
             });
         });
 
-        describe('isQuickLinkUser', () => {
-            beforeEach(() => {
+        describe('isCallableAndReadyToBeDismissed', () => {
+            it('should return false when all of the participants isCallableAndReadyToBeDismissed returns false', () => {
                 testModel.participants.forEach(particpantPanelModel => {
-                    spyOnProperty(particpantPanelModel, 'isQuickLinkUser').and.returnValue(false);
+                    spyOnProperty(particpantPanelModel, 'isCallableAndReadyToBeDismissed').and.returnValue(false);
                 });
+                expect(testModel.isCallableAndReadyToBeDismissed).toBe(false);
             });
 
-            it('should return false when all of the participants isQuickLinkUser returns false', () => {
-                expect(testModel.isQuickLinkUser).toBe(false);
-            });
-
-            it('should return true when any of the participants isQuickLinkUser', () => {
-                testModel.participants.forEach(particpantPanelModel => {
-                    spyOnProperty(particpantPanelModel, 'isQuickLinkUser').and.returnValue(true);
-                    expect(testModel.isQuickLinkUser).toBe(true);
+            describe('when any are isCallableAndReadyToBeDismissed', () => {
+                beforeEach(() => {
+                    testModel.participants.forEach(particpantPanelModel => {
+                        spyOnProperty(particpantPanelModel, 'isCallableAndReadyToBeDismissed').and.returnValue(true);
+                    });
                 });
+
+                it('should return true when all of the participants isCallableAndReadyToBeDismissed returns true', () => {
+                    testModel.participants.forEach(particpantPanelModel => {
+                        spyOnProperty(particpantPanelModel, 'isCallableAndReadyToBeDismissed').and.returnValue(true);
+                    });
+                    expect(testModel.isCallableAndReadyToBeDismissed).toBe(true);
+                });
+
+                for (let i = 0; i < participantPanelModels.length; i++) {
+                    it('should return true when any of the participants isCallableAndReadyToBeDismissed', () => {
+                        const particpantPanelModel = testModel.participants[i];
+                        spyOnProperty(particpantPanelModel, 'isCallableAndReadyToBeDismissed').and.returnValue(true);
+                        expect(testModel.isCallableAndReadyToBeDismissed).toBe(true);
+                    });
+                }
             });
         });
     });

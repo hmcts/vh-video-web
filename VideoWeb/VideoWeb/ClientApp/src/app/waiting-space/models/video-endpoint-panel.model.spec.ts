@@ -51,15 +51,21 @@ describe('VideoEndpointPanelModel', () => {
             model = new VideoEndpointPanelModel(endpoint);
         });
         describe('isCallable', () => {
-            expect(model.isCallable).toBe(false);
+            it('should be false', () => {
+                expect(model.isCallable).toBe(false);
+            });
         });
 
         describe('isCallableAndReadyToJoin', () => {
-            expect(model.isCallableAndReadyToJoin).toBe(false);
+            it('should be false', () => {
+                expect(model.isCallableAndReadyToJoin).toBe(false);
+            });
         });
 
         describe('isCallableAndReadyToBeDismissed', () => {
-            expect(model.isCallableAndReadyToBeDismissed).toBe(false);
+            it('should be false', () => {
+                expect(model.isCallableAndReadyToBeDismissed).toBe(false);
+            });
         });
     });
 });

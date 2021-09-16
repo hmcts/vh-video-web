@@ -46,11 +46,11 @@ export class LinkedParticipantPanelModel extends PanelModel {
     }
 
     get isCallableAndReadyToJoin(): boolean {
-        return this.participants.every(p => p.isAvailable()) && this.isCallable;
+        return this.participants.every(p => p.isCallableAndReadyToJoin);
     }
 
     get isCallableAndReadyToBeDismissed(): boolean {
-        return this.participants.some(p => p.isInHearing()) && this.isCallable;
+        return this.participants.some(p => p.isCallableAndReadyToBeDismissed);
     }
     get isCallable(): boolean {
         return this.participants.some(x => x.isCallable);
