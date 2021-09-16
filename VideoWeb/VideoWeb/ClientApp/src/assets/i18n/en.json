@@ -610,7 +610,9 @@
     "stop-sharing-my-screen": "Stop sharing my screen",
     "stop-sharing-screen": "Stop sharing screen",
     "change-camera-mic": "Change your camera and microphone",
-    "context-menu": "Open Menu"
+    "context-menu": "Open Menu",
+    "hearing-controls": "Hearing controls"
+    
   },
   "chat-panel": {
     "heading": "VH Officer messages",
