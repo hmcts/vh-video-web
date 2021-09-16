@@ -190,14 +190,14 @@ describe('LinkedParticipantPanelModel - witness & interpreter', () => {
     it('should return true when both participants are available', () => {
         participants.forEach(p => (p.status = ParticipantStatus.Available));
         createLinkedModel();
-        expect(model.isWitnessOrQuickLinkUserReadyToJoin).toBeTruthy();
+        expect(model.isCallableAndReadyToJoin).toBeTruthy();
     });
 
     it('should return false when one participant is not available', () => {
         const participant = participants.find(p => p.hearing_role === HearingRole.INTERPRETER);
         participant.status = ParticipantStatus.NotSignedIn;
         createLinkedModel();
-        expect(model.isWitnessOrQuickLinkUserReadyToJoin).toBeFalsy();
+        expect(model.isCallableAndReadyToJoin).toBeFalsy();
     });
 
     function createLinkedModel() {

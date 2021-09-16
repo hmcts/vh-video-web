@@ -1,11 +1,16 @@
 import { ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { HearingRole } from './hearing-role-model';
 import { PanelModel } from './panel-model-base';
+import { ParticipantPanelModel } from './participant-panel-model';
 
 export class LinkedParticipantPanelModel extends PanelModel {
-    public participants: PanelModel[] = [];
+    public participants: ParticipantPanelModel[] = [];
 
-    static fromListOfPanelModels(participants: PanelModel[], pexipDisplayName: string, roomid: string): LinkedParticipantPanelModel {
+    static fromListOfPanelModels(
+        participants: ParticipantPanelModel[],
+        pexipDisplayName: string,
+        roomid: string
+    ): LinkedParticipantPanelModel {
         const lip = participants.find(x => x.hearingRole !== HearingRole.INTERPRETER);
         const pexipName = pexipDisplayName;
         const displayName = participants.map(x => x.displayName).join(', ');
@@ -19,7 +24,11 @@ export class LinkedParticipantPanelModel extends PanelModel {
         return model;
     }
 
-    static forJudicialHolders(participants: PanelModel[], pexipDisplayName: string, roomid: string): LinkedParticipantPanelModel {
+    static forJudicialHolders(
+        participants: ParticipantPanelModel[],
+        pexipDisplayName: string,
+        roomid: string
+    ): LinkedParticipantPanelModel {
         const joh = participants.find(x => x.role === Role.JudicialOfficeHolder);
         const pexipName = pexipDisplayName;
         const displayName = participants.map(x => x.displayName).join(', ');
@@ -40,11 +49,18 @@ export class LinkedParticipantPanelModel extends PanelModel {
         return this.participants.some(p => p.isWitness);
     }
 
-    get isWitnessOrQuickLinkUserReadyToJoin(): boolean {
-        return this.participants.every(p => p.isAvailable()) && this.participants.some(x => x.isWitness || x.isQuickLinkUser);
+    get isCallableAndReadyToJoin(): boolean {
+        return this.participants.every(p => p.isAvailable()) && this.isCallable;
     }
 
-    get witnessParticipant(): PanelModel {
+    get isCallableAndReadyToBeDismissed(): boolean {
+        return this.participants.some(p => p.isInHearing()) && this.isCallable;
+    }
+    get isCallable(): boolean {
+        return this.participants.some(x => x.isCallable);
+    }
+
+    get witnessParticipant(): ParticipantPanelModel {
         return this.participants.find(x => x.isWitness);
     }
 
@@ -52,7 +68,7 @@ export class LinkedParticipantPanelModel extends PanelModel {
         return this.participants.some(p => p.transferringIn);
     }
 
-    private get participantsInHearing(): PanelModel[] {
+    private get participantsInHearing(): ParticipantPanelModel[] {
         return this.participants.filter(p => p.isInHearing());
     }
 

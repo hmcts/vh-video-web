@@ -47,7 +47,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     eventhubSubscription$ = new Subscription();
     participantsSubscription$ = new Subscription();
 
-    witnessTransferTimeout: { [id: string]: NodeJS.Timeout } = {};
+    transferTimeout: { [id: string]: NodeJS.Timeout } = {};
 
     constructor(
         private videoWebService: VideoWebService,
@@ -97,12 +97,12 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     resetWitnessTransferTimeout(participantId: string) {
-        clearTimeout(this.witnessTransferTimeout[participantId]);
-        this.witnessTransferTimeout[participantId] = undefined;
+        clearTimeout(this.transferTimeout[participantId]);
+        this.transferTimeout[participantId] = undefined;
     }
 
     resetAllWitnessTransferTimeouts() {
-        for (const participantId of Object.keys(this.witnessTransferTimeout)) {
+        for (const participantId of Object.keys(this.transferTimeout)) {
             this.resetWitnessTransferTimeout(participantId);
         }
     }
@@ -406,7 +406,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     async callParticipantIntoHearing(participant: PanelModel) {
-        if (!participant.isWitnessOrQuickLinkUserReadyToJoin) {
+        if (!participant.isCallableAndReadyToJoin) {
             return;
         }
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to call participant into hearing`, {
@@ -415,7 +415,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         });
 
         await this.sendTransferDirection(participant, TransferDirection.In);
-        this.witnessTransferTimeout[participant.id] = setTimeout(() => {
+        this.transferTimeout[participant.id] = setTimeout(() => {
             this.initiateTransfer(participant);
         }, 10000);
     }
@@ -453,7 +453,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     async dismissParticipantFromHearing(participant: PanelModel) {
-        if (!participant.isInHearing()) {
+        if (!participant.isCallableAndReadyToBeDismissed) {
             return;
         }
 
@@ -467,7 +467,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         try {
             let participantId = participant.id;
             if (participant instanceof LinkedParticipantPanelModel) {
-                participantId = participant.witnessParticipant.id; // TODO How to handle this?
+                participantId = participant.witnessParticipant.id;
             }
             await this.videoCallService.dismissParticipantFromHearing(this.conferenceId, participantId);
         } catch (error) {
