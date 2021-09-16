@@ -1,4 +1,4 @@
-import { Router } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import {
     AuthorizationResult,
     AuthorizedState,
@@ -17,14 +17,19 @@ describe('HomeComponent', () => {
     let routerSpy: jasmine.SpyObj<Router>;
     let eventServiceSpy: jasmine.SpyObj<PublicEventsService>;
     let oidcClientNotificationSpy: jasmine.SpyObj<OidcClientNotification<any>>;
+    let routeSpy: jasmine.SpyObj<ActivatedRoute>;
 
     beforeAll(() => {
         routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate']);
         eventServiceSpy = jasmine.createSpyObj('PublicEventsService', ['registerForEvents']);
+        const snapshotSpy = jasmine.createSpyObj('ActivatedRouteSnapshot', [], { queryParamMap: convertToParamMap({}) });
+        routeSpy = jasmine.createSpyObj('ActivatedRoute', [], {
+            snapshot: snapshotSpy
+        });
     });
 
     beforeEach(() => {
-        component = new HomeComponent(routerSpy, eventServiceSpy, new MockLogger());
+        component = new HomeComponent(routerSpy, eventServiceSpy, new MockLogger(), routeSpy);
         routerSpy.navigate.and.callFake(() => Promise.resolve(true));
     });
 
@@ -37,5 +42,15 @@ describe('HomeComponent', () => {
         eventServiceSpy.registerForEvents.and.returnValue(of(oidcClientNotificationSpy));
         component.ngOnInit();
         expect(routerSpy.navigate).toHaveBeenCalledWith([`/${pageUrls.Navigator}`]);
+    });
+
+    it('should navigate IdpSelection page when input home page url manually', async () => {
+        const eventValue: OidcClientNotification<AuthorizationResult> = {
+            type: EventTypes.ConfigLoaded
+        };
+        oidcClientNotificationSpy = jasmine.createSpyObj('OidcClientNotification', {}, eventValue);
+        eventServiceSpy.registerForEvents.and.returnValue(of(oidcClientNotificationSpy));
+        component.ngOnInit();
+        expect(routerSpy.navigate).toHaveBeenCalledWith([`/${pageUrls.Login}`]);
     });
 });

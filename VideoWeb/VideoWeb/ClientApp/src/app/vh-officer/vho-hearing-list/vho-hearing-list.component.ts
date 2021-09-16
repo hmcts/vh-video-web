@@ -49,7 +49,7 @@ export class VhoHearingListComponent {
         return this.mapToHearing(conference, participants);
     }
 
-    trackConference(conference: HearingSummary) {
+    trackConference(index: number, conference: HearingSummary) {
         return conference.id;
     }
 }
