@@ -324,32 +324,3 @@ describe('LinkedParticipantPanelModel', () => {
         model = LinkedParticipantPanelModel.forJudicialHolders(pats, roomLabel, roomId);
     }
 });
-
-describe('LinkedParticipantPanelModel - witness & interpreter', () => {
-    let model: LinkedParticipantPanelModel;
-    let participants: ParticipantForUserResponse[];
-    const mapper = new ParticipantPanelModelMapper();
-    beforeEach(() => {
-        participants = new ConferenceTestData().getListOfLinkedParticipants(true);
-    });
-
-    it('should return true when both participants are available', () => {
-        participants.forEach(p => (p.status = ParticipantStatus.Available));
-        createLinkedModel();
-        expect(model.isCallableAndReadyToJoin).toBeTruthy();
-    });
-
-    it('should return false when one participant is not available', () => {
-        const participant = participants.find(p => p.hearing_role === HearingRole.INTERPRETER);
-        participant.status = ParticipantStatus.NotSignedIn;
-        createLinkedModel();
-        expect(model.isCallableAndReadyToJoin).toBeFalsy();
-    });
-
-    function createLinkedModel() {
-        const pats = participants.map(p => mapper.mapFromParticipantUserResponse(p));
-        const roomLabel = 'Witness1';
-        const roomId = '788';
-        model = LinkedParticipantPanelModel.fromListOfPanelModels(pats, roomLabel, roomId);
-    }
-});
