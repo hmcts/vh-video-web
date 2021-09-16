@@ -1,4 +1,4 @@
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import {
     AuthorizationResult,
     AuthorizedState,
@@ -9,7 +9,6 @@ import {
 } from 'angular-auth-oidc-client';
 import { of } from 'rxjs';
 import { pageUrls } from '../shared/page-url.constants';
-import { ActivatedRouteSnapshotMock } from '../testing/mocks/mock-activated-route-snapshot';
 import { MockLogger } from '../testing/mocks/mock-logger';
 import { HomeComponent } from './home.component';
 
@@ -21,11 +20,11 @@ describe('HomeComponent', () => {
     let routeSpy: jasmine.SpyObj<ActivatedRoute>;
 
     beforeAll(() => {
-        const snapshotMock = new ActivatedRouteSnapshotMock();
         routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate']);
         eventServiceSpy = jasmine.createSpyObj('PublicEventsService', ['registerForEvents']);
+        const snapshotSpy = jasmine.createSpyObj('ActivatedRouteSnapshot', [], { queryParamMap: convertToParamMap({}) });
         routeSpy = jasmine.createSpyObj('ActivatedRoute', [], {
-            snapshot: snapshotMock
+            snapshot: snapshotSpy
         });
     });
 
