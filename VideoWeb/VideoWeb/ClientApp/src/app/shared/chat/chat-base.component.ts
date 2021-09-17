@@ -20,7 +20,7 @@ import { takeUntil } from 'rxjs/operators';
 export abstract class ChatBaseComponent implements OnDestroy {
     protected hearing: Hearing;
     protected securityService: ISecurityService;
-    private destroyed$ = new Subject();
+    protected destroyed$ = new Subject();
 
     messages: InstantMessage[] = [];
     pendingMessages: Map<string, InstantMessage[]> = new Map<string, InstantMessage[]>();

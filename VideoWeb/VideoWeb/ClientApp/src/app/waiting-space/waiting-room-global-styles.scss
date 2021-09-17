@@ -188,6 +188,9 @@
   font-weight: normal;
   display: flex;
   flex-direction: row;
+  @media only screen and (max-width: 400px) {
+    max-width: 150px;
+  }
 }
 
 .room-title-label {

@@ -6,8 +6,8 @@
   </p>
   <hr />
   <a *ngIf="participant.isInHearing()" (click)="toggleMuteParticipant()">{{ getMutedStatusText() }}</a>
-  <a *ngIf="canCallParticipantIntoHearing()" (click)="callWitnessIntoHearing()">{{'judge-context-menu.call-witness' | translate}}</a>
-  <a *ngIf="canDismissParticipantFromHearing()" (click)="dismissWitnessFromHearing()">{{'judge-context-menu.dismiss-witness' | translate}}</a>
+  <a *ngIf="canCallParticipantIntoHearing()" (click)="callParticipantIntoHearing()">{{'judge-context-menu.call-witness' | translate}}</a>
+  <a *ngIf="canDismissParticipantFromHearing()" (click)="dismissParticipantFromHearing()">{{'judge-context-menu.dismiss-witness' | translate}}</a>
   <a *ngIf="!participant.isJudge && participant.hasHandRaised() && participant.isInHearing()" (click)="lowerParticipantHand()">{{'judge-context-menu.lower-hand' | translate}}</a>
   <a *ngIf="participant.isInHearing() && !participant.isLocalCameraOff()" (click)="toggleSpotlightParticipant()">{{ getPinStatusText() }}</a>
 </div>
