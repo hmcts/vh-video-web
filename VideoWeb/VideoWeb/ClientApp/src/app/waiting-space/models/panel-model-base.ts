@@ -80,7 +80,9 @@ export abstract class PanelModel {
     abstract isAvailable(): boolean;
     abstract isInConsultation(): boolean;
 
-    abstract get isWitnessOrQuickLinkUserReadyToJoin(): boolean;
+    abstract get isCallableAndReadyToBeDismissed(): boolean;
+    abstract get isCallableAndReadyToJoin(): boolean;
+    abstract get isCallable(): boolean;
 
     /**
      * Determines if the panel is hosting the given participant by id
@@ -160,7 +162,7 @@ export abstract class PanelModel {
             return 2;
         } else if (this.role === Role.QuickLinkParticipant) {
             return 4;
-        } else if (this.caseTypeGroup.toLowerCase() === 'endpoint') {
+        } else if (this.caseTypeGroup?.toLowerCase() === 'endpoint') {
             return 5;
         } else if (this.hearingRole === HearingRole.OBSERVER || this.role === Role.QuickLinkObserver) {
             return 6;

@@ -7,8 +7,8 @@ import {
     ToggleMuteParticipantEvent,
     ToggleSpotlightParticipantEvent,
     LowerParticipantHandEvent,
-    CallWitnessIntoHearingEvent,
-    DismissWitnessFromHearingEvent
+    CallParticipantIntoHearingEvent,
+    DismissParticipantFromHearingEvent
 } from 'src/app/shared/models/participant-event';
 import { ElementRef } from '@angular/core';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
@@ -129,36 +129,36 @@ describe('JudgeContextMenuComponent', () => {
         expect(component.toggleMuteParticipantEvent.emit).toHaveBeenCalledWith(new ToggleMuteParticipantEvent(model));
     });
 
-    it('should emit event when calling witness', () => {
+    it('should emit event when calling participant', () => {
         // Arrange
         const p = participants[0];
         p.status = ParticipantStatus.InHearing;
         const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
-        spyOn(component.callWitnessIntoHearingEvent, 'emit');
+        spyOn(component.callParticipantIntoHearingEvent, 'emit');
 
         // Act
-        component.callWitnessIntoHearing();
+        component.callParticipantIntoHearing();
 
         // Assert
-        expect(component.callWitnessIntoHearingEvent.emit).toHaveBeenCalled();
-        expect(component.callWitnessIntoHearingEvent.emit).toHaveBeenCalledWith(new CallWitnessIntoHearingEvent(model));
+        expect(component.callParticipantIntoHearingEvent.emit).toHaveBeenCalled();
+        expect(component.callParticipantIntoHearingEvent.emit).toHaveBeenCalledWith(new CallParticipantIntoHearingEvent(model));
     });
 
-    it('should emit event when dismissing witness', () => {
+    it('should emit event when dismissing participant', () => {
         // Arrange
         const p = participants[0];
         p.status = ParticipantStatus.InHearing;
         const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
-        spyOn(component.dismissWitnessFromHearingEvent, 'emit');
+        spyOn(component.dismissParticipantFromHearingEvent, 'emit');
 
         // Act
-        component.dismissWitnessFromHearing();
+        component.dismissParticipantFromHearing();
 
         // Assert
-        expect(component.dismissWitnessFromHearingEvent.emit).toHaveBeenCalled();
-        expect(component.dismissWitnessFromHearingEvent.emit).toHaveBeenCalledWith(new DismissWitnessFromHearingEvent(model));
+        expect(component.dismissParticipantFromHearingEvent.emit).toHaveBeenCalled();
+        expect(component.dismissParticipantFromHearingEvent.emit).toHaveBeenCalledWith(new DismissParticipantFromHearingEvent(model));
     });
 
     it('should close context menu if click is outside of the menu', () => {
