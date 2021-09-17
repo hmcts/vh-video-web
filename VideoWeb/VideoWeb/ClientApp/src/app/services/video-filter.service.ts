@@ -52,7 +52,7 @@ export class VideoFilterService {
         return this.filterOnSubject.asObservable();
     }
 
-    private _blurStrength: number = 20;
+    private _blurStrength = 20;
     get blurStrength(): number {
         return this._blurStrength;
     }
