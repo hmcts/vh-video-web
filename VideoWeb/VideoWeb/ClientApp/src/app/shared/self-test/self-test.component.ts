@@ -75,6 +75,8 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
         this.initialiseData();
 
+        this.showChangeDevices = this.videoFilterService.doesSupportVideoFiltering();
+
         this.userMediaService.connectedDevices$.pipe(take(1)).subscribe({
             next: () => {
                 this.displayFeed = false;
@@ -108,8 +110,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         } else {
             this.selfTestPexipNode = this.selfTestPexipConfig.pexip_self_test_node;
         }
-
-        this.showChangeDevices = this.videoFilterService.doesSupportVideoFiltering();
     }
 
     get streamsActive() {
