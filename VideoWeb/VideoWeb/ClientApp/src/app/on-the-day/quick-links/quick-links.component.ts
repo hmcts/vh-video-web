@@ -96,13 +96,12 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
         let errorsFound = false;
 
         if (this.quickLinkNameFormControl.invalid) {
+            this.error.nameError = true;
             if (this.quickLinkNameFormControl.errors['emptyOrWhitespaceError']) {
                 this.error.notEmptyOrWhitespaceError = true;
-                this.error.nameError = true;
             }
             if (this.quickLinkNameFormControl.errors['specialCharError']) {
                 this.error.specialCharError = true;
-                this.error.nameError = true;
             }
             errorsFound = true;
         }
