@@ -17,15 +17,14 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 export class QuickLinksComponent implements OnInit, OnDestroy {
     private loggerPrefix = '[QuickLinksComponent] -';
 
-    @ViewChild('fullName', { static: false })
-    inputFullName: ElementRef;
+    @ViewChild('fullName', { static: false }) inputFullName: ElementRef;
 
     error: {
         nameError: boolean;
+        notEmptyOrWhitespaceError: boolean;
+        specialCharError: boolean;
         roleError: boolean;
     };
-    notEmptyOrWhitespaceError: boolean;
-    specialCharError: boolean;
 
     role = Role;
     quickLinkForm: FormGroup;
@@ -98,11 +97,11 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
 
         if (this.quickLinkNameFormControl.invalid) {
             if (this.quickLinkNameFormControl.errors['emptyOrWhitespaceError']) {
-                this.notEmptyOrWhitespaceError = true;
+                this.error.notEmptyOrWhitespaceError = true;
                 this.error.nameError = true;
             }
             if (this.quickLinkNameFormControl.errors['specialCharError']) {
-                this.specialCharError = true;
+                this.error.specialCharError = true;
                 this.error.nameError = true;
             }
             errorsFound = true;
@@ -119,10 +118,10 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
     resetErrors() {
         this.error = {
             nameError: false,
+            notEmptyOrWhitespaceError: false,
+            specialCharError: false,
             roleError: false
         };
-        this.notEmptyOrWhitespaceError = false;
-        this.specialCharError = false;
     }
 
     onSubmit() {

@@ -185,12 +185,12 @@ describe('QuickLinksComponent', () => {
 
         describe('resetErrors', () => {
             it('should resets errors', () => {
-                component.error.nameError = component.error.roleError = component.notEmptyOrWhitespaceError = component.specialCharError = true;
+                component.error.nameError = component.error.roleError = component.error.notEmptyOrWhitespaceError = component.error.specialCharError = true;
                 component.resetErrors();
                 expect(component.error.nameError).toBeFalse();
                 expect(component.error.roleError).toBeFalse();
-                expect(component.notEmptyOrWhitespaceError).toBeFalse();
-                expect(component.specialCharError).toBeFalse();
+                expect(component.error.notEmptyOrWhitespaceError).toBeFalse();
+                expect(component.error.specialCharError).toBeFalse();
             });
         });
 

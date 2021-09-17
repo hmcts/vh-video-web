@@ -5,7 +5,7 @@
 
   <form [formGroup]="quickLinkForm" class="govuk-form-group" (ngSubmit)="onSubmit()">
 
-    <div *ngIf="specialCharError" class="govuk-error-summary" aria-labelledby="error-summary-title" data-module="govuk-error-summary">
+    <div *ngIf="error.specialCharError" class="govuk-error-summary" aria-labelledby="error-summary-title" data-module="govuk-error-summary">
       <h2 class="govuk-error-summary__title" id="error-summary-title">
         {{ 'quick-participant-landing-page.problem-with-form' | translate }}
       </h2>
@@ -28,8 +28,8 @@
     <p>{{ 'quick-participant-landing-page.paragraph1' | translate }}</p>
 
     <div [ngClass]="{ 'govuk-form-group--error': error.nameError }" class="govuk-!-margin-bottom-5">
-      <p *ngIf="notEmptyOrWhitespaceError" class="govuk-error-message">{{ 'quick-participant-landing-page.name-error-empty' | translate }}</p>
-      <p *ngIf="specialCharError" class="govuk-error-message">{{ 'quick-participant-landing-page.name-error-special-char' | translate }}</p>
+      <p *ngIf="error.notEmptyOrWhitespaceError" class="govuk-error-message">{{ 'quick-participant-landing-page.name-error-empty' | translate }}</p>
+      <p *ngIf="error.specialCharError" class="govuk-error-message">{{ 'quick-participant-landing-page.name-error-special-char' | translate }}</p>
       <label class="govuk-label" for="full-name">
         {{ 'quick-participant-landing-page.name-label' | translate }}
       </label>
