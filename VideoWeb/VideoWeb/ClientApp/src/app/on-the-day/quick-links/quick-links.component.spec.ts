@@ -157,6 +157,14 @@ describe('QuickLinksComponent', () => {
                 expect(component.error.nameError).toBeTrue();
             });
 
+            it('should set name error and mark form as invalid if name contains special chars', () => {
+                component.error.nameError = false;
+                component.quickLinkForm.controls['name'].setValue('#Peter C*nolly');
+
+                expect(component.validateForm()).toBeFalse();
+                expect(component.error.nameError).toBeTrue();
+            });
+
             it('should set role error and mark form as invalid if role is not selected', () => {
                 component.error.roleError = false;
                 component.quickLinkForm.controls['quickLinkParticipantRole'].setValue('');
@@ -177,10 +185,12 @@ describe('QuickLinksComponent', () => {
 
         describe('resetErrors', () => {
             it('should resets errors', () => {
-                component.error.nameError = component.error.roleError = true;
+                component.error.nameError = component.error.roleError = component.error.notEmptyOrWhitespaceError = component.error.specialCharError = true;
                 component.resetErrors();
                 expect(component.error.nameError).toBeFalse();
                 expect(component.error.roleError).toBeFalse();
+                expect(component.error.notEmptyOrWhitespaceError).toBeFalse();
+                expect(component.error.specialCharError).toBeFalse();
             });
         });
 
