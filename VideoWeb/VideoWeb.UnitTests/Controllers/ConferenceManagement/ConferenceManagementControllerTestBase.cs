@@ -88,9 +88,17 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                         .With(x => x.Username = Faker.Internet.Email("witness1"))
                         .With(x => x.Id = Guid.NewGuid()).Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.StaffMember)
-                    .With(x => x.HearingRole = "Staff Member")
-                    .With(x => x.Username = Faker.Internet.Email("witness1"))
-                    .With(x => x.Id = Guid.NewGuid()).Build()
+                        .With(x => x.HearingRole = "Staff Member")
+                        .With(x => x.Username = Faker.Internet.Email("witness1"))
+                        .With(x => x.Id = Guid.NewGuid()).Build(),
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.QuickLinkObserver)
+                        .With(x => x.HearingRole = "Quick link observer")
+                        .With(x => x.Username = Faker.Internet.Email("quicklinkobserver1"))
+                        .With(x => x.Id = Guid.NewGuid()).Build(),
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.QuickLinkParticipant)
+                        .With(x => x.HearingRole = "Quick link participant")
+                        .With(x => x.Username = Faker.Internet.Email("quicklinkparticipant1"))
+                        .With(x => x.Id = Guid.NewGuid()).Build()
                 }
             };
 
