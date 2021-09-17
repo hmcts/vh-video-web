@@ -38,6 +38,20 @@ describe('ParticipantPanelModel', () => {
         expect(model.isAvailable()).toBeTruthy();
     });
 
+    it('returns isAvailable: true when participant is quick link observer and in consultation', () => {
+        participant.status = ParticipantStatus.InConsultation;
+        participant.role = Role.QuickLinkObserver;
+        model = mapper.mapFromParticipantUserResponse(participant);
+        expect(model.isAvailable()).toBeTruthy();
+    });
+
+    it('returns isAvailable: true when participant is quick link observer and in consultation', () => {
+        participant.status = ParticipantStatus.InConsultation;
+        participant.role = Role.QuickLinkParticipant;
+        model = mapper.mapFromParticipantUserResponse(participant);
+        expect(model.isAvailable()).toBeTruthy();
+    });
+
     it('should return true when participant is a judge', () => {
         participant.role = Role.Judge;
         model = mapper.mapFromParticipantUserResponse(participant);
