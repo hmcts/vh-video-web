@@ -1026,7 +1026,7 @@ export abstract class WaitingRoomBaseDirective {
             return;
         }
 
-        if (this.isOrHasWitnessLink() && this.participant.status === ParticipantStatus.InHearing) {
+        if ((this.isOrHasWitnessLink() || this.isQuickLinkParticipant()) && this.participant.status === ParticipantStatus.InHearing) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because witness is in hearing';
             this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
