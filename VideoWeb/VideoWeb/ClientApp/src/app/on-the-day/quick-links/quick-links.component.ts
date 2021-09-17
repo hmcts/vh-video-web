@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, of, Subject } from 'rxjs';
@@ -17,10 +17,15 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 export class QuickLinksComponent implements OnInit, OnDestroy {
     private loggerPrefix = '[QuickLinksComponent] -';
 
+    @ViewChild('fullName', { static: false }) inputFullName: ElementRef;
+
     error: {
         nameError: boolean;
+        notEmptyOrWhitespaceError: boolean;
+        specialCharError: boolean;
         roleError: boolean;
     };
+
     role = Role;
     quickLinkForm: FormGroup;
     hearingId: string;
@@ -65,8 +70,16 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
             .subscribe();
     }
 
+    focusToInput(): void {
+        this.inputFullName.nativeElement.focus();
+    }
+
     initializeForm() {
-        this.quickLinkNameFormControl = this.formBuilder.control('', [Validators.required, CustomValidators.notEmptyOrWhitespaceValidator]);
+        this.quickLinkNameFormControl = this.formBuilder.control('', [
+            Validators.required,
+            CustomValidators.specialCharValidator,
+            CustomValidators.notEmptyOrWhitespaceValidator
+        ]);
         this.quickLinkRoleFormControl = this.formBuilder.control('', Validators.required);
 
         this.quickLinksService.getQuickLinkParticipantRoles().subscribe(roles => {
@@ -84,6 +97,12 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
 
         if (this.quickLinkNameFormControl.invalid) {
             this.error.nameError = true;
+            if (this.quickLinkNameFormControl.errors['emptyOrWhitespaceError']) {
+                this.error.notEmptyOrWhitespaceError = true;
+            }
+            if (this.quickLinkNameFormControl.errors['specialCharError']) {
+                this.error.specialCharError = true;
+            }
             errorsFound = true;
         }
 
@@ -98,6 +117,8 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
     resetErrors() {
         this.error = {
             nameError: false,
+            notEmptyOrWhitespaceError: false,
+            specialCharError: false,
             roleError: false
         };
     }
