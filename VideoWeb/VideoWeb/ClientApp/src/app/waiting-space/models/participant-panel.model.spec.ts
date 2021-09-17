@@ -62,39 +62,92 @@ describe('ParticipantPanelModel', () => {
         expect(model.isJudicialOfficeHolder).toBeFalsy();
     });
 
-    it('should return false when participant is a witness and status is in hearing', () => {
-        participant.hearing_role = HearingRole.WITNESS;
-        participant.status = ParticipantStatus.InHearing;
-        model = mapper.mapFromParticipantUserResponse(participant);
-        expect(model.isWitnessOrQuickLinkUserReadyToJoin).toBeFalsy();
-    });
+    describe('callable', () => {
+        const id = 'id';
+        const displayName = 'displayName';
+        const role = Role.None;
+        const caseTypeGroup = 'caseTypeGroup';
+        const pexipDisplayName = 'pexipDisplayName';
+        const hearingRole = 'hearingRole';
+        const representee = 'representsee';
+        const status = ParticipantStatus.None;
 
-    it('should return false when participant is a quick link observer and status is in hearing', () => {
-        participant.role = Role.QuickLinkObserver;
-        participant.status = ParticipantStatus.InHearing;
-        participant.hearing_role = HearingRole.QUICK_LINK_OBSERVER;
-        model = mapper.mapFromParticipantUserResponse(participant);
-        expect(model.isWitnessOrQuickLinkUserReadyToJoin).toBeFalsy();
-    });
+        beforeEach(() => {
+            model = new ParticipantPanelModel(id, displayName, role, caseTypeGroup, pexipDisplayName, hearingRole, representee, status);
+        });
 
-    it('should return false when participant is a quick link observer and status is not in hearing', () => {
-        participant.role = Role.QuickLinkObserver;
-        participant.status = ParticipantStatus.Available;
-        model = mapper.mapFromParticipantUserResponse(participant);
-        expect(model.isWitnessOrQuickLinkUserReadyToJoin).toBeTruthy();
-    });
+        describe('isWitness', () => {
+            const validHearingRoles = [HearingRole.WITNESS];
 
-    it('should return false when participant is a quick link participant and status is in hearing', () => {
-        participant.role = Role.QuickLinkParticipant;
-        participant.status = ParticipantStatus.InHearing;
-        model = mapper.mapFromParticipantUserResponse(participant);
-        expect(model.isWitnessOrQuickLinkUserReadyToJoin).toBeFalsy();
-    });
+            Object.keys(HearingRole).forEach(hearingRoleString => {
+                const testHearingRole = HearingRole[hearingRoleString];
+                const isValid = validHearingRoles.includes(testHearingRole);
+                it(`should return ${isValid} when hearing role is ${hearingRoleString}`, () => {
+                    model.hearingRole = testHearingRole;
+                    expect(model.isWitness).toBe(isValid);
+                });
+            });
+        });
 
-    it('should return true when participant is a quick link participant and status is not in hearing', () => {
-        participant.role = Role.QuickLinkParticipant;
-        participant.status = ParticipantStatus.Available;
-        model = mapper.mapFromParticipantUserResponse(participant);
-        expect(model.isWitnessOrQuickLinkUserReadyToJoin).toBeTruthy();
+        describe('isQuickLinkUser', () => {
+            const validRoles = [Role.QuickLinkObserver, Role.QuickLinkParticipant];
+
+            Object.keys(Role).forEach(roleString => {
+                const testRole = Role[roleString];
+                const isValid = validRoles.includes(testRole);
+                it(`should return ${isValid} when role is ${roleString}`, () => {
+                    model.role = testRole;
+                    expect(model.isQuickLinkUser).toBe(isValid);
+                });
+            });
+        });
+
+        describe('isCallable', () => {
+            const testCases = [
+                { isWitness: false, isQuickLinkUser: false, expectation: false },
+                { isWitness: true, isQuickLinkUser: false, expectation: true },
+                { isWitness: false, isQuickLinkUser: true, expectation: true },
+                { isWitness: true, isQuickLinkUser: true, expectation: true }
+            ];
+            testCases.forEach(testCase => {
+                it(`should return ${testCase.expectation} when isWitness is ${testCase.isWitness} and isQuickLinkUser is ${testCase.isQuickLinkUser}`, () => {
+                    spyOnProperty(model, 'isWitness').and.returnValue(testCase.isWitness);
+                    spyOnProperty(model, 'isQuickLinkUser').and.returnValue(testCase.isQuickLinkUser);
+                    expect(model.isCallable).toBe(testCase.expectation);
+                });
+            });
+        });
+
+        describe('isCallableAndReadyToJoin', () => {
+            const testCases = [
+                { isCallable: false, isInHearing: false, expectation: false },
+                { isCallable: true, isInHearing: false, expectation: true },
+                { isCallable: false, isInHearing: true, expectation: false },
+                { isCallable: true, isInHearing: true, expectation: false }
+            ];
+            testCases.forEach(testCase => {
+                it(`should return ${testCase.expectation} when isCallable is ${testCase.isCallable} and isInHearing is ${testCase.isInHearing}`, () => {
+                    spyOnProperty(model, 'isCallable').and.returnValue(testCase.isCallable);
+                    spyOn(model, 'isInHearing').and.returnValue(testCase.isInHearing);
+                    expect(model.isCallableAndReadyToJoin).toBe(testCase.expectation);
+                });
+            });
+        });
+
+        describe('isCallableAndReadyToBeDismissed', () => {
+            const testCases = [
+                { isCallable: false, isInHearing: false, expectation: false },
+                { isCallable: true, isInHearing: false, expectation: false },
+                { isCallable: false, isInHearing: true, expectation: false },
+                { isCallable: true, isInHearing: true, expectation: true }
+            ];
+            testCases.forEach(testCase => {
+                it(`should return ${testCase.expectation} when isCallable is ${testCase.isCallable} and isInHearing is ${testCase.isInHearing}`, () => {
+                    spyOnProperty(model, 'isCallable').and.returnValue(testCase.isCallable);
+                    spyOn(model, 'isInHearing').and.returnValue(testCase.isInHearing);
+                    expect(model.isCallableAndReadyToBeDismissed).toBe(testCase.expectation);
+                });
+            });
+        });
     });
 });
