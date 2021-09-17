@@ -386,30 +386,19 @@
     </div>
 </div>
 
-<div class="outgoing-video-container">
+<app-self-view [videoSource]="outgoingStream" [showSpotlightedBorder]="isSpotlighted" [isOpen]="selfViewOpen"></app-self-view>
+
+<div class="outgoing-present-video-container">
   <video
-    [ngClass]="{ 'vh-fade-in': selfViewOpen, 'vh-fade-out': !selfViewOpen, 'vh-spotlight-self-view-outline': isSpotlighted }"
-    id="outgoingFeedVideo"
+    [ngClass]="{ 'vh-fade-in': this.screenShareStream, 'vh-fade-out': !this.screenShareStream }"
+    id="outgoingFeedPresentVideo"
     [muted]="true"
-    [srcObject]="this.outgoingStream"
+    [srcObject]="this.screenShareStream"
     autoplay
     height="auto"
-    class="selfie-view"
   >
     {{ 'private-consultation-room-controls.browser-support' | translate }}
   </video>
-</div>
-<div class='outgoing-present-video-container'>
-    <video
-        [ngClass]="{ 'vh-fade-in': this.screenShareStream, 'vh-fade-out': !this.screenShareStream }"
-        id='outgoingFeedPresentVideo'
-        [muted]='true'
-        [srcObject]='this.screenShareStream'
-        autoplay
-        height='auto'
-    >
-        {{ 'private-consultation-room-controls.browser-support' | translate }}
-    </video>
 </div>
 
 <app-confirm-close-hearing-popup

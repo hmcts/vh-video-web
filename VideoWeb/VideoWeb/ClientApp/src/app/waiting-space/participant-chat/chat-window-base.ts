@@ -24,6 +24,7 @@ import { ImHelper } from 'src/app/shared/im-helper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { TranslateService } from '@ngx-translate/core';
 import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
+import { takeUntil } from 'rxjs/operators';
 
 @Injectable()
 export abstract class ChatWindowBaseComponent extends ChatBaseComponent implements OnInit, OnDestroy, AfterViewChecked {
@@ -74,7 +75,9 @@ export abstract class ChatWindowBaseComponent extends ChatBaseComponent implemen
             this.handleChatHistoryResponse(messages);
         });
 
-        this.securityService.userData$.subscribe(ud => (this._participantUsername = ud.preferred_username.toLowerCase()));
+        this.securityService.userData$.pipe(takeUntil(this.destroyed$)).subscribe(ud => {
+            this._participantUsername = ud.preferred_username.toLowerCase();
+        });
     }
 
     ngAfterViewChecked(): void {

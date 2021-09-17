@@ -1,7 +1,7 @@
 import { EndpointStatus, Role, VideoEndpointResponse } from '../../services/clients/api-client';
-import { PanelModel } from './panel-model-base';
+import { IndividualPanelModel } from './individual-panel-model';
 
-export class VideoEndpointPanelModel extends PanelModel {
+export class VideoEndpointPanelModel extends IndividualPanelModel {
     public status: EndpointStatus;
 
     constructor(endpoint: VideoEndpointResponse) {
@@ -9,7 +9,14 @@ export class VideoEndpointPanelModel extends PanelModel {
         this.status = endpoint.status;
     }
 
-    get isWitnessOrQuickLinkUserReadyToJoin(): boolean {
+    get isCallableAndReadyToJoin(): boolean {
+        return false;
+    }
+
+    get isCallableAndReadyToBeDismissed(): boolean {
+        return false;
+    }
+    get isCallable(): boolean {
         return false;
     }
 

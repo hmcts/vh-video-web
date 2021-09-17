@@ -30,6 +30,7 @@ import { ConsultationLeaveComponent } from './consultation-modals/consultation-l
 import { ParticipantNetworkPoorAlertComponent } from './participant-network-health/participant-network-poor-alert.component';
 import { ChatPanelComponent } from './chat-panel/chat-panel.component';
 import { ParticipantItemComponent } from './participant-waiting-room/private-consultation-participants/participant-item/participant-item.component';
+import { SelfViewComponent } from './private-consultation-room-controls/self-view/self-view.component';
 
 @NgModule({
     imports: [SharedModule, WaitingSpaceRoutingModule],
@@ -57,7 +58,8 @@ import { ParticipantItemComponent } from './participant-waiting-room/private-con
         InviteParticipantComponent,
         PrivateConsultationParticipantsComponent,
         ParticipantNetworkPoorAlertComponent,
-        ParticipantItemComponent
+        ParticipantItemComponent,
+        SelfViewComponent
     ],
     providers: [VideoCallService, NotificationSoundsService, NotificationToastrService, RoomClosingToastrService, LoggedUserResolveService]
 })
