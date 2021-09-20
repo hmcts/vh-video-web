@@ -1,15 +1,39 @@
 <ng-container *ngIf="hearingValidated; else loading">
   <h1 class="govuk-heading-xl govuk-!-margin-top-8">{{ 'quick-participant-landing-page.page-title' | translate }}</h1>
 
-  <p>{{ 'quick-participant-landing-page.paragraph1' | translate }}</p>
+  
 
   <form [formGroup]="quickLinkForm" class="govuk-form-group" (ngSubmit)="onSubmit()">
+
+    <div *ngIf="error.specialCharError" class="govuk-error-summary" aria-labelledby="error-summary-title" data-module="govuk-error-summary">
+      <h2 class="govuk-error-summary__title" id="error-summary-title">
+        {{ 'quick-participant-landing-page.problem-with-form' | translate }}
+      </h2>
+      <div class="govuk-error-summary__body">
+        <ul class="govuk-list govuk-error-summary__list">
+          <li>
+            <a class="govuk-link" href="javascript:void(0)" (click)="focusToInput()">
+              {{ 'quick-participant-landing-page.problem-with-special-char' | translate }}
+            </a>
+          </li>
+          <li>
+            <a class="govuk-link" href="javascript:void(0)" (click)="focusToInput()">
+              {{ 'quick-participant-landing-page.problem-with-special-char-recommendation' | translate }}
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  
+    <p>{{ 'quick-participant-landing-page.paragraph1' | translate }}</p>
+
     <div [ngClass]="{ 'govuk-form-group--error': error.nameError }" class="govuk-!-margin-bottom-5">
-      <p *ngIf="error.nameError" class="govuk-error-message">{{ 'quick-participant-landing-page.name-error' | translate }}</p>
+      <p *ngIf="error.notEmptyOrWhitespaceError" class="govuk-error-message">{{ 'quick-participant-landing-page.name-error-empty' | translate }}</p>
+      <p *ngIf="error.specialCharError" class="govuk-error-message">{{ 'quick-participant-landing-page.name-error-special-char' | translate }}</p>
       <label class="govuk-label" for="full-name">
         {{ 'quick-participant-landing-page.name-label' | translate }}
       </label>
-      <input formControlName="name" class="govuk-input govuk-!-width-two-thirds" id="full-name" name="full-name" type="text" spellcheck="false" autocomplete="name">
+      <input  #fullName formControlName="name" class="govuk-input govuk-!-width-two-thirds" id="full-name" name="full-name" type="text" spellcheck="false" autocomplete="name">
     </div>
 
     <div [ngClass]="{ 'govuk-form-group--error': error.roleError }">

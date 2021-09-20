@@ -1,0 +1,13 @@
+.spotlighted-border {
+  border: 3px solid govuk-colour('yellow');
+}
+
+.video-container {
+  bottom: 10px;
+  left: 10px;
+  z-index: 101;
+  position: absolute;
+  max-width: 10vw;
+  min-width: 8rem;
+  height: auto;
+}
