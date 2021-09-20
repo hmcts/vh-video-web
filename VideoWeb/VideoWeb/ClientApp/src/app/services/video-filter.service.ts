@@ -148,8 +148,10 @@ export class VideoFilterService {
     }
 
     doesSupportVideoFiltering() {
-        const allowedBrowser = !this.deviceTypeService.getBrowserName().includes(browsers.Safari);
-        return this.enableVideoFilters && allowedBrowser && !this.deviceTypeService.isTablet();
+        //const allowedBrowser = !this.deviceTypeService.getBrowserName().includes(browsers.Safari);
+        return this.enableVideoFilters &&
+            // allowedBrowser &&
+            !this.deviceTypeService.isTablet();
     }
 
     private onSelfieSegmentationResults(results: Results): void {
