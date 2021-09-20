@@ -12,10 +12,10 @@ export class LowerParticipantHandEvent {
     constructor(public participant: PanelModel) {}
 }
 
-export class CallWitnessIntoHearingEvent {
+export class CallParticipantIntoHearingEvent {
     constructor(public participant: PanelModel) {}
 }
 
-export class DismissWitnessFromHearingEvent {
+export class DismissParticipantFromHearingEvent {
     constructor(public participant: PanelModel) {}
 }

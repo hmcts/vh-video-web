@@ -365,7 +365,7 @@ export class VideoCallService {
             conference: conferenceId,
             participant: participantId
         });
-        return this.apiClient.callWitness(conferenceId, participantId).toPromise();
+        return this.apiClient.callParticipant(conferenceId, participantId).toPromise();
     }
 
     async dismissParticipantFromHearing(conferenceId: string, participantId: string) {
@@ -373,7 +373,7 @@ export class VideoCallService {
             conference: conferenceId,
             participant: participantId
         });
-        return this.apiClient.dismissWitness(conferenceId, participantId).toPromise();
+        return this.apiClient.dismissParticipant(conferenceId, participantId).toPromise();
     }
 
     renegotiateCall(sendUpdate: boolean = false) {
