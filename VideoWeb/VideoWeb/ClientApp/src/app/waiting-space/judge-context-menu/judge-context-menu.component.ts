@@ -85,21 +85,15 @@ export class JudgeContextMenuComponent {
         this.isDroppedDown = !this.isDroppedDown;
     }
 
-    getAdditionalText(): string {
-        return this.participant.hearingRole !== HearingRole.JUDGE ? this.getHearingRole() + this.getCaseRole() : '';
+    get isJudge(): boolean {
+        return this.participant.hearingRole === HearingRole.JUDGE;
     }
 
-    private getHearingRole(): string {
-        return this.participant.representee
-            ? `<br/>${this.participant.hearingRole} for ${this.participant.representee}`
-            : `<br/>${this.participant.hearingRole}`;
+    get isWitness(): boolean {
+        return this.participant.hearingRole === HearingRole.WITNESS;
     }
 
-    private getCaseRole(): string {
-        return this.showCaseRole() ? `<br/>${this.participant.caseTypeGroup}` : '';
-    }
-
-    private showCaseRole() {
+    showCaseRole() {
         return !this.participant.caseTypeGroup ||
             this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
             this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
