@@ -5697,6 +5697,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
     e_jud_idp_settings?: IdpSettingsResponse | undefined;
     vh_idp_settings?: IdpSettingsResponse | undefined;
     enable_video_filters?: boolean;
+    blur_radius?: number;
 
     constructor(data?: IClientSettingsResponse) {
         if (data) {

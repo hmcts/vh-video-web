@@ -50,7 +50,8 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
             var servicesConfiguration = new HearingServicesConfiguration
             {
                 VideoApiUrl = "https://vh-video-api/",
-                EnableVideoFilters = true
+                EnableVideoFilters = true,
+                BlurRadius = 20
             };
 
             var kinlyConfiguration = new KinlyConfiguration
