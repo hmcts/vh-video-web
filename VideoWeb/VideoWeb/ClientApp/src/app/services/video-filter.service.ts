@@ -52,6 +52,15 @@ export class VideoFilterService {
         return this.filterOnSubject.asObservable();
     }
 
+    private _blurStrength = 20;
+    get blurStrength(): number {
+        return this._blurStrength;
+    }
+
+    set blurStrength(str: number) {
+        this._blurStrength = str;
+    }
+
     selfieSegmentation: SelfieSegmentation;
     activeFilter: BackgroundFilter;
     imgs: Map<BackgroundFilter, HTMLImageElement> = new Map();
@@ -189,7 +198,7 @@ export class VideoFilterService {
 
     private applyBlurEffect(results: Results, withBlur: boolean) {
         if (withBlur) {
-            this.canvasCtx.filter = 'blur(50px)';
+            this.canvasCtx.filter = `blur(${this.blurStrength}px)`;
         }
         this.canvasCtx.drawImage(results.image, 0, 0, this.canvasElement.width, this.canvasElement.height);
     }
