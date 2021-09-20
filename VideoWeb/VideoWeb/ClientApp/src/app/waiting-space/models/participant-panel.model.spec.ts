@@ -3,8 +3,9 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { ParticipantPanelModel } from './participant-panel-model';
 import { ParticipantPanelModelMapper } from '../../shared/mappers/participant-panel-model-mapper';
 import { HearingRole } from './hearing-role-model';
+import { PanelModel } from './panel-model-base';
 
-describe('ParticipantPanelModel', () => {
+fdescribe('ParticipantPanelModel', () => {
     let model: ParticipantPanelModel;
     let participant: ParticipantForUserResponse;
 
@@ -38,18 +39,25 @@ describe('ParticipantPanelModel', () => {
         expect(model.isAvailable()).toBeTruthy();
     });
 
-    it('returns isAvailable: true when participant is quick link observer and in consultation', () => {
+    it('returns isAvailable: true when participant is quick link user and status is in consultation', () => {
         participant.status = ParticipantStatus.InConsultation;
-        participant.role = Role.QuickLinkObserver;
         model = mapper.mapFromParticipantUserResponse(participant);
+        spyOnProperty(model, 'isQuickLinkUser').and.returnValue(true);
         expect(model.isAvailable()).toBeTruthy();
     });
 
-    it('returns isAvailable: true when participant is quick link observer and in consultation', () => {
-        participant.status = ParticipantStatus.InConsultation;
-        participant.role = Role.QuickLinkParticipant;
+    it('returns isAvailable: true when participant is quick link user and status is available', () => {
+        participant.status = ParticipantStatus.Available;
         model = mapper.mapFromParticipantUserResponse(participant);
+        spyOnProperty(model, 'isQuickLinkUser').and.returnValue(true);
         expect(model.isAvailable()).toBeTruthy();
+    });
+
+    it('returns isAvailable: false when participant is quick link user and status is in hearing', () => {
+        participant.status = ParticipantStatus.InHearing;
+        model = mapper.mapFromParticipantUserResponse(participant);
+        spyOnProperty(model, 'isQuickLinkUser').and.returnValue(true);
+        expect(model.isAvailable()).toBeFalsy();
     });
 
     it('should return true when participant is a judge', () => {
