@@ -39,6 +39,7 @@ export class QuickLinkSecurityService implements ISecurityService {
         this.tokenSessionStorage = new SessionStorage<string>(this.tokenSessionStorageKey);
         this.token = this.tokenSessionStorage.get();
         if (this.isTokenValid(this.token)) {
+            this.decodedTokenBody = this.decodeTokenBody(this.token);
             this.isAuthenticatedSubject.next(true);
         }
     }
