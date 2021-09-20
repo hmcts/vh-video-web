@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Camera } from '@mediapipe/camera_utils';
 import { Results, SelfieSegmentation } from '@mediapipe/selfie_segmentation';
 import { Observable, ReplaySubject, Subject } from 'rxjs';
-import { browsers } from '../shared/browser.constants';
 import { ConfigService } from './api/config.service';
 import { DeviceTypeService } from './device-type.service';
 import { Logger } from './logging/logger-base';
@@ -158,9 +157,11 @@ export class VideoFilterService {
 
     doesSupportVideoFiltering() {
         //const allowedBrowser = !this.deviceTypeService.getBrowserName().includes(browsers.Safari);
-        return this.enableVideoFilters &&
+        return (
+            this.enableVideoFilters &&
             // allowedBrowser &&
-            !this.deviceTypeService.isTablet();
+            !this.deviceTypeService.isTablet()
+        );
     }
 
     private onSelfieSegmentationResults(results: Results): void {
