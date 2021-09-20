@@ -163,7 +163,13 @@ export class UserMediaService {
     getCameraAndMicrophoneDevices(): Observable<UserMediaDevice[]> {
         return from(this.navigator.mediaDevices.enumerateDevices()).pipe(
             take(1),
-            map(devices => devices.filter(x => x.deviceId !== 'default' && (x.kind === 'videoinput' || x.kind === 'audioinput'))),
+            map(devices => {
+                const filteredDevices = devices.filter(
+                    x => x.deviceId !== 'default' && x.deviceId !== 'communications' && (x.kind === 'videoinput' || x.kind === 'audioinput')
+                );
+
+                return filteredDevices.length > 0 ? filteredDevices : devices;
+            }),
             map(devices => devices.map(device => new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)))
         );
     }
