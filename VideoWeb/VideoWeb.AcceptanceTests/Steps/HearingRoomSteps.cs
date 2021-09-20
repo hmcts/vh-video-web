@@ -54,8 +54,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the Judge closes the hearing")]
         public void WhenTheJudgeClosesTheHearing()
         {
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.CloseButton, 180);
-            _browsers[_c.CurrentUser].Click(HearingRoomPage.CloseButton);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.CloseButtonLandscape, 180);
+            _browsers[_c.CurrentUser].Click(HearingRoomPage.CloseButtonLandscape);
             if (_c.VideoWebConfig.TestConfig.TargetBrowser == TargetBrowser.Firefox)
             {
                 Thread.Sleep(TimeSpan.FromSeconds(5));
@@ -90,7 +90,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.ToggleSelfView).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.PauseButton).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.CloseButton).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.CloseButtonLandscape).Displayed.Should().BeTrue();
         }
 
         [Then(@"the user can see themselves and toggle the view off and on")]
