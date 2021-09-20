@@ -21,7 +21,6 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public sealed class WaitingRoomSteps : ISteps
     {
-        private const int _maxTimeout = 60;
         private const int ExtraTimeAfterReachingWaitingRoom = 3;
         private const int ExtraTimeInWaitingRoomAfterThePause = 10;
         private readonly Dictionary<UserDto, UserBrowser> _browsers;
@@ -351,6 +350,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var participantDetailsResponses = loggedInParticipants as ParticipantDetailsResponse[] ?? loggedInParticipants.ToArray();
 
             By panelElement = null;
+            string participant = "Participant";
 
             foreach (var user in participantDetailsResponses)
             {
@@ -358,10 +358,12 @@ namespace VideoWeb.AcceptanceTests.Steps
 
                 if (user.HearingRole.Equals("Observer", StringComparison.OrdinalIgnoreCase))
                 {
+                    participant = "Observer";
                     panelElement = JudgeParticipantPanel.ObserverStatus(user.Id);
                 }
                 else if (user.HearingRole.Equals("Panel Member", StringComparison.OrdinalIgnoreCase))
                 {
+                    participant = "Panel Member";
                     panelElement = JudgeParticipantPanel.PanelMemberStatus(user.Id);
                 }
                 else
@@ -369,9 +371,10 @@ namespace VideoWeb.AcceptanceTests.Steps
                     panelElement = JudgeParticipantPanel.ParticipantStatus(user.Id);
                 }
 
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(panelElement, _maxTimeout);
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(panelElement, Convert.ToInt32(_c.VideoWebConfig.consultationRoomTimeout));
                 _browsers[_c.CurrentUser].TextOf(panelElement).ToUpper()
-                    .Should().BeOneOf("CONNECTED", "IN CONSULTATION");
+                    .Should().BeOneOf(new string[] { "CONNECTED", "IN CONSULTATION" }, $"{participant} ($user id: {user.Id}) is not connected.");
+
 
                 if (user.HearingRole.ToLower() != "interpreter") continue;
                 var interpretee = participantDetailsResponses.Single(p => p.Id == user.LinkedParticipants.Single().LinkedId);
