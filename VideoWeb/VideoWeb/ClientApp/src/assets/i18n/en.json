@@ -610,7 +610,10 @@
     "start-sharing-screen": "Start sharing screen",
     "stop-sharing-my-screen": "Stop sharing my screen",
     "stop-sharing-screen": "Stop sharing screen",
-    "change-camera-mic": "Change your camera and microphone"
+    "change-camera-mic": "Change your camera and microphone",
+    "context-menu": "Open Menu",
+    "hearing-controls": "Hearing controls"
+    
   },
   "chat-panel": {
     "heading": "VH Officer messages",
@@ -1060,8 +1063,12 @@
   "quick-participant-landing-page": {
     "page-title": "Enter your details to join your hearing",
     "paragraph1": "Please tell us your name and your role in the hearing.",
+    "problem-with-form": "There is a problem",
+    "problem-with-special-char": "You entered some characters that are not allowed.",
+    "problem-with-special-char-recommendation": "You may use accents, apostrophes and hyphens but no other symbols.",
     "name-label": "Your full name",
-    "name-error": "Please enter your full name",
+    "name-error-empty": "Please enter your full name",
+    "name-error-special-char": "You've entered characters that are not allowed",
     "role-label": "What is your role in the hearing?",
     "role-error": "Please choose your role in the hearing",
     "roles": {

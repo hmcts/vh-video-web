@@ -13,4 +13,14 @@ export class CustomValidators extends Validators {
         // Disabling next line as prettier and ng lint are arguing over the semi-colon
         // tslint:disable-next-line
     };
+
+    public static specialCharValidator(control) {
+        if (control.value.trim().length > 0 && !control.value?.match(/^[^!”#$%&()*+,./:;<=>?@[\\\]^_`{|}~]+$/)) {
+            return { specialCharError: 'specialCharError' };
+        }
+        return null;
+
+        // Disabling next line as prettier and ng lint are arguing over the semi-colon
+        // tslint:disable-next-line
+    }
 }

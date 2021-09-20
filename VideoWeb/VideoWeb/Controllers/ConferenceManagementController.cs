@@ -140,11 +140,11 @@ namespace VideoWeb.Controllers
         /// <param name="participantId">witness id</param>
         /// <returns>Accepted status</returns>
         [HttpPost("{conferenceId}/participant/{participantId}/call")]
-        [SwaggerOperation(OperationId = "CallWitness")]
+        [SwaggerOperation(OperationId = "CallParticipant")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        public async Task<IActionResult> CallWitnessAsync(Guid conferenceId, Guid participantId)
+        public async Task<IActionResult> CallParticipantAsync(Guid conferenceId, Guid participantId)
         {
-            var validatedRequest = await ValidateWitnessInConference(conferenceId, participantId);
+            var validatedRequest = await ValidateParticipantInConference(conferenceId, participantId);
             if (validatedRequest != null)
             {
                 return validatedRequest;
@@ -176,11 +176,11 @@ namespace VideoWeb.Controllers
         /// <param name="participantId">witness id</param>
         /// <returns>Accepted status</returns>
         [HttpPost("{conferenceId}/participant/{participantId}/dismiss")]
-        [SwaggerOperation(OperationId = "DismissWitness")]
+        [SwaggerOperation(OperationId = "DismissParticipant")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        public async Task<IActionResult> DismissWitnessAsync(Guid conferenceId, Guid participantId)
+        public async Task<IActionResult> DismissParticipantAsync(Guid conferenceId, Guid participantId)
         {
-            var validatedRequest = await ValidateWitnessInConference(conferenceId, participantId);
+            var validatedRequest = await ValidateParticipantInConference(conferenceId, participantId);
             if (validatedRequest != null)
             {
                 return validatedRequest;
@@ -234,19 +234,19 @@ namespace VideoWeb.Controllers
             return Unauthorized("User must be a Judge");
         }
 
-        private async Task<IActionResult> ValidateWitnessInConference(Guid conferenceId, Guid participantId)
+        private async Task<IActionResult> ValidateParticipantInConference(Guid conferenceId, Guid participantId)
         {
             var judgeValidation = await ValidateUserIsJudgeAndInConference(conferenceId);
             if (judgeValidation != null) return judgeValidation;
 
-            if (await IsParticipantAWitnessOrWitnessInterpreter(conferenceId, participantId))
+            if (await IsParticipantCallable(conferenceId, participantId))
             { 
                 return null;
             }
 
-            _logger.LogWarning("Participant {Participant} is not a witness in {Conference}", participantId,
+            _logger.LogWarning("Participant {Participant} is not a callable participant in {Conference}", participantId,
                 conferenceId);
-            return Unauthorized("Participant is not a witness");
+            return Unauthorized("Participant is not callable");
         }
 
         private async Task<bool> IsConferenceJudge(Guid conferenceId)
@@ -256,7 +256,7 @@ namespace VideoWeb.Controllers
                 .Equals(User.Identity.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase);
         }
 
-        private async Task<bool> IsParticipantAWitnessOrWitnessInterpreter(Guid conferenceId, Guid participantId)
+        private async Task<bool> IsParticipantCallable(Guid conferenceId, Guid participantId)
         {
             var conference = await _conferenceCache.GetOrAddConferenceAsync
             (
@@ -273,7 +273,7 @@ namespace VideoWeb.Controllers
 
             if (!participant.LinkedParticipants.Any())
             {
-                return participant.IsWitness();
+                return participant.IsCallable();
             }
             
             var witnessRoom = conference.CivilianRooms.First(x => x.Participants.Contains(participant.Id));

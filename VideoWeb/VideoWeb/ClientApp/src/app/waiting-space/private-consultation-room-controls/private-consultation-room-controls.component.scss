@@ -9,10 +9,6 @@
   color: govuk-colour('yellow');
 }
 
-.vh-spotlight-self-view-outline {
-  border: 3px solid govuk-colour('yellow');
-}
-
 .red {
   color: govuk-colour('red');
 }
@@ -39,6 +35,10 @@
 }
 
 .icon-button:hover {
+  opacity: 1;
+}
+
+.dropdown-opaque {
   opacity: 1;
 }
 
@@ -90,6 +90,7 @@
   margin-top: 10px;
   margin-bottom: -10px;
   line-height: 30px;
+  margin-right: 30px;
 }
 
 .small-button {
@@ -130,5 +131,60 @@
   background: rgba(29, 112, 184, 0.7);
   &:hover {
     background: rgba(29, 112, 184, 1);
+  }
+}
+
+.dropdown {
+  position: relative;
+  display: none;
+  @media only screen and (min-width: 320px) and (max-width: 768px) {
+    display: inline-block;
+  }
+}
+
+.dropdown-content {
+  display: block;
+  position: absolute;
+  right: -73px;
+  left: auto;
+  background-color: govuk-colour('white');
+  color: black;
+  font-size: 16px;
+  min-width: 300px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  padding: 12px 16px;
+  z-index: 999;
+}
+.context-item {
+  font-family: 'GDS Transport', arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  margin-left: 4px;
+}
+.portrait {
+  display: block;
+  @media only screen and (orientation: landscape) {
+    display: none;
+  }
+}
+
+.landscape {
+  display: inline-flex;
+  @media only screen and (orientation: portrait) {
+    display: none;
+  }
+  @media only screen and (min-width: 768px) {
+    display: none;
+  }
+}
+
+.hearing-controls-desktop {
+  display: inline-flex;
+  @media only screen and (min-width: 320px) and (max-width: 768px) {
+    display: none;
+  }
+
+  .horizontal-spacer {
+    padding-bottom: 10px;
+    border-bottom: 2px solid govuk-colour('mid-grey');
   }
 }

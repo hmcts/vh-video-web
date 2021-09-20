@@ -50,8 +50,8 @@ describe('VideoCallService', () => {
             'startOrResumeVideoHearing',
             'pauseVideoHearing',
             'endVideoHearing',
-            'callWitness',
-            'dismissWitness',
+            'callParticipant',
+            'dismissParticipant',
             'getParticipantRoomForParticipant'
         ]);
 
@@ -236,19 +236,19 @@ describe('VideoCallService', () => {
     });
 
     it('should make api call witness on call witness', async () => {
-        apiClient.callWitness.and.returnValue(of());
+        apiClient.callParticipant.and.returnValue(of());
         const conferenceId = Guid.create().toString();
         const witnessId = Guid.create().toString();
         await service.callParticipantIntoHearing(conferenceId, witnessId);
-        expect(apiClient.callWitness).toHaveBeenCalledWith(conferenceId, witnessId);
+        expect(apiClient.callParticipant).toHaveBeenCalledWith(conferenceId, witnessId);
     });
 
     it('should make api dismiss witness on dismiss witness', async () => {
-        apiClient.dismissWitness.and.returnValue(of());
+        apiClient.dismissParticipant.and.returnValue(of());
         const conferenceId = Guid.create().toString();
         const witnessId = Guid.create().toString();
         await service.dismissParticipantFromHearing(conferenceId, witnessId);
-        expect(apiClient.dismissWitness).toHaveBeenCalledWith(conferenceId, witnessId);
+        expect(apiClient.dismissParticipant).toHaveBeenCalledWith(conferenceId, witnessId);
     });
 
     it('should call renegotiate', () => {
