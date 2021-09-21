@@ -60,6 +60,7 @@ export function getLocale() {
         { provide: LOCALE_ID, useFactory: getLocale },
         { provide: ErrorHandler, useClass: GlobalErrorHandler },
         { provide: Navigator, useValue: window.navigator },
+        { provide: Document, useValue: window.document },
         ConfigService,
         Title,
         PageTrackerService,
