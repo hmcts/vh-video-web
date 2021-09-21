@@ -12,9 +12,6 @@ import { ConfigService } from 'src/app/services/api/config.service';
     templateUrl: './navigator.component.html'
 })
 export class NavigatorComponent implements OnInit {
-    private enableIOSSupport: boolean;
-    private enableAndroidSupport: boolean;
-
     constructor(
         private router: Router,
         private profileService: ProfileService,
@@ -25,13 +22,13 @@ export class NavigatorComponent implements OnInit {
 
     ngOnInit() {
         this.configService.getClientSettings().subscribe(settings => {
-            this.enableAndroidSupport = settings.enable_android_support;
-            this.enableIOSSupport = settings.enable_ios_support;
+            const enableAndroidSupport = settings.enable_android_support;
+            const enableIOSSupport = settings.enable_ios_support;
 
             if (
                 this.deviceTypeService.isDesktop() ||
-                (this.deviceTypeService.isAndroid() && this.enableAndroidSupport) ||
-                (this.deviceTypeService.isIOS() && this.enableIOSSupport)
+                (this.deviceTypeService.isAndroid() && enableAndroidSupport) ||
+                (this.deviceTypeService.isIOS() && enableIOSSupport)
             ) {
                 this.profileService
                     .getUserProfile()

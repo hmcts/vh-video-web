@@ -97,7 +97,7 @@ describe('DeviceType', () => {
         expect(service.getOSVersion()).toBe(testOsVersion);
     });
 
-    it('should return whether hte OS is iOS', () => {
+    it('should return whether the OS is iOS', () => {
         deviceDetectorService.os = 'ios';
         expect(service.isIOS()).toBeTrue();
 
@@ -105,7 +105,7 @@ describe('DeviceType', () => {
         expect(service.isIOS()).toBeFalse();
     });
 
-    it('should return whether hte OS is Android', () => {
+    it('should return whether the OS is Android', () => {
         deviceDetectorService.os = 'android';
         expect(service.isAndroid()).toBeTrue();
 
