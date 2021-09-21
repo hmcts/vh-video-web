@@ -52,12 +52,27 @@ export class VideoFilterService {
         return this.filterOnSubject.asObservable();
     }
 
+    private _blurRadius = 20;
+    get blurRadius(): number {
+        return this._blurRadius;
+    }
+
+    set blurRadius(str: number) {
+        this._blurRadius = str;
+    }
+
     selfieSegmentation: SelfieSegmentation;
     activeFilter: BackgroundFilter;
     imgs: Map<BackgroundFilter, HTMLImageElement> = new Map();
 
     constructor(private logger: Logger, private configService: ConfigService, private deviceTypeService: DeviceTypeService) {
-        this.configService.getClientSettings().subscribe(settings => (this.enableVideoFilters = settings.enable_video_filters));
+        this.configService.getClientSettings().subscribe(settings => {
+            this.enableVideoFilters = settings.enable_video_filters;
+            if (settings.blur_radius) {
+                this.logger.debug(`${this.loggerPrefix} Loaded blur radius from config - ${settings.blur_radius}px`);
+                this.blurRadius = settings.blur_radius;
+            }
+        });
         this.preferredFilterCache = new SessionStorage(this.PREFERRED_FILTER_KEY);
 
         if (!this.preferredFilterCache.get()) {
@@ -187,7 +202,7 @@ export class VideoFilterService {
 
     private applyBlurEffect(results: Results, withBlur: boolean) {
         if (withBlur) {
-            this.canvasCtx.filter = 'blur(50px)';
+            this.canvasCtx.filter = `blur(${this.blurRadius}px)`;
         }
         this.canvasCtx.drawImage(results.image, 0, 0, this.canvasElement.width, this.canvasElement.height);
     }

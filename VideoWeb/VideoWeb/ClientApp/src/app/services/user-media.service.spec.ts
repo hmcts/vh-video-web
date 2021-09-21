@@ -5,6 +5,7 @@ import { LocalStorageService } from './conference/local-storage.service';
 import { of, Subject } from 'rxjs';
 import { fakeAsync, flush } from '@angular/core/testing';
 import { UserMediaDevice } from '../shared/models/user-media-device';
+import { Guid } from 'guid-typescript';
 
 describe('UserMediaService', () => {
     const testData = new MediaDeviceTestData();
@@ -117,6 +118,32 @@ describe('UserMediaService', () => {
         userMediaService.getCameraAndMicrophoneDevices().subscribe(devices => (result = devices));
         flush();
         expect(result.length).toBeGreaterThan(0);
+    }));
+
+    it('should filter devices with device ids of default and communications camera and microphone devices', fakeAsync(() => {
+        const deviceList = testData.getListOfDevices();
+        deviceList.push(new UserMediaDevice('Default Test', 'default', 'audioinput', Guid.create().toString()));
+        deviceList.push(new UserMediaDevice('Default Test', 'communications', 'audioinput', Guid.create().toString()));
+        spyOn(navigator.mediaDevices as any, 'enumerateDevices').and.resolveTo(deviceList);
+
+        let result: UserMediaDevice[];
+        userMediaService.getCameraAndMicrophoneDevices().subscribe(devices => (result = devices));
+        flush();
+        expect(result.find(x => x.deviceId === 'default')).toBeUndefined();
+        expect(result.find(x => x.deviceId === 'communications')).toBeUndefined();
+    }));
+
+    it('should NOT filter devices with device ids of default and communications camera and microphone devices IF they are the only devices', fakeAsync(() => {
+        const deviceList = [];
+        deviceList.push(new UserMediaDevice('Default Test', 'default', 'audioinput', Guid.create().toString()));
+        deviceList.push(new UserMediaDevice('Default Test', 'communications', 'audioinput', Guid.create().toString()));
+        spyOn(navigator.mediaDevices as any, 'enumerateDevices').and.resolveTo(deviceList);
+
+        let result: UserMediaDevice[];
+        userMediaService.getCameraAndMicrophoneDevices().subscribe(devices => (result = devices));
+        flush();
+        expect(result.find(x => x.deviceId === 'default')).toBeTruthy();
+        expect(result.find(x => x.deviceId === 'communications')).toBeTruthy();
     }));
 
     describe('updateIsAudioOnly', () => {
