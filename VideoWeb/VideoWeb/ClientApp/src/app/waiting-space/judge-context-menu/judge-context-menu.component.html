@@ -1,16 +1,24 @@
 <img src="assets/images/elipses.png" class="panel-icon" (click)="toggleDropdown()" [attr.alt]="'judge-context-menu.context-menu-icon' | translate" />
 <div [hidden]="!isDroppedDown" class="dropdown-content">
   <p class="govuk-body-s dropdown-header">
-    <strong>{{ participant.displayName }}</strong>
+    <span [id]="'judge-context-menu-participant-display-name' + participant?.id">
+      <strong>{{ participant.displayName }}</strong>
+    </span>
     <span>
-      <span *ngIf="!isJudge">
-        <span>
+      <ng-container *ngIf="!isJudge">
+        <span [id]="'judge-context-menu-participant-hearing-role' + participant?.id">
           {{ 'hearing-role.' + (participant.hearingRole | hyphenate) | translate}}
         </span>
-        <span *ngIf="!!this.participant.representee">
-          {{ 'participants-panel.for' | translate }} {{ this.participant.representee }}
-        </span>
-      </span>
+        <ng-container *ngIf="!!this.participant.representee">
+          {{ 'participants-panel.for' | translate }} 
+          <span [id]="'judge-context-menu-participant-representee' + participant?.id">
+            {{ this.participant.representee }}
+          </span>
+        </ng-container>
+      </ng-container>
+    </span>
+    <span *ngIf="showCaseTypeGroup" [id]="'judge-context-menu-participant-case-type-group' + participant?.id">
+      {{ participant.caseTypeGroup }}
     </span>
   </p>
   <hr />
