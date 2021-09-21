@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DeviceDetectorService } from 'ngx-device-detector';
+import { BROWSERS, DeviceDetectorService, OS } from 'ngx-device-detector';
 import { browsers } from '../shared/browser.constants';
 
 @Injectable({
@@ -23,17 +23,17 @@ export class DeviceTypeService {
     isIpad(): boolean {
         return (
             this.deviceDetectorService.isTablet() &&
-            (this.deviceDetectorService.os.toLowerCase() === 'mac' || this.deviceDetectorService.os.toLowerCase() === 'ios') &&
-            this.deviceDetectorService.browser.toLowerCase() === 'safari'
+            (this.deviceDetectorService.os.toLowerCase() === OS.MAC || this.deviceDetectorService.os.toLowerCase() === OS.IOS) &&
+            this.deviceDetectorService.browser.toLowerCase() === BROWSERS.SAFARI
         );
     }
 
     isIOS(): boolean {
-        return this.deviceDetectorService.os.toLowerCase() === 'ios';
+        return this.deviceDetectorService.os.toLowerCase() === OS.IOS;
     }
 
     isAndroid(): boolean {
-        return this.deviceDetectorService.os.toLowerCase() === 'android';
+        return this.deviceDetectorService.os.toLowerCase() === OS.ANDROID;
     }
 
     isSupportedBrowser(): boolean {
