@@ -506,7 +506,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     getPanelRowTooltipText(participant: PanelModel) {
-        let toolTipText: string;
+        let toolTipText = participant.displayName + this.getAdditionalText(participant);
 
         if (!participant.isDisconnected() && !participant.isInHearing()) {
             toolTipText = participant.displayName + ': ' + this.getTranslatedText('not-joined') + this.getAdditionalText(participant);
@@ -520,10 +520,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         }
         if (participant.isDisconnected()) {
             toolTipText = participant.displayName + ': ' + this.getTranslatedText('disconnected') + this.getAdditionalText(participant);
-        }
-
-        if (!toolTipText) {
-            toolTipText = participant.displayName + this.getAdditionalText(participant);
         }
 
         return toolTipText;
