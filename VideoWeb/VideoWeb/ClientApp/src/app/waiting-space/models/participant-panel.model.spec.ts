@@ -1,11 +1,10 @@
 import { ParticipantForUserResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { ParticipantPanelModel } from './participant-panel-model';
 import { ParticipantPanelModelMapper } from '../../shared/mappers/participant-panel-model-mapper';
 import { HearingRole } from './hearing-role-model';
-import { PanelModel } from './panel-model-base';
+import { ParticipantPanelModel } from './participant-panel-model';
 
-fdescribe('ParticipantPanelModel', () => {
+describe('ParticipantPanelModel', () => {
     let model: ParticipantPanelModel;
     let participant: ParticipantForUserResponse;
 
@@ -18,70 +17,77 @@ fdescribe('ParticipantPanelModel', () => {
     it('should return isDisconnected: true when participant is disconnected', () => {
         participant.status = ParticipantStatus.Disconnected;
         model = mapper.mapFromParticipantUserResponse(participant);
-        expect(model.isDisconnected()).toBeTruthy();
+        expect(model.isDisconnected()).toBe(true);
     });
 
     it('should return isDisconnected: false when participant is available', () => {
         participant.status = ParticipantStatus.Available;
         model = mapper.mapFromParticipantUserResponse(participant);
-        expect(model.isDisconnected()).toBeFalsy();
+        expect(model.isDisconnected()).toBe(false);
     });
 
     it('should return isAvailable: false when participant is in hearing', () => {
         participant.status = ParticipantStatus.InHearing;
         model = mapper.mapFromParticipantUserResponse(participant);
-        expect(model.isAvailable()).toBeFalsy();
+        expect(model.isAvailable()).toBe(false);
     });
 
     it('should return isAvailable: true when participant is available', () => {
         participant.status = ParticipantStatus.Available;
         model = mapper.mapFromParticipantUserResponse(participant);
-        expect(model.isAvailable()).toBeTruthy();
+        expect(model.isAvailable()).toBe(true);
     });
 
     it('returns isAvailable: true when participant is quick link user and status is in consultation', () => {
         participant.status = ParticipantStatus.InConsultation;
         model = mapper.mapFromParticipantUserResponse(participant);
         spyOnProperty(model, 'isQuickLinkUser').and.returnValue(true);
-        expect(model.isAvailable()).toBeTruthy();
+        expect(model.isAvailable()).toBe(true);
+    });
+
+    it('returns isAvailable: false when participant is not quick link user and status is in consultation', () => {
+        participant.status = ParticipantStatus.InConsultation;
+        model = mapper.mapFromParticipantUserResponse(participant);
+        spyOnProperty(model, 'isQuickLinkUser').and.returnValue(false);
+        expect(model.isAvailable()).toBe(false);
     });
 
     it('returns isAvailable: true when participant is quick link user and status is available', () => {
         participant.status = ParticipantStatus.Available;
         model = mapper.mapFromParticipantUserResponse(participant);
         spyOnProperty(model, 'isQuickLinkUser').and.returnValue(true);
-        expect(model.isAvailable()).toBeTruthy();
+        expect(model.isAvailable()).toBe(true);
     });
 
     it('returns isAvailable: false when participant is quick link user and status is in hearing', () => {
         participant.status = ParticipantStatus.InHearing;
         model = mapper.mapFromParticipantUserResponse(participant);
         spyOnProperty(model, 'isQuickLinkUser').and.returnValue(true);
-        expect(model.isAvailable()).toBeFalsy();
+        expect(model.isAvailable()).toBe(false);
     });
 
     it('should return true when participant is a judge', () => {
         participant.role = Role.Judge;
         model = mapper.mapFromParticipantUserResponse(participant);
-        expect(model.isJudge).toBeTruthy();
+        expect(model.isJudge).toBe(true);
     });
 
     it('should return false when participant is not a judge', () => {
         participant.role = Role.Individual;
         model = mapper.mapFromParticipantUserResponse(participant);
-        expect(model.isJudge).toBeFalsy();
+        expect(model.isJudge).toBe(false);
     });
 
     it('should return true when participant is a joh', () => {
         participant.role = Role.JudicialOfficeHolder;
         model = mapper.mapFromParticipantUserResponse(participant);
-        expect(model.isJudicialOfficeHolder).toBeTruthy();
+        expect(model.isJudicialOfficeHolder).toBe(true);
     });
 
     it('should return false when participant is not a joh', () => {
         participant.role = Role.Individual;
         model = mapper.mapFromParticipantUserResponse(participant);
-        expect(model.isJudicialOfficeHolder).toBeFalsy();
+        expect(model.isJudicialOfficeHolder).toBe(false);
     });
 
     describe('callable', () => {
