@@ -79,6 +79,8 @@ export class NoSleepService {
     onStreamChange(stream: MediaStream): void {
         this.logger.debug(`${this.loggerPrefix} updating stream`);
         this.currentStream = stream;
-        if (this.videoElement) this.videoElement.srcObject = this.currentStream;
+        if (this.videoElement) {
+            this.videoElement.srcObject = this.currentStream;
+        }
     }
 }
