@@ -99,7 +99,7 @@ export class JudgeContextMenuComponent {
             this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
             this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase() ||
             this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
-            this.participant.caseTypeGroup.toLowerCase() === 'endpoint'
+            this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.ENDPOINT.toLowerCase()
             ? false
             : true;
     }
