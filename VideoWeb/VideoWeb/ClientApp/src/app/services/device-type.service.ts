@@ -23,17 +23,18 @@ export class DeviceTypeService {
     isIpad(): boolean {
         return (
             this.deviceDetectorService.isTablet() &&
-            (this.deviceDetectorService.os.toLowerCase() === OS.MAC || this.deviceDetectorService.os.toLowerCase() === OS.IOS) &&
-            this.deviceDetectorService.browser.toLowerCase() === BROWSERS.SAFARI
+            (this.deviceDetectorService.os.toLowerCase() === OS.MAC.toLowerCase() ||
+                this.deviceDetectorService.os.toLowerCase() === OS.IOS.toLowerCase()) &&
+            this.deviceDetectorService.browser.toLowerCase() === BROWSERS.SAFARI.toLowerCase()
         );
     }
 
     isIOS(): boolean {
-        return this.deviceDetectorService.os.toLowerCase() === OS.IOS;
+        return this.deviceDetectorService.os.toLowerCase() === OS.IOS.toLowerCase();
     }
 
     isAndroid(): boolean {
-        return this.deviceDetectorService.os.toLowerCase() === OS.ANDROID;
+        return this.deviceDetectorService.os.toLowerCase() === OS.ANDROID.toLowerCase();
     }
 
     isSupportedBrowser(): boolean {
