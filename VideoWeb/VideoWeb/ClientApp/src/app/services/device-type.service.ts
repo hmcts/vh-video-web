@@ -28,6 +28,14 @@ export class DeviceTypeService {
         );
     }
 
+    isIOS(): boolean {
+        return this.deviceDetectorService.os.toLowerCase() === 'ios';
+    }
+
+    isAndroid(): boolean {
+        return this.deviceDetectorService.os.toLowerCase() === 'android';
+    }
+
     isSupportedBrowser(): boolean {
         const supportedBrowsers = [
             browsers.Firefox,

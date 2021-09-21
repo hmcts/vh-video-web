@@ -30,6 +30,8 @@ namespace VideoWeb.Mappings
                 EJudIdpSettings = ejudSettings,
                 VHIdpSettings = vhAdSettings,
                 EnableVideoFilters = servicesConfiguration.EnableVideoFilters,
+                EnableAndroidSupport = servicesConfiguration.EnableAndroidSupport,
+                EnableIOSSupport = servicesConfiguration.EnableIOSSupport
                 BlurRadius = servicesConfiguration.BlurRadius
             };
         }
