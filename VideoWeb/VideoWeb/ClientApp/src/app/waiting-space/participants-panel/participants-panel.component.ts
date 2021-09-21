@@ -515,14 +515,15 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             toolTipText = participant.displayName + ': ' + this.getTranslatedText('joining') + this.getAdditionalText(participant);
         }
         if (participant.isWitness && participant.isAvailable() && !participant.isInHearing()) {
-            toolTipText = participant.displayName + ': ' + this.getTranslatedText('participant-available') + this.getAdditionalText(participant);
+            toolTipText =
+                participant.displayName + ': ' + this.getTranslatedText('participant-available') + this.getAdditionalText(participant);
         }
         if (participant.isDisconnected()) {
             toolTipText = participant.displayName + ': ' + this.getTranslatedText('disconnected') + this.getAdditionalText(participant);
         }
 
-        if ( !toolTipText) {
-            toolTipText =  participant.displayName + this.getAdditionalText(participant);
+        if (!toolTipText) {
+            toolTipText = participant.displayName + this.getAdditionalText(participant);
         }
 
         return toolTipText;
