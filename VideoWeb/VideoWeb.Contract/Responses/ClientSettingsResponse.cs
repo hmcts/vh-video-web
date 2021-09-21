@@ -48,5 +48,9 @@ namespace VideoWeb.Contract.Responses
         /// Enable video filters
         /// </summary>
         public bool EnableVideoFilters { get; set; }
+        /// <summary>
+        /// Blur radius in pixels
+        /// </summary>
+        public int BlurRadius { get; set; }
     }
 }
