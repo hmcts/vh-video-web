@@ -26,13 +26,10 @@ export class NavigatorComponent implements OnInit {
             .getClientSettings()
             .pipe(take(1))
             .subscribe(settings => {
-                const enableAndroidSupport = settings.enable_android_support;
-                const enableIOSSupport = settings.enable_ios_support;
-
                 if (
                     this.deviceTypeService.isDesktop() ||
-                    (this.deviceTypeService.isAndroid() && enableAndroidSupport) ||
-                    (this.deviceTypeService.isIOS() && enableIOSSupport)
+                    (this.deviceTypeService.isAndroid() && settings.enable_android_support) ||
+                    (this.deviceTypeService.isIOS() && settings.enable_ios_support)
                 ) {
                     this.profileService
                         .getUserProfile()
