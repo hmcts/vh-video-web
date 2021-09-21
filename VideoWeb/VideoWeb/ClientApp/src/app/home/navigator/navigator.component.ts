@@ -5,28 +5,42 @@ import { DeviceTypeService } from '../../services/device-type.service';
 import { ErrorService } from '../../services/error.service';
 import { pageUrls } from '../../shared/page-url.constants';
 import { UserProfileResponse, Role } from '../../services/clients/api-client';
+import { ConfigService } from 'src/app/services/api/config.service';
 
 @Component({
     selector: 'app-navigator',
     templateUrl: './navigator.component.html'
 })
 export class NavigatorComponent implements OnInit {
+    private enableIOSSupport: boolean;
+    private enableAndroidSupport: boolean;
+
     constructor(
         private router: Router,
         private profileService: ProfileService,
         private errorService: ErrorService,
-        private deviceTypeService: DeviceTypeService
+        private deviceTypeService: DeviceTypeService,
+        private configService: ConfigService
     ) {}
 
     ngOnInit() {
-        if (this.deviceTypeService.isDesktop() || this.deviceTypeService.isIpad()) {
-            this.profileService
-                .getUserProfile()
-                .then(profile => this.navigateToHearingList(profile))
-                .catch(error => this.errorService.handleApiError(error));
-        } else {
-            this.router.navigate([pageUrls.UnsupportedDevice]);
-        }
+        this.configService.getClientSettings().subscribe(settings => {
+            this.enableAndroidSupport = settings.enable_android_support;
+            this.enableIOSSupport = settings.enable_ios_support;
+
+            if (
+                this.deviceTypeService.isDesktop() ||
+                (this.deviceTypeService.isAndroid() && this.enableAndroidSupport) ||
+                (this.deviceTypeService.isIOS() && this.enableIOSSupport)
+            ) {
+                this.profileService
+                    .getUserProfile()
+                    .then(profile => this.navigateToHearingList(profile))
+                    .catch(error => this.errorService.handleApiError(error));
+            } else {
+                this.router.navigate([pageUrls.UnsupportedDevice]);
+            }
+        });
     }
 
     navigateToHearingList(userProfile: UserProfileResponse) {

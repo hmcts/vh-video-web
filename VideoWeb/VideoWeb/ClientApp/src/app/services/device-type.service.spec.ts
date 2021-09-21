@@ -97,6 +97,22 @@ describe('DeviceType', () => {
         expect(service.getOSVersion()).toBe(testOsVersion);
     });
 
+    it('should return whether hte OS is iOS', () => {
+        deviceDetectorService.os = 'ios';
+        expect(service.isIOS()).toBeTrue();
+
+        deviceDetectorService.os = 'android';
+        expect(service.isIOS()).toBeFalse();
+    });
+
+    it('should return whether hte OS is Android', () => {
+        deviceDetectorService.os = 'android';
+        expect(service.isAndroid()).toBeTrue();
+
+        deviceDetectorService.os = 'ios';
+        expect(service.isAndroid()).toBeFalse();
+    });
+
     const isSupportedBrowserTestCases = [
         { browser: browsers.Firefox, expected: true },
         { browser: browsers.Safari, expected: true },
