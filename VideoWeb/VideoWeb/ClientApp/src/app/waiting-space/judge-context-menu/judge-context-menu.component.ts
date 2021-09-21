@@ -93,7 +93,7 @@ export class JudgeContextMenuComponent {
         return this.participant.hearingRole === HearingRole.WITNESS;
     }
 
-    showCaseRole() {
+    showCaseTypeGroup(): boolean {
         return !this.participant.caseTypeGroup ||
             this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
             this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||

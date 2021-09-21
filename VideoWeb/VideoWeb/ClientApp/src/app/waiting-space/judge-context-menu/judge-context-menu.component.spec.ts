@@ -14,71 +14,114 @@ import { ElementRef } from '@angular/core';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { ParticipantPanelModelMapper } from 'src/app/shared/mappers/participant-panel-model-mapper';
 import { HearingRole } from '../models/hearing-role-model';
+import { CaseTypeGroup } from '../models/case-type-group';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { async, ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
+import { MockPipe } from 'ng-mocks';
+import { HyphenatePipe } from 'src/app/shared/pipes/hyphenate.pipe';
+import { LowerCasePipe } from '@angular/common';
+export class MockElementRef extends ElementRef {
+    constructor() {
+        super(null);
+    }
+}
 
-describe('JudgeContextMenuComponent', () => {
+fdescribe('JudgeContextMenuComponent', () => {
     const participants = new ConferenceTestData().getListOfParticipants();
     const logger = new MockLogger();
-    let elementRef: ElementRef<HTMLDivElement>;
-    let nativeElement: HTMLDivElement;
+    // const nativeElementSpy = jasmine.createSpyObj<any>(['contains']);
+    let elementRef: MockElementRef;
+    elementRef = new MockElementRef();
+    elementRef.nativeElement = jasmine.createSpyObj('nativeElement', ['contains']);
+    // let nativeElement: HTMLDivElement;
 
     let component: JudgeContextMenuComponent;
+    let fixture: ComponentFixture<JudgeContextMenuComponent>;
+
     const translateService = translateServiceSpy;
 
     const mapper = new ParticipantPanelModelMapper();
 
+    let testParticipipantPanelModel: ParticipantPanelModel;
+    const testParticipantId = 'id';
+    const testParticipantDisplayName = 'displayName';
+    const testParticipantRole = Role.None;
+    const testParticipantCaseTypeGroup = 'caseTypeGroup';
+    const testParticipantPexipDisplayName = 'pexipDisplayName';
+    const testParticipantHearingRole = 'hearingRole';
+    const testParticipantRepresentee = 'representsee';
+    const testParticipantStatus = ParticipantStatus.None;
+
+    beforeEach(async () => {
+        TestBed.configureTestingModule({
+            declarations: [JudgeContextMenuComponent, MockPipe(TranslatePipe), MockPipe(HyphenatePipe), MockPipe(LowerCasePipe)],
+            providers: [
+                {
+                    provide: Logger,
+                    useValue: logger
+                },
+                {
+                    provide: ElementRef,
+                    useValue: elementRef
+                },
+                {
+                    provide: TranslateService,
+                    useValue: translateService
+                }
+            ]
+        }).compileComponents();
+    });
+
     beforeEach(() => {
-        nativeElement = document.createElement('div');
-        elementRef = new ElementRef<HTMLDivElement>(nativeElement);
-        component = new JudgeContextMenuComponent(logger, elementRef, translateService);
-        component.participant = mapper.mapFromParticipantUserResponse(participants[0]);
+        fixture = TestBed.createComponent(JudgeContextMenuComponent);
+        component = fixture.componentInstance;
+
+        testParticipipantPanelModel = new ParticipantPanelModel(
+            testParticipantId,
+            testParticipantDisplayName,
+            testParticipantRole,
+            testParticipantCaseTypeGroup,
+            testParticipantPexipDisplayName,
+            testParticipantHearingRole,
+            testParticipantRepresentee,
+            testParticipantStatus
+        );
+        component.participant = testParticipipantPanelModel;
+
+        fixture.detectChanges();
     });
 
-    it('should getAdditionalText return displayname as default', () => {
-        const p = participants[0];
-        p.status = ParticipantStatus.InHearing;
-        const model = mapper.mapFromParticipantUserResponse(participants[0]);
-        component.participant = model;
-        expect(component.getAdditionalText()).toContain(``);
-    });
+    describe('showCaseRole', () => {
+        const dontShowForCaseTypeGroup = [
+            CaseTypeGroup.NONE,
+            CaseTypeGroup.JUDGE,
+            CaseTypeGroup.PANEL_MEMBER,
+            CaseTypeGroup.OBSERVER,
+            CaseTypeGroup.ENDPOINT
+        ];
+        const caseTypeGroups = Object.keys(CaseTypeGroup);
 
-    it('should getAdditionalText return hearing role and case role for an individual', () => {
-        const p = participants[1];
-        p.status = ParticipantStatus.InHearing;
-        const model = mapper.mapFromParticipantUserResponse(p);
-        component.participant = model;
-        expect(component.getAdditionalText()).toEqual(`<br/>${p.hearing_role}<br/>${p.case_type_group}`);
-    });
+        it(`should return false when case type group is null`, () => {
+            component.participant.caseTypeGroup = null;
+            expect(component.showCaseTypeGroup()).toBe(false);
+        });
 
-    it('should getAdditionalText return hearing role and case role for a representative', () => {
-        const p = participants[0];
-        p.status = ParticipantStatus.InHearing;
-        const model = mapper.mapFromParticipantUserResponse(p);
-        component.participant = model;
-        expect(component.getAdditionalText()).toEqual(`<br/>${p.hearing_role} for ${p.representee}<br/>${p.case_type_group}`);
-    });
+        caseTypeGroups.forEach(caseTypeGroupString => {
+            const testCaseTypeGroup = CaseTypeGroup[caseTypeGroupString];
+            const showFor = !dontShowForCaseTypeGroup.includes(testCaseTypeGroup);
+            it(`should return ${showFor} when case type group role is ${caseTypeGroupString}`, () => {
+                component.participant.caseTypeGroup = testCaseTypeGroup;
+                expect(component.showCaseTypeGroup()).toBe(showFor);
+            });
+        });
 
-    it('should getAdditionalText return hearing role and case role for an observer', () => {
-        const p = participants[5];
-        p.status = ParticipantStatus.InHearing;
-        const model = mapper.mapFromParticipantUserResponse(p);
-        component.participant = model;
-        expect(component.getAdditionalText()).toEqual(`<br/>${p.hearing_role}`);
-    });
-
-    it('should getAdditionalText return hearing role and case role for a panel member', () => {
-        const p = participants[6];
-        p.status = ParticipantStatus.InHearing;
-        const model = mapper.mapFromParticipantUserResponse(p);
-        component.participant = model;
-        expect(component.getAdditionalText()).toEqual(`<br/>${p.hearing_role}`);
-    });
-
-    it('should getAdditionalText return display name for judge', () => {
-        const p = participants[2];
-        p.status = ParticipantStatus.InHearing;
-        const model = mapper.mapFromParticipantUserResponse(p);
-        component.participant = model;
-        expect(component.getAdditionalText()).toEqual(``);
+        it(`should return true when case type group is any other value`, () => {
+            const caseTypeGroup = 'AnyOtherValue';
+            component.participant.caseTypeGroup = caseTypeGroup;
+            expect(caseTypeGroups).not.toContain(caseTypeGroup);
+            expect(component.showCaseTypeGroup()).toBe(true);
+        });
     });
 
     it('should emit event when lowering participant hand', () => {
@@ -193,60 +236,61 @@ describe('JudgeContextMenuComponent', () => {
         expect(component.isDroppedDown).toBeTruthy();
     });
 
-    it('should return isClickedOutsideOfOpenMenu true when click event is outside element and menu is open', () => {
-        // Arrange
-        component.isDroppedDown = true;
-        spyOn(elementRef.nativeElement, 'contains').and.returnValue(false);
-        const event = new MouseEvent('click');
-        spyOnProperty(event, 'target').and.returnValue(new EventTarget());
+    describe('isClickedOutsideOfOpenMenu', () => {
+        let event: MouseEvent;
+        let containsSpy: jasmine.Spy;
+        beforeEach(() => {
+            event = new MouseEvent('click');
+            spyOnProperty(event, 'target').and.returnValue(document.createElement('div'));
+            containsSpy = spyOn(component['elementRef'].nativeElement, 'contains');
+        });
+        it('should return isClickedOutsideOfOpenMenu true when click event is outside element and menu is open', () => {
+            // Arrange
+            component.isDroppedDown = true;
+            containsSpy.and.returnValue(false);
 
-        // Act
-        const result = component.isClickedOutsideOfOpenMenu(event);
+            // Act
+            const result = component.isClickedOutsideOfOpenMenu(event);
 
-        // Assert
-        expect(result).toBeTruthy();
-    });
+            // Assert
+            expect(result).toBeTruthy();
+        });
 
-    it('should return isClickedOutsideOfOpenMenu false when click event is outside element and menu is closed', () => {
-        // Arrange
-        component.isDroppedDown = false;
-        spyOn(elementRef.nativeElement, 'contains').and.returnValue(false);
-        const event = new MouseEvent('click');
-        spyOnProperty(event, 'target').and.returnValue(new EventTarget());
+        it('should return isClickedOutsideOfOpenMenu false when click event is outside element and menu is closed', () => {
+            // Arrange
+            component.isDroppedDown = false;
+            containsSpy.and.returnValue(false);
 
-        // Act
-        const result = component.isClickedOutsideOfOpenMenu(event);
+            // Act
+            const result = component.isClickedOutsideOfOpenMenu(event);
 
-        // Assert
-        expect(result).toBeFalsy();
-    });
+            // Assert
+            expect(result).toBeFalsy();
+        });
 
-    it('should return isClickedOutsideOfOpenMenu false when click event is inside element and menu is open', () => {
-        // Arrange
-        component.isDroppedDown = true;
-        spyOn(elementRef.nativeElement, 'contains').and.returnValue(true);
-        const event = new MouseEvent('click');
-        spyOnProperty(event, 'target').and.returnValue(new EventTarget());
+        it('should return isClickedOutsideOfOpenMenu false when click event is inside element and menu is open', () => {
+            // Arrange
+            component.isDroppedDown = true;
+            containsSpy.and.returnValue(true);
 
-        // Act
-        const result = component.isClickedOutsideOfOpenMenu(event);
+            // Act
+            const result = component.isClickedOutsideOfOpenMenu(event);
 
-        // Assert
-        expect(result).toBeFalsy();
-    });
+            // Assert
+            expect(result).toBeFalsy();
+        });
 
-    it('should return isClickedOutsideOfOpenMenu false when click event is inside element and menu is closed', () => {
-        // Arrange
-        component.isDroppedDown = false;
-        spyOn(elementRef.nativeElement, 'contains').and.returnValue(false);
-        const event = new MouseEvent('click');
-        spyOnProperty(event, 'target').and.returnValue(new EventTarget());
+        it('should return isClickedOutsideOfOpenMenu false when click event is inside element and menu is closed', () => {
+            // Arrange
+            component.isDroppedDown = false;
+            containsSpy.and.returnValue(false);
 
-        // Act
-        const result = component.isClickedOutsideOfOpenMenu(event);
+            // Act
+            const result = component.isClickedOutsideOfOpenMenu(event);
 
-        // Assert
-        expect(result).toBeFalsy();
+            // Assert
+            expect(result).toBeFalsy();
+        });
     });
 
     it('should callParticipantIntoHearing return false when the participant is a witness and in hearing', () => {
