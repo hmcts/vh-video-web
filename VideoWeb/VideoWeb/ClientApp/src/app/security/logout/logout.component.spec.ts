@@ -6,17 +6,20 @@ import { of, Subject } from 'rxjs';
 import { SecurityServiceProvider } from '../authentication/security-provider.service';
 import { ISecurityService } from '../authentication/security-service.interface';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
-import { fakeAsync, flush } from '@angular/core/testing';
+import { fakeAsync, flush, TestBed } from '@angular/core/testing';
+import { FeatureFlagService } from 'src/app/services/feature-flag.service';
 
-describe('LogoutComponent', () => {
+fdescribe('LogoutComponent', () => {
     let component: LogoutComponent;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
     let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
+    let featureFlagServiceSpy: jasmine.SpyObj<FeatureFlagService>;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
     let isAuthenticatedSubject: Subject<boolean>;
 
     beforeAll(() => {
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['clearUserProfile']);
+        featureFlagServiceSpy = jasmine.createSpyObj<FeatureFlagService>('FeatureFlagService', ['getFeatureFlagByName']);
     });
 
     beforeEach(() => {
@@ -32,7 +35,7 @@ describe('LogoutComponent', () => {
 
         getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
 
-        component = new LogoutComponent(securityServiceProviderServiceSpy, profileServiceSpy);
+        component = new LogoutComponent(securityServiceProviderServiceSpy, profileServiceSpy, featureFlagServiceSpy);
     });
 
     it('should call logout if authenticated', fakeAsync(() => {
