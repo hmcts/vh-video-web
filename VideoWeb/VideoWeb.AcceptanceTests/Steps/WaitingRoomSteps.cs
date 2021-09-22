@@ -366,6 +366,11 @@ namespace VideoWeb.AcceptanceTests.Steps
                     participant = "Panel Member";
                     panelElement = JudgeParticipantPanel.PanelMemberStatus(user.Id);
                 }
+                else if (user.HearingRole.Equals("Winger", StringComparison.OrdinalIgnoreCase))
+                {
+                    participant = "Winger";
+                    panelElement = JudgeParticipantPanel.WingerStatus(user.Id);
+                }
                 else
                 {
                     panelElement = JudgeParticipantPanel.ParticipantStatus(user.Id);
