@@ -618,10 +618,20 @@ describe('ParticipantsPanelComponent', () => {
 
     it('should getPanelRowTooltipText return "Joining" for available participant', () => {
         const p = participants[0];
+        p.hearing_role = HearingRole.PANEL_MEMBER;
         p.status = ParticipantStatus.Available;
         const model = mapper.mapFromParticipantUserResponse(p);
         expect(component.getPanelRowTooltipText(model)).toContain(p.display_name + ': participants-panel.joining');
     });
+
+    it('should getPanelRowTooltipText return "Available" for available witness participant', () => {
+        const p = participants[0];
+        p.hearing_role = HearingRole.WITNESS;
+        p.status = ParticipantStatus.Available;
+        const model = mapper.mapFromParticipantUserResponse(p);
+        expect(component.getPanelRowTooltipText(model)).toContain(p.display_name + ': participants-panel.participant-available');
+    });
+
     it('should getPanelRowTooltipText return "Not Joined" for participant not joined', () => {
         const p = participants[0];
         p.status = ParticipantStatus.Joining;

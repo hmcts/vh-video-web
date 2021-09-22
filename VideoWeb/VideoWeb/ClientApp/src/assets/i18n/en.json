@@ -585,6 +585,7 @@
     "call-witness": "Call witness",
     "participant-unavailable": "{{ role }} unavailable",
     "admit-participant": "Admit {{ role }}",
+    "participant-available": "Available",
     "mute-participant": "Mute participant",
     "microphone-muted-icon": "Microphone muted icon",
     "microphone-on-icon": "Microphone on icon",
