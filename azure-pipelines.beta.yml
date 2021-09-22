@@ -1,69 +1,69 @@
 parameters:
-- name: deploymentBranch
-  displayName: Branch to Deploy
-  type: string
-  default: refs/heads/master
+  - name: deploymentBranch
+    displayName: Branch to Deploy
+    type: string
+    default: refs/heads/master
 
-- name: environment
-  displayName: Environment
-  type: string
-  default: AAT
-  values:
-  - Preview
-  - Dev
-  - AAT
-  - Sandbox
-  - Test1
-  - Test2
-  - Demo
-  - Preprod
-  - Prod
-  
-- name: dotnetTestMaxRetries
-  type: number
-  default: 4  
+  - name: environment
+    displayName: Environment
+    type: string
+    default: AAT
+    values:
+      - Preview
+      - Dev
+      - AAT
+      - Sandbox
+      - Test1
+      - Test2
+      - Demo
+      - Preprod
+      - Prod
 
-- name: deviceConfiguration
-  displayName: Device Configurations
-  type: object
-  default:
-    - OS: Windows
-      Browser: Chrome
-      BrowserVersion: Beta
-      DeviceType: Desktop
-      DeviceName:
-      TestCaseFilter: TestCategory=Smoketest-Extended
-    - OS: Windows
-      Browser: Firefox
-      BrowserVersion: Beta
-      DeviceType: Desktop
-      DeviceName:
-      TestCaseFilter: TestCategory=Smoketest-Extended
-    - OS: Windows
-      Browser: EdgeChromium
-      BrowserVersion: Beta
-      DeviceType: Desktop
-      DeviceName:
-      TestCaseFilter: TestCategory=Smoketest-Extended
-    - OS: MacOS
-      Browser: Chrome
-      BrowserVersion: Beta
-      DeviceType: Desktop
-      DeviceName:
-      TestCaseFilter: TestCategory=Smoketest-Extended
-    - OS: MacOS
-      Browser: Firefox
-      BrowserVersion: Beta
-      DeviceType: Desktop
-      DeviceName:
-      TestCaseFilter: TestCategory=Smoketest-Extended
+  - name: dotnetTestMaxRetries
+    type: number
+    default: 4
 
-- name: prodEnvs
-  displayName: Environments Using Prod Subscription
-  type: object
-  default:
-    - Prod
-    - Preprod
+  - name: deviceConfiguration
+    displayName: Device Configurations
+    type: object
+    default:
+      - OS: Windows
+        Browser: Chrome
+        BrowserVersion: Beta
+        DeviceType: Desktop
+        DeviceName:
+        TestCaseFilter: TestCategory=Smoketest-Extended
+      - OS: Windows
+        Browser: Firefox
+        BrowserVersion: Beta
+        DeviceType: Desktop
+        DeviceName:
+        TestCaseFilter: TestCategory=Smoketest-Extended
+      - OS: Windows
+        Browser: EdgeChromium
+        BrowserVersion: Beta
+        DeviceType: Desktop
+        DeviceName:
+        TestCaseFilter: TestCategory=Smoketest-Extended
+      - OS: MacOS
+        Browser: Chrome
+        BrowserVersion: Beta
+        DeviceType: Desktop
+        DeviceName:
+        TestCaseFilter: TestCategory=Smoketest-Extended
+      - OS: MacOS
+        Browser: Firefox
+        BrowserVersion: Beta
+        DeviceType: Desktop
+        DeviceName:
+        TestCaseFilter: TestCategory=Smoketest-Extended
+
+  - name: prodEnvs
+    displayName: Environments Using Prod Subscription
+    type: object
+    default:
+      - Prod
+      - Preprod
 
 # Set variables once
 variables:
@@ -74,19 +74,19 @@ variables:
   - group: vh test users
   - group: Saucelabs
   - ${{ if containsValue(parameters.prodEnvs, parameters.environment) }}:
-    - group: vh-prod
+      - group: vh-prod
   - ${{ if not(containsValue(parameters.prodEnvs, parameters.environment)) }}:
-    - group: vh-preview
+      - group: vh-preview
 
 trigger: none
 pr: none
 schedules:
-- cron: "0 19 * * 0"
-  displayName: Weekly Beta build
-  always: true
-  branches:
-    include:
-    - master
+  - cron: '0 19 * * 0'
+    displayName: Weekly Beta build
+    always: true
+    branches:
+      include:
+        - master
 
 resources:
   repositories:
@@ -96,8 +96,8 @@ resources:
       ref: refs/heads/master
       endpoint: hmcts
   pipelines:
-  - pipeline: CI
-    source: hmcts.vh-video-web
+    - pipeline: CI
+      source: hmcts.vh-video-web
 
 stages:
   - template: templates/vh-release.yml@templates
@@ -115,78 +115,106 @@ stages:
         resourceGroup: vh-video-web-$(environment)
         testCaseFilter: TestCategory=smoketest
         dependentApps:
-        - name: vh-user-api-$(environment)
-          resourceGroup: vh-user-api-$(environment)
-          healthEndpoint: $(user_api_url)healthcheck/health
-        - name: vh-bookings-api-$(environment)
-          resourceGroup: vh-bookings-api-$(environment)
-          healthEndpoint: $(bookings_api_url)healthcheck/health
-        - name: vh-video-api-$(environment)
-          resourceGroup: vh-video-api-$(environment)
-          healthEndpoint: $(video_api_url)healthcheck/health
-        - name: vh-test-api-$(environment)
-          resourceGroup: vh-test-api-$(environment)
-          healthEndpoint: $(test_api_url)health/health
+          - name: vh-user-api-$(environment)
+            resourceGroup: vh-user-api-$(environment)
+            healthEndpoint: $(user_api_url)healthcheck/health
+          - name: vh-bookings-api-$(environment)
+            resourceGroup: vh-bookings-api-$(environment)
+            healthEndpoint: $(bookings_api_url)healthcheck/health
+          - name: vh-video-api-$(environment)
+            resourceGroup: vh-video-api-$(environment)
+            healthEndpoint: $(video_api_url)healthcheck/health
+          - name: vh-test-api-$(environment)
+            resourceGroup: vh-test-api-$(environment)
+            healthEndpoint: $(test_api_url)health/health
         variables:
           - group: vh-wowza-dev
             env:
-             - Preview
-             - Dev
-             - AAT
-             - Sandbox
-             - Test1
-             - Test2
+              - Preview
+              - Dev
+              - AAT
+              - Sandbox
+              - Test1
+              - Test2
           - group: vh-wowza-demo
             env:
-             - Demo
+              - Demo
           - group: vh-wowza-preprod
             env:
-             - Preprod
+              - Preprod
           - group: vh-wowza-prod
             env:
-             - Prod
+              - Prod
           - group: KinlyConfiguration_Test
             env:
-             - Preview
-             - Dev
-             - AAT
-             - Sandbox
-             - Test1
-             - Test2
+              - Preview
+              - Dev
+              - AAT
+              - Sandbox
+              - Test1
+              - Test2
           - group: KinlyConfiguration_Test2
             env:
-             - Demo
+              - Demo
           - group: KinlyConfiguration_Preprod
             env:
-             - Preprod
+              - Preprod
           - group: KinlyConfiguration_Prod
             env:
-             - Prod
+              - Prod
 
           - group: QuickLinks_Preview
             env:
               - Preview
           - group: QuickLinks_Dev
             env:
-             - Dev
+              - Dev
           - group: QuickLinks_Preprod
             env:
-             - Preprod
+              - Preprod
           - group: QuickLinks_Prod
             env:
-             - Prod
+              - Prod
           - group: QuickLinks_Test
             env:
-             - Test1
+              - Test1
           - group: QuickLinks_Aat
             env:
-             - Aat
+              - Aat
           - group: QuickLinks_Demo
             env:
-             - Demo
+              - Demo
           - group: QuickLinks_Sandbox
             env:
-             - Sandbox
+              - Sandbox
+          - name: EnableAndroidSupport
+            value: false
+            env:
+              - Prod
+              - Preprod
+          - name: EnableAndroidSupport
+            value: true
+            env:
+              - Preview
+              - Dev
+              - AAT
+              - Sandbox
+              - Test1
+              - Test2
+          - name: EnableIOSSupport
+            value: false
+            env:
+              - Prod
+              - Preprod
+          - name: EnableIOSSupport
+            value: true
+            env:
+              - Preview
+              - Dev
+              - AAT
+              - Sandbox
+              - Test1
+              - Test2
 
         appSettings:
           - name: ApplicationInsights:InstrumentationKey
@@ -257,7 +285,7 @@ stages:
             value: $(TurnServerUser)
           - name: KinlyConfiguration:TurnServerCredential
             value: $(TurnServerCredential)
-            
+
           # VhServices
           - name: VhServices:BookingsApiResourceId
             value: vh-bookings-api-identifieruris
@@ -278,6 +306,10 @@ stages:
             value: $(EmailReformDomain)
           - name: VhServices:InternalEventSecret
             value: $(internal_event_secret)
+          - name: VhServices:EnableAndroidSupport
+            value: $(EnableAndroidSupport)
+          - name: VhServices:EnableIOSSupport
+            value: $(EnableIOSSupport)
 
           # Quick Links Configuration
           - name: QuickLinks:Issuer
@@ -315,6 +347,10 @@ stages:
             value: $(video_web_url)
           - name: VhServices:VideoWebUrl
             value: $(video_web_url)
+          - name: VhServices:EnableAndroidSupport
+            value: $(EnableAndroidSupport)
+          - name: VhServices:EnableIOSSupport
+            value: $(EnableIOSSupport)
 
           # AzureAd
           - name: AzureAd:TenantId
@@ -329,7 +365,7 @@ stages:
           - name: AzureAd:VhVideoApiResourceId
             value: vh-video-web-identifieruris
             secret: true
-          
+
           # EJudAd
           - name: EJudAd:TenantId
             value: ejud-tenantid
@@ -375,7 +411,7 @@ stages:
             value: $(wowza_storageAccountKey)
           - name: WowzaConfiguration:StorageContainerName
             value: $(wowza_storageContainerName)
-            
+
           # Ejud - test setting only
           - name: UsingEjud
             value: $(UsingEjud)

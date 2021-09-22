@@ -166,25 +166,53 @@ stages:
               - Preview
           - group: QuickLinks_Dev
             env:
-             - Dev
+              - Dev
           - group: QuickLinks_Preprod
             env:
-             - Preprod
+              - Preprod
           - group: QuickLinks_Prod
             env:
-             - Prod
+              - Prod
           - group: QuickLinks_Test
             env:
-             - Test1
+              - Test1
           - group: QuickLinks_Aat
             env:
-             - Aat
+              - Aat
           - group: QuickLinks_Demo
             env:
-             - Demo
+              - Demo
           - group: QuickLinks_Sandbox
             env:
-             - Sandbox
+              - Sandbox
+          - name: EnableAndroidSupport
+            value: false
+            env:
+              - Prod
+              - Preprod
+          - name: EnableAndroidSupport
+            value: true
+            env:
+              - Preview
+              - Dev
+              - AAT
+              - Sandbox
+              - Test1
+              - Test2
+          - name: EnableIOSSupport
+            value: false
+            env:
+              - Prod
+              - Preprod
+          - name: EnableIOSSupport
+            value: true
+            env:
+              - Preview
+              - Dev
+              - AAT
+              - Sandbox
+              - Test1
+              - Test2
         appSettings:
           - name: ApplicationInsights:InstrumentationKey
             value: vh-core-infra-AppInsightsKey
@@ -277,6 +305,10 @@ stages:
             value: $(EmailReformDomain)
           - name: VhServices:InternalEventSecret
             value: $(internal_event_secret)
+          - name: VhServices:EnableAndroidSupport
+            value: $(EnableAndroidSupport)
+          - name: VhServices:EnableIOSSupport
+            value: $(EnableIOSSupport)
 
           # Quick Links Configuration
           - name: QuickLinks:Issuer
@@ -314,6 +346,10 @@ stages:
             value: $(video_web_url)
           - name: VhServices:VideoWebUrl
             value: $(video_web_url)
+          - name: VhServices:EnableAndroidSupport
+            value: $(EnableAndroidSupport)
+          - name: VhServices:EnableIOSSupport
+            value: $(EnableIOSSupport)
 
           # AzureAd
           - name: AzureAd:TenantId
