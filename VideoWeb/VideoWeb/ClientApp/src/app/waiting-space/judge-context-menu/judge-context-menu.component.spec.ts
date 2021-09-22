@@ -705,6 +705,13 @@ describe('JudgeContextMenuComponent', () => {
             expectedValue = `${prefix}-${testInputSection}`;
         });
 
+        it('should return correct value when section is present and participant is null', () => {
+            inputSection = testInputSection;
+            component.participant = null;
+
+            expectedValue = `${prefix}-${testInputSection}`;
+        });
+
         it('should return correct value when section is null and participant id is present', () => {
             inputSection = null;
             component.participant.id = testParticipantId;
@@ -715,6 +722,13 @@ describe('JudgeContextMenuComponent', () => {
         it('should return correct value when section and participant id is null', () => {
             inputSection = null;
             component.participant.id = null;
+
+            expectedValue = `${prefix}`;
+        });
+
+        it('should return correct value when section and participant is null', () => {
+            inputSection = null;
+            component.participant = null;
 
             expectedValue = `${prefix}`;
         });

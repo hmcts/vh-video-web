@@ -127,7 +127,7 @@ export class JudgeContextMenuComponent {
     getElementId(section?: string): string {
         section = !!section ? `-${section}` : '';
         const prefix = 'judge-context-menu';
-        const identifier = this.participant?.id ? `-participant-${this.participant.id}` : '';
+        const identifier = !!this.participant?.id ? `-participant-${this.participant.id}` : '';
         return `${prefix}${identifier}${section}`;
     }
 }
