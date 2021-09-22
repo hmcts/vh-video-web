@@ -1,4 +1,4 @@
-﻿@VIH-4289 @VIH-4036
+﻿#@VIH-4289 @VIH-4036
 Feature: Switch on your camera and microphone
 	As a registered video hearings user
 	I would like to be prompted to switch on my camera and microphone
@@ -12,7 +12,7 @@ Scenario: Participant switch on camera and microphone
 	When the user clicks the Watch the video button
 	Then the user is on the Practice video hearing page
 
-@VIH-4671 
+#@VIH-4671 
 Scenario: Judge switch on camera and microphone
 	Given the Judge Self Test user has progressed to the Switch on your camera and microphone page
 	Then contact us details are available
