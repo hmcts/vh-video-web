@@ -12,9 +12,19 @@
 }
 .vh-popup {
   padding: 40px;
-  margin: 250px auto;
+  @media only screen and (min-width: 768px) {
+    margin: 250px auto;
+    width: 37%;
+  }
+  @media only screen and (min-width: 280px) and (max-width: 768px) {
+    margin: 100px auto;
+    width: 70%;
+  }
+  @media only screen and (min-height: 280px) and (max-height: 768px) {
+    margin: 10px auto;
+    width: 70%;
+  }
   border-radius: 3px;
   background: govuk-colour('white');
   transition: all 2s ease-in-out;
-  width: 37%;
 }

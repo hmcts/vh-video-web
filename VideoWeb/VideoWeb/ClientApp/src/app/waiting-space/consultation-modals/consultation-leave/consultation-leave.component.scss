@@ -2,3 +2,20 @@
   text-align: left;
   padding: 50px;
 }
+.consultation-modal {
+  position: fixed;
+  left: 50%;
+  top: 70%;
+  width: 35vw;
+  white-space: pre-wrap;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  @media only screen and (min-width: 1024px) {
+    width: 50%;
+    top: 70%;
+  }
+  @media only screen and (min-width: 280px) and (max-width: 1024px) {
+    width: 82%;
+    top: 50%;
+  }
+}

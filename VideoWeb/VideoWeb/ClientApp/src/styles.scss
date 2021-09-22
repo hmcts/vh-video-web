@@ -59,16 +59,6 @@ $govuk-global-styles: true;
   background-color: rgba(223, 223, 223, 0);
 }
 
-.modal.consultation {
-  position: fixed;
-  left: 50%;
-  top: 70%;
-  width: 35vw;
-  white-space: pre-wrap;
-  transform: translate(-50%, -50%);
-  text-align: center;
-}
-
 /* Modal Content/Box */
 
 .modal-content {

@@ -5,7 +5,7 @@
   /* Hidden by default */
   position: fixed;
   /* Stay in place */
-  z-index: 11;
+  z-index: 999;
   /* Sit on top */
   left: 0;
   top: 0;
@@ -26,11 +26,14 @@
 .modal-content {
   background-color: #fefefe;
   margin: 5% auto;
-  /* 15% from the top and centered */
-  padding: 20px;
   border: 1px solid #888;
-  width: 50%;
-  /* Could be more or less, depending on screen size */
+  padding: 20px;
+  @media only screen and (min-width: 1024px) {
+    width: 50%;
+  }
+  @media only screen and (min-width: 280px) and (max-width: 1024px) {
+    width: 82%;
+  }
 }
 
 .wr-modal {
@@ -39,15 +42,16 @@
 }
 
 .wr-ml {
-  margin-left: 10px;
+  @media only screen and (min-width: 768px) {
+    margin-left: 10px;
+  }
+  @media only screen and (min-width: 280px) and (max-width: 768px) {
+    margin-top: -10px;
+  }
 }
 
 .wr-h {
   margin-left: 25px;
-}
-
-.camSwitchTitle {
-  margin-top: -25px;
 }
 
 // Rounded sliders
@@ -56,7 +60,12 @@
   display: inline-block;
   width: 40px;
   height: 24px;
-  margin-bottom: 30px;
+  @media only screen and (min-width: 280px) and (max-width: 768px) {
+    margin-bottom: 0px;
+  }
+  @media only screen and (min-width: 768px) {
+    margin-bottom: 30px;
+  }
 }
 
 .avoid-clicks {
@@ -114,4 +123,28 @@ input:checked + .slider:before {
 .toggle-text {
   margin-left: 44px;
   font-size: 20px;
+}
+
+.audio-only-column {
+  padding-left: 20px;
+}
+
+.camera-label {
+  @media only screen and (min-width: 280px) and (max-width: 768px) {
+    font-size: 13px;
+  }
+}
+
+.green-bar-hint {
+  font-size: 13px;
+}
+
+.warning-text__text {
+  @media only screen and (min-width: 280px) and (max-width: 768px) {
+    padding-top: 10px;
+    font-size: 10px;
+  }
+  @media only screen and (min-width: 768px) {
+    font-size: 1.1875rem;
+  }
 }
