@@ -32,6 +32,9 @@
   margin-left: 10px;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  @media screen and (max-width: 650px) {
+    display: none;
+  }
 }
 
 .lock-badge {
@@ -41,6 +44,9 @@
   text-transform: uppercase;
   font-weight: 400;
   font-size: 14px;
+  @media screen and (max-width: 650px) {
+    font-size: 10px;
+  }
 }
 
 .lock-badge.locked,
@@ -57,6 +63,12 @@
 
 .header-content-grid-with-lock {
   display: grid;
-  grid-template-columns: 200px 100px auto auto;
+  grid-template-columns: 250px 100px auto auto;
+  @media only screen and (max-width: 720px) {
+    grid-template-columns: 200px 100px auto auto;
+  }
+  @media only screen and (max-width: 640px) {
+    grid-template-columns: 100px 100px auto auto;
+  }
   width: 100%;
 }

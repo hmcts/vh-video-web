@@ -173,7 +173,9 @@
 
 @media screen and (max-width: 45rem) {
   .panel-wrapper {
-    width: 333px;
+    max-width: 31.25rem;
+    width: 20vw;
+    min-width: 18.75rem;
     position: absolute;
     top: 4.094375rem;
     right: 0;
@@ -182,7 +184,7 @@
       top: 5rem;
     }
     overflow: overlay;
-    background-color: #f3f2f1;
+    background-color: #333;
     box-shadow: 0px 5px 10px 0px rgb(0 0 0 / 70%);
     box-shadow: 0px 20px 30px 0px rgb(0 0 0 / 30%);
   }
@@ -204,11 +206,13 @@
   font-weight: normal;
   display: flex;
   flex-direction: row;
+  width: auto;
   @media only screen and (max-width: 720px) {
     max-width: 250px;
   }
   @media only screen and (max-width: 640px) {
-    max-width: 150px;
+    max-width: 100px;
+    font-size: 10px;
   }
 }
 

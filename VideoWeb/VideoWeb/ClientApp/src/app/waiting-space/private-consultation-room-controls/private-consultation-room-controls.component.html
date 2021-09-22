@@ -71,7 +71,11 @@
                 </div>
                 <div class='icon-button-dark' id='toggle-hand-raised-img' *ngIf='!isPrivateConsultation && !isJudge'
                     colour='grey' (click)='toggleHandRaised()'>
-                    <span class='far fa-hand-paper' [class]='{ yellow: handRaised }'></span>
+                    <span class='far fa-hand-paper' [class]='{ yellow: handRaised }'>
+                        <span class='context-item'> {{(handRaised
+                            ? 'private-consultation-room-controls.hand-raise-toggle-true'
+                            : 'private-consultation-room-controls.hand-raise-toggle-false') | translate
+                            }}</span></span>
                 </div>
                 <div *ngIf='!isPrivateConsultation && isJudge' id='pause-hearing' class='icon-button-dark portrait'
                     data-module='govuk-button' (click)='pause()' [hidden]='!canCloseOrPauseHearing()'>
