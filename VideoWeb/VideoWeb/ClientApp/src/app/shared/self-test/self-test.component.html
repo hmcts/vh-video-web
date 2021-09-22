@@ -40,7 +40,7 @@
 </div>
 
 <div class="govuk-grid-row">
-  <div *ngIf="hasMultipleDevices" class="govuk-grid-column-full govuk-!-margin-bottom-6">
+  <div *ngIf="showChangeDevices" class="govuk-grid-column-full govuk-!-margin-bottom-6">
     <a id="change-device-link" href="javascript:void(0);" role="button" (click)="changeDevices()" class="govuk-link">{{
       'self-test.change-camera-mic' | translate
     }}</a>

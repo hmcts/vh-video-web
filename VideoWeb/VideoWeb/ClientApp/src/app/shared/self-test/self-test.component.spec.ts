@@ -25,6 +25,7 @@ import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/w
 import { mockMicStream } from 'src/app/waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { VideoFilterService } from 'src/app/services/video-filter.service';
 
 describe('SelfTestComponent', () => {
     let component: SelfTestComponent;
@@ -39,6 +40,7 @@ describe('SelfTestComponent', () => {
 
     let userMediaStreamServiceSpy: jasmine.SpyObj<UserMediaStreamService>;
     let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
+    let videoFilterServiceSpy: jasmine.SpyObj<VideoFilterService>;
     let navigatorSpy: jasmine.SpyObj<Navigator>;
 
     const token = new TokenResponse({
@@ -83,6 +85,9 @@ describe('SelfTestComponent', () => {
             'disconnectFromCall'
         ]);
 
+        videoFilterServiceSpy = jasmine.createSpyObj<VideoFilterService>(['doesSupportVideoFiltering']);
+        videoFilterServiceSpy.doesSupportVideoFiltering.and.returnValue(false);
+
         navigatorSpy = jasmine.createSpyObj<Navigator>([], ['userAgent']);
 
         component = new SelfTestComponent(
@@ -91,6 +96,7 @@ describe('SelfTestComponent', () => {
             errorServiceSpy,
             userMediaServiceSpy,
             userMediaStreamServiceSpy,
+            videoFilterServiceSpy,
             videoCallServiceSpy,
             navigatorSpy
         );
@@ -106,6 +112,30 @@ describe('SelfTestComponent', () => {
 
             // Assert
             expect(initialiseDataSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should initialise showChangeDevices to the true when video filters is supported', () => {
+            // Arrange
+            spyOn(component, 'initialiseData');
+            videoFilterServiceSpy.doesSupportVideoFiltering.and.returnValue(true);
+
+            // Act
+            component.ngOnInit();
+
+            // Arrange
+            expect(component.showChangeDevices).toBeTrue();
+        });
+
+        it('should initialise showChangeDevices to the false when video filters is NOT supported', () => {
+            // Arrange
+            spyOn(component, 'initialiseData');
+            videoFilterServiceSpy.doesSupportVideoFiltering.and.returnValue(false);
+
+            // Act
+            component.ngOnInit();
+
+            // Arrange
+            expect(component.showChangeDevices).toBeFalse();
         });
 
         describe('on connectedDevices$', () => {
@@ -151,7 +181,7 @@ describe('SelfTestComponent', () => {
 
                 // Assert
                 expect(component.preferredMicrophoneStream).toEqual(mockMicStream);
-                expect(component.hasMultipleDevices).toBeTrue();
+                expect(component.showChangeDevices).toBeTrue();
             }));
         });
     });

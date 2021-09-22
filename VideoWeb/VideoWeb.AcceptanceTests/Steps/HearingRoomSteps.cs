@@ -54,15 +54,15 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the Judge closes the hearing")]
         public void WhenTheJudgeClosesTheHearing()
         {
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.CloseButtonLandscape, 180);
-            _browsers[_c.CurrentUser].Click(HearingRoomPage.CloseButtonLandscape);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.CloseButtonDesktop, 180);
+            _browsers[_c.CurrentUser].Click(HearingRoomPage.CloseButtonDesktop);
             if (_c.VideoWebConfig.TestConfig.TargetBrowser == TargetBrowser.Firefox)
             {
                 Thread.Sleep(TimeSpan.FromSeconds(5));
             }
             else
             {
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.ConfirmClosePopup).Displayed.Should().BeTrue();
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.ConfirmClosePopup, Convert.ToInt32(_c.VideoWebConfig.consultationRoomTimeout)).Displayed.Should().BeTrue();
             }
             _browsers[_c.CurrentUser].Click(HearingRoomPage.ConfirmCloseButton);
             _c.Test.HearingClosedTime = DateTime.Now;
@@ -90,7 +90,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.ToggleSelfView).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.PauseButton).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.CloseButtonLandscape).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.CloseButtonDesktop).Displayed.Should().BeTrue();
         }
 
         [Then(@"the user can see themselves and toggle the view off and on")]

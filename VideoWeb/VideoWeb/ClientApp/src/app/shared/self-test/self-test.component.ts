@@ -18,6 +18,7 @@ import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { VideoFilterService } from 'src/app/services/video-filter.service';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 
@@ -45,7 +46,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     displayFeed = false;
 
     displayDeviceChangeModal = false;
-    hasMultipleDevices = false;
+    showChangeDevices = false;
 
     testCallResult: TestCallScoreResponse = null;
     scoreSent = false;
@@ -64,6 +65,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         private errorService: ErrorService,
         private userMediaService: UserMediaService,
         private userMediaStreamService: UserMediaStreamService,
+        private videoFilterService: VideoFilterService,
         private videoCallService: VideoCallService,
         private navigator: Navigator
     ) {}
@@ -72,6 +74,8 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         this.logger.debug(`${this.loggerPrefix} Loading self test`);
 
         this.initialiseData();
+
+        this.showChangeDevices = this.videoFilterService.doesSupportVideoFiltering();
 
         this.userMediaService.connectedDevices$.pipe(take(1)).subscribe({
             next: () => {
@@ -160,7 +164,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             .hasMultipleDevices()
             .pipe(takeUntil(this.destroyedSubject))
             .subscribe(result => {
-                this.hasMultipleDevices = result;
+                this.showChangeDevices = result || this.videoFilterService.doesSupportVideoFiltering();
             });
     }
 

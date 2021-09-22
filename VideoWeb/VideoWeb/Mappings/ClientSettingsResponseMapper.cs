@@ -29,7 +29,10 @@ namespace VideoWeb.Mappings
                 KinlyTurnServerCredential = kinlyConfiguration.TurnServerCredential,
                 EJudIdpSettings = ejudSettings,
                 VHIdpSettings = vhAdSettings,
-                EnableVideoFilters = servicesConfiguration.EnableVideoFilters
+                EnableVideoFilters = servicesConfiguration.EnableVideoFilters,
+                EnableAndroidSupport = servicesConfiguration.EnableAndroidSupport,
+                EnableIOSSupport = servicesConfiguration.EnableIOSSupport,
+                BlurRadius = servicesConfiguration.BlurRadius
             };
         }
 
