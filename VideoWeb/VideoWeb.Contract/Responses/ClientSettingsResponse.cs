@@ -48,5 +48,20 @@ namespace VideoWeb.Contract.Responses
         /// Enable video filters
         /// </summary>
         public bool EnableVideoFilters { get; set; }
+
+        /// <summary>
+        /// Enable Android support
+        /// </summary>
+        public bool EnableAndroidSupport { get; set; }
+
+        /// <summary>
+        /// Enable iOS support
+        /// </summary>
+        public bool EnableIOSSupport { get; set; }
+
+        /// <summary>
+        /// Blur radius in pixels
+        /// </summary>
+        public int BlurRadius { get; set; }
     }
 }

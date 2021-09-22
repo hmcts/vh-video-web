@@ -9,6 +9,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By PanelMemberName(Guid participantId) => By.Id($"p-{participantId:D}-name-panel-member");
         public static By PanelMemberStatus(Guid participantId) => By.Id($"p-{participantId:D}-status-panel-member");
         public static By IndividualRow(Guid participantId) => By.Id($"p-row-{participantId:D}-participant");
+        public static By WingerStatus(Guid participantId) => By.Id($"p-{participantId:D}-status-winger");
         public static By ParticipantName(Guid participantId) => By.Id($"p-{participantId:D}-name-participant");
         public static By ParticipantCaseType(Guid participantId) => By.Id($"p-{participantId:D}-case-type-group-participant");
         public static By ParticipantHearingRole(Guid participantId) => By.Id($"p-{participantId:D}-hearing-role-participant");

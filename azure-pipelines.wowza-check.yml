@@ -1,30 +1,30 @@
 parameters:
-- name: deploymentBranch
-  displayName: Branch to Deploy
-  type: string
-  default: refs/heads/master
+  - name: deploymentBranch
+    displayName: Branch to Deploy
+    type: string
+    default: refs/heads/master
 
-- name: environment
-  displayName: Environment
-  type: string
-  default: Prod
-  values:
-  - Preview
-  - Dev
-  - AAT
-  - Sandbox
-  - Test1
-  - Test2
-  - Demo
-  - Preprod
-  - Prod
+  - name: environment
+    displayName: Environment
+    type: string
+    default: Prod
+    values:
+      - Preview
+      - Dev
+      - AAT
+      - Sandbox
+      - Test1
+      - Test2
+      - Demo
+      - Preprod
+      - Prod
 
-- name: prodEnvs
-  displayName: Environments Using Prod Subscription
-  type: object
-  default:
-    - Prod
-    - Preprod
+  - name: prodEnvs
+    displayName: Environments Using Prod Subscription
+    type: object
+    default:
+      - Prod
+      - Preprod
 
 # Set variables once
 variables:
@@ -34,19 +34,19 @@ variables:
   - group: vh test users
   - group: Saucelabs
   - ${{ if containsValue(parameters.prodEnvs, parameters.environment) }}:
-    - group: vh-prod
+      - group: vh-prod
   - ${{ if not(containsValue(parameters.prodEnvs, parameters.environment)) }}:
-    - group: vh-preview
+      - group: vh-preview
 
 trigger: none
 pr: none
 schedules:
-- cron: "0 19 * * 1-5"
-  displayName: Audio Recording Check Mon-Fri
-  always: true
-  branches:
-    include:
-    - master
+  - cron: '0 19 * * 1-5'
+    displayName: Audio Recording Check Mon-Fri
+    always: true
+    branches:
+      include:
+        - master
 
 resources:
   repositories:
@@ -124,6 +124,29 @@ stages:
         - group: KinlyConfiguration_Prod
           env:
             - Prod
+        - name: EnableAndroidSupport
+          value: true
+          env:
+            - Preview
+            - Dev
+            - AAT
+            - Sandbox
+            - Test1
+            - Test2
+        - name: EnableIOSSupport
+          value: false
+          env:
+            - Prod
+            - Preprod
+        - name: EnableIOSSupport
+          value: true
+          env:
+            - Preview
+            - Dev
+            - AAT
+            - Sandbox
+            - Test1
+            - Test2
       acceptanceTestSettings:
         - name: ConnectionStrings:SignalR
           value: signalr-connection-str
@@ -154,6 +177,10 @@ stages:
           value: $(video_web_url)
         - name: VhServices:VideoWebUrl
           value: $(video_web_url)
+        - name: VhServices:EnableAndroidSupport
+          value: $(EnableAndroidSupport)
+        - name: VhServices:EnableIOSSupport
+          value: $(EnableIOSSupport)
 
         # AzureAd
         - name: AzureAd:TenantId
@@ -198,7 +225,7 @@ stages:
           value: $(SelfTestApiKey)
         - name: KinlyConfiguration:JoinByPhoneFromDate
           value: $(JoinByPhoneFromDate)
-          
+
         # SauceLabs
         - name: Saucelabs:Username
           value: $(Saucelabs:Username)
@@ -214,7 +241,7 @@ stages:
           value: $(wowza_storageAccountKey)
         - name: WowzaConfiguration:StorageContainerName
           value: $(wowza_storageContainerName)
-          
+
         # Ejud - test setting only
         - name: UsingEjud
           value: $(UsingEjud)

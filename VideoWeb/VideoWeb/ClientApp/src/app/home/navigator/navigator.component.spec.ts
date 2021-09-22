@@ -1,28 +1,39 @@
 import { Router } from '@angular/router';
 import { ProfileService } from '../../services/api/profile.service';
-import { Role, UserProfileResponse } from '../../services/clients/api-client';
+import { ClientSettingsResponse, Role, UserProfileResponse } from '../../services/clients/api-client';
 import { DeviceTypeService } from '../../services/device-type.service';
 import { ErrorService } from '../../services/error.service';
 import { pageUrls } from '../../shared/page-url.constants';
 import { NavigatorComponent } from './navigator.component';
-import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
+import { ConfigService } from 'src/app/services/api/config.service';
+import { of } from 'rxjs';
 
-describe('HomeComponent', () => {
+describe('NavigatorComponent', () => {
     let component: NavigatorComponent;
     let router: jasmine.SpyObj<Router>;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
+    let configServiceSpy: jasmine.SpyObj<ConfigService>;
     let deviceTypeServiceSpy: jasmine.SpyObj<DeviceTypeService>;
     let errorServiceSpy: jasmine.SpyObj<ErrorService>;
+    let clientSettingsResponse: ClientSettingsResponse;
 
     beforeAll(() => {
+        clientSettingsResponse = new ClientSettingsResponse({
+            enable_android_support: true,
+            enable_ios_support: true
+        });
+
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
-        deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isMobile', 'isTablet', 'isDesktop', 'isIpad']);
+        configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings']);
+        deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isMobile', 'isTablet', 'isDesktop', 'isIOS', 'isAndroid']);
         errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['handleApiError']);
+        configServiceSpy.getClientSettings.and.returnValue(of(clientSettingsResponse));
     });
 
     beforeEach(() => {
-        component = new NavigatorComponent(router, profileServiceSpy, errorServiceSpy, deviceTypeServiceSpy);
+        component = new NavigatorComponent(router, profileServiceSpy, errorServiceSpy, deviceTypeServiceSpy, configServiceSpy);
         router.navigate.and.callFake(() => Promise.resolve(true));
     });
 
@@ -62,9 +73,65 @@ describe('HomeComponent', () => {
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.Unauthorised]);
     });
 
-    it('should redirect to unsupported device screen if on a mobile device', () => {
+    it('should navigate to hearing list if ios is supported and is on ios device', fakeAsync(() => {
+        const profile = new UserProfileResponse({ role: Role.Individual });
         deviceTypeServiceSpy.isDesktop.and.returnValue(false);
+        deviceTypeServiceSpy.isIOS.and.returnValue(true);
+        clientSettingsResponse.enable_ios_support = true;
+        configServiceSpy.getClientSettings.and.returnValue(of(clientSettingsResponse));
+        profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
+        spyOn(component, 'navigateToHearingList');
+
         component.ngOnInit();
+        tick();
+
+        expect(component.navigateToHearingList).toHaveBeenCalledWith(profile);
+    }));
+
+    it('should navigate to unsupported device if ios is not supported and is on ios device', fakeAsync(() => {
+        deviceTypeServiceSpy.isDesktop.and.returnValue(false);
+        deviceTypeServiceSpy.isIOS.and.returnValue(true);
+        clientSettingsResponse.enable_ios_support = false;
+
+        component.ngOnInit();
+        tick();
+
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.UnsupportedDevice]);
+    }));
+
+    it('should navigate to hearing list if android is supported and is on android device', fakeAsync(() => {
+        const profile = new UserProfileResponse({ role: Role.Individual });
+        deviceTypeServiceSpy.isDesktop.and.returnValue(false);
+        deviceTypeServiceSpy.isAndroid.and.returnValue(true);
+        clientSettingsResponse.enable_android_support = true;
+        configServiceSpy.getClientSettings.and.returnValue(of(clientSettingsResponse));
+        profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
+        spyOn(component, 'navigateToHearingList');
+
+        component.ngOnInit();
+        tick();
+
+        expect(component.navigateToHearingList).toHaveBeenCalledWith(profile);
+    }));
+
+    it('should navigate to unsupported device if android is not supported and is on android device', fakeAsync(() => {
+        deviceTypeServiceSpy.isDesktop.and.returnValue(false);
+        deviceTypeServiceSpy.isAndroid.and.returnValue(true);
+        clientSettingsResponse.enable_android_support = false;
+
+        component.ngOnInit();
+        tick();
+
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.UnsupportedDevice]);
+    }));
+
+    it('should redirect to unsupported device screen if on a mobile device and is not supported', () => {
+        deviceTypeServiceSpy.isDesktop.and.returnValue(false);
+        clientSettingsResponse.enable_android_support = false;
+        clientSettingsResponse.enable_ios_support = false;
+
+        component.ngOnInit();
+
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.UnsupportedDevice]);
     });
 
@@ -87,10 +154,4 @@ describe('HomeComponent', () => {
         flushMicrotasks();
         expect(errorServiceSpy.handleApiError).toHaveBeenCalledWith(error);
     }));
-
-    it('should redirect to unsupported device screen if on tablet and not an iPad', () => {
-        deviceTypeServiceSpy.isIpad.and.returnValue(false);
-        component.ngOnInit();
-        expect(router.navigate).toHaveBeenCalledWith([pageUrls.UnsupportedDevice]);
-    });
 });
