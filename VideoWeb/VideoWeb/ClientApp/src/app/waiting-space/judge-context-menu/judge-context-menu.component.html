@@ -22,10 +22,10 @@
     </span>
   </p>
   <hr />
-  <a *ngIf="participant.isInHearing()" (click)="toggleMuteParticipant()">{{ getMutedStatusText() }} [id]="getElementId('toggle-mute')"</a>
+  <a *ngIf="participant.isInHearing()" (click)="toggleMuteParticipant()" [id]="getElementId('toggle-mute')">{{ getMutedStatusText() }}</a>
   <a *ngIf="canCallParticipantIntoHearing()" (click)="callParticipantIntoHearing()" [id]="getElementId('call')">
     <ng-container
-      *ngIf="isWitness; then isWitnessCall; else isNotWitnessCall">
+      *ngIf="isWitness; then isWitnessCallContent; else isNotWitnessCallContent">
     </ng-container>
   </a>
   <a *ngIf="canDismissParticipantFromHearing()" (click)="dismissParticipantFromHearing()" [id]="getElementId('dismiss')">
@@ -35,9 +35,9 @@
   <a *ngIf="participant.isInHearing() && !participant.isLocalCameraOff()" (click)="toggleSpotlightParticipant()" [id]="getElementId('toggle-spotlight')">{{ getPinStatusText() }}</a>
 </div>
 
-<ng-template #isWitnessCall>
+<ng-template #isWitnessCallContent>
     {{'judge-context-menu.call-witness' | translate}}
 </ng-template>
-<ng-template #isNotWitnessCall>
+<ng-template #isNotWitnessCallContent>
     {{'judge-context-menu.admit-participant' | translate: { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase} }}
 </ng-template>
