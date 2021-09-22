@@ -683,4 +683,46 @@ describe('JudgeContextMenuComponent', () => {
             });
         });
     });
+
+    describe('getElementId', () => {
+        let expectedValue: string;
+        let inputSection: string;
+
+        const prefix = 'judge-context-menu';
+        const testInputSection = 'inputSection';
+
+        it('should return correct value when section and participant id present', () => {
+            inputSection = testInputSection;
+            component.participant.id = testParticipantId;
+
+            expectedValue = `${prefix}-participant-${testParticipantId}-${testInputSection}`;
+        });
+
+        it('should return correct value when section is present and participant id null', () => {
+            inputSection = testInputSection;
+            component.participant.id = null;
+
+            expectedValue = `${prefix}-${testInputSection}`;
+        });
+
+        it('should return correct value when section is null and participant id is present', () => {
+            inputSection = null;
+            component.participant.id = testParticipantId;
+
+            expectedValue = `${prefix}-participant-${testParticipantId}`;
+        });
+
+        it('should return correct value when section and participant id is null', () => {
+            inputSection = null;
+            component.participant.id = null;
+
+            expectedValue = `${prefix}`;
+        });
+
+        afterEach(() => {
+            console.log(component.getElementId(inputSection));
+            component.getElementId(expectedValue);
+            expect(component.getElementId(inputSection)).toEqual(expectedValue);
+        });
+    });
 });

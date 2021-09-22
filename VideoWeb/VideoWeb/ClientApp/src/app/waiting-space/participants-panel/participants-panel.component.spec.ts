@@ -43,6 +43,7 @@ import { ParticipantModel } from 'src/app/shared/models/participant';
 import { CaseTypeGroup } from '../models/case-type-group';
 import { Subject } from 'rxjs';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
+import { PanelModel } from '../models/panel-model-base';
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
@@ -831,5 +832,19 @@ describe('ParticipantsPanelComponent', () => {
         getParticipantsUpdatedSubjectMock.next(message);
 
         expect(component.nonEndpointParticipants).toEqual(mappedParticipants);
+    });
+
+    describe('isWitness', () => {
+        let participant: PanelModel;
+        beforeEach(() => {
+            participant = component.participants[0];
+        });
+        const testCases = [true, false];
+        testCases.forEach(testCase => {
+            it(`should return ${testCase}`, () => {
+                spyOnProperty(participant, 'isWitness').and.returnValue(testCase);
+                expect(component.isWitness(participant)).toBe(testCase);
+            });
+        });
     });
 });
