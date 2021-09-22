@@ -20,7 +20,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private LoginSharedSteps _loginSharedSteps;
         private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly TestContext _c;
-        private bool isEjudEnabled;
+        private readonly bool isEjudEnabled;
 
         public LoginSteps(Dictionary<UserDto, UserBrowser> browsers, TestContext c)
         {
