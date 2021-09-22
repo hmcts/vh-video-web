@@ -506,16 +506,23 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     getPanelRowTooltipText(participant: PanelModel) {
-        if (participant.isAvailable()) {
-            return participant.displayName + ': ' + this.getTranslatedText('joining') + this.getAdditionalText(participant);
-        }
+        let toolTipText = participant.displayName + this.getAdditionalText(participant);
+
         if (!participant.isDisconnected() && !participant.isInHearing()) {
-            return participant.displayName + ': ' + this.getTranslatedText('not-joined') + this.getAdditionalText(participant);
+            toolTipText = participant.displayName + ': ' + this.getTranslatedText('not-joined') + this.getAdditionalText(participant);
+        }
+        if (participant.isAvailable()) {
+            toolTipText = participant.displayName + ': ' + this.getTranslatedText('joining') + this.getAdditionalText(participant);
+        }
+        if (participant.isWitness && participant.isAvailable() && !participant.isInHearing()) {
+            toolTipText =
+                participant.displayName + ': ' + this.getTranslatedText('participant-available') + this.getAdditionalText(participant);
         }
         if (participant.isDisconnected()) {
-            return participant.displayName + ': ' + this.getTranslatedText('disconnected') + this.getAdditionalText(participant);
+            toolTipText = participant.displayName + ': ' + this.getTranslatedText('disconnected') + this.getAdditionalText(participant);
         }
-        return participant.displayName + this.getAdditionalText(participant);
+
+        return toolTipText;
     }
 
     getAdditionalText(participant: PanelModel): string {
