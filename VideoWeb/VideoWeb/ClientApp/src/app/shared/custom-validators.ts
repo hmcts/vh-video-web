@@ -15,7 +15,7 @@ export class CustomValidators extends Validators {
     };
 
     public static specialCharValidator(control) {
-        if (control.value.trim().length > 0 && !control.value?.match(/^[^!”#$%&()*+,./:;<=>?@[\\\]^_`{|}~]+$/)) {
+        if (control.value.trim().length > 0 && !control.value?.match(/^[^!”#$%&()*"£¬+,./:;<=>?@[\\\]^_`{|}~]+$/)) {
             return { specialCharError: 'specialCharError' };
         }
         return null;
