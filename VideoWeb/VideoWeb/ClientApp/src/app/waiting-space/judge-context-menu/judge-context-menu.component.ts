@@ -117,10 +117,17 @@ export class JudgeContextMenuComponent {
     }
 
     canCallParticipantIntoHearing(): boolean {
-        return (this.participant.isWitness || this.participant.isQuickLinkUser) && !this.participant.isInHearing();
+        return this.participant.isCallableAndReadyToJoin;
     }
 
     canDismissParticipantFromHearing(): boolean {
-        return (this.participant.isWitness || this.participant.isQuickLinkUser) && this.participant.isInHearing();
+        return this.participant.isCallableAndReadyToBeDismissed;
+    }
+
+    getElementId(section?: string): string {
+        section = !!section ? `-${section}` : '';
+        const prefix = 'judge-context-menu';
+        const identifier = this.participant?.id ? `-participant-${this.participant.id}` : '';
+        return `${prefix}${identifier}${section}`;
     }
 }
