@@ -598,11 +598,11 @@ describe('JudgeContextMenuComponent', () => {
                                 translateSpy
                                     .withArgs(admitParticipantPath, { role: testHearingRoleTranslatedLowercase })
                                     .and.returnValue(admitReturn);
+                                spyOnProperty(component, 'isWitness').and.returnValue(false);
                                 component.participant.hearingRole = testHearingRole;
                                 fixture.detectChanges();
 
                                 callElement = fixture.debugElement.query(By.css(`#${callId}`));
-
                                 expect(hyphenateSpy).toHaveBeenCalledWith(testHearingRole);
                                 expect(translateSpy).toHaveBeenCalledWith(testHearingRoleHyphenatedWithPrefix);
                                 expect(lowerCaseSpy).toHaveBeenCalledWith(testHearingRoleTranslated);
@@ -615,10 +615,12 @@ describe('JudgeContextMenuComponent', () => {
                             it('should display correct value when witness', () => {
                                 const callWitnessPath = 'judge-context-menu.call-witness';
                                 const witnessReturn = 'Witness return';
-                                component.participant.hearingRole = HearingRole.WITNESS;
+                                translateSpy.withArgs(callWitnessPath).and.returnValue(witnessReturn);
+                                spyOnProperty(component, 'isWitness').and.returnValue(true);
                                 fixture.detectChanges();
 
-                                translateSpy.withArgs(callWitnessPath).and.returnValue(witnessReturn);
+                                console.log(fixture.debugElement.nativeElement);
+                                callElement = fixture.debugElement.query(By.css(`#${callId}`));
                                 expect(translateSpy).toHaveBeenCalledWith(callWitnessPath);
                                 expect(callElement.nativeElement.textContent.trim()).toEqual(witnessReturn);
                             });
@@ -628,7 +630,7 @@ describe('JudgeContextMenuComponent', () => {
                     describe('dismiss', () => {
                         const dismissId = fakeGetElementId('dismiss');
                         let canDismissParticipantFromHearingSpy: jasmine.Spy;
-                        let callElement: DebugElement;
+                        let dismissElement: DebugElement;
 
                         beforeEach(() => {
                             canDismissParticipantFromHearingSpy = spyOn(component, 'canDismissParticipantFromHearing');
@@ -637,19 +639,19 @@ describe('JudgeContextMenuComponent', () => {
                         it('should not display', () => {
                             canDismissParticipantFromHearingSpy.and.returnValue(false);
                             fixture.detectChanges();
-                            callElement = fixture.debugElement.query(By.css(`#${dismissId}`));
-                            expect(callElement).toBeFalsy();
+                            dismissElement = fixture.debugElement.query(By.css(`#${dismissId}`));
+                            expect(dismissElement).toBeFalsy();
                         });
 
                         describe('when canDismissParticipantFromHearing is true', () => {
                             beforeEach(() => {
                                 canDismissParticipantFromHearingSpy.and.returnValue(true);
                                 fixture.detectChanges();
-                                callElement = fixture.debugElement.query(By.css(`#${dismissId}`));
+                                dismissElement = fixture.debugElement.query(By.css(`#${dismissId}`));
                             });
 
                             it('should display', () => {
-                                expect(callElement).toBeTruthy();
+                                expect(dismissElement).toBeTruthy();
                             });
 
                             it('should display correct value when not witness', () => {
@@ -665,7 +667,7 @@ describe('JudgeContextMenuComponent', () => {
                                 component.participant.hearingRole = testHearingRole;
                                 fixture.detectChanges();
 
-                                callElement = fixture.debugElement.query(By.css(`#${dismissId}`));
+                                dismissElement = fixture.debugElement.query(By.css(`#${dismissId}`));
 
                                 expect(hyphenateSpy).toHaveBeenCalledWith(testHearingRole);
                                 expect(translateSpy).toHaveBeenCalledWith(testHearingRoleHyphenatedWithPrefix);
@@ -673,7 +675,7 @@ describe('JudgeContextMenuComponent', () => {
                                 expect(translateSpy).toHaveBeenCalledWith(dismissParticipantPath, {
                                     role: testHearingRoleTranslatedLowercase
                                 });
-                                expect(callElement.nativeElement.textContent.trim()).toEqual(dismissReturn);
+                                expect(dismissElement.nativeElement.textContent.trim()).toEqual(dismissReturn);
                             });
                         });
                     });
