@@ -1076,6 +1076,10 @@
         "description": "Rydych yn arsylwi'r gwrandawiad, ond nid ydych yn cymryd rhan."
       }
     },
+    "problem-with-form": "Mae problem.",
+    "problem-with-special-char": "Rydych wedi rhoi rhai nodau na chaniateir.",
+    "problem-with-special-char-recommendation": "Cewch ddefnyddio acenion, collnodau a chysylltnodau ond dim symbolau eraill.",
+    "name-error-special-char": "Rydych wedi rhoi nodau na chaniateir.",
     "button-continue": "Parhau"
   },
   "quick-participant-errors": {
