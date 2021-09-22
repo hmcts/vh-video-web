@@ -321,7 +321,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ProgressToNextPage()
         {
             Thread.Sleep(TimeSpan.FromSeconds(ExtraTimeAfterReachingWaitingRoom));
-            _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(JudgeWaitingRoomPage.PleaseWaitText);
+            _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(JudgeWaitingRoomPage.PleaseWaitText, Convert.ToInt32(_c.VideoWebConfig.consultationRoomTimeout));
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.StartVideoHearingButton).Displayed.Should().BeTrue();
             CheckParticipantsAreStillConnected();
             _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.StartVideoHearingButton);
