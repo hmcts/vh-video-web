@@ -21,6 +21,7 @@ import { SecurityConfigSetupService } from './security/security-config-setup.ser
 import { ISecurityService } from './security/authentication/security-service.interface';
 import { BackLinkDetails } from './shared/models/back-link-details';
 import { Location } from '@angular/common';
+import { NoSleepService } from './services/no-sleep.service';
 
 @Component({
     selector: 'app-root',
@@ -61,6 +62,7 @@ export class AppComponent implements OnInit, OnDestroy {
         private securityServiceProviderService: SecurityServiceProvider,
         private securityConfigSetupService: SecurityConfigSetupService,
         private location: Location,
+        private noSleepService: NoSleepService,
         private logger: Logger
     ) {
         this.isRepresentativeOrIndividual = false;
@@ -76,6 +78,7 @@ export class AppComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.checkBrowser();
         this.setupSecurityServiceProviderSubscription();
+        this.noSleepService.enable();
         this.configService
             .getClientSettings()
             .pipe(first())
