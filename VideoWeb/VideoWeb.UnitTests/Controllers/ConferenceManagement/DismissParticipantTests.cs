@@ -186,22 +186,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         }
 
         [Test]
-        [TestCase(Role.Judge)]
-        public async Task should_create_an_alert_with_the_correct_dismisser_role_when_the_witness_is_dismissed(Role dismisserRole)
+        [TestCase(Role.Judge, AppRoles.JudgeRole)]
+        public async Task should_create_an_alert_with_the_correct_dismisser_role_when_the_witness_is_dismissed(Role dismisserRole, string appRole)
         {
-            string appRole;
-            switch(dismisserRole)
-            { 
-                case Role.Judge:
-                    appRole = AppRoles.JudgeRole.ToString();
-                    break;
-                case Role.StaffMember:
-                    appRole = AppRoles.StaffMember.ToString();
-                    break;
-                default:
-                    appRole = "";
-                    break;
-            }
             var dismisser = TestConference.Participants.First(x => x.Role == dismisserRole);
             var participant = TestConference.Participants.First(x => x.HearingRole == "Witness");
             var user = new ClaimsPrincipalBuilder()
