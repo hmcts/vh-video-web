@@ -186,6 +186,42 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         }
 
         [Test]
+        [TestCase(Role.Judge)]
+        public async Task should_create_an_alert_with_the_correct_dismisser_role_when_the_witness_is_dismissed(Role dismisserRole)
+        {
+            string appRole;
+            switch(dismisserRole)
+            { 
+                case Role.Judge:
+                    appRole = AppRoles.JudgeRole.ToString();
+                    break;
+                case Role.StaffMember:
+                    appRole = AppRoles.StaffMember.ToString();
+                    break;
+                default:
+                    appRole = "";
+                    break;
+            }
+            var dismisser = TestConference.Participants.First(x => x.Role == dismisserRole);
+            var participant = TestConference.Participants.First(x => x.HearingRole == "Witness");
+            var user = new ClaimsPrincipalBuilder()
+                .WithUsername(dismisser.Username)
+                .WithRole(appRole).Build();
+            Controller = SetupControllerWithClaims(user);
+
+            string expectedBody = $"{participant.HearingRole} dismissed by {dismisser.HearingRole}";
+
+            var result = await Controller.DismissParticipantAsync(TestConference.Id, participant.Id);
+            var typedResult = (AcceptedResult)result;
+            typedResult.Should().NotBeNull();
+
+
+            VideoApiClientMock.Verify(x => x.AddTaskAsync(TestConference.Id,
+                It.Is<AddTaskRequest>(r => r.ParticipantId == participant.Id && r.Body == expectedBody && r.TaskType == TaskType.Participant)),
+                Times.Once);
+        }
+
+        [Test]
         public async Task should_return_accepted_when_participant_is_a_room()
         {
             var judge = TestConference.GetJudge();
