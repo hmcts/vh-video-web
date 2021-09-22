@@ -25,14 +25,13 @@ export class LogoutComponent implements OnInit {
     ) {
         securityServiceProviderService.currentSecurityService$.subscribe(securityService => (this.securityService = securityService));
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
-    }
-
-    ngOnInit() {
         this.featureFlagService
             .getFeatureFlagByName('EJudFeature')
             .pipe(first())
             .subscribe(flag => (this.loginPath = flag ? '../' + pageUrls.IdpSelection : '../' + pageUrls.Login));
+    }
 
+    ngOnInit() {
         this.securityService.isAuthenticated$.subscribe(authenticated => {
             if (authenticated) {
                 this.profileService.clearUserProfile();

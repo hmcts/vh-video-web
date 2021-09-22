@@ -8,6 +8,7 @@
         import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
         import { fakeAsync, flush } from '@angular/core/testing';
         import { FeatureFlagService } from '../../services/feature-flag.service';
+        import { pageUrls } from '../../shared/page-url.constants';
 
         describe('LogoutComponent', () => {
             let component: LogoutComponent;
@@ -77,5 +78,6 @@
                 flush();
 
                 expect(loggedIn).toBeFalsy();
+                expect(component.loginPath).toBe(`../${pageUrls.IdpSelection}`);
             }));
         });

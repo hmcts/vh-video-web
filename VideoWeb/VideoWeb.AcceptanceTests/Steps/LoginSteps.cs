@@ -9,6 +9,7 @@ using VideoWeb.AcceptanceTests.Helpers;
 using TestApi.Contract.Dtos;
 using VideoWeb.AcceptanceTests.Pages;
 using TestApi.Contract.Enums;
+using BookingsApi.Contract.Configuration;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -19,18 +20,23 @@ namespace VideoWeb.AcceptanceTests.Steps
         private LoginSharedSteps _loginSharedSteps;
         private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly TestContext _c;
+        private bool isEjudEnabled;
 
         public LoginSteps(Dictionary<UserDto, UserBrowser> browsers, TestContext c)
         {
             _browsers = browsers;
             _c = c;
+            isEjudEnabled = bool.Parse(c.Apis.BookingsApi.GetFeatureFlagByName(nameof(FeatureFlags.EJudFeature)).Content);
         }
 
         [When(@"they attempt to login with valid credentials")]
         public void ProgressToNextPage()
         {
             if (_c.VideoWebConfig.TestConfig.TargetBrowser == TargetBrowser.Ie11) return;
-            SelectUserType();
+            if (isEjudEnabled)
+            {
+                SelectUserType();
+            }
             _loginSharedSteps = new LoginSharedSteps(_browsers[_c.CurrentUser], _c.CurrentUser.Username, _c.VideoWebConfig.TestConfig.TestUserPassword);
             _loginSharedSteps.ProgressToNextPage();
             if (IsAnEjudUser())
@@ -53,7 +59,15 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].ClickLink(CommonPages.SignOutLink);
             _browsers[_c.CurrentUser].Click(LogoutPage.ChooseWhoToSignOut(_c.CurrentUser.DisplayName));
             _browsers[_c.CurrentUser].ClickLink(CommonPages.SignInLink);
-            _browsers[_c.CurrentUser].PageUrl(Page.IdpSelection.Url);
+            if (isEjudEnabled)
+            {
+                _browsers[_c.CurrentUser].PageUrl(Page.IdpSelection.Url);
+            }
+            else
+            {
+                _browsers[_c.CurrentUser].PageUrl(Page.Login.Url);
+
+            }
         }
 
         [Then(@"the sign out link is displayed")]
@@ -64,11 +78,12 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private bool IsAnEjudUser()
         {
-            bool isEjud = _c.VideoWebConfig.ValidEjudDIdDomains.Any(_c.CurrentUser.ContactEmail.Contains);
-            NUnit.Framework.TestContext.WriteLine($"Check for Ejud user: {_c.CurrentUser.DisplayName} is {_c.CurrentUser.GetType()} ID: {_c.CurrentUser.Id} User name: {_c.CurrentUser.Username} user type: {_c.CurrentUser.UserType} Email: {_c.CurrentUser.ContactEmail} and ejud is {isEjud}");
-            return _c.VideoWebConfig.UsingEjud &&
-                    isEjud &&
-                    (_c.CurrentUser.UserType == UserType.Judge ||
+            var isEjud = _c.VideoWebConfig.ValidEjudDIdDomains.Any(_c.CurrentUser.ContactEmail.Contains);
+            NUnit.Framework.TestContext.WriteLine($"Check for Ejud user: {_c.CurrentUser.DisplayName} is {_c.CurrentUser.GetType()} ID: {_c.CurrentUser.Id} User name: {_c.CurrentUser.Username} user type: {_c.CurrentUser.UserType} Email: {_c.CurrentUser.ContactEmail} and ejud is {isEjudEnabled}");
+            return _c.VideoWebConfig.UsingEjud 
+                && isEjud 
+                && isEjudEnabled 
+                && (_c.CurrentUser.UserType == UserType.Judge ||
                     _c.CurrentUser.UserType == UserType.PanelMember ||
                     _c.CurrentUser.UserType == UserType.Winger);
         }
