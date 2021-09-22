@@ -14,6 +14,8 @@ namespace VideoWeb.Common.Configuration
         public string EmailReformDomain { get; set; }
         public string InternalEventSecret { get; set; }
         public bool EnableVideoFilters { get; set; }
+        public bool EnableAndroidSupport { get; set; }
+        public bool EnableIOSSupport { get; set; }
         public int BlurRadius { get; set; }
     }
 }

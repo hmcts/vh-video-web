@@ -5723,6 +5723,8 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
     e_jud_idp_settings?: IdpSettingsResponse | undefined;
     vh_idp_settings?: IdpSettingsResponse | undefined;
     enable_video_filters?: boolean;
+    enable_ios_support?: boolean;
+    enable_android_support?: boolean;
     blur_radius?: number;
 
     constructor(data?: IClientSettingsResponse) {
@@ -5784,6 +5786,8 @@ export interface IClientSettingsResponse {
     e_jud_idp_settings?: IdpSettingsResponse | undefined;
     vh_idp_settings?: IdpSettingsResponse | undefined;
     enable_video_filters?: boolean;
+    enable_ios_support?: boolean;
+    enable_android_support?: boolean;
     blur_radius?: number;
 }
 

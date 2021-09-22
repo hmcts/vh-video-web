@@ -5,6 +5,8 @@ import { DeviceTypeService } from '../../services/device-type.service';
 import { ErrorService } from '../../services/error.service';
 import { pageUrls } from '../../shared/page-url.constants';
 import { UserProfileResponse, Role } from '../../services/clients/api-client';
+import { ConfigService } from 'src/app/services/api/config.service';
+import { take } from 'rxjs/operators';
 
 @Component({
     selector: 'app-navigator',
@@ -15,18 +17,28 @@ export class NavigatorComponent implements OnInit {
         private router: Router,
         private profileService: ProfileService,
         private errorService: ErrorService,
-        private deviceTypeService: DeviceTypeService
+        private deviceTypeService: DeviceTypeService,
+        private configService: ConfigService
     ) {}
 
     ngOnInit() {
-        if (this.deviceTypeService.isDesktop() || this.deviceTypeService.isIpad()) {
-            this.profileService
-                .getUserProfile()
-                .then(profile => this.navigateToHearingList(profile))
-                .catch(error => this.errorService.handleApiError(error));
-        } else {
-            this.router.navigate([pageUrls.UnsupportedDevice]);
-        }
+        this.configService
+            .getClientSettings()
+            .pipe(take(1))
+            .subscribe(settings => {
+                if (
+                    this.deviceTypeService.isDesktop() ||
+                    (this.deviceTypeService.isAndroid() && settings.enable_android_support) ||
+                    (this.deviceTypeService.isIOS() && settings.enable_ios_support)
+                ) {
+                    this.profileService
+                        .getUserProfile()
+                        .then(profile => this.navigateToHearingList(profile))
+                        .catch(error => this.errorService.handleApiError(error));
+                } else {
+                    this.router.navigate([pageUrls.UnsupportedDevice]);
+                }
+            });
     }
 
     navigateToHearingList(userProfile: UserProfileResponse) {

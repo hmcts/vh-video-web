@@ -69,6 +69,10 @@ parameters:
         secret: true
       - name: VhServices:InternalEventSecret
         value: $(internal_event_secret)
+      - name: VhServices:EnableAndroidSupport
+        value: $(EnableAndroidSupport)
+      - name: VhServices:EnableIOSSupport
+        value: $(EnableIOSSupport)
 
       # AzureAd
       - name: AzureAd:TenantId
@@ -228,16 +232,16 @@ parameters:
         value: $(JwtProviderSecret)
 
 variables:
-    - group: vh-domains-and-urls
-    - group: vh-apps-settings-generic
-    - group: vh-video-web
-    - group: vh-video-web-nonprod
-    - group: vh-preview
-    - group: vh test users
-    - group: Saucelabs
-    - group: vh-wowza-dev
-    - group: KinlyConfiguration_Test
-    - group: QuickLinks_Preview
+  - group: vh-domains-and-urls
+  - group: vh-apps-settings-generic
+  - group: vh-video-web
+  - group: vh-video-web-nonprod
+  - group: vh-preview
+  - group: vh test users
+  - group: Saucelabs
+  - group: vh-wowza-dev
+  - group: KinlyConfiguration_Test
+  - group: QuickLinks_Preview
 
 trigger:
   branches:
@@ -280,6 +284,35 @@ extends:
       - npm
     Test: ${{ or(parameters.RunUnitTests, parameters.RunIntegTests, parameters.RunMutationTests) }}
     testParameters:
+      variables:
+        - name: EnableAndroidSupport
+          value: false
+          env:
+            - Prod
+            - Preprod
+        - name: EnableAndroidSupport
+          value: true
+          env:
+            - Preview
+            - Dev
+            - AAT
+            - Sandbox
+            - Test1
+            - Test2
+        - name: EnableIOSSupport
+          value: false
+          env:
+            - Prod
+            - Preprod
+        - name: EnableIOSSupport
+          value: true
+          env:
+            - Preview
+            - Dev
+            - AAT
+            - Sandbox
+            - Test1
+            - Test2
       coreProjectPath: VideoWeb/VideoWeb
       nodeProjectPath: VideoWeb/VideoWeb/ClientApp
       RunNode: true
@@ -297,17 +330,17 @@ extends:
               value: ${{ setting.value }}
               secret: ${{ setting.secret }}
       coverletCoverageExclusions:
-        - "[VideoWeb]VideoWeb.ConfigureServicesExtensions"
-        - "[VideoWeb]VideoWeb.Program"
-        - "[VideoWeb]VideoWeb.Startup"
-        - "[*]VideoWeb.Common.*"
-        - "[*]VideoWeb.Extensions.*"
-        - "[*]VideoWeb.Pages.*"
-        - "[*]VideoWeb.Swagger.*"
-        - "[*]VideoWeb.Views.*"
-        - "[*]VideoWeb.UnitTests.*"
-        - "[*]VideoWeb.Services.*"
-        - "[*]Testing.Common.*"
+        - '[VideoWeb]VideoWeb.ConfigureServicesExtensions'
+        - '[VideoWeb]VideoWeb.Program'
+        - '[VideoWeb]VideoWeb.Startup'
+        - '[*]VideoWeb.Common.*'
+        - '[*]VideoWeb.Extensions.*'
+        - '[*]VideoWeb.Pages.*'
+        - '[*]VideoWeb.Swagger.*'
+        - '[*]VideoWeb.Views.*'
+        - '[*]VideoWeb.UnitTests.*'
+        - '[*]VideoWeb.Services.*'
+        - '[*]Testing.Common.*'
       sonarCloud_ExtraProperties: |
         sonar.exclusions=**/node_modules/**,**/*.spec.ts, *.spec.ts, **/ClientApp/src/*, **/ClientApp/coverage/**/**, **/ConfigureServicesExtensions.cs, **/Startup.cs, **/Program.cs, **/Testing.Common/**, **/VideoWeb.UnitTests/**, **/VideoWeb.Common/**, **/VideoWeb/Swagger/**, **/VideoWeb/Extensions/**, **/ClientApp/src/scripts/*.js
         sonar.typescript.exclusions=**/node_modules/**,**/typings.d.ts,**/main.ts,**/environments/environment*.ts,**/*routing.module.ts,**/api-client.ts,**/app-insights-logger.service.ts
@@ -323,6 +356,35 @@ extends:
       StrykerBreak: 75
     ACTest: ${{ parameters.RunACTests }}
     releaseParameters:
+      variables:
+        - name: EnableAndroidSupport
+          value: false
+          env:
+            - Prod
+            - Preprod
+        - name: EnableAndroidSupport
+          value: true
+          env:
+            - Preview
+            - Dev
+            - AAT
+            - Sandbox
+            - Test1
+            - Test2
+        - name: EnableIOSSupport
+          value: false
+          env:
+            - Prod
+            - Preprod
+        - name: EnableIOSSupport
+          value: true
+          env:
+            - Preview
+            - Dev
+            - AAT
+            - Sandbox
+            - Test1
+            - Test2
       environment: Preview
       subscription: $(pr_Subscription)
       secrets_KeyVault: $(pr_Secret_KeyVault)
