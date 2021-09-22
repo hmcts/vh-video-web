@@ -10,24 +10,26 @@ import {
     CallParticipantIntoHearingEvent,
     DismissParticipantFromHearingEvent
 } from 'src/app/shared/models/participant-event';
-import { ElementRef } from '@angular/core';
+import { DebugElement, ElementRef } from '@angular/core';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { ParticipantPanelModelMapper } from 'src/app/shared/mappers/participant-panel-model-mapper';
 import { HearingRole } from '../models/hearing-role-model';
 import { CaseTypeGroup } from '../models/case-type-group';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { async, ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
-import { MockPipe } from 'ng-mocks';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { ComponentFixture, TestBed, tick } from '@angular/core/testing';
+import { MockBuilder, MockPipe } from 'ng-mocks';
 import { HyphenatePipe } from 'src/app/shared/pipes/hyphenate.pipe';
 import { LowerCasePipe } from '@angular/common';
+import { By } from '@angular/platform-browser';
+import { finalize } from 'rxjs/operators';
 export class MockElementRef extends ElementRef {
     constructor() {
         super(null);
     }
 }
 
-fdescribe('JudgeContextMenuComponent', () => {
+describe('JudgeContextMenuComponent', () => {
     const participants = new ConferenceTestData().getListOfParticipants();
     const logger = new MockLogger();
     // const nativeElementSpy = jasmine.createSpyObj<any>(['contains']);
@@ -52,10 +54,22 @@ fdescribe('JudgeContextMenuComponent', () => {
     const testParticipantHearingRole = 'hearingRole';
     const testParticipantRepresentee = 'representsee';
     const testParticipantStatus = ParticipantStatus.None;
+    let hyphenateSpy: jasmine.Spy;
+    let translateSpy: jasmine.Spy;
+    let lowerCaseSpy: jasmine.Spy;
 
     beforeEach(async () => {
-        TestBed.configureTestingModule({
-            declarations: [JudgeContextMenuComponent, MockPipe(TranslatePipe), MockPipe(HyphenatePipe), MockPipe(LowerCasePipe)],
+        hyphenateSpy = jasmine.createSpy('transform').and.callThrough();
+        translateSpy = jasmine.createSpy('transform').and.callThrough();
+        lowerCaseSpy = jasmine.createSpy('transform').and.callThrough();
+
+        await TestBed.configureTestingModule({
+            declarations: [
+                JudgeContextMenuComponent,
+                MockPipe(TranslatePipe, translateSpy),
+                MockPipe(HyphenatePipe, hyphenateSpy),
+                MockPipe(LowerCasePipe, lowerCaseSpy)
+            ],
             providers: [
                 {
                     provide: Logger,
@@ -293,13 +307,28 @@ fdescribe('JudgeContextMenuComponent', () => {
         });
     });
 
-    it('should callParticipantIntoHearing return false when the participant is a witness and in hearing', () => {
-        const p = participants[2];
-        p.status = ParticipantStatus.InHearing;
-        p.hearing_role = HearingRole.WITNESS;
-        const model = mapper.mapFromParticipantUserResponse(p);
-        component.participant = model;
-        expect(component.canCallParticipantIntoHearing()).toBeFalsy();
+    describe('canCallParticipantIntoHearing', () => {
+        it('should return false when participant cannot be called', () => {
+            spyOnProperty(testParticipipantPanelModel, 'isCallableAndReadyToJoin').and.returnValue(false);
+            expect(component.canCallParticipantIntoHearing()).toBe(false);
+        });
+
+        it('should return true when participant can be called', () => {
+            spyOnProperty(testParticipipantPanelModel, 'isCallableAndReadyToJoin').and.returnValue(true);
+            expect(component.canCallParticipantIntoHearing()).toBe(true);
+        });
+    });
+
+    describe('canDismissParticipantFromHearing', () => {
+        it('should return false when participant cannot be called', () => {
+            spyOnProperty(testParticipipantPanelModel, 'isCallableAndReadyToBeDismissed').and.returnValue(false);
+            expect(component.canDismissParticipantFromHearing()).toBe(false);
+        });
+
+        it('should return true when participant can be called', () => {
+            spyOnProperty(testParticipipantPanelModel, 'isCallableAndReadyToBeDismissed').and.returnValue(true);
+            expect(component.canDismissParticipantFromHearing()).toBe(true);
+        });
     });
 
     it('should canCallParticipantIntoHearing return true when the participant is a witness and not in hearing', () => {
@@ -399,5 +428,257 @@ fdescribe('JudgeContextMenuComponent', () => {
         const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
         expect(component.canDismissParticipantFromHearing()).toBeTruthy();
+    });
+
+    describe('UI tests', () => {
+        let dropdownElement;
+        function fakeGetElementId(section: string) {
+            return `id-${section}`;
+        }
+
+        describe('dropdown', () => {
+            const dropdownId = fakeGetElementId('dropdown');
+
+            beforeEach(() => {
+                spyOn(component, 'getElementId').and.callFake(section => {
+                    return fakeGetElementId(section);
+                });
+                fixture.detectChanges();
+                dropdownElement = fixture.debugElement.query(By.css(`#${dropdownId}`));
+            });
+            it('dropdown should be hidden', () => {
+                component.isDroppedDown = false;
+                fixture.detectChanges();
+                expect(dropdownElement.nativeElement.hasAttribute('hidden')).toBe(true);
+            });
+
+            describe('when visible', () => {
+                describe('header', () => {
+                    beforeEach(() => {
+                        component.isDroppedDown = true;
+                        fixture.detectChanges();
+                    });
+                    it('dropdown should not be hidden', () => {
+                        expect(dropdownElement.nativeElement.hasAttribute('hidden')).toBe(false);
+                    });
+
+                    it('displayName should be correct', () => {
+                        const displayNameId = fakeGetElementId('display-name');
+                        const displayNameStrongElement = fixture.debugElement.query(By.css(`#${displayNameId} > strong`));
+
+                        expect(displayNameStrongElement.nativeElement.textContent.trim()).toEqual(testParticipantDisplayName);
+                    });
+                    describe('hearing role', () => {
+                        let hearingRoleFullElement;
+                        const hearingRoleFullElementId = fakeGetElementId('hearing-role-full');
+                        beforeEach(() => {});
+                        it('should not show for judge', () => {
+                            spyOnProperty(component, 'isJudge').and.returnValue(true);
+                            fixture.detectChanges();
+                            hearingRoleFullElement = fixture.debugElement.query(By.css(`#${hearingRoleFullElementId}`));
+                            expect(hearingRoleFullElement).toBeFalsy();
+                        });
+
+                        describe('when not judge', () => {
+                            beforeEach(() => {
+                                spyOnProperty(component, 'isJudge').and.returnValue(false);
+                                fixture.detectChanges();
+                                hearingRoleFullElement = fixture.debugElement.query(By.css(`#${hearingRoleFullElementId}`));
+                            });
+                            it('should show for non-judge', () => {
+                                expect(hearingRoleFullElement).toBeTruthy();
+                            });
+
+                            it('should have correct hearing role', () => {
+                                const testHearingRole = 'Test hearing role';
+                                const testHearingRoleHyphenated = 'test-hearing-role-hyphenated';
+                                const testHearingRoleHyphenatedWithPrefix = `hearing-role.${testHearingRoleHyphenated}`;
+                                const testHearingRoleTranslated = 'Test hearing role translated';
+                                hyphenateSpy.withArgs(testHearingRole).and.returnValue(testHearingRoleHyphenated);
+                                translateSpy.withArgs(testHearingRoleHyphenatedWithPrefix).and.returnValue(testHearingRoleTranslated);
+
+                                component.participant.hearingRole = testHearingRole;
+                                fixture.detectChanges();
+
+                                const hearingRoleElementId = fakeGetElementId('hearing-role');
+                                const hearingRoleElement = fixture.debugElement.query(By.css(`#${hearingRoleElementId}`));
+
+                                expect(hyphenateSpy).toHaveBeenCalledWith(testHearingRole);
+                                expect(translateSpy).toHaveBeenCalledWith(testHearingRoleHyphenatedWithPrefix);
+                                expect(hearingRoleElement.nativeElement.textContent.trim()).toEqual(testHearingRoleTranslated);
+                            });
+
+                            describe('representee', () => {
+                                const representeeElementId = fakeGetElementId('representee');
+
+                                it('should not display', () => {
+                                    component.participant.representee = null;
+                                    fixture.detectChanges();
+                                    const representeeElement = fixture.debugElement.query(By.css(`#${representeeElementId}`));
+                                    expect(representeeElement).toBeFalsy();
+                                });
+
+                                it('should have correct details for representee', () => {
+                                    const representeeString = 'Test representee';
+                                    component.participant.representee = representeeString;
+                                    fixture.detectChanges();
+
+                                    const representeeElement = fixture.debugElement.query(By.css(`#${representeeElementId}`));
+                                    expect(representeeElement).toBeTruthy();
+                                    expect(representeeElement.nativeElement.textContent.trim()).toEqual(representeeString);
+                                });
+                            });
+
+                            describe('case type group', () => {
+                                const caseTypeGroupId = fakeGetElementId('case-type-group');
+
+                                it('should not display', () => {
+                                    spyOn(component, 'showCaseTypeGroup').and.returnValue(false);
+                                    component.participant.caseTypeGroup = 'anything';
+                                    fixture.detectChanges();
+                                    const caseTypeGroupElement = fixture.debugElement.query(By.css(`#${caseTypeGroupId}`));
+                                    expect(caseTypeGroupElement).toBeFalsy();
+                                });
+
+                                it('should have correct details for case type group', () => {
+                                    spyOn(component, 'showCaseTypeGroup').and.returnValue(true);
+                                    const caseTypeGroupString = 'Test case type group';
+                                    component.participant.caseTypeGroup = caseTypeGroupString;
+                                    fixture.detectChanges();
+
+                                    const caseTypeGroupElement = fixture.debugElement.query(By.css(`#${caseTypeGroupId}`));
+                                    expect(caseTypeGroupElement).toBeTruthy();
+                                    expect(caseTypeGroupElement.nativeElement.textContent.trim()).toEqual(caseTypeGroupString);
+                                });
+                            });
+                        });
+                    });
+                });
+
+                describe('controls', () => {
+                    const testHearingRole = 'Test hearing role';
+                    const testHearingRoleHyphenated = 'test-hearing-role-hyphenated';
+                    const testHearingRoleHyphenatedWithPrefix = `hearing-role.${testHearingRoleHyphenated}`;
+                    const testHearingRoleTranslated = 'Test hearing role translated';
+                    const testHearingRoleTranslatedLowercase = 'test hearing role translated lower case';
+
+                    describe('call', () => {
+                        const callId = fakeGetElementId('call');
+                        let canCallParticipantIntoHearingSpy: jasmine.Spy;
+                        let callElement: DebugElement;
+                        beforeEach(() => {
+                            canCallParticipantIntoHearingSpy = spyOn(component, 'canCallParticipantIntoHearing');
+                        });
+
+                        it('should not display', () => {
+                            canCallParticipantIntoHearingSpy.and.returnValue(false);
+                            fixture.detectChanges();
+                            callElement = fixture.debugElement.query(By.css(`#${callId}`));
+                            expect(callElement).toBeFalsy();
+                        });
+
+                        describe('when canCallParticipantIntoHearing is true', () => {
+                            beforeEach(() => {
+                                canCallParticipantIntoHearingSpy.and.returnValue(true);
+                                fixture.detectChanges();
+                                callElement = fixture.debugElement.query(By.css(`#${callId}`));
+                            });
+
+                            it('should display', () => {
+                                expect(callElement).toBeTruthy();
+                            });
+
+                            it('should display correct value when not witness', () => {
+                                const admitParticipantPath = 'judge-context-menu.admit-participant';
+                                const admitReturn = 'Admit return';
+
+                                hyphenateSpy.withArgs(testHearingRole).and.returnValue(testHearingRoleHyphenated);
+                                translateSpy.withArgs(testHearingRoleHyphenatedWithPrefix).and.returnValue(testHearingRoleTranslated);
+                                lowerCaseSpy.withArgs(testHearingRoleTranslated).and.returnValue(testHearingRoleTranslatedLowercase);
+                                translateSpy
+                                    .withArgs(admitParticipantPath, { role: testHearingRoleTranslatedLowercase })
+                                    .and.returnValue(admitReturn);
+                                component.participant.hearingRole = testHearingRole;
+                                fixture.detectChanges();
+
+                                callElement = fixture.debugElement.query(By.css(`#${callId}`));
+
+                                expect(hyphenateSpy).toHaveBeenCalledWith(testHearingRole);
+                                expect(translateSpy).toHaveBeenCalledWith(testHearingRoleHyphenatedWithPrefix);
+                                expect(lowerCaseSpy).toHaveBeenCalledWith(testHearingRoleTranslated);
+                                expect(translateSpy).toHaveBeenCalledWith(admitParticipantPath, {
+                                    role: testHearingRoleTranslatedLowercase
+                                });
+                                expect(callElement.nativeElement.textContent.trim()).toEqual(admitReturn);
+                            });
+
+                            it('should display correct value when witness', () => {
+                                const callWitnessPath = 'judge-context-menu.call-witness';
+                                const witnessReturn = 'Witness return';
+                                component.participant.hearingRole = HearingRole.WITNESS;
+                                fixture.detectChanges();
+
+                                translateSpy.withArgs(callWitnessPath).and.returnValue(witnessReturn);
+                                expect(translateSpy).toHaveBeenCalledWith(callWitnessPath);
+                                expect(callElement.nativeElement.textContent.trim()).toEqual(witnessReturn);
+                            });
+                        });
+                    });
+
+                    describe('dismiss', () => {
+                        const dismissId = fakeGetElementId('dismiss');
+                        let canDismissParticipantFromHearingSpy: jasmine.Spy;
+                        let callElement: DebugElement;
+
+                        beforeEach(() => {
+                            canDismissParticipantFromHearingSpy = spyOn(component, 'canDismissParticipantFromHearing');
+                        });
+
+                        it('should not display', () => {
+                            canDismissParticipantFromHearingSpy.and.returnValue(false);
+                            fixture.detectChanges();
+                            callElement = fixture.debugElement.query(By.css(`#${dismissId}`));
+                            expect(callElement).toBeFalsy();
+                        });
+
+                        describe('when canDismissParticipantFromHearing is true', () => {
+                            beforeEach(() => {
+                                canDismissParticipantFromHearingSpy.and.returnValue(true);
+                                fixture.detectChanges();
+                                callElement = fixture.debugElement.query(By.css(`#${dismissId}`));
+                            });
+
+                            it('should display', () => {
+                                expect(callElement).toBeTruthy();
+                            });
+
+                            it('should display correct value when not witness', () => {
+                                const dismissParticipantPath = 'judge-context-menu.dismiss-participant';
+                                const dismissReturn = 'Dismiss return';
+
+                                hyphenateSpy.withArgs(testHearingRole).and.returnValue(testHearingRoleHyphenated);
+                                translateSpy.withArgs(testHearingRoleHyphenatedWithPrefix).and.returnValue(testHearingRoleTranslated);
+                                lowerCaseSpy.withArgs(testHearingRoleTranslated).and.returnValue(testHearingRoleTranslatedLowercase);
+                                translateSpy
+                                    .withArgs(dismissParticipantPath, { role: testHearingRoleTranslatedLowercase })
+                                    .and.returnValue(dismissReturn);
+                                component.participant.hearingRole = testHearingRole;
+                                fixture.detectChanges();
+
+                                callElement = fixture.debugElement.query(By.css(`#${dismissId}`));
+
+                                expect(hyphenateSpy).toHaveBeenCalledWith(testHearingRole);
+                                expect(translateSpy).toHaveBeenCalledWith(testHearingRoleHyphenatedWithPrefix);
+                                expect(lowerCaseSpy).toHaveBeenCalledWith(testHearingRoleTranslated);
+                                expect(translateSpy).toHaveBeenCalledWith(dismissParticipantPath, {
+                                    role: testHearingRoleTranslatedLowercase
+                                });
+                                expect(callElement.nativeElement.textContent.trim()).toEqual(dismissReturn);
+                            });
+                        });
+                    });
+                });
+            });
+        });
     });
 });
