@@ -87,7 +87,7 @@
           </div>
         </div>
       </div>
-      <div class="govuk-grid-row audio-only-column">
+      <div *ngIf="showAudioOnlySetting" class="govuk-grid-row audio-only-column">
         <label class="govuk-label change-switch-label">{{ 'select-media-devices.join-with-camera-on-off' | translate }}</label>
         <label class="switch camSwitchToggle" [ngClass]="{ 'avoid-clicks': blockToggleClicks }">
           <input type="checkbox" id="audio-only-toggle" [checked]="connectWithCameraOn" (click)="toggleSwitch()" />
