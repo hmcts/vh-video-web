@@ -1,3 +1,4 @@
+import { DebugElement } from '@angular/core';
 import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
@@ -12,6 +13,9 @@ describe('CopyQuickLinkComponent', () => {
     let clipboardService: any;
     let vhoQueryService: any;
     let translateService: any;
+    const testConferenceId = 'test';
+    const elementName = `#copy-quick-link-${testConferenceId}`;
+    let copyLinkElement: DebugElement;
 
     beforeEach(async () => {
         const coursesServiceSpy = jasmine.createSpyObj('ClipboardService', ['copyFromContent']);
@@ -31,6 +35,7 @@ describe('CopyQuickLinkComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(CopyQuickLinkComponent);
         component = fixture.componentInstance;
+        component.conferenceId = testConferenceId;
         fixture.detectChanges();
         clipboardService = TestBed.inject(ClipboardService);
         vhoQueryService = TestBed.inject(VhoQueryService);
@@ -39,6 +44,8 @@ describe('CopyQuickLinkComponent', () => {
             hearing_id: '555555'
         });
         vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceData));
+
+        copyLinkElement = fixture.debugElement.query(By.css(elementName));
     });
 
     afterEach(() => {
@@ -47,15 +54,12 @@ describe('CopyQuickLinkComponent', () => {
     });
 
     it('renders icon to copy to clipboard', () => {
-        component.ngOnInit();
-        fixture.detectChanges();
-        expect(fixture.debugElement.query(By.css('#copy-quick-link'))).toBeTruthy();
+        expect(copyLinkElement).toBeTruthy();
     });
 
     it('copies content into the clipboard using the clipboard service when element is clicked', fakeAsync(() => {
         const baseUrl = 'https://wow';
         spyOn(component, 'getbaseUrl').and.returnValue(baseUrl);
-        const copyLinkElement = fixture.debugElement.query(By.css('span'));
         copyLinkElement.triggerEventHandler('click', {});
         fixture.detectChanges();
         flush();
