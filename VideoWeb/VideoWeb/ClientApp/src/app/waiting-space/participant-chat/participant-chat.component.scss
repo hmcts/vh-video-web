@@ -1,5 +1,5 @@
 @import '~govuk-frontend/govuk/all';
-$device-width: 48em;
+$talbet-portrait-width: 48em;
 
 .judge-chat-window {
   background: white;
@@ -37,7 +37,7 @@ $device-width: 48em;
   color: govuk-colour('white');
   margin-bottom: 0;
 
-  @media only screen and (max-width: $device-width) {
+  @media only screen and (max-width: $talbet-portrait-width) {
     font-size: 13px;
   }
 }

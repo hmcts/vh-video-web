@@ -1,5 +1,5 @@
 @import '~govuk-frontend/govuk/base';
-$device-width: 48em;
+$talbet-portrait-width: 48em;
 
 .modal {
   display: block;
@@ -33,11 +33,11 @@ $device-width: 48em;
   border: none;
   border-radius: 5px;
   max-width: 700px;
-  @media only screen and (min-width: $device-width) {
+  @media only screen and (min-width: $talbet-portrait-width) {
     width: 50%;
     padding: 20px;
   }
-  @media only screen and (max-width: $device-width) {
+  @media only screen and (max-width: $talbet-portrait-width) {
     width: 80%;
     padding: 5px;
   }
@@ -48,10 +48,10 @@ $device-width: 48em;
   padding: 3px 5px 3px 5px;
   font-weight: 600;
   letter-spacing: 1px;
-  @media only screen and (min-width: $device-width) {
+  @media only screen and (min-width: $talbet-portrait-width) {
     font-size: 0.9rem;
   }
-  @media only screen and (max-width: $device-width) {
+  @media only screen and (max-width: $talbet-portrait-width) {
     font-size: 8px;
   }
 }
@@ -81,7 +81,7 @@ $device-width: 48em;
   overflow-x: hidden;
 }
 
-@media only screen and (max-height: $device-width) {
+@media only screen and (max-height: $talbet-portrait-width) {
   .vh-scroll-wrap {
     max-height: 250px;
     overflow-y: auto;
@@ -103,7 +103,7 @@ $device-width: 48em;
 }
 
 .warning-text {
-  @media only screen and (max-width: $device-width) {
+  @media only screen and (max-width: $talbet-portrait-width) {
     font-size: 13px;
     margin-top: -15px;
     margin-bottom: -10px;
@@ -111,13 +111,13 @@ $device-width: 48em;
 }
 
 .modal-title {
-  @media only screen and (max-width: $device-width) {
+  @media only screen and (max-width: $talbet-portrait-width) {
     font-size: 15px;
   }
 }
 
 .checkboxes-label {
-  @media only screen and (max-width: $device-width) {
+  @media only screen and (max-width: $talbet-portrait-width) {
     font-size: 13px;
     padding: 2px;
   }

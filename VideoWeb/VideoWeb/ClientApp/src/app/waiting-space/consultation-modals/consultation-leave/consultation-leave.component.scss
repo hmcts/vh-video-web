@@ -1,3 +1,5 @@
+$talbet-landscape-width: 68em;
+
 .modal-content {
   text-align: left;
   padding: 50px;
@@ -10,11 +12,11 @@
   white-space: pre-wrap;
   transform: translate(-50%, -50%);
   text-align: center;
-  @media only screen and (min-width: 1024px) {
+  @media only screen and (min-width: $talbet-landscape-width) {
     width: 50%;
     top: 70%;
   }
-  @media only screen and (min-width: 280px) and (max-width: 1024px) {
+  @media only screen and (max-width: $talbet-landscape-width) {
     width: 82%;
     top: 50%;
   }

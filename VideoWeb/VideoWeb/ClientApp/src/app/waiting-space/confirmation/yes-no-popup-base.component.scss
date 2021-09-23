@@ -1,5 +1,5 @@
 @import '~govuk-frontend/govuk/base';
-$device-width: 48em;
+$talbet-portrait-width: 48em;
 
 .vh-popup-overlay {
   position: fixed;
@@ -13,15 +13,15 @@ $device-width: 48em;
 }
 .vh-popup {
   padding: 40px;
-  @media only screen and (min-width: $device-width) {
+  @media only screen and (min-width: $talbet-portrait-width) {
     margin: 250px auto;
     width: 37%;
   }
-  @media only screen and (max-width: $device-width) {
+  @media only screen and (max-width: $talbet-portrait-width) {
     margin: 100px auto;
     width: 70%;
   }
-  @media only screen and (max-height: $device-width) {
+  @media only screen and (max-height: $talbet-portrait-width) {
     margin: 10px auto;
     width: 70%;
   }
