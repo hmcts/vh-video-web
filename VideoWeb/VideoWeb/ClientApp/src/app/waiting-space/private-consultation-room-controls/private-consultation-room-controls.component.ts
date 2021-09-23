@@ -1,6 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -26,6 +25,7 @@ import { VideoCallService } from '../services/video-call.service';
 })
 export class PrivateConsultationRoomControlsComponent extends HearingControlsBaseComponent {
     showContextMenu = false;
+    @Input() public canToggleParticipantsPanel: boolean;
 
     constructor(
         protected videoCallService: VideoCallService,
@@ -37,6 +37,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         protected userMediaService: UserMediaService
     ) {
         super(videoCallService, eventService, deviceTypeService, logger, participantService, translateService, userMediaService);
+        this.canToggleParticipantsPanel = true;
     }
 
     canCloseOrPauseHearing() {
