@@ -1,4 +1,5 @@
 @import '~govuk-frontend/govuk/base';
+$device-width: 48em;
 
 .modal {
   display: block;
@@ -32,11 +33,11 @@
   border: none;
   border-radius: 5px;
   max-width: 700px;
-  @media only screen and (min-width: 900px) {
+  @media only screen and (min-width: $device-width) {
     width: 50%;
     padding: 20px;
   }
-  @media only screen and (min-width: 320px) and (max-width: 900px) {
+  @media only screen and (max-width: $device-width) {
     width: 80%;
     padding: 5px;
   }
@@ -47,10 +48,10 @@
   padding: 3px 5px 3px 5px;
   font-weight: 600;
   letter-spacing: 1px;
-  @media only screen and (min-width: 900px) {
+  @media only screen and (min-width: $device-width) {
     font-size: 0.9rem;
   }
-  @media only screen and (min-width: 320px) and (max-width: 900px) {
+  @media only screen and (max-width: $device-width) {
     font-size: 8px;
   }
 }
@@ -80,7 +81,7 @@
   overflow-x: hidden;
 }
 
-@media only screen and (max-height: 736px) {
+@media only screen and (max-height: $device-width) {
   .vh-scroll-wrap {
     max-height: 250px;
     overflow-y: auto;
@@ -102,7 +103,7 @@
 }
 
 .warning-text {
-  @media only screen and (min-width: 320px) and (max-width: 900px) {
+  @media only screen and (max-width: $device-width) {
     font-size: 13px;
     margin-top: -15px;
     margin-bottom: -10px;
@@ -110,13 +111,13 @@
 }
 
 .modal-title {
-  @media only screen and (min-width: 320px) and (max-width: 900px) {
+  @media only screen and (max-width: $device-width) {
     font-size: 15px;
   }
 }
 
 .checkboxes-label {
-  @media only screen and (min-width: 320px) and (max-width: 900px) {
+  @media only screen and (max-width: $device-width) {
     font-size: 13px;
     padding: 2px;
   }

@@ -1,5 +1,6 @@
 @import '~govuk-frontend/govuk/base';
-
+$talbet-portrait-width: 48em;
+$talbet-landscape-width: 64em;
 .modal {
   display: block;
   /* Hidden by default */
@@ -28,10 +29,10 @@
   margin: 5% auto;
   border: 1px solid #888;
   padding: 20px;
-  @media only screen and (min-width: 1024px) {
+  @media only screen and (min-width: $talbet-landscape-width) {
     width: 50%;
   }
-  @media only screen and (min-width: 280px) and (max-width: 1024px) {
+  @media only screen and (max-width: $talbet-landscape-width) {
     width: 82%;
   }
 }
@@ -42,10 +43,10 @@
 }
 
 .wr-ml {
-  @media only screen and (min-width: 768px) {
+  @media only screen and (min-width: $talbet-portrait-width) {
     margin-left: 10px;
   }
-  @media only screen and (min-width: 280px) and (max-width: 768px) {
+  @media only screen and (max-width: $talbet-portrait-width) {
     margin-top: -10px;
   }
 }
@@ -60,10 +61,10 @@
   display: inline-block;
   width: 40px;
   height: 24px;
-  @media only screen and (min-width: 280px) and (max-width: 768px) {
+  @media only screen and (max-width: $talbet-portrait-width) {
     margin-bottom: 0px;
   }
-  @media only screen and (min-width: 768px) {
+  @media only screen and (min-width: $talbet-portrait-width) {
     margin-bottom: 30px;
   }
 }
@@ -130,7 +131,7 @@ input:checked + .slider:before {
 }
 
 .camera-label {
-  @media only screen and (min-width: 280px) and (max-width: 768px) {
+  @media only screen and (max-width: $talbet-portrait-width) {
     font-size: 13px;
   }
 }
@@ -140,11 +141,11 @@ input:checked + .slider:before {
 }
 
 .warning-text__text {
-  @media only screen and (min-width: 280px) and (max-width: 768px) {
+  @media only screen and (max-width: $talbet-portrait-width) {
     padding-top: 10px;
     font-size: 10px;
   }
-  @media only screen and (min-width: 768px) {
+  @media only screen and (min-width: $talbet-portrait-width) {
     font-size: 1.1875rem;
   }
 }
