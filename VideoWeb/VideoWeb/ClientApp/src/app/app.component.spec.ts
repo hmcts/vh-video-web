@@ -38,6 +38,7 @@ import { TranslatePipeMock } from './testing/mocks/mock-translation-pipe';
 import { TranslateService } from '@ngx-translate/core';
 import { RouterTestingModule } from '@angular/router/testing';
 import { translateServiceSpy } from './testing/mocks/mock-translation.service';
+import { NoSleepService } from './services/no-sleep.service';
 
 describe('AppComponent', () => {
     let fixture: ComponentFixture<AppComponent>;
@@ -56,6 +57,7 @@ describe('AppComponent', () => {
     let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
     let securityConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
+    let noSleepServiceSpy: jasmine.SpyObj<NoSleepService>;
 
     let locationSpy: jasmine.SpyObj<Location>;
     const clientSettings = new ClientSettingsResponse({
@@ -109,6 +111,7 @@ describe('AppComponent', () => {
 
     beforeEach(
         waitForAsync(() => {
+            noSleepServiceSpy = jasmine.createSpyObj<NoSleepService>(['enable']);
             securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
                 'SecurityServiceProviderService',
                 [],
@@ -146,7 +149,8 @@ describe('AppComponent', () => {
                     {
                         provide: ActivatedRoute,
                         useValue: activatedRouteMock
-                    }
+                    },
+                    { provide: NoSleepService, useValue: noSleepServiceSpy }
                 ],
                 declarations: [
                     AppComponent,
@@ -173,6 +177,19 @@ describe('AppComponent', () => {
             publicEventsServiceSpy.registerForEvents.and.returnValue(of(eventValue));
         })
     );
+
+    it('should enable the no sleep service on init', fakeAsync(() => {
+        // Arrange
+        securityServiceSpy.checkAuth.and.returnValue(of(true));
+
+        // Act
+        component.ngOnInit();
+        tick();
+        flush();
+
+        // Assert
+        expect(noSleepServiceSpy.enable).toHaveBeenCalledTimes(1);
+    }));
 
     it('should start connection status service if authenticated oninit', fakeAsync(() => {
         // Arrange
