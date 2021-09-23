@@ -19,6 +19,6 @@ describe('TooltipDirective', () => {
         const propertyId = 'test';
         directive.name = propertyId;
         directive.ngOnInit();
-        expect(elementRef.nativeElement.id).toBe(propertyId);
+        expect(directive.name).toBe(propertyId);
     });
 });
