@@ -119,7 +119,12 @@
               *ngIf="!participant.transferringIn"
               appTooltip
               [text]="
-                (participant.isAvailable() ? 'participants-panel.call-witness' : 'participants-panel.witness-unavailable') | translate
+                (participant.isAvailable() ? 
+                  (isWitness(participant) ? 
+                    ('participants-panel.call-witness' | translate) : 
+                    ('participants-panel.admit-participant' | translate : {role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase})
+                  ) : 
+                  'participants-panel.participant-unavailable' | translate : {role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate})
               "
               [colour]="participant.isAvailable() ? 'green' : 'grey'"
               class="fas icon-button"
