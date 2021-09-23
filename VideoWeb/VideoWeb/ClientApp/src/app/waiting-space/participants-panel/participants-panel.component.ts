@@ -543,6 +543,10 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         return this.translateService.instant(`participants-panel.${key}`);
     }
 
+    isWitness(participant: PanelModel) {
+        return participant.isWitness;
+    }
+
     private getHearingRole(participant: PanelModel): string {
         const translatedtext = this.getTranslatedText('for');
         const hearingRoleText = this.translateService.instant('hearing-role.' + participant.hearingRole.toLowerCase().split(' ').join('-'));
