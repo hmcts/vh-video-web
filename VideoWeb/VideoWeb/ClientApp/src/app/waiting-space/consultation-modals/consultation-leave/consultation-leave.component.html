@@ -5,18 +5,20 @@
         <p class="govuk-!-font-size-27 govuk-!-font-weight-bold govuk-!-margin-bottom-3">{{'consultation-leave.message' | translate}}</p>
         <p class="govuk-!-font-size-19">{{'consultation-leave.return-wr-message' | translate}}</p>
         <button
-          class="govuk-button govuk-!-margin-top-6 govuk-!-margin-bottom-0 govuk-!-margin-left-2"
-          data-module="govuk-button"
-          (click)="leaveConsultation()"
-          [attr.alt]="'consultation-leave.leave' | translate"
+        id="consultation-leave-button"
+        class="govuk-button govuk-!-margin-top-6 govuk-!-margin-bottom-0 govuk-!-margin-left-2"
+        data-module="govuk-button"
+        (click)="leaveConsultation()"
+        [attr.alt]="'consultation-leave.leave' | translate"
         >
           {{'consultation-leave.leave' | translate}}
         </button>
         <button
-          class="govuk-button govuk-!-margin-top-6 govuk-!-margin-left-2 govuk-!-margin-bottom-0 govuk-button--secondary"
-          data-module="govuk-button"
-          (click)="closeModal()"
-          [attr.alt]="'consultation-leave.stay' | translate"
+        id="consultation-stay-button"
+        class="govuk-button govuk-!-margin-top-6 govuk-!-margin-left-2 govuk-!-margin-bottom-0 govuk-button--secondary"
+        data-module="govuk-button"
+        (click)="closeModal()"
+        [attr.alt]="'consultation-leave.stay' | translate"
         >
           {{'consultation-leave.stay' | translate}}
         </button>

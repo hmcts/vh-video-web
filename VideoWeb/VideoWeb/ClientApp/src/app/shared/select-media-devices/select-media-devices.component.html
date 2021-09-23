@@ -90,7 +90,7 @@
       <div class="govuk-grid-row audio-only-column">
         <label class="govuk-label change-switch-label">{{ 'select-media-devices.join-with-camera-on-off' | translate }}</label>
         <label class="switch camSwitchToggle" [ngClass]="{ 'avoid-clicks': blockToggleClicks }">
-          <input type="checkbox" id="toggle" [checked]="connectWithCameraOn" (click)="toggleSwitch()" />
+          <input type="checkbox" id="audio-only-toggle" [checked]="connectWithCameraOn" (click)="toggleSwitch()" />
           <span class="slider round" (transitionstart)="transitionstart()" (transitionend)="transitionEnd()">
             <span class="govuk-heading-m" id="toggletextON" class="govuk-label govuk-!-font-weight-bold toggle-text">
               {{ audioOnlyToggleText }}
