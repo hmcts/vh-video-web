@@ -1,7 +1,7 @@
 import { ElementRef, Renderer2 } from '@angular/core';
 import { SetIdDirective } from './set-property-id.directive';
 
-fdescribe('TooltipDirective', () => {
+describe('TooltipDirective', () => {
     let elementRef: ElementRef<HTMLDivElement>;
     let renderer2: jasmine.SpyObj<Renderer2>;
     let directive: SetIdDirective;
