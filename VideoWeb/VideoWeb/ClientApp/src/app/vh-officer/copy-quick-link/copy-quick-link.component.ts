@@ -11,7 +11,7 @@ export class CopyQuickLinkComponent implements OnInit {
     @Input() conferenceId: string;
     hearingId: string;
     tooltip: string;
-    propertyIdName: string;
+    propertyIdName = 'copy-quick-link';
 
     constructor(
         private clipBoardService: ClipboardService,

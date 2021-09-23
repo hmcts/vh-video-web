@@ -6,7 +6,7 @@ import { ConferenceResponseVho } from 'src/app/services/clients/api-client';
 import { VhoQueryService } from '../services/vho-query-service.service';
 import { CopyQuickLinkComponent } from './copy-quick-link.component';
 
-fdescribe('CopyQuickLinkComponent', () => {
+describe('CopyQuickLinkComponent', () => {
     let component: CopyQuickLinkComponent;
     let fixture: ComponentFixture<CopyQuickLinkComponent>;
     let clipboardService: any;
@@ -46,14 +46,16 @@ fdescribe('CopyQuickLinkComponent', () => {
         translateService.instant.calls.reset();
     });
 
-    fit('renders icon to copy to clipboard', () => {
+    it('renders icon to copy to clipboard', () => {
+        component.ngOnInit();
+        fixture.detectChanges();
         expect(fixture.debugElement.query(By.css('#copy-quick-link'))).toBeTruthy();
     });
 
     it('copies content into the clipboard using the clipboard service when element is clicked', fakeAsync(() => {
         const baseUrl = 'https://wow';
         spyOn(component, 'getbaseUrl').and.returnValue(baseUrl);
-        const copyLinkElement = fixture.debugElement.query(By.css('#copy-quick-link'));
+        const copyLinkElement = fixture.debugElement.query(By.css('span'));
         copyLinkElement.triggerEventHandler('click', {});
         fixture.detectChanges();
         flush();
