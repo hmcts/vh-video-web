@@ -43,6 +43,7 @@ import { ParticipantModel } from 'src/app/shared/models/participant';
 import { CaseTypeGroup } from '../models/case-type-group';
 import { Subject } from 'rxjs';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
+import { PanelModel } from '../models/panel-model-base';
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
@@ -617,10 +618,20 @@ describe('ParticipantsPanelComponent', () => {
 
     it('should getPanelRowTooltipText return "Joining" for available participant', () => {
         const p = participants[0];
+        p.hearing_role = HearingRole.PANEL_MEMBER;
         p.status = ParticipantStatus.Available;
         const model = mapper.mapFromParticipantUserResponse(p);
         expect(component.getPanelRowTooltipText(model)).toContain(p.display_name + ': participants-panel.joining');
     });
+
+    it('should getPanelRowTooltipText return "Available" for available witness participant', () => {
+        const p = participants[0];
+        p.hearing_role = HearingRole.WITNESS;
+        p.status = ParticipantStatus.Available;
+        const model = mapper.mapFromParticipantUserResponse(p);
+        expect(component.getPanelRowTooltipText(model)).toContain(p.display_name + ': participants-panel.participant-available');
+    });
+
     it('should getPanelRowTooltipText return "Not Joined" for participant not joined', () => {
         const p = participants[0];
         p.status = ParticipantStatus.Joining;
@@ -831,5 +842,19 @@ describe('ParticipantsPanelComponent', () => {
         getParticipantsUpdatedSubjectMock.next(message);
 
         expect(component.nonEndpointParticipants).toEqual(mappedParticipants);
+    });
+
+    describe('isWitness', () => {
+        let participant: PanelModel;
+        beforeEach(() => {
+            participant = component.participants[0];
+        });
+        const testCases = [true, false];
+        testCases.forEach(testCase => {
+            it(`should return ${testCase}`, () => {
+                spyOnProperty(participant, 'isWitness').and.returnValue(testCase);
+                expect(component.isWitness(participant)).toBe(testCase);
+            });
+        });
     });
 });
