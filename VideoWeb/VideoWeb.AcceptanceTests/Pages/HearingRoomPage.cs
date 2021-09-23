@@ -4,8 +4,8 @@ namespace VideoWeb.AcceptanceTests.Pages
 {
     public static class HearingRoomPage
     {
-        public static readonly By PauseButton = By.Id("pause-hearing");
-        public static readonly By CloseButtonLandscape = By.Id("end-hearing-landscape");
+        public static readonly By PauseButton = By.Id("pause-hearing-desktop");
+        public static readonly By CloseButtonDesktop = By.Id("end-hearing-desktop");
         public static readonly By ConfirmClosePopup = By.Id("confirmationDialog");
         public static readonly By ConfirmCloseButton = By.Id("btnConfirmClose");
         public static readonly By ToggleSelfView = By.Id("toggle-self-view-img");
