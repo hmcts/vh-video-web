@@ -83,7 +83,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         [When(@"(?:he|she|they) (?:enter|enters) the private consultation room")]
         public void WhenTheyEnterPrivateConsultationRoom()
-        {;
+        {
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.HearingTitle).Displayed.Should().BeTrue();
             WaitForUserStatusToBe(ParticipantState.Available);
             _browsers[_c.CurrentUser].ClickToProgress(JudgeWaitingRoomPage.EnterPrivateConsultationButton, PrivateConsultationRoomPage.LeavePrivateConsultationButton, 10);
