@@ -6,7 +6,7 @@ import { ConferenceResponseVho } from 'src/app/services/clients/api-client';
 import { VhoQueryService } from '../services/vho-query-service.service';
 import { CopyQuickLinkComponent } from './copy-quick-link.component';
 
-describe('CopyQuickLinkComponent', () => {
+fdescribe('CopyQuickLinkComponent', () => {
     let component: CopyQuickLinkComponent;
     let fixture: ComponentFixture<CopyQuickLinkComponent>;
     let clipboardService: any;
@@ -46,7 +46,7 @@ describe('CopyQuickLinkComponent', () => {
         translateService.instant.calls.reset();
     });
 
-    it('renders icon to copy to clipboard', () => {
+    fit('renders icon to copy to clipboard', () => {
         expect(fixture.debugElement.query(By.css('#copy-quick-link'))).toBeTruthy();
     });
 

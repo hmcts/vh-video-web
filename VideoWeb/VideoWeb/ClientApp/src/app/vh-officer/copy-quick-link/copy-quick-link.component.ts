@@ -11,6 +11,7 @@ export class CopyQuickLinkComponent implements OnInit {
     @Input() conferenceId: string;
     hearingId: string;
     tooltip: string;
+    propertyIdName: string;
 
     constructor(
         private clipBoardService: ClipboardService,
@@ -22,6 +23,7 @@ export class CopyQuickLinkComponent implements OnInit {
         this.tooltip = this.translateService.instant('copy-quick-link.display-text');
         const response = await this.vhoQueryService.getConferenceByIdVHO(this.conferenceId);
         this.hearingId = response && response.hearing_id;
+        this.propertyIdName = this.propertyIdName + '-' + this.hearingId;
     }
 
     copyToClipboard() {
