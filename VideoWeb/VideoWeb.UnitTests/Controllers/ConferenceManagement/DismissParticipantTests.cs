@@ -138,22 +138,73 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         }
 
         [Test]
-        public async Task should_create_an_alert_when_the_witness_is_dismissed()
+        [TestCase(Role.QuickLinkObserver, "Observer")]
+        [TestCase(Role.QuickLinkParticipant, "Participant")]
+        public async Task should_create_an_alert_when_the_quick_link_user_is_dismissed(Role role, string expectedPrefix)
         {
+
             var judge = TestConference.GetJudge();
-            var witness = TestConference.Participants.First(x => x.HearingRole == "Witness");
+            var participant = TestConference.Participants.First(x => x.Role == role);
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(judge.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
-
             Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.DismissParticipantAsync(TestConference.Id, witness.Id);
+            string expectedBody = $"{expectedPrefix} dismissed by {judge.HearingRole}";
+
+            var result = await Controller.DismissParticipantAsync(TestConference.Id, participant.Id);
             var typedResult = (AcceptedResult)result;
             typedResult.Should().NotBeNull();
 
+
             VideoApiClientMock.Verify(x => x.AddTaskAsync(TestConference.Id,
-                It.Is<AddTaskRequest>(r => r.ParticipantId == witness.Id && r.Body == "Witness dismissed" && r.TaskType == TaskType.Participant)),
+                It.Is<AddTaskRequest>(r => r.ParticipantId == participant.Id && r.Body == expectedBody && r.TaskType == TaskType.Participant)),
+                Times.Once);
+        }
+
+        [Test]
+        public async Task should_create_an_alert_when_the_witness_is_dismissed()
+        {
+
+            var judge = TestConference.GetJudge();
+            var participant = TestConference.Participants.First(x => x.HearingRole == "Witness");
+            var user = new ClaimsPrincipalBuilder()
+                .WithUsername(judge.Username)
+                .WithRole(AppRoles.JudgeRole).Build();
+            Controller = SetupControllerWithClaims(user);
+
+            string expectedBody = $"{participant.HearingRole} dismissed by {judge.HearingRole}";
+
+            var result = await Controller.DismissParticipantAsync(TestConference.Id, participant.Id);
+            var typedResult = (AcceptedResult)result;
+            typedResult.Should().NotBeNull();
+
+
+            VideoApiClientMock.Verify(x => x.AddTaskAsync(TestConference.Id,
+                It.Is<AddTaskRequest>(r => r.ParticipantId == participant.Id && r.Body == expectedBody && r.TaskType == TaskType.Participant)),
+                Times.Once);
+        }
+
+        [Test]
+        [TestCase(Role.Judge, AppRoles.JudgeRole)]
+        public async Task should_create_an_alert_with_the_correct_dismisser_role_when_the_witness_is_dismissed(Role dismisserRole, string appRole)
+        {
+            var dismisser = TestConference.Participants.First(x => x.Role == dismisserRole);
+            var participant = TestConference.Participants.First(x => x.HearingRole == "Witness");
+            var user = new ClaimsPrincipalBuilder()
+                .WithUsername(dismisser.Username)
+                .WithRole(appRole).Build();
+            Controller = SetupControllerWithClaims(user);
+
+            string expectedBody = $"{participant.HearingRole} dismissed by {dismisser.HearingRole}";
+
+            var result = await Controller.DismissParticipantAsync(TestConference.Id, participant.Id);
+            var typedResult = (AcceptedResult)result;
+            typedResult.Should().NotBeNull();
+
+
+            VideoApiClientMock.Verify(x => x.AddTaskAsync(TestConference.Id,
+                It.Is<AddTaskRequest>(r => r.ParticipantId == participant.Id && r.Body == expectedBody && r.TaskType == TaskType.Participant)),
                 Times.Once);
         }
 
@@ -162,23 +213,25 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         {
             var judge = TestConference.GetJudge();
             var room = TestConference.CivilianRooms.First();
-            var witness = TestConference.Participants.First(x => x.IsWitness() && room.Participants.Contains(x.Id));
+            var participant = TestConference.Participants.First(x => x.IsWitness() && room.Participants.Contains(x.Id));
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(judge.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
             Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.DismissParticipantAsync(TestConference.Id, witness.Id);
+            string expectedBody = $"{participant.HearingRole} dismissed by {judge.HearingRole}";
+
+            var result = await Controller.DismissParticipantAsync(TestConference.Id, participant.Id);
             var typedResult = (AcceptedResult)result;
             typedResult.Should().NotBeNull();
 
             VideoApiClientMock.Verify(
                 x => x.TransferParticipantAsync(TestConference.Id,
                     It.Is<TransferParticipantRequest>(r =>
-                        r.ParticipantId == witness.Id && r.TransferType == TransferType.Dismiss)), Times.Once);
+                        r.ParticipantId == participant.Id && r.TransferType == TransferType.Dismiss)), Times.Once);
 
             VideoApiClientMock.Verify(x => x.AddTaskAsync(TestConference.Id,
-                    It.Is<AddTaskRequest>(r => r.ParticipantId == witness.Id && r.Body == "Witness dismissed" && r.TaskType == TaskType.Participant)),
+                    It.Is<AddTaskRequest>(r => r.ParticipantId == participant.Id && r.Body == expectedBody && r.TaskType == TaskType.Participant)),
                 Times.Once);
         }
 
@@ -231,6 +284,5 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                     It.Is<TransferParticipantRequest>(r =>
                         r.ParticipantId == quickLinkUser.Id && r.TransferType == TransferType.Dismiss)), Times.Once);
         }
-
     }
 }
