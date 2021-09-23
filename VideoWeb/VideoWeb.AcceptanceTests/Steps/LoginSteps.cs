@@ -80,12 +80,17 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var isEjud = _c.VideoWebConfig.ValidEjudDIdDomains.Any(_c.CurrentUser.ContactEmail.Contains);
             NUnit.Framework.TestContext.WriteLine($"Check for Ejud user: {_c.CurrentUser.DisplayName} is {_c.CurrentUser.GetType()} ID: {_c.CurrentUser.Id} User name: {_c.CurrentUser.Username} user type: {_c.CurrentUser.UserType} Email: {_c.CurrentUser.ContactEmail} and ejud is {isEjudEnabled}");
-            return _c.VideoWebConfig.UsingEjud 
-                && isEjud 
-                && isEjudEnabled 
-                && (_c.CurrentUser.UserType == UserType.Judge ||
-                    _c.CurrentUser.UserType == UserType.PanelMember ||
-                    _c.CurrentUser.UserType == UserType.Winger);
+            return _c.VideoWebConfig.UsingEjud
+                && isEjud
+                && isEjudEnabled
+                && IsUserRoleJudiciary(_c.CurrentUser.UserType);
+        }
+
+        private bool IsUserRoleJudiciary(UserType userType)
+        {
+            return (userType == UserType.Judge ||
+                    userType == UserType.PanelMember ||
+                    userType == UserType.Winger);
         }
     }
 }
