@@ -48,6 +48,7 @@ import { Logger } from '../services/logging/logger-base';
 import { SecurityConfigSetupService } from '../security/security-config-setup.service';
 import { HeaderLogoSvgComponent } from './header-logo-svg/header-logo-svg.component';
 import { VideoFilterComponent } from './video-filter/video-filter.component';
+import { HyphenatePipe } from './pipes/hyphenate.pipe';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -105,6 +106,7 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         RoomClosingToastComponent,
         MultilinePipe,
         NgxDatePipe,
+        HyphenatePipe,
         LoadingComponent,
         HeaderLogoSvgComponent,
         VideoFilterComponent
@@ -150,6 +152,7 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         TranslateModule,
         MultilinePipe,
         NgxDatePipe,
+        HyphenatePipe,
         LoadingComponent,
         VideoFilterComponent
     ]
