@@ -1,4 +1,4 @@
-$talbet-landscape-width: 64em;
+@import 'abstracts';
 
 .modal-content {
   text-align: left;
@@ -12,11 +12,11 @@ $talbet-landscape-width: 64em;
   white-space: pre-wrap;
   transform: translate(-50%, -50%);
   text-align: center;
-  @media only screen and (min-width: $talbet-landscape-width) {
+  @media only screen and (min-width: $tablet-large-breakpoint) {
     width: 50%;
     top: 70%;
   }
-  @media only screen and (max-width: $talbet-landscape-width) {
+  @media only screen and (max-width: $tablet-large-breakpoint) {
     width: 82%;
     top: 50%;
   }

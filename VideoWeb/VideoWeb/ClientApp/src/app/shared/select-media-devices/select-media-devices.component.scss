@@ -1,6 +1,6 @@
 @import '~govuk-frontend/govuk/base';
-$talbet-portrait-width: 48em;
-$talbet-landscape-width: 64em;
+@import 'abstracts';
+
 .modal {
   display: block;
   /* Hidden by default */
@@ -29,10 +29,10 @@ $talbet-landscape-width: 64em;
   margin: 5% auto;
   border: 1px solid #888;
   padding: 20px;
-  @media only screen and (min-width: $talbet-landscape-width) {
+  @media only screen and (min-width: $tablet-large-breakpoint) {
     width: 50%;
   }
-  @media only screen and (max-width: $talbet-landscape-width) {
+  @media only screen and (max-width: $tablet-large-breakpoint) {
     width: 82%;
   }
 }
@@ -43,10 +43,10 @@ $talbet-landscape-width: 64em;
 }
 
 .wr-ml {
-  @media only screen and (min-width: $talbet-portrait-width) {
+  @media only screen and (min-width: $tablet-medium-breakpoint) {
     margin-left: 10px;
   }
-  @media only screen and (max-width: $talbet-portrait-width) {
+  @media only screen and (max-width: $tablet-medium-breakpoint) {
     margin-top: -10px;
   }
 }
@@ -61,10 +61,10 @@ $talbet-landscape-width: 64em;
   display: inline-block;
   width: 40px;
   height: 24px;
-  @media only screen and (max-width: $talbet-portrait-width) {
+  @media only screen and (max-width: $tablet-medium-breakpoint) {
     margin-bottom: 0px;
   }
-  @media only screen and (min-width: $talbet-portrait-width) {
+  @media only screen and (min-width: $tablet-medium-breakpoint) {
     margin-bottom: 30px;
   }
 }
@@ -131,7 +131,7 @@ input:checked + .slider:before {
 }
 
 .camera-label {
-  @media only screen and (max-width: $talbet-portrait-width) {
+  @media only screen and (max-width: $tablet-medium-breakpoint) {
     font-size: 13px;
   }
 }
@@ -141,11 +141,11 @@ input:checked + .slider:before {
 }
 
 .warning-text__text {
-  @media only screen and (max-width: $talbet-portrait-width) {
+  @media only screen and (max-width: $tablet-medium-breakpoint) {
     padding-top: 10px;
     font-size: 10px;
   }
-  @media only screen and (min-width: $talbet-portrait-width) {
+  @media only screen and (min-width: $tablet-medium-breakpoint) {
     font-size: 1.1875rem;
   }
 }

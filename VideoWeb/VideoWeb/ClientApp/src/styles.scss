@@ -5,6 +5,7 @@ $govuk-global-styles: true;
 @import '~@hmcts/frontend/all';
 @import '~@ng-select/ng-select/themes/default.theme.css';
 @import '~@ministryofjustice/frontend/moj/all';
+@import 'sass/abstracts';
 
 .grey-btn {
   background-color: govuk-colour('light-grey');
