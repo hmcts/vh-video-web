@@ -25,6 +25,7 @@ import { SelfTestComponent } from './self-test/self-test.component';
 import { SharedRoutingModule } from './shared-routing.module';
 import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-browser.component';
 import { TooltipDirective } from './directives/tooltip.directive';
+import { SetIdDirective } from './directives/set-property-id.directive';
 import { ErrorCameraMicrophoneComponent } from './error-camera-microphone/error-camera-microphone.component';
 import { ToastrModule } from 'ngx-toastr';
 import { VhToastComponent } from './toast/vh-toast.component';
@@ -100,6 +101,7 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         ChatInputBoxComponent,
         ChatBodyWindowComponent,
         TooltipDirective,
+        SetIdDirective,
         ErrorCameraMicrophoneComponent,
         VhToastComponent,
         RoomClosingToastComponent,
@@ -146,6 +148,7 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         ChatInputBoxComponent,
         ChatBodyWindowComponent,
         TooltipDirective,
+        SetIdDirective,
         ErrorCameraMicrophoneComponent,
         TranslateModule,
         MultilinePipe,

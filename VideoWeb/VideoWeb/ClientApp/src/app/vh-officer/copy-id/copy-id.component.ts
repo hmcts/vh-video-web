@@ -10,10 +10,12 @@ export class CopyIdComponent implements OnInit {
     @Input() conference: HearingSummary;
     tooltip: string;
     @ViewChild('copyID', { static: false }) copyID: ElementRef;
+    propertyIdName = 'copy-conference-id';
 
     constructor(private clipboardService: ClipboardService) {}
 
     ngOnInit(): void {
+        this.propertyIdName = this.propertyIdName + '-' + this.conference.id;
         this.resetText();
     }
 

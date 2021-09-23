@@ -1,6 +1,7 @@
 <span
     appTooltip
     [text]="tooltip"
+    appSetPropertyId [name]="propertyIdName"
     (tooltipShown)="resetText()"
     [attr.alt]="'copy-id.alt' | translate"
     (click)="copyToClipboard(conference); $event.stopPropagation()">
