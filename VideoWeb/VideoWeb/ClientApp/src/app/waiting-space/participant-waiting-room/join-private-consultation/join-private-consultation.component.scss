@@ -1,4 +1,5 @@
 @import '~govuk-frontend/govuk/base';
+$talbet-landscape-width: 64em;
 
 .modal {
   display: block;
@@ -34,10 +35,10 @@
   border-radius: 5px;
   max-width: 700px;
 
-  @media only screen and (min-width: 1024px) {
+  @media only screen and (min-width: $talbet-landscape-width) {
     width: 50%;
   }
-  @media only screen and (min-width: 280px) and (max-width: 1024px) {
+  @media only screen and (max-width: $talbet-landscape-width) {
     width: 82%;
   }
 }
