@@ -9,10 +9,12 @@ export class CopyTelephoneIdComponent implements OnInit {
     @Input() telephoneNumber: string;
     @Input() telephoneId: string;
     tooltip: string;
+    propertyIdName = 'copy-telephone-id';
 
     constructor(private clipboardService: ClipboardService) {}
 
     ngOnInit(): void {
+        this.propertyIdName = this.propertyIdName + '-' + this.telephoneId;
         this.resetText();
     }
 
