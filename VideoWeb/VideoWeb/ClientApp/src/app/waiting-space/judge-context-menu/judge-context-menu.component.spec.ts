@@ -433,17 +433,12 @@ describe('JudgeContextMenuComponent', () => {
     describe('UI tests', () => {
         let dropdownElement;
         function fakeGetElementId(section: string) {
-            return `id-${section}`;
+            return `${component.idPrefix}-${section}`;
         }
 
         describe('dropdown', () => {
-            const dropdownId = fakeGetElementId('dropdown');
-
             beforeEach(() => {
-                spyOn(component, 'getElementId').and.callFake(section => {
-                    return fakeGetElementId(section);
-                });
-                fixture.detectChanges();
+                const dropdownId = fakeGetElementId('dropdown');
                 dropdownElement = fixture.debugElement.query(By.css(`#${dropdownId}`));
             });
             it('dropdown should be hidden', () => {
@@ -470,8 +465,10 @@ describe('JudgeContextMenuComponent', () => {
                     });
                     describe('hearing role', () => {
                         let hearingRoleFullElement;
-                        const hearingRoleFullElementId = fakeGetElementId('hearing-role-full');
-                        beforeEach(() => {});
+                        let hearingRoleFullElementId;
+                        beforeEach(() => {
+                            hearingRoleFullElementId = fakeGetElementId('hearing-role-full');
+                        });
                         it('should not show for judge', () => {
                             spyOnProperty(component, 'isJudge').and.returnValue(true);
                             fixture.detectChanges();
@@ -509,7 +506,10 @@ describe('JudgeContextMenuComponent', () => {
                             });
 
                             describe('representee', () => {
-                                const representeeElementId = fakeGetElementId('representee');
+                                let representeeElementId: string;
+                                beforeEach(() => {
+                                    representeeElementId = fakeGetElementId('representee');
+                                });
 
                                 it('should not display', () => {
                                     component.participant.representee = null;
@@ -530,7 +530,10 @@ describe('JudgeContextMenuComponent', () => {
                             });
 
                             describe('case type group', () => {
-                                const caseTypeGroupId = fakeGetElementId('case-type-group');
+                                let caseTypeGroupId: string;
+                                beforeEach(() => {
+                                    caseTypeGroupId = fakeGetElementId('case-type-group');
+                                });
 
                                 it('should not display', () => {
                                     spyOn(component, 'showCaseTypeGroup').and.returnValue(false);
@@ -542,13 +545,23 @@ describe('JudgeContextMenuComponent', () => {
 
                                 it('should have correct details for case type group', () => {
                                     spyOn(component, 'showCaseTypeGroup').and.returnValue(true);
-                                    const caseTypeGroupString = 'Test case type group';
-                                    component.participant.caseTypeGroup = caseTypeGroupString;
-                                    fixture.detectChanges();
+                                    const testCaseTypeGroup = 'Test case type group';
+                                    const testCaseTypeGroupHyphenated = 'test-case-type-group-hyphenated';
+                                    const testCaseTypeGroupHyphenatedWithPrefix = `case-role.${testCaseTypeGroupHyphenated}`;
+                                    const testCaseTypeGroupRoleTranslated = 'case type group translated';
+                                    hyphenateSpy.withArgs(testCaseTypeGroup).and.returnValue(testCaseTypeGroupHyphenated);
+                                    translateSpy
+                                        .withArgs(testCaseTypeGroupHyphenatedWithPrefix)
+                                        .and.returnValue(testCaseTypeGroupRoleTranslated);
 
+                                    component.participant.caseTypeGroup = testCaseTypeGroup;
+                                    fixture.detectChanges();
                                     const caseTypeGroupElement = fixture.debugElement.query(By.css(`#${caseTypeGroupId}`));
+
+                                    expect(hyphenateSpy).toHaveBeenCalledWith(testCaseTypeGroup);
+                                    expect(translateSpy).toHaveBeenCalledWith(testCaseTypeGroupHyphenatedWithPrefix);
                                     expect(caseTypeGroupElement).toBeTruthy();
-                                    expect(caseTypeGroupElement.nativeElement.textContent.trim()).toEqual(caseTypeGroupString);
+                                    expect(caseTypeGroupElement.nativeElement.textContent.trim()).toEqual(testCaseTypeGroupRoleTranslated);
                                 });
                             });
                         });
@@ -563,10 +576,11 @@ describe('JudgeContextMenuComponent', () => {
                     const testHearingRoleTranslatedLowercase = 'test hearing role translated lower case';
 
                     describe('call', () => {
-                        const callId = fakeGetElementId('call');
+                        let callId;
                         let canCallParticipantIntoHearingSpy: jasmine.Spy;
                         let callElement: DebugElement;
                         beforeEach(() => {
+                            callId = fakeGetElementId('call');
                             canCallParticipantIntoHearingSpy = spyOn(component, 'canCallParticipantIntoHearing');
                         });
 
@@ -619,7 +633,6 @@ describe('JudgeContextMenuComponent', () => {
                                 spyOnProperty(component, 'isWitness').and.returnValue(true);
                                 fixture.detectChanges();
 
-                                console.log(fixture.debugElement.nativeElement);
                                 callElement = fixture.debugElement.query(By.css(`#${callId}`));
                                 expect(translateSpy).toHaveBeenCalledWith(callWitnessPath);
                                 expect(callElement.nativeElement.textContent.trim()).toEqual(witnessReturn);
@@ -628,11 +641,12 @@ describe('JudgeContextMenuComponent', () => {
                     });
 
                     describe('dismiss', () => {
-                        const dismissId = fakeGetElementId('dismiss');
+                        let dismissId;
                         let canDismissParticipantFromHearingSpy: jasmine.Spy;
                         let dismissElement: DebugElement;
 
                         beforeEach(() => {
+                            dismissId = fakeGetElementId('dismiss');
                             canDismissParticipantFromHearingSpy = spyOn(component, 'canDismissParticipantFromHearing');
                         });
 
@@ -684,59 +698,30 @@ describe('JudgeContextMenuComponent', () => {
         });
     });
 
-    describe('getElementId', () => {
+    describe('idPrefix', () => {
         let expectedValue: string;
-        let inputSection: string;
 
         const prefix = 'judge-context-menu';
-        const testInputSection = 'inputSection';
-
-        it('should return correct value when section and participant id present', () => {
-            inputSection = testInputSection;
-            component.participant.id = testParticipantId;
-
-            expectedValue = `${prefix}-participant-${testParticipantId}-${testInputSection}`;
-        });
-
-        it('should return correct value when section is present and participant id null', () => {
-            inputSection = testInputSection;
-            component.participant.id = null;
-
-            expectedValue = `${prefix}-${testInputSection}`;
-        });
-
-        it('should return correct value when section is present and participant is null', () => {
-            inputSection = testInputSection;
-            component.participant = null;
-
-            expectedValue = `${prefix}-${testInputSection}`;
-        });
 
         it('should return correct value when section is null and participant id is present', () => {
-            inputSection = null;
             component.participant.id = testParticipantId;
-
+            fixture.detectChanges();
             expectedValue = `${prefix}-participant-${testParticipantId}`;
         });
 
         it('should return correct value when section and participant id is null', () => {
-            inputSection = null;
             component.participant.id = null;
-
             expectedValue = `${prefix}`;
         });
 
         it('should return correct value when section and participant is null', () => {
-            inputSection = null;
             component.participant = null;
-
             expectedValue = `${prefix}`;
         });
 
         afterEach(() => {
-            console.log(component.getElementId(inputSection));
-            component.getElementId(expectedValue);
-            expect(component.getElementId(inputSection)).toEqual(expectedValue);
+            component.ngOnInit();
+            expect(component.idPrefix).toEqual(expectedValue);
         });
     });
 });

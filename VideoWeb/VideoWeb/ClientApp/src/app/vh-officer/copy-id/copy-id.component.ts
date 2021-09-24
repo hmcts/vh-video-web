@@ -9,11 +9,13 @@ import { ClipboardService } from 'ngx-clipboard';
 export class CopyIdComponent implements OnInit {
     @Input() conference: HearingSummary;
     tooltip: string;
+    propertyIdName = 'copy-conference-id';
     @ViewChild('copyID', { static: false }) copyID: ElementRef;
 
     constructor(private clipboardService: ClipboardService) {}
 
     ngOnInit(): void {
+        this.propertyIdName = this.propertyIdName + '-' + this.conference.id;
         this.resetText();
     }
 
