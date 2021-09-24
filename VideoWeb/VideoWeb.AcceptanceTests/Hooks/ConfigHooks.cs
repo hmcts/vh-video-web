@@ -18,6 +18,7 @@ using BookingsApi.Contract.Responses;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security;
+using BookingsApi.Contract.Configuration;
 
 namespace VideoWeb.AcceptanceTests.Hooks
 {

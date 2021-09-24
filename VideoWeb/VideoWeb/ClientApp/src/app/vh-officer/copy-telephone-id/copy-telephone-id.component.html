@@ -1,6 +1,7 @@
 <span 
 appTooltip
 [text]="tooltip"
+[id]="propertyIdName"
 (tooltipShown)="resetText()"
 [attr.alt]="'copy-telephone-id.alt' | translate"
 (click)="copyToClipboard(); $event.stopPropagation()">

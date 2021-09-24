@@ -1,8 +1,8 @@
 
 <span
 appTooltip
-id="copy-quick-link"
 [text]="tooltip"
+[id]="propertyIdName"
 (tooltipShown)="resetTooltipText()"
 (click)="copyToClipboard(); $event.stopPropagation()"
 >
