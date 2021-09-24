@@ -18,6 +18,7 @@ using VideoApi.Contract.Responses;
 using BookingsApi.Contract.Responses;
 using FizzWare.NBuilder;
 using Faker;
+using BookingsApi.Contract.Configuration;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -305,7 +306,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 Application = Application.VideoWeb,
                 ExpiryInMinutes = expiresIn,
-                IsEjud = _c.VideoWebConfig.UsingEjud,
+                IsEjud = bool.Parse(_c.Apis.BookingsApi.GetFeatureFlagByName(nameof(FeatureFlags.EJudFeature)).Content),
                 IsProdUser = _c.VideoWebConfig.IsLive,
                 TestType = TestType.Automated,
                 UserTypes = userTypes
