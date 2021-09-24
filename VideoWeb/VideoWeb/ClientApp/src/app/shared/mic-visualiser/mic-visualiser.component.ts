@@ -29,10 +29,9 @@ export class MicVisualiserComponent implements AfterViewInit, OnDestroy, AfterVi
     @ViewChild('meter') meterCanvas: ElementRef;
     @ViewChild('container') meterContainer: ElementRef;
     meterCurrentWidth: number;
-    readonly meterMaxWidth = 270;
     readonly scaleMultiplier = 1.75;
     readonly fillColor = '#008000';
-
+    readonly feedbackMax = 255;
     constructor(private changeDetector: ChangeDetectorRef) {}
 
     @Input() stream: MediaStream;
@@ -98,7 +97,7 @@ export class MicVisualiserComponent implements AfterViewInit, OnDestroy, AfterVi
         this.canvasContext.fillStyle = this.fillColor;
 
         this.canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
-        this.canvasContext.fillRect(0, 0, (feedback / this.meterMaxWidth) * canvasWidth * this.scaleMultiplier, canvasHeight);
+        this.canvasContext.fillRect(0, 0, (feedback / this.feedbackMax) * canvasWidth * this.scaleMultiplier, canvasHeight);
     }
 
     tick() {
