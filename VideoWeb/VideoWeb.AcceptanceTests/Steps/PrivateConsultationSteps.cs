@@ -96,8 +96,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browserSteps.GivenInTheUsersBrowser(user);
             Thread.Sleep(TimeSpan.FromSeconds(SecondsWaitToCallAndAnswer));
-            var fromUser = Users.GetUserFromText(from, _c.Test.Users);
-            _browsers[_c.CurrentUser].TextOf(PrivateCallPopupPage.IncomingCallMessage).Should().Contain(fromUser.DisplayName);
+            var fromUser = Users.GetUserFromText(from, _c.Test.Users);_browsers[_c.CurrentUser].TextOf(PrivateCallPopupPage.IncomingCallMessage).Should().Contain(fromUser.DisplayName);
             _browsers[_c.CurrentUser].Click(PrivateCallPopupPage.AcceptPrivateCall);
         }
 
@@ -106,6 +105,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browserSteps.GivenInTheUsersBrowser(user);
             var fromUser = Users.GetUserFromText(from, _c.Test.Users);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(PrivateCallPopupPage.IncomingCallMessage, Convert.ToInt32(_c.VideoWebConfig.consultationRoomTimeout));
             _browsers[_c.CurrentUser].TextOf(PrivateCallPopupPage.IncomingCallMessage).Should().Contain(fromUser.DisplayName);
             _browsers[_c.CurrentUser].Click(PrivateCallPopupPage.DeclinePrivateCall);
         }
