@@ -1,5 +1,5 @@
 @import '~govuk-frontend/govuk/base';
-@import 'abstracts';
+@import 'src/sass/abstracts';
 
 .modal {
   display: block;
@@ -52,7 +52,7 @@
     font-size: 0.9rem;
   }
   @media only screen and (max-width: $tablet-medium-breakpoint) {
-    font-size: 8px;
+    font-size: rem(8px);
   }
 }
 
@@ -104,7 +104,7 @@
 
 .warning-text {
   @media only screen and (max-width: $tablet-medium-breakpoint) {
-    font-size: 13px;
+    font-size: rem(13px);
     margin-top: -15px;
     margin-bottom: -10px;
   }
@@ -112,13 +112,13 @@
 
 .modal-title {
   @media only screen and (max-width: $tablet-medium-breakpoint) {
-    font-size: 15px;
+    font-size: rem(15px);
   }
 }
 
 .checkboxes-label {
   @media only screen and (max-width: $tablet-medium-breakpoint) {
-    font-size: 13px;
+    font-size: rem(13px);
     padding: 2px;
   }
 }

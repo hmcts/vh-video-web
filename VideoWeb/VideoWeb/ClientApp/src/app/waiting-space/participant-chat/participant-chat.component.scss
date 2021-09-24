@@ -1,5 +1,5 @@
 @import '~govuk-frontend/govuk/all';
-@import 'abstracts';
+@import 'src/sass/abstracts';
 
 .judge-chat-window {
   background: white;
@@ -38,7 +38,7 @@
   margin-bottom: 0;
 
   @media only screen and (max-width: $tablet-medium-breakpoint) {
-    font-size: 13px;
+    font-size: rem(13px);
   }
 }
 
