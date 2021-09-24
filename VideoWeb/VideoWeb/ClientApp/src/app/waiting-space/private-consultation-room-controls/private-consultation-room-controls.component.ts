@@ -27,6 +27,7 @@ import { VideoCallService } from '../services/video-call.service';
 export class PrivateConsultationRoomControlsComponent extends HearingControlsBaseComponent {
     showContextMenu = false;
     @Input() public canToggleParticipantsPanel: boolean;
+    @Input() public isChatVisible: boolean;
 
     constructor(
         protected videoCallService: VideoCallService,

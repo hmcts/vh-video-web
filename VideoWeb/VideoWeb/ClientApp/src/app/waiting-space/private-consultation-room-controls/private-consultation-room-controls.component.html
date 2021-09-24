@@ -8,7 +8,13 @@
                     translate}}</div>
                 <div class='icon-button-dark' id='toggle-chat-panel' *ngIf='isJudge && !isPrivateConsultation'
                     colour='grey' (click)="togglePanelStatus('Chat')">
-                    <span class='far fa-comment'> <span class='context-item'>Hide messages list</span></span>
+                    <span class='far fa-comment'>
+                        <span class='context-item'>
+                            {{
+                                (isChatVisible ? 'private-consultation-room-controls.hide-chat-window' : 'private-consultation-room-controls.show-chat-window') | translate
+                            }}
+                        </span>
+                    </span>
                     <span class='badge' *ngIf='unreadMessageCount > 0'>{{ unreadMessageCount > 9 ? '9+' :
                         unreadMessageCount }}</span>
                 </div>
