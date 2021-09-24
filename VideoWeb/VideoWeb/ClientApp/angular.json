@@ -95,7 +95,7 @@
             "codeCoverageExclude": ["src/app/testing/**", "src/app/services/clients/**", "src/app/vh-officer/helper.ts"],
             "styles": ["src/styles.css", "src/styles.scss"],
             "stylePreprocessorOptions": {
-              "includePaths": ["./sass"]
+              "includePaths": ["src/sass"]
             },
             "scripts": [
               "src/scripts/pexrtc.js",
