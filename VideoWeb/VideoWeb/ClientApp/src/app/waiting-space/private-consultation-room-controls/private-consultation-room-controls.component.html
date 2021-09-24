@@ -67,7 +67,16 @@
 
                 <div class='icon-button-dark' id='toggle-audio-mute-locked-img' *ngIf='remoteMuted && !isJudge'
                     colour='grey'>
-                    <span class='far fa-microphone-slash red'></span>
+                    <span class='far fa-microphone-slash red'>                        <span class='context-item'>
+                        {{(audioMuted
+                        ? 'private-consultation-room-controls.audio-mute-toggle-true'
+                        : 'private-consultation-room-controls.audio-mute-toggle-false') | translate
+                        }}
+                    </span>
+                    <span class='context-item'>
+                        {{'private-consultation-room-controls.remote-muted' | translate}}
+                    </span>
+                </span>
                 </div>
                 <div class='icon-button-dark' id='toggle-hand-raised-img' *ngIf='!isPrivateConsultation && !isJudge'
                     colour='grey' (click)='toggleHandRaised()'>
