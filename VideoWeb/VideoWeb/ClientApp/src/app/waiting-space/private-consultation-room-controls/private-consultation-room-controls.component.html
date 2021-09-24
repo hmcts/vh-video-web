@@ -80,7 +80,7 @@
                 </div>
                 <div class='icon-button-dark' id='toggle-hand-raised-img' *ngIf='!isPrivateConsultation && !isJudge'
                     colour='grey' (click)='toggleHandRaised()'>
-                    <span class='far fa-hand-paper' [class]='{ yellow: handRaised }'>
+                    <span class='far fa-hand-paper'>
                         <span class='context-item'> {{(handRaised
                             ? 'private-consultation-room-controls.hand-raise-toggle-true'
                             : 'private-consultation-room-controls.hand-raise-toggle-false') | translate
