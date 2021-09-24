@@ -92,6 +92,26 @@ describe('JohWaitingRoomComponent', () => {
         videoWebService.getConferenceById.calls.reset();
     });
 
+    describe('toggleParticipantsPanel', () => {
+        it('should switch isParticipantsPanelHidden from false to true to false to true to false when starting from false', () => {
+            // Arrange
+            component.isParticipantsPanelHidden = false;
+
+            // Act & Assert
+            component.toggleParticipantsPanel();
+            expect(component.isParticipantsPanelHidden).toBe(true);
+
+            component.toggleParticipantsPanel();
+            expect(component.isParticipantsPanelHidden).toBe(false);
+
+            component.toggleParticipantsPanel();
+            expect(component.isParticipantsPanelHidden).toBe(true);
+
+            component.toggleParticipantsPanel();
+            expect(component.isParticipantsPanelHidden).toBe(false);
+        });
+    });
+
     describe('get allowAudioOnlyToggle', () => {
         it('should return false if the conference is null', () => {
             // Arrange
