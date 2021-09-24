@@ -1,23 +1,14 @@
 @import 'abstracts';
 
-.modal-content {
-  text-align: left;
-  padding: 50px;
-}
 .consultation-modal {
+  display: block;
   position: fixed;
-  left: 50%;
-  top: 70%;
-  width: 35vw;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
   white-space: pre-wrap;
-  transform: translate(-50%, -50%);
   text-align: center;
-  @media only screen and (min-width: $breakpoint-large) {
-    width: 50%;
-    top: 70%;
-  }
-  @media only screen and (max-width: $breakpoint-large) {
-    width: 82%;
-    top: 50%;
-  }
 }

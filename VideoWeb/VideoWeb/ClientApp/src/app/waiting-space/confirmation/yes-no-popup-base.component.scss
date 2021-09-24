@@ -11,21 +11,3 @@
   transition: opacity 500ms;
   z-index: 999;
 }
-.vh-popup {
-  padding: 40px;
-  @media only screen and (min-width: $breakpoint-medium) {
-    margin: 250px auto;
-    width: 37%;
-  }
-  @media only screen and (max-width: $breakpoint-medium) {
-    margin: 100px auto;
-    width: 70%;
-  }
-  @media only screen and (max-height: $breakpoint-medium) {
-    margin: 10px auto;
-    width: 70%;
-  }
-  border-radius: 3px;
-  background: govuk-colour('white');
-  transition: all 2s ease-in-out;
-}

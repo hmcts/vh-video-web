@@ -33,13 +33,9 @@
   padding: 20px;
   border: none;
   border-radius: 5px;
-  max-width: 700px;
 
-  @media only screen and (min-width: $breakpoint-large) {
-    width: 50%;
-  }
-  @media only screen and (max-width: $breakpoint-large) {
-    width: 82%;
+  @media only screen and (min-width: $breakpoint-medium) {
+    width: rem(680px);
   }
 }
 

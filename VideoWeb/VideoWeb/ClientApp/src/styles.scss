@@ -5,6 +5,7 @@ $govuk-global-styles: true;
 @import '~@hmcts/frontend/all';
 @import '~@ng-select/ng-select/themes/default.theme.css';
 @import '~@ministryofjustice/frontend/moj/all';
+@import 'abstracts';
 
 .grey-btn {
   background-color: govuk-colour('light-grey');
@@ -67,6 +68,10 @@ $govuk-global-styles: true;
   /* 15% from the top and centered */
   padding: 20px;
   border: 1px solid #888;
+  width: 90%;
+  @media only screen and (min-width: $breakpoint-medium) {
+    width: 680px;
+  }
 }
 
 .modal-content.negative {
