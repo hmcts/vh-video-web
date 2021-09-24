@@ -29,10 +29,10 @@
   margin: 5% auto;
   border: 1px solid #888;
   padding: 20px;
-  @media only screen and (min-width: $tablet-large-breakpoint) {
+  @media only screen and (min-width: $breakpoint-large) {
     width: 50%;
   }
-  @media only screen and (max-width: $tablet-large-breakpoint) {
+  @media only screen and (max-width: $breakpoint-large) {
     width: 82%;
   }
 }
@@ -43,10 +43,10 @@
 }
 
 .wr-ml {
-  @media only screen and (min-width: $tablet-medium-breakpoint) {
+  @media only screen and (min-width: $breakpoint-medium) {
     margin-left: 10px;
   }
-  @media only screen and (max-width: $tablet-medium-breakpoint) {
+  @media only screen and (max-width: $breakpoint-medium) {
     margin-top: -10px;
   }
 }
@@ -61,10 +61,10 @@
   display: inline-block;
   width: 40px;
   height: 24px;
-  @media only screen and (max-width: $tablet-medium-breakpoint) {
+  @media only screen and (max-width: $breakpoint-medium) {
     margin-bottom: 0px;
   }
-  @media only screen and (min-width: $tablet-medium-breakpoint) {
+  @media only screen and (min-width: $breakpoint-medium) {
     margin-bottom: 30px;
   }
 }
@@ -131,7 +131,7 @@ input:checked + .slider:before {
 }
 
 .camera-label {
-  @media only screen and (max-width: $tablet-medium-breakpoint) {
+  @media only screen and (max-width: $breakpoint-medium) {
     font-size: rem(13px);
   }
 }
@@ -141,11 +141,11 @@ input:checked + .slider:before {
 }
 
 .warning-text__text {
-  @media only screen and (max-width: $tablet-medium-breakpoint) {
+  @media only screen and (max-width: $breakpoint-medium) {
     padding-top: 10px;
     font-size: rem(15px);
   }
-  @media only screen and (min-width: $tablet-medium-breakpoint) {
+  @media only screen and (min-width: $breakpoint-medium) {
     font-size: 1.1875rem;
   }
 }

@@ -13,15 +13,15 @@
 }
 .vh-popup {
   padding: 40px;
-  @media only screen and (min-width: $tablet-medium-breakpoint) {
+  @media only screen and (min-width: $breakpoint-medium) {
     margin: 250px auto;
     width: 37%;
   }
-  @media only screen and (max-width: $tablet-medium-breakpoint) {
+  @media only screen and (max-width: $breakpoint-medium) {
     margin: 100px auto;
     width: 70%;
   }
-  @media only screen and (max-height: $tablet-medium-breakpoint) {
+  @media only screen and (max-height: $breakpoint-medium) {
     margin: 10px auto;
     width: 70%;
   }

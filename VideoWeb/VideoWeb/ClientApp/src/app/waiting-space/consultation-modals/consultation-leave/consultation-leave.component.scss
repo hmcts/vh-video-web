@@ -12,11 +12,11 @@
   white-space: pre-wrap;
   transform: translate(-50%, -50%);
   text-align: center;
-  @media only screen and (min-width: $tablet-large-breakpoint) {
+  @media only screen and (min-width: $breakpoint-large) {
     width: 50%;
     top: 70%;
   }
-  @media only screen and (max-width: $tablet-large-breakpoint) {
+  @media only screen and (max-width: $breakpoint-large) {
     width: 82%;
     top: 50%;
   }

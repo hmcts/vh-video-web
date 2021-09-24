@@ -37,7 +37,7 @@
   color: govuk-colour('white');
   margin-bottom: 0;
 
-  @media only screen and (max-width: $tablet-medium-breakpoint) {
+  @media only screen and (max-width: $breakpoint-medium) {
     font-size: rem(13px);
   }
 }
