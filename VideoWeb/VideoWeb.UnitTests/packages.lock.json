@@ -15,9 +15,9 @@
       },
       "BookingsApi.Client": {
         "type": "Direct",
-        "requested": "[1.25.8, )",
-        "resolved": "1.25.8",
-        "contentHash": "QwHQtoFZlHoVk2K5KfS87Nktest+1wYiNC4ZYJBAfk5y7f58QMGJ+DJWeyB5cBHWER0zwBjygFXHSn1yH5ZYXA==",
+        "requested": "[1.27.11, )",
+        "resolved": "1.27.11",
+        "contentHash": "BIR8P5SMKlGD/wD/1aVAknCxKa2NLueHHE/sJ8AeXKBf7e8IvitVTTSitr68LJbY1KM7u2+nwxBHEE60liPwoQ==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
           "Newtonsoft.Json": "12.0.3"
@@ -2355,7 +2355,7 @@
       "videoweb": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Client": "1.25.8",
+          "BookingsApi.Client": "1.27.11",
           "Castle.Core": "4.4.0",
           "FluentValidation.AspNetCore": "9.5.1",
           "MicroElements.Swashbuckle.FluentValidation": "3.0.0-rc.4",
@@ -2388,7 +2388,7 @@
       "videoweb.common": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Client": "1.25.8",
+          "BookingsApi.Client": "1.27.11",
           "Microsoft.ApplicationInsights": "2.16.0",
           "Microsoft.ApplicationInsights.AspNetCore": "2.16.0",
           "Microsoft.AspNetCore.SignalR": "1.1.0",
@@ -2404,7 +2404,7 @@
       "videoweb.contract": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Client": "1.25.8",
+          "BookingsApi.Client": "1.27.11",
           "UserApi.Client": "1.24.3",
           "VideoApi.Client": "1.27.9",
           "VideoWeb.Common": "1.0.0"
@@ -2413,7 +2413,7 @@
       "videoweb.eventhub": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Client": "1.25.8",
+          "BookingsApi.Client": "1.27.11",
           "Microsoft.ApplicationInsights.AspNetCore": "2.16.0",
           "Microsoft.AspNetCore.SignalR": "1.1.0",
           "Microsoft.Extensions.Caching.Abstractions": "3.1.10",
