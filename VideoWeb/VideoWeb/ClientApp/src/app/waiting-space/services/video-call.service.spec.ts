@@ -57,7 +57,7 @@ describe('VideoCallService', () => {
 
         userMediaService = jasmine.createSpyObj<UserMediaService>(
             'UserMediaService',
-            ['selectScreenToShare'],
+            ['selectScreenToShare', 'initialise'],
             ['connectedVideoDevices$', 'connectedMicrophoneDevices$', 'isAudioOnly$']
         );
 
@@ -117,6 +117,10 @@ describe('VideoCallService', () => {
 
     it('should initialise user_media_stream', () => {
         expect(service.pexipAPI.user_media_stream).toBe(mockCamStream);
+    });
+
+    it('should try to initialise the userMediaService', () => {
+        expect(userMediaService.initialise).toHaveBeenCalledTimes(1);
     });
 
     it('should toggle mute', () => {

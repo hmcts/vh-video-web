@@ -11,6 +11,7 @@ import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/partic
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { first } from 'rxjs/operators';
+import { UserMediaService } from 'src/app/services/user-media.service';
 
 @Component({
     selector: 'app-switch-on-camera-microphone',
@@ -37,6 +38,7 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
         private errorService: ErrorService,
         protected logger: Logger,
         protected participantStatusUpdateService: ParticipantStatusUpdateService,
+        private userMediaService: UserMediaService,
         private userMediaStreamService: UserMediaStreamService
     ) {
         super(participantStatusUpdateService, logger);
@@ -73,6 +75,7 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
     }
 
     async requestMedia() {
+        this.userMediaService.initialise();
         this.userMediaStreamService.currentStream$.pipe(first()).subscribe({
             next: stream => {
                 this.mediaAccepted = true;

@@ -86,6 +86,7 @@ export class VideoCallService {
         this.initTurnServer();
         this.pexipAPI.screenshare_fps = 30;
 
+        this.userMediaService.initialise();
         this.userMediaStreamService.currentStream$
             .pipe(take(1))
             .subscribe(currentStream => (this.pexipAPI.user_media_stream = currentStream));

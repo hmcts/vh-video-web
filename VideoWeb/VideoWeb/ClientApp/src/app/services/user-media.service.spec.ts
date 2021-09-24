@@ -176,13 +176,14 @@ describe('UserMediaService', () => {
         }));
     });
 
-    describe('Construction', () => {
+    describe('initialise', () => {
         beforeEach(() => {
             spyOn(UserMediaService.prototype, 'getCameraAndMicrophoneDevices').and.returnValue(
                 getCameraAndMicrophoneDevicesSubject.asObservable()
             );
             spyOn(UserMediaService.prototype, 'hasValidCameraAndMicAvailable').and.returnValue(of(true));
             userMediaService = new UserMediaService(new MockLogger(), localStorageServiceSpy);
+            userMediaService.initialise();
         });
 
         it('should handle device change', fakeAsync(() => {

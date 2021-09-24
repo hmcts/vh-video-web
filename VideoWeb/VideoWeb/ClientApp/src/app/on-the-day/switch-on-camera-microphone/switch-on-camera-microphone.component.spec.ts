@@ -14,6 +14,7 @@ import { ParticipantStatusUpdateService } from 'src/app/services/participant-sta
 import { Subject, throwError } from 'rxjs';
 import { mockCamStream } from 'src/app/waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
+import { UserMediaService } from 'src/app/services/user-media.service';
 
 describe('SwitchOnCameraMicrophoneComponent', () => {
     let component: SwitchOnCameraMicrophoneComponent;
@@ -27,6 +28,7 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
     let videoWebService: jasmine.SpyObj<VideoWebService>;
     let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
     let errorService: jasmine.SpyObj<ErrorService>;
+    let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
     const logger: Logger = new MockLogger();
     let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
 
@@ -55,6 +57,8 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
 
         participantStatusUpdateService = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
 
+        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>(['initialise']);
+
         component = new SwitchOnCameraMicrophoneComponent(
             router,
             activatedRoute,
@@ -63,6 +67,7 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
             errorService,
             logger,
             participantStatusUpdateService,
+            userMediaServiceSpy,
             userMediaStreamService
         );
         component.conference = conference;
@@ -89,6 +94,7 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
             errorService,
             logger,
             participantStatusUpdateService,
+            userMediaServiceSpy,
             userMediaStreamService
         );
 
@@ -156,6 +162,7 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
         flush();
         expect(component.userPrompted).toBeTrue();
         expect(component.mediaAccepted).toBeTrue();
+        expect(userMediaServiceSpy.initialise).toHaveBeenCalledTimes(1);
     }));
 
     it('should update mediaAccepted and userPrompted to false when request media throw an error', fakeAsync(() => {
