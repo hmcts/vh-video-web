@@ -30,6 +30,9 @@
               "src/scripts"
             ],
             "styles": ["src/styles.css", "src/styles.scss", "node_modules/ngx-toastr/toastr.css"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["src/sass"]
+            },
             "scripts": [
               "src/scripts/pexrtc.js",
               "src/scripts/EdgePF.js",
@@ -91,6 +94,9 @@
             "karmaConfig": "src/karma.conf.js",
             "codeCoverageExclude": ["src/app/testing/**", "src/app/services/clients/**", "src/app/vh-officer/helper.ts"],
             "styles": ["src/styles.css", "src/styles.scss"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["src/sass"]
+            },
             "scripts": [
               "src/scripts/pexrtc.js",
               "src/scripts/EdgePF.js",

@@ -1,11 +1,12 @@
 @import '~govuk-frontend/govuk/base';
+@import 'abstracts';
 
 .modal {
   display: block;
   /* Hidden by default */
   position: fixed;
   /* Stay in place */
-  z-index: 11;
+  z-index: 999;
   /* Sit on top */
   left: 0;
   top: 0;
@@ -32,8 +33,10 @@
   padding: 20px;
   border: none;
   border-radius: 5px;
-  width: 50%;
-  max-width: 700px;
+
+  @media only screen and (min-width: $breakpoint-medium) {
+    width: rem(680px);
+  }
 }
 
 .govuk-radios--small {

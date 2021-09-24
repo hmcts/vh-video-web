@@ -4,12 +4,12 @@
   <!-- Modal content -->
   <div class="modal-content">
     <div class="govuk-width-container">
-      <h2 class="govuk-heading-l govuk-!-margin-top-6 govuk-!-margin-bottom-6">{{'start-private-consultation.invite' |
+      <h2 class="govuk-heading-l govuk-!-margin-top-6 govuk-!-margin-bottom-6 modal-title">{{'start-private-consultation.invite' |
         translate}}</h2>
       <div class="govuk-warning-text">
         <span aria-hidden="true"
           class="govuk-warning-text__icon">!</span>
-        <span class="govuk-warning-text__text">
+        <span class="govuk-warning-text__text warning-text">
           <span class="govuk-warning-text__assistive">{{'start-private-consultation.warning' | translate}}</span>
           {{'start-private-consultation.confidential-declaration' | translate}}
         </span>
@@ -25,7 +25,7 @@
               [checked]="participantSelected(participant.id)"
               [disabled]="getParticipantDisabled(participant)"
               (change)="toggleParticipant(participant.id)" />
-            <label class="govuk-label govuk-checkboxes__label"
+            <label class="govuk-label govuk-checkboxes__label checkboxes-label"
               for="{{participant.id}}">
               <span class="govuk-!-font-weight-bold">{{participant.display_name}}</span>
               {{participantHearingRoleText(participant)}}
@@ -54,7 +54,7 @@
             [checked]="endpointSelected(endpoint.id)"
             [disabled]="getEndpointDisabled(endpoint)"
             (change)="toggleEndpoint(endpoint.id)" />
-          <label class="govuk-label govuk-checkboxes__label"
+          <label class="govuk-label govuk-checkboxes__label checkboxes-label"
             for="{{endpoint.id}}">
             <span class="govuk-!-font-weight-bold">{{endpoint.display_name}}</span>
             {{'start-private-consultation.video-access-point' | translate}}

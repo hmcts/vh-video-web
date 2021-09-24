@@ -1,8 +1,8 @@
 @import '~govuk-frontend/govuk/all';
+@import 'abstracts';
 
 .judge-chat-window {
   background: white;
-  width: 30%;
   z-index: 100;
   position: fixed;
   bottom: 0;
@@ -10,6 +10,7 @@
   -webkit-box-shadow: 0 0 8px 3px govuk-colour('dark-grey');
   -moz-box-shadow: 0 0 8px 3px govuk-colour('dark-grey');
   box-shadow: 0 0 8px 3px govuk-colour('dark-grey');
+  width: 320px;
 }
 
 .chat-window-always-on {
@@ -35,11 +36,15 @@
 .chat-header-text {
   color: govuk-colour('white');
   margin-bottom: 0;
+
+  @media only screen and (max-width: $breakpoint-medium) {
+    font-size: rem(13px);
+  }
 }
 
 .chat-window {
-  height: 400px;
   background: govuk-colour('white');
+  height: calc(50vh - 50px);
 }
 
 .notification-badge {
