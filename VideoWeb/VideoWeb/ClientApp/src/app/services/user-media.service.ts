@@ -58,7 +58,7 @@ export class UserMediaService {
 
     constructor(private logger: Logger, private localStorageService: LocalStorageService) {}
 
-    private initialised: boolean = false;
+    private initialised = false;
     initialise() {
         if (!this.initialised) {
             this.logger.debug(`${this.loggerPrefix} Initialising user media service.`);
