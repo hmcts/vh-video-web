@@ -57,8 +57,8 @@ describe('VideoCallService', () => {
 
         userMediaService = jasmine.createSpyObj<UserMediaService>(
             'UserMediaService',
-            ['selectScreenToShare'],
-            ['connectedVideoDevices$', 'connectedMicrophoneDevices$', 'isAudioOnly$', 'initialise']
+            ['selectScreenToShare', 'initialise'],
+            ['connectedVideoDevices$', 'connectedMicrophoneDevices$', 'isAudioOnly$']
         );
 
         userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>([], ['currentStream$', 'streamModified$']);
