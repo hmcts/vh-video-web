@@ -1,38 +1,38 @@
 <img src="assets/images/elipses.png" class="panel-icon" (click)="toggleDropdown()" [attr.alt]="'judge-context-menu.context-menu-icon' | translate" />
-<div [hidden]="!isDroppedDown" class="dropdown-content" [id]="getElementId('dropdown')">
+<div [hidden]="!isDroppedDown" class="dropdown-content" [id]="idPrefix + '-dropdown'">
   <p class="govuk-body-s dropdown-header">
-    <span [id]="getElementId('display-name')">
+    <span [id]="idPrefix + '-display-name'">
       <strong>{{ participant.displayName }}</strong>
     </span>
-    <span *ngIf="!isJudge" [id]="getElementId('hearing-role-full')">
-        <span [id]="getElementId('hearing-role')">
+    <span *ngIf="!isJudge" [id]="idPrefix + '-hearing-role-full'">
+        <span [id]="idPrefix + '-hearing-role'">
           {{ 'hearing-role.' + (participant.hearingRole | hyphenate) | translate}}
         </span>
         <ng-container *ngIf="!!this.participant.representee">
-          <span [id]="getElementId('for')">
+          <span [id]="idPrefix + '-for'">
             {{ 'participants-panel.for' | translate }} 
           </span>
-          <span [id]="getElementId('representee')">
+          <span [id]="idPrefix + '-representee'">
             {{ this.participant.representee }}
           </span>
         </ng-container>
     </span>
-    <span *ngIf="showCaseTypeGroup()" [id]="getElementId('case-type-group')">
-      {{ participant.caseTypeGroup }}
+    <span *ngIf="showCaseTypeGroup()" [id]="idPrefix + '-case-type-group'">
+      {{ 'case-role.' + (participant.caseTypeGroup | hyphenate) | translate }}
     </span>
   </p>
   <hr />
-  <a *ngIf="participant.isInHearing()" (click)="toggleMuteParticipant()" [id]="getElementId('toggle-mute')">{{ getMutedStatusText() }}</a>
-  <a *ngIf="canCallParticipantIntoHearing()" (click)="callParticipantIntoHearing()" [id]="getElementId('call')">
+  <a *ngIf="participant.isInHearing()" (click)="toggleMuteParticipant()" [id]="idPrefix + '-toggle-mute'">{{ getMutedStatusText() }}</a>
+  <a *ngIf="canCallParticipantIntoHearing()" (click)="callParticipantIntoHearing()" [id]="idPrefix + '-call'">
     <ng-container
       *ngIf="isWitness; then isWitnessCallContent; else isNotWitnessCallContent">
     </ng-container>
   </a>
-  <a *ngIf="canDismissParticipantFromHearing()" (click)="dismissParticipantFromHearing()" [id]="getElementId('dismiss')">
+  <a *ngIf="canDismissParticipantFromHearing()" (click)="dismissParticipantFromHearing()" [id]="idPrefix + '-dismiss'">
     {{'judge-context-menu.dismiss-participant' | translate: { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase} }}
   </a>
-  <a *ngIf="!participant.isJudge && participant.hasHandRaised() && participant.isInHearing()" (click)="lowerParticipantHand()" [id]="getElementId('lower-hand')">{{'judge-context-menu.lower-hand' | translate}}</a>
-  <a *ngIf="participant.isInHearing() && !participant.isLocalCameraOff()" (click)="toggleSpotlightParticipant()" [id]="getElementId('toggle-spotlight')">{{ getPinStatusText() }}</a>
+  <a *ngIf="!participant.isJudge && participant.hasHandRaised() && participant.isInHearing()" (click)="lowerParticipantHand()" [id]="idPrefix + '-lower-hand'">{{'judge-context-menu.lower-hand' | translate}}</a>
+  <a *ngIf="participant.isInHearing() && !participant.isLocalCameraOff()" (click)="toggleSpotlightParticipant()" [id]="idPrefix + '-toggle-spotlight'">{{ getPinStatusText() }}</a>
 </div>
 
 <ng-template #isWitnessCallContent>
