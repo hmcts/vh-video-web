@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, HostListener, ElementRef } from '@angular/core';
+import { Component, EventEmitter, Input, Output, HostListener, ElementRef, OnInit } from '@angular/core';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { PanelModel } from '../models/panel-model-base';
 import {
@@ -17,10 +17,12 @@ import { TranslateService } from '@ngx-translate/core';
     templateUrl: './judge-context-menu.component.html',
     styleUrls: ['./judge-context-menu.component.scss']
 })
-export class JudgeContextMenuComponent {
+export class JudgeContextMenuComponent implements OnInit {
     private readonly loggerPrefix = '[JudgeContextMenu] -';
-    participant: PanelModel;
+    private readonly initialPrefix = 'judge-context-menu';
+    idPrefix: string;
     isDroppedDown = false;
+    participant: PanelModel;
 
     @Input() set participantInput(participant: PanelModel) {
         this.participant = participant;
@@ -33,6 +35,9 @@ export class JudgeContextMenuComponent {
     @Output() dismissParticipantFromHearingEvent = new EventEmitter<DismissParticipantFromHearingEvent>();
 
     constructor(private logger: Logger, private elementRef: ElementRef, protected translateService: TranslateService) {}
+    ngOnInit(): void {
+        this.idPrefix = this.participant?.id ? `${this.initialPrefix}-participant-${this.participant.id}` : this.initialPrefix;
+    }
 
     @HostListener('document:click', ['$event'])
     clickout(event: Event) {
@@ -122,12 +127,5 @@ export class JudgeContextMenuComponent {
 
     canDismissParticipantFromHearing(): boolean {
         return this.participant.isCallableAndReadyToBeDismissed;
-    }
-
-    getElementId(section?: string): string {
-        section = !!section ? `-${section}` : '';
-        const prefix = 'judge-context-menu';
-        const identifier = !!this.participant?.id ? `-participant-${this.participant.id}` : '';
-        return `${prefix}${identifier}${section}`;
     }
 }
