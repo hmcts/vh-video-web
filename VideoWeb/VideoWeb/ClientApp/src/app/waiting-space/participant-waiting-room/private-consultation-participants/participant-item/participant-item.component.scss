@@ -2,8 +2,17 @@
 
 .participant-endpoint-row {
   display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
   padding-top: 0.5em;
   padding-bottom: 0.1em;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -ms-flex-line-pack: center;
+  align-content: center;
+  -ms-flex-pack: space-evenly;
+  justify-content: flex-start;
+  align-items: center;
 
   > div {
     margin-right: 0.5em;
@@ -42,7 +51,9 @@
 .white {
   color: rgba(255, 255, 255, 0.9);
 }
-
+.display-name {
+  overflow-wrap: anywhere;
+}
 .outline {
   border: 2px solid rgba(255, 255, 255, 0.9);
   border-radius: 2px;
