@@ -7,7 +7,7 @@ import { fakeAsync, flush } from '@angular/core/testing';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Guid } from 'guid-typescript';
 
-describe('UserMediaService', () => {
+fdescribe('UserMediaService', () => {
     const testData = new MediaDeviceTestData();
     let userMediaService: UserMediaService;
     let localStorageServiceSpy: jasmine.SpyObj<LocalStorageService>;

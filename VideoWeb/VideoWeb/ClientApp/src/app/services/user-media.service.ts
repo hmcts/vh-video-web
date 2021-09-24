@@ -58,12 +58,19 @@ export class UserMediaService {
 
     constructor(private logger: Logger, private localStorageService: LocalStorageService) {
         this.logger.debug(`${this.loggerPrefix} Constructor called. attempting to initialise active devices.`);
+    }
 
-        this.handleDeviceChange();
-
-        this.navigator.mediaDevices.ondevicechange = () => {
+    private initialised: boolean = false;
+    initialise() {
+        if (!this.initialised) {
             this.handleDeviceChange();
-        };
+
+            this.navigator.mediaDevices.ondevicechange = () => {
+                this.handleDeviceChange();
+            };
+
+            this.initialised = true;
+        }
     }
 
     private handleDeviceChange() {
