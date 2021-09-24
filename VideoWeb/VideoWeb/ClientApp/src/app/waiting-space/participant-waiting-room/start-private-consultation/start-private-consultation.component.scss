@@ -44,11 +44,10 @@
   padding: 3px 5px 3px 5px;
   font-weight: 600;
   letter-spacing: 1px;
+  font-size: rem(8px);
+
   @media only screen and (min-width: $breakpoint-medium) {
     font-size: 0.9rem;
-  }
-  @media only screen and (max-width: $breakpoint-medium) {
-    font-size: rem(8px);
   }
 }
 

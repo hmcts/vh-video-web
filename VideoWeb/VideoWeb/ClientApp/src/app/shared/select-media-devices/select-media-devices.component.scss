@@ -39,15 +39,6 @@
   /* Black w/ opacity */
 }
 
-.wr-ml {
-  @media only screen and (min-width: $breakpoint-medium) {
-    margin-left: 10px;
-  }
-  @media only screen and (max-width: $breakpoint-medium) {
-    margin-top: -10px;
-  }
-}
-
 .wr-h {
   margin-left: 25px;
 }
@@ -58,11 +49,10 @@
   display: inline-block;
   width: 40px;
   height: 24px;
+  margin-bottom: 30px;
+
   @media only screen and (max-width: $breakpoint-medium) {
     margin-bottom: 0px;
-  }
-  @media only screen and (min-width: $breakpoint-medium) {
-    margin-bottom: 30px;
   }
 }
 
@@ -138,11 +128,9 @@ input:checked + .slider:before {
 }
 
 .warning-text__text {
+  font-size: 1.1875rem;
   @media only screen and (max-width: $breakpoint-medium) {
     padding-top: 10px;
-    font-size: rem(15px);
-  }
-  @media only screen and (min-width: $breakpoint-medium) {
-    font-size: 1.1875rem;
+    font-size: 1rem;
   }
 }
