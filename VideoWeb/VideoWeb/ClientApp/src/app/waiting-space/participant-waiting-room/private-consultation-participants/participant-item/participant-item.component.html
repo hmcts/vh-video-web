@@ -16,7 +16,7 @@
             aria-hidden="true"></span>
     </div>
     <div [class]="getRowClasses(participant)">
-        <span [class]="'display-name ' + participantNameClass(participant)">{{participant.display_name}}</span>
+        <span [class]="'wrap-anywhere ' + participantNameClass(participant)">{{participant.display_name}}</span>
     </div>
     <div [class]="getRowClasses(participant)"
         class="text-right">
@@ -29,7 +29,7 @@
  class="individual-endpoint-row">
     <div class="header-left" [class]="getRowClasses(interpreter)"> </div>
     <div [class]="getRowClasses(interpreter)">
-        <span [class]="'display-name ' + participantNameClass(interpreter)">{{interpreter.display_name}}</span>
+        <span [class]="'wrap-anywhere ' + participantNameClass(interpreter)">{{interpreter.display_name}}</span>
     </div>
 
 </div>

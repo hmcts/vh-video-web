@@ -67,10 +67,10 @@ export class ParticipantItemComponent {
 
     participantNameClass(roomParticipant: any): string {
         if (this.isParticipantInCurrentRoom(roomParticipant)) {
-            return 'display-name ' + 'yellow';
+            return 'yellow';
         }
 
-        return 'display-name ' + this.isParticipantAvailable(roomParticipant) ? 'white' : '';
+        return this.isParticipantAvailable(roomParticipant) ? 'white' : '';
     }
 
     isParticipantInCurrentRoom(roomParticipant: any): boolean {
