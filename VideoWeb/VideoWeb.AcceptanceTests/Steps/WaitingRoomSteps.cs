@@ -72,7 +72,28 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var user = Users.GetUserFromText(name, _c.Test.Users);
             var participant = _c.Test.ConferenceParticipants.Single(x => x.Username.ToLower().Equals(user.Username.ToLower()));
-            _browsers[_c.CurrentUser].TextOf(JudgeParticipantPanel.ParticipantStatus(participant.Id)).ToUpper().Should().Be(status.ToUpper());
+
+            CheckParticipantStatus(status, participant);
+        }
+
+        private void CheckParticipantStatus(string status, ParticipantDetailsResponse participant)
+        {
+            if (participant.HearingRole.Equals("winger", StringComparison.OrdinalIgnoreCase))
+            {
+                _browsers[_c.CurrentUser].TextOf(JudgeParticipantPanel.WingerStatus(participant.Id)).ToUpper().Should().Be(status.ToUpper());
+            }
+            else if (participant.HearingRole.Equals("panel member", StringComparison.OrdinalIgnoreCase))
+            {
+                _browsers[_c.CurrentUser].TextOf(JudgeParticipantPanel.PanelMemberStatus(participant.Id)).ToUpper().Should().Be(status.ToUpper());
+            }
+            else if (participant.HearingRole.Equals("observer", StringComparison.OrdinalIgnoreCase))
+            {
+                _browsers[_c.CurrentUser].TextOf(JudgeParticipantPanel.ObserverStatus(participant.Id)).ToUpper().Should().Be(status.ToUpper());
+            }
+            else
+            {
+                _browsers[_c.CurrentUser].TextOf(JudgeParticipantPanel.ParticipantStatus(participant.Id)).ToUpper().Should().Be(status.ToUpper());
+            }
         }
 
         [Then(@"the (.*) will see the status for (.*) is displayed as (.*)")]
