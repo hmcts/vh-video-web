@@ -7,7 +7,7 @@ import { fakeAsync, flush } from '@angular/core/testing';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Guid } from 'guid-typescript';
 
-fdescribe('UserMediaService', () => {
+describe('UserMediaService', () => {
     const testData = new MediaDeviceTestData();
     let userMediaService: UserMediaService;
     let localStorageServiceSpy: jasmine.SpyObj<LocalStorageService>;
@@ -176,13 +176,14 @@ fdescribe('UserMediaService', () => {
         }));
     });
 
-    describe('Construction', () => {
+    describe('initialise', () => {
         beforeEach(() => {
             spyOn(UserMediaService.prototype, 'getCameraAndMicrophoneDevices').and.returnValue(
                 getCameraAndMicrophoneDevicesSubject.asObservable()
             );
             spyOn(UserMediaService.prototype, 'hasValidCameraAndMicAvailable').and.returnValue(of(true));
             userMediaService = new UserMediaService(new MockLogger(), localStorageServiceSpy);
+            userMediaService.initialise();
         });
 
         it('should handle device change', fakeAsync(() => {

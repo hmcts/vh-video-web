@@ -56,13 +56,12 @@ export class UserMediaService {
         return this.isAudioOnlySubject.asObservable();
     }
 
-    constructor(private logger: Logger, private localStorageService: LocalStorageService) {
-        this.logger.debug(`${this.loggerPrefix} Constructor called. attempting to initialise active devices.`);
-    }
+    constructor(private logger: Logger, private localStorageService: LocalStorageService) {}
 
     private initialised: boolean = false;
     initialise() {
         if (!this.initialised) {
+            this.logger.debug(`${this.loggerPrefix} Initialising user media service.`);
             this.handleDeviceChange();
 
             this.navigator.mediaDevices.ondevicechange = () => {
