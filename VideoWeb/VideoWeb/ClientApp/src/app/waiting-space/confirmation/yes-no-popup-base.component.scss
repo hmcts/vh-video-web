@@ -1,4 +1,5 @@
 @import '~govuk-frontend/govuk/base';
+@import 'abstracts';
 
 .vh-popup-overlay {
   position: fixed;
@@ -9,12 +10,4 @@
   background: rgba(0, 0, 0, 0.5);
   transition: opacity 500ms;
   z-index: 999;
-}
-.vh-popup {
-  padding: 40px;
-  margin: 250px auto;
-  border-radius: 3px;
-  background: govuk-colour('white');
-  transition: all 2s ease-in-out;
-  width: 37%;
 }
