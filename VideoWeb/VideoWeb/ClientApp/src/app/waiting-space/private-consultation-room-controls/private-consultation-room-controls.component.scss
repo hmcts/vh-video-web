@@ -171,8 +171,8 @@
 
 .show-for-medium {
   display: none;
-  @media only screen and (min-width: $breakpoint-medium) {
-    display: line-flex;
+  @media only screen and (min-width: $breakpoint-medium) and (max-width: $breakpoint-large) {
+    display: inline-flex;
   }
 }
 

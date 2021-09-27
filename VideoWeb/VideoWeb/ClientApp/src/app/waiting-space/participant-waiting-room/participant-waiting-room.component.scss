@@ -33,8 +33,9 @@
   margin-left: 10px;
   word-wrap: break-word;
   overflow-wrap: break-word;
-  @media screen and (max-width: $breakpoint-small) {
-    display: none;
+  display: none;
+  @media screen and (min-width: $breakpoint-small) {
+    display: inline-flex;
   }
 }
 

@@ -39,7 +39,7 @@
   font-size: rem(13px);
 
   @media only screen and (min-width: $breakpoint-medium) {
-    font-size: 1em;
+    font-size: rem(15px);
   }
 }
 
