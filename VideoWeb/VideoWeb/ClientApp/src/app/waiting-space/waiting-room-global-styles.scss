@@ -211,9 +211,9 @@
   @media only screen and (max-width: $breakpoint-medium) {
     max-width: 250px;
   }
-  @media only screen and (max-width: $breakpoint-extra-small) {
-    max-width: 100px;
-    font-size: rem(10px);
+  @media only screen and (max-width: $breakpoint-small) {
+    max-width: 150px;
+    font-size: rem(13px);
   }
 }
 
@@ -225,7 +225,7 @@
   text-overflow: ellipsis;
   max-width: 600px;
 
-  @media only screen and (max-width: 1024px) {
+  @media only screen and (max-width: $breakpoint-large) {
     max-width: 400px;
   }
 }

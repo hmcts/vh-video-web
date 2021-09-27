@@ -16,7 +16,7 @@
             aria-hidden="true"></span>
     </div>
     <div [class]="getRowClasses(participant)">
-        <span [class]="'wrap-anywhere ' + participantNameClass(participant)">{{participant.display_name}}</span>
+        <span class="wrap-anywhere" [ngClass]="participantNameClass(participant)">{{participant.display_name}}</span>
     </div>
     <div [class]="getRowClasses(participant)"
         class="text-right">
