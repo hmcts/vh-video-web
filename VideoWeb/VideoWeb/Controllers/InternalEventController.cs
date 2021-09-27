@@ -92,6 +92,9 @@ namespace VideoWeb.Controllers
                     conference.UpdateParticipant(mappedUpdateParticipant);
                 });
 
+                _logger.LogTrace($"Updating conference in cache: {JsonSerializer.Serialize(conference)}");
+                await _conferenceCache.UpdateConferenceAsync(conference);
+
                 await _participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference);
                 _logger.LogDebug($"ParticipantsUpdated finished. ConferenceId: {conferenceId}");
                 return NoContent();
