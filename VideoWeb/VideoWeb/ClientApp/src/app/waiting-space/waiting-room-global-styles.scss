@@ -208,12 +208,15 @@
   display: flex;
   flex-direction: row;
   width: auto;
-  @media only screen and (max-width: $breakpoint-medium) {
+  max-width: 150px;
+  font-size: rem(13px);
+  @media only screen and (min-width: $breakpoint-small) and (max-width: $breakpoint-medium) {
     max-width: 250px;
+    font-size: 1em;
   }
-  @media only screen and (max-width: $breakpoint-small) {
-    max-width: 150px;
-    font-size: rem(13px);
+  @media only screen and (min-width: $breakpoint-medium) {
+    max-width: 350px;
+    font-size: 1em;
   }
 }
 
