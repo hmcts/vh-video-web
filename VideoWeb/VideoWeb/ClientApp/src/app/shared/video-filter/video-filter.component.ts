@@ -45,8 +45,12 @@ export class VideoFilterComponent implements OnInit, OnDestroy {
 
     backgroundChanged(e: Event) {
         const filter = BackgroundFilter[(e.target as HTMLInputElement).value];
-        this.logger.info(`${this.loggerPrefix} filter dropdown changed ${filter}`);
-        this.videoFilterService.updateFilter(filter);
+        this.updateFilter(filter);
+    }
+
+    updateFilter(newFilter: BackgroundFilter | null) {
+        this.logger.info(`${this.loggerPrefix} filter dropdown changed ${newFilter}`);
+        this.videoFilterService.updateFilter(newFilter);
     }
 
     toggleDisplayOptions() {

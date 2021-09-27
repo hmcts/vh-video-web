@@ -1,5 +1,5 @@
-<button class="vh-accordion" (click)="toggleDisplayOptions()">
-  <span class="govuk-link">
+<button class="vh-accordion" (click)="toggleDisplayOptions()" tabindex="-1">
+  <span class="govuk-link" tabindex="0">
     {{ 'video-filter.title' | translate }}
     <i class="vh-video-filter-title fas" [ngClass]="showOptions ? 'fa-chevron-up' : 'fa-chevron-down'" id="bg-icon" aria-hidden="true"></i
   ></span>
@@ -16,8 +16,9 @@
         [checked]="!filterOn"
         [value]="null"
         (change)="this.backgroundChanged($event)"
+        tabindex="-1"
       />
-      <label for="bg-none">
+      <label for="bg-none" tabindex="0" (keypress)="updateFilter(null)">
         <img src="/assets/images/VhBgFilterNone.jpg" class="bg-option-img" [attr.alt]="'video-filter.none-alt' | translate" />
       </label>
     </div>
@@ -33,8 +34,9 @@
         [checked]="activeFilter === filtersAvailable.blur"
         [value]="filtersAvailable.blur"
         (change)="this.backgroundChanged($event)"
+        tabindex="-1"
       />
-      <label for="bg-blur">
+      <label for="bg-blur" tabindex="0" (keypress)="updateFilter(filtersAvailable.blur)">
         <img src="/assets/images/VhBgFilterBlur.jpg" class="bg-option-img" [attr.alt]="'video-filter.blur-alt' | translate" />
       </label>
     </div>
@@ -50,8 +52,9 @@
         [checked]="activeFilter === filtersAvailable.HMCTS"
         [value]="filtersAvailable.HMCTS"
         (change)="this.backgroundChanged($event)"
+        tabindex="-1"
       />
-      <label for="bg-hmcts">
+      <label for="bg-hmcts" tabindex="0" (keypress)="updateFilter(filtersAvailable.HMCTS)">
         <img src="/assets/images/VhBgFilterHMCTS.jpg" class="bg-option-img" [attr.alt]="'video-filter.hmcts-alt' | translate" />
       </label>
     </div>
@@ -67,8 +70,9 @@
         [checked]="activeFilter === filtersAvailable.SCTS"
         [value]="filtersAvailable.SCTS"
         (change)="this.backgroundChanged($event)"
+        tabindex="-1"
       />
-      <label for="bg-scot">
+      <label for="bg-scot" tabindex="0" (keypress)="updateFilter(filtersAvailable.SCTS)">
         <img src="/assets/images/VhBgFilterSCTS.jpg" class="bg-option-img" [attr.alt]="'video-filter.scts-alt' | translate" />
       </label>
     </div>
