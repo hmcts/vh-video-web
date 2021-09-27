@@ -137,9 +137,9 @@
 
 .dropdown {
   position: relative;
-  display: none;
-  @media only screen and (max-width: $breakpoint-large) {
-    display: inline-block;
+  display: inline-block;
+  @media only screen and (min-width: $breakpoint-large) {
+    display: none;
   }
 }
 
@@ -162,24 +162,24 @@
   -webkit-font-smoothing: antialiased;
   margin-left: 4px;
 }
-.portrait {
+.hide-for-medium {
   display: block;
-  @media only screen and (max-width: $breakpoint-small-medium) and (min-width: $breakpoint-large) {
+  @media only screen and (min-width: $breakpoint-medium) {
     display: none;
   }
 }
 
-.landscape {
+.show-for-medium {
   display: none;
-  @media only screen and (max-width: $breakpoint-small-medium) and (min-width: $breakpoint-large) {
+  @media only screen and (min-width: $breakpoint-medium) {
     display: line-flex;
   }
 }
 
 .hearing-controls-desktop {
-  display: inline-flex;
-  @media only screen and (max-width: $breakpoint-large) {
-    display: none;
+  display: none;
+  @media only screen and (min-width: $breakpoint-large) {
+    display: inline-flex;
   }
 
   .horizontal-spacer {
