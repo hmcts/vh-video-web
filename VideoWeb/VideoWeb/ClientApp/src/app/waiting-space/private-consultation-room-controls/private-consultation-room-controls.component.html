@@ -92,13 +92,13 @@
                             : 'private-consultation-room-controls.hand-raise-toggle-false') | translate
                             }}</span></span>
                 </div>
-                <div *ngIf='!isPrivateConsultation && isJudge' id='pause-hearing' class='icon-button-dark portrait'
+                <div *ngIf='!isPrivateConsultation && isJudge' id='pause-hearing' class='icon-button-dark hide-for-medium'
                     data-module='govuk-button' (click)='pause()' [hidden]='!canCloseOrPauseHearing()'>
                     <span class='far fa-pause-circle'><span class='context-item'>{{
                             'private-consultation-room-controls.pause' | translate }}</span></span>
                 </div>
 
-                <div *ngIf='!isPrivateConsultation && isJudge' id='end-hearing' class='icon-button-dark portrait'
+                <div *ngIf='!isPrivateConsultation && isJudge' id='end-hearing' class='icon-button-dark hide-for-medium'
                     data-module='govuk-button' (click)='displayConfirmationDialog()'
                     [hidden]='!canCloseOrPauseHearing()'>
                     <span class='far fa-stop-circle'><span class='context-item'>{{
@@ -112,7 +112,7 @@
                             'private-consultation-room-controls.lock-the-room-toggle-' + roomLocked | translate
                             }}</span></span>
                 </div>
-                <div *ngIf='showConsultationControls' id='leaveButton' class='icon-button-dark portrait'
+                <div *ngIf='showConsultationControls' id='leaveButton' class='icon-button-dark hide-for-medium'
                     data-module='govuk-button' (click)='leavePrivateConsultation()' [hidden]='!canLeaveConsultation()'>
                     <span class='far fa-sign-out-alt'><span class='context-item'>{{
                             'private-consultation-room-controls.leave' | translate }}</span></span>
@@ -125,7 +125,7 @@
             (click)="togglePanelStatus('Participants')">
             <span class='far fa-users'></span>
         </div>
-        <div class='landscape'>
+        <div class='show-for-medium'>
             <button *ngIf="!isPrivateConsultation && isJudge" id="pause-hearing-landscape" class="small-button blue"
                 data-module="govuk-button" (click)="pause()" type="button" [hidden]="!canCloseOrPauseHearing()">
                 {{ 'private-consultation-room-controls.pause' | translate }}
