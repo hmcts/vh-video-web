@@ -785,7 +785,8 @@
     },
     "copy-telephone-id": {
         "alt": "Copy joining by phone details to clipboard",
-        "display-text": "Copy joining by phone details to clipboard"
+        "display-text": "Copy joining by phone details to clipboard",
+        "tooltip-copied": "Details copied to clipboard"
     },
     "participant-network-status": {
         "icon-alt": "Open instant messaging chat window arrow"
@@ -810,7 +811,8 @@
     },
     "copy-id": {
         "alt": "Copy conference id icon",
-        "display-text": "Copy hearing ID to clipboard"
+        "display-text": "Copy hearing ID to clipboard",
+        "tooltip-copied": "Conference ID copied to clipboard"
     },
     "copy-quick-link": {
         "tooltip-copied": "Join by quick link details copied to clipboard",
