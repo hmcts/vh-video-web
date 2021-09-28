@@ -17,10 +17,12 @@ export class VideoFilterComponent implements OnInit, OnDestroy {
     activeFilter: BackgroundFilter;
     filterOn: boolean;
     showOptions: boolean;
+    browserSupportsFilters: boolean;
 
     constructor(private videoFilterService: VideoFilterService, private logger: Logger) {}
 
     ngOnInit(): void {
+        this.browserSupportsFilters = this.videoFilterService.doesSupportVideoFiltering();
         this.showOptions = false;
         this.initCurrentFilter();
     }

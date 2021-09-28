@@ -6,7 +6,7 @@
 </button>
 
 <div *ngIf="showOptions" class="v-bg-panel">
-  <div class="bg-grid">
+  <div *ngIf="browserSupportsFilters; else unsupportedBrowser" class="bg-grid">
     <div class="bg-img1">
       <input
         type="radio"
@@ -80,4 +80,13 @@
       <div class="govuk-hint bg-option-text">{{ 'video-filter.scts' | translate }}</div>
     </div>
   </div>
+  <ng-template #unsupportedBrowser>
+    <div class="govuk-warning-text govuk-!-margin-bottom-0">
+      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Unsupported Browser</span>
+        This browser does not support custom backgrounds.
+      </strong>
+    </div>
+  </ng-template>
 </div>
