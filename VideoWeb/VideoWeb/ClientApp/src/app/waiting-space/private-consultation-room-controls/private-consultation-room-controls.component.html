@@ -125,7 +125,7 @@
             (click)="togglePanelStatus('Participants')">
             <span class='far fa-users'></span>
         </div>
-        <div class='show-for-medium'>
+        <div class='show-for-medium-only'>
             <button *ngIf="!isPrivateConsultation && isJudge" id="pause-hearing-landscape" class="small-button blue"
                 data-module="govuk-button" (click)="pause()" type="button" [hidden]="!canCloseOrPauseHearing()">
                 {{ 'private-consultation-room-controls.pause' | translate }}
