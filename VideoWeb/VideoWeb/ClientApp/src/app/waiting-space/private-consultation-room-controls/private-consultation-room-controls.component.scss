@@ -169,9 +169,9 @@
   }
 }
 
-.show-for-medium {
+.show-for-medium-only {
   display: none;
-  @media only screen and (min-width: $breakpoint-medium) and (max-width: $breakpoint-large) {
+  @media only screen and (min-width: $breakpoint-medium) and (max-width: $breakpoint-medium-max) {
     display: inline-flex;
   }
 }
