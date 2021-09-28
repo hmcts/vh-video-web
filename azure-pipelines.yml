@@ -224,6 +224,10 @@ parameters:
         value: $(EmailReformDomain)
       - name: VhServices:InternalEventSecret
         value: $(internal_event_secret)
+      - name: VhServices:EnableAndroidSupport
+        value: $(EnableAndroidSupport)
+      - name: VhServices:EnableIOSSupport
+        value: $(EnableIOSSupport)
 
       # Quick Links Configuration
       - name: QuickLinks:Issuer
@@ -233,6 +237,7 @@ parameters:
 
 variables:
   - group: vh-domains-and-urls
+  - group: FeatureFlags_NonProd
   - group: vh-apps-settings-generic
   - group: vh-video-web
   - group: vh-video-web-nonprod
@@ -284,35 +289,6 @@ extends:
       - npm
     Test: ${{ or(parameters.RunUnitTests, parameters.RunIntegTests, parameters.RunMutationTests) }}
     testParameters:
-      variables:
-        - name: EnableAndroidSupport
-          value: false
-          env:
-            - Prod
-            - Preprod
-        - name: EnableAndroidSupport
-          value: true
-          env:
-            - Preview
-            - Dev
-            - AAT
-            - Sandbox
-            - Test1
-            - Test2
-        - name: EnableIOSSupport
-          value: false
-          env:
-            - Prod
-            - Preprod
-        - name: EnableIOSSupport
-          value: true
-          env:
-            - Preview
-            - Dev
-            - AAT
-            - Sandbox
-            - Test1
-            - Test2
       coreProjectPath: VideoWeb/VideoWeb
       nodeProjectPath: VideoWeb/VideoWeb/ClientApp
       RunNode: true
@@ -356,35 +332,6 @@ extends:
       StrykerBreak: 75
     ACTest: ${{ parameters.RunACTests }}
     releaseParameters:
-      variables:
-        - name: EnableAndroidSupport
-          value: false
-          env:
-            - Prod
-            - Preprod
-        - name: EnableAndroidSupport
-          value: true
-          env:
-            - Preview
-            - Dev
-            - AAT
-            - Sandbox
-            - Test1
-            - Test2
-        - name: EnableIOSSupport
-          value: false
-          env:
-            - Prod
-            - Preprod
-        - name: EnableIOSSupport
-          value: true
-          env:
-            - Preview
-            - Dev
-            - AAT
-            - Sandbox
-            - Test1
-            - Test2
       environment: Preview
       subscription: $(pr_Subscription)
       secrets_KeyVault: $(pr_Secret_KeyVault)
