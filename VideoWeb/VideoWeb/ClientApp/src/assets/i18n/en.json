@@ -383,7 +383,7 @@
     "context-menu-icon": "Context menu icon",
     "call-witness": "Call witness",
     "admit-participant": "Admit {{ role }}",
-    "dismiss-participant" : "Dismiss {{ role }}",
+    "dismiss-participant": "Dismiss {{ role }}",
     "lower-hand": "Lower hand",
     "unmute": "Unmute",
     "mute": "Mute",
@@ -616,7 +616,6 @@
     "change-camera-mic": "Change your camera and microphone",
     "context-menu": "Open Menu",
     "hearing-controls": "Hearing controls"
-    
   },
   "chat-panel": {
     "heading": "VH Officer messages",
@@ -1095,13 +1094,13 @@
   "loading": "Loading please wait...",
   "video-filter": {
     "title": "Choose a custom background",
-    "none": "No background",
+    "none": "None",
     "none-alt": "Remove all filters",
     "blur": "Blurred",
     "blur-alt": "Apply the blurred background filter",
-    "hmcts": "HMCTS crest",
+    "hmcts": "HMCTS",
     "hmcts-alt": "Apply the background with the HMCTS crest",
-    "scts": "SCTS crest",
+    "scts": "SCTS",
     "scts-alt": "Apply the background with the SCTS crest"
   }
 }
