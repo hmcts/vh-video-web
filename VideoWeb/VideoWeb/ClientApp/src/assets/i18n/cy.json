@@ -783,6 +783,7 @@
     "blue": "glas",
     "grey": "llwyd",
     "call-witness": "Galw'r tyst",
+    "participant-unavailable": "Nid yw'r {{role}} ar gael",
     "participant-available": "As gael",
     "joining1": "Yn ymuno...",
     "for": ""
@@ -795,7 +796,9 @@
     "lower-hand": "Rhoi llaw i lawr",
     "call-witness": "Galw'r tyst",
     "unpin": "Peidio amlygu",
-    "unmute": "Dadfudo"
+    "unmute": "Dadfudo",
+    "admit-participant": "Gadael {{role}} i mewn",
+    "dismiss-participant" : "Gwrthod {{role}}"
   },
   "confirm-close-hearing-popup": {
     "title": "Rydych ar fin cau'r gwrandawiad hwn",
