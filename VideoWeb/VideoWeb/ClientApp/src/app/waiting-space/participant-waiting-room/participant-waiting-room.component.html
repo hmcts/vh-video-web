@@ -32,6 +32,7 @@
       <ng-container *ngIf="connected">
         <app-private-consultation-room-controls
           #hearingControls
+          [canToggleParticipantsPanel]="isPrivateConsultation"
           [conferenceId]="conference.id"
           [participant]="participant"
           [isPrivateConsultation]="isPrivateConsultation"
@@ -41,12 +42,13 @@
           (leaveConsultation)="showLeaveConsultationModal()"
           (lockConsultation)="setRoomLock($event)"
           (changeDeviceToggle)="showChooseCameraDialog()"
+          (togglePanel)="toggleParticipantsPanel()"
         >
         </app-private-consultation-room-controls>
       </ng-container>
     </div>
   </div>
-  <div *ngIf="hearing && isPrivateConsultation" class="panel-wrapper">
+  <div *ngIf="hearing && isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': isParticipantsPanelHidden }">
     <app-private-consultation-participants
       [conference]="hearing.getConference()"
       [participantEndpoints]="participantEndpoints"

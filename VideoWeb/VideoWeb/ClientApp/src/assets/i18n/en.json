@@ -1,1107 +1,1108 @@
 {
-  "app": {
-    "skip-to-main-content": "Skip to main content"
-  },
-  "hearing-list-table": {
-    "date-and-time": "Date & time",
-    "hearing-details": "Hearing details",
-    "case-number": "Case number",
-    "sign-in": "Sign in {{date}}",
-    "from": "from {{time}}",
-    "today": "Today",
-    "on-date": "on {{date}}",
-    "button": {
-      "sign-into-hearing": "Sign into hearing"
-    }
-  },
-  "footer": {
-    "privacy-policy": "Privacy policy",
-    "accessibility": "Accessibility",
-    "translate-to": "Gweld y gwasanaeth hwn yn Gymraeg",
-    "all-content-availabe-under": "All content is available under the ",
-    "open-government-license": "Open Government Licence v3.0",
-    "except": " except where otherwise stated",
-    "copyright": "© Crown copyright",
-    "copyright-info-link-label": "Copyright Information"
-  },
-  "login": {
-    "redirect": "Please wait while we redirect"
-  },
-  "logout": {
-    "signing-out": "Signing out",
-    "signed-out-successfully": "Signed out successfully. Click",
-    "here": "here",
-    "log-back-in": "to log back in."
-  },
-  "unauthorised": {
-    "not-authorised": "You are not authorised to use this service",
-    "not-registered": "It looks like you are not registered for this service.",
-    "contact-us": "If you think this is a mistake and you need to speak to someone, please contact us using the options below."
-  },
-  "back-navigation": {
-    "back": "Back",
-    "return-to-video-hearing-list": "Return to video hearing list"
-  },
-  "beta-banner": {
-    "beta": "beta",
-    "this-new-service": " This is a new service – your",
-    "feedback": "feedback",
-    "help-improve": "will help us to improve it."
-  },
-  "chat-base": {
-    "you": "You"
-  },
-  "chat-body-window": {
-    "error": "Error:",
-    "failed": "message failed to send",
-    "try-again": "try again",
-    "alerts-icon": "alerts icon",
-    "at": "at"
-  },
-  "chat-input-box": {
-    "send": "Send",
-    "char-count": "Character count",
-    "maximum": "maximum allowed",
-    "unable-send": "Unable to send message.",
-    "type-a-message": "Type a message"
-  },
-  "contact-us": {
-    "contact-video-hearings": "Contact the video hearings service",
-    "speak-to-admin": "To speak to a hearings administrator:",
-    "call": "call",
-    "email": "email"
-  },
-  "contact-us-folding": {
-    "contact-for-help": "Contact us for help",
-    "call-vh-team": "Call the video hearings team on",
-    "quote-case-number": "and quote your case number",
-    "available-time": "(available between 9am and 5pm, Monday to Friday)",
-    "email-us": "Email us at",
-    "quoting-case-number": "quoting your case number"
-  },
-  "equipment-problem": {
-    "problem-with-equipment": "Problems with your equipment?",
-    "not-working-call-us": "something's not working, please call us now.",
-    "call": "Call",
-    "for-vh-team": "for the video hearings team"
-  },
-  "error": {
-    "problem-with-service": "Sorry, there is a problem with the service",
-    "try-later": "Please try again later.",
-    "need-to-speak": "If you need to speak to someone please contact us using the options below.",
-    "problem-with-connection": "There's a problem with your connection",
-    "default-body-message": "Please reconnect. Call us if you keep seeing this message.",
-    "you-not-connected": "You are not connected to the internet. You will not be able to join your video hearing until you are reconnected. Please call the Video Hearings Team to let them know you cannot connect to our service.",
-    "check-security-settings": "Please check that your security settings are not blocking the connection.",
-    "keep-seeing-message": "If you keep seeing this message contact the video hearings team.",
-    "find-out-more": "Find out more about your computer set-up and internet connection at:",
-    "computer-part-of-network": "If your computer is part of a network, your IT support will find guidance and firewall settings at:",
-    "button-reconnect": "Reconnect",
-    "contact-for-help": "Contact us for help",
-    "call-vh-team": "Call the Video Hearings team on",
-    "click-reconnect": "Please click \"Reconnect\" to return to the previous page. Call us if you keep seeing this message."
-  },
-  "error-service": {
-    "unexpected-error": "An unexpected error occurred",
-    "click-reconnect": "Please click \"Reconnect\" to return to the previous page. Call us if you keep seeing this message.",
-    "problem-with-connection": "There's a problem with your connection",
-    "camera-mic-blocked": "Your camera and microphone are blocked",
-    "please-unblock": "Please unblock the camera and microphone or call us if there is a problem."
-  },
-  "error-camera-microphone": {
-    "problem-with-camera-mic": "There is a problem with your camera and microphone",
-    "camera-mic-in-use": "Your camera and microphone may already be in use. Please close any application that may be using your camera and microphone and try again.",
-    "camera-mic-cannot-be-found": "Your camera and microphone cannot be found. Please connect your camera and microphone and try again.",
-    "call-us": "Call us if you're still seeing this message.",
-    "button-continue": " Continue"
-  },
-  "header": {
-    "hm-courts": "HM Courts",
-    "tribunals-service": "Tribunals Service",
-    "sign-out": "Sign out",
-    "crest-image-alt": "HMCTS logo crest image",
-    "account-navigation-label": "Account navigation"
-  },
-  "not-found": {
-    "page-not-found": "Page not found",
-    "typed-web-address": "If you typed the web address, check it is correct.",
-    "pasted-web-address": "If you pasted the web address, check you copied the entire address.",
-    "web-address-correct": "If the web address is correct or you selected a link or button, contact us using the options below."
-  },
-  "select-media-devices": {
-    "change-camera-mic": "Change your camera and microphone",
-    "browser-support": "Your browser does not support video",
-    "change-camera": "Change camera",
-    "change-microphone": "Change microphone",
-    "green-bar": "Make sure the green bar moves when you speak",
-    "permission-switch-off-camera": "You need permission from the court to switch off your camera",
-    "button-close": "Close",
-    "on": "ON",
-    "off": "OFF",
-    "warning": "Warning",
-    "join-with-camera-on-off": " Join with your camera on/off"
-  },
-  "self-test": {
-    "testing-equipment": "Testing your equipment",
-    "to-be-connected": "Please wait to be connected...",
-    "browser-not-support": "Your browser does not support video",
-    "change-camera-mic": "Change camera or microphone"
-  },
-  "unsupported-browser": {
-    "using-unsupported-browser": "You're using an unsupported browser",
-    "please-try-again": "Please try again using one of the browsers listed below. If you are still having problems, please contact the video hearings team.",
-    "supported-browser-alt": "{{browserName}} browser logo"
-  },
-  "unsupported-device": {
-    "use-different-device": "Please use a different device",
-    "service-will-not-work": "The service will not work on the device you’re using. Please sign out and sign in again.",
-    "you-may-use": "You may use:",
-    "laptop-or-desktop": "a laptop or desktop computer with a camera and microphone",
-    "apple-ipad": "an Apple iPad (Safari only)",
-    "if-you-cannot-access": "If you cannot access a suitable device, call the video hearings team on 0300 303 0655."
-  },
-  "equipment-check-base": {
-    "yes": "Yes"
-  },
-  "camera-and-microphone": {
-    "continue": "Continue",
-    "sign-into-the-conference": "Sign into the conference"
-  },
-  "camera-check": {
-    "was-your-camera-working": "Was your camera working?",
-    "error": "Error:",
-    "select-if-you-could-see-yourself": "Select if you could see yourself in the camera window",
-    "could-you-see-yourself-on-the-screen": "Could you see yourself on the screen in the camera window?",
-    "yes": "Yes",
-    "no": "No",
-    "continue": "Continue",
-    "check-my-equipment-again": "Check my equipment again",
-    "camera": "Camera"
-  },
-  "declaration": {
-    "declaration": "Declaration",
-    "error": "Error:",
-    "please-tick-the-box-to-confirm-no-recording": "Please tick the box to confirm that you will not record the hearing in any way",
-    "warning": "Warning",
-    "it-is-a-criminal-offence": "It is a criminal offence to record this hearing (by audio or video), to publish any such recording, or to take any images (by photo or screenshot)",
-    "i-confirm-that-i-will-not-record-or-take-any-images": "I confirm that I will not record or take any images of this hearing",
-    "continue": "Continue"
-  },
-  "equipment-check": {
-    "lets-confirm-your-equipment-is-working": "Let's confirm your equipment is working",
-    "this-short-video": "This short video will help you check that your camera and microphone are working.",
-    "equipment-check": "Equipment Check",
-    "continue": "Continue"
-  },
-  "hearing-rules": {
-    "court-rules": "Court rules",
-    "you-must-follow-courtroom-rules": "You must follow the same rules as you would in a courtroom.",
-    "this-means-you": "This means you:",
-    "can-only-drink-water": "can only drink water",
-    "must-not-eat": "must not eat",
-    "must-only-use-your-phone-to-contact-the-vh-team": "must only use your phone for contact with the video hearings team",
-    "must-follow-the-judges-instructions": "must follow the judge’s instructions",
-    "are-not-allowed-to-smoke-including-e-cigarettes": "are not allowed to smoke (including e-cigarettes)",
-    "must-be-alone-unless-you-have-the-judges-permission": "must be alone unless you have the judge’s permission to have someone with you",
-    "must-ask-the-judges-permission-to-move-away-from-screen": "must ask the judge's permission if you need to move away from your screen",
-    "hm-courts-and-tribunals-service-crest": "HM Courts &amp; Tribunals Service crest",
-    "continue": "Continue"
-  },
-  "independent-self-test": {
-    "please-wait-to-be-connected": "Please wait to be connected...",
-    "problems-with-your-equipment": "Problems with your equipment?",
-    "please-call-beforenumber": "Please call the video hearings team on ",
-    "please-call-afternumber": " to let us know.",
-    "continue": "Continue",
-    "re-play-the-video-message": "Re-play the video message",
-    "check-equipment-again": "Check equipment again"
-  },
-  "introduction": {
-    "hm-courts-and-tribunals-service-crest": "HM Courts &amp; Tribunals Service crest",
-    "get-ready-for-the-hearing": "Get ready for the hearing",
-    "next-we-are-going-to": "Next, we're going to:",
-    "check-that-your-equipment-is-working": "check that your equipment is working",
-    "tell-you-about-the-rules-of-the-court": "tell you about the rules of the court",
-    "next": "Next"
-  },
-  "judge-hearing-list": {
-    "loading-please-wait": "Loading please wait...",
-    "video-hearings-for-court-name": "Video hearings for {{ courtName }}",
-    "check-equipment": "Check equipment",
-    "you-have-no-video-hearings": "You have no video hearings",
-    "if-no-details-shown-please-contact-us": "If you are expecting to see details of your hearing listed here, please contact us using the options below.",
-    "do-you-need-help": "Do you need help?",
-    "call-the-video-hearings-team-on": "Call the video hearings team on "
-  },
-  "judge-hearing-table": {
-    "time": "Time",
-    "judge": "Judge",
-    "hearing": "Hearing",
-    "attendees": "Attendees",
-    "case-number": "Case number: ",
-    "panel-member": "Panel Member",
-    "panel-members": "Panel Members",
-    "winger": "Winger",
-    "wingers": "Wingers",
-    "participant": "Participant",
-    "participants": "Participants",
-    "video-access-point": "Video access point",
-    "video-access-points": "Video access points",
-    "observer": "Observer",
-    "observers": "Observers",
-    "winger-single": "Winger",
-    "winger-plural": "Wingers",
-    "judicial-consultation-room-is-now-closed": "Judicial consultation room is now closed",
-    "judicial-consultation-room-open-until": "Judicial consultation room open until ",
-    "sign-into-the-conference": "Sign into the conference",
-    "select": "Select",
-    "not-ready-to-start": "Not ready to start",
-    "conference-status-heading": "Status/Action"
-  },
-  "judge-self-test": {
-    "please-wait-to-be-connected": "Please wait to be connected...",
-    "problems-with-your-equipment": "Problems with your equipment?",
-    "please-call-beforenumber": "Please call the video hearings team on ",
-    "please-call-afternumber": " to let us know.",
-    "we-will-tell-the-participants-their-hearing-may-be-delayed": "We'll tell the participants their hearing may be delayed.",
-    "continue": "Continue",
-    "re-play-the-video-message": "Re-play the video message",
-    "check-equipment-again": "Check equipment again"
-  },
-  "microphone-check": {
-    "was-your-microphone-working": "Was your microphone working?",
-    "error": "Error:",
-    "select-if-you-could-see-the-bar-moving-when-you-spoke": "Select if you could see the bar moving when you spoke",
-    "could-you-see-the-bar-moving-when-you-spoke": "Could you see the bar moving when you spoke?",
-    "yes": "Yes",
-    "no": "No",
-    "continue": "Continue",
-    "check-my-equipment-again": "Check my equipment again",
-    "microphone": "Microphone"
-  },
-  "participant-hearings": {
-    "your-video-hearing": "Your video hearing",
-    "your-video-hearings": "Your video hearings",
-    "loading-please-wait": "Loading please wait...",
-    "check-equipment": "Check equipment",
-    "you-do-not-have-a-video-hearing-today": "You do not have a video hearing today",
-    "if-no-details-shown-please-contact-us": "If you were expecting to see the details of a hearing here, please contact the video hearings team."
-  },
-  "participant-self-test": {
-    "please-wait-to-be-connected": "Please wait to be connected...",
-    "when-the-video-has-ended-answer-3-questions": "When the video has ended, answer 3 questions to confirm your microphone and camera are working.",
-    "continue": "Continue",
-    "watch-the-video-again": "Watch the video again"
-  },
-  "self-test-actions": {
-    "equipment-is-working": "Equipment is working",
-    "equipment-is-faulty": "Equipment is faulty"
-  },
-  "switch-on-camera-microphone": {
-    "use-your-camera-and-microphone": "Use your camera and microphone",
-    "switch-on-camera-and-mic-to-watch-the-video": "Switch on your camera and microphone to watch the video.",
-    "your-camera-and-microphone-are-switched-on": "Your camera and microphone are switched on",
-    "camera-and-mic-are-switched-on-you-can-continue-to-video": "Your camera and microphone are switched on. You can now continue to the video.",
-    "your-camera-and-microphone-are-blocked": "Your camera and microphone are blocked",
-    "sorry-you-must-use-camera-and-mic": "We're sorry, you can't take part in the hearing without using your camera and microphone.",
-    "stay-close-to-your-phone-we-will-call-in-5-mins": "Stay close to your phone and we'll call you within 5 minutes.",
-    "sorry-hearing-can-not-go-ahead-if-camera-and-mic-are-blocked": "We're sorry, the hearing can't go ahead if your camera and microphone are blocked.",
-    "please-unblock-camera-and-mic-or-call-us-if-any-problems": "Please unblock the camera and microphone or call us if there is a problem.",
-    "helpline-contact-phone": "Helpline: {{ contactPhone }}",
-    "switch-on": "Switch on",
-    "watch-the-video": "Watch the video"
-  },
-  "video-check": {
-    "could-you-see-and-hear-the-video-clearly": "Could you see and hear the video clearly?",
-    "error": "Error:",
-    "select-if-the-image-and-sound-were-clear": "Select if the image and sound were clear",
-    "were-the-image-and-sound-clear": "Were the image and sound clear?",
-    "yes": "Yes",
-    "no": "No",
-    "continue": "Continue",
-    "check-my-equipment-again": "Check my equipment again",
-    "video": "Video"
-  },
-  "consultation-error": {
-    "message": "Sorry, there was an error with your private consultation",
-    "close": "Close",
-    "try-again": "Please try again shortly"
-  },
-  "consultation-leave": {
-    "message": "You are about to leave the meeting",
-    "return-wr-message": "You'll be returning to the waiting room.",
-    "stay": "Stay",
-    "leave": "Leave"
-  },
-  "hearing-controls": {
-    "lower-my-hand": "Lower my hand",
-    "raise-my-hand": "Raise my hand",
-    "switch-camera-on": "Switch camera on",
-    "switch-camera-off": "Switch camera off"
-  },
-  "individual-participant-status-list": {
-    "available": "Available",
-    "unavailable": "Unavailable",
-    "wingers": "Wingers",
-    "panel-members": "Panel members",
-    "staff-members": "Staff members",
-    "participants": "Participants",
-    "observers": "Observers",
-    "video-access-points": "Video access points",
-    "for": "for",
-    "crest-icon-alt": "HM Courts & Tribunals Service crest"
-  },
-  "joh-waiting-room": {
-    "hearing": "Hearing",
-    "date": "Date",
-    "to": "to",
-    "is-suspended": "is suspended",
-    "is-paused": "is paused",
-    "is-closed": "is closed",
-    "is-in-session": "is in session",
-    "loading": "Loading please wait...",
-    "your-video-hearing": "Your video hearing",
-    "choose-camera-and-microphone": "Choose camera and microphone",
-    "choose-camera-and-microphone-aria-label": "Choose camera and microphone dialog",
-    "case-number": "case number",
-    "please-wait": "Please wait",
-    "hearing-starting-at": "Your video hearing is scheduled to begin at {{date}}",
-    "hearing-closed": "This hearing has finished. You may now sign out.",
-    "hearing-paused": "The judge will restart the hearing when they are ready. Please stay near your screen.",
-    "hearing-suspended-technical-title": "We're having technical issues",
-    "hearing-suspended-message": "All participants are affected. Stay near your screen for further updates. There's no need to call us.",
-    "time-now": "The time now is:",
-    "enter-consultation-room": "Enter consultation room",
-    "video-hearing-team-contact": "Video hearings team: {{phone}}",
-    "switch-to-main-screen": "Switch to main screen",
-    "browser-doesnt-support-video": "Your browser does not support Video",
-    "judge-participant-status-list-label": "list of participants in hearing",
-    "warning": "Warning",
-    "please-wait-while-we-connect-you": "Please wait while we connect you..."
-  },
-  "judge-context-menu": {
-    "context-menu-icon": "Context menu icon",
-    "call-witness": "Call witness",
-    "admit-participant": "Admit {{ role }}",
-    "dismiss-participant" : "Dismiss {{ role }}",
-    "lower-hand": "Lower hand",
-    "unmute": "Unmute",
-    "mute": "Mute",
-    "unpin": "Unpin",
-    "pin": "Pin"
-  },
-  "judge-participant-status-list": {
-    "crest-alt": "HM Courts &amp; Tribunals Service crest",
-    "edit": "Edit",
-    "judge": "Judge",
-    "save": "Save",
-    "cancel": "Cancel",
-    "wingers": "Wingers",
-    "panel-members": "Panel members",
-    "staff-members": "Staff members",
-    "participants": "Participants",
-    "video-access-points": "Video access points",
-    "observers": "Observers",
-    "not-signed-in": "Not signed in",
-    "connected": "Connected"
-  },
-  "judge-waiting-room": {
-    "start-this-hearing": "Start this hearing",
-    "hearing-suspended": "Hearing suspended",
-    "hearing-paused": "Hearing paused",
-    "hearing-is-closed": "Hearing is closed",
-    "hearing-is-in-session": "Hearing is in session",
-    "loading-please-wait": "Loading please wait...",
-    "browser-support-message": "Your browser does not support Video",
-    "switch-to-main-screen": "Switch to main screen",
-    "choose-camera-and-microphone": "Choose camera and microphone",
-    "choose-camera-and-microphone-dialog": "Choose camera and microphone dialog",
-    "details-of-the-hearing": "Details of the hearing",
-    "hearing": "Hearing",
-    "date": "Date",
-    "to": "to",
-    "case-number": "case number",
-    "is-everyone-connected": "Is everyone connected?",
-    "hearing-messages": {
-      "not-started": "If any participants are not connected, you must call the video hearings team on <strong>{{phone}}</strong> before you start the hearing.",
-      "paused": "Please call the video hearings team on <strong>{{phone}}</strong> if you're having problems. We'll update the participants.",
-      "suspended": "The video hearings team has been alerted and we're informing the participants. Please call us now on <strong>{{phone}}</strong>.",
-      "closed": "The consultation room is available for up to 2 hours after the hearing has finished.",
-      "warning": "Warning",
-      "consultation-room-will-close-at": "The consultation room will close at"
+    "app": {
+        "skip-to-main-content": "Skip to main content"
     },
-    "buttons": {
-      "start-video-hearing": "Start video hearing",
-      "resume-video-hearing": "Resume video hearing",
-      "enter-consultation-room": "Enter consultation room"
-    },
-    "warning": "Warning",
-    "please-wait-while-we-connect-you": "Please wait while we connect you...",
-    "hearing-is-being-recorded": {
-      "true": "The audio of this hearing is being recorded.",
-      "false": "The audio of this hearing is NOT being recorded.",
-      "image-true": "Recording on image",
-      "image-false": "Recording off image"
-    },
-    "judge-participant-status-list-label": "list of participants in hearing"
-  },
-  "participant-alert": {
-    "disconnected": "Disconnected",
-    "network-connection-is-poor": "Network connection is poor"
-  },
-  "participant-chat": {
-    "message-vho": "Message video hearings officer",
-    "open": "Open instant messaging chat window arrow",
-    "close": "Close instant messaging chat window arrow",
-    "loading": "Loading..."
-  },
-  "participant-network-health": {
-    "your-connection-is-poor": "Your connection is poor",
-    "good-network-icon": "Good network icon",
-    "tips-for-improving-your-connection": "Tips for improving your connection",
-    "show-detail": "The hearing may be disrupted if your internet connection does not improve",
-    "tips-for-improving-your-internet-connection": "Tips for improving your internet connection",
-    "close": "Close",
-    "message1": "If you're on WiFi, try moving close to your router",
-    "message2": "If others are using the same connection, ask if they can wait until you've finished your hearing",
-    "message3": "If possible, use a wired connection rather than WiFi"
-  },
-  "waiting-room-monitor": {
-    "your-internet-connection-is-poor": "Your internet connection is poor",
-    "good-network-icon-in-hearing": "Good network icon in hearing",
-    "trouble-seeing": "Others may have trouble seeing and hearing you."
-  },
-  "participant-waiting-room": {
-    "switch-to-main-screen": "Switch to main screen",
-    "locked": "locked",
-    "unlocked": "unlocked",
-    "is-suspended": "is suspended",
-    "is-paused": "is paused",
-    "is-closed": "is closed",
-    "is-in-session": "is in session",
-    "is-delayed": "is delayed",
-    "is-about-to-begin": "is about to begin",
-    "loading-please-wait": "Loading please wait...",
-    "browser-support": "Your browser does not support video",
-    "lock-the-room": "Lock the room to prevent others joining",
-    "invite-others": "Invite others by calling them or unlock the room for others to join",
-    "witness-transferring-warning-image": "Witness transferring warning image",
-    "hearing-ready": "Please get ready <br/> You'll &thinsp; join the hearing in a few seconds",
-    "your-video-hearing": "Your video hearing",
-    "choose-camera-and-microphone": "Choose camera and microphone",
-    "choose-camera-and-microphone-aria-label": "Choose camera and microphone dialog",
-    "details-of-the-hearing": "Details of the hearing",
-    "hearing": "Hearing",
-    "to": "to",
-    "date": "Date",
-    "case-number": "case number",
-    "please-wait": "Please wait",
-    "please-wait-while-we-connect-you": "Please wait while we connect you...",
-    "hearing-starting-at": "Your video hearing is scheduled to begin at",
-    "hearing-status-messages": {
-      "starting-title": "Please stay near your screen",
-      "starting-body": "Make sure you're ready when the judge starts the hearing.",
-      "delayed-title": "Your hearing is delayed",
-      "delayed-body": "We're sorry for the delay. Stay near your screen for further updates.",
-      "closed": "This hearing has finished. You may now sign out.",
-      "paused": "The judge will restart the hearing when they are ready. Please stay near your screen.",
-      "suspended-title": "We're having technical issues",
-      "suspended-body": "All participants are affected. Stay near your screen for further updates. There's no need to call us.",
-      "in-session-title": "The hearing has started",
-      "in-session-body": "The judge will bring you into the hearing when they are ready for you. An alert will sound and you will join the hearing a few seconds later."
-    },
-    "hearing-about-to-start": "The judge will bring you into the hearing when they are ready for you. An alert will sound and you will join the hearing a few seconds later.",
-    "time-now": "The time now is:",
-    "private-consultation": {
-      "start": "Start a private meeting",
-      "join": "Join a private meeting",
-      "what-are-private-meetings": "What are private meetings?",
-      "talk-to-other-participants": "You can talk to other participants in private before the hearing begins or during a break, if you wish.",
-      "guide1": "Start a meeting by choosing who you want to speak to from the list",
-      "guide2": "Join a meeting that's already started by choosing from the list",
-      "guide3": "If a meeting room is locked you'll need to be invited by someone in the meeting",
-      "guide4": "If you wish to have a private conversation during the hearing you'll need to ask the judge's permission."
-    },
-    "vh-team": "Video hearings team: {{phone}}",
-    "individual-participant-status-list-label": "list of participants in hearing",
-    "warning": "Warning"
-  },
-  "invite-participant": {
-    "invite-this-person": "Invite this person to the meeting"
-  },
-  "join-private-consultation": {
-    "join": "Join a private meeting",
-    "warning": "Warning",
-    "confidential-declaration": "All meetings outside the hearing are confidential and not recorded as part of court or tribunal proceedings",
-    "video-access-point": "Video access point",
-    "continue": "Continue",
-    "close": "Close",
-    "for": "for",
-    "no-meetings-to-join": "There are no meetings to join"
-  },
-  "start-private-consultation": {
-    "invite": "Invite others to a private meeting",
-    "warning": "Warning",
-    "confidential-declaration": "All meetings outside the hearing are confidential and not recorded as part of court or tribunal proceedings",
-    "video-access-point": "Video access point",
-    "continue": "Continue",
-    "close": "Close",
-    "for": "for",
-    "unavailable": "Unavailable",
-    "in": "In"
-  },
-  "private-consultation-participants": {
-    "calling": "Calling...",
-    "declined": "Declined",
-    "failed": "Failed",
-    "no-answer": "No Answer",
-    "transferring": "Transferring",
-    "not-available": "Not available",
-    "crest-icon-alt": "Crest",
-    "participants": "Participants"
-  },
-  "participants-panel": {
-    "for": "for",
-    "joining": "Joining",
-    "not-joined": "Not joined",
-    "disconnected": "DISCONNECTED",
-    "red": "red",
-    "blue": "blue",
-    "grey": "grey",
-    "participants": "Participants",
-    "mute-lock": "Mute & lock",
-    "mute-tooltip": "Mute all participants and prevent them from unmuting",
-    "unmute-lock": "Unlock mute",
-    "unmute-tooltip": "Allow all participants to unmute",
-    "lower-hands": "Lower hands",
-    "lower-hand": "Lower hand",
-    "lower-hands-tooltip": "Lower all raised hands",
-    "crest": "HMCTS Crest",
-    "camera-off": "Camera off",
-    "remove-spotlight": " (remove spotlight)",
-    "click-to-spotlight": " (click to spotlight)",
-    "loading-participants": "Loading Participants",
-    "joining1": "Joining...",
-    "call-witness": "Call witness",
-    "participant-unavailable": "{{ role }} unavailable",
-    "admit-participant": "Admit {{ role }}",
-    "participant-available": "Available",
-    "mute-participant": "Mute participant",
-    "microphone-muted-icon": "Microphone muted icon",
-    "microphone-on-icon": "Microphone on icon",
-    "participant-muted": "Participant muted"
-  },
-  "private-consultation-room-controls": {
-    "browser-support": "Your browser does not support video",
-    "leave": "Leave",
-    "lock-the-room-toggle-false": "Lock the room ",
-    "lock-the-room-toggle-true": "Unlock the room ",
-    "close": "Close",
-    "pause": "Pause",
-    "hand-raise-toggle-true": "Lower hand",
-    "hand-raise-toggle-false": "Raise hand",
-    "remote-muted": "Judge has muted you. Raise your hand to speak.",
-    "audio-mute-toggle-true": "Unmute microphone",
-    "audio-mute-toggle-false": "Mute microphone",
-    "video-mute-toggle-true": "Turn on camera",
-    "video-mute-toggle-false": "Turn off camera",
-    "selfview-toggle-true": "Hide my self-view",
-    "selfview-toggle-false": "Show my self-view",
-    "participants-panel": "Participants Panel",
-    "chat-panel": "Chat Panel",
-    "share-my-screen": "Share my screen",
-    "start-sharing-screen": "Start sharing screen",
-    "stop-sharing-my-screen": "Stop sharing my screen",
-    "stop-sharing-screen": "Stop sharing screen",
-    "change-camera-mic": "Change your camera and microphone",
-    "context-menu": "Open Menu",
-    "hearing-controls": "Hearing controls"
-    
-  },
-  "chat-panel": {
-    "heading": "VH Officer messages",
-    "loading": "Loading..."
-  },
-  "select-hearing-layout": {
-    "choose-hearing-layout": "Choose hearing layout",
-    "open-all": "Open all",
-    "close-all": "Close all"
-  },
-  "hearing-layout": {
-    "layout-image-alt": "Layout image for {{layout}}",
-    "recommended": "recommended",
-    "title-1-plus-7": "1 main speaker",
-    "title-2-plus-21": "2 main speakers",
-    "title-dynamic": "Dynamic",
-    "description-1-plus-7": "Up to 7 participants on screen. The current speaker appears in the main window.",
-    "description-2-plus-21": "Up to 21 participants on screen. The current speakers appear in 2 main windows.",
-    "description-dynamic": "Layout automatically adapts to the number of participants."
-  },
-  "hearing-role": {
-    "app": "App",
-    "app-advocate": "App Advocate",
-    "appellant-lip": "Appellant LIP",
-    "applicant-lip": "Applicant LIP",
-    "barrister": "Barrister",
-    "claimant-lip": "Claimant LIP",
-    "defendant-lip": "Defendant LIP",
-    "expert": "Expert",
-    "interpreter": "Interpreter",
-    "judge": "Judge",
-    "litigant-in-person": "Litigant in person",
-    "litigation-friend": "Litigation friend",
-    "macKenzie-friend": "MacKenzie friend",
-    "observer": "Observer",
-    "panel-member": "Panel Member",
-    "presenting-officer": "Presenting Officer",
-    "prosecution": "Prosecution",
-    "prosecution-advocate": "Prosecution Advocate",
-    "representative": "Representative",
-    "respondent": "Respondent",
-    "respondent-Advocate": "Respondent Advocate",
-    "respondent-lip": "Respondent LIP",
-    "special-counsel": "Special Counsel",
-    "solicitor": "Solicitor",
-    "state-lip": "State LIP",
-    "winger": "Winger",
-    "witness": "Witness",
-    "intermediary": "Intermediary",
-    "video-access-point": "Video access point",
-    "quick-link-participant": "Participant",
-    "quick-link-observer": "Observer"
-  },
-  "case-role": {
-    "appellant": "Appellant",
-    "applicant": "Applicant",
-    "claimant": "Claimant",
-    "defendant": "Defendant",
-    "home-office": "Home Office",
-    "judge": "Judge",
-    "none": "None",
-    "observer": "Observer",
-    "panel-member": "Panel Member",
-    "respondent": "Respondent",
-    "state": "State"
-  },
-  "case-type": {
-    "adoption": "Adoption",
-    "children-act": "Children Act",
-    "civil": "Civil",
-    "civil-money-claims": "Civil Money Claims",
-    "court-of-appeal-criminal-division": "Court of Appeal Criminal Division",
-    "divorce": "Divorce",
-    "employment-tribunal": "Employment Tribunal",
-    "family-law-act": "Family Law Act",
-    "financial-remedy": "Financial Remedy",
-    "generic": "Generic",
-    "grc---charity": "GRC - Charity",
-    "grc---crb": "GRC - CRB",
-    "grc---dvsa": "GRC - DVSA",
-    "grc---environment": "GRC - Environment",
-    "grc---estate-agents": "GRC - Estate Agents",
-    "grc---food": "GRC - Food",
-    "grc---gambling": "GRC - Gambling",
-    "grc---immigration-services": "GRC - Immigration Services",
-    "grc---information-rights": "GRC - Information Rights",
-    "grc---pensions-regulation": "GRC - Pensions Regulation",
-    "grc---professional-regulations": "GRC - Professional Regulations",
-    "grc---query-jurisdiction": "GRC - Query Jurisdiction",
-    "grc---welfare-of-animals": "GRC - Welfare of Animals",
-    "grc---ej": "GRC - EJ",
-    "housing-&-planning-act": "Housing & Planning Act",
-    "housing-act": "Housing Act",
-    "immigration-and-asylum": "Immigration and Asylum",
-    "land-registration": "Land Registration",
-    "leasehold-enfranchisement": "Leasehold Enfranchisement",
-    "leasehold-management": "Leasehold Management",
-    "park-homes": "Park Homes",
-    "placement": "Placement",
-    "private-law": "Private Law",
-    "public-law---care": "Public Law - Care",
-    "rents": "Rents",
-    "right-to-buy": "Right to buy",
-    "tax": "Tax",
-    "tribunal": "Tribunal"
-  },
-  "case-type-group": {
-    "state": "State",
-    "observer": "Observer",
-    "panelmember": "PanelMember",
-    "none": "None",
-    "judge": "Judge",
-    "applicant": "Applicant",
-    "panel member": "Panel Member",
-    "defendant": "Defendant",
-    "respondent": "Respondent",
-    "appellant": "Appellant",
-    "claimant": "Claimant"
-  },
-  "user-role": {
-    "case-admin": "Case admin",
-    "video-hearings-officer": "Video hearings officer",
-    "hearing-facilitation-support-(ctrt-clerk)": "Hearing facilitation support (CTRT Clerk)",
-    "judge": "Judge",
-    "individual": "Individual",
-    "representative": "Representative",
-    "judicial-office-holder": "Judicial Office Holder",
-    "quick-link-participant": "Participant",
-    "quick-link-observer": "Observer"
-  },
-  "participant-status": {
-    "none": "None",
-    "notsignedin": "Not signed in",
-    "unabletojoin": "Unable to join",
-    "joining": "Joining",
-    "available": "Available",
-    "inhearing": "In hearing",
-    "inconsultation": "In consultation",
-    "disconnected": "Disconnected",
-    "hmcts-crest": "HM Courts & Tribunals Service crest"
-  },
-  "endpoint-status": {
-    "notyetjoined": "Not yet joined",
-    "connected": "Connected",
-    "disconnected": "Disconnected",
-    "inconsultation": "In consultation"
-  },
-  "conference-status": {
-    "notstarted": "Not Started",
-    "insession": "In Session",
-    "paused": "Paused",
-    "suspended": "Suspended",
-    "closed": "Closed"
-  },
-  "confirm-start-hearing-popup": {
-    "hearing-about-to-start": "You are about to {{ action }} this hearing",
-    "participant-sees-countdown-timer": "Participants will see a countdown timer before the hearing begins.",
-    "private-consultations": "Any participants in private consultations will automatically be brought into the hearing.",
-    "confirm-start-hearing": "Confirm start hearing",
-    "hearing": "hearing",
-    "cancel-start-hearing": "Cancel start hearing",
-    "cancel": "Cancel",
-    "resume": "resume",
-    "start": "start"
-  },
-  "copy-telephone-id": {
-    "alt": "Copy joining by phone details to clipboard",
-    "display-text": "Copy joining by phone details to clipboard"
-  },
-  "participant-network-status": {
-    "icon-alt": "Open instant messaging chat window arrow"
-  },
-  "pending-tasks": {
-    "alert-icon": "alerts icon"
-  },
-  "audio-alert": {
-    "warning-icon": "warning exclamation mark",
-    "title": "Warning",
-    "message": "There’s a problem with recording. Some or all of the audio for this hearing may not be recorded."
-  },
-  "unread-messages": {
-    "im-image-alt": "instant message icon"
-  },
-  "vho-hearing-list": {
-    "crest-icon-alt": "crest icon"
-  },
-  "court-room-filters": {
-    "apply-filters-alt": "Apply selected filters",
-    "cancel-filters-alt": "Cancel filters"
-  },
-  "copy-id": {
-    "alt": "Copy conference id icon",
-    "display-text": "Copy hearing ID to clipboard"
-  },
-  "copy-quick-link": {
-    "tooltip-copied": "Join by quick link details copied to clipboard",
-    "display-text": "Copy join by quick link details to clipboard"
-  },
-  "admin-im-list": {
-    "judge-icon-alt": "Judge icon",
-    "representing": "Representing",
-    "unavailable": "Unavailable"
-  },
-  "confirm-close-hearing-popup": {
-    "title": "You are about to close this hearing",
-    "message": "Close the hearing if you have completed proceedings. Once closed, the hearing is ended and cannot be re-opened.",
-    "close-hearing": "Close hearing",
-    "close-hearing-label": "Confirm closing the hearing",
-    "cancel-close": "Keep hearing open",
-    "cancel-close-label": "Cancel closing the hearing"
-  },
-  "venue-list": {
-    "title": "Select your hearing lists",
-    "label": "Venue name {{name}}",
-    "allocation-list-label": "Venue allocation list"
-  },
-  "accessibility": {
-    "crest-image-alt": "HMCTS logo crest image",
-    "menu": {
-      "heading": "Contents",
-      "accessibility-statement": {
-        "heading": "Accessibility statement for the HMCTS video hearing service",
-        "paragraph1": "This service allows all participants to take part in a court hearing by video - from their home, office or somewhere else using a laptop or desktop computer.",
-        "paragraph2": "This accessibility statement is based on evaluation conducted by the Digital Accessibility Centre (DAC), Neath, during September 2019.",
-        "paragraph3": "This website is run by HM Courts and Tribunals Service. We want as many people as possible to be able to use this service. For example, this means you should be able to:",
-        "list": {
-          "1": "change colours, contrast levels and fonts",
-          "2": "zoom in up to 300% without the text spilling off the screen",
-          "3": "navigate most of the website using just a keyboard",
-          "4": "navigate most of the website using speech recognition software",
-          "5": "listen to most of the website using a screen reader"
-        },
-        "paragraph4": "We’ve also made the website text as simple as possible to understand.",
-        "abilityNet": "AbilityNet",
-        "paragraph5": "has advice on making your device easier to use if you have a disability."
-      },
-      "how-accessible": {
-        "heading": "How accessible is this website?",
-        "paragraph1": "Fully video hearings provide an additional channel for conducting a hearing. While they are being made as accessible as possible, they may not be suitable for everyone.",
-        "paragraph2": "The video hearings service includes a triage process so that people can make the court aware of any particular condition or impairment that may impact their ability to take part in a video hearing.",
-        "paragraph3": "It will always be for a judge to decide whether to use the option of a fully video hearing, and to ensure the interests of justice are served in any given hearing.",
-        "paragraph4": "During testing by DAC, users with cognitive impairment and dyslexia were able to navigate the website ‘completely independently, with no issues’. The access issues reported particularly affected those who are visually impaired or use voice activation technology."
-      },
-      "cannot-access": {
-        "heading": "What to do if you cannot access parts of this website",
-        "paragraph1": "If you need help to access the information on this website, contact the video hearings team:",
-        "paragraph2": "Available between 9am and 5pm, Monday to Friday.",
-        "list": {
-          "1": "email {{email}}",
-          "2": "call {{phone}}"
+    "hearing-list-table": {
+        "date-and-time": "Date & time",
+        "hearing-details": "Hearing details",
+        "case-number": "Case number",
+        "sign-in": "Sign in {{date}}",
+        "from": "from {{time}}",
+        "today": "Today",
+        "on-date": "on {{date}}",
+        "button": {
+            "sign-into-hearing": "Sign into hearing"
         }
-      },
-      "reporting-accessibility": {
-        "heading": "Reporting accessibility problems with this website",
-        "paragraph1": "We’re always looking to improve the accessibility of this website. If you find any problems not listed on this page or think we’re not meeting accessibility requirements, contact the video hearings team (above)."
-      },
-      "enforcement-procedure": {
-        "heading": "Enforcement procedure",
-        "paragraph1": "The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018 (the ‘accessibility regulations’). If you’re not happy with how we respond to your complaint, ",
-        "paragraph2": "contact the Equality Advisory and Support Service (EASS)"
-      },
-      "technical-information": {
-        "heading": "Technical information about this website’s accessibility",
-        "paragraph1": "HM Courts and Tribunals Service is committed to making its website accessible, in accordance with the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018.",
-        "paragraph2": {
-          "1": "This website is partially compliant with the",
-          "2": "Web Content Accessibility Guidelines version 2.1",
-          "3": "AA standard, due to the non-compliances listed below."
+    },
+    "footer": {
+        "privacy-policy": "Privacy policy",
+        "accessibility": "Accessibility",
+        "translate-to": "Gweld y gwasanaeth hwn yn Gymraeg",
+        "all-content-availabe-under": "All content is available under the ",
+        "open-government-license": "Open Government Licence v3.0",
+        "except": " except where otherwise stated",
+        "copyright": "© Crown copyright",
+        "copyright-info-link-label": "Copyright Information"
+    },
+    "login": {
+        "redirect": "Please wait while we redirect"
+    },
+    "logout": {
+        "signing-out": "Signing out",
+        "signed-out-successfully": "Signed out successfully. Click",
+        "here": "here",
+        "log-back-in": "to log back in."
+    },
+    "unauthorised": {
+        "not-authorised": "You are not authorised to use this service",
+        "not-registered": "It looks like you are not registered for this service.",
+        "contact-us": "If you think this is a mistake and you need to speak to someone, please contact us using the options below."
+    },
+    "back-navigation": {
+        "back": "Back",
+        "return-to-video-hearing-list": "Return to video hearing list"
+    },
+    "beta-banner": {
+        "beta": "beta",
+        "this-new-service": " This is a new service – your",
+        "feedback": "feedback",
+        "help-improve": "will help us to improve it."
+    },
+    "chat-base": {
+        "you": "You"
+    },
+    "chat-body-window": {
+        "error": "Error:",
+        "failed": "message failed to send",
+        "try-again": "try again",
+        "alerts-icon": "alerts icon",
+        "at": "at"
+    },
+    "chat-input-box": {
+        "send": "Send",
+        "char-count": "Character count",
+        "maximum": "maximum allowed",
+        "unable-send": "Unable to send message.",
+        "type-a-message": "Type a message"
+    },
+    "contact-us": {
+        "contact-video-hearings": "Contact the video hearings service",
+        "speak-to-admin": "To speak to a hearings administrator:",
+        "call": "call",
+        "email": "email"
+    },
+    "contact-us-folding": {
+        "contact-for-help": "Contact us for help",
+        "call-vh-team": "Call the video hearings team on",
+        "quote-case-number": "and quote your case number",
+        "available-time": "(available between 9am and 5pm, Monday to Friday)",
+        "email-us": "Email us at",
+        "quoting-case-number": "quoting your case number"
+    },
+    "equipment-problem": {
+        "problem-with-equipment": "Problems with your equipment?",
+        "not-working-call-us": "something's not working, please call us now.",
+        "call": "Call",
+        "for-vh-team": "for the video hearings team"
+    },
+    "error": {
+        "problem-with-service": "Sorry, there is a problem with the service",
+        "try-later": "Please try again later.",
+        "need-to-speak": "If you need to speak to someone please contact us using the options below.",
+        "problem-with-connection": "There's a problem with your connection",
+        "default-body-message": "Please reconnect. Call us if you keep seeing this message.",
+        "you-not-connected": "You are not connected to the internet. You will not be able to join your video hearing until you are reconnected. Please call the Video Hearings Team to let them know you cannot connect to our service.",
+        "check-security-settings": "Please check that your security settings are not blocking the connection.",
+        "keep-seeing-message": "If you keep seeing this message contact the video hearings team.",
+        "find-out-more": "Find out more about your computer set-up and internet connection at:",
+        "computer-part-of-network": "If your computer is part of a network, your IT support will find guidance and firewall settings at:",
+        "button-reconnect": "Reconnect",
+        "contact-for-help": "Contact us for help",
+        "call-vh-team": "Call the Video Hearings team on",
+        "click-reconnect": "Please click \"Reconnect\" to return to the previous page. Call us if you keep seeing this message."
+    },
+    "error-service": {
+        "unexpected-error": "An unexpected error occurred",
+        "click-reconnect": "Please click \"Reconnect\" to return to the previous page. Call us if you keep seeing this message.",
+        "problem-with-connection": "There's a problem with your connection",
+        "camera-mic-blocked": "Your camera and microphone are blocked",
+        "please-unblock": "Please unblock the camera and microphone or call us if there is a problem."
+    },
+    "error-camera-microphone": {
+        "problem-with-camera-mic": "There is a problem with your camera and microphone",
+        "camera-mic-in-use": "Your camera and microphone may already be in use. Please close any application that may be using your camera and microphone and try again.",
+        "camera-mic-cannot-be-found": "Your camera and microphone cannot be found. Please connect your camera and microphone and try again.",
+        "call-us": "Call us if you're still seeing this message.",
+        "button-continue": " Continue"
+    },
+    "header": {
+        "hm-courts": "HM Courts",
+        "tribunals-service": "Tribunals Service",
+        "sign-out": "Sign out",
+        "crest-image-alt": "HMCTS logo crest image",
+        "account-navigation-label": "Account navigation"
+    },
+    "not-found": {
+        "page-not-found": "Page not found",
+        "typed-web-address": "If you typed the web address, check it is correct.",
+        "pasted-web-address": "If you pasted the web address, check you copied the entire address.",
+        "web-address-correct": "If the web address is correct or you selected a link or button, contact us using the options below."
+    },
+    "select-media-devices": {
+        "change-camera-mic": "Change your camera and microphone",
+        "browser-support": "Your browser does not support video",
+        "change-camera": "Change camera",
+        "change-microphone": "Change microphone",
+        "green-bar": "Make sure the green bar moves when you speak",
+        "permission-switch-off-camera": "You need permission from the court to switch off your camera",
+        "button-close": "Close",
+        "on": "ON",
+        "off": "OFF",
+        "warning": "Warning",
+        "join-with-camera-on-off": " Join with your camera on/off"
+    },
+    "self-test": {
+        "testing-equipment": "Testing your equipment",
+        "to-be-connected": "Please wait to be connected...",
+        "browser-not-support": "Your browser does not support video",
+        "change-camera-mic": "Change camera or microphone"
+    },
+    "unsupported-browser": {
+        "using-unsupported-browser": "You're using an unsupported browser",
+        "please-try-again": "Please try again using one of the browsers listed below. If you are still having problems, please contact the video hearings team.",
+        "supported-browser-alt": "{{browserName}} browser logo"
+    },
+    "unsupported-device": {
+        "use-different-device": "Please use a different device",
+        "service-will-not-work": "The service will not work on the device you’re using. Please sign out and sign in again.",
+        "you-may-use": "You may use:",
+        "laptop-or-desktop": "a laptop or desktop computer with a camera and microphone",
+        "apple-ipad": "an Apple iPad (Safari only)",
+        "if-you-cannot-access": "If you cannot access a suitable device, call the video hearings team on 0300 303 0655."
+    },
+    "equipment-check-base": {
+        "yes": "Yes"
+    },
+    "camera-and-microphone": {
+        "continue": "Continue",
+        "sign-into-the-conference": "Sign into the conference"
+    },
+    "camera-check": {
+        "was-your-camera-working": "Was your camera working?",
+        "error": "Error:",
+        "select-if-you-could-see-yourself": "Select if you could see yourself in the camera window",
+        "could-you-see-yourself-on-the-screen": "Could you see yourself on the screen in the camera window?",
+        "yes": "Yes",
+        "no": "No",
+        "continue": "Continue",
+        "check-my-equipment-again": "Check my equipment again",
+        "camera": "Camera"
+    },
+    "declaration": {
+        "declaration": "Declaration",
+        "error": "Error:",
+        "please-tick-the-box-to-confirm-no-recording": "Please tick the box to confirm that you will not record the hearing in any way",
+        "warning": "Warning",
+        "it-is-a-criminal-offence": "It is a criminal offence to record this hearing (by audio or video), to publish any such recording, or to take any images (by photo or screenshot)",
+        "i-confirm-that-i-will-not-record-or-take-any-images": "I confirm that I will not record or take any images of this hearing",
+        "continue": "Continue"
+    },
+    "equipment-check": {
+        "lets-confirm-your-equipment-is-working": "Let's confirm your equipment is working",
+        "this-short-video": "This short video will help you check that your camera and microphone are working.",
+        "equipment-check": "Equipment Check",
+        "continue": "Continue"
+    },
+    "hearing-rules": {
+        "court-rules": "Court rules",
+        "you-must-follow-courtroom-rules": "You must follow the same rules as you would in a courtroom.",
+        "this-means-you": "This means you:",
+        "can-only-drink-water": "can only drink water",
+        "must-not-eat": "must not eat",
+        "must-only-use-your-phone-to-contact-the-vh-team": "must only use your phone for contact with the video hearings team",
+        "must-follow-the-judges-instructions": "must follow the judge’s instructions",
+        "are-not-allowed-to-smoke-including-e-cigarettes": "are not allowed to smoke (including e-cigarettes)",
+        "must-be-alone-unless-you-have-the-judges-permission": "must be alone unless you have the judge’s permission to have someone with you",
+        "must-ask-the-judges-permission-to-move-away-from-screen": "must ask the judge's permission if you need to move away from your screen",
+        "hm-courts-and-tribunals-service-crest": "HM Courts &amp; Tribunals Service crest",
+        "continue": "Continue"
+    },
+    "independent-self-test": {
+        "please-wait-to-be-connected": "Please wait to be connected...",
+        "problems-with-your-equipment": "Problems with your equipment?",
+        "please-call-beforenumber": "Please call the video hearings team on ",
+        "please-call-afternumber": " to let us know.",
+        "continue": "Continue",
+        "re-play-the-video-message": "Re-play the video message",
+        "check-equipment-again": "Check equipment again"
+    },
+    "introduction": {
+        "hm-courts-and-tribunals-service-crest": "HM Courts &amp; Tribunals Service crest",
+        "get-ready-for-the-hearing": "Get ready for the hearing",
+        "next-we-are-going-to": "Next, we're going to:",
+        "check-that-your-equipment-is-working": "check that your equipment is working",
+        "tell-you-about-the-rules-of-the-court": "tell you about the rules of the court",
+        "next": "Next"
+    },
+    "judge-hearing-list": {
+        "loading-please-wait": "Loading please wait...",
+        "video-hearings-for-court-name": "Video hearings for {{ courtName }}",
+        "check-equipment": "Check equipment",
+        "you-have-no-video-hearings": "You have no video hearings",
+        "if-no-details-shown-please-contact-us": "If you are expecting to see details of your hearing listed here, please contact us using the options below.",
+        "do-you-need-help": "Do you need help?",
+        "call-the-video-hearings-team-on": "Call the video hearings team on "
+    },
+    "judge-hearing-table": {
+        "time": "Time",
+        "judge": "Judge",
+        "hearing": "Hearing",
+        "attendees": "Attendees",
+        "case-number": "Case number: ",
+        "panel-member": "Panel Member",
+        "panel-members": "Panel Members",
+        "winger": "Winger",
+        "wingers": "Wingers",
+        "participant": "Participant",
+        "participants": "Participants",
+        "video-access-point": "Video access point",
+        "video-access-points": "Video access points",
+        "observer": "Observer",
+        "observers": "Observers",
+        "winger-single": "Winger",
+        "winger-plural": "Wingers",
+        "judicial-consultation-room-is-now-closed": "Judicial consultation room is now closed",
+        "judicial-consultation-room-open-until": "Judicial consultation room open until ",
+        "sign-into-the-conference": "Sign into the conference",
+        "select": "Select",
+        "not-ready-to-start": "Not ready to start",
+        "conference-status-heading": "Status/Action"
+    },
+    "judge-self-test": {
+        "please-wait-to-be-connected": "Please wait to be connected...",
+        "problems-with-your-equipment": "Problems with your equipment?",
+        "please-call-beforenumber": "Please call the video hearings team on ",
+        "please-call-afternumber": " to let us know.",
+        "we-will-tell-the-participants-their-hearing-may-be-delayed": "We'll tell the participants their hearing may be delayed.",
+        "continue": "Continue",
+        "re-play-the-video-message": "Re-play the video message",
+        "check-equipment-again": "Check equipment again"
+    },
+    "microphone-check": {
+        "was-your-microphone-working": "Was your microphone working?",
+        "error": "Error:",
+        "select-if-you-could-see-the-bar-moving-when-you-spoke": "Select if you could see the bar moving when you spoke",
+        "could-you-see-the-bar-moving-when-you-spoke": "Could you see the bar moving when you spoke?",
+        "yes": "Yes",
+        "no": "No",
+        "continue": "Continue",
+        "check-my-equipment-again": "Check my equipment again",
+        "microphone": "Microphone"
+    },
+    "participant-hearings": {
+        "your-video-hearing": "Your video hearing",
+        "your-video-hearings": "Your video hearings",
+        "loading-please-wait": "Loading please wait...",
+        "check-equipment": "Check equipment",
+        "you-do-not-have-a-video-hearing-today": "You do not have a video hearing today",
+        "if-no-details-shown-please-contact-us": "If you were expecting to see the details of a hearing here, please contact the video hearings team."
+    },
+    "participant-self-test": {
+        "please-wait-to-be-connected": "Please wait to be connected...",
+        "when-the-video-has-ended-answer-3-questions": "When the video has ended, answer 3 questions to confirm your microphone and camera are working.",
+        "continue": "Continue",
+        "watch-the-video-again": "Watch the video again"
+    },
+    "self-test-actions": {
+        "equipment-is-working": "Equipment is working",
+        "equipment-is-faulty": "Equipment is faulty"
+    },
+    "switch-on-camera-microphone": {
+        "use-your-camera-and-microphone": "Use your camera and microphone",
+        "switch-on-camera-and-mic-to-watch-the-video": "Switch on your camera and microphone to watch the video.",
+        "your-camera-and-microphone-are-switched-on": "Your camera and microphone are switched on",
+        "camera-and-mic-are-switched-on-you-can-continue-to-video": "Your camera and microphone are switched on. You can now continue to the video.",
+        "your-camera-and-microphone-are-blocked": "Your camera and microphone are blocked",
+        "sorry-you-must-use-camera-and-mic": "We're sorry, you can't take part in the hearing without using your camera and microphone.",
+        "stay-close-to-your-phone-we-will-call-in-5-mins": "Stay close to your phone and we'll call you within 5 minutes.",
+        "sorry-hearing-can-not-go-ahead-if-camera-and-mic-are-blocked": "We're sorry, the hearing can't go ahead if your camera and microphone are blocked.",
+        "please-unblock-camera-and-mic-or-call-us-if-any-problems": "Please unblock the camera and microphone or call us if there is a problem.",
+        "helpline-contact-phone": "Helpline: {{ contactPhone }}",
+        "switch-on": "Switch on",
+        "watch-the-video": "Watch the video"
+    },
+    "video-check": {
+        "could-you-see-and-hear-the-video-clearly": "Could you see and hear the video clearly?",
+        "error": "Error:",
+        "select-if-the-image-and-sound-were-clear": "Select if the image and sound were clear",
+        "were-the-image-and-sound-clear": "Were the image and sound clear?",
+        "yes": "Yes",
+        "no": "No",
+        "continue": "Continue",
+        "check-my-equipment-again": "Check my equipment again",
+        "video": "Video"
+    },
+    "consultation-error": {
+        "message": "Sorry, there was an error with your private consultation",
+        "close": "Close",
+        "try-again": "Please try again shortly"
+    },
+    "consultation-leave": {
+        "message": "You are about to leave the meeting",
+        "return-wr-message": "You'll be returning to the waiting room.",
+        "stay": "Stay",
+        "leave": "Leave"
+    },
+    "hearing-controls": {
+        "lower-my-hand": "Lower my hand",
+        "raise-my-hand": "Raise my hand",
+        "switch-camera-on": "Switch camera on",
+        "switch-camera-off": "Switch camera off"
+    },
+    "individual-participant-status-list": {
+        "available": "Available",
+        "unavailable": "Unavailable",
+        "wingers": "Wingers",
+        "panel-members": "Panel members",
+        "staff-members": "Staff members",
+        "participants": "Participants",
+        "observers": "Observers",
+        "video-access-points": "Video access points",
+        "for": "for",
+        "crest-icon-alt": "HM Courts & Tribunals Service crest"
+    },
+    "joh-waiting-room": {
+        "hearing": "Hearing",
+        "date": "Date",
+        "to": "to",
+        "is-suspended": "is suspended",
+        "is-paused": "is paused",
+        "is-closed": "is closed",
+        "is-in-session": "is in session",
+        "loading": "Loading please wait...",
+        "your-video-hearing": "Your video hearing",
+        "choose-camera-and-microphone": "Choose camera and microphone",
+        "choose-camera-and-microphone-aria-label": "Choose camera and microphone dialog",
+        "case-number": "case number",
+        "please-wait": "Please wait",
+        "hearing-starting-at": "Your video hearing is scheduled to begin at {{date}}",
+        "hearing-closed": "This hearing has finished. You may now sign out.",
+        "hearing-paused": "The judge will restart the hearing when they are ready. Please stay near your screen.",
+        "hearing-suspended-technical-title": "We're having technical issues",
+        "hearing-suspended-message": "All participants are affected. Stay near your screen for further updates. There's no need to call us.",
+        "time-now": "The time now is:",
+        "enter-consultation-room": "Enter consultation room",
+        "video-hearing-team-contact": "Video hearings team: {{phone}}",
+        "switch-to-main-screen": "Switch to main screen",
+        "browser-doesnt-support-video": "Your browser does not support Video",
+        "judge-participant-status-list-label": "list of participants in hearing",
+        "warning": "Warning",
+        "please-wait-while-we-connect-you": "Please wait while we connect you..."
+    },
+    "judge-context-menu": {
+        "context-menu-icon": "Context menu icon",
+        "call-witness": "Call witness",
+        "admit-participant": "Admit {{ role }}",
+        "dismiss-participant": "Dismiss {{ role }}",
+        "lower-hand": "Lower hand",
+        "unmute": "Unmute",
+        "mute": "Mute",
+        "unpin": "Unpin",
+        "pin": "Pin"
+    },
+    "judge-participant-status-list": {
+        "crest-alt": "HM Courts &amp; Tribunals Service crest",
+        "edit": "Edit",
+        "judge": "Judge",
+        "save": "Save",
+        "cancel": "Cancel",
+        "wingers": "Wingers",
+        "panel-members": "Panel members",
+        "staff-members": "Staff members",
+        "participants": "Participants",
+        "video-access-points": "Video access points",
+        "observers": "Observers",
+        "not-signed-in": "Not signed in",
+        "connected": "Connected"
+    },
+    "judge-waiting-room": {
+        "start-this-hearing": "Start this hearing",
+        "hearing-suspended": "Hearing suspended",
+        "hearing-paused": "Hearing paused",
+        "hearing-is-closed": "Hearing is closed",
+        "hearing-is-in-session": "Hearing is in session",
+        "loading-please-wait": "Loading please wait...",
+        "browser-support-message": "Your browser does not support Video",
+        "switch-to-main-screen": "Switch to main screen",
+        "choose-camera-and-microphone": "Choose camera and microphone",
+        "choose-camera-and-microphone-dialog": "Choose camera and microphone dialog",
+        "details-of-the-hearing": "Details of the hearing",
+        "hearing": "Hearing",
+        "date": "Date",
+        "to": "to",
+        "case-number": "case number",
+        "is-everyone-connected": "Is everyone connected?",
+        "hearing-messages": {
+            "not-started": "If any participants are not connected, you must call the video hearings team on <strong>{{phone}}</strong> before you start the hearing.",
+            "paused": "Please call the video hearings team on <strong>{{phone}}</strong> if you're having problems. We'll update the participants.",
+            "suspended": "The video hearings team has been alerted and we're informing the participants. Please call us now on <strong>{{phone}}</strong>.",
+            "closed": "The consultation room is available for up to 2 hours after the hearing has finished.",
+            "warning": "Warning",
+            "consultation-room-will-close-at": "The consultation room will close at"
         },
-        "paragraph3": "paragraph1"
-      },
-      "non-accessible-content": {
-        "heading": "Non accessible content",
-        "paragraph1": "A number of accessibility and usability issues were reported. These particularly impacted those who are visually impaired or use voice activation technology. Most issues were resolved before the private beta was released. Those that remain are shown below."
-      },
-      "non-compliance-accessibility-regulations": {
-        "heading": "Non compliance with the accessibility regulations",
-        "sub-heading1": "Information videos",
-        "paragraph1": "We currently use video to help users see what their experience would be like either attending a court building or taking part in a video hearing. This has proved popular in user testing and we’ll make the necessary changes to make the videos more accessible by the end of 2019.",
-        "sub-heading2": "Equipment check",
-        "paragraph2": "We use video to help users test whether their computer equipment is suitable for a video hearing. This has caused some accessibility issues, detailed below.",
-        "paragraph3": "We use a visual method to indicate to the user that their microphone is working. This is not suitable for those with visual impairments. We’re considering providing an audible indicator so they know their microphone is picking up sound.",
-        "paragraph4": "The video intentionally has no controls. It needs to play to the end to detect the strength of the user’s internet connection. This takes at least 20 to 30 seconds. We’ve added an explanation.",
-        "paragraph5": "By Spring 2020 we’ll review the way we help users test their equipment to address the accessibility issues identified in the DAC report."
-      },
-      "not-within-the-scope": {
-        "heading": "Not within scope/not applicable",
-        "paragraph1": "In preparing for a video hearing, potential participants are asked a series of questions. These are presented as one question per page, with the option of a ‘yes’ or ‘no’ answer. DAC advised that we should group the ‘yes’ and ‘no’ buttons to assist screen reader users. (WCAG reference 1.3.1 – A). This advice reflects guidance for longer forms with separate groups of questions on a single page, which is not applicable in this instance."
-      },
-      "how-we-tested-this-website": {
-        "heading": "How we tested this website",
-        "paragraph1": "The website was tested by the Digital Accessibility Centre, Neath, during September 2019.",
-        "paragraph2": "This is an excerpt from their report explaining their methodology:",
-        "paragraph3": "The website was tested by a team of experienced auditors, many of who are disabled individuals and users of adaptive technology. The combination of subjective pan-disability user feedback and comprehensive technical auditing allows us to measure how the website performs technically and practically, thereby offering an essential added dimension to our test results that other methods of testing cannot provide.",
-        "sub-heading1": "User testing:",
-        "paragraph4": "Manual accessibility checking was conducted by a team of disabled individuals, using a range of adaptive technologies (hardware and software designed to facilitate the use of computers by people with disabilities).",
-        "sub-heading2": "Technical auditing:",
-        "paragraph5": "Technical auditing involves the experienced application of a number of technical auditing and standards compliance assessment tools. This combined with an extensive knowledge of WCAG, its application and wider global practice provides the DAC website with further credibility and quality."
-      }
+        "buttons": {
+            "start-video-hearing": "Start video hearing",
+            "resume-video-hearing": "Resume video hearing",
+            "enter-consultation-room": "Enter consultation room"
+        },
+        "warning": "Warning",
+        "please-wait-while-we-connect-you": "Please wait while we connect you...",
+        "hearing-is-being-recorded": {
+            "true": "The audio of this hearing is being recorded.",
+            "false": "The audio of this hearing is NOT being recorded.",
+            "image-true": "Recording on image",
+            "image-false": "Recording off image"
+        },
+        "judge-participant-status-list-label": "list of participants in hearing"
     },
-    "contents": "Contents"
-  },
-  "privacy-policy": {
-    "crest-image-alt": "HMCTS logo crest image",
-    "heading": "Our privacy policy for the video hearings service",
-    "print-button": "Print",
-    "paragraph1": "The video hearings service is managed by HM Courts and Tribunals Service (HMCTS).",
-    "paragraph2": "When you use this service we (HMCTS) will ask you to provide some personal data. This policy explains why we collect your personal data, what we do with it and your rights.",
-    "why-we-collect": {
-      "heading": "Why we collect your personal data",
-      "paragraph": "We collect your personal data so you can take part in a video hearing and to meet legal requirements. We also collect data to improve the service."
+    "participant-alert": {
+        "disconnected": "Disconnected",
+        "network-connection-is-poor": "Network connection is poor"
     },
-    "what-we-do": {
-      "heading": "What we do with your personal data",
-      "paragraph1": "Your personal data is processed by our staff in the UK, and the data is stored within the EEA.",
-      "paragraph2": "HMCTS is an executive agency of the Ministry of Justice. The Ministry of Justice is known as the 'data controller' of the personal data you provide. The Ministry's personal information charter explains more about how we process data."
+    "participant-chat": {
+        "message-vho": "Message video hearings officer",
+        "open": "Open instant messaging chat window arrow",
+        "close": "Close instant messaging chat window arrow",
+        "loading": "Loading..."
     },
-    "what-we-collect": {
-      "heading": "The data we collect",
-      "paragraph": "The personal data we collect includes:",
-      "list": {
-        "1": "your name, address and contact details, including your email address and telephone number",
-        "2": "details of your company and your role, if applicable",
-        "3": "details of anyone who acts on your behalf or anyone that you act for in a video hearing",
-        "4": "information we gather to assess your suitability for a video hearing",
-        "5": "information about your video hearing",
-        "6": "information that tells us if you open an email from us, or click on a link in an email",
-        "7": "the login details you use to access the video hearings service",
-        "8": "information about the way you access this service including your IP address, internet speed, computer operating system and the browser you use to access the internet. We do this by",
-        "8-cookies": "using cookies"
-      }
+    "participant-network-health": {
+        "your-connection-is-poor": "Your connection is poor",
+        "good-network-icon": "Good network icon",
+        "tips-for-improving-your-connection": "Tips for improving your connection",
+        "show-detail": "The hearing may be disrupted if your internet connection does not improve",
+        "tips-for-improving-your-internet-connection": "Tips for improving your internet connection",
+        "close": "Close",
+        "message1": "If you're on WiFi, try moving close to your router",
+        "message2": "If others are using the same connection, ask if they can wait until you've finished your hearing",
+        "message3": "If possible, use a wired connection rather than WiFi"
     },
-    "how-long": {
-      "heading": "How long we keep your data",
-      "paragraph": "The video hearings service will keep this information for 3 months after the date your hearing is booked to take place. We'll then delete it. Information about your application or your case is held by a different department in HMCTS and different arrangements may apply."
+    "waiting-room-monitor": {
+        "your-internet-connection-is-poor": "Your internet connection is poor",
+        "good-network-icon-in-hearing": "Good network icon in hearing",
+        "trouble-seeing": "Others may have trouble seeing and hearing you."
     },
-    "shoring-and-sharing": {
-      "heading": "Storing and sharing your data internationally",
-      "paragraph": "Sometimes your personal data will be stored outside the UK. When we do this, we comply with data protection law."
+    "participant-waiting-room": {
+        "switch-to-main-screen": "Switch to main screen",
+        "locked": "locked",
+        "unlocked": "unlocked",
+        "is-suspended": "is suspended",
+        "is-paused": "is paused",
+        "is-closed": "is closed",
+        "is-in-session": "is in session",
+        "is-delayed": "is delayed",
+        "is-about-to-begin": "is about to begin",
+        "loading-please-wait": "Loading please wait...",
+        "browser-support": "Your browser does not support video",
+        "lock-the-room": "Lock the room to prevent others joining",
+        "invite-others": "Invite others by calling them or unlock the room for others to join",
+        "witness-transferring-warning-image": "Witness transferring warning image",
+        "hearing-ready": "Please get ready <br/> You'll &thinsp; join the hearing in a few seconds",
+        "your-video-hearing": "Your video hearing",
+        "choose-camera-and-microphone": "Choose camera and microphone",
+        "choose-camera-and-microphone-aria-label": "Choose camera and microphone dialog",
+        "details-of-the-hearing": "Details of the hearing",
+        "hearing": "Hearing",
+        "to": "to",
+        "date": "Date",
+        "case-number": "case number",
+        "please-wait": "Please wait",
+        "please-wait-while-we-connect-you": "Please wait while we connect you...",
+        "hearing-starting-at": "Your video hearing is scheduled to begin at",
+        "hearing-status-messages": {
+            "starting-title": "Please stay near your screen",
+            "starting-body": "Make sure you're ready when the judge starts the hearing.",
+            "delayed-title": "Your hearing is delayed",
+            "delayed-body": "We're sorry for the delay. Stay near your screen for further updates.",
+            "closed": "This hearing has finished. You may now sign out.",
+            "paused": "The judge will restart the hearing when they are ready. Please stay near your screen.",
+            "suspended-title": "We're having technical issues",
+            "suspended-body": "All participants are affected. Stay near your screen for further updates. There's no need to call us.",
+            "in-session-title": "The hearing has started",
+            "in-session-body": "The judge will bring you into the hearing when they are ready for you. An alert will sound and you will join the hearing a few seconds later."
+        },
+        "hearing-about-to-start": "The judge will bring you into the hearing when they are ready for you. An alert will sound and you will join the hearing a few seconds later.",
+        "time-now": "The time now is:",
+        "private-consultation": {
+            "start": "Start a private meeting",
+            "join": "Join a private meeting",
+            "what-are-private-meetings": "What are private meetings?",
+            "talk-to-other-participants": "You can talk to other participants in private before the hearing begins or during a break, if you wish.",
+            "guide1": "Start a meeting by choosing who you want to speak to from the list",
+            "guide2": "Join a meeting that's already started by choosing from the list",
+            "guide3": "If a meeting room is locked you'll need to be invited by someone in the meeting",
+            "guide4": "If you wish to have a private conversation during the hearing you'll need to ask the judge's permission."
+        },
+        "vh-team": "Video hearings team: {{phone}}",
+        "individual-participant-status-list-label": "list of participants in hearing",
+        "warning": "Warning"
     },
-    "your-rights": {
-      "heading": "Your rights",
-      "paragraph1": "You can ask:",
-      "list-ask": {
-        "1": "to see the personal data that we hold on you",
-        "2": "to have the personal data corrected",
-        "3": "to have the personal data removed or deleted (this will depend on the circumstances, for example, if you decide not to continue with your case)",
-        "4": "that access to the personal data is restricted (for example, you can ask to have your data stored for longer and not automatically deleted)"
-      },
-      "paragraph2": "If you want to see the personal data that we hold on you, you can:",
-      "list-see": {
-        "1-1": "complete a form to",
-        "1-link": "make a subject access request.",
-        "1-2": "Your request goes to the MoJ as data controller.",
-        "2": "write to us: Disclosure Team, Post point 10.38, 102 Petty France, London, SW1H 9AJ"
-      },
-      "paragraph3": "You can ask for more information about:",
-      "list-more": {
-        "1": "agreements we have on sharing information with other organisations",
-        "2": "when we are allowed to pass on personal information without telling you",
-        "3": "our instructions to staff on how to collect, use or delete your personal information",
-        "4": "how we check that the information we hold is accurate and up to date"
-      },
-      "paragraph4": "You can contact the MoJ data protection officer by:",
-      "list-contact": {
-        "1": "writing to us: Post point 10.38, 102 Petty France, London, SW1H 9AJ",
-        "2": "emailing:"
-      }
+    "invite-participant": {
+        "invite-this-person": "Invite this person to the meeting"
     },
-    "how-to-complain": {
-      "heading": "How to complain",
-      "paragraph1-1": "See our ",
-      "paragraph1-link": "complaints procedure",
-      "paragraph1-2": "if you want to complain about how we've handled your personal data.",
-      "paragraph2-1": "Write to: Post point 10.38, 102 Petty France, London, SW1H 9AJ",
-      "paragraph2-2": "Email: ",
-      "paragraph3-1": "You can also complain to the ",
-      "paragraph3-link": "Information Commissioner's Office",
-      "paragraph3-2": "if you're not satisfied with our response or believe we're not processing your personal data lawfully."
+    "join-private-consultation": {
+        "join": "Join a private meeting",
+        "warning": "Warning",
+        "confidential-declaration": "All meetings outside the hearing are confidential and not recorded as part of court or tribunal proceedings",
+        "video-access-point": "Video access point",
+        "continue": "Continue",
+        "close": "Close",
+        "for": "for",
+        "no-meetings-to-join": "There are no meetings to join"
     },
-    "hearings-recorded": {
-      "heading": "Where hearings are recorded",
-      "paragraph1": "The process for recording video hearings is the same as for hearings held in a court or tribunal building:",
-      "list": {
-        "1": "hearings at the Crown Court and at civil and family courts are always recorded",
-        "2-1": "tribunal hearings are not always recorded. ",
-        "2-link": "Contact the tribunal",
-        "2-2": " to find out if the hearing was recorded.",
-        "3": "hearings at magistrates' courts are never recorded."
-      },
-      "paragraph2-1": "Where hearings are recorded you may ",
-      "paragraph2-link": "apply for a transcript.",
-      "paragraph3": "Participants must not record or take any images of the hearing."
+    "start-private-consultation": {
+        "invite": "Invite others to a private meeting",
+        "warning": "Warning",
+        "confidential-declaration": "All meetings outside the hearing are confidential and not recorded as part of court or tribunal proceedings",
+        "video-access-point": "Video access point",
+        "continue": "Continue",
+        "close": "Close",
+        "for": "for",
+        "unavailable": "Unavailable",
+        "in": "In"
+    },
+    "private-consultation-participants": {
+        "calling": "Calling...",
+        "declined": "Declined",
+        "failed": "Failed",
+        "no-answer": "No Answer",
+        "transferring": "Transferring",
+        "not-available": "Not available",
+        "crest-icon-alt": "Crest",
+        "participants": "Participants"
+    },
+    "participants-panel": {
+        "for": "for",
+        "joining": "Joining",
+        "not-joined": "Not joined",
+        "disconnected": "DISCONNECTED",
+        "red": "red",
+        "blue": "blue",
+        "grey": "grey",
+        "participants": "Participants",
+        "mute-lock": "Mute & lock",
+        "mute-tooltip": "Mute all participants and prevent them from unmuting",
+        "unmute-lock": "Unlock mute",
+        "unmute-tooltip": "Allow all participants to unmute",
+        "lower-hands": "Lower hands",
+        "lower-hand": "Lower hand",
+        "lower-hands-tooltip": "Lower all raised hands",
+        "crest": "HMCTS Crest",
+        "camera-off": "Camera off",
+        "remove-spotlight": " (remove spotlight)",
+        "click-to-spotlight": " (click to spotlight)",
+        "loading-participants": "Loading Participants",
+        "joining1": "Joining...",
+        "call-witness": "Call witness",
+        "participant-unavailable": "{{ role }} unavailable",
+        "admit-participant": "Admit {{ role }}",
+        "participant-available": "Available",
+        "mute-participant": "Mute participant",
+        "microphone-muted-icon": "Microphone muted icon",
+        "microphone-on-icon": "Microphone on icon",
+        "participant-muted": "Participant muted"
+    },
+    "private-consultation-room-controls": {
+        "browser-support": "Your browser does not support video",
+        "leave": "Leave",
+        "lock-the-room-toggle-false": "Lock the room ",
+        "lock-the-room-toggle-true": "Unlock the room ",
+        "close": "Close",
+        "pause": "Pause",
+        "hand-raise-toggle-true": "Lower hand",
+        "hand-raise-toggle-false": "Raise hand",
+        "remote-muted": "Judge has muted you. Raise your hand to speak.",
+        "audio-mute-toggle-true": "Unmute microphone",
+        "audio-mute-toggle-false": "Mute microphone",
+        "video-mute-toggle-true": "Turn on camera",
+        "video-mute-toggle-false": "Turn off camera",
+        "selfview-toggle-true": "Hide my self-view",
+        "selfview-toggle-false": "Show my self-view",
+        "participants-panel": "Participants Panel",
+        "chat-panel": "Chat Panel",
+        "share-my-screen": "Share my screen",
+        "start-sharing-screen": "Start sharing screen",
+        "stop-sharing-my-screen": "Stop sharing my screen",
+        "stop-sharing-screen": "Stop sharing screen",
+        "change-camera-mic": "Change your camera and microphone",
+        "context-menu": "Open Menu",
+        "hearing-controls": "Hearing controls",
+        "show-chat-window": "Show messages list",
+        "hide-chat-window": "Hide messages list"
+    },
+    "chat-panel": {
+        "heading": "VH Officer messages",
+        "loading": "Loading..."
+    },
+    "select-hearing-layout": {
+        "choose-hearing-layout": "Choose hearing layout",
+        "open-all": "Open all",
+        "close-all": "Close all"
+    },
+    "hearing-layout": {
+        "layout-image-alt": "Layout image for {{layout}}",
+        "recommended": "recommended",
+        "title-1-plus-7": "1 main speaker",
+        "title-2-plus-21": "2 main speakers",
+        "title-dynamic": "Dynamic",
+        "description-1-plus-7": "Up to 7 participants on screen. The current speaker appears in the main window.",
+        "description-2-plus-21": "Up to 21 participants on screen. The current speakers appear in 2 main windows.",
+        "description-dynamic": "Layout automatically adapts to the number of participants."
+    },
+    "hearing-role": {
+        "app": "App",
+        "app-advocate": "App Advocate",
+        "appellant-lip": "Appellant LIP",
+        "applicant-lip": "Applicant LIP",
+        "barrister": "Barrister",
+        "claimant-lip": "Claimant LIP",
+        "defendant-lip": "Defendant LIP",
+        "expert": "Expert",
+        "interpreter": "Interpreter",
+        "judge": "Judge",
+        "litigant-in-person": "Litigant in person",
+        "litigation-friend": "Litigation friend",
+        "macKenzie-friend": "MacKenzie friend",
+        "observer": "Observer",
+        "panel-member": "Panel Member",
+        "presenting-officer": "Presenting Officer",
+        "prosecution": "Prosecution",
+        "prosecution-advocate": "Prosecution Advocate",
+        "representative": "Representative",
+        "respondent": "Respondent",
+        "respondent-Advocate": "Respondent Advocate",
+        "respondent-lip": "Respondent LIP",
+        "special-counsel": "Special Counsel",
+        "solicitor": "Solicitor",
+        "state-lip": "State LIP",
+        "winger": "Winger",
+        "witness": "Witness",
+        "intermediary": "Intermediary",
+        "video-access-point": "Video access point",
+        "quick-link-participant": "Participant",
+        "quick-link-observer": "Observer"
+    },
+    "case-role": {
+        "appellant": "Appellant",
+        "applicant": "Applicant",
+        "claimant": "Claimant",
+        "defendant": "Defendant",
+        "home-office": "Home Office",
+        "judge": "Judge",
+        "none": "None",
+        "observer": "Observer",
+        "panel-member": "Panel Member",
+        "respondent": "Respondent",
+        "state": "State"
+    },
+    "case-type": {
+        "adoption": "Adoption",
+        "children-act": "Children Act",
+        "civil": "Civil",
+        "civil-money-claims": "Civil Money Claims",
+        "court-of-appeal-criminal-division": "Court of Appeal Criminal Division",
+        "divorce": "Divorce",
+        "employment-tribunal": "Employment Tribunal",
+        "family-law-act": "Family Law Act",
+        "financial-remedy": "Financial Remedy",
+        "generic": "Generic",
+        "grc---charity": "GRC - Charity",
+        "grc---crb": "GRC - CRB",
+        "grc---dvsa": "GRC - DVSA",
+        "grc---environment": "GRC - Environment",
+        "grc---estate-agents": "GRC - Estate Agents",
+        "grc---food": "GRC - Food",
+        "grc---gambling": "GRC - Gambling",
+        "grc---immigration-services": "GRC - Immigration Services",
+        "grc---information-rights": "GRC - Information Rights",
+        "grc---pensions-regulation": "GRC - Pensions Regulation",
+        "grc---professional-regulations": "GRC - Professional Regulations",
+        "grc---query-jurisdiction": "GRC - Query Jurisdiction",
+        "grc---welfare-of-animals": "GRC - Welfare of Animals",
+        "grc---ej": "GRC - EJ",
+        "housing-&-planning-act": "Housing & Planning Act",
+        "housing-act": "Housing Act",
+        "immigration-and-asylum": "Immigration and Asylum",
+        "land-registration": "Land Registration",
+        "leasehold-enfranchisement": "Leasehold Enfranchisement",
+        "leasehold-management": "Leasehold Management",
+        "park-homes": "Park Homes",
+        "placement": "Placement",
+        "private-law": "Private Law",
+        "public-law---care": "Public Law - Care",
+        "rents": "Rents",
+        "right-to-buy": "Right to buy",
+        "tax": "Tax",
+        "tribunal": "Tribunal"
+    },
+    "case-type-group": {
+        "state": "State",
+        "observer": "Observer",
+        "panelmember": "PanelMember",
+        "none": "None",
+        "judge": "Judge",
+        "applicant": "Applicant",
+        "panel member": "Panel Member",
+        "defendant": "Defendant",
+        "respondent": "Respondent",
+        "appellant": "Appellant",
+        "claimant": "Claimant"
+    },
+    "user-role": {
+        "case-admin": "Case admin",
+        "video-hearings-officer": "Video hearings officer",
+        "hearing-facilitation-support-(ctrt-clerk)": "Hearing facilitation support (CTRT Clerk)",
+        "judge": "Judge",
+        "individual": "Individual",
+        "representative": "Representative",
+        "judicial-office-holder": "Judicial Office Holder",
+        "quick-link-participant": "Participant",
+        "quick-link-observer": "Observer"
+    },
+    "participant-status": {
+        "none": "None",
+        "notsignedin": "Not signed in",
+        "unabletojoin": "Unable to join",
+        "joining": "Joining",
+        "available": "Available",
+        "inhearing": "In hearing",
+        "inconsultation": "In consultation",
+        "disconnected": "Disconnected",
+        "hmcts-crest": "HM Courts & Tribunals Service crest"
+    },
+    "endpoint-status": {
+        "notyetjoined": "Not yet joined",
+        "connected": "Connected",
+        "disconnected": "Disconnected",
+        "inconsultation": "In consultation"
+    },
+    "conference-status": {
+        "notstarted": "Not Started",
+        "insession": "In Session",
+        "paused": "Paused",
+        "suspended": "Suspended",
+        "closed": "Closed"
+    },
+    "confirm-start-hearing-popup": {
+        "hearing-about-to-start": "You are about to {{ action }} this hearing",
+        "participant-sees-countdown-timer": "Participants will see a countdown timer before the hearing begins.",
+        "private-consultations": "Any participants in private consultations will automatically be brought into the hearing.",
+        "confirm-start-hearing": "Confirm start hearing",
+        "hearing": "hearing",
+        "cancel-start-hearing": "Cancel start hearing",
+        "cancel": "Cancel",
+        "resume": "resume",
+        "start": "start"
+    },
+    "copy-telephone-id": {
+        "alt": "Copy joining by phone details to clipboard",
+        "display-text": "Copy joining by phone details to clipboard"
+    },
+    "participant-network-status": {
+        "icon-alt": "Open instant messaging chat window arrow"
+    },
+    "pending-tasks": {
+        "alert-icon": "alerts icon"
+    },
+    "audio-alert": {
+        "warning-icon": "warning exclamation mark",
+        "title": "Warning",
+        "message": "There’s a problem with recording. Some or all of the audio for this hearing may not be recorded."
+    },
+    "unread-messages": {
+        "im-image-alt": "instant message icon"
+    },
+    "vho-hearing-list": {
+        "crest-icon-alt": "crest icon"
+    },
+    "court-room-filters": {
+        "apply-filters-alt": "Apply selected filters",
+        "cancel-filters-alt": "Cancel filters"
+    },
+    "copy-id": {
+        "alt": "Copy conference id icon",
+        "display-text": "Copy hearing ID to clipboard"
+    },
+    "copy-quick-link": {
+        "tooltip-copied": "Join by quick link details copied to clipboard",
+        "display-text": "Copy join by quick link details to clipboard"
+    },
+    "admin-im-list": {
+        "judge-icon-alt": "Judge icon",
+        "representing": "Representing",
+        "unavailable": "Unavailable"
+    },
+    "confirm-close-hearing-popup": {
+        "title": "You are about to close this hearing",
+        "message": "Close the hearing if you have completed proceedings. Once closed, the hearing is ended and cannot be re-opened.",
+        "close-hearing": "Close hearing",
+        "close-hearing-label": "Confirm closing the hearing",
+        "cancel-close": "Keep hearing open",
+        "cancel-close-label": "Cancel closing the hearing"
+    },
+    "venue-list": {
+        "title": "Select your hearing lists",
+        "label": "Venue name {{name}}",
+        "allocation-list-label": "Venue allocation list"
+    },
+    "accessibility": {
+        "crest-image-alt": "HMCTS logo crest image",
+        "menu": {
+            "heading": "Contents",
+            "accessibility-statement": {
+                "heading": "Accessibility statement for the HMCTS video hearing service",
+                "paragraph1": "This service allows all participants to take part in a court hearing by video - from their home, office or somewhere else using a laptop or desktop computer.",
+                "paragraph2": "This accessibility statement is based on evaluation conducted by the Digital Accessibility Centre (DAC), Neath, during September 2019.",
+                "paragraph3": "This website is run by HM Courts and Tribunals Service. We want as many people as possible to be able to use this service. For example, this means you should be able to:",
+                "list": {
+                    "1": "change colours, contrast levels and fonts",
+                    "2": "zoom in up to 300% without the text spilling off the screen",
+                    "3": "navigate most of the website using just a keyboard",
+                    "4": "navigate most of the website using speech recognition software",
+                    "5": "listen to most of the website using a screen reader"
+                },
+                "paragraph4": "We’ve also made the website text as simple as possible to understand.",
+                "abilityNet": "AbilityNet",
+                "paragraph5": "has advice on making your device easier to use if you have a disability."
+            },
+            "how-accessible": {
+                "heading": "How accessible is this website?",
+                "paragraph1": "Fully video hearings provide an additional channel for conducting a hearing. While they are being made as accessible as possible, they may not be suitable for everyone.",
+                "paragraph2": "The video hearings service includes a triage process so that people can make the court aware of any particular condition or impairment that may impact their ability to take part in a video hearing.",
+                "paragraph3": "It will always be for a judge to decide whether to use the option of a fully video hearing, and to ensure the interests of justice are served in any given hearing.",
+                "paragraph4": "During testing by DAC, users with cognitive impairment and dyslexia were able to navigate the website ‘completely independently, with no issues’. The access issues reported particularly affected those who are visually impaired or use voice activation technology."
+            },
+            "cannot-access": {
+                "heading": "What to do if you cannot access parts of this website",
+                "paragraph1": "If you need help to access the information on this website, contact the video hearings team:",
+                "paragraph2": "Available between 9am and 5pm, Monday to Friday.",
+                "list": {
+                    "1": "email {{email}}",
+                    "2": "call {{phone}}"
+                }
+            },
+            "reporting-accessibility": {
+                "heading": "Reporting accessibility problems with this website",
+                "paragraph1": "We’re always looking to improve the accessibility of this website. If you find any problems not listed on this page or think we’re not meeting accessibility requirements, contact the video hearings team (above)."
+            },
+            "enforcement-procedure": {
+                "heading": "Enforcement procedure",
+                "paragraph1": "The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018 (the ‘accessibility regulations’). If you’re not happy with how we respond to your complaint, ",
+                "paragraph2": "contact the Equality Advisory and Support Service (EASS)"
+            },
+            "technical-information": {
+                "heading": "Technical information about this website’s accessibility",
+                "paragraph1": "HM Courts and Tribunals Service is committed to making its website accessible, in accordance with the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018.",
+                "paragraph2": {
+                    "1": "This website is partially compliant with the",
+                    "2": "Web Content Accessibility Guidelines version 2.1",
+                    "3": "AA standard, due to the non-compliances listed below."
+                },
+                "paragraph3": "paragraph1"
+            },
+            "non-accessible-content": {
+                "heading": "Non accessible content",
+                "paragraph1": "A number of accessibility and usability issues were reported. These particularly impacted those who are visually impaired or use voice activation technology. Most issues were resolved before the private beta was released. Those that remain are shown below."
+            },
+            "non-compliance-accessibility-regulations": {
+                "heading": "Non compliance with the accessibility regulations",
+                "sub-heading1": "Information videos",
+                "paragraph1": "We currently use video to help users see what their experience would be like either attending a court building or taking part in a video hearing. This has proved popular in user testing and we’ll make the necessary changes to make the videos more accessible by the end of 2019.",
+                "sub-heading2": "Equipment check",
+                "paragraph2": "We use video to help users test whether their computer equipment is suitable for a video hearing. This has caused some accessibility issues, detailed below.",
+                "paragraph3": "We use a visual method to indicate to the user that their microphone is working. This is not suitable for those with visual impairments. We’re considering providing an audible indicator so they know their microphone is picking up sound.",
+                "paragraph4": "The video intentionally has no controls. It needs to play to the end to detect the strength of the user’s internet connection. This takes at least 20 to 30 seconds. We’ve added an explanation.",
+                "paragraph5": "By Spring 2020 we’ll review the way we help users test their equipment to address the accessibility issues identified in the DAC report."
+            },
+            "not-within-the-scope": {
+                "heading": "Not within scope/not applicable",
+                "paragraph1": "In preparing for a video hearing, potential participants are asked a series of questions. These are presented as one question per page, with the option of a ‘yes’ or ‘no’ answer. DAC advised that we should group the ‘yes’ and ‘no’ buttons to assist screen reader users. (WCAG reference 1.3.1 – A). This advice reflects guidance for longer forms with separate groups of questions on a single page, which is not applicable in this instance."
+            },
+            "how-we-tested-this-website": {
+                "heading": "How we tested this website",
+                "paragraph1": "The website was tested by the Digital Accessibility Centre, Neath, during September 2019.",
+                "paragraph2": "This is an excerpt from their report explaining their methodology:",
+                "paragraph3": "The website was tested by a team of experienced auditors, many of who are disabled individuals and users of adaptive technology. The combination of subjective pan-disability user feedback and comprehensive technical auditing allows us to measure how the website performs technically and practically, thereby offering an essential added dimension to our test results that other methods of testing cannot provide.",
+                "sub-heading1": "User testing:",
+                "paragraph4": "Manual accessibility checking was conducted by a team of disabled individuals, using a range of adaptive technologies (hardware and software designed to facilitate the use of computers by people with disabilities).",
+                "sub-heading2": "Technical auditing:",
+                "paragraph5": "Technical auditing involves the experienced application of a number of technical auditing and standards compliance assessment tools. This combined with an extensive knowledge of WCAG, its application and wider global practice provides the DAC website with further credibility and quality."
+            }
+        },
+        "contents": "Contents"
+    },
+    "privacy-policy": {
+        "crest-image-alt": "HMCTS logo crest image",
+        "heading": "Our privacy policy for the video hearings service",
+        "print-button": "Print",
+        "paragraph1": "The video hearings service is managed by HM Courts and Tribunals Service (HMCTS).",
+        "paragraph2": "When you use this service we (HMCTS) will ask you to provide some personal data. This policy explains why we collect your personal data, what we do with it and your rights.",
+        "why-we-collect": {
+            "heading": "Why we collect your personal data",
+            "paragraph": "We collect your personal data so you can take part in a video hearing and to meet legal requirements. We also collect data to improve the service."
+        },
+        "what-we-do": {
+            "heading": "What we do with your personal data",
+            "paragraph1": "Your personal data is processed by our staff in the UK, and the data is stored within the EEA.",
+            "paragraph2": "HMCTS is an executive agency of the Ministry of Justice. The Ministry of Justice is known as the 'data controller' of the personal data you provide. The Ministry's personal information charter explains more about how we process data."
+        },
+        "what-we-collect": {
+            "heading": "The data we collect",
+            "paragraph": "The personal data we collect includes:",
+            "list": {
+                "1": "your name, address and contact details, including your email address and telephone number",
+                "2": "details of your company and your role, if applicable",
+                "3": "details of anyone who acts on your behalf or anyone that you act for in a video hearing",
+                "4": "information we gather to assess your suitability for a video hearing",
+                "5": "information about your video hearing",
+                "6": "information that tells us if you open an email from us, or click on a link in an email",
+                "7": "the login details you use to access the video hearings service",
+                "8": "information about the way you access this service including your IP address, internet speed, computer operating system and the browser you use to access the internet. We do this by",
+                "8-cookies": "using cookies"
+            }
+        },
+        "how-long": {
+            "heading": "How long we keep your data",
+            "paragraph": "The video hearings service will keep this information for 3 months after the date your hearing is booked to take place. We'll then delete it. Information about your application or your case is held by a different department in HMCTS and different arrangements may apply."
+        },
+        "shoring-and-sharing": {
+            "heading": "Storing and sharing your data internationally",
+            "paragraph": "Sometimes your personal data will be stored outside the UK. When we do this, we comply with data protection law."
+        },
+        "your-rights": {
+            "heading": "Your rights",
+            "paragraph1": "You can ask:",
+            "list-ask": {
+                "1": "to see the personal data that we hold on you",
+                "2": "to have the personal data corrected",
+                "3": "to have the personal data removed or deleted (this will depend on the circumstances, for example, if you decide not to continue with your case)",
+                "4": "that access to the personal data is restricted (for example, you can ask to have your data stored for longer and not automatically deleted)"
+            },
+            "paragraph2": "If you want to see the personal data that we hold on you, you can:",
+            "list-see": {
+                "1-1": "complete a form to",
+                "1-link": "make a subject access request.",
+                "1-2": "Your request goes to the MoJ as data controller.",
+                "2": "write to us: Disclosure Team, Post point 10.38, 102 Petty France, London, SW1H 9AJ"
+            },
+            "paragraph3": "You can ask for more information about:",
+            "list-more": {
+                "1": "agreements we have on sharing information with other organisations",
+                "2": "when we are allowed to pass on personal information without telling you",
+                "3": "our instructions to staff on how to collect, use or delete your personal information",
+                "4": "how we check that the information we hold is accurate and up to date"
+            },
+            "paragraph4": "You can contact the MoJ data protection officer by:",
+            "list-contact": {
+                "1": "writing to us: Post point 10.38, 102 Petty France, London, SW1H 9AJ",
+                "2": "emailing:"
+            }
+        },
+        "how-to-complain": {
+            "heading": "How to complain",
+            "paragraph1-1": "See our ",
+            "paragraph1-link": "complaints procedure",
+            "paragraph1-2": "if you want to complain about how we've handled your personal data.",
+            "paragraph2-1": "Write to: Post point 10.38, 102 Petty France, London, SW1H 9AJ",
+            "paragraph2-2": "Email: ",
+            "paragraph3-1": "You can also complain to the ",
+            "paragraph3-link": "Information Commissioner's Office",
+            "paragraph3-2": "if you're not satisfied with our response or believe we're not processing your personal data lawfully."
+        },
+        "hearings-recorded": {
+            "heading": "Where hearings are recorded",
+            "paragraph1": "The process for recording video hearings is the same as for hearings held in a court or tribunal building:",
+            "list": {
+                "1": "hearings at the Crown Court and at civil and family courts are always recorded",
+                "2-1": "tribunal hearings are not always recorded. ",
+                "2-link": "Contact the tribunal",
+                "2-2": " to find out if the hearing was recorded.",
+                "3": "hearings at magistrates' courts are never recorded."
+            },
+            "paragraph2-1": "Where hearings are recorded you may ",
+            "paragraph2-link": "apply for a transcript.",
+            "paragraph3": "Participants must not record or take any images of the hearing."
+        }
+    },
+    "wr-participant-list-shared": {
+        "for": "for",
+        "representative": "Representative"
+    },
+    "notification-toastr": {
+        "invite": {
+            "call-from": "Call from {{name}}",
+            "video-hearing-officer": "Video hearings officer",
+            "with": "with",
+            "accept": "Accept",
+            "decline": "Decline"
+        },
+        "linked-participants": {
+            "waiting-single": "Waiting for {{name}} to accept the invitation from {{invitedBy}}.",
+            "waiting-multiple": "Waiting for {{number}} other participants to accept the invitation from {{invitedBy}}.",
+            "rejected": "{{rejector}} rejected the invitation from {{invitedBy}}.",
+            "button-close": "Close"
+        },
+        "poor-connection": {
+            "title": "Alert",
+            "message": "Your internet connection is poor. People may have trouble seeing and hearing you.",
+            "dismiss": "Dismiss"
+        },
+        "participant-added": {
+            "title": "{{name}}",
+            "message-without-party": "{{role}} has been added to the hearing.",
+            "message-with-party": "{{role}} ({{party}}) has been added to the hearing.",
+            "dismiss": "Dismiss"
+        }
+    },
+    "consultation-service": {
+        "judge-room": "Judge Room",
+        "judge-room-short": "Judge Room",
+        "meeting-room": "Meeting Room",
+        "meeting-room-short": "Room"
+    },
+    "idp-selection": {
+        "title": "Select your account type to sign in",
+        "description": "You'll need to select the correct option and have a valid email address and password to sign in.",
+        "ejud": {
+            "title": "Judicial Office Holder",
+            "description": "If you are a judge or panel member, select this option (your email will end with @ejudiciary.net)."
+        },
+        "vhaad": {
+            "title": "Hearing Participant",
+            "description": "If you are participating in a video hearing in any other capacity, select this option."
+        },
+        "next": "Next",
+        "error-title": "There is a problem:",
+        "select-a-provider": "Select an account type to continue."
+    },
+    "quick-participant-landing-page": {
+        "page-title": "Enter your details to join your hearing",
+        "paragraph1": "Please tell us your name and your role in the hearing.",
+        "problem-with-form": "There is a problem",
+        "problem-with-special-char": "You entered some characters that are not allowed.",
+        "problem-with-special-char-recommendation": "You may use accents, apostrophes and hyphens but no other symbols.",
+        "name-label": "Your full name",
+        "name-error-empty": "Please enter your full name",
+        "name-error-special-char": "You've entered characters that are not allowed",
+        "role-label": "What is your role in the hearing?",
+        "role-error": "Please choose your role in the hearing",
+        "roles": {
+            "QuickLinkParticipant": {
+                "title": "Participant",
+                "description": "You have been called to take part in the hearing."
+            },
+            "QuickLinkObserver": {
+                "title": "Observer",
+                "description": "You are observing the hearing, but not taking part."
+            }
+        },
+        "button-continue": "Continue"
+    },
+    "quick-participant-errors": {
+        "invalid-page": {
+            "heading": "The link you've used can't be recognised",
+            "body": "Please check the link you were sent. If it still doesn't work, call 0300 303 0655 for immediate contact with a video hearings officer."
+        }
+    },
+    "loading": "Loading please wait...",
+    "video-filter": {
+        "title": "Choose a custom background",
+        "none": "No background",
+        "none-alt": "Remove all filters",
+        "blur": "Blurred",
+        "blur-alt": "Apply the blurred background filter",
+        "hmcts": "HMCTS crest",
+        "hmcts-alt": "Apply the background with the HMCTS crest",
+        "scts": "SCTS crest",
+        "scts-alt": "Apply the background with the SCTS crest"
     }
-  },
-  "wr-participant-list-shared": {
-    "for": "for",
-    "representative": "Representative"
-  },
-  "notification-toastr": {
-    "invite": {
-      "call-from": "Call from {{name}}",
-      "video-hearing-officer": "Video hearings officer",
-      "with": "with",
-      "accept": "Accept",
-      "decline": "Decline"
-    },
-    "linked-participants": {
-      "waiting-single": "Waiting for {{name}} to accept the invitation from {{invitedBy}}.",
-      "waiting-multiple": "Waiting for {{number}} other participants to accept the invitation from {{invitedBy}}.",
-      "rejected": "{{rejector}} rejected the invitation from {{invitedBy}}.",
-      "button-close": "Close"
-    },
-    "poor-connection": {
-      "title": "Alert",
-      "message": "Your internet connection is poor. People may have trouble seeing and hearing you.",
-      "dismiss": "Dismiss"
-    },
-    "participant-added": {
-      "title": "{{name}}",
-      "message-without-party": "{{role}} has been added to the hearing.",
-      "message-with-party": "{{role}} ({{party}}) has been added to the hearing.",
-      "dismiss": "Dismiss"
-    }
-  },
-  "consultation-service": {
-    "judge-room": "Judge Room",
-    "judge-room-short": "Judge Room",
-    "meeting-room": "Meeting Room",
-    "meeting-room-short": "Room"
-  },
-  "idp-selection": {
-    "title": "Select your account type to sign in",
-    "description": "You'll need to select the correct option and have a valid email address and password to sign in.",
-    "ejud": {
-      "title": "Judicial Office Holder",
-      "description": "If you are a judge or panel member, select this option (your email will end with @ejudiciary.net)."
-    },
-    "vhaad": {
-      "title": "Hearing Participant",
-      "description": "If you are participating in a video hearing in any other capacity, select this option."
-    },
-    "next": "Next",
-    "error-title": "There is a problem:",
-    "select-a-provider": "Select an account type to continue."
-  },
-  "quick-participant-landing-page": {
-    "page-title": "Enter your details to join your hearing",
-    "paragraph1": "Please tell us your name and your role in the hearing.",
-    "problem-with-form": "There is a problem",
-    "problem-with-special-char": "You entered some characters that are not allowed.",
-    "problem-with-special-char-recommendation": "You may use accents, apostrophes and hyphens but no other symbols.",
-    "name-label": "Your full name",
-    "name-error-empty": "Please enter your full name",
-    "name-error-special-char": "You've entered characters that are not allowed",
-    "role-label": "What is your role in the hearing?",
-    "role-error": "Please choose your role in the hearing",
-    "roles": {
-      "QuickLinkParticipant": {
-        "title": "Participant",
-        "description": "You have been called to take part in the hearing."
-      },
-      "QuickLinkObserver": {
-        "title": "Observer",
-        "description": "You are observing the hearing, but not taking part."
-      }
-    },
-    "button-continue": "Continue"
-  },
-  "quick-participant-errors": {
-    "invalid-page": {
-      "heading": "The link you've used can't be recognised",
-      "body": "Please check the link you were sent. If it still doesn't work, call 0300 303 0655 for immediate contact with a video hearings officer."
-    }
-  },
-  "loading": "Loading please wait...",
-  "video-filter": {
-    "title": "Choose a custom background",
-    "none": "No background",
-    "none-alt": "Remove all filters",
-    "blur": "Blurred",
-    "blur-alt": "Apply the blurred background filter",
-    "hmcts": "HMCTS crest",
-    "hmcts-alt": "Apply the background with the HMCTS crest",
-    "scts": "SCTS crest",
-    "scts-alt": "Apply the background with the SCTS crest"
-  }
 }

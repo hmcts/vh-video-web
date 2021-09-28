@@ -598,7 +598,9 @@
     "chat-panel": "Panel sgwrsio",
     "pause": "Egwyl",
     "close": "Cau",
-    "context-menu": "Bwydlen Agored"
+    "context-menu": "Bwydlen Agored",
+    "hearing-controls": "Rheolyddion y gwrandawiad"
+
   },
   "judge-waiting-room": {
     "switch-to-main-screen": "Dychwelyd i'r brif sgrin",

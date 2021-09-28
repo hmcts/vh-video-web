@@ -36,6 +36,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     hearingStartingAnnounced: boolean;
 
     clockSubscription$: Subscription;
+    isParticipantsPanelHidden = false;
 
     constructor(
         protected route: ActivatedRoute,
@@ -86,6 +87,10 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             this.participant?.status !== ParticipantStatus.InConsultation &&
             this.participant?.status !== ParticipantStatus.InHearing
         );
+    }
+
+    toggleParticipantsPanel() {
+        this.isParticipantsPanelHidden = !this.isParticipantsPanelHidden;
     }
 
     private onShouldReload(): void {
