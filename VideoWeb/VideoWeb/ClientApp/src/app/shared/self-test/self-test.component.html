@@ -15,7 +15,7 @@
 </div>
 
 <div class="govuk-grid-row">
-  <div>
+  <div class="self-view-container">
     <div>
       <video
         *ngIf="streamsActive"
@@ -31,7 +31,7 @@
       </video>
     </div>
 
-    <div class="govuk-grid-column-one-half">
+    <div>
       <app-mic-visualiser
         *ngIf="displayFeed && streamsActive && preferredMicrophoneStream"
         [stream]="preferredMicrophoneStream"
