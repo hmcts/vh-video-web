@@ -1,3 +1,5 @@
+@import '~govuk-frontend/govuk/base';
+
 .spotlighted-border {
   border: 3px solid govuk-colour('yellow');
 }
@@ -7,7 +9,7 @@
   left: 10px;
   z-index: 101;
   position: absolute;
-  max-width: 10vw;
-  min-width: 8rem;
+  max-width: 8vw;
+  min-width: 6rem;
   height: auto;
 }

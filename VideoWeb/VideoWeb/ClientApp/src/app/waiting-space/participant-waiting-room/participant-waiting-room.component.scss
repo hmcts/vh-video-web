@@ -1,4 +1,5 @@
 @import '~govuk-frontend/govuk/base';
+@import 'abstracts';
 
 #outgoingFeedVideoTransfer {
   bottom: 10px;
@@ -28,10 +29,14 @@
 .room-status-desc {
   color: lightgray;
   margin-top: 10px;
-  font-size: 16px;
+  font-size: rem(16px);
   margin-left: 10px;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  display: none;
+  @media screen and (min-width: $breakpoint-small) {
+    display: inline-flex;
+  }
 }
 
 .lock-badge {
@@ -40,7 +45,10 @@
   border-radius: 2px;
   text-transform: uppercase;
   font-weight: 400;
-  font-size: 14px;
+  font-size: rem(10px);
+  @media screen and (min-width: $breakpoint-small) {
+    font-size: rem(14px);
+  }
 }
 
 .lock-badge.locked,
@@ -57,6 +65,6 @@
 
 .header-content-grid-with-lock {
   display: grid;
-  grid-template-columns: 200px 100px auto auto;
+  grid-template-columns: 1fr rem(100px) auto auto;
   width: 100%;
 }

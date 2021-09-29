@@ -33,6 +33,7 @@
       [conference]="hearing.getConference()"
       [participantEndpoints]="participantEndpoints"
       [roomLabel]="this.participant.current_room?.label"
+      (togglePanel)="toggleParticipantsPanel()"
     >
     </app-private-consultation-participants>
   </div>
