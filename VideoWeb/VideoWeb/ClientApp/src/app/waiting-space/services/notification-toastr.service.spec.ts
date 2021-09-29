@@ -751,6 +751,7 @@ describe('NotificationToastrService', () => {
                 timeOut: 0,
                 extendedTimeOut: 0,
                 tapToDismiss: false,
+                positionClass: 'toast-top-center',
                 toastComponent: VhToastComponent
             });
         });
