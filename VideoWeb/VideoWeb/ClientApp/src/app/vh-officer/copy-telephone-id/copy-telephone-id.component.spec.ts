@@ -7,23 +7,23 @@ describe('CopyIdComponent', () => {
     let component: CopyTelephoneIdComponent;
     let mouseEvent: MouseEvent;
     let clipboardServiceSpy: jasmine.SpyObj<ClipboardService>;
-    let copyID: HTMLDivElement;
     const conference = new ConferenceTestData().getConferenceFuture();
     const hearing = new HearingSummary(conference);
+    let translateServiceSpy: any;
 
     beforeAll(() => {
         mouseEvent = document.createEvent('MouseEvent');
         mouseEvent.initMouseEvent('mouseover', true, true, window, 0, 0, 0, 80, 20, false, false, false, false, 0, null);
         clipboardServiceSpy = jasmine.createSpyObj<ClipboardService>('ClipboardService', ['copyFromContent']);
         clipboardServiceSpy.copyFromContent.and.returnValue(true);
+        translateServiceSpy = jasmine.createSpyObj('TranslateService', ['instant']);
     });
 
     beforeEach(() => {
-        component = new CopyTelephoneIdComponent(clipboardServiceSpy);
+        component = new CopyTelephoneIdComponent(clipboardServiceSpy, translateServiceSpy);
         component.telephoneId = hearing.telephoneConferenceId;
         component.telephoneNumber = hearing.telephoneConferenceNumber;
         component.ngOnInit();
-        copyID = document.createElement('div');
     });
 
     it('should create', () => {
@@ -34,6 +34,31 @@ describe('CopyIdComponent', () => {
         component.copyToClipboard();
         const expectedContent = `${hearing.telephoneConferenceNumber} (ID: ${hearing.telephoneConferenceId})`;
         expect(clipboardServiceSpy.copyFromContent).toHaveBeenCalledWith(expectedContent);
-        expect(component.tooltip).toBe('Details copied to clipboard');
+    });
+
+    it('updates tooltip text when copyToClipboard is invoked', () => {
+        component.tooltip = '';
+        const expectedToolTipValue = 'expected value';
+        translateServiceSpy.instant.and.returnValue(expectedToolTipValue);
+        component.copyToClipboard();
+        expect(component.tooltip).toBe(expectedToolTipValue);
+        expect(translateServiceSpy.instant).toHaveBeenCalledWith('copy-telephone-id.tooltip-copied');
+    });
+
+    it('sets the tooltip text when component is initialized', () => {
+        const expectedToolTipValue = 'expected value';
+        translateServiceSpy.instant.and.returnValue(expectedToolTipValue);
+        component.ngOnInit();
+        expect(component.tooltip).toBe(expectedToolTipValue);
+        expect(translateServiceSpy.instant).toHaveBeenCalledWith('copy-telephone-id.display-text');
+    });
+
+    it('resets text when resetText is invoked', () => {
+        component.tooltip = 'some other text';
+        const expectedToolTipValue = 'expected value';
+        translateServiceSpy.instant.and.returnValue(expectedToolTipValue);
+        component.resetText();
+        expect(component.tooltip).toBe(expectedToolTipValue);
+        expect(translateServiceSpy.instant).toHaveBeenCalledWith('copy-telephone-id.display-text');
     });
 });

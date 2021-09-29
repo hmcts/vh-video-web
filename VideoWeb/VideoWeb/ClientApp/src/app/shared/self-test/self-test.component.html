@@ -15,28 +15,30 @@
 </div>
 
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-one-quarter">
-    <video
-      *ngIf="streamsActive"
-      id="outgoingStream"
-      [muted]="true"
-      [srcObject]="this.outgoingStream"
-      autoplay
-      width="270"
-      height="auto"
-      class="selfie-view"
-    >
-      {{ 'self-test.browser-not-support' | translate }}
-    </video>
-  </div>
+  <div>
+    <div>
+      <video
+        *ngIf="streamsActive"
+        id="outgoingStream"
+        [muted]="true"
+        [srcObject]="this.outgoingStream"
+        autoplay
+        width="270"
+        height="auto"
+        class="selfie-view"
+      >
+        {{ 'self-test.browser-not-support' | translate }}
+      </video>
+    </div>
 
-  <div class="govuk-grid-column-full">
-    <app-mic-visualiser
-      *ngIf="displayFeed && streamsActive && preferredMicrophoneStream"
-      [stream]="preferredMicrophoneStream"
-      [incomingStream]="incomingStream"
-    ></app-mic-visualiser>
-  </div>
+    <div>
+      <app-mic-visualiser
+        *ngIf="displayFeed && streamsActive && preferredMicrophoneStream"
+        [stream]="preferredMicrophoneStream"
+        [incomingStream]="incomingStream"
+      ></app-mic-visualiser>
+    </div>
+</div>
 </div>
 
 <div class="govuk-grid-row">
