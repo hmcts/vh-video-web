@@ -691,7 +691,7 @@ describe('NotificationToastrService', () => {
         expect(service.activeHeartbeatReport.length).toBe(23);
     });
 
-    describe('showParticipantAdded', () => {
+    fdescribe('showParticipantAdded', () => {
         let mockToast: ActiveToast<VhToastComponent>;
         const expectedToastId = 2;
         const testParticipant = new ParticipantResponse();

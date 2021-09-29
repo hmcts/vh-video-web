@@ -1,0 +1,13 @@
+.toast-top-right {
+    top: 70px;
+    right: 20px;
+}
+
+.toast-top-center {
+    top: 70px !important;
+    @media only screen and (min-width: $breakpoint-medium) {
+        top: 70px !important;
+        width: 220px !important;  
+        margin-right: auto;
+        }
+}

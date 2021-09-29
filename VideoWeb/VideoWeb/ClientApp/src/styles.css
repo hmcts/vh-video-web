@@ -1,11 +1,2 @@
 /* You can add global styles to this file, and also import other style files */
 
-.toast-top-right {
-    top: 70px !important;
-    right: 20px !important;
-}
-
-.toast-content {
-    display: block;
-    word-wrap: break-word;
-}
