@@ -2,16 +2,14 @@
 
 $breakpoints: (
   smallest: 0px,
-  extra-small : 480px,
+  extra-small : 481px,
   small: 641px,
-  medium : 768px,
-  large: 1024px,
+  medium : 769px,
+  large: 1025px,
 );
 
 // 1024px
 $breakpoint-large: em(map-get($breakpoints, large));
-// 1023px
-$breakpoint-medium-max: em(map-get($breakpoints, large)-1px);
 // 768px
 $breakpoint-medium: em(map-get($breakpoints, medium));
 // 641px
