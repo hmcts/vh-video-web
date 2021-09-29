@@ -100,7 +100,7 @@
       </div>
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
-          <app-video-filter ></app-video-filter>
+          <app-video-filter *ngIf="showBackgroundFilter && selectedCameraStream"></app-video-filter>
         </div>
         <div class="govuk-grid-column-full">
           <div ng class="govuk-!-margin-top-6">
