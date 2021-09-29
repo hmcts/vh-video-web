@@ -66,7 +66,7 @@
           />
           <br />
         </span>
-        <span innerHtml="{{ participant.displayName | MultiLinePipe }}"></span>
+        <span class="wrap-anywhere" innerHtml="{{ participant.displayName | MultiLinePipe }}"></span>
       </div>
 
       <ng-container *ngIf="!isParticipantDisconnected(participant); else participantDisconnected">
@@ -119,11 +119,11 @@
               *ngIf="!participant.transferringIn"
               appTooltip
               [text]="
-                (participant.isAvailable() ? 
-                  (isWitness(participant) ? 
-                    ('participants-panel.call-witness' | translate) : 
+                (participant.isAvailable() ?
+                  (isWitness(participant) ?
+                    ('participants-panel.call-witness' | translate) :
                     ('participants-panel.admit-participant' | translate : {role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase})
-                  ) : 
+                  ) :
                   'participants-panel.participant-unavailable' | translate : {role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate})
               "
               [colour]="participant.isAvailable() ? 'green' : 'grey'"

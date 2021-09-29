@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { ClipboardService } from 'ngx-clipboard';
 
 @Component({
@@ -11,7 +12,7 @@ export class CopyTelephoneIdComponent implements OnInit {
     tooltip: string;
     propertyIdName = 'copy-telephone-id';
 
-    constructor(private clipboardService: ClipboardService) {}
+    constructor(private clipboardService: ClipboardService, private translateService: TranslateService) {}
 
     ngOnInit(): void {
         this.propertyIdName = this.propertyIdName + '-' + this.telephoneId;
@@ -21,10 +22,10 @@ export class CopyTelephoneIdComponent implements OnInit {
     copyToClipboard() {
         const text = `${this.telephoneNumber} (ID: ${this.telephoneId})`;
         this.clipboardService.copyFromContent(text);
-        this.tooltip = 'Details copied to clipboard';
+        this.tooltip = this.translateService.instant('copy-telephone-id.tooltip-copied');
     }
 
     resetText() {
-        this.tooltip = 'Copy joining by phone details to clipboard';
+        this.tooltip = this.translateService.instant('copy-telephone-id.display-text');
     }
 }

@@ -29,6 +29,7 @@ import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-ba
 export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
     private readonly loggerPrefixJOH = '[JOH WR] -';
     private destroyedSubject = new Subject();
+    isParticipantsPanelHidden = false;
 
     constructor(
         protected route: ActivatedRoute,
@@ -70,6 +71,10 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
 
     ngOnInit(): void {
         this.init();
+    }
+
+    toggleParticipantsPanel() {
+        this.isParticipantsPanelHidden = !this.isParticipantsPanelHidden;
     }
 
     private onShouldReload(): void {

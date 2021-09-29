@@ -134,8 +134,10 @@ namespace VideoWeb.Controllers
                 
             var requestToParticipantMapper = _mapperFactory.Get<ParticipantDetailsResponse, Participant>();
             conference.AddParticipant(requestToParticipantMapper.Map(response.ParticipantDetails));
-            
+
+            _logger.LogTrace($"Updating conference in cache: {JsonSerializer.Serialize(conference)}");
             await _conferenceCache.UpdateConferenceAsync(conference);
+
             await _participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference);
         }
     }
