@@ -7,6 +7,7 @@ import { ApiClient, HearingLayout, SharedParticipantRoom, StartHearingRequest } 
 import { KinlyHeartbeatService } from 'src/app/services/conference/kinly-heartbeat.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
+import { StreamMixer } from 'src/app/services/stream-mixer.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import {
@@ -49,12 +50,14 @@ export class VideoCallService {
     private onConnectedPresentationSubject = new Subject<ConnectedPresentation>();
     private onDisconnectedPresentationSubject = new Subject<DisconnectedPresentation>();
 
+    private onVideoEvidenceSharedSubject = new Subject<void>();
+    private onVideoEvidenceStoppedSubject = new Subject<void>();
+
     private hasDisconnected$ = new Subject();
     private renegotiating = false;
     private justRenegotiated = false;
 
     pexipAPI: PexipClient;
-    localOutgoingStream: any;
 
     constructor(
         private logger: Logger,
@@ -263,6 +266,14 @@ export class VideoCallService {
         return this.onStoppedScreenshareSubject.asObservable();
     }
 
+    onVideoEvidenceShared(): Observable<void> {
+        return this.onVideoEvidenceSharedSubject.asObservable();
+    }
+
+    onVideoEvidenceStopped(): Observable<void> {
+        return this.onVideoEvidenceStoppedSubject.asObservable();
+    }
+
     toggleMute(conferenceId: string, participantId: string): boolean {
         this.logger.info(`${this.loggerPrefix} Toggling mute`, {
             currentAudioMuteStatus: this.pexipAPI.mutedAudio,
@@ -389,6 +400,34 @@ export class VideoCallService {
         this.renegotiating = false;
         this.justRenegotiated = true;
         this.logger.info(`${this.loggerPrefix} renegotiated`);
+    }
+
+    async selectScreenWithMicrophone() {
+        this.logger.info(`${this.loggerPrefix} mixing screen and microphone stream`);
+        const displayStream = await this.userMediaService.selectScreenToShare();
+        this.userMediaStreamService.activeMicrophoneStream$.pipe(take(1)).subscribe(micStream => {
+            const mixStream = new StreamMixer().mergeAudioStreams(displayStream, micStream);
+            mixStream.addTrack(displayStream.getVideoTracks()[0]);
+
+            // capture when the user stops screen sharing via the browser instead of the control menu
+            mixStream.getVideoTracks()[0].addEventListener('ended', () => {
+                this.stopScreenWithMicrophone();
+            });
+
+            this.pexipAPI.user_media_stream = mixStream;
+            this.renegotiateCall();
+            this.onVideoEvidenceSharedSubject.next();
+        });
+    }
+
+    stopScreenWithMicrophone() {
+        this.logger.info(`${this.loggerPrefix} stopping mixed screen and microphone stream`);
+        this.pexipAPI.user_media_stream.getTracks().forEach(t => t.stop());
+        this.userMediaStreamService.currentStream$.pipe(take(1)).subscribe(currentStream => {
+            this.pexipAPI.user_media_stream = currentStream;
+            this.renegotiateCall();
+            this.onVideoEvidenceStoppedSubject.next();
+        });
     }
 
     async selectScreen() {

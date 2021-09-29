@@ -48,6 +48,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     isSpotlighted: boolean;
 
     private destroyedSubject = new Subject<void>();
+    sharingDynamicEvidence: boolean;
 
     protected constructor(
         protected videoCallService: VideoCallService,
@@ -173,6 +174,10 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
         this.participantSpotlightUpdateSubscription?.unsubscribe();
         this.participantSpotlightUpdateSubscription = null;
+
+        if (this.sharingDynamicEvidence) {
+            this.stopScreenShareWithMicrophone();
+        }
     }
 
     get handToggleText(): string {
@@ -208,6 +213,16 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             .onScreenshareStopped()
             .pipe(takeUntil(this.destroyedSubject))
             .subscribe(discconnectedScreenShare => this.handleScreenShareStopped(discconnectedScreenShare));
+
+        this.videoCallService
+            .onVideoEvidenceShared()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(() => (this.sharingDynamicEvidence = true));
+
+        this.videoCallService
+            .onVideoEvidenceStopped()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(() => (this.sharingDynamicEvidence = false));
     }
 
     handleScreenShareConnected(connectedScreenShare: ConnectedScreenshare): void {
@@ -369,6 +384,14 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     async startScreenShare() {
         await this.videoCallService.selectScreen();
         this.videoCallService.startScreenShare();
+    }
+
+    async startScreenShareWithMicrophone() {
+        await this.videoCallService.selectScreenWithMicrophone();
+    }
+
+    stopScreenShareWithMicrophone() {
+        this.videoCallService.stopScreenWithMicrophone();
     }
 
     stopScreenShare() {
