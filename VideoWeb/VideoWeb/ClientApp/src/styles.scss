@@ -6,6 +6,8 @@ $govuk-global-styles: true;
 @import '~@ng-select/ng-select/themes/default.theme.css';
 @import '~@ministryofjustice/frontend/moj/all';
 @import 'abstracts';
+@import 'base';
+@import 'vendor-modifications';
 
 .grey-btn {
   background-color: govuk-colour('light-grey');
@@ -224,8 +226,4 @@ video {
   transform: rotateY(180deg);
   -webkit-transform: rotateY(180deg); /* Safari and Chrome */
   -moz-transform: rotateY(180deg); /* Firefox */
-}
-
-.govuk-template {
-  overflow-y: unset;
 }

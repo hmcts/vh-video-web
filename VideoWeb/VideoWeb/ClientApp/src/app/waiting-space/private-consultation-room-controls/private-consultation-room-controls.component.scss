@@ -138,7 +138,7 @@
 .dropdown {
   position: relative;
   display: inline-block;
-  @media only screen and (min-width: $breakpoint-large) {
+  @include responds-to(large) {
     display: none;
   }
 }
@@ -164,21 +164,21 @@
 }
 .hide-for-medium {
   display: block;
-  @media only screen and (min-width: $breakpoint-medium) {
+  @include responds-to-only(medium) {
     display: none;
   }
 }
 
 .show-for-medium-only {
   display: none;
-  @media only screen and (min-width: $breakpoint-medium) and (max-width: $breakpoint-medium-max) {
+  @include responds-to-only(medium) {
     display: inline-flex;
   }
 }
 
 .hearing-controls-desktop {
   display: none;
-  @media only screen and (min-width: $breakpoint-large) {
+  @include responds-to(large) {
     display: inline-flex;
   }
 
