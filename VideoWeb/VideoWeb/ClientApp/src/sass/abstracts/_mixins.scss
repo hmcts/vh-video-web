@@ -19,7 +19,7 @@
         $next: map-get-next($breakpoints, $name);
         @if not $next {
             @warn "Warning: `#{$name}` is the last breakpoint.";
-        } else {
+        } @else {
             @media only screen and (min-width: em(map-get($breakpoints, $name))) and (max-width: em($next - 1px)) {
                 @content;
             }
