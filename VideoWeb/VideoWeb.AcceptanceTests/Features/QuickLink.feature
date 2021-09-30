@@ -1,7 +1,7 @@
 @ChromeOnly @WindowsOnly @ignore
 
 #
-#  This test cannot check the clipboard contents after a paste, an alternatice will be looked at pasting elsewhere
+#  This test cannot check the clipboard contents after a paste, an alternative will be looked at pasting elsewhere
 #  You can't access the testing device clipboard using .netcore 3, and the other option of accessing via the browser does not work in automation
 #  Maybe find a way to paste elsewhere & check pasted value?
 #
