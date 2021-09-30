@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, ParamMap, Router } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, ParamMap, Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
 import { Observable, ReplaySubject, Subscription } from 'rxjs';
 import { filter, map, mergeMap, take } from 'rxjs/operators';
 import { ParticipantModel } from 'src/app/shared/models/participant';
+
 import { ApiClient, ConferenceResponse } from '../clients/api-client';
 import { EventsService } from '../events.service';
 import { LoggerService } from '../logging/logger.service';
@@ -24,22 +25,28 @@ export class ConferenceService {
         private apiClient: ApiClient,
         private logger: LoggerService
     ) {
+        this.onRouteParamsChanged(this.getParamMap(activatedRoute.snapshot));
+
         logger.conferenceService = this;
         router.events
             .pipe(
                 filter(x => x instanceof NavigationEnd),
                 map(() => activatedRoute.snapshot),
                 map(route => {
-                    while (route && !route.paramMap?.has('conferenceId')) {
-                        route = route?.firstChild;
-                    }
-
-                    return route?.paramMap;
+                    return this.getParamMap(route);
                 })
             )
             .subscribe(paramMap => {
                 this.onRouteParamsChanged(paramMap);
             });
+    }
+
+    private getParamMap(route: ActivatedRouteSnapshot): ParamMap {
+        while (route && !route.paramMap?.has('conferenceId')) {
+            route = route?.firstChild;
+        }
+
+        return route?.paramMap;
     }
 
     private _currentConference: ConferenceResponse;
