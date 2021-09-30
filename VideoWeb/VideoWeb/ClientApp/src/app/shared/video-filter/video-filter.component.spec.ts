@@ -13,11 +13,12 @@ describe('VideoFilterComponent', () => {
     beforeAll(() => {
         videoFilterService = jasmine.createSpyObj<VideoFilterService>(
             'VideoFilterService',
-            ['updateFilter'],
+            ['updateFilter', 'doesSupportVideoFiltering'],
             ['onFilterChanged$', 'activeFilter']
         );
         getSpiedPropertyGetter(videoFilterService, 'activeFilter').and.returnValue(null);
         getSpiedPropertyGetter(videoFilterService, 'onFilterChanged$').and.returnValue(filterChangedSubject.asObservable());
+        videoFilterService.doesSupportVideoFiltering.and.returnValue(true);
     });
 
     beforeEach(() => {
@@ -66,5 +67,21 @@ describe('VideoFilterComponent', () => {
         filterChangedSubject.next(filter);
 
         expect(component.filterOn).toBeFalse();
+    });
+
+    it('should set browserSupportsFilters to true when video filter service is supported', () => {
+        videoFilterService.doesSupportVideoFiltering.and.returnValue(true);
+
+        component.ngOnInit();
+
+        expect(component.browserSupportsFilters).toBeTrue();
+    });
+
+    it('should set browserSupportsFilters to false when video filter service is not supported', () => {
+        videoFilterService.doesSupportVideoFiltering.and.returnValue(false);
+
+        component.ngOnInit();
+
+        expect(component.browserSupportsFilters).toBeFalse();
     });
 });
