@@ -15,7 +15,7 @@
 </div>
 
 <div class="govuk-grid-row">
-  <div>
+  <div class="self-view-container">
     <div>
       <video
         *ngIf="streamsActive"
@@ -23,7 +23,7 @@
         [muted]="true"
         [srcObject]="this.outgoingStream"
         autoplay
-        width="270"
+        width="100%"
         height="auto"
         class="selfie-view"
       >
