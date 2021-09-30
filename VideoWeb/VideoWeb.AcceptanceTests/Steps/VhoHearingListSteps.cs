@@ -54,7 +54,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                     _browsers[_c.CurrentUser].Click(VhoHearingListPage.CopyQuickLink(_c.Test.Conference.Id.ToString()));
                     break;
                 case "Phone Details":
-                    _browsers[_c.CurrentUser].Click(VhoHearingListPage.CopyTelephoneID(_c.Test.Conference.Id.ToString()));
+                    _browsers[_c.CurrentUser].Click(VhoHearingListPage.CopyTelephoneID(_c.Test.Conference.MeetingRoom.TelephoneConferenceId.ToString()));
                     break;
             }
         }

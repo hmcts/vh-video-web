@@ -28,7 +28,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         //public static By CopyConferenceID(Guid conferenceId) => By.Id($"copy-conference-id-{conferenceId:D}/a");
         public static By CopyConferenceID(string conferenceId) => By.XPath($"//span[@id='copy-conference-id-{conferenceId:D}']/a");
         public static By CopyQuickLink(string conferenceId) => By.XPath($"//span[@id='copy-quick-link-{conferenceId:D}']/a");
-        public static By CopyTelephoneID(string telephoneId) => By.XPath($"//span[@id='copy-telephone-id-{telephoneId:D}']/a");
+        public static By CopyTelephoneID(string telephoneId) => By.XPath($"//span[@id='copy-telephone-id-{telephoneId}']/a");
         public static By HearingLinkHover(string conferenceId) => By.XPath($"//div[@id='{conferenceId}-summary']/div/span[@id='copyTooltip']");
 
     }
