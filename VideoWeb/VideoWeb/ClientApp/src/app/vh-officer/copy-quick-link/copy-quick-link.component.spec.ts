@@ -4,6 +4,7 @@ import { By } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
 import { ClipboardService } from 'ngx-clipboard';
 import { ConferenceResponseVho } from 'src/app/services/clients/api-client';
+import { TranslatePipeMock } from 'src/app/testing/mocks/mock-translation-pipe';
 import { VhoQueryService } from '../services/vho-query-service.service';
 import { CopyQuickLinkComponent } from './copy-quick-link.component';
 
@@ -23,7 +24,7 @@ describe('CopyQuickLinkComponent', () => {
         const translateServiceSpy = jasmine.createSpyObj('TranslateService', ['instant']);
 
         await TestBed.configureTestingModule({
-            declarations: [CopyQuickLinkComponent],
+            declarations: [CopyQuickLinkComponent, TranslatePipeMock],
             providers: [
                 { provide: ClipboardService, useValue: coursesServiceSpy },
                 { provide: VhoQueryService, useValue: vhoQueryServiceSpy },

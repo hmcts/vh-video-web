@@ -85,7 +85,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
 
     determineFilterSelectionVisibility(profile: UserProfileResponse) {
         const isCorrectRole = profile.role === Role.JudicialOfficeHolder || profile.role === Role.Judge;
-        this.showBackgroundFilter = isCorrectRole && this.videoFilterService.doesSupportVideoFiltering();
+        this.showBackgroundFilter = isCorrectRole;
     }
 
     onSelectedCameraDeviceChange() {
