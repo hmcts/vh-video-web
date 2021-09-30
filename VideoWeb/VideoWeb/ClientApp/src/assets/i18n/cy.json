@@ -1098,13 +1098,13 @@
   "loading": "Wrthi'n llwytho...",
   "video-filter": {
     "title": "Dewis cefndir personol",
-    "none": "Dim cefndir",
+    "none": "Dim",
     "none-alt": "Tynnu'r holl hidlwyr",
     "blur": "Aneglur",
     "blur-alt": "Defnyddio hidlydd cefndir aneglur",
-    "hmcts": "Arwydd GLlTEM",
+    "hmcts": "GLlTEM",
     "hmcts-alt": "Defnyddio cefndir gydag arwydd GLlTEM",
-    "scts": "Arwydd SCTS",
+    "scts": "SCTS",
     "scts-alt": "Defnyddio cefndir gydag arwydd SCTS"
   }
 }
