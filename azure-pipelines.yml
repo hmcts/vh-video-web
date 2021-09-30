@@ -73,6 +73,8 @@ parameters:
         value: $(EnableAndroidSupport)
       - name: VhServices:EnableIOSSupport
         value: $(EnableIOSSupport)
+      - name: VhServices:EnableVideoFilters
+        value: $(EnableVideoFilters)
 
       # AzureAd
       - name: AzureAd:TenantId
