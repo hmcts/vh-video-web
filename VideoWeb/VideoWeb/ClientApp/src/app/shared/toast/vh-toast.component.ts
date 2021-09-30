@@ -13,6 +13,7 @@ export interface VhToastOptions {
 export interface VhToastButton {
     label: string;
     hoverColour?: 'red' | 'green';
+    dismissOnly?: boolean;
     action: () => void;
 }
 

@@ -258,7 +258,7 @@ export class NotificationToastrService {
             buttons: [
                 {
                     label: this.translateService.instant('notification-toastr.poor-connection.dismiss'),
-                    hoverColour: 'green',
+                    dismissOnly: true,
                     action: async () => {
                         this.toastr.remove(toast.toastId);
                     }
@@ -282,7 +282,7 @@ export class NotificationToastrService {
             buttons: [
                 {
                     label: this.translateService.instant('notification-toastr.poor-connection.dismiss'),
-                    hoverColour: 'green',
+                    dismissOnly: true,
                     action: async () => {
                         this.toastr.remove(toast.toastId);
                         callback();
@@ -317,7 +317,6 @@ export class NotificationToastrService {
             timeOut: 0,
             extendedTimeOut: 0,
             tapToDismiss: false,
-            positionClass: 'toast-top-center',
             toastComponent: VhToastComponent
         });
         (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
@@ -329,14 +328,13 @@ export class NotificationToastrService {
             buttons: [
                 {
                     label: this.translateService.instant('notification-toastr.participant-added.dismiss'),
-                    hoverColour: 'green',
+                    dismissOnly: true,
                     action: async () => {
                         this.toastr.remove(toast.toastId);
                     }
                 }
             ]
         };
-
         return toast.toastRef.componentInstance as VhToastComponent;
     }
 

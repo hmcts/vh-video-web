@@ -751,14 +751,12 @@ describe('NotificationToastrService', () => {
                 timeOut: 0,
                 extendedTimeOut: 0,
                 tapToDismiss: false,
-                positionClass: 'toast-top-center',
                 toastComponent: VhToastComponent
             });
         });
 
         it('should have a button to close the toast', () => {
             // Arrange
-            const expectedHoverColor = 'green';
             toastrService.show.and.returnValue(mockToast);
 
             // Act
@@ -767,7 +765,7 @@ describe('NotificationToastrService', () => {
             // Assert
             expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(1);
             expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy();
-            expect(toastComponentInstance.vhToastOptions.buttons[0].hoverColour).toBe(expectedHoverColor);
+            expect(toastComponentInstance.vhToastOptions.buttons[0].dismissOnly).toBeTruthy();
             expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedButtonTranslationString);
             expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedButtonTranslationString);
         });
