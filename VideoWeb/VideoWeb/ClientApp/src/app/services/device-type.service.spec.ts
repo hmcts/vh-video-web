@@ -101,6 +101,9 @@ describe('DeviceType', () => {
         deviceDetectorService.os = 'ios';
         expect(service.isIOS()).toBeTrue();
 
+        deviceDetectorService.os = 'mac';
+        expect(service.isIOS()).toBeTrue();
+
         deviceDetectorService.os = 'android';
         expect(service.isIOS()).toBeFalse();
     });

@@ -124,29 +124,22 @@ stages:
         - group: KinlyConfiguration_Prod
           env:
             - Prod
-        - name: EnableAndroidSupport
-          value: true
+        - group: FeatureFlags_NonProd
           env:
             - Preview
             - Dev
             - AAT
             - Sandbox
+        - group: FeatureFlags_Test
+          env:
             - Test1
             - Test2
-        - name: EnableIOSSupport
-          value: false
+        - group: FeatureFlags_PreProd
+          env:
+            - PreProd
+        - group: FeatureFlags_Prod
           env:
             - Prod
-            - Preprod
-        - name: EnableIOSSupport
-          value: true
-          env:
-            - Preview
-            - Dev
-            - AAT
-            - Sandbox
-            - Test1
-            - Test2
       acceptanceTestSettings:
         - name: ConnectionStrings:SignalR
           value: signalr-connection-str
@@ -181,6 +174,8 @@ stages:
           value: $(EnableAndroidSupport)
         - name: VhServices:EnableIOSSupport
           value: $(EnableIOSSupport)
+        - name: VhServices:EnableVideoFilters
+          value: $(EnableVideoFilters)
 
         # AzureAd
         - name: AzureAd:TenantId
