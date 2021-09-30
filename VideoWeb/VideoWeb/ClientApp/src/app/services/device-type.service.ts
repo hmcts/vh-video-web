@@ -29,8 +29,10 @@ export class DeviceTypeService {
     }
 
     isIOS(): boolean {
-        return this.deviceDetectorService.os.toLowerCase() === OS.MAC.toLowerCase() ||
-            this.deviceDetectorService.os.toLowerCase() === OS.IOS.toLowerCase();
+        return (
+            this.deviceDetectorService.os.toLowerCase() === OS.MAC.toLowerCase() ||
+            this.deviceDetectorService.os.toLowerCase() === OS.IOS.toLowerCase()
+        );
     }
 
     isAndroid(): boolean {
