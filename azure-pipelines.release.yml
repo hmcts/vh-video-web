@@ -131,7 +131,7 @@ stages:
           - group: KinlyConfiguration_Test2
             env:
               - Demo
-          - group: KinlyConfiguration_Preprod
+          - group: KinlyConfiguration_Test
             env:
               - Preprod
           - group: KinlyConfiguration_Prod
