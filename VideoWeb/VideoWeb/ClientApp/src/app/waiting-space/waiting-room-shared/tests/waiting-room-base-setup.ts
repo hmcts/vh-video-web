@@ -99,7 +99,6 @@ export function initAllWRDependencies() {
         'stopConsultationRequestRingtone'
     ]);
     notificationToastrService = jasmine.createSpyObj<NotificationToastrService>('NotificationToastrService', [
-        'showConsultationInvite',
         'showConsultationRejectedByLinkedParticipant',
         'showWaitingForLinkedParticipantsToAccept',
         'reportPoorConnection',

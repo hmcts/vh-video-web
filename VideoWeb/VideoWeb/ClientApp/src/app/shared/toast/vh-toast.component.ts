@@ -5,6 +5,7 @@ export interface VhToastOptions {
     color: 'white' | 'black';
     body?: string;
     htmlBody?: string;
+    dismissOnly?: boolean;
     buttons: VhToastButton[];
     onNoAction?: () => void;
     onRemove?: () => void;
@@ -12,8 +13,7 @@ export interface VhToastOptions {
 
 export interface VhToastButton {
     label: string;
-    hoverColour?: 'red' | 'green';
-    dismissOnly?: boolean;
+    setColour?: 'red' | 'green';
     action: () => void;
 }
 

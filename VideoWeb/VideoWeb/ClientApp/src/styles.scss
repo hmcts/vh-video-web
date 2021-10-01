@@ -232,21 +232,4 @@ video {
   overflow-y: unset;
 }
 
-.govuk-button--green-button {
-  font-family: “GDS Transport”, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  margin:0;
-  font-size: 14px;
-  color:govuk-colour('white');
-  padding:6px 10px;
-  background:govuk-colour('green');
-  border-radius:2px;
-  border-color: govuk-colour('green');
-  font-family: 'GDS Transport', arial, sans-serif;
-  cursor:pointer;
 
-  @media only screen and (max-width: $breakpoint-medium) {    
-    width: 240px;
-    }
-}

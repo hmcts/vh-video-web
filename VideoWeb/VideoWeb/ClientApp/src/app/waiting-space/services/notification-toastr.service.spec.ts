@@ -32,7 +32,7 @@ describe('NotificationToastrService', () => {
     beforeEach(() => {
         translateServiceSpy = jasmine.createSpyObj<TranslateService>('TranslateService', ['instant']);
         translateServiceSpy.instant.and.callFake(k => k);
-        service = new NotificationToastrService(logger, toastrService, consultationService, notificationSoundsService, translateServiceSpy);
+        service = new NotificationToastrService(logger, toastrService, notificationSoundsService, translateServiceSpy);
         roomLabel = 'Meeting room 1';
         consultationService.respondToConsultationRequest.calls.reset();
         notificationSoundsService.playConsultationRequestRingtone.calls.reset();
@@ -41,342 +41,6 @@ describe('NotificationToastrService', () => {
 
     it('should create', async () => {
         expect(service).toBeTruthy();
-    });
-
-    describe('showConsultationInvite', () => {
-        const expectedInvitationId = 'invitation-id';
-        const invitation = {
-            invitationId: expectedInvitationId
-        } as ConsultationInvitation;
-        beforeEach(() => {
-            toastrService.remove.calls.reset();
-        });
-
-        it('should remove any active rejected by linked participant toasts for the invite key', async () => {
-            // Arrange
-            const expectedInviteKey = 'invite-key';
-            const participant = new Participant(globalParticipant);
-            const mockToast = {
-                toastRef: {
-                    componentInstance: {}
-                }
-            } as ActiveToast<VhToastComponent>;
-
-            toastrService.show.and.returnValue(mockToast);
-            spyOn(service, 'getInviteKey').and.returnValue(expectedInviteKey);
-
-            const existingRejectedToast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
-            service.activeLinkedParticipantRejectionToasts[expectedInviteKey] = existingRejectedToast;
-
-            // Act
-            service.showConsultationInvite(roomLabel, globalConference.id, invitation, participant, participant, [participant], [], false);
-
-            // Assert
-            expect(existingRejectedToast.remove).toHaveBeenCalledTimes(1);
-        });
-
-        it('should only show invite for room once', async () => {
-            // Arrange
-            const mockToast = {
-                toastRef: {
-                    componentInstance: {}
-                }
-            } as ActiveToast<VhToastComponent>;
-            toastrService.show.and.returnValue(mockToast);
-            const p = new Participant(globalParticipant);
-
-            // Act
-            service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], false);
-            service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], false);
-            service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], false);
-
-            // Assert
-            expect(notificationSoundsService.playConsultationRequestRingtone).toHaveBeenCalledTimes(1);
-        });
-
-        it('should allow another invite after responded', async () => {
-            // Arrange
-            const mockToast = {
-                toastRef: {
-                    componentInstance: {}
-                }
-            } as ActiveToast<VhToastComponent>;
-            toastrService.show.and.returnValue(mockToast);
-            toastrService.toasts = [mockToast];
-            const p = new Participant(globalParticipant);
-
-            // Act
-            service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], false);
-            await mockToast.toastRef.componentInstance.vhToastOptions.onNoAction();
-            service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], false);
-            await mockToast.toastRef.componentInstance.vhToastOptions.onNoAction();
-            service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], false);
-
-            // Assert
-            expect(notificationSoundsService.playConsultationRequestRingtone).toHaveBeenCalledTimes(3);
-        });
-
-        it('should play notification ringtone if not in conference', async () => {
-            // Arrange
-            const mockToast = {
-                toastRef: {
-                    componentInstance: {}
-                }
-            } as ActiveToast<VhToastComponent>;
-            toastrService.show.and.returnValue(mockToast);
-            const p = new Participant(globalParticipant);
-
-            // Act
-            service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], false);
-
-            // Assert
-            expect(notificationSoundsService.playConsultationRequestRingtone).toHaveBeenCalledTimes(1);
-        });
-
-        it('should not play notification ringtone if in conference', async () => {
-            // Arrange
-            const mockToast = {
-                toastRef: {
-                    componentInstance: {}
-                }
-            } as ActiveToast<VhToastComponent>;
-            toastrService.show.and.returnValue(mockToast);
-            const p = new Participant(globalParticipant);
-
-            // Act
-            service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], true);
-
-            // Assert
-            expect(notificationSoundsService.playConsultationRequestRingtone).toHaveBeenCalledTimes(0);
-        });
-
-        it('should set colour to white if in conference', async () => {
-            // Arrange
-            const mockToast = {
-                toastRef: {
-                    componentInstance: {}
-                }
-            } as ActiveToast<VhToastComponent>;
-            toastrService.show.and.returnValue(mockToast);
-            const p = new Participant(globalParticipant);
-
-            // Act
-            service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], true);
-
-            // Assert
-            expect(mockToast.toastRef.componentInstance.vhToastOptions.color).toBe('white');
-        });
-
-        it('should set colour to black if not in conference', async () => {
-            // Arrange
-            const mockToast = {
-                toastRef: {
-                    componentInstance: {}
-                }
-            } as ActiveToast<VhToastComponent>;
-            toastrService.show.and.returnValue(mockToast);
-            const p = new Participant(globalParticipant);
-
-            // Act
-            service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], false);
-
-            // Assert
-            expect(mockToast.toastRef.componentInstance.vhToastOptions.color).toBe('black');
-        });
-
-        it('should respond to consultation request on toastr on NO action', async () => {
-            // Arrange
-            const mockToast = {
-                toastRef: {
-                    componentInstance: {}
-                }
-            } as ActiveToast<VhToastComponent>;
-            toastrService.show.and.returnValue(mockToast);
-            toastrService.toasts = [mockToast];
-            const p = new Participant(globalParticipant);
-
-            // Act
-            service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], false);
-            await mockToast.toastRef.componentInstance.vhToastOptions.onNoAction();
-
-            // Assert
-            expect(consultationService.respondToConsultationRequest).toHaveBeenCalledWith(
-                globalConference.id,
-                invitation.invitationId,
-                p.id,
-                p.id,
-                ConsultationAnswer.Rejected,
-                roomLabel
-            );
-            expect(consultationService.respondToConsultationRequest).toHaveBeenCalledTimes(1);
-        });
-
-        it('should respond stop the sound playing and clear toasts on remove action', async () => {
-            // Arrange
-            const mockToast = {
-                toastRef: {
-                    componentInstance: {}
-                }
-            } as ActiveToast<VhToastComponent>;
-            toastrService.show.and.returnValue(mockToast);
-            toastrService.toasts = [mockToast];
-            const p = new Participant(globalParticipant);
-
-            // Act
-            service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], false);
-            await mockToast.toastRef.componentInstance.vhToastOptions.onRemove();
-
-            // Assert
-            expect(notificationSoundsService.stopConsultationRequestRingtone).toHaveBeenCalledTimes(1);
-        });
-
-        it('should join participants display names - no endpoints', async () => {
-            // Arrange
-            const mockToast = {
-                toastRef: {
-                    componentInstance: {}
-                }
-            } as ActiveToast<VhToastComponent>;
-            toastrService.show.and.returnValue(mockToast);
-            toastrService.toasts = [mockToast];
-            const p = new Participant(globalParticipant);
-            const p2 = new Participant(globalWitness);
-
-            // Act
-            service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p2], [], false);
-
-            // Assert
-            expect(mockToast.toastRef.componentInstance.vhToastOptions.htmlBody).toBe(
-                `<span class="govuk-!-font-weight-bold">notification-toastr.invite.call-from</span><br/>notification-toastr.invite.with<br/>${p2.displayName}`
-            );
-        });
-
-        it('should join participants display names - participants and endpoints', async () => {
-            // Arrange
-            const mockToast = {
-                toastRef: {
-                    componentInstance: {}
-                }
-            } as ActiveToast<VhToastComponent>;
-            toastrService.show.and.returnValue(mockToast);
-            toastrService.toasts = [mockToast];
-            const p = new Participant(globalParticipant);
-            const p2 = new Participant(globalWitness);
-            const endpoint = globalEndpoint;
-
-            // Act
-            service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p, p2], [endpoint], false);
-
-            // Assert
-            expect(mockToast.toastRef.componentInstance.vhToastOptions.htmlBody).toBe(
-                '<span class="govuk-!-font-weight-bold">notification-toastr.invite.call-from</span><br/>notification-toastr.invite.with<br/>Chris Witness<br/>DispName1'
-            );
-        });
-
-        it('should join participants display names - single participant', async () => {
-            // Arrange
-            const mockToast = {
-                toastRef: {
-                    componentInstance: {}
-                }
-            } as ActiveToast<VhToastComponent>;
-            toastrService.show.and.returnValue(mockToast);
-            toastrService.toasts = [mockToast];
-            const p = new Participant(globalParticipant);
-
-            // Act
-            service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], false);
-
-            // Assert
-            expect(mockToast.toastRef.componentInstance.vhToastOptions.htmlBody).toBe(
-                '<span class="govuk-!-font-weight-bold">notification-toastr.invite.call-from</span>'
-            );
-        });
-
-        it('should add accept button', async () => {
-            // Arrange
-            const mockToast = {
-                toastId: 2,
-                toastRef: {
-                    componentInstance: {}
-                }
-            } as ActiveToast<VhToastComponent>;
-            toastrService.show.and.returnValue(mockToast);
-            toastrService.toasts = [mockToast];
-            const p = new Participant(globalParticipant);
-
-            // Act
-            service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], false);
-            await mockToast.toastRef.componentInstance.vhToastOptions.buttons[0].action();
-
-            // Assert
-            expect(mockToast.toastRef.componentInstance.vhToastOptions.buttons[0].hoverColour).toBe('green');
-            expect(mockToast.toastRef.componentInstance.vhToastOptions.buttons[0].label).toBe('notification-toastr.invite.accept');
-            expect(consultationService.respondToConsultationRequest).toHaveBeenCalledWith(
-                globalConference.id,
-                invitation.invitationId,
-                p.id,
-                p.id,
-                ConsultationAnswer.Accepted,
-                roomLabel
-            );
-            expect(consultationService.respondToConsultationRequest).toHaveBeenCalledTimes(1);
-            expect(toastrService.remove).toHaveBeenCalledOnceWith(mockToast.toastId);
-        });
-
-        it('should add decline button', async () => {
-            // Arrange
-            const mockToast = {
-                toastId: 2,
-                toastRef: {
-                    componentInstance: {}
-                }
-            } as ActiveToast<VhToastComponent>;
-            toastrService.show.and.returnValue(mockToast);
-            toastrService.toasts = [mockToast];
-            const p = new Participant(globalParticipant);
-
-            // Act
-            service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], false);
-            await mockToast.toastRef.componentInstance.vhToastOptions.buttons[1].action();
-
-            // Assert
-            expect(mockToast.toastRef.componentInstance.vhToastOptions.buttons[1].hoverColour).toBe('red');
-            expect(mockToast.toastRef.componentInstance.vhToastOptions.buttons[1].label).toBe('notification-toastr.invite.decline');
-            expect(consultationService.respondToConsultationRequest).toHaveBeenCalledWith(
-                globalConference.id,
-                invitation.invitationId,
-                p.id,
-                p.id,
-                ConsultationAnswer.Rejected,
-                roomLabel
-            );
-            expect(consultationService.respondToConsultationRequest).toHaveBeenCalledTimes(1);
-            expect(toastrService.remove).toHaveBeenCalledOnceWith(mockToast.toastId);
-        });
-
-        it('should set correct toastr properties', async () => {
-            // Arrange
-            const mockToast = {
-                toastRef: {
-                    componentInstance: {}
-                }
-            } as ActiveToast<VhToastComponent>;
-            toastrService.show
-                .withArgs('', '', {
-                    timeOut: 120000,
-                    tapToDismiss: false,
-                    toastComponent: VhToastComponent
-                })
-                .and.returnValue(mockToast);
-            const p = new Participant(globalParticipant);
-
-            // Act
-            service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], false);
-
-            // Assert
-            expect(mockToast.toastRef.componentInstance).not.toBeNull();
-        });
     });
 
     describe('getInviteKey', () => {
@@ -586,7 +250,7 @@ describe('NotificationToastrService', () => {
 
         it('should have a button to close the toast', () => {
             // Arrange
-            const expectedHoverColor = 'red';
+            const expectedSetColor = 'red';
             toastrService.show.and.returnValue(mockToast);
 
             // Act
@@ -595,7 +259,7 @@ describe('NotificationToastrService', () => {
             // Assert
             expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(1);
             expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy();
-            expect(toastComponentInstance.vhToastOptions.buttons[0].hoverColour).toBe(expectedHoverColor);
+            expect(toastComponentInstance.vhToastOptions.buttons[0].setColour).toBe(expectedSetColor);
             expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedButtonTranslationString);
             expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedButtonTranslationString);
         });
@@ -765,7 +429,7 @@ describe('NotificationToastrService', () => {
             // Assert
             expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(1);
             expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy();
-            expect(toastComponentInstance.vhToastOptions.buttons[0].dismissOnly).toBeTruthy();
+            expect(toastComponentInstance.vhToastOptions.dismissOnly).toBeTruthy();
             expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedButtonTranslationString);
             expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedButtonTranslationString);
         });

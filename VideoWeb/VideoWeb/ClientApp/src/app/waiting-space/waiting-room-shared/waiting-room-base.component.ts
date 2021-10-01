@@ -302,8 +302,6 @@ export abstract class WaitingRoomBaseDirective {
                     this.logger.debug(`${this.loggerPrefix} Recieved RequestedConsultationMessage`);
 
                     const requestedBy = this.resolveParticipant(message.requestedBy);
-                    const roomParticipants = this.findParticipantsInRoom(message.roomLabel).map(x => new Participant(x));
-                    const roomEndpoints = this.findEndpointsInRoom(message.roomLabel);
 
                     const invitation = this.consultationInvitiationService.getInvitation(message.roomLabel);
                     invitation.invitationId = message.invitationId;
@@ -319,24 +317,6 @@ export abstract class WaitingRoomBaseDirective {
                             invitation.answer,
                             message.roomLabel
                         );
-                    }
-
-                    if (invitation.answer !== ConsultationAnswer.Accepted) {
-                        invitation.answer = ConsultationAnswer.None;
-                        const consultationInviteToast = this.notificationToastrService.showConsultationInvite(
-                            message.roomLabel,
-                            message.conferenceId,
-                            invitation,
-                            requestedBy,
-                            requestedFor,
-                            roomParticipants,
-                            roomEndpoints,
-                            this.participant.status !== ParticipantStatus.Available
-                        );
-
-                        if (consultationInviteToast) {
-                            invitation.activeToast = consultationInviteToast;
-                        }
                     }
 
                     for (const linkedParticipant of this.participant.linked_participants) {

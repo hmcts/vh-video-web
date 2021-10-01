@@ -13,9 +13,9 @@
 <div class="actions" *ngIf="vhToastOptions.buttons">
     <div class="action" *ngFor="let btn of vhToastOptions.buttons">
         <button
-        [ngClass]="{ 'govuk-button--green-button': btn.dismissOnly }"
-        [class.green]="btn.hoverColour === 'green'"
-        [class.red]="btn.hoverColour === 'red'"
+        class="govuk-button--color-button"
+        [class.green]="btn.setColour === 'green'"
+        [class.red]="btn.setColour === 'red'"
         data-module="govuk-button"
         (click)="handleAction(btn.action)">{{btn.label}}</button>
     </div>
