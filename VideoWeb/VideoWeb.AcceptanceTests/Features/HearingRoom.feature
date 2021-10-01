@@ -1,10 +1,11 @@
-@VIH-4252
+#@VIH-4252
 Feature: Hearing Room
 	In order to conduct a video hearing
 	As a registered user
 	I want to be able to access the video hearing room and interact with the controls
 
-@VIH-4610 @VIH-4615 @HearingTest @Smoketest-Extended
+#@VIH-4610 @VIH-4615
+@HearingTest @Smoketest-Extended
 Scenario: Judge pauses and closes hearing
 	Given the first Individual user has progressed to the Waiting Room page
 	And the Judge user has progressed to the Judge Waiting Room page for the existing hearing

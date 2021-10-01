@@ -1,4 +1,4 @@
-﻿@VIH-4091
+﻿#@VIH-4091
 Feature: Declaration
 	As a registered video hearings user
 	I need to declare that I have read and will comply with the rules
