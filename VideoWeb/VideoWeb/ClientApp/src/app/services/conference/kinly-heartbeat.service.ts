@@ -79,14 +79,6 @@ export class KinlyHeartbeatService {
     }
 
     async handleHeartbeat(heartbeat: any) {
-        if (!this.currentConference || !this.currentParticipant) {
-            this.logger.warn(`${this.loggerPrefix} current conference or participant is falsey. Stopping heartbeat.`, {
-                conference: this.currentConference,
-                participant: this.currentParticipant
-            });
-            return;
-        }
-
         const heartbeatModel = this.heartbeatMapper.map(
             JSON.parse(heartbeat),
             this.deviceTypeService.getBrowserName(),
