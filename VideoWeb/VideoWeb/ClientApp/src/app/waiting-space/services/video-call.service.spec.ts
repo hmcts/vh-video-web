@@ -175,6 +175,7 @@ describe('VideoCallService', () => {
         service.pexipAPI = pexipSpy;
         service.disconnectFromCall();
         expect(pexipSpy.disconnect).toHaveBeenCalled();
+        expect(kinlyHeartbeatServiceSpy.stopHeartbeat).toHaveBeenCalledTimes(1);
     });
 
     it('should not disconnect from pexip when api has not been initialised', () => {

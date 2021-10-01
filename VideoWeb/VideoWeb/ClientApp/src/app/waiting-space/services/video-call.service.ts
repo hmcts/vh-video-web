@@ -94,7 +94,9 @@ export class VideoCallService {
 
         this.pexipAPI.onError = this.handleError.bind(this);
 
-        this.pexipAPI.onDisconnect = this.handleDisconnect.bind(this);
+        // Handles server issued disconections - NOT CLIENT
+        // https://docs.pexip.com/api_client/api_pexrtc.htm#disconnect
+        this.pexipAPI.onDisconnect = this.handleAdminDisconnect.bind(this);
 
         this.pexipAPI.onParticipantUpdate = this.handleParticipantUpdate.bind(this);
 
@@ -149,7 +151,10 @@ export class VideoCallService {
         this.onErrorSubject.next(new CallError(error));
     }
 
-    private handleDisconnect(reason: string) {
+    // Handles server issued disconections - NOT CLIENT
+    // https://docs.pexip.com/api_client/api_pexrtc.htm#disconnect
+    private handleAdminDisconnect(reason: string) {
+        this.logger.debug(`${this.loggerPrefix} handling disconnection`);
         this.kinlyHeartbeatService.stopHeartbeat();
 
         this.onDisconnected.next(new DisconnectedCall(reason));
@@ -194,6 +199,7 @@ export class VideoCallService {
         if (this.pexipAPI) {
             this.logger.info(`${this.loggerPrefix} Disconnecting from pexip node.`);
             this.pexipAPI.disconnect();
+            this.kinlyHeartbeatService.stopHeartbeat();
         } else {
             throw new Error(`${this.loggerPrefix} Pexip Client has not been initialised.`);
         }
