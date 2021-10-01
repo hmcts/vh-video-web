@@ -18,6 +18,7 @@ using BookingsApi.Contract.Responses;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security;
+using BookingsApi.Contract.Configuration;
 
 namespace VideoWeb.AcceptanceTests.Hooks
 {
@@ -28,7 +29,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
         public ConfigHooks(TestContext context)
         {
-            _configRoot = ConfigurationManager.BuildConfig("CA353381-2F0D-47D7-A97B-79A30AFF8B86", "18c466fd-9265-425f-964e-5989181743a7");
+             _configRoot = ConfigurationManager.BuildConfig("CA353381-2F0D-47D7-A97B-79A30AFF8B86", "18c466fd-9265-425f-964e-5989181743a7");
             context.VideoWebConfig = new VideoWebConfig();
             context.Tokens = new VideoWebTokens();
         }
@@ -159,6 +160,9 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
             context.Tokens.CallbackBearerToken = GenerateTemporaryTokens.SetCustomJwTokenForCallback(context.VideoWebConfig.VideoWebKinlyConfiguration);
             context.Tokens.CallbackBearerToken.Should().NotBeNullOrEmpty();
+
+            context.Tokens.BookingsApiBearerToken = await tokenProvider.GetClientAccessToken(context.VideoWebConfig.AzureAdConfiguration.ClientId, context.VideoWebConfig.AzureAdConfiguration.ClientSecret, context.VideoWebConfig.VhServices.BookingsApiResourceId);
+            context.Tokens.BookingsApiBearerToken.Should().NotBeNullOrEmpty();
         }
 
         private static string GetTargetTestEnvironment()

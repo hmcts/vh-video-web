@@ -8,8 +8,7 @@
   text-decoration-line: underline;
 }
 
-#outgoingStream {
-  transform: rotateY(180deg);
-  -webkit-transform: rotateY(180deg); /* Safari and Chrome */
-  -moz-transform: rotateY(180deg); /* Firefox */
+.self-view-container {
+  width: 270px;
+  padding: 0 15px;
 }

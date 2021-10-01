@@ -120,7 +120,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         expect(component.panelMembers).toBeDefined();
         expect(component.panelMembers.length).toBe(1);
 
-        expect(component.participantCount).toBe(5);
+        expect(component.participantCount).toBe(6);
 
         expect(component.endpoints).toBeDefined();
         expect(component.endpoints.length).toBe(2);
@@ -221,13 +221,13 @@ describe('WaitingRoom ParticipantList Base', () => {
         component.loggedInUser.role = Role.JudicialOfficeHolder;
         component.initParticipants();
 
-        expect(component.participantsInConsultation.length).toBe(6);
+        expect(component.participantsInConsultation.length).toBe(7);
     });
     it('should get list of participants for user participant', () => {
         component.loggedInUser.role = Role.Individual;
 
         component.initParticipants();
-        expect(component.participantsInConsultation.length).toBe(6);
+        expect(component.participantsInConsultation.length).toBe(7);
     });
     it('should be allowed to invite in consultation if the participant is in the participants room', () => {
         const indivUser = conference.participants.find(x => x.role === Role.Individual);
@@ -324,13 +324,16 @@ describe('WaitingRoom ParticipantList Base', () => {
             expect(component.panelMembers).toBeDefined();
             expect(component.panelMembers.length).toBe(1);
 
+            expect(component.staffMembers).toBeDefined();
+            expect(component.staffMembers.length).toBe(1);
+
             expect(component.wingers).toBeDefined();
             expect(component.wingers.length).toBe(0);
 
             expect(component.endpoints).toBeDefined();
             expect(component.endpoints.length).toBe(2);
 
-            expect(component.participantCount).toBe(9);
+            expect(component.participantCount).toBe(10);
         });
 
         it('interpreter and interpretee should have hasInterpreterLink set to true', () => {
@@ -415,6 +418,22 @@ describe('WaitingRoom ParticipantList Base', () => {
             const hearingRoleText = component.getHearingRole(litigant);
 
             expect(hearingRoleText).toEqual('hearing-role.litigant-in-person');
+        });
+
+        it('getHearingRole should return contain the hearing role when displaying a participant', () => {
+            const participant = new ParticipantResponse();
+            participant.hearing_role = 'Quick link participant';
+            const hearingRoleText = component.getHearingRole(participant);
+
+            expect(hearingRoleText).toEqual('hearing-role.quick-link-participant');
+        });
+
+        it('getHearingRole should return contain the hearing role when displaying a participant', () => {
+            const participant = new ParticipantResponse();
+            participant.hearing_role = 'Quick link observer';
+            const hearingRoleText = component.getHearingRole(participant);
+
+            expect(hearingRoleText).toEqual('hearing-role.quick-link-observer');
         });
     });
 });

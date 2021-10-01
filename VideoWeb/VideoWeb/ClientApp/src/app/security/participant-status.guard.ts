@@ -5,6 +5,7 @@ import { Role } from '../services/clients/api-client';
 import { Logger } from '../services/logging/logger-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { EventType } from 'src/app/services/clients/api-client';
+import { ErrorService } from '../services/error.service';
 
 @Injectable({
     providedIn: 'root'
@@ -14,6 +15,7 @@ export class ParticipantStatusGuard implements CanActivate {
         private userProfileService: ProfileService,
         private router: Router,
         private logger: Logger,
+        private errorService: ErrorService,
         private participantStatusUpdateService: ParticipantStatusUpdateService
     ) {}
 
@@ -32,13 +34,18 @@ export class ParticipantStatusGuard implements CanActivate {
             if (
                 conferenceId &&
                 (!this.router.navigated || urlActive) &&
-                (profile.role === Role.Representative || profile.role === Role.Individual || profile.role === Role.JudicialOfficeHolder)
+                (profile.role === Role.Representative ||
+                    profile.role === Role.Individual ||
+                    profile.role === Role.JudicialOfficeHolder ||
+                    profile.role === Role.QuickLinkObserver ||
+                    profile.role === Role.QuickLinkParticipant)
             ) {
                 this.logger.debug(`[ParticipantStatusGuard] Refresh detected. Resetting participant status to joining`);
                 this.participantStatusUpdateService.postParticipantStatus(EventType.ParticipantJoining, conferenceId).then(() => {});
             }
         } catch (err) {
             this.logger.error(`[ParticipantStatusGuard] Could not reset participant status to Joining.`, err);
+            this.errorService.handleApiError(err);
         }
 
         return true;

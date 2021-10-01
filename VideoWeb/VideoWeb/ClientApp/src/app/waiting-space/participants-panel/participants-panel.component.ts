@@ -13,8 +13,8 @@ import { HearingTransfer, TransferDirection } from 'src/app/services/models/hear
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { ParticipantPanelModelMapper } from 'src/app/shared/mappers/participant-panel-model-mapper';
 import {
-    CallWitnessIntoHearingEvent,
-    DismissWitnessFromHearingEvent,
+    CallParticipantIntoHearingEvent,
+    DismissParticipantFromHearingEvent,
     LowerParticipantHandEvent,
     ToggleMuteParticipantEvent,
     ToggleSpotlightParticipantEvent
@@ -47,7 +47,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     eventhubSubscription$ = new Subscription();
     participantsSubscription$ = new Subscription();
 
-    witnessTransferTimeout: { [id: string]: NodeJS.Timeout } = {};
+    transferTimeout: { [id: string]: NodeJS.Timeout } = {};
 
     constructor(
         private videoWebService: VideoWebService,
@@ -81,12 +81,12 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.lowerParticipantHand(e.participant);
     }
 
-    callWitnessIntoHearingEventHandler(e: CallWitnessIntoHearingEvent) {
-        this.callWitnessIntoHearing(e.participant);
+    callParticipantIntoHearingEventHandler(e: CallParticipantIntoHearingEvent) {
+        this.callParticipantIntoHearing(e.participant);
     }
 
-    dismissWitnessFromHearingEventHandler(e: DismissWitnessFromHearingEvent) {
-        this.dismissWitnessFromHearing(e.participant);
+    dismissParticipantFromHearingEventHandler(e: DismissParticipantFromHearingEvent) {
+        this.dismissParticipantFromHearing(e.participant);
     }
 
     ngOnDestroy(): void {
@@ -97,12 +97,12 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     resetWitnessTransferTimeout(participantId: string) {
-        clearTimeout(this.witnessTransferTimeout[participantId]);
-        this.witnessTransferTimeout[participantId] = undefined;
+        clearTimeout(this.transferTimeout[participantId]);
+        this.transferTimeout[participantId] = undefined;
     }
 
     resetAllWitnessTransferTimeouts() {
-        for (const participantId of Object.keys(this.witnessTransferTimeout)) {
+        for (const participantId of Object.keys(this.transferTimeout)) {
             this.resetWitnessTransferTimeout(participantId);
         }
     }
@@ -405,17 +405,17 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         });
     }
 
-    async callWitnessIntoHearing(participant: PanelModel) {
-        if (!participant.isAvailable() || !participant.isWitness) {
+    async callParticipantIntoHearing(participant: PanelModel) {
+        if (!participant.isCallableAndReadyToJoin) {
             return;
         }
-        this.logger.debug(`${this.loggerPrefix} Judge is attempting to call witness into hearing`, {
+        this.logger.debug(`${this.loggerPrefix} Judge is attempting to call participant into hearing`, {
             conference: this.conferenceId,
             participant: participant.id
         });
 
         await this.sendTransferDirection(participant, TransferDirection.In);
-        this.witnessTransferTimeout[participant.id] = setTimeout(() => {
+        this.transferTimeout[participant.id] = setTimeout(() => {
             this.initiateTransfer(participant);
         }, 10000);
     }
@@ -452,12 +452,12 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         }
     }
 
-    async dismissWitnessFromHearing(participant: PanelModel) {
-        if (!participant.isInHearing() || !participant.isWitness) {
+    async dismissParticipantFromHearing(participant: PanelModel) {
+        if (!participant.isCallableAndReadyToBeDismissed) {
             return;
         }
 
-        this.logger.debug(`${this.loggerPrefix} Judge is attempting to dismiss witness from hearing`, {
+        this.logger.debug(`${this.loggerPrefix} Judge is attempting to dismiss participant from hearing`, {
             conference: this.conferenceId,
             participant: participant.id
         });
@@ -506,16 +506,23 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     getPanelRowTooltipText(participant: PanelModel) {
-        if (participant.isAvailable()) {
-            return participant.displayName + ': ' + this.getTranslatedText('joining') + this.getAdditionalText(participant);
-        }
+        let toolTipText = participant.displayName + this.getAdditionalText(participant);
+
         if (!participant.isDisconnected() && !participant.isInHearing()) {
-            return participant.displayName + ': ' + this.getTranslatedText('not-joined') + this.getAdditionalText(participant);
+            toolTipText = participant.displayName + ': ' + this.getTranslatedText('not-joined') + this.getAdditionalText(participant);
+        }
+        if (participant.isAvailable()) {
+            toolTipText = participant.displayName + ': ' + this.getTranslatedText('joining') + this.getAdditionalText(participant);
+        }
+        if (participant.isWitness && participant.isAvailable() && !participant.isInHearing()) {
+            toolTipText =
+                participant.displayName + ': ' + this.getTranslatedText('participant-available') + this.getAdditionalText(participant);
         }
         if (participant.isDisconnected()) {
-            return participant.displayName + ': ' + this.getTranslatedText('disconnected') + this.getAdditionalText(participant);
+            toolTipText = participant.displayName + ': ' + this.getTranslatedText('disconnected') + this.getAdditionalText(participant);
         }
-        return participant.displayName + this.getAdditionalText(participant);
+
+        return toolTipText;
     }
 
     getAdditionalText(participant: PanelModel): string {
@@ -536,6 +543,10 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         return this.translateService.instant(`participants-panel.${key}`);
     }
 
+    isWitness(participant: PanelModel) {
+        return participant.isWitness;
+    }
+
     private getHearingRole(participant: PanelModel): string {
         const translatedtext = this.getTranslatedText('for');
         const hearingRoleText = this.translateService.instant('hearing-role.' + participant.hearingRole.toLowerCase().split(' ').join('-'));
@@ -543,6 +554,9 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     private getCaseRole(participant: PanelModel): string {
+        if (!participant.caseTypeGroup) {
+            return '';
+        }
         const translatedCaseTypeGroup = this.translateService.instant(
             'case-type-group.' + participant.caseTypeGroup.toLowerCase().split(' ').join('-')
         );
@@ -562,7 +576,14 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     private setParticipants() {
         const combined = [...this.nonEndpointParticipants, ...this.endpointParticipants];
         combined.sort((x, z) => {
-            return x.orderInTheList === z.orderInTheList ? 0 : +(x.orderInTheList > z.orderInTheList) || -1;
+            if (x.orderInTheList === z.orderInTheList) {
+                // 3 here means regular participants and should be grouped by caseTypeGroup
+                if (x.orderInTheList !== 3 || x.caseTypeGroup === z.caseTypeGroup) {
+                    return x.displayName.localeCompare(z.displayName);
+                }
+                return x.caseTypeGroup.localeCompare(z.caseTypeGroup);
+            }
+            return x.orderInTheList > z.orderInTheList ? 1 : -1;
         });
         this.participants = combined;
     }

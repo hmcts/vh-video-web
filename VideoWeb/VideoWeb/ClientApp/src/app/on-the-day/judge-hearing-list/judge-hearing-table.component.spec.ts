@@ -40,7 +40,7 @@ describe('JudgeHearingTableComponent', () => {
         { status: ConferenceStatus.Paused, expected: true },
         { status: ConferenceStatus.Suspended, expected: true },
         { status: ConferenceStatus.Closed, expected: true },
-        { status: ConferenceStatus.InSession, expected: false },
+        { status: ConferenceStatus.InSession, expected: true },
         { status: ConferenceStatus.NotStarted, expected: false }
     ];
 

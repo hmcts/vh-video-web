@@ -1,26 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <ProjectGuid>{8DB35AEF-80FC-4A54-B253-D5A2236A0AF6}</ProjectGuid>
-    <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <ProjectGuid>{8DB35AEF-80FC-4A54-B253-D5A2236A0AF6}</ProjectGuid>
+        <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="BookingsApi.Client" Version="1.25.8" />
-    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.16.0" />
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.16.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.10" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.10" />
-    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.8" />
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.18.0.27296">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="StackExchange.Redis" Version="2.1.28" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
-    <PackageReference Include="UserApi.Client" Version="1.24.3" />
-    <PackageReference Include="VideoApi.Client" Version="1.27.9" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="BookingsApi.Client" Version="1.27.12" />
+        <PackageReference Include="Microsoft.ApplicationInsights" Version="2.16.0" />
+        <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.16.0" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.10" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.10" />
+        <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.8" />
+        <PackageReference Include="SonarAnalyzer.CSharp" Version="8.18.0.27296">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="StackExchange.Redis" Version="2.1.28" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
+        <PackageReference Include="UserApi.Client" Version="1.27.0" />
+        <PackageReference Include="VideoApi.Client" Version="1.27.12" />
+    </ItemGroup>
 
 </Project>

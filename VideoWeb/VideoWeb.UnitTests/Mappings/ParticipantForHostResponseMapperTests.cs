@@ -6,7 +6,7 @@ using Participant = VideoApi.Contract.Responses.ParticipantForHostResponse;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class ParticipantForHostResponseMapperTests : BaseMockerSutTestSetup<ParticipantForJudgeResponseMapper>
+    public class ParticipantForHostResponseMapperTests : BaseMockerSutTestSetup<ParticipantForHostResponseMapper>
     {
         [Test]
         public void Should_map_all_participants()

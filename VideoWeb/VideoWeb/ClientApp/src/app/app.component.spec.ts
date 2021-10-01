@@ -1,8 +1,8 @@
 import { ElementRef } from '@angular/core';
-import { fakeAsync, flushMicrotasks, tick, flush } from '@angular/core/testing';
-import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, convertToParamMap, Event, NavigationEnd, Router } from '@angular/router';
-import { of, Subject, Subscription } from 'rxjs';
+import { fakeAsync, flushMicrotasks, tick, flush, ComponentFixture, waitForAsync, TestBed } from '@angular/core/testing';
+import { By, Title } from '@angular/platform-browser';
+import { ActivatedRoute, Event, NavigationEnd, Router } from '@angular/router';
+import { BehaviorSubject, of, Subject, Subscription } from 'rxjs';
 import { AppComponent } from './app.component';
 import { ConfigService } from './services/api/config.service';
 import { ProfileService } from './services/api/profile.service';
@@ -11,10 +11,7 @@ import { DeviceTypeService } from './services/device-type.service';
 import { ErrorService } from './services/error.service';
 import { PageTrackerService } from './services/page-tracker.service';
 import { ConnectionStatusService } from './services/connection-status.service';
-import { pageUrls } from './shared/page-url.constants';
-import { MockOidcSecurityService } from './testing/mocks/mock-oidc-security.service';
 import { TestLanguageService } from './shared/test-language.service';
-import { translateServiceSpy } from './testing/mocks/mock-translation.service';
 import {
     PublicEventsService,
     OidcClientNotification,
@@ -24,8 +21,29 @@ import {
     ValidationResult
 } from 'angular-auth-oidc-client';
 import { MockLogger } from './testing/mocks/mock-logger';
+import { SecurityServiceProvider } from './security/authentication/security-provider.service';
+import { SecurityConfigSetupService } from './security/security-config-setup.service';
+import { getSpiedPropertyGetter } from './shared/jasmine-helpers/property-helpers';
+import { ISecurityService } from './security/authentication/security-service.interface';
+import { Location } from '@angular/common';
+import { pageUrls } from './shared/page-url.constants';
+import { BackLinkDetails } from './shared/models/back-link-details';
+import { Logger } from './services/logging/logger-base';
+import { MockComponent, ngMocks } from 'ng-mocks';
+import { BackNavigationComponent } from './shared/back-navigation/back-navigation.component';
+import { BetaBannerComponent } from './shared/beta-banner/beta-banner.component';
+import { FooterComponent } from './shared/footer/footer.component';
+import { HeaderComponent } from './shared/header/header.component';
+import { TranslatePipeMock } from './testing/mocks/mock-translation-pipe';
+import { TranslateService } from '@ngx-translate/core';
+import { RouterTestingModule } from '@angular/router/testing';
+import { translateServiceSpy } from './testing/mocks/mock-translation.service';
+import { NoSleepService } from './services/no-sleep.service';
 
 describe('AppComponent', () => {
+    let fixture: ComponentFixture<AppComponent>;
+    let component: AppComponent;
+
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
     let deviceTypeServiceSpy: jasmine.SpyObj<DeviceTypeService>;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
@@ -36,27 +54,37 @@ describe('AppComponent', () => {
     let connectionStatusServiceSpy: jasmine.SpyObj<ConnectionStatusService>;
     let pageTrackerServiceSpy: jasmine.SpyObj<PageTrackerService>;
     let testLanguageServiceSpy: jasmine.SpyObj<TestLanguageService>;
-    const mockOidcSecurityService = new MockOidcSecurityService();
-    let oidcSecurityService;
+    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
+    let securityConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
+    let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
+    let noSleepServiceSpy: jasmine.SpyObj<NoSleepService>;
+
+    let locationSpy: jasmine.SpyObj<Location>;
     const clientSettings = new ClientSettingsResponse({
         event_hub_path: 'evenhub',
         join_by_phone_from_date: '2020-09-01',
         app_insights_instrumentation_key: 'appinsights'
     });
 
-    let component: AppComponent;
-    let activatedRoute: ActivatedRoute;
+    let activatedRouteMock: any;
     const eventsSubjects = new Subject<Event>();
     const dummyElement = document.createElement('div');
+    const testTitle = 'test-title';
+    let eventValue: OidcClientNotification<AuthorizationResult> = {
+        type: EventTypes.NewAuthorizationResult,
+        value: { isRenewProcess: false, authorizationState: AuthorizedState.Authorized, validationResult: ValidationResult.Ok }
+    };
+    const configRestoredSubject = new BehaviorSubject(true);
 
     beforeAll(() => {
-        activatedRoute = jasmine.createSpyObj<ActivatedRoute>('ActivatedRoute', [], {
-            firstChild: <any>{ snapshot: { data: convertToParamMap({ title: 'test-title' }) } }
-        });
+        jasmine.getEnv().allowRespy(true);
+
+        activatedRouteMock = {
+            firstChild: { snapshot: { data: { title: testTitle } } }
+        };
 
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings', 'loadConfig']);
         configServiceSpy.getClientSettings.and.returnValue(of(clientSettings));
-        oidcSecurityService = mockOidcSecurityService;
         deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isSupportedBrowser']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
         const profile = new UserProfileResponse({ role: Role.Representative });
@@ -70,50 +98,117 @@ describe('AppComponent', () => {
         pageTrackerServiceSpy = jasmine.createSpyObj('PageTrackerService', ['trackNavigation', 'trackPreviousPage']);
         testLanguageServiceSpy = jasmine.createSpyObj('TestLanguageService', ['setupSubscriptions']);
         publicEventsServiceSpy = jasmine.createSpyObj('PublicEventsService', ['registerForEvents']);
-    });
-
-    beforeEach(() => {
-        component = new AppComponent(
-            routerSpy,
-            deviceTypeServiceSpy,
-            profileServiceSpy,
-            errorServiceSpy,
-            titleServiceSpy,
-            activatedRoute,
-            connectionStatusServiceSpy,
-            pageTrackerServiceSpy,
-            testLanguageServiceSpy,
-            translateServiceSpy,
-            oidcSecurityService,
-            configServiceSpy,
-            publicEventsServiceSpy,
-            new MockLogger()
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>(
+            'ISecurityService',
+            ['checkAuth', 'logoffAndRevokeTokens'],
+            ['isAuthenticated$']
         );
-
-        document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(dummyElement);
-        component.main = new ElementRef(dummyElement);
-        component.skipLinkDiv = new ElementRef(dummyElement);
-        deviceTypeServiceSpy.isSupportedBrowser.and.returnValue(true);
-        routerSpy.navigate.and.returnValue(Promise.resolve(true));
-        routerSpy.navigateByUrl.and.returnValue(Promise.resolve(true));
-        routerSpy.navigate.calls.reset();
-        routerSpy.navigateByUrl.calls.reset();
-        profileServiceSpy.getUserProfile.calls.reset();
     });
 
-    afterEach(() => {
-        mockOidcSecurityService.setAuthenticated(false);
+    afterAll(() => {
+        jasmine.getEnv().allowRespy(false);
     });
+
+    beforeEach(
+        waitForAsync(() => {
+            noSleepServiceSpy = jasmine.createSpyObj<NoSleepService>(['enable']);
+            securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
+                'SecurityServiceProviderService',
+                [],
+                ['currentSecurityService$']
+            );
+
+            spyOnProperty(securityServiceSpy, 'isAuthenticated$', 'get').and.returnValue(of(true));
+            getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
+
+            securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>(
+                'SecurityConfigSetupService',
+                ['getIdp'],
+                ['configRestored$']
+            );
+            spyOnProperty(securityConfigSetupServiceSpy, 'configRestored$').and.returnValue(configRestoredSubject.asObservable());
+            locationSpy = jasmine.createSpyObj<Location>('Location', ['back']);
+
+            TestBed.configureTestingModule({
+                providers: [
+                    { provide: DeviceTypeService, useValue: deviceTypeServiceSpy },
+                    { provide: ProfileService, useValue: profileServiceSpy },
+                    { provide: ErrorService, useValue: errorServiceSpy },
+                    { provide: Title, useValue: titleServiceSpy },
+                    { provide: ConnectionStatusService, useValue: connectionStatusServiceSpy },
+                    { provide: PageTrackerService, useValue: pageTrackerServiceSpy },
+                    { provide: TestLanguageService, useValue: testLanguageServiceSpy },
+                    { provide: SecurityServiceProvider, useValue: securityServiceProviderServiceSpy },
+                    { provide: SecurityConfigSetupService, useValue: securityConfigSetupServiceSpy },
+                    { provide: ConfigService, useValue: configServiceSpy },
+                    { provide: PublicEventsService, useValue: publicEventsServiceSpy },
+                    { provide: Location, useValue: locationSpy },
+                    { provide: Logger, useValue: new MockLogger() },
+                    { provide: TranslateService, useValue: translateServiceSpy },
+                    { provide: Router, useValue: routerSpy },
+                    {
+                        provide: ActivatedRoute,
+                        useValue: activatedRouteMock
+                    },
+                    { provide: NoSleepService, useValue: noSleepServiceSpy }
+                ],
+                declarations: [
+                    AppComponent,
+                    TranslatePipeMock,
+                    MockComponent(BackNavigationComponent),
+                    MockComponent(HeaderComponent),
+                    MockComponent(FooterComponent),
+                    MockComponent(BetaBannerComponent)
+                ],
+                imports: [RouterTestingModule]
+            }).compileComponents();
+
+            fixture = TestBed.createComponent(AppComponent);
+            component = fixture.componentInstance;
+            document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(dummyElement);
+            component.main = new ElementRef(dummyElement);
+            component.skipLinkDiv = new ElementRef(dummyElement);
+            deviceTypeServiceSpy.isSupportedBrowser.and.returnValue(true);
+            routerSpy.navigate.and.returnValue(Promise.resolve(true));
+            routerSpy.navigateByUrl.and.returnValue(Promise.resolve(true));
+            routerSpy.navigate.calls.reset();
+            routerSpy.navigateByUrl.calls.reset();
+            profileServiceSpy.getUserProfile.calls.reset();
+            publicEventsServiceSpy.registerForEvents.and.returnValue(of(eventValue));
+        })
+    );
+
+    it('should enable the no sleep service on init', fakeAsync(() => {
+        // Arrange
+        securityServiceSpy.checkAuth.and.returnValue(of(true));
+
+        // Act
+        component.ngOnInit();
+        tick();
+        flush();
+
+        // Assert
+        expect(noSleepServiceSpy.enable).toHaveBeenCalledTimes(1);
+    }));
 
     it('should start connection status service if authenticated oninit', fakeAsync(() => {
-        const eventValue: OidcClientNotification<AuthorizationResult> = {
+        // Arrange
+        const checkAuthSubject = new Subject<boolean>();
+        securityServiceSpy.checkAuth.and.returnValue(checkAuthSubject.asObservable());
+
+        eventValue = {
             type: EventTypes.NewAuthorizationResult,
             value: { isRenewProcess: false, authorizationState: AuthorizedState.Authorized, validationResult: ValidationResult.Ok }
         };
+
         publicEventsServiceSpy.registerForEvents.and.returnValue(of(eventValue));
-        mockOidcSecurityService.setAuthenticated(true);
+
+        // Act
         component.ngOnInit();
+        tick();
         flush();
+
+        // Assert
         expect(connectionStatusServiceSpy.start).toHaveBeenCalled();
     }));
 
@@ -130,10 +225,10 @@ describe('AppComponent', () => {
     });
 
     it('should log out of adal', () => {
-        spyOn(oidcSecurityService, 'logoffAndRevokeTokens');
+        component.securityService = securityServiceSpy;
         component.logOut();
         expect(component.loggedIn).toBeFalsy();
-        expect(oidcSecurityService.logoffAndRevokeTokens).toHaveBeenCalled();
+        expect(securityServiceSpy.logoffAndRevokeTokens).toHaveBeenCalled();
     });
 
     it('should set to true when user profile is a representative', async () => {
@@ -165,26 +260,50 @@ describe('AppComponent', () => {
     });
 
     it('should retrieve profile when on not on logout and authenticated', async () => {
-        mockOidcSecurityService.setAuthenticated(true);
         await component.ngOnInit();
         expect(profileServiceSpy.getUserProfile).toHaveBeenCalled();
     });
 
     it('should not check auth or get profile on logout', async () => {
-        mockOidcSecurityService.setAuthenticated(true);
+        component.securityService = securityServiceSpy;
         await component.checkAuth();
         expect(routerSpy.navigate).toHaveBeenCalledTimes(0);
         expect(profileServiceSpy.getUserProfile).toHaveBeenCalledTimes(0);
     });
 
-    it('should update page title is naviation event raised', fakeAsync(() => {
-        const navEvent = new NavigationEnd(1, pageUrls.Login, pageUrls.AdminVenueList);
-        component.setPageTitle();
-        eventsSubjects.next(navEvent);
-        tick();
-        flushMicrotasks();
-        expect(titleServiceSpy.setTitle).toHaveBeenCalled();
-    }));
+    describe('NavigationEndEvent', () => {
+        const navEvent = new NavigationEnd(1, 'url', 'urlAfterRedirects');
+
+        it('should update page title is naviation event raised', fakeAsync(() => {
+            const testTitlePrefix = 'Test Title Prefix';
+            titleServiceSpy.getTitle.and.returnValue(testTitlePrefix);
+            component.setupNavigationSubscriptions();
+            eventsSubjects.next(navEvent);
+            tick();
+            flushMicrotasks();
+            expect(titleServiceSpy.setTitle).toHaveBeenCalledWith(testTitlePrefix + ' - ' + testTitle);
+        }));
+
+        describe('backLinkDetails$', () => {
+            it('should update backLinkDetails$ value as undefined when none present', fakeAsync(() => {
+                component.setupNavigationSubscriptions();
+                eventsSubjects.next(navEvent);
+                tick();
+                flushMicrotasks();
+                expect(component.backLinkDetails$.value).toBe(undefined);
+            }));
+
+            it('should update backLinkDetails$ value as null when none present', fakeAsync(() => {
+                const testBackLinkDetails = new BackLinkDetails();
+                activatedRouteMock.firstChild.snapshot.data['backLink'] = testBackLinkDetails;
+                component.setupNavigationSubscriptions();
+                eventsSubjects.next(navEvent);
+                tick();
+                flushMicrotasks();
+                expect(component.backLinkDetails$.value).toBe(testBackLinkDetails);
+            }));
+        });
+    });
 
     it('should clear subscriptions on destory', () => {
         const sub = jasmine.createSpyObj<Subscription>('Subscription', ['add', 'unsubscribe']);
@@ -197,5 +316,49 @@ describe('AppComponent', () => {
         spyOn(dummyElement, 'focus');
         component.skipToContent();
         expect(dummyElement.focus).toHaveBeenCalled();
+    });
+
+    describe('navigateBack', () => {
+        it('should call location back when called with falsy value', () => {
+            component.navigateBack(null);
+            expect(locationSpy.back).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call location back when called with falsy value', () => {
+            const testPath = 'testPath';
+            component.navigateBack(testPath);
+            expect(routerSpy.navigate).toHaveBeenCalledWith([testPath]);
+        });
+    });
+
+    describe('backNavigationComponent', () => {
+        const element = 'app-back-navigation';
+
+        it('should not have component when value is null', () => {
+            component.backLinkDetails$.next(null);
+            fixture.detectChanges();
+            expect(fixture.debugElement.query(By.css(element))).toBeFalsy();
+        });
+
+        describe('when has value', () => {
+            const testLinkText = 'testLinkText';
+            const testLinkPath = 'testLinkPath';
+            const testBackLinkDetails = new BackLinkDetails(testLinkText, testLinkPath);
+            let backNavigationComponent: BackNavigationComponent;
+            beforeEach(() => {
+                component.backLinkDetails$.next(testBackLinkDetails);
+                fixture.detectChanges();
+                backNavigationComponent = ngMocks.find<BackNavigationComponent>('app-back-navigation').componentInstance;
+            });
+            it('sends the correct value to the child input', () => {
+                expect(backNavigationComponent.linkText).toEqual(testBackLinkDetails.text);
+            });
+
+            it('navigateBack output should call function correctly', () => {
+                spyOn(component, 'navigateBack');
+                backNavigationComponent.navigateBack.emit();
+                expect(component.navigateBack).toHaveBeenCalledWith(testBackLinkDetails.path);
+            });
+        });
     });
 });

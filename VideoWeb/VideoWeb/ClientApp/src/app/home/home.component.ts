@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { EventTypes, OidcSecurityService, PublicEventsService } from 'angular-auth-oidc-client';
+import { ActivatedRoute, Router } from '@angular/router';
+import { EventTypes, PublicEventsService } from 'angular-auth-oidc-client';
 import { filter } from 'rxjs/operators';
 import { Logger } from '../services/logging/logger-base';
 import { pageUrls } from '../shared/page-url.constants';
@@ -10,8 +10,7 @@ import { pageUrls } from '../shared/page-url.constants';
     templateUrl: './home.component.html'
 })
 export class HomeComponent implements OnInit {
-    oidcSecurityService: OidcSecurityService;
-    constructor(private router: Router, private eventService: PublicEventsService, private logger: Logger) {}
+    constructor(private router: Router, private eventService: PublicEventsService, private logger: Logger, private route: ActivatedRoute) {}
 
     ngOnInit() {
         this.eventService
@@ -28,5 +27,8 @@ export class HomeComponent implements OnInit {
                     this.router.navigate([`/${pageUrls.Navigator}`]);
                 }
             });
+        if (this.route.snapshot.queryParamMap.get('code') === null) {
+            this.router.navigate([`/${pageUrls.Login}`]);
+        }
     }
 }

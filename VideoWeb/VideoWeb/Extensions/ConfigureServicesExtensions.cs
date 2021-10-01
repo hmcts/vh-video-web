@@ -36,6 +36,7 @@ using UserApi.Client;
 using VideoApi.Client;
 using VideoWeb.EventHub.Services;
 using VideoWeb.Swagger;
+using VideoWeb.Helpers.Interfaces;
 
 namespace VideoWeb.Extensions
 {
@@ -99,7 +100,7 @@ namespace VideoWeb.Extensions
 
             services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
             services.AddScoped<ITokenProvider, TokenProvider>();
-            services.AddScoped<ICustomJwtTokenProvider, CustomJwtTokenProvider>();
+            services.AddScoped<IKinlyJwtTokenProvider, KinlyJwtTokenProvider>();
             services.AddScoped<IHashGenerator, HashGenerator>();
             services.AddScoped<AdUserProfileService>();
             services.AddScoped<IUserProfileService, CachedProfileService>();
@@ -132,6 +133,7 @@ namespace VideoWeb.Extensions
                 .AddTypedClient(httpClient => BuildUserApiClient(httpClient, servicesConfiguration));
 
             services.AddScoped<IEventHandlerFactory, EventHandlerFactory>();
+            services.AddScoped<IParticipantsUpdatedEventNotifier, ParticipantsUpdatedEventNotifier>();
             RegisterEventHandlers(services);
 
             var contractResolver = new DefaultContractResolver

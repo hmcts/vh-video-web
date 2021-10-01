@@ -1,0 +1,92 @@
+<button class="vh-accordion" (click)="toggleDisplayOptions()" tabindex="-1">
+  <span class="govuk-link" tabindex="0">
+    {{ 'video-filter.title' | translate }}
+    <i class="vh-video-filter-title fas" [ngClass]="showOptions ? 'fa-chevron-up' : 'fa-chevron-down'" id="bg-icon" aria-hidden="true"></i
+  ></span>
+</button>
+
+<div *ngIf="showOptions" class="v-bg-panel">
+  <div *ngIf="browserSupportsFilters; else unsupportedBrowser" class="bg-grid">
+    <div class="bg-img1">
+      <input
+        type="radio"
+        class="input-hidden"
+        name="backgrounds"
+        id="bg-none"
+        [checked]="!filterOn"
+        [value]="null"
+        (change)="this.backgroundChanged($event)"
+        tabindex="-1"
+      />
+      <label for="bg-none" tabindex="0" (keypress)="updateFilter(null)">
+        <img src="/assets/images/VhBgFilterNone.jpg" class="bg-option-img" [attr.alt]="'video-filter.none-alt' | translate" />
+      </label>
+    </div>
+    <div class="bg-name1">
+      <div class="govuk-hint bg-option-text">{{ 'video-filter.none' | translate }}</div>
+    </div>
+    <div class="bg-img2">
+      <input
+        type="radio"
+        class="input-hidden"
+        name="backgrounds"
+        id="bg-blur"
+        [checked]="activeFilter === filtersAvailable.blur"
+        [value]="filtersAvailable.blur"
+        (change)="this.backgroundChanged($event)"
+        tabindex="-1"
+      />
+      <label for="bg-blur" tabindex="0" (keypress)="updateFilter(filtersAvailable.blur)">
+        <img src="/assets/images/VhBgFilterBlur.jpg" class="bg-option-img" [attr.alt]="'video-filter.blur-alt' | translate" />
+      </label>
+    </div>
+    <div class="bg-name2">
+      <div class="govuk-hint bg-option-text">{{ 'video-filter.blur' | translate }}</div>
+    </div>
+    <div class="bg-img3">
+      <input
+        type="radio"
+        class="input-hidden"
+        name="backgrounds"
+        id="bg-hmcts"
+        [checked]="activeFilter === filtersAvailable.HMCTS"
+        [value]="filtersAvailable.HMCTS"
+        (change)="this.backgroundChanged($event)"
+        tabindex="-1"
+      />
+      <label for="bg-hmcts" tabindex="0" (keypress)="updateFilter(filtersAvailable.HMCTS)">
+        <img src="/assets/images/VhBgFilterHMCTS.jpg" class="bg-option-img" [attr.alt]="'video-filter.hmcts-alt' | translate" />
+      </label>
+    </div>
+    <div class="bg-name3">
+      <div class="govuk-hint bg-option-text">{{ 'video-filter.hmcts' | translate }}</div>
+    </div>
+    <div class="bg-img4">
+      <input
+        type="radio"
+        class="input-hidden"
+        name="backgrounds"
+        id="bg-scot"
+        [checked]="activeFilter === filtersAvailable.SCTS"
+        [value]="filtersAvailable.SCTS"
+        (change)="this.backgroundChanged($event)"
+        tabindex="-1"
+      />
+      <label for="bg-scot" tabindex="0" (keypress)="updateFilter(filtersAvailable.SCTS)">
+        <img src="/assets/images/VhBgFilterSCTS.jpg" class="bg-option-img" [attr.alt]="'video-filter.scts-alt' | translate" />
+      </label>
+    </div>
+    <div class="bg-name4">
+      <div class="govuk-hint bg-option-text">{{ 'video-filter.scts' | translate }}</div>
+    </div>
+  </div>
+  <ng-template #unsupportedBrowser>
+    <div class="govuk-warning-text govuk-!-margin-bottom-0">
+      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Unsupported Browser</span>
+        This browser does not support custom backgrounds.
+      </strong>
+    </div>
+  </ng-template>
+</div>

@@ -33,7 +33,7 @@ namespace VideoWeb.Mappings
             {
                 return Role.Judge;
             }
-
+            
             if (user.IsInRole(AppRoles.JudicialOfficeHolderRole))
             {
                 return Role.JudicialOfficeHolder;
@@ -48,10 +48,25 @@ namespace VideoWeb.Mappings
             {
                 return Role.Individual;
             }
-
+            
+            if (user.IsInRole(AppRoles.QuickLinkObserver))
+            {
+                return Role.QuickLinkObserver;
+            }
+            
+            if (user.IsInRole(AppRoles.QuickLinkParticipant))
+            {
+                return Role.QuickLinkParticipant;
+            }
+            
             if (user.IsInRole(AppRoles.CaseAdminRole))
             {
                 return Role.CaseAdmin;
+            }
+
+            if (user.IsInRole(AppRoles.StaffMember))
+            {
+                return Role.StaffMember;
             }
 
             throw new NotSupportedException($"Role is not supported for this application");

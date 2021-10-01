@@ -69,6 +69,15 @@ parameters:
         secret: true
       - name: VhServices:InternalEventSecret
         value: $(internal_event_secret)
+<<<<<<< HEAD
+=======
+      - name: VhServices:EnableAndroidSupport
+        value: $(EnableAndroidSupport)
+      - name: VhServices:EnableIOSSupport
+        value: $(EnableIOSSupport)
+      - name: VhServices:EnableVideoFilters
+        value: $(EnableVideoFilters)
+>>>>>>> origin
 
       # AzureAd
       - name: AzureAd:TenantId
@@ -136,6 +145,7 @@ parameters:
       - name: UsingEjud
         value: $(UsingEjud)
 
+<<<<<<< HEAD
   - name: appSettings
     type: object
     default:
@@ -194,6 +204,72 @@ parameters:
       - name: KinlyConfiguration:HeartbeatUrlBase
         value: $(HeartbeatUrlBase)
 
+=======
+      # Quick Links Configuration
+      - name: QuickLinks:Issuer
+        value: $(video_api_url)
+      - name: QuickLinks:JwtProviderSecret
+        value: $(JwtProviderSecret)
+
+  - name: appSettings
+    type: object
+    default:
+      - name: ApplicationInsights:InstrumentationKey
+        value: vh-core-infra-AppInsightsKey
+        secret: true
+      - name: ConnectionStrings:SignalR
+        value: signalr-connection-str
+        secret: true
+
+      # AzureAd
+      - name: AzureAd:ClientId
+        value: vh-video-web-appid-v2
+        secret: true
+      - name: AzureAd:ClientSecret
+        value: vh-video-web-key-v2
+        secret: true
+      - name: AzureAd:PostLogoutRedirectUri
+        value: $(video_web_url)logout
+      - name: AzureAd:RedirectUri
+        value: $(video_web_url)home
+      - name: AzureAd:TenantId
+        value: tenantid
+        secret: true
+      - name: AzureAd:VhVideoWebResourceId
+        value: vh-video-web-identifieruris
+        secret: true
+
+      # EJudAd
+      - name: EJudAd:ClientId
+        value: ejud-appid
+        secret: true
+      - name: EJudAd:PostLogoutRedirectUri
+        value: $(video_web_url)logout
+      - name: EJudAd:RedirectUri
+        value: $(video_web_url)home
+      - name: EJudAd:TenantId
+        value: ejud-tenantid
+        secret: true
+
+      # Kinly
+      - name: KinlyConfiguration:CallbackSecret
+        value: $(CallbackKey)
+      - name: KinlyConfiguration:ApiSecret
+        value: $(KinlyHeartBeatApiKey)
+      - name: KinlyConfiguration:SelfTestApiSecret
+        value: $(SelfTestApiKey)
+      - name: KinlyConfiguration:JoinByPhoneFromDate
+        value: $(JoinByPhoneFromDate)
+      - name: KinlyConfiguration:TurnServer
+        value: $(TurnServer)
+      - name: KinlyConfiguration:TurnServerUser
+        value: $(TurnServerUser)
+      - name: KinlyConfiguration:TurnServerCredential
+        value: $(TurnServerCredential)
+      - name: KinlyConfiguration:HeartbeatUrlBase
+        value: $(HeartbeatUrlBase)
+
+>>>>>>> origin
       # VhServices
       - name: VhServices:BookingsApiResourceId
         value: vh-bookings-api-identifieruris
@@ -214,9 +290,28 @@ parameters:
         value: $(EmailReformDomain)
       - name: VhServices:InternalEventSecret
         value: $(internal_event_secret)
+<<<<<<< HEAD
 
 variables:
   - group: vh-domains-and-urls
+=======
+      - name: VhServices:EnableAndroidSupport
+        value: $(EnableAndroidSupport)
+      - name: VhServices:EnableIOSSupport
+        value: $(EnableIOSSupport)
+      - name: VhServices:EnableVideoFilters
+        value: $(EnableVideoFilters)
+
+      # Quick Links Configuration
+      - name: QuickLinks:Issuer
+        value: $(video_api_url)
+      - name: QuickLinks:JwtProviderSecret
+        value: $(JwtProviderSecret)
+
+variables:
+  - group: vh-domains-and-urls
+  - group: FeatureFlags_NonProd
+>>>>>>> origin
   - group: vh-apps-settings-generic
   - group: vh-video-web
   - group: vh-video-web-nonprod
@@ -225,6 +320,10 @@ variables:
   - group: Saucelabs
   - group: vh-wowza-dev
   - group: KinlyConfiguration_Test
+<<<<<<< HEAD
+=======
+  - group: QuickLinks_Preview
+>>>>>>> origin
 
 trigger:
   branches:
@@ -284,6 +383,7 @@ extends:
               value: ${{ setting.value }}
               secret: ${{ setting.secret }}
       coverletCoverageExclusions:
+<<<<<<< HEAD
         - "[VideoWeb]VideoWeb.ConfigureServicesExtensions"
         - "[VideoWeb]VideoWeb.Program"
         - "[VideoWeb]VideoWeb.Startup"
@@ -301,6 +401,25 @@ extends:
         sonar.coverage.exclusions= **/Testing.Common/**, VideoWeb/Views/*,VideoWeb/Pages/*,VideoWeb.AcceptanceTests/*,**/ClientApp/src/scripts/*.js,**/ClientApp/src/app/testing/**,**/ClientApp/src/app/vh-officer/helper.ts,**/ClientApp/src/app/services/events.service.ts, **/ClientApp/src/app/send-video-events/send-video-events.component.ts,**/ClientApp/src/app/services/api/video-web.service.ts,**/ClientApp/src/app/waiting-space/analogue-clock/analogue-clock.component.ts,**/app-insights-logger.service.ts
         sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)/Coverage/coverage.opencover.xml
         sonar.typescript.lcov.reportPaths=$(System.DefaultWorkingDirectory)/VideoWeb/VideoWeb/ClientApp/coverage/lcov.info
+=======
+        - '[VideoWeb]VideoWeb.ConfigureServicesExtensions'
+        - '[VideoWeb]VideoWeb.Program'
+        - '[VideoWeb]VideoWeb.Startup'
+        - '[*]VideoWeb.Common.*'
+        - '[*]VideoWeb.Extensions.*'
+        - '[*]VideoWeb.Pages.*'
+        - '[*]VideoWeb.Swagger.*'
+        - '[*]VideoWeb.Views.*'
+        - '[*]VideoWeb.UnitTests.*'
+        - '[*]VideoWeb.Services.*'
+        - '[*]Testing.Common.*'
+      sonarCloud_ExtraProperties: |
+        sonar.exclusions=**/node_modules/**,**/*.spec.ts, *.spec.ts, **/ClientApp/src/*, **/ClientApp/coverage/**/**, **/ConfigureServicesExtensions.cs, **/Startup.cs, **/Program.cs, **/Testing.Common/**, **/VideoWeb.UnitTests/**, **/VideoWeb.Common/**, **/VideoWeb/Swagger/**, **/VideoWeb/Extensions/**, **/ClientApp/src/scripts/*.js
+        sonar.typescript.exclusions=**/node_modules/**,**/typings.d.ts,**/main.ts,**/environments/environment*.ts,**/*routing.module.ts,**/api-client.ts,**/app-insights-logger.service.ts
+        sonar.coverage.exclusions= **/Testing.Common/**, VideoWeb/Views/*,VideoWeb/Pages/*,VideoWeb.AcceptanceTests/*,**/ClientApp/src/scripts/*.js,**/ClientApp/src/app/testing/**,**/ClientApp/src/app/vh-officer/helper.ts,**/ClientApp/src/app/services/events.service.ts, **/ClientApp/src/app/send-video-events/send-video-events.component.ts,**/ClientApp/src/app/services/api/video-web.service.ts,**/ClientApp/src/app/waiting-space/analogue-clock/analogue-clock.component.ts,**/app-insights-logger.service.ts,**/video-filter.service.ts
+        sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)/Coverage/coverage.opencover.xml
+        sonar.javascript.lcov.reportPaths=$(System.DefaultWorkingDirectory)/VideoWeb/VideoWeb/ClientApp/coverage/lcov.info
+>>>>>>> origin
         sonar.cpd.exclusions=**/tests/WRTestComponent.ts,**/joh-waiting-room/**
         sonar.issue.ignore.multicriteria=e1,e2
         sonar.issue.ignore.multicriteria.e1.ruleKey=typescript:S107

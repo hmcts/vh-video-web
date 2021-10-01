@@ -1,11 +1,12 @@
 @import '~govuk-frontend/govuk/base';
+@import 'abstracts';
 
 .modal {
   display: block;
   /* Hidden by default */
   position: fixed;
   /* Stay in place */
-  z-index: 11;
+  z-index: 999;
   /* Sit on top */
   left: 0;
   top: 0;
@@ -29,19 +30,25 @@
   box-shadow: 0 6px 30px rgba(0, 0, 0, 0.7);
   background-color: #fefefe;
   margin: 5% auto;
-  padding: 20px;
   border: none;
   border-radius: 5px;
-  width: 50%;
-  max-width: 700px;
+  padding: 5px;
+
+  @media only screen and (min-width: $breakpoint-medium) {
+    padding: 20px;
+  }
 }
 
 .label-status {
   color: govuk-colour('white');
   padding: 3px 5px 3px 5px;
   font-weight: 600;
-  font-size: 0.9rem;
   letter-spacing: 1px;
+  font-size: rem(8px);
+
+  @media only screen and (min-width: $breakpoint-medium) {
+    font-size: 0.9rem;
+  }
 }
 
 .label-status--unavailable {
@@ -69,7 +76,7 @@
   overflow-x: hidden;
 }
 
-@media only screen and (max-height: 736px) {
+@media only screen and (max-height: $breakpoint-medium) {
   .vh-scroll-wrap {
     max-height: 250px;
     overflow-y: auto;
@@ -88,4 +95,25 @@
   border-radius: 5px;
   background-color: govuk-colour('dark-grey');
   -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+.warning-text {
+  @media only screen and (max-width: $breakpoint-medium) {
+    font-size: rem(13px);
+    margin-top: -15px;
+    margin-bottom: -10px;
+  }
+}
+
+.modal-title {
+  @media only screen and (max-width: $breakpoint-medium) {
+    font-size: rem(15px);
+  }
+}
+
+.checkboxes-label {
+  @media only screen and (max-width: $breakpoint-medium) {
+    font-size: rem(13px);
+    padding: 2px;
+  }
 }

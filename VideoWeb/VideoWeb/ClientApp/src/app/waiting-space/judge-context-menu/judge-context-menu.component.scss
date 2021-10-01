@@ -1,5 +1,9 @@
 @import '~govuk-frontend/govuk/base';
 
+:host {
+  position: relative;
+}
+
 .panel-icon {
   width: 24px;
   cursor: pointer;
@@ -36,5 +40,9 @@
   color: black;
   padding: 8px 12px;
   text-decoration: none;
+  display: block;
+}
+
+.dropdown-header > span {
   display: block;
 }

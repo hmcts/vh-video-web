@@ -1,5 +1,5 @@
-import { ElementRef } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, ElementRef, OnDestroy } from '@angular/core';
+import { Subject, Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { LoggedParticipantResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
@@ -9,10 +9,19 @@ import { InstantMessage } from 'src/app/services/models/instant-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ImHelper } from '../im-helper';
 import { TranslateService } from '@ngx-translate/core';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
+import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
+import { takeUntil } from 'rxjs/operators';
 
-export abstract class ChatBaseComponent {
+@Component({
+    selector: 'app-chat-base-component',
+    template: ''
+})
+export abstract class ChatBaseComponent implements OnDestroy {
     protected hearing: Hearing;
+    protected securityService: ISecurityService;
+    protected destroyed$ = new Subject();
+
     messages: InstantMessage[] = [];
     pendingMessages: Map<string, InstantMessage[]> = new Map<string, InstantMessage[]>();
     loggedInUserProfile: UserProfileResponse;
@@ -26,10 +35,14 @@ export abstract class ChatBaseComponent {
         protected profileService: ProfileService,
         protected eventService: EventsService,
         protected logger: Logger,
-        protected oidcSecurityService: OidcSecurityService,
+        securityServiceProviderService: SecurityServiceProvider,
         protected imHelper: ImHelper,
         protected translateService: TranslateService
-    ) {}
+    ) {
+        securityServiceProviderService.currentSecurityService$
+            .pipe(takeUntil(this.destroyed$))
+            .subscribe(securityService => (this.securityService = securityService));
+    }
 
     abstract content: ElementRef<HTMLElement>;
     abstract sendMessage(messageBody: string): void;
@@ -41,6 +54,10 @@ export abstract class ChatBaseComponent {
         } else {
             return [];
         }
+    }
+
+    ngOnDestroy(): void {
+        this.destroyed$.next();
     }
 
     async setupChatSubscription(): Promise<Subscription> {
@@ -65,7 +82,7 @@ export abstract class ChatBaseComponent {
             return;
         }
 
-        this.oidcSecurityService.userData$.subscribe(async ud => {
+        this.securityService.userData$.pipe(takeUntil(this.destroyed$)).subscribe(async ud => {
             const from = message.from.toUpperCase();
             const username =
                 this.loggedInUser && this.loggedInUser.participant_id && this.loggedInUser.participant_id !== this.emptyGuid

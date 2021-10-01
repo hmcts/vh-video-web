@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -58,7 +59,7 @@ namespace VideoWeb.Controllers
                 );
 
                 request.ParticipantsToForceTransfer = conference.Participants.
-                    Where(x => x.Role == Role.Judge).
+                    Where(x => x.Role == Role.Judge || x.Role == Role.StaffMember).
                     Select(x => x.Id.ToString());
 
                 request.MuteGuests = true;
@@ -139,11 +140,11 @@ namespace VideoWeb.Controllers
         /// <param name="participantId">witness id</param>
         /// <returns>Accepted status</returns>
         [HttpPost("{conferenceId}/participant/{participantId}/call")]
-        [SwaggerOperation(OperationId = "CallWitness")]
+        [SwaggerOperation(OperationId = "CallParticipant")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        public async Task<IActionResult> CallWitnessAsync(Guid conferenceId, Guid participantId)
+        public async Task<IActionResult> CallParticipantAsync(Guid conferenceId, Guid participantId)
         {
-            var validatedRequest = await ValidateWitnessInConference(conferenceId, participantId);
+            var validatedRequest = await ValidateParticipantInConference(conferenceId, participantId);
             if (validatedRequest != null)
             {
                 return validatedRequest;
@@ -175,11 +176,11 @@ namespace VideoWeb.Controllers
         /// <param name="participantId">witness id</param>
         /// <returns>Accepted status</returns>
         [HttpPost("{conferenceId}/participant/{participantId}/dismiss")]
-        [SwaggerOperation(OperationId = "DismissWitness")]
+        [SwaggerOperation(OperationId = "DismissParticipant")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        public async Task<IActionResult> DismissWitnessAsync(Guid conferenceId, Guid participantId)
+        public async Task<IActionResult> DismissParticipantAsync(Guid conferenceId, Guid participantId)
         {
-            var validatedRequest = await ValidateWitnessInConference(conferenceId, participantId);
+            var validatedRequest = await ValidateParticipantInConference(conferenceId, participantId);
             if (validatedRequest != null)
             {
                 return validatedRequest;
@@ -187,7 +188,7 @@ namespace VideoWeb.Controllers
 
             try
             {
-                _logger.LogDebug("Sending request to dismiss witness {Participant} from video hearing {Conference}",
+                _logger.LogDebug("Sending request to dismiss participant {Participant} from video hearing {Conference}",
                     participantId, conferenceId);
                 await _videoApiClient.TransferParticipantAsync(conferenceId, new TransferParticipantRequest
                 {
@@ -197,25 +198,30 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException ex)
             {
-                _logger.LogError(ex, "Unable to dismiss witness {Participant} from video hearing {Conference}",
+                _logger.LogError(ex, "Unable to dismiss participant {Participant} from video hearing {Conference}",
                     participantId, conferenceId);
                 return StatusCode(ex.StatusCode, ex.Response);
             }
 
             try
             {
-                _logger.LogDebug("Sending alert to vho witness {Participant} dismissed from video hearing {Conference}",
+                _logger.LogDebug("Sending alert to vho participant {Participant} dismissed from video hearing {Conference}",
                     participantId, conferenceId);
+
+                var participant = await GetParticipant(conferenceId, participantId);
+                var dismisser = await GetParticipant(conferenceId, User.Identity.Name);
+
+
                 await _videoApiClient.AddTaskAsync(conferenceId, new AddTaskRequest
                 {
                     ParticipantId = participantId,
-                    Body = "Witness dismissed",
+                    Body = $"{GetParticipantRoleString(participant)} dismissed by {GetParticipantRoleString(dismisser)}",
                     TaskType = TaskType.Participant
                 });
             }
             catch (VideoApiException ex)
             {
-                _logger.LogError(ex, "Unable to add a dismiss witness alert for {Participant} in video hearing {Conference}",
+                _logger.LogError(ex, "Unable to add a dismiss participant alert for {Participant} in video hearing {Conference}",
                     participantId, conferenceId);
                 return StatusCode(ex.StatusCode, ex.Response);
             }
@@ -233,19 +239,19 @@ namespace VideoWeb.Controllers
             return Unauthorized("User must be a Judge");
         }
 
-        private async Task<IActionResult> ValidateWitnessInConference(Guid conferenceId, Guid participantId)
+        private async Task<IActionResult> ValidateParticipantInConference(Guid conferenceId, Guid participantId)
         {
             var judgeValidation = await ValidateUserIsJudgeAndInConference(conferenceId);
             if (judgeValidation != null) return judgeValidation;
 
-            if (await IsParticipantAWitnessOrWitnessInterpreter(conferenceId, participantId))
-            { 
+            if (await IsParticipantCallable(conferenceId, participantId))
+            {
                 return null;
             }
 
-            _logger.LogWarning("Participant {Participant} is not a witness in {Conference}", participantId,
+            _logger.LogWarning("Participant {Participant} is not a callable participant in {Conference}", participantId,
                 conferenceId);
-            return Unauthorized("Participant is not a witness");
+            return Unauthorized("Participant is not callable");
         }
 
         private async Task<bool> IsConferenceJudge(Guid conferenceId)
@@ -255,7 +261,7 @@ namespace VideoWeb.Controllers
                 .Equals(User.Identity.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase);
         }
 
-        private async Task<bool> IsParticipantAWitnessOrWitnessInterpreter(Guid conferenceId, Guid participantId)
+        private async Task<bool> IsParticipantCallable(Guid conferenceId, Guid participantId)
         {
             var conference = await _conferenceCache.GetOrAddConferenceAsync
             (
@@ -272,9 +278,9 @@ namespace VideoWeb.Controllers
 
             if (!participant.LinkedParticipants.Any())
             {
-                return participant.IsWitness();
+                return participant.IsCallable();
             }
-            
+
             var witnessRoom = conference.CivilianRooms.First(x => x.Participants.Contains(participant.Id));
             var expectedParticipantsInRoomIds = participant.LinkedParticipants.Select(x => x.LinkedId).ToList();
             expectedParticipantsInRoomIds.Add(participant.Id);
@@ -288,6 +294,42 @@ namespace VideoWeb.Controllers
                 conferenceId,
                 () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
             );
+        }
+
+        private async Task<Participant> GetParticipant(Guid conferenceId, Guid participantId)
+        {
+            var conference = await _conferenceCache.GetOrAddConferenceAsync
+            (
+                conferenceId,
+                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
+            );
+
+            return conference.Participants.SingleOrDefault(x => x.Id == participantId);
+        }
+
+        private async Task<Participant> GetParticipant(Guid conferenceId, string username)
+        {
+            var conference = await _conferenceCache.GetOrAddConferenceAsync
+            (
+                conferenceId,
+                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
+            );
+
+            return conference.Participants.SingleOrDefault(x => x.Username.Trim().Equals(username.Trim(), StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        private string GetParticipantRoleString(Participant participant)
+        {
+            switch (participant.Role)
+            {
+                case Role.QuickLinkParticipant:
+                    return "Participant";
+                case Role.QuickLinkObserver:
+                    return "Observer";
+                default:
+                    return participant.HearingRole;
+            }
+
         }
     }
 }

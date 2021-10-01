@@ -1,0 +1,6 @@
+<div class="video-container">
+    <video [ngClass]="{ 'vh-fade-in': isOpen, 'vh-fade-out': !isOpen, 'spotlighted-border': showSpotlightedBorder }"
+        id="outgoingFeedVideo" [muted]="true" [srcObject]="this.videoSource" autoplay width="100%" height="auto">
+        {{ 'private-consultation-room-controls.browser-support' | translate }}
+    </video>
+</div>

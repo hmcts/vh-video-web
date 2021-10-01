@@ -1,5 +1,5 @@
 <div id="confirmationDialog" class="vh-popup-overlay">
-  <div class="vh-popup">
+  <div class="modal-content">
     <h1 class="govuk-heading-m">{{ 'confirm-start-hearing-popup.hearing-about-to-start' | translate:{ action: action } }}</h1>
 
     <p class="govuk-body">{{ 'confirm-start-hearing-popup.participant-sees-countdown-timer' | translate }}</p>
@@ -20,7 +20,7 @@
 
     <button
       id="btnCancelStart"
-      class="govuk-button govuk-button--secondary govuk-!-margin-left-2"
+      class="govuk-button govuk-button--secondary"
       type="button"
       data-module="govuk-button"
       [attr.aria-label]="'confirm-start-hearing-popup.cancel-start-hearing' | translate"

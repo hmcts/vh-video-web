@@ -13,7 +13,7 @@ namespace VideoWeb.Mappings
     {
         public IEnumerable<ParticipantContactDetailsResponseVho> Map(
             Conference conference,
-            IEnumerable<ParticipantInHearingResponse> judgesInHearings)
+            IEnumerable<ParticipantInHearingResponse> hostsInHearings)
         {
             var conferenceId = conference.Id;
             var hearingVenueName = conference.HearingVenueName;
@@ -23,7 +23,7 @@ namespace VideoWeb.Mappings
                 .Select(x =>
                 {
                     var status = Enum.Parse<ParticipantStatus>(x.ParticipantStatus.ToString());
-                    var judgeInHearing = judgesInHearings.Where(j => j.Username == x.Username && j.Id != x.Id);
+                    var hostInHearing = hostsInHearings.Where(j => j.Username == x.Username && j.Id != x.Id);
                     var links = x.LinkedParticipants.Select(x =>
                         new Contract.Responses.LinkedParticipantResponse
                         {
@@ -47,7 +47,7 @@ namespace VideoWeb.Mappings
                         ContactEmail = x.ContactEmail,
                         ContactTelephone = x.ContactTelephone,
                         HearingVenueName = hearingVenueName,
-                        JudgeInAnotherHearing = judgeInHearing.Any(),
+                        HostInAnotherHearing = hostInHearing.Any(),
                         Representee = x.Representee,
                         LinkedParticipants = links
                     };

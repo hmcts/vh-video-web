@@ -3,13 +3,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceStatus, ParticipantResponse, Role } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
-import { UserMediaService } from 'src/app/services/user-media.service';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { DeviceTypeService } from '../../services/device-type.service';
 import { HeartbeatModelMapper } from '../../shared/mappers/heartbeat-model-mapper';
@@ -38,6 +36,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     hearingStartingAnnounced: boolean;
 
     clockSubscription$: Subscription;
+    isParticipantsPanelHidden = false;
 
     constructor(
         protected route: ActivatedRoute,
@@ -50,8 +49,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,
         protected consultationService: ConsultationService,
-        protected userMediaService: UserMediaService,
-        protected userMediaStreamService: UserMediaStreamService,
         protected notificationSoundsService: NotificationSoundsService,
         protected notificationToastrService: NotificationToastrService,
         protected roomClosingToastrService: RoomClosingToastrService,
@@ -71,8 +68,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             deviceTypeService,
             router,
             consultationService,
-            userMediaService,
-            userMediaStreamService,
             notificationSoundsService,
             notificationToastrService,
             roomClosingToastrService,
@@ -83,6 +78,19 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
 
     ngOnInit() {
         this.init();
+    }
+
+    get allowAudioOnlyToggle(): boolean {
+        return (
+            !!this.conference &&
+            !!this.participant &&
+            this.participant?.status !== ParticipantStatus.InConsultation &&
+            this.participant?.status !== ParticipantStatus.InHearing
+        );
+    }
+
+    toggleParticipantsPanel() {
+        this.isParticipantsPanelHidden = !this.isParticipantsPanelHidden;
     }
 
     private onShouldReload(): void {
@@ -99,7 +107,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.destroyedSubject)).subscribe(() => this.onShouldUnload());
         this.unloadDetectorService.shouldReload.pipe(take(1)).subscribe(() => this.onShouldReload());
 
-        this.audioOnly = this.videoCallService.retrieveVideoCallPreferences().audioOnly;
         this.errorCount = 0;
         this.logger.debug('[Participant WR] - Loading participant waiting room');
         this.connected = false;
@@ -213,12 +220,20 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         return this.participant?.hearing_role === HearingRole.OBSERVER;
     }
 
+    get isQuickLinkObserver(): boolean {
+        return this.participant?.role === Role.QuickLinkObserver;
+    }
+
+    get isQuickLinkUser(): boolean {
+        return this.participant?.role === Role.QuickLinkObserver || this.participant?.role === Role.QuickLinkParticipant;
+    }
+
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
         super.handleConferenceStatusChange(message);
         if (!this.validateIsForConference(message.conferenceId)) {
             return;
         }
-        if (message.status === ConferenceStatus.InSession && !this.isOrHasWitnessLink()) {
+        if (message.status === ConferenceStatus.InSession && !this.isOrHasWitnessLink() && !this.isQuickLinkUser) {
             this.notificationSoundsService.playHearingAlertSound();
         } else {
             this.notificationSoundsService.stopHearingAlertSound();
@@ -245,7 +260,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     }
 
     get canStartJoinConsultation() {
-        return !this.isOrHasWitnessLink() && !this.isObserver && !this.participant.linked_participants.length;
+        return !this.isOrHasWitnessLink() && !this.isObserver && !this.isQuickLinkObserver && !this.participant.linked_participants.length;
     }
 
     async startPrivateConsultation(participants: string[], endpoints: string[]) {

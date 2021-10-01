@@ -15,10 +15,13 @@ export const pageUrls = {
     ParticipantSelfTestVideo: 'practice-video-hearing',
     UnsupportedDevice: 'unsupported-device',
     Introduction: 'introduction',
+    QuickLinks: 'quickjoin/:hearingId',
     // judge
     JudgeHearingList: 'judge/hearing-list',
     JudgeWaitingRoom: 'judge/waiting-room',
     JudgeSelfTestVideo: 'judge/practice-video-hearing',
+    // Staff Member
+    StaffMemberHearingList: 'staff-member/hearing-list',
     // participant
     ParticipantHearingList: 'participant/hearing-list',
     ParticipantWaitingRoom: 'participant/waiting-room',

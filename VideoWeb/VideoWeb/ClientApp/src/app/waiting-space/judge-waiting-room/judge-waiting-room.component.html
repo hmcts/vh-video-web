@@ -18,12 +18,12 @@
             <app-private-consultation-room-controls
               [conferenceId]="conference.id"
               [participant]="participant"
-              [audioOnly]="audioOnly"
               [isPrivateConsultation]="isPrivateConsultation"
               [outgoingStream]="outgoingStream"
               [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
               [showConsultationControls]="showConsultationControls"
               [unreadMessageCount]="unreadMessageCount"
+              [isChatVisible]="isChatVisible"
               (leaveConsultation)="leaveConsultation()"
               (togglePanel)="togglePanel($event)"
               (changeDeviceToggle)="showChooseCameraDialog()"
@@ -32,7 +32,7 @@
           </div>
         </div>
 
-        <div *ngIf="hearing" class="panel-wrapper" [ngClass]="{ 'hide-panel': !isPrivateConsultation && !panelStates['Participants'] }">
+        <div *ngIf="hearing" class="panel-wrapper" [ngClass]="{ 'hide-panel': !panelStates['Participants'] }">
           <app-private-consultation-participants
             *ngIf="isPrivateConsultation"
             [conference]="hearing.getConference()"
@@ -91,10 +91,6 @@
   </div>
 </div>
 <div *ngIf="!loadingData && conference" [ngClass]="{ 'no-mass': showVideo }">
-  <a id="back-to-hearing-list-link" href="javascript:void(0)" (click)="goToJudgeHearingList()" class="govuk-back-link">
-    {{ 'judge-waiting-room.return-to-video-hearing-list' | translate }}
-  </a>
-
   <div class="govuk-grid-row govuk-!-margin-top-5" *ngIf="!showVideo">
     <div class="govuk-grid-column-one-third">
       <button
@@ -240,7 +236,6 @@
 
   <div class="govuk-grid-column-one-third" [ngClass]="{ 'no-mass': showVideo }">
     <app-judge-participant-status-list
-      [attr.aria-label]="'judge-waiting-room.judge-participant-status-list-label' | translate"
       [conference]="conference"
     >
     </app-judge-participant-status-list>
@@ -255,9 +250,7 @@
 
 <app-select-media-devices
   *ngIf="displayDeviceChangeModal"
-  [waitingRoomMode]="true"
-  (cancelMediaDeviceChange)="onMediaDeviceChangeCancelled()"
-  (acceptMediaDeviceChange)="onMediaDeviceChangeAccepted($event)"
+  (shouldClose)="onSelectMediaDeviceShouldClose()"
   #selectMediaDevices
 ></app-select-media-devices>
 

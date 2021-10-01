@@ -27,6 +27,7 @@ import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { fakeAsync, flush } from '@angular/core/testing';
 import { Subject } from 'rxjs';
+import { UserMediaService } from 'src/app/services/user-media.service';
 
 describe('HearingControlsBaseComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -70,6 +71,9 @@ describe('HearingControlsBaseComponent', () => {
 
     let participantServiceSpy: jasmine.SpyObj<ParticipantService>;
 
+    let isAudioOnlySubject: Subject<boolean>;
+    let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
+
     beforeEach(() => {
         translateService.instant.calls.reset();
 
@@ -82,6 +86,13 @@ describe('HearingControlsBaseComponent', () => {
             ParticipantModel.fromParticipantForUserResponse(participantOne)
         );
         getSpiedPropertyGetter(participantServiceSpy, 'loggedInParticipant$').and.returnValue(loggedInParticipantSubject.asObservable());
+<<<<<<< HEAD
+=======
+
+        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>([], ['isAudioOnly$']);
+        isAudioOnlySubject = new Subject<boolean>();
+        getSpiedPropertyGetter(userMediaServiceSpy, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
+>>>>>>> origin
 
         component = new PrivateConsultationRoomControlsComponent(
             videoCallService,
@@ -89,7 +100,8 @@ describe('HearingControlsBaseComponent', () => {
             deviceTypeService,
             logger,
             participantServiceSpy,
-            translateService
+            translateService,
+            userMediaServiceSpy
         );
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;
@@ -100,6 +112,52 @@ describe('HearingControlsBaseComponent', () => {
 
     afterEach(() => {
         component.ngOnDestroy();
+    });
+
+    describe('on audio only changed', () => {
+        beforeEach(() => {
+            component.ngOnInit();
+        });
+
+        describe('when changed to true', () => {
+            it('should set audio only to true', fakeAsync(() => {
+                // Act
+                isAudioOnlySubject.next(true);
+                flush();
+
+                // Assert
+                expect(component.audioOnly).toBeTrue();
+            }));
+
+            it('should set video muted to true', fakeAsync(() => {
+                // Act
+                isAudioOnlySubject.next(true);
+                flush();
+
+                // Assert
+                expect(component.videoMuted).toBeTrue();
+            }));
+        });
+
+        describe('when changed to false', () => {
+            it('should set audio only to false', fakeAsync(() => {
+                // Act
+                isAudioOnlySubject.next(false);
+                flush();
+
+                // Assert
+                expect(component.audioOnly).toBeFalse();
+            }));
+
+            it('should set video muted to false', fakeAsync(() => {
+                // Act
+                isAudioOnlySubject.next(false);
+                flush();
+
+                // Assert
+                expect(component.videoMuted).toBeFalse();
+            }));
+        });
     });
 
     describe('onLoggedInParticipantChanged', () => {
@@ -564,7 +622,7 @@ describe('HearingControlsBaseComponent', () => {
 
     it(`canShowScreenShareButton() should cover all HearingRole's when showing/hiding the "share screen" button`, () => {
         const enumCount = Object.keys(HearingRole).length;
-        const numberBeingTested = allowedHearingRoles.length + nonAllowedHearingRoles.length;
+        const numberBeingTested = allowedHearingRoles.length + nonAllowedHearingRoles.length + nonAllowedRoles.length;
         expect(numberBeingTested).toBe(enumCount);
     });
 
@@ -581,7 +639,9 @@ describe('HearingControlsBaseComponent', () => {
         HearingRole.PROSECUTION_ADVOCATE,
         HearingRole.REPRESENTATIVE,
         HearingRole.WINGER,
-        HearingRole.LITIGANT_IN_PERSON
+        HearingRole.LITIGANT_IN_PERSON,
+        HearingRole.STAFF_MEMBER,
+        HearingRole.QUICK_LINK_PARTICIPANT
     ];
     allowedHearingRoles.forEach(hearingRole => {
         it(`canShowScreenShareButton() should return "true" when device is not a tablet and user has the '${hearingRole}' HearingRole`, () => {
@@ -597,6 +657,16 @@ describe('HearingControlsBaseComponent', () => {
         it(`canShowScreenShareButton() should return "false" when device is not a tablet and user has the '${hearingRole}' HearingRole`, () => {
             deviceTypeService.isTablet.and.returnValue(false);
             component.participant.hearing_role = hearingRole;
+            component.ngOnInit();
+            expect(component.canShowScreenShareButton).toBeFalsy();
+        });
+    });
+
+    const nonAllowedRoles = [Role.QuickLinkObserver];
+    nonAllowedRoles.forEach(role => {
+        it(`canShowScreenShareButton() should return "false" when device is not a tablet and user has the '${role}'Role`, () => {
+            deviceTypeService.isTablet.and.returnValue(false);
+            component.participant.role = role;
             component.ngOnInit();
             expect(component.canShowScreenShareButton).toBeFalsy();
         });

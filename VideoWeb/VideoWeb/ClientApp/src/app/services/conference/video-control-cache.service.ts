@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { take } from 'rxjs/operators';
 import { LoggerService } from '../logging/logger.service';
 import { ConferenceService } from './conference.service';
 import { VideoControlCacheLocalStorageService } from './video-control-cache-local-storage.service';
@@ -18,9 +19,17 @@ export class VideoControlCacheService {
         private logger: LoggerService
     ) {
         this.conferenceService.currentConference$.subscribe(conference => {
-            this.storageService.loadHearingStateForConference(conference.id).subscribe(state => {
-                this.hearingControlStates = state;
-            });
+            if (!conference) {
+                this.logger.warn(`${this.loggerPrefix} No conference loaded. Skipping loading of hearing state for conference`);
+                return;
+            }
+
+            this.storageService
+                .loadHearingStateForConference(conference.id)
+                .pipe(take(1))
+                .subscribe(state => {
+                    this.hearingControlStates = state;
+                });
         });
     }
 

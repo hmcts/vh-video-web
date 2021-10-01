@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceForJudgeResponse, LoggedParticipantResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
+import { ConferenceForHostResponse, LoggedParticipantResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -12,6 +12,7 @@ import { ConferenceStatusMessage } from 'src/app/services/models/conference-stat
 import { vhContactDetails } from 'src/app/shared/contact-information';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ScreenHelper } from 'src/app/shared/screen-helper';
+import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 
 @Component({
     selector: 'app-judge-hearing-list',
@@ -23,7 +24,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
         phone: vhContactDetails.phone
     };
 
-    conferences: ConferenceForJudgeResponse[];
+    conferences: ConferenceForHostResponse[];
     conferencesSubscription = new Subscription();
     hearingListForm: FormGroup;
     loadingData: boolean;
@@ -69,7 +70,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
         this.logger.debug('[JudgeHearingList] - Updating hearing list');
         this.conferencesSubscription.add(
             this.videoWebService.getConferencesForJudge().subscribe({
-                next: (data: ConferenceForJudgeResponse[]) => {
+                next: (data: ConferenceForHostResponse[]) => {
                     this.logger.debug('[JudgeHearingList] - Got updated list');
                     this.loadingData = false;
                     this.conferences = data;
@@ -95,11 +96,13 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
         return !!this.conferences && this.conferences.length > 0;
     }
 
-    onConferenceSelected(conference: ConferenceForJudgeResponse) {
+    onConferenceSelected(conference: ConferenceForHostResponse) {
         this.logger.debug('[JudgeHearingList] - Signing into judge waiting room', { conference: conference.id });
         this.videoWebService.getCurrentParticipant(conference.id).then(x => {
-            const result = conference.participants.find(p => p.id === x.participant_id && p.hearing_role === 'Judge');
-            if (result) {
+            const useJudgeWaitingRoom = conference.participants.find(
+                p => p.id === x.participant_id && (p.hearing_role === HearingRole.JUDGE || p.hearing_role === HearingRole.STAFF_MEMBER)
+            );
+            if (useJudgeWaitingRoom) {
                 this.router.navigate([pageUrls.JudgeWaitingRoom, conference.id]);
             } else {
                 this.router.navigate([pageUrls.JOHWaitingRoom, conference.id]);

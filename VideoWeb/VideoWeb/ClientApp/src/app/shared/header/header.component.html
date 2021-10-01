@@ -1,33 +1,32 @@
-<header class="govuk-header" role="banner" data-module="header">
-  <div class="govuk-header__container govuk-width-container">
-    <div class="govuk-header__logo">
-      <a class="govuk-header__link--homepage">
-        <span class="govuk-header__logotype hmcts-header__link">
-          <img
-            src="assets/images/UkGovCrestWhite.png"
-            height="32"
-            width="38"
-            class="hmcts-header__logotype-crest"
-            [attr.alt]="'crest-image-alt' | translate"
-            style="margin-right: 30px;"
-          />
-          <span class="govuk-header_link govuk-header_link--service-name" id="header-logo">
-            {{'header.hm-courts' | translate}} &amp; {{'header.tribunals-service' | translate}} 
-          </span>
-        </span>
-      </a>
-    </div>
+<div class="moj-header" role="banner" data-module="header">
 
-    <div class="hmcts-header__content">
-      <nav class="hmcts-header__navigation" [attr.aria-label]="'account-navigation-label' | translate">
-        <ul class="hmcts-header__navigation-list">
-          <li *ngIf="loggedIn" class="hmcts-header__navigation-item">
-            <a class="govuk-header__link" href="/logout">
-             {{'header.sign-out' | translate}}
-            </a>
+  <div class="moj-header__container">
+
+    <div class="moj-header__logo">
+
+    <app-header-logo-svg></app-header-logo-svg>
+
+      <span class="moj-header__link moj-header__link--organisation-name" id="header-logo">
+            {{'header.hm-courts' | translate}} &amp; {{'header.tribunals-service' | translate}}          
+          
+  </span>
+
+    </div>
+    <div class="moj-header__content">
+
+      <nav class="moj-header__navigation" [attr.aria-label]="'account-navigation-label' | translate">
+
+        <ul class="moj-header__navigation-list">
+
+          <li *ngIf="loggedIn" class="moj-header__navigation-item">
+            <a id="logout-link" class="moj-header__navigation-link"  [routerLink]="logoutRoute">
+              {{'header.sign-out' | translate}}</a>
           </li>
         </ul>
+
       </nav>
+
     </div>
   </div>
-</header>
+
+</div>

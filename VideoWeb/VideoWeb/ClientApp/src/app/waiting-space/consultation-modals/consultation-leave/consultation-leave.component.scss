@@ -1,4 +1,14 @@
-.modal-content {
-  text-align: left;
-  padding: 50px;
+@import 'abstracts';
+
+.consultation-modal {
+  display: block;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  white-space: pre-wrap;
+  text-align: center;
 }

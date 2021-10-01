@@ -20,7 +20,7 @@ namespace VideoWeb.UnitTests.Mappings
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Participant, Contract.Responses.ParticipantForJudgeResponse>()).Returns(_mocker.Create<ParticipantForJudgeResponseMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Participant, Contract.Responses.ParticipantForHostResponse>()).Returns(_mocker.Create<ParticipantForHostResponseMapper>());
             _sut = _mocker.Create<ConferenceForHostResponseMapper>();
         }
 

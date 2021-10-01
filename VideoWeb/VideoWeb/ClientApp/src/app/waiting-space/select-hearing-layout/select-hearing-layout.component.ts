@@ -1,5 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 import { ConferenceResponse, HearingLayout } from 'src/app/services/clients/api-client';
 import { VideoCallService } from '../services/video-call.service';
 
@@ -8,11 +9,12 @@ import { VideoCallService } from '../services/video-call.service';
     templateUrl: './select-hearing-layout.component.html'
 })
 export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
-    availableLayouts = HearingLayout;
+    availableLayouts = [HearingLayout.OnePlus7, HearingLayout.TwoPlus21, HearingLayout.Dynamic];
     selectedLayout: HearingLayout;
     accordionOpenAllElement: HTMLButtonElement;
     currentButtonContentKey: string;
     @Input() conference: ConferenceResponse;
+    subscriptions = new Subscription();
     constructor(private videoCallService: VideoCallService, protected translateService: TranslateService) {}
 
     ngOnInit(): void {
@@ -32,20 +34,25 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
         this.accordionOpenAllElement.onclick = e => this.setAccordionText(e);
         this.setAccordionText({} as MouseEvent);
 
-        this.translateService.onLangChange.subscribe(event => {
-            const updatedHeadingElement = document.getElementById('accordion-choose-layout-heading');
-            const currentHeaderText = updatedHeadingElement.innerText;
-            const updatedHeaderText = this.translateService.instant('select-hearing-layout.choose-hearing-layout');
+        this.subscriptions.add(
+            this.translateService.onLangChange.subscribe(() => {
+                const updatedHeadingElement = document.getElementById('accordion-choose-layout-heading');
+                const currentHeaderText = updatedHeadingElement.innerText;
+                const updatedHeaderText = this.translateService.instant('select-hearing-layout.choose-hearing-layout');
 
-            updatedHeadingElement.innerHTML = updatedHeadingElement.innerHTML.replace(currentHeaderText, updatedHeaderText);
-            const currentTextValue = this.accordionOpenAllElement.innerText.split('\n')[0];
-            const translatedElement = this.translateService.instant(`select-hearing-layout.${this.currentButtonContentKey}`);
-            this.accordionOpenAllElement.innerHTML = this.accordionOpenAllElement.innerHTML.replace(currentTextValue, translatedElement);
-        });
+                updatedHeadingElement.innerHTML = updatedHeadingElement.innerHTML.replace(currentHeaderText, updatedHeaderText);
+                const currentTextValue = this.accordionOpenAllElement.innerText.split('\n')[0];
+                const translatedElement = this.translateService.instant(`select-hearing-layout.${this.currentButtonContentKey}`);
+                this.accordionOpenAllElement.innerHTML = this.accordionOpenAllElement.innerHTML.replace(
+                    currentTextValue,
+                    translatedElement
+                );
+            })
+        );
     }
 
     ngOnDestroy(): void {
-        this.translateService.onLangChange.unsubscribe();
+        this.subscriptions.unsubscribe();
     }
 
     setAccordionText(event: MouseEvent) {
@@ -64,20 +71,12 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
         }
     }
 
-    get recommendDynamic(): boolean {
-        return this.recommendedLayout() === HearingLayout.Dynamic;
-    }
-
-    get recommend1Plus7(): boolean {
-        return this.recommendedLayout() === HearingLayout.OnePlus7;
-    }
-
-    get recommend2Plus21(): boolean {
-        return this.recommendedLayout() === HearingLayout.TwoPlus21;
-    }
-
     get isAccordianOpen(): boolean {
         return document.getElementById('accordian-container').classList.contains('govuk-accordion__section--expanded');
+    }
+
+    isRecommendedLayout(layout: HearingLayout): boolean {
+        return this.recommendedLayout() === layout;
     }
 
     recommendedLayout(): HearingLayout {

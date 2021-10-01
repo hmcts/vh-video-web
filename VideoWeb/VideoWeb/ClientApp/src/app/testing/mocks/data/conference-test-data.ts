@@ -26,6 +26,28 @@ import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { AlertFilter, AlertsStatus, HearingsFilter, StatusFilter } from '../../../shared/models/hearings-filter';
 
 export class ConferenceTestData {
+    quickLinkParticipant1 = new ParticipantForUserResponse({
+        id: 'QuickLinkParticipant1_Id',
+        status: ParticipantStatus.NotSignedIn,
+        display_name: 'QuickLinkParticipant1_display_name',
+        role: Role.QuickLinkParticipant,
+        case_type_group: 'QuickLinkParticipant1_case_type_group',
+        hearing_role: HearingRole.QUICK_LINK_PARTICIPANT,
+        tiled_display_name: 'QuickLinkParticipant1_tiled_display_name',
+        linked_participants: []
+    });
+
+    quickLinkParticipant2 = new ParticipantForUserResponse({
+        id: 'QuickLinkParticipant2_Id',
+        status: ParticipantStatus.NotSignedIn,
+        display_name: 'QuickLinkParticipant2_display_name',
+        role: Role.QuickLinkParticipant,
+        case_type_group: 'QuickLinkParticipant2_case_type_group',
+        hearing_role: HearingRole.QUICK_LINK_PARTICIPANT,
+        tiled_display_name: 'QuickLinkParticipant2_tiled_display_name',
+        linked_participants: []
+    });
+
     asConferenceResponseVho(confResponse: ConferenceResponse): ConferenceResponseVho {
         confResponse.endpoints = undefined;
         return new ConferenceResponseVho(confResponse);
@@ -374,6 +396,31 @@ export class ConferenceTestData {
             linked_participants: []
         });
 
+        const participant10 = new ParticipantForUserResponse({
+            id: '1234-1234-1234-1234',
+            status: ParticipantStatus.NotSignedIn,
+            display_name: 'Staff Member Doe PM',
+            role: Role.StaffMember,
+            case_type_group: 'staffmember',
+            hearing_role: HearingRole.STAFF_MEMBER,
+            tiled_display_name: 'Staff Member Doe PM;1234-1234-1234-1234',
+            linked_participants: []
+        });
+
+        const participant11 = this.quickLinkParticipant2; // Out of order to test sorting
+        const participant12 = this.quickLinkParticipant1;
+
+        const participant13 = new ParticipantForUserResponse({
+            id: 'QuickLinkObserver_Id',
+            status: ParticipantStatus.NotSignedIn,
+            display_name: 'QuickLinkObserver_display_name',
+            role: Role.QuickLinkObserver,
+            case_type_group: 'QuickLinkObserver_case_type_group',
+            hearing_role: HearingRole.QUICK_LINK_OBSERVER,
+            tiled_display_name: 'QuickLinkParticipant_tiled_display_name',
+            linked_participants: []
+        });
+
         participants.push(participant1);
         participants.push(participant2);
         participants.push(participant3);
@@ -383,6 +430,10 @@ export class ConferenceTestData {
         participants.push(participant7);
         participants.push(participant8);
         participants.push(participant9);
+        participants.push(participant10);
+        participants.push(participant11);
+        participants.push(participant12);
+        participants.push(participant13);
         return participants;
     }
 
@@ -428,9 +479,23 @@ export class ConferenceTestData {
             linked_participants: []
         });
 
+        const participant4 = new ParticipantResponseVho({
+            id: '9F681318-4965-49AF-A887-DED64554429T',
+            name: 'Staff Member name',
+            status: ParticipantStatus.Available,
+            role: Role.StaffMember,
+            display_name: 'Staff Member display name',
+            case_type_group: 'Staff Member',
+            tiled_display_name: 'Staff Member;Staff Member;9F681318-4965-49AF-A887-DED64554429T',
+            hearing_role: HearingRole.STAFF_MEMBER,
+            current_room: new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' }),
+            linked_participants: []
+        });
+
         participants.push(participant1);
         participants.push(participant2);
         participants.push(participant3);
+        participants.push(participant4);
         return participants;
     }
 
@@ -489,7 +554,7 @@ export class ConferenceTestData {
             first_name: 'Judge',
             last_name: 'Fudge',
             ref_id: '9B4737C9-5D8A-4B67-8569-EF8185FFE6E3',
-            judge_in_another_hearing: true,
+            host_in_another_hearing: true,
             hearing_role: HearingRole.JUDGE,
             linked_participants: []
         });

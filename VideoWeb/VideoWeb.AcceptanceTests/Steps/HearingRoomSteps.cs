@@ -54,15 +54,15 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the Judge closes the hearing")]
         public void WhenTheJudgeClosesTheHearing()
         {
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.CloseButton, 180);
-            _browsers[_c.CurrentUser].Click(HearingRoomPage.CloseButton);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.CloseButtonDesktop, 180);
+            _browsers[_c.CurrentUser].Click(HearingRoomPage.CloseButtonDesktop);
             if (_c.VideoWebConfig.TestConfig.TargetBrowser == TargetBrowser.Firefox)
             {
                 Thread.Sleep(TimeSpan.FromSeconds(5));
             }
             else
             {
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.ConfirmClosePopup).Displayed.Should().BeTrue();
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.ConfirmClosePopup, Convert.ToInt32(_c.VideoWebConfig.consultationRoomTimeout)).Displayed.Should().BeTrue();
             }
             _browsers[_c.CurrentUser].Click(HearingRoomPage.ConfirmCloseButton);
             _c.Test.HearingClosedTime = DateTime.Now;
@@ -90,7 +90,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.ToggleSelfView).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.PauseButton).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.CloseButton).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.CloseButtonDesktop).Displayed.Should().BeTrue();
         }
 
         [Then(@"the user can see themselves and toggle the view off and on")]
@@ -134,8 +134,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var response = _c.Apis.TestApi.GetAudioRecordingLink(_c.Test.NewHearingId);
             var audioLink = RequestHelper.Deserialise<AudioRecordingResponse>(response.Content);
-//            audioLink.AudioFileLinks.Should().NotBeNullOrEmpty();
-//            audioLink.AudioFileLinks.First().ToLower().Should().Contain(_c.Test.NewHearingId.ToString().ToLower());
         }
 
         [Then(@"the VHO can see that (.*) is in the Waiting Room")]
@@ -174,10 +172,12 @@ namespace VideoWeb.AcceptanceTests.Steps
             interpreter.Should().NotBeNull();
             interpreter.LinkedParticipants.Should().NotBeNullOrEmpty();
             var interpretee = _c.Test.ConferenceParticipants.Single(x => x.Id == interpreter.LinkedParticipants.Single().LinkedId);
-            _browsers[_c.CurrentUser].Driver.WaitUntilElementExists(HearingRoomPage.ParticipantPanel, 60);
-            _browsers[_c.CurrentUser].Driver.WaitUntilElementExists(HearingRoomPage.InterPreterName(interpreter.DisplayName), 60);
+            NUnit.Framework.TestContext.WriteLine($"Interpretee found: {interpretee.DisplayName}");
+            var ele1 = HearingRoomPage.InterPreterName(interpreter.DisplayName);
+            NUnit.Framework.TestContext.WriteLine($"looking for {interpreter.DisplayName}");
+            var ele2 = _browsers[_c.CurrentUser].Driver.WaitUntilElementExists(HearingRoomPage.InterPreterName(interpreter.DisplayName), 60);
             var interpreterText = _browsers[_c.CurrentUser].TextOf(HearingRoomPage.InterPreterName(interpreter.DisplayName));
-            interpreterText.Should().Contain($"{interpretee.DisplayName}");
+            interpreterText.Should().Contain($"{interpreter.DisplayName}");
         }
 
         [Then(@"the Judge can see interpreter hand (.*)")]

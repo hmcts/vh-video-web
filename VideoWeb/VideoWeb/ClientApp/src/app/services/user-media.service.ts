@@ -1,152 +1,266 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { from, Observable, of, ReplaySubject, zip } from 'rxjs';
 import 'webrtc-adapter';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Logger } from './logging/logger-base';
-import { SessionStorage } from './session-storage';
-import { ErrorService } from '../services/error.service';
-import { CallError } from '../waiting-space/models/video-call-models';
+import { catchError, filter, map, mergeMap, retry, take } from 'rxjs/operators';
+import { LocalStorageService } from './conference/local-storage.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class UserMediaService {
     private readonly loggerPrefix = '[UserMediaService] -';
+    readonly defaultStreamConstraints = { audio: true, video: true };
     navigator: Navigator = navigator;
-
-    private readonly preferredCamCache: SessionStorage<UserMediaDevice>;
-    private readonly preferredMicCache: SessionStorage<UserMediaDevice>;
 
     readonly PREFERRED_CAMERA_KEY = 'vh.preferred.camera';
     readonly PREFERRED_MICROPHONE_KEY = 'vh.preferred.microphone';
-    availableDeviceList: UserMediaDevice[];
 
-    connectedDevices: BehaviorSubject<UserMediaDevice[]> = new BehaviorSubject([]);
-
-    constructor(private logger: Logger, private errorService: ErrorService) {
-        this.preferredCamCache = new SessionStorage(this.PREFERRED_CAMERA_KEY);
-        this.preferredMicCache = new SessionStorage(this.PREFERRED_MICROPHONE_KEY);
-
-        this.navigator.mediaDevices.ondevicechange = async () => {
-            await this.updateAvailableDevicesList();
-        };
+    private connectedDevicesSubject: ReplaySubject<UserMediaDevice[]> = new ReplaySubject(1);
+    get connectedDevices$(): Observable<UserMediaDevice[]> {
+        return this.connectedDevicesSubject.asObservable();
     }
 
-    async getListOfVideoDevices(): Promise<UserMediaDevice[]> {
-        await this.checkDeviceListIsReady();
-        return this.availableDeviceList.filter(x => x.kind === 'videoinput');
+    get connectedVideoDevices$(): Observable<UserMediaDevice[]> {
+        return this.connectedDevicesSubject.pipe(
+            map(devices => {
+                return devices.filter(x => x.kind === 'videoinput');
+            })
+        );
     }
 
-    async getListOfMicrophoneDevices(): Promise<UserMediaDevice[]> {
-        await this.checkDeviceListIsReady();
-        return this.availableDeviceList.filter(x => x.kind === 'audioinput' && x.deviceId !== 'communications');
+    get connectedMicrophoneDevices$(): Observable<UserMediaDevice[]> {
+        return this.connectedDevicesSubject.pipe(
+            map(devices => {
+                return devices.filter(x => x.kind === 'audioinput');
+            })
+        );
     }
 
-    async checkDeviceListIsReady() {
-        if (!this.availableDeviceList || this.availableDeviceList.length === 0) {
-            await this.updateAvailableDevicesList();
+    private activeVideoDevice: UserMediaDevice;
+    private activeVideoDeviceSubject = new ReplaySubject<UserMediaDevice>(1);
+    get activeVideoDevice$(): Observable<UserMediaDevice> {
+        return this.activeVideoDeviceSubject.asObservable();
+    }
+
+    private activeMicrophoneDevice: UserMediaDevice;
+    private activeMicrophoneDeviceSubject = new ReplaySubject<UserMediaDevice>(1);
+    get activeMicrophoneDevice$(): Observable<UserMediaDevice> {
+        return this.activeMicrophoneDeviceSubject.asObservable();
+    }
+
+    private isAudioOnly = false;
+    private isAudioOnlySubject = new ReplaySubject<boolean>(1);
+    get isAudioOnly$(): Observable<boolean> {
+        return this.isAudioOnlySubject.asObservable();
+    }
+
+    constructor(private logger: Logger, private localStorageService: LocalStorageService) {}
+
+    private initialised = false;
+    initialise() {
+        if (!this.initialised) {
+            this.logger.debug(`${this.loggerPrefix} Initialising user media service.`);
+            this.handleDeviceChange();
+
+            this.navigator.mediaDevices.ondevicechange = () => {
+                this.handleDeviceChange();
+            };
+
+            this.initialised = true;
         }
     }
 
-    async updateAvailableDevicesList(): Promise<void> {
+    private handleDeviceChange() {
+        this.logger.debug(`${this.loggerPrefix} handle device change`);
+        this.updateAvailableDeviceList().subscribe(availableDevices => {
+            this.connectedDevicesSubject.next(availableDevices);
+
+            this.initialiseActiveDevicesFromCache(availableDevices);
+            this.checkActiveDevicesAreStillConnected(availableDevices);
+        });
+    }
+
+    private initialiseActiveDevicesFromCache(availableDevices: UserMediaDevice[]) {
+        this.logger.debug(`${this.loggerPrefix} initialise active devices from cache`);
+
+        if (!this.activeVideoDevice) {
+            let camera: UserMediaDevice = this.localStorageService.load(this.PREFERRED_CAMERA_KEY);
+            if (!camera) {
+                this.logger.debug(`${this.loggerPrefix} no camera cached. Attempting to load default camera`, { camera });
+                camera = this.loadDefaultCamera(availableDevices);
+            }
+
+            this.setActiveCamera(camera);
+        }
+
+        if (!this.activeMicrophoneDevice) {
+            let microphone: UserMediaDevice = this.localStorageService.load(this.PREFERRED_MICROPHONE_KEY);
+            if (!microphone) {
+                this.logger.debug(`${this.loggerPrefix} no microphone cached. Attempting to load default microphone`, { microphone });
+                microphone = this.loadDefaultMicrophone(availableDevices);
+            }
+
+            this.setActiveMicrophone(microphone);
+        }
+
+        this.setIsAudioOnly(false);
+    }
+
+    private checkActiveDevicesAreStillConnected(availableDevices: UserMediaDevice[]): void {
+        this.activeVideoDevice$.pipe(take(1)).subscribe(activeCamera =>
+            this.isDeviceStillConnected(activeCamera)
+                .pipe(
+                    take(1),
+                    filter(stillConnected => !stillConnected)
+                )
+                .subscribe(() => {
+                    this.logger.debug(`${this.loggerPrefix} camera disconnected. Attempting to set default camera to cache`, {
+                        activeCamera
+                    });
+
+                    const camera = this.loadDefaultCamera(availableDevices);
+                    this.setActiveCamera(camera);
+                })
+        );
+
+        this.activeMicrophoneDevice$.pipe(take(1)).subscribe(activeMicrophone =>
+            this.isDeviceStillConnected(activeMicrophone)
+                .pipe(
+                    take(1),
+                    filter(stillConnected => !stillConnected)
+                )
+                .subscribe(() => {
+                    this.logger.debug(`${this.loggerPrefix} microphone disconnected. Attempting to set default camera to cache`, {
+                        activeMicrophone
+                    });
+
+                    const microphone = this.loadDefaultMicrophone(availableDevices);
+                    this.setActiveMicrophone(microphone);
+                })
+        );
+    }
+
+    private loadDefaultCamera(availableDevices: UserMediaDevice[]): UserMediaDevice {
+        return availableDevices.filter(device => device.kind === 'videoinput')[0];
+    }
+
+    private loadDefaultMicrophone(availableDevices: UserMediaDevice[]): UserMediaDevice {
+        return availableDevices.filter(device => device.kind === 'audioinput')[0];
+    }
+
+    private updateAvailableDeviceList(): Observable<UserMediaDevice[]> {
         if (!this.navigator.mediaDevices || !this.navigator.mediaDevices.enumerateDevices) {
-            const erroMessage = 'enumerateDevices() not supported.';
-            const error = new Error(erroMessage);
+            const error = new Error('enumerateDevices() not supported.');
             this.logger.error(`${this.loggerPrefix} enumerateDevices() not supported.`, error);
             throw error;
         }
+
         this.logger.debug(`${this.loggerPrefix} Attempting to update available media devices.`);
-        let updatedDevices: MediaDeviceInfo[] = [];
-        const stream: MediaStream = await this.navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-        if (stream && stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0) {
-            updatedDevices = await this.navigator.mediaDevices.enumerateDevices();
-        }
-        updatedDevices = updatedDevices.filter(x => x.deviceId !== 'default' && x.kind !== 'audiooutput');
-        this.availableDeviceList = Array.from(
-            updatedDevices,
-            device => new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)
+
+        return this.hasValidCameraAndMicAvailable().pipe(
+            take(1),
+            filter(Boolean),
+            mergeMap(() => this.getCameraAndMicrophoneDevices())
         );
-        if (stream) {
-            stream.getTracks().forEach(track => {
-                track.stop();
-            });
-        }
-        this.connectedDevices.next(this.availableDeviceList);
     }
 
-    async hasMultipleDevices(): Promise<boolean> {
-        const camDevices = await this.getListOfVideoDevices();
-        const micDevices = await this.getListOfMicrophoneDevices();
-        return micDevices.length > 1 || camDevices.length > 1;
+    getCameraAndMicrophoneDevices(): Observable<UserMediaDevice[]> {
+        return from(this.navigator.mediaDevices.enumerateDevices()).pipe(
+            take(1),
+            map(devices => {
+                const filteredDevices = devices.filter(
+                    x => x.deviceId !== 'default' && x.deviceId !== 'communications' && (x.kind === 'videoinput' || x.kind === 'audioinput')
+                );
+
+                return filteredDevices.length > 0 ? filteredDevices : devices;
+            }),
+            map(devices => devices.map(device => new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)))
+        );
     }
 
-    getPreferredCamera() {
-        return this.getCachedDeviceIfStillConnected(this.preferredCamCache);
+    hasValidCameraAndMicAvailable(): Observable<boolean> {
+        return from(this.navigator.mediaDevices.getUserMedia(this.defaultStreamConstraints)).pipe(
+            retry(3),
+            take(1),
+            map(stream => !!stream && stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0),
+            catchError(error => {
+                this.logger.error(`${this.loggerPrefix} couldn't get a valid camera and microphone`, error);
+                return of(false);
+            })
+        );
     }
 
-    getPreferredMicrophone() {
-        return this.getCachedDeviceIfStillConnected(this.preferredMicCache);
-    }
+    updateActiveMicrophone(microhoneDevice: UserMediaDevice) {
+        this.logger.debug(`${this.loggerPrefix} Attempting to update available active microphone.`);
 
-    async getCachedDeviceIfStillConnected(cache: SessionStorage<UserMediaDevice>): Promise<UserMediaDevice> {
-        const device = cache.get();
-        if (!device) {
-            return null;
-        }
-
-        await this.checkDeviceListIsReady();
-
-        const stillConnected = this.availableDeviceList.find(x => x.label === device.label);
-        if (stillConnected) {
-            return device;
-        } else {
-            this.logger.warn(`${this.loggerPrefix} Preferred device ${device.label} is no longer connected`);
-            cache.clear();
-            this.errorService.handlePexipError(new CallError('Preferred device is no longer connected'), null);
-            return null;
-        }
-    }
-
-    updatePreferredCamera(camera: UserMediaDevice) {
-        this.preferredCamCache.set(camera);
-        this.logger.info(`${this.loggerPrefix} Updating preferred camera to ${camera.label}`);
-    }
-
-    updatePreferredMicrophone(microphone: UserMediaDevice) {
-        this.preferredMicCache.set(microphone);
-        this.logger.info(`${this.loggerPrefix} Updating preferred microphone to ${microphone.label}`);
-    }
-
-    async setDefaultDevicesInCache() {
-        try {
-            const cam = await this.getPreferredCamera();
-            if (!cam) {
-                const cams = await this.getListOfVideoDevices();
-                if (cams.length > 1) {
-                    // set first camera in the list as preferred camera if cache is empty
-                    const firstCam = cams.find(x => x.label.length > 0);
-                    if (firstCam) {
-                        this.logger.info(`${this.loggerPrefix} Setting default camera to ${firstCam.label}`);
-                        this.updatePreferredCamera(firstCam);
-                    }
-                }
+        this.activeMicrophoneDevice$.pipe(take(1)).subscribe(mic => {
+            if (mic.deviceId !== microhoneDevice.deviceId) {
+                this.setActiveMicrophone(microhoneDevice);
             }
-            const mic = await this.getPreferredMicrophone();
-            if (!mic) {
-                const mics = await this.getListOfMicrophoneDevices();
-                if (mics.length > 1) {
-                    // set first microphone in the list as preferred microphone if cache is empty
-                    const firstMic = mics.find(x => x.label.length > 0);
-                    if (firstMic) {
-                        this.logger.info(`${this.loggerPrefix} Setting default microphone to ${firstMic.label}`);
-                        this.updatePreferredMicrophone(firstMic);
-                    }
-                }
-            }
-        } catch (error) {
-            this.logger.error(`${this.loggerPrefix} Failed to set default devices in cache.`, error);
-            this.errorService.handlePexipError(new CallError(error.name), null);
+        });
+    }
+
+    private setActiveMicrophone(microhoneDevice: UserMediaDevice) {
+        this.logger.debug(`${this.loggerPrefix} Attempting to set active microhone.`, { microhoneDevice });
+
+        if (microhoneDevice) {
+            this.activeMicrophoneDevice = microhoneDevice;
+            this.activeMicrophoneDeviceSubject.next(microhoneDevice);
+
+            this.localStorageService.save(this.PREFERRED_MICROPHONE_KEY, microhoneDevice);
         }
+    }
+
+    updateActiveCamera(cameraDevice: UserMediaDevice) {
+        this.logger.debug(`${this.loggerPrefix} Attempting to update available active camera.`);
+
+        this.activeVideoDevice$.pipe(take(1)).subscribe(cam => {
+            if (cam.deviceId !== cameraDevice.deviceId) {
+                this.setActiveCamera(cameraDevice);
+            }
+        });
+    }
+
+    private setActiveCamera(cameraDevice: UserMediaDevice) {
+        this.logger.debug(`${this.loggerPrefix} Attempting to set active camera.`, { cameraDevice });
+
+        if (cameraDevice) {
+            this.activeVideoDevice = cameraDevice;
+            this.activeVideoDeviceSubject.next(cameraDevice);
+
+            this.localStorageService.save(this.PREFERRED_CAMERA_KEY, cameraDevice);
+        }
+    }
+
+    updateIsAudioOnly(audioOnly: boolean) {
+        if (this.isAudioOnly !== audioOnly) {
+            this.setIsAudioOnly(audioOnly);
+        }
+    }
+
+    private setIsAudioOnly(audioOnly: boolean) {
+        this.logger.debug(`${this.loggerPrefix} Attempting to set audioOnly.`, { audioOnly });
+
+        this.isAudioOnly = audioOnly;
+        this.isAudioOnlySubject.next(this.isAudioOnly);
+    }
+
+    hasMultipleDevices(): Observable<boolean> {
+        return zip(this.connectedVideoDevices$, this.connectedMicrophoneDevices$).pipe(
+            map(deviceList => {
+                return deviceList[0].length > 1 || deviceList[1].length > 1;
+            })
+        );
+    }
+
+    isDeviceStillConnected(device: UserMediaDevice): Observable<boolean> {
+        return this.connectedDevices$.pipe(
+            map(connectedDevices => {
+                return !!connectedDevices.find(x => x.deviceId === device.deviceId);
+            })
+        );
     }
 
     async selectScreenToShare(): Promise<MediaStream> {

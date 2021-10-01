@@ -1,7 +1,7 @@
 import { ParticipantStatus, Role } from '../../services/clients/api-client';
-import { PanelModel } from './panel-model-base';
+import { IndividualPanelModel } from './individual-panel-model';
 
-export class ParticipantPanelModel extends PanelModel {
+export class ParticipantPanelModel extends IndividualPanelModel {
     constructor(
         id: string,
         displayName: string,
@@ -15,8 +15,15 @@ export class ParticipantPanelModel extends PanelModel {
         super(id, displayName, role, caseTypeGroup, pexipDisplayName, hearingRole, representee);
     }
 
-    get isWitnessReadyToJoin(): boolean {
-        return this.isWitness && !this.isInHearing();
+    get isCallableAndReadyToJoin(): boolean {
+        return this.isCallable && !this.isInHearing();
+    }
+
+    get isCallableAndReadyToBeDismissed(): boolean {
+        return this.isCallable && this.isInHearing();
+    }
+    get isCallable(): boolean {
+        return this.isWitness || this.isQuickLinkUser;
     }
 
     isInHearing(): boolean {
@@ -28,7 +35,7 @@ export class ParticipantPanelModel extends PanelModel {
     }
 
     isAvailable(): boolean {
-        return this.status === ParticipantStatus.Available;
+        return (this.isQuickLinkUser && this.status === ParticipantStatus.InConsultation) || this.status === ParticipantStatus.Available;
     }
 
     isInConsultation(): boolean {

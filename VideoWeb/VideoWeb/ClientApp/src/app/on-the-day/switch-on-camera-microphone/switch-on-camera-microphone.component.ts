@@ -5,11 +5,13 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { AddMediaEventRequest, ConferenceResponse, Role } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { vhContactDetails } from 'src/app/shared/contact-information';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { first } from 'rxjs/operators';
+import { UserMediaService } from 'src/app/services/user-media.service';
 
 @Component({
     selector: 'app-switch-on-camera-microphone',
@@ -32,11 +34,12 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
         private router: Router,
         protected route: ActivatedRoute,
         private videoWebService: VideoWebService,
-        private userMediaStreamService: UserMediaStreamService,
         private profileService: ProfileService,
         private errorService: ErrorService,
         protected logger: Logger,
-        protected participantStatusUpdateService: ParticipantStatusUpdateService
+        protected participantStatusUpdateService: ParticipantStatusUpdateService,
+        private userMediaService: UserMediaService,
+        private userMediaStreamService: UserMediaStreamService
     ) {
         super(participantStatusUpdateService, logger);
         this.userPrompted = false;
@@ -72,15 +75,28 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
     }
 
     async requestMedia() {
-        this.mediaAccepted = await this.userMediaStreamService.requestAccess();
-        this.userPrompted = true;
-        if (!this.mediaAccepted) {
-            this.logger.warn(`[SwitchOnCameraMicrophone] - ${this.participantName} denied access to camera.`, {
-                conference: this.conferenceId,
-                participant: this.participantName
-            });
-            this.postPermissionDeniedAlert();
-        }
+        this.userMediaService.initialise();
+        this.userMediaStreamService.currentStream$.pipe(first()).subscribe({
+            next: stream => {
+                this.mediaAccepted = true;
+                this.userPrompted = true;
+            },
+            error: error => {
+                this.mediaAccepted = false;
+                this.userPrompted = false;
+                this.logger.warn(`[SwitchOnCameraMicrophone] - ${this.participantName} denied access to camera.`, {
+                    conference: this.conferenceId,
+                    participant: this.participantName,
+                    error: error
+                });
+                this.postPermissionDeniedAlert();
+                this.errorService.goToServiceError(
+                    'error-camera-microphone.problem-with-camera-mic',
+                    'error-camera-microphone.camera-mic-in-use',
+                    false
+                );
+            }
+        });
     }
 
     goVideoTest() {

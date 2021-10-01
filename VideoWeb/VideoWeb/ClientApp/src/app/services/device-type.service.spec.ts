@@ -1,4 +1,5 @@
 import { DeviceDetectorService } from 'ngx-device-detector';
+import { browsers } from '../shared/browser.constants';
 import { DeviceTypeService } from './device-type.service';
 
 describe('DeviceType', () => {
@@ -96,16 +97,35 @@ describe('DeviceType', () => {
         expect(service.getOSVersion()).toBe(testOsVersion);
     });
 
+    it('should return whether the OS is iOS', () => {
+        deviceDetectorService.os = 'ios';
+        expect(service.isIOS()).toBeTrue();
+
+        deviceDetectorService.os = 'mac';
+        expect(service.isIOS()).toBeTrue();
+
+        deviceDetectorService.os = 'android';
+        expect(service.isIOS()).toBeFalse();
+    });
+
+    it('should return whether the OS is Android', () => {
+        deviceDetectorService.os = 'android';
+        expect(service.isAndroid()).toBeTrue();
+
+        deviceDetectorService.os = 'ios';
+        expect(service.isAndroid()).toBeFalse();
+    });
+
     const isSupportedBrowserTestCases = [
-        { browser: 'Firefox', expected: true },
-        { browser: 'Safari', expected: true },
-        { browser: 'Chrome', expected: true },
-        { browser: 'MS-Edge', expected: true },
-        { browser: 'MS-Edge-Chromium', expected: true },
-        { browser: 'Opera', expected: false },
-        { browser: 'Brave', expected: false },
-        { browser: 'MSIE', expected: false },
-        { browser: 'MSIE', expected: false }
+        { browser: browsers.Firefox, expected: true },
+        { browser: browsers.Safari, expected: true },
+        { browser: browsers.Chrome, expected: true },
+        { browser: browsers.MSEdge, expected: true },
+        { browser: browsers.Samsung, expected: true },
+        { browser: browsers.MSEdgeChromium, expected: true },
+        { browser: browsers.Opera, expected: false },
+        { browser: browsers.Brave, expected: false },
+        { browser: browsers.MSInternetExplorer, expected: false }
     ];
 
     isSupportedBrowserTestCases.forEach(test => {

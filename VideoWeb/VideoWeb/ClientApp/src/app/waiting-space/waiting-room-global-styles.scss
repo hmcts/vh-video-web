@@ -1,4 +1,5 @@
 @import '~govuk-frontend/govuk/base';
+@import 'abstracts';
 
 .fill-container {
   width: 100%;
@@ -28,7 +29,6 @@
   left: 0;
   bottom: 0;
   right: 0;
-  overflow: auto;
   z-index: 11;
 }
 
@@ -142,10 +142,21 @@
   color: white;
 }
 
+.video-wrapper,
+.panel-wrapper {
+  height: calc(100% - 4.094375rem);
+}
+
+@media screen and (min-width: 40.0625em) {
+  .video-wrapper,
+  .panel-wrapper {
+    height: calc(100% - 5rem);
+  }
+}
+
 .video-wrapper {
   width: auto;
   overflow: hidden;
-  height: calc(100% - 80px);
 }
 
 .hide-panel {
@@ -153,13 +164,21 @@
 }
 
 .panel-wrapper {
-  width: 333px;
+  max-width: 31.25rem;
+  width: 20vw;
   float: right;
+  min-width: 18.75rem;
+  position: absolute;
+  top: 4.094375rem;
+  right: 0;
+  z-index: 998;
   overflow: overlay;
-  height: calc(100% - 55px);
-
+  background-color: #333;
   box-shadow: 0px 5px 10px 0px rgb(0 0 0 / 70%);
   box-shadow: 0px 20px 30px 0px rgb(0 0 0 / 30%);
+  @media screen and (min-width: $breakpoint-small) {
+    top: 5rem;
+  }
 }
 
 .chat-wrapper {
@@ -174,10 +193,19 @@
   color: lightgray;
   margin-left: 50px;
   margin-top: 10px;
-  font-size: 1em;
   font-weight: normal;
   display: flex;
   flex-direction: row;
+  width: auto;
+  max-width: rem(150px);
+  font-size: rem(13px);
+  @media only screen and (min-width: $breakpoint-extra-small) {
+    max-width: rem(250px);
+    font-size: rem(15px);
+  }
+  @media only screen and (min-width: $breakpoint-medium) {
+    max-width: rem(350px);
+  }
 }
 
 .room-title-label {
@@ -186,10 +214,10 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 600px;
+  max-width: rem(400px);
 
-  @media only screen and (max-width: 1024px) {
-    max-width: 400px;
+  @media only screen and (min-width: $breakpoint-large) {
+    max-width: rem(600px);
   }
 }
 

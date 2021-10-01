@@ -150,7 +150,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var parameters = new ParameterBuilder(_mocker)
                 .AddTypedParameters<ParticipantResponseMapper>()
                 .AddTypedParameters<EndpointsResponseMapper>()
-                .AddTypedParameters<ParticipantForJudgeResponseMapper>()
+                .AddTypedParameters<ParticipantForHostResponseMapper>()
                 .AddTypedParameters<ParticipantResponseForVhoMapper>()
                 .AddTypedParameters<ParticipantForUserResponseMapper>()
                 .AddTypedParameters<ConferenceForHostResponseMapper>()

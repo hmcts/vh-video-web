@@ -22,7 +22,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         protected ConferenceManagementController Controller;
         protected Mock<IVideoApiClient> VideoApiClientMock;
         protected Mock<ILogger<ConferenceManagementController>> MockLogger;
-        protected Mock<IConferenceCache> ConferenceCache;
+        protected Mock<IConferenceCache> ConferenceCacheMock;
 
         protected ConferenceManagementController SetupControllerWithClaims(ClaimsPrincipal claimsPrincipal)
         {
@@ -36,7 +36,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             };
 
             return new ConferenceManagementController(VideoApiClientMock.Object, MockLogger.Object,
-                ConferenceCache.Object)
+                ConferenceCacheMock.Object)
             {
                 ControllerContext = context
             };
@@ -44,11 +44,11 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         
         private void BaseSetup()
         {
-            ConferenceCache = new Mock<IConferenceCache>();
+            ConferenceCacheMock = new Mock<IConferenceCache>();
             VideoApiClientMock = new Mock<IVideoApiClient>();
             MockLogger = new Mock<ILogger<ConferenceManagementController>>();
 
-            ConferenceCache.Setup(x =>
+            ConferenceCacheMock.Setup(x =>
                     x.GetOrAddConferenceAsync(TestConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(TestConference);
@@ -86,6 +86,18 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.HearingRole = "Witness")
                         .With(x => x.Username = Faker.Internet.Email("witness1"))
+                        .With(x => x.Id = Guid.NewGuid()).Build(),
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.StaffMember)
+                        .With(x => x.HearingRole = "Staff Member")
+                        .With(x => x.Username = Faker.Internet.Email("witness1"))
+                        .With(x => x.Id = Guid.NewGuid()).Build(),
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.QuickLinkObserver)
+                        .With(x => x.HearingRole = "Quick link observer")
+                        .With(x => x.Username = Faker.Internet.Email("quicklinkobserver1"))
+                        .With(x => x.Id = Guid.NewGuid()).Build(),
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.QuickLinkParticipant)
+                        .With(x => x.HearingRole = "Quick link participant")
+                        .With(x => x.Username = Faker.Internet.Email("quicklinkparticipant1"))
                         .With(x => x.Id = Guid.NewGuid()).Build()
                 }
             };

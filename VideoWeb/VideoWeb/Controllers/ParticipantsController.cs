@@ -218,12 +218,12 @@ namespace VideoWeb.Controllers
                     () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
 
                 _logger.LogTrace($"Retrieving booking participants for hearing ${conference.HearingId}");
-                var judgesInHearingsToday = await _videoApiClient.GetJudgesInHearingsTodayAsync();
+                var hostsInHearingsToday = await _videoApiClient.GetHostsInHearingsTodayAsync();
 
                 var participantContactDetailsResponseVhoMapper = _mapperFactory
                     .Get<Conference, IEnumerable<ParticipantInHearingResponse>,
                         IEnumerable<ParticipantContactDetailsResponseVho>>();
-                var response = participantContactDetailsResponseVhoMapper.Map(conference, judgesInHearingsToday);
+                var response = participantContactDetailsResponseVhoMapper.Map(conference, hostsInHearingsToday);
 
                 return Ok(response);
             }
@@ -275,7 +275,10 @@ namespace VideoWeb.Controllers
                 Role.Judge,
                 Role.Individual,
                 Role.Representative,
-                Role.JudicialOfficeHolder
+                Role.JudicialOfficeHolder,
+                Role.QuickLinkParticipant,
+                Role.QuickLinkObserver,
+                Role.StaffMember
             };
 
             try

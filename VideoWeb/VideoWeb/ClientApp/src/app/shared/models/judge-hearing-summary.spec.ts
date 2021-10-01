@@ -1,16 +1,17 @@
-import { ConferenceForJudgeResponse, ConferenceStatus, Role } from 'src/app/services/clients/api-client';
+import { ConferenceForHostResponse, ConferenceStatus, ParticipantForHostResponse, Role } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { HearingSummary } from './hearing-summary';
 import { JudgeHearingSummary } from './JudgeHearingSummary';
+import { ParticipantSummary } from './participant-summary';
 
 describe('JudgeHearingSummary', () => {
-    let conference: ConferenceForJudgeResponse;
+    let conference: ConferenceForHostResponse;
     const testData = new ConferenceTestData();
 
     beforeEach(() => {
         const allParticiantTypes = testData.getListOfParticipants();
-        conference = testData.getConferenceFuture() as ConferenceForJudgeResponse;
+        conference = testData.getConferenceFuture() as ConferenceForHostResponse;
         conference.participants = allParticiantTypes;
         conference.number_of_endpoints = 2;
     });
@@ -32,11 +33,11 @@ describe('JudgeHearingSummary', () => {
         expect(hearing.numberOfEndpoints).toBe(conference.number_of_endpoints);
     });
 
-    it('should get observers', () => {
+    it('should get observers including quick link observers', () => {
         const hearing = new JudgeHearingSummary(conference);
         const observers = hearing.observers;
-        expect(observers.filter(x => x.hearingRole !== HearingRole.OBSERVER).length).toBe(0);
-        expect(observers.length).toBe(1);
+        expect(observers.filter(x => x.hearingRole !== HearingRole.OBSERVER && x.role !== Role.QuickLinkObserver).length).toBe(0);
+        expect(observers.length).toBe(2);
     });
 
     it('should get panel members', () => {
@@ -53,18 +54,27 @@ describe('JudgeHearingSummary', () => {
         expect(wingers.length).toBe(1);
     });
 
+    it('should get staff members', () => {
+        const hearing = new JudgeHearingSummary(conference);
+        const staffMembers = hearing.staffMembers;
+        expect(staffMembers.filter(x => x.hearingRole !== HearingRole.STAFF_MEMBER).length).toBe(0);
+        expect(staffMembers.length).toBe(1);
+    });
+
     it('should get non judicial participants, excluding observers', () => {
         const hearing = new JudgeHearingSummary(conference);
         const participants = hearing.nonJudicialParticipantsExcludingObservers;
 
         expect(
-            participants.filter(x => x.role !== Role.Individual && x.role !== Role.Representative && x.hearingRole !== HearingRole.WINGER)
-                .length
+            participants.filter(
+                x =>
+                    x.role !== Role.Individual &&
+                    x.role !== Role.Representative &&
+                    x.hearingRole !== HearingRole.WINGER &&
+                    x.role !== Role.QuickLinkParticipant
+            ).length
         ).toBe(0);
-        expect(participants.filter(x => x.hearingRole === HearingRole.OBSERVER).length).toBe(0);
-        expect(participants.filter(x => x.hearingRole === HearingRole.PANEL_MEMBER).length).toBe(0);
-        expect(participants.filter(x => x.hearingRole === HearingRole.WINGER).length).toBe(0);
-        expect(participants.length).toBe(5);
+        expect(participants.length).toBe(7);
     });
 
     it('should return isExpired false when hearing is not closed', () => {

@@ -1,15 +1,15 @@
+using AcceptanceTests.Common.Api.Hearings;
+using AcceptanceTests.Common.Api.Helpers;
+using BookingsApi.Contract.Responses;
+using FluentAssertions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using AcceptanceTests.Common.Api.Hearings;
-using AcceptanceTests.Common.Api.Helpers;
-using FluentAssertions;
 using TechTalk.SpecFlow;
-using VideoWeb.AcceptanceTests.Helpers;
 using TestApi.Contract.Enums;
 using VideoApi.Contract.Responses;
-using BookingsApi.Contract.Responses;
+using VideoWeb.AcceptanceTests.Helpers;
 
 namespace VideoWeb.AcceptanceTests.Hooks
 {
@@ -49,7 +49,8 @@ namespace VideoWeb.AcceptanceTests.Hooks
         private void ClearClosedConferencesForUser(TestApiManager api)
         {
             var response = api.GetConferencesForTodayJudge(_username);
-            var todaysConferences = RequestHelper.Deserialise<List<ConferenceForHostResponse>>(response.Content);
+
+            var todaysConferences = RequestHelper.Deserialise<List<ConferenceForHostResponse>>(FormatSerializedString(response.Content));
             if (todaysConferences == null) return;
 
             foreach (var conference in todaysConferences)
@@ -62,6 +63,16 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 if (ConferenceHasNotBeenDeletedAlready(api, conference.Id))
                     DeleteTheConference(api, hearingId, conference.Id);
             }
+        }
+
+        private static string FormatSerializedString(string content)
+        {
+            var formattedContent = content;
+            formattedContent = formattedContent.Replace("\\", "");
+            formattedContent = formattedContent.Replace("\"[", "[");
+            formattedContent = formattedContent.Replace("]\"", "]");
+
+            return formattedContent;
         }
 
         private static Guid GetTheHearingIdFromTheConference(TestApiManager api, Guid conferenceId)

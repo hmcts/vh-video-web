@@ -1,4 +1,4 @@
-<div>
+<div role="region" [attr.aria-label]="'judge-waiting-room.judge-participant-status-list-label' | translate">
   <div id="p-row-{{ judge.id }}" class="govuk-grid-row govuk-!-margin-bottom-1">
     <div class="govuk-!-margin-top-4">
       <div class="govuk-grid-column-one-third">
@@ -14,9 +14,7 @@
       <div class="govuk-grid-column-two-thirds">
         <div class="govuk-heading-m govuk-!-margin-bottom-0">
             <span>{{'judge-participant-status-list.judge' | translate}}</span>
-          <span *ngIf="isUserJudge"
-            ><a href="javascript:void(0);" (click)="changeJudgeNameShow()" class="govuk-body govuk-link vh-ml10">{{'judge-participant-status-list.edit' | translate}}</a></span
-          >
+          <span *ngIf="isUserJudge"><a href="javascript:void(0);" (click)="changeJudgeNameShow()" class="govuk-body govuk-link vh-ml10">{{'judge-participant-status-list.edit' | translate}}</a></span>
         </div>
         <p class="govuk-body-s govuk-!-margin-bottom-0" *ngIf="!showChangeJudgeDisplayName">
           <strong>{{ judge.display_name }}</strong>
@@ -73,14 +71,14 @@
     </div>
     <div class="vh-border">
       <div *ngFor="let participant of wingers; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
-        <div id="p-row-{{ participant.id }}-panel-member" class="govuk-grid-column-full govuk-!-margin-top-2">
-          <p id="p-{{ participant.id }}-name-panel-member" class="govuk-heading-s govuk-!-margin-bottom-3">
+        <div id="p-row-{{ participant.id }}-winger" class="govuk-grid-column-full govuk-!-margin-top-2">
+          <p id="p-{{ participant.id }}-name-winger" class="govuk-heading-s govuk-!-margin-bottom-3">
             {{ participant.name }}
           </p>
 
           <div class="govuk-body-s govuk-!-margin-bottom-3">
             <label
-              id="p-{{ participant.id }}-status-participant"
+              id="p-{{ participant.id }}-status-winger"
               class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
             >
               {{ getParticipantStatus(participant) }}
@@ -105,10 +103,62 @@
           <p id="p-{{ participant.id }}-name-panel-member" class="govuk-heading-s govuk-!-margin-bottom-3">
             {{ participant.name }}
           </p>
-
           <div class="govuk-body-s govuk-!-margin-bottom-3">
             <label
-              id="p-{{ participant.id }}-status-participant"
+              id="p-{{ participant.id }}-status-panel-member"
+              class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
+            >
+              {{ getParticipantStatus(participant) }}
+            </label>
+          </div>
+
+          <div class="vh-line" *ngIf="!lastItem"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+    <div *ngIf="staffMembers.length > 0">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+          <h2 class="govuk-heading-s">{{'judge-participant-status-list.staff-members' | translate}}</h2>
+      </div>
+    </div>
+    <div class="vh-border">
+      <div *ngFor="let participant of staffMembers; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
+        <div id="p-row-{{ participant.id }}-staff-member" class="govuk-grid-column-full govuk-!-margin-top-2">
+          <p id="p-{{ participant.id }}-name-staff-member" class="govuk-heading-s govuk-!-margin-bottom-3">
+            {{ participant.display_name }}
+              <span *ngIf="isStaffMember"><a href="javascript:void(0);" (click)="changeStaffMemberNameShow(participant.id)" class="govuk-body govuk-link vh-ml10">{{'judge-participant-status-list.edit' | translate}}</a></span>
+          </p>
+            <div *ngIf="showChangeStaffMemberDisplayName">
+                <div class="govuk-form-group vh-mt10">
+                    <input
+                        type="text"
+                        id="new-staff-member-name"
+                        #staffMemberInputName
+                        (blur)="onEnterStaffMemberDisplayName(staffMemberInputName.value)"
+                        value="{{ newStaffMemberDisplayName }}"
+                        class="govuk-input govuk-input--width-20"
+                    />
+                </div>
+                <div class="vh-mt10">
+              <span>
+                <input type="button" id="editStaffmemberDisplayName" (click)="saveStaffMemberDisplayName(participant.id)" value="{{'judge-participant-status-list.save' | translate}}" class="govuk-button" />
+              </span>
+                    <span>
+                <input
+                    type="button"
+                    id="cancelStaffMemberDisplayName"
+                    (click)="cancelStaffMemberDisplayName()"
+                    value="{{'judge-participant-status-list.cancel' | translate}}"
+                    class="govuk-button vh-ml10 govuk-button--secondary"
+                />
+              </span>
+                </div>
+            </div>
+          <div class="govuk-body-s govuk-!-margin-bottom-3">
+            <label
+              id="p-{{ participant.id }}-status-staff-member"
               class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
             >
               {{ getParticipantStatus(participant) }}
@@ -211,7 +261,7 @@
 
           <div class="govuk-body-s govuk-!-margin-bottom-3">
             <label
-              id="p-{{ participant.id }}-status-participant"
+              id="p-{{ participant.id }}-status-observer"
               class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
             >
               {{ getParticipantStatus(participant) }}
@@ -225,6 +275,6 @@
   </div>
 </div>
 
-<app-modal id="pc-error-modal" class="modal clear consultation">
+<app-modal id="pc-error-modal" class="modal clear">
   <app-consultation-error (closedModal)="closeAllPCModals()"></app-consultation-error>
 </app-modal>

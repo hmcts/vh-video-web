@@ -29,14 +29,11 @@ import { ConferenceStatusMessage } from 'src/app/services/models/conference-stat
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
-import { UserMediaService } from 'src/app/services/user-media.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
 import { Room } from 'src/app/shared/models/room';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
 import { HearingRole } from '../models/hearing-role-model';
 import {
     CallError,
@@ -111,8 +108,6 @@ export abstract class WaitingRoomBaseDirective {
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,
         protected consultationService: ConsultationService,
-        protected userMediaService: UserMediaService,
-        protected userMediaStreamService: UserMediaStreamService,
         protected notificationSoundsService: NotificationSoundsService,
         protected notificationToastrService: NotificationToastrService,
         protected roomClosingToastrService: RoomClosingToastrService,
@@ -539,16 +534,8 @@ export abstract class WaitingRoomBaseDirective {
 
         if (this.displayDeviceChangeModal) {
             this.logger.debug(`${this.loggerPrefix} Participant accepted a consultation. Closing change device modal.`);
-            const preferredCamera = await this.userMediaService.getPreferredCamera();
-            const preferredMicrophone = await this.userMediaService.getPreferredMicrophone();
-            const preferredCameraStream = await this.userMediaStreamService.getStreamForCam(preferredCamera);
-            const preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(preferredMicrophone);
-
-            this.userMediaStreamService.stopStream(preferredCameraStream);
-            this.userMediaStreamService.stopStream(preferredMicrophoneStream);
             this.displayDeviceChangeModal = false;
         }
-
         const invitation = this.consultationInvitiationService.getInvitation(roomLabel);
         if (invitation.answer === ConsultationAnswer.Rejected) {
             return;
@@ -765,6 +752,13 @@ export abstract class WaitingRoomBaseDirective {
 
         this.logger.debug(`${this.loggerPrefix} getting judicial room for participant`, logPayload);
         return this.videoCallService.retrieveJudicialRoom(this.conference.id, this.participant.id);
+    }
+
+    isQuickLinkParticipant(): boolean {
+        return (
+            this.participant?.role.toUpperCase() === Role.QuickLinkObserver.toUpperCase() ||
+            this.participant?.role.toUpperCase() === Role.QuickLinkParticipant.toUpperCase()
+        );
     }
 
     isOrHasWitnessLink(): boolean {
@@ -1021,7 +1015,7 @@ export abstract class WaitingRoomBaseDirective {
             return;
         }
 
-        if (this.hearing.isInSession() && !this.isOrHasWitnessLink()) {
+        if (this.hearing.isInSession() && !this.isOrHasWitnessLink() && !this.isQuickLinkParticipant()) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because hearing is in session';
             this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
@@ -1032,7 +1026,7 @@ export abstract class WaitingRoomBaseDirective {
             return;
         }
 
-        if (this.isOrHasWitnessLink() && this.participant.status === ParticipantStatus.InHearing) {
+        if ((this.isOrHasWitnessLink() || this.isQuickLinkParticipant()) && this.participant.status === ParticipantStatus.InHearing) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because witness is in hearing';
             this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
@@ -1066,51 +1060,13 @@ export abstract class WaitingRoomBaseDirective {
         this.displayDeviceChangeModal = true;
     }
 
-    onMediaDeviceChangeCancelled() {
+    onSelectMediaDeviceShouldClose() {
         this.displayDeviceChangeModal = false;
-    }
-
-    async onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
-        this.logger.debug(`${this.loggerPrefix} Updated device settings`, { selectedMediaDevice });
-        this.userMediaService.updatePreferredCamera(selectedMediaDevice.selectedCamera);
-        this.userMediaService.updatePreferredMicrophone(selectedMediaDevice.selectedMicrophone);
-        this.audioOnly = selectedMediaDevice.audioOnly;
-        this.updateAudioOnlyPreference(this.audioOnly);
-        await this.updatePexipAudioVideoSource();
-        this.videoCallService.reconnectToCallWithNewDevices();
-        if (this.audioOnly) {
-            this.videoCallService.switchToAudioOnlyCall();
-        }
-        if (this.hearingControls) {
-            await this.publishMediaDeviceStatus();
-        }
     }
 
     async publishMediaDeviceStatus() {
         this.hearingControls.audioOnly = this.audioOnly;
         await this.hearingControls.publishMediaDeviceStatus();
-    }
-
-    protected updateAudioOnlyPreference(audioOnly: boolean) {
-        const videoCallPrefs = this.videoCallService.retrieveVideoCallPreferences();
-        videoCallPrefs.audioOnly = audioOnly;
-        this.videoCallService.updateVideoCallPreferences(videoCallPrefs);
-    }
-
-    private async updatePexipAudioVideoSource() {
-        const cam = await this.userMediaService.getPreferredCamera();
-        if (cam) {
-            this.videoCallService.updateCameraForCall(cam);
-        }
-
-        const mic = await this.userMediaService.getPreferredMicrophone();
-        if (mic) {
-            this.videoCallService.updateMicrophoneForCall(mic);
-        }
-        this.logger.info(`${this.loggerPrefix} Update camera and microphone selection`, {
-            cameraId: cam.deviceId,
-            microphoneId: mic.deviceId
-        });
     }
 
     get showExtraContent(): boolean {

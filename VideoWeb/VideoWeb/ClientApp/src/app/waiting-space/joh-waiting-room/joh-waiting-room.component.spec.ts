@@ -1,6 +1,12 @@
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
-import { ConferenceResponse, ConferenceStatus, LoggedParticipantResponse, ParticipantResponse } from 'src/app/services/clients/api-client';
+import {
+    ConferenceResponse,
+    ConferenceStatus,
+    LoggedParticipantResponse,
+    ParticipantResponse,
+    ParticipantStatus
+} from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import {
@@ -19,8 +25,6 @@ import {
     notificationToastrService,
     roomClosingToastrService,
     router,
-    userMediaService,
-    userMediaStreamService,
     videoCallService,
     videoWebService
 } from '../waiting-room-shared/tests/waiting-room-base-setup';
@@ -71,8 +75,6 @@ describe('JohWaitingRoomComponent', () => {
             deviceTypeService,
             router,
             consultationService,
-            userMediaService,
-            userMediaStreamService,
             notificationSoundsService,
             notificationToastrService,
             roomClosingToastrService,
@@ -90,11 +92,140 @@ describe('JohWaitingRoomComponent', () => {
         videoWebService.getConferenceById.calls.reset();
     });
 
+    describe('toggleParticipantsPanel', () => {
+        it('should switch isParticipantsPanelHidden from false to true to false to true to false when starting from false', () => {
+            // Arrange
+            component.isParticipantsPanelHidden = false;
+
+            // Act & Assert
+            component.toggleParticipantsPanel();
+            expect(component.isParticipantsPanelHidden).toBe(true);
+
+            component.toggleParticipantsPanel();
+            expect(component.isParticipantsPanelHidden).toBe(false);
+
+            component.toggleParticipantsPanel();
+            expect(component.isParticipantsPanelHidden).toBe(true);
+
+            component.toggleParticipantsPanel();
+            expect(component.isParticipantsPanelHidden).toBe(false);
+        });
+    });
+
+    describe('get allowAudioOnlyToggle', () => {
+        it('should return false if the conference is null', () => {
+            // Arrange
+            component.conference = null;
+
+            // Act
+            const result = component.allowAudioOnlyToggle;
+
+            // Arrange
+            expect(result).toBeFalse();
+        });
+
+        it('should return false if the conference is undefined', () => {
+            // Arrange
+            component.conference = undefined;
+
+            // Act
+            const result = component.allowAudioOnlyToggle;
+
+            // Arrange
+            expect(result).toBeFalse();
+        });
+
+        it('should return false if the participant is null', () => {
+            // Arrange
+            component.participant = null;
+
+            // Act
+            const result = component.allowAudioOnlyToggle;
+
+            // Arrange
+            expect(result).toBeFalse();
+        });
+
+        it('should return false if the participant is undefined', () => {
+            // Arrange
+            component.participant = undefined;
+
+            // Act
+            const result = component.allowAudioOnlyToggle;
+
+            // Arrange
+            expect(result).toBeFalse();
+        });
+
+        it('should return false if the participant is InConsultation', () => {
+            // Arrange
+            component.participant.status = ParticipantStatus.InConsultation;
+
+            // Act
+            const result = component.allowAudioOnlyToggle;
+
+            // Arrange
+            expect(result).toBeFalse();
+        });
+
+        it('should return false if the participant is InHearing', () => {
+            // Arrange
+            component.participant.status = ParticipantStatus.InHearing;
+
+            // Act
+            const result = component.allowAudioOnlyToggle;
+
+            // Arrange
+            expect(result).toBeFalse();
+        });
+
+        it('should return true if the participant is Joining', () => {
+            // Arrange
+            component.participant.status = ParticipantStatus.Joining;
+
+            // Act
+            const result = component.allowAudioOnlyToggle;
+
+            // Arrange
+            expect(result).toBeTrue();
+        });
+
+        it('should return true if the participant is Available', () => {
+            // Arrange
+            component.participant.status = ParticipantStatus.Available;
+
+            // Act
+            const result = component.allowAudioOnlyToggle;
+
+            // Arrange
+            expect(result).toBeTrue();
+        });
+
+        it('should return true if the participant is Disconnected', () => {
+            // Arrange
+            component.participant.status = ParticipantStatus.Disconnected;
+
+            // Act
+            const result = component.allowAudioOnlyToggle;
+
+            // Arrange
+            expect(result).toBeTrue();
+        });
+    });
+
     afterEach(() => {
         if (component.eventHubSubscription$) {
             component.ngOnDestroy();
         }
     });
+
+    it('should show audio only toggle', fakeAsync(() => {
+        component.conference = globalConference;
+        component.participant.status = ParticipantStatus.Available;
+        const result = component.allowAudioOnlyToggle;
+
+        expect(result).toBeTrue();
+    }));
 
     it('should init hearing alert and subscribers', fakeAsync(() => {
         component.ngOnInit();

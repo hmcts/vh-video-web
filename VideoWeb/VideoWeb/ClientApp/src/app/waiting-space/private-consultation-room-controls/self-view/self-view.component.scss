@@ -1,0 +1,15 @@
+@import '~govuk-frontend/govuk/base';
+
+.spotlighted-border {
+  border: 3px solid govuk-colour('yellow');
+}
+
+.video-container {
+  bottom: 10px;
+  left: 10px;
+  z-index: 101;
+  position: absolute;
+  max-width: 8vw;
+  min-width: 6rem;
+  height: auto;
+}

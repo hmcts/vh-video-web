@@ -16,7 +16,7 @@ import { ConferenceStatusChanged } from './models/conference-status-changed.mode
 export class ConferenceService {
     constructor(
         router: Router,
-        private activatedRoute: ActivatedRoute,
+        activatedRoute: ActivatedRoute,
         private eventService: EventsService,
         private apiClient: ApiClient,
         private logger: LoggerService
@@ -146,11 +146,17 @@ export class ConferenceService {
         });
 
         if (!this._currentConferenceId) {
-            this.logger.warn(`${this.loggerPrefix} Could not get conference id from the route parameters: ${params?.get('conferenceId')}`);
+            this.logger.warn(`${this.loggerPrefix} Could not get conference id from the route parameters: ${params?.get('conferenceId')}`, {
+                routeParams: params
+            });
+
+            this.currentConferenceSubject.next(null);
+            this.onCurrentConferenceStatusChangedSubject.next({ newStatus: null, oldStatus: null });
+
             return;
         }
 
-        console.log(`${this.loggerPrefix} attempting to get conference details.`);
+        this.logger.debug(`${this.loggerPrefix} attempting to get conference details.`);
         this.getConferenceById(this.currentConferenceId).subscribe(conference => {
             this.logger.info(`${this.loggerPrefix} conference details retrieved.`, {
                 oldDetails: this.currentConference,

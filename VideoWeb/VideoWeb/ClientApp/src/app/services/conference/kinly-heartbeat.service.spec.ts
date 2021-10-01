@@ -14,7 +14,7 @@ import { ConferenceService } from './conference.service';
 import { KinlyHeartbeatService } from './kinly-heartbeat.service';
 import { ParticipantService } from './participant.service';
 
-fdescribe('KinlyHeartbeatService', () => {
+describe('KinlyHeartbeatService', () => {
     const participant = new ParticipantModel(
         Guid.create().toString(),
         null,
@@ -81,70 +81,125 @@ fdescribe('KinlyHeartbeatService', () => {
 
     describe('initialiseHeartbeat', () => {
         it('should do nothing if the current conference is undefined', fakeAsync(() => {
+<<<<<<< HEAD
             // Act
             sut.initialiseHeartbeat(pexipApiMock);
             flush();
 
+=======
+            // Arrange
+>>>>>>> origin
             currentConferenceSubject.next(undefined);
             loggedInParticipantSubject.next(participant);
             flush();
 
+<<<<<<< HEAD
+=======
+            // Act
+            sut.initialiseHeartbeat(pexipApiMock);
+            flush();
+
+>>>>>>> origin
             // Assert
             expect(sut.heartbeat).toBeFalsy();
             expect(apiClientSpy.getHeartbeatConfigForParticipant).not.toHaveBeenCalled();
         }));
 
         it('should do nothing if the current conference is null', fakeAsync(() => {
+<<<<<<< HEAD
             // Act
             sut.initialiseHeartbeat(pexipApiMock);
             flush();
 
+=======
+            // Arrange
+>>>>>>> origin
             currentConferenceSubject.next(null);
             loggedInParticipantSubject.next(participant);
             flush();
 
+<<<<<<< HEAD
+=======
+            // Act
+            sut.initialiseHeartbeat(pexipApiMock);
+            flush();
+
+>>>>>>> origin
             // Assert
             expect(sut.heartbeat).toBeFalsy();
             expect(apiClientSpy.getHeartbeatConfigForParticipant).not.toHaveBeenCalled();
         }));
 
         it('should do nothing if the current participant is undefined', fakeAsync(() => {
+<<<<<<< HEAD
             // Act
             sut.initialiseHeartbeat(pexipApiMock);
             flush();
 
+=======
+            // Arrange
+>>>>>>> origin
             currentConferenceSubject.next(conference);
             loggedInParticipantSubject.next(undefined);
             flush();
 
+<<<<<<< HEAD
+=======
+            // Act
+            sut.initialiseHeartbeat(pexipApiMock);
+            flush();
+
+>>>>>>> origin
             // Assert
             expect(sut.heartbeat).toBeFalsy();
             expect(apiClientSpy.getHeartbeatConfigForParticipant).not.toHaveBeenCalled();
         }));
 
         it('should do nothing if the current participant is null', fakeAsync(() => {
+<<<<<<< HEAD
             // Act
             sut.initialiseHeartbeat(pexipApiMock);
             flush();
 
+=======
+            // Arrange
+>>>>>>> origin
             currentConferenceSubject.next(conference);
             loggedInParticipantSubject.next(null);
             flush();
 
+<<<<<<< HEAD
+=======
+            // Act
+            sut.initialiseHeartbeat(pexipApiMock);
+            flush();
+
+>>>>>>> origin
             // Assert
             expect(sut.heartbeat).toBeFalsy();
             expect(apiClientSpy.getHeartbeatConfigForParticipant).not.toHaveBeenCalled();
         }));
 
         it('should get the heartbeat configuration for the participant and initialise the heartbeat', fakeAsync(() => {
+<<<<<<< HEAD
             // Act
             sut.initialiseHeartbeat(pexipApiMock);
             flush();
 
+=======
+            // Arrange
+>>>>>>> origin
             currentConferenceSubject.next(conference);
             loggedInParticipantSubject.next(participant);
             flush();
 
+<<<<<<< HEAD
+=======
+            // Act
+            sut.initialiseHeartbeat(pexipApiMock);
+            flush();
+
+>>>>>>> origin
             heartbeatConfigSubject.next(heartbeatConfig);
             flush();
 
@@ -159,6 +214,7 @@ fdescribe('KinlyHeartbeatService', () => {
         }));
 
         it('should catch errors from getHeartbeatConfigForParticipant', fakeAsync(() => {
+<<<<<<< HEAD
             // Act & Assert
             expect(() => {
                 sut.initialiseHeartbeat(pexipApiMock);
@@ -167,6 +223,16 @@ fdescribe('KinlyHeartbeatService', () => {
                 loggedInParticipantSubject.next(participant);
                 flush();
 
+=======
+            // Arrange
+            currentConferenceSubject.next(conference);
+            loggedInParticipantSubject.next(participant);
+            flush();
+
+            // Act & Assert
+            expect(() => {
+                sut.initialiseHeartbeat(pexipApiMock);
+>>>>>>> origin
                 heartbeatConfigSubject.error(new Error());
                 flush();
             }).not.toThrow();
@@ -178,12 +244,85 @@ fdescribe('KinlyHeartbeatService', () => {
     });
 
     describe('handleHeartbeat', () => {
+<<<<<<< HEAD
         beforeEach(fakeAsync(() => {
             sut.initialiseHeartbeat(pexipApiMock);
 
             currentConferenceSubject.next(conference);
             loggedInParticipantSubject.next(participant);
             flush();
+=======
+        it('should stop the heartbeat if current conference is null', fakeAsync(() => {
+            // Arrange
+            const stopHeartbeatSpy = spyOn(sut, 'stopHeartbeat');
+
+            currentConferenceSubject.next(null);
+            loggedInParticipantSubject.next(participant);
+            flush();
+
+            // Act
+            sut.handleHeartbeat(JSON.stringify({}));
+            flush();
+
+            // Assert
+            expect(stopHeartbeatSpy).toHaveBeenCalledTimes(1);
+            expect(heartbeatMapperSpy.map).not.toHaveBeenCalled();
+            expect(eventServiceSpy.sendHeartbeat).not.toHaveBeenCalled();
+        }));
+
+        it('should stop the heartbeat if current conference is undefined', fakeAsync(() => {
+            // Arrange
+            const stopHeartbeatSpy = spyOn(sut, 'stopHeartbeat');
+
+            currentConferenceSubject.next(undefined);
+            loggedInParticipantSubject.next(participant);
+            flush();
+
+            // Act
+            sut.handleHeartbeat(JSON.stringify({}));
+            flush();
+
+            // Assert
+            expect(stopHeartbeatSpy).toHaveBeenCalledTimes(1);
+            expect(heartbeatMapperSpy.map).not.toHaveBeenCalled();
+            expect(eventServiceSpy.sendHeartbeat).not.toHaveBeenCalled();
+        }));
+
+        it('should stop the heartbeat if current participant is null', fakeAsync(() => {
+            // Arrange
+            const stopHeartbeatSpy = spyOn(sut, 'stopHeartbeat');
+
+            currentConferenceSubject.next(conference);
+            loggedInParticipantSubject.next(null);
+            flush();
+
+            // Act
+            sut.handleHeartbeat(JSON.stringify({}));
+            flush();
+
+            // Assert
+            expect(stopHeartbeatSpy).toHaveBeenCalledTimes(1);
+            expect(heartbeatMapperSpy.map).not.toHaveBeenCalled();
+            expect(eventServiceSpy.sendHeartbeat).not.toHaveBeenCalled();
+        }));
+
+        it('should stop the heartbeat if current participant is undefined', fakeAsync(() => {
+            // Arrange
+            const stopHeartbeatSpy = spyOn(sut, 'stopHeartbeat');
+
+            currentConferenceSubject.next(conference);
+            loggedInParticipantSubject.next(undefined);
+            flush();
+
+            // Act
+            sut.handleHeartbeat(JSON.stringify({}));
+            flush();
+
+            // Assert
+            expect(stopHeartbeatSpy).toHaveBeenCalledTimes(1);
+            expect(heartbeatMapperSpy.map).not.toHaveBeenCalled();
+            expect(eventServiceSpy.sendHeartbeat).not.toHaveBeenCalled();
+>>>>>>> origin
         }));
 
         it('should should map the heartbeat', fakeAsync(() => {

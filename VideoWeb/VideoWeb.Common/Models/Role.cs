@@ -9,6 +9,9 @@ namespace VideoWeb.Common.Models
         Judge = 4,
         Individual = 5,
         Representative = 6,
-        JudicialOfficeHolder = 7
+        JudicialOfficeHolder = 7,
+        QuickLinkParticipant = 8,
+        QuickLinkObserver = 9,
+        StaffMember = 10,
     }
 }

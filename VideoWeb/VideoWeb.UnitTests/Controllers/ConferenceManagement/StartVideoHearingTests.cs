@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
+using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
@@ -107,19 +109,18 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 It.Is<StartHearingRequest>(r => r.Layout == HearingLayout.Dynamic)), Times.Once);
         }
         
-        
         [Test]
-        public async Task should_send_all_judges_in_conference_as_participants_to_transfer()
+        public async Task should_send_all_judges_and_staff_members_in_conference_as_participants_to_transfer()
         {
             var participant = TestConference.GetJudge();
             var expectedParticipantsToForceTransfer = TestConference.Participants
-                .Where(x => x.Role == Role.Judge).Select(x => x.Id.ToString());
+                .Where(x => x.Role == Role.Judge || x.Role == Role.StaffMember).Select(x => x.Id.ToString());
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(participant.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
-
+            
             // ConferenceCache is mocked in the base class for these tests...
-
+            
             Controller = SetupControllerWithClaims(user);
 
             var result = await Controller.StartOrResumeVideoHearingAsync(TestConference.Id,

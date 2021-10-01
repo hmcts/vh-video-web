@@ -30,8 +30,6 @@ import {
     notificationToastrService,
     roomClosingToastrService,
     router,
-    userMediaService,
-    userMediaStreamService,
     videoCallService,
     videoWebService
 } from '../../waiting-room-shared/tests/waiting-room-base-setup';
@@ -211,7 +209,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         ]);
         videoControlCacheServiceSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', ['setSpotlightStatus']);
 
-        userMediaService.setDefaultDevicesInCache.and.returnValue(Promise.resolve());
         component = new JudgeWaitingRoomComponent(
             activatedRoute,
             videoWebService,
@@ -224,8 +221,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             router,
             consultationService,
             audioRecordingService,
-            userMediaService,
-            userMediaStreamService,
             notificationSoundsService,
             notificationToastrService,
             roomClosingToastrService,
@@ -271,6 +266,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         flushMicrotasks();
         tick(100);
         expect(component.eventHubSubscription$).toBeDefined();
+<<<<<<< HEAD
     }));
     it('should handle error when unable to setup default devices', fakeAsync(() => {
         errorService.handlePexipError.calls.reset();
@@ -279,7 +275,10 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         component.ngOnInit();
         flushMicrotasks();
         expect(errorService.handlePexipError).toHaveBeenCalledTimes(1);
+=======
+>>>>>>> origin
     }));
+
     it('should init hearing alert and subscribers', fakeAsync(() => {
         component.ngOnInit();
         flushMicrotasks();
@@ -551,18 +550,9 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         component.showChooseCameraDialog();
         expect(component.displayDeviceChangeModal).toBe(true);
     });
-
-    it('should on consultation accept stop streams for devices and close choose device popup', async () => {
-        component.displayDeviceChangeModal = true;
-        await component.onConsultationAccepted('');
-        expect(component.displayDeviceChangeModal).toBe(false);
-        expect(userMediaStreamService.getStreamForMic).toHaveBeenCalled();
-        expect(userMediaStreamService.getStreamForCam).toHaveBeenCalled();
-        expect(userMediaStreamService.stopStream).toHaveBeenCalled();
-    });
     it('should hide change device popup on close popup', () => {
         component.displayDeviceChangeModal = true;
-        component.onMediaDeviceChangeCancelled();
+        component.onSelectMediaDeviceShouldClose();
         expect(component.displayDeviceChangeModal).toBe(false);
     });
 

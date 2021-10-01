@@ -92,6 +92,7 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
             if (!this.loggedInParticipant) {
                 this.loggedInParticipant = await this.videoWebService.getCurrentParticipant(conference.id);
             }
+
             const conferenceResponse = await this.videoWebService.getConferenceById(conference.id);
 
             const participant = conferenceResponse.participants.find(p => p.id === this.loggedInParticipant.participant_id);

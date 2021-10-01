@@ -1,4 +1,5 @@
 @import '~govuk-frontend/govuk/base';
+@import 'abstracts';
 
 @mixin all-main-container {
   position: fixed;
@@ -9,17 +10,13 @@
   color: govuk-colour('yellow');
 }
 
-.vh-spotlight-self-view-outline {
-  border: 3px solid govuk-colour('yellow');
-}
-
 .red {
   color: govuk-colour('red');
 }
 
 .badge {
   font-weight: 700;
-  font-size: 13px;
+  font-size: rem(13px);
   position: relative;
   top: -8px;
   right: 5px;
@@ -42,6 +39,10 @@
   opacity: 1;
 }
 
+.dropdown-opaque {
+  opacity: 1;
+}
+
 .flexBar {
   flex-basis: auto;
   margin-right: 22px;
@@ -52,9 +53,6 @@
 #outgoingFeedVideo {
   bottom: 10px;
   width: 259px;
-  transform: rotateY(180deg);
-  -webkit-transform: rotateY(180deg); /* Safari and Chrome */
-  -moz-transform: rotateY(180deg); /* Firefox */
 }
 
 #outgoingFeedPresentVideo {
@@ -93,6 +91,7 @@
   margin-top: 10px;
   margin-bottom: -10px;
   line-height: 30px;
+  margin-right: 30px;
 }
 
 .small-button {
@@ -133,5 +132,58 @@
   background: rgba(29, 112, 184, 0.7);
   &:hover {
     background: rgba(29, 112, 184, 1);
+  }
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  @media only screen and (min-width: $breakpoint-large) {
+    display: none;
+  }
+}
+
+.dropdown-content {
+  display: block;
+  position: absolute;
+  right: -6.25rem;
+  left: auto;
+  background-color: govuk-colour('white');
+  color: black;
+  font-size: rem(16px);
+  width: rem(200px);
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  padding: 12px 16px;
+  z-index: 999;
+}
+
+.context-item {
+  font-family: 'GDS Transport', arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  margin-left: 4px;
+}
+.hide-for-medium {
+  display: block;
+  @media only screen and (min-width: $breakpoint-medium) {
+    display: none;
+  }
+}
+
+.show-for-medium-only {
+  display: none;
+  @media only screen and (min-width: $breakpoint-medium) and (max-width: $breakpoint-medium-max) {
+    display: inline-flex;
+  }
+}
+
+.hearing-controls-desktop {
+  display: none;
+  @media only screen and (min-width: $breakpoint-large) {
+    display: inline-flex;
+  }
+
+  .horizontal-spacer {
+    padding-bottom: 10px;
+    border-bottom: 2px solid govuk-colour('mid-grey');
   }
 }

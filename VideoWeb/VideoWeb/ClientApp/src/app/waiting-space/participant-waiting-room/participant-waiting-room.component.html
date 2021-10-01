@@ -32,9 +32,9 @@
       <ng-container *ngIf="connected">
         <app-private-consultation-room-controls
           #hearingControls
+          [canToggleParticipantsPanel]="isPrivateConsultation"
           [conferenceId]="conference.id"
           [participant]="participant"
-          [audioOnly]="audioOnly"
           [isPrivateConsultation]="isPrivateConsultation"
           [outgoingStream]="outgoingStream"
           [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
@@ -42,12 +42,13 @@
           (leaveConsultation)="showLeaveConsultationModal()"
           (lockConsultation)="setRoomLock($event)"
           (changeDeviceToggle)="showChooseCameraDialog()"
+          (togglePanel)="toggleParticipantsPanel()"
         >
         </app-private-consultation-room-controls>
       </ng-container>
     </div>
   </div>
-  <div *ngIf="hearing && isPrivateConsultation" class="panel-wrapper">
+  <div *ngIf="hearing && isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': isParticipantsPanelHidden }">
     <app-private-consultation-participants
       [conference]="hearing.getConference()"
       [participantEndpoints]="participantEndpoints"
@@ -91,7 +92,7 @@
   </div>
 </div>
 
-<div *ngIf="isOrHasWitnessLink() && isTransferringIn">
+<div *ngIf="(isOrHasWitnessLink() || isQuickLinkParticipant()) && isTransferringIn">
   <div class="video-background">
     <div class="transferMessage">
       <img
@@ -110,8 +111,8 @@
 
 <div *ngIf="!loadingData && hearing && showExtraContent" class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <div class="govuk-!-padding-top-5" style="margin-bottom: 0">
-      <h1 class="govuk-heading-xl govuk-!-padding-top-5">
+    <div style="margin-bottom: 0">
+      <h1 class="govuk-heading-xl">
         {{ 'participant-waiting-room.your-video-hearing' | translate }} {{ getConferenceStatusText() }}
       </h1>
     </div>
@@ -196,7 +197,7 @@
           <p>{{ 'participant-waiting-room.hearing-status-messages.suspended-body' | translate }}</p>
         </div>
 
-        <div *ngIf="isOrHasWitnessLink() && hearing.isInSession()">
+        <div *ngIf="(isOrHasWitnessLink() || isQuickLinkParticipant()) && hearing.isInSession()">
           <h2 class="govuk-heading-m white">{{ 'participant-waiting-room.hearing-status-messages.in-session-title' | translate }}</h2>
           <p class="white">
             {{ 'participant-waiting-room.hearing-status-messages.in-session-body' | translate }}
@@ -231,7 +232,7 @@
     <div *ngIf="canStartJoinConsultation">
       <button
         [disabled]="!connected"
-        class="govuk-button"
+        class="govuk-button govuk-!-margin-right-3"
         id="openStartPCButton"
         data-module="govuk-button"
         (click)="openStartConsultationModal()"
@@ -241,7 +242,7 @@
 
       <button
         [disabled]="!connected"
-        class="govuk-button govuk-button-blue govuk-!-margin-left-5"
+        class="govuk-button govuk-button-blue"
         id="openJoinPCButton"
         data-module="govuk-button"
         (click)="openJoinConsultationModal()"
@@ -306,11 +307,8 @@
 
 <app-select-media-devices
   *ngIf="displayDeviceChangeModal"
-  [waitingRoomMode]="true"
-  [showAudioOnlySetting]="true"
-  [cameraOn]="!audioOnly"
-  (cancelMediaDeviceChange)="onMediaDeviceChangeCancelled()"
-  (acceptMediaDeviceChange)="onMediaDeviceChangeAccepted($event)"
+  [showAudioOnlySetting]="allowAudioOnlyToggle"
+  (shouldClose)="onSelectMediaDeviceShouldClose()"
   #selectMediaDevices
 ></app-select-media-devices>
 

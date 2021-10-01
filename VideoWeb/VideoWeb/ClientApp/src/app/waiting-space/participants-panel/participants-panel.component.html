@@ -66,7 +66,7 @@
           />
           <br />
         </span>
-        <span innerHtml="{{ participant.displayName | MultiLinePipe }}"></span>
+        <span class="wrap-anywhere" innerHtml="{{ participant.displayName | MultiLinePipe }}"></span>
       </div>
 
       <ng-container *ngIf="!isParticipantDisconnected(participant); else participantDisconnected">
@@ -114,12 +114,17 @@
               </span>
             </ng-container>
           </div>
-          <div *ngIf="participant.isWitnessReadyToJoin">
+          <div *ngIf="participant.isCallableAndReadyToJoin">
             <span
               *ngIf="!participant.transferringIn"
               appTooltip
               [text]="
-                (participant.isAvailable() ? 'participants-panel.call-witness' : 'participants-panel.witness-unavailable') | translate
+                (participant.isAvailable() ?
+                  (isWitness(participant) ?
+                    ('participants-panel.call-witness' | translate) :
+                    ('participants-panel.admit-participant' | translate : {role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase})
+                  ) :
+                  'participants-panel.participant-unavailable' | translate : {role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate})
               "
               [colour]="participant.isAvailable() ? 'green' : 'grey'"
               class="fas icon-button"
@@ -128,7 +133,7 @@
                 'fa-question-circle': !participant.isAvailable(),
                 'no-click': !participant.isAvailable()
               }"
-              (click)="callWitnessIntoHearing(participant); $event.stopPropagation()"
+              (click)="callParticipantIntoHearing(participant); $event.stopPropagation()"
             >
             </span>
             <div *ngIf="participant.transferringIn" class="yellow">{{ 'participants-panel.joining1' | translate }}</div>
@@ -179,8 +184,8 @@
             (toggleMuteParticipantEvent)="toggleMuteParticipantEventHandler($event)"
             (toggleSpotlightParticipantEvent)="toggleSpotlightParticipantEventHandler($event)"
             (lowerParticipantHandEvent)="lowerParticipantHandEventHandler($event)"
-            (callWitnessIntoHearingEvent)="callWitnessIntoHearingEventHandler($event)"
-            (dismissWitnessFromHearingEvent)="dismissWitnessFromHearingEventHandler($event)"
+            (callParticipantIntoHearingEvent)="callParticipantIntoHearingEventHandler($event)"
+            (dismissParticipantFromHearingEvent)="dismissParticipantFromHearingEventHandler($event)"
           >
           </app-judge-context-menu>
         </div>

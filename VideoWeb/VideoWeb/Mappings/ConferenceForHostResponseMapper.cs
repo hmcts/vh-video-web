@@ -11,11 +11,11 @@ namespace VideoWeb.Mappings
 {
     public class ConferenceForHostResponseMapper : IMapTo<Conference, ConferenceForHostResponse>
     {
-        private readonly IMapTo<Participant, ParticipantForJudgeResponse> _participantForJudgeResponseMapper;
+        private readonly IMapTo<Participant, ParticipantForHostResponse> _participantForHostResponseMapper;
 
-        public ConferenceForHostResponseMapper(IMapTo<Participant, ParticipantForJudgeResponse> participantForJudgeResponseMapper)
+        public ConferenceForHostResponseMapper(IMapTo<Participant, ParticipantForHostResponse> participantForHostResponseMapper)
         {
-            _participantForJudgeResponseMapper = participantForJudgeResponseMapper;
+            _participantForHostResponseMapper = participantForHostResponseMapper;
         }
 
         public ConferenceForHostResponse Map(Conference conference)
@@ -30,7 +30,7 @@ namespace VideoWeb.Mappings
                 ScheduledDuration = conference.ScheduledDuration,
                 ClosedDateTime = conference.ClosedDateTime,
                 ScheduledDateTime = conference.ScheduledDateTime,
-                Participants = conference.Participants.Select(_participantForJudgeResponseMapper.Map).ToList(),
+                Participants = conference.Participants.Select(_participantForHostResponseMapper.Map).ToList(),
                 NumberOfEndpoints = conference.NumberOfEndpoints
             };
         }

@@ -212,7 +212,8 @@
     "all-content-availabe-under": "Mae'r holl gynnwys ar gael dan y ",
     "open-government-license": "Drwydded Llywodraeth Agored f3.0,",
     "except": " oni bai pan nodir fel arall",
-    "copyright": "© Hawlfraint y Goron"
+    "copyright": "© Hawlfraint y Goron",
+    "copyright-info-link-label": "Gwybodaeth Hawlfraint"
   },
   "participant-hearings": {
     "loading-please-wait": "Wrthi'n llwytho...",
@@ -265,7 +266,8 @@
     "observer": "Sylwebydd",
     "observers": "Sylwebydd",
     "video-access-point": "Pwynt mynediad fideo ",
-    "video-access-points": "Pwynt mynediad fideo"
+    "video-access-points": "Pwynt mynediad fideo",
+    "conference-status-heading": "Statws/Gweithredu"
   },
   "conference-status": {
     "paused": "Wedi'i atal dros dro",
@@ -279,7 +281,8 @@
     "continue": "Parhau"
   },
   "back-navigation": {
-    "back": "Yn ôl"
+    "back": "Yn ôl",
+    "return-to-video-hearing-list": "Dychwelyd i'r rhestr gwrandawiadau fideo "
   },
   "introduction": {
     "hm-courts-and-tribunals-service-crest": "Arwyddlun Gwasanaeth Llysoedd a Thribiwnlysoedd EM",
@@ -484,6 +487,7 @@
   "individual-participant-status-list": {
     "crest-icon-alt": "Arwyddlun Gwasanaeth Llysoedd a Thribiwnlysoedd EM",
     "panel-members": "Aelodau'r panel",
+    "staff-members": "Aelodau'r staff",
     "wingers": "Asgellwyr",
     "participants": "Cyfranogwyr",
     "for": "",
@@ -516,7 +520,8 @@
     "send": "Anfon",
     "char-count": "Nifer o nodau",
     "maximum": "caniateir hyd at",
-    "unable-send": "Methu anfon y neges"
+    "unable-send": "Methu anfon y neges",
+    "type-a-message": "Teipiwch neges"
   },
   "start-private-consultation": {
     "invite": "Gwahodd eraill i gyfarfod preifat",
@@ -560,7 +565,8 @@
     },
     "participant-added": {
       "title": "Mae {{name}}",
-      "message": "{{role}} ({{party}}) wedi cael ei (h)ychwanegu at y gwrandawiad.",
+      "message-without-party": "{{role}} wedi cael ei (h)ychwanegu at y gwrandawiad.",
+      "message-with-party": "{{role}} ({{party}}) wedi cael ei (h)ychwanegu at y gwrandawiad.",
       "dismiss": "Gwrthod"
     }
   },
@@ -591,12 +597,14 @@
     "participants-panel": "Panel y cyfranogwyr",
     "chat-panel": "Panel sgwrsio",
     "pause": "Egwyl",
-    "close": "Cau"
+    "close": "Cau",
+    "context-menu": "Bwydlen Agored",
+    "hearing-controls": "Rheolyddion y gwrandawiad"
+
   },
   "judge-waiting-room": {
     "switch-to-main-screen": "Dychwelyd i'r brif sgrin",
     "loading-please-wait": "Wrthi'n llwytho...",
-    "return-to-video-hearing-list": "Dychwelyd i'r rhestr gwrandawiadau fideo ",
     "hearing": "Gwrandawiad",
     "choose-camera-and-microphone": "Dewis camera a microffon",
     "choose-camera-and-microphone-dialog": "Blwch deialog dewis camera a microffon",
@@ -715,6 +723,7 @@
     "connected": "Wedi cysylltu",
     "wingers": "Asgellwyr",
     "panel-members": "Aelodau'r panel",
+    "staff-members": "Aelodau'r staff",
     "participants": "Cyfranogwyr",
     "video-access-points": "Pwyntiau mynediad fideo",
     "observers": "Sylwebwyr",
@@ -774,6 +783,8 @@
     "blue": "glas",
     "grey": "llwyd",
     "call-witness": "Galw'r tyst",
+    "participant-unavailable": "Nid yw'r {{role}} ar gael",
+    "participant-available": "As gael",
     "joining1": "Yn ymuno...",
     "for": ""
   },
@@ -785,7 +796,9 @@
     "lower-hand": "Rhoi llaw i lawr",
     "call-witness": "Galw'r tyst",
     "unpin": "Peidio amlygu",
-    "unmute": "Dadfudo"
+    "unmute": "Dadfudo",
+    "admit-participant": "Gadael {{role}} i mewn",
+    "dismiss-participant" : "Gwrthod {{role}}"
   },
   "confirm-close-hearing-popup": {
     "title": "Rydych ar fin cau'r gwrandawiad hwn",
@@ -880,8 +893,7 @@
     "redirect": "Arhoswch tra byddwn yn eich ailgyfeirio"
   },
   "unsupported-browser": {
-    "using-unsupported-browser": "Rydych wedi mewngofnodi gan ddefnyddio porwr nas gefnogir",
-    "unfortunately-this-browser": "Rydych yn defnyddio porwr nas gefnogir gan y gwasanaeth gwrandawiadau fideo.",
+    "using-unsupported-browser": "Rydych yn defnyddio porwr sydd heb ei gefnogi.",
     "please-try-again": "Rhowch gynnig arall arni gan ddefnyddio un o’r porwyr a restrir isod. Os ydych dal i gael problemau, cysylltwch â’r tîm gwrandawiadau fideo.",
     "supported-browser-alt": "{{browserName}} logo'r porwr"
   },
@@ -911,7 +923,9 @@
     "judicial-office-holder": "Daliwr Swydd Farnwrol",
     "judge": "Barnwr",
     "individual": "Unigolyn",
-    "hearing-facilitation-support-(ctrt-clerk)": "Hwylusydd y gwrandawiad (Clerc CTRT)"
+    "hearing-facilitation-support-(ctrt-clerk)": "Hwylusydd y gwrandawiad (Clerc CTRT)",
+    "quick-link-participant": "Cyfranogwr",
+    "quick-link-observer": "Sylwedydd"
   },
   "hearing-role": {
     "intermediary": "Cyfryngwr",
@@ -936,12 +950,15 @@
     "expert": "Arbenigwr",
     "defendant-lip": "Ymgyfreithiwr drosto'i hun y Diffynnydd ",
     "claimant-lip": "Ymgyfreithiwr drosto'i hun yr Hawlydd",
-    "claimaint-lip": "Ymgyfreithiwr drosto'i hun yr Hawlydd",
     "applicant-lip": "Ymgyfreithiwr drosto'i hun y Ceisydd",
     "appellant-lip": "Ymgyfreithiwr drosto'i hun yr Apelydd",
     "app-advocate": "Eiriolwr yr Apelydd",
     "app": "Apelydd",
-    "video-access-point": "Pwynt mynediad fideo"
+    "video-access-point": "Pwynt mynediad fideo",
+    "solicitor": "Cyfreithiwr",
+    "barrister": "Bargyfreithiwr",
+    "quick-link-participant": "Cyfranogwr",
+    "quick-link-observer": "Sylwedydd"
   },
   "case-type-group": {
     "respondent": "Atebydd",
@@ -982,6 +999,7 @@
     "grc---dvsa": "GRC - DVSA",
     "grc---crb": "GRC - CRB",
     "grc---charity": "GRC - Elusennau",
+    "grc---ej": "GRC - EJ",
     "generic": "Cyffredinol",
     "financial-remedy": "Rhwymedi Ariannol",
     "family-law-act": "Deddf Cyfraith Teulu",
@@ -1035,9 +1053,58 @@
     "cancel-filters-alt": "Canslo'r ffilteri"
   },
   "copy-telephone-id": {
-    "alt": "Copïo'r manylion ymuno dros y ffôn i'r clipfwrdd"
+    "alt": "Copïo'r manylion ymuno dros y ffôn i'r clipfwrdd",
+    "display-text": "Copïo'r manylion ymuno dros y ffôn i'r clipfwrdd",
+    "tooltip-copied": "Manylion wedi cael eu copïo i'r clipfwrdd"
   },
   "copy-id": {
-    "alt": "Eicon copïo rhif adnabod (ID) y gynhadledd"
+    "alt": "Eicon copïo rhif adnabod (ID) y gynhadledd",
+    "display-text": "Copïo'r rhif adnabod gwrandawiad i'r clipfwrdd",
+    "tooltip-copied": "Wedi copïo'r rhif adnabod cynhadledd i'r clipfwrdd"
+  },
+  "copy-quick-link": {
+    "tooltip-copied": "Manylion ymuno drwy ddolen gyflym i'r clipfwrdd wedi cael eu copïo i'r clipfwrdd",
+    "display-text": "Copïo'r manylion ymuno drwy ddolen gyflym i'r clipfwrdd"
+  },
+  "quick-participant-landing-page": {
+    "page-title": "Rhowch eich manylion i ymuno â'ch gwrandawiad",
+    "paragraph1": "Dywedwch wrthym eich enw a'ch rôl yn y gwrandawiad.",
+    "name-label": "Eich enw llawn",
+    "name-error": "Rhowch eich enw llawn",
+    "role-label": "Beth yw eich rôl yn y gwrandawiad?",
+    "role-error": "Dewiswch eich rôl yn y gwrandawiad",
+    "roles": {
+      "QuickLinkParticipant": {
+        "title": "Cyfranogwr",
+        "description": "Rydych wedi cael eich galw i gymryd rhan yn y gwrandawiad."
+      },
+      "QuickLinkObserver": {
+        "title": "Sylwedydd",
+        "description": "Rydych yn arsylwi'r gwrandawiad, ond nid ydych yn cymryd rhan."
+      }
+    },
+    "problem-with-form": "Mae problem.",
+    "problem-with-special-char": "Rydych wedi rhoi rhai nodau na chaniateir.",
+    "problem-with-special-char-recommendation": "Cewch ddefnyddio acenion, collnodau a chysylltnodau ond dim symbolau eraill.",
+    "name-error-special-char": "Rydych wedi rhoi nodau na chaniateir.",
+    "button-continue": "Parhau"
+  },
+  "quick-participant-errors": {
+    "invalid-page": {
+      "heading": "Does dim modd cydnabod y ddolen rydych chi wedi'i defnyddio",
+      "body": "Gwiriwch y ddolen a anfonwyd atoch. Os nad yw'n gweithio o hyd, ffoniwch 0300 303 0655 i siarad â swyddog gwrandawiadau fideo."
+    }
+  },
+  "loading": "Wrthi'n llwytho...",
+  "video-filter": {
+    "title": "Dewis cefndir personol",
+    "none": "Dim",
+    "none-alt": "Tynnu'r holl hidlwyr",
+    "blur": "Aneglur",
+    "blur-alt": "Defnyddio hidlydd cefndir aneglur",
+    "hmcts": "GLlTEM",
+    "hmcts-alt": "Defnyddio cefndir gydag arwydd GLlTEM",
+    "scts": "SCTS",
+    "scts-alt": "Defnyddio cefndir gydag arwydd SCTS"
   }
 }

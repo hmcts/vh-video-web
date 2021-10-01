@@ -38,7 +38,8 @@ namespace VideoWeb.Mappings
                 Status = ConferenceHelper.GetConferenceStatus(conference.CurrentStatus),
                 Participants = participants,
                 ClosedDateTime = conference.ClosedDateTime,
-                HearingVenueName = conference.HearingVenueName
+                HearingVenueName = conference.HearingVenueName,
+                HearingId = conference.HearingId
             };
 
             if (conference.MeetingRoom == null) return response;

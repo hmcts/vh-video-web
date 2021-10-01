@@ -20,13 +20,16 @@ import { EventsService } from './services/events.service';
 import { TestLanguageService } from './shared/test-language.service';
 import { TranslateService } from '@ngx-translate/core';
 import { translateServiceSpy } from './testing/mocks/mock-translation.service';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { MockOidcSecurityService } from './testing/mocks/mock-oidc-security.service';
 import { TranslatePipeMock } from './testing/mocks/mock-translation-pipe';
 import { of } from 'rxjs';
 import { PublicEventsService } from 'angular-auth-oidc-client';
+import { SecurityServiceProvider } from './security/authentication/security-provider.service';
+import { ISecurityService } from './security/authentication/security-service.interface';
+import { SecurityConfigSetupService } from './security/security-config-setup.service';
+import { getSpiedPropertyGetter } from './shared/jasmine-helpers/property-helpers';
+import { NoSleepService } from './services/no-sleep.service';
 
-describe('AppComponent', () => {
+describe('AppComponent - Testbed', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
     let deviceTypeServiceSpy: jasmine.SpyObj<DeviceTypeService>;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
@@ -34,6 +37,7 @@ describe('AppComponent', () => {
     let pageTrackerSpy: jasmine.SpyObj<PageTrackerService>;
     let testLanguageServiceSpy: jasmine.SpyObj<TestLanguageService>;
     let publicEventsServiceSpy: jasmine.SpyObj<PublicEventsService>;
+    let noSleepServiceSpy: jasmine.SpyObj<NoSleepService>;
 
     const clientSettings = new ClientSettingsResponse({
         event_hub_path: 'evenhub',
@@ -44,8 +48,12 @@ describe('AppComponent', () => {
     let component: AppComponent;
     let fixture: ComponentFixture<AppComponent>;
     let router: Router;
+    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
+    let securityConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
+    let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
 
     configureTestSuite(() => {
+        noSleepServiceSpy = jasmine.createSpyObj<NoSleepService>(['enable']);
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings', 'loadConfig']);
         configServiceSpy.getClientSettings.and.returnValue(of(clientSettings));
 
@@ -62,13 +70,23 @@ describe('AppComponent', () => {
         participantStatusUpdateServiceSpy.postParticipantStatus.and.returnValue(Promise.resolve());
         publicEventsServiceSpy = jasmine.createSpyObj('PublicEventsService', ['registerForEvents']);
 
+        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
+            'SecurityServiceProviderService',
+            [],
+            ['currentSecurityService$']
+        );
+
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['authorize']);
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
+
+        securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>('SecurityConfigSetupService', ['getIdp']);
+
         TestBed.configureTestingModule({
             imports: [HttpClientModule, RouterTestingModule],
             declarations: [AppComponent, HeaderStubComponent, FooterStubComponent, BetaBannerStubComponent, TranslatePipeMock],
             providers: [
                 { provide: ConfigService, useValue: configServiceSpy },
                 { provide: Logger, useClass: MockLogger },
-                { provide: OidcSecurityService, useClass: MockOidcSecurityService },
                 { provide: DeviceTypeService, useValue: deviceTypeServiceSpy },
                 { provide: DeviceTypeService, useValue: deviceTypeServiceSpy },
                 { provide: ProfileService, useValue: profileServiceSpy },
@@ -77,7 +95,10 @@ describe('AppComponent', () => {
                 { provide: ParticipantStatusUpdateService, useValue: participantStatusUpdateServiceSpy },
                 { provide: EventsService, useValue: eventsServiceSpy },
                 { provide: TranslateService, useValue: translateServiceSpy },
-                { provide: PublicEventsService, useValue: publicEventsServiceSpy }
+                { provide: PublicEventsService, useValue: publicEventsServiceSpy },
+                { provide: SecurityConfigSetupService, useValue: securityConfigSetupServiceSpy },
+                { provide: SecurityServiceProvider, useValue: securityServiceProviderServiceSpy },
+                { provide: NoSleepService, useValue: noSleepServiceSpy }
             ]
         });
     });

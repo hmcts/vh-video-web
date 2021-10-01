@@ -4,6 +4,8 @@ $govuk-global-styles: true;
 @import '~govuk-frontend/govuk/all';
 @import '~@hmcts/frontend/all';
 @import '~@ng-select/ng-select/themes/default.theme.css';
+@import '~@ministryofjustice/frontend/moj/all';
+@import 'abstracts';
 
 .grey-btn {
   background-color: govuk-colour('light-grey');
@@ -58,16 +60,6 @@ $govuk-global-styles: true;
   background-color: rgba(223, 223, 223, 0);
 }
 
-.modal.consultation {
-  position: fixed;
-  left: 50%;
-  top: 70%;
-  width: 35vw;
-  white-space: pre-wrap;
-  transform: translate(-50%, -50%);
-  text-align: center;
-}
-
 /* Modal Content/Box */
 
 .modal-content {
@@ -76,6 +68,10 @@ $govuk-global-styles: true;
   /* 15% from the top and centered */
   padding: 20px;
   border: 1px solid #888;
+  width: 90%;
+  @media only screen and (min-width: $breakpoint-medium) {
+    width: 680px;
+  }
 }
 
 .modal-content.negative {
@@ -148,6 +144,11 @@ $govuk-global-styles: true;
   transition: visibility 0s linear 0s, opacity 300ms;
 }
 
+.wrap-anywhere {
+  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+
 .vh-tooltip {
   @include govuk-font(14, $weight: 'regular', $tabular: false, $line-height: false);
   color: govuk-colour('white');
@@ -162,8 +163,9 @@ $govuk-global-styles: true;
   top: 127px;
   left: 42px;
   padding: 8px;
-  visibility: hidden;
+  display: none;
   opacity: 0.9;
+  pointer-events: none;
 }
 
 .vh-tooltip-blue {
@@ -193,7 +195,8 @@ $govuk-global-styles: true;
 }
 
 .vh-tooltip-show {
-  visibility: visible;
+  display: block;
+  pointer-events: none;
 }
 
 video {
@@ -208,6 +211,21 @@ video {
   display: block;
 }
 
-.vh-no-pointer{
+.vh-no-pointer {
   pointer-events: none;
+}
+
+.copy-link-text {
+  text-decoration: none;
+  padding-left: 0.2em;
+}
+
+.selfie-view {
+  transform: rotateY(180deg);
+  -webkit-transform: rotateY(180deg); /* Safari and Chrome */
+  -moz-transform: rotateY(180deg); /* Firefox */
+}
+
+.govuk-template {
+  overflow-y: unset;
 }

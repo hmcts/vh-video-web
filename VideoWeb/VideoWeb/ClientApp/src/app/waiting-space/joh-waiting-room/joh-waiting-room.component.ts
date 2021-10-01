@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceStatus } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
@@ -13,8 +13,6 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
-import { UserMediaService } from 'src/app/services/user-media.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
@@ -31,6 +29,7 @@ import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-ba
 export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
     private readonly loggerPrefixJOH = '[JOH WR] -';
     private destroyedSubject = new Subject();
+    isParticipantsPanelHidden = false;
 
     constructor(
         protected route: ActivatedRoute,
@@ -43,8 +42,6 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,
         protected consultationService: ConsultationService,
-        protected userMediaService: UserMediaService,
-        protected userMediaStreamService: UserMediaStreamService,
         protected notificationSoundsService: NotificationSoundsService,
         protected notificationToastrService: NotificationToastrService,
         protected roomClosingToastrService: RoomClosingToastrService,
@@ -64,8 +61,6 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
             deviceTypeService,
             router,
             consultationService,
-            userMediaService,
-            userMediaStreamService,
             notificationSoundsService,
             notificationToastrService,
             roomClosingToastrService,
@@ -76,6 +71,10 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
 
     ngOnInit(): void {
         this.init();
+    }
+
+    toggleParticipantsPanel() {
+        this.isParticipantsPanelHidden = !this.isParticipantsPanelHidden;
     }
 
     private onShouldReload(): void {
@@ -104,6 +103,15 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
             this.startEventHubSubscribers();
             this.connectToPexip();
         });
+    }
+
+    get allowAudioOnlyToggle(): boolean {
+        return (
+            !!this.conference &&
+            !!this.participant &&
+            this.participant?.status !== ParticipantStatus.InConsultation &&
+            this.participant?.status !== ParticipantStatus.InHearing
+        );
     }
 
     getConferenceStatusText(): string {

@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
 import { Observable, Subject } from 'rxjs';
+import { skip, take, takeUntil } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ApiClient, HearingLayout, SharedParticipantRoom, StartHearingRequest } from 'src/app/services/clients/api-client';
 import { KinlyHeartbeatService } from 'src/app/services/conference/kinly-heartbeat.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
-import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
+
 import {
     CallError,
     CallSetup,
@@ -22,7 +24,10 @@ import {
     StoppedScreenshare
 } from '../models/video-call-models';
 import { VideoCallEventsService } from './video-call-events.service';
+<<<<<<< HEAD
 import { VideoCallPreferences } from './video-call-preferences.mode';
+=======
+>>>>>>> origin
 
 declare var PexRTC: any;
 
@@ -30,7 +35,6 @@ declare var PexRTC: any;
 export class VideoCallService {
     private readonly loggerPrefix = '[VideoCallService] -';
     private readonly preferredLayoutCache: SessionStorage<Record<string, HearingLayout>>;
-    private readonly videoCallPreferences: SessionStorage<VideoCallPreferences>;
     readonly VIDEO_CALL_PREFERENCE_KEY = 'vh.videocall.preferences';
     readonly PREFERRED_LAYOUT_KEY = 'vh.preferred.layout';
 
@@ -50,27 +54,26 @@ export class VideoCallService {
     private onConnectedPresentationSubject = new Subject<ConnectedPresentation>();
     private onDisconnectedPresentationSubject = new Subject<DisconnectedPresentation>();
 
+    private hasDisconnected$ = new Subject();
+    private renegotiating = false;
+    private justRenegotiated = false;
+
     pexipAPI: PexipClient;
     localOutgoingStream: any;
-    get isAudioOnlyCall(): boolean {
-        return this.pexipAPI.call_type === this.callTypeAudioOnly || this.pexipAPI.video_source === false;
-    }
 
     constructor(
         private logger: Logger,
         private userMediaService: UserMediaService,
+        private userMediaStreamService: UserMediaStreamService,
         private apiClient: ApiClient,
         private configService: ConfigService,
         private kinlyHeartbeatService: KinlyHeartbeatService,
         private videoCallEventsService: VideoCallEventsService
     ) {
         this.preferredLayoutCache = new SessionStorage(this.PREFERRED_LAYOUT_KEY);
-        this.videoCallPreferences = new SessionStorage(this.VIDEO_CALL_PREFERENCE_KEY);
+
         if (!this.preferredLayoutCache.get()) {
             this.preferredLayoutCache.set({});
-        }
-        if (!this.videoCallPreferences.get()) {
-            this.videoCallPreferences.set(new VideoCallPreferences());
         }
     }
 
@@ -78,18 +81,21 @@ export class VideoCallService {
      * This will initialise the pexip client and initalise the call with
      * the user's preferred camera and microphone (if selected)
      */
-    async setupClient() {
+    async setupClient(): Promise<void> {
+        this.hasDisconnected$ = new Subject();
+
         const self = this;
         this.pexipAPI = new PexRTC();
-        await this.retrievePreferredDevices();
         this.initCallTag();
         this.initTurnServer();
         this.pexipAPI.screenshare_fps = 30;
 
-        this.pexipAPI.onSetup = function (stream, pinStatus, conferenceExtension) {
-            self.onSetupSubject.next(new CallSetup(stream));
-        };
+        this.userMediaService.initialise();
+        this.userMediaStreamService.currentStream$
+            .pipe(take(1))
+            .subscribe(currentStream => (this.pexipAPI.user_media_stream = currentStream));
 
+<<<<<<< HEAD
         this.pexipAPI.onConnect = this.handleConnect.bind(this);
 
         this.pexipAPI.onError = this.handleError.bind(this);
@@ -98,6 +104,16 @@ export class VideoCallService {
         // https://docs.pexip.com/api_client/api_pexrtc.htm#disconnect
         this.pexipAPI.onDisconnect = this.handleAdminDisconnect.bind(this);
 
+=======
+        this.pexipAPI.onSetup = this.handleSetup.bind(this);
+
+        this.pexipAPI.onConnect = this.handleConnect.bind(this);
+
+        this.pexipAPI.onError = this.handleError.bind(this);
+
+        this.pexipAPI.onDisconnect = this.handleDisconnect.bind(this);
+
+>>>>>>> origin
         this.pexipAPI.onParticipantUpdate = this.handleParticipantUpdate.bind(this);
 
         this.pexipAPI.onConferenceUpdate = function (conferenceUpdate) {
@@ -132,8 +148,14 @@ export class VideoCallService {
             self.logger.info(`${self.loggerPrefix} Screenshare stopped : ${JSON.stringify(reason)}`);
             self.onStoppedScreenshareSubject.next(new StoppedScreenshare(reason));
         };
+
+        this.userMediaStreamService.currentStream$.pipe(skip(1)).subscribe(currentStream => {
+            this.pexipAPI.user_media_stream = currentStream;
+            this.renegotiateCall();
+        });
     }
 
+<<<<<<< HEAD
     private handleConnect(stream: MediaStream | URL) {
         this.kinlyHeartbeatService.initialiseHeartbeat(this.pexipAPI);
 
@@ -160,6 +182,8 @@ export class VideoCallService {
         this.onDisconnected.next(new DisconnectedCall(reason));
     }
 
+=======
+>>>>>>> origin
     initTurnServer() {
         const config = this.configService.getConfig();
         const turnServerObj = {
@@ -174,20 +198,42 @@ export class VideoCallService {
         this.pexipAPI.call_tag = Guid.create().toString();
     }
 
-    private async retrievePreferredDevices() {
-        const preferredCam = await this.userMediaService.getPreferredCamera();
-        if (preferredCam) {
-            this.updateCameraForCall(preferredCam);
-        } else {
-            this.logger.warn(`${this.loggerPrefix} prefered camera was falsey.`);
+    private handleSetup(stream: MediaStream | URL) {
+        this.onSetupSubject.next(new CallSetup(stream));
+    }
+
+    private handleConnect(stream: MediaStream | URL) {
+        if (this.renegotiating || this.justRenegotiated) {
+            this.logger.warn(`${this.loggerPrefix} Not handling pexip connect event as it was during a renegotation`);
+            this.justRenegotiated = false;
+            return;
         }
 
-        const preferredMic = await this.userMediaService.getPreferredMicrophone();
-        if (preferredMic) {
-            this.updateMicrophoneForCall(preferredMic);
-        } else {
-            this.logger.warn(`${this.loggerPrefix} prefered mic was falsey.`);
-        }
+        this.kinlyHeartbeatService.initialiseHeartbeat(this.pexipAPI);
+
+        this.userMediaStreamService.streamModified$.pipe(takeUntil(this.hasDisconnected$)).subscribe(() => this.renegotiateCall());
+
+        this.onConnectedSubject.next(new ConnectedCall(stream));
+    }
+
+    private handleParticipantUpdate(participantUpdate: PexipParticipant) {
+        this.videoCallEventsService.handleParticipantUpdated(ParticipantUpdated.fromPexipParticipant(participantUpdate));
+        this.onParticipantUpdatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
+    }
+
+    private handleError(error: string) {
+        this.kinlyHeartbeatService.stopHeartbeat();
+
+        this.onErrorSubject.next(new CallError(error));
+    }
+
+    private handleDisconnect(reason: string) {
+        this.hasDisconnected$.next();
+        this.hasDisconnected$.complete();
+
+        this.kinlyHeartbeatService.stopHeartbeat();
+
+        this.onDisconnected.next(new DisconnectedCall(reason));
     }
 
     makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number) {
@@ -255,16 +301,6 @@ export class VideoCallService {
 
     onScreenshareStopped(): Observable<StoppedScreenshare> {
         return this.onStoppedScreenshareSubject.asObservable();
-    }
-
-    updateCameraForCall(camera: UserMediaDevice) {
-        this.pexipAPI.video_source = camera.deviceId;
-        this.logger.info(`${this.loggerPrefix}  Using preferred camera: ${camera.label}`);
-    }
-
-    updateMicrophoneForCall(microphone: UserMediaDevice) {
-        this.pexipAPI.audio_source = microphone.deviceId;
-        this.logger.info(`${this.loggerPrefix} Using preferred microphone: ${microphone.label}`);
     }
 
     toggleMute(conferenceId: string, participantId: string): boolean {
@@ -375,7 +411,7 @@ export class VideoCallService {
             conference: conferenceId,
             participant: participantId
         });
-        return this.apiClient.callWitness(conferenceId, participantId).toPromise();
+        return this.apiClient.callParticipant(conferenceId, participantId).toPromise();
     }
 
     async dismissParticipantFromHearing(conferenceId: string, participantId: string) {
@@ -383,27 +419,16 @@ export class VideoCallService {
             conference: conferenceId,
             participant: participantId
         });
-        return this.apiClient.dismissWitness(conferenceId, participantId).toPromise();
+        return this.apiClient.dismissParticipant(conferenceId, participantId).toPromise();
     }
 
-    retrieveVideoCallPreferences(): VideoCallPreferences {
-        return this.videoCallPreferences.get();
-    }
-
-    updateVideoCallPreferences(updatedPreferences: VideoCallPreferences) {
-        this.videoCallPreferences.set(updatedPreferences);
-    }
-
-    reconnectToCallWithNewDevices() {
-        this.pexipAPI.disconnectCall();
-        this.pexipAPI.addCall(null);
-    }
-
-    switchToAudioOnlyCall() {
-        this.pexipAPI.disconnectCall();
-        this.localOutgoingStream = this.pexipAPI.video_source;
-        this.pexipAPI.video_source = false;
-        this.pexipAPI.addCall('video');
+    renegotiateCall(sendUpdate: boolean = false) {
+        this.logger.info(`${this.loggerPrefix} renegotiating`);
+        this.renegotiating = true;
+        this.pexipAPI.renegotiate(sendUpdate);
+        this.renegotiating = false;
+        this.justRenegotiated = true;
+        this.logger.info(`${this.loggerPrefix} renegotiated`);
     }
 
     async selectScreen() {

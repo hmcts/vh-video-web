@@ -21,7 +21,8 @@
     "all-content-availabe-under": "All content is available under the ",
     "open-government-license": "Open Government Licence v3.0",
     "except": " except where otherwise stated",
-    "copyright": "© Crown copyright"
+    "copyright": "© Crown copyright",
+    "copyright-info-link-label": "Copyright Information"
   },
   "login": {
     "redirect": "Please wait while we redirect"
@@ -38,7 +39,8 @@
     "contact-us": "If you think this is a mistake and you need to speak to someone, please contact us using the options below."
   },
   "back-navigation": {
-    "back": "Back"
+    "back": "Back",
+    "return-to-video-hearing-list": "Return to video hearing list"
   },
   "beta-banner": {
     "beta": "beta",
@@ -60,7 +62,8 @@
     "send": "Send",
     "char-count": "Character count",
     "maximum": "maximum allowed",
-    "unable-send": "Unable to send message."
+    "unable-send": "Unable to send message.",
+    "type-a-message": "Type a message"
   },
   "contact-us": {
     "contact-video-hearings": "Contact the video hearings service",
@@ -145,8 +148,7 @@
     "change-camera-mic": "Change camera or microphone"
   },
   "unsupported-browser": {
-    "using-unsupported-browser": "Unsupported browser",
-    "unfortunately-this-browser": "You're using a browser that is not supported by the Video Hearings service.",
+    "using-unsupported-browser": "You're using an unsupported browser",
     "please-try-again": "Please try again using one of the browsers listed below. If you are still having problems, please contact the video hearings team.",
     "supported-browser-alt": "{{browserName}} browser logo"
   },
@@ -253,7 +255,8 @@
     "judicial-consultation-room-open-until": "Judicial consultation room open until ",
     "sign-into-the-conference": "Sign into the conference",
     "select": "Select",
-    "not-ready-to-start": "Not ready to start"
+    "not-ready-to-start": "Not ready to start",
+    "conference-status-heading": "Status/Action"
   },
   "judge-self-test": {
     "please-wait-to-be-connected": "Please wait to be connected...",
@@ -341,6 +344,7 @@
     "unavailable": "Unavailable",
     "wingers": "Wingers",
     "panel-members": "Panel members",
+    "staff-members": "Staff members",
     "participants": "Participants",
     "observers": "Observers",
     "video-access-points": "Video access points",
@@ -378,7 +382,8 @@
   "judge-context-menu": {
     "context-menu-icon": "Context menu icon",
     "call-witness": "Call witness",
-    "dismiss-witness": "Dismiss witness",
+    "admit-participant": "Admit {{ role }}",
+    "dismiss-participant": "Dismiss {{ role }}",
     "lower-hand": "Lower hand",
     "unmute": "Unmute",
     "mute": "Mute",
@@ -393,6 +398,7 @@
     "cancel": "Cancel",
     "wingers": "Wingers",
     "panel-members": "Panel members",
+    "staff-members": "Staff members",
     "participants": "Participants",
     "video-access-points": "Video access points",
     "observers": "Observers",
@@ -408,7 +414,6 @@
     "loading-please-wait": "Loading please wait...",
     "browser-support-message": "Your browser does not support Video",
     "switch-to-main-screen": "Switch to main screen",
-    "return-to-video-hearing-list": "Return to video hearing list",
     "choose-camera-and-microphone": "Choose camera and microphone",
     "choose-camera-and-microphone-dialog": "Choose camera and microphone dialog",
     "details-of-the-hearing": "Details of the hearing",
@@ -578,7 +583,9 @@
     "loading-participants": "Loading Participants",
     "joining1": "Joining...",
     "call-witness": "Call witness",
-    "witness-unavailable": "Witness unavailable",
+    "participant-unavailable": "{{ role }} unavailable",
+    "admit-participant": "Admit {{ role }}",
+    "participant-available": "Available",
     "mute-participant": "Mute participant",
     "microphone-muted-icon": "Microphone muted icon",
     "microphone-on-icon": "Microphone on icon",
@@ -606,7 +613,11 @@
     "start-sharing-screen": "Start sharing screen",
     "stop-sharing-my-screen": "Stop sharing my screen",
     "stop-sharing-screen": "Stop sharing screen",
-    "change-camera-mic": "Change your camera and microphone"
+    "change-camera-mic": "Change your camera and microphone",
+    "context-menu": "Open Menu",
+    "hearing-controls": "Hearing controls",
+    "show-chat-window": "Show messages list",
+    "hide-chat-window": "Hide messages list"
   },
   "chat-panel": {
     "heading": "VH Officer messages",
@@ -632,7 +643,7 @@
     "app-advocate": "App Advocate",
     "appellant-lip": "Appellant LIP",
     "applicant-lip": "Applicant LIP",
-    "claimaint-lip": "Claimaint LIP",
+    "barrister": "Barrister",
     "claimant-lip": "Claimant LIP",
     "defendant-lip": "Defendant LIP",
     "expert": "Expert",
@@ -651,11 +662,14 @@
     "respondent-Advocate": "Respondent Advocate",
     "respondent-lip": "Respondent LIP",
     "special-counsel": "Special Counsel",
+    "solicitor": "Solicitor",
     "state-lip": "State LIP",
     "winger": "Winger",
     "witness": "Witness",
     "intermediary": "Intermediary",
-    "video-access-point":"Video access point"
+    "video-access-point": "Video access point",
+    "quick-link-participant": "Participant",
+    "quick-link-observer": "Observer"
   },
   "case-role": {
     "appellant": "Appellant",
@@ -694,6 +708,7 @@
     "grc---professional-regulations": "GRC - Professional Regulations",
     "grc---query-jurisdiction": "GRC - Query Jurisdiction",
     "grc---welfare-of-animals": "GRC - Welfare of Animals",
+    "grc---ej": "GRC - EJ",
     "housing-&-planning-act": "Housing & Planning Act",
     "housing-act": "Housing Act",
     "immigration-and-asylum": "Immigration and Asylum",
@@ -729,7 +744,9 @@
     "judge": "Judge",
     "individual": "Individual",
     "representative": "Representative",
-    "judicial-office-holder": "Judicial Office Holder"
+    "judicial-office-holder": "Judicial Office Holder",
+    "quick-link-participant": "Participant",
+    "quick-link-observer": "Observer"
   },
   "participant-status": {
     "none": "None",
@@ -767,7 +784,9 @@
     "start": "start"
   },
   "copy-telephone-id": {
-    "alt": "Copy joining by phone details to clipboard"
+    "alt": "Copy joining by phone details to clipboard",
+    "display-text": "Copy joining by phone details to clipboard",
+    "tooltip-copied": "Details copied to clipboard"
   },
   "participant-network-status": {
     "icon-alt": "Open instant messaging chat window arrow"
@@ -791,7 +810,13 @@
     "cancel-filters-alt": "Cancel filters"
   },
   "copy-id": {
-    "alt": "Copy conference id icon"
+    "alt": "Copy conference id icon",
+    "display-text": "Copy hearing ID to clipboard",
+    "tooltip-copied": "Conference ID copied to clipboard"
+  },
+  "copy-quick-link": {
+    "tooltip-copied": "Join by quick link details copied to clipboard",
+    "display-text": "Copy join by quick link details to clipboard"
   },
   "admin-im-list": {
     "judge-icon-alt": "Judge icon",
@@ -1003,10 +1028,10 @@
       "decline": "Decline"
     },
     "linked-participants": {
-        "waiting-single": "Waiting for {{name}} to accept the invitation from {{invitedBy}}.",
-        "waiting-multiple": "Waiting for {{number}} other participants to accept the invitation from {{invitedBy}}.",
-        "rejected": "{{rejector}} rejected the invitation from {{invitedBy}}.",
-        "button-close": "Close"
+      "waiting-single": "Waiting for {{name}} to accept the invitation from {{invitedBy}}.",
+      "waiting-multiple": "Waiting for {{number}} other participants to accept the invitation from {{invitedBy}}.",
+      "rejected": "{{rejector}} rejected the invitation from {{invitedBy}}.",
+      "button-close": "Close"
     },
     "poor-connection": {
       "title": "Alert",
@@ -1015,7 +1040,8 @@
     },
     "participant-added": {
       "title": "{{name}}",
-      "message": "{{role}} ({{party}}) has been added to the hearing.",
+      "message-without-party": "{{role}} has been added to the hearing.",
+      "message-with-party": "{{role}} ({{party}}) has been added to the hearing.",
       "dismiss": "Dismiss"
     }
   },
@@ -1039,5 +1065,46 @@
     "next": "Next",
     "error-title": "There is a problem:",
     "select-a-provider": "Select an account type to continue."
+  },
+  "quick-participant-landing-page": {
+    "page-title": "Enter your details to join your hearing",
+    "paragraph1": "Please tell us your name and your role in the hearing.",
+    "problem-with-form": "There is a problem",
+    "problem-with-special-char": "You entered some characters that are not allowed.",
+    "problem-with-special-char-recommendation": "You may use accents, apostrophes and hyphens but no other symbols.",
+    "name-label": "Your full name",
+    "name-error-empty": "Please enter your full name",
+    "name-error-special-char": "You've entered characters that are not allowed",
+    "role-label": "What is your role in the hearing?",
+    "role-error": "Please choose your role in the hearing",
+    "roles": {
+      "QuickLinkParticipant": {
+        "title": "Participant",
+        "description": "You have been called to take part in the hearing."
+      },
+      "QuickLinkObserver": {
+        "title": "Observer",
+        "description": "You are observing the hearing, but not taking part."
+      }
+    },
+    "button-continue": "Continue"
+  },
+  "quick-participant-errors": {
+    "invalid-page": {
+      "heading": "The link you've used can't be recognised",
+      "body": "Please check the link you were sent. If it still doesn't work, call 0300 303 0655 for immediate contact with a video hearings officer."
+    }
+  },
+  "loading": "Loading please wait...",
+  "video-filter": {
+    "title": "Choose a custom background",
+    "none": "None",
+    "none-alt": "Remove all filters",
+    "blur": "Blurred",
+    "blur-alt": "Apply the blurred background filter",
+    "hmcts": "HMCTS",
+    "hmcts-alt": "Apply the background with the HMCTS crest",
+    "scts": "SCTS",
+    "scts-alt": "Apply the background with the SCTS crest"
   }
 }

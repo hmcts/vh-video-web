@@ -17,7 +17,7 @@ namespace VideoWeb.Controllers
         private readonly IHashGenerator _hashGenerator;
         private readonly KinlyConfiguration _kinlyConfiguration;
 
-        public TokenController(IHashGenerator hashGenerator,
+        public TokenController(IHashGenerator hashGenerator, 
             KinlyConfiguration kinlyConfiguration)
         {
             _hashGenerator = hashGenerator;

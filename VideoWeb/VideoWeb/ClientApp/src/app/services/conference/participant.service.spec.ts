@@ -196,6 +196,19 @@ describe('ParticipantService', () => {
     });
 
     describe('construction', () => {
+        it('should not get participants or subscribe to conference events if the conference is falsey', fakeAsync(() => {
+            // Act
+            const conference = new ConferenceResponse();
+            conference.id = 'conference-id';
+            currentConferenceSubject.next(null);
+            flush();
+
+            // Assert
+            expect(sut).toBeTruthy();
+            expect(conferenceServiceSpy.getParticipantsForConference).not.toHaveBeenCalled();
+            expect(conferenceServiceSpy.getEndpointsForConference).not.toHaveBeenCalled();
+        }));
+
         it('should be created and the initialise participant list', fakeAsync(() => {
             // Arrange
             const participantResponses = [participantOne, participantTwo];
@@ -289,6 +302,7 @@ describe('ParticipantService', () => {
             expect(currentConference$.subscribe).toHaveBeenCalledTimes(1);
         }));
     });
+
     describe('get Participants ', () => {
         it('should return combination of endpoint and non-endpoint participants', () => {
             // Arrange
@@ -306,6 +320,7 @@ describe('ParticipantService', () => {
             expect(result).toEqual(allParticipants);
         });
     });
+
     describe('handle current conference changed', () => {
         it('should call get participants and end points and subscribe to the relevant conference events', fakeAsync(() => {
             // Arrange
