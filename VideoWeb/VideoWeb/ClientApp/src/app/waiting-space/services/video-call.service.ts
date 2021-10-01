@@ -95,7 +95,6 @@ export class VideoCallService {
             .pipe(take(1))
             .subscribe(currentStream => (this.pexipAPI.user_media_stream = currentStream));
 
-<<<<<<< HEAD
         this.pexipAPI.onConnect = this.handleConnect.bind(this);
 
         this.pexipAPI.onError = this.handleError.bind(this);
@@ -104,16 +103,6 @@ export class VideoCallService {
         // https://docs.pexip.com/api_client/api_pexrtc.htm#disconnect
         this.pexipAPI.onDisconnect = this.handleAdminDisconnect.bind(this);
 
-=======
-        this.pexipAPI.onSetup = this.handleSetup.bind(this);
-
-        this.pexipAPI.onConnect = this.handleConnect.bind(this);
-
-        this.pexipAPI.onError = this.handleError.bind(this);
-
-        this.pexipAPI.onDisconnect = this.handleDisconnect.bind(this);
-
->>>>>>> origin
         this.pexipAPI.onParticipantUpdate = this.handleParticipantUpdate.bind(this);
 
         this.pexipAPI.onConferenceUpdate = function (conferenceUpdate) {
@@ -155,7 +144,6 @@ export class VideoCallService {
         });
     }
 
-<<<<<<< HEAD
     private handleConnect(stream: MediaStream | URL) {
         this.kinlyHeartbeatService.initialiseHeartbeat(this.pexipAPI);
 
@@ -182,8 +170,6 @@ export class VideoCallService {
         this.onDisconnected.next(new DisconnectedCall(reason));
     }
 
-=======
->>>>>>> origin
     initTurnServer() {
         const config = this.configService.getConfig();
         const turnServerObj = {

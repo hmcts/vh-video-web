@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { fakeAsync, flush } from '@angular/core/testing';
-=======
 import { discardPeriodicTasks, fakeAsync, flush } from '@angular/core/testing';
->>>>>>> origin
 import { Guid } from 'guid-typescript';
 import { of, ReplaySubject, Subject } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
@@ -21,15 +17,9 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-<<<<<<< HEAD
-import { ParticipantUpdated } from '../models/video-call-models';
-import { VideoCallEventsService } from './video-call-events.service';
-import { VideoCallPreferences } from './video-call-preferences.mode';
-=======
 import { mockCamStream, mockMicStream } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { ParticipantUpdated } from '../models/video-call-models';
 import { VideoCallEventsService } from './video-call-events.service';
->>>>>>> origin
 import { VideoCallService } from './video-call.service';
 
 const config = new ClientSettingsResponse({
@@ -54,12 +44,8 @@ describe('VideoCallService', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
     let kinlyHeartbeatServiceSpy: jasmine.SpyObj<KinlyHeartbeatService>;
     let videoCallEventsServiceSpy: jasmine.SpyObj<VideoCallEventsService>;
-<<<<<<< HEAD
-    beforeAll(() => {
-=======
 
     beforeEach(fakeAsync(() => {
->>>>>>> origin
         apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
             'startOrResumeVideoHearing',
             'pauseVideoHearing',
@@ -93,13 +79,6 @@ describe('VideoCallService', () => {
 
         videoCallEventsServiceSpy = jasmine.createSpyObj<VideoCallEventsService>(['handleParticipantUpdated']);
 
-<<<<<<< HEAD
-    beforeEach(async () => {
-        kinlyHeartbeatServiceSpy = jasmine.createSpyObj<KinlyHeartbeatService>(['initialiseHeartbeat', 'stopHeartbeat']);
-        videoCallEventsServiceSpy = jasmine.createSpyObj<VideoCallEventsService>(['handleParticipantUpdated']);
-
-=======
->>>>>>> origin
         pexipSpy = jasmine.createSpyObj<PexipClient>('PexipClient', [
             'connect',
             'makeCall',
@@ -119,61 +98,16 @@ describe('VideoCallService', () => {
             'stopPresentation',
             'renegotiate'
         ]);
-<<<<<<< HEAD
-        service = new VideoCallService(
-            logger,
-            userMediaService,
-=======
 
         service = new VideoCallService(
             logger,
             userMediaService,
             userMediaStreamService,
->>>>>>> origin
             apiClient,
             configServiceSpy,
             kinlyHeartbeatServiceSpy,
             videoCallEventsServiceSpy
         );
-<<<<<<< HEAD
-        await service.setupClient();
-    });
-
-    it('should init pexip and set pexip client', async () => {
-        await service.setupClient();
-        expect(service.pexipAPI).toBeDefined();
-        expect(userMediaService.getPreferredCamera).toBeDefined();
-        expect(userMediaService.getPreferredMicrophone).toBeDefined();
-        expect(service.pexipAPI.audio_source).toEqual(preferredMicrophone.deviceId);
-        expect(service.pexipAPI.video_source).toEqual(preferredCamera.deviceId);
-
-        expect(service.onCallSetup()).toBeDefined();
-        expect(service.onCallConnected()).toBeDefined();
-        expect(service.onCallDisconnected()).toBeDefined();
-        expect(service.onError()).toBeDefined();
-        expect(service.onParticipantUpdated()).toBeDefined();
-        expect(service.onConferenceUpdated()).toBeDefined();
-        expect(service.onCallTransferred()).toBeDefined();
-        expect(service.onPresentation()).toBeDefined();
-        expect(service.onPresentationConnected()).toBeDefined();
-        expect(service.onPresentationDisconnected()).toBeDefined();
-        expect(service.onScreenshareConnected()).toBeDefined();
-        expect(service.onScreenshareStopped()).toBeDefined();
-        expect(service.pexipAPI.turn_server).toBeDefined();
-        expect(service.pexipAPI.turn_server.url).toContain(config.kinly_turn_server);
-        expect(service.pexipAPI.turn_server.username).toContain(config.kinly_turn_server_user);
-        expect(service.pexipAPI.turn_server.credential).toContain(config.kinly_turn_server_credential);
-    });
-
-    it('should use default devices on setup if no preferred devices found', async () => {
-        userMediaService.getPreferredCamera.and.resolveTo(null);
-        userMediaService.getPreferredMicrophone.and.resolveTo(null);
-
-        await service.setupClient();
-
-        expect(service.pexipAPI.audio_source).toBeNull();
-        expect(service.pexipAPI.video_source).toBeNull();
-=======
 
         currentStreamSubject.next(mockCamStream);
 
@@ -187,7 +121,6 @@ describe('VideoCallService', () => {
 
     it('should try to initialise the userMediaService', () => {
         expect(userMediaService.initialise).toHaveBeenCalledTimes(1);
->>>>>>> origin
     });
 
     it('should toggle mute', () => {
@@ -417,8 +350,6 @@ describe('VideoCallService', () => {
         expect(apiClient.getParticipantRoomForParticipant).toHaveBeenCalledWith(conferenceId, participantId, 'Judicial');
     });
 
-<<<<<<< HEAD
-=======
     describe('PexipAPI onConnect', () => {
         it('should call renegotiateCall', fakeAsync(() => {
             spyOn<any>(service, 'renegotiateCall').and.callThrough();
@@ -476,7 +407,6 @@ describe('VideoCallService', () => {
         }));
     });
 
->>>>>>> origin
     describe('handleParticipantUpdate', () => {
         it('should raise the event through video call events service', fakeAsync(() => {
             // Arrange
