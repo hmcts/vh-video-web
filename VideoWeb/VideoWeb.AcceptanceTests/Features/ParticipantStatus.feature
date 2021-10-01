@@ -3,7 +3,7 @@ Feature: Participant Status
 	As a Video Hearings Officer
 	I want to be able to view the status of each participant
 
-@VIH-4500
+#@VIH-4500
 Scenario Outline: Participants status updates
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	And the VHO can see the participants statuses are Not signed in
@@ -17,7 +17,7 @@ Scenario Outline: Participants status updates
 	| Available       |
 	| Disconnected    |
 
-@VIH-5431
+#@VIH-5431
 Scenario Outline: Judge status updates
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	And the VHO can see the Judge status is Unavailable
@@ -30,7 +30,7 @@ Scenario Outline: Judge status updates
   | In consultation |
   | Disconnected    |
   
-@VIH-5431
+#@VIH-5431
 Scenario: Judge in another hearing
   Given I have a hearing
   And the Judge status is set to In hearing
@@ -38,7 +38,7 @@ Scenario: Judge in another hearing
   When the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
   Then the VHO can see the Judge status is In another hearing
 
-@VIH-5431
+#@VIH-5431
 Scenario: Judge in another waiting room after disconnection
   Given I have a hearing
   And the Judge status is set to Disconnected

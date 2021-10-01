@@ -3,7 +3,8 @@ Feature: Filters
 	As a Video Hearings Officer
 	I want to limit the number of displayed hearings
 
-@VIH-5922 @Smoketest-Extended @ignore
+#@VIH-5922
+@Smoketest-Extended @ignore
 Scenario: VHO filters hearings by Courtroom Account
   Given I have a hearing with a Judge
   And I have another hearing with another Judge

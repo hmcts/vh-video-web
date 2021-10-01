@@ -1,4 +1,4 @@
-@VIH-4133 @VIH-4355 
+#@VIH-4133 @VIH-4355 
 Feature: Practice video hearing
 	In order to check if my camera and microphone is working
 	As a participant in a video hearing
@@ -16,7 +16,8 @@ Scenario: Individual video hearing practice
 	When the user changes the camera and microphone
 	Then the choose your camera and microphone popup should disappear
 
-@VIH-5386 @Video @Smoketest-Extended
+#@VIH-5386
+@Video @Smoketest-Extended
 Scenario: Individual self test video hearing practice
 	Given the Individual Self Test user has progressed to the Practice video hearing page
 	Then the incoming and self video should be playing video
@@ -27,7 +28,8 @@ Scenario: Individual self test video hearing practice
 	When the user changes the camera and microphone
 	Then the choose your camera and microphone popup should disappear
 
-@VIH-4997 @Video
+#@VIH-4997
+@Video
 Scenario: Representative self test video hearing practice
 	Given the Representative Self Test user has progressed to the Practice video hearing page
 	Then the incoming and self video should be playing video
@@ -38,7 +40,8 @@ Scenario: Representative self test video hearing practice
 	When the user changes the camera and microphone
 	Then the choose your camera and microphone popup should disappear
 
-@VIH-4671 @Video
+#@VIH-4671
+@Video
 Scenario: Judge video hearing practice
 	Given the Judge Self Test user has progressed to the Practice video hearing page
 	Then the incoming and self video should be playing video
@@ -49,14 +52,16 @@ Scenario: Judge video hearing practice
 	When the user changes the camera and microphone
 	Then the choose your camera and microphone popup should disappear
 
-@VIH-4671 @Video
+#@VIH-4671
+@Video
 Scenario: Judge confirms the equipment is working
 	Given the Judge Self Test user has progressed to the Practice video hearing page
 	Then the incoming and self video should be playing video
 	When the user clicks the Equipment is working button
 	Then the user is on the Hearing List page
 
-@VIH-4671 @Video
+#@VIH-4671
+@Video
 Scenario: Judge does not confirm the equipment is working
 	Given the Judge Self Test user has progressed to the Practice video hearing page
 	Then the incoming and self video should be playing video
@@ -81,7 +86,7 @@ Scenario: Panel member video hearing practice
 	When the user changes the camera and microphone
 	Then the choose your camera and microphone popup should disappear
 
-@VIH-6140
+#@VIH-6140
 Scenario: Panel member confirms the equipment is working
   Given I have a hearing with an Observer and Panel Member
 	And the Panel Member Self Test user has progressed to the Practice video hearing page for the existing hearing
@@ -89,7 +94,7 @@ Scenario: Panel member confirms the equipment is working
 	When the user clicks the Equipment is working button
 	Then the user is on the Hearing List page
 
-@VIH-6420
+#@VIH-6420
 Scenario: Winger video hearing practice
   Given I have a CACD hearing with a Winger
 	And the Winger Self Test user has progressed to the Practice video hearing page for the existing hearing
@@ -101,7 +106,7 @@ Scenario: Winger video hearing practice
 	When the user changes the camera and microphone
 	Then the choose your camera and microphone popup should disappear
 
-@VIH-6420
+#@VIH-6420
 Scenario: Winger confirms the equipment is working
   Given I have a CACD hearing with a Winger
 	And the Winger Self Test user has progressed to the Practice video hearing page for the existing hearing
