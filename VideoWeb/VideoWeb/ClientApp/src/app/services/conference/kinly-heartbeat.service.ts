@@ -28,8 +28,21 @@ export class KinlyHeartbeatService {
         private eventService: EventsService,
         private logger: Logger
     ) {
-        this.conferenceService.currentConference$.subscribe(conference => (this.currentConference = conference));
-        this.participantService.loggedInParticipant$.subscribe(loggedInParticipant => (this.currentParticipant = loggedInParticipant));
+        this.conferenceService.currentConference$.subscribe(conference => {
+            this.logger.debug(`${this.loggerPrefix} conference changed`, {
+                old: this.currentConference?.id ?? null,
+                new: conference?.id ?? null
+            });
+            this.currentConference = conference;
+        });
+
+        this.participantService.loggedInParticipant$.subscribe(loggedInParticipant => {
+            this.logger.debug(`${this.loggerPrefix} participant changed`, {
+                old: this.currentParticipant?.id ?? null,
+                new: loggedInParticipant?.id ?? null
+            });
+            this.currentParticipant = loggedInParticipant;
+        });
     }
 
     initialiseHeartbeat(pexipApi: PexipClient) {
@@ -91,9 +104,14 @@ export class KinlyHeartbeatService {
     }
 
     stopHeartbeat() {
-        if (this.heartbeat) {
-            this.heartbeat.kill();
-            this.heartbeat = null;
+        this.logger.debug(`${this.loggerPrefix} Attempting to stop heartbeat`);
+        if (!this.heartbeat) {
+            this.logger.warn(`${this.loggerPrefix} Couldn't stop the heartbeat as it didn't exist`);
+            return;
         }
+
+        this.heartbeat.kill();
+        this.heartbeat = null;
+        this.logger.info(`${this.loggerPrefix} Should of stopped heartbeat`);
     }
 }
