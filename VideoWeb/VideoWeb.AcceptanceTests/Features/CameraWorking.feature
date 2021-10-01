@@ -1,4 +1,4 @@
-﻿@VIH-4230
+﻿#@VIH-4230
 Feature: Camera Working
 	As a registered video hearings user
 	I would like to confirm the camera check was successful
@@ -11,7 +11,7 @@ Scenario: Participant camera working
 	And the user clicks the Continue button
 	Then the user is on the Microphone Working page
 
-@VIH-4595
+#@VIH-4595
 Scenario: Participant camera not working
 	Given the Participant user has progressed to the Camera Working page
 	When the user selects the No radiobutton

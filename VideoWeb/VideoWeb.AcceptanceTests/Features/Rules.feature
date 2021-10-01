@@ -1,4 +1,4 @@
-﻿@VIH-4037
+﻿#@VIH-4037
 Feature: Rules
 	As a registered video hearings user
 	I need to see a list of rules regarding participating in a video hearing 

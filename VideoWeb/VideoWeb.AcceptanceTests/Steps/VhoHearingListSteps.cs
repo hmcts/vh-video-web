@@ -1,3 +1,4 @@
+//using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +37,26 @@ namespace VideoWeb.AcceptanceTests.Steps
             Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser]);
             _browsers[_c.CurrentUser].Click(VhoHearingListPage.HearingsTabButton);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
+        }
+
+        [When(@"the Video Hearings Officer clicks (.*)")]
+        public void WhenTheVideoHearingsOfficerClicks(string elementName)
+        {
+            var action = new Actions(_browsers[_c.CurrentUser].Driver.WrappedDriver);
+            var hearinglinkHover = _browsers[_c.CurrentUser].Driver.FindElement(VhoHearingListPage.HearingLinkHover(_c.Test.Conference.Id.ToString()));
+            action.MoveToElement(hearinglinkHover).Click().Perform();
+            switch (elementName)
+            {
+                case "Hearing ID":
+                    _browsers[_c.CurrentUser].Click(VhoHearingListPage.CopyConferenceID(_c.Test.Conference.Id.ToString()));
+                    break;
+                case "QuickLink Details":
+                    _browsers[_c.CurrentUser].Click(VhoHearingListPage.CopyQuickLink(_c.Test.Conference.Id.ToString()));
+                    break;
+                case "Phone Details":
+                    _browsers[_c.CurrentUser].Click(VhoHearingListPage.CopyTelephoneID(_c.Test.Conference.MeetingRoom.TelephoneConferenceId.ToString()));
+                    break;
+            }
         }
 
         [Then(@"the VHO can see a list of hearings including the new hearing")]
@@ -78,6 +99,25 @@ namespace VideoWeb.AcceptanceTests.Steps
             TheToolTipDetailsAreDisplayed(conferenceParticipant, hearingParticipant);
         }
 
+        [Then(@"the (.*) is in the clipboard")]
+        public void ThenTheIsInTheClipboard(string elementName)
+        {
+            //var clipboardText = _jsRuntime.InvokeAsync<string>("navigator.clipboard.readText");
+            var clipboardText = _browsers[_c.CurrentUser].Driver.ExecuteAsyncScript("setTimeout(async () => { await navigator.clipboard.readText(); }, 5000);");
+            //var clipboardText = _browsers[_c.CurrentUser].Driver.
+
+            switch (elementName)
+            {
+                case "Hearing ID":
+                    break;
+                case "QuickLink Details":
+                    break;
+                case "Phone Details":
+                    var id = _c.Test.Conference.MeetingRoom.TelephoneConferenceId;
+                    break;
+            }
+        }
+
         private void TheToolTipDetailsAreDisplayed(ParticipantDetailsResponse participant, ParticipantResponse hearingParticipant)
         {
             var participantEmailAndRole = $"{participant.Name}";
@@ -85,5 +125,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].TextOf(VhoHearingListPage.ParticipantContactEmail(participant.Id)).Should().Be(hearingParticipant.ContactEmail);
             _browsers[_c.CurrentUser].TextOf(VhoHearingListPage.ParticipantContactPhone(participant.Id)).Should().Be(hearingParticipant.TelephoneNumber);
         }
+
+
     }
 }
