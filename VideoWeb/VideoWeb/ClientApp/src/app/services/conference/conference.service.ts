@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, ParamMap, Router } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, ParamMap, Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
 import { Observable, ReplaySubject, Subscription } from 'rxjs';
 import { filter, map, mergeMap, take, tap } from 'rxjs/operators';
@@ -19,23 +19,19 @@ export class ConferenceService {
     private subscriptions: Subscription[] = [];
     constructor(
         router: Router,
-        activatedRoute: ActivatedRoute,
+        private activatedRoute: ActivatedRoute,
         private eventService: EventsService,
         private apiClient: ApiClient,
         private logger: LoggerService
     ) {
         logger.conferenceService = this;
+
+        this.initialiseConferenceFromActiveRoute();
         router.events
             .pipe(
                 filter(x => x instanceof NavigationEnd),
                 map(() => activatedRoute.snapshot),
-                map(route => {
-                    while (route && !route.paramMap?.has('conferenceId')) {
-                        route = route?.firstChild;
-                    }
-
-                    return route?.paramMap;
-                }),
+                map(this.getConferenceIdFromRoute),
                 tap(paramMap => {
                     this.logger.debug(`${this.loggerPrefix} nav end. ${paramMap?.get('conferenceId')}`);
                 })
@@ -43,6 +39,18 @@ export class ConferenceService {
             .subscribe(paramMap => {
                 this.onRouteParamsChanged(paramMap);
             });
+    }
+
+    initialiseConferenceFromActiveRoute() {
+        this.onRouteParamsChanged(this.getConferenceIdFromRoute(this.activatedRoute.snapshot));
+    }
+
+    private getConferenceIdFromRoute(route: ActivatedRouteSnapshot): ParamMap {
+        while (route && !route.paramMap?.has('conferenceId')) {
+            route = route?.firstChild;
+        }
+
+        return route?.paramMap;
     }
 
     private _currentConference: ConferenceResponse;
