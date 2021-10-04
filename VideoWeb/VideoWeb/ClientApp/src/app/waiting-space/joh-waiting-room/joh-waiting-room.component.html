@@ -18,6 +18,7 @@
         [conferenceId]="conference.id"
         [participant]="participant"
         [isPrivateConsultation]="isPrivateConsultation"
+        [canToggleParticipantsPanel]="isPrivateConsultation"
         [outgoingStream]="outgoingStream"
         [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
         [showConsultationControls]="showConsultationControls"
@@ -29,7 +30,7 @@
     </div>
   </div>
 
-    <div *ngIf="hearing" class="panel-wrapper" [ngClass]="{ 'hide-panel': !panelStates['Participants'] }">
+    <div *ngIf="hearing" class="panel-wrapper" [ngClass]="{ 'hide-panel': panelStates['Participants'] }">
         <app-private-consultation-participants
             *ngIf="isPrivateConsultation"
             [conference]="hearing.getConference()"
@@ -37,7 +38,6 @@
             [roomLabel]="this.participant.current_room?.label"
         >
         </app-private-consultation-participants>
-        <app-participants-panel *ngIf="!isPrivateConsultation"> </app-participants-panel>
     </div>
 
   <div class="video-wrapper">
