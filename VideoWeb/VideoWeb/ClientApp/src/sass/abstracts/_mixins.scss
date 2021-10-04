@@ -1,0 +1,28 @@
+@import 'functions';
+@import 'breakpoints';
+
+
+@mixin responds-to($name) {
+    @if not map-has-key($breakpoints, $name) {
+        @warn "Warning: `#{$name}` is not a valid breakpoint name.";
+    } @else {
+        @media only screen and (min-width: em(map-get($breakpoints, $name))) {
+            @content;
+        }
+    }
+}
+
+@mixin responds-to-only($name) {
+    @if not map-has-key($breakpoints, $name) {
+        @warn "Warning: `#{$name}` is not a valid breakpoint name.";
+    } @else {
+        $next: map-get-next($breakpoints, $name);
+        @if not $next {
+            @warn "Warning: `#{$name}` is the last breakpoint.";
+        } @else {
+            @media only screen and (min-width: em(map-get($breakpoints, $name))) and (max-width: em($next - 1px)) {
+                @content;
+            }
+        }
+    }
+}
