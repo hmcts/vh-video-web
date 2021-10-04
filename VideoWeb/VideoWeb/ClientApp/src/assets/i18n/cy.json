@@ -599,7 +599,9 @@
     "pause": "Egwyl",
     "close": "Cau",
     "context-menu": "Bwydlen Agored",
-    "hearing-controls": "Rheolyddion y gwrandawiad"
+    "hearing-controls": "Rheolyddion y gwrandawiad",
+    "show-chat-window": "Dangos y rhestr negeseuon",
+    "hide-chat-window": "Cuddio’r rhestr negeseuon"
 
   },
   "judge-waiting-room": {
