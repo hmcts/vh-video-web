@@ -612,22 +612,13 @@ describe('HearingControlsBaseComponent', () => {
         expect(component.isJOHConsultation).toBe(true);
     });
 
-    it(`canShowScreenShareButton() should return "false" when device is a tablet`, () => {
+    it(`canShowScreenShareButton() should return "false" when device is not desktop`, () => {
         deviceTypeService.isDesktop.and.returnValue(false);
-        deviceTypeService.isTablet.and.returnValue(true);
-        component.ngOnInit();
-        expect(component.canShowScreenShareButton).toBe(false);
-    });
-
-    it(`canShowScreenShareButton() returns "false" when it is a mobile device`, () => {
-        deviceTypeService.isDesktop.and.returnValue(false);
-        deviceTypeService.isMobile.and.returnValue(true);
         component.ngOnInit();
         expect(component.canShowScreenShareButton).toBe(false);
     });
 
     it(`canShowScreenShareButton() returns "true" when it is a desktop device`, () => {
-        deviceTypeService.isTablet.and.returnValue(false);
         deviceTypeService.isDesktop.and.returnValue(true);
         component.ngOnInit();
         expect(component.canShowScreenShareButton).toBe(true);
