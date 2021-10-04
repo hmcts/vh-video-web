@@ -187,7 +187,7 @@ export class VideoCallService {
     // Handles server issued disconections - NOT CLIENT
     // https://docs.pexip.com/api_client/api_pexrtc.htm#onDisconnect
     private handleServerDisconnect(reason: string) {
-        this.logger.debug(`${this.loggerPrefix} handling admin disconnection`);
+        this.logger.debug(`${this.loggerPrefix} handling server disconnection`);
         this.hasDisconnected$.next();
         this.hasDisconnected$.complete();
 
