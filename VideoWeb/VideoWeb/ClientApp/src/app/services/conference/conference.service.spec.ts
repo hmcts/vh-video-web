@@ -179,11 +179,7 @@ describe('ConferenceService', () => {
                 ['firstChild', 'paramMap']
             );
             getSpiedPropertyGetter(activatedRouteSpy, 'snapshot').and.returnValue(routeSnapshotSpy);
-            getSpiedPropertyGetter(routeSnapshotSpy, 'paramMap').and.returnValue(
-                convertToParamMap({
-                    notConferenceId: conferenceId
-                })
-            );
+            getSpiedPropertyGetter(routeSnapshotSpy, 'paramMap').and.returnValue(convertToParamMap({}));
 
             const getConferenceSubject = new Subject<ConferenceResponse>();
             const getConference$ = getConferenceSubject.asObservable();
@@ -379,7 +375,7 @@ describe('ConferenceService', () => {
             spyOnProperty(sut, 'currentConference', 'get').and.returnValue(expectedConference);
             spyOnProperty(sut, 'currentConferenceId', 'get').and.returnValue(expectedConference.id);
 
-            const expectedResult = null;
+            const expectedResult: ConferenceStatusChanged = { oldStatus: null, newStatus: null };
             let result = null;
 
             sut.onCurrentConferenceStatusChanged$.subscribe(update => (result = update));
@@ -444,7 +440,7 @@ describe('ConferenceService', () => {
             spyOnProperty(sut, 'currentConference', 'get').and.returnValue(expectedConference);
             spyOnProperty(sut, 'currentConferenceId', 'get').and.returnValue(expectedConference.id);
 
-            const expectedResult = null;
+            const expectedResult = { oldStatus: null, newStatus: null };
             let result = null;
 
             sut.onCurrentConferenceStatusChanged$.subscribe(update => (result = update));
