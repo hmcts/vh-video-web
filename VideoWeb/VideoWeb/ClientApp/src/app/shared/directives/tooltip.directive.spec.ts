@@ -96,11 +96,17 @@ describe('TooltipDirective', () => {
         expect(directive.tooltip).toBeDefined();
     });
 
-    it('should create and display tooltip in mobile when canShowInMobile is true', () => {
+    it('should create tooltip in mobile when canShowInMobile is true', () => {
         directive._canShowInMobile = true;
         directive.tooltip = undefined;
         directive.onMouseEnter(new MouseEvent('mouseenter', {}));
         expect(directive.tooltip).toBeDefined();
+    });
+
+    it('should not create tooltip in mobile when canShowInMobile is false', () => {
+        directive.tooltip = undefined;
+        directive.onMouseEnter(new MouseEvent('mouseenter', {}));
+        expect(directive.tooltip).not.toBeDefined();
     });
 
     it('should show and updated tooltip if already defined on mouse enter', () => {
