@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, ParamMap, Router } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, ParamMap, Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
 import { Observable, ReplaySubject, Subscription } from 'rxjs';
-import { filter, map, mergeMap, take } from 'rxjs/operators';
+import { filter, map, mergeMap, take, tap } from 'rxjs/operators';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { ApiClient, ConferenceResponse } from '../clients/api-client';
 import { EventsService } from '../events.service';
@@ -14,52 +14,63 @@ import { ConferenceStatusChanged } from './models/conference-status-changed.mode
     providedIn: 'root'
 })
 export class ConferenceService {
-    private loggerPrefix = '[ConferenceService] -';
-
-    private subscriptions: Subscription[] = [];
     constructor(
         router: Router,
-        activatedRoute: ActivatedRoute,
+        private activatedRoute: ActivatedRoute,
         private eventService: EventsService,
         private apiClient: ApiClient,
         private logger: LoggerService
     ) {
         logger.conferenceService = this;
+
+        this.initialiseConferenceFromActiveRoute();
         router.events
             .pipe(
                 filter(x => x instanceof NavigationEnd),
                 map(() => activatedRoute.snapshot),
-                map(route => {
-                    while (route && !route.paramMap?.has('conferenceId')) {
-                        route = route?.firstChild;
-                    }
-
-                    return route?.paramMap;
+                map(this.getConferenceIdFromRoute),
+                tap(paramMap => {
+                    this.logger.debug(`${this.loggerPrefix} nav end. ${paramMap?.get('conferenceId')}`);
                 })
             )
             .subscribe(paramMap => {
                 this.onRouteParamsChanged(paramMap);
             });
     }
-
-    private _currentConference: ConferenceResponse;
     get currentConference(): ConferenceResponse {
         return this._currentConference;
     }
-
-    private currentConferenceSubject = new ReplaySubject<ConferenceResponse>(1);
     get currentConference$(): Observable<ConferenceResponse> {
         return this.currentConferenceSubject.asObservable();
     }
-
-    private onCurrentConferenceStatusChangedSubject = new ReplaySubject<ConferenceStatusChanged>(1);
     get onCurrentConferenceStatusChanged$() {
         return this.onCurrentConferenceStatusChangedSubject.asObservable();
     }
-
-    private _currentConferenceId: string;
     get currentConferenceId(): string {
         return this._currentConferenceId;
+    }
+    private loggerPrefix = '[ConferenceService] -';
+
+    private subscriptions: Subscription[] = [];
+
+    private _currentConference: ConferenceResponse;
+
+    private currentConferenceSubject = new ReplaySubject<ConferenceResponse>(1);
+
+    private onCurrentConferenceStatusChangedSubject = new ReplaySubject<ConferenceStatusChanged>(1);
+
+    private _currentConferenceId: string;
+
+    initialiseConferenceFromActiveRoute() {
+        this.onRouteParamsChanged(this.getConferenceIdFromRoute(this.activatedRoute.snapshot));
+    }
+
+    private getConferenceIdFromRoute(route: ActivatedRouteSnapshot): ParamMap {
+        while (route && !route.paramMap?.has('conferenceId')) {
+            route = route?.firstChild;
+        }
+
+        return route?.paramMap;
     }
 
     getConferenceById(conferenceId: string | Guid): Observable<ConferenceResponse> {
