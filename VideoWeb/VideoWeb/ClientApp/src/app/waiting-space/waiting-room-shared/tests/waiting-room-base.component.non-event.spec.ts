@@ -105,6 +105,7 @@ describe('WaitingRoomComponent message and clock', () => {
             // Act & Assert
             component.togglePanel(participantPanelName);
             expect(component.panelStates.Participants).toBe(true);
+            expect(component.panelStates.Chat).toBe(false);
         });
 
         it('should switch Participants from true to false when starting from true', () => {
@@ -114,6 +115,7 @@ describe('WaitingRoomComponent message and clock', () => {
             // Act & Assert
             component.togglePanel(participantPanelName);
             expect(component.panelStates.Participants).toBe(false);
+            expect(component.panelStates.Chat).toBe(false);
         });
 
         it('should switch chat from false to true  when starting from false', () => {
@@ -123,6 +125,7 @@ describe('WaitingRoomComponent message and clock', () => {
             // Act & Assert
             component.togglePanel(chatPanelName);
             expect(component.panelStates.Chat).toBe(true);
+            expect(component.panelStates.Participants).toBe(false);
         });
 
         it('should switch chat from true to false when starting from true', () => {
@@ -132,6 +135,7 @@ describe('WaitingRoomComponent message and clock', () => {
             // Act & Assert
             component.togglePanel(chatPanelName);
             expect(component.panelStates.Chat).toBe(false);
+            expect(component.panelStates.Participants).toBe(false);
         });
     });
 
