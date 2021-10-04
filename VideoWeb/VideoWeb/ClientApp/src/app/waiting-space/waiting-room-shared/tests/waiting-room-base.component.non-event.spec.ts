@@ -100,6 +100,7 @@ describe('WaitingRoomComponent message and clock', () => {
 
         it('should switch Participants from false to true  when starting from false', () => {
             // Arrange
+            component.panelStates[chatPanelName] = false;
             component.panelStates[participantPanelName] = false;
 
             // Act & Assert
@@ -110,6 +111,7 @@ describe('WaitingRoomComponent message and clock', () => {
 
         it('should switch Participants from true to false when starting from true', () => {
             // Arrange
+            component.panelStates[chatPanelName] = false;
             component.panelStates[participantPanelName] = true;
 
             // Act & Assert
@@ -121,6 +123,7 @@ describe('WaitingRoomComponent message and clock', () => {
         it('should switch chat from false to true  when starting from false', () => {
             // Arrange
             component.panelStates[chatPanelName] = false;
+            component.panelStates[participantPanelName] = false;
 
             // Act & Assert
             component.togglePanel(chatPanelName);
@@ -131,6 +134,7 @@ describe('WaitingRoomComponent message and clock', () => {
         it('should switch chat from true to false when starting from true', () => {
             // Arrange
             component.panelStates[chatPanelName] = true;
+            component.panelStates[participantPanelName] = false;
 
             // Act & Assert
             component.togglePanel(chatPanelName);
