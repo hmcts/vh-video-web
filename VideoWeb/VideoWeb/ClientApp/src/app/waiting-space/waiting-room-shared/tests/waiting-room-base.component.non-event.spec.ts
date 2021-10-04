@@ -94,6 +94,47 @@ describe('WaitingRoomComponent message and clock', () => {
         videoWebService.getConferenceById.calls.reset();
     });
 
+    describe('toggle Panel', () => {
+        const participantPanelName = 'Participants';
+        const chatPanelName = 'Chat';
+
+        it('should switch Participants from false to true  when starting from false', () => {
+            // Arrange
+            component.panelStates[participantPanelName] = false;
+
+            // Act & Assert
+            component.togglePanel(participantPanelName);
+            expect(component.panelStates.Participants).toBe(true);
+        });
+
+        it('should switch Participants from true to false when starting from true', () => {
+            // Arrange
+            component.panelStates[participantPanelName] = true;
+
+            // Act & Assert
+            component.togglePanel(participantPanelName);
+            expect(component.panelStates.Participants).toBe(false);
+        });
+
+        it('should switch chat from false to true  when starting from false', () => {
+            // Arrange
+            component.panelStates[chatPanelName] = false;
+
+            // Act & Assert
+            component.togglePanel(chatPanelName);
+            expect(component.panelStates.Chat).toBe(true);
+        });
+
+        it('should switch chat from true to false when starting from true', () => {
+            // Arrange
+            component.panelStates[chatPanelName] = true;
+
+            // Act & Assert
+            component.togglePanel(chatPanelName);
+            expect(component.panelStates.Chat).toBe(false);
+        });
+    });
+
     it('should call consultation service to close all modals', () => {
         // Act
         component.closeAllPCModals();
