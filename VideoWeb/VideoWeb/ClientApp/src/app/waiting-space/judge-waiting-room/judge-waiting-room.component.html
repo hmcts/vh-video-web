@@ -11,7 +11,7 @@
           <div class="header-content-grid govuk-body">
             <div class="room-title">
               <h1 #roomTitleLabel class="room-title-label">{{ getCaseNameAndNumber() }}</h1>
-              <div *ngIf="hasCaseNameOverflowed" class="room-title-show-more" appTooltip [text]="getCaseNameAndNumber()" colour="grey">
+              <div *ngIf="hasCaseNameOverflowed" class="room-title-show-more" appTooltip [text]="getCaseNameAndNumber()" colour="grey" canShowInMobile=true>
                 (show more)
               </div>
             </div>

@@ -39,6 +39,7 @@
       <div
         [class]="{ yellow: participant.hasSpotlight(), red: participant.isDisconnected() }"
         appTooltip
+        canShowInMobile=true
         [text]="getPanelRowTooltipText(participant)"
         [colour]="getPanelRowTooltipColour(participant)"
       >
