@@ -41,7 +41,7 @@ describe('SelectMediaDevicesComponent', () => {
     let activeMicrophoneStreamSubject: Subject<MediaStream>;
     beforeAll(() => {
         profileService = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
-        videoFilterService = jasmine.createSpyObj<VideoFilterService>('VideoFilterService', [], ['onFilterChanged$']);
+        videoFilterService = jasmine.createSpyObj<VideoFilterService>('VideoFilterService', ['isFeatureEnabled'], ['onFilterChanged$']);
     });
 
     beforeEach(fakeAsync(() => {
@@ -77,6 +77,7 @@ describe('SelectMediaDevicesComponent', () => {
         );
         getSpiedPropertyGetter(videoFilterService, 'onFilterChanged$').and.returnValue(filterChangedSubject.asObservable());
         filterChangedSubject.next(BackgroundFilter.blur);
+        videoFilterService.isFeatureEnabled.and.returnValue(true);
 
         component = new SelectMediaDevicesComponent(
             userMediaService,
