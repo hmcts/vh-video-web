@@ -168,7 +168,7 @@ export class VideoFilterService {
 
     doesSupportVideoFiltering() {
         const allowedBrowser = !this.deviceTypeService.getBrowserName().includes(browsers.Safari);
-        return this._enableVideoFilters && allowedBrowser && !this.deviceTypeService.isDesktop();
+        return this._enableVideoFilters && allowedBrowser && this.deviceTypeService.isDesktop();
     }
 
     private onSelfieSegmentationResults(results: Results): void {
