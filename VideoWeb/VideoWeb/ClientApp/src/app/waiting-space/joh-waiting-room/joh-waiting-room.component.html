@@ -23,20 +23,22 @@
         [showConsultationControls]="showConsultationControls"
         (leaveConsultation)="showLeaveConsultationModal()"
         (changeDeviceToggle)="showChooseCameraDialog()"
+        (togglePanel)="togglePanel($event)"
       >
       </app-private-consultation-room-controls>
     </div>
   </div>
 
-  <div *ngIf="hearing && isPrivateConsultation" class="panel-wrapper">
-    <app-private-consultation-participants
-      [conference]="hearing.getConference()"
-      [participantEndpoints]="participantEndpoints"
-      [roomLabel]="this.participant.current_room?.label"
-      (togglePanel)="toggleParticipantsPanel()"
-    >
-    </app-private-consultation-participants>
-  </div>
+    <div *ngIf="hearing" class="panel-wrapper" [ngClass]="{ 'hide-panel': !panelStates['Participants'] }">
+        <app-private-consultation-participants
+            *ngIf="isPrivateConsultation"
+            [conference]="hearing.getConference()"
+            [participantEndpoints]="participantEndpoints"
+            [roomLabel]="this.participant.current_room?.label"
+        >
+        </app-private-consultation-participants>
+        <app-participants-panel *ngIf="!isPrivateConsultation"> </app-participants-panel>
+    </div>
 
   <div class="video-wrapper">
     <video
