@@ -99,6 +99,6 @@ export class KinlyHeartbeatService {
 
         this.heartbeat.kill();
         this.heartbeat = null;
-        this.logger.info(`${this.loggerPrefix} Should of stopped heartbeat`);
+        this.logger.info(`${this.loggerPrefix} Should have stopped heartbeat`);
     }
 }
