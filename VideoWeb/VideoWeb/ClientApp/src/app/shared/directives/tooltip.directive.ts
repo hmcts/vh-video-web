@@ -62,6 +62,7 @@ export class TooltipDirective implements OnDestroy {
         this.create();
         this.updatePosition($event);
         this.show();
+        setTimeout(() => { this.hide(); }, 5000);
     }
 
     updatePosition($event: MouseEvent) {
