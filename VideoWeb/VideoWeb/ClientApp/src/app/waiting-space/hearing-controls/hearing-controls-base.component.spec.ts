@@ -604,67 +604,69 @@ describe('HearingControlsBaseComponent', () => {
         expect(component.isJOHConsultation).toBe(true);
     });
 
-    it(`canShowScreenShareButton() should return "false" when device is not desktop`, () => {
-        deviceTypeService.isDesktop.and.returnValue(false);
-        component.ngOnInit();
-        expect(component.canShowScreenShareButton).toBe(false);
-    });
-
-    it(`canShowScreenShareButton() returns "true" when it is a desktop device`, () => {
-        deviceTypeService.isDesktop.and.returnValue(true);
-        component.ngOnInit();
-        expect(component.canShowScreenShareButton).toBe(true);
-    });
-
-    it(`canShowScreenShareButton() should cover all HearingRole's when showing/hiding the "share screen" button`, () => {
-        const enumCount = Object.keys(HearingRole).length;
-        const numberBeingTested = allowedHearingRoles.length + nonAllowedHearingRoles.length + nonAllowedRoles.length;
-        expect(numberBeingTested).toBe(enumCount);
-    });
-
-    const allowedHearingRoles = [
-        HearingRole.APPELLANT,
-        HearingRole.DEFENCE_ADVOCATE,
-        HearingRole.EXPERT,
-        HearingRole.INTERPRETER,
-        HearingRole.JUDGE,
-        HearingRole.MACKENZIE_FRIEND,
-        HearingRole.OBSERVER,
-        HearingRole.PANEL_MEMBER,
-        HearingRole.PROSECUTION,
-        HearingRole.PROSECUTION_ADVOCATE,
-        HearingRole.REPRESENTATIVE,
-        HearingRole.WINGER,
-        HearingRole.LITIGANT_IN_PERSON,
-        HearingRole.STAFF_MEMBER,
-        HearingRole.QUICK_LINK_PARTICIPANT
-    ];
-    allowedHearingRoles.forEach(hearingRole => {
-        it(`canShowScreenShareButton() should return "true" when device is a desktop device and user has the '${hearingRole}' HearingRole`, () => {
-            deviceTypeService.isDesktop.and.returnValue(true);
-            component.participant.hearing_role = hearingRole;
+    describe('canShowScreenShareButton()', () => {
+        it(`returns "false" when device is not desktop`, () => {
+            deviceTypeService.isDesktop.and.returnValue(false);
             component.ngOnInit();
-            expect(component.canShowScreenShareButton).toBeTruthy();
+            expect(component.canShowScreenShareButton).toBe(false);
         });
-    });
 
-    const nonAllowedHearingRoles = [HearingRole.WITNESS];
-    nonAllowedHearingRoles.forEach(hearingRole => {
-        it(`canShowScreenShareButton() should return "false" when device is a desktop device and user has the '${hearingRole}' HearingRole`, () => {
+        it(`returns "true" when it is a desktop device`, () => {
             deviceTypeService.isDesktop.and.returnValue(true);
-            component.participant.hearing_role = hearingRole;
             component.ngOnInit();
-            expect(component.canShowScreenShareButton).toBeFalsy();
+            expect(component.canShowScreenShareButton).toBe(true);
         });
-    });
 
-    const nonAllowedRoles = [Role.QuickLinkObserver];
-    nonAllowedRoles.forEach(role => {
-        it(`canShowScreenShareButton() should return "false" when device is a desktop device and user has the '${role}'Role`, () => {
-            deviceTypeService.isDesktop.and.returnValue(true);
-            component.participant.role = role;
-            component.ngOnInit();
-            expect(component.canShowScreenShareButton).toBeFalsy();
+        it(`covers all HearingRole's when showing/hiding the "share screen" button`, () => {
+            const enumCount = Object.keys(HearingRole).length;
+            const numberBeingTested = allowedHearingRoles.length + nonAllowedHearingRoles.length + nonAllowedRoles.length;
+            expect(numberBeingTested).toBe(enumCount);
+        });
+
+        const allowedHearingRoles = [
+            HearingRole.APPELLANT,
+            HearingRole.DEFENCE_ADVOCATE,
+            HearingRole.EXPERT,
+            HearingRole.INTERPRETER,
+            HearingRole.JUDGE,
+            HearingRole.MACKENZIE_FRIEND,
+            HearingRole.OBSERVER,
+            HearingRole.PANEL_MEMBER,
+            HearingRole.PROSECUTION,
+            HearingRole.PROSECUTION_ADVOCATE,
+            HearingRole.REPRESENTATIVE,
+            HearingRole.WINGER,
+            HearingRole.LITIGANT_IN_PERSON,
+            HearingRole.STAFF_MEMBER,
+            HearingRole.QUICK_LINK_PARTICIPANT
+        ];
+        allowedHearingRoles.forEach(hearingRole => {
+            it(`returns "true" when device is a desktop device and user has the '${hearingRole}' HearingRole`, () => {
+                deviceTypeService.isDesktop.and.returnValue(true);
+                component.participant.hearing_role = hearingRole;
+                component.ngOnInit();
+                expect(component.canShowScreenShareButton).toBeTruthy();
+            });
+        });
+
+        const nonAllowedHearingRoles = [HearingRole.WITNESS];
+        nonAllowedHearingRoles.forEach(hearingRole => {
+            it(`returns "false" when device is a desktop device and user has the '${hearingRole}' HearingRole`, () => {
+                deviceTypeService.isDesktop.and.returnValue(true);
+                component.participant.hearing_role = hearingRole;
+                component.ngOnInit();
+                expect(component.canShowScreenShareButton).toBeFalsy();
+            });
+        });
+
+        const nonAllowedRoles = [Role.QuickLinkObserver];
+        nonAllowedRoles.forEach(role => {
+            it(`returns "false" when device is a desktop device and user has the '${role}'Role`, () => {
+                deviceTypeService.isDesktop.and.returnValue(true);
+                component.participant.role = role;
+                component.ngOnInit();
+                expect(component.canShowScreenShareButton).toBeFalsy();
+            });
         });
     });
 
