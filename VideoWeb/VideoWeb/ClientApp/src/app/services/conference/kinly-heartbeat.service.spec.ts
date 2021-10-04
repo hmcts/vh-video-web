@@ -1,6 +1,6 @@
 import { discardPeriodicTasks, fakeAsync, flush } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { of, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Heartbeat } from 'src/app/shared/models/heartbeat';
@@ -14,7 +14,7 @@ import { ConferenceService } from './conference.service';
 import { KinlyHeartbeatService } from './kinly-heartbeat.service';
 import { ParticipantService } from './participant.service';
 
-fdescribe('KinlyHeartbeatService', () => {
+describe('KinlyHeartbeatService', () => {
     const participant = new ParticipantModel(
         Guid.create().toString(),
         null,
