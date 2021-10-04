@@ -1,4 +1,4 @@
-@VIH-4035
+#@VIH-4035
 Feature: Hearing List
 	As a registered video hearings user
 	I would like to login and access the hearing details
@@ -31,7 +31,7 @@ Scenario: Participant has no hearings
 	And a warning message appears indicating the participant has no hearings scheduled
 	And contact us details are available
 
-@VIH-4607
+#@VIH-4607
 Scenario: Judge has no hearings
 	Given a new browser is open for a Judge
 	When they attempt to login with valid credentials
@@ -39,7 +39,7 @@ Scenario: Judge has no hearings
 	And a warning message appears indicating the Judge has no hearings scheduled
 	And contact us details for the Judge are available
 
-@VIH-4607
+#@VIH-4607
 Scenario: Judge has 1 or more hearings
 	Given I have a hearing
 	And a new browser is open for a Judge
@@ -52,7 +52,7 @@ Scenario: Judge has 1 or more hearings
 	When the user clicks on the Start Hearing button
 	Then the user is on the Waiting Room page
 
-@VIH-6621
+#@VIH-6621
 Scenario: Judge has a hearing with observers and panel members
 	Given I have a hearing with an Observer and Panel Member
 	And a new browser is open for a Judge
@@ -65,7 +65,7 @@ Scenario: Judge has a hearing with observers and panel members
 	When the user clicks on the Start Hearing button
 	Then the user is on the Waiting Room page
 
-@VIH-6621
+#@VIH-6621
 Scenario: Judge has a hearing on the hearing list with wingers
 	Given I have a CACD hearing with a Winger
 	And a new browser is open for a Judge
@@ -78,7 +78,8 @@ Scenario: Judge has a hearing on the hearing list with wingers
 	When the user clicks on the Start Hearing button
 	Then the user is on the Waiting Room page
 
-@VIH-4156 @VIH-4507 @Smoketest
+#@VIH-4156 @VIH-4507
+@Smoketest
 Scenario: Video Hearings Officer has 1 or more hearings smoke test
   Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	Then the VHO can see a list of hearings including the new hearing
@@ -86,7 +87,7 @@ Scenario: Video Hearings Officer has 1 or more hearings smoke test
 	Then the VHO can see the hearing view
 	And the VHO should see the participant contact details
 
-@VIH-4559
+#@VIH-4559
 Scenario: Video Hearings Officer can see all hearings for today only
 	Given I have a hearing
 	And I have another hearing
@@ -130,7 +131,7 @@ Scenario: Panel Member has a hearing more than 30 minutes in the future
 	When the user clicks on the Start Hearing button
 	Then the user is on the Waiting Room page
 
-@VIH-6420
+#@VIH-6420
   Scenario: Winger has 1 or more hearings
 	Given I have a CACD hearing with a Winger
 	And a new browser is open for a Winger
@@ -141,7 +142,7 @@ Scenario: Panel Member has a hearing more than 30 minutes in the future
 	When the user clicks on the Start Hearing button
 	Then the user is on the Waiting Room page
 
-@VIH-6420
+#@VIH-6420
 Scenario: Winger has a hearing more than 30 minutes in the future
 	Given I have a hearing in 31 minutes time with winger 
 	And a new browser is open for a Winger

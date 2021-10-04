@@ -1,4 +1,4 @@
-﻿@VIH-4230
+﻿#@VIH-4230
 Feature: Microphone Working
 	As a registered video hearings user
 	I would like to confirm the microphone check was successful
@@ -11,7 +11,7 @@ Scenario: Participant microphone working
 	And the user clicks the Continue button
 	Then the user is on the See and Hear Video page
 
-@VIH-4595
+#@VIH-4595
 Scenario: Participant confirms the microphone is not working
 	Given the Participant user has progressed to the Microphone Working page
 	When the user selects the No radiobutton

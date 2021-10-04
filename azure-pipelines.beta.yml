@@ -187,35 +187,22 @@ stages:
           - group: QuickLinks_Sandbox
             env:
               - Sandbox
-          - name: EnableAndroidSupport
-            value: false
-            env:
-              - Prod
-              - Preprod
-          - name: EnableAndroidSupport
-            value: true
+          - group: FeatureFlags_NonProd
             env:
               - Preview
               - Dev
               - AAT
               - Sandbox
+          - group: FeatureFlags_Test
+            env:
               - Test1
               - Test2
-          - name: EnableIOSSupport
-            value: false
+          - group: FeatureFlags_PreProd
+            env:
+              - PreProd
+          - group: FeatureFlags_Prod
             env:
               - Prod
-              - Preprod
-          - name: EnableIOSSupport
-            value: true
-            env:
-              - Preview
-              - Dev
-              - AAT
-              - Sandbox
-              - Test1
-              - Test2
-
         appSettings:
           - name: ApplicationInsights:InstrumentationKey
             value: vh-core-infra-AppInsightsKey
@@ -310,6 +297,8 @@ stages:
             value: $(EnableAndroidSupport)
           - name: VhServices:EnableIOSSupport
             value: $(EnableIOSSupport)
+          - name: VhServices:EnableVideoFilters
+            value: $(EnableVideoFilters)
 
           # Quick Links Configuration
           - name: QuickLinks:Issuer
@@ -351,6 +340,8 @@ stages:
             value: $(EnableAndroidSupport)
           - name: VhServices:EnableIOSSupport
             value: $(EnableIOSSupport)
+          - name: VhServices:EnableVideoFilters
+            value: $(EnableVideoFilters)
 
           # AzureAd
           - name: AzureAd:TenantId
