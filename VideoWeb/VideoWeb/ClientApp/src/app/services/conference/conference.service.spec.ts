@@ -124,6 +124,89 @@ describe('ConferenceService', () => {
         sut = new ConferenceService(routerSpy, activatedRouteSpy, eventsServiceSpy, apiClientSpy, loggerSpy);
     });
 
+    describe('initialiseConferenceFromActiveRoute', () => {
+        it('should call getConferenceById when the router navigation ends and conference id is in the param map', fakeAsync(() => {
+            // Arrange
+            const conferenceId = 'conference-id';
+            const routeSnapshot = new ActivatedRouteSnapshot();
+            getSpiedPropertyGetter(activatedRouteSpy, 'snapshot').and.returnValue(routeSnapshot);
+            spyOnProperty(routeSnapshot, 'paramMap', 'get').and.returnValue(
+                convertToParamMap({
+                    conferenceId: conferenceId
+                })
+            );
+
+            const getConferenceSubject = new Subject<ConferenceResponse>();
+            const getConference$ = getConferenceSubject.asObservable();
+
+            spyOn(getConference$, 'subscribe').and.callThrough();
+            apiClientSpy.getConferenceById.and.returnValue(getConference$);
+
+            const expectedConferenceResult = new ConferenceResponse({
+                id: conferenceId,
+                status: ConferenceStatus.NotStarted
+            });
+
+            const expectedConferenceStatusResult = { newStatus: expectedConferenceResult.status, oldStatus: null };
+
+            let currentConferenceResult = null;
+            sut.currentConference$.subscribe(conference => (currentConferenceResult = conference));
+            let conferenceStatusResult = null;
+            sut.onCurrentConferenceStatusChanged$.subscribe(update => (conferenceStatusResult = update));
+
+            // Act
+            sut.initialiseConferenceFromActiveRoute();
+
+            getConferenceSubject.next(expectedConferenceResult);
+            flush();
+
+            // Assert
+            expect(apiClientSpy.getConferenceById).toHaveBeenCalledOnceWith(conferenceId);
+            expect(getConference$.subscribe).toHaveBeenCalledTimes(1);
+            expect(currentConferenceResult).toBeTruthy();
+            expect(sut.currentConference).toEqual(expectedConferenceResult);
+            expect(sut.currentConferenceId).toEqual(expectedConferenceResult.id);
+            expect(currentConferenceResult).toEqual(expectedConferenceResult);
+            expect(conferenceStatusResult).toEqual(expectedConferenceStatusResult);
+        }));
+
+        it('should NOT call getConferenceId when the router navigation ends and conference id is NOT in the param map', fakeAsync(() => {
+            // Arrange
+            const conferenceId = 'conference-id';
+            const routeSnapshotSpy = jasmine.createSpyObj<ActivatedRouteSnapshot>(
+                'ActivatedRouteSnapshot',
+                ['toString'],
+                ['firstChild', 'paramMap']
+            );
+            getSpiedPropertyGetter(activatedRouteSpy, 'snapshot').and.returnValue(routeSnapshotSpy);
+            getSpiedPropertyGetter(routeSnapshotSpy, 'paramMap').and.returnValue(convertToParamMap({}));
+
+            const getConferenceSubject = new Subject<ConferenceResponse>();
+            const getConference$ = getConferenceSubject.asObservable();
+
+            spyOn(getConference$, 'subscribe').and.callThrough();
+            apiClientSpy.getConferenceById.and.returnValue(getConference$);
+
+            const expectedConference = new ConferenceResponse({
+                id: conferenceId
+            });
+
+            let result = null;
+            sut.currentConference$.subscribe(conference => (result = conference));
+
+            // Act
+            sut.initialiseConferenceFromActiveRoute();
+
+            getConferenceSubject.next(expectedConference);
+            flush();
+
+            // Assert
+            expect(apiClientSpy.getConferenceById).not.toHaveBeenCalled();
+            expect(getConference$.subscribe).not.toHaveBeenCalled();
+            expect(result).toBeFalsy();
+        }));
+    });
+
     describe('handle navigation end', () => {
         it('should call getConferenceById when the router navigation ends and conference id is in the param map', fakeAsync(() => {
             // Arrange
@@ -292,7 +375,7 @@ describe('ConferenceService', () => {
             spyOnProperty(sut, 'currentConference', 'get').and.returnValue(expectedConference);
             spyOnProperty(sut, 'currentConferenceId', 'get').and.returnValue(expectedConference.id);
 
-            const expectedResult = null;
+            const expectedResult: ConferenceStatusChanged = { oldStatus: null, newStatus: null };
             let result = null;
 
             sut.onCurrentConferenceStatusChanged$.subscribe(update => (result = update));
@@ -357,7 +440,7 @@ describe('ConferenceService', () => {
             spyOnProperty(sut, 'currentConference', 'get').and.returnValue(expectedConference);
             spyOnProperty(sut, 'currentConferenceId', 'get').and.returnValue(expectedConference.id);
 
-            const expectedResult = null;
+            const expectedResult = { oldStatus: null, newStatus: null };
             let result = null;
 
             sut.onCurrentConferenceStatusChanged$.subscribe(update => (result = update));

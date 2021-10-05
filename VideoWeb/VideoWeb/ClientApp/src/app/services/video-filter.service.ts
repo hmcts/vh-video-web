@@ -17,7 +17,7 @@ export class VideoFilterService {
 
     private _canvasWidth = 1280;
     private _canvasHeight = 720;
-    private enableVideoFilters: boolean;
+    private _enableVideoFilters: boolean;
 
     private readonly preferredFilterCache: SessionStorage<BackgroundFilter>;
     readonly PREFERRED_FILTER_KEY = 'vh.preferred.filter';
@@ -67,7 +67,7 @@ export class VideoFilterService {
 
     constructor(private logger: Logger, private configService: ConfigService, private deviceTypeService: DeviceTypeService) {
         this.configService.getClientSettings().subscribe(settings => {
-            this.enableVideoFilters = settings.enable_video_filters;
+            this._enableVideoFilters = settings.enable_video_filters;
             if (settings.blur_radius) {
                 this.logger.debug(`${this.loggerPrefix} Loaded blur radius from config - ${settings.blur_radius}px`);
                 this.blurRadius = settings.blur_radius;
@@ -162,9 +162,13 @@ export class VideoFilterService {
         }
     }
 
+    isFeatureEnabled() {
+        return this._enableVideoFilters;
+    }
+
     doesSupportVideoFiltering() {
         const allowedBrowser = !this.deviceTypeService.getBrowserName().includes(browsers.Safari);
-        return this.enableVideoFilters && allowedBrowser && !this.deviceTypeService.isTablet();
+        return this._enableVideoFilters && allowedBrowser && this.deviceTypeService.isDesktop();
     }
 
     private onSelfieSegmentationResults(results: Results): void {

@@ -1,4 +1,4 @@
-﻿@VIH-4289
+﻿#@VIH-4289
 Feature: See and Hear Video
 	As a registered video hearings user
 	I would like to confirm the equipment check was successful
@@ -11,7 +11,7 @@ Scenario: Participant see and hear video
 	And the user clicks the Continue button
 	Then the user is on the Rules page
 
-@VIH-4595
+#@VIH-4595
 Scenario: Participant does not confirm the equipment is working
 	Given the Participant user has progressed to the See and Hear Video page
 	When the user selects the No radiobutton

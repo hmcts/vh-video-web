@@ -1,6 +1,6 @@
 import { discardPeriodicTasks, fakeAsync, flush } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { of, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Heartbeat } from 'src/app/shared/models/heartbeat';
@@ -81,13 +81,12 @@ describe('KinlyHeartbeatService', () => {
 
     describe('initialiseHeartbeat', () => {
         it('should do nothing if the current conference is undefined', fakeAsync(() => {
-            // Arrange
-            currentConferenceSubject.next(undefined);
-            loggedInParticipantSubject.next(participant);
-            flush();
-
             // Act
             sut.initialiseHeartbeat(pexipApiMock);
+            flush();
+
+            currentConferenceSubject.next(undefined);
+            loggedInParticipantSubject.next(participant);
             flush();
 
             // Assert
@@ -96,13 +95,12 @@ describe('KinlyHeartbeatService', () => {
         }));
 
         it('should do nothing if the current conference is null', fakeAsync(() => {
-            // Arrange
-            currentConferenceSubject.next(null);
-            loggedInParticipantSubject.next(participant);
-            flush();
-
             // Act
             sut.initialiseHeartbeat(pexipApiMock);
+            flush();
+
+            currentConferenceSubject.next(null);
+            loggedInParticipantSubject.next(participant);
             flush();
 
             // Assert
@@ -111,13 +109,12 @@ describe('KinlyHeartbeatService', () => {
         }));
 
         it('should do nothing if the current participant is undefined', fakeAsync(() => {
-            // Arrange
-            currentConferenceSubject.next(conference);
-            loggedInParticipantSubject.next(undefined);
-            flush();
-
             // Act
             sut.initialiseHeartbeat(pexipApiMock);
+            flush();
+
+            currentConferenceSubject.next(conference);
+            loggedInParticipantSubject.next(undefined);
             flush();
 
             // Assert
@@ -126,13 +123,12 @@ describe('KinlyHeartbeatService', () => {
         }));
 
         it('should do nothing if the current participant is null', fakeAsync(() => {
-            // Arrange
-            currentConferenceSubject.next(conference);
-            loggedInParticipantSubject.next(null);
-            flush();
-
             // Act
             sut.initialiseHeartbeat(pexipApiMock);
+            flush();
+
+            currentConferenceSubject.next(conference);
+            loggedInParticipantSubject.next(null);
             flush();
 
             // Assert
@@ -141,13 +137,12 @@ describe('KinlyHeartbeatService', () => {
         }));
 
         it('should get the heartbeat configuration for the participant and initialise the heartbeat', fakeAsync(() => {
-            // Arrange
-            currentConferenceSubject.next(conference);
-            loggedInParticipantSubject.next(participant);
-            flush();
-
             // Act
             sut.initialiseHeartbeat(pexipApiMock);
+            flush();
+
+            currentConferenceSubject.next(conference);
+            loggedInParticipantSubject.next(participant);
             flush();
 
             heartbeatConfigSubject.next(heartbeatConfig);
@@ -164,14 +159,14 @@ describe('KinlyHeartbeatService', () => {
         }));
 
         it('should catch errors from getHeartbeatConfigForParticipant', fakeAsync(() => {
-            // Arrange
-            currentConferenceSubject.next(conference);
-            loggedInParticipantSubject.next(participant);
-            flush();
-
             // Act & Assert
             expect(() => {
                 sut.initialiseHeartbeat(pexipApiMock);
+
+                currentConferenceSubject.next(conference);
+                loggedInParticipantSubject.next(participant);
+                flush();
+
                 heartbeatConfigSubject.error(new Error());
                 flush();
             }).not.toThrow();
@@ -183,76 +178,12 @@ describe('KinlyHeartbeatService', () => {
     });
 
     describe('handleHeartbeat', () => {
-        it('should stop the heartbeat if current conference is null', fakeAsync(() => {
-            // Arrange
-            const stopHeartbeatSpy = spyOn(sut, 'stopHeartbeat');
-
-            currentConferenceSubject.next(null);
-            loggedInParticipantSubject.next(participant);
-            flush();
-
-            // Act
-            sut.handleHeartbeat(JSON.stringify({}));
-            flush();
-
-            // Assert
-            expect(stopHeartbeatSpy).toHaveBeenCalledTimes(1);
-            expect(heartbeatMapperSpy.map).not.toHaveBeenCalled();
-            expect(eventServiceSpy.sendHeartbeat).not.toHaveBeenCalled();
-        }));
-
-        it('should stop the heartbeat if current conference is undefined', fakeAsync(() => {
-            // Arrange
-            const stopHeartbeatSpy = spyOn(sut, 'stopHeartbeat');
-
-            currentConferenceSubject.next(undefined);
-            loggedInParticipantSubject.next(participant);
-            flush();
-
-            // Act
-            sut.handleHeartbeat(JSON.stringify({}));
-            flush();
-
-            // Assert
-            expect(stopHeartbeatSpy).toHaveBeenCalledTimes(1);
-            expect(heartbeatMapperSpy.map).not.toHaveBeenCalled();
-            expect(eventServiceSpy.sendHeartbeat).not.toHaveBeenCalled();
-        }));
-
-        it('should stop the heartbeat if current participant is null', fakeAsync(() => {
-            // Arrange
-            const stopHeartbeatSpy = spyOn(sut, 'stopHeartbeat');
+        beforeEach(fakeAsync(() => {
+            sut.initialiseHeartbeat(pexipApiMock);
 
             currentConferenceSubject.next(conference);
-            loggedInParticipantSubject.next(null);
+            loggedInParticipantSubject.next(participant);
             flush();
-
-            // Act
-            sut.handleHeartbeat(JSON.stringify({}));
-            flush();
-
-            // Assert
-            expect(stopHeartbeatSpy).toHaveBeenCalledTimes(1);
-            expect(heartbeatMapperSpy.map).not.toHaveBeenCalled();
-            expect(eventServiceSpy.sendHeartbeat).not.toHaveBeenCalled();
-        }));
-
-        it('should stop the heartbeat if current participant is undefined', fakeAsync(() => {
-            // Arrange
-            const stopHeartbeatSpy = spyOn(sut, 'stopHeartbeat');
-
-            currentConferenceSubject.next(conference);
-            loggedInParticipantSubject.next(undefined);
-            flush();
-
-            // Act
-            sut.handleHeartbeat(JSON.stringify({}));
-            flush();
-
-            // Assert
-            expect(stopHeartbeatSpy).toHaveBeenCalledTimes(1);
-            expect(heartbeatMapperSpy.map).not.toHaveBeenCalled();
-            expect(eventServiceSpy.sendHeartbeat).not.toHaveBeenCalled();
         }));
 
         it('should should map the heartbeat', fakeAsync(() => {
