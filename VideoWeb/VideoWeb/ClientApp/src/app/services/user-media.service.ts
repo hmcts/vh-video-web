@@ -11,7 +11,13 @@ import { LocalStorageService } from './conference/local-storage.service';
 })
 export class UserMediaService {
     private readonly loggerPrefix = '[UserMediaService] -';
-    readonly defaultStreamConstraints = { audio: true, video: true };
+    readonly defaultStreamConstraints = {
+        audio: true,
+        video: {
+            width: 256,
+            height: 256
+        }
+    };
     navigator: Navigator = navigator;
 
     readonly PREFERRED_CAMERA_KEY = 'vh.preferred.camera';

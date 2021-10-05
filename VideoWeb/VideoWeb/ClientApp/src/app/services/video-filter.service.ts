@@ -15,8 +15,8 @@ import { SessionStorage } from './session-storage';
 export class VideoFilterService {
     private readonly loggerPrefix = '[VideoFilterService] -';
 
-    private _canvasWidth = 1280;
-    private _canvasHeight = 720;
+    private _canvasWidth = 256;
+    private _canvasHeight = 256;
     private _enableVideoFilters: boolean;
 
     private readonly preferredFilterCache: SessionStorage<BackgroundFilter>;
@@ -106,8 +106,9 @@ export class VideoFilterService {
             return;
         }
 
-        this._canvasWidth = stream.getVideoTracks()[0].getSettings().width;
-        this._canvasHeight = stream.getVideoTracks()[0].getSettings().height;
+        const settings = stream.getVideoTracks()[0].getSettings();
+        this._canvasWidth = settings.width / settings.aspectRatio;
+        this._canvasHeight = settings.height / settings.aspectRatio;
 
         this.logger.debug(`${this.loggerPrefix} initialising stream for filter`);
         this.videoElement = document.createElement('video');
@@ -138,6 +139,11 @@ export class VideoFilterService {
 
     updateCameraStream(stream: MediaStream) {
         this.videoElement.srcObject = stream;
+        const settings = stream.getVideoTracks()[0].getSettings();
+        this._canvasWidth = settings.width / settings.aspectRatio;
+        this._canvasHeight = settings.height / settings.aspectRatio;
+        this.canvasElement.width = this._canvasWidth;
+        this.canvasElement.height = this._canvasHeight;
     }
 
     startFilteredStream(): MediaStream {
@@ -214,7 +220,17 @@ export class VideoFilterService {
     private applyVirtualBackgroundEffect() {
         const imageObject = this.getImageForBackground();
         this.canvasCtx.imageSmoothingEnabled = true;
-        this.canvasCtx.drawImage(imageObject, 0, 0, this.canvasElement.width, this.canvasElement.height);
+        this.canvasCtx.drawImage(
+            imageObject,
+            0,
+            0,
+            imageObject.width,
+            imageObject.height,
+            0,
+            0,
+            this.canvasElement.width,
+            this.canvasElement.height
+        );
     }
 
     private getImageForBackground(): HTMLImageElement {
