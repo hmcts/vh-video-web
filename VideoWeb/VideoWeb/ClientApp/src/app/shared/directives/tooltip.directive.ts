@@ -20,7 +20,6 @@ export class TooltipDirective implements OnDestroy {
         this.setTooltipColour(oldColour);
     }
     @Input() set canShowInMobile(value: boolean) {
-        console.log('[apptoolTip] set canShowInMobile ');
         this._canShowInMobile = value;
     }
     @Output() tooltipShown = new EventEmitter();
