@@ -123,11 +123,11 @@ describe('WaitingRoomComponent message and clock', () => {
         it('should switch Participants from true to false when starting from true and already a chat panel is open', () => {
             // Arrange
             component.panelStates[chatPanelName] = true;
-            component.panelStates[participantPanelName] = true;
+            component.panelStates[participantPanelName] = false;
 
             // Act & Assert
             component.togglePanel(participantPanelName);
-            expect(component.panelStates.Participants).toBe(false);
+            expect(component.panelStates.Participants).toBe(true);
             expect(component.panelStates.Chat).toBe(false);
         });
 
