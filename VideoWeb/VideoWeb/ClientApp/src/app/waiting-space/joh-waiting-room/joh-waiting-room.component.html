@@ -30,7 +30,7 @@
     </div>
   </div>
 
-    <div *ngIf="hearing" class="panel-wrapper" [ngClass]="{ 'hide-panel': panelStates['Participants'] }">
+    <div *ngIf="isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': panelStates['Participants'] }">
         <app-private-consultation-participants
             *ngIf="isPrivateConsultation"
             [conference]="hearing.getConference()"
