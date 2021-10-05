@@ -35,8 +35,10 @@ namespace VideoWeb.AcceptanceTests.Steps
                 WhenTheJudgeClicksTheCheckEquipmentButton();
             }
             else
-                { 
-                _browsers[_c.CurrentUser].ScrollTo(JudgeHearingListPage.CaseName(_c.Test.Conference.Id));
+                {
+                var caseNameElement = JudgeHearingListPage.CaseName(_c.Test.Conference.Id);
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(caseNameElement, Convert.ToInt32(_c.VideoWebConfig.consultationRoomTimeout));
+                _browsers[_c.CurrentUser].ScrollTo(caseNameElement);
                 _browsers[_c.CurrentUser].Click(JudgeHearingListPage.StartHearingButton(_c.Test.Conference.Id));
                 Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser]);
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(WaitingRoomPage.HearingCaseDetails, 60).Displayed.Should().BeTrue();

@@ -36,7 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BookingsApi.Client" Version="1.27.11" />
+    <PackageReference Include="BookingsApi.Client" Version="1.27.12" />
     <PackageReference Include="DotNetSeleniumExtras.PageObjects" Version="3.11.0" />
     <PackageReference Include="DotNetSeleniumExtras.WaitHelpers" Version="3.11.0" />
     <PackageReference Include="Faker.NETCore" Version="1.0.2" />
@@ -62,8 +62,8 @@
     <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
     <PackageReference Include="TestApi.Client" Version="1.27.0" />
     <PackageReference Include="UserApi.Client" Version="1.27.0" />
-    <PackageReference Include="VH.AcceptanceTests.Common" Version="1.21.57" />
-    <PackageReference Include="VideoApi.Client" Version="1.27.9" />
+    <PackageReference Include="VH.AcceptanceTests.Common" Version="1.21.59" />
+    <PackageReference Include="VideoApi.Client" Version="1.27.12" />
   </ItemGroup>
 
   <ItemGroup>
