@@ -28,9 +28,9 @@ export class NavigatorComponent implements OnInit {
             .subscribe(settings => {
                 if (
                     this.deviceTypeService.isDesktop() ||
-                    (this.deviceTypeService.isIOS() && this.deviceTypeService.isTablet()) ||
-                    (this.deviceTypeService.isAndroid() && settings.enable_android_support) ||
-                    (this.deviceTypeService.isIOS() && this.deviceTypeService.isMobile() && settings.enable_ios_support)
+                    (this.deviceTypeService.isIOS() && this.deviceTypeService.isTablet() && settings.enable_ios_tablet_support) ||
+                    (this.deviceTypeService.isIOS() && this.deviceTypeService.isMobile() && settings.enable_ios_mobile_support) ||
+                    (this.deviceTypeService.isAndroid() && settings.enable_android_support)
                 ) {
                     this.profileService
                         .getUserProfile()
