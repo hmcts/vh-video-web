@@ -73,10 +73,6 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         this.init();
     }
 
-    toggleParticipantsPanel() {
-        this.isParticipantsPanelHidden = !this.isParticipantsPanelHidden;
-    }
-
     private onShouldReload(): void {
         window.location.reload();
     }
