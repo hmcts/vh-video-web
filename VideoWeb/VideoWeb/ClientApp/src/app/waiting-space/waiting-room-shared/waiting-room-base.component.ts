@@ -86,6 +86,12 @@ export abstract class WaitingRoomBaseDirective {
     displayStartPrivateConsultationModal: boolean;
     displayJoinPrivateConsultationModal: boolean;
 
+    panelTypes = ['Participants', 'Chat'];
+    panelStates = {
+        Participants: true,
+        Chat: false
+    };
+
     CALL_TIMEOUT = 31000; // 31 seconds
     callbackTimeout: NodeJS.Timer;
     private readonly loggerPrefix = '[WR] -';
@@ -152,6 +158,17 @@ export abstract class WaitingRoomBaseDirective {
 
     stringToTranslateId(str: string) {
         return str.replace(/\s/g, '-').toLowerCase();
+    }
+
+    togglePanel(panelName: string) {
+        const newState = !this.panelStates[panelName];
+        if (newState) {
+            this.panelTypes.forEach(pt => {
+                this.panelStates[pt] = false;
+            });
+        }
+
+        this.panelStates[panelName] = newState;
     }
 
     async getConference(): Promise<void> {
