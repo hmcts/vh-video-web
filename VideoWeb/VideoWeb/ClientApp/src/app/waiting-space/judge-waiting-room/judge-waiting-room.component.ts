@@ -48,11 +48,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     conferenceRecordingInSessionForSeconds = 0;
     expanedPanel = true;
     displayConfirmStartHearingPopup: boolean;
-    panelTypes = ['Participants', 'Chat'];
-    panelStates = {
-        Participants: true,
-        Chat: false
-    };
+
     unreadMessageCount = 0;
     audioErrorToast: VhToastComponent;
     onParticipantOrVmrPexipConnectedOrIdUpdatedSubscription: Subscription;
@@ -455,17 +451,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             return !this.showVideo;
         }
         return true;
-    }
-
-    togglePanel(panelName: string) {
-        const newState = !this.panelStates[panelName];
-        if (newState) {
-            this.panelTypes.forEach(pt => {
-                this.panelStates[pt] = false;
-            });
-        }
-
-        this.panelStates[panelName] = newState;
     }
 
     unreadMessageCounterUpdate(count: number) {
