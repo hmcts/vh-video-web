@@ -61,6 +61,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     participantStatusChangedSubscription: Subscription;
     onConferenceStatusChangedSubscription: Subscription;
 
+    get isChatVisible() {
+        return this.panelStates['Chat'];
+    }
+
     constructor(
         protected route: ActivatedRoute,
         protected videoWebService: VideoWebService,

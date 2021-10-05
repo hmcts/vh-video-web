@@ -267,7 +267,7 @@
     "observers": "Sylwebydd",
     "video-access-point": "Pwynt mynediad fideo ",
     "video-access-points": "Pwynt mynediad fideo",
-    "conference-status-heading": "Status/Action"
+    "conference-status-heading": "Statws/Gweithredu"
   },
   "conference-status": {
     "paused": "Wedi'i atal dros dro",
@@ -598,7 +598,9 @@
     "chat-panel": "Panel sgwrsio",
     "pause": "Egwyl",
     "close": "Cau",
-    "context-menu": "Bwydlen Agored"
+    "context-menu": "Bwydlen Agored",
+    "hearing-controls": "Rheolyddion y gwrandawiad"
+
   },
   "judge-waiting-room": {
     "switch-to-main-screen": "Dychwelyd i'r brif sgrin",
@@ -781,6 +783,7 @@
     "blue": "glas",
     "grey": "llwyd",
     "call-witness": "Galw'r tyst",
+    "participant-unavailable": "Nid yw'r {{role}} ar gael",
     "participant-available": "As gael",
     "joining1": "Yn ymuno...",
     "for": ""
@@ -793,7 +796,9 @@
     "lower-hand": "Rhoi llaw i lawr",
     "call-witness": "Galw'r tyst",
     "unpin": "Peidio amlygu",
-    "unmute": "Dadfudo"
+    "unmute": "Dadfudo",
+    "admit-participant": "Gadael {{role}} i mewn",
+    "dismiss-participant" : "Gwrthod {{role}}"
   },
   "confirm-close-hearing-popup": {
     "title": "Rydych ar fin cau'r gwrandawiad hwn",
@@ -1049,15 +1054,17 @@
   },
   "copy-telephone-id": {
     "alt": "Copïo'r manylion ymuno dros y ffôn i'r clipfwrdd",
-    "display-text": "Copïo'r manylion ymuno dros y ffôn i'r clipfwrdd"
+    "display-text": "Copïo'r manylion ymuno dros y ffôn i'r clipfwrdd",
+    "tooltip-copied": "Manylion wedi cael eu copïo i'r clipfwrdd"
   },
   "copy-id": {
     "alt": "Eicon copïo rhif adnabod (ID) y gynhadledd",
-    "display-text": "Copy hearing ID to clipboard"
+    "display-text": "Copïo'r rhif adnabod gwrandawiad i'r clipfwrdd",
+    "tooltip-copied": "Wedi copïo'r rhif adnabod cynhadledd i'r clipfwrdd"
   },
   "copy-quick-link": {
-    "tooltip-copied": "Join by quick link details copied to clipboard",
-    "display-text": "Copy join by quick link details to clipboard"
+    "tooltip-copied": "Manylion ymuno drwy ddolen gyflym i'r clipfwrdd wedi cael eu copïo i'r clipfwrdd",
+    "display-text": "Copïo'r manylion ymuno drwy ddolen gyflym i'r clipfwrdd"
   },
   "quick-participant-landing-page": {
     "page-title": "Rhowch eich manylion i ymuno â'ch gwrandawiad",
@@ -1091,13 +1098,13 @@
   "loading": "Wrthi'n llwytho...",
   "video-filter": {
     "title": "Dewis cefndir personol",
-    "none": "Dim cefndir",
+    "none": "Dim",
     "none-alt": "Tynnu'r holl hidlwyr",
     "blur": "Aneglur",
     "blur-alt": "Defnyddio hidlydd cefndir aneglur",
-    "hmcts": "Arwydd GLlTEM",
+    "hmcts": "GLlTEM",
     "hmcts-alt": "Defnyddio cefndir gydag arwydd GLlTEM",
-    "scts": "Arwydd SCTS",
+    "scts": "SCTS",
     "scts-alt": "Defnyddio cefndir gydag arwydd SCTS"
   }
 }

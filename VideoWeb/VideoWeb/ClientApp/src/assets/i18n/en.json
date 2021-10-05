@@ -383,7 +383,7 @@
     "context-menu-icon": "Context menu icon",
     "call-witness": "Call witness",
     "admit-participant": "Admit {{ role }}",
-    "dismiss-participant" : "Dismiss {{ role }}",
+    "dismiss-participant": "Dismiss {{ role }}",
     "lower-hand": "Lower hand",
     "unmute": "Unmute",
     "mute": "Mute",
@@ -615,8 +615,9 @@
     "stop-sharing-screen": "Stop sharing screen",
     "change-camera-mic": "Change your camera and microphone",
     "context-menu": "Open Menu",
-    "hearing-controls": "Hearing controls"
-    
+    "hearing-controls": "Hearing controls",
+    "show-chat-window": "Show messages list",
+    "hide-chat-window": "Hide messages list"
   },
   "chat-panel": {
     "heading": "VH Officer messages",
@@ -784,7 +785,8 @@
   },
   "copy-telephone-id": {
     "alt": "Copy joining by phone details to clipboard",
-    "display-text": "Copy joining by phone details to clipboard"
+    "display-text": "Copy joining by phone details to clipboard",
+    "tooltip-copied": "Details copied to clipboard"
   },
   "participant-network-status": {
     "icon-alt": "Open instant messaging chat window arrow"
@@ -809,7 +811,8 @@
   },
   "copy-id": {
     "alt": "Copy conference id icon",
-    "display-text": "Copy hearing ID to clipboard"
+    "display-text": "Copy hearing ID to clipboard",
+    "tooltip-copied": "Conference ID copied to clipboard"
   },
   "copy-quick-link": {
     "tooltip-copied": "Join by quick link details copied to clipboard",
@@ -1095,13 +1098,13 @@
   "loading": "Loading please wait...",
   "video-filter": {
     "title": "Choose a custom background",
-    "none": "No background",
+    "none": "None",
     "none-alt": "Remove all filters",
     "blur": "Blurred",
     "blur-alt": "Apply the blurred background filter",
-    "hmcts": "HMCTS crest",
+    "hmcts": "HMCTS",
     "hmcts-alt": "Apply the background with the HMCTS crest",
-    "scts": "SCTS crest",
+    "scts": "SCTS",
     "scts-alt": "Apply the background with the SCTS crest"
   }
 }
