@@ -18,7 +18,7 @@ import {
     Role,
     RoomSummaryResponse,
     SharedParticipantRoom,
-    VideoEndpointResponse
+    VideoEndpointResponse,
 } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
@@ -34,6 +34,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
 import { Room } from 'src/app/shared/models/room';
 import { pageUrls } from 'src/app/shared/page-url.constants';
+
 import { HearingRole } from '../models/hearing-role-model';
 import {
     CallError,
@@ -42,9 +43,11 @@ import {
     ConnectedPresentation,
     DisconnectedCall,
     DisconnectedPresentation,
-    Presentation
+    Presentation,
 } from '../models/video-call-models';
-import { PrivateConsultationRoomControlsComponent } from '../private-consultation-room-controls/private-consultation-room-controls.component';
+import {
+    PrivateConsultationRoomControlsComponent,
+} from '../private-consultation-room-controls/private-consultation-room-controls.component';
 import { ConsultationInvitation, ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
@@ -221,20 +224,7 @@ export abstract class WaitingRoomBaseDirective {
             return;
         }
 
-        if (invitation.activeToast) {
-            invitation.activeToast.declinedByThirdParty = true;
-            invitation.activeToast.remove();
-        }
-
         this.consultationInvitiationService.linkedParticipantRejectedInvitation(consulationRoomLabel, linkedParticipant.id);
-
-        invitation.activeToast = this.notificationToastrService.showConsultationRejectedByLinkedParticipant(
-            this.conferenceId,
-            consulationRoomLabel,
-            linkedParticipant.display_name,
-            invitation.invitedByName,
-            this.participant.status === ParticipantStatus.InHearing
-        );
     }
 
     onTransferingToConsultation(roomLabel: string) {
@@ -296,6 +286,7 @@ export abstract class WaitingRoomBaseDirective {
         this.logger.debug(`${this.loggerPrefix} Subscribing to RequestedConsultationMessage`);
         this.eventHubSubscription$.add(
             this.eventService.getRequestedConsultationMessage().subscribe(message => {
+                console.log('Faz - getRequestedConsultationMessage', message);
                 const requestedFor = this.resolveParticipant(message.requestedFor);
                 if (requestedFor.id === this.participant.id && this.participant.status !== ParticipantStatus.InHearing) {
                     // A request for you to join a consultation room
@@ -306,6 +297,7 @@ export abstract class WaitingRoomBaseDirective {
                     const roomEndpoints = this.findEndpointsInRoom(message.roomLabel);
 
                     const invitation = this.consultationInvitiationService.getInvitation(message.roomLabel);
+                    console.log('Faz - invitation', invitation);
                     invitation.invitationId = message.invitationId;
                     invitation.invitedByName = requestedBy.displayName;
 
@@ -323,20 +315,7 @@ export abstract class WaitingRoomBaseDirective {
 
                     if (invitation.answer !== ConsultationAnswer.Accepted) {
                         invitation.answer = ConsultationAnswer.None;
-                        const consultationInviteToast = this.notificationToastrService.showConsultationInvite(
-                            message.roomLabel,
-                            message.conferenceId,
-                            invitation,
-                            requestedBy,
-                            requestedFor,
-                            roomParticipants,
-                            roomEndpoints,
-                            this.participant.status !== ParticipantStatus.Available
-                        );
-
-                        if (consultationInviteToast) {
-                            invitation.activeToast = consultationInviteToast;
-                        }
+                        this.consultationInvitiationService.addInvitation(invitation);
                     }
 
                     for (const linkedParticipant of this.participant.linked_participants) {
@@ -556,13 +535,8 @@ export abstract class WaitingRoomBaseDirective {
             }
         }
 
-        if (invitation.activeToast) {
-            invitation.activeToast.remove();
-            invitation.activeToast = null;
-        }
-
         if (waitingOnLinkedParticipants.length > 0) {
-            invitation.activeToast = this.notificationToastrService.showWaitingForLinkedParticipantsToAccept(
+            this.notificationToastrService.showWaitingForLinkedParticipantsToAccept(
                 waitingOnLinkedParticipants,
                 invitation.invitedByName,
                 this.participant.status === ParticipantStatus.InHearing

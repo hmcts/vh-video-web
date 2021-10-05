@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+
 import { ModalComponent } from '../shared/modal/modal.component';
 
 @Injectable({

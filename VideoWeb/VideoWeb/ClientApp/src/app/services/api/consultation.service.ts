@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NotificationSoundsService } from 'src/app/waiting-space/services/notification-sounds.service';
+
 import {
     AddEndpointConsultationRequest,
     ApiClient,
@@ -13,7 +14,7 @@ import {
     ParticipantResponse,
     PrivateConsultationRequest,
     StartPrivateConsultationRequest,
-    VirtualCourtRoomType
+    VirtualCourtRoomType,
 } from '../clients/api-client';
 import { Logger } from '../logging/logger-base';
 import { ModalService } from '../modal.service';
@@ -24,6 +25,7 @@ import { ModalService } from '../modal.service';
 export class ConsultationService {
     static ERROR_PC_MODAL = 'pc-error-modal';
     static LEAVE_PC_MODAL = 'pc-leave-modal';
+    static loggerPrefix = 'ConsultationService'; // TODO
 
     constructor(
         private apiClient: ApiClient,
@@ -254,5 +256,9 @@ export class ConsultationService {
             .replace('JudgeJOHConsultationRoom', judgeRoom)
             .replace('ConsultationRoom', meetingRoom);
         return roomName ?? meetingRoom.trimEnd();
+    }
+
+    getInviteKey(conferenceId: string, roomLabel: string): string {
+        return `${conferenceId}_${roomLabel}`;
     }
 }

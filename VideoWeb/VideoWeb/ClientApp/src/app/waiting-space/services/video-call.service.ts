@@ -21,7 +21,7 @@ import {
     DisconnectedPresentation,
     ParticipantUpdated,
     Presentation,
-    StoppedScreenshare
+    StoppedScreenshare,
 } from '../models/video-call-models';
 import { VideoCallEventsService } from './video-call-events.service';
 

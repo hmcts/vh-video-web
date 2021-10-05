@@ -4,6 +4,7 @@ import { Guid } from 'guid-typescript';
 import { Observable, ReplaySubject, Subscription } from 'rxjs';
 import { filter, map, mergeMap, take } from 'rxjs/operators';
 import { ParticipantModel } from 'src/app/shared/models/participant';
+
 import { ApiClient, ConferenceResponse } from '../clients/api-client';
 import { EventsService } from '../events.service';
 import { LoggerService } from '../logging/logger.service';
