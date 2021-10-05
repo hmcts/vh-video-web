@@ -40,7 +40,7 @@ export class MediaStreamService {
     }
 
     getStreamForCam(device: UserMediaDevice): Observable<MediaStream> {
-        return from(this.navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId }, width: 256, height: 256 } }))
+        return from(this.navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId }, width: 640, height: 480 } }))
             .pipe(retry(3))
             .pipe(
                 mergeMap(stream => {

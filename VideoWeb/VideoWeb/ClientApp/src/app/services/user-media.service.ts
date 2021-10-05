@@ -14,8 +14,8 @@ export class UserMediaService {
     readonly defaultStreamConstraints = {
         audio: true,
         video: {
-            width: 256,
-            height: 256
+            width: 640,
+            height: 480
         }
     };
     navigator: Navigator = navigator;

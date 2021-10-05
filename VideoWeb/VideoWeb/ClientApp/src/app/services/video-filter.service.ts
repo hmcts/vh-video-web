@@ -15,8 +15,8 @@ import { SessionStorage } from './session-storage';
 export class VideoFilterService {
     private readonly loggerPrefix = '[VideoFilterService] -';
 
-    private _canvasWidth = 256;
-    private _canvasHeight = 256;
+    private _canvasWidth = 640;
+    private _canvasHeight = 480;
     private _enableVideoFilters: boolean;
 
     private readonly preferredFilterCache: SessionStorage<BackgroundFilter>;
