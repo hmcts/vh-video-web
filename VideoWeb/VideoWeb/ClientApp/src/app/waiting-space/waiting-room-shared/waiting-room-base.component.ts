@@ -162,9 +162,11 @@ export abstract class WaitingRoomBaseDirective {
 
     togglePanel(panelName: string) {
         const newState = !this.panelStates[panelName];
-        this.panelTypes.forEach(pt => {
-            this.panelStates[pt] = false;
-        });
+        if (newState) {
+            this.panelTypes.forEach(pt => {
+                this.panelStates[pt] = false;
+            });
+        }
 
         this.panelStates[panelName] = newState;
     }
