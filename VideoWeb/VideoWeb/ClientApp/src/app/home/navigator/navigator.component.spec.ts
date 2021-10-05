@@ -78,6 +78,7 @@ describe('NavigatorComponent', () => {
         const profile = new UserProfileResponse({ role: Role.Individual });
         deviceTypeServiceSpy.isDesktop.and.returnValue(false);
         deviceTypeServiceSpy.isIOS.and.returnValue(true);
+        deviceTypeServiceSpy.isMobile.and.returnValue(true);
         clientSettingsResponse.enable_ios_mobile_support = true;
         configServiceSpy.getClientSettings.and.returnValue(of(clientSettingsResponse));
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
@@ -92,6 +93,7 @@ describe('NavigatorComponent', () => {
         const profile = new UserProfileResponse({ role: Role.Individual });
         deviceTypeServiceSpy.isDesktop.and.returnValue(false);
         deviceTypeServiceSpy.isIOS.and.returnValue(true);
+        deviceTypeServiceSpy.isTablet.and.returnValue(true);
         clientSettingsResponse.enable_ios_tablet_support = true;
         configServiceSpy.getClientSettings.and.returnValue(of(clientSettingsResponse));
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
