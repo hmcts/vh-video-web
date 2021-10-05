@@ -32,6 +32,7 @@ import { ParticipantStatusMessage } from 'src/app/services/models/participant-st
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
+import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { Room } from 'src/app/shared/models/room';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { HearingRole } from '../models/hearing-role-model';
