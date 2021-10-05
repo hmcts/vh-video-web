@@ -2476,7 +2476,7 @@
       "videoweb.common": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Client": "1.27.11",
+          "BookingsApi.Client": "1.27.12",
           "Microsoft.ApplicationInsights": "2.16.0",
           "Microsoft.ApplicationInsights.AspNetCore": "2.16.0",
           "Microsoft.AspNetCore.SignalR": "1.1.0",
@@ -2485,29 +2485,29 @@
           "Microsoft.IdentityModel.Clients.ActiveDirectory": "5.2.8",
           "StackExchange.Redis": "2.1.28",
           "System.IdentityModel.Tokens.Jwt": "5.6.0",
-          "UserApi.Client": "1.24.3",
-          "VideoApi.Client": "1.27.9"
+          "UserApi.Client": "1.27.0",
+          "VideoApi.Client": "1.27.12"
         }
       },
       "videoweb.contract": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Client": "1.27.11",
-          "UserApi.Client": "1.24.3",
-          "VideoApi.Client": "1.27.9",
+          "BookingsApi.Client": "1.27.12",
+          "UserApi.Client": "1.27.0",
+          "VideoApi.Client": "1.27.12",
           "VideoWeb.Common": "1.0.0"
         }
       },
       "videoweb.eventhub": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Client": "1.27.11",
+          "BookingsApi.Client": "1.27.12",
           "Microsoft.ApplicationInsights.AspNetCore": "2.16.0",
           "Microsoft.AspNetCore.SignalR": "1.1.0",
           "Microsoft.Extensions.Caching.Abstractions": "3.1.10",
           "System.Text.Json": "4.7.1",
-          "UserApi.Client": "1.24.3",
-          "VideoApi.Client": "1.27.9",
+          "UserApi.Client": "1.27.0",
+          "VideoApi.Client": "1.27.12",
           "VideoWeb.Common": "1.0.0",
           "VideoWeb.Contract": "1.0.0"
         }
