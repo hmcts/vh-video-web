@@ -15,7 +15,9 @@ describe('MediaStreamService', () => {
             video: {
                 deviceId: {
                     exact: device.deviceId
-                }
+                },
+                width: 256,
+                height: 256
             }
         } as MediaStreamConstraints;
     };
