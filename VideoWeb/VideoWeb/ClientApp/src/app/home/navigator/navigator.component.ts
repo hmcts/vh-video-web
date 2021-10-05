@@ -19,7 +19,7 @@ export class NavigatorComponent implements OnInit {
         private errorService: ErrorService,
         private deviceTypeService: DeviceTypeService,
         private configService: ConfigService
-    ) { }
+    ) {}
 
     ngOnInit() {
         this.configService
