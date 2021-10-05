@@ -1,38 +1,59 @@
+import { ElementRef } from '@angular/core';
 import { ComponentFixture, fakeAsync, flush, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
+import { ConsultationService } from 'src/app/services/api/consultation.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
     ConferenceStatus,
     ConsultationAnswer,
-    LoggedParticipantResponse,
     EndpointStatus,
+    LoggedParticipantResponse,
     ParticipantResponse,
     ParticipantStatus,
     RoomSummaryResponse
 } from 'src/app/services/clients/api-client';
-import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
+import { ClockService } from 'src/app/services/clock.service';
+import { DeviceTypeService } from 'src/app/services/device-type.service';
+import { ErrorService } from 'src/app/services/error.service';
+import { EventsService } from 'src/app/services/events.service';
+import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { UserMediaService } from 'src/app/services/user-media.service';
+import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Hearing } from 'src/app/shared/models/hearing';
+import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
+import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import {
     consultationRequestResponseMessageSubjectMock,
-    requestedConsultationMessageSubjectMock,
     endpointStatusSubjectMock,
     eventHubDisconnectSubjectMock,
     eventHubReconnectSubjectMock,
+    getParticipantsUpdatedSubjectMock,
+    hearingCountdownCompleteSubjectMock,
     hearingStatusSubjectMock,
     hearingTransferSubjectMock,
-    participantStatusSubjectMock,
-    roomUpdateSubjectMock,
-    roomTransferSubjectMock,
-    hearingCountdownCompleteSubjectMock,
     onEventsHubReadySubjectMock,
-    eventsServiceSpy,
-    getParticipantsUpdatedSubjectMock
+    participantStatusSubjectMock,
+    requestedConsultationMessageSubjectMock,
+    roomTransferSubjectMock,
+    roomUpdateSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
+
+import { Room } from '../../../shared/models/room';
+import { RoomTransfer } from '../../../shared/models/room-transfer';
+import { ConsultationInvitation, ConsultationInvitationService } from '../../services/consultation-invitation.service';
+import { NotificationSoundsService } from '../../services/notification-sounds.service';
+import { NotificationToastrService } from '../../services/notification-toastr.service';
+import { RoomClosingToastrService } from '../../services/room-closing-toast.service';
+import { VideoCallService } from '../../services/video-call.service';
 import {
     clockService,
     consultationInvitiationService,
@@ -54,33 +75,10 @@ import {
     router,
     userMediaService,
     userMediaStreamService,
-    videoWebService,
-    videoCallService
+    videoCallService,
+    videoWebService
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
-import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
-import { Room } from '../../../shared/models/room';
-import { RoomTransfer } from '../../../shared/models/room-transfer';
-import { ElementRef } from '@angular/core';
-import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
-import { ConsultationInvitation, ConsultationInvitationService } from '../../services/consultation-invitation.service';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { EventsService } from 'src/app/services/events.service';
-import { Logger } from 'src/app/services/logging/logger-base';
-import { ErrorService } from 'src/app/services/error.service';
-import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
-import { VideoCallService } from '../../services/video-call.service';
-import { DeviceTypeService } from 'src/app/services/device-type.service';
-import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { UserMediaService } from 'src/app/services/user-media.service';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
-import { NotificationSoundsService } from '../../services/notification-sounds.service';
-import { NotificationToastrService } from '../../services/notification-toastr.service';
-import { RoomClosingToastrService } from '../../services/room-closing-toast.service';
-import { ClockService } from 'src/app/services/clock.service';
-import { Participant } from 'src/app/shared/models/participant';
-import { createTrue } from 'typescript';
-import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 
 describe('WaitingRoomComponent EventHub Call', () => {
     let fixture: ComponentFixture<WRTestComponent>;
@@ -1479,120 +1477,137 @@ describe('WaitingRoomComponent EventHub Call', () => {
     describe('getParticipantsUpdated', () => {
         const testConferenceId = 'TestConferenceId';
         const testParticipant = new ParticipantResponse();
+        const testConference = new ConferenceResponse();
+        testConference.id = testConferenceId;
+        const testHearing = new Hearing(testConference);
         testParticipant.id = 'TestId';
         testParticipant.display_name = 'TestDisplayName';
-        const testParticipantMessage = new ParticipantsUpdatedMessage(testConferenceId, [testParticipant]);
 
         beforeEach(() => {
+            component.hearing = testHearing;
             component.conference.participants = [];
             spyOn(component, 'getLoggedParticipant');
         });
 
-        afterEach(() => {
-            expect(component.getLoggedParticipant).toHaveBeenCalledTimes(1);
+        describe('when is not correct conference', () => {
+            const differentConferenceId = 'DifferentConferenceId';
+            const testParticipantMessage = new ParticipantsUpdatedMessage(differentConferenceId, [testParticipant]);
+            it('should not make any changes', () => {
+                getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
+                expect(component.getLoggedParticipant).not.toHaveBeenCalled();
+                expect(notificationToastrService.showParticipantAdded).not.toHaveBeenCalled();
+                expect(component.conference.participants).toEqual([]);
+            });
         });
 
-        it('should show toast for in hearing', () => {
-            // Arrange
-            component.participant.status = ParticipantStatus.InHearing;
-
-            // Act
-            getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
-
-            // Assert
-            expect(notificationToastrService.showParticipantAdded).toHaveBeenCalledWith(testParticipant, true);
-        });
-
-        it('should show toast for in consultation', () => {
-            // Arrange
-            component.participant.status = ParticipantStatus.InConsultation;
-
-            // Act
-            getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
-
-            // Assert
-            expect(notificationToastrService.showParticipantAdded).toHaveBeenCalledWith(testParticipant, true);
-        });
-
-        it('should show toast for not in hearing or consultation', () => {
-            // Arrange
-            component.participant.status = ParticipantStatus.Available;
-
-            // Act
-            getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
-
-            // Assert
-            expect(notificationToastrService.showParticipantAdded).toHaveBeenCalledWith(testParticipant, false);
-        });
-
-        describe('when message participant already exists', () => {
-            let existingParticipant: ParticipantResponse;
-            beforeEach(() => {
-                existingParticipant = new ParticipantResponse();
-                existingParticipant.id = testParticipant.id;
-                component.conference.participants = [existingParticipant];
+        describe('when is correct conference', () => {
+            const testParticipantMessage = new ParticipantsUpdatedMessage(testConferenceId, [testParticipant]);
+            afterEach(() => {
+                expect(component.getLoggedParticipant).toHaveBeenCalledTimes(1);
             });
 
-            it('should keep current room', () => {
+            it('should show toast for in hearing', () => {
                 // Arrange
-                const existingRoom = new RoomSummaryResponse();
-                existingRoom.id = 'ExistingRoomId';
-                existingRoom.label = 'ExistingRoomLabel';
-                existingParticipant.current_room = existingRoom;
+                component.participant.status = ParticipantStatus.InHearing;
 
                 // Act
                 getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
 
                 // Assert
-                const updatedParticipant = component.conference.participants.find(x => x.id === testParticipant.id);
-                expect(updatedParticipant.display_name).toBe(testParticipant.display_name);
-                expect(updatedParticipant.current_room).toBe(existingRoom);
+                expect(notificationToastrService.showParticipantAdded).toHaveBeenCalledWith(testParticipant, true);
             });
 
-            it('should keep current status', () => {
+            it('should show toast for in consultation', () => {
                 // Arrange
-                const existingStatus = ParticipantStatus.Joining;
-                existingParticipant.status = existingStatus;
+                component.participant.status = ParticipantStatus.InConsultation;
 
                 // Act
                 getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
 
                 // Assert
-                const updatedParticipant = component.conference.participants.find(x => x.id === testParticipant.id);
-                expect(updatedParticipant.display_name).toBe(testParticipant.display_name);
-                expect(updatedParticipant.status).toBe(existingStatus);
+                expect(notificationToastrService.showParticipantAdded).toHaveBeenCalledWith(testParticipant, true);
             });
-        });
 
-        describe('when participant is new', () => {
-            it('should set current room to null if NOT already in in hearing', () => {
+            it('should show toast for not in hearing or consultation', () => {
                 // Arrange
-                const sentRoom = new RoomSummaryResponse();
-                sentRoom.id = 'SentRoomId';
-                sentRoom.label = 'SentRoomLabel';
-                testParticipant.current_room = sentRoom;
+                component.participant.status = ParticipantStatus.Available;
 
                 // Act
                 getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
 
                 // Assert
-                const updatedParticipant = component.conference.participants.find(x => x.id === testParticipant.id);
-                expect(updatedParticipant.display_name).toBe(testParticipant.display_name);
-                expect(updatedParticipant.current_room).toBeNull();
+                expect(notificationToastrService.showParticipantAdded).toHaveBeenCalledWith(testParticipant, false);
             });
 
-            it('should set status to NotSignedIn if NOT already in in hearing', () => {
-                // Arrange
-                const sentStatus = ParticipantStatus.Available;
-                testParticipant.id = 'Not available';
-                testParticipant.status = sentStatus;
-                // Act
-                getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
+            describe('when message participant already exists', () => {
+                let existingParticipant: ParticipantResponse;
+                beforeEach(() => {
+                    existingParticipant = new ParticipantResponse();
+                    existingParticipant.id = testParticipant.id;
+                    component.conference.participants = [existingParticipant];
+                });
 
-                // Assert
-                const updatedParticipant = component.conference.participants.find(x => x.id === testParticipant.id);
-                expect(updatedParticipant.display_name).toBe(testParticipant.display_name);
-                expect(updatedParticipant.status).toBe(ParticipantStatus.NotSignedIn);
+                it('should keep current room', () => {
+                    // Arrange
+                    const existingRoom = new RoomSummaryResponse();
+                    existingRoom.id = 'ExistingRoomId';
+                    existingRoom.label = 'ExistingRoomLabel';
+                    existingParticipant.current_room = existingRoom;
+
+                    // Act
+                    getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
+
+                    // Assert
+                    const updatedParticipant = component.conference.participants.find(x => x.id === testParticipant.id);
+                    expect(updatedParticipant.display_name).toBe(testParticipant.display_name);
+                    expect(updatedParticipant.current_room).toBe(existingRoom);
+                });
+
+                it('should keep current status', () => {
+                    // Arrange
+                    const existingStatus = ParticipantStatus.Joining;
+                    existingParticipant.status = existingStatus;
+
+                    // Act
+                    getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
+
+                    // Assert
+                    const updatedParticipant = component.conference.participants.find(x => x.id === testParticipant.id);
+                    expect(updatedParticipant.display_name).toBe(testParticipant.display_name);
+                    expect(updatedParticipant.status).toBe(existingStatus);
+                });
+            });
+
+            describe('when participant is new', () => {
+                it('should set current room to null if NOT already in in hearing', () => {
+                    // Arrange
+                    const sentRoom = new RoomSummaryResponse();
+                    sentRoom.id = 'SentRoomId';
+                    sentRoom.label = 'SentRoomLabel';
+                    testParticipant.current_room = sentRoom;
+
+                    // Act
+                    getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
+
+                    // Assert
+                    const updatedParticipant = component.conference.participants.find(x => x.id === testParticipant.id);
+                    expect(updatedParticipant.display_name).toBe(testParticipant.display_name);
+                    expect(updatedParticipant.current_room).toBeNull();
+                });
+
+                it('should set status to NotSignedIn if NOT already in in hearing', () => {
+                    // Arrange
+                    const sentStatus = ParticipantStatus.Available;
+                    testParticipant.id = 'Not available';
+                    testParticipant.status = sentStatus;
+                    // Act
+                    getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
+
+                    // Assert
+                    const updatedParticipant = component.conference.participants.find(x => x.id === testParticipant.id);
+                    expect(updatedParticipant.display_name).toBe(testParticipant.display_name);
+                    expect(updatedParticipant.status).toBe(ParticipantStatus.NotSignedIn);
+                });
             });
         });
     });
