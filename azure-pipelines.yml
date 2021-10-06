@@ -71,8 +71,10 @@ parameters:
         value: $(internal_event_secret)
       - name: VhServices:EnableAndroidSupport
         value: $(EnableAndroidSupport)
-      - name: VhServices:EnableIOSSupport
-        value: $(EnableIOSSupport)
+      - name: VhServices:EnableIOSMobileSupport
+        value: $(EnableIOSMobileSupport)
+      - name: VhServices:EnableIOSTabletSupport
+        value: $(EnableIOSTabletSupport)
       - name: VhServices:EnableVideoFilters
         value: $(EnableVideoFilters)
 
@@ -228,8 +230,10 @@ parameters:
         value: $(internal_event_secret)
       - name: VhServices:EnableAndroidSupport
         value: $(EnableAndroidSupport)
-      - name: VhServices:EnableIOSSupport
-        value: $(EnableIOSSupport)
+      - name: VhServices:EnableIOSMobileSupport
+        value: $(EnableIOSMobileSupport)
+      - name: VhServices:EnableIOSTabletSupport
+        value: $(EnableIOSTabletSupport)
       - name: VhServices:EnableVideoFilters
         value: $(EnableVideoFilters)
 
