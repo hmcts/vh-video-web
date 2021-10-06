@@ -338,7 +338,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         }
 
         this.videoControlService.setSpotlightStatus(
-            this.participantsService.getParticipantOrVirtualMeetingRoomById(panelModel.id),
+            this.participantsService.getParticipantOrVirtualMeetingRoomById(panelModel.id, this.participants),
             !panelModel.hasSpotlight()
         );
     }
@@ -576,6 +576,13 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     private setParticipants() {
         const combined = [...this.nonEndpointParticipants, ...this.endpointParticipants];
         combined.sort((x, z) => {
+            let currentParticipant = this.participants.find(r => r.id === z.id);
+            z.updateParticipant(
+                currentParticipant?.isMicRemoteMuted(),
+                currentParticipant?.hasHandRaised(),
+                currentParticipant?.hasSpotlight()
+            );
+            z.assignPexipId(currentParticipant?.pexipId);
             if (x.orderInTheList === z.orderInTheList) {
                 // 3 here means regular participants and should be grouped by caseTypeGroup
                 if (x.orderInTheList !== 3 || x.caseTypeGroup === z.caseTypeGroup) {
@@ -585,6 +592,10 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             }
             return x.orderInTheList > z.orderInTheList ? 1 : -1;
         });
+        console.log('Before changing to whats combined');
+        console.log(this.participants);
         this.participants = combined;
+        console.log('after changing to whats combined');
+        console.log(this.participants);
     }
 }

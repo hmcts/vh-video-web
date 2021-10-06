@@ -108,19 +108,32 @@ export class ParticipantService {
         this.initialise();
     }
 
-    getParticipantOrVirtualMeetingRoomById(participantOrVmrId: string | Guid): ParticipantModel | VirtualMeetingRoomModel {
+    getParticipantOrVirtualMeetingRoomById(
+        participantOrVmrId: string | Guid,
+        participantsFromPanel?: any
+    ): ParticipantModel | VirtualMeetingRoomModel {
         this.logger.info(`${this.loggerPrefix} getting participant or VMR by ID.`, {
             participantOrVmrId: participantOrVmrId ?? null
         });
 
         if (Guid.isGuid(participantOrVmrId)) {
-            const participant = this.participants.find(x => x.id === participantOrVmrId.toString());
-            this.logger.info(`${this.loggerPrefix} getting participant or VMR by ID - ID was a participants ID.`, {
-                participantOrVmrId: participantOrVmrId,
-                participant: participant ?? null,
-                participants: this.participants ?? null
-            });
-            return participant;
+            if (participantsFromPanel) {
+                const participant = participantsFromPanel.find(x => x.id === participantOrVmrId.toString());
+                this.logger.info(`${this.loggerPrefix} getting participant or VMR by ID - ID was a participants ID.`, {
+                    participantOrVmrId: participantOrVmrId,
+                    participant: participant ?? null,
+                    participants: participantsFromPanel ?? null
+                });
+                return participant;
+            } else {
+                const participant = this.participants.find(x => x.id === participantOrVmrId.toString());
+                this.logger.info(`${this.loggerPrefix} getting participant or VMR by ID - ID was a participants ID.`, {
+                    participantOrVmrId: participantOrVmrId,
+                    participant: participant ?? null,
+                    participants: this.participants ?? null
+                });
+                return participant;
+            }
         } else {
             const vmr = this.virtualMeetingRooms.find(x => x.id === participantOrVmrId);
             this.logger.info(`${this.loggerPrefix} getting participant or VMR by ID - ID was a VMR ID.`, {
