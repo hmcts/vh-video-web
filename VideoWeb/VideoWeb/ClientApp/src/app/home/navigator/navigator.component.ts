@@ -26,7 +26,6 @@ export class NavigatorComponent implements OnInit {
             .getClientSettings()
             .pipe(take(1))
             .subscribe(settings => {
-                console.log('settings', settings);
                 if (
                     this.deviceTypeService.isDesktop() ||
                     (this.deviceTypeService.isIOS() && this.deviceTypeService.isTablet() && settings.enable_ios_tablet_support) ||
