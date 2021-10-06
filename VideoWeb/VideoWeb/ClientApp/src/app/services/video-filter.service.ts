@@ -15,8 +15,8 @@ import { SessionStorage } from './session-storage';
 export class VideoFilterService {
     private readonly loggerPrefix = '[VideoFilterService] -';
 
-    private _canvasWidth = 640;
-    private _canvasHeight = 480;
+    private _canvasWidth = 1280;
+    private _canvasHeight = 720;
     private _enableVideoFilters: boolean;
 
     private readonly preferredFilterCache: SessionStorage<BackgroundFilter>;
@@ -106,9 +106,7 @@ export class VideoFilterService {
             return;
         }
 
-        const settings = stream.getVideoTracks()[0].getSettings();
-        this._canvasWidth = settings.width / settings.aspectRatio;
-        this._canvasHeight = settings.height / settings.aspectRatio;
+        this.updateCanvasSize(stream);
 
         this.logger.debug(`${this.loggerPrefix} initialising stream for filter`);
         this.videoElement = document.createElement('video');
@@ -131,19 +129,22 @@ export class VideoFilterService {
                     this.logger.error(`${this.loggerPrefix} failed to send image to self segmentation mask`, err);
                 }
             },
-            width: this._canvasWidth,
-            height: this._canvasHeight
+            width: 1280,
+            height: 720
         });
         camera.start();
     }
 
     updateCameraStream(stream: MediaStream) {
         this.videoElement.srcObject = stream;
-        const settings = stream.getVideoTracks()[0].getSettings();
-        this._canvasWidth = settings.width / settings.aspectRatio;
-        this._canvasHeight = settings.height / settings.aspectRatio;
         this.canvasElement.width = this._canvasWidth;
         this.canvasElement.height = this._canvasHeight;
+    }
+
+    updateCanvasSize(stream: MediaStream) {
+        const settings = stream.getVideoTracks()[0].getSettings();
+        this._canvasWidth = settings.width;
+        this._canvasHeight = settings.height;
     }
 
     startFilteredStream(): MediaStream {
