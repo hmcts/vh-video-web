@@ -15,7 +15,8 @@ namespace VideoWeb.Common.Configuration
         public string InternalEventSecret { get; set; }
         public bool EnableVideoFilters { get; set; }
         public bool EnableAndroidSupport { get; set; }
-        public bool EnableIOSSupport { get; set; }
+        public bool EnableIOSMobileSupport { get; set; }
+        public bool EnableIOSTabletSupport { get; set; }
         public int BlurRadius { get; set; }
     }
 }
