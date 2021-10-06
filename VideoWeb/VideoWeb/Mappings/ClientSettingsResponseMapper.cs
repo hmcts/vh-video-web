@@ -31,7 +31,8 @@ namespace VideoWeb.Mappings
                 VHIdpSettings = vhAdSettings,
                 EnableVideoFilters = servicesConfiguration.EnableVideoFilters,
                 EnableAndroidSupport = servicesConfiguration.EnableAndroidSupport,
-                EnableIOSSupport = servicesConfiguration.EnableIOSSupport,
+                EnableIOSMobileSupport = servicesConfiguration.EnableIOSMobileSupport,
+                EnableIOSTabletSupport = servicesConfiguration.EnableIOSTabletSupport,
                 BlurRadius = servicesConfiguration.BlurRadius
             };
         }
