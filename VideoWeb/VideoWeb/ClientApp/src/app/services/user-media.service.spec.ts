@@ -176,7 +176,7 @@ describe('UserMediaService', () => {
         }));
     });
 
-    describe('initialise', () => {
+    fdescribe('initialise', () => {
         beforeEach(() => {
             spyOn(UserMediaService.prototype, 'getCameraAndMicrophoneDevices').and.returnValue(
                 getCameraAndMicrophoneDevicesSubject.asObservable()
@@ -241,7 +241,11 @@ describe('UserMediaService', () => {
         }));
 
         it('should load default cam when there is no camera device in the cache', fakeAsync(() => {
-            localStorageServiceSpy.load.and.returnValue(null);
+            localStorageServiceSpy.load.and.callFake(function <T extends Object>(key) {
+                if (key === userMediaService.PREFERRED_CAMERA_KEY) return (null as unknown) as T;
+                if (key === userMediaService.PREFERRED_MICROPHONE_KEY) return (testData.getListOfMicrophones()[0] as unknown) as T;
+            });
+
             spyOn<any>(userMediaService, 'setActiveCamera').and.callFake(function () {});
             spyOn<any>(userMediaService, 'loadDefaultCamera').and.callThrough();
             getCameraAndMicrophoneDevicesSubject.next(testData.getListOfDevices());
@@ -251,7 +255,11 @@ describe('UserMediaService', () => {
         }));
 
         it('should load default cam when the cached device is not available', fakeAsync(() => {
-            localStorageServiceSpy.load.and.returnValue(null);
+            localStorageServiceSpy.load.and.callFake(function <T extends Object>(key) {
+                if (key === userMediaService.PREFERRED_CAMERA_KEY) return ({ deviceId: 'invalid ID' } as unknown) as T;
+                if (key === userMediaService.PREFERRED_MICROPHONE_KEY) return (testData.getListOfMicrophones()[0] as unknown) as T;
+            });
+
             spyOn<any>(userMediaService, 'setActiveCamera').and.callFake(function () {});
             spyOn<any>(userMediaService, 'loadDefaultCamera').and.callThrough();
             getCameraAndMicrophoneDevicesSubject.next(testData.getListOfDevices());
@@ -261,7 +269,11 @@ describe('UserMediaService', () => {
         }));
 
         it('should load default mic when there is no camera device in the cache', fakeAsync(() => {
-            localStorageServiceSpy.load.and.returnValue(null);
+            localStorageServiceSpy.load.and.callFake(function <T extends Object>(key) {
+                if (key === userMediaService.PREFERRED_CAMERA_KEY) return (testData.getListOfCameras()[0] as unknown) as T;
+                if (key === userMediaService.PREFERRED_MICROPHONE_KEY) return (null as unknown) as T;
+            });
+
             spyOn<any>(userMediaService, 'setActiveMicrophone').and.callFake(function () {});
             spyOn<any>(userMediaService, 'loadDefaultMicrophone').and.callThrough();
             getCameraAndMicrophoneDevicesSubject.next(testData.getListOfDevices());
@@ -271,7 +283,11 @@ describe('UserMediaService', () => {
         }));
 
         it('should load default mic when the cached device is not available', fakeAsync(() => {
-            localStorageServiceSpy.load.and.returnValue({ deviceId: 'invalid ID' } as UserMediaDevice);
+            localStorageServiceSpy.load.and.callFake(function <T extends Object>(key) {
+                if (key === userMediaService.PREFERRED_CAMERA_KEY) return (testData.getListOfCameras()[0] as unknown) as T;
+                if (key === userMediaService.PREFERRED_MICROPHONE_KEY) return ({ deviceId: 'invalid ID' } as unknown) as T;
+            });
+
             spyOn<any>(userMediaService, 'setActiveMicrophone').and.callFake(function () {});
             spyOn<any>(userMediaService, 'loadDefaultMicrophone').and.callThrough();
             getCameraAndMicrophoneDevicesSubject.next(testData.getListOfDevices());
