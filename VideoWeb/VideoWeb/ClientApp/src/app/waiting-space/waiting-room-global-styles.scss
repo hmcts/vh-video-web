@@ -164,10 +164,9 @@
 }
 
 .panel-wrapper {
-  max-width: 31.25rem;
-  width: 20vw;
+  max-width: rem(500px);
+  width: rem(256px);
   float: right;
-  min-width: 18.75rem;
   position: absolute;
   top: 4.094375rem;
   right: 0;
@@ -176,8 +175,10 @@
   background-color: #333;
   box-shadow: 0px 5px 10px 0px rgb(0 0 0 / 70%);
   box-shadow: 0px 20px 30px 0px rgb(0 0 0 / 30%);
-  @media screen and (min-width: $breakpoint-small) {
-    top: 5rem;
+  @include responds-to(small) {
+    width: rem(333px);
+    top: 0px;
+    position: relative;
   }
 }
 
@@ -199,11 +200,11 @@
   width: auto;
   max-width: rem(150px);
   font-size: rem(13px);
-  @media only screen and (min-width: $breakpoint-extra-small) {
+  @include responds-to(extra-small) {
     max-width: rem(250px);
     font-size: rem(15px);
   }
-  @media only screen and (min-width: $breakpoint-medium) {
+  @include responds-to(medium) {
     max-width: rem(350px);
   }
 }
@@ -216,7 +217,7 @@
   text-overflow: ellipsis;
   max-width: rem(400px);
 
-  @media only screen and (min-width: $breakpoint-large) {
+  @include responds-to(large) {
     max-width: rem(600px);
   }
 }
