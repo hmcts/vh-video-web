@@ -176,7 +176,7 @@ describe('UserMediaService', () => {
         }));
     });
 
-    fdescribe('initialise', () => {
+    describe('initialise', () => {
         beforeEach(() => {
             spyOn(UserMediaService.prototype, 'getCameraAndMicrophoneDevices').and.returnValue(
                 getCameraAndMicrophoneDevicesSubject.asObservable()
