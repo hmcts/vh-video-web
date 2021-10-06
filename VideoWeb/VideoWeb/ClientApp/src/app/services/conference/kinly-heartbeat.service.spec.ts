@@ -14,7 +14,7 @@ import { ConferenceService } from './conference.service';
 import { KinlyHeartbeatService } from './kinly-heartbeat.service';
 import { ParticipantService } from './participant.service';
 
-fdescribe('KinlyHeartbeatService', () => {
+describe('KinlyHeartbeatService', () => {
     const participant = new ParticipantModel(
         Guid.create().toString(),
         null,
