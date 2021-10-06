@@ -78,6 +78,7 @@ export class UserMediaService {
             this.connectedDevicesSubject.next(availableDevices);
 
             this.initialiseActiveDevicesFromCache(availableDevices);
+            this.checkActiveDevicesAreStillConnected(availableDevices);
         });
     }
 
@@ -112,6 +113,40 @@ export class UserMediaService {
         }
 
         this.setIsAudioOnly(false);
+    }
+
+    private checkActiveDevicesAreStillConnected(availableDevices: UserMediaDevice[]): void {
+        this.activeVideoDevice$.pipe(take(1)).subscribe(activeCamera =>
+            this.isDeviceStillConnected(activeCamera)
+                .pipe(
+                    take(1),
+                    filter(stillConnected => !stillConnected)
+                )
+                .subscribe(() => {
+                    this.logger.debug(`${this.loggerPrefix} camera disconnected. Attempting to set default camera to cache`, {
+                        activeCamera
+                    });
+
+                    const camera = this.loadDefaultCamera(availableDevices);
+                    this.setActiveCamera(camera);
+                })
+        );
+
+        this.activeMicrophoneDevice$.pipe(take(1)).subscribe(activeMicrophone =>
+            this.isDeviceStillConnected(activeMicrophone)
+                .pipe(
+                    take(1),
+                    filter(stillConnected => !stillConnected)
+                )
+                .subscribe(() => {
+                    this.logger.debug(`${this.loggerPrefix} microphone disconnected. Attempting to set default camera to cache`, {
+                        activeMicrophone
+                    });
+
+                    const microphone = this.loadDefaultMicrophone(availableDevices);
+                    this.setActiveMicrophone(microphone);
+                })
+        );
     }
 
     private loadDefaultCamera(availableDevices: UserMediaDevice[]): UserMediaDevice {

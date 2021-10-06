@@ -188,9 +188,11 @@ describe('UserMediaService', () => {
 
         it('should handle device change', fakeAsync(() => {
             spyOn<any>(userMediaService, 'initialiseActiveDevicesFromCache').and.callFake(function () {});
+            spyOn<any>(userMediaService, 'checkActiveDevicesAreStillConnected').and.callFake(function () {});
             getCameraAndMicrophoneDevicesSubject.next(testData.getListOfDevices());
             flush();
             expect(userMediaService['initialiseActiveDevicesFromCache']).toHaveBeenCalledWith(testData.getListOfDevices());
+            expect(userMediaService['checkActiveDevicesAreStillConnected']).toHaveBeenCalledWith(testData.getListOfDevices());
         }));
 
         it('should handle device change', fakeAsync(() => {
@@ -200,6 +202,7 @@ describe('UserMediaService', () => {
             spyOn<any>(userMediaService, 'loadDefaultMicrophone').and.callThrough();
 
             spyOn(userMediaService, 'isDeviceStillConnected').and.returnValue(of(false));
+            spyOn<any>(userMediaService, 'checkActiveDevicesAreStillConnected').and.callThrough();
 
             getCameraAndMicrophoneDevicesSubject.next(testData.getListOfDevices());
             flush();
