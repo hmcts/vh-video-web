@@ -7,7 +7,6 @@ import { ConfigService } from './api/config.service';
 import { DeviceTypeService } from './device-type.service';
 import { Logger } from './logging/logger-base';
 import { BackgroundFilter } from './models/background-filter';
-import { SessionStorage } from './session-storage';
 
 @Injectable({
     providedIn: 'root'
@@ -18,9 +17,6 @@ export class VideoFilterService {
     private _canvasWidth = 1280;
     private _canvasHeight = 720;
     private _enableVideoFilters: boolean;
-
-    private readonly preferredFilterCache: SessionStorage<BackgroundFilter>;
-    readonly PREFERRED_FILTER_KEY = 'vh.preferred.filter';
 
     private _onFilterChanged = new Subject<BackgroundFilter | null>();
     get onFilterChanged$(): Observable<BackgroundFilter | null> {
@@ -73,16 +69,9 @@ export class VideoFilterService {
                 this.blurRadius = settings.blur_radius;
             }
         });
-        this.preferredFilterCache = new SessionStorage(this.PREFERRED_FILTER_KEY);
 
-        if (!this.preferredFilterCache.get()) {
-            this.filterOn = false;
-            this.activeFilter = null;
-        } else {
-            this.activeFilter = this.preferredFilterCache.get();
-            this.filterOn = true;
-        }
-
+        this.filterOn = false;
+        this.activeFilter = null;
         this.filterOnSubject.next(this.filterOn);
 
         this.selfieSegmentation = new SelfieSegmentation({
@@ -155,13 +144,11 @@ export class VideoFilterService {
     updateFilter(filter: BackgroundFilter | null) {
         this.logger.debug(`${this.loggerPrefix} Updating filter to ${filter}`);
         if (filter) {
-            this.preferredFilterCache.set(filter);
             this.activeFilter = filter;
             this.filterOn = true;
             this.logger.debug(`${this.loggerPrefix} Filter on`);
             this._onFilterChanged.next(filter);
         } else {
-            this.preferredFilterCache.clear();
             this.activeFilter = null;
             this.filterOn = false;
             this.logger.debug(`${this.loggerPrefix} Filter off`);
