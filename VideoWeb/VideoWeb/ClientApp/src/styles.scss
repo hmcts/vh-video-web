@@ -226,3 +226,8 @@ video {
   -webkit-transform: rotateY(180deg); /* Safari and Chrome */
   -moz-transform: rotateY(180deg); /* Firefox */
 }
+
+.horizontal-spacer {
+  padding-bottom: 10px;
+  border-bottom: 2px solid govuk-colour('mid-grey');
+}
