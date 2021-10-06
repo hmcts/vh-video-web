@@ -87,8 +87,12 @@ export class UserMediaService {
 
         if (!this.activeVideoDevice) {
             let camera: UserMediaDevice = this.localStorageService.load(this.PREFERRED_CAMERA_KEY);
-            if (!camera) {
-                this.logger.debug(`${this.loggerPrefix} no camera cached. Attempting to load default camera`, { camera });
+            if (!camera || !availableDevices.find(device => device.deviceId === camera.deviceId)) {
+                this.logger.debug(
+                    `${this.loggerPrefix} no camera cached or cached camera cannot be found. Attempting to load default camera`,
+                    { camera }
+                );
+
                 camera = this.loadDefaultCamera(availableDevices);
             }
 
@@ -97,8 +101,11 @@ export class UserMediaService {
 
         if (!this.activeMicrophoneDevice) {
             let microphone: UserMediaDevice = this.localStorageService.load(this.PREFERRED_MICROPHONE_KEY);
-            if (!microphone) {
-                this.logger.debug(`${this.loggerPrefix} no microphone cached. Attempting to load default microphone`, { microphone });
+            if (!microphone || !availableDevices.find(device => device.deviceId === microphone.deviceId)) {
+                this.logger.debug(
+                    `${this.loggerPrefix} no microphone cached or cached microphone cannot be found. Attempting to load default microphone`,
+                    { microphone }
+                );
                 microphone = this.loadDefaultMicrophone(availableDevices);
             }
 
