@@ -55,9 +55,14 @@ namespace VideoWeb.Contract.Responses
         public bool EnableAndroidSupport { get; set; }
 
         /// <summary>
-        /// Enable iOS support
+        /// Enable iOS mobile support
         /// </summary>
-        public bool EnableIOSSupport { get; set; }
+        public bool EnableIOSMobileSupport { get; set; }
+        
+        /// <summary>
+        /// Enable iOS tablet support
+        /// </summary>
+        public bool EnableIOSTabletSupport { get; set; }
 
         /// <summary>
         /// Blur radius in pixels
