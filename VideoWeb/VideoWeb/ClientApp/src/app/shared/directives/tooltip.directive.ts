@@ -90,7 +90,7 @@ export class TooltipDirective implements OnDestroy {
 
     show() {
         if (this.tooltip) {
-            if (!this.deviceTypeService.isDesktop()) { 
+            if (!this.deviceTypeService.isDesktop()) {
                 setTimeout(() => {
                     this.hide();
                 }, 5000);
