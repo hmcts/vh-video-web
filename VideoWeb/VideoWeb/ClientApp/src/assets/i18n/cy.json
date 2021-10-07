@@ -267,7 +267,9 @@
     "observers": "Sylwebydd",
     "video-access-point": "Pwynt mynediad fideo ",
     "video-access-points": "Pwynt mynediad fideo",
-    "conference-status-heading": "Statws/Gweithredu"
+    "conference-status-heading": "Statws/Gweithredu",
+    "staff-member": "Aelod o staff",
+    "staff-members": "Aelodau'r staff"
   },
   "conference-status": {
     "paused": "Wedi'i atal dros dro",
@@ -603,7 +605,6 @@
     "consultation-controls": "Rheolaethau Ymgynghori",
     "show-chat-window": "Dangos y rhestr negeseuon",
     "hide-chat-window": "Cuddio’r rhestr negeseuon"
-
   },
   "judge-waiting-room": {
     "switch-to-main-screen": "Dychwelyd i'r brif sgrin",
@@ -801,7 +802,7 @@
     "unpin": "Peidio amlygu",
     "unmute": "Dadfudo",
     "admit-participant": "Gadael {{role}} i mewn",
-    "dismiss-participant" : "Gwrthod {{role}}"
+    "dismiss-participant": "Gwrthod {{role}}"
   },
   "confirm-close-hearing-popup": {
     "title": "Rydych ar fin cau'r gwrandawiad hwn",
