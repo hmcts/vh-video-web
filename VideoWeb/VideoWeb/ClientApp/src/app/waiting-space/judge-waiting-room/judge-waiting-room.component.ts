@@ -160,7 +160,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 this.participantService.onParticipantPexipIdChanged$,
                 this.participantService.onVmrConnectedToPexip$,
                 this.participantService.onVmrPexipIdChanged$
-            ).subscribe(() => this.restoreSpotlightState());
+            ).subscribe();
         });
 
         this.participantStatusChangedSubscription = this.participantService.onParticipantStatusChanged$.subscribe(participant =>
@@ -206,6 +206,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             this.videoControlService.restoreParticipantsSpotlight(vmr);
         });
     }
+
 
     private restoreSpotlightIfParticipantIsNotInAVMR(participant: ParticipantModel) {
         if (!participant.virtualMeetingRoomSummary) {

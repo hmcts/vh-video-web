@@ -576,7 +576,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     private setParticipants() {
         const combined = [...this.nonEndpointParticipants, ...this.endpointParticipants];
         combined.sort((x, z) => {
-            let currentParticipant = this.participants.find(r => r.id === z.id);
+            const currentParticipant = this.participants.find(r => r.id === z.id);
             z.updateParticipant(
                 currentParticipant?.isMicRemoteMuted(),
                 currentParticipant?.hasHandRaised(),
@@ -592,10 +592,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             }
             return x.orderInTheList > z.orderInTheList ? 1 : -1;
         });
-        console.log('Before changing to whats combined');
-        console.log(this.participants);
         this.participants = combined;
-        console.log('after changing to whats combined');
-        console.log(this.participants);
     }
 }
