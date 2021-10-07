@@ -207,7 +207,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         });
     }
 
-
     private restoreSpotlightIfParticipantIsNotInAVMR(participant: ParticipantModel) {
         if (!participant.virtualMeetingRoomSummary) {
             this.videoControlService.restoreParticipantsSpotlight(participant);
