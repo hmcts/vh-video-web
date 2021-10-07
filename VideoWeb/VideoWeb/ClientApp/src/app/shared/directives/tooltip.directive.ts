@@ -1,4 +1,5 @@
 import { Directive, ElementRef, EventEmitter, HostListener, Input, OnDestroy, Output, Renderer2 } from '@angular/core';
+import { DeviceTypeService } from 'src/app/services/device-type.service';
 
 @Directive({
     selector: '[appTooltip]'
@@ -6,6 +7,7 @@ import { Directive, ElementRef, EventEmitter, HostListener, Input, OnDestroy, Ou
 export class TooltipDirective implements OnDestroy {
     _text: string;
     _colour = 'blue';
+    _isDesktopOnly = true;
     @Input() set text(value: string) {
         this._text = value;
         if (this.tooltip) {
@@ -17,16 +19,22 @@ export class TooltipDirective implements OnDestroy {
         this._colour = value;
         this.setTooltipColour(oldColour);
     }
+    @Input() set isDesktopOnly(value: boolean) {
+        this._isDesktopOnly = value;
+    }
     @Output() tooltipShown = new EventEmitter();
 
     tooltip: HTMLElement;
 
-    constructor(private el: ElementRef, private renderer: Renderer2) {}
+    constructor(private el: ElementRef, private renderer: Renderer2, private deviceTypeService: DeviceTypeService) {}
     ngOnDestroy(): void {
         this.hide();
     }
 
     @HostListener('mouseenter', ['$event']) onMouseEnter($event: MouseEvent) {
+        if (this._isDesktopOnly && !this.deviceTypeService.isDesktop()) {
+            return;
+        }
         if (this.tooltip) {
             this.show();
             this.updatePosition($event);
@@ -82,6 +90,11 @@ export class TooltipDirective implements OnDestroy {
 
     show() {
         if (this.tooltip) {
+            if (!this.deviceTypeService.isDesktop()) {
+                setTimeout(() => {
+                    this.hide();
+                }, 5000);
+            }
             this.renderer.addClass(this.tooltip, 'vh-tooltip-show');
             this.tooltipShown.emit();
         }
