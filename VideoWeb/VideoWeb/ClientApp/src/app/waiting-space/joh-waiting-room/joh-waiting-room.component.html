@@ -9,7 +9,7 @@
     <div class="header-content-grid govuk-body">
       <div class="room-title">
         <div #roomTitleLabel class="room-title-label">{{ getCaseNameAndNumber() }}</div>
-        <div *ngIf="hasCaseNameOverflowed" class="room-title-show-more" appTooltip [text]="getCaseNameAndNumber()" colour="grey"canShowInMobile=true>
+        <div *ngIf="hasCaseNameOverflowed" class="room-title-show-more" appTooltip [text]="getCaseNameAndNumber()" colour="grey" [isDesktopOnly]=false>
           (show more)
         </div>
       </div>

@@ -7,7 +7,7 @@ import { DeviceTypeService } from 'src/app/services/device-type.service';
 export class TooltipDirective implements OnDestroy {
     _text: string;
     _colour = 'blue';
-    _canShowInMobile = false;
+    _isDesktopOnly = true;
     @Input() set text(value: string) {
         this._text = value;
         if (this.tooltip) {
@@ -19,8 +19,8 @@ export class TooltipDirective implements OnDestroy {
         this._colour = value;
         this.setTooltipColour(oldColour);
     }
-    @Input() set canShowInMobile(value: boolean) {
-        this._canShowInMobile = value;
+    @Input() set isDesktopOnly(value: boolean) {
+        this._isDesktopOnly = value;
     }
     @Output() tooltipShown = new EventEmitter();
 
@@ -32,10 +32,13 @@ export class TooltipDirective implements OnDestroy {
     }
 
     @HostListener('mouseenter', ['$event']) onMouseEnter($event: MouseEvent) {
+        if (this._isDesktopOnly || this.deviceTypeService.isDesktop()) {
+            return;
+        }
         if (this.tooltip) {
             this.show();
             this.updatePosition($event);
-        } else if (this._canShowInMobile || this.deviceTypeService.isDesktop()) {
+        } else {
             this.createAndDisplay($event);
         }
     }
@@ -67,9 +70,6 @@ export class TooltipDirective implements OnDestroy {
         this.create();
         this.updatePosition($event);
         this.show();
-        setTimeout(() => {
-            this.hide();
-        }, 5000);
     }
 
     updatePosition($event: MouseEvent) {
@@ -90,6 +90,9 @@ export class TooltipDirective implements OnDestroy {
 
     show() {
         if (this.tooltip) {
+            setTimeout(() => {
+                this.hide();
+            }, 5000);
             this.renderer.addClass(this.tooltip, 'vh-tooltip-show');
             this.tooltipShown.emit();
         }
