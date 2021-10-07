@@ -1,9 +1,11 @@
 import { ElementRef, Renderer2 } from '@angular/core';
+import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { TooltipDirective } from './tooltip.directive';
 
 describe('TooltipDirective', () => {
     let elementRef: ElementRef<HTMLDivElement>;
     let renderer2: jasmine.SpyObj<Renderer2>;
+    let deviceTypeService: jasmine.SpyObj<DeviceTypeService>;
     let directive: TooltipDirective;
     let mockElement: HTMLElement;
     let nativeElement: HTMLDivElement;
@@ -16,8 +18,10 @@ describe('TooltipDirective', () => {
         renderer2.createElement.and.returnValue(mockElement);
         renderer2.addClass.and.callFake(() => mockElement.classList.add('vh-tooltip'));
         renderer2.removeClass.and.callFake(() => mockElement.classList.remove('vh-tooltip'));
+        deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', ['isDesktop']);
+
         elementRef = new ElementRef<HTMLDivElement>(nativeElement);
-        directive = new TooltipDirective(elementRef, renderer2);
+        directive = new TooltipDirective(elementRef, renderer2, deviceTypeService);
     });
 
     it('should set tooltip text', () => {
@@ -86,12 +90,27 @@ describe('TooltipDirective', () => {
     });
 
     it('should create tooltip if not created on mouse enter', () => {
+        deviceTypeService.isDesktop.and.returnValue(true);
         directive.tooltip = undefined;
         directive.onMouseEnter(new MouseEvent('mouseenter', {}));
         expect(directive.tooltip).toBeDefined();
     });
 
+    it('should create tooltip in mobile when canShowInMobile is true', () => {
+        directive._isDesktopOnly = false;
+        directive.tooltip = undefined;
+        directive.onMouseEnter(new MouseEvent('mouseenter', {}));
+        expect(directive.tooltip).toBeDefined();
+    });
+
+    it('should not create tooltip in mobile when canShowInMobile is false', () => {
+        directive.tooltip = undefined;
+        directive.onMouseEnter(new MouseEvent('mouseenter', {}));
+        expect(directive.tooltip).not.toBeDefined();
+    });
+
     it('should show and updated tooltip if already defined on mouse enter', () => {
+        deviceTypeService.isDesktop.and.returnValue(true);
         spyOn(directive, 'show');
         spyOn(directive, 'updatePosition');
         directive.tooltip = document.createElement('span');

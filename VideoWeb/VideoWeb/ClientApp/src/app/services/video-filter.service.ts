@@ -7,7 +7,6 @@ import { ConfigService } from './api/config.service';
 import { DeviceTypeService } from './device-type.service';
 import { Logger } from './logging/logger-base';
 import { BackgroundFilter } from './models/background-filter';
-import { SessionStorage } from './session-storage';
 
 @Injectable({
     providedIn: 'root'
@@ -18,9 +17,6 @@ export class VideoFilterService {
     private _canvasWidth = 1280;
     private _canvasHeight = 720;
     private _enableVideoFilters: boolean;
-
-    private readonly preferredFilterCache: SessionStorage<BackgroundFilter>;
-    readonly PREFERRED_FILTER_KEY = 'vh.preferred.filter';
 
     private _onFilterChanged = new Subject<BackgroundFilter | null>();
     get onFilterChanged$(): Observable<BackgroundFilter | null> {
@@ -73,16 +69,9 @@ export class VideoFilterService {
                 this.blurRadius = settings.blur_radius;
             }
         });
-        this.preferredFilterCache = new SessionStorage(this.PREFERRED_FILTER_KEY);
 
-        if (!this.preferredFilterCache.get()) {
-            this.filterOn = false;
-            this.activeFilter = null;
-        } else {
-            this.activeFilter = this.preferredFilterCache.get();
-            this.filterOn = true;
-        }
-
+        this.filterOn = false;
+        this.activeFilter = null;
         this.filterOnSubject.next(this.filterOn);
 
         this.selfieSegmentation = new SelfieSegmentation({
@@ -106,8 +95,7 @@ export class VideoFilterService {
             return;
         }
 
-        this._canvasWidth = stream.getVideoTracks()[0].getSettings().width;
-        this._canvasHeight = stream.getVideoTracks()[0].getSettings().height;
+        this.updateCanvasSize(stream);
 
         this.logger.debug(`${this.loggerPrefix} initialising stream for filter`);
         this.videoElement = document.createElement('video');
@@ -130,14 +118,22 @@ export class VideoFilterService {
                     this.logger.error(`${this.loggerPrefix} failed to send image to self segmentation mask`, err);
                 }
             },
-            width: this._canvasWidth,
-            height: this._canvasHeight
+            width: 1280,
+            height: 720
         });
         camera.start();
     }
 
     updateCameraStream(stream: MediaStream) {
         this.videoElement.srcObject = stream;
+        this.canvasElement.width = this._canvasWidth;
+        this.canvasElement.height = this._canvasHeight;
+    }
+
+    updateCanvasSize(stream: MediaStream) {
+        const settings = stream.getVideoTracks()[0].getSettings();
+        this._canvasWidth = settings.width;
+        this._canvasHeight = settings.height;
     }
 
     startFilteredStream(): MediaStream {
@@ -148,13 +144,11 @@ export class VideoFilterService {
     updateFilter(filter: BackgroundFilter | null) {
         this.logger.debug(`${this.loggerPrefix} Updating filter to ${filter}`);
         if (filter) {
-            this.preferredFilterCache.set(filter);
             this.activeFilter = filter;
             this.filterOn = true;
             this.logger.debug(`${this.loggerPrefix} Filter on`);
             this._onFilterChanged.next(filter);
         } else {
-            this.preferredFilterCache.clear();
             this.activeFilter = null;
             this.filterOn = false;
             this.logger.debug(`${this.loggerPrefix} Filter off`);
@@ -214,7 +208,17 @@ export class VideoFilterService {
     private applyVirtualBackgroundEffect() {
         const imageObject = this.getImageForBackground();
         this.canvasCtx.imageSmoothingEnabled = true;
-        this.canvasCtx.drawImage(imageObject, 0, 0, this.canvasElement.width, this.canvasElement.height);
+        this.canvasCtx.drawImage(
+            imageObject,
+            0,
+            0,
+            imageObject.width,
+            imageObject.height,
+            0,
+            0,
+            this.canvasElement.width,
+            this.canvasElement.height
+        );
     }
 
     private getImageForBackground(): HTMLImageElement {
