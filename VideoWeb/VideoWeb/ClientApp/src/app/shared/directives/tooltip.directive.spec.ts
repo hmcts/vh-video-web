@@ -2,7 +2,7 @@ import { ElementRef, Renderer2 } from '@angular/core';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { TooltipDirective } from './tooltip.directive';
 
-fdescribe('TooltipDirective', () => {
+describe('TooltipDirective', () => {
     let elementRef: ElementRef<HTMLDivElement>;
     let renderer2: jasmine.SpyObj<Renderer2>;
     let deviceTypeService: jasmine.SpyObj<DeviceTypeService>;
