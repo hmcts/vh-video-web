@@ -32,7 +32,7 @@ export class TooltipDirective implements OnDestroy {
     }
 
     @HostListener('mouseenter', ['$event']) onMouseEnter($event: MouseEvent) {
-        if (this._isDesktopOnly || this.deviceTypeService.isDesktop()) {
+        if (this._isDesktopOnly && !this.deviceTypeService.isDesktop()) {
             return;
         }
         if (this.tooltip) {

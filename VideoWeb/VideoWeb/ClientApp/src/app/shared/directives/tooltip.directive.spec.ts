@@ -2,7 +2,7 @@ import { ElementRef, Renderer2 } from '@angular/core';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { TooltipDirective } from './tooltip.directive';
 
-describe('TooltipDirective', () => {
+fdescribe('TooltipDirective', () => {
     let elementRef: ElementRef<HTMLDivElement>;
     let renderer2: jasmine.SpyObj<Renderer2>;
     let deviceTypeService: jasmine.SpyObj<DeviceTypeService>;
@@ -97,7 +97,7 @@ describe('TooltipDirective', () => {
     });
 
     it('should create tooltip in mobile when canShowInMobile is true', () => {
-        directive._canShowInMobile = true;
+        directive._isDesktopOnly = false;
         directive.tooltip = undefined;
         directive.onMouseEnter(new MouseEvent('mouseenter', {}));
         expect(directive.tooltip).toBeDefined();
@@ -110,6 +110,7 @@ describe('TooltipDirective', () => {
     });
 
     it('should show and updated tooltip if already defined on mouse enter', () => {
+        deviceTypeService.isDesktop.and.returnValue(true);
         spyOn(directive, 'show');
         spyOn(directive, 'updatePosition');
         directive.tooltip = document.createElement('span');
