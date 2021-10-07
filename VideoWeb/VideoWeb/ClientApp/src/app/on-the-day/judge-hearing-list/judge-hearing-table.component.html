@@ -48,48 +48,47 @@
                             <span *ngIf="hearing.panelMembers.length > 0">
                                 <p class="govuk-!-margin-0 govuk-!-padding-0">
                                     <span id="panel-member-count-{{ hearing.id }}">
-                                        {{ hearing.panelMembers.length }} {{ hearing.panelMembers.length > 1 ?
-                                        getTranslation('panel-members') : getTranslation('panel-member') }}
+                                        {{ hearing.panelMembers.length }} {{( hearing.panelMembers.length > 1 ?
+                                        'judge-hearing-table.panel-members' : 'judge-hearing-table.panel-member') | translate }}
                                     </span>
                                 </p>
                             </span>
                             <span *ngIf="hearing.wingers.length > 0">
                                 <p class="govuk-!-margin-0 govuk-!-padding-0">
                                     <span id="winger-count-{{ hearing.id }}">
-                                        {{ hearing.wingers.length }} {{ hearing.wingers.length > 1 ?
-                                        getTranslation('wingers') : getTranslation('winger') }}
+                                        {{ hearing.wingers.length }} {{( hearing.wingers.length > 1 ?
+                                        'judge-hearing-table.wingers' : 'judge-hearing-table.winger') | translate }}
                                     </span>
                                 </p>
                             </span>
                             <span *ngIf="hearing.staffMembers.length > 0">
                                 <p class="govuk-!-margin-0 govuk-!-padding-0">
                                     <span id="staff-member-count-{{ hearing.id }}">
-                                        {{ hearing.staffMembers.length }} {{ hearing.staffMembers.length > 1 ? 
-                                        getTranslation('staff-members') : getTranslation('staff-member') }}
+                                        {{ hearing.staffMembers.length }} {{( hearing.staffMembers.length > 1 ? 
+                                        'judge-hearing-table.staff-members' : 'judge-hearing-table.staff-member') | translate }}
                                     </span>
                                 </p>
                             </span>
                             <span *ngIf="hearing.nonJudicialParticipantsExcludingObservers.length > 0">
                                 <p class="govuk-!-margin-0 govuk-!-padding-0">
                                     <span id="participant-count-{{ hearing.id }}">
-                                        {{ hearing.nonJudicialParticipantsExcludingObservers.length }} {{
+                                        {{ hearing.nonJudicialParticipantsExcludingObservers.length }} {{(
                                         hearing.nonJudicialParticipantsExcludingObservers.length > 1 ?
-                                        getTranslation('participants') : getTranslation('participant')
-                                        }}
+                                        'judge-hearing-table.participants' : 'judge-hearing-table.participant') | translate }}
                                     </span>
                                 </p>
                             </span>
                             <div *ngIf="hearing.numberOfEndpoints > 0">
                                 <span id="endpoints-count-{{ hearing.id }}">
-                                    {{ hearing.numberOfEndpoints }} {{ hearing.numberOfEndpoints > 1 ?
-                                    getTranslation('video-access-points') : getTranslation('video-access-point') }}
+                                    {{ hearing.numberOfEndpoints }} {{( hearing.numberOfEndpoints > 1 ?
+                                    'judge-hearing-table.video-access-points' : 'judge-hearing-table.video-access-point') | translate }}
                                 </span>
                             </div>
                             <span *ngIf="hearing.observers.length > 0">
                                 <p class="govuk-!-margin-0 govuk-!-padding-0">
                                     <span id="observer-count-{{ hearing.id }}">
-                                        {{ hearing.observers.length }} {{ hearing.observers.length > 1 ?
-                                        getTranslation('observers') : getTranslation('observer') }}
+                                        {{ hearing.observers.length }} {{( hearing.observers.length > 1 ?
+                                        'judge-hearing-table.observers' : 'judge-hearing-table.observer') | translate }}
                                     </span>
                                 </p>
                             </span>
