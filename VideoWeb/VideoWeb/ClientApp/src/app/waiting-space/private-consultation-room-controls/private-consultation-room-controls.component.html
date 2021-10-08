@@ -125,12 +125,12 @@
             <span class='far fa-users'></span>
         </div>
         <div class='show-for-medium-only'>
-            <button *ngIf="!isPrivateConsultation && isJudge" id="pause-hearing-landscape" class="small-button blue"
+            <button *ngIf="!isPrivateConsultation && isHost" id="pause-hearing-landscape" class="small-button blue"
                 data-module="govuk-button" (click)="pause()" type="button" [hidden]="!canCloseOrPauseHearing()">
                 {{ 'private-consultation-room-controls.pause' | translate }}
             </button>
 
-            <button *ngIf="!isPrivateConsultation && isJudge" id="end-hearing-landscape" class="small-button red"
+            <button *ngIf="!isPrivateConsultation && isHost" id="end-hearing-landscape" class="small-button red"
                 data-module="govuk-button" (click)="displayConfirmationDialog()" type="button"
                 [hidden]="!canCloseOrPauseHearing()">
                 {{ 'private-consultation-room-controls.close' | translate }}
@@ -143,7 +143,7 @@
             </button>
         </div>
         <div class="hearing-controls-desktop">
-            <div class="icon-button" id="toggle-chat-panel-desktop" appTooltip *ngIf="isJudge && !isPrivateConsultation"
+            <div class="icon-button" id="toggle-chat-panel-desktop" appTooltip *ngIf="isHost && !isPrivateConsultation"
                 [text]="'private-consultation-room-controls.chat-panel' | translate" colour="grey"
                 (click)="togglePanelStatus('Chat')">
                 <span class="far fa-comment"></span>
@@ -180,7 +180,7 @@
                 <span class="far" [class]="selfViewOpen ? 'fa-eye' : 'fa-eye-slash'"></span>
             </div>
 
-            <div class="icon-button" id="toggle-video-mute-img-desktop" appTooltip *ngIf="!isJudge && !audioOnly"
+            <div class="icon-button" id="toggle-video-mute-img-desktop" appTooltip *ngIf="!isHost && !audioOnly"
                 [text]="
             (videoMuted
             ? 'private-consultation-room-controls.video-mute-toggle-true'
@@ -189,7 +189,7 @@
                 <span class="far" [class]="videoMuted ? 'fa-video-slash' : 'fa-video'"></span>
             </div>
 
-            <div class="icon-button" id="toggle-audio-mute-img-desktop" appTooltip *ngIf="!remoteMuted || isJudge"
+            <div class="icon-button" id="toggle-audio-mute-img-desktop" appTooltip *ngIf="!remoteMuted || isHost"
                 [text]="
             (audioMuted
             ? 'private-consultation-room-controls.audio-mute-toggle-true'
@@ -199,13 +199,13 @@
             </div>
 
             <div class="icon-button" id="toggle-audio-mute-locked-img-desktop" appTooltip
-                *ngIf="remoteMuted && !isJudge" [text]="'private-consultation-room-controls.remote-muted' | translate"
+                *ngIf="remoteMuted && !isHost" [text]="'private-consultation-room-controls.remote-muted' | translate"
                 colour="grey">
                 <span class="far fa-microphone-slash red"></span>
             </div>
 
             <div class="icon-button" id="toggle-hand-raised-img-desktop" appTooltip
-                *ngIf="!isPrivateConsultation && !isJudge" [text]="
+                *ngIf="!isPrivateConsultation && !isHost" [text]="
             (handRaised
             ? 'private-consultation-room-controls.hand-raise-toggle-true'
             : 'private-consultation-room-controls.hand-raise-toggle-false') | translate" colour="grey"
@@ -213,12 +213,12 @@
                 <span class="far fa-hand-paper" [class]="{ yellow: handRaised }"></span>
             </div>
 
-            <button *ngIf="!isPrivateConsultation && isJudge" id="pause-hearing-desktop" class="small-button blue"
+            <button *ngIf="!isPrivateConsultation && isHost" id="pause-hearing-desktop" class="small-button blue"
                 data-module="govuk-button" (click)="pause()" type="button" [hidden]="!canCloseOrPauseHearing()">
                 {{ 'private-consultation-room-controls.pause' | translate }}
             </button>
 
-            <button *ngIf="!isPrivateConsultation && isJudge" id="end-hearing-desktop" class="small-button red"
+            <button *ngIf="!isPrivateConsultation && isHost" id="end-hearing-desktop" class="small-button red"
                 data-module="govuk-button" (click)="displayConfirmationDialog()" type="button"
                 [hidden]="!canCloseOrPauseHearing()">
                 {{ 'private-consultation-room-controls.close' | translate }}
@@ -251,5 +251,5 @@
     </video>
 </div>
 
-<app-confirm-close-hearing-popup *ngIf='!isPrivateConsultation && isJudge && displayConfirmPopup'
+<app-confirm-close-hearing-popup *ngIf='!isPrivateConsultation && isHost && displayConfirmPopup'
     (popupAnswered)='close($event)'></app-confirm-close-hearing-popup>

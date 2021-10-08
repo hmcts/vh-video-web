@@ -74,6 +74,10 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         return this.participant.role === Role.Judge;
     }
 
+    get isHost(): boolean {
+        return  this.participant.role === Role.Judge || this.participant.role === Role.StaffMember;
+    }
+
     get isJOHConsultation(): boolean {
         return this.participant.role === Role.JudicialOfficeHolder || this.isJudge;
     }

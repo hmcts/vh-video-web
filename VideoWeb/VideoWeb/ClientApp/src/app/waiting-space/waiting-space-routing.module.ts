@@ -26,6 +26,13 @@ const routes: Routes = [
         data: { title: 'Waiting room', backLink: new BackLinkDetails(returnToVideoHearingListText, pageUrls.JudgeHearingList) }
     },
     {
+        path: `${pageUrls.StaffMemberWaitingRoom}/:conferenceId`,
+        component: JudgeWaitingRoomComponent,
+        canActivate: [ConferenceGuard],
+        resolve: { loggedUser: LoggedUserResolveService },
+        data: { title: 'Waiting room', backLink: new BackLinkDetails(returnToVideoHearingListText, pageUrls.StaffMemberHearingList) }
+    },
+    {
         path: `${pageUrls.JOHWaitingRoom}/:conferenceId`,
         component: JohWaitingRoomComponent,
         resolve: { loggedUser: LoggedUserResolveService },

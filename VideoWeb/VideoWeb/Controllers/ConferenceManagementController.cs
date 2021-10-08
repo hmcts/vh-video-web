@@ -18,7 +18,6 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("conferences")]
-    [Authorize(AppRoles.JudgeRole)]
     public class ConferenceManagementController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
@@ -44,7 +43,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         public async Task<IActionResult> StartOrResumeVideoHearingAsync(Guid conferenceId, StartHearingRequest request)
         {
-            var validatedRequest = await ValidateUserIsJudgeAndInConference(conferenceId);
+            var validatedRequest = await ValidateUserIsHostAndInConference(conferenceId);
             if (validatedRequest != null)
             {
                 return validatedRequest;
@@ -57,10 +56,14 @@ namespace VideoWeb.Controllers
                     conferenceId,
                     () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
                 );
+                request.ParticipantsToForceTransfer = conference.Participants
+                    .Where(x => x.Username.Equals(User.Identity.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase))
+                    .Select(x => x.Id.ToString()).ToList();
 
-                request.ParticipantsToForceTransfer = conference.Participants.
-                    Where(x => x.Role == Role.Judge || x.Role == Role.StaffMember).
-                    Select(x => x.Id.ToString());
+                var inConsultation = conference.Participants
+                   .Where(x => x.Username != User.Identity.Name?.Trim())
+                    .Where(x => x.ParticipantStatus == ParticipantStatus.InConsultation)
+                    .Select(x => x.Id.ToString());
 
                 request.MuteGuests = true;
 
@@ -85,7 +88,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         public async Task<IActionResult> PauseVideoHearingAsync(Guid conferenceId)
         {
-            var validatedRequest = await ValidateUserIsJudgeAndInConference(conferenceId);
+            var validatedRequest = await ValidateUserIsHostAndInConference(conferenceId);
             if (validatedRequest != null)
             {
                 return validatedRequest;
@@ -114,7 +117,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         public async Task<IActionResult> EndVideoHearingAsync(Guid conferenceId)
         {
-            var validatedRequest = await ValidateUserIsJudgeAndInConference(conferenceId);
+            var validatedRequest = await ValidateUserIsHostAndInConference(conferenceId);
             if (validatedRequest != null)
             {
                 return validatedRequest;
@@ -228,20 +231,20 @@ namespace VideoWeb.Controllers
             return Accepted();
         }
 
-        private async Task<IActionResult> ValidateUserIsJudgeAndInConference(Guid conferenceId)
+        private async Task<IActionResult> ValidateUserIsHostAndInConference(Guid conferenceId)
         {
-            if (await IsConferenceJudge(conferenceId))
+            if (await IsConferenceHost(conferenceId))
             {
                 return null;
             }
 
-            _logger.LogWarning("Only judges may control hearings");
-            return Unauthorized("User must be a Judge");
+            _logger.LogWarning($"{AppRoles.JudgeRole} or {AppRoles.StaffMember} may control hearings.");
+            return Unauthorized($"User must be either {AppRoles.JudgeRole} or {AppRoles.StaffMember}.");
         }
 
         private async Task<IActionResult> ValidateParticipantInConference(Guid conferenceId, Guid participantId)
         {
-            var judgeValidation = await ValidateUserIsJudgeAndInConference(conferenceId);
+            var judgeValidation = await ValidateUserIsHostAndInConference(conferenceId);
             if (judgeValidation != null) return judgeValidation;
 
             if (await IsParticipantCallable(conferenceId, participantId))
@@ -249,8 +252,7 @@ namespace VideoWeb.Controllers
                 return null;
             }
 
-            _logger.LogWarning("Participant {Participant} is not a callable participant in {Conference}", participantId,
-                conferenceId);
+            _logger.LogWarning($"Participant {participantId} is not a callable participant in {conferenceId}");
             return Unauthorized("Participant is not callable");
         }
 
@@ -259,6 +261,12 @@ namespace VideoWeb.Controllers
             var conference = await GetConference(conferenceId);
             return conference.GetJudge().Username
                 .Equals(User.Identity.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        private async Task<bool> IsConferenceHost(Guid conferenceId)
+        {
+            var conference = await GetConference(conferenceId);
+            return conference.Participants.FirstOrDefault(x => x.Username.Equals(User.Identity.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase)).IsHost();
         }
 
         private async Task<bool> IsParticipantCallable(Guid conferenceId, Guid participantId)

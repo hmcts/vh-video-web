@@ -31,6 +31,11 @@ namespace VideoWeb.Common.Models
             return Role == Role.Judge;
         }
         
+        public bool IsStaffMember()
+        {
+            return Role == Role.StaffMember;
+        }
+
         public bool IsJudicialOfficeHolder()
         {
             return Role == Role.JudicialOfficeHolder;
@@ -49,6 +54,11 @@ namespace VideoWeb.Common.Models
         public bool IsCallable()
         {
             return IsWitness() || IsQuickLinkUser();
+        }
+        
+        public bool IsHost()
+        {
+            return IsJudge() || IsStaffMember();
         }
     }
 }

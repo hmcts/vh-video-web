@@ -22,6 +22,8 @@ export const pageUrls = {
     JudgeSelfTestVideo: 'judge/practice-video-hearing',
     // Staff Member
     StaffMemberHearingList: 'staff-member/hearing-list',
+    StaffMemberWaitingRoom: 'staff-member/waiting-room',
+
     // participant
     ParticipantHearingList: 'participant/hearing-list',
     ParticipantWaitingRoom: 'participant/waiting-room',
