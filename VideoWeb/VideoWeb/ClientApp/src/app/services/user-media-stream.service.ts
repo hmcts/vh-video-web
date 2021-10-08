@@ -7,6 +7,7 @@ import { UserMediaService } from './user-media.service';
 import { skip, take, takeUntil } from 'rxjs/operators';
 import { MediaStreamService } from './media-stream.service';
 import { mustProvideAMicrophoneDeviceError } from './errors/must-provide-a-microphone-device.error';
+import { AudioOnlyImageServiceService } from './audio-only-image-service.service';
 
 @Injectable({
     providedIn: 'root'
@@ -54,7 +55,12 @@ export class UserMediaStreamService {
         return this.streamModifiedSubject.asObservable();
     }
 
-    constructor(private logger: Logger, private userMediaService: UserMediaService, private mediaStreamService: MediaStreamService) {
+    constructor(
+        private logger: Logger,
+        private userMediaService: UserMediaService,
+        private mediaStreamService: MediaStreamService,
+        private audioOnlyImageService: AudioOnlyImageServiceService
+    ) {
         this.logger.debug(
             `${this.loggerPrefix} Constructor called. Attempting to get active devices from userMediaService to initialise the stream.`
         );
