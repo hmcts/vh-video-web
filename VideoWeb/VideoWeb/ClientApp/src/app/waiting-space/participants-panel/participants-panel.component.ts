@@ -337,8 +337,9 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this.videoControlService.setSpotlightStatus(
-            this.participantsService.getParticipantOrVirtualMeetingRoomById(panelModel.id, this.participants),
+        this.videoControlService.setSpotlightStatusById(
+            panelModel.id,
+            panelModel.pexipId,
             !panelModel.hasSpotlight()
         );
     }
@@ -575,14 +576,17 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     private setParticipants() {
         const combined = [...this.nonEndpointParticipants, ...this.endpointParticipants];
-        combined.sort((x, z) => {
-            const currentParticipant = this.participants.find(r => r.id === z.id);
-            z.updateParticipant(
+        combined.forEach(participant => {
+            const currentParticipant = this.participants.find(r => r.id === participant.id);
+            participant.updateParticipant(
                 currentParticipant?.isMicRemoteMuted(),
                 currentParticipant?.hasHandRaised(),
                 currentParticipant?.hasSpotlight()
             );
-            z.assignPexipId(currentParticipant?.pexipId);
+            participant.assignPexipId(currentParticipant?.pexipId);
+        });
+
+        combined.sort((x, z) => {
             if (x.orderInTheList === z.orderInTheList) {
                 // 3 here means regular participants and should be grouped by caseTypeGroup
                 if (x.orderInTheList !== 3 || x.caseTypeGroup === z.caseTypeGroup) {

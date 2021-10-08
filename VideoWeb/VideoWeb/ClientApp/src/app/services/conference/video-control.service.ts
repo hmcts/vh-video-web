@@ -21,35 +21,39 @@ export class VideoControlService {
     ) {}
 
     setSpotlightStatus(participantOrVmr: ParticipantModel | VirtualMeetingRoomModel, spotlightStatus: boolean) {
+        this.setSpotlightStatusById(participantOrVmr.id, participantOrVmr.pexipId, spotlightStatus);
+    }
+
+    setSpotlightStatusById(id: string, pexipId: string, spotlightStatus: boolean) {
         const conferenceId = this.conferenceService.currentConferenceId;
 
         this.logger.info(
-            `${this.loggerPrefix} Attempting to set spotlight status of participant in conference: ${participantOrVmr.id} in ${conferenceId}.`,
+            `${this.loggerPrefix} Attempting to set spotlight status of participant in conference: ${id} in ${conferenceId}.`,
             {
                 spotlightStatus: spotlightStatus,
                 conferenceId: this.conferenceService.currentConferenceId,
-                participantOrVmrId: participantOrVmr.id,
-                pexipId: participantOrVmr.pexipId
+                participantOrVmrId: id,
+                pexipId: pexipId
             }
         );
 
         this.videoCallService.spotlightParticipant(
-            participantOrVmr.pexipId,
+            pexipId,
             spotlightStatus,
             this.conferenceService.currentConferenceId,
-            participantOrVmr.id
+            id
         );
 
         this.logger.info(`${this.loggerPrefix} Attempted to make call to pexip to update spotlight status. Subscribing for update.`, {
             spotlightStatus: spotlightStatus,
             conferenceId: conferenceId,
-            participantId: participantOrVmr.id
+            participantId: id
         });
 
         this.videoCallService
             .onParticipantUpdated()
             .pipe(
-                filter(update => update.pexipDisplayName.includes(participantOrVmr.id)),
+                filter(update => update.pexipDisplayName.includes(id)),
                 map(update => {
                     if (update.isSpotlighted !== spotlightStatus) {
                         throw new Error('update.isSpotlighted !== spotlightStatus');
@@ -63,14 +67,14 @@ export class VideoControlService {
                             this.logger.warn(`${this.loggerPrefix} Retrying call to pexip to update spotlight status.`, {
                                 spotlightStatus: spotlightStatus,
                                 conferenceId: conferenceId,
-                                participantId: participantOrVmr.id
+                                participantId: id
                             });
 
                             this.videoCallService.spotlightParticipant(
-                                participantOrVmr.pexipId,
+                                pexipId,
                                 spotlightStatus,
                                 this.conferenceService.currentConferenceId,
-                                participantOrVmr.id
+                                id
                             );
                         })
                     )
@@ -83,10 +87,10 @@ export class VideoControlService {
                     updatedValue: update.isSpotlighted,
                     wasValueChangedPerRequest: spotlightStatus === update.isSpotlighted,
                     conferenceId: conferenceId,
-                    participantId: participantOrVmr.id
+                    participantId: id
                 });
 
-                this.videoControlCacheService.setSpotlightStatus(participantOrVmr.id, update.isSpotlighted);
+                this.videoControlCacheService.setSpotlightStatus(id, update.isSpotlighted);
             });
     }
 

@@ -178,8 +178,8 @@ export class ParticipantService {
                 .pipe(take(1))
                 .subscribe(participantsArrays => {
                     this._virtualMeetingRooms = [];
-                    this._nonEndpointParticipants = participantsArrays[0];
-                    this._endpointParticipants = participantsArrays[1];
+                    this._nonEndpointParticipants = [...participantsArrays[0]];
+                    this._endpointParticipants = [...participantsArrays[1]];
 
                     this.populateVirtualMeetingRooms();
 
@@ -285,7 +285,7 @@ export class ParticipantService {
                     map(message => message.participants.map(x => ParticipantModel.fromParticipantResponseVho(x)))
                 )
                 .subscribe(participants => {
-                    this._nonEndpointParticipants = participants;
+                    this._nonEndpointParticipants = [...participants];
                     this.participantsUpdatedSubject.next(true);
                 })
         );
