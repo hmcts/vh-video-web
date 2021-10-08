@@ -16,7 +16,7 @@ export class ParticipantPanelModel extends IndividualPanelModel {
     }
 
     get isCallableAndReadyToJoin(): boolean {
-        return this.isCallable && !this.isInHearing();
+        return this.isCallable && this.isAvailable();
     }
 
     get isCallableAndReadyToBeDismissed(): boolean {

@@ -42,6 +42,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     endpointParticipants: PanelModel[] = [];
     isMuteAll = false;
     conferenceId: string;
+    readonly idPrefix = 'participants-panel';
 
     videoCallSubscription$ = new Subscription();
     eventhubSubscription$ = new Subscription();

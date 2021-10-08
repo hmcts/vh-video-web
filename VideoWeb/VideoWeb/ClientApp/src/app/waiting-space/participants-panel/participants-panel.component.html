@@ -114,29 +114,35 @@
               </span>
             </ng-container>
           </div>
-          <div *ngIf="participant.isCallableAndReadyToJoin">
-            <span
-              *ngIf="!participant.transferringIn"
-              appTooltip
-              [text]="
-                (participant.isAvailable() ?
+          <div *ngIf="participant.isCallable" [id]="idPrefix + '-' + participant.id + '-admit-participant-controls'">
+            <ng-container *ngIf="participant.isAvailable; else participantUnavailable">
+              <span
+                *ngIf="!participant.transferringIn"
+                [id]="idPrefix + '-' + participant.id + '-admit-participant-icon'"
+                appTooltip
+                [text]="
                   (isWitness(participant) ?
-                    ('participants-panel.call-witness' | translate) :
-                    ('participants-panel.admit-participant' | translate : {role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase})
-                  ) :
-                  'participants-panel.participant-unavailable' | translate : {role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate})
-              "
-              [colour]="participant.isAvailable() ? 'green' : 'grey'"
-              class="fas icon-button"
-              [class]="{
-                'fa-megaphone': participant.isAvailable(),
-                'fa-question-circle': !participant.isAvailable(),
-                'no-click': !participant.isAvailable()
-              }"
-              (click)="callParticipantIntoHearing(participant); $event.stopPropagation()"
-            >
-            </span>
-            <div *ngIf="participant.transferringIn" class="yellow">{{ 'participants-panel.joining1' | translate }}</div>
+                      ('participants-panel.call-witness' | translate) :
+                      ('participants-panel.admit-participant' | translate : {role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase})
+                    )
+                "
+                colour="green"
+                class="fas icon-button fa-megaphone"
+                (click)="callParticipantIntoHearing(participant); $event.stopPropagation()"
+              >
+              </span>
+              <div [id]="idPrefix + '-' + participant.id + '-transferring-in-text'" *ngIf="participant.transferringIn" class="yellow">{{ 'participants-panel.joining1' | translate }}</div>
+            </ng-container>
+            <ng-template #participantUnavailable>
+              <span
+              [id]="idPrefix + '-' + participant.id + '-participant-unavailable-icon'"
+              appTooltip
+              [text]="'participants-panel.participant-unavailable' | translate : {role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate}"
+              colour="grey"
+              class="fas icon-button fa-question-circle no-click"
+              >
+              </span>
+            </ng-template>
           </div>
         </div>
 
@@ -198,9 +204,11 @@
           ></app-participant-alert>
         </div>
       </ng-template>
-    </ng-container>
+    </ng-container>    
   </div>
 </div>
 <div class="container" *ngIf="participants.length == 0">
   <h4 class="govuk-heading-s white">{{ 'participants-panel.loading-participants' | translate }}</h4>
 </div>
+
+
