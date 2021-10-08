@@ -434,11 +434,14 @@ describe('SelfTestComponent', () => {
             // Arrange
             const disconnectSpy = spyOn(component, 'disconnect');
             const callSpy = spyOn(component, 'call');
+            const stream = new MediaStream();
+            component.preferredMicrophoneStream = stream;
 
             // Act
             component.replayVideo();
 
             // Arrange
+            expect(component.preferredMicrophoneStream).toBeTruthy();
             expect(disconnectSpy).toHaveBeenCalledTimes(1);
             expect(callSpy).toHaveBeenCalledTimes(1);
         });
@@ -457,6 +460,7 @@ describe('SelfTestComponent', () => {
             expect(closeMicStreamSpy).toHaveBeenCalledTimes(1);
             expect(component.incomingStream).toBeFalsy();
             expect(component.outgoingStream).toBeFalsy();
+            expect(component.preferredMicrophoneStream).toBeUndefined();
         });
 
         it('should handle any errors and clean up', () => {
