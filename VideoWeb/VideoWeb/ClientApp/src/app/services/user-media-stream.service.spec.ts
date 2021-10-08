@@ -1,16 +1,16 @@
 import { fakeAsync, flush } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { of, ReplaySubject, Subject } from 'rxjs';
+import { of, ReplaySubject } from 'rxjs';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
 import { UserMediaDevice } from '../shared/models/user-media-device';
-import { AudioOnlyImageServiceService as AudioOnlyImageService } from './audio-only-image-service.service';
+import { AudioOnlyImageService } from './audio-only-image.service';
 import { mustProvideAMicrophoneDeviceError } from './errors/must-provide-a-microphone-device.error';
 import { Logger } from './logging/logger-base';
 import { MediaStreamService } from './media-stream.service';
 import { UserMediaStreamService } from './user-media-stream.service';
 import { UserMediaService } from './user-media.service';
 
-describe('UserMediaStreamService', () => {
+fdescribe('UserMediaStreamService', () => {
     const mediaStreamBuilder = (device: UserMediaDevice) => {
         const stream = jasmine.createSpyObj<MediaStream>(['addTrack', 'removeTrack', 'getTracks', 'getVideoTracks', 'getAudioTracks']);
         const track = jasmine.createSpyObj<MediaStreamTrack>(['stop'], ['label', 'id']);
@@ -98,6 +98,7 @@ describe('UserMediaStreamService', () => {
 
         activeCameraDeviceSubject.next(cameraOneDevice);
         activeMicrophoneDeviceSubject.next(microphoneOneDevice);
+        audioOnlyImageServiceSpy.getAudioOnlyImageStream.and.returnValue(of(audioOnlyImageStream));
         flush();
     }));
 
@@ -157,7 +158,7 @@ describe('UserMediaStreamService', () => {
 
         it('should NOT add the new tracks to the active stream from the new camera when it is audio only', fakeAsync(() => {
             // Arrange
-            const expectedNumberOfTracks = 1; // Only audio track
+            const expectedNumberOfTracks = 2; // Audio track + Audio Only Image Track
             isAudioOnlySubject.next(true);
             flush();
 
@@ -256,7 +257,7 @@ describe('UserMediaStreamService', () => {
     });
 
     describe('on is audio only changed', () => {
-        it('should emit null for the active video stream when audio only', fakeAsync(() => {
+        it('should emit the audio only image stream for the active video stream when audio only', fakeAsync(() => {
             // Act
             let stream: MediaStream | null = new MediaStream();
             sut.activeCameraStream$.subscribe(result => (stream = result));
@@ -265,7 +266,7 @@ describe('UserMediaStreamService', () => {
             flush();
 
             // Assert
-            expect(stream).toBeNull();
+            expect(stream).toBe(audioOnlyImageStream);
         }));
 
         it('should emit stream for the active video stream when NOT audio only', fakeAsync(() => {
@@ -283,7 +284,7 @@ describe('UserMediaStreamService', () => {
 
         it('should remove the existing tracks for the active video camera when audio only is true', fakeAsync(() => {
             // Arrange
-            const expectedNumberOfTracks = 1; // Only audio track
+            const expectedNumberOfTracks = 2; // Audio track + Audio Only Image Track
 
             // Act
             let currentStream: MediaStream | null = null;
@@ -296,7 +297,7 @@ describe('UserMediaStreamService', () => {
             // Assert
             cameraOneStream.getVideoTracks().forEach(track => {
                 expect(currentStream.removeTrack).toHaveBeenCalledWith(track);
-                expect(track.stop).toHaveBeenCalled();
+                expect(track.stop).not.toHaveBeenCalled();
             });
 
             const currentStreamTracks = currentStream.getTracks();
@@ -309,8 +310,6 @@ describe('UserMediaStreamService', () => {
         it('should add the tracks for the active only image stream when audio only is true', fakeAsync(() => {
             // Arrange
             const expectedNumberOfTracks = 2; // Audio track + Audio Only Image Track
-
-            audioOnlyImageServiceSpy.getAudioOnlyImageStream.and.returnValue(audioOnlyImageStream);
 
             // Act
             let currentStream: MediaStream | null = null;
@@ -377,7 +376,7 @@ describe('UserMediaStreamService', () => {
             // Assert
             audioOnlyImageStream.getVideoTracks().forEach(track => {
                 expect(currentStream.removeTrack).toHaveBeenCalledWith(track);
-                expect(track.stop).not.toHaveBeenCalled();
+                expect(track.stop).toHaveBeenCalled();
             });
 
             const currentStreamTracks = currentStream.getTracks();
