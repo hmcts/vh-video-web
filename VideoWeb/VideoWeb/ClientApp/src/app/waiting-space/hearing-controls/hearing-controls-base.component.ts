@@ -46,6 +46,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     displayConfirmPopup: boolean;
     participantSpotlightUpdateSubscription: Subscription;
     isSpotlighted: boolean;
+    showEvidenceContextMenu;
 
     private destroyedSubject = new Subject<void>();
     sharingDynamicEvidence: boolean;
@@ -64,6 +65,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.selfViewOpen = false;
         this.isSpotlighted = false;
         this.displayConfirmPopup = false;
+        this.showEvidenceContextMenu = false;
     }
 
     get canShowScreenShareButton(): boolean {
@@ -176,7 +178,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.participantSpotlightUpdateSubscription = null;
 
         if (this.sharingDynamicEvidence) {
-            this.stopScreenShareWithMicrophone();
+            this.videoCallService.stopScreenWithMicrophone()
         }
     }
 
@@ -384,18 +386,19 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     async startScreenShare() {
         await this.videoCallService.selectScreen();
         this.videoCallService.startScreenShare();
+        this.sharingDynamicEvidence = false;
     }
 
     async startScreenShareWithMicrophone() {
         await this.videoCallService.selectScreenWithMicrophone();
     }
 
-    stopScreenShareWithMicrophone() {
-        this.videoCallService.stopScreenWithMicrophone();
-    }
-
     stopScreenShare() {
-        this.videoCallService.stopScreenShare();
+        if (this.sharingDynamicEvidence) {
+            this.videoCallService.stopScreenWithMicrophone();
+        } else {
+            this.videoCallService.stopScreenShare();
+        }
     }
 
     togglePanelStatus(panelName: string) {
@@ -404,5 +407,9 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     changeDeviceSelected() {
         this.changeDeviceToggle.emit();
+    }
+
+    showShareEvidenceContextMenu() {
+        this.showEvidenceContextMenu = true;
     }
 }

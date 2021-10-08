@@ -3,7 +3,7 @@
         <div class='icon-button dropdown' id='toggle-context-menu' colour='grey'
             [class]="{ 'dropdown-opaque': showContextMenu }" (click)='showContextMenu = !showContextMenu'>
             <span class='far fa-ellipsis-h'></span>
-            <div *ngIf='showContextMenu' class='dropdown-content'>
+            <div *ngIf='showContextMenu' class='dropdown-content show'>
                     <app-context-menu-header [isPrivateConsultation]='isPrivateConsultation'></app-context-menu-header>
                 <div class='icon-button-dark' id='toggle-chat-panel' *ngIf='isJudge && !isPrivateConsultation'
                     colour='grey' (click)="togglePanelStatus('Chat')">
@@ -23,7 +23,7 @@
                             class='context-item'>{{'private-consultation-room-controls.share-my-screen' |
                             translate}}</span></span>
                 </div>
-                <div *ngIf='screenShareStream' class='icon-button-dark' id='stop-screenshare-img' colour='red'
+                <div *ngIf='screenShareStream || sharingDynamicEvidence' class='icon-button-dark' id='stop-screenshare-img' colour='red'
                     (click)='stopScreenShare()'>
                     <span class='fak fa-stop-screen-share'><span
                             class='context-item'>{{'private-consultation-room-controls.stop-sharing-my-screen' |
@@ -151,14 +151,21 @@
                     }}</span>
             </div>
 
-            <div class="icon-button" id="start-screenshare-img-desktop"
+            <div class="icon-button dropdown always-on" id="start-screenshare-img-desktop"
                 *ngIf="!screenShareStream && canShowScreenShareButton" appTooltip
                 [text]="'private-consultation-room-controls.share-my-screen' | translate" colour="grey"
-                (click)="startScreenShare()">
+                (click)="showEvidenceContextMenu = !showEvidenceContextMenu">
                 <span class="fak fa-start-screen-share"></span>
+
+                <div id="shareDropdown" class="dropdown-content" [ngClass]="{ 'show': showEvidenceContextMenu }" style="font-size:0.8em; width:240px;">
+                    <div (click)="startScreenShareWithMicrophone()"><a href="#"><i class="fad fa-play-circle" aria-hidden="true"></i><span style="margin-left:4px;">Share video or audio</span></a></div>
+                    <div (click)="startScreenShare()"><a href="#"><i class="fad fa-file-alt" aria-hidden="true"></i><span style="margin-left:4px;">Share documents</span></a></div>
+                 </div>
             </div>
 
-            <div *ngIf="screenShareStream" class="icon-button" id="stop-screenshare-img-desktop" appTooltip
+            
+
+            <div *ngIf="screenShareStream || sharingDynamicEvidence" class="icon-button" id="stop-screenshare-img-desktop" appTooltip
                 [text]="'private-consultation-room-controls.stop-sharing-my-screen' | translate" colour="red"
                 (click)="stopScreenShare()">
                 <span class="fak fa-stop-screen-share"></span>
