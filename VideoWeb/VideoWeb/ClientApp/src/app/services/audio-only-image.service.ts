@@ -12,9 +12,6 @@ export class AudioOnlyImageService {
     private audioOnlyImageStreamFps = 0;
     private audioOnlyImagePath = '/assets/images/Audio-only-BG.jpg';
 
-    /**
-     *
-     */
     constructor(private logger: Logger) {}
 
     private createAudioOnlyImageCanvas(image$: Observable<HTMLImageElement>): Observable<HTMLCanvasElement> {
