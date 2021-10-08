@@ -142,6 +142,7 @@ export class UserMediaStreamService {
                     this.audioOnlyImageStream.getTracks().forEach(track => this.currentStream.addTrack(track));
 
                     this.activeCameraStreamSubject.next(this.audioOnlyImageStream);
+                    this.streamModifiedSubject.next();
                 });
         } else {
             this.logger.debug(`${this.loggerPrefix} removing audio only image tracks.`, {
@@ -164,9 +165,8 @@ export class UserMediaStreamService {
 
             this.activeCameraStream?.getVideoTracks().forEach(track => this.currentStream.addTrack(track));
             this.activeCameraStreamSubject.next(this.activeCameraStream);
+            this.streamModifiedSubject.next();
         }
-
-        this.streamModifiedSubject.next();
 
         this.logger.info(`${this.loggerPrefix} Audio only update complete.`, {
             audioOnly: this.isAudioOnly,
