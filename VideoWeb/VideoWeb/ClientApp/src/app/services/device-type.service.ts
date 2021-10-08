@@ -50,8 +50,8 @@ export class DeviceTypeService {
         ];
         const browser = this.deviceDetectorService.browser;
         const supportedIOSBrowsers = [browsers.Safari];
-
         if (this.isIOS() && !this.isDesktop()) {
+
             return supportedIOSBrowsers.findIndex(x => x.toUpperCase() === browser.toUpperCase()) > -1;
         }
         return supportedBrowsers.findIndex(x => x.toUpperCase() === browser.toUpperCase()) > -1;

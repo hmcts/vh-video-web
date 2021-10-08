@@ -1,169 +1,75 @@
-import { DeviceDetectorService } from 'ngx-device-detector';
+import { Injectable } from '@angular/core';
+import { BROWSERS, DeviceDetectorService, OS } from 'ngx-device-detector';
 import { browsers } from '../shared/browser.constants';
-import { DeviceTypeService } from './device-type.service';
 
-describe('DeviceType', () => {
-    let service: DeviceTypeService;
-    let deviceDetectorService: jasmine.SpyObj<DeviceDetectorService>;
+@Injectable({
+    providedIn: 'root'
+})
+export class DeviceTypeService {
+    constructor(private deviceDetectorService: DeviceDetectorService) {}
 
-    beforeAll(() => {
-        deviceDetectorService = jasmine.createSpyObj<DeviceDetectorService>('DeviceDetectorService', ['isMobile', 'isTablet', 'isDesktop']);
-    });
+    isMobile(): boolean {
+        return this.deviceDetectorService.isMobile();
+    }
 
-    beforeEach(() => {
-        service = new DeviceTypeService(deviceDetectorService);
-    });
+    isTablet(): boolean {
+        return this.deviceDetectorService.isTablet();
+    }
 
-    const isMobileTestCases = [
-        { isMobile: true, expected: true },
-        { isMobile: false, expected: false }
-    ];
+    isDesktop(): boolean {
+        return this.deviceDetectorService.isDesktop();
+    }
 
-    isMobileTestCases.forEach(test => {
-        it(`should return is mobile: ${test.expected} when mobile device is ${test.isMobile}`, () => {
-            deviceDetectorService.isMobile.and.returnValue(test.isMobile);
-            expect(service.isMobile()).toBe(test.expected);
-        });
-    });
+    isIpad(): boolean {
+        return (
+            this.deviceDetectorService.isTablet() &&
+            this.isIOS() &&
+            this.deviceDetectorService.browser.toLowerCase() === BROWSERS.SAFARI.toLowerCase()
+        );
+    }
 
-    const isTabletTestCases = [
-        { isTablet: true, expected: true },
-        { isTablet: false, expected: false }
-    ];
+    isIOS(): boolean {
+        return (
+            this.deviceDetectorService.os.toLowerCase() === OS.MAC.toLowerCase() ||
+            this.deviceDetectorService.os.toLowerCase() === OS.IOS.toLowerCase()
+        );
+    }
 
-    isTabletTestCases.forEach(test => {
-        it(`should return is tablet: ${test.expected} when tablet device is ${test.isTablet}`, () => {
-            deviceDetectorService.isTablet.and.returnValue(test.isTablet);
-            expect(service.isTablet()).toBe(test.expected);
-        });
-    });
+    isAndroid(): boolean {
+        return this.deviceDetectorService.os.toLowerCase() === OS.ANDROID.toLowerCase();
+    }
 
-    const isDesktopTestCases = [
-        { isDesktop: true, expected: true },
-        { isDesktop: false, expected: false }
-    ];
+    isSupportedBrowser(): boolean {
+        const supportedBrowsers = [
+            browsers.Firefox,
+            browsers.Safari,
+            browsers.Chrome,
+            browsers.MSEdge,
+            browsers.MSEdgeChromium,
+            browsers.Samsung
+        ];
+        const browser = this.deviceDetectorService.browser;
+        const supportedIOSBrowsers = [browsers.Safari];
 
-    isDesktopTestCases.forEach(test => {
-        it(`should return is desktop: ${test.expected} when desktop device is ${test.isDesktop}`, () => {
-            deviceDetectorService.isDesktop.and.returnValue(test.isDesktop);
-            expect(service.isDesktop()).toBe(test.expected);
-        });
-    });
+        if (this.isIOS() && !this.isDesktop()) {
+            return supportedIOSBrowsers.findIndex(x => x.toUpperCase() === browser.toUpperCase()) > -1;
+        }
+        return supportedBrowsers.findIndex(x => x.toUpperCase() === browser.toUpperCase()) > -1;
+    }
 
-    const isIpadTestCases = [
-        { isTablet: true, os: 'Mac', browser: 'Safari', expected: true },
-        { isTablet: true, os: 'Mac', browser: 'Chrome', expected: false },
-        { isTablet: true, os: 'Mac', browser: 'Firefox', expected: false },
-        { isTablet: false, os: 'Mac', browser: 'Chrome', expected: false },
-        { isTablet: false, os: 'Mac', browser: 'Firefox', expected: false },
-        { isTablet: true, os: 'ios', browser: 'Safari', expected: true },
-        { isTablet: true, os: 'ios', browser: 'Chrome', expected: false },
-        { isTablet: false, os: 'Windows', browser: 'Firefox', expected: false },
-        { isTablet: false, os: 'Windows', browser: 'Chrome', expected: false },
-        { isTablet: false, os: 'Windows', browser: 'MS-Edge-Chromium', expected: false }
-    ];
+    getBrowserName(): string {
+        return this.deviceDetectorService.browser;
+    }
 
-    isIpadTestCases.forEach(test => {
-        it(`should return is iPad: ${test.expected} when tablet is ${test.isTablet}, os is ${test.os} and browser is ${test.browser}`, () => {
-            deviceDetectorService.isTablet.and.returnValue(test.isTablet);
-            deviceDetectorService.os = test.os;
-            deviceDetectorService.browser = test.browser;
+    getBrowserVersion(): string {
+        return this.deviceDetectorService.browser_version;
+    }
 
-            expect(service.isIpad()).toBe(test.expected);
-        });
-    });
+    getOSName(): string {
+        return this.deviceDetectorService.os;
+    }
 
-    it('should return the browser name', () => {
-        const testBrowser = 'Firefox';
-        deviceDetectorService.browser = testBrowser;
-        expect(service.getBrowserName()).toBe(testBrowser);
-    });
-
-    it('should return the browser version', () => {
-        const testBrowserVersion = '1.2.3.4';
-        deviceDetectorService.browser_version = testBrowserVersion;
-        expect(service.getBrowserVersion()).toBe(testBrowserVersion);
-    });
-
-    it('should return the os name', () => {
-        const testOsName = 'Mac OS';
-        deviceDetectorService.os = testOsName;
-        expect(service.getOSName()).toBe(testOsName);
-    });
-
-    it('should return the os version', () => {
-        const testOsVersion = '1.2.3.4';
-        deviceDetectorService.os_version = testOsVersion;
-        expect(service.getOSVersion()).toBe(testOsVersion);
-    });
-
-    it('should return whether the OS is iOS', () => {
-        deviceDetectorService.os = 'ios';
-        expect(service.isIOS()).toBeTrue();
-
-        deviceDetectorService.os = 'mac';
-        expect(service.isIOS()).toBeTrue();
-
-        deviceDetectorService.os = 'android';
-        expect(service.isIOS()).toBeFalse();
-    });
-
-    it('should return whether the OS is Android', () => {
-        deviceDetectorService.os = 'android';
-        expect(service.isAndroid()).toBeTrue();
-
-        deviceDetectorService.os = 'ios';
-        expect(service.isAndroid()).toBeFalse();
-    });
-
-    const isSupportedBrowserTestCases = [
-        { browser: browsers.Firefox, expected: true },
-        { browser: browsers.Safari, expected: true },
-        { browser: browsers.Chrome, expected: true },
-        { browser: browsers.MSEdge, expected: true },
-        { browser: browsers.Samsung, expected: true },
-        { browser: browsers.MSEdgeChromium, expected: true },
-        { browser: browsers.Opera, expected: false },
-        { browser: browsers.Brave, expected: false },
-        { browser: browsers.MSInternetExplorer, expected: false }
-    ];
-
-    isSupportedBrowserTestCases.forEach(test => {
-        it(`should return ${test.expected} when browser is ${test.browser}`, () => {
-            deviceDetectorService.isDesktop.and.returnValue(true);
-            deviceDetectorService.os = 'windows 10';
-            deviceDetectorService.browser = test.browser;
-            expect(service.isSupportedBrowser()).toBe(test.expected);
-        });
-    });
-
-    isSupportedBrowserTestCases.forEach(test => {
-        it(`should return ${test.expected} when browser is ${test.browser}`, () => {
-            deviceDetectorService.isDesktop.and.returnValue(true);
-            deviceDetectorService.os = 'Mac';
-            deviceDetectorService.browser = test.browser;
-            expect(service.isSupportedBrowser()).toBe(test.expected);
-        });
-    });
-
-    const isSupportedIOSBrowserTestCases = [
-        { browser: browsers.Firefox, expected: false },
-        { browser: browsers.Safari, expected: true },
-        { browser: browsers.Chrome, expected: false },
-        { browser: browsers.MSEdge, expected: false },
-        { browser: browsers.Samsung, expected: false },
-        { browser: browsers.MSEdgeChromium, expected: false },
-        { browser: browsers.Opera, expected: false },
-        { browser: browsers.Brave, expected: false },
-        { browser: browsers.MSInternetExplorer, expected: false }
-    ];
-
-    isSupportedIOSBrowserTestCases.forEach(test => {
-        it(`should return ${test.expected} when browser is ${test.browser}`, () => {
-            deviceDetectorService.isDesktop.and.returnValue(false);
-            deviceDetectorService.os = 'ios';
-            deviceDetectorService.browser = test.browser;
-            expect(service.isSupportedBrowser()).toBe(test.expected);
-        });
-    });
-});
+    getOSVersion(): string {
+        return this.deviceDetectorService.os_version;
+    }
+}
