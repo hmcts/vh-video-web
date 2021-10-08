@@ -130,6 +130,27 @@ describe('DeviceType', () => {
 
     isSupportedBrowserTestCases.forEach(test => {
         it(`should return ${test.expected} when browser is ${test.browser}`, () => {
+            deviceDetectorService.os = 'windows 10';
+            deviceDetectorService.browser = test.browser;
+            expect(service.isSupportedBrowser()).toBe(test.expected);
+        });
+    });
+
+    const isSupportedIOSBrowserTestCases = [
+        { browser: browsers.Firefox, expected: false },
+        { browser: browsers.Safari, expected: true },
+        { browser: browsers.Chrome, expected: false },
+        { browser: browsers.MSEdge, expected: false },
+        { browser: browsers.Samsung, expected: false },
+        { browser: browsers.MSEdgeChromium, expected: false },
+        { browser: browsers.Opera, expected: false },
+        { browser: browsers.Brave, expected: false },
+        { browser: browsers.MSInternetExplorer, expected: false }
+    ];
+
+    isSupportedIOSBrowserTestCases.forEach(test => {
+        it(`should return ${test.expected} when browser is ${test.browser}`, () => {
+            deviceDetectorService.os = 'ios';
             deviceDetectorService.browser = test.browser;
             expect(service.isSupportedBrowser()).toBe(test.expected);
         });
