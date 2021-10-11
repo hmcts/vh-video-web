@@ -944,19 +944,10 @@ describe('ParticipantsPanelComponent', () => {
                 let controlsElementId;
                 let controlsElement: DebugElement;
                 let testPanelModelSpy: jasmine.SpyObj<PanelModel>;
-                // let testPanelModel: ParticipantPanelModel;
                 const testId = 'testId';
-                // const testDisplayName = 'testDisplayName';
-                // const testRole = Role.Individual;
-                // const testCaseTypeGroup = 'testCaseTypeGroup';
-                // const testPexipDisplayName = 'testPexipDisplayName';
-                // const testHearingRole = 'testHearingRole';
-                // const testRepresentee = 'testRepresentee';
-                // const testStatus = ParticipantStatus = ;
 
                 beforeEach(() => {
                     spyOn(component, 'getPanelRowTooltipText').and.returnValue('testToolTipText');
-                    // testPanelModel = new ParticipantPanelModel(testId, testDisplayName, testRole, testCaseTypeGroup, testPexipDisplayName, testHearingRole, testRepresentee, testStatus);
                     testPanelModelSpy = jasmine.createSpyObj<PanelModel>(
                         'ParticipantPanelModel',
                         [
@@ -1090,8 +1081,6 @@ describe('ParticipantsPanelComponent', () => {
                                     spyOnProperty(testPanelModelSpy, 'isWitness').and.returnValue(true);
                                     fixture.detectChanges();
                                     setElementsToTest();
-                                    console.log(fixture.nativeElement);
-                                    console.log(admitParticipantIconElement.nativeElement);
 
                                     mockDirective = ngMocks.get(ngMocks.find(`#${admitParticipantIconId}`), TooltipDirective);
                                     expect(translateSpy).toHaveBeenCalledWith(witnessKey);
@@ -1201,7 +1190,6 @@ describe('ParticipantsPanelComponent', () => {
                                     spyOnProperty(testPanelModelSpy, 'transferringIn').and.returnValue(false);
                                     fixture.detectChanges();
                                     setElementsToTest();
-                                    console.log(fixture.nativeElement);
                                 });
 
                                 it('should be visible when not available and not transferring in', () => {
