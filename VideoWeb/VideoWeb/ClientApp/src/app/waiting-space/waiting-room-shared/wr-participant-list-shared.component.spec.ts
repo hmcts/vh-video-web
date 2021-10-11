@@ -266,10 +266,8 @@ describe('WaitingRoom ParticipantList Base', () => {
         expect(component.canInvite).toBe(true);
     });
     it('should be allowed to invite if the logged in user is a Staff Member', () => {
-        const indivUser = conference.participants.find(x => x.role === Role.StaffMember);
-        indivUser.linked_participants = [{} as any];
-        indivUser.current_room = new RoomSummaryResponse({ label: 'JudgeJOHCourtRoom' });
-        component.loggedInUser.participant_id = indivUser.id;
+        const staffMember = conference.participants.find(x => x.role === Role.StaffMember);
+        component.loggedInUser.participant_id = staffMember.id;
         component.loggedInUser.role = Role.StaffMember;
         component.conference = conference;
         expect(component.canInvite).toBe(true);
