@@ -229,8 +229,9 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
 
     get canInvite(): boolean {
         const isJudicialUser = this.loggedInUser.role === Role.Judge || this.loggedInUser.role === Role.JudicialOfficeHolder;
+        const isStaffMember = this.loggedInUser.role === Role.StaffMember;
 
-        if (isJudicialUser) {
+        if (isJudicialUser || isStaffMember) {
             return true;
         } else {
             const loggedInParticipant = this.conference.participants.find(x => x.id === this.loggedInUser.participant_id);
