@@ -38,7 +38,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 new StartHearingRequest {Layout = HearingLayout.Dynamic});
             var typedResult = (UnauthorizedObjectResult) result;
             typedResult.Should().NotBeNull();
-            typedResult.Value.Should().Be("User must be a Judge");
+            typedResult.Value.Should().Be("User must be either Judge or StaffMember.");
 
             VideoApiClientMock.Verify(
                 x => x.StartOrResumeVideoHearingAsync(TestConference.Id,
@@ -58,7 +58,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 new StartHearingRequest {Layout = HearingLayout.Dynamic});
             var typedResult = (UnauthorizedObjectResult) result;
             typedResult.Should().NotBeNull();
-            typedResult.Value.Should().Be("User must be a Judge");
+            typedResult.Value.Should().Be("User must be either Judge or StaffMember.");
 
             VideoApiClientMock.Verify(
                 x => x.StartOrResumeVideoHearingAsync(TestConference.Id, It.IsAny<StartHearingRequest>()), Times.Never);
@@ -113,14 +113,16 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         public async Task should_send_all_judges_and_staff_members_in_conference_as_participants_to_transfer()
         {
             var participant = TestConference.GetJudge();
-            var expectedParticipantsToForceTransfer = TestConference.Participants
-                .Where(x => x.Role == Role.Judge || x.Role == Role.StaffMember).Select(x => x.Id.ToString());
+           
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(participant.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
-            
+
+            var expectedParticipantsToForceTransfer = TestConference.Participants
+               .Where(x => x.Username.Equals(user.Identity?.Name)).Select(x => x.Id.ToString());
+
             // ConferenceCache is mocked in the base class for these tests...
-            
+
             Controller = SetupControllerWithClaims(user);
 
             var result = await Controller.StartOrResumeVideoHearingAsync(TestConference.Id,
