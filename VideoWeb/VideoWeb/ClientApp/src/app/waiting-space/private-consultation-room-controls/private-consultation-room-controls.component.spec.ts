@@ -75,11 +75,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     beforeEach(() => {
         translateService.instant.calls.reset();
 
-        participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
-            'ParticipantService',
-            [],
-            ['loggedInParticipant$']
-        );
+        participantServiceSpy = jasmine.createSpyObj<ParticipantService>('ParticipantService', [], ['loggedInParticipant$']);
 
         userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>([], ['isAudioOnly$']);
         isAudioOnlySubject = new Subject<boolean>();

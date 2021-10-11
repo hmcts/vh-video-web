@@ -37,12 +37,7 @@ export class VideoControlService {
             }
         );
 
-        this.videoCallService.spotlightParticipant(
-            pexipId,
-            spotlightStatus,
-            this.conferenceService.currentConferenceId,
-            id
-        );
+        this.videoCallService.spotlightParticipant(pexipId, spotlightStatus, this.conferenceService.currentConferenceId, id);
 
         this.logger.info(`${this.loggerPrefix} Attempted to make call to pexip to update spotlight status. Subscribing for update.`, {
             spotlightStatus: spotlightStatus,

@@ -76,7 +76,10 @@ describe('ParticipantsPanelComponent', () => {
         jasmine.getEnv().allowRespy(false);
     });
     beforeEach(() => {
-        videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', ['setSpotlightStatus']);
+        videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', [
+            'setSpotlightStatus',
+            'setSpotlightStatusById'
+        ]);
 
         participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
             'ParticipantService',
@@ -439,21 +442,17 @@ describe('ParticipantsPanelComponent', () => {
     });
 
     describe('toggleSpotlightParticipant', () => {
-        //it('should call video control service set spotlight status', () => {
-        //    // Arrange
-        //    const panelModel = component.participants[1];
-        //    panelModel.updateParticipant(false, false, false);
-//
-        //    const participantModel = new ParticipantModel('', '', '', null, null, null, null, false, null, null);
-//
-        //    participantServiceSpy.getParticipantOrVirtualMeetingRoomById.and.returnValue(participantModel);
-//
-        //    // Act
-        //    component.toggleSpotlightParticipant(panelModel);
-//
-        //    // Assert
-        //    expect(videoControlServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(participantModel, true);
-        //});
+        it('should call video control service set spotlight status', () => {
+            // Arrange
+            const panelModel = component.participants[1];
+            panelModel.updateParticipant(false, false, false);
+
+            // Act
+            component.toggleSpotlightParticipant(panelModel);
+
+            // Assert
+            expect(videoControlServiceSpy.setSpotlightStatusById).toHaveBeenCalled();
+        });
 
         it('should NOT call video control service set spotlight status if the participant cannot be found', () => {
             // Arrange
@@ -468,7 +467,7 @@ describe('ParticipantsPanelComponent', () => {
             component.toggleSpotlightParticipant(participant);
 
             // Assert
-            expect(videoControlServiceSpy.setSpotlightStatus).not.toHaveBeenCalled();
+            expect(videoControlServiceSpy.setSpotlightStatusById).not.toHaveBeenCalled();
         });
     });
 

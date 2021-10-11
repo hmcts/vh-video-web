@@ -1234,5 +1234,5 @@ describe('ParticipantService', () => {
             // Assert
             expect(result).toBeNull();
         }));
-    });    
+    });
 });
