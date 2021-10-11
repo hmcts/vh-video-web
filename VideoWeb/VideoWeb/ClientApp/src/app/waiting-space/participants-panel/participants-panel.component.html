@@ -114,7 +114,7 @@
               </span>
             </ng-container>
           </div>
-          <div *ngIf="participant.isCallable" [id]="idPrefix + '-' + participant.id + '-admit-participant-controls'">
+          <div *ngIf="participant.isCallable && !participant.isInHearing()" [id]="idPrefix + '-' + participant.id + '-admit-participant-controls'">
             <ng-container *ngIf="participant.isAvailable(); else participantUnavailable">
               <span
                 *ngIf="!participant.transferringIn"

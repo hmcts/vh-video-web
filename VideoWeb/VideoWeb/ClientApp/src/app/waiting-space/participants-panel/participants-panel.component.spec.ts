@@ -985,18 +985,31 @@ describe('ParticipantsPanelComponent', () => {
                         controlsElement = fixture.debugElement.query(By.css(`#${controlsElementId}`));
                     });
 
-                    describe('when not callable', () => {
-                        beforeEach(() => {
-                            spyOnProperty(testPanelModelSpy, 'isCallable').and.returnValue(false);
+                    describe('when should not be visible', () => {
+                        afterEach(() => {
                             fixture.detectChanges();
                             controlsElement = fixture.debugElement.query(By.css(`#${controlsElementId}`));
                         });
 
-                        it('should not display', () => {
+                        it('should not display when not callable and not in hearing', () => {
+                            spyOnProperty(testPanelModelSpy, 'isCallable').and.returnValue(false);
+                            spyOn(testPanelModelSpy, 'isInHearing').and.returnValue(false);
+                            expect(controlsElement).toBeFalsy();
+                        });
+
+                        it('should not display when not callable and in hearing', () => {
+                            spyOnProperty(testPanelModelSpy, 'isCallable').and.returnValue(false);
+                            spyOn(testPanelModelSpy, 'isInHearing').and.returnValue(true);
+                            expect(controlsElement).toBeFalsy();
+                        });
+
+                        it('should not display when callable and in hearing', () => {
+                            spyOnProperty(testPanelModelSpy, 'isCallable').and.returnValue(true);
+                            spyOn(testPanelModelSpy, 'isInHearing').and.returnValue(true);
                             expect(controlsElement).toBeFalsy();
                         });
                     });
-                    describe('when callable', () => {
+                    describe('when callable and not in hearing', () => {
                         let admitParticipantIconId;
                         let transferingInTextId;
                         let participantUnavailableIconId;
@@ -1016,6 +1029,7 @@ describe('ParticipantsPanelComponent', () => {
                             participantUnavailableIconId = idPrefix + '-participant-unavailable-icon';
 
                             spyOnProperty(testPanelModelSpy, 'isCallable').and.returnValue(true);
+                            spyOn(testPanelModelSpy, 'isInHearing').and.returnValue(false);
                             fixture.detectChanges();
                             controlsElement = fixture.debugElement.query(By.css(`#${controlsElementId}`));
                         });
