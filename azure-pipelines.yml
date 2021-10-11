@@ -264,6 +264,14 @@ pr:
     include:
       - master
 
+schedules:
+- cron: "0 0 14,28 * *"
+  displayName: Fortnightly ci build
+  always: true
+  branches:
+    include:
+    - master
+  
 resources:
   repositories:
     - repository: templates
