@@ -22,7 +22,12 @@ import {
 } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
-import { onParticipantUpdatedMock, videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
+import {
+    onParticipantUpdatedMock,
+    onVideoEvidenceSharedMock,
+    onVideoEvidenceStoppedMock,
+    videoCallServiceSpy
+} from 'src/app/testing/mocks/mock-video-call.service';
 import { HearingRole } from '../models/hearing-role-model';
 import { ParticipantUpdated } from '../models/video-call-models';
 import { PrivateConsultationRoomControlsComponent } from '../private-consultation-room-controls/private-consultation-room-controls.component';
@@ -55,6 +60,9 @@ describe('HearingControlsBaseComponent', () => {
     const videoCallService = videoCallServiceSpy;
     const onParticipantUpdatedSubject = onParticipantUpdatedMock;
     const translateService = translateServiceSpy;
+
+    const dynamicScreenShareStartedSubject = onVideoEvidenceSharedMock;
+    const dynamicScreenShareStoppedSubject = onVideoEvidenceStoppedMock;
 
     const deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', ['isDesktop']);
 
@@ -215,6 +223,39 @@ describe('HearingControlsBaseComponent', () => {
             // Assert
             expect(component.isSpotlighted).toBeFalse();
         }));
+    });
+
+    describe('onVideoEvidenceSharing', () => {
+        it('should set sharingDynamicEvidence to true when video evidence sharing has started', fakeAsync(() => {
+            component.sharingDynamicEvidence = false;
+            dynamicScreenShareStartedSubject.next();
+
+            flush();
+
+            expect(component.sharingDynamicEvidence).toBeTrue();
+        }));
+
+        it('should set sharingDynamicEvidence to true when video evidence sharing has stopped', fakeAsync(() => {
+            component.sharingDynamicEvidence = true;
+            dynamicScreenShareStoppedSubject.next();
+
+            flush();
+
+            expect(component.sharingDynamicEvidence).toBeFalse();
+        }));
+
+        it('should trigger screen with micrphone selection when dynamic evidence sharing is started', async () => {
+            await component.startScreenShareWithMicrophone();
+            expect(videoCallService.selectScreenWithMicrophone).toHaveBeenCalled();
+        });
+
+        it('should stop screen share with micrphone when sharingDynamicEvidence is true and screenshare has been stopped', () => {
+            component.sharingDynamicEvidence = true;
+
+            component.stopScreenShare();
+
+            expect(videoCallService.stopScreenWithMicrophone).toHaveBeenCalled();
+        });
     });
 
     it('should open self-view by default for judge', () => {
@@ -673,5 +714,13 @@ describe('HearingControlsBaseComponent', () => {
         spyOn(component.changeDeviceToggle, 'emit');
         component.changeDeviceSelected();
         expect(component.changeDeviceToggle.emit).toHaveBeenCalled();
+    });
+
+    it('should stop screen sharing with microphone when evidence is still shared whilst the component is destroyed', () => {
+        component.sharingDynamicEvidence = true;
+
+        component.ngOnDestroy();
+
+        expect(videoCallService.stopScreenWithMicrophone).toHaveBeenCalled();
     });
 });

@@ -7,7 +7,7 @@ import { ApiClient, HearingLayout, SharedParticipantRoom, StartHearingRequest } 
 import { KinlyHeartbeatService } from 'src/app/services/conference/kinly-heartbeat.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
-import { StreamMixer } from 'src/app/services/stream-mixer.service';
+import { StreamMixerService } from 'src/app/services/stream-mixer.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import {
@@ -66,7 +66,8 @@ export class VideoCallService {
         private apiClient: ApiClient,
         private configService: ConfigService,
         private kinlyHeartbeatService: KinlyHeartbeatService,
-        private videoCallEventsService: VideoCallEventsService
+        private videoCallEventsService: VideoCallEventsService,
+        private streamMixerService: StreamMixerService
     ) {
         this.preferredLayoutCache = new SessionStorage(this.PREFERRED_LAYOUT_KEY);
 
@@ -406,9 +407,8 @@ export class VideoCallService {
         this.logger.info(`${this.loggerPrefix} mixing screen and microphone stream`);
         const displayStream = await this.userMediaService.selectScreenToShare();
         this.userMediaStreamService.activeMicrophoneStream$.pipe(take(1)).subscribe(micStream => {
-            const mixStream = new StreamMixer().mergeAudioStreams(displayStream, micStream);
+            const mixStream = this.streamMixerService.mergeAudioStreams(displayStream, micStream);
             mixStream.addTrack(displayStream.getVideoTracks()[0]);
-
             // capture when the user stops screen sharing via the browser instead of the control menu
             mixStream.getVideoTracks()[0].addEventListener('ended', () => {
                 this.stopScreenWithMicrophone();

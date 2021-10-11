@@ -408,8 +408,4 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     changeDeviceSelected() {
         this.changeDeviceToggle.emit();
     }
-
-    showShareEvidenceContextMenu() {
-        this.showEvidenceContextMenu = true;
-    }
 }
