@@ -620,7 +620,9 @@
     "hearing-controls": "Hearing controls",
     "consultation-controls": "Consultation controls",
     "show-chat-window": "Show messages list",
-    "hide-chat-window": "Hide messages list"
+    "hide-chat-window": "Hide messages list",
+    "share-video-evidence": "Share video or audio",
+    "share-document-evidence": "Share documents"
   },
   "chat-panel": {
     "heading": "VH Officer messages",

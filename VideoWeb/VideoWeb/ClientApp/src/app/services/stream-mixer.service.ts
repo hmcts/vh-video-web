@@ -3,7 +3,8 @@ export class StreamMixer {
         const audioContext = new AudioContext();
         const destination = audioContext.createMediaStreamDestination();
 
-        streams.forEach(s => {
+        const streamsWithAudio = streams.filter(s => s.getAudioTracks().length);
+        streamsWithAudio.forEach(s => {
             const stream = new MediaStream();
             stream.addTrack(s.getAudioTracks()[0]);
             const streamSource = audioContext.createMediaStreamSource(stream);

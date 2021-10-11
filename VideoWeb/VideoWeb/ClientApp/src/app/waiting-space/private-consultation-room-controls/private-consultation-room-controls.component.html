@@ -157,9 +157,9 @@
                 (click)="showEvidenceContextMenu = !showEvidenceContextMenu">
                 <span class="fak fa-start-screen-share"></span>
 
-                <div id="shareDropdown" class="dropdown-content" [ngClass]="{ 'show': showEvidenceContextMenu }" style="font-size:0.8em; width:240px;">
-                    <div (click)="startScreenShareWithMicrophone()"><a href="#"><i class="fad fa-play-circle" aria-hidden="true"></i><span style="margin-left:4px;">Share video or audio</span></a></div>
-                    <div (click)="startScreenShare()"><a href="#"><i class="fad fa-file-alt" aria-hidden="true"></i><span style="margin-left:4px;">Share documents</span></a></div>
+                <div id="shareDropdown" class="dropdown-content govuk-!-padding-0" [ngClass]="{ 'show': showEvidenceContextMenu }">
+                    <div (click)="startScreenShareWithMicrophone()"><span class="action"><i class="fad fa-play-circle" aria-hidden="true"></i><span style="margin-left:4px;">{{ 'private-consultation-room-controls.share-video-evidence' | translate }}</span></span></div>
+                    <div (click)="startScreenShare()"><span class="action"><i class="fad fa-file-alt" aria-hidden="true"></i><span style="margin-left:4px;">{{ 'private-consultation-room-controls.share-document-evidence' | translate }}</span></span></div>
                  </div>
             </div>
 

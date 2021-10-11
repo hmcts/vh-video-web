@@ -160,14 +160,14 @@
   z-index: 999;
 }
 
-.dropdown-content a {
+.dropdown-content .action {
   color: govuk-colour('black');
   padding: 8px 12px;
   text-decoration: none;
   display: block;
 }
 
-.dropdown-content a:hover {
+.dropdown-content .action:hover {
   background-color: govuk-colour('green');
   color: govuk-colour('white');
 }
