@@ -788,6 +788,7 @@
     "grey": "llwyd",
     "call-witness": "Galw'r tyst",
     "participant-unavailable": "Nid yw'r {{role}} ar gael",
+    "admit-participant": "Gadael {{role}} i mewn",
     "participant-available": "As gael",
     "joining1": "Yn ymuno...",
     "for": ""
