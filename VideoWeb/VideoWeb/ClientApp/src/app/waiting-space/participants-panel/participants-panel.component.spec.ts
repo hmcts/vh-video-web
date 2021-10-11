@@ -959,7 +959,15 @@ describe('ParticipantsPanelComponent', () => {
                     // testPanelModel = new ParticipantPanelModel(testId, testDisplayName, testRole, testCaseTypeGroup, testPexipDisplayName, testHearingRole, testRepresentee, testStatus);
                     testPanelModelSpy = jasmine.createSpyObj<PanelModel>(
                         'ParticipantPanelModel',
-                        ['isDisconnected', 'isAvailable', 'isInHearing', 'hasSpotlight', 'hasHandRaised', 'isLocalCameraOff'],
+                        [
+                            'isDisconnected',
+                            'isAvailable',
+                            'isInHearing',
+                            'hasSpotlight',
+                            'hasHandRaised',
+                            'isLocalCameraOff',
+                            'isMicRemoteMuted'
+                        ],
                         ['id', 'isCallable', 'transferringIn', 'isWitness']
                     );
                     spyOnProperty(testPanelModelSpy, 'id').and.returnValue(testId);
