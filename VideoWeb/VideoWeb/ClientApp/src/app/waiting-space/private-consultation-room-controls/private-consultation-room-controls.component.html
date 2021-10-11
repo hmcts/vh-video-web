@@ -4,8 +4,7 @@
             [class]="{ 'dropdown-opaque': showContextMenu }" (click)='showContextMenu = !showContextMenu'>
             <span class='far fa-ellipsis-h'></span>
             <div *ngIf='showContextMenu' class='dropdown-content'>
-                <div *ngif="!isPrivateConsultation" class="govuk-heading-s horizontal-spacer">{{'private-consultation-room-controls.hearing-controls' |
-                    translate}}</div>
+                    <app-context-menu-header [isPrivateConsultation]='isPrivateConsultation'></app-context-menu-header>
                 <div class='icon-button-dark' id='toggle-chat-panel' *ngIf='isJudge && !isPrivateConsultation'
                     colour='grey' (click)="togglePanelStatus('Chat')">
                     <span class='far fa-comment'>

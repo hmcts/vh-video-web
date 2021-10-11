@@ -21,7 +21,8 @@ describe('NavigatorComponent', () => {
     beforeAll(() => {
         clientSettingsResponse = new ClientSettingsResponse({
             enable_android_support: true,
-            enable_ios_support: true
+            enable_ios_tablet_support: true,
+            enable_ios_mobile_support: true
         });
 
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
@@ -73,11 +74,27 @@ describe('NavigatorComponent', () => {
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.Unauthorised]);
     });
 
-    it('should navigate to hearing list if ios is supported and is on ios device', fakeAsync(() => {
+    it('should navigate to hearing list if ios is supported and is on ios mobile device', fakeAsync(() => {
         const profile = new UserProfileResponse({ role: Role.Individual });
         deviceTypeServiceSpy.isDesktop.and.returnValue(false);
         deviceTypeServiceSpy.isIOS.and.returnValue(true);
-        clientSettingsResponse.enable_ios_support = true;
+        deviceTypeServiceSpy.isMobile.and.returnValue(true);
+        clientSettingsResponse.enable_ios_mobile_support = true;
+        configServiceSpy.getClientSettings.and.returnValue(of(clientSettingsResponse));
+        profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
+        spyOn(component, 'navigateToHearingList');
+
+        component.ngOnInit();
+        tick();
+
+        expect(component.navigateToHearingList).toHaveBeenCalledWith(profile);
+    }));
+    it('should navigate to hearing list if ios is supported and is on ios tablet device', fakeAsync(() => {
+        const profile = new UserProfileResponse({ role: Role.Individual });
+        deviceTypeServiceSpy.isDesktop.and.returnValue(false);
+        deviceTypeServiceSpy.isIOS.and.returnValue(true);
+        deviceTypeServiceSpy.isTablet.and.returnValue(true);
+        clientSettingsResponse.enable_ios_tablet_support = true;
         configServiceSpy.getClientSettings.and.returnValue(of(clientSettingsResponse));
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         spyOn(component, 'navigateToHearingList');
@@ -88,10 +105,16 @@ describe('NavigatorComponent', () => {
         expect(component.navigateToHearingList).toHaveBeenCalledWith(profile);
     }));
 
-    it('should navigate to unsupported device if ios is not supported and is on ios device', fakeAsync(() => {
+    it('should navigate to unsupported device if ios is not supported and is on ios mobile device', fakeAsync(() => {
+        const clientSettings = new ClientSettingsResponse({
+            enable_android_support: false,
+            enable_ios_tablet_support: false,
+            enable_ios_mobile_support: false
+        });
         deviceTypeServiceSpy.isDesktop.and.returnValue(false);
         deviceTypeServiceSpy.isIOS.and.returnValue(true);
-        clientSettingsResponse.enable_ios_support = false;
+        deviceTypeServiceSpy.isMobile.and.returnValue(true);
+        configServiceSpy.getClientSettings.and.returnValue(of(clientSettings));
 
         component.ngOnInit();
         tick();
@@ -103,8 +126,12 @@ describe('NavigatorComponent', () => {
         const profile = new UserProfileResponse({ role: Role.Individual });
         deviceTypeServiceSpy.isDesktop.and.returnValue(false);
         deviceTypeServiceSpy.isAndroid.and.returnValue(true);
-        clientSettingsResponse.enable_android_support = true;
-        configServiceSpy.getClientSettings.and.returnValue(of(clientSettingsResponse));
+        const clientSettings = new ClientSettingsResponse({
+            enable_android_support: true,
+            enable_ios_tablet_support: false,
+            enable_ios_mobile_support: false
+        });
+        configServiceSpy.getClientSettings.and.returnValue(of(clientSettings));
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         spyOn(component, 'navigateToHearingList');
 
@@ -117,18 +144,35 @@ describe('NavigatorComponent', () => {
     it('should navigate to unsupported device if android is not supported and is on android device', fakeAsync(() => {
         deviceTypeServiceSpy.isDesktop.and.returnValue(false);
         deviceTypeServiceSpy.isAndroid.and.returnValue(true);
-        clientSettingsResponse.enable_android_support = false;
+        const clientSettings = new ClientSettingsResponse({
+            enable_android_support: false,
+            enable_ios_tablet_support: false,
+            enable_ios_mobile_support: false
+        });
+        configServiceSpy.getClientSettings.and.returnValue(of(clientSettings));
 
         component.ngOnInit();
         tick();
 
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.UnsupportedDevice]);
     }));
+    it('should redirect to the unsupported device page when the enable_android_support toggle off for an android mobile and tablet', fakeAsync(() => {
+        // Arrange
+        clientSettingsResponse.enable_android_support = false;
+        deviceTypeServiceSpy.isAndroid.and.returnValue(true);
+        configServiceSpy.getClientSettings.and.returnValue(of(clientSettingsResponse));
 
+        // Act
+        component.ngOnInit();
+        tick();
+        // Assert
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.UnsupportedDevice]);
+    }));
     it('should redirect to unsupported device screen if on a mobile device and is not supported', () => {
         deviceTypeServiceSpy.isDesktop.and.returnValue(false);
         clientSettingsResponse.enable_android_support = false;
-        clientSettingsResponse.enable_ios_support = false;
+        clientSettingsResponse.enable_ios_mobile_support = false;
+        configServiceSpy.getClientSettings.and.returnValue(of(clientSettingsResponse));
 
         component.ngOnInit();
 

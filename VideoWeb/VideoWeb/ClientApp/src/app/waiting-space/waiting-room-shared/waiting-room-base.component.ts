@@ -32,6 +32,7 @@ import { ParticipantStatusMessage } from 'src/app/services/models/participant-st
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
+import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { Room } from 'src/app/shared/models/room';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { HearingRole } from '../models/hearing-role-model';
@@ -455,26 +456,7 @@ export abstract class WaitingRoomBaseDirective {
 
         this.eventHubSubscription$.add(
             this.eventService.getParticipantsUpdated().subscribe(async participantsUpdatedMessage => {
-                this.logger.debug(`[WR] - Participants Updated`, participantsUpdatedMessage.participants);
-                const newParticipants = participantsUpdatedMessage.participants.filter(
-                    x => !this.conference.participants.find(y => y.id === x.id)
-                );
-                newParticipants.forEach(participant => {
-                    this.logger.debug(`[WR] - Participant added, showing notification`, participant);
-                    this.notificationToastrService.showParticipantAdded(
-                        participant,
-                        this.participant.status === ParticipantStatus.InHearing ||
-                            this.participant.status === ParticipantStatus.InConsultation
-                    );
-                });
-
-                this.conference.participants = [...participantsUpdatedMessage.participants].map(participant => {
-                    const currentParticipant = this.conference.participants.find(x => x.id === participant.id);
-                    participant.current_room = currentParticipant ? currentParticipant.current_room : null;
-                    participant.status = currentParticipant ? currentParticipant.status : ParticipantStatus.NotSignedIn;
-                    return participant;
-                });
-                this.participant = this.getLoggedParticipant();
+                this.handleParticipantsUpdatedMessage(participantsUpdatedMessage);
             })
         );
     }
@@ -976,6 +958,31 @@ export abstract class WaitingRoomBaseDirective {
         this.toggleVideoStreamMute(false);
     }
 
+    private handleParticipantsUpdatedMessage(participantsUpdatedMessage: ParticipantsUpdatedMessage) {
+        this.logger.debug(`[WR] - Participants updated message recieved`, participantsUpdatedMessage.participants);
+
+        if (!this.validateIsForConference(participantsUpdatedMessage.conferenceId)) {
+            return;
+        }
+
+        const newParticipants = participantsUpdatedMessage.participants.filter(x => !this.conference.participants.find(y => y.id === x.id));
+
+        newParticipants.forEach(participant => {
+            this.logger.debug(`[WR] - Participant added, showing notification`, participant);
+            this.notificationToastrService.showParticipantAdded(
+                participant,
+                this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
+            );
+        });
+
+        this.conference.participants = [...participantsUpdatedMessage.participants].map(participant => {
+            const currentParticipant = this.conference.participants.find(x => x.id === participant.id);
+            participant.current_room = currentParticipant ? currentParticipant.current_room : null;
+            participant.status = currentParticipant ? currentParticipant.status : ParticipantStatus.NotSignedIn;
+            return participant;
+        });
+        this.participant = this.getLoggedParticipant();
+    }
     protected validateIsForConference(conferenceId: string): boolean {
         if (conferenceId !== this.hearing.id) {
             this.logger.info(`${this.loggerPrefix} message not for current conference`);

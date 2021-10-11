@@ -8,7 +8,7 @@ import { SupportedBrowserModel } from './SupportedBrowserModel';
 })
 export class UnsupportedBrowserComponent {
     supportedBrowsers: SupportedBrowserModel[] = [
-        new SupportedBrowserModel('Chrome', 'Chrome for Windows, Mac, Android phone, Android tablet, iPhone and iPad'),
+        new SupportedBrowserModel('Chrome', 'Chrome for Windows, Mac, Android phone, Android tablet'),
         new SupportedBrowserModel('Firefox', 'Firefox for Windows and Mac'),
         new SupportedBrowserModel('Safari', 'Safari for Mac, iPhone and iPad'),
         new SupportedBrowserModel('Edge Chromium', 'Edge for Windows'),
