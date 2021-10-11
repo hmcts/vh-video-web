@@ -966,7 +966,8 @@ describe('ParticipantsPanelComponent', () => {
                             'hasSpotlight',
                             'hasHandRaised',
                             'isLocalCameraOff',
-                            'isMicRemoteMuted'
+                            'isMicRemoteMuted',
+                            'isLocalMicMuted'
                         ],
                         ['id', 'isCallable', 'transferringIn', 'isWitness']
                     );
