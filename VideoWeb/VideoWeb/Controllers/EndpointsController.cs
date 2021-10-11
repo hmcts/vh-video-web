@@ -41,6 +41,7 @@ namespace VideoWeb.Controllers
         [HttpGet("{conferenceId}/participants")]
         [SwaggerOperation(OperationId = "GetVideoEndpointsForConference")]
         [ProducesResponseType(typeof(List<VideoEndpointResponse>), (int)HttpStatusCode.OK)]
+        [Authorize("Host")]
         public async Task<IActionResult> GetVideoEndpointsForConferenceAsync(Guid conferenceId)
         {
             try

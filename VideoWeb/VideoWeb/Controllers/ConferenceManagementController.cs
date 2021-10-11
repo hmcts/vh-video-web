@@ -18,6 +18,7 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("conferences")]
+    [Authorize("Host")]
     public class ConferenceManagementController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
@@ -56,14 +57,10 @@ namespace VideoWeb.Controllers
                     conferenceId,
                     () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
                 );
+ 
                 request.ParticipantsToForceTransfer = conference.Participants
                     .Where(x => x.Username.Equals(User.Identity.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase))
                     .Select(x => x.Id.ToString()).ToList();
-
-                var inConsultation = conference.Participants
-                   .Where(x => x.Username != User.Identity.Name?.Trim())
-                    .Where(x => x.ParticipantStatus == ParticipantStatus.InConsultation)
-                    .Select(x => x.Id.ToString());
 
                 request.MuteGuests = true;
 

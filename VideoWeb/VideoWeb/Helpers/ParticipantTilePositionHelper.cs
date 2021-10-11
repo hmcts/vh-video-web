@@ -26,7 +26,8 @@ namespace VideoWeb.Helpers
             {
                 prefix = "JUDGE";
                 heartbeatMode = Heartbeat;
-            } else if (participant.Role == Role.StaffMember)
+            } 
+            else if (participant.Role == Role.StaffMember)
             {
                 prefix = "CLERK";
                 heartbeatMode = Heartbeat;
