@@ -430,13 +430,12 @@ describe('SelfTestComponent', () => {
     });
 
     describe('replayVideo', () => {
-        it('should disconnect and reconnect', () => {
+        it('should disconnect and reconnect', fakeAsync(() => {
             // Arrange
             const disconnectSpy = spyOn(component, 'disconnect');
             const callSpy = spyOn(component, 'call');
             const stream = new MediaStream();
             component.preferredMicrophoneStream = null;
-            
 
             // Act
             component.replayVideo();
@@ -447,19 +446,7 @@ describe('SelfTestComponent', () => {
             expect(component.preferredMicrophoneStream).toBe(stream);
             expect(disconnectSpy).toHaveBeenCalledTimes(1);
             expect(callSpy).toHaveBeenCalledTimes(1);
-            const disconnectSpy = spyOn(component, 'disconnect');
-            const callSpy = spyOn(component, 'call');
-            const stream = new MediaStream();
-            component.preferredMicrophoneStream = stream;
-
-            // Act
-            component.replayVideo();
-
-            // Arrange
-            expect(component.preferredMicrophoneStream).toBeTruthy();
-            expect(disconnectSpy).toHaveBeenCalledTimes(1);
-            expect(callSpy).toHaveBeenCalledTimes(1);
-        });
+        }));
     });
 
     describe('disconnect', () => {

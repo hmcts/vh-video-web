@@ -254,7 +254,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         this.disconnect();
 
         this.userMediaStreamService.activeMicrophoneStream$
-            .pipe(takeUntil(this.destroyedSubject))
+            .pipe(take(1))
             .subscribe(micStream => (this.preferredMicrophoneStream = micStream));
 
         this.call();
