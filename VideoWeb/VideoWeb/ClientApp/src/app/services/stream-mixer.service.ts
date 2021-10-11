@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class StreamMixerService {
     mergeAudioStreams(...streams: MediaStream[]) {
         const audioContext = new AudioContext();
