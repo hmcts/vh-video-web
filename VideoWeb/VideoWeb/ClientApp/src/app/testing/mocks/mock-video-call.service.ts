@@ -80,7 +80,9 @@ videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>(
         'retrieveWitnessInterpreterRoom',
         'retrieveJudicialRoom',
         'onVideoEvidenceShared',
-        'onVideoEvidenceStopped'
+        'onVideoEvidenceStopped',
+        'selectScreenWithMicrophone',
+        'stopScreenWithMicrophone'
     ],
     {
         pexipAPI: pexipApiMock

@@ -604,7 +604,9 @@
     "hearing-controls": "Rheolyddion y gwrandawiad",
     "consultation-controls": "Rheolaethau Ymgynghori",
     "show-chat-window": "Dangos y rhestr negeseuon",
-    "hide-chat-window": "Cuddio’r rhestr negeseuon"
+    "hide-chat-window": "Cuddio’r rhestr negeseuon",
+    "share-video-evidence": "Share video or audio",
+    "share-document-evidence": "Share documents"
   },
   "judge-waiting-room": {
     "switch-to-main-screen": "Dychwelyd i'r brif sgrin",
