@@ -39,7 +39,6 @@ import { ParticipantsPanelComponent } from './participants-panel.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { VideoControlService } from 'src/app/services/conference/video-control.service';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
-import { ParticipantModel } from 'src/app/shared/models/participant';
 import { CaseTypeGroup } from '../models/case-type-group';
 import { Subject } from 'rxjs';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
@@ -100,7 +99,6 @@ describe('ParticipantsPanelComponent', () => {
             videoControlServiceSpy,
             eventService,
             logger,
-            participantServiceSpy,
             translateService,
             participantPanelModelMapperSpy
         );
