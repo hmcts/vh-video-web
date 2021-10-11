@@ -108,43 +108,6 @@ export class ParticipantService {
         this.initialise();
     }
 
-    getParticipantOrVirtualMeetingRoomById(
-        participantOrVmrId: string | Guid,
-        participantsFromPanel?: any
-    ): ParticipantModel | VirtualMeetingRoomModel {
-        this.logger.info(`${this.loggerPrefix} getting participant or VMR by ID.`, {
-            participantOrVmrId: participantOrVmrId ?? null
-        });
-
-        if (Guid.isGuid(participantOrVmrId)) {
-            if (participantsFromPanel) {
-                const participant = participantsFromPanel.find(x => x.id === participantOrVmrId.toString());
-                this.logger.info(`${this.loggerPrefix} getting participant or VMR by ID - ID was a participants ID.`, {
-                    participantOrVmrId: participantOrVmrId,
-                    participant: participant ?? null,
-                    participants: participantsFromPanel ?? null
-                });
-                return participant;
-            } else {
-                const participant = this.participants.find(x => x.id === participantOrVmrId.toString());
-                this.logger.info(`${this.loggerPrefix} getting participant or VMR by ID - ID was a participants ID.`, {
-                    participantOrVmrId: participantOrVmrId,
-                    participant: participant ?? null,
-                    participants: this.participants ?? null
-                });
-                return participant;
-            }
-        } else {
-            const vmr = this.virtualMeetingRooms.find(x => x.id === participantOrVmrId);
-            this.logger.info(`${this.loggerPrefix} getting participant or VMR by ID - ID was a VMR ID.`, {
-                participantOrVmrId: participantOrVmrId,
-                virtualMeetingRoom: vmr ?? null,
-                virtualMeetingRooms: this.virtualMeetingRooms ?? null
-            });
-            return vmr;
-        }
-    }
-
     getPexipIdForParticipant(participantId: Guid | string): string {
         return this.participants.find(p => p.id === participantId?.toString())?.pexipId ?? null;
     }

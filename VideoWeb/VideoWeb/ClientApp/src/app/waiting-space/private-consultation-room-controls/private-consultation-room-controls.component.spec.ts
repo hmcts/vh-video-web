@@ -77,7 +77,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
         participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
             'ParticipantService',
-            ['getParticipantOrVirtualMeetingRoomById'],
+            [],
             ['loggedInParticipant$']
         );
 

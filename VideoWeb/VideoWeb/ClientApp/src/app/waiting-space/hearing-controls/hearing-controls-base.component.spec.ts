@@ -72,7 +72,7 @@ describe('HearingControlsBaseComponent', () => {
 
         participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
             'ParticipantService',
-            ['getParticipantOrVirtualMeetingRoomById'],
+            [],
             ['loggedInParticipant$', 'onParticipantSpotlightStatusChanged$']
         );
         const loggedInParticipantSubject = new BehaviorSubject<ParticipantModel>(

@@ -160,7 +160,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 this.participantService.onParticipantPexipIdChanged$,
                 this.participantService.onVmrConnectedToPexip$,
                 this.participantService.onVmrPexipIdChanged$
-            ).subscribe();
+            ).subscribe(() => this.restoreSpotlightState());
         });
 
         this.participantStatusChangedSubscription = this.participantService.onParticipantStatusChanged$.subscribe(participant =>
