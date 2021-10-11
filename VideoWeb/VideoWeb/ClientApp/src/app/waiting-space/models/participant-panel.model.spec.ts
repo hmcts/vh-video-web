@@ -148,15 +148,15 @@ describe('ParticipantPanelModel', () => {
 
         describe('isCallableAndReadyToJoin', () => {
             const testCases = [
-                { isCallable: false, isInHearing: false, expectation: false },
-                { isCallable: true, isInHearing: false, expectation: true },
-                { isCallable: false, isInHearing: true, expectation: false },
-                { isCallable: true, isInHearing: true, expectation: false }
+                { isCallable: false, isAvailable: false, expectation: false },
+                { isCallable: true, isAvailable: true, expectation: true },
+                { isCallable: false, isAvailable: true, expectation: false },
+                { isCallable: true, isAvailable: false, expectation: false }
             ];
             testCases.forEach(testCase => {
-                it(`should return ${testCase.expectation} when isCallable is ${testCase.isCallable} and isInHearing is ${testCase.isInHearing}`, () => {
+                it(`should return ${testCase.expectation} when isCallable is ${testCase.isCallable} and isInHearing is ${testCase.isAvailable}`, () => {
                     spyOnProperty(model, 'isCallable').and.returnValue(testCase.isCallable);
-                    spyOn(model, 'isInHearing').and.returnValue(testCase.isInHearing);
+                    spyOn(model, 'isAvailable').and.returnValue(testCase.isAvailable);
                     expect(model.isCallableAndReadyToJoin).toBe(testCase.expectation);
                 });
             });

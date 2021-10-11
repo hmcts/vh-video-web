@@ -115,13 +115,13 @@
             </ng-container>
           </div>
           <div *ngIf="participant.isCallable" [id]="idPrefix + '-' + participant.id + '-admit-participant-controls'">
-            <ng-container *ngIf="participant.isAvailable; else participantUnavailable">
+            <ng-container *ngIf="participant.isAvailable(); else participantUnavailable">
               <span
                 *ngIf="!participant.transferringIn"
                 [id]="idPrefix + '-' + participant.id + '-admit-participant-icon'"
                 appTooltip
                 [text]="
-                  (isWitness(participant) ?
+                  (participant.isWitness ?
                       ('participants-panel.call-witness' | translate) :
                       ('participants-panel.admit-participant' | translate : {role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase})
                     )

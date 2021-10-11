@@ -46,7 +46,7 @@ import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-u
 import { PanelModel } from '../models/panel-model-base';
 import { JudgeContextMenuComponent } from '../judge-context-menu/judge-context-menu.component';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { MockPipe } from 'ng-mocks';
+import { MockComponent, MockDirective, MockPipe, ngMocks } from 'ng-mocks';
 import { HyphenatePipe } from 'src/app/shared/pipes/hyphenate.pipe';
 import { LowerCasePipe } from '@angular/common';
 import { VideoCallService } from '../services/video-call.service';
@@ -55,8 +55,10 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { MultilinePipe } from 'src/app/shared/pipes/multiline.pipe';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
+import { TooltipDirective } from 'src/app/shared/directives/tooltip.directive';
+import { ParticipantAlertComponent } from '../participant-alert/participant-alert.component';
 
-fdescribe('ParticipantsPanelComponent', () => {
+describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
     const conferenceId = '1111-1111-1111';
     let participants = testData.getListOfParticipants();
@@ -114,6 +116,9 @@ fdescribe('ParticipantsPanelComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [
                 ParticipantsPanelComponent,
+                MockComponent(JudgeContextMenuComponent),
+                MockComponent(ParticipantAlertComponent),
+                MockDirective(TooltipDirective),
                 MockPipe(TranslatePipe, translateSpy),
                 MockPipe(HyphenatePipe, hyphenateSpy),
                 MockPipe(LowerCasePipe, lowerCaseSpy),
@@ -932,7 +937,7 @@ fdescribe('ParticipantsPanelComponent', () => {
         });
     });
 
-    fdescribe('UI tests', () => {
+    describe('UI tests', () => {
         describe('Participant panels', () => {
             describe('Admit participant controls', () => {
                 let idPrefix;
@@ -955,7 +960,7 @@ fdescribe('ParticipantsPanelComponent', () => {
                     testPanelModelSpy = jasmine.createSpyObj<PanelModel>(
                         'ParticipantPanelModel',
                         ['isDisconnected', 'isAvailable', 'isInHearing', 'hasSpotlight', 'hasHandRaised'],
-                        ['id', 'isCallable', 'transferringIn']
+                        ['id', 'isCallable', 'transferringIn', 'isWitness']
                     );
                     spyOnProperty(testPanelModelSpy, 'id').and.returnValue(testId);
 
@@ -992,21 +997,24 @@ fdescribe('ParticipantsPanelComponent', () => {
                         });
                     });
                     describe('when callable', () => {
-                        const admitParticipantIconId = idPrefix + '-admit-participant-icon';
-                        const transferingInTextId = idPrefix + '-transferring-in-text';
-                        const participantUnavailableIconId = idPrefix + '-participant-unavailable-icon';
+                        let admitParticipantIconId;
+                        let transferingInTextId;
+                        let participantUnavailableIconId;
+
                         let admitParticipantIconElement;
                         let transferingInTextElement;
-                        let participantUnavailableIcontransferingInTextElement;
+                        let participantUnavailableIconElement;
                         function setElementsToTest() {
                             admitParticipantIconElement = fixture.debugElement.query(By.css(`#${admitParticipantIconId}`));
                             transferingInTextElement = fixture.debugElement.query(By.css(`#${transferingInTextId}`));
-                            participantUnavailableIcontransferingInTextElement = fixture.debugElement.query(
-                                By.css(`#${participantUnavailableIconId}`)
-                            );
+                            participantUnavailableIconElement = fixture.debugElement.query(By.css(`#${participantUnavailableIconId}`));
                         }
 
                         beforeEach(() => {
+                            admitParticipantIconId = idPrefix + '-admit-participant-icon';
+                            transferingInTextId = idPrefix + '-transferring-in-text';
+                            participantUnavailableIconId = idPrefix + '-participant-unavailable-icon';
+
                             spyOnProperty(testPanelModelSpy, 'isCallable').and.returnValue(true);
                             fixture.detectChanges();
                             controlsElement = fixture.debugElement.query(By.css(`#${controlsElementId}`));
@@ -1018,6 +1026,7 @@ fdescribe('ParticipantsPanelComponent', () => {
                         describe('admitParticipantIconElement', () => {
                             describe('not visisble,', () => {
                                 afterEach(() => {
+                                    fixture.detectChanges();
                                     setElementsToTest();
                                     expect(admitParticipantIconElement).toBeFalsy();
                                 });
@@ -1037,15 +1046,75 @@ fdescribe('ParticipantsPanelComponent', () => {
                                 });
                             });
                             describe('visisble,', () => {
+                                let mockDirective: TooltipDirective;
+
                                 beforeEach(() => {
                                     spyOn(testPanelModelSpy, 'isAvailable').and.returnValue(true);
                                     spyOnProperty(testPanelModelSpy, 'transferringIn').and.returnValue(false);
-                                    fixture.detectChanges();
-                                    setElementsToTest();
                                 });
 
                                 it('should be visible when available and not joining', () => {
+                                    fixture.detectChanges();
+                                    setElementsToTest();
                                     expect(admitParticipantIconElement).toBeTruthy();
+                                });
+
+                                it('should display call witness when role is Witness', () => {
+                                    const witnessKey = 'participants-panel.call-witness';
+                                    const translatedValue = 'translated';
+                                    translateSpy.withArgs(witnessKey).and.returnValue(translatedValue);
+
+                                    spyOnProperty(testPanelModelSpy, 'isWitness').and.returnValue(true);
+                                    fixture.detectChanges();
+                                    setElementsToTest();
+                                    console.log(fixture.nativeElement);
+                                    console.log(admitParticipantIconElement.nativeElement);
+
+                                    mockDirective = ngMocks.get(ngMocks.find(`#${admitParticipantIconId}`), TooltipDirective);
+                                    expect(translateSpy).toHaveBeenCalledWith(witnessKey);
+                                    expect(mockDirective.text.trim()).toEqual(translatedValue);
+                                });
+
+                                it('should display call participant when role is not witness', () => {
+                                    const participantKey = 'participants-panel.admit-participant';
+                                    const admitParticipantTranslated = 'Admit participant translated';
+
+                                    const testHearingRole = 'Test hearing role';
+                                    const testHearingRoleHyphenated = 'test-hearing-role-hyphenated';
+                                    const testHearingRoleHyphenatedWithPrefix = `hearing-role.${testHearingRoleHyphenated}`;
+                                    const testHearingRoleTranslated = 'Test hearing role translated';
+                                    const testHearingRoleTranslatedLowercase = 'test hearing role translated lower case';
+
+                                    hyphenateSpy.withArgs(testHearingRole).and.returnValue(testHearingRoleHyphenated);
+                                    translateSpy.withArgs(testHearingRoleHyphenatedWithPrefix).and.returnValue(testHearingRoleTranslated);
+                                    lowerCaseSpy.withArgs(testHearingRoleTranslated).and.returnValue(testHearingRoleTranslatedLowercase);
+                                    translateSpy
+                                        .withArgs(participantKey, { role: testHearingRoleTranslatedLowercase })
+                                        .and.returnValue(admitParticipantTranslated);
+
+                                    spyOnProperty(testPanelModelSpy, 'isWitness').and.returnValue(false);
+                                    testPanelModelSpy.hearingRole = testHearingRole;
+
+                                    fixture.detectChanges();
+                                    setElementsToTest();
+
+                                    mockDirective = ngMocks.get(ngMocks.find(`#${admitParticipantIconId}`), TooltipDirective);
+                                    expect(hyphenateSpy).toHaveBeenCalledWith(testHearingRole);
+                                    expect(translateSpy).toHaveBeenCalledWith(testHearingRoleHyphenatedWithPrefix);
+                                    expect(lowerCaseSpy).toHaveBeenCalledWith(testHearingRoleTranslated);
+                                    expect(translateSpy).toHaveBeenCalledWith(participantKey, {
+                                        role: testHearingRoleTranslatedLowercase
+                                    });
+                                    expect(mockDirective.text.trim()).toEqual(admitParticipantTranslated);
+                                });
+
+                                it('should call participant when clicked', () => {
+                                    fixture.detectChanges();
+                                    setElementsToTest();
+                                    const callParticipantIntoHearingSpy = spyOn(component, 'callParticipantIntoHearing');
+                                    admitParticipantIconElement.nativeElement.click();
+                                    expect(callParticipantIntoHearingSpy).toHaveBeenCalledTimes(1);
+                                    expect(callParticipantIntoHearingSpy).toHaveBeenCalledWith(testPanelModelSpy);
                                 });
                             });
                         });
@@ -1053,6 +1122,7 @@ fdescribe('ParticipantsPanelComponent', () => {
                         describe('transferringInElement', () => {
                             describe('not visisble,', () => {
                                 afterEach(() => {
+                                    fixture.detectChanges();
                                     setElementsToTest();
                                     expect(transferingInTextElement).toBeFalsy();
                                 });
@@ -1084,26 +1154,45 @@ fdescribe('ParticipantsPanelComponent', () => {
                                 });
                             });
                         });
-                        // describe('when available', () => {
-                        //     beforeEach(() => {
-                        //         spyOnProperty(testPanelModelSpy, 'isAvailable').and.returnValue(true);
-                        //         fixture.detectChanges();
-                        //         setElementsToTest();
-                        //     });
-                        //     describe('when not joining', () => {
-                        //         beforeEach(() => {
-                        //             spyOnProperty(testPanelModelSpy, 'isAvailable').and.returnValue(true);
-                        //             fixture.detectChanges();
-                        //             setElementsToTest();
-                        //         });
 
-                        //     it('admitParticipantIcon should be visible', () => {
-                        //         expect(admitParticipantIconElement).toBeTruthy();
-                        //     });
+                        describe('unavailableIconElement', () => {
+                            describe('not visisble,', () => {
+                                afterEach(() => {
+                                    fixture.detectChanges();
+                                    setElementsToTest();
+                                    expect(participantUnavailableIconElement).toBeFalsy();
+                                });
+                                it('should not be visible when available and not transferring in', () => {
+                                    spyOn(testPanelModelSpy, 'isAvailable').and.returnValue(true);
+                                    spyOnProperty(testPanelModelSpy, 'transferringIn').and.returnValue(false);
+                                });
 
-                        //     it('transferingInText should be visible', () => {
-                        //         expect(admitParticipantIconElement).toBeTruthy();
-                        //     })
+                                it('should not be visible when available and transferring in', () => {
+                                    spyOn(testPanelModelSpy, 'isAvailable').and.returnValue(true);
+                                    spyOnProperty(testPanelModelSpy, 'transferringIn').and.returnValue(true);
+                                });
+                            });
+                            describe('visisble,', () => {
+                                beforeEach(() => {
+                                    spyOn(testPanelModelSpy, 'isAvailable').and.returnValue(false);
+                                    spyOnProperty(testPanelModelSpy, 'transferringIn').and.returnValue(false);
+                                    fixture.detectChanges();
+                                    setElementsToTest();
+                                    console.log(fixture.nativeElement);
+                                });
+
+                                it('should be visible when not available and not transferring in', () => {
+                                    expect(participantUnavailableIconElement).toBeTruthy();
+                                });
+
+                                it('should be visible when not available and transferring in', () => {
+                                    spyOnProperty(testPanelModelSpy, 'transferringIn').and.returnValue(true);
+                                    fixture.detectChanges();
+                                    setElementsToTest();
+                                    expect(participantUnavailableIconElement).toBeTruthy();
+                                });
+                            });
+                        });
                     });
                 });
             });
