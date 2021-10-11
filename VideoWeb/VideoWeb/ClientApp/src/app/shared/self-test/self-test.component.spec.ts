@@ -435,6 +435,21 @@ describe('SelfTestComponent', () => {
             const disconnectSpy = spyOn(component, 'disconnect');
             const callSpy = spyOn(component, 'call');
             const stream = new MediaStream();
+            component.preferredMicrophoneStream = null;
+            
+
+            // Act
+            component.replayVideo();
+            activateMicrophoneSubject.next(stream);
+            flush();
+
+            // Assert
+            expect(component.preferredMicrophoneStream).toBe(stream);
+            expect(disconnectSpy).toHaveBeenCalledTimes(1);
+            expect(callSpy).toHaveBeenCalledTimes(1);
+            const disconnectSpy = spyOn(component, 'disconnect');
+            const callSpy = spyOn(component, 'call');
+            const stream = new MediaStream();
             component.preferredMicrophoneStream = stream;
 
             // Act
