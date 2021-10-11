@@ -4,7 +4,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ParticipantResponse } from 'src/app/services/clients/api-client';
-import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { VideoControlService } from 'src/app/services/conference/video-control.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -56,7 +55,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private videoControlService: VideoControlService,
         private eventService: EventsService,
         private logger: Logger,
-        private participantsService: ParticipantService,
         protected translateService: TranslateService,
         private mapper: ParticipantPanelModelMapper
     ) {}
