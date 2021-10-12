@@ -631,7 +631,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         component.updateShowVideo();
 
         expect(component.conference.participants.find(p => p.role === Role.Judge).status).toBe(ParticipantStatus.Available);
-        expect(component.conferenceStartedBy).toBe(undefined);
+        expect(component.conferenceStartedBy).toBe(null);
     }));
 
     it('should not pull the STAFFMEMBER in to the hearing when STAFFMEMBER is in Waiting Room and hearing started by the JUDGE', () => {
@@ -644,7 +644,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         component.updateShowVideo();
 
         expect(component.conference.participants.find(p => p.role === Role.StaffMember).status).toBe(ParticipantStatus.Available);
-        expect(component.conferenceStartedBy).toBe(undefined);
+        expect(component.conferenceStartedBy).toBe(null);
     });
 
     describe('onConferenceStatusChanged', () => {

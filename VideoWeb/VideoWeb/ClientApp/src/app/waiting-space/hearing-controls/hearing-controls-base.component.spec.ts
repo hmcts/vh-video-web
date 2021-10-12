@@ -62,6 +62,7 @@ describe('HearingControlsBaseComponent', () => {
     const logger: Logger = new MockLogger();
 
     const testData = new VideoCallTestData();
+    let conference: ConferenceResponse;
 
     let participantServiceSpy: jasmine.SpyObj<ParticipantService>;
 
@@ -94,6 +95,7 @@ describe('HearingControlsBaseComponent', () => {
             translateService,
             userMediaServiceSpy
         );
+        conference = new ConferenceTestData().getConferenceNow();
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;
         component.isPrivateConsultation = false;
@@ -105,17 +107,17 @@ describe('HearingControlsBaseComponent', () => {
         component.ngOnDestroy();
     });
     it('should return true for staff member', () => {
-        component.participant = globalConference.participants.find(x => x.role === Role.StaffMember);
+        component.participant = conference.participants.find(x => x.role === Role.StaffMember);
 
         expect(component.isHost).toBe(true);
     });
     it('should return true for judge', () => {
-        component.participant = globalConference.participants.find(x => x.role === Role.Judge);
+        component.participant = conference.participants.find(x => x.role === Role.Judge);
 
         expect(component.isHost).toBe(true);
     });
     it('should return true for individual', () => {
-        component.participant = globalConference.participants.find(x => x.role === Role.Individual);
+        component.participant = conference.participants.find(x => x.role === Role.Individual);
 
         expect(component.isHost).toBe(false);
     });

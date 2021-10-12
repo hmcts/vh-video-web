@@ -44,12 +44,13 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                     It.Is<StartHearingRequest>(r => r.Layout == HearingLayout.Dynamic)), Times.Never);
         }
 
-        [Test]
-        public async Task Should_return_unauthorised_if_judge_not_assigned_to_conference()
+        [TestCase(AppRoles.JudgeRole)]
+        [TestCase(AppRoles.StaffMember)]
+        public async Task Should_return_unauthorised_if_host_not_assigned_to_conference(string role)
         {
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername("notforconference@hmcts.net")
-                .WithRole(AppRoles.JudgeRole).Build();
+                .WithRole(role).Build();
 
             Controller = SetupControllerWithClaims(user);
 
@@ -89,13 +90,14 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             typedResult.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
         }
 
-        [Test]
-        public async Task Should_return_accepted_when_user_is_judge_in_conference()
+        [TestCase(AppRoles.JudgeRole)]
+        [TestCase(AppRoles.StaffMember)]
+        public async Task Should_return_accepted_when_user_is_host_in_conference(string role)
         {
             var participant = TestConference.GetJudge();
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(participant.Username)
-                .WithRole(AppRoles.JudgeRole).Build();
+                .WithRole(role).Build();
 
             Controller = SetupControllerWithClaims(user);
 
