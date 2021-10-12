@@ -4,7 +4,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ParticipantResponse } from 'src/app/services/clients/api-client';
-import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { VideoControlService } from 'src/app/services/conference/video-control.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -57,7 +56,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private videoControlService: VideoControlService,
         private eventService: EventsService,
         private logger: Logger,
-        private participantsService: ParticipantService,
         protected translateService: TranslateService,
         private mapper: ParticipantPanelModelMapper
     ) {}
@@ -338,10 +336,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this.videoControlService.setSpotlightStatus(
-            this.participantsService.getParticipantOrVirtualMeetingRoomById(panelModel.id),
-            !panelModel.hasSpotlight()
-        );
+        this.videoControlService.setSpotlightStatusById(panelModel.id, panelModel.pexipId, !panelModel.hasSpotlight());
     }
 
     toggleMuteParticipant(participant: PanelModel) {
@@ -576,6 +571,18 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     private setParticipants() {
         const combined = [...this.nonEndpointParticipants, ...this.endpointParticipants];
+        combined.forEach(participant => {
+            const currentParticipant = this.participants.find(r => r.id === participant.id);
+            if (currentParticipant) {
+                participant.updateParticipant(
+                    currentParticipant?.isMicRemoteMuted(),
+                    currentParticipant?.hasHandRaised(),
+                    currentParticipant?.hasSpotlight()
+                );
+                participant.assignPexipId(currentParticipant?.pexipId);
+            }
+        });
+
         combined.sort((x, z) => {
             if (x.orderInTheList === z.orderInTheList) {
                 // 3 here means regular participants and should be grouped by caseTypeGroup
