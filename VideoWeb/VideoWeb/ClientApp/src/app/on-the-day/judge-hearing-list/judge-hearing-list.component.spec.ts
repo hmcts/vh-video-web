@@ -133,7 +133,9 @@ describe('JudgeHearingListComponent', () => {
     it('should navigate to judge waiting room when conference is selected for user as a staffmember in the conference', fakeAsync(() => {
         const conference = conferences[1];
         const staffMember = conference.participants.find(x => x.role === Role.StaffMember);
-        videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(new LoggedParticipantResponse({ participant_id: staffMember.id })));
+        videoWebService.getCurrentParticipant.and.returnValue(
+            Promise.resolve(new LoggedParticipantResponse({ participant_id: staffMember.id }))
+        );
 
         component.onConferenceSelected(conference);
         tick();

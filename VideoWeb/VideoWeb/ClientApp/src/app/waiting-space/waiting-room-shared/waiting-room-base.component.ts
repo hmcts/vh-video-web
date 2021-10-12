@@ -1082,7 +1082,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     isConferenceStartedBy(): boolean {
-        return  this.conferenceStartedBy === this.participant.id;
+        return this.conferenceStartedBy === this.participant.id;
     }
     showChooseCameraDialog() {
         this.displayDeviceChangeModal = true;
