@@ -39,7 +39,6 @@ import { ParticipantsPanelComponent } from './participants-panel.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { VideoControlService } from 'src/app/services/conference/video-control.service';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
-import { ParticipantModel } from 'src/app/shared/models/participant';
 import { CaseTypeGroup } from '../models/case-type-group';
 import { Subject } from 'rxjs';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
@@ -76,11 +75,14 @@ describe('ParticipantsPanelComponent', () => {
         jasmine.getEnv().allowRespy(false);
     });
     beforeEach(() => {
-        videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', ['setSpotlightStatus']);
+        videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', [
+            'setSpotlightStatus',
+            'setSpotlightStatusById'
+        ]);
 
         participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
             'ParticipantService',
-            ['getParticipantOrVirtualMeetingRoomById'],
+            [],
             ['onParticipantsUpdated$', 'nonEndpointParticipants']
         );
 
@@ -97,7 +99,6 @@ describe('ParticipantsPanelComponent', () => {
             videoControlServiceSpy,
             eventService,
             logger,
-            participantServiceSpy,
             translateService,
             participantPanelModelMapperSpy
         );
@@ -444,15 +445,11 @@ describe('ParticipantsPanelComponent', () => {
             const panelModel = component.participants[1];
             panelModel.updateParticipant(false, false, false);
 
-            const participantModel = new ParticipantModel('', '', '', null, null, null, null, false, null, null);
-
-            participantServiceSpy.getParticipantOrVirtualMeetingRoomById.and.returnValue(participantModel);
-
             // Act
             component.toggleSpotlightParticipant(panelModel);
 
             // Assert
-            expect(videoControlServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(participantModel, true);
+            expect(videoControlServiceSpy.setSpotlightStatusById).toHaveBeenCalled();
         });
 
         it('should NOT call video control service set spotlight status if the participant cannot be found', () => {
@@ -468,7 +465,7 @@ describe('ParticipantsPanelComponent', () => {
             component.toggleSpotlightParticipant(participant);
 
             // Assert
-            expect(videoControlServiceSpy.setSpotlightStatus).not.toHaveBeenCalled();
+            expect(videoControlServiceSpy.setSpotlightStatusById).not.toHaveBeenCalled();
         });
     });
 
