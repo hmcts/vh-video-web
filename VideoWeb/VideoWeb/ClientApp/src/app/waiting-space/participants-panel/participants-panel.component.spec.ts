@@ -97,9 +97,6 @@ describe('ParticipantsPanelComponent', () => {
         hyphenateSpy = jasmine.createSpy('transform').and.callThrough();
         translateSpy = jasmine.createSpy('transform').and.callThrough();
         lowerCaseSpy = jasmine.createSpy('transform').and.callThrough();
-
-
-    beforeEach(() => {
         videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', [
             'setSpotlightStatus',
             'setSpotlightStatusById'
