@@ -28,6 +28,9 @@ export class MediaStreamService {
     }
 
     getStreamForMic(device: UserMediaDevice): Observable<MediaStream> {
+        this.logger.info(
+            `${this.loggerPrefix} getting microphone with the device label ${device.label} and ID ${device.deviceId} ${device.deviceId}`
+        );
         return from(this.navigator.mediaDevices.getUserMedia({ audio: { deviceId: { exact: device.deviceId } } }))
             .pipe(retry(3))
             .pipe(
@@ -40,6 +43,7 @@ export class MediaStreamService {
     }
 
     getStreamForCam(device: UserMediaDevice): Observable<MediaStream> {
+        this.logger.info(`${this.loggerPrefix} getting camera with the device label ${device.label} and ID ${device.deviceId}`);
         return from(this.navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId }, width: 1280, height: 720 } }))
             .pipe(retry(3))
             .pipe(
