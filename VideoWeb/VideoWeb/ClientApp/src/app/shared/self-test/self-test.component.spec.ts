@@ -1,13 +1,7 @@
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ErrorService } from 'src/app/services/error.service';
-import { Logger } from 'src/app/services/logging/logger-base';
-import { UserMediaService } from 'src/app/services/user-media.service';
-import { SelfTestComponent } from './self-test.component';
-import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
-import { UserMediaDevice } from '../models/user-media-device';
-import { of, Subject } from 'rxjs';
-import { getSpiedPropertyGetter } from '../jasmine-helpers/property-helpers';
 import { fakeAsync, flush } from '@angular/core/testing';
+import { Guid } from 'guid-typescript';
+import { of, Subject } from 'rxjs';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     AddSelfTestFailureEventRequest,
     ConferenceResponse,
@@ -19,13 +13,18 @@ import {
     TestScore,
     TokenResponse
 } from 'src/app/services/clients/api-client';
-import { Guid } from 'guid-typescript';
+import { ErrorService } from 'src/app/services/error.service';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { UserMediaService } from 'src/app/services/user-media.service';
+import { VideoFilterService } from 'src/app/services/video-filter.service';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
+import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 import { mockMicStream } from 'src/app/waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
-import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
-import { VideoFilterService } from 'src/app/services/video-filter.service';
+import { getSpiedPropertyGetter } from '../jasmine-helpers/property-helpers';
+import { UserMediaDevice } from '../models/user-media-device';
+import { SelfTestComponent } from './self-test.component';
 
 describe('SelfTestComponent', () => {
     let component: SelfTestComponent;
@@ -61,7 +60,7 @@ describe('SelfTestComponent', () => {
 
         errorServiceSpy = jasmine.createSpyObj<ErrorService>(['handleApiError', 'handlePexipError']);
 
-        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>(['hasMultipleDevices'], ['connectedDevices$']);
+        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>(['hasMultipleDevices', 'initialise'], ['connectedDevices$']);
         userMediaServiceSpy.hasMultipleDevices.and.returnValue(of(true));
 
         connectedDevicesSubject = new Subject<UserMediaDevice[]>();
@@ -136,6 +135,14 @@ describe('SelfTestComponent', () => {
 
             // Arrange
             expect(component.showChangeDevices).toBeFalse();
+        });
+
+        it('initialises user media services', () => {
+            component.selfTestPexipConfig = {} as SelfTestPexipResponse;
+
+            component.ngOnInit();
+
+            expect(userMediaServiceSpy.initialise).toHaveBeenCalledTimes(1);
         });
 
         describe('on connectedDevices$', () => {
