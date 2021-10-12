@@ -76,7 +76,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         this.initialiseData();
 
         this.showChangeDevices = this.videoFilterService.doesSupportVideoFiltering();
-
+        this.userMediaService.initialise();
         this.userMediaService.connectedDevices$.pipe(take(1)).subscribe({
             next: () => {
                 this.displayFeed = false;
