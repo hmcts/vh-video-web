@@ -66,7 +66,10 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     get canShowScreenShareButton(): boolean {
-        const isAllowedRole = this.participant?.hearing_role !== HearingRole.WITNESS && this.participant?.role !== Role.QuickLinkObserver;
+        const isAllowedRole =
+            this.participant?.hearing_role !== HearingRole.WITNESS &&
+            this.participant?.hearing_role !== HearingRole.OBSERVER &&
+            this.participant?.role !== Role.QuickLinkObserver;
         return this.deviceTypeService.isDesktop() && isAllowedRole;
     }
 

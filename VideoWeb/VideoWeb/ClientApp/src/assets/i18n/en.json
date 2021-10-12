@@ -256,7 +256,9 @@
     "sign-into-the-conference": "Sign into the conference",
     "select": "Select",
     "not-ready-to-start": "Not ready to start",
-    "conference-status-heading": "Status/Action"
+    "conference-status-heading": "Status/Action",
+    "staff-member": "Staff Member",
+    "staff-members": "Staff Members"
   },
   "judge-self-test": {
     "please-wait-to-be-connected": "Please wait to be connected...",
