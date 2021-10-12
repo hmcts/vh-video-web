@@ -178,7 +178,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.participantSpotlightUpdateSubscription = null;
 
         if (this.sharingDynamicEvidence) {
-            this.videoCallService.stopScreenWithMicrophone()
+            this.videoCallService.stopScreenWithMicrophone();
         }
     }
 

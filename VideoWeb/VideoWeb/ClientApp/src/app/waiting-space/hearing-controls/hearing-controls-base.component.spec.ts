@@ -235,7 +235,7 @@ describe('HearingControlsBaseComponent', () => {
             expect(component.sharingDynamicEvidence).toBeTrue();
         }));
 
-        it('should set sharingDynamicEvidence to true when video evidence sharing has stopped', fakeAsync(() => {
+        it('should set sharingDynamicEvidence to false when video evidence sharing has stopped', fakeAsync(() => {
             component.sharingDynamicEvidence = true;
             dynamicScreenShareStoppedSubject.next();
 
