@@ -1039,7 +1039,6 @@ export abstract class WaitingRoomBaseDirective {
             this.isPrivateConsultation = false;
             return;
         }
-
         if (this.hearing.isInSession() && !this.isOrHasWitnessLink() && !this.isQuickLinkParticipant() && this.isConferenceStartedBy()) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because hearing is in session';
@@ -1077,7 +1076,7 @@ export abstract class WaitingRoomBaseDirective {
         logPaylod.reason = 'Not showing video because hearing is not in session and user is not in consultation';
         this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
         this.showVideo = false;
-        this.conferenceStartedBy = null;
+        this.conferenceStartedBy = undefined;
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
     }

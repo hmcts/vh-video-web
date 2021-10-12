@@ -253,13 +253,6 @@ namespace VideoWeb.Controllers
             return Unauthorized("Participant is not callable");
         }
 
-        private async Task<bool> IsConferenceJudge(Guid conferenceId)
-        {
-            var conference = await GetConference(conferenceId);
-            return conference.GetJudge().Username
-                .Equals(User.Identity.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase);
-        }
-
         private async Task<bool> IsConferenceHost(Guid conferenceId)
         {
             var conference = await GetConference(conferenceId);

@@ -27,6 +27,7 @@ import { HearingRole } from '../models/hearing-role-model';
 import { ParticipantUpdated } from '../models/video-call-models';
 import { PrivateConsultationRoomControlsComponent } from '../private-consultation-room-controls/private-consultation-room-controls.component';
 import { HearingControlsBaseComponent } from './hearing-controls-base.component';
+import { globalConference } from '../waiting-room-shared/tests/waiting-room-base-setup';
 
 describe('HearingControlsBaseComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -102,6 +103,21 @@ describe('HearingControlsBaseComponent', () => {
 
     afterEach(() => {
         component.ngOnDestroy();
+    });
+    it('should return true for staff member', () => {
+        component.participant = globalConference.participants.find(x => x.role === Role.StaffMember);
+
+        expect(component.isHost).toBe(true);
+    });
+    it('should return true for judge', () => {
+        component.participant = globalConference.participants.find(x => x.role === Role.Judge);
+
+        expect(component.isHost).toBe(true);
+    });
+    it('should return true for individual', () => {
+        component.participant = globalConference.participants.find(x => x.role === Role.Individual);
+
+        expect(component.isHost).toBe(false);
     });
 
     describe('on audio only changed', () => {
