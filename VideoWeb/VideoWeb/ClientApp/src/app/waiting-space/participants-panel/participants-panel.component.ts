@@ -571,13 +571,13 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     private setParticipants() {
         const combined = [...this.nonEndpointParticipants, ...this.endpointParticipants];
         combined.forEach(participant => {
-            const currentParticipant = this.participants.find(r => r.id === participant.id);                
+            const currentParticipant = this.participants.find(r => r.id === participant.id);
             if (currentParticipant) {
                 participant.updateParticipant(
                     currentParticipant?.isMicRemoteMuted(),
                     currentParticipant?.hasHandRaised(),
                     currentParticipant?.hasSpotlight()
-                );                
+                );
                 participant.assignPexipId(currentParticipant?.pexipId);
             }
         });
