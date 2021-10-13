@@ -19,6 +19,7 @@ namespace VideoWeb.Controllers
     [ApiController]
     [Route("conferences")]
     [Authorize(AppRoles.JudgeRole)]
+    [Authorize(AppRoles.StaffMember)]
     public class ConferenceManagementController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
@@ -82,14 +83,29 @@ namespace VideoWeb.Controllers
         /// <returns>Ok status</returns>
         /// <returns>Forbidden status</returns>
         /// <returns>Not Found status</returns>
-        [HttpPost("{conferenceId}/pause")]
-        [SwaggerOperation(OperationId = "PauseVideoHearing")]
+        [HttpPost("{conferenceId}/getlayout")]
+        [SwaggerOperation(OperationId = "GetLayoutForHearing")]
         [ProducesResponseType(typeof(HearingLayout), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public Task<IActionResult> GetLayoutForHearing(Guid conferenceId)
+        public async Task<IActionResult> GetLayoutForHearing(Guid conferenceId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var cachedConference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, async () => await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
+                return Ok(cachedConference.HearingLayout);
+            }
+            catch (VideoApiException exception)
+            {
+                if (exception.StatusCode == 404) 
+                    return NotFound();
+            }
+            catch
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+
+            return StatusCode((int)HttpStatusCode.InternalServerError);
         }
 
         /// <summary>

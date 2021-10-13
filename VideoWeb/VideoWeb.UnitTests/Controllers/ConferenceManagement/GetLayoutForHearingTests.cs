@@ -17,6 +17,7 @@ using VideoApi.Client;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using VideoWeb.UnitTests.Builders;
+using System.Net;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 {
@@ -33,20 +34,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             _sut = _mocker.Create<ConferenceManagementController>();
         }
 
-        private void Authorise(string role)
-        {
-            _sut.HttpContext.User = new ClaimsPrincipalBuilder()
-                .WithUsername("username")
-                .WithRole(role).Build();
-        }
-
-        [TestCase(AppRoles.JudgeRole)]
-        [TestCase(AppRoles.StaffMember)]
+        [Test]
         public async Task should_return_the_layout_for_the_hearing(string role)
         {
             // Arrange
-            Authorise(role);
-
             var conferenceId = Guid.NewGuid();
             var expectedLayout = HearingLayout.TwoPlus21;
             var conference = new Conference()
@@ -61,54 +52,17 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var layoutResponse = await _sut.GetLayoutForHearing(conferenceId);
 
             // Assert
-            layoutResponse.Should().BeAssignableTo<OkObjectResult>().And.Be(expectedLayout);
+            layoutResponse.Should().BeAssignableTo<OkObjectResult>().Which.Value.Should().Be(expectedLayout);
         }
 
-        [TestCase(AppRoles.JudgeRole)]
-        [TestCase(AppRoles.StaffMember)]
+        [Test]
         public async Task should_return_a_404_if_the_hearing_cannot_be_found(string role)
         {
             // Arrange
-            Authorise(role);
-
             var conferenceId = Guid.NewGuid();
 
             var exception = new VideoApiException("message", 404, null, null, null);
             _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(x => x == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ThrowsAsync(exception);
-
-            // Act
-            var layoutResponse = await _sut.GetLayoutForHearing(conferenceId);
-
-            // Assert
-            layoutResponse.Should().BeAssignableTo<NotFoundResult>();
-        }
-
-        [Test]
-        public async Task should_return_a_403_if_the_user_is_not_authenticated()
-        {
-            // Arrange
-            var conferenceId = Guid.NewGuid();
-
-            // Act
-            var layoutResponse = await _sut.GetLayoutForHearing(conferenceId);
-
-            // Assert
-            layoutResponse.Should().BeAssignableTo<ForbidResult>();
-        }
-
-        [TestCase(AppRoles.QuickLinkObserver)]
-        [TestCase(AppRoles.QuickLinkParticipant)]
-        [TestCase(AppRoles.RepresentativeRole)]
-        [TestCase(AppRoles.VhOfficerRole)]
-        [TestCase(AppRoles.JudicialOfficeHolderRole)]
-        [TestCase(AppRoles.CaseAdminRole)]
-        [TestCase(AppRoles.CitizenRole)]
-        public async Task should_return_a_403_if_the_user_is_not_a_judge_or_staff_member(string role)
-        {
-            // Arrange
-            Authorise(role);
-
-            var conferenceId = Guid.NewGuid();
 
             // Act
             var layoutResponse = await _sut.GetLayoutForHearing(conferenceId);
