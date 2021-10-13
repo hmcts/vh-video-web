@@ -10,7 +10,7 @@ import { HearingLayoutService } from './hearing-layout.service';
 import { Logger } from './logging/logger-base';
 import HearingLayoutChanged from './models/hearing-layout-chagned';
 
-fdescribe('HearingLayoutService', () => {
+describe('HearingLayoutService', () => {
     let service: HearingLayoutService;
     let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
     let apiClientSpy: jasmine.SpyObj<ApiClient>;
