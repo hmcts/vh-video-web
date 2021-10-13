@@ -76,6 +76,23 @@ namespace VideoWeb.Controllers
         }
 
         /// <summary>
+        /// Returns the active layout for a conference
+        /// </summary>
+        /// <param name="conferenceId">conference id</param>
+        /// <returns>Ok status</returns>
+        /// <returns>Forbidden status</returns>
+        /// <returns>Not Found status</returns>
+        [HttpPost("{conferenceId}/pause")]
+        [SwaggerOperation(OperationId = "PauseVideoHearing")]
+        [ProducesResponseType(typeof(HearingLayout), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public Task<IActionResult> GetLayoutForHearing(Guid conferenceId)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// Pause a video hearing
         /// </summary>
         /// <param name="conferenceId">conference id</param>
