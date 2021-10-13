@@ -814,6 +814,14 @@
     "close-hearing-label": "Cadarnhau cau'r gwrandawiad",
     "cancel-close-label": "Canslo cau'r gwrandawiad"
   },
+  "confirm-leave-hearing-popup": {
+    "title": "You are about to leave this hearing",
+    "message": "Ensure the judge or another responsible officer is still present before leaving the hearing.",
+    "leave-hearing": "Leave hearing",
+    "leave-hearing-label": "Confirm leaving the hearing",
+    "cancel-leave": "Cancel",
+    "cancel-leave-label": "Cancel leaving the hearing"
+  },
   "chat-panel": {
     "loading": "Wrthi'n llwytho...",
     "heading": "Negeseuon y swyddog gwrandawiadau fideo"

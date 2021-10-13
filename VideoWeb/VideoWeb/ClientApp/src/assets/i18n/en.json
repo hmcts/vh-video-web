@@ -837,6 +837,14 @@
     "cancel-close": "Keep hearing open",
     "cancel-close-label": "Cancel closing the hearing"
   },
+  "confirm-leave-hearing-popup": {
+    "title": "You are about to leave this hearing",
+    "message": "Ensure the judge or another responsible officer is still present before leaving the hearing.",
+    "leave-hearing": "Leave hearing",
+    "leave-hearing-label": "Confirm leaving the hearing",
+    "cancel-leave": "Cancel",
+    "cancel-leave-label": "Cancel leaving the hearing"
+  },
   "venue-list": {
     "title": "Select your hearing lists",
     "label": "Venue name {{name}}",
