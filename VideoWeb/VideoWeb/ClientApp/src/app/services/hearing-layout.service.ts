@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy, OnInit } from '@angular/core';
 import { Observable, ReplaySubject, Subject } from 'rxjs';
-import { filter, mergeMap, skip, take, takeUntil } from 'rxjs/operators';
+import { filter, map, mergeMap, skip, take, takeUntil } from 'rxjs/operators';
 import { ApiClient, HearingLayout } from './clients/api-client';
 import { ConferenceService } from './conference/conference.service';
 import { EventsService } from './events.service';
@@ -61,5 +61,24 @@ export class HearingLayoutService implements OnInit, OnDestroy {
         this.conferenceService.currentConference$.pipe(take(1)).subscribe(currentConference => {
             this.eventsService.updateHearingLayout(currentConference.id, layout);
         });
+    }
+
+    getRecommendLayout(): Observable<HearingLayout> {
+        return this.conferenceService.currentConference$.pipe(
+            take(1),
+            map(conference => {
+                const numOfParticipantsIncJudge = conference.participants.length + conference.endpoints.length;
+
+                if (numOfParticipantsIncJudge >= 10) {
+                    return HearingLayout.TwoPlus21;
+                }
+
+                if (numOfParticipantsIncJudge >= 6 && numOfParticipantsIncJudge <= 9) {
+                    return HearingLayout.OnePlus7;
+                }
+
+                return HearingLayout.Dynamic;
+            })
+        );
     }
 }

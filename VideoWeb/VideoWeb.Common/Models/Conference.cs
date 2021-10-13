@@ -13,7 +13,7 @@ namespace VideoWeb.Common.Models
             Participants = new List<Participant>();
             Endpoints = new List<Endpoint>();
             CivilianRooms = new List<CivilianRoom>();
-            HearingLayout = HearingLayout.Dynamic;
+            HearingLayout = GetRecommendedLayout();
         }
 
         public Guid Id { get; set; }
@@ -85,6 +85,22 @@ namespace VideoWeb.Common.Models
         public CivilianRoom GetRoom(Guid participantId)
         {
             return CivilianRooms.FirstOrDefault(room => room.Participants.Contains(participantId));
+        }
+
+        public HearingLayout GetRecommendedLayout()
+        {
+            var numOfParticipantsIncJudge = Participants.Count + Endpoints.Count;
+            if (numOfParticipantsIncJudge >= 10)
+            {
+                return HearingLayout.TwoPlus21;
+            }
+
+            if (numOfParticipantsIncJudge >= 6 && numOfParticipantsIncJudge <= 9)
+            {
+                return HearingLayout.OnePlus7;
+            }
+
+            return HearingLayout.Dynamic;
         }
     }
 }

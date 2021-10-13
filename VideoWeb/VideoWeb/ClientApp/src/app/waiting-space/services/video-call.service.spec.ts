@@ -229,17 +229,6 @@ describe('VideoCallService', () => {
         expect(apiClient.endVideoHearing).toHaveBeenCalledWith(conferenceId);
     });
 
-    it('should update preferred layout', () => {
-        const ss = new SessionStorage(service.PREFERRED_LAYOUT_KEY);
-        ss.set({});
-        const conferenceId = Guid.create().toString();
-        expect(service.getPreferredLayout(conferenceId)).toBeUndefined();
-        const layout = HearingLayout.OnePlus7;
-        service.updatePreferredLayout(conferenceId, layout);
-        expect(service.getPreferredLayout(conferenceId)).toBe(layout);
-        ss.clear();
-    });
-
     it('should make api call witness on call witness', async () => {
         apiClient.callParticipant.and.returnValue(of());
         const conferenceId = Guid.create().toString();
