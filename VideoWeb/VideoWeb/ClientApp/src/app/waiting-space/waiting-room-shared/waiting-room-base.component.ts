@@ -86,6 +86,7 @@ export abstract class WaitingRoomBaseDirective {
     displayDeviceChangeModal: boolean;
     displayStartPrivateConsultationModal: boolean;
     displayJoinPrivateConsultationModal: boolean;
+    conferenceStartedBy: string;
 
     panelTypes = ['Participants', 'Chat'];
     panelStates = {
@@ -1038,8 +1039,12 @@ export abstract class WaitingRoomBaseDirective {
             this.isPrivateConsultation = false;
             return;
         }
-
-        if (this.hearing.isInSession() && !this.isOrHasWitnessLink() && !this.isQuickLinkParticipant()) {
+        if (
+            this.hearing.isInSession() &&
+            !this.isOrHasWitnessLink() &&
+            !this.isQuickLinkParticipant() &&
+            this.shouldCurrentUserJoinHearing()
+        ) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because hearing is in session';
             this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
@@ -1076,8 +1081,17 @@ export abstract class WaitingRoomBaseDirective {
         logPaylod.reason = 'Not showing video because hearing is not in session and user is not in consultation';
         this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
         this.showVideo = false;
+        this.conferenceStartedBy = null;
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
+    }
+
+    shouldCurrentUserJoinHearing(): boolean {
+        return (this.conferenceStartedBy === this.participant.id && this.isHost()) || !this.isHost();
+    }
+
+    isHost(): boolean {
+        return this.participant.role === Role.Judge || this.participant.role === Role.StaffMember;
     }
 
     showChooseCameraDialog() {
