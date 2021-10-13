@@ -622,7 +622,8 @@
     "hearing-controls": "Hearing controls",
     "consultation-controls": "Consultation controls",
     "show-chat-window": "Show messages list",
-    "hide-chat-window": "Hide messages list"
+    "hide-chat-window": "Hide messages list",
+    "leave-hearing": "Leave Hearing"
   },
   "chat-panel": {
     "heading": "VH Officer messages",
