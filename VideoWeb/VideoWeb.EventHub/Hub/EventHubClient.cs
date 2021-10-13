@@ -15,6 +15,7 @@ using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common.Configuration;
 using Microsoft.Extensions.Options;
+using VideoWeb.EventHub.Services;
 
 namespace VideoWeb.EventHub.Hub
 {
@@ -28,15 +29,17 @@ namespace VideoWeb.EventHub.Hub
         private readonly IVideoApiClient _videoApiClient;
         private readonly IConferenceCache _conferenceCache;
         private readonly IHeartbeatRequestMapper _heartbeatRequestMapper;
+        private readonly IConferenceLayoutService _conferenceLayoutService;
         private readonly HearingServicesConfiguration _servicesConfiguration;
 
         public EventHub(IUserProfileService userProfileService, IVideoApiClient videoApiClient,
-            ILogger<EventHub> logger, IConferenceCache conferenceCache, IHeartbeatRequestMapper heartbeatRequestMapper, IOptions<HearingServicesConfiguration> servicesConfiguration)
+            ILogger<EventHub> logger, IConferenceCache conferenceCache, IHeartbeatRequestMapper heartbeatRequestMapper, IOptions<HearingServicesConfiguration> servicesConfiguration, IConferenceLayoutService conferenceLayoutService)
         {
             _userProfileService = userProfileService;
             _logger = logger;
             _conferenceCache = conferenceCache;
             _heartbeatRequestMapper = heartbeatRequestMapper;
+            _conferenceLayoutService = conferenceLayoutService;
             _videoApiClient = videoApiClient;
             _servicesConfiguration = servicesConfiguration.Value;
         }
@@ -537,6 +540,11 @@ namespace VideoWeb.EventHub.Hub
                     conferenceId);
                 return particiantId;
             }
+        }
+
+        public async Task HearingLayoutChanged(Guid conferenceId, HearingLayout newLayout, HearingLayout? oldLayout = null)
+        {
+            await _conferenceLayoutService.UpdateLayout(conferenceId, newLayout);
         }
     }
 }

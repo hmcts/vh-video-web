@@ -7,15 +7,10 @@ using VideoApi.Contract.Requests;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Hub;
+using VideoWeb.EventHub.Services;
 
 namespace VideoWeb.Helpers
 {
-    public interface IConferenceLayoutService
-    {
-        Task UpdateLayout(Guid conferenceId, HearingLayout newLayout);
-        Task<HearingLayout?> GetCurrentLayout(Guid conferenceId);
-    }
-
     public class ConferenceLayoutService : IConferenceLayoutService
     {
         private readonly IVideoApiClient _videoApiClient;
