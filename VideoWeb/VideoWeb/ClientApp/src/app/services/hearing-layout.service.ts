@@ -1,5 +1,6 @@
 import { Injectable, OnDestroy, OnInit } from '@angular/core';
-import { Observable, ReplaySubject } from 'rxjs';
+import { Observable, ReplaySubject, Subject } from 'rxjs';
+import { filter, mergeMap, skip, take, takeUntil } from 'rxjs/operators';
 import { ApiClient, HearingLayout } from './clients/api-client';
 import { ConferenceService } from './conference/conference.service';
 import { EventsService } from './events.service';
@@ -10,6 +11,7 @@ import { Logger } from './logging/logger-base';
 })
 export class HearingLayoutService implements OnInit, OnDestroy {
     private loggerPrefix = '[HearingLayoutService]';
+    private destroyedSubject: Subject<void>;
 
     private currentLayoutSubject = new ReplaySubject<HearingLayout>(1);
     get currentLayout$(): Observable<HearingLayout> {
@@ -24,18 +26,40 @@ export class HearingLayoutService implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
-        throw new Error('Method not implemented.');
+        this.logger.debug(`${this.loggerPrefix} subscribing to event hub message`);
+
+        this.destroyedSubject = new Subject();
+        this.conferenceService.currentConference$.pipe(takeUntil(this.destroyedSubject)).subscribe(currentConference => {
+            this.apiClient.getLayoutForHearing(currentConference.id).subscribe(layout => this.currentLayoutSubject.next(layout));
+
+            this.eventsService
+                .getHearingLayoutChanged()
+                .pipe(
+                    takeUntil(this.destroyedSubject),
+                    takeUntil(this.conferenceService.currentConference$.pipe(skip(1))),
+                    filter(layoutChanged => layoutChanged.conferenceId === currentConference.id)
+                )
+                .subscribe(layoutChanged => this.currentLayoutSubject.next(layoutChanged.newHearingLayout));
+        });
+
+        this.eventsService.getHearingLayoutChanged().pipe();
     }
 
     ngOnDestroy(): void {
-        throw new Error('Method not implemented.');
+        this.destroyedSubject.next();
+        this.destroyedSubject.complete();
     }
 
     getCurrentLayout(): Observable<HearingLayout> {
-        throw new Error('Method not implemented.');
+        return this.conferenceService.currentConference$.pipe(
+            take(1),
+            mergeMap(currentConference => this.apiClient.getLayoutForHearing(currentConference.id))
+        );
     }
 
     updateCurrentLayout(layout: HearingLayout) {
-        throw new Error('Method not implemented.');
+        this.conferenceService.currentConference$.pipe(take(1)).subscribe(currentConference => {
+            this.eventsService.updateHearingLayout(currentConference.id, layout);
+        });
     }
 }

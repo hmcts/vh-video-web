@@ -71,7 +71,8 @@ eventsServiceSpy = jasmine.createSpyObj<EventsService>(
         'publishRemoteMuteStatus',
         'onEventsHubReady',
         'getParticipantsUpdated',
-        'getHearingLayoutChanged'
+        'getHearingLayoutChanged',
+        'updateHearingLayout'
     ],
     ['eventHubIsConnected']
 );

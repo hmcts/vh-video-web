@@ -3,11 +3,9 @@ import { Guid } from 'guid-typescript';
 import { of } from 'rxjs';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
 import { eventsServiceSpy, hearingLayoutChangedSubjectMock } from '../testing/mocks/mock-events-service';
-import { logger } from '../waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
 import { ApiClient, ConferenceResponse, HearingLayout } from './clients/api-client';
 import { ConferenceService } from './conference/conference.service';
 import { EventsService } from './events.service';
-
 import { HearingLayoutService } from './hearing-layout.service';
 import { Logger } from './logging/logger-base';
 import HearingLayoutChanged from './models/hearing-layout-chagned';
@@ -23,7 +21,7 @@ fdescribe('HearingLayoutService', () => {
 
         TestBed.configureTestingModule({
             providers: [
-                { provide: logger, useValue: jasmine.createSpyObj<Logger>(['debug', 'info', 'warn', 'error']) },
+                { provide: Logger, useValue: jasmine.createSpyObj<Logger>(['debug', 'info', 'warn', 'error']) },
                 { provide: ConferenceService, useValue: conferenceServiceSpy },
                 { provide: ApiClient, useValue: apiClientSpy },
                 { provide: EventsService, useValue: eventsServiceSpy }
@@ -61,9 +59,26 @@ fdescribe('HearingLayoutService', () => {
     });
 
     describe('on hearingLayoutChanged recieved on event bus', () => {
+        const conferenceId = Guid.create().toString();
+        const initialLayout = HearingLayout.Dynamic;
+
+        beforeEach(fakeAsync(() => {
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference$').and.returnValue(
+                of(
+                    new ConferenceResponse({
+                        id: conferenceId
+                    })
+                )
+            );
+
+            apiClientSpy.getLayoutForHearing.and.returnValue(of(initialLayout));
+
+            service.ngOnInit();
+            flush();
+        }));
+
         it('should emit the new layout from currentLayout$ when it is for the current conference', fakeAsync(() => {
             // Arrange
-            const conferenceId = Guid.create().toString();
             const expectedLayout = HearingLayout.OnePlus7;
 
             getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference$').and.returnValue(
@@ -74,15 +89,16 @@ fdescribe('HearingLayoutService', () => {
                 )
             );
 
-            // Act
-            var currentLayout: HearingLayout | null = null;
-            service.currentLayout$.subscribe(layout => (currentLayout = layout));
+            apiClientSpy.getLayoutForHearing.and.returnValue(of(expectedLayout));
 
+            // Act
             hearingLayoutChangedSubjectMock.next(new HearingLayoutChanged(conferenceId, expectedLayout));
             flush();
 
+            var currentLayout: HearingLayout | null = null;
+            service.currentLayout$.subscribe(layout => (currentLayout = layout));
+
             // Assert
-            expect(currentLayout).toBeTruthy();
             expect(currentLayout).toEqual(expectedLayout);
         }));
     });
@@ -108,7 +124,6 @@ fdescribe('HearingLayoutService', () => {
             flush();
 
             // Assert
-            expect(currentLayout).toBeTruthy();
             expect(currentLayout).toEqual(expectedLayout);
             expect(apiClientSpy.getLayoutForHearing).toHaveBeenCalledOnceWith(conferenceId);
         }));
