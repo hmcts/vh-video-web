@@ -13,6 +13,7 @@ using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Enums;
 using VideoWeb.Helpers;
+using VideoWeb.EventHub.Services;
 
 namespace VideoWeb.Controllers
 {
