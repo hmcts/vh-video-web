@@ -1087,7 +1087,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     shouldCurrentUserJoinHearing(): boolean {
-        return (this.conferenceStartedBy === this.participant.id && this.isHost()) || !this.isHost();
+        return this.conferenceStartedBy === this.participant.id || !this.isHost();
     }
 
     isHost(): boolean {
