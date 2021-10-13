@@ -95,13 +95,14 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var cachedConference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, async () => await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
-                return Ok(cachedConference.HearingLayout);
+                var layout = await _conferenceLayoutService.GetCurrentLayout(conferenceId);
+                if (!layout.HasValue) return NotFound();
+
+                return Ok(layout);
             }
             catch (VideoApiException exception)
             {
-                if (exception.StatusCode == 404) 
-                    return NotFound();
+                return StatusCode(exception.StatusCode, exception.Response);
             }
             catch
             {
