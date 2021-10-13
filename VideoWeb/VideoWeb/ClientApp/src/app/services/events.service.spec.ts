@@ -432,7 +432,7 @@ describe('EventsService', () => {
 
         it('updateHearingLayout', fakeAsync(() => {
             // Arrange
-            const expectedMessageName = 'HearingLayoutChanged';
+            const expectedMessageName = 'UpdateHearingLayout';
             const expectedConferenceId = 'test-conference-id';
             const expectedLayout = HearingLayout.OnePlus7;
             const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['send']);

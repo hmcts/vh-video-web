@@ -399,6 +399,6 @@ export class EventsService {
     }
 
     async updateHearingLayout(conferenceId: string, newLayout: HearingLayout) {
-        await this.eventsHubConnection.send('HearingLayoutChanged', conferenceId, newLayout);
+        await this.eventsHubConnection.send('UpdateHearingLayout', conferenceId, newLayout);
     }
 }
