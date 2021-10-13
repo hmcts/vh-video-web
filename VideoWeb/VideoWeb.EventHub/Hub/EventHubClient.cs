@@ -542,7 +542,7 @@ namespace VideoWeb.EventHub.Hub
             }
         }
 
-        public async Task HearingLayoutChanged(Guid conferenceId, HearingLayout newLayout, HearingLayout? oldLayout = null)
+        public async Task UpdateHearingLayout(Guid conferenceId, HearingLayout newLayout)
         {
             await _conferenceLayoutService.UpdateLayout(conferenceId, newLayout);
         }

@@ -113,6 +113,7 @@ namespace VideoWeb.Extensions
             services.AddScoped<IConsultationInvitationTracker, ConsultationInvitationTracker>();
             services.AddScoped<IConsultationNotifier, ConsultationNotifier>();
             services.AddScoped<IConferenceLayoutService, ConferenceLayoutService>();
+            services.AddScoped<IConferenceLayoutCache, DistributedConferenceLayoutCache>();
 
             RegisterMappers(services);
 

@@ -13,7 +13,6 @@ namespace VideoWeb.Common.Models
             Participants = new List<Participant>();
             Endpoints = new List<Endpoint>();
             CivilianRooms = new List<CivilianRoom>();
-            HearingLayout = GetRecommendedLayout();
         }
 
         public Guid Id { get; set; }
@@ -23,7 +22,6 @@ namespace VideoWeb.Common.Models
         public List<CivilianRoom> CivilianRooms { get; set; }
         public string HearingVenueName { get; set; }
         public ConferenceState CurrentStatus { get; set; }
-        public HearingLayout HearingLayout { get; set; }
 
         public Participant GetJudge()
         {

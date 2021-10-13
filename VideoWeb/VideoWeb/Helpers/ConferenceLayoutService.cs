@@ -15,12 +15,14 @@ namespace VideoWeb.Helpers
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly IConferenceCache _conferenceCache;
+        private readonly IConferenceLayoutCache _conferenceLayoutCache;
         private readonly IHubContext<EventHub.Hub.EventHub, IEventHubClient> _hubContext;
 
-        public ConferenceLayoutService(IVideoApiClient videoApiClient, IConferenceCache conferenceCache, IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext)
+        public ConferenceLayoutService(IVideoApiClient videoApiClient, IConferenceCache conferenceCache, IConferenceLayoutCache conferenceLayoutCache, IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext)
         {
             _videoApiClient = videoApiClient;
             _conferenceCache = conferenceCache;
+            this._conferenceLayoutCache = conferenceLayoutCache;
             _hubContext = hubContext;
         }
 
@@ -29,11 +31,23 @@ namespace VideoWeb.Helpers
             return await _conferenceCache.GetOrAddConferenceAsync(conferenceId, async () => await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
         }
 
+        private async Task SetConferenceLayoutInCache(Guid conferenceId, HearingLayout newLayout)
+        {
+            await _conferenceLayoutCache.Write(conferenceId, newLayout);
+        }
+
+        private async Task<HearingLayout?> GetConferenceLayoutFromCache(Guid conferenceId)
+        {
+            return await _conferenceLayoutCache.Read(conferenceId);
+        }
+
         public async Task<HearingLayout?> GetCurrentLayout(Guid conferenceId)
         {
             try
             {
-                return (await GetConferenceFromCache(conferenceId)).HearingLayout;
+                var conference = await GetConferenceFromCache(conferenceId);
+                var conferenceLayout = await GetConferenceLayoutFromCache(conferenceId);
+                return conferenceLayout ?? conference.GetRecommendedLayout();
             }
             catch (VideoApiException exception)
             {
@@ -50,15 +64,15 @@ namespace VideoWeb.Helpers
             {
                 conference = await GetConferenceFromCache(conferenceId);
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 return;
             }
 
-            var oldLayout = conference.HearingLayout;
-            conference.HearingLayout = newLayout;
+            var conferenceLayout = await GetConferenceLayoutFromCache(conferenceId);
+            var oldLayout = conferenceLayout ?? conference.GetRecommendedLayout();
+            await SetConferenceLayoutInCache(conferenceId, newLayout);
 
-            await _conferenceCache.UpdateConferenceAsync(conference);
             await _hubContext.Clients
                             .Groups(conference.Participants
                             .Where(participant => participant.Role == Role.Judge || participant.Role == Role.StaffMember)

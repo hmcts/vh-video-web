@@ -47,10 +47,10 @@ namespace VideoWeb.UnitTests.Caching
             var expectedLayout = HearingLayout.TwoPlus21;
             var conference = new Conference()
             {
-                Id = conferenceId,
-                HearingLayout = expectedLayout
+                Id = conferenceId
             };
 
+            _mocker.Mock<IConferenceLayoutCache>().Setup(x => x.Read(conferenceId)).ReturnsAsync(expectedLayout);
             _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(x => x == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ReturnsAsync(conference);
 
             // Act
@@ -116,18 +116,17 @@ namespace VideoWeb.UnitTests.Caching
             var conference = new Conference()
             {
                 Id = conferenceId,
-                HearingLayout = defaultLayout,
                 Participants = participants
             };
             var conferenceUpdate = new Conference()
             {
                 Id = conferenceId,
-                HearingLayout = expectedLayout,
                 Participants = participants
             };
 
             var exception = new Exception();
             _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(x => x == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ReturnsAsync(conference);
+            _mocker.Mock<IConferenceLayoutCache>().Setup(x => x.Read(It.Is<Guid>(x => x == conferenceId))).ReturnsAsync(defaultLayout);
 
 
             _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients)
@@ -141,7 +140,7 @@ namespace VideoWeb.UnitTests.Caching
             await _sut.UpdateLayout(conferenceId, expectedLayout);
 
             // Assert
-            _mocker.Mock<IConferenceCache>().Verify(x => x.UpdateConferenceAsync(It.Is<Conference>(update => update.HearingLayout == conferenceUpdate.HearingLayout)), Times.Once);
+            _mocker.Mock<IConferenceLayoutCache>().Verify(x => x.Write(conferenceId, expectedLayout), Times.Once);
             _mocker.Mock<IEventHubClient>().Verify(
                 x => x.HearingLayoutChanged(conferenceId, expectedLayout, defaultLayout),
                 Times.Once);

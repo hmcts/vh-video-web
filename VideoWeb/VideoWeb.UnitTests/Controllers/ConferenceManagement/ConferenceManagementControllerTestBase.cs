@@ -14,6 +14,7 @@ using VideoWeb.Controllers;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoWeb.Helpers;
+using VideoWeb.EventHub.Services;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 {

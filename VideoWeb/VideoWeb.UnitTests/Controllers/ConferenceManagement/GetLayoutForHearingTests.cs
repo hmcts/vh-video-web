@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Http;
 using VideoWeb.UnitTests.Builders;
 using System.Net;
 using VideoWeb.Helpers;
+using VideoWeb.EventHub.Services;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 {
@@ -43,8 +44,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var expectedLayout = HearingLayout.TwoPlus21;
             var conference = new Conference()
             {
-                Id = conferenceId,
-                HearingLayout = expectedLayout
+                Id = conferenceId
             };
 
             _mocker.Mock<IConferenceLayoutService>().Setup(x => x.GetCurrentLayout(It.Is<Guid>(x => x == conferenceId))).ReturnsAsync(expectedLayout);

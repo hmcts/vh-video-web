@@ -47,8 +47,8 @@ namespace VideoWeb.Common.Caching
             conference = await GetConferenceAsync(id);
 
             return conference;
-        }
 
+        }
         private async Task<Conference> GetConferenceAsync(Guid id)
         {
             try
