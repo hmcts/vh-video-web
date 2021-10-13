@@ -86,7 +86,7 @@ namespace VideoWeb.UnitTests.Caching
             _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(x => x == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ThrowsAsync(exception);
 
             // Act && Assert
-            Action action = async () => await _sut.GetCurrentLayout(conferenceId);
+            Func<Task> action = async () => await _sut.GetCurrentLayout(conferenceId);
             action.Should().Throw<VideoApiException>();
         }
 
@@ -106,7 +106,7 @@ namespace VideoWeb.UnitTests.Caching
             _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(x => x == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ThrowsAsync(exception);
 
             // Act && Assert
-            Action action = async () => await _sut.GetCurrentLayout(conferenceId);
+            Func<Task> action = async () => await _sut.GetCurrentLayout(conferenceId);
             action.Should().Throw<Exception>();
         }
     }

@@ -35,7 +35,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         }
 
         [Test]
-        public async Task should_return_the_layout_for_the_hearing(string role)
+        public async Task should_return_the_layout_for_the_hearing()
         {
             // Arrange
             var conferenceId = Guid.NewGuid();
@@ -56,7 +56,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         }
 
         [Test]
-        public async Task should_return_a_404_if_the_hearing_cannot_be_found(string role)
+        public async Task should_return_a_404_if_the_hearing_cannot_be_found()
         {
             // Arrange
             var conferenceId = Guid.NewGuid();

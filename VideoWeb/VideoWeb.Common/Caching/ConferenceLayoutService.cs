@@ -10,7 +10,7 @@ namespace VideoWeb.Common.Caching
     public interface IConferenceLayoutService
     {
         Task UpdateLayout(Guid conferenceId, HearingLayout hearingLayout);
-        Task<HearingLayout> GetCurrentLayout(Guid conferenceId);
+        Task<HearingLayout?> GetCurrentLayout(Guid conferenceId);
     }
 
     public class ConferenceLayoutService : IConferenceLayoutService
@@ -24,9 +24,19 @@ namespace VideoWeb.Common.Caching
             _conferenceCache = conferenceCache;
         }
 
-        public Task<HearingLayout> GetCurrentLayout(Guid conferenceId)
+        public async Task<HearingLayout?> GetCurrentLayout(Guid conferenceId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var cachedConference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, async () => await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
+                return cachedConference.HearingLayout;
+            }
+            catch (VideoApiException exception)
+            {
+                if (exception.StatusCode != 404) throw;
+            }
+
+            return null;
         }
 
         public Task UpdateLayout(Guid conferenceId, HearingLayout hearingLayout)
