@@ -18,6 +18,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using VideoWeb.UnitTests.Builders;
 using System.Net;
+using VideoWeb.Helpers;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 {
@@ -46,7 +47,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 HearingLayout = expectedLayout
             };
 
-            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid> (x => x == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ReturnsAsync(conference);
+            _mocker.Mock<IConferenceLayoutService>().Setup(x => x.GetCurrentLayout(It.Is<Guid>(x => x == conferenceId))).ReturnsAsync(expectedLayout);
 
             // Act
             var layoutResponse = await _sut.GetLayoutForHearing(conferenceId);
@@ -56,13 +57,13 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         }
 
         [Test]
-        public async Task should_return_a_404_if_the_hearing_cannot_be_found()
+        public async Task should_return_a_404_if_the_layout_returned_is_null()
         {
             // Arrange
             var conferenceId = Guid.NewGuid();
 
             var exception = new VideoApiException("message", 404, null, null, null);
-            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(x => x == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ThrowsAsync(exception);
+            _mocker.Mock<IConferenceLayoutService>().Setup(x => x.GetCurrentLayout(It.Is<Guid>(x => x == conferenceId))).Returns(Task.FromResult<HearingLayout?>(null));
 
             // Act
             var layoutResponse = await _sut.GetLayoutForHearing(conferenceId);

@@ -12,6 +12,7 @@ using VideoWeb.Common.Models;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Enums;
+using VideoWeb.Helpers;
 
 namespace VideoWeb.Controllers
 {
@@ -25,13 +26,15 @@ namespace VideoWeb.Controllers
         private readonly IVideoApiClient _videoApiClient;
         private readonly ILogger<ConferenceManagementController> _logger;
         private readonly IConferenceCache _conferenceCache;
+        private readonly IConferenceLayoutService _conferenceLayoutService;
 
         public ConferenceManagementController(IVideoApiClient videoApiClient,
-            ILogger<ConferenceManagementController> logger, IConferenceCache conferenceCache)
+            ILogger<ConferenceManagementController> logger, IConferenceCache conferenceCache, IConferenceLayoutService conferenceLayoutService)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
             _conferenceCache = conferenceCache;
+            _conferenceLayoutService = conferenceLayoutService;
         }
 
         /// <summary>
