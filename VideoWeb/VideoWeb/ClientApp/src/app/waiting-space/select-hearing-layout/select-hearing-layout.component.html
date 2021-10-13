@@ -14,7 +14,7 @@
         <fieldset class="govuk-fieldset">
           <legend class="govuk-visually-hidden">{{'select-hearing-layout.choose-hearing-layout' | translate }}</legend>
           <ng-container *ngFor="let layout of availableLayouts">
-            <app-hearing-layout [layout]="layout" [recommended]="(recommendedLayout$ | async) === (currentLayout$ | async)" [isSelected]="(currentLayout$ | async) === layout" (selectedEvent)="updateSelectedLayout(layout)"></app-hearing-layout>
+            <app-hearing-layout [layout]="layout" [recommended]="(recommendedLayout$ | async) === layout" [isSelected]="(currentLayout$ | async) === layout" (selectedEvent)="updateSelectedLayout(layout)"></app-hearing-layout>
           </ng-container>
         </fieldset>
       </div>

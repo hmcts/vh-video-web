@@ -22,7 +22,7 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
     }
 
     get recommendedLayout$(): Observable<HearingLayout> {
-        return this.hearingLayoutService.getRecommendLayout();
+        return this.hearingLayoutService.recommendLayout$;
     }
 
     ngOnInit(): void {

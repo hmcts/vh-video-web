@@ -17,6 +17,7 @@ import { VideoControlService } from 'src/app/services/conference/video-control.s
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
+import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
@@ -83,7 +84,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected participantService: ParticipantService,
         protected videoControlService: VideoControlService,
         protected videoControlCacheService: VideoControlCacheService,
-        private unloadDetectorService: UnloadDetectorService
+        private unloadDetectorService: UnloadDetectorService,
+        private hearingLayoutService: HearingLayoutService
     ) {
         super(
             route,
@@ -357,7 +359,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             });
 
             this.conferenceStartedBy = this.participant.id;
-            await this.videoCallService.startHearing(this.hearing.id, this.videoCallService.getPreferredLayout(this.conferenceId));
+            this.hearingLayoutService.currentLayout$.pipe(take(1)).subscribe(async layout => {
+                await this.videoCallService.startHearing(this.hearing.id, layout);
+            });
         } catch (err) {
             this.logger.error(`${this.loggerPrefixJudge} Failed to ${action} a hearing for conference`, err, {
                 conference: this.conferenceId,
