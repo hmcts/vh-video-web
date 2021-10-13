@@ -108,30 +108,6 @@ export class ParticipantService {
         this.initialise();
     }
 
-    getParticipantOrVirtualMeetingRoomById(participantOrVmrId: string | Guid): ParticipantModel | VirtualMeetingRoomModel {
-        this.logger.info(`${this.loggerPrefix} getting participant or VMR by ID.`, {
-            participantOrVmrId: participantOrVmrId ?? null
-        });
-
-        if (Guid.isGuid(participantOrVmrId)) {
-            const participant = this.participants.find(x => x.id === participantOrVmrId.toString());
-            this.logger.info(`${this.loggerPrefix} getting participant or VMR by ID - ID was a participants ID.`, {
-                participantOrVmrId: participantOrVmrId,
-                participant: participant ?? null,
-                participants: this.participants ?? null
-            });
-            return participant;
-        } else {
-            const vmr = this.virtualMeetingRooms.find(x => x.id === participantOrVmrId);
-            this.logger.info(`${this.loggerPrefix} getting participant or VMR by ID - ID was a VMR ID.`, {
-                participantOrVmrId: participantOrVmrId,
-                virtualMeetingRoom: vmr ?? null,
-                virtualMeetingRooms: this.virtualMeetingRooms ?? null
-            });
-            return vmr;
-        }
-    }
-
     getPexipIdForParticipant(participantId: Guid | string): string {
         return this.participants.find(p => p.id === participantId?.toString())?.pexipId ?? null;
     }
@@ -165,8 +141,8 @@ export class ParticipantService {
                 .pipe(take(1))
                 .subscribe(participantsArrays => {
                     this._virtualMeetingRooms = [];
-                    this._nonEndpointParticipants = participantsArrays[0];
-                    this._endpointParticipants = participantsArrays[1];
+                    this._nonEndpointParticipants = [...participantsArrays[0]];
+                    this._endpointParticipants = [...participantsArrays[1]];
 
                     this.populateVirtualMeetingRooms();
 
@@ -272,7 +248,7 @@ export class ParticipantService {
                     map(message => message.participants.map(x => ParticipantModel.fromParticipantResponseVho(x)))
                 )
                 .subscribe(participants => {
-                    this._nonEndpointParticipants = participants;
+                    this._nonEndpointParticipants = [...participants];
                     this.participantsUpdatedSubject.next(true);
                 })
         );
