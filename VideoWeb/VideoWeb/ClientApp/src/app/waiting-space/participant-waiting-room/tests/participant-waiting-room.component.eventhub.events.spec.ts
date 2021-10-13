@@ -1,6 +1,6 @@
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConferenceStatus, ParticipantResponse, Role } from 'src/app/services/clients/api-client';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { hearingStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { Hearing } from '../../../shared/models/hearing';
@@ -87,6 +87,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
     it('should play hearing starting sound when "in session" message received and participant is not a witness', fakeAsync(() => {
         const status = ConferenceStatus.InSession;
         const message = new ConferenceStatusMessage(globalConference.id, status);
+        component.conferenceStartedBy = component.participant.id;
         notificationSoundsService.playHearingAlertSound.calls.reset();
 
         component.displayDeviceChangeModal = true;
