@@ -49,4 +49,8 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     canLeaveConsultation() {
         return this.participant?.status === ParticipantStatus.InConsultation;
     }
+
+    leaveHearing() {
+        console.log('Arif - leave hearing');
+    }
 }

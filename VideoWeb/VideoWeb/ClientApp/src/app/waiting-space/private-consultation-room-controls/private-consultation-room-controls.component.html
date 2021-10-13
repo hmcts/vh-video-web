@@ -119,6 +119,11 @@
             </div>
         </div>
         <div class='flexBar'></div>
+        <div class='icon-button' id='leave-hearing' appTooltip colour='grey'
+            [text]="'private-consultation-room-controls.leave-hearing' | translate"
+            (click)="leaveHearing()">
+            <span class='fad fa-sign-out-alt fa-flip-horizontal leave-hearing-button'></span>
+        </div>
         <div class='icon-button' id='toggle-participants-panel' appTooltip *ngIf="canToggleParticipantsPanel"
             [text]="'private-consultation-room-controls.participants-panel' | translate" colour='grey'
             (click)="togglePanelStatus('Participants')">
