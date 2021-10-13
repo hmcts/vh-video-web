@@ -5,7 +5,14 @@ import { Room } from '../shared/models/room';
 import { ParticipantMediaStatus } from '../shared/models/participant-media-status';
 import { ParticipantMediaStatusMessage } from '../shared/models/participant-media-status-message';
 import { ConferenceMessageAnswered } from './models/conference-message-answered';
-import { ConferenceStatus, ConsultationAnswer, EndpointStatus, ParticipantResponse, ParticipantStatus } from './clients/api-client';
+import {
+    ConferenceStatus,
+    ConsultationAnswer,
+    EndpointStatus,
+    HearingLayout,
+    ParticipantResponse,
+    ParticipantStatus
+} from './clients/api-client';
 import { Logger } from './logging/logger-base';
 
 import { ConsultationRequestResponseMessage } from './models/consultation-request-response-message';
@@ -23,6 +30,7 @@ import { ParticipantHandRaisedMessage } from '../shared/models/participant-hand-
 import { ParticipantRemoteMuteMessage } from '../shared/models/participant-remote-mute-message';
 import { EventsHubService } from './events-hub.service';
 import { ParticipantsUpdatedMessage } from '../shared/models/participants-updated-message';
+import HearingLayoutChanged from './models/hearing-layout-chagned';
 
 @Injectable({
     providedIn: 'root'
@@ -59,6 +67,7 @@ export class EventsService {
     private participantHandRaisedStatusSubject = new Subject<ParticipantHandRaisedMessage>();
     private roomUpdateSubject = new Subject<Room>();
     private roomTransferSubject = new Subject<RoomTransfer>();
+    private hearingLayoutChangedSubject = new Subject<HearingLayoutChanged>();
 
     private _handlersRegistered = false;
 
@@ -205,6 +214,11 @@ export class EventsService {
                 osVersion
             );
             this.participantHeartbeat.next(heartbeat);
+        },
+
+        HearingLayoutChanged: (conferenceId: string, newHearingLayout: HearingLayout, oldHearingLayout?: HearingLayout) => {
+            const hearingLayoutChanged = new HearingLayoutChanged(conferenceId, newHearingLayout, oldHearingLayout);
+            this.hearingLayoutChangedSubject.next(hearingLayoutChanged);
         }
     };
 
@@ -327,6 +341,10 @@ export class EventsService {
         return this.participantsUpdatedSubject.asObservable();
     }
 
+    getHearingLayoutChanged(): Observable<HearingLayoutChanged> {
+        return this.hearingLayoutChangedSubject.asObservable();
+    }
+
     async sendMessage(instantMessage: InstantMessage) {
         this.logger.debug('[EventsService] - Sent message to EventHub', instantMessage);
         try {
@@ -378,5 +396,9 @@ export class EventsService {
             participant: participantId,
             mediaStatus: mediaStatus
         });
+    }
+
+    async updateHearingLayout(conferenceId: string, newLayout: HearingLayout) {
+        await this.eventsHubConnection.send('HearingLayoutChanged', conferenceId, newLayout);
     }
 }

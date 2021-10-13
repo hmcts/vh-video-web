@@ -5,12 +5,12 @@ import { MockLogger } from '../testing/mocks/mock-logger';
 import { EventsService } from './events.service';
 import { Logger } from './logging/logger-base';
 import { InstantMessage } from './models/instant-message';
-import { fakeAsync, tick } from '@angular/core/testing';
+import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { EventsHubService } from './events-hub.service';
 import { Heartbeat } from '../shared/models/heartbeat';
 import { TransferDirection } from './models/hearing-transfer';
 import { ParticipantMediaStatus } from '../shared/models/participant-media-status';
-import { ParticipantResponse } from './clients/api-client';
+import { HearingLayout, ParticipantResponse } from './clients/api-client';
 
 describe('EventsService', () => {
     function spyPropertyGetter<T, K extends keyof T>(spyObj: jasmine.SpyObj<T>, propName: K): jasmine.Spy<() => T[K]> {
@@ -64,6 +64,7 @@ describe('EventsService', () => {
         subscription$.add(serviceUnderTest.getServiceReconnected().subscribe());
         subscription$.add(serviceUnderTest.getServiceDisconnected().subscribe());
         subscription$.add(serviceUnderTest.getParticipantsUpdated().subscribe());
+        subscription$.add(serviceUnderTest.getHearingLayoutChanged().subscribe());
 
         // Assert
         expect(subscription$).toBeTruthy();
@@ -136,7 +137,7 @@ describe('EventsService', () => {
     });
 
     describe('handlers', () => {
-        const expectedNumberOfRegisterations = 17;
+        const expectedNumberOfRegisterations = 18;
 
         describe('registerHandlers', () => {
             it('should register the handlers if they are NOT already registered', () => {
@@ -427,6 +428,23 @@ describe('EventsService', () => {
                 expectedParticipantId,
                 expectedMediaStatus
             );
+        }));
+
+        it('updateHearingLayout', fakeAsync(() => {
+            // Arrange
+            const expectedMessageName = 'HearingLayoutChanged';
+            const expectedConferenceId = 'test-conference-id';
+            const expectedLayout = HearingLayout.OnePlus7;
+            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['send']);
+
+            spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
+
+            // Act
+            serviceUnderTest.updateHearingLayout(expectedConferenceId, expectedLayout);
+            flush();
+
+            // Assert
+            expect(hubConnectionSpy.send).toHaveBeenCalledOnceWith(expectedMessageName, expectedConferenceId, expectedLayout);
         }));
     });
 });
