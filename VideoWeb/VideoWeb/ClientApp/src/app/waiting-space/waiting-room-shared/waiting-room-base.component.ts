@@ -1039,7 +1039,12 @@ export abstract class WaitingRoomBaseDirective {
             this.isPrivateConsultation = false;
             return;
         }
-        if (this.hearing.isInSession() && !this.isOrHasWitnessLink() && !this.isQuickLinkParticipant() && this.shouldCurrentUserJoinHearing()) {
+        if (
+            this.hearing.isInSession() &&
+            !this.isOrHasWitnessLink() &&
+            !this.isQuickLinkParticipant() &&
+            this.shouldCurrentUserJoinHearing()
+        ) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because hearing is in session';
             this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
