@@ -26,7 +26,7 @@ import { VideoCallService } from '../services/video-call.service';
 })
 export class PrivateConsultationRoomControlsComponent extends HearingControlsBaseComponent {
     showContextMenu = false;
-    showLeaveHearingModal = false;
+
     @Input() public canToggleParticipantsPanel: boolean;
     @Input() public isChatVisible: boolean;
 
@@ -49,9 +49,5 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
 
     canLeaveConsultation() {
         return this.participant?.status === ParticipantStatus.InConsultation;
-    }
-
-    leaveHearing() {
-        // this.apiClient.dismissParticipant(this.conferenceId, this.participant.id);
     }
 }

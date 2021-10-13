@@ -262,6 +262,12 @@ describe('HearingControlsBaseComponent', () => {
         expect(component.selfViewOpen).toBeFalsy();
     });
 
+    fit('should not display the leave hearing popup', async () => {
+        component.displayLeaveHearingPopup = true;
+        component.leave(true);
+        expect(component.displayLeaveHearingPopup).toBeFalsy();
+    });
+
     it('should raise hand on toggle if hand not raised', () => {
         component.handRaised = false;
         component.toggleHandRaised();

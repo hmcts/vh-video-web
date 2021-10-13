@@ -121,7 +121,7 @@
         <div class='flexBar'></div>
         <div class='icon-button' id='leave-hearing' appTooltip colour='grey'
             [text]="'private-consultation-room-controls.leave-hearing' | translate"
-            (click)="showLeaveHearingModal = !showLeaveHearingModal">
+            (click)="displayLeaveHearingPopup = !displayLeaveHearingPopup">
             <span class='fad fa-sign-out-alt fa-flip-horizontal leave-hearing-button'></span>
         </div>
         <div class='icon-button' id='toggle-participants-panel' appTooltip *ngIf="canToggleParticipantsPanel"
@@ -256,7 +256,7 @@
     </video>
 </div>
 
-<app-confirm-leave-hearing-popup *ngIf='showLeaveHearingModal'
+<app-confirm-leave-hearing-popup *ngIf='displayLeaveHearingPopup'
     (popupAnswered)='close($event)'></app-confirm-leave-hearing-popup>
 
 <app-confirm-close-hearing-popup *ngIf='!isPrivateConsultation && isJudge && displayConfirmPopup'

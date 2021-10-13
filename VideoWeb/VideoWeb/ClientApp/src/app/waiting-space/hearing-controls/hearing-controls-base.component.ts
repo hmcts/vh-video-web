@@ -44,6 +44,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     remoteMuted: boolean;
     selfViewOpen: boolean;
     displayConfirmPopup: boolean;
+    displayLeaveHearingPopup: boolean;
     participantSpotlightUpdateSubscription: Subscription;
     isSpotlighted: boolean;
 
@@ -353,6 +354,13 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         if (answer) {
             this.logger.debug(`${this.loggerPrefix} Attempting to close hearing`, this.logPayload);
             this.videoCallService.endHearing(this.conferenceId);
+        }
+    }
+
+    leave(answer: boolean) {
+        this.displayLeaveHearingPopup = false;
+        if (answer) {
+            console.log('Arif - leaving');
         }
     }
 
