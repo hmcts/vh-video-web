@@ -352,23 +352,24 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     async startHearing() {
         const action = this.isNotStarted() ? 'start' : 'resume';
-        try {
-            this.logger.debug(`${this.loggerPrefixJudge} Judge clicked ${action} hearing`, {
-                conference: this.conferenceId,
-                status: this.conference.status
-            });
 
-            this.conferenceStartedBy = this.participant.id;
-            this.hearingLayoutService.currentLayout$.pipe(take(1)).subscribe(async layout => {
+        this.logger.debug(`${this.loggerPrefixJudge} Judge clicked ${action} hearing`, {
+            conference: this.conferenceId,
+            status: this.conference.status
+        });
+
+        this.conferenceStartedBy = this.participant.id;
+        this.hearingLayoutService.currentLayout$.pipe(take(1)).subscribe(async layout => {
+            try {
                 await this.videoCallService.startHearing(this.hearing.id, layout);
-            });
-        } catch (err) {
-            this.logger.error(`${this.loggerPrefixJudge} Failed to ${action} a hearing for conference`, err, {
-                conference: this.conferenceId,
-                status: this.conference.status
-            });
-            this.errorService.handleApiError(err);
-        }
+            } catch (err) {
+                this.logger.error(`${this.loggerPrefixJudge} Failed to ${action} a hearing for conference`, err, {
+                    conference: this.conferenceId,
+                    status: this.conference.status
+                });
+                this.errorService.handleApiError(err);
+            }
+        });
     }
 
     goToJudgeHearingList(): void {
