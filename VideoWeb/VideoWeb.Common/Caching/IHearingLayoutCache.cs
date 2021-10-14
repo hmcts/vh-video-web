@@ -6,7 +6,7 @@ using VideoApi.Contract.Requests;
 
 namespace VideoWeb.Common.Caching
 {
-    public interface IConferenceLayoutCache
+    public interface IHearingLayoutCache
     {
         Task Write(Guid conferenceId, HearingLayout layout);
         Task<HearingLayout?> Read(Guid conferenceId);

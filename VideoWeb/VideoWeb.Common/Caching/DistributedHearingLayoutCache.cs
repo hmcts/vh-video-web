@@ -8,12 +8,12 @@ using VideoApi.Contract.Requests;
 
 namespace VideoWeb.Common.Caching
 {
-    public class DistributedConferenceLayoutCache : IConferenceLayoutCache
+    public class DistributedHearingLayoutCache : IHearingLayoutCache
     {
         private readonly IDistributedCache _distributedCache;
         private readonly string _cachePrefix = "layout_";
 
-        public DistributedConferenceLayoutCache(IDistributedCache distributedCache)
+        public DistributedHearingLayoutCache(IDistributedCache distributedCache)
         {
             _distributedCache = distributedCache;
         }

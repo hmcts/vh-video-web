@@ -26,10 +26,10 @@ namespace VideoWeb.Controllers
         private readonly IVideoApiClient _videoApiClient;
         private readonly ILogger<ConferenceManagementController> _logger;
         private readonly IConferenceCache _conferenceCache;
-        private readonly IConferenceLayoutService _conferenceLayoutService;
+        private readonly IHearingLayoutService _conferenceLayoutService;
 
         public ConferenceManagementController(IVideoApiClient videoApiClient,
-            ILogger<ConferenceManagementController> logger, IConferenceCache conferenceCache, IConferenceLayoutService conferenceLayoutService)
+            ILogger<ConferenceManagementController> logger, IConferenceCache conferenceCache, IHearingLayoutService conferenceLayoutService)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;

@@ -6,7 +6,7 @@ using VideoApi.Contract.Requests;
 
 namespace VideoWeb.EventHub.Services
 {
-    public interface IConferenceLayoutService
+    public interface IHearingLayoutService
     {
         Task UpdateLayout(Guid conferenceId, Guid changedById, HearingLayout newLayout);
         Task<HearingLayout?> GetCurrentLayout(Guid conferenceId);

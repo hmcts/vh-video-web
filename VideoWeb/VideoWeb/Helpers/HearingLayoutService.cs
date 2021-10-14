@@ -11,14 +11,14 @@ using VideoWeb.EventHub.Services;
 
 namespace VideoWeb.Helpers
 {
-    public class ConferenceLayoutService : IConferenceLayoutService
+    public class HearingLayoutService : IHearingLayoutService
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly IConferenceCache _conferenceCache;
-        private readonly IConferenceLayoutCache _conferenceLayoutCache;
+        private readonly IHearingLayoutCache _conferenceLayoutCache;
         private readonly IHubContext<EventHub.Hub.EventHub, IEventHubClient> _hubContext;
 
-        public ConferenceLayoutService(IVideoApiClient videoApiClient, IConferenceCache conferenceCache, IConferenceLayoutCache conferenceLayoutCache, IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext)
+        public HearingLayoutService(IVideoApiClient videoApiClient, IConferenceCache conferenceCache, IHearingLayoutCache conferenceLayoutCache, IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext)
         {
             _videoApiClient = videoApiClient;
             _conferenceCache = conferenceCache;
