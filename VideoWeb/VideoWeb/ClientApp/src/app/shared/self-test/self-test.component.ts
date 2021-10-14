@@ -76,7 +76,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         this.initialiseData();
 
         this.showChangeDevices = this.videoFilterService.doesSupportVideoFiltering();
-
+        this.userMediaService.initialise();
         this.userMediaService.connectedDevices$.pipe(take(1)).subscribe({
             next: () => {
                 this.displayFeed = false;
@@ -252,6 +252,11 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             participant: this.selfTestParticipantId
         });
         this.disconnect();
+
+        this.userMediaStreamService.activeMicrophoneStream$
+            .pipe(take(1))
+            .subscribe(micStream => (this.preferredMicrophoneStream = micStream));
+
         this.call();
     }
 
