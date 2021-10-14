@@ -84,7 +84,7 @@
         <!-- Column 3 -->
         <div>
           <div *ngIf="isParticipantInHearing(participant)">
-            <ng-container *ngIf="!participant.isJudge">
+            <ng-container *ngIf="!participant.isHost">
               <img
                 *ngIf="participant.isMicRemoteMuted()"
                 appTooltip
@@ -180,7 +180,7 @@
         <div>
           <app-judge-context-menu
             [participantInput]="participant"
-            *ngIf="!participant.isJudge"
+            *ngIf="!participant.isHost"
             [hidden]="!isParticipantInHearing(participant) && !participant.isAvailable()"
             (toggleMuteParticipantEvent)="toggleMuteParticipantEventHandler($event)"
             (toggleSpotlightParticipantEvent)="toggleSpotlightParticipantEventHandler($event)"
