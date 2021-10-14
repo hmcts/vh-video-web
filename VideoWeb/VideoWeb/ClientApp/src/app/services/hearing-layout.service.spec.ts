@@ -248,7 +248,7 @@ describe('HearingLayoutService', () => {
 
                     // Act
                     var recommendedLayout = null;
-                    service.recommendLayout$.subscribe(layout => (recommendedLayout = layout));
+                    service.recommendedLayout$.subscribe(layout => (recommendedLayout = layout));
                     flush();
 
                     // Assert
@@ -263,7 +263,7 @@ describe('HearingLayoutService', () => {
 
                 // Act
                 var recommendedLayout = null;
-                service.recommendLayout$.subscribe(layout => (recommendedLayout = layout));
+                service.recommendedLayout$.subscribe(layout => (recommendedLayout = layout));
                 flush();
 
                 currentConferenceSubject.next(twoPlusTwentyOneConferenceMin);
@@ -283,7 +283,7 @@ describe('HearingLayoutService', () => {
 
                 // Act
                 var recommendedLayout = null;
-                service.recommendLayout$.subscribe(layout => (recommendedLayout = layout));
+                service.recommendedLayout$.subscribe(layout => (recommendedLayout = layout));
                 flush();
 
                 recommendedLayout = null;

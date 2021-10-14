@@ -107,7 +107,7 @@ export class HearingLayoutService {
             });
     }
 
-    get recommendLayout$(): Observable<HearingLayout> {
+    get recommendedLayout$(): Observable<HearingLayout> {
         return this.conferenceService.currentConference$.pipe(
             distinctUntilChanged((x, y) => x?.id === y?.id),
             map(conference => {
