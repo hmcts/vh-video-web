@@ -45,7 +45,7 @@ describe('HearingLayoutService', () => {
     describe('on initialisation', () => {
         it('should of fetched the current layout', fakeAsync(() => {
             // Act
-            var currentLayout: HearingLayout | null = null;
+            let currentLayout: HearingLayout | null = null;
             service.currentLayout$.subscribe(layout => (currentLayout = layout));
             flush();
 
@@ -71,7 +71,7 @@ describe('HearingLayoutService', () => {
                 hearingLayoutChangedSubjectMock.next(new HearingLayoutChanged(initialConferenceId, expectedLayout));
                 flush();
 
-                var currentLayout: HearingLayout | null = null;
+                let currentLayout: HearingLayout | null = null;
                 service.currentLayout$.subscribe(layout => (currentLayout = layout));
 
                 // Assert
@@ -86,7 +86,7 @@ describe('HearingLayoutService', () => {
                 hearingLayoutChangedSubjectMock.next(new HearingLayoutChanged(Guid.create().toString(), unexpectedLayout));
                 flush();
 
-                var currentLayout: HearingLayout | null = null;
+                let currentLayout: HearingLayout | null = null;
                 service.currentLayout$.subscribe(layout => (currentLayout = layout));
 
                 // Assert
@@ -107,7 +107,7 @@ describe('HearingLayoutService', () => {
                 hearingLayoutChangedSubjectMock.next(new HearingLayoutChanged(initialConferenceId, unexpectedLayout));
                 flush();
 
-                var currentLayout: HearingLayout | null = null;
+                let currentLayout: HearingLayout | null = null;
                 service.currentLayout$.subscribe(layout => (currentLayout = layout));
 
                 // Assert
@@ -128,7 +128,7 @@ describe('HearingLayoutService', () => {
                 hearingLayoutChangedSubjectMock.next(new HearingLayoutChanged(conferenceId, expectedLayout));
                 flush();
 
-                var currentLayout: HearingLayout | null = null;
+                let currentLayout: HearingLayout | null = null;
                 service.currentLayout$.subscribe(layout => (currentLayout = layout));
 
                 // Assert
@@ -144,7 +144,7 @@ describe('HearingLayoutService', () => {
                 apiClientSpy.getLayoutForHearing.and.returnValue(of(expectedLayout));
 
                 // Act
-                var currentLayout: HearingLayout | null = null;
+                let currentLayout: HearingLayout | null = null;
                 service.getCurrentLayout().subscribe(layout => (currentLayout = layout));
                 flush();
 
@@ -247,7 +247,7 @@ describe('HearingLayoutService', () => {
                     flush();
 
                     // Act
-                    var recommendedLayout = null;
+                    let recommendedLayout = null;
                     service.recommendedLayout$.subscribe(layout => (recommendedLayout = layout));
                     flush();
 
@@ -262,7 +262,7 @@ describe('HearingLayoutService', () => {
                 flush();
 
                 // Act
-                var recommendedLayout = null;
+                let recommendedLayout = null;
                 service.recommendedLayout$.subscribe(layout => (recommendedLayout = layout));
                 flush();
 
@@ -282,7 +282,7 @@ describe('HearingLayoutService', () => {
                 flush();
 
                 // Act
-                var recommendedLayout = null;
+                let recommendedLayout = null;
                 service.recommendedLayout$.subscribe(layout => (recommendedLayout = layout));
                 flush();
 

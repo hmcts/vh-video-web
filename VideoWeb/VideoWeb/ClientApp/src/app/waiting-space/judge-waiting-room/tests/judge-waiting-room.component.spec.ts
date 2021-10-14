@@ -50,7 +50,7 @@ import { HearingRole } from '../../models/hearing-role-model';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
 
-fdescribe('JudgeWaitingRoomComponent when conference exists', () => {
+describe('JudgeWaitingRoomComponent when conference exists', () => {
     const participantOneId = Guid.create().toString();
     const participantOne = new ParticipantForUserResponse({
         id: participantOneId,

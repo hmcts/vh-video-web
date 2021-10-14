@@ -51,7 +51,9 @@ export class HearingLayoutService {
                                 this.conferenceService.currentConference$.pipe(filter(conference => conference.id !== currentConferenceId))
                             ),
                             tap(layoutChanged => {
-                                if (layoutChanged.conferenceId === currentConferenceId) return;
+                                if (layoutChanged.conferenceId === currentConferenceId) {
+                                    return;
+                                }
 
                                 this.logger.debug(
                                     `${this.loggerPrefix} layout changed from ${layoutChanged.newHearingLayout} to ${layoutChanged.newHearingLayout} for conference: ${currentConferenceId}`
