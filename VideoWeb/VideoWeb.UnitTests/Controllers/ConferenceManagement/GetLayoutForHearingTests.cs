@@ -11,7 +11,6 @@ using VideoApi.Contract.Responses;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
-using Microsoft.AspNetCore.Mvc;
 using FluentAssertions;
 using VideoApi.Client;
 using System.Security.Claims;

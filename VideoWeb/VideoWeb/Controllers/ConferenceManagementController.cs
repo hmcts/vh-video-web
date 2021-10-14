@@ -108,8 +108,6 @@ namespace VideoWeb.Controllers
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
-
-            return StatusCode((int)HttpStatusCode.InternalServerError);
         }
 
         /// <summary>
