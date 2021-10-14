@@ -28,6 +28,6 @@ namespace VideoWeb.EventHub.Hub
         Task ReceiveHeartbeat(Guid conferenceId, Guid participantId, HeartbeatHealth heartbeatHealth, string browserName, string browserVersion, string osName, string osVersion);
         Task HearingTransfer(Guid conferenceId, Guid participantId, TransferDirection transferDirection);
         Task ParticipantsUpdatedMessage(Guid conferenceId, List<ParticipantResponse> participants);
-        Task HearingLayoutChanged(Guid conferenceId, HearingLayout newLayout, HearingLayout oldLayout);
+        Task HearingLayoutChanged(Guid conferenceId, Guid changedById, HearingLayout newLayout, HearingLayout oldLayout);
     }
 }

@@ -65,10 +65,11 @@ describe('HearingLayoutService', () => {
             it('should emit the new layout from currentLayout$ when it is for the current conference', fakeAsync(() => {
                 // Arrange
                 const expectedLayout = HearingLayout.OnePlus7;
+                const changedById = Guid.create().toString();
                 apiClientSpy.getLayoutForHearing.and.returnValue(of(expectedLayout));
 
                 // Act
-                hearingLayoutChangedSubjectMock.next(new HearingLayoutChanged(initialConferenceId, expectedLayout));
+                hearingLayoutChangedSubjectMock.next(new HearingLayoutChanged(initialConferenceId, changedById, expectedLayout));
                 flush();
 
                 let currentLayout: HearingLayout | null = null;
@@ -83,7 +84,9 @@ describe('HearingLayoutService', () => {
                 const unexpectedLayout = HearingLayout.OnePlus7;
 
                 // Act
-                hearingLayoutChangedSubjectMock.next(new HearingLayoutChanged(Guid.create().toString(), unexpectedLayout));
+                hearingLayoutChangedSubjectMock.next(
+                    new HearingLayoutChanged(Guid.create().toString(), Guid.create().toString(), unexpectedLayout)
+                );
                 flush();
 
                 let currentLayout: HearingLayout | null = null;
@@ -98,13 +101,14 @@ describe('HearingLayoutService', () => {
                 const unexpectedLayout = HearingLayout.TwoPlus21;
 
                 const conferenceId = Guid.create().toString();
+                const changedById = Guid.create().toString();
                 const conference = new ConferenceResponse({ id: conferenceId });
 
                 // Act
                 currentConferenceSubject.next(conference);
                 flush();
 
-                hearingLayoutChangedSubjectMock.next(new HearingLayoutChanged(initialConferenceId, unexpectedLayout));
+                hearingLayoutChangedSubjectMock.next(new HearingLayoutChanged(initialConferenceId, changedById, unexpectedLayout));
                 flush();
 
                 let currentLayout: HearingLayout | null = null;
@@ -119,13 +123,14 @@ describe('HearingLayoutService', () => {
                 const expectedLayout = HearingLayout.TwoPlus21;
 
                 const conferenceId = Guid.create().toString();
+                const changedById = Guid.create().toString();
                 const conference = new ConferenceResponse({ id: conferenceId });
 
                 // Act
                 currentConferenceSubject.next(conference);
                 flush();
 
-                hearingLayoutChangedSubjectMock.next(new HearingLayoutChanged(conferenceId, expectedLayout));
+                hearingLayoutChangedSubjectMock.next(new HearingLayoutChanged(conferenceId, changedById, expectedLayout));
                 flush();
 
                 let currentLayout: HearingLayout | null = null;

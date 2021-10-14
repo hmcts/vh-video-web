@@ -544,7 +544,8 @@ namespace VideoWeb.EventHub.Hub
 
         public async Task UpdateHearingLayout(Guid conferenceId, HearingLayout newLayout)
         {
-            await _conferenceLayoutService.UpdateLayout(conferenceId, newLayout);
+            var updatedById = Guid.Parse(await GetParticipantIdByUsernameAsync(conferenceId, Context.User.Identity.Name));
+            await _conferenceLayoutService.UpdateLayout(conferenceId, updatedById, newLayout);
         }
     }
 }

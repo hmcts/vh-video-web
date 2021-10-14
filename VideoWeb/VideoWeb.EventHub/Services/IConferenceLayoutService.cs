@@ -8,7 +8,7 @@ namespace VideoWeb.EventHub.Services
 {
     public interface IConferenceLayoutService
     {
-        Task UpdateLayout(Guid conferenceId, HearingLayout newLayout);
+        Task UpdateLayout(Guid conferenceId, Guid changedById, HearingLayout newLayout);
         Task<HearingLayout?> GetCurrentLayout(Guid conferenceId);
     }
 

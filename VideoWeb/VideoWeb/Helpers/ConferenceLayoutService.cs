@@ -57,7 +57,7 @@ namespace VideoWeb.Helpers
             return null;
         }
 
-        public async Task UpdateLayout(Guid conferenceId, HearingLayout newLayout)
+        public async Task UpdateLayout(Guid conferenceId, Guid changedById, HearingLayout newLayout)
         {
             Conference conference;
             try
@@ -77,7 +77,7 @@ namespace VideoWeb.Helpers
                             .Groups(conference.Participants
                             .Where(participant => participant.Role == Role.Judge || participant.Role == Role.StaffMember)
                             .Select(participant => participant.Username.ToLowerInvariant()).ToList())
-                            .HearingLayoutChanged(conferenceId, newLayout, oldLayout);
+                            .HearingLayoutChanged(conferenceId, changedById, newLayout, oldLayout);
         }
     }
 }

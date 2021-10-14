@@ -216,8 +216,13 @@ export class EventsService {
             this.participantHeartbeat.next(heartbeat);
         },
 
-        HearingLayoutChanged: (conferenceId: string, newHearingLayout: HearingLayout, oldHearingLayout?: HearingLayout) => {
-            const hearingLayoutChanged = new HearingLayoutChanged(conferenceId, newHearingLayout, oldHearingLayout);
+        HearingLayoutChanged: (
+            conferenceId: string,
+            changedById: string,
+            newHearingLayout: HearingLayout,
+            oldHearingLayout?: HearingLayout
+        ) => {
+            const hearingLayoutChanged = new HearingLayoutChanged(conferenceId, changedById, newHearingLayout, oldHearingLayout);
             this.hearingLayoutChangedSubject.next(hearingLayoutChanged);
         }
     };

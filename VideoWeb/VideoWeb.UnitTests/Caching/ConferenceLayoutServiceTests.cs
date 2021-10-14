@@ -109,6 +109,7 @@ namespace VideoWeb.UnitTests.Caching
         {
             // Arrange
             var conferenceId = Guid.NewGuid();
+            var changedById = Guid.NewGuid();
             var defaultLayout = HearingLayout.Dynamic;
             var expectedLayout = HearingLayout.TwoPlus21;
             var participants = BuildParticipantListWithAllRoles();
@@ -137,12 +138,12 @@ namespace VideoWeb.UnitTests.Caching
                 .Returns(_mocker.Mock<IEventHubClient>().Object);
 
             // Act
-            await _sut.UpdateLayout(conferenceId, expectedLayout);
+            await _sut.UpdateLayout(conferenceId, changedById, expectedLayout);
 
             // Assert
             _mocker.Mock<IConferenceLayoutCache>().Verify(x => x.Write(conferenceId, expectedLayout), Times.Once);
             _mocker.Mock<IEventHubClient>().Verify(
-                x => x.HearingLayoutChanged(conferenceId, expectedLayout, defaultLayout),
+                x => x.HearingLayoutChanged(conferenceId, changedById, expectedLayout, defaultLayout),
                 Times.Once);
         }
 
@@ -151,6 +152,7 @@ namespace VideoWeb.UnitTests.Caching
         {
             // Arrange
             var conferenceId = Guid.NewGuid();
+            var changedById = Guid.NewGuid();
             var expectedLayout = HearingLayout.TwoPlus21;
 
 
@@ -158,12 +160,12 @@ namespace VideoWeb.UnitTests.Caching
             _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(x => x == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ThrowsAsync(new Exception());
 
             // Act
-            await _sut.UpdateLayout(conferenceId, expectedLayout);
+            await _sut.UpdateLayout(conferenceId, changedById, expectedLayout);
 
             // Assert
             _mocker.Mock<IConferenceCache>().Verify(x => x.UpdateConferenceAsync(It.IsAny<Conference>()), Times.Never);
             _mocker.Mock<IEventHubClient>().Verify(
-                x => x.HearingLayoutChanged(It.IsAny<Guid>(), It.IsAny<HearingLayout>(), It.IsAny<HearingLayout>()),
+                x => x.HearingLayoutChanged(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<HearingLayout>(), It.IsAny<HearingLayout>()),
                 Times.Never);
         }
 
