@@ -161,9 +161,11 @@ export class VideoFilterService {
     }
 
     doesSupportVideoFiltering() {
-        const allowedBrowser = !this.deviceTypeService.getBrowserName().includes(browsers.Safari);
-        return this._enableVideoFilters && allowedBrowser && this.deviceTypeService.isDesktop();
+        const allowedBrowser = this.deviceTypeService.getBrowserName().includes(browsers.Safari);
+        return this._enableVideoFilters && allowedBrowser && this.deviceTypeService.isDesktop() && this.isWebGL2Supported();
     }
+
+    private isWebGL2Supported = () => !!document.createElement('canvas').getContext('webgl2');
 
     private onSelfieSegmentationResults(results: Results): void {
         // Draw the overlays.
