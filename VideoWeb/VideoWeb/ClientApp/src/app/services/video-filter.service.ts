@@ -161,7 +161,7 @@ export class VideoFilterService {
     }
 
     doesSupportVideoFiltering() {
-        const allowedBrowser = this.deviceTypeService.getBrowserName().includes(browsers.Safari);
+        const allowedBrowser = !this.deviceTypeService.getBrowserName().includes(browsers.Safari);
         return this._enableVideoFilters && allowedBrowser && this.deviceTypeService.isDesktop() && this.isWebGL2Supported();
     }
 
