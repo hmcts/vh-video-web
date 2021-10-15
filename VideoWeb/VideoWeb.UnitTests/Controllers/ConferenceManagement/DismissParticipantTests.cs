@@ -82,7 +82,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var result = await Controller.DismissParticipantAsync(TestConference.Id, participant.Id);
             var typedResult = (UnauthorizedObjectResult)result;
             typedResult.Should().NotBeNull();
-            typedResult.Value.Should().Be("User must be a Judge");
+            typedResult.Value.Should().Be("User must be either Judge or StaffMember.");
 
             VideoApiClientMock.Verify(
                 x => x.TransferParticipantAsync(TestConference.Id,

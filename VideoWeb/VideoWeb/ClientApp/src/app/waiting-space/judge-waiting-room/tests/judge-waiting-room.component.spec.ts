@@ -621,6 +621,32 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.defineIsIMEnabled()).toBeFalsy();
     });
 
+    it('should not pull the JUDGE in to the hearing when JUDGE is in Waiting Room and hearing started by the STAFFMEMBER', fakeAsync(() => {
+        component.ngOnInit();
+        component.connected = true;
+        component.conference.status = ConferenceStatus.InSession;
+        component.conferenceStartedBy = component.conference.participants.find(p => p.role === Role.StaffMember).id;
+        component.participant = component.conference.participants.find(p => p.role === Role.Judge);
+
+        component.updateShowVideo();
+
+        expect(component.conference.participants.find(p => p.role === Role.Judge).status).toBe(ParticipantStatus.Available);
+        expect(component.conferenceStartedBy).toBe(null);
+    }));
+
+    it('should not pull the STAFFMEMBER in to the hearing when STAFFMEMBER is in Waiting Room and hearing started by the JUDGE', () => {
+        component.ngOnInit();
+        component.connected = true;
+        component.conference.status = ConferenceStatus.InSession;
+        component.conferenceStartedBy = component.conference.participants.find(p => p.role === Role.Judge).id;
+        component.participant = component.conference.participants.find(p => p.role === Role.StaffMember);
+
+        component.updateShowVideo();
+
+        expect(component.conference.participants.find(p => p.role === Role.StaffMember).status).toBe(ParticipantStatus.Available);
+        expect(component.conferenceStartedBy).toBe(null);
+    });
+
     describe('onConferenceStatusChanged', () => {
         it('should spotlight judge on conference start and restore all other participant states if it is first time the conference has started', () => {
             // Arrange

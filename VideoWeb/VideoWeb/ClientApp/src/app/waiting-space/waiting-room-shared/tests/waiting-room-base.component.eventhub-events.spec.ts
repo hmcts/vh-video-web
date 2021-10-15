@@ -244,6 +244,8 @@ describe('WaitingRoomComponent EventHub Call', () => {
     it('should update conference status and show video when "in session" message received and participant is not a witness', fakeAsync(() => {
         const status = ConferenceStatus.InSession;
         const message = new ConferenceStatusMessage(globalConference.id, status);
+        component.conferenceStartedBy = component.participant.id;
+
         notificationSoundsService.playHearingAlertSound.calls.reset();
         hearingStatusSubject.next(message);
         tick();
