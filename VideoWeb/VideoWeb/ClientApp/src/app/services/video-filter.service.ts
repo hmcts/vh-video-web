@@ -121,7 +121,7 @@ export class VideoFilterService {
             width: 1280,
             height: 720
         });
-        camera.start();
+        camera.start().then(x => (this.videoElement.srcObject = stream));
     }
 
     updateCameraStream(stream: MediaStream) {
