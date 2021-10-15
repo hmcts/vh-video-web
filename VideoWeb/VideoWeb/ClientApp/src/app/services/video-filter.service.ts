@@ -76,7 +76,7 @@ export class VideoFilterService {
 
         this.selfieSegmentation = new SelfieSegmentation({
             locateFile: file => {
-                return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1.1629494320/${file}`;
+                return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1.1632777926/${file}`;
             }
         });
         this.selfieSegmentation.setOptions({
