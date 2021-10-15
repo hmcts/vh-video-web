@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Camera } from '@mediapipe/camera_utils';
 import { Results, SelfieSegmentation } from '@mediapipe/selfie_segmentation';
 import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { browsers } from '../shared/browser.constants';
@@ -108,20 +107,22 @@ export class VideoFilterService {
 
         this.logger.debug(`${this.loggerPrefix} starting filtered stream`);
 
-        const camera = new Camera(this.videoElement, {
-            onFrame: async () => {
-                try {
-                    if (this.videoElement) {
-                        await this.selfieSegmentation.send({ image: this.videoElement });
-                    }
-                } catch (err) {
-                    this.logger.error(`${this.loggerPrefix} failed to send image to self segmentation mask`, err);
-                }
-            },
-            width: 1280,
-            height: 720
-        });
-        camera.start().then(x => (this.videoElement.srcObject = stream));
+        // const camera = new Camera(this.videoElement, {
+        //     onFrame: async () => {
+        //         try {
+        //             if (this.videoElement) {
+        //                 await this.selfieSegmentation.send({ image: this.videoElement });
+        //             }
+        //         } catch (err) {
+        //             this.logger.error(`${this.loggerPrefix} failed to send image to self segmentation mask`, err);
+        //         }
+        //     },
+        //     width: 1280,
+        //     height: 720
+        // });
+        // camera.start().then(x => (this.videoElement.srcObject = stream));
+
+        window.requestAnimationFrame(drawCustomBackground.bind(this));
     }
 
     updateCameraStream(stream: MediaStream) {
@@ -263,5 +264,27 @@ export class VideoFilterService {
         imageObject.src = imagePath;
         this.imgs.set(this.activeFilter, imageObject);
         return imageObject;
+    }
+
+    // async drawCustomBackground() {
+    //     try {
+    //         if (this.videoElement) {
+    //             await this.selfieSegmentation.send({ image: this.videoElement });
+    //         }
+    //         window.requestAnimationFrame(this.drawCustomBackground.bind(this));
+    //     } catch (err) {
+    //         this.logger.error(`${this.loggerPrefix} failed to send image to self segmentation mask`, err);
+    //     }
+    // }
+}
+
+async function drawCustomBackground() {
+    try {
+        if (this.videoElement) {
+            await this.selfieSegmentation.send({ image: this.videoElement });
+        }
+        window.requestAnimationFrame(drawCustomBackground.bind(this));
+    } catch (err) {
+        this.logger.error(`${this.loggerPrefix} failed to send image to self segmentation mask`, err);
     }
 }

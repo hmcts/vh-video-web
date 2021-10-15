@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
+    "start": "ng serve -c development",
+    "build": "ng build -c development",
     "build-prod": "ng build --prod",
     "build:ssr": "ng run VideoWeb:server:dev",
     "test": "ng test --code-coverage",
