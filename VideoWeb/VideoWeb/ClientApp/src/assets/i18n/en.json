@@ -1046,6 +1046,11 @@
       "message-without-party": "{{role}} has been added to the hearing.",
       "message-with-party": "{{role}} ({{party}}) has been added to the hearing.",
       "dismiss": "Dismiss"
+    },
+    "hearing-layout-changed": {
+      "title": "{{name}}",
+      "message": "has changed the hearing layout.",
+      "dismiss": "Dismiss"
     }
   },
   "consultation-service": {
