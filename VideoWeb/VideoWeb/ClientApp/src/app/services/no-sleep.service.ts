@@ -50,8 +50,8 @@ export class NoSleepService {
         this.videoElement.style.height = '100px';
         this.videoElement.style.position = 'absolute';
         this.videoElement.style.pointerEvents = 'none';
-        this.videoElement.srcObject = this.currentStream;
-        const firstDiv = this.document.getElementsByTagName('div')[0];
+        this.videoElement.setAttribute('role', 'presentation');
+        const firstDiv = this.document.getElementsByTagName('main')[0];
         firstDiv.appendChild(this.videoElement);
 
         this.logger.debug(`${this.loggerPrefix} created video element`);
