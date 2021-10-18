@@ -26,7 +26,7 @@ describe('EventsService', () => {
         loggerMock = new MockLogger();
         eventsHubServiceSpy = jasmine.createSpyObj<EventsHubService>(
             'EventsHubService',
-            ['start', 'stop', 'getServiceReconnected', 'getServiceDisconnected'],
+            ['start', 'stop', 'getServiceConnected', 'getServiceDisconnected'],
             ['connection', 'onEventsHubReady']
         );
         eventsHubServiceSpy.getServiceConnected.and.returnValue(new Observable<any>());

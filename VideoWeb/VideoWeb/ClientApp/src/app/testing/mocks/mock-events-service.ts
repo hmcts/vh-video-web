@@ -52,7 +52,7 @@ eventsServiceSpy = jasmine.createSpyObj<EventsService>(
         'getHearingCountdownCompleteMessage',
         'getConsultationRequestResponseMessage',
         'getServiceDisconnected',
-        'getServiceReconnected',
+        'getServiceConnected',
         'sendHeartbeat',
         'getRequestedConsultationMessage',
         'getChatMessage',
