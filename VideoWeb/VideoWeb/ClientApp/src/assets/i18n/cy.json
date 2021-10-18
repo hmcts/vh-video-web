@@ -636,7 +636,8 @@
     "buttons": {
       "start-video-hearing": "Dechrau'r gwrandawiad fideo",
       "enter-consultation-room": "Ymuno ag ystafell ymgynghori",
-      "resume-video-hearing": "Parhau â'r gwrandawiad fideo"
+      "resume-video-hearing": "Parhau â'r gwrandawiad fideo",
+      "join-hearing": "Ymuno â'r gwrandawiad "
     },
     "hearing-paused": "Gwrandawiad wedi'i atal dros dro",
     "hearing-suspended": "Gwrandawiad wedi'i ohirio",
