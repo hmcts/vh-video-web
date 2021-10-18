@@ -275,8 +275,8 @@ export class EventsService {
         return this.eventsHubService.onEventsHubReady;
     }
 
-    getServiceReconnected(): Observable<any> {
-        return this.eventsHubService.getServiceReconnected();
+    getServiceConnected(): Observable<any> {
+        return this.eventsHubService.getServiceConnected();
     }
 
     getServiceDisconnected(): Observable<number> {

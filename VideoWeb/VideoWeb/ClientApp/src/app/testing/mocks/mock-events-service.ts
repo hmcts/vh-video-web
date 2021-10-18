@@ -83,7 +83,7 @@ eventsServiceSpy.getEndpointStatusMessage.and.returnValue(endpointStatusSubjectM
 eventsServiceSpy.getHearingCountdownCompleteMessage.and.returnValue(hearingCountdownCompleteSubjectMock.asObservable());
 eventsServiceSpy.getConsultationRequestResponseMessage.and.returnValue(consultationRequestResponseMessageSubjectMock.asObservable());
 eventsServiceSpy.getServiceDisconnected.and.returnValue(eventHubDisconnectSubjectMock.asObservable());
-eventsServiceSpy.getServiceReconnected.and.returnValue(eventHubReconnectSubjectMock.asObservable());
+eventsServiceSpy.getServiceConnected.and.returnValue(eventHubReconnectSubjectMock.asObservable());
 eventsServiceSpy.getRequestedConsultationMessage.and.returnValue(requestedConsultationMessageSubjectMock.asObservable());
 eventsServiceSpy.getChatMessage.and.returnValue(messageSubjectMock.asObservable());
 eventsServiceSpy.getHeartbeat.and.returnValue(heartbeatSubjectMock.asObservable());

@@ -29,7 +29,7 @@ describe('EventsService', () => {
             ['start', 'stop', 'getServiceReconnected', 'getServiceDisconnected'],
             ['connection', 'onEventsHubReady']
         );
-        eventsHubServiceSpy.getServiceReconnected.and.returnValue(new Observable<any>());
+        eventsHubServiceSpy.getServiceConnected.and.returnValue(new Observable<any>());
         eventsHubServiceSpy.getServiceDisconnected.and.returnValue(new Observable<number>());
         spyPropertyGetter(eventsHubServiceSpy, 'onEventsHubReady').and.returnValue(new Observable());
         serviceUnderTest = new EventsService(loggerMock, eventsHubServiceSpy);
@@ -44,7 +44,7 @@ describe('EventsService', () => {
         // Arrange
 
         // Act
-        subscription$.add(serviceUnderTest.getServiceReconnected().subscribe());
+        subscription$.add(serviceUnderTest.getServiceConnected().subscribe());
         subscription$.add(serviceUnderTest.getServiceDisconnected().subscribe());
         subscription$.add(serviceUnderTest.getParticipantStatusMessage().subscribe());
         subscription$.add(serviceUnderTest.getHearingStatusMessage().subscribe());
@@ -61,7 +61,7 @@ describe('EventsService', () => {
         subscription$.add(serviceUnderTest.getRoomUpdate().subscribe());
         subscription$.add(serviceUnderTest.getRoomTransfer().subscribe());
         subscription$.add(serviceUnderTest.getHeartbeat().subscribe());
-        subscription$.add(serviceUnderTest.getServiceReconnected().subscribe());
+        subscription$.add(serviceUnderTest.getServiceConnected().subscribe());
         subscription$.add(serviceUnderTest.getServiceDisconnected().subscribe());
         subscription$.add(serviceUnderTest.getParticipantsUpdated().subscribe());
         subscription$.add(serviceUnderTest.getHearingLayoutChanged().subscribe());
@@ -91,10 +91,10 @@ describe('EventsService', () => {
             // Arrange
 
             // Act
-            serviceUnderTest.getServiceReconnected();
+            serviceUnderTest.getServiceConnected();
 
             // Assert
-            expect(eventsHubServiceSpy.getServiceReconnected).toHaveBeenCalledTimes(1);
+            expect(eventsHubServiceSpy.getServiceConnected).toHaveBeenCalledTimes(1);
         });
     });
 
