@@ -435,7 +435,8 @@
     "buttons": {
       "start-video-hearing": "Start video hearing",
       "resume-video-hearing": "Resume video hearing",
-      "enter-consultation-room": "Enter consultation room"
+      "enter-consultation-room": "Enter consultation room",
+      "join-hearing": "Join the hearing"
     },
     "warning": "Warning",
     "please-wait-while-we-connect-you": "Please wait while we connect you...",
