@@ -366,6 +366,14 @@ export class VideoCallService {
         return this.apiClient.endVideoHearing(conferenceId).toPromise();
     }
 
+    async joinHearingInSession(conferenceId: string, participantId: string) {
+        this.logger.info(`${this.loggerPrefix} Attempting to call participant into hearing`, {
+            conference: conferenceId,
+            participant: participantId
+        });
+        return this.apiClient.joinHearingInSession(conferenceId, participantId).toPromise();
+    }
+
     async callParticipantIntoHearing(conferenceId: string, participantId: string) {
         this.logger.info(`${this.loggerPrefix} Attempting to call participant into hearing`, {
             conference: conferenceId,
