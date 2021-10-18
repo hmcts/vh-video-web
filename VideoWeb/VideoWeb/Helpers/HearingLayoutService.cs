@@ -69,25 +69,25 @@ namespace VideoWeb.Helpers
             }
             catch (Exception exception)
             {
-                _logger.LogError($"Failed to update layout for conferece {conferenceId} to {newLayout} change requested by {changedById}", exception);
+                _logger.LogError(exception, "Failed to update layout for conferece {conferenceId} to {newLayout} change requested by {changedById}", conferenceId, newLayout, changedById);
                 return;
             }
 
             var hearingLayout = await GetHearingLayoutFromCache(conferenceId);
             var oldLayout = hearingLayout ?? conference.GetRecommendedLayout();
 
-            _logger.LogWarning($"Hearing layout changed for {conferenceId} from {oldLayout} to {newLayout} by participant with the ID {changedById}.");
+            _logger.LogWarning("Hearing layout changed for {conferenceId} from {oldLayout} to {newLayout} by participant with the ID {changedById}.", conferenceId, oldLayout, newLayout, changedById);
 
             await SetHearingLayoutInCache(conferenceId, newLayout);
 
-            _logger.LogWarning($"Set hearing layout in the cache for {conferenceId}.");
+            _logger.LogWarning("Set hearing layout in the cache for {conferenceId}.", conferenceId);
 
 
             var hosts = conference.Participants
                             .Where(participant => participant.IsHost())
                             .Select(participant => participant.Username.ToLowerInvariant());
 
-            _logger.LogWarning($"Sending message to {hosts} for layout change in {conferenceId}.");
+            _logger.LogWarning("Sending message to {hosts} for layout change in {conferenceId}.", hosts.ToArray(), conferenceId);
 
             await _hubContext.Clients
                             .Groups(hosts.ToList())
