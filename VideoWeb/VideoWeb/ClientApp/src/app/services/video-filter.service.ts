@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Camera } from '@mediapipe/camera_utils';
 import { Results, SelfieSegmentation } from '@mediapipe/selfie_segmentation';
-import { Observable, ReplaySubject, Subject } from 'rxjs';
+import { from, Observable, of, ReplaySubject, Subject } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { browsers } from '../shared/browser.constants';
 import { ConfigService } from './api/config.service';
 import { DeviceTypeService } from './device-type.service';
@@ -86,13 +87,14 @@ export class VideoFilterService {
         this.selfieSegmentation.onResults(results => this.onSelfieSegmentationResults(results));
     }
 
-    initFilterFromMediaStream(stream: MediaStream) {
+    initFilterFromMediaStream(stream: MediaStream): Observable<void> {
         if (this.videoElement && (this.videoElement?.srcObject as MediaStream)?.id !== stream.id) {
             this.logger.debug(`${this.loggerPrefix} camera stream has changed`);
             this.updateCameraStream(stream);
         }
         if (this.canvasStream) {
-            return;
+            this.logger.debug(`${this.loggerPrefix} canvas already exists returning`);
+            return of(void 0);
         }
 
         this.updateCanvasSize(stream);
@@ -121,7 +123,12 @@ export class VideoFilterService {
             width: 1280,
             height: 720
         });
-        camera.start();
+
+        return from(camera.start()).pipe(
+            tap(() => {
+                this.videoElement.srcObject = stream;
+            })
+        );
     }
 
     updateCameraStream(stream: MediaStream) {

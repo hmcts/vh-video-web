@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, from, of } from 'rxjs';
-import { catchError, map, mergeMap, retry } from 'rxjs/operators';
+import { catchError, map, mergeMap, retry, take } from 'rxjs/operators';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { CallError } from '../waiting-space/models/video-call-models';
 import { ErrorService } from './error.service';
@@ -50,12 +50,17 @@ export class MediaStreamService {
                 mergeMap(stream => {
                     if (this.videoFilterService.doesSupportVideoFiltering()) {
                         return this.videoFilterService.filterOn$.pipe(
-                            map(filterOn => {
+                            mergeMap(filterOn => {
                                 if (filterOn) {
-                                    this.videoFilterService.initFilterFromMediaStream(stream);
-                                    return this.videoFilterService.startFilteredStream();
+                                    return this.videoFilterService.initFilterFromMediaStream(stream).pipe(
+                                        take(1),
+                                        map(() => {
+                                            this.logger.info(`${this.loggerPrefix} MAP`);
+                                            return this.videoFilterService.startFilteredStream()
+                                        })
+                                    );
                                 } else {
-                                    return stream;
+                                    return of(stream);
                                 }
                             })
                         );
