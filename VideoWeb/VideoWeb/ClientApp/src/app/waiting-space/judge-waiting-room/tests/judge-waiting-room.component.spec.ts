@@ -348,6 +348,35 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.hearingPaused()).toBeFalsy();
     });
 
+    describe('hearingIsInSession', () => {
+        const invalidConferenceStatus = [
+            ConferenceStatus.NotStarted,
+            ConferenceStatus.Paused,
+            ConferenceStatus.Suspended,
+            ConferenceStatus.Closed
+        ];
+
+        it('hearing in session returns true when the conference is in session', () => {
+            component.conference.status = ConferenceStatus.InSession;
+            expect(component.hearingIsInSession()).toBe(true);
+        });
+
+        invalidConferenceStatus.forEach(status => {
+            it(`hearing in session returns false when the conference is ${status}`, () => {
+                component.conference.status = status;
+                expect(component.hearingIsInSession()).toBe(false);
+            });
+        });
+    });
+
+    it('hearing in session returns false when the conference is not in session', () => {
+        const statuses = [ConferenceStatus.Closed, ConferenceStatus.NotStarted, ConferenceStatus.Paused, ConferenceStatus.Suspended];
+        statuses.forEach(currentStatus => {
+            component.conference.status = currentStatus;
+            expect(component.hearingIsInSession()).toBe(false);
+        });
+    });
+
     it('should handle error when get conference fails', async () => {
         const error = { status: 401, isApiException: true };
         videoWebService.getConferenceById.and.rejectWith(error);
@@ -370,6 +399,13 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         getSpiedPropertyGetter(hearingLayoutServiceSpy, 'currentLayout$').and.returnValue(of(layout));
         await component.startHearing();
         expect(errorService.handleApiError).toHaveBeenCalledWith(error);
+    });
+
+    it('calls join hearing in session endpoint and updates dualHostHasSignalledToJoinHearing to be true', async () => {
+        await component.joinHearingInSession();
+
+        expect(videoCallService.joinHearingInSession).toHaveBeenCalledWith(component.conferenceId, component.participant.id);
+        expect(component.dualHostHasSignalledToJoinHearing).toBe(true);
     });
 
     it('should continue with no recording when judge dismisses the audio recording alert mid hearing', async () => {

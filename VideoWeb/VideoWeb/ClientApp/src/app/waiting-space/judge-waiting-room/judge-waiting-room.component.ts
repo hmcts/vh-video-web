@@ -394,6 +394,15 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         return this.conference.status === ConferenceStatus.Paused;
     }
 
+    hearingIsInSession(): boolean {
+        return this.conference.status === ConferenceStatus.InSession;
+    }
+
+    async joinHearingInSession() {
+        await this.videoCallService.joinHearingInSession(this.conferenceId, this.participant.id);
+        this.dualHostHasSignalledToJoinHearing = true;
+    }
+
     initAudioRecordingInterval() {
         this.audioRecordingInterval = setInterval(async () => {
             await this.retrieveAudioStreamInfo(this.conference.hearing_ref_id);
