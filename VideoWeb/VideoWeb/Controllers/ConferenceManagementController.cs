@@ -170,6 +170,41 @@ namespace VideoWeb.Controllers
         }
 
         /// <summary>
+        /// Joins a video hearing currently in session
+        /// </summary>
+        /// <param name="conferenceId">conference id</param>
+        /// <param name="participantId">witness id</param>
+        /// <returns>Accepted status</returns>
+        [HttpPost("{conferenceId}/participant/{participantId}/joinHearing")]
+        [SwaggerOperation(OperationId = "JoinHearingInSession")]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
+        public async Task<IActionResult> JoinHearingInSession(Guid conferenceId, Guid participantId)
+        {
+            var validatedRequest = await ValidateUserIsHostAndInConference(conferenceId);
+            if (validatedRequest != null)
+            {
+                return validatedRequest;
+            }
+            try
+            {
+                _logger.LogDebug("Sending request to call witness {Participant} into video hearing {Conference}",
+                    participantId, conferenceId);
+                await _videoApiClient.TransferParticipantAsync(conferenceId, new TransferParticipantRequest
+                {
+                    ParticipantId = participantId,
+                    TransferType = TransferType.Call
+                });
+                return Accepted();
+            }
+            catch (VideoApiException ex)
+            {
+                _logger.LogError(ex, "{Participant} is unable to join into video hearing {Conference}",
+                    participantId, conferenceId);
+                return StatusCode(ex.StatusCode, ex.Response);
+            }
+        }
+
+        /// <summary>
         /// Call a witness into a video hearing
         /// </summary>
         /// <param name="conferenceId">conference id</param>
