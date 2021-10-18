@@ -478,11 +478,11 @@ export class ApiClient {
     /**
      * Joins a video hearing currently in session
      * @param conferenceId conference id
-     * @param participantId witness id
+     * @param participantId participant id
      * @return Success
      */
     joinHearingInSession(conferenceId: string, participantId: string): Observable<void> {
-        let url_ = this.baseUrl + '/conferences/{conferenceId}/participant/{participantId}/joinHearing';
+        let url_ = this.baseUrl + '/conferences/{conferenceId}/participant/{participantId}/join-hearing';
         if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
         if (participantId === undefined || participantId === null) throw new Error("The parameter 'participantId' must be defined.");
