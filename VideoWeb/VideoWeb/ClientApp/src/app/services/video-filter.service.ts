@@ -186,6 +186,7 @@ export class VideoFilterService {
 
         if (!this.deviceTypeService.isDesktop()) {
             this.logger.info(`${this.loggerPrefix} Custom backgrounds not supported - Client is not a desktop`);
+            return false;
         }
 
         this.logger.info(`${this.loggerPrefix} Custom backgrounds supported`);
