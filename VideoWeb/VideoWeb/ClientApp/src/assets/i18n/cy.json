@@ -624,7 +624,8 @@
       "suspended": "Rydym wedi hysbysu'r tîm gwrandawiadau fideo am hyn ac mi wnawn hefyd roi gwybod i'r cyfranogwyr eraill. Ffoniwch ni nawr ar <strong>{{phone}}</strong>.",
       "closed": "Mae'r ystafell ymgynghori ar gael am hyd at 30 munud ar ôl i'r gwrandawiad orffen. ",
       "consultation-room-will-close-at": "Bydd yr ystafell ymgynghori yn cau am ",
-      "warning": "Rhybudd"
+      "warning": "Rhybudd",
+      "in-session": "Mae aelod o staff y llys wedi agor y gwrandawiad"
     },
     "please-wait-while-we-connect-you": "Arhoswch tra byddwn yn eich cysylltu...",
     "hearing-is-being-recorded": {
