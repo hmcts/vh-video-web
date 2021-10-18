@@ -75,7 +75,7 @@ namespace VideoWeb.Helpers
 
             await _hubContext.Clients
                             .Groups(conference.Participants
-                            .Where(participant => participant.Role == Role.Judge || participant.Role == Role.StaffMember)
+                            .Where(participant => participant.IsHost())
                             .Select(participant => participant.Username.ToLowerInvariant()).ToList())
                             .HearingLayoutChanged(conferenceId, changedById, newLayout, oldLayout);
         }
