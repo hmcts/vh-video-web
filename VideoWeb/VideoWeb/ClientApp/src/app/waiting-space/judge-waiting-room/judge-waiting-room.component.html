@@ -168,6 +168,12 @@
       [innerHTML]="'judge-waiting-room.hearing-messages.suspended' | translate: { phone: '0300 303 0655' }"
     ></p>
 
+    <p
+      class="govuk-body govuk-!-margin-bottom-3"
+      *ngIf="hearingIsInSession()"
+      [innerHTML]="'judge-waiting-room.hearing-messages.in-session' | translate"
+    ></p>
+
     <div *ngIf="hearing.isClosed()">
       <p class="govuk-body govuk-!-margin-bottom-3" [innerHTML]="'judge-waiting-room.hearing-messages.closed' | translate"></p>
       <div class="govuk-warning-text">
