@@ -35,7 +35,7 @@ namespace VideoWeb.UnitTests.Hub
         protected ClaimsPrincipal Claims;
         protected Mock<IConferenceCache> ConferenceCacheMock;
         protected Mock<IHeartbeatRequestMapper> HeartbeatMapper;
-        protected Mock<IHearingLayoutService> conferenceLayoutServiceMock;
+        protected Mock<IHearingLayoutService> hearingLayoutServiceMock;
 
         [SetUp]
         public void Setup()
@@ -48,7 +48,7 @@ namespace VideoWeb.UnitTests.Hub
             GroupManagerMock = new Mock<IGroupManager>();
             HeartbeatMapper = new Mock<IHeartbeatRequestMapper>();
             ConferenceCacheMock = new Mock<IConferenceCache>();
-            conferenceLayoutServiceMock = new Mock<IHearingLayoutService>();
+            hearingLayoutServiceMock = new Mock<IHearingLayoutService>();
 
             Claims = new ClaimsPrincipalBuilder().Build();
             HubCallerContextMock.Setup(x => x.User).Returns(Claims);
@@ -64,7 +64,7 @@ namespace VideoWeb.UnitTests.Hub
             });
 
             Hub = new EventHub.Hub.EventHub(UserProfileServiceMock.Object, VideoApiClientMock.Object,
-                LoggerMock.Object, ConferenceCacheMock.Object, HeartbeatMapper.Object, vhServicesConfigurationOptions, conferenceLayoutServiceMock.Object)
+                LoggerMock.Object, ConferenceCacheMock.Object, HeartbeatMapper.Object, vhServicesConfigurationOptions, hearingLayoutServiceMock.Object)
             {
                 Context = HubCallerContextMock.Object,
                 Groups = GroupManagerMock.Object,

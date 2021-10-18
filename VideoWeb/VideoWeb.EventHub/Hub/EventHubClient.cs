@@ -29,17 +29,17 @@ namespace VideoWeb.EventHub.Hub
         private readonly IVideoApiClient _videoApiClient;
         private readonly IConferenceCache _conferenceCache;
         private readonly IHeartbeatRequestMapper _heartbeatRequestMapper;
-        private readonly IHearingLayoutService _conferenceLayoutService;
+        private readonly IHearingLayoutService _hearingLayoutService;
         private readonly HearingServicesConfiguration _servicesConfiguration;
 
         public EventHub(IUserProfileService userProfileService, IVideoApiClient videoApiClient,
-            ILogger<EventHub> logger, IConferenceCache conferenceCache, IHeartbeatRequestMapper heartbeatRequestMapper, IOptions<HearingServicesConfiguration> servicesConfiguration, IHearingLayoutService conferenceLayoutService)
+            ILogger<EventHub> logger, IConferenceCache conferenceCache, IHeartbeatRequestMapper heartbeatRequestMapper, IOptions<HearingServicesConfiguration> servicesConfiguration, IHearingLayoutService hearingLayoutService)
         {
             _userProfileService = userProfileService;
             _logger = logger;
             _conferenceCache = conferenceCache;
             _heartbeatRequestMapper = heartbeatRequestMapper;
-            _conferenceLayoutService = conferenceLayoutService;
+            _hearingLayoutService = hearingLayoutService;
             _videoApiClient = videoApiClient;
             _servicesConfiguration = servicesConfiguration.Value;
         }
@@ -545,7 +545,7 @@ namespace VideoWeb.EventHub.Hub
         public async Task UpdateHearingLayout(Guid conferenceId, HearingLayout newLayout)
         {
             var updatedById = Guid.Parse(await GetParticipantIdByUsernameAsync(conferenceId, Context.User.Identity.Name));
-            await _conferenceLayoutService.UpdateLayout(conferenceId, updatedById, newLayout);
+            await _hearingLayoutService.UpdateLayout(conferenceId, updatedById, newLayout);
         }
     }
 }

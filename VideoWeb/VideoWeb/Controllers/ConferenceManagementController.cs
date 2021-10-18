@@ -26,15 +26,15 @@ namespace VideoWeb.Controllers
         private readonly IVideoApiClient _videoApiClient;
         private readonly ILogger<ConferenceManagementController> _logger;
         private readonly IConferenceCache _conferenceCache;
-        private readonly IHearingLayoutService _conferenceLayoutService;
+        private readonly IHearingLayoutService _hearingLayoutService;
 
         public ConferenceManagementController(IVideoApiClient videoApiClient,
-            ILogger<ConferenceManagementController> logger, IConferenceCache conferenceCache, IHearingLayoutService conferenceLayoutService)
+            ILogger<ConferenceManagementController> logger, IConferenceCache conferenceCache, IHearingLayoutService hearingLayoutService)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
             _conferenceCache = conferenceCache;
-            _conferenceLayoutService = conferenceLayoutService;
+            _hearingLayoutService = hearingLayoutService;
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var layout = await _conferenceLayoutService.GetCurrentLayout(conferenceId);
+                var layout = await _hearingLayoutService.GetCurrentLayout(conferenceId);
                 if (!layout.HasValue) return NotFound();
 
                 return Ok(layout);

@@ -25,7 +25,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         protected Mock<IVideoApiClient> VideoApiClientMock;
         protected Mock<ILogger<ConferenceManagementController>> MockLogger;
         protected Mock<IConferenceCache> ConferenceCacheMock;
-        protected Mock<IHearingLayoutService> ConferenceLayoutService;
+        protected Mock<IHearingLayoutService> HearingLayoutServiceMock;
 
         protected ConferenceManagementController SetupControllerWithClaims(ClaimsPrincipal claimsPrincipal)
         {
@@ -39,7 +39,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             };
 
             return new ConferenceManagementController(VideoApiClientMock.Object, MockLogger.Object,
-                ConferenceCacheMock.Object, ConferenceLayoutService.Object)
+                ConferenceCacheMock.Object, HearingLayoutServiceMock.Object)
             {
                 ControllerContext = context
             };
@@ -48,7 +48,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         private void BaseSetup()
         {
             ConferenceCacheMock = new Mock<IConferenceCache>();
-            ConferenceLayoutService = new Mock<IHearingLayoutService>();
+            HearingLayoutServiceMock = new Mock<IHearingLayoutService>();
             VideoApiClientMock = new Mock<IVideoApiClient>();
             MockLogger = new Mock<ILogger<ConferenceManagementController>>();
 

@@ -15,14 +15,14 @@ namespace VideoWeb.Helpers
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly IConferenceCache _conferenceCache;
-        private readonly IHearingLayoutCache _conferenceLayoutCache;
+        private readonly IHearingLayoutCache _hearingLayoutCache;
         private readonly IHubContext<EventHub.Hub.EventHub, IEventHubClient> _hubContext;
 
-        public HearingLayoutService(IVideoApiClient videoApiClient, IConferenceCache conferenceCache, IHearingLayoutCache conferenceLayoutCache, IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext)
+        public HearingLayoutService(IVideoApiClient videoApiClient, IConferenceCache conferenceCache, IHearingLayoutCache hearingLayoutCache, IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext)
         {
             _videoApiClient = videoApiClient;
             _conferenceCache = conferenceCache;
-            this._conferenceLayoutCache = conferenceLayoutCache;
+            _hearingLayoutCache = hearingLayoutCache;
             _hubContext = hubContext;
         }
 
@@ -31,14 +31,14 @@ namespace VideoWeb.Helpers
             return await _conferenceCache.GetOrAddConferenceAsync(conferenceId, async () => await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
         }
 
-        private async Task SetConferenceLayoutInCache(Guid conferenceId, HearingLayout newLayout)
+        private async Task SetHearingLayoutInCache(Guid conferenceId, HearingLayout newLayout)
         {
-            await _conferenceLayoutCache.Write(conferenceId, newLayout);
+            await _hearingLayoutCache.Write(conferenceId, newLayout);
         }
 
-        private async Task<HearingLayout?> GetConferenceLayoutFromCache(Guid conferenceId)
+        private async Task<HearingLayout?> GetHearingLayoutFromCache(Guid conferenceId)
         {
-            return await _conferenceLayoutCache.Read(conferenceId);
+            return await _hearingLayoutCache.Read(conferenceId);
         }
 
         public async Task<HearingLayout?> GetCurrentLayout(Guid conferenceId)
@@ -46,8 +46,8 @@ namespace VideoWeb.Helpers
             try
             {
                 var conference = await GetConferenceFromCache(conferenceId);
-                var conferenceLayout = await GetConferenceLayoutFromCache(conferenceId);
-                return conferenceLayout ?? conference.GetRecommendedLayout();
+                var hearingLayout = await GetHearingLayoutFromCache(conferenceId);
+                return hearingLayout ?? conference.GetRecommendedLayout();
             }
             catch (VideoApiException exception)
             {
@@ -69,9 +69,9 @@ namespace VideoWeb.Helpers
                 return;
             }
 
-            var conferenceLayout = await GetConferenceLayoutFromCache(conferenceId);
-            var oldLayout = conferenceLayout ?? conference.GetRecommendedLayout();
-            await SetConferenceLayoutInCache(conferenceId, newLayout);
+            var hearingLayout = await GetHearingLayoutFromCache(conferenceId);
+            var oldLayout = hearingLayout ?? conference.GetRecommendedLayout();
+            await SetHearingLayoutInCache(conferenceId, newLayout);
 
             await _hubContext.Clients
                             .Groups(conference.Participants

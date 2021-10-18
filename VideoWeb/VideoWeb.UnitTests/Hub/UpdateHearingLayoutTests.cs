@@ -40,7 +40,7 @@ namespace VideoWeb.UnitTests.Hub
             await Hub.UpdateHearingLayout(_conference.Id, layout);
 
             // Assert
-            conferenceLayoutServiceMock.Verify(x => x.UpdateLayout(_conference.Id, _judgeUser.Id, layout));
+            hearingLayoutServiceMock.Verify(x => x.UpdateLayout(_conference.Id, _judgeUser.Id, layout));
         }
     }
 }
