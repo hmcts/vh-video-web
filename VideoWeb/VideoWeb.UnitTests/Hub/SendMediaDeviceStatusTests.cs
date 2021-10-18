@@ -12,7 +12,7 @@ namespace VideoWeb.UnitTests.Hub
     public class SendMediaDeviceStatusTests : EventHubBaseTests
     {
         [Test]
-        public async Task should_publish_media_status_to_participants_and_admin_when_ids_are_valid()
+        public async Task should_publish_media_status_to_participants_hosts_and_admin_when_ids_are_valid()
         {
             var participantUsername = "individual@hmcts.net";
             var conference = CreateTestConference(participantUsername);
@@ -67,6 +67,14 @@ namespace VideoWeb.UnitTests.Hub
             var judge = conference.Participants.Single(x => x.IsJudge());
             EventHubClientMock.Verify(
                 x => x.Group(judge.Username.ToLowerInvariant())
+                    .ParticipantMediaStatusMessage(participantId, conference.Id,
+                        It.Is<ParticipantMediaStatus>(s =>
+                            s.IsLocalAudioMuted == message.IsLocalAudioMuted &&
+                            s.IsLocalVideoMuted == message.IsLocalVideoMuted)), times);
+
+            var staffMember = conference.Participants.Single(x => x.IsStaffMember());
+            EventHubClientMock.Verify(
+                x => x.Group(staffMember.Username.ToLowerInvariant())
                     .ParticipantMediaStatusMessage(participantId, conference.Id,
                         It.Is<ParticipantMediaStatus>(s =>
                             s.IsLocalAudioMuted == message.IsLocalAudioMuted &&

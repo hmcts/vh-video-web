@@ -136,7 +136,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             this.resetMute();
         }
 
-        if (!this.isJudge && !this.isPrivateConsultation && !this.audioMuted) {
+        if (!this.isHost && !this.isPrivateConsultation && !this.audioMuted) {
             this.toggleMute();
         }
     }
@@ -277,7 +277,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             return;
         }
 
-        if (this.isJudge) {
+        if (this.isHost) {
             await this.resetMute();
             return;
         }
