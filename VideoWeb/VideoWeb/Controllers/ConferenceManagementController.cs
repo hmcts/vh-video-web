@@ -293,9 +293,9 @@ namespace VideoWeb.Controllers
         /// Joins a video hearing currently in session
         /// </summary>
         /// <param name="conferenceId">conference id</param>
-        /// <param name="participantId">witness id</param>
+        /// <param name="participantId">participant id</param>
         /// <returns>Accepted status</returns>
-        [HttpPost("{conferenceId}/participant/{participantId}/joinHearing")]
+        [HttpPost("{conferenceId}/participant/{participantId}/join-hearing")]
         [SwaggerOperation(OperationId = "JoinHearingInSession")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         public async Task<IActionResult> JoinHearingInSession(Guid conferenceId, Guid participantId)
