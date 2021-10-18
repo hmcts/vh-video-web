@@ -214,6 +214,16 @@
         {{ 'judge-waiting-room.buttons.resume-video-hearing' | translate }}
       </button>
       <button
+      [disabled]="!isParticipantInCorrectWaitingRoomState()"
+      id="join-hearing-button"
+      *ngIf="hearingIsInSession()"
+      type="button"
+      class="govuk-button govuk-button--start govuk-!-margin-right-3 vh-btn-text"
+      (click)="joinHearingInSession()"
+    >
+    {{ 'judge-waiting-room.buttons.join-hearing' | translate }}
+    </button>
+      <button
         class="govuk-button govuk-button--bigblue vh-btn-text"
         type="button"
         id="joinPCButton"

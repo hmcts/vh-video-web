@@ -94,6 +94,47 @@ describe('WaitingRoomComponent message and clock', () => {
         videoWebService.getConferenceById.calls.reset();
     });
 
+    describe('updateShowVideo', () => {
+        const dualHostRoles = [Role.Judge, Role.StaffMember];
+        const nonDualHostRoles = [
+            Role.None,
+            Role.CaseAdmin,
+            Role.VideoHearingsOfficer,
+            Role.HearingFacilitationSupport,
+            Role.Individual,
+            Role.Representative,
+            Role.JudicialOfficeHolder,
+            Role.QuickLinkParticipant,
+            Role.QuickLinkObserver
+        ];
+
+        dualHostRoles.forEach(role => {
+            it(`returns dualHostHasSignalledToJoinHearing as true when hearing in session and the participant is a ${role.toLocaleLowerCase()}`, () => {
+                component.connected = true;
+                component.dualHostHasSignalledToJoinHearing = true;
+                component.participant.role = role;
+                component.conference.status = ConferenceStatus.InSession;
+
+                component.updateShowVideo();
+
+                expect(component.dualHostHasSignalledToJoinHearing).toBe(true);
+            });
+        });
+
+        nonDualHostRoles.forEach(role => {
+            it(`returns dualHostHasSignalledToJoinHearing as false when hearing in session and the participant is a ${role.toLocaleLowerCase()}`, () => {
+                component.connected = true;
+                component.dualHostHasSignalledToJoinHearing = true;
+                component.participant.role = role;
+                component.conference.status = ConferenceStatus.InSession;
+
+                component.updateShowVideo();
+
+                expect(component.dualHostHasSignalledToJoinHearing).toBe(false);
+            });
+        });
+    });
+
     describe('toggle Panel', () => {
         const participantPanelName = 'Participants';
         const chatPanelName = 'Chat';
