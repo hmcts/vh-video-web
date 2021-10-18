@@ -168,8 +168,28 @@ export class VideoFilterService {
     }
 
     doesSupportVideoFiltering() {
+        if (!this._enableVideoFilters) {
+            this.logger.info(`${this.loggerPrefix} Custom backgrounds not supported - feature is disabled`);
+            return false;
+        }
+
         const allowedBrowser = !this.deviceTypeService.getBrowserName().includes(browsers.Safari);
-        return this._enableVideoFilters && allowedBrowser && this.deviceTypeService.isDesktop() && this.isWebGL2Supported();
+        if (!allowedBrowser) {
+            this.logger.info(`${this.loggerPrefix} Custom backgrounds not supported - Browser is not supported for video filtering`);
+            return false;
+        }
+
+        if (!this.isWebGL2Supported()) {
+            this.logger.info(`${this.loggerPrefix} Custom backgrounds not supported - WebGl2 is not supported on client`);
+            return false;
+        }
+
+        if (!this.deviceTypeService.isDesktop()) {
+            this.logger.info(`${this.loggerPrefix} Custom backgrounds not supported - Client is not a desktop`);
+        }
+
+        this.logger.info(`${this.loggerPrefix} Custom backgrounds supported`);
+        return true;
     }
 
     private isWebGL2Supported = () => !!document.createElement('canvas').getContext('webgl2');
