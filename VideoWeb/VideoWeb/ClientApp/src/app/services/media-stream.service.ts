@@ -56,7 +56,7 @@ export class MediaStreamService {
                                         take(1),
                                         map(() => {
                                             this.logger.info(`${this.loggerPrefix} MAP`);
-                                            return this.videoFilterService.startFilteredStream()
+                                            return this.videoFilterService.startFilteredStream();
                                         })
                                     );
                                 } else {
