@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
 import { skip, take, takeUntil } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ApiClient, HearingLayout, SharedParticipantRoom, StartHearingRequest } from 'src/app/services/clients/api-client';
@@ -55,6 +55,7 @@ export class VideoCallService {
 
     pexipAPI: PexipClient;
     localOutgoingStream: any;
+    streamModifiedSubscription: Subscription;
 
     constructor(
         private logger: Logger,
@@ -161,14 +162,19 @@ export class VideoCallService {
 
     private handleConnect(stream: MediaStream | URL) {
         if (this.renegotiating || this.justRenegotiated) {
-            this.logger.warn(`${this.loggerPrefix} Not handling pexip connect event as it was during a renegotation`);
+            this.logger.warn(
+                `${this.loggerPrefix} Not initialising heartbeat or subscribing to stream modified as it was during a renegotation`
+            );
             this.justRenegotiated = false;
-            return;
+        } else {
+            this.kinlyHeartbeatService.initialiseHeartbeat(this.pexipAPI);
+
+            if (!this.streamModifiedSubscription) {
+                this.streamModifiedSubscription = this.userMediaStreamService.streamModified$
+                    .pipe(takeUntil(this.hasDisconnected$))
+                    .subscribe(() => this.renegotiateCall());
+            }
         }
-
-        this.kinlyHeartbeatService.initialiseHeartbeat(this.pexipAPI);
-
-        this.userMediaStreamService.streamModified$.pipe(takeUntil(this.hasDisconnected$)).subscribe(() => this.renegotiateCall());
 
         this.onConnectedSubject.next(new ConnectedCall(stream));
     }
@@ -205,6 +211,8 @@ export class VideoCallService {
         if (this.pexipAPI) {
             this.logger.info(`${this.loggerPrefix} Disconnecting from pexip node.`);
             this.pexipAPI.disconnect();
+            this.hasDisconnected$.next();
+            this.hasDisconnected$.complete();
             this.kinlyHeartbeatService.stopHeartbeat();
         } else {
             throw new Error(`${this.loggerPrefix} Pexip Client has not been initialised.`);

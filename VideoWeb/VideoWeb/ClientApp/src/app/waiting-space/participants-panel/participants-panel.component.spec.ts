@@ -1,4 +1,4 @@
-import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { Guid } from 'guid-typescript';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -43,6 +43,19 @@ import { CaseTypeGroup } from '../models/case-type-group';
 import { Subject } from 'rxjs';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { PanelModel } from '../models/panel-model-base';
+import { JudgeContextMenuComponent } from '../judge-context-menu/judge-context-menu.component';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { MockComponent, MockDirective, MockPipe, ngMocks } from 'ng-mocks';
+import { HyphenatePipe } from 'src/app/shared/pipes/hyphenate.pipe';
+import { LowerCasePipe } from '@angular/common';
+import { VideoCallService } from '../services/video-call.service';
+import { EventsService } from 'src/app/services/events.service';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { MultilinePipe } from 'src/app/shared/pipes/multiline.pipe';
+import { DebugElement } from '@angular/core';
+import { By } from '@angular/platform-browser';
+import { TooltipDirective } from 'src/app/shared/directives/tooltip.directive';
+import { ParticipantAlertComponent } from '../participant-alert/participant-alert.component';
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
@@ -65,8 +78,13 @@ describe('ParticipantsPanelComponent', () => {
     let participantPanelModelMapperSpy: jasmine.SpyObj<ParticipantPanelModelMapper>;
 
     let component: ParticipantsPanelComponent;
+    let fixture: ComponentFixture<ParticipantsPanelComponent>;
     const mapper = new ParticipantPanelModelMapper();
     const participantsUpdatedSubject = new Subject<boolean>();
+
+    let hyphenateSpy: jasmine.Spy;
+    let translateSpy: jasmine.Spy;
+    let lowerCaseSpy: jasmine.Spy;
 
     beforeAll(() => {
         jasmine.getEnv().allowRespy(true);
@@ -74,7 +92,11 @@ describe('ParticipantsPanelComponent', () => {
     afterAll(() => {
         jasmine.getEnv().allowRespy(false);
     });
-    beforeEach(() => {
+
+    beforeEach(async () => {
+        hyphenateSpy = jasmine.createSpy('transform').and.callThrough();
+        translateSpy = jasmine.createSpy('transform').and.callThrough();
+        lowerCaseSpy = jasmine.createSpy('transform').and.callThrough();
         videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', [
             'setSpotlightStatus',
             'setSpotlightStatusById'
@@ -92,16 +114,73 @@ describe('ParticipantsPanelComponent', () => {
         ]);
         spyOnProperty(participantServiceSpy, 'onParticipantsUpdated$').and.returnValue(participantsUpdatedSubject.asObservable());
 
-        component = new ParticipantsPanelComponent(
-            videoWebServiceSpy,
-            activatedRoute,
-            videocallService,
-            videoControlServiceSpy,
-            eventService,
-            logger,
-            translateService,
-            participantPanelModelMapperSpy
-        );
+        await TestBed.configureTestingModule({
+            declarations: [
+                ParticipantsPanelComponent,
+                MockComponent(JudgeContextMenuComponent),
+                MockComponent(ParticipantAlertComponent),
+                MockDirective(TooltipDirective),
+                MockPipe(TranslatePipe, translateSpy),
+                MockPipe(HyphenatePipe, hyphenateSpy),
+                MockPipe(LowerCasePipe, lowerCaseSpy),
+                MockPipe(MultilinePipe)
+            ],
+            providers: [
+                {
+                    provide: VideoWebService,
+                    useValue: videoWebServiceSpy
+                },
+                {
+                    provide: ActivatedRoute,
+                    useValue: activatedRoute
+                },
+                {
+                    provide: VideoCallService,
+                    useValue: videocallService
+                },
+                {
+                    provide: VideoControlService,
+                    useValue: videoControlServiceSpy
+                },
+                {
+                    provide: EventsService,
+                    useValue: eventService
+                },
+                {
+                    provide: Logger,
+                    useValue: logger
+                },
+                {
+                    provide: ParticipantService,
+                    useValue: participantServiceSpy
+                },
+                {
+                    provide: TranslateService,
+                    useValue: translateService
+                },
+                {
+                    provide: ParticipantPanelModelMapper,
+                    useValue: participantPanelModelMapperSpy
+                }
+            ]
+        }).compileComponents();
+    });
+
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ParticipantsPanelComponent);
+        component = fixture.componentInstance;
+
+        component.participants = new ParticipantPanelModelMapper().mapFromParticipantUserResponseArray(participants);
+        component.conferenceId = conferenceId;
+        component.transferTimeout = {};
+
+        endpoints.map(endpoint => {
+            component.participants = component.participants.concat(new VideoEndpointPanelModel(endpoint));
+        });
+        videocallService.muteParticipant.calls.reset();
+        translateService.instant.calls.reset();
+
+        fixture.detectChanges();
 
         component.participants = new ParticipantPanelModelMapper().mapFromParticipantUserResponseArray(participants);
         component.conferenceId = conferenceId;
@@ -851,6 +930,279 @@ describe('ParticipantsPanelComponent', () => {
             it(`should return ${testCase}`, () => {
                 spyOnProperty(participant, 'isWitness').and.returnValue(testCase);
                 expect(component.isWitness(participant)).toBe(testCase);
+            });
+        });
+    });
+
+    describe('UI tests', () => {
+        describe('Participant panels', () => {
+            describe('Admit participant controls', () => {
+                let idPrefix;
+                let controlsElementId;
+                let controlsElement: DebugElement;
+                let testPanelModelSpy: jasmine.SpyObj<PanelModel>;
+                const testId = 'testId';
+
+                beforeEach(() => {
+                    spyOn(component, 'getPanelRowTooltipText').and.returnValue('testToolTipText');
+                    testPanelModelSpy = jasmine.createSpyObj<PanelModel>(
+                        'ParticipantPanelModel',
+                        [
+                            'isDisconnected',
+                            'isAvailable',
+                            'isInHearing',
+                            'hasSpotlight',
+                            'hasHandRaised',
+                            'isLocalCameraOff',
+                            'isMicRemoteMuted',
+                            'isLocalMicMuted'
+                        ],
+                        ['id', 'isCallable', 'transferringIn', 'isWitness']
+                    );
+                    spyOnProperty(testPanelModelSpy, 'id').and.returnValue(testId);
+
+                    component.participants = [testPanelModelSpy];
+                    idPrefix = `${component.idPrefix}-${testPanelModelSpy.id}`;
+                    controlsElementId = `${idPrefix}-admit-participant-controls`;
+                });
+                describe('when disconnected', () => {
+                    beforeEach(() => {
+                        spyOn(testPanelModelSpy, 'isDisconnected').and.returnValue(true);
+                        fixture.detectChanges();
+                        controlsElement = fixture.debugElement.query(By.css(`#${controlsElementId}`));
+                    });
+                    it('should not display', () => {
+                        expect(controlsElement).toBeFalsy();
+                    });
+                });
+                describe('when connected', () => {
+                    beforeEach(() => {
+                        spyOn(testPanelModelSpy, 'isDisconnected').and.returnValue(false);
+                        fixture.detectChanges();
+                        controlsElement = fixture.debugElement.query(By.css(`#${controlsElementId}`));
+                    });
+
+                    describe('when should not be visible', () => {
+                        afterEach(() => {
+                            fixture.detectChanges();
+                            controlsElement = fixture.debugElement.query(By.css(`#${controlsElementId}`));
+                        });
+
+                        it('should not display when not callable and not in hearing', () => {
+                            spyOnProperty(testPanelModelSpy, 'isCallable').and.returnValue(false);
+                            spyOn(testPanelModelSpy, 'isInHearing').and.returnValue(false);
+                            expect(controlsElement).toBeFalsy();
+                        });
+
+                        it('should not display when not callable and in hearing', () => {
+                            spyOnProperty(testPanelModelSpy, 'isCallable').and.returnValue(false);
+                            spyOn(testPanelModelSpy, 'isInHearing').and.returnValue(true);
+                            expect(controlsElement).toBeFalsy();
+                        });
+
+                        it('should not display when callable and in hearing', () => {
+                            spyOnProperty(testPanelModelSpy, 'isCallable').and.returnValue(true);
+                            spyOn(testPanelModelSpy, 'isInHearing').and.returnValue(true);
+                            expect(controlsElement).toBeFalsy();
+                        });
+                    });
+                    describe('when callable and not in hearing', () => {
+                        let admitParticipantIconId;
+                        let transferingInTextId;
+                        let participantUnavailableIconId;
+
+                        let admitParticipantIconElement;
+                        let transferingInTextElement;
+                        let participantUnavailableIconElement;
+                        function setElementsToTest() {
+                            admitParticipantIconElement = fixture.debugElement.query(By.css(`#${admitParticipantIconId}`));
+                            transferingInTextElement = fixture.debugElement.query(By.css(`#${transferingInTextId}`));
+                            participantUnavailableIconElement = fixture.debugElement.query(By.css(`#${participantUnavailableIconId}`));
+                        }
+
+                        beforeEach(() => {
+                            admitParticipantIconId = idPrefix + '-admit-participant-icon';
+                            transferingInTextId = idPrefix + '-transferring-in-text';
+                            participantUnavailableIconId = idPrefix + '-participant-unavailable-icon';
+
+                            spyOnProperty(testPanelModelSpy, 'isCallable').and.returnValue(true);
+                            spyOn(testPanelModelSpy, 'isInHearing').and.returnValue(false);
+                            fixture.detectChanges();
+                            controlsElement = fixture.debugElement.query(By.css(`#${controlsElementId}`));
+                        });
+                        it('should display', () => {
+                            expect(controlsElement).toBeTruthy();
+                        });
+
+                        describe('admitParticipantIconElement', () => {
+                            describe('not visisble,', () => {
+                                afterEach(() => {
+                                    fixture.detectChanges();
+                                    setElementsToTest();
+                                    expect(admitParticipantIconElement).toBeFalsy();
+                                });
+                                it('should not be visible when not available and not transferring in', () => {
+                                    spyOn(testPanelModelSpy, 'isAvailable').and.returnValue(false);
+                                    spyOnProperty(testPanelModelSpy, 'transferringIn').and.returnValue(false);
+                                });
+
+                                it('should not be visible when available and transferring in', () => {
+                                    spyOn(testPanelModelSpy, 'isAvailable').and.returnValue(true);
+                                    spyOnProperty(testPanelModelSpy, 'transferringIn').and.returnValue(true);
+                                });
+
+                                it('should not be visible when not available and transferring in', () => {
+                                    spyOn(testPanelModelSpy, 'isAvailable').and.returnValue(false);
+                                    spyOnProperty(testPanelModelSpy, 'transferringIn').and.returnValue(true);
+                                });
+                            });
+                            describe('visisble,', () => {
+                                let mockDirective: TooltipDirective;
+
+                                beforeEach(() => {
+                                    spyOn(testPanelModelSpy, 'isAvailable').and.returnValue(true);
+                                    spyOnProperty(testPanelModelSpy, 'transferringIn').and.returnValue(false);
+                                });
+
+                                it('should be visible when available and not joining', () => {
+                                    fixture.detectChanges();
+                                    setElementsToTest();
+                                    expect(admitParticipantIconElement).toBeTruthy();
+                                });
+
+                                it('should display call witness when role is Witness', () => {
+                                    const witnessKey = 'participants-panel.call-witness';
+                                    const translatedValue = 'translated';
+                                    translateSpy.withArgs(witnessKey).and.returnValue(translatedValue);
+
+                                    spyOnProperty(testPanelModelSpy, 'isWitness').and.returnValue(true);
+                                    fixture.detectChanges();
+                                    setElementsToTest();
+
+                                    mockDirective = ngMocks.get(ngMocks.find(`#${admitParticipantIconId}`), TooltipDirective);
+                                    expect(translateSpy).toHaveBeenCalledWith(witnessKey);
+                                    expect(mockDirective.text.trim()).toEqual(translatedValue);
+                                });
+
+                                it('should display call participant when role is not witness', () => {
+                                    const participantKey = 'participants-panel.admit-participant';
+                                    const admitParticipantTranslated = 'Admit participant translated';
+
+                                    const testHearingRole = 'Test hearing role';
+                                    const testHearingRoleHyphenated = 'test-hearing-role-hyphenated';
+                                    const testHearingRoleHyphenatedWithPrefix = `hearing-role.${testHearingRoleHyphenated}`;
+                                    const testHearingRoleTranslated = 'Test hearing role translated';
+                                    const testHearingRoleTranslatedLowercase = 'test hearing role translated lower case';
+
+                                    hyphenateSpy.withArgs(testHearingRole).and.returnValue(testHearingRoleHyphenated);
+                                    translateSpy.withArgs(testHearingRoleHyphenatedWithPrefix).and.returnValue(testHearingRoleTranslated);
+                                    lowerCaseSpy.withArgs(testHearingRoleTranslated).and.returnValue(testHearingRoleTranslatedLowercase);
+                                    translateSpy
+                                        .withArgs(participantKey, { role: testHearingRoleTranslatedLowercase })
+                                        .and.returnValue(admitParticipantTranslated);
+
+                                    spyOnProperty(testPanelModelSpy, 'isWitness').and.returnValue(false);
+                                    testPanelModelSpy.hearingRole = testHearingRole;
+
+                                    fixture.detectChanges();
+                                    setElementsToTest();
+
+                                    mockDirective = ngMocks.get(ngMocks.find(`#${admitParticipantIconId}`), TooltipDirective);
+                                    expect(hyphenateSpy).toHaveBeenCalledWith(testHearingRole);
+                                    expect(translateSpy).toHaveBeenCalledWith(testHearingRoleHyphenatedWithPrefix);
+                                    expect(lowerCaseSpy).toHaveBeenCalledWith(testHearingRoleTranslated);
+                                    expect(translateSpy).toHaveBeenCalledWith(participantKey, {
+                                        role: testHearingRoleTranslatedLowercase
+                                    });
+                                    expect(mockDirective.text.trim()).toEqual(admitParticipantTranslated);
+                                });
+
+                                it('should call participant when clicked', () => {
+                                    fixture.detectChanges();
+                                    setElementsToTest();
+                                    const callParticipantIntoHearingSpy = spyOn(component, 'callParticipantIntoHearing');
+                                    admitParticipantIconElement.nativeElement.click();
+                                    expect(callParticipantIntoHearingSpy).toHaveBeenCalledTimes(1);
+                                    expect(callParticipantIntoHearingSpy).toHaveBeenCalledWith(testPanelModelSpy);
+                                });
+                            });
+                        });
+
+                        describe('transferringInElement', () => {
+                            describe('not visisble,', () => {
+                                afterEach(() => {
+                                    fixture.detectChanges();
+                                    setElementsToTest();
+                                    expect(transferingInTextElement).toBeFalsy();
+                                });
+                                it('should not be visible when not available and not transferring in', () => {
+                                    spyOn(testPanelModelSpy, 'isAvailable').and.returnValue(false);
+                                    spyOnProperty(testPanelModelSpy, 'transferringIn').and.returnValue(false);
+                                });
+
+                                it('should not be visible when not available and transferring in', () => {
+                                    spyOn(testPanelModelSpy, 'isAvailable').and.returnValue(false);
+                                    spyOnProperty(testPanelModelSpy, 'transferringIn').and.returnValue(true);
+                                });
+
+                                it('should not be visible when available and not transferring in', () => {
+                                    spyOn(testPanelModelSpy, 'isAvailable').and.returnValue(true);
+                                    spyOnProperty(testPanelModelSpy, 'transferringIn').and.returnValue(false);
+                                });
+                            });
+                            describe('visisble,', () => {
+                                beforeEach(() => {
+                                    spyOn(testPanelModelSpy, 'isAvailable').and.returnValue(true);
+                                    spyOnProperty(testPanelModelSpy, 'transferringIn').and.returnValue(true);
+                                    fixture.detectChanges();
+                                    setElementsToTest();
+                                });
+
+                                it('should be visible when available and joining', () => {
+                                    expect(transferingInTextElement).toBeTruthy();
+                                });
+                            });
+                        });
+
+                        describe('unavailableIconElement', () => {
+                            describe('not visisble,', () => {
+                                afterEach(() => {
+                                    fixture.detectChanges();
+                                    setElementsToTest();
+                                    expect(participantUnavailableIconElement).toBeFalsy();
+                                });
+                                it('should not be visible when available and not transferring in', () => {
+                                    spyOn(testPanelModelSpy, 'isAvailable').and.returnValue(true);
+                                    spyOnProperty(testPanelModelSpy, 'transferringIn').and.returnValue(false);
+                                });
+
+                                it('should not be visible when available and transferring in', () => {
+                                    spyOn(testPanelModelSpy, 'isAvailable').and.returnValue(true);
+                                    spyOnProperty(testPanelModelSpy, 'transferringIn').and.returnValue(true);
+                                });
+                            });
+                            describe('visisble,', () => {
+                                beforeEach(() => {
+                                    spyOn(testPanelModelSpy, 'isAvailable').and.returnValue(false);
+                                    spyOnProperty(testPanelModelSpy, 'transferringIn').and.returnValue(false);
+                                    fixture.detectChanges();
+                                    setElementsToTest();
+                                });
+
+                                it('should be visible when not available and not transferring in', () => {
+                                    expect(participantUnavailableIconElement).toBeTruthy();
+                                });
+
+                                it('should be visible when not available and transferring in', () => {
+                                    spyOnProperty(testPanelModelSpy, 'transferringIn').and.returnValue(true);
+                                    fixture.detectChanges();
+                                    setElementsToTest();
+                                    expect(participantUnavailableIconElement).toBeTruthy();
+                                });
+                            });
+                        });
+                    });
+                });
             });
         });
     });

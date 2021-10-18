@@ -569,6 +569,16 @@ describe('HearingControlsBaseComponent', () => {
         expect(videoCallService.toggleMute).toHaveBeenCalledTimes(1);
     });
 
+    it('should reset mute on countdown complete for staffmember', () => {
+        videoCallService.toggleMute.calls.reset();
+        component.audioMuted = true;
+        component.participant = gloalConference.participants.filter(x => x.role === Role.StaffMember)[0];
+
+        hearingCountdownCompleteSubjectMock.next(gloalConference.id);
+
+        expect(videoCallService.toggleMute).toHaveBeenCalledTimes(1);
+    });
+
     it('should not reset mute on countdown complete for another hearing', () => {
         videoCallService.toggleMute.calls.reset();
         component.audioMuted = true;
