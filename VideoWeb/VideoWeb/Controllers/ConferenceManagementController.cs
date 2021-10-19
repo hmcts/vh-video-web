@@ -122,6 +122,7 @@ namespace VideoWeb.Controllers
         /// Update the active layout for a conference
         /// </summary>
         /// <param name="conferenceId">conference id</param>
+        /// <param name="layout">layout</param>
         /// <returns>Ok status</returns>
         /// <returns>Forbidden status</returns>
         /// <returns>Not Found status</returns>
@@ -134,7 +135,7 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                _logger.LogDebug("Attempting to update layout to {layout} for conference {conferenceId}", layout,conferenceId);
+                _logger.LogDebug("Attempting to update layout to {layout} for conference {conferenceId}", layout, conferenceId);
 
                 var participant = await GetParticipant(conferenceId, User.Identity.Name);
 
