@@ -32,6 +32,8 @@ import { BehaviorSubject, of, Subject } from 'rxjs';
 import { HearingRole } from '../models/hearing-role-model';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { HearingControlsBaseComponent } from '../hearing-controls/hearing-controls-base.component';
+import { CaseTypeGroup } from '../models/case-type-group';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -75,7 +77,11 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     beforeEach(() => {
         translateService.instant.calls.reset();
 
-        participantServiceSpy = jasmine.createSpyObj<ParticipantService>('ParticipantService', [], ['loggedInParticipant$']);
+        participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
+            'ParticipantService',
+            [],
+            ['loggedInParticipant$', 'participants']
+        );
 
         userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>([], ['isAudioOnly$']);
         isAudioOnlySubject = new Subject<boolean>();
@@ -573,5 +579,34 @@ describe('PrivateConsultationRoomControlsComponent', () => {
                 expect(result).toBeFalse();
             });
         }
+    });
+
+    describe('leave', () => {
+        it('should call super leave method with participants', () => {
+            const spy = spyOn(HearingControlsBaseComponent.prototype, 'leave');
+            console.log(participantServiceSpy);
+            getSpiedPropertyGetter(participantServiceSpy, 'participants').and.returnValue([
+                new ParticipantModel(
+                    '7879c48a-f513-4d3b-bb1b-151831427507',
+                    'Participant Name',
+                    'DisplayName',
+                    `Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507`,
+                    CaseTypeGroup.NONE,
+                    Role.Individual,
+                    HearingRole.LITIGANT_IN_PERSON,
+                    false,
+                    null,
+                    null,
+                    ParticipantStatus.Available,
+                    null
+                )
+            ]);
+
+            component.leave(true);
+
+            expect(spy.calls.count()).toBe(1);
+            expect(spy.calls.mostRecent().args[0]).toBe(true);
+            expect(spy.calls.mostRecent().args[1]).toBe(participantServiceSpy.participants);
+        });
     });
 });

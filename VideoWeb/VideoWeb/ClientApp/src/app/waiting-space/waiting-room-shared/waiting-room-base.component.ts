@@ -58,7 +58,7 @@ export abstract class WaitingRoomBaseDirective {
     audioOnly: boolean;
     hearingStartingAnnounced: boolean;
     privateConsultationAccordianExpanded = false;
-
+    dualHostHasSignalledToJoinHearing: boolean;
     loadingData: boolean;
     errorCount: number;
     hearing: Hearing;
@@ -1043,6 +1043,7 @@ export abstract class WaitingRoomBaseDirective {
             this.isPrivateConsultation = false;
             return;
         }
+
         if (
             this.hearing.isInSession() &&
             !this.isOrHasWitnessLink() &&
@@ -1092,7 +1093,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     shouldCurrentUserJoinHearing(): boolean {
-        return this.conferenceStartedBy === this.participant.id || !this.isHost();
+        return !this.isHost() || this.dualHostHasSignalledToJoinHearing;
     }
 
     isHost(): boolean {

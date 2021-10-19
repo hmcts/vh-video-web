@@ -57,6 +57,8 @@ videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>(
         'startHearing',
         'pauseHearing',
         'endHearing',
+        'leaveHearing',
+        'suspendHearing',
         'lowerAllHands',
         'lowerHandById',
         'callParticipantIntoHearing',

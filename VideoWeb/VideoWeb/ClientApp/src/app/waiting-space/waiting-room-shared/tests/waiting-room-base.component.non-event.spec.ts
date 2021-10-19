@@ -488,6 +488,38 @@ describe('WaitingRoomComponent message and clock', () => {
         expect(roomClosingToastrService.currentToast).toBeTruthy();
     });
 
+    describe('shouldCurrentUserJoinHearing', () => {
+        it('should return false if user is a host and has not signalled to join hearing', () => {
+            component.dualHostHasSignalledToJoinHearing = false;
+            const spy = spyOn(component, 'isHost').and.returnValue(true);
+
+            const shouldCurrentUserJoinHearing = component.shouldCurrentUserJoinHearing();
+
+            expect(spy).toHaveBeenCalledTimes(1);
+            expect(shouldCurrentUserJoinHearing).toBeFalsy();
+        });
+
+        it('should return true if user is not a host', () => {
+            component.dualHostHasSignalledToJoinHearing = false;
+            const spy = spyOn(component, 'isHost').and.returnValue(false);
+
+            const shouldCurrentUserJoinHearing = component.shouldCurrentUserJoinHearing();
+
+            expect(spy).toHaveBeenCalledTimes(1);
+            expect(shouldCurrentUserJoinHearing).toBeTrue();
+        });
+
+        it('should return true if user is a host and has signalled to join the hearing', () => {
+            component.dualHostHasSignalledToJoinHearing = true;
+            const spy = spyOn(component, 'isHost').and.returnValue(true);
+
+            const shouldCurrentUserJoinHearing = component.shouldCurrentUserJoinHearing();
+
+            expect(spy).toHaveBeenCalledTimes(1);
+            expect(shouldCurrentUserJoinHearing).toBeTrue();
+        });
+    });
+
     describe('call', () => {
         beforeAll(() => {
             jasmine.getEnv().allowRespy(true);

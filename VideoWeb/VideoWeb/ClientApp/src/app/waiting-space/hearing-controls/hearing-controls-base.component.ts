@@ -33,6 +33,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     @Output() public lockConsultation = new EventEmitter<boolean>();
     @Output() public togglePanel = new EventEmitter<string>();
     @Output() public changeDeviceToggle = new EventEmitter();
+    @Output() public leaveHearing = new EventEmitter();
 
     audioOnly = false;
 
@@ -357,10 +358,18 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         }
     }
 
-    leave(answer: boolean) {
+    leave(confirmation: boolean, participants: ParticipantModel[]) {
         this.displayLeaveHearingPopup = false;
-        if (answer) {
-            console.log('Arif - leaving');
+        if (confirmation) {
+            const isAnotherHostPresent = this.isAnotherHostPresent(participants);
+
+            if (isAnotherHostPresent) {
+                this.videoCallService.leaveHearing(this.conferenceId, this.participant.id).then(() => {
+                    this.leaveHearing.emit();
+                });
+            } else {
+                this.videoCallService.suspendHearing(this.conferenceId);
+            }
         }
     }
 
@@ -393,5 +402,28 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     changeDeviceSelected() {
         this.changeDeviceToggle.emit();
+    }
+
+    isAnotherHostPresent(participants: ParticipantModel[]): boolean {
+        let isAnotherHostInHearing = false;
+
+        const hosts = participants.filter(
+            x =>
+                x.id !== this.participant.id &&
+                (x.role === Role.Judge || x.role === Role.StaffMember || x.role === Role.JudicialOfficeHolder)
+        );
+
+        if (hosts.length === 0) {
+            return isAnotherHostInHearing;
+        }
+
+        hosts.forEach(host => {
+            if (host.status === ParticipantStatus.InHearing) {
+                isAnotherHostInHearing = true;
+                return;
+            }
+        });
+
+        return isAnotherHostInHearing;
     }
 }

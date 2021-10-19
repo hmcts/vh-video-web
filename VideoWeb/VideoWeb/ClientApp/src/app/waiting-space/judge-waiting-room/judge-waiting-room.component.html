@@ -27,6 +27,7 @@
               (leaveConsultation)="leaveConsultation()"
               (togglePanel)="togglePanel($event)"
               (changeDeviceToggle)="showChooseCameraDialog()"
+              (leaveHearing)="leaveHearing()"
             >
             </app-private-consultation-room-controls>
           </div>
@@ -210,6 +211,7 @@
       >
         {{ 'judge-waiting-room.buttons.start-video-hearing' | translate }}
       </button>
+
       <button
         [disabled]="!isParticipantInCorrectWaitingRoomState()"
         *ngIf="hearingPaused() || hearingSuspended()"
