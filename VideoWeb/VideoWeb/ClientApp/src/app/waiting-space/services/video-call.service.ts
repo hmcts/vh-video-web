@@ -214,6 +214,7 @@ export class VideoCallService {
     disconnectFromCall() {
         if (this.pexipAPI) {
             this.logger.info(`${this.loggerPrefix} Disconnecting from pexip node.`);
+            this.stopPresentation();
             this.pexipAPI.disconnect();
             this.hasDisconnected$.next();
             this.hasDisconnected$.complete();
