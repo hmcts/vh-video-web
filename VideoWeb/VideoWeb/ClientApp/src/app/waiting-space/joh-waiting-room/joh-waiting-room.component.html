@@ -49,6 +49,7 @@
       [srcObject]="presentationStream && !streamInMain ? presentationStream : stream"
       height="auto"
       poster="/assets/images/empty_crest.jpg"
+      playsinline
     >
       {{ 'joh-waiting-room.browser-doesnt-support-video' | translate }}
     </video>
@@ -66,6 +67,7 @@
         height="auto"
         poster="/assets/images/empty_crest.jpg"
         class="fill-container"
+        playsinline
       >
         {{ 'joh-waiting-room.browser-doesnt-support-video' | translate }}
       </video>
