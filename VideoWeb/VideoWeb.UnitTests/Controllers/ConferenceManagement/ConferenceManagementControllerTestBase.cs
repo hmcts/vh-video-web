@@ -15,22 +15,20 @@ using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoWeb.Helpers;
 using VideoWeb.EventHub.Services;
+using Autofac.Extras.Moq;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 {
     public abstract class ConferenceManagementControllerTestBase
     {
+        protected AutoMock _mocker;
         protected Conference TestConference;
-        protected ConferenceManagementController Controller;
-        protected Mock<IVideoApiClient> VideoApiClientMock;
-        protected Mock<ILogger<ConferenceManagementController>> MockLogger;
-        protected Mock<IConferenceCache> ConferenceCacheMock;
-        protected Mock<IHearingLayoutService> HearingLayoutServiceMock;
 
         protected ConferenceManagementController SetupControllerWithClaims(ClaimsPrincipal claimsPrincipal)
         {
-            BaseSetup();
-            var context = new ControllerContext
+            _mocker = AutoMock.GetLoose();
+            var sut = _mocker.Create<ConferenceManagementController>();
+            sut.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext
                 {
@@ -38,26 +36,14 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 }
             };
 
-            return new ConferenceManagementController(VideoApiClientMock.Object, MockLogger.Object,
-                ConferenceCacheMock.Object, HearingLayoutServiceMock.Object)
-            {
-                ControllerContext = context
-            };
-        }
-        
-        private void BaseSetup()
-        {
-            ConferenceCacheMock = new Mock<IConferenceCache>();
-            HearingLayoutServiceMock = new Mock<IHearingLayoutService>();
-            VideoApiClientMock = new Mock<IVideoApiClient>();
-            MockLogger = new Mock<ILogger<ConferenceManagementController>>();
-
-            ConferenceCacheMock.Setup(x =>
-                    x.GetOrAddConferenceAsync(TestConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+            _mocker.Mock<IConferenceCache>().Setup(x =>
+                x.GetOrAddConferenceAsync(TestConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(TestConference);
-        }
 
+            return sut;
+        }
+        
         protected static Conference BuildConferenceForTest(bool withWitnessRoom = false)
         {
             var conference = new Conference
