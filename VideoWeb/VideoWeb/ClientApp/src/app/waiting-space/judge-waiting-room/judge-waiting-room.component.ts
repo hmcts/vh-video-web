@@ -356,7 +356,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 status: this.conference.status
             });
 
-            this.conferenceStartedBy = this.participant.id;
+            this.dualHostHasSignalledToJoinHearing = true;
             await this.videoCallService.startHearing(this.hearing.id, this.videoCallService.getPreferredLayout(this.conferenceId));
         } catch (err) {
             this.logger.error(`${this.loggerPrefixJudge} Failed to ${action} a hearing for conference`, err, {
@@ -464,5 +464,13 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         } else {
             this.leaveJudicialConsultation();
         }
+    }
+    async joinInSessionHearing() {
+        await this.videoCallService.callParticipantIntoHearing(this.conferenceId, this.participant.id);
+        this.dualHostHasSignalledToJoinHearing = true;
+    }
+
+    leaveHearing() {
+        this.dualHostHasSignalledToJoinHearing = false;
     }
 }

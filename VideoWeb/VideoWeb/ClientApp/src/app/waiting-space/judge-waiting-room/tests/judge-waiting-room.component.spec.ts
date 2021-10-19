@@ -350,10 +350,22 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(errorService.handleApiError).toHaveBeenCalledWith(error);
     });
 
+    it('should mark host as not wanting to join the hearing', async () => {
+        component.dualHostHasSignalledToJoinHearing = true;
+
+        await component.leaveHearing();
+
+        expect(component.dualHostHasSignalledToJoinHearing).toBeFalse();
+    });
+
     it('should start the hearing', async () => {
+        component.dualHostHasSignalledToJoinHearing = false;
         const layout = HearingLayout.TwoPlus21;
         videoCallService.getPreferredLayout.and.returnValue(layout);
+
         await component.startHearing();
+
+        expect(component.dualHostHasSignalledToJoinHearing).toBeTrue();
         expect(videoCallService.startHearing).toHaveBeenCalledWith(component.conference.id, layout);
     });
 

@@ -105,6 +105,35 @@ namespace VideoWeb.Controllers
         }
 
         /// <summary>
+        /// Suspend a video hearing
+        /// </summary>
+        /// <param name="conferenceId">conference id</param>
+        /// <returns>Accepted status</returns>
+        [HttpPost("{conferenceId}/suspend")]
+        [SwaggerOperation(OperationId = "SuspendVideoHearing")]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
+        public async Task<IActionResult> SuspendVideoHearingAsync(Guid conferenceId)
+        {
+            var validatedRequest = await ValidateUserIsHostAndInConference(conferenceId);
+            if (validatedRequest != null)
+            {
+                return validatedRequest;
+            }
+
+            try
+            {
+                await _videoApiClient.SuspendHearingAsync(conferenceId);
+                _logger.LogDebug("Sent request to suspend conference {Conference}", conferenceId);
+                return Accepted();
+            }
+            catch (VideoApiException ex)
+            {
+                _logger.LogError(ex, "Unable to suspend video hearing {Conference}", conferenceId);
+                return StatusCode(ex.StatusCode, ex.Response);
+            }
+        }
+
+        /// <summary>
         /// End a video hearing
         /// </summary>
         /// <param name="conferenceId">conference id</param>
@@ -170,7 +199,7 @@ namespace VideoWeb.Controllers
         }
 
         /// <summary>
-        /// Call a witness into a video hearing
+        /// Dismiss a witness from a video hearing
         /// </summary>
         /// <param name="conferenceId">conference id</param>
         /// <param name="participantId">witness id</param>
@@ -188,13 +217,7 @@ namespace VideoWeb.Controllers
 
             try
             {
-                _logger.LogDebug("Sending request to dismiss participant {Participant} from video hearing {Conference}",
-                    participantId, conferenceId);
-                await _videoApiClient.TransferParticipantAsync(conferenceId, new TransferParticipantRequest
-                {
-                    ParticipantId = participantId,
-                    TransferType = TransferType.Dismiss
-                });
+                await TransferParticipantAsync(conferenceId, participantId);
             }
             catch (VideoApiException ex)
             {
@@ -205,19 +228,7 @@ namespace VideoWeb.Controllers
 
             try
             {
-                _logger.LogDebug("Sending alert to vho participant {Participant} dismissed from video hearing {Conference}",
-                    participantId, conferenceId);
-
-                var participant = await GetParticipant(conferenceId, participantId);
-                var dismisser = await GetParticipant(conferenceId, User.Identity.Name);
-
-
-                await _videoApiClient.AddTaskAsync(conferenceId, new AddTaskRequest
-                {
-                    ParticipantId = participantId,
-                    Body = $"{GetParticipantRoleString(participant)} dismissed by {GetParticipantRoleString(dismisser)}",
-                    TaskType = TaskType.Participant
-                });
+                await AddDismissTaskAsync(conferenceId, participantId);
             }
             catch (VideoApiException ex)
             {
@@ -225,6 +236,37 @@ namespace VideoWeb.Controllers
                     participantId, conferenceId);
                 return StatusCode(ex.StatusCode, ex.Response);
             }
+            return Accepted();
+        }
+
+        /// <summary>
+        /// Leave host from hearing
+        /// </summary>
+        /// <param name="conferenceId">conference id</param>
+        /// <param name="participantId">witness id</param>
+        /// <returns>Accepted status</returns>
+        [HttpPost("{conferenceId}/participant/{participantId}/leave")]
+        [SwaggerOperation(OperationId = "LeaveHearing")]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
+        public async Task<IActionResult> LeaveHearingAsync(Guid conferenceId, Guid participantId)
+        {
+            var validatedRequest = await ValidateUserIsHostAndInConference(conferenceId);
+            if (validatedRequest != null)
+            {
+                return validatedRequest;
+            }
+
+            try
+            {
+                await TransferParticipantAsync(conferenceId, participantId);
+            }
+            catch (VideoApiException ex)
+            {
+                _logger.LogError(ex, "Unable to dismiss participant {Participant} from video hearing {Conference}",
+                    participantId, conferenceId);
+                return StatusCode(ex.StatusCode, ex.Response);
+            }
+
             return Accepted();
         }
 
@@ -328,6 +370,34 @@ namespace VideoWeb.Controllers
                     return participant.HearingRole;
             }
 
+        }
+
+        private Task TransferParticipantAsync(Guid conferenceId, Guid participantId)
+        {
+            _logger.LogDebug("Sending request to dismiss participant {Participant} from video hearing {Conference}",
+                participantId, conferenceId);
+
+            return _videoApiClient.TransferParticipantAsync(conferenceId, new TransferParticipantRequest
+            {
+                ParticipantId = participantId,
+                TransferType = TransferType.Dismiss
+            });
+        }
+
+        private async Task AddDismissTaskAsync(Guid conferenceId, Guid participantId)
+        {
+            _logger.LogDebug("Sending alert to vho participant {Participant} dismissed from video hearing {Conference}",
+                participantId, conferenceId);
+
+            var participant = await GetParticipant(conferenceId, participantId);
+            var dismisser = await GetParticipant(conferenceId, User.Identity.Name);
+
+            await _videoApiClient.AddTaskAsync(conferenceId, new AddTaskRequest
+            {
+                ParticipantId = participantId,
+                Body = $"{GetParticipantRoleString(participant)} dismissed by {GetParticipantRoleString(dismisser)}",
+                TaskType = TaskType.Participant
+            });
         }
     }
 }

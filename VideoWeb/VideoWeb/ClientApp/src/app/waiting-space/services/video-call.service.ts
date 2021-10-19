@@ -374,6 +374,16 @@ export class VideoCallService {
         return this.apiClient.pauseVideoHearing(conferenceId).toPromise();
     }
 
+    suspendHearing(conferenceId: string): Promise<void> {
+        this.logger.info(`${this.loggerPrefix} Attempting to suspend hearing`, { conference: conferenceId });
+        return this.apiClient.suspendVideoHearing(conferenceId).toPromise();
+    }
+
+    leaveHearing(conferenceId: string, participantId: string): Promise<void> {
+        this.logger.info(`${this.loggerPrefix} Attempting to suspend hearing`, { conference: conferenceId });
+        return this.apiClient.leaveHearing(conferenceId, participantId).toPromise();
+    }
+
     endHearing(conferenceId: string): Promise<void> {
         this.logger.info(`${this.loggerPrefix} Attempting to end hearing`, { conference: conferenceId });
         return this.apiClient.endVideoHearing(conferenceId).toPromise();
