@@ -45,7 +45,7 @@ export class NoSleepService {
         this.videoElement.muted = true;
         this.videoElement.setAttribute('playsInLine', 'true');
         this.videoElement.setAttribute('role', 'none');
-        this.videoElement.setAttribute('aria-hidden', 'hidden');
+        this.videoElement.setAttribute('aria-hidden', 'true');
         this.videoElement.style.opacity = '0';
         this.videoElement.style.top = '0';
         this.videoElement.style.width = '100px';
