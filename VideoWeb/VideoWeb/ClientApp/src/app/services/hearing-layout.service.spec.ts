@@ -9,7 +9,7 @@ import {
     getParticipantsUpdatedSubjectMock,
     hearingLayoutChangedSubjectMock
 } from '../testing/mocks/mock-events-service';
-import { ApiClient, ConferenceResponse, HearingLayout, ParticipantResponse, VideoEndpointResponse } from './clients/api-client';
+import { ApiClient, ConferenceResponse, HearingLayout } from './clients/api-client';
 import { ConferenceService } from './conference/conference.service';
 import { EventsService } from './events.service';
 import { HearingLayoutService } from './hearing-layout.service';
@@ -27,10 +27,11 @@ describe('HearingLayoutService', () => {
         id: initialConferenceId
     });
     const initialLayout = HearingLayout.Dynamic;
+    const initialRecommendedLayout = HearingLayout.Dynamic;
 
     beforeEach(() => {
         conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>([], ['currentConference$']);
-        apiClientSpy = jasmine.createSpyObj<ApiClient>(['getLayoutForHearing', 'updateLayoutForHearing']);
+        apiClientSpy = jasmine.createSpyObj<ApiClient>(['getLayoutForHearing', 'updateLayoutForHearing', 'getRecommendedLayoutForHearing']);
 
         TestBed.configureTestingModule({
             providers: [
@@ -45,6 +46,7 @@ describe('HearingLayoutService', () => {
         currentConferenceSubject.next(initialConference);
 
         apiClientSpy.getLayoutForHearing.and.returnValue(of(initialLayout));
+        apiClientSpy.getRecommendedLayoutForHearing.and.returnValue(of(initialRecommendedLayout));
         apiClientSpy.updateLayoutForHearing.and.returnValue(of(void 0));
 
         getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference$').and.returnValue(currentConferenceSubject.asObservable());
@@ -227,7 +229,7 @@ describe('HearingLayoutService', () => {
                 it('should emit when the participants updated message is recieved', fakeAsync(() => {
                     // Arrange
                     const expectedLayout = HearingLayout.OnePlus7;
-                    spyOn(service, 'getCurrentRecommendedLayout').and.returnValues(
+                    apiClientSpy.getRecommendedLayoutForHearing.and.returnValues(
                         of(HearingLayout.TwoPlus21),
                         of(HearingLayout.Dynamic),
                         of(HearingLayout.TwoPlus21),
@@ -260,7 +262,7 @@ describe('HearingLayoutService', () => {
                 it('should only emit when the update is for the current conference', fakeAsync(() => {
                     // Arrange
                     const expectedLayout = HearingLayout.OnePlus7;
-                    spyOn(service, 'getCurrentRecommendedLayout').and.returnValues(of(HearingLayout.TwoPlus21), of(expectedLayout));
+                    apiClientSpy.getRecommendedLayoutForHearing.and.returnValues(of(HearingLayout.TwoPlus21), of(expectedLayout));
 
                     const conferenceId = Guid.create().toString();
                     currentConferenceSubject.next(new ConferenceResponse({ id: conferenceId }));
@@ -288,7 +290,7 @@ describe('HearingLayoutService', () => {
                 it('should emit when the update is for the current conference even if the current conference changes', fakeAsync(() => {
                     // Arrange
                     const expectedLayout = HearingLayout.OnePlus7;
-                    spyOn(service, 'getCurrentRecommendedLayout').and.returnValues(
+                    apiClientSpy.getRecommendedLayoutForHearing.and.returnValues(
                         of(HearingLayout.TwoPlus21),
                         of(HearingLayout.Dynamic),
                         of(HearingLayout.TwoPlus21),
@@ -328,7 +330,7 @@ describe('HearingLayoutService', () => {
                 it('should emit when the conference changes', fakeAsync(() => {
                     // Arrange
                     const expectedLayout = HearingLayout.OnePlus7;
-                    spyOn(service, 'getCurrentRecommendedLayout').and.returnValues(
+                    apiClientSpy.getRecommendedLayoutForHearing.and.returnValues(
                         of(HearingLayout.TwoPlus21),
                         of(HearingLayout.Dynamic),
                         of(expectedLayout)
@@ -368,7 +370,7 @@ describe('HearingLayoutService', () => {
                         id: Guid.create().toString()
                     });
 
-                    spyOn(service, 'getCurrentRecommendedLayout').and.returnValue(of(HearingLayout.TwoPlus21));
+                    apiClientSpy.getRecommendedLayoutForHearing.and.returnValue(of(HearingLayout.TwoPlus21));
 
                     currentConferenceSubject.next(conference);
                     flush();

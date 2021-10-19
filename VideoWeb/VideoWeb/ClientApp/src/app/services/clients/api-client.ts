@@ -447,6 +447,99 @@ export class ApiClient {
     }
 
     /**
+     * Get recommended layout for hearing
+     * @param conferenceId conference id
+     * @return Success
+     */
+    getRecommendedLayoutForHearing(conferenceId: string): Observable<HearingLayout> {
+        let url_ = this.baseUrl + '/conferences/{conferenceId}/getrecommendedlayout';
+        if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
+        url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
+        url_ = url_.replace(/[?&]$/, '');
+
+        let options_: any = {
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({
+                Accept: 'application/json'
+            })
+        };
+
+        return this.http
+            .request('post', url_, options_)
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processGetRecommendedLayoutForHearing(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processGetRecommendedLayoutForHearing(<any>response_);
+                        } catch (e) {
+                            return <Observable<HearingLayout>>(<any>_observableThrow(e));
+                        }
+                    } else return <Observable<HearingLayout>>(<any>_observableThrow(response_));
+                })
+            );
+    }
+
+    protected processGetRecommendedLayoutForHearing(response: HttpResponseBase): Observable<HearingLayout> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result200: any = null;
+                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result200 = resultData200 !== undefined ? resultData200 : <any>null;
+                    return _observableOf(result200);
+                })
+            );
+        } else if (status === 403) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result403: any = null;
+                    let resultData403 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result403 = ProblemDetails.fromJS(resultData403);
+                    return throwException('Forbidden', status, _responseText, _headers, result403);
+                })
+            );
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result404: any = null;
+                    let resultData404 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result404 = ProblemDetails.fromJS(resultData404);
+                    return throwException('Not Found', status, _responseText, _headers, result404);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<HearingLayout>(<any>null);
+    }
+
+    /**
      * Pause a video hearing
      * @param conferenceId conference id
      * @return Success

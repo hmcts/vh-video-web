@@ -134,7 +134,7 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                _logger.LogDebug("Attempting toupdate layout to {layout} for conference {conferenceId}", layout,conferenceId);
+                _logger.LogDebug("Attempting to update layout to {layout} for conference {conferenceId}", layout,conferenceId);
 
                 var participant = await GetParticipant(conferenceId, User.Identity.Name);
 
@@ -157,6 +157,39 @@ namespace VideoWeb.Controllers
             catch (Exception exception)
             {
                 _logger.LogError(exception, "Could not update layout for {conferenceId} an unkown exception was thrown", conferenceId);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Get recommended layout for hearing
+        /// </summary>
+        /// <param name="conferenceId">conference id</param>
+        /// <returns>Ok status</returns>
+        /// <returns>Forbidden status</returns>
+        /// <returns>Not Found status</returns>
+        [HttpPost("{conferenceId}/getrecommendedlayout")]
+        [SwaggerOperation(OperationId = "GetRecommendedLayoutForHearing")]
+        [ProducesResponseType(typeof(HearingLayout), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetRecommendedLayoutForHearing(Guid conferenceId)
+        {
+            try
+            {
+                _logger.LogDebug("Attempting get recommended layout  for conference {conferenceId}", conferenceId);
+                var conference = await GetConference(conferenceId);
+
+                return Ok(conference.GetRecommendedLayout());
+            }
+            catch (VideoApiException exception)
+            {
+                _logger.LogError(exception, "Could not get recommended layout for {conferenceId} a video api exception was thrown", conferenceId);
+                return StatusCode(exception.StatusCode, exception.Response);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Could not get recommended layout for {conferenceId} an unkown exception was thrown", conferenceId);
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
         }

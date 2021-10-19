@@ -90,7 +90,10 @@ export class HearingLayoutService {
                 map(conference => conference.id),
                 tap(() => {
                     this.logger.debug(`${this.loggerPrefix} Conference changed getting the new recommended layout`);
-                    this.getCurrentRecommendedLayout().subscribe(layout => this.recommendedLayoutSubject.next(layout));
+                    this.getCurrentRecommendedLayout().subscribe(layout => {
+                        this.logger.info(`${this.loggerPrefix} Conference changed got the new recommended layout ${layout}`);
+                        this.recommendedLayoutSubject.next(layout);
+                    });
                 }),
                 mergeMap(currentConferenceId => {
                     return this.eventsService.getParticipantsUpdated().pipe(
@@ -98,12 +101,15 @@ export class HearingLayoutService {
                             this.conferenceService.currentConference$.pipe(filter(conference => conference?.id !== currentConferenceId))
                         ),
                         filter(update => update.conferenceId === currentConferenceId),
+                        tap(() => {
+                            this.logger.debug(`${this.loggerPrefix} Participant list updated getting the new recommended layout`);
+                        }),
                         mergeMap(() => this.getCurrentRecommendedLayout())
                     );
                 })
             )
             .subscribe(layout => {
-                this.logger.debug(`${this.loggerPrefix} participant list updated getting the new recommended layout`);
+                this.logger.info(`${this.loggerPrefix} Participant list updated got the new recommended layout ${layout}`);
                 this.recommendedLayoutSubject.next(layout);
             });
     }
@@ -111,9 +117,8 @@ export class HearingLayoutService {
     getCurrentRecommendedLayout(): Observable<HearingLayout> {
         return this.conferenceService.currentConference$.pipe(
             take(1),
-            map(() => {
-                return HearingLayout.Dynamic;
-            })
+            map(conference => conference.id),
+            mergeMap(conferenceId => this.apiClient.getRecommendedLayoutForHearing(conferenceId))
         );
     }
 
