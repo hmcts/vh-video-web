@@ -403,12 +403,14 @@ namespace VideoWeb.EventHub.Hub
                     throw new ParticipantNotFoundException(conferenceId, Context.User.Identity.Name);
                 }
 
-                await Clients.Group(VhOfficersGroupName)
-                    .ParticipantMediaStatusMessage(participantId, conferenceId, mediaStatus);
-                var judge = conference.Participants.Single(x => x.IsJudge());
-                await Clients.Group(judge.Username.ToLowerInvariant())
-                    .ParticipantMediaStatusMessage(participantId, conferenceId, mediaStatus);
-
+                var groupNames = new List<string> { VhOfficersGroupName };
+                groupNames.AddRange(conference.Participants.Where(x => x.IsHost()).Select(h => h.Username.ToLowerInvariant()));
+                foreach(var groupName in groupNames)
+                {
+                    await Clients.Group(groupName)
+                        .ParticipantMediaStatusMessage(participantId, conferenceId, mediaStatus);
+                }
+               
                 _logger.LogTrace(
                     "Participant device status updated: Participant Id: {ParticipantId} | Conference Id: {ConferenceId}",
                     participantId, conferenceId);
@@ -462,12 +464,16 @@ namespace VideoWeb.EventHub.Hub
                 var conference = await GetConference(conferenceId);
                 var participant = conference.Participants.Single(x => x.Id == participantId);
                 var linkedParticipants = GetLinkedParticipants(conference, participant);
-                
-                var judge = conference.Participants.Single(x => x.IsJudge());
-                await Clients.Group(judge.Username.ToLowerInvariant())
-                    .ParticipantHandRaiseMessage(participantId, conferenceId, isRaised);
-                await Clients.Group(participant.Username.ToLowerInvariant())
-                    .ParticipantHandRaiseMessage(participantId, conferenceId, isRaised);
+
+                var groupNames = new List<string> { participant.Username.ToLowerInvariant() };
+                groupNames.AddRange(conference.Participants.Where(x => x.IsHost()).Select(h => h.Username.ToLowerInvariant()));
+
+                foreach (var groupName in groupNames)
+                {
+                    await Clients.Group(groupName)
+                        .ParticipantHandRaiseMessage(participantId, conferenceId, isRaised);
+                }
+               
                 _logger.LogTrace(
                     "Participant hand status updated: Participant Id: {ParticipantId} | Conference Id: {ConferenceId} to {IsHandRaised}",
                     participantId, conferenceId, isRaised);
