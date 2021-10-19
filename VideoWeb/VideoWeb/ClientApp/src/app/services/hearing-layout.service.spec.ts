@@ -2,7 +2,7 @@ import { fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { of, ReplaySubject, Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
-import { eventsServiceSpy, hearingLayoutChangedSubjectMock } from '../testing/mocks/mock-events-service';
+import { eventHubReconnectSubjectMock, eventsServiceSpy, hearingLayoutChangedSubjectMock } from '../testing/mocks/mock-events-service';
 import { ApiClient, ConferenceResponse, HearingLayout, ParticipantResponse, VideoEndpointResponse } from './clients/api-client';
 import { ConferenceService } from './conference/conference.service';
 import { EventsService } from './events.service';
@@ -15,8 +15,6 @@ describe('HearingLayoutService', () => {
     let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
     let apiClientSpy: jasmine.SpyObj<ApiClient>;
 
-    let getServiceConnectedSubject: Subject<void>;
-
     const initialConferenceId = Guid.create().toString();
     let currentConferenceSubject: ReplaySubject<ConferenceResponse>;
     const initialConference = new ConferenceResponse({
@@ -27,9 +25,6 @@ describe('HearingLayoutService', () => {
     beforeEach(() => {
         conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>([], ['currentConference$']);
         apiClientSpy = jasmine.createSpyObj<ApiClient>(['getLayoutForHearing']);
-
-        getServiceConnectedSubject = new Subject<void>();
-        eventsServiceSpy.getServiceConnected.and.returnValue(getServiceConnectedSubject.asObservable());
 
         TestBed.configureTestingModule({
             providers: [
@@ -78,8 +73,7 @@ describe('HearingLayoutService', () => {
             let currentLayout: HearingLayout | null = null;
             service.currentLayout$.subscribe(layout => (currentLayout = layout));
 
-            getServiceConnectedSubject.next();
-            flush();
+            eventHubReconnectSubjectMock.next();
             flush();
 
             // Assert
