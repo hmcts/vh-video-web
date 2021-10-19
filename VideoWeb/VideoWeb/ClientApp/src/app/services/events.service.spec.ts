@@ -429,22 +429,5 @@ describe('EventsService', () => {
                 expectedMediaStatus
             );
         }));
-
-        it('updateHearingLayout', fakeAsync(() => {
-            // Arrange
-            const expectedMessageName = 'UpdateHearingLayout';
-            const expectedConferenceId = 'test-conference-id';
-            const expectedLayout = HearingLayout.OnePlus7;
-            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['send']);
-
-            spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
-
-            // Act
-            serviceUnderTest.updateHearingLayout(expectedConferenceId, expectedLayout);
-            flush();
-
-            // Assert
-            expect(hubConnectionSpy.send).toHaveBeenCalledOnceWith(expectedMessageName, expectedConferenceId, expectedLayout);
-        }));
     });
 });

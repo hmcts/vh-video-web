@@ -148,7 +148,7 @@ namespace VideoWeb.UnitTests.Caching
         }
 
         [Test]
-        public async Task UpdateLayout_should_NOT_update_conference_cache_or_raise_event_hub_event_for_judges_and_staff_memebers_when_an_exception_is_thrown()
+        public async Task UpdateLayout_should_not_hadnle_an_exception_when_getting_the_conference_from_the_cache_is_thrown()
         {
             // Arrange
             var conferenceId = Guid.NewGuid();
@@ -156,13 +156,14 @@ namespace VideoWeb.UnitTests.Caching
             var expectedLayout = HearingLayout.TwoPlus21;
 
 
-            var exception = new Exception();
-            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(x => x == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ThrowsAsync(new Exception());
+            var exception = new VideoApiException("message", 403, null, null, null);
+            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(x => x == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ThrowsAsync(exception);
 
             // Act
-            await _sut.UpdateLayout(conferenceId, changedById, expectedLayout);
+            Func<Task> action = async () => await _sut.UpdateLayout(conferenceId, changedById, expectedLayout);
 
             // Assert
+            (await action.Should().ThrowExactlyAsync<VideoApiException>()).Which.Should().Be(exception);
             _mocker.Mock<IConferenceCache>().Verify(x => x.UpdateConferenceAsync(It.IsAny<Conference>()), Times.Never);
             _mocker.Mock<IEventHubClient>().Verify(
                 x => x.HearingLayoutChanged(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<HearingLayout>(), It.IsAny<HearingLayout>()),

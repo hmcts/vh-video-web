@@ -547,11 +547,5 @@ namespace VideoWeb.EventHub.Hub
                 return particiantId;
             }
         }
-
-        public async Task UpdateHearingLayout(Guid conferenceId, HearingLayout newLayout)
-        {
-            var updatedById = Guid.Parse(await GetParticipantIdByUsernameAsync(conferenceId, Context.User.Identity.Name));
-            await _hearingLayoutService.UpdateLayout(conferenceId, updatedById, newLayout);
-        }
     }
 }

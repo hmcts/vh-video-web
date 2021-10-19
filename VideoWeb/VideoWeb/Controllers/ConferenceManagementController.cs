@@ -119,6 +119,49 @@ namespace VideoWeb.Controllers
         }
 
         /// <summary>
+        /// Update the active layout for a conference
+        /// </summary>
+        /// <param name="conferenceId">conference id</param>
+        /// <returns>Ok status</returns>
+        /// <returns>Forbidden status</returns>
+        /// <returns>Not Found status</returns>
+        [HttpPost("{conferenceId}/updatelayout")]
+        [SwaggerOperation(OperationId = "UpdateLayoutForHearing")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> UpdateLayoutForHearing(Guid conferenceId, HearingLayout layout)
+        {
+            try
+            {
+                _logger.LogDebug("Attempting toupdate layout to {layout} for conference {conferenceId}", layout,conferenceId);
+
+                var participant = await GetParticipant(conferenceId, User.Identity.Name);
+
+                if (participant == null)
+                {
+                    _logger.LogWarning("Could not update layout to {layout} for hearing as participant with the name {username} was not found in conference {conferenceId}", layout, User.Identity.Name, conferenceId);
+                    return NotFound(nameof(participant));
+                }
+
+                await _hearingLayoutService.UpdateLayout(conferenceId, participant.Id, layout);
+
+                _logger.LogInformation("Updated layout to {layout} for conference {conferenceId}", layout, conferenceId);
+                return Ok();
+            }
+            catch (VideoApiException exception)
+            {
+                _logger.LogError(exception, "Could not update layout for {conferenceId} a video api exception was thrown", conferenceId);
+                return StatusCode(exception.StatusCode, exception.Response);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Could not update layout for {conferenceId} an unkown exception was thrown", conferenceId);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+        }
+
+        /// <summary>
         /// Pause a video hearing
         /// </summary>
         /// <param name="conferenceId">conference id</param>

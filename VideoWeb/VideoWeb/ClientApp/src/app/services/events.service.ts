@@ -402,8 +402,4 @@ export class EventsService {
             mediaStatus: mediaStatus
         });
     }
-
-    async updateHearingLayout(conferenceId: string, newLayout: HearingLayout) {
-        await this.eventsHubConnection.send('UpdateHearingLayout', conferenceId, newLayout);
-    }
 }

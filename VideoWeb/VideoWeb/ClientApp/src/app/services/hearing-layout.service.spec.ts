@@ -1,6 +1,6 @@
 import { fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { of, ReplaySubject, Subject } from 'rxjs';
+import { of, ReplaySubject } from 'rxjs';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
 import { eventHubReconnectSubjectMock, eventsServiceSpy, hearingLayoutChangedSubjectMock } from '../testing/mocks/mock-events-service';
 import { ApiClient, ConferenceResponse, HearingLayout, ParticipantResponse, VideoEndpointResponse } from './clients/api-client';
@@ -24,7 +24,7 @@ describe('HearingLayoutService', () => {
 
     beforeEach(() => {
         conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>([], ['currentConference$']);
-        apiClientSpy = jasmine.createSpyObj<ApiClient>(['getLayoutForHearing']);
+        apiClientSpy = jasmine.createSpyObj<ApiClient>(['getLayoutForHearing', 'updateLayoutForHearing']);
 
         TestBed.configureTestingModule({
             providers: [
@@ -204,7 +204,7 @@ describe('HearingLayoutService', () => {
                 flush();
 
                 // Assert
-                expect(eventsServiceSpy.updateHearingLayout).toHaveBeenCalledOnceWith(conferenceId, layout);
+                expect(apiClientSpy.updateLayoutForHearing).toHaveBeenCalledOnceWith(conferenceId, layout);
             }));
         });
 

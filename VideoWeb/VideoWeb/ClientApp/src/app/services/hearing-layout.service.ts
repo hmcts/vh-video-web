@@ -94,7 +94,17 @@ export class HearingLayoutService {
                 this.logger.info(
                     `${this.loggerPrefix} updating current layout to ${layout} for current conference: ${currentConferenceId}`
                 );
-                this.eventsService.updateHearingLayout(currentConferenceId, layout);
+                this.apiClient.updateLayoutForHearing(currentConferenceId, layout).subscribe(
+                    () =>
+                        this.logger.info(
+                            `${this.loggerPrefix} request to update current layout to ${layout} for conference: ${currentConferenceId} was successful`
+                        ),
+                    error =>
+                        this.logger.error(
+                            `${this.loggerPrefix} failed to update the current layout to ${layout} for ${currentConferenceId}`,
+                            error
+                        )
+                );
             });
     }
 

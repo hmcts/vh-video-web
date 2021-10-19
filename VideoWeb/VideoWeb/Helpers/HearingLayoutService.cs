@@ -64,16 +64,7 @@ namespace VideoWeb.Helpers
         {
             _logger.LogInformation("Attempting to change layout for {conferenceId} to {newLayout} by participant with the ID {changedById}.", conferenceId, newLayout, changedById);
 
-            Conference conference;
-            try
-            {
-                conference = await GetConferenceFromCache(conferenceId);
-            }
-            catch (Exception exception)
-            {
-                _logger.LogError(exception, "Failed to update layout for conferece {conferenceId} to {newLayout} change requested by {changedById}", conferenceId, newLayout, changedById);
-                return;
-            }
+            Conference conference = await GetConferenceFromCache(conferenceId);
 
             _logger.LogDebug("Got conference {conferenceId} to change layout to {newLayout} requested by participant with the ID {changedById}.", conferenceId, newLayout, changedById);
 
