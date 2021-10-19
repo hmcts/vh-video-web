@@ -46,7 +46,7 @@
                         </span>
                     </span>
                 </div>
-                <div class='icon-button-dark' id='toggle-video-mute-img' *ngIf='!isHost && !audioOnly' colour='grey'
+                <div class='icon-button-dark' id='toggle-video-mute-img' *ngIf='!isJudge && !audioOnly' colour='grey'
                     (click)='toggleVideoMute()'>
                     <span class='far' [class]="videoMuted ? 'fa-video-slash' : 'fa-video'">
                         <span class='context-item'>
@@ -58,7 +58,7 @@
                     </span>
                 </div>
 
-                <div class='icon-button-dark' id='toggle-audio-mute-img' *ngIf='!remoteMuted || isHost' colour='grey'
+                <div class='icon-button-dark' id='toggle-audio-mute-img' *ngIf='!remoteMuted || isJudge' colour='grey'
                     (click)='toggleMute()'>
                     <span class='far' [class]="audioMuted ? 'fa-microphone-slash' : 'fa-microphone'">
                         <span class='context-item'>
@@ -187,7 +187,7 @@
                 <span class="far" [class]="selfViewOpen ? 'fa-eye' : 'fa-eye-slash'"></span>
             </div>
 
-            <div class="icon-button" id="toggle-video-mute-img-desktop" appTooltip *ngIf="!isHost && !audioOnly"
+            <div class="icon-button" id="toggle-video-mute-img-desktop" appTooltip *ngIf="!isJudge && !audioOnly"
                 [text]="
             (videoMuted
             ? 'private-consultation-room-controls.video-mute-toggle-true'
@@ -253,7 +253,7 @@
 
 <div class="outgoing-present-video-container">
     <video [ngClass]="{ 'vh-fade-in': this.screenShareStream, 'vh-fade-out': !this.screenShareStream }"
-        id="outgoingFeedPresentVideo" [muted]="true" [srcObject]="this.screenShareStream" autoplay height="auto">
+        id="outgoingFeedPresentVideo" [muted]="true" [srcObject]="this.screenShareStream" autoplay playsinline height="auto">
         {{ 'private-consultation-room-controls.browser-support' | translate }}
     </video>
 </div>

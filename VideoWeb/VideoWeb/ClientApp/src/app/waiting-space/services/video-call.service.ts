@@ -207,6 +207,10 @@ export class VideoCallService {
     }
 
     makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number) {
+        this.logger.info(`${this.loggerPrefix} make pexip call`, {
+            pexipNode: pexipNode
+        });
+        this.stopPresentation();
         this.initCallTag();
         this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, null);
     }
@@ -214,6 +218,7 @@ export class VideoCallService {
     disconnectFromCall() {
         if (this.pexipAPI) {
             this.logger.info(`${this.loggerPrefix} Disconnecting from pexip node.`);
+            this.stopPresentation();
             this.pexipAPI.disconnect();
             this.hasDisconnected$.next();
             this.hasDisconnected$.complete();
