@@ -191,6 +191,7 @@ describe('HearingLayoutService', () => {
                 // Arrange
                 const conferenceId = Guid.create().toString();
                 const layout = HearingLayout.OnePlus7;
+                apiClientSpy.updateLayoutForHearing.and.returnValue(of(void 0));
                 getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference$').and.returnValue(
                     of(
                         new ConferenceResponse({
