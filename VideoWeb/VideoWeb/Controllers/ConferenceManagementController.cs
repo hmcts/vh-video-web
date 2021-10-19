@@ -95,17 +95,25 @@ namespace VideoWeb.Controllers
         {
             try
             {
+                _logger.LogDebug("Getting the layout for {conferenceId}", conferenceId);
                 var layout = await _hearingLayoutService.GetCurrentLayout(conferenceId);
-                if (!layout.HasValue) return NotFound();
 
+                if (!layout.HasValue) {
+                    _logger.LogWarning("Layout didn't have a value returning NotFound. This was for {conferenceId}", conferenceId);
+                    return NotFound();
+                }
+
+                _logger.LogTrace("Got Layout ({layout}) for {conferenceId}", layout.Value, conferenceId);
                 return Ok(layout);
             }
             catch (VideoApiException exception)
             {
+                _logger.LogError(exception, "Could not get layout for {conferenceId} a video api exception was thrown", conferenceId);
                 return StatusCode(exception.StatusCode, exception.Response);
             }
-            catch
+            catch (Exception exception)
             {
+                _logger.LogError(exception, "Could not get layout for {conferenceId} an unkown exception was thrown", conferenceId);
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
         }
