@@ -44,13 +44,14 @@ export class NoSleepService {
         this.videoElement = this.document.createElement('video');
         this.videoElement.muted = true;
         this.videoElement.setAttribute('playsInLine', 'true');
+        this.videoElement.setAttribute('role', 'presentation');
         this.videoElement.style.opacity = '0';
         this.videoElement.style.top = '0';
         this.videoElement.style.width = '100px';
         this.videoElement.style.height = '100px';
         this.videoElement.style.position = 'absolute';
         this.videoElement.style.pointerEvents = 'none';
-        this.videoElement.setAttribute('role', 'presentation');
+        this.videoElement.srcObject = this.currentStream;
         const mainElement = this.document.getElementsByTagName('main')[0];
         mainElement.appendChild(this.videoElement);
 
