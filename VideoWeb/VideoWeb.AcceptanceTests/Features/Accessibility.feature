@@ -141,7 +141,8 @@ Scenario: VHO Command Centre Messages Tab page accessibility
   And the VHO selects the Messages tab
 	Then the page should be accessible 
 
-@Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
+# Ignoring this test as we don't land on this page anymore. This should be changed back if ejud is re-enabled.
+@Ignore @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
 Scenario: Account Type Selection page accessibility
   Given a Participant is on the account type selection page
   Then the page should be accessible

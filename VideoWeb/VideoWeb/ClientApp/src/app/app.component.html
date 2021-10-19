@@ -3,12 +3,12 @@
   <div role="navigation">
     <a href="javascript:void(0)" class="govuk-skip-link" (click)="skipToContent()">{{ 'app.skip-to-main-content' | translate }}</a>
   </div>
-  <header role="banner">
-    <app-header class="govuk-!-display-none-print" [loggedIn]="loggedIn"></app-header>
-    <div class="govuk-width-container">
-      <app-beta-banner *ngIf="loggedIn" [isRepresentativeOrIndividual]="isRepresentativeOrIndividual"></app-beta-banner>
-      <app-back-navigation *ngIf="backLinkDetails$ | async as backLinkDetails" [linkText]="backLinkDetails.text" (navigateBack)="navigateBack(backLinkDetails.path)"></app-back-navigation>
-    </div>
+  <header role="banner">    
+      <app-header class="govuk-!-display-none-print" [loggedIn]="loggedIn"></app-header>
+      <div class="govuk-width-container">
+        <app-beta-banner *ngIf="loggedIn" [isRepresentativeOrIndividual]="isRepresentativeOrIndividual"></app-beta-banner>
+        <app-back-navigation *ngIf="backLinkDetails$ | async as backLinkDetails" [linkText]="backLinkDetails.text" (navigateBack)="navigateBack(backLinkDetails.path)"></app-back-navigation>
+      </div>
   </header>
   <div class="govuk-width-container" id="master-container">
     <main
