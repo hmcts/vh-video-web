@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
-import { merge, Observable, ReplaySubject } from 'rxjs';
+import { Observable, ReplaySubject } from 'rxjs';
 import { distinctUntilChanged, filter, map, mergeMap, take, takeUntil, tap } from 'rxjs/operators';
 import { ApiClient, HearingLayout } from './clients/api-client';
 import { ConferenceService } from './conference/conference.service';
 import { EventsService } from './events.service';
 import { Logger } from './logging/logger-base';
-import { EventsHubService } from './events-hub.service';
 
 @Injectable({
     providedIn: 'root'
@@ -22,83 +21,59 @@ export class HearingLayoutService {
         private logger: Logger,
         private conferenceService: ConferenceService,
         private apiClient: ApiClient,
-        private eventsService: EventsService,
-        private eventsHubService: EventsHubService
+        private eventsService: EventsService
     ) {
         this.initialise();
     }
 
     initialise(): void {
-        merge([this.eventsHubService.onEventsHubReady, this.eventsHubService.getServiceConnected()]).subscribe(() => {
-            this.conferenceService.currentConference$
-                .pipe(
-                    map(conference => conference.id),
-                    tap(id => this.logger.debug(`${this.loggerPrefix} currentConference$: ${id}`)),
-                    take(1)
-                )
-                .subscribe(() => {
-                    this.getCurrentLayout().subscribe(layout => {
-                        this.currentLayoutSubject.next(layout);
-                    });
-                });
+        this.eventsService.getServiceConnected().subscribe(() => {
+            this.logger.debug(`${this.loggerPrefix} eventsService connected/reconnected getting the current layout`);
+            this.getCurrentLayout().subscribe(layout => {
+                this.currentLayoutSubject.next(layout);
+                this.logger.debug(`${this.loggerPrefix} Retrieved and updated current layout (${layout})`);
+            });
         });
 
         this.conferenceService.currentConference$
             .pipe(
-                map(conference => conference.id),
+                map(conference => conference?.id),
                 tap(id => this.logger.debug(`${this.loggerPrefix} currentConference$: ${id}`)),
-                distinctUntilChanged()
+                distinctUntilChanged((x, y) => x === y),
+                filter(id => !!id)
             )
-            .subscribe(
-                currentConferenceId => {
-                    this.logger.debug(`${this.loggerPrefix} Retrieving current layout for conference: ${currentConferenceId}`);
-                    this.apiClient.getLayoutForHearing(currentConferenceId).subscribe(layout => {
-                        this.logger.debug(
-                            `${this.loggerPrefix} Retrieved current layout (${layout}) for conference: ${currentConferenceId}`
-                        );
-                        this.currentLayoutSubject.next(layout);
-                    });
+            .subscribe(currentConferenceId => {
+                this.logger.debug(`${this.loggerPrefix} Retrieving current layout for conference: ${currentConferenceId}`);
+                this.apiClient.getLayoutForHearing(currentConferenceId).subscribe(layout => {
+                    this.logger.info(`${this.loggerPrefix} Retrieved current layout (${layout}) for conference: ${currentConferenceId}`);
+                    this.currentLayoutSubject.next(layout);
+                });
 
-                    this.logger.debug(`${this.loggerPrefix} subscribing to event hub message for conference: ${currentConferenceId}`);
-                    this.eventsService
-                        .getHearingLayoutChanged()
-                        .pipe(
-                            takeUntil(
-                                this.conferenceService.currentConference$.pipe(filter(conference => conference.id !== currentConferenceId))
-                            ),
-                            tap(layoutChanged => {
-                                if (layoutChanged.conferenceId === currentConferenceId) {
-                                    return;
-                                }
-
-                                this.logger.debug(
-                                    `${this.loggerPrefix} layout changed from ${layoutChanged.newHearingLayout} to ${layoutChanged.newHearingLayout} for conference: ${currentConferenceId}`
-                                );
-                            }),
-                            filter(layoutChanged => layoutChanged.conferenceId === currentConferenceId)
-                        )
-                        .subscribe(
-                            layoutChanged => {
-                                this.logger.info(
-                                    `${this.loggerPrefix} layout changed from ${layoutChanged.newHearingLayout} to ${layoutChanged.newHearingLayout} in current conference: ${currentConferenceId}`
-                                );
-                                this.currentLayoutSubject.next(layoutChanged.newHearingLayout);
-                            },
-                            error => {
-                                this.logger.error(`${this.loggerPrefix} Error in getHearingLayoutChanged subscription.`, error);
-                            },
-                            () => {
-                                this.logger.debug(`${this.loggerPrefix} getHearingLayoutChanged subscription complete`);
+                this.logger.debug(`${this.loggerPrefix} subscribing to event hub message for conference: ${currentConferenceId}`);
+                this.eventsService
+                    .getHearingLayoutChanged()
+                    .pipe(
+                        takeUntil(
+                            this.conferenceService.currentConference$.pipe(filter(conference => conference?.id !== currentConferenceId))
+                        ),
+                        tap(layoutChanged => {
+                            if (layoutChanged.conferenceId === currentConferenceId) {
+                                return;
                             }
+
+                            this.logger.debug(
+                                `${this.loggerPrefix} layout changed from ${layoutChanged.newHearingLayout} to ${layoutChanged.newHearingLayout} for conference: ${currentConferenceId}`
+                            );
+                        }),
+                        filter(layoutChanged => layoutChanged.conferenceId === currentConferenceId)
+                    )
+                    .subscribe(layoutChanged => {
+                        this.logger.info(
+                            `${this.loggerPrefix} layout changed from ${layoutChanged.newHearingLayout} to ${layoutChanged.newHearingLayout} in current conference: ${currentConferenceId}`
                         );
-                },
-                error => {
-                    this.logger.error(`${this.loggerPrefix} Error in currentConference$ subscription.`, error);
-                },
-                () => {
-                    this.logger.debug(`${this.loggerPrefix} currentConference$ subscription complete`);
-                }
-            );
+                        this.currentLayoutSubject.next(layoutChanged.newHearingLayout);
+                    });
+            });
     }
 
     getCurrentLayout(): Observable<HearingLayout> {

@@ -1,6 +1,6 @@
 import { fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { of, ReplaySubject } from 'rxjs';
+import { of, ReplaySubject, Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
 import { eventsServiceSpy, hearingLayoutChangedSubjectMock } from '../testing/mocks/mock-events-service';
 import { ApiClient, ConferenceResponse, HearingLayout, ParticipantResponse, VideoEndpointResponse } from './clients/api-client';
@@ -14,6 +14,9 @@ describe('HearingLayoutService', () => {
     let service: HearingLayoutService;
     let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
     let apiClientSpy: jasmine.SpyObj<ApiClient>;
+
+    let getServiceConnectedSubject: Subject<void>;
+
     const initialConferenceId = Guid.create().toString();
     let currentConferenceSubject: ReplaySubject<ConferenceResponse>;
     const initialConference = new ConferenceResponse({
@@ -24,6 +27,9 @@ describe('HearingLayoutService', () => {
     beforeEach(() => {
         conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>([], ['currentConference$']);
         apiClientSpy = jasmine.createSpyObj<ApiClient>(['getLayoutForHearing']);
+
+        getServiceConnectedSubject = new Subject<void>();
+        eventsServiceSpy.getServiceConnected.and.returnValue(getServiceConnectedSubject.asObservable());
 
         TestBed.configureTestingModule({
             providers: [
@@ -46,7 +52,9 @@ describe('HearingLayoutService', () => {
         it('should of fetched the current layout', fakeAsync(() => {
             // Act
             let currentLayout: HearingLayout | null = null;
-            service.currentLayout$.subscribe(layout => (currentLayout = layout));
+            service.currentLayout$.subscribe(layout => {
+                currentLayout = layout;
+            });
             flush();
 
             // Assert
@@ -56,11 +64,32 @@ describe('HearingLayoutService', () => {
         }));
     });
 
-    describe('after initialisation', () => {
+    describe('on event hub connected', () => {
         beforeEach(() => {
             apiClientSpy.getLayoutForHearing.calls.reset();
         });
 
+        it('should update the current layout', fakeAsync(() => {
+            // Arrange
+            var expectedLayout = HearingLayout.TwoPlus21;
+            apiClientSpy.getLayoutForHearing.and.returnValue(of(expectedLayout));
+
+            // Act
+            let currentLayout: HearingLayout | null = null;
+            service.currentLayout$.subscribe(layout => (currentLayout = layout));
+
+            getServiceConnectedSubject.next();
+            flush();
+            flush();
+
+            // Assert
+            expect(currentLayout).toBeTruthy();
+            expect(currentLayout).toEqual(expectedLayout);
+            expect(apiClientSpy.getLayoutForHearing).toHaveBeenCalledOnceWith(initialConferenceId);
+        }));
+    });
+
+    describe('after initialisation', () => {
         describe('on hearingLayoutChanged recieved on event bus', () => {
             it('should emit the new layout from currentLayout$ when it is for the current conference', fakeAsync(() => {
                 // Arrange
@@ -142,6 +171,10 @@ describe('HearingLayoutService', () => {
         });
 
         describe('getCurrentLayout', () => {
+            beforeEach(() => {
+                apiClientSpy.getLayoutForHearing.calls.reset();
+            });
+
             it('should get the current conference id and retrive the layout for it', fakeAsync(() => {
                 // Arrange
                 const expectedLayout = HearingLayout.OnePlus7;
