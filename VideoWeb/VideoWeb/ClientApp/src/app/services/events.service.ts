@@ -30,7 +30,7 @@ import { ParticipantHandRaisedMessage } from '../shared/models/participant-hand-
 import { ParticipantRemoteMuteMessage } from '../shared/models/participant-remote-mute-message';
 import { EventsHubService } from './events-hub.service';
 import { ParticipantsUpdatedMessage } from '../shared/models/participants-updated-message';
-import HearingLayoutChanged from './models/hearing-layout-chagned';
+import HearingLayoutChanged from './models/hearing-layout-changed';
 
 @Injectable({
     providedIn: 'root'
