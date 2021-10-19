@@ -71,7 +71,7 @@ describe('HearingLayoutService', () => {
 
         it('should update the current layout', fakeAsync(() => {
             // Arrange
-            var expectedLayout = HearingLayout.TwoPlus21;
+            const expectedLayout = HearingLayout.TwoPlus21;
             apiClientSpy.getLayoutForHearing.and.returnValue(of(expectedLayout));
 
             // Act
