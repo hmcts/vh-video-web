@@ -171,57 +171,57 @@ namespace VideoWeb.UnitTests.Caching
 
         private List<Participant> BuildParticipantListWithAllRoles()
         {
-            var participants = new List<Participant>();
-            participants.Add(new Participant()
+            return new List<Participant>
             {
-                Id = Guid.NewGuid(),
-                Username = Guid.NewGuid().ToString(),
-                Role = Role.Judge
-            });
-            participants.Add(new Participant()
-            {
-                Id = Guid.NewGuid(),
-                Username = Guid.NewGuid().ToString(),
-                Role = Role.StaffMember
-            });
-            participants.Add(new Participant()
-            {
-                Id = Guid.NewGuid(),
-                Username = Guid.NewGuid().ToString(),
-                Role = Role.JudicialOfficeHolder
-            });
-            participants.Add(new Participant()
-            {
-                Id = Guid.NewGuid(),
-                Username = Guid.NewGuid().ToString(),
-                Role = Role.Individual
-            });
-            participants.Add(new Participant()
-            {
-                Id = Guid.NewGuid(),
-                Username = Guid.NewGuid().ToString(),
-                Role = Role.CaseAdmin
-            });
-            participants.Add(new Participant()
-            {
-                Id = Guid.NewGuid(),
-                Username = Guid.NewGuid().ToString(),
-                Role = Role.QuickLinkObserver
-            });
-            participants.Add(new Participant()
-            {
-                Id = Guid.NewGuid(),
-                Username = Guid.NewGuid().ToString(),
-                Role = Role.QuickLinkParticipant
-            });
-            participants.Add(new Participant()
-            {
-                Id = Guid.NewGuid(),
-                Username = Guid.NewGuid().ToString(),
-                Role = Role.None
-            });
-
-            return participants;
+                new Participant()
+                {
+                    Id = Guid.NewGuid(),
+                    Username = Guid.NewGuid().ToString(),
+                    Role = Role.Judge
+                },
+                    new Participant()
+                {
+                    Id = Guid.NewGuid(),
+                    Username = Guid.NewGuid().ToString(),
+                    Role = Role.StaffMember
+                },
+                    new Participant()
+                {
+                    Id = Guid.NewGuid(),
+                    Username = Guid.NewGuid().ToString(),
+                    Role = Role.JudicialOfficeHolder
+                },
+                new Participant()
+                {
+                    Id = Guid.NewGuid(),
+                    Username = Guid.NewGuid().ToString(),
+                    Role = Role.Individual
+                },
+                new Participant()
+                {
+                    Id = Guid.NewGuid(),
+                    Username = Guid.NewGuid().ToString(),
+                    Role = Role.CaseAdmin
+                },
+                new Participant()
+                {
+                    Id = Guid.NewGuid(),
+                    Username = Guid.NewGuid().ToString(),
+                    Role = Role.QuickLinkObserver
+                },
+                new Participant()
+                {
+                    Id = Guid.NewGuid(),
+                    Username = Guid.NewGuid().ToString(),
+                    Role = Role.QuickLinkParticipant
+                },
+                new Participant()
+                {
+                    Id = Guid.NewGuid(),
+                    Username = Guid.NewGuid().ToString(),
+                    Role = Role.None
+                }
+            };
         }
     }
 }
