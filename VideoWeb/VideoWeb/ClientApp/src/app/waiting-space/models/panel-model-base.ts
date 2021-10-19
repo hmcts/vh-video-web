@@ -95,6 +95,10 @@ export abstract class PanelModel {
         return this.role === Role.Judge;
     }
 
+    get isHost(): boolean {
+        return this.role === Role.Judge || this.role === Role.StaffMember;
+    }
+
     get isJudicialOfficeHolder(): boolean {
         return this.role === Role.JudicialOfficeHolder;
     }
@@ -160,14 +164,16 @@ export abstract class PanelModel {
             return 1;
         } else if (this.role === Role.JudicialOfficeHolder) {
             return 2;
-        } else if (this.role === Role.QuickLinkParticipant) {
-            return 4;
-        } else if (this.caseTypeGroup?.toLowerCase() === 'endpoint') {
-            return 5;
-        } else if (this.hearingRole === HearingRole.OBSERVER || this.role === Role.QuickLinkObserver) {
-            return 6;
-        } else {
+        } else if (this.role === Role.StaffMember) {
             return 3;
+        } else if (this.role === Role.QuickLinkParticipant) {
+            return 5;
+        } else if (this.caseTypeGroup?.toLowerCase() === 'endpoint') {
+            return 6;
+        } else if (this.hearingRole === HearingRole.OBSERVER || this.role === Role.QuickLinkObserver) {
+            return 7;
+        } else {
+            return 4;
         }
     }
 }
