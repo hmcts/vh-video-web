@@ -36,12 +36,12 @@ namespace VideoWeb.Helpers
 
         private async Task SetHearingLayoutInCache(Guid conferenceId, HearingLayout newLayout)
         {
-            await _hearingLayoutCache.Write(conferenceId, newLayout);
+            await _hearingLayoutCache.WriteToCache(conferenceId, newLayout);
         }
 
         private async Task<HearingLayout?> GetHearingLayoutFromCache(Guid conferenceId)
         {
-            return await _hearingLayoutCache.Read(conferenceId);
+            return await _hearingLayoutCache.ReadFromCache(conferenceId);
         }
 
         public async Task<HearingLayout?> GetCurrentLayout(Guid conferenceId)
@@ -89,9 +89,13 @@ namespace VideoWeb.Helpers
 
             var hosts = conference.Participants
                             .Where(participant => participant.IsHost())
-                            .Select(participant => participant.Username.ToLowerInvariant());
+                            .Select(participant => participant.Username.ToLowerInvariant()).ToList();
 
             _logger.LogTrace("Sending message to {hosts} for layout change in {conferenceId} requested by participant with the ID {changedById}.", hosts.ToArray(), conferenceId, changedById);
+            
+            await _hubContext.Clients
+                .Groups(hosts)
+                .HearingLayoutChanged(conferenceId, changedById, newLayout, oldLayout);
 
             _logger.LogTrace("Hearing layout changed for {conferenceId} from {oldLayout} to {newLayout} by participant with the ID {changedById}.", conferenceId, oldLayout, newLayout, changedById);
         }

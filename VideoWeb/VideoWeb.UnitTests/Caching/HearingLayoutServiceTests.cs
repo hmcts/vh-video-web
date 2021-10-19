@@ -50,7 +50,7 @@ namespace VideoWeb.UnitTests.Caching
                 Id = conferenceId
             };
 
-            _mocker.Mock<IHearingLayoutCache>().Setup(x => x.Read(conferenceId)).ReturnsAsync(expectedLayout);
+            _mocker.Mock<IHearingLayoutCache>().Setup(x => x.ReadFromCache(conferenceId)).ReturnsAsync(expectedLayout);
             _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(x => x == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ReturnsAsync(conference);
 
             // Act
@@ -127,7 +127,7 @@ namespace VideoWeb.UnitTests.Caching
 
             var exception = new Exception();
             _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(x => x == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ReturnsAsync(conference);
-            _mocker.Mock<IHearingLayoutCache>().Setup(x => x.Read(It.Is<Guid>(x => x == conferenceId))).ReturnsAsync(defaultLayout);
+            _mocker.Mock<IHearingLayoutCache>().Setup(x => x.ReadFromCache(It.Is<Guid>(x => x == conferenceId))).ReturnsAsync(defaultLayout);
 
 
             _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients)
@@ -141,7 +141,7 @@ namespace VideoWeb.UnitTests.Caching
             await _sut.UpdateLayout(conferenceId, changedById, expectedLayout);
 
             // Assert
-            _mocker.Mock<IHearingLayoutCache>().Verify(x => x.Write(conferenceId, expectedLayout), Times.Once);
+            _mocker.Mock<IHearingLayoutCache>().Verify(x => x.WriteToCache(conferenceId, expectedLayout), Times.Once);
             _mocker.Mock<IEventHubClient>().Verify(
                 x => x.HearingLayoutChanged(conferenceId, changedById, expectedLayout, defaultLayout),
                 Times.Once);
