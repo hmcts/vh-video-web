@@ -130,15 +130,18 @@
             <span class='far fa-users'></span>
         </div>
         <div class='show-for-medium-only'>
-            <div class="flexBar"></div>
-
-            <div *ngIf='isHost && !isPrivateConsultation' class='icon-button' id='leave-hearing' appTooltip colour='grey'
-                [text]="'private-consultation-room-controls.leave-hearing' | translate"
-                (click)="displayLeaveHearingPopup = !displayLeaveHearingPopup">
-                <span class='fad fa-sign-out-alt fa-flip-horizontal leave-hearing-button'></span>
-            </div>
             
-            <div class="flexBar"></div>
+            <ng-template *ngIf='isHost && !isPrivateConsultation'>
+                <div class="flexBar"></div>
+
+                <div class='icon-button' id='leave-hearing' appTooltip colour='grey'
+                    [text]="'private-consultation-room-controls.leave-hearing' | translate"
+                    (click)="displayLeaveHearingPopup = !displayLeaveHearingPopup">
+                    <span class='fad fa-sign-out-alt fa-flip-horizontal leave-hearing-button'></span>
+                </div>
+                
+                <div class="flexBar"></div>
+            </ng-template>
 
             <button *ngIf="!isPrivateConsultation && isHost" id="pause-hearing-landscape" class="small-button blue"
                 data-module="govuk-button" (click)="pause()" type="button" [hidden]="!canCloseOrPauseHearing()">
@@ -228,15 +231,17 @@
                 <span class="far fa-hand-paper" [class]="{ yellow: handRaised }"></span>
             </div>
 
-            <div class="flexBar"></div>
+            <ng-template *ngIf='isHost && !isPrivateConsultation'>
+                <div class="flexBar"></div>
 
-            <div *ngIf='isHost && !isPrivateConsultation' id='leave-hearing' class="icon-button" appTooltip colour='grey'
-                [text]="'private-consultation-room-controls.leave-hearing' | translate"
-                (click)="displayLeaveHearingPopup = !displayLeaveHearingPopup">
-                <span class='fad fa-sign-out-alt fa-flip-horizontal leave-hearing-button'></span>
-            </div>
-
-            <div class="flexBar"></div>
+                <div id='leave-hearing' class="icon-button" appTooltip colour='grey'
+                    [text]="'private-consultation-room-controls.leave-hearing' | translate"
+                    (click)="displayLeaveHearingPopup = !displayLeaveHearingPopup">
+                    <span class='fad fa-sign-out-alt fa-flip-horizontal leave-hearing-button'></span>
+                </div>
+    
+                <div class="flexBar"></div>
+            </ng-template>
 
             <button *ngIf="!isPrivateConsultation && isHost" id="pause-hearing-desktop" class="small-button blue"
                 data-module="govuk-button" (click)="pause()" type="button" [hidden]="!canCloseOrPauseHearing()">
