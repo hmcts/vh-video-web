@@ -32,14 +32,14 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithUsername(participant.Username)
                 .WithRole(AppRoles.CitizenRole).Build();
 
-            Controller = SetupControllerWithClaims(user);
+            var Controller = SetupControllerWithClaims(user);
 
             var result = await Controller.LeaveHearingAsync(TestConference.Id, participant.Id);
             var typedResult = (UnauthorizedObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().Be("User must be either Judge or StaffMember.");
 
-            VideoApiClientMock.Verify(
+            _mocker.Mock<IVideoApiClient>().Verify(
                 x => x.TransferParticipantAsync(TestConference.Id,
                     It.Is<TransferParticipantRequest>(r => r.ParticipantId == participant.Id)), Times.Never);
         }
@@ -52,14 +52,14 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithUsername(judge.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
 
-            Controller = SetupControllerWithClaims(user);
+            var Controller = SetupControllerWithClaims(user);
 
             var responseMessage = "Could not start transfer participant";
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
                 (int)HttpStatusCode.InternalServerError,
                 responseMessage, null, default, null);
 
-            VideoApiClientMock.Setup(
+            _mocker.Mock<IVideoApiClient>().Setup(
                 x => x.TransferParticipantAsync(TestConference.Id,
                     It.IsAny<TransferParticipantRequest>())).ThrowsAsync(apiException);
 
@@ -78,13 +78,13 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithUsername(judge.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
 
-            Controller = SetupControllerWithClaims(user);
+            var Controller = SetupControllerWithClaims(user);
 
             var result = await Controller.LeaveHearingAsync(TestConference.Id, judge.Id);
             var typedResult = (AcceptedResult)result;
             typedResult.Should().NotBeNull();
 
-            VideoApiClientMock.Verify(
+            _mocker.Mock<IVideoApiClient>().Verify(
                 x => x.TransferParticipantAsync(TestConference.Id,
                     It.Is<TransferParticipantRequest>(r =>
                         r.ParticipantId == judge.Id && r.TransferType == TransferType.Dismiss)), Times.Once);

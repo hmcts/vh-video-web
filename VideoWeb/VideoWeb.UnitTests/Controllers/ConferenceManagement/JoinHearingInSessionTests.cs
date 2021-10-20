@@ -35,14 +35,14 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithUsername(participant.Username)
                 .WithRole(AppRoles.CitizenRole).Build();
 
-            Controller = SetupControllerWithClaims(user);
+            var Controller = SetupControllerWithClaims(user);
 
             var result = await Controller.JoinHearingInSession(TestConference.Id, participantId);
             var typedResult = (UnauthorizedObjectResult) result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().Be("User must be either Judge or StaffMember.");
 
-            VideoApiClientMock.Verify(
+            _mocker.Mock<IVideoApiClient>().Verify(
                 x => x.TransferParticipantAsync(It.IsAny<Guid>(), It.IsAny<TransferParticipantRequest>()), Times.Never);
         }
 
@@ -54,14 +54,14 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithUsername("notforconference@hmcts.net")
                 .WithRole(role).Build();
 
-            Controller = SetupControllerWithClaims(user);
+            var Controller = SetupControllerWithClaims(user);
 
             var result = await Controller.JoinHearingInSession(TestConference.Id, participantId);
             var typedResult = (UnauthorizedObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().Be("User must be either Judge or StaffMember.");
 
-            VideoApiClientMock.Verify(
+            _mocker.Mock<IVideoApiClient>().Verify(
                 x => x.TransferParticipantAsync(TestConference.Id, It.IsAny<TransferParticipantRequest>()), Times.Never);
         }
 
@@ -73,13 +73,13 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithUsername(participant.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
 
-            Controller = SetupControllerWithClaims(user);
+            var Controller = SetupControllerWithClaims(user);
 
             var responseMessage = "Could not start a video hearing";
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
                 (int)HttpStatusCode.InternalServerError,
                 responseMessage, null, default, null);
-            VideoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.TransferParticipantAsync(TestConference.Id, It.IsAny<TransferParticipantRequest>()))
                 .ThrowsAsync(apiException);
 
@@ -99,13 +99,13 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithUsername(participant.Username)
                 .WithRole(role).Build();
 
-            Controller = SetupControllerWithClaims(user);
+            var Controller = SetupControllerWithClaims(user);
 
             var result = await Controller.JoinHearingInSession(TestConference.Id, participantId);
             var typedResult = (AcceptedResult)result;
             typedResult.Should().NotBeNull();
 
-            VideoApiClientMock.Verify(x => x.TransferParticipantAsync(TestConference.Id,It.Is<TransferParticipantRequest>(request => request.ParticipantId == participantId && request.TransferType == TransferType.Call)), Times.Once);
+            _mocker.Mock<IVideoApiClient>().Verify(x => x.TransferParticipantAsync(TestConference.Id,It.Is<TransferParticipantRequest>(request => request.ParticipantId == participantId && request.TransferType == TransferType.Call)), Times.Once);
         }
     }
 }
