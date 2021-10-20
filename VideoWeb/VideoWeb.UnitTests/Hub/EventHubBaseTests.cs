@@ -19,6 +19,7 @@ using VideoApi.Contract.Enums;
 using VideoWeb.Common.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
+using VideoWeb.EventHub.Services;
 
 namespace VideoWeb.UnitTests.Hub
 {
@@ -34,6 +35,7 @@ namespace VideoWeb.UnitTests.Hub
         protected ClaimsPrincipal Claims;
         protected Mock<IConferenceCache> ConferenceCacheMock;
         protected Mock<IHeartbeatRequestMapper> HeartbeatMapper;
+        protected Mock<IHearingLayoutService> hearingLayoutServiceMock;
 
         [SetUp]
         public void Setup()

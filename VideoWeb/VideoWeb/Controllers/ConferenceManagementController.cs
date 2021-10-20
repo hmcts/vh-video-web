@@ -12,6 +12,8 @@ using VideoWeb.Common.Models;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Enums;
+using VideoWeb.Helpers;
+using VideoWeb.EventHub.Services;
 
 namespace VideoWeb.Controllers
 {
@@ -24,13 +26,15 @@ namespace VideoWeb.Controllers
         private readonly IVideoApiClient _videoApiClient;
         private readonly ILogger<ConferenceManagementController> _logger;
         private readonly IConferenceCache _conferenceCache;
+        private readonly IHearingLayoutService _hearingLayoutService;
 
         public ConferenceManagementController(IVideoApiClient videoApiClient,
-            ILogger<ConferenceManagementController> logger, IConferenceCache conferenceCache)
+            ILogger<ConferenceManagementController> logger, IConferenceCache conferenceCache, IHearingLayoutService hearingLayoutService)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
             _conferenceCache = conferenceCache;
+            _hearingLayoutService = hearingLayoutService;
         }
 
         /// <summary>
@@ -72,6 +76,122 @@ namespace VideoWeb.Controllers
             {
                 _logger.LogError(ex, "Unable to start video hearing {Conference}", conferenceId);
                 return StatusCode(ex.StatusCode, ex.Response);
+            }
+        }
+
+        /// <summary>
+        /// Returns the active layout for a conference
+        /// </summary>
+        /// <param name="conferenceId">conference id</param>
+        /// <returns>Ok status</returns>
+        /// <returns>Forbidden status</returns>
+        /// <returns>Not Found status</returns>
+        [HttpPost("{conferenceId}/getlayout")]
+        [SwaggerOperation(OperationId = "GetLayoutForHearing")]
+        [ProducesResponseType(typeof(HearingLayout), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetLayoutForHearing(Guid conferenceId)
+        {
+            try
+            {
+                _logger.LogDebug("Getting the layout for {conferenceId}", conferenceId);
+                var layout = await _hearingLayoutService.GetCurrentLayout(conferenceId);
+
+                if (!layout.HasValue) {
+                    _logger.LogWarning("Layout didn't have a value returning NotFound. This was for {conferenceId}", conferenceId);
+                    return NotFound();
+                }
+
+                _logger.LogTrace("Got Layout ({layout}) for {conferenceId}", layout.Value, conferenceId);
+                return Ok(layout);
+            }
+            catch (VideoApiException exception)
+            {
+                _logger.LogError(exception, "Could not get layout for {conferenceId} a video api exception was thrown", conferenceId);
+                return StatusCode(exception.StatusCode, exception.Response);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Could not get layout for {conferenceId} an unkown exception was thrown", conferenceId);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Update the active layout for a conference
+        /// </summary>
+        /// <param name="conferenceId">conference id</param>
+        /// <param name="layout">layout</param>
+        /// <returns>Ok status</returns>
+        /// <returns>Forbidden status</returns>
+        /// <returns>Not Found status</returns>
+        [HttpPost("{conferenceId}/updatelayout")]
+        [SwaggerOperation(OperationId = "UpdateLayoutForHearing")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> UpdateLayoutForHearing(Guid conferenceId, HearingLayout layout)
+        {
+            try
+            {
+                _logger.LogDebug("Attempting to update layout to {layout} for conference {conferenceId}", layout, conferenceId);
+
+                var participant = await GetParticipant(conferenceId, User.Identity.Name);
+
+                if (participant == null)
+                {
+                    _logger.LogWarning("Could not update layout to {layout} for hearing as participant with the name {username} was not found in conference {conferenceId}", layout, User.Identity.Name, conferenceId);
+                    return NotFound(nameof(participant));
+                }
+
+                await _hearingLayoutService.UpdateLayout(conferenceId, participant.Id, layout);
+
+                _logger.LogInformation("Updated layout to {layout} for conference {conferenceId}", layout, conferenceId);
+                return Ok();
+            }
+            catch (VideoApiException exception)
+            {
+                _logger.LogError(exception, "Could not update layout for {conferenceId} a video api exception was thrown", conferenceId);
+                return StatusCode(exception.StatusCode, exception.Response);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Could not update layout for {conferenceId} an unkown exception was thrown", conferenceId);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Get recommended layout for hearing
+        /// </summary>
+        /// <param name="conferenceId">conference id</param>
+        /// <returns>Ok status</returns>
+        /// <returns>Forbidden status</returns>
+        /// <returns>Not Found status</returns>
+        [HttpPost("{conferenceId}/getrecommendedlayout")]
+        [SwaggerOperation(OperationId = "GetRecommendedLayoutForHearing")]
+        [ProducesResponseType(typeof(HearingLayout), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetRecommendedLayoutForHearing(Guid conferenceId)
+        {
+            try
+            {
+                _logger.LogDebug("Attempting get recommended layout  for conference {conferenceId}", conferenceId);
+                var conference = await GetConference(conferenceId);
+
+                return Ok(conference.GetRecommendedLayout());
+            }
+            catch (VideoApiException exception)
+            {
+                _logger.LogError(exception, "Could not get recommended layout for {conferenceId} a video api exception was thrown", conferenceId);
+                return StatusCode(exception.StatusCode, exception.Response);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Could not get recommended layout for {conferenceId} an unkown exception was thrown", conferenceId);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
             }
         }
 

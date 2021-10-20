@@ -361,18 +361,6 @@ export class VideoCallService {
         this.pexipAPI.clearAllBuzz();
     }
 
-    updatePreferredLayout(conferenceId: string, layout: HearingLayout) {
-        this.logger.info(`${this.loggerPrefix} Updating preferred layout`, { conference: conferenceId, layout });
-        const record = this.preferredLayoutCache.get();
-        record[conferenceId] = layout;
-        this.preferredLayoutCache.set(record);
-    }
-
-    getPreferredLayout(conferenceId: string) {
-        const record = this.preferredLayoutCache.get();
-        return record[conferenceId];
-    }
-
     startHearing(conferenceId: string, layout: HearingLayout): Promise<void> {
         this.logger.info(`${this.loggerPrefix} Attempting to start hearing`, { conference: conferenceId, layout });
         const request = new StartHearingRequest({

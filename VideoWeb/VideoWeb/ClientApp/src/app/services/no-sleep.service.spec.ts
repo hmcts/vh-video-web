@@ -19,6 +19,7 @@ describe('NoSleepService', () => {
 
     let currentStreamSubject: Subject<MediaStream>;
     let videoElementSpy: jasmine.SpyObj<HTMLVideoElement>;
+    let containerElementSpy: jasmine.SpyObj<HTMLDivElement>;
     let touchStartCallback: (e: any) => boolean | void = null;
 
     beforeEach(() => {
@@ -27,6 +28,7 @@ describe('NoSleepService', () => {
         getSpiedPropertyGetter(userMediaStreamServiceSpy, 'currentStream$').and.returnValue(currentStreamSubject.asObservable());
 
         videoElementSpy = jasmine.createSpyObj<HTMLVideoElement>(['play', 'setAttribute'], ['style', 'parentElement']);
+        containerElementSpy = jasmine.createSpyObj<HTMLDivElement>(['setAttribute', 'appendChild']);
         getSpiedPropertyGetter(videoElementSpy, 'style').and.returnValue({} as CSSStyleDeclaration);
 
         renderer2FactorySpy = jasmine.createSpyObj<RendererFactory2>(['createRenderer']);
@@ -40,8 +42,9 @@ describe('NoSleepService', () => {
 
         deviceServiceSpy = jasmine.createSpyObj<DeviceDetectorService>(['isDesktop']);
 
-        documentSpy = jasmine.createSpyObj<Document>(['createElement', 'getElementsByTagName']);
+        documentSpy = jasmine.createSpyObj<Document>(['createElement', 'querySelector']);
         documentSpy.createElement.withArgs('video').and.returnValue(videoElementSpy);
+        documentSpy.createElement.withArgs('div').and.returnValue(containerElementSpy);
 
         loggerSpy = jasmine.createSpyObj<Logger>(['info', 'debug', 'warn', 'error']);
 
@@ -58,73 +61,61 @@ describe('NoSleepService', () => {
 
             // Assert
             expect(documentSpy.createElement).not.toHaveBeenCalled();
-            expect(documentSpy.getElementsByTagName).not.toHaveBeenCalled();
+            expect(documentSpy.querySelector).not.toHaveBeenCalled();
         });
 
-        it('should create a video element and add it to the first div in the page', () => {
-            // Arrange
-            const firstDivSpy = jasmine.createSpyObj<HTMLDivElement>(['appendChild']);
-            const secondDivSpy = jasmine.createSpyObj<HTMLDivElement>(['appendChild']);
+        describe('html editting', () => {
+            let firstMainSpy;
 
-            documentSpy.getElementsByTagName.withArgs('div').and.returnValue(({
-                0: firstDivSpy,
-                1: secondDivSpy
-            } as unknown) as HTMLCollectionOf<Element>);
+            beforeEach(() => {
+                firstMainSpy = jasmine.createSpyObj<HTMLElement>(['appendChild']);
+                documentSpy.querySelector.withArgs('[role="main"]').and.returnValue(firstMainSpy);
+            });
 
-            service['videoElement'] = null;
+            it('should create a video element and add it to the first div in the page', () => {
+                // Arrange
+                service['videoElement'] = null;
 
-            // Act
-            service.enable();
+                // Act
+                service.enable();
 
-            // Assert
-            expect(service['videoElement']).toBe(videoElementSpy);
-            expect(documentSpy.createElement).toHaveBeenCalledOnceWith('video');
-            expect(documentSpy.getElementsByTagName).toHaveBeenCalledWith('div');
-            expect(firstDivSpy.appendChild).toHaveBeenCalledWith(videoElementSpy);
-            expect(secondDivSpy.appendChild).not.toHaveBeenCalled();
+                // Assert
+                expect(service['videoElement']).toBe(videoElementSpy);
+                expect(documentSpy.createElement).toHaveBeenCalledWith('video');
+                expect(documentSpy.createElement).toHaveBeenCalledWith('video');
+                expect(documentSpy.querySelector).toHaveBeenCalledWith('[role="main"]');
+                expect(firstMainSpy.appendChild).toHaveBeenCalledWith(containerElementSpy);
+                expect(containerElementSpy.appendChild).toHaveBeenCalledWith(videoElementSpy);
+            });
+
+            it('should play the video immediately when the device is a desktop', () => {
+                // Arrange
+                deviceServiceSpy.isDesktop.and.returnValue(true);
+
+                service['videoElement'] = null;
+
+                // Act
+                service.enable();
+
+                // Assert
+                expect(videoElementSpy.play).toHaveBeenCalledTimes(1);
+            });
+
+            it('should play the video once the first touch has occured when the device is NOT a desktop', fakeAsync(() => {
+                // Arrange
+                deviceServiceSpy.isDesktop.and.returnValue(false);
+
+                service['videoElement'] = null;
+
+                // Act & Assert
+                service.enable();
+                expect(videoElementSpy.play).not.toHaveBeenCalled();
+
+                touchStartCallback(undefined);
+                flush();
+                expect(videoElementSpy.play).toHaveBeenCalledTimes(1);
+            }));
         });
-
-        it('should play the video immediately when the device is a desktop', () => {
-            // Arrange
-            const firstDivSpy = jasmine.createSpyObj<HTMLDivElement>(['appendChild']);
-            const secondDivSpy = jasmine.createSpyObj<HTMLDivElement>(['appendChild']);
-            documentSpy.getElementsByTagName.withArgs('div').and.returnValue(({
-                0: firstDivSpy,
-                1: secondDivSpy
-            } as unknown) as HTMLCollectionOf<Element>);
-
-            deviceServiceSpy.isDesktop.and.returnValue(true);
-
-            service['videoElement'] = null;
-
-            // Act
-            service.enable();
-
-            // Assert
-            expect(videoElementSpy.play).toHaveBeenCalledTimes(1);
-        });
-
-        it('should play the video once the first touch has occured when the device is NOT a desktop', fakeAsync(() => {
-            // Arrange
-            const firstDivSpy = jasmine.createSpyObj<HTMLDivElement>(['appendChild']);
-            const secondDivSpy = jasmine.createSpyObj<HTMLDivElement>(['appendChild']);
-            documentSpy.getElementsByTagName.withArgs('div').and.returnValue(({
-                0: firstDivSpy,
-                1: secondDivSpy
-            } as unknown) as HTMLCollectionOf<Element>);
-
-            deviceServiceSpy.isDesktop.and.returnValue(false);
-
-            service['videoElement'] = null;
-
-            // Act & Assert
-            service.enable();
-            expect(videoElementSpy.play).not.toHaveBeenCalled();
-
-            touchStartCallback(undefined);
-            flush();
-            expect(videoElementSpy.play).toHaveBeenCalledTimes(1);
-        }));
     });
 
     describe('onCurrentStream change', () => {

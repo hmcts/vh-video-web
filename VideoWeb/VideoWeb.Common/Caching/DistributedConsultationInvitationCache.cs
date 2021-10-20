@@ -9,41 +9,26 @@ using VideoWeb.Common.Models;
 
 namespace VideoWeb.Common.Caching
 {
-    public class DistributedConsultationInvitationCache : IConsultationInvitationCache
+    public class DistributedConsultationInvitationCache : RedisCacheBase<Guid, ConsultationInvitation>, IConsultationInvitationCache
     {
-        private readonly IDistributedCache _distributedCache;
+        public override DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
 
-        public DistributedConsultationInvitationCache(IDistributedCache distributedCache)
+        public DistributedConsultationInvitationCache(IDistributedCache distributedCache) : base(distributedCache)
         {
-            _distributedCache = distributedCache;
+            CacheEntryOptions = new DistributedCacheEntryOptions
+            {
+                SlidingExpiration = TimeSpan.FromMinutes(2.5)
+            };
         }
 
-        public async Task Write(ConsultationInvitation consultationInvitation)
+        public async Task WriteToCache(ConsultationInvitation consultationInvitation)
         {
-            var serialisedConference = JsonConvert.SerializeObject(consultationInvitation, CachingHelper.SerializerSettings);
-            var data = Encoding.UTF8.GetBytes(serialisedConference);
-            await _distributedCache.SetAsync(consultationInvitation.InvitationId.ToString(), data,
-                new DistributedCacheEntryOptions
-                {
-                    SlidingExpiration = TimeSpan.FromMinutes(2.5)
-                });
+            await base.WriteToCache(consultationInvitation.InvitationId, consultationInvitation); 
         }
 
-        public async Task<ConsultationInvitation> Read(Guid invitationId)
+        public override string GetKey(Guid key)
         {
-            try
-            {
-                var data = await _distributedCache.GetAsync(invitationId.ToString());
-                var profileSerialised = Encoding.UTF8.GetString(data);
-                var invite =
-                    JsonConvert.DeserializeObject<ConsultationInvitation>(profileSerialised,
-                        CachingHelper.SerializerSettings);
-                return invite;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return key.ToString();
         }
     }
 }
