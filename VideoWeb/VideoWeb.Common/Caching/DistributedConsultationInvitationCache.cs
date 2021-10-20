@@ -11,6 +11,8 @@ namespace VideoWeb.Common.Caching
 {
     public class DistributedConsultationInvitationCache : RedisCacheBase<Guid, ConsultationInvitation>, IConsultationInvitationCache
     {
+        public override DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
+
         public DistributedConsultationInvitationCache(IDistributedCache distributedCache) : base(distributedCache)
         {
             CacheEntryOptions = new DistributedCacheEntryOptions

@@ -10,7 +10,7 @@ namespace VideoWeb.Common.Caching
     public abstract class RedisCacheBase<TKey, TEntry>
     {
         private readonly IDistributedCache _distributedCache;
-        public DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
+        public abstract DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
 
         public RedisCacheBase(IDistributedCache distributedCache)
         {
@@ -19,6 +19,9 @@ namespace VideoWeb.Common.Caching
 
         public virtual async Task WriteToCache(TKey key, TEntry toWrite)
         {
+            if (CacheEntryOptions == null)
+                throw new InvalidOperationException($"Cannot write to cache without setting the {nameof(CacheEntryOptions)}");
+
             var serialisedLayout = JsonConvert.SerializeObject(toWrite, CachingHelper.SerializerSettings);
             var data = Encoding.UTF8.GetBytes(serialisedLayout);
             await _distributedCache.SetAsync(GetKey(key), data, CacheEntryOptions);

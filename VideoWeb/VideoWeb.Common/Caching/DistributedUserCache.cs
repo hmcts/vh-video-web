@@ -9,6 +9,8 @@ namespace VideoWeb.Common.Caching
 {
     public class DistributedUserCache : RedisCacheBase<string, UserProfile>, IUserCache
     {
+        public override DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
+
         public DistributedUserCache(IDistributedCache distributedCache) : base(distributedCache)
         {
             CacheEntryOptions = new DistributedCacheEntryOptions

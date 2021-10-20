@@ -11,6 +11,8 @@ namespace VideoWeb.Common.Caching
     public class DistributedHearingLayoutCache : RedisCacheBase<Guid, HearingLayout?>, IHearingLayoutCache
     {
         private readonly string _entryPrefix = "layout_";
+        public override DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
+
 
         public DistributedHearingLayoutCache(IDistributedCache distributedCache) : base(distributedCache)
         {

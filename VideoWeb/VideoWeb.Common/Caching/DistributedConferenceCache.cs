@@ -10,6 +10,8 @@ namespace VideoWeb.Common.Caching
 {
     public class DistributedConferenceCache : RedisCacheBase<Guid, Conference>, IConferenceCache
     {
+        public override DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
+
         public DistributedConferenceCache(IDistributedCache distributedCache) : base(distributedCache)
         {
             CacheEntryOptions = new DistributedCacheEntryOptions
