@@ -392,7 +392,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.dualHostHasSignalledToJoinHearing).toBeFalse();
     });
 
-    it('should start the hearing', async () => {
+    it('should start the hearing', fakeAsync(() => {
         component.dualHostHasSignalledToJoinHearing = false;
         const layout = HearingLayout.TwoPlus21;
         getSpiedPropertyGetter(hearingLayoutServiceSpy, 'currentLayout$').and.returnValue(of(layout));
@@ -401,7 +401,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         expect(component.dualHostHasSignalledToJoinHearing).toBeTrue();
         expect(videoCallService.startHearing).toHaveBeenCalledWith(component.conference.id, layout);
-    }););
+    }));
 
     it('should handle api error when start hearing fails', async () => {
         const error = { status: 500, isApiException: true };
@@ -948,4 +948,4 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             expect(videoControlCacheServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(participant.id, false);
         });
     });
-})
+});
