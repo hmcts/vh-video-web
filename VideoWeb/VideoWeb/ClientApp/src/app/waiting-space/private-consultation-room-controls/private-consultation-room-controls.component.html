@@ -131,7 +131,7 @@
         </div>
         <div class='show-for-medium-only'>
             
-            <ng-template *ngIf='isHost && !isPrivateConsultation'>
+            <ng-container *ngIf='isHost && !isPrivateConsultation'>
                 <div class="flexBar"></div>
 
                 <div class='icon-button' id='leave-hearing' appTooltip colour='grey'
@@ -141,7 +141,7 @@
                 </div>
                 
                 <div class="flexBar"></div>
-            </ng-template>
+            </ng-container>
 
             <button *ngIf="!isPrivateConsultation && isHost" id="pause-hearing-landscape" class="small-button blue"
                 data-module="govuk-button" (click)="pause()" type="button" [hidden]="!canCloseOrPauseHearing()">
@@ -231,7 +231,7 @@
                 <span class="far fa-hand-paper" [class]="{ yellow: handRaised }"></span>
             </div>
 
-            <ng-template *ngIf='isHost && !isPrivateConsultation'>
+            <ng-container *ngIf='isHost && !isPrivateConsultation'>
                 <div class="flexBar"></div>
 
                 <div id='leave-hearing' class="icon-button" appTooltip colour='grey'
@@ -241,7 +241,7 @@
                 </div>
     
                 <div class="flexBar"></div>
-            </ng-template>
+            </ng-container>
 
             <button *ngIf="!isPrivateConsultation && isHost" id="pause-hearing-desktop" class="small-button blue"
                 data-module="govuk-button" (click)="pause()" type="button" [hidden]="!canCloseOrPauseHearing()">
