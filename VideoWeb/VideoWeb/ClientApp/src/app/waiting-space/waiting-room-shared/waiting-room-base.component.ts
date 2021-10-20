@@ -1001,6 +1001,10 @@ export abstract class WaitingRoomBaseDirective {
             return;
         }
 
+        if (!this.isHost()) {
+            return;
+        }
+
         const participant = this.findParticipant(hearingLayoutMessage.changedById);
         if (participant.id === this.getLoggedParticipant().id) {
             return;
