@@ -58,7 +58,6 @@ export abstract class WaitingRoomBaseDirective {
     audioOnly: boolean;
     hearingStartingAnnounced: boolean;
     privateConsultationAccordianExpanded = false;
-    dualHostHasSignalledToJoinHearing: boolean;
     loadingData: boolean;
     errorCount: number;
     hearing: Hearing;

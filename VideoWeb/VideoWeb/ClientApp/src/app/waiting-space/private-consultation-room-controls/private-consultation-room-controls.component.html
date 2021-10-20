@@ -91,6 +91,11 @@
                             : 'private-consultation-room-controls.hand-raise-toggle-false') | translate
                             }}</span></span>
                 </div>
+                <div *ngIf='!isPrivateConsultation && isHost' id='leave-hearing' class='icon-button-dark hide-for-medium'
+                    data-module='govuk-button' (click)='displayLeaveHearingPopup = !displayLeaveHearingPopup'>
+                    <span class='fad fa-sign-out-alt fa-flip-horizontal'></span><span class='context-item'>{{
+                            'private-consultation-room-controls.leave-hearing' | translate }}</span>
+                </div>
                 <div *ngIf='!isPrivateConsultation && isHost' id='pause-hearing' class='icon-button-dark hide-for-medium'
                     data-module='govuk-button' (click)='pause()' [hidden]='!canCloseOrPauseHearing()'>
                     <span class='far fa-pause-circle'><span class='context-item'>{{
@@ -119,7 +124,7 @@
             </div>
         </div>
         <div class='flexBar'></div>
-        <div class='icon-button' id='leave-hearing' appTooltip colour='grey'
+        <div *ngIf='isHost && !isPrivateConsultation' class='show-for-medium-only icon-button' id='leave-hearing' appTooltip colour='grey'
             [text]="'private-consultation-room-controls.leave-hearing' | translate"
             (click)="displayLeaveHearingPopup = !displayLeaveHearingPopup">
             <span class='fad fa-sign-out-alt fa-flip-horizontal leave-hearing-button'></span>
