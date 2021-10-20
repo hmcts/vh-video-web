@@ -301,13 +301,7 @@ namespace VideoWeb.Controllers
 
             try
             {
-                _logger.LogDebug("Sending request to call witness {Participant} into video hearing {Conference}",
-                    participantId, conferenceId);
-                await _videoApiClient.TransferParticipantAsync(conferenceId, new TransferParticipantRequest
-                {
-                    ParticipantId = participantId,
-                    TransferType = TransferType.Call
-                });
+                await TransferParticipantAsync(conferenceId, participantId, TransferType.Call);
                 return Accepted();
             }
             catch (VideoApiException ex)
@@ -336,13 +330,7 @@ namespace VideoWeb.Controllers
             }
             try
             {
-                _logger.LogDebug("Sending request to call witness {Participant} into video hearing {Conference}",
-                    participantId, conferenceId);
-                await _videoApiClient.TransferParticipantAsync(conferenceId, new TransferParticipantRequest
-                {
-                    ParticipantId = participantId,
-                    TransferType = TransferType.Call
-                });
+                await TransferParticipantAsync(conferenceId, participantId, TransferType.Call);
                 return Accepted();
             }
             catch (VideoApiException ex)
@@ -372,7 +360,7 @@ namespace VideoWeb.Controllers
 
             try
             {
-                await TransferParticipantAsync(conferenceId, participantId);
+                await TransferParticipantAsync(conferenceId, participantId, TransferType.Dismiss);
             }
             catch (VideoApiException ex)
             {
@@ -413,7 +401,7 @@ namespace VideoWeb.Controllers
 
             try
             {
-                await TransferParticipantAsync(conferenceId, participantId);
+                await TransferParticipantAsync(conferenceId, participantId, TransferType.Dismiss);
             }
             catch (VideoApiException ex)
             {
@@ -527,15 +515,15 @@ namespace VideoWeb.Controllers
 
         }
 
-        private Task TransferParticipantAsync(Guid conferenceId, Guid participantId)
+        private Task TransferParticipantAsync(Guid conferenceId, Guid participantId, TransferType transferType)
         {
-            _logger.LogDebug("Sending request to dismiss participant {Participant} from video hearing {Conference}",
-                participantId, conferenceId);
+            _logger.LogDebug("Sending request to {transferType.ToString().ToLowerInvariant()} participant {ParticipantId} from video hearing {ConferenceId}",
+                transferType, participantId, conferenceId);
 
             return _videoApiClient.TransferParticipantAsync(conferenceId, new TransferParticipantRequest
             {
                 ParticipantId = participantId,
-                TransferType = TransferType.Dismiss
+                TransferType = transferType
             });
         }
 
