@@ -15,6 +15,7 @@ using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common.Configuration;
 using Microsoft.Extensions.Options;
+using VideoWeb.EventHub.Services;
 
 namespace VideoWeb.EventHub.Hub
 {

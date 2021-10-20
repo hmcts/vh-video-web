@@ -7,50 +7,33 @@ using UserApi.Contract.Responses;
 
 namespace VideoWeb.Common.Caching
 {
-    public class DistributedUserCache : IUserCache
+    public class DistributedUserCache : RedisCacheBase<string, UserProfile>, IUserCache
     {
-        private readonly IDistributedCache _distributedCache;
+        public override DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
 
-        public DistributedUserCache(IDistributedCache distributedCache)
+        public DistributedUserCache(IDistributedCache distributedCache) : base(distributedCache)
         {
-            _distributedCache = distributedCache;
+            CacheEntryOptions = new DistributedCacheEntryOptions
+            {
+                SlidingExpiration = TimeSpan.FromHours(4)
+            };
         }
 
         public async Task<UserProfile> GetOrAddAsync(string key, Func<string, Task<UserProfile>> valueFactory)
         {
+            var profile = await ReadFromCache(key);
 
-            var profile = GetProfileFromCache(key);
-            if (profile != null) return profile;
-            
-            profile = await valueFactory.Invoke(key);
-            var serialisedProfile = JsonConvert.SerializeObject(profile, CachingHelper.SerializerSettings);
+            if (profile != null) return profile;            
+            profile = await valueFactory(key);
 
-            var data = Encoding.UTF8.GetBytes(serialisedProfile);
-            await _distributedCache.SetAsync(key, data,
-                new DistributedCacheEntryOptions
-                {
-                    SlidingExpiration = TimeSpan.FromHours(4)
-                });
+            await WriteToCache(key, profile);
 
             return profile;
         }
 
-        private UserProfile GetProfileFromCache(string key)
+        public override string GetKey(string key)
         {
-            try
-            {
-                var data = _distributedCache.Get(key);
-                var profileSerialised = Encoding.UTF8.GetString(data);
-                var profile =
-                    JsonConvert.DeserializeObject<UserProfile>(profileSerialised, CachingHelper.SerializerSettings);
-                return profile;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return key;
         }
-        
-        
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using VideoApi.Contract.Requests;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Enums;
@@ -18,7 +19,7 @@ namespace VideoWeb.EventHub.Hub
         Task ConferenceStatusMessage(Guid conferenceId, ConferenceStatus conferenceState);
         Task CountdownFinished(Guid conferenceId);
         Task RequestedConsultationMessage(Guid conferenceId, Guid invitationId, string roomLabel, Guid requestedBy, Guid requestedFor);
-        Task ConsultationRequestResponseMessage(Guid conferenceId, Guid invitationId, string roomLabel, Guid requestedFor, ConsultationAnswer answer, Guid responseInitiatorId);
+        Task ConsultationRequestResponseMessage(Guid conferenceId, Guid invitationId, string roomLabel, Guid requestedFor, Common.Models.ConsultationAnswer answer, Guid responseInitiatorId);
         Task RoomUpdate(Room room);
         Task RoomTransfer(RoomTransfer roomTransfer);
         Task HelpMessage(Guid conferenceId, string participantName);
@@ -27,5 +28,6 @@ namespace VideoWeb.EventHub.Hub
         Task ReceiveHeartbeat(Guid conferenceId, Guid participantId, HeartbeatHealth heartbeatHealth, string browserName, string browserVersion, string osName, string osVersion);
         Task HearingTransfer(Guid conferenceId, Guid participantId, TransferDirection transferDirection);
         Task ParticipantsUpdatedMessage(Guid conferenceId, List<ParticipantResponse> participants);
+        Task HearingLayoutChanged(Guid conferenceId, Guid changedById, HearingLayout newLayout, HearingLayout oldLayout);
     }
 }
