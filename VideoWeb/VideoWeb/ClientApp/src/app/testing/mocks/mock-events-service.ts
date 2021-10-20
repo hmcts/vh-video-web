@@ -4,7 +4,7 @@ import { ConferenceMessageAnswered } from 'src/app/services/models/conference-me
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
-import HearingLayoutChanged from 'src/app/services/models/hearing-layout-changed';
+import { HearingLayoutChanged} from 'src/app/services/models/hearing-layout-changed';
 import { HearingTransfer } from 'src/app/services/models/hearing-transfer';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { ParticipantHeartbeat } from 'src/app/services/models/participant-heartbeat';
