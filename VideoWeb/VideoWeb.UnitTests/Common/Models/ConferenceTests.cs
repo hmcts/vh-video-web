@@ -1,3 +1,4 @@
+using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
 using System;
@@ -52,8 +53,8 @@ namespace VideoWeb.UnitTests.Common.Models
         public void Should_return_correct_layout_for_the_number_of_participants_and_endpoints(int numberOfParticipants, int numberOfEndpoints, HearingLayout expectedLayout)
         {
             // Arrange
-            conference.Participants = Enumerable.Repeat(new Participant(), numberOfParticipants).ToList();
-            conference.Endpoints = Enumerable.Repeat(new Endpoint(), numberOfEndpoints).ToList();
+            conference.Participants = Builder<Participant>.CreateListOfSize(numberOfParticipants).Build().ToList();
+            conference.Endpoints = Builder<Endpoint>.CreateListOfSize(numberOfEndpoints).Build().ToList();
 
             // Act
             var recommendedLayout = conference.GetRecommendedLayout();

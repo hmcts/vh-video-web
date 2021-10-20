@@ -1,4 +1,5 @@
 using Autofac.Extras.Moq;
+using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.SignalR;
 using Moq;
@@ -135,6 +136,7 @@ namespace VideoWeb.UnitTests.Caching
             var defaultLayout = HearingLayout.Dynamic;
             var expectedLayout = HearingLayout.TwoPlus21;
             var participants = BuildParticipantListWithAllRoles();
+            var expectedHostGroups = participants.Where(participant => participant.IsHost()).Select(participant => participant.Username.ToLowerInvariant());
 
             var conference = new Conference()
             {
@@ -150,8 +152,7 @@ namespace VideoWeb.UnitTests.Caching
             _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients)
                 .Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
 
-            Func<IEnumerable<string>, bool> onlyContainsHosts = (groups) => groups.All(group => participants.Where(participant => participant.Role == Role.Judge || participant.Role == Role.StaffMember).Select(participant => participant.Username).Contains(group));
-            _mocker.Mock<IHubClients<IEventHubClient>>().Setup(x => x.Groups(It.Is<IReadOnlyList<string>>(y => onlyContainsHosts(y))))
+            _mocker.Mock<IHubClients<IEventHubClient>>().Setup(x => x.Groups(It.IsAny<IReadOnlyList<string>>()))
                 .Returns(_mocker.Mock<IEventHubClient>().Object);
 
             // Act
@@ -159,6 +160,7 @@ namespace VideoWeb.UnitTests.Caching
 
             // Assert
             _mocker.Mock<IHearingLayoutCache>().Verify(x => x.WriteToCache(conferenceId, expectedLayout), Times.Once);
+            _mocker.Mock<IHubClients<IEventHubClient>>().Verify(x => x.Groups(It.Is<IReadOnlyList<string>>(groups => groups.All(group => expectedHostGroups.Contains(group)))), Times.Once);
             _mocker.Mock<IEventHubClient>().Verify(
                 x => x.HearingLayoutChanged(conferenceId, changedById, expectedLayout, defaultLayout),
                 Times.Once);
@@ -179,6 +181,7 @@ namespace VideoWeb.UnitTests.Caching
                 Participants = participants
             };
             var defaultLayout = conference.GetRecommendedLayout();
+            var expectedHostGroups = participants.Where(participant => participant.IsHost()).Select(participant => participant.Username.ToLowerInvariant());
 
             var exception = new Exception();
             _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(x => x == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ReturnsAsync(conference);
@@ -187,8 +190,7 @@ namespace VideoWeb.UnitTests.Caching
             _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients)
                 .Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
 
-            Func<IEnumerable<string>, bool> onlyContainsHosts = (groups) => groups.All(group => participants.Where(participant => participant.Role == Role.Judge || participant.Role == Role.StaffMember).Select(participant => participant.Username).Contains(group));
-            _mocker.Mock<IHubClients<IEventHubClient>>().Setup(x => x.Groups(It.Is<IReadOnlyList<string>>(y => onlyContainsHosts(y))))
+            _mocker.Mock<IHubClients<IEventHubClient>>().Setup(x => x.Groups(It.IsAny<IReadOnlyList<string>>()))
                 .Returns(_mocker.Mock<IEventHubClient>().Object);
 
             // Act
@@ -196,6 +198,7 @@ namespace VideoWeb.UnitTests.Caching
 
             // Assert
             _mocker.Mock<IHearingLayoutCache>().Verify(x => x.WriteToCache(conferenceId, expectedLayout), Times.Once);
+            _mocker.Mock<IHubClients<IEventHubClient>>().Verify(x => x.Groups(It.Is<IReadOnlyList<string>>(groups => groups.All(group => expectedHostGroups.Contains(group)))), Times.Once);
             _mocker.Mock<IEventHubClient>().Verify(
                 x => x.HearingLayoutChanged(conferenceId, changedById, expectedLayout, defaultLayout),
                 Times.Once);
@@ -226,57 +229,20 @@ namespace VideoWeb.UnitTests.Caching
 
         private List<Participant> BuildParticipantListWithAllRoles()
         {
-            return new List<Participant>
-            {
-                new Participant()
-                {
-                    Id = Guid.NewGuid(),
-                    Username = Guid.NewGuid().ToString(),
-                    Role = Role.Judge
-                },
-                    new Participant()
-                {
-                    Id = Guid.NewGuid(),
-                    Username = Guid.NewGuid().ToString(),
-                    Role = Role.StaffMember
-                },
-                    new Participant()
-                {
-                    Id = Guid.NewGuid(),
-                    Username = Guid.NewGuid().ToString(),
-                    Role = Role.JudicialOfficeHolder
-                },
-                new Participant()
-                {
-                    Id = Guid.NewGuid(),
-                    Username = Guid.NewGuid().ToString(),
-                    Role = Role.Individual
-                },
-                new Participant()
-                {
-                    Id = Guid.NewGuid(),
-                    Username = Guid.NewGuid().ToString(),
-                    Role = Role.CaseAdmin
-                },
-                new Participant()
-                {
-                    Id = Guid.NewGuid(),
-                    Username = Guid.NewGuid().ToString(),
-                    Role = Role.QuickLinkObserver
-                },
-                new Participant()
-                {
-                    Id = Guid.NewGuid(),
-                    Username = Guid.NewGuid().ToString(),
-                    Role = Role.QuickLinkParticipant
-                },
-                new Participant()
-                {
-                    Id = Guid.NewGuid(),
-                    Username = Guid.NewGuid().ToString(),
-                    Role = Role.None
-                }
-            };
+            return Builder<Participant>.CreateListOfSize(12)
+                .TheFirst(1).With(x => x.Role = Role.Judge)
+                .TheNext(1).With(x => x.Role = Role.StaffMember)
+                .TheNext(1).With(x => x.Role = Role.CaseAdmin)
+                .TheNext(1).With(x => x.Role = Role.HearingFacilitationSupport)
+                .TheNext(1).With(x => x.Role = Role.JudicialOfficeHolder)
+                .TheNext(1).With(x => x.Role = Role.None)
+                .TheNext(1).With(x => x.Role = Role.CaseAdmin)
+                .TheNext(1).With(x => x.Role = Role.QuickLinkObserver)
+                .TheNext(1).With(x => x.Role = Role.QuickLinkParticipant)
+                .TheNext(1).With(x => x.Role = Role.Representative)
+                .TheNext(1).With(x => x.Role = Role.VideoHearingsOfficer)
+                .TheRest().With(x => x.Role = Role.Individual).Build().ToList();
         }
+
     }
 }
