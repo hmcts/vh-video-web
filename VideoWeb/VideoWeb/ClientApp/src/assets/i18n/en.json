@@ -622,7 +622,8 @@
     "show-chat-window": "Show messages list",
     "hide-chat-window": "Hide messages list",
     "share-video-evidence": "Share video or audio",
-    "share-document-evidence": "Share documents"
+    "share-document-evidence": "Share documents",
+    "unsupported-dynamic-evidence": "Video sharing is not supported on this browser"
   },
   "chat-panel": {
     "heading": "VH Officer messages",

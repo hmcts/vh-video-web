@@ -176,6 +176,12 @@
   display: block;
 }
 
+.unsupported-sharing {
+  background-color: govuk-colour('red');
+  color: govuk-colour('white');
+  font-size: rem(16px);
+}
+
 .context-item {
   font-family: 'GDS Transport', arial, sans-serif;
   -webkit-font-smoothing: antialiased;

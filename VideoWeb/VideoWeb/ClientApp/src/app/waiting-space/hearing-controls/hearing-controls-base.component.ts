@@ -9,6 +9,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { browsers } from 'src/app/shared/browser.constants';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-hand-raised-message';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
@@ -46,7 +47,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     displayConfirmPopup: boolean;
     participantSpotlightUpdateSubscription: Subscription;
     isSpotlighted: boolean;
-    showEvidenceContextMenu;
+    showEvidenceContextMenu: boolean;
 
     private destroyedSubject = new Subject<void>();
     sharingDynamicEvidence: boolean;
@@ -73,7 +74,13 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             this.participant?.hearing_role !== HearingRole.WITNESS &&
             this.participant?.hearing_role !== HearingRole.OBSERVER &&
             this.participant?.role !== Role.QuickLinkObserver;
-        return this.deviceTypeService.isDesktop() && isAllowedRole;
+        return this.deviceTypeService.isDesktop() && isAllowedRole && !this.sharingDynamicEvidence;
+    }
+
+    get canShowDynamicEvidenceShareButton(): boolean {
+        const supportedBrowsers = [browsers.Chrome, browsers.MSEdgeChromium];
+        const browser = this.deviceTypeService.getBrowserName();
+        return supportedBrowsers.some(x => x.toUpperCase() === browser.toUpperCase());
     }
 
     get isJudge(): boolean {
