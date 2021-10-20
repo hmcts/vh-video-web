@@ -358,7 +358,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             status: this.conference.status
         });
 
-
         this.hearingLayoutService.currentLayout$.pipe(take(1)).subscribe(async layout => {
             try {
                 await this.videoCallService.startHearing(this.hearing.id, layout);

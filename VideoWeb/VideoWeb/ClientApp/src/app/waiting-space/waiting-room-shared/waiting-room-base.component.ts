@@ -1047,7 +1047,7 @@ export abstract class WaitingRoomBaseDirective {
             this.hearing.isInSession() &&
             !this.isOrHasWitnessLink() &&
             !this.isQuickLinkParticipant() &&
-            (this.shouldCurrentUserJoinHearing() || this.dualHostHasSignalledToJoinHearing)
+            this.shouldCurrentUserJoinHearing()
         ) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because hearing is in session';
