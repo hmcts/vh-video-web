@@ -26,10 +26,10 @@ describe('EventsService', () => {
         loggerMock = new MockLogger();
         eventsHubServiceSpy = jasmine.createSpyObj<EventsHubService>(
             'EventsHubService',
-            ['start', 'stop', 'getServiceReconnected', 'getServiceDisconnected'],
+            ['start', 'stop', 'getServiceConnected', 'getServiceDisconnected'],
             ['connection', 'onEventsHubReady']
         );
-        eventsHubServiceSpy.getServiceReconnected.and.returnValue(new Observable<any>());
+        eventsHubServiceSpy.getServiceConnected.and.returnValue(new Observable<any>());
         eventsHubServiceSpy.getServiceDisconnected.and.returnValue(new Observable<number>());
         spyPropertyGetter(eventsHubServiceSpy, 'onEventsHubReady').and.returnValue(new Observable());
         serviceUnderTest = new EventsService(loggerMock, eventsHubServiceSpy);
@@ -44,7 +44,7 @@ describe('EventsService', () => {
         // Arrange
 
         // Act
-        subscription$.add(serviceUnderTest.getServiceReconnected().subscribe());
+        subscription$.add(serviceUnderTest.getServiceConnected().subscribe());
         subscription$.add(serviceUnderTest.getServiceDisconnected().subscribe());
         subscription$.add(serviceUnderTest.getParticipantStatusMessage().subscribe());
         subscription$.add(serviceUnderTest.getHearingStatusMessage().subscribe());
@@ -61,7 +61,7 @@ describe('EventsService', () => {
         subscription$.add(serviceUnderTest.getRoomUpdate().subscribe());
         subscription$.add(serviceUnderTest.getRoomTransfer().subscribe());
         subscription$.add(serviceUnderTest.getHeartbeat().subscribe());
-        subscription$.add(serviceUnderTest.getServiceReconnected().subscribe());
+        subscription$.add(serviceUnderTest.getServiceConnected().subscribe());
         subscription$.add(serviceUnderTest.getServiceDisconnected().subscribe());
         subscription$.add(serviceUnderTest.getParticipantsUpdated().subscribe());
         subscription$.add(serviceUnderTest.getHearingLayoutChanged().subscribe());
@@ -91,10 +91,10 @@ describe('EventsService', () => {
             // Arrange
 
             // Act
-            serviceUnderTest.getServiceReconnected();
+            serviceUnderTest.getServiceConnected();
 
             // Assert
-            expect(eventsHubServiceSpy.getServiceReconnected).toHaveBeenCalledTimes(1);
+            expect(eventsHubServiceSpy.getServiceConnected).toHaveBeenCalledTimes(1);
         });
     });
 
@@ -428,23 +428,6 @@ describe('EventsService', () => {
                 expectedParticipantId,
                 expectedMediaStatus
             );
-        }));
-
-        it('updateHearingLayout', fakeAsync(() => {
-            // Arrange
-            const expectedMessageName = 'UpdateHearingLayout';
-            const expectedConferenceId = 'test-conference-id';
-            const expectedLayout = HearingLayout.OnePlus7;
-            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['send']);
-
-            spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
-
-            // Act
-            serviceUnderTest.updateHearingLayout(expectedConferenceId, expectedLayout);
-            flush();
-
-            // Assert
-            expect(hubConnectionSpy.send).toHaveBeenCalledOnceWith(expectedMessageName, expectedConferenceId, expectedLayout);
         }));
     });
 });

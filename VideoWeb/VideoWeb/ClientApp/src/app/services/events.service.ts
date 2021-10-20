@@ -30,7 +30,7 @@ import { ParticipantHandRaisedMessage } from '../shared/models/participant-hand-
 import { ParticipantRemoteMuteMessage } from '../shared/models/participant-remote-mute-message';
 import { EventsHubService } from './events-hub.service';
 import { ParticipantsUpdatedMessage } from '../shared/models/participants-updated-message';
-import HearingLayoutChanged from './models/hearing-layout-chagned';
+import HearingLayoutChanged from './models/hearing-layout-changed';
 
 @Injectable({
     providedIn: 'root'
@@ -275,8 +275,8 @@ export class EventsService {
         return this.eventsHubService.onEventsHubReady;
     }
 
-    getServiceReconnected(): Observable<any> {
-        return this.eventsHubService.getServiceReconnected();
+    getServiceConnected(): Observable<any> {
+        return this.eventsHubService.getServiceConnected();
     }
 
     getServiceDisconnected(): Observable<number> {
@@ -401,9 +401,5 @@ export class EventsService {
             participant: participantId,
             mediaStatus: mediaStatus
         });
-    }
-
-    async updateHearingLayout(conferenceId: string, newLayout: HearingLayout) {
-        await this.eventsHubConnection.send('UpdateHearingLayout', conferenceId, newLayout);
     }
 }

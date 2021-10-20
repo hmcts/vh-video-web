@@ -431,7 +431,7 @@ export abstract class WaitingRoomBaseDirective {
 
         this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub reconnects`);
         this.eventHubSubscription$.add(
-            this.eventService.getServiceReconnected().subscribe(async () => {
+            this.eventService.getServiceConnected().subscribe(async () => {
                 this.logger.info(`${this.loggerPrefix} EventHub re-connected`, {
                     conference: this.conferenceId,
                     participant: this.participant.id

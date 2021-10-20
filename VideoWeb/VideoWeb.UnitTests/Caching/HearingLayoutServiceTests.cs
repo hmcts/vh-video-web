@@ -50,7 +50,29 @@ namespace VideoWeb.UnitTests.Caching
                 Id = conferenceId
             };
 
-            _mocker.Mock<IHearingLayoutCache>().Setup(x => x.Read(conferenceId)).ReturnsAsync(expectedLayout);
+            _mocker.Mock<IHearingLayoutCache>().Setup(x => x.ReadFromCache(conferenceId)).ReturnsAsync(expectedLayout);
+            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(x => x == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ReturnsAsync(conference);
+
+            // Act
+            var layout = await _sut.GetCurrentLayout(conferenceId);
+
+            // Assert
+            layout.Should().Be(expectedLayout);
+        }
+
+        [Test]
+        public async Task GetCurrentLayout_should_return_the_default_layout_for_the_conference_when_there_is_no_layout_in_the_cache()
+        {
+            // Arrange
+            var conferenceId = Guid.NewGuid();
+            var conference = new Conference()
+            {
+                Id = conferenceId,
+                Participants = new List<Participant>()
+            };
+            var expectedLayout = conference.GetRecommendedLayout();
+
+            _mocker.Mock<IHearingLayoutCache>().Setup(x => x.ReadFromCache(conferenceId)).Returns(Task.FromResult<HearingLayout?>(null));
             _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(x => x == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ReturnsAsync(conference);
 
             // Act
@@ -119,15 +141,10 @@ namespace VideoWeb.UnitTests.Caching
                 Id = conferenceId,
                 Participants = participants
             };
-            var conferenceUpdate = new Conference()
-            {
-                Id = conferenceId,
-                Participants = participants
-            };
 
             var exception = new Exception();
             _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(x => x == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ReturnsAsync(conference);
-            _mocker.Mock<IHearingLayoutCache>().Setup(x => x.Read(It.Is<Guid>(x => x == conferenceId))).ReturnsAsync(defaultLayout);
+            _mocker.Mock<IHearingLayoutCache>().Setup(x => x.ReadFromCache(It.Is<Guid>(x => x == conferenceId))).ReturnsAsync(defaultLayout);
 
 
             _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients)
@@ -141,14 +158,51 @@ namespace VideoWeb.UnitTests.Caching
             await _sut.UpdateLayout(conferenceId, changedById, expectedLayout);
 
             // Assert
-            _mocker.Mock<IHearingLayoutCache>().Verify(x => x.Write(conferenceId, expectedLayout), Times.Once);
+            _mocker.Mock<IHearingLayoutCache>().Verify(x => x.WriteToCache(conferenceId, expectedLayout), Times.Once);
             _mocker.Mock<IEventHubClient>().Verify(
                 x => x.HearingLayoutChanged(conferenceId, changedById, expectedLayout, defaultLayout),
                 Times.Once);
         }
 
         [Test]
-        public async Task UpdateLayout_should_NOT_update_conference_cache_or_raise_event_hub_event_for_judges_and_staff_memebers_when_an_exception_is_thrown()
+        public async Task UpdateLayout_should_return_the_default_layout_for_the_old_layout_if_there_was_not_one_in_the_cache()
+        {
+            // Arrange
+            var conferenceId = Guid.NewGuid();
+            var changedById = Guid.NewGuid();
+            var expectedLayout = HearingLayout.TwoPlus21;
+            var participants = BuildParticipantListWithAllRoles();
+
+            var conference = new Conference()
+            {
+                Id = conferenceId,
+                Participants = participants
+            };
+            var defaultLayout = conference.GetRecommendedLayout();
+
+            var exception = new Exception();
+            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(x => x == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ReturnsAsync(conference);
+            _mocker.Mock<IHearingLayoutCache>().Setup(x => x.ReadFromCache(It.Is<Guid>(x => x == conferenceId))).Returns(Task.FromResult<HearingLayout?>(null));
+
+            _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients)
+                .Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
+
+            Func<IEnumerable<string>, bool> onlyContainsHosts = (groups) => groups.All(group => participants.Where(participant => participant.Role == Role.Judge || participant.Role == Role.StaffMember).Select(participant => participant.Username).Contains(group));
+            _mocker.Mock<IHubClients<IEventHubClient>>().Setup(x => x.Groups(It.Is<IReadOnlyList<string>>(y => onlyContainsHosts(y))))
+                .Returns(_mocker.Mock<IEventHubClient>().Object);
+
+            // Act
+            await _sut.UpdateLayout(conferenceId, changedById, expectedLayout);
+
+            // Assert
+            _mocker.Mock<IHearingLayoutCache>().Verify(x => x.WriteToCache(conferenceId, expectedLayout), Times.Once);
+            _mocker.Mock<IEventHubClient>().Verify(
+                x => x.HearingLayoutChanged(conferenceId, changedById, expectedLayout, defaultLayout),
+                Times.Once);
+        }
+
+        [Test]
+        public async Task UpdateLayout_should_not_hadnle_an_exception_when_getting_the_conference_from_the_cache_is_thrown()
         {
             // Arrange
             var conferenceId = Guid.NewGuid();
@@ -156,13 +210,14 @@ namespace VideoWeb.UnitTests.Caching
             var expectedLayout = HearingLayout.TwoPlus21;
 
 
-            var exception = new Exception();
-            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(x => x == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ThrowsAsync(new Exception());
+            var exception = new VideoApiException("message", 403, null, null, null);
+            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(x => x == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ThrowsAsync(exception);
 
             // Act
-            await _sut.UpdateLayout(conferenceId, changedById, expectedLayout);
+            Func<Task> action = async () => await _sut.UpdateLayout(conferenceId, changedById, expectedLayout);
 
             // Assert
+            (await action.Should().ThrowExactlyAsync<VideoApiException>()).Which.Should().Be(exception);
             _mocker.Mock<IConferenceCache>().Verify(x => x.UpdateConferenceAsync(It.IsAny<Conference>()), Times.Never);
             _mocker.Mock<IEventHubClient>().Verify(
                 x => x.HearingLayoutChanged(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<HearingLayout>(), It.IsAny<HearingLayout>()),
@@ -171,57 +226,57 @@ namespace VideoWeb.UnitTests.Caching
 
         private List<Participant> BuildParticipantListWithAllRoles()
         {
-            var participants = new List<Participant>();
-            participants.Add(new Participant()
+            return new List<Participant>
             {
-                Id = Guid.NewGuid(),
-                Username = Guid.NewGuid().ToString(),
-                Role = Role.Judge
-            });
-            participants.Add(new Participant()
-            {
-                Id = Guid.NewGuid(),
-                Username = Guid.NewGuid().ToString(),
-                Role = Role.StaffMember
-            });
-            participants.Add(new Participant()
-            {
-                Id = Guid.NewGuid(),
-                Username = Guid.NewGuid().ToString(),
-                Role = Role.JudicialOfficeHolder
-            });
-            participants.Add(new Participant()
-            {
-                Id = Guid.NewGuid(),
-                Username = Guid.NewGuid().ToString(),
-                Role = Role.Individual
-            });
-            participants.Add(new Participant()
-            {
-                Id = Guid.NewGuid(),
-                Username = Guid.NewGuid().ToString(),
-                Role = Role.CaseAdmin
-            });
-            participants.Add(new Participant()
-            {
-                Id = Guid.NewGuid(),
-                Username = Guid.NewGuid().ToString(),
-                Role = Role.QuickLinkObserver
-            });
-            participants.Add(new Participant()
-            {
-                Id = Guid.NewGuid(),
-                Username = Guid.NewGuid().ToString(),
-                Role = Role.QuickLinkParticipant
-            });
-            participants.Add(new Participant()
-            {
-                Id = Guid.NewGuid(),
-                Username = Guid.NewGuid().ToString(),
-                Role = Role.None
-            });
-
-            return participants;
+                new Participant()
+                {
+                    Id = Guid.NewGuid(),
+                    Username = Guid.NewGuid().ToString(),
+                    Role = Role.Judge
+                },
+                    new Participant()
+                {
+                    Id = Guid.NewGuid(),
+                    Username = Guid.NewGuid().ToString(),
+                    Role = Role.StaffMember
+                },
+                    new Participant()
+                {
+                    Id = Guid.NewGuid(),
+                    Username = Guid.NewGuid().ToString(),
+                    Role = Role.JudicialOfficeHolder
+                },
+                new Participant()
+                {
+                    Id = Guid.NewGuid(),
+                    Username = Guid.NewGuid().ToString(),
+                    Role = Role.Individual
+                },
+                new Participant()
+                {
+                    Id = Guid.NewGuid(),
+                    Username = Guid.NewGuid().ToString(),
+                    Role = Role.CaseAdmin
+                },
+                new Participant()
+                {
+                    Id = Guid.NewGuid(),
+                    Username = Guid.NewGuid().ToString(),
+                    Role = Role.QuickLinkObserver
+                },
+                new Participant()
+                {
+                    Id = Guid.NewGuid(),
+                    Username = Guid.NewGuid().ToString(),
+                    Role = Role.QuickLinkParticipant
+                },
+                new Participant()
+                {
+                    Id = Guid.NewGuid(),
+                    Username = Guid.NewGuid().ToString(),
+                    Role = Role.None
+                }
+            };
         }
     }
 }

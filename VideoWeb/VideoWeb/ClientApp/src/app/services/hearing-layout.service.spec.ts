@@ -2,28 +2,36 @@ import { fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { of, ReplaySubject } from 'rxjs';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
-import { eventsServiceSpy, hearingLayoutChangedSubjectMock } from '../testing/mocks/mock-events-service';
-import { ApiClient, ConferenceResponse, HearingLayout, ParticipantResponse, VideoEndpointResponse } from './clients/api-client';
+import { ParticipantsUpdatedMessage } from '../shared/models/participants-updated-message';
+import {
+    eventHubReconnectSubjectMock,
+    eventsServiceSpy,
+    getParticipantsUpdatedSubjectMock,
+    hearingLayoutChangedSubjectMock
+} from '../testing/mocks/mock-events-service';
+import { ApiClient, ConferenceResponse, HearingLayout } from './clients/api-client';
 import { ConferenceService } from './conference/conference.service';
 import { EventsService } from './events.service';
 import { HearingLayoutService } from './hearing-layout.service';
 import { Logger } from './logging/logger-base';
-import HearingLayoutChanged from './models/hearing-layout-chagned';
+import HearingLayoutChanged from './models/hearing-layout-changed';
 
 describe('HearingLayoutService', () => {
     let service: HearingLayoutService;
     let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
     let apiClientSpy: jasmine.SpyObj<ApiClient>;
+
     const initialConferenceId = Guid.create().toString();
     let currentConferenceSubject: ReplaySubject<ConferenceResponse>;
     const initialConference = new ConferenceResponse({
         id: initialConferenceId
     });
     const initialLayout = HearingLayout.Dynamic;
+    const initialRecommendedLayout = HearingLayout.Dynamic;
 
     beforeEach(() => {
         conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>([], ['currentConference$']);
-        apiClientSpy = jasmine.createSpyObj<ApiClient>(['getLayoutForHearing']);
+        apiClientSpy = jasmine.createSpyObj<ApiClient>(['getLayoutForHearing', 'updateLayoutForHearing', 'getRecommendedLayoutForHearing']);
 
         TestBed.configureTestingModule({
             providers: [
@@ -38,15 +46,25 @@ describe('HearingLayoutService', () => {
         currentConferenceSubject.next(initialConference);
 
         apiClientSpy.getLayoutForHearing.and.returnValue(of(initialLayout));
+        apiClientSpy.getRecommendedLayoutForHearing.and.returnValue(of(initialRecommendedLayout));
+        apiClientSpy.updateLayoutForHearing.and.returnValue(of(void 0));
+
         getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference$').and.returnValue(currentConferenceSubject.asObservable());
-        service = TestBed.inject(HearingLayoutService);
+        service = new HearingLayoutService(
+            jasmine.createSpyObj<Logger>(['debug', 'info', 'warn', 'error']),
+            conferenceServiceSpy,
+            apiClientSpy,
+            eventsServiceSpy
+        );
     });
 
     describe('on initialisation', () => {
         it('should of fetched the current layout', fakeAsync(() => {
             // Act
             let currentLayout: HearingLayout | null = null;
-            service.currentLayout$.subscribe(layout => (currentLayout = layout));
+            service.currentLayout$.subscribe(layout => {
+                currentLayout = layout;
+            });
             flush();
 
             // Assert
@@ -56,11 +74,31 @@ describe('HearingLayoutService', () => {
         }));
     });
 
-    describe('after initialisation', () => {
+    describe('on event hub connected', () => {
         beforeEach(() => {
             apiClientSpy.getLayoutForHearing.calls.reset();
         });
 
+        it('should update the current layout', fakeAsync(() => {
+            // Arrange
+            const expectedLayout = HearingLayout.TwoPlus21;
+            apiClientSpy.getLayoutForHearing.and.returnValue(of(expectedLayout));
+
+            // Act
+            let currentLayout: HearingLayout | null = null;
+            service.currentLayout$.subscribe(layout => (currentLayout = layout));
+
+            eventHubReconnectSubjectMock.next();
+            flush();
+
+            // Assert
+            expect(currentLayout).toBeTruthy();
+            expect(currentLayout).toEqual(expectedLayout);
+            expect(apiClientSpy.getLayoutForHearing).toHaveBeenCalledOnceWith(initialConferenceId);
+        }));
+    });
+
+    describe('after initialisation', () => {
         describe('on hearingLayoutChanged recieved on event bus', () => {
             it('should emit the new layout from currentLayout$ when it is for the current conference', fakeAsync(() => {
                 // Arrange
@@ -142,6 +180,10 @@ describe('HearingLayoutService', () => {
         });
 
         describe('getCurrentLayout', () => {
+            beforeEach(() => {
+                apiClientSpy.getLayoutForHearing.calls.reset();
+            });
+
             it('should get the current conference id and retrive the layout for it', fakeAsync(() => {
                 // Arrange
                 const expectedLayout = HearingLayout.OnePlus7;
@@ -164,6 +206,7 @@ describe('HearingLayoutService', () => {
                 // Arrange
                 const conferenceId = Guid.create().toString();
                 const layout = HearingLayout.OnePlus7;
+                apiClientSpy.updateLayoutForHearing.and.returnValue(of(void 0));
                 getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference$').and.returnValue(
                     of(
                         new ConferenceResponse({
@@ -177,78 +220,133 @@ describe('HearingLayoutService', () => {
                 flush();
 
                 // Assert
-                expect(eventsServiceSpy.updateHearingLayout).toHaveBeenCalledOnceWith(conferenceId, layout);
+                expect(apiClientSpy.updateLayoutForHearing).toHaveBeenCalledOnceWith(conferenceId, layout);
             }));
         });
 
         describe('recommendLayout$', () => {
-            const dynamicConferenceMin = new ConferenceResponse();
-            dynamicConferenceMin.id = Guid.create().toString();
-            dynamicConferenceMin.participants = [];
-            dynamicConferenceMin.endpoints = [];
-
-            const dynamicConferenceMax = new ConferenceResponse();
-            dynamicConferenceMax.id = Guid.create().toString();
-            dynamicConferenceMax.participants = [{} as ParticipantResponse, {} as ParticipantResponse, {} as ParticipantResponse];
-            dynamicConferenceMax.endpoints = [{} as VideoEndpointResponse, {} as VideoEndpointResponse];
-
-            const onePlusSevenConferenceMin = new ConferenceResponse();
-            onePlusSevenConferenceMin.id = Guid.create().toString();
-            onePlusSevenConferenceMin.participants = [
-                {} as ParticipantResponse,
-                {} as ParticipantResponse,
-                {} as ParticipantResponse,
-                {} as ParticipantResponse
-            ];
-            onePlusSevenConferenceMin.endpoints = [{} as VideoEndpointResponse, {} as VideoEndpointResponse];
-
-            const onePlusSevenConferenceMax = new ConferenceResponse();
-            onePlusSevenConferenceMax.id = Guid.create().toString();
-            onePlusSevenConferenceMax.participants = [
-                {} as ParticipantResponse,
-                {} as ParticipantResponse,
-                {} as ParticipantResponse,
-                {} as ParticipantResponse,
-                {} as ParticipantResponse
-            ];
-            onePlusSevenConferenceMax.endpoints = [
-                {} as VideoEndpointResponse,
-                {} as VideoEndpointResponse,
-                {} as VideoEndpointResponse,
-                {} as VideoEndpointResponse
-            ];
-
-            const twoPlusTwentyOneConferenceMin = new ConferenceResponse();
-            twoPlusTwentyOneConferenceMin.id = Guid.create().toString();
-            twoPlusTwentyOneConferenceMin.participants = [
-                {} as ParticipantResponse,
-                {} as ParticipantResponse,
-                {} as ParticipantResponse,
-                {} as ParticipantResponse,
-                {} as ParticipantResponse
-            ];
-            twoPlusTwentyOneConferenceMin.endpoints = [
-                {} as VideoEndpointResponse,
-                {} as VideoEndpointResponse,
-                {} as VideoEndpointResponse,
-                {} as VideoEndpointResponse,
-                {} as VideoEndpointResponse
-            ];
-
-            const testCases = [
-                { conference: dynamicConferenceMin, expectedLayout: HearingLayout.Dynamic },
-                { conference: dynamicConferenceMax, expectedLayout: HearingLayout.Dynamic },
-                { conference: onePlusSevenConferenceMin, expectedLayout: HearingLayout.OnePlus7 },
-                { conference: onePlusSevenConferenceMax, expectedLayout: HearingLayout.OnePlus7 },
-                { conference: twoPlusTwentyOneConferenceMin, expectedLayout: HearingLayout.TwoPlus21 }
-            ];
-
-            testCases.forEach(testCase => {
-                it(`should recommend ${testCase.expectedLayout} for ${
-                    testCase.conference.participants.length + testCase.conference.endpoints.length
-                } participants.`, fakeAsync(() => {
+            describe('when participants list is updated', () => {
+                it('should emit when the participants updated message is recieved', fakeAsync(() => {
                     // Arrange
-                    currentConferenceSubject.next(testCase.conference);
+                    const expectedLayout = HearingLayout.OnePlus7;
+                    apiClientSpy.getRecommendedLayoutForHearing.and.returnValues(
+                        of(HearingLayout.TwoPlus21),
+                        of(HearingLayout.Dynamic),
+                        of(HearingLayout.TwoPlus21),
+                        of(expectedLayout)
+                    );
+
+                    const conferenceId = Guid.create().toString();
+                    currentConferenceSubject.next(new ConferenceResponse({ id: conferenceId }));
+                    flush();
+
+                    // Act & Assert
+                    let recommendedLayout = null;
+                    service.recommendedLayout$.subscribe(layout => (recommendedLayout = layout));
+
+                    expect(recommendedLayout).toEqual(HearingLayout.TwoPlus21);
+
+                    getParticipantsUpdatedSubjectMock.next(new ParticipantsUpdatedMessage(conferenceId, []));
+                    flush();
+                    expect(recommendedLayout).toEqual(HearingLayout.Dynamic);
+
+                    getParticipantsUpdatedSubjectMock.next(new ParticipantsUpdatedMessage(conferenceId, []));
+                    flush();
+                    expect(recommendedLayout).toEqual(HearingLayout.TwoPlus21);
+
+                    getParticipantsUpdatedSubjectMock.next(new ParticipantsUpdatedMessage(conferenceId, []));
+                    flush();
+                    expect(recommendedLayout).toEqual(expectedLayout);
+                }));
+
+                it('should only emit when the update is for the current conference', fakeAsync(() => {
+                    // Arrange
+                    const expectedLayout = HearingLayout.OnePlus7;
+                    apiClientSpy.getRecommendedLayoutForHearing.and.returnValues(of(HearingLayout.TwoPlus21), of(expectedLayout));
+
+                    const conferenceId = Guid.create().toString();
+                    currentConferenceSubject.next(new ConferenceResponse({ id: conferenceId }));
+                    flush();
+
+                    // Act & Assert
+                    let recommendedLayout = null;
+                    service.recommendedLayout$.subscribe(layout => (recommendedLayout = layout));
+
+                    expect(recommendedLayout).toEqual(HearingLayout.TwoPlus21);
+
+                    getParticipantsUpdatedSubjectMock.next(new ParticipantsUpdatedMessage(conferenceId, []));
+                    flush();
+                    expect(recommendedLayout).toEqual(expectedLayout);
+
+                    getParticipantsUpdatedSubjectMock.next(new ParticipantsUpdatedMessage(Guid.create().toString(), []));
+                    flush();
+                    expect(recommendedLayout).toEqual(expectedLayout);
+
+                    getParticipantsUpdatedSubjectMock.next(new ParticipantsUpdatedMessage(Guid.create().toString(), []));
+                    flush();
+                    expect(recommendedLayout).toEqual(expectedLayout);
+                }));
+
+                it('should emit when the update is for the current conference even if the current conference changes', fakeAsync(() => {
+                    // Arrange
+                    const expectedLayout = HearingLayout.OnePlus7;
+                    apiClientSpy.getRecommendedLayoutForHearing.and.returnValues(
+                        of(HearingLayout.TwoPlus21),
+                        of(HearingLayout.Dynamic),
+                        of(HearingLayout.TwoPlus21),
+                        of(expectedLayout)
+                    );
+
+                    const conferenceId = Guid.create().toString();
+                    const otherConferenceId = Guid.create().toString();
+                    currentConferenceSubject.next(new ConferenceResponse({ id: conferenceId }));
+                    flush();
+
+                    // Act & Assert
+                    let recommendedLayout = null;
+                    service.recommendedLayout$.subscribe(layout => (recommendedLayout = layout));
+
+                    expect(recommendedLayout).toEqual(HearingLayout.TwoPlus21);
+
+                    getParticipantsUpdatedSubjectMock.next(new ParticipantsUpdatedMessage(conferenceId, []));
+                    flush();
+                    expect(recommendedLayout).toEqual(HearingLayout.Dynamic);
+
+                    getParticipantsUpdatedSubjectMock.next(new ParticipantsUpdatedMessage(otherConferenceId, []));
+                    flush();
+                    expect(recommendedLayout).toEqual(HearingLayout.Dynamic);
+
+                    currentConferenceSubject.next(new ConferenceResponse({ id: otherConferenceId }));
+                    flush();
+                    expect(recommendedLayout).toEqual(HearingLayout.TwoPlus21);
+
+                    getParticipantsUpdatedSubjectMock.next(new ParticipantsUpdatedMessage(otherConferenceId, []));
+                    flush();
+                    expect(recommendedLayout).toEqual(expectedLayout);
+                }));
+            });
+
+            describe('when conference changes', () => {
+                it('should emit when the conference changes', fakeAsync(() => {
+                    // Arrange
+                    const expectedLayout = HearingLayout.OnePlus7;
+                    apiClientSpy.getRecommendedLayoutForHearing.and.returnValues(
+                        of(HearingLayout.TwoPlus21),
+                        of(HearingLayout.Dynamic),
+                        of(expectedLayout)
+                    );
+
+                    const conference1 = new ConferenceResponse({
+                        id: Guid.create().toString()
+                    });
+                    const conference2 = new ConferenceResponse({
+                        id: Guid.create().toString()
+                    });
+                    const conference3 = new ConferenceResponse({
+                        id: Guid.create().toString()
+                    });
+
+                    currentConferenceSubject.next(conference1);
                     flush();
 
                     // Act
@@ -256,48 +354,40 @@ describe('HearingLayoutService', () => {
                     service.recommendedLayout$.subscribe(layout => (recommendedLayout = layout));
                     flush();
 
+                    currentConferenceSubject.next(conference2);
+                    flush();
+
+                    currentConferenceSubject.next(conference3);
+                    flush();
+
                     // Assert
-                    expect(recommendedLayout).toEqual(testCase.expectedLayout);
+                    expect(recommendedLayout).toEqual(expectedLayout);
+                }));
+
+                it('should NOT emit again when the conference emits but does NOT change', fakeAsync(() => {
+                    // Arrange
+                    const conference = new ConferenceResponse({
+                        id: Guid.create().toString()
+                    });
+
+                    apiClientSpy.getRecommendedLayoutForHearing.and.returnValue(of(HearingLayout.TwoPlus21));
+
+                    currentConferenceSubject.next(conference);
+                    flush();
+
+                    // Act
+                    let recommendedLayout = null;
+                    service.recommendedLayout$.subscribe(layout => (recommendedLayout = layout));
+                    flush();
+
+                    recommendedLayout = null;
+                    currentConferenceSubject.next(conference);
+                    flush();
+
+                    // Assert
+                    expect(recommendedLayout).toBeNull();
                 }));
             });
-
-            it('should emit again when the conference changes', fakeAsync(() => {
-                // Arrange
-                currentConferenceSubject.next(dynamicConferenceMin);
-                flush();
-
-                // Act
-                let recommendedLayout = null;
-                service.recommendedLayout$.subscribe(layout => (recommendedLayout = layout));
-                flush();
-
-                currentConferenceSubject.next(twoPlusTwentyOneConferenceMin);
-                flush();
-
-                currentConferenceSubject.next(onePlusSevenConferenceMin);
-                flush();
-
-                // Assert
-                expect(recommendedLayout).toEqual(HearingLayout.OnePlus7);
-            }));
-
-            it('should NOT emit again when the conference emits but does NOT change', fakeAsync(() => {
-                // Arrange
-                currentConferenceSubject.next(dynamicConferenceMin);
-                flush();
-
-                // Act
-                let recommendedLayout = null;
-                service.recommendedLayout$.subscribe(layout => (recommendedLayout = layout));
-                flush();
-
-                recommendedLayout = null;
-                currentConferenceSubject.next(dynamicConferenceMin);
-                flush();
-
-                // Assert
-                expect(recommendedLayout).toBeNull();
-            }));
         });
     });
 });

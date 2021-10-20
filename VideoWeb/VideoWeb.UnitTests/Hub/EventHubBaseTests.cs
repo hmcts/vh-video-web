@@ -35,7 +35,7 @@ namespace VideoWeb.UnitTests.Hub
         protected ClaimsPrincipal Claims;
         protected Mock<IConferenceCache> ConferenceCacheMock;
         protected Mock<IHeartbeatRequestMapper> HeartbeatMapper;
-        protected Mock<IHearingLayoutService> conferenceLayoutServiceMock;
+        protected Mock<IHearingLayoutService> hearingLayoutServiceMock;
 
         [SetUp]
         public void Setup()
@@ -48,7 +48,6 @@ namespace VideoWeb.UnitTests.Hub
             GroupManagerMock = new Mock<IGroupManager>();
             HeartbeatMapper = new Mock<IHeartbeatRequestMapper>();
             ConferenceCacheMock = new Mock<IConferenceCache>();
-            conferenceLayoutServiceMock = new Mock<IHearingLayoutService>();
 
             Claims = new ClaimsPrincipalBuilder().Build();
             HubCallerContextMock.Setup(x => x.User).Returns(Claims);
@@ -64,7 +63,7 @@ namespace VideoWeb.UnitTests.Hub
             });
 
             Hub = new EventHub.Hub.EventHub(UserProfileServiceMock.Object, VideoApiClientMock.Object,
-                LoggerMock.Object, ConferenceCacheMock.Object, HeartbeatMapper.Object, vhServicesConfigurationOptions, conferenceLayoutServiceMock.Object)
+                LoggerMock.Object, ConferenceCacheMock.Object, HeartbeatMapper.Object, vhServicesConfigurationOptions)
             {
                 Context = HubCallerContextMock.Object,
                 Groups = GroupManagerMock.Object,
@@ -121,11 +120,12 @@ namespace VideoWeb.UnitTests.Hub
         protected Conference CreateTestConference(string participantUsername, bool withLinked = false)
         {
             var conferenceId = Guid.NewGuid();
-            var participants = Builder<Participant>.CreateListOfSize(5)
+            var participants = Builder<Participant>.CreateListOfSize(6)
                 .All().With(x=> x.Id = Guid.NewGuid()).With(x=>x.Username = Faker.Internet.Email())
                 .With(x => x.LinkedParticipants = new List<LinkedParticipant>())
                 .TheFirst(1).With(x => x.Role = Role.Judge)
                 .TheNext(2).With(x=> x.Role = Role.JudicialOfficeHolder)
+                .TheNext(1).With(x => x.Role = Role.StaffMember)
                 .TheNext(1).With(x => x.Role = Role.Individual).With(x => x.Username = participantUsername)
                 .TheNext(1).With(x => x.Role = Role.Individual)
                 .Build().ToList();

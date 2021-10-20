@@ -8,7 +8,7 @@ namespace VideoWeb.Common.Caching
 {
     public interface IHearingLayoutCache
     {
-        Task Write(Guid conferenceId, HearingLayout layout);
-        Task<HearingLayout?> Read(Guid conferenceId);
+        Task WriteToCache(Guid conferenceId, HearingLayout? layout);
+        Task<HearingLayout?> ReadFromCache(Guid conferenceId);
     }
 }

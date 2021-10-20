@@ -29,17 +29,15 @@ namespace VideoWeb.EventHub.Hub
         private readonly IVideoApiClient _videoApiClient;
         private readonly IConferenceCache _conferenceCache;
         private readonly IHeartbeatRequestMapper _heartbeatRequestMapper;
-        private readonly IHearingLayoutService _conferenceLayoutService;
         private readonly HearingServicesConfiguration _servicesConfiguration;
 
         public EventHub(IUserProfileService userProfileService, IVideoApiClient videoApiClient,
-            ILogger<EventHub> logger, IConferenceCache conferenceCache, IHeartbeatRequestMapper heartbeatRequestMapper, IOptions<HearingServicesConfiguration> servicesConfiguration, IHearingLayoutService conferenceLayoutService)
+            ILogger<EventHub> logger, IConferenceCache conferenceCache, IHeartbeatRequestMapper heartbeatRequestMapper, IOptions<HearingServicesConfiguration> servicesConfiguration)
         {
             _userProfileService = userProfileService;
             _logger = logger;
             _conferenceCache = conferenceCache;
             _heartbeatRequestMapper = heartbeatRequestMapper;
-            _conferenceLayoutService = conferenceLayoutService;
             _videoApiClient = videoApiClient;
             _servicesConfiguration = servicesConfiguration.Value;
         }
@@ -403,12 +401,14 @@ namespace VideoWeb.EventHub.Hub
                     throw new ParticipantNotFoundException(conferenceId, Context.User.Identity.Name);
                 }
 
-                await Clients.Group(VhOfficersGroupName)
-                    .ParticipantMediaStatusMessage(participantId, conferenceId, mediaStatus);
-                var judge = conference.Participants.Single(x => x.IsJudge());
-                await Clients.Group(judge.Username.ToLowerInvariant())
-                    .ParticipantMediaStatusMessage(participantId, conferenceId, mediaStatus);
-
+                var groupNames = new List<string> { VhOfficersGroupName };
+                groupNames.AddRange(conference.Participants.Where(x => x.IsHost()).Select(h => h.Username.ToLowerInvariant()));
+                foreach(var groupName in groupNames)
+                {
+                    await Clients.Group(groupName)
+                        .ParticipantMediaStatusMessage(participantId, conferenceId, mediaStatus);
+                }
+               
                 _logger.LogTrace(
                     "Participant device status updated: Participant Id: {ParticipantId} | Conference Id: {ConferenceId}",
                     participantId, conferenceId);
@@ -462,12 +462,16 @@ namespace VideoWeb.EventHub.Hub
                 var conference = await GetConference(conferenceId);
                 var participant = conference.Participants.Single(x => x.Id == participantId);
                 var linkedParticipants = GetLinkedParticipants(conference, participant);
-                
-                var judge = conference.Participants.Single(x => x.IsJudge());
-                await Clients.Group(judge.Username.ToLowerInvariant())
-                    .ParticipantHandRaiseMessage(participantId, conferenceId, isRaised);
-                await Clients.Group(participant.Username.ToLowerInvariant())
-                    .ParticipantHandRaiseMessage(participantId, conferenceId, isRaised);
+
+                var groupNames = new List<string> { participant.Username.ToLowerInvariant() };
+                groupNames.AddRange(conference.Participants.Where(x => x.IsHost()).Select(h => h.Username.ToLowerInvariant()));
+
+                foreach (var groupName in groupNames)
+                {
+                    await Clients.Group(groupName)
+                        .ParticipantHandRaiseMessage(participantId, conferenceId, isRaised);
+                }
+               
                 _logger.LogTrace(
                     "Participant hand status updated: Participant Id: {ParticipantId} | Conference Id: {ConferenceId} to {IsHandRaised}",
                     participantId, conferenceId, isRaised);
@@ -540,12 +544,6 @@ namespace VideoWeb.EventHub.Hub
                     conferenceId);
                 return particiantId;
             }
-        }
-
-        public async Task UpdateHearingLayout(Guid conferenceId, HearingLayout newLayout)
-        {
-            var updatedById = Guid.Parse(await GetParticipantIdByUsernameAsync(conferenceId, Context.User.Identity.Name));
-            await _conferenceLayoutService.UpdateLayout(conferenceId, updatedById, newLayout);
         }
     }
 }

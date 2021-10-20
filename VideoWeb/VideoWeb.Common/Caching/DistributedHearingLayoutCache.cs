@@ -8,46 +8,23 @@ using VideoApi.Contract.Requests;
 
 namespace VideoWeb.Common.Caching
 {
-    public class DistributedHearingLayoutCache : IHearingLayoutCache
+    public class DistributedHearingLayoutCache : RedisCacheBase<Guid, HearingLayout?>, IHearingLayoutCache
     {
-        private readonly IDistributedCache _distributedCache;
-        private readonly string _cachePrefix = "layout_";
+        private readonly string _entryPrefix = "layout_";
+        public override DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
 
-        public DistributedHearingLayoutCache(IDistributedCache distributedCache)
-        {
-            _distributedCache = distributedCache;
-        }
 
-        public async Task Write(Guid conferenceId, HearingLayout layout)
+        public DistributedHearingLayoutCache(IDistributedCache distributedCache) : base(distributedCache)
         {
-            var serialisedLayout = JsonConvert.SerializeObject(layout, CachingHelper.SerializerSettings);
-            var data = Encoding.UTF8.GetBytes(serialisedLayout);
-            await _distributedCache.SetAsync(GetKey(conferenceId), data,
-                new DistributedCacheEntryOptions
-                {
-                    SlidingExpiration = TimeSpan.FromHours(4)
-                });
-        }
-
-        public async Task<HearingLayout?> Read(Guid conferenceId)
-        {
-            try
+            CacheEntryOptions = new DistributedCacheEntryOptions
             {
-                var data = await _distributedCache.GetAsync(GetKey(conferenceId));
-                var profileSerialised = Encoding.UTF8.GetString(data);
-                var layout =
-                    JsonConvert.DeserializeObject<HearingLayout>(profileSerialised,
-                        CachingHelper.SerializerSettings);
-                return layout;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+                SlidingExpiration = TimeSpan.FromHours(4)
+            };
         }
-        private string GetKey(Guid conferenceId)
+
+        public override string GetKey(Guid key)
         {
-            return $"{_cachePrefix}{conferenceId}";
+            return $"{_entryPrefix}{key}";
         }
     }
 }

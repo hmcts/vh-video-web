@@ -4,7 +4,7 @@ import { ConferenceMessageAnswered } from 'src/app/services/models/conference-me
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
-import HearingLayoutChanged from 'src/app/services/models/hearing-layout-chagned';
+import HearingLayoutChanged from 'src/app/services/models/hearing-layout-changed';
 import { HearingTransfer } from 'src/app/services/models/hearing-transfer';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { ParticipantHeartbeat } from 'src/app/services/models/participant-heartbeat';
@@ -52,7 +52,7 @@ eventsServiceSpy = jasmine.createSpyObj<EventsService>(
         'getHearingCountdownCompleteMessage',
         'getConsultationRequestResponseMessage',
         'getServiceDisconnected',
-        'getServiceReconnected',
+        'getServiceConnected',
         'sendHeartbeat',
         'getRequestedConsultationMessage',
         'getChatMessage',
@@ -71,8 +71,7 @@ eventsServiceSpy = jasmine.createSpyObj<EventsService>(
         'publishRemoteMuteStatus',
         'onEventsHubReady',
         'getParticipantsUpdated',
-        'getHearingLayoutChanged',
-        'updateHearingLayout'
+        'getHearingLayoutChanged'
     ],
     ['eventHubIsConnected']
 );
@@ -83,7 +82,7 @@ eventsServiceSpy.getEndpointStatusMessage.and.returnValue(endpointStatusSubjectM
 eventsServiceSpy.getHearingCountdownCompleteMessage.and.returnValue(hearingCountdownCompleteSubjectMock.asObservable());
 eventsServiceSpy.getConsultationRequestResponseMessage.and.returnValue(consultationRequestResponseMessageSubjectMock.asObservable());
 eventsServiceSpy.getServiceDisconnected.and.returnValue(eventHubDisconnectSubjectMock.asObservable());
-eventsServiceSpy.getServiceReconnected.and.returnValue(eventHubReconnectSubjectMock.asObservable());
+eventsServiceSpy.getServiceConnected.and.returnValue(eventHubReconnectSubjectMock.asObservable());
 eventsServiceSpy.getRequestedConsultationMessage.and.returnValue(requestedConsultationMessageSubjectMock.asObservable());
 eventsServiceSpy.getChatMessage.and.returnValue(messageSubjectMock.asObservable());
 eventsServiceSpy.getHeartbeat.and.returnValue(heartbeatSubjectMock.asObservable());

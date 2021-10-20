@@ -82,6 +82,7 @@
         height="auto"
         poster="/assets/images/empty_crest.jpg"
         class="fill-container"
+        playsinline
       >
         {{ 'participant-waiting-room.browser-support' | translate }}
       </video>
@@ -103,7 +104,7 @@
         [attr.alt]="'participant-waiting-room.witness-transferring-warning-image' | translate"
       />
       <h2 class="govuk-heading-m white govuk-!-margin-top-5" [innerHTML]="'participant-waiting-room.hearing-ready' | translate"></h2>
-      <video id="outgoingFeedVideoTransfer" [muted]="true" [srcObject]="outgoingStream" autoplay height="auto">
+      <video id="outgoingFeedVideoTransfer" [muted]="true" [srcObject]="outgoingStream" autoplay height="auto" playsinline>
         {{ 'participant-waiting-room.browser-support' | translate }}
       </video>
     </div>

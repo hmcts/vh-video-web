@@ -41,6 +41,9 @@ export class NoSleepService {
             return;
         }
 
+        const containerElement = this.document.createElement('div');
+        containerElement.setAttribute('role', 'none');
+
         this.videoElement = this.document.createElement('video');
         this.videoElement.muted = true;
         this.videoElement.setAttribute('playsInLine', 'true');
@@ -51,8 +54,11 @@ export class NoSleepService {
         this.videoElement.style.position = 'absolute';
         this.videoElement.style.pointerEvents = 'none';
         this.videoElement.srcObject = this.currentStream;
-        const firstDiv = this.document.getElementsByTagName('div')[0];
-        firstDiv.appendChild(this.videoElement);
+
+        containerElement.appendChild(this.videoElement);
+
+        const mainElement = this.document.querySelector('[role="main"]');
+        mainElement.appendChild(containerElement);
 
         this.logger.debug(`${this.loggerPrefix} created video element`);
 
