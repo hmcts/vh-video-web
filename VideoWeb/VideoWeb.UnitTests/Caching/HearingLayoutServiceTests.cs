@@ -61,6 +61,28 @@ namespace VideoWeb.UnitTests.Caching
         }
 
         [Test]
+        public async Task GetCurrentLayout_should_return_the_default_layout_for_the_conference_when_there_is_no_layout_in_the_cache()
+        {
+            // Arrange
+            var conferenceId = Guid.NewGuid();
+            var conference = new Conference()
+            {
+                Id = conferenceId,
+                Participants = new List<Participant>()
+            };
+            var expectedLayout = conference.GetRecommendedLayout();
+
+            _mocker.Mock<IHearingLayoutCache>().Setup(x => x.ReadFromCache(conferenceId)).Returns(Task.FromResult<HearingLayout?>(null));
+            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(x => x == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ReturnsAsync(conference);
+
+            // Act
+            var layout = await _sut.GetCurrentLayout(conferenceId);
+
+            // Assert
+            layout.Should().Be(expectedLayout);
+        }
+
+        [Test]
         public async Task GetCurrentLayout_return_null_if_conference_could_NOT_be_found()
         {
             // Arrange
@@ -119,16 +141,48 @@ namespace VideoWeb.UnitTests.Caching
                 Id = conferenceId,
                 Participants = participants
             };
-            var conferenceUpdate = new Conference()
-            {
-                Id = conferenceId,
-                Participants = participants
-            };
 
             var exception = new Exception();
             _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(x => x == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ReturnsAsync(conference);
             _mocker.Mock<IHearingLayoutCache>().Setup(x => x.ReadFromCache(It.Is<Guid>(x => x == conferenceId))).ReturnsAsync(defaultLayout);
 
+
+            _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients)
+                .Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
+
+            Func<IEnumerable<string>, bool> onlyContainsHosts = (groups) => groups.All(group => participants.Where(participant => participant.Role == Role.Judge || participant.Role == Role.StaffMember).Select(participant => participant.Username).Contains(group));
+            _mocker.Mock<IHubClients<IEventHubClient>>().Setup(x => x.Groups(It.Is<IReadOnlyList<string>>(y => onlyContainsHosts(y))))
+                .Returns(_mocker.Mock<IEventHubClient>().Object);
+
+            // Act
+            await _sut.UpdateLayout(conferenceId, changedById, expectedLayout);
+
+            // Assert
+            _mocker.Mock<IHearingLayoutCache>().Verify(x => x.WriteToCache(conferenceId, expectedLayout), Times.Once);
+            _mocker.Mock<IEventHubClient>().Verify(
+                x => x.HearingLayoutChanged(conferenceId, changedById, expectedLayout, defaultLayout),
+                Times.Once);
+        }
+
+        [Test]
+        public async Task UpdateLayout_should_return_the_default_layout_for_the_old_layout_if_there_was_not_one_in_the_cache()
+        {
+            // Arrange
+            var conferenceId = Guid.NewGuid();
+            var changedById = Guid.NewGuid();
+            var expectedLayout = HearingLayout.TwoPlus21;
+            var participants = BuildParticipantListWithAllRoles();
+
+            var conference = new Conference()
+            {
+                Id = conferenceId,
+                Participants = participants
+            };
+            var defaultLayout = conference.GetRecommendedLayout();
+
+            var exception = new Exception();
+            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(x => x == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ReturnsAsync(conference);
+            _mocker.Mock<IHearingLayoutCache>().Setup(x => x.ReadFromCache(It.Is<Guid>(x => x == conferenceId))).Returns(Task.FromResult<HearingLayout?>(null));
 
             _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients)
                 .Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
