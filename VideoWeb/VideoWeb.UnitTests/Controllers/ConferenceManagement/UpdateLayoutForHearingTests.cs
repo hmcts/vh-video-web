@@ -19,6 +19,8 @@ using VideoWeb.UnitTests.Builders;
 using System.Net;
 using VideoWeb.Helpers;
 using VideoWeb.EventHub.Services;
+using FizzWare.NBuilder;
+using System.Linq;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 {
@@ -33,20 +35,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         [SetUp]
         public void SetUp()
         {
-            _judgeParticipant = new Participant
-            {
-                Id = Guid.NewGuid(),
-                Username = "first last"
-            };
-
-            _conference = new Conference()
-            {
-                Id = Guid.NewGuid(),
-                Participants = new List<Participant>
-                {
-                    _judgeParticipant
-                }
-            };
+            var participants = Builder<Participant>.CreateListOfSize(5).TheFirst(1).With(x => x.Role = Role.Judge).TheNext(1).With(x => x.Role = Role.StaffMember).TheRest().With(x => x.Role = Role.Individual).Build().ToList();
+            _judgeParticipant = participants.Single(x => x.Role == Role.Judge);
+            _conference = Builder<Conference>.CreateNew().With(x => x.Participants = participants).Build();
 
             _mocker = AutoMock.GetLoose();
             _sut = _mocker.Create<ConferenceManagementController>();

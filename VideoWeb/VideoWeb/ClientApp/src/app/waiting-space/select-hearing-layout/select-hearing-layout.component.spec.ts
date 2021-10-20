@@ -103,21 +103,6 @@ describe('SelectHearingLayoutComponent', () => {
         expect(component.currentButtonContentKey).toBe(buttonContentKeyWhenClosed);
     }));
 
-    const recommendLayoutForTestCases = [
-        { numOfParticipantsIncJudge: 1, expected: HearingLayout.Dynamic },
-        { numOfParticipantsIncJudge: 2, expected: HearingLayout.Dynamic },
-        { numOfParticipantsIncJudge: 3, expected: HearingLayout.Dynamic },
-        { numOfParticipantsIncJudge: 4, expected: HearingLayout.Dynamic },
-        { numOfParticipantsIncJudge: 5, expected: HearingLayout.Dynamic },
-        { numOfParticipantsIncJudge: 6, expected: HearingLayout.OnePlus7 },
-        { numOfParticipantsIncJudge: 7, expected: HearingLayout.OnePlus7 },
-        { numOfParticipantsIncJudge: 8, expected: HearingLayout.OnePlus7 },
-        { numOfParticipantsIncJudge: 9, expected: HearingLayout.OnePlus7 },
-        { numOfParticipantsIncJudge: 10, expected: HearingLayout.TwoPlus21 },
-        { numOfParticipantsIncJudge: 11, expected: HearingLayout.TwoPlus21 },
-        { numOfParticipantsIncJudge: 12, expected: HearingLayout.TwoPlus21 }
-    ];
-
     it('should return true when accordian is open', () => {
         const accordian: HTMLDivElement = document.createElement('div');
         document.getElementById = jasmine.createSpy('accordian-container').and.returnValue(accordian);
