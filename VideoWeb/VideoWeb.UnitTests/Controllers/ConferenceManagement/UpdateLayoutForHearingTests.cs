@@ -35,7 +35,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         [SetUp]
         public void SetUp()
         {
-            var participants = Builder<Participant>.CreateListOfSize(5).TheNext(1).With(x => x.Role = Role.Judge).TheNext(1).With(x => x.Role = Role.StaffMember).TheRest().With(x => x.Role = Role.Individual).Build().ToList();
+            var participants = Builder<Participant>.CreateListOfSize(5).TheFirst(1).With(x => x.Role = Role.Judge).TheNext(1).With(x => x.Role = Role.StaffMember).TheRest().With(x => x.Role = Role.Individual).Build().ToList();
             _judgeParticipant = participants.Single(x => x.Role == Role.Judge);
             _conference = Builder<Conference>.CreateNew().With(x => x.Participants = participants).Build();
 
