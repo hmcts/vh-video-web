@@ -15,7 +15,7 @@ import { Logger } from './logging/logger-base';
 export class EventsHubService implements OnDestroy {
     private securityService: ISecurityService;
     private eventHubDisconnectSubject = new Subject<number>();
-    private eventHubReconnectSubject = new Subject();
+    private eventHubConnectedSubject = new Subject();
     private destroyed$ = new Subject();
 
     private eventsHubReady = new ReplaySubject<void>(1);
@@ -100,7 +100,7 @@ export class EventsHubService implements OnDestroy {
     configureConnection() {
         this.connection.serverTimeoutInMilliseconds = this.serverTimeoutTime;
         this.connection.onreconnecting(error => this.onEventHubReconnecting(error));
-        this.connection.onreconnected(() => this.onEventHubReconnected());
+        this.connection.onreconnected(() => this.onEventHubConnected());
         this.connection.onclose(error => this.onEventHubErrorOrClose(error));
 
         this.eventsHubReady.next();
@@ -120,7 +120,7 @@ export class EventsHubService implements OnDestroy {
                 .then(() => {
                     this.logger.info('[EventsService] - Successfully connected to EventHub');
                     this._reconnectionAttempt = 0;
-                    this.onEventHubReconnected();
+                    this.onEventHubConnected();
                 })
                 .catch(async error => {
                     this.logger.warn(`[EventsService] - Failed to connect to EventHub ${error}`);
@@ -183,14 +183,14 @@ export class EventsHubService implements OnDestroy {
         return this.eventHubDisconnectSubject.asObservable();
     }
 
-    private onEventHubReconnected(): void {
+    private onEventHubConnected(): void {
         this.logger.info('[EventsService] - Successfully reconnected to EventHub');
         this._reconnectionAttempt = 0;
-        this.eventHubReconnectSubject.next();
+        this.eventHubConnectedSubject.next();
     }
 
-    getServiceReconnected(): Observable<any> {
-        return this.eventHubReconnectSubject.asObservable();
+    getServiceConnected(): Observable<any> {
+        return this.eventHubConnectedSubject.asObservable();
     }
 
     private onEventHubReconnecting(error: Error): void {

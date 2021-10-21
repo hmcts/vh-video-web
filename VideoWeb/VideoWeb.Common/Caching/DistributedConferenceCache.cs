@@ -8,13 +8,16 @@ using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Common.Caching
 {
-    public class DistributedConferenceCache : IConferenceCache
+    public class DistributedConferenceCache : RedisCacheBase<Guid, Conference>, IConferenceCache
     {
-        private readonly IDistributedCache _distributedCache;
+        public override DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
 
-        public DistributedConferenceCache(IDistributedCache distributedCache)
+        public DistributedConferenceCache(IDistributedCache distributedCache) : base(distributedCache)
         {
-            _distributedCache = distributedCache;
+            CacheEntryOptions = new DistributedCacheEntryOptions
+            {
+                SlidingExpiration = TimeSpan.FromHours(4)
+            };
         }
 
         public async Task AddConferenceAsync(ConferenceDetailsResponse conferenceResponse)
@@ -25,43 +28,24 @@ namespace VideoWeb.Common.Caching
 
         public async Task UpdateConferenceAsync(Conference conference)
         {
-            var serialisedConference = JsonConvert.SerializeObject(conference, CachingHelper.SerializerSettings);
-
-            var data = Encoding.UTF8.GetBytes(serialisedConference);
-
-            await _distributedCache.SetAsync(conference.Id.ToString(), data,
-                new DistributedCacheEntryOptions
-                {
-                    SlidingExpiration = TimeSpan.FromHours(4)
-                });
+            await WriteToCache(conference.Id, conference);
         }
 
         public async Task<Conference> GetOrAddConferenceAsync(Guid id, Func<Task<ConferenceDetailsResponse>> addConferenceDetailsFactory)
         {
-            var conference = await GetConferenceAsync(id);
+            var conference = await ReadFromCache(id);
 
             if (conference != null) return conference;
-            
-            var conferenceDetails = await addConferenceDetailsFactory();
-            await AddConferenceAsync(conferenceDetails);
-            conference = await GetConferenceAsync(id);
+            conference = ConferenceCacheMapper.MapConferenceToCacheModel(await addConferenceDetailsFactory());
+
+            await WriteToCache(id, conference);
 
             return conference;
         }
-
-        private async Task<Conference> GetConferenceAsync(Guid id)
+        
+        public override string GetKey(Guid key)
         {
-            try
-            {
-                var data = await _distributedCache.GetAsync(id.ToString());
-                var conferenceSerialised = Encoding.UTF8.GetString(data);
-                var conference = JsonConvert.DeserializeObject<Conference>(conferenceSerialised, CachingHelper.SerializerSettings);
-                return conference;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return key.ToString();
         }
     }
 }

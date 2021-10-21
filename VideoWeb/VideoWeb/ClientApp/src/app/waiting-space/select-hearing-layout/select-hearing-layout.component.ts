@@ -1,8 +1,8 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { ConferenceResponse, HearingLayout } from 'src/app/services/clients/api-client';
-import { VideoCallService } from '../services/video-call.service';
+import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
 
 @Component({
     selector: 'app-select-hearing-layout',
@@ -10,21 +10,24 @@ import { VideoCallService } from '../services/video-call.service';
 })
 export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
     availableLayouts = [HearingLayout.OnePlus7, HearingLayout.TwoPlus21, HearingLayout.Dynamic];
-    selectedLayout: HearingLayout;
     accordionOpenAllElement: HTMLButtonElement;
     currentButtonContentKey: string;
     @Input() conference: ConferenceResponse;
     subscriptions = new Subscription();
-    constructor(private videoCallService: VideoCallService, protected translateService: TranslateService) {}
+
+    constructor(private hearingLayoutService: HearingLayoutService, protected translateService: TranslateService) {}
+
+    get currentLayout$(): Observable<HearingLayout> {
+        return this.hearingLayoutService.currentLayout$;
+    }
+
+    get recommendedLayout$(): Observable<HearingLayout> {
+        return this.hearingLayoutService.recommendedLayout$;
+    }
 
     ngOnInit(): void {
         const headingElement = document.getElementById('accordion-choose-layout-heading');
         headingElement.innerHTML = this.translateService.instant('select-hearing-layout.choose-hearing-layout');
-        this.selectedLayout = this.videoCallService.getPreferredLayout(this.conference.id);
-        if (!this.selectedLayout) {
-            this.selectedLayout = this.recommendedLayout();
-            this.updateSelectedLayout(this.selectedLayout);
-        }
 
         (<any>window).GOVUKFrontend.initAll();
         headingElement.onclick = e => this.setAccordionText(e);
@@ -75,37 +78,7 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
         return document.getElementById('accordian-container').classList.contains('govuk-accordion__section--expanded');
     }
 
-    isRecommendedLayout(layout: HearingLayout): boolean {
-        return this.recommendedLayout() === layout;
-    }
-
-    recommendedLayout(): HearingLayout {
-        const endpointCount = this.conference.endpoints ? this.conference.endpoints.length : 0;
-        return this.recommendLayoutFor(endpointCount + this.conference.participants.length);
-    }
-
-    getSelectedOrPreferredLayout(): HearingLayout {
-        if (this.selectedLayout) {
-            return this.selectedLayout;
-        } else {
-            return this.recommendedLayout();
-        }
-    }
-
-    recommendLayoutFor(numOfParticipantsIncJudge: number): HearingLayout {
-        if (numOfParticipantsIncJudge >= 10) {
-            return HearingLayout.TwoPlus21;
-        }
-
-        if (numOfParticipantsIncJudge >= 6 && numOfParticipantsIncJudge <= 9) {
-            return HearingLayout.OnePlus7;
-        }
-
-        return HearingLayout.Dynamic;
-    }
-
     updateSelectedLayout(layout: HearingLayout) {
-        this.selectedLayout = layout;
-        this.videoCallService.updatePreferredLayout(this.conference.id, layout);
+        this.hearingLayoutService.updateCurrentLayout(layout);
     }
 }

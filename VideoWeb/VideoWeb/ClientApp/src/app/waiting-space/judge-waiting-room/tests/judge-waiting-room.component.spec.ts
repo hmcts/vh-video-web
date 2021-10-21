@@ -43,11 +43,12 @@ import { VideoControlService } from 'src/app/services/conference/video-control.s
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { VideoControlCacheService } from 'src/app/services/conference/video-control-cache.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
-import { Observable, Subject } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { VirtualMeetingRoomModel } from 'src/app/services/conference/models/virtual-meeting-room.model';
 import { HearingRole } from '../../models/hearing-role-model';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
+import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     const participantOneId = Guid.create().toString();
@@ -138,6 +139,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     let unloadDetectorServiceSpy: jasmine.SpyObj<UnloadDetectorService>;
     let shouldUnloadSubject: Subject<void>;
     let shouldReloadSubject: Subject<void>;
+    let hearingLayoutServiceSpy: jasmine.SpyObj<HearingLayoutService>;
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -209,6 +211,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         ]);
         videoControlCacheServiceSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', ['setSpotlightStatus']);
 
+        hearingLayoutServiceSpy = jasmine.createSpyObj<HearingLayoutService>([], ['currentLayout$']);
+
         component = new JudgeWaitingRoomComponent(
             activatedRoute,
             videoWebService,
@@ -231,7 +235,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             participantServiceSpy,
             videoControlServiceSpy,
             videoControlCacheServiceSpy,
-            unloadDetectorServiceSpy
+            unloadDetectorServiceSpy,
+            hearingLayoutServiceSpy
         );
 
         consultationInvitiationService.getInvitation.and.returnValue(consultationInvitiation);
@@ -350,18 +355,19 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(errorService.handleApiError).toHaveBeenCalledWith(error);
     });
 
-    it('should start the hearing', async () => {
+    it('should start the hearing', fakeAsync(() => {
         const layout = HearingLayout.TwoPlus21;
-        videoCallService.getPreferredLayout.and.returnValue(layout);
-        await component.startHearing();
+        getSpiedPropertyGetter(hearingLayoutServiceSpy, 'currentLayout$').and.returnValue(of(layout));
+        component.startHearing();
+        flush();
         expect(videoCallService.startHearing).toHaveBeenCalledWith(component.conference.id, layout);
-    });
+    }));
 
     it('should handle api error when start hearing fails', async () => {
         const error = { status: 500, isApiException: true };
         videoCallService.startHearing.and.returnValue(Promise.reject(error));
         const layout = HearingLayout.TwoPlus21;
-        videoCallService.getPreferredLayout.and.returnValue(layout);
+        getSpiedPropertyGetter(hearingLayoutServiceSpy, 'currentLayout$').and.returnValue(of(layout));
         await component.startHearing();
         expect(errorService.handleApiError).toHaveBeenCalledWith(error);
     });
@@ -568,8 +574,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
     it('should start hearing when confirmation answered yes', fakeAsync(() => {
         // Arrange
-        videoCallService.getPreferredLayout.calls.reset();
-
         component.displayConfirmStartHearingPopup = true;
         videoCallService.startHearing.calls.reset();
         videoCallService.startHearing.and.resolveTo();
@@ -579,7 +583,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         spyOnProperty(component, 'conferenceId', 'get').and.returnValue(conferenceId);
 
         const hearingLayout = HearingLayout.Dynamic;
-        videoCallService.getPreferredLayout.and.returnValue(hearingLayout);
+        getSpiedPropertyGetter(hearingLayoutServiceSpy, 'currentLayout$').and.returnValue(of(hearingLayout));
 
         const hearingId = Guid.create();
         spyOnProperty(component.hearing, 'id', 'get').and.returnValue(hearingId);
@@ -589,7 +593,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         flush();
 
         // Assert
-        expect(videoCallService.getPreferredLayout).toHaveBeenCalledOnceWith(conferenceId);
         expect(component.displayConfirmStartHearingPopup).toBeFalsy();
         expect(videoCallService.startHearing).toHaveBeenCalledOnceWith(hearingId, hearingLayout);
     }));

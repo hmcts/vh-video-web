@@ -14,7 +14,6 @@
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
                         "progress": true,
-                        "extractCss": true,
                         "outputPath": "dist",
                         "index": "src/index.html",
                         "main": "src/main.ts",
@@ -54,6 +53,14 @@
                         "aot": true
                     },
                     "configurations": {
+                        "development": {
+                            "buildOptimizer": false,
+                            "optimization": false,
+                            "vendorChunk": true,
+                            "extractLicenses": false,
+                            "sourceMap": true,
+                            "namedChunks": true
+                        },
                         "production": {
                             "fileReplacements": [
                                 {
@@ -64,7 +71,6 @@
                             "optimization": true,
                             "outputHashing": "all",
                             "sourceMap": false,
-                            "extractCss": true,
                             "namedChunks": false,
                             "aot": true,
                             "extractLicenses": true,
@@ -82,7 +88,11 @@
                     "configurations": {
                         "production": {
                             "browserTarget": "VideoWeb:build:production"
-                        }
+                        },
+                        "development": {
+                            "browserTarget": "VideoWeb:build:development"
+                        },
+                        "defaultConfiguration": "development"
                     }
                 },
                 "extract-i18n": {
@@ -153,7 +163,7 @@
                         "dev": {
                             "optimization": true,
                             "outputHashing": "all",
-                            "sourceMap": false,
+                            "sourceMap": true,
                             "namedChunks": false,
                             "extractLicenses": true
                         },
