@@ -11,7 +11,14 @@
           <div class="header-content-grid govuk-body">
             <div class="room-title">
               <h1 #roomTitleLabel class="room-title-label">{{ getCaseNameAndNumber() }}</h1>
-              <div *ngIf="hasCaseNameOverflowed" class="room-title-show-more" appTooltip [text]="getCaseNameAndNumber()" colour="grey" [isDesktopOnly]=false>
+              <div
+                *ngIf="hasCaseNameOverflowed"
+                class="room-title-show-more"
+                appTooltip
+                [text]="getCaseNameAndNumber()"
+                colour="grey"
+                [isDesktopOnly]="false"
+              >
                 (show more)
               </div>
             </div>
@@ -130,7 +137,7 @@
           <strong>{{ conference.case_number }}</strong>
         </td>
         <td class="govuk-table__cell hearing-details-col2-width">
-          {{ hearing.scheduledStartTime | translateDate : 'dd MMMM yyyy' }}
+          {{ hearing.scheduledStartTime | translateDate: 'dd MMMM yyyy' }}
           <span class="govuk-!-font-weight-bold">
             {{ hearing.scheduledStartTime | date: 'HH:mm' }} {{ 'judge-waiting-room.to' | translate }}
             {{ hearing.scheduledEndTime | date: 'HH:mm' }}
@@ -171,7 +178,7 @@
 
     <p
       class="govuk-body govuk-!-margin-bottom-3"
-      *ngIf="hearingIsInSession()"
+      *ngIf="isHearingInSession()"
       [innerHTML]="'judge-waiting-room.hearing-messages.in-session' | translate"
     ></p>
 
@@ -222,15 +229,15 @@
         {{ 'judge-waiting-room.buttons.resume-video-hearing' | translate }}
       </button>
       <button
-      [disabled]="!isParticipantInCorrectWaitingRoomState()"
-      id="join-hearing-button"
-      *ngIf="hearingIsInSession()"
-      type="button"
-      class="govuk-button govuk-button--start govuk-!-margin-right-3 vh-btn-text"
-      (click)="joinHearingInSession()"
-    >
-    {{ 'judge-waiting-room.buttons.join-hearing' | translate }}
-    </button>
+        [disabled]="!isParticipantInCorrectWaitingRoomState()"
+        id="join-hearing-button"
+        *ngIf="isHearingInSession()"
+        type="button"
+        class="govuk-button govuk-button--start govuk-!-margin-right-3 vh-btn-text"
+        (click)="joinHearingInSession()"
+      >
+        {{ 'judge-waiting-room.buttons.join-hearing' | translate }}
+      </button>
       <button
         class="govuk-button govuk-button--bigblue vh-btn-text"
         type="button"
@@ -255,10 +262,7 @@
   </div>
 
   <div class="govuk-grid-column-one-third" [ngClass]="{ 'no-mass': showVideo }">
-    <app-judge-participant-status-list
-      [conference]="conference"
-    >
-    </app-judge-participant-status-list>
+    <app-judge-participant-status-list [conference]="conference"> </app-judge-participant-status-list>
   </div>
 </div>
 

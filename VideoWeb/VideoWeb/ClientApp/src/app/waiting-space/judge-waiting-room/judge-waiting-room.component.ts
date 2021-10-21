@@ -394,7 +394,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         return this.conference.status === ConferenceStatus.Paused;
     }
 
-    hearingIsInSession(): boolean {
+    isHearingInSession(): boolean {
         return this.conference.status === ConferenceStatus.InSession;
     }
 
@@ -478,10 +478,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         } else {
             this.leaveJudicialConsultation();
         }
-    }
-    async joinInSessionHearing() {
-        await this.videoCallService.callParticipantIntoHearing(this.conferenceId, this.participant.id);
-        this.dualHostHasSignalledToJoinHearing = true;
     }
 
     leaveHearing() {

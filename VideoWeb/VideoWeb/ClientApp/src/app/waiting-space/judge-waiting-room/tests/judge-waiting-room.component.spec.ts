@@ -348,7 +348,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.hearingPaused()).toBeFalsy();
     });
 
-    describe('hearingIsInSession', () => {
+    describe('isHearingInSession', () => {
         const invalidConferenceStatus = [
             ConferenceStatus.NotStarted,
             ConferenceStatus.Paused,
@@ -358,13 +358,13 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         it('hearing in session returns true when the conference is in session', () => {
             component.conference.status = ConferenceStatus.InSession;
-            expect(component.hearingIsInSession()).toBe(true);
+            expect(component.isHearingInSession()).toBe(true);
         });
 
         invalidConferenceStatus.forEach(status => {
             it(`hearing in session returns false when the conference is ${status}`, () => {
                 component.conference.status = status;
-                expect(component.hearingIsInSession()).toBe(false);
+                expect(component.isHearingInSession()).toBe(false);
             });
         });
     });
@@ -373,7 +373,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         const statuses = [ConferenceStatus.Closed, ConferenceStatus.NotStarted, ConferenceStatus.Paused, ConferenceStatus.Suspended];
         statuses.forEach(currentStatus => {
             component.conference.status = currentStatus;
-            expect(component.hearingIsInSession()).toBe(false);
+            expect(component.isHearingInSession()).toBe(false);
         });
     });
 
