@@ -127,7 +127,7 @@ stages:
               - Dev
               - AAT
               - Test1
-              - Test2
+              - Test2 
           - group: KinlyConfiguration_Test2
             env:
               - Demo
@@ -191,6 +191,7 @@ stages:
               - Dev
               - AAT
               - Sandbox
+              - Demo
           - group: FeatureFlags_Test
             env:
               - Test1
