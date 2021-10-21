@@ -4,15 +4,16 @@
     <ng-container *ngIf="hasMessageFailed(message)">
       <span id="message-send-error" class="failed-message">
         <img class="alert-image" src="/assets/images/alert-full.png" [attr.alt]="'chat-body-window.alerts-icon' | translate" />
-        <span class="govuk-visually-hidden">{{'chat-body-window.error' | translate}}</span> {{'chat-body-window.failed' | translate}}
-        <a href="javascript:void(0)" class="govuk-link" (click)="retry(message)">{{'chat-body-window.try-again' | translate}}</a>
+        <span class="govuk-visually-hidden">{{ 'chat-body-window.error' | translate }}</span> {{ 'chat-body-window.failed' | translate }}
+        <a href="javascript:void(0)" class="govuk-link" (click)="retry(message)">{{ 'chat-body-window.try-again' | translate }}</a>
       </span>
     </ng-container>
     <div>
       {{ message.message }}
     </div>
     <div class="message-meta">
-    <span class="message-meta-sender">{{ message.from_display_name }}</span> {{'chat-body-window.at' | translate}} <span class="message-meta-timestamp">{{ message.timestamp | date: 'shortTime' }}</span>
+      <span class="message-meta-sender">{{ message.from_display_name }}</span> {{ 'chat-body-window.at' | translate }}
+      <span class="message-meta-timestamp">{{ message.timestamp | date: 'shortTime' }}</span>
     </div>
   </div>
   <div class="message-item spacer"></div>

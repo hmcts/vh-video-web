@@ -17,7 +17,8 @@
 <div *ngIf="showEquipmentFaultMessage" class="govuk-!-margin-top-6">
   <h1 class="govuk-heading-xl">{{ 'independent-self-test.problems-with-your-equipment' | translate }}</h1>
   <p class="govuk-body govuk-!-margin-top-7">
-    {{ 'independent-self-test.please-call-beforenumber' | translate }}<span class="govuk-!-font-weight-bold">{{ contact.phone }}</span>{{ 'independent-self-test.please-call-afternumber' | translate }}
+    {{ 'independent-self-test.please-call-beforenumber' | translate }}<span class="govuk-!-font-weight-bold">{{ contact.phone }}</span
+    >{{ 'independent-self-test.please-call-afternumber' | translate }}
   </p>
 </div>
 
@@ -29,16 +30,11 @@
     data-module="govuk-button"
     (click)="equipmentWorksHandler()"
   >
-  {{ 'independent-self-test.continue' | translate }}
+    {{ 'independent-self-test.continue' | translate }}
   </button>
 
-  <button
-    id="check-equipment-btn"
-    class="govuk-button govuk-button--secondary"
-    data-module="govuk-button"
-    (click)="restartTest()"
-  >
-  {{ 'independent-self-test.check-equipment-again' | translate }}
+  <button id="check-equipment-btn" class="govuk-button govuk-button--secondary" data-module="govuk-button" (click)="restartTest()">
+    {{ 'independent-self-test.check-equipment-again' | translate }}
   </button>
 </div>
 

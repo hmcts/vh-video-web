@@ -1,32 +1,33 @@
 <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-        <h2 id="unsupported" class="govuk-heading-l govuk-!-padding-top-3">
-            {{'unsupported-browser.using-unsupported-browser' | translate}}
-        </h2>
-        <div>
-            <p class="govuk-body">{{'unsupported-browser.please-try-again' | translate}}</p>
-            <ul class="govuk-list">
-                <li *ngFor="let browser of supportedBrowsers">
-                    <div class="govuk-grid-column-full">
-                        <div class="govuk-grid-row">
-                            <div class="govuk-grid-column-one-quarter" style="padding: 5px; width: 6%;">
-                                <img src="{{ browser.iconPath }}"
-                                     height="48"
-                                     width="48"
-                                     class="govuk-!-margin-right-2"
-                                     [attr.alt]="'unsupported-browser.supported-browser-alt' | translate:{ browserName: browser.name } " />
-                            </div>
-                            <div class="govuk-grid-column-three-quarters" style="padding-top: 15px;">
-                                <p>{{ browser.displayName }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-        </div>
+  <div class="govuk-grid-column-full">
+    <h2 id="unsupported" class="govuk-heading-l govuk-!-padding-top-3">
+      {{ 'unsupported-browser.using-unsupported-browser' | translate }}
+    </h2>
+    <div>
+      <p class="govuk-body">{{ 'unsupported-browser.please-try-again' | translate }}</p>
+      <ul class="govuk-list">
+        <li *ngFor="let browser of supportedBrowsers">
+          <div class="govuk-grid-column-full">
+            <div class="govuk-grid-row">
+              <div class="govuk-grid-column-one-quarter" style="padding: 5px; width: 6%">
+                <img
+                  src="{{ browser.iconPath }}"
+                  height="48"
+                  width="48"
+                  class="govuk-!-margin-right-2"
+                  [attr.alt]="'unsupported-browser.supported-browser-alt' | translate: { browserName: browser.name }"
+                />
+              </div>
+              <div class="govuk-grid-column-three-quarters" style="padding-top: 15px">
+                <p>{{ browser.displayName }}</p>
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
     </div>
+  </div>
 </div>
 <div class="govuk-grid-row">
-    <app-contact-us-folding></app-contact-us-folding>
+  <app-contact-us-folding></app-contact-us-folding>
 </div>
-

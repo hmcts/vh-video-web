@@ -2,19 +2,28 @@
   <div class="govuk-accordion__section" id="accordian-container">
     <div class="govuk-accordion__section-header">
       <h2 class="govuk-accordion__section-heading">
-          <span class="govuk-accordion__section-button" id="accordion-choose-layout-heading"></span>
+        <span class="govuk-accordion__section-button" id="accordion-choose-layout-heading"></span>
       </h2>
     </div>
     <div *ngIf="!isAccordianOpen">
-      <app-hearing-layout [layout]="currentLayout$ | async" [recommended]="(recommendedLayout$ | async) === (currentLayout$ | async)" [showInput]="false"></app-hearing-layout>
+      <app-hearing-layout
+        [layout]="currentLayout$ | async"
+        [recommended]="(recommendedLayout$ | async) === (currentLayout$ | async)"
+        [showInput]="false"
+      ></app-hearing-layout>
     </div>
 
     <div id="select-hearing-container-content-1" class="govuk-accordion__section-content">
       <div class="govuk-radios govuk-radios--small layoutsgrid">
         <fieldset class="govuk-fieldset">
-          <legend class="govuk-visually-hidden">{{'select-hearing-layout.choose-hearing-layout' | translate }}</legend>
+          <legend class="govuk-visually-hidden">{{ 'select-hearing-layout.choose-hearing-layout' | translate }}</legend>
           <ng-container *ngFor="let layout of availableLayouts">
-            <app-hearing-layout [layout]="layout" [recommended]="(recommendedLayout$ | async) === layout" [isSelected]="(currentLayout$ | async) === layout" (selectedEvent)="updateSelectedLayout(layout)"></app-hearing-layout>
+            <app-hearing-layout
+              [layout]="layout"
+              [recommended]="(recommendedLayout$ | async) === layout"
+              [isSelected]="(currentLayout$ | async) === layout"
+              (selectedEvent)="updateSelectedLayout(layout)"
+            ></app-hearing-layout>
           </ng-container>
         </fieldset>
       </div>

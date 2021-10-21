@@ -33,7 +33,9 @@
         {{ 'switch-on-camera-microphone.please-unblock-camera-and-mic-or-call-us-if-any-problems' | translate }}
       </p>
 
-      <h3 class="govuk-heading-m govuk-!-margin-bottom-7">{{ 'switch-on-camera-microphone.helpline-contact-phone' | translate: { contactPhone: contact.phone } }}</h3>
+      <h3 class="govuk-heading-m govuk-!-margin-bottom-7">
+        {{ 'switch-on-camera-microphone.helpline-contact-phone' | translate: { contactPhone: contact.phone } }}
+      </h3>
     </div>
 
     <button
@@ -43,7 +45,7 @@
       data-module="govuk-button"
       (click)="requestMedia()"
     >
-    {{ 'switch-on-camera-microphone.switch-on' | translate }}
+      {{ 'switch-on-camera-microphone.switch-on' | translate }}
     </button>
 
     <button
@@ -53,7 +55,7 @@
       data-module="govuk-button"
       (click)="goVideoTest()"
     >
-    {{ 'switch-on-camera-microphone.watch-the-video' | translate }}
+      {{ 'switch-on-camera-microphone.watch-the-video' | translate }}
     </button>
 
     <app-contact-us-folding></app-contact-us-folding>

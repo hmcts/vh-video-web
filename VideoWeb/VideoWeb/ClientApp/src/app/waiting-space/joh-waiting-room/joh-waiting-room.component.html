@@ -9,11 +9,19 @@
     <div class="header-content-grid govuk-body">
       <div class="room-title">
         <div #roomTitleLabel class="room-title-label">{{ getCaseNameAndNumber() }}</div>
-        <div *ngIf="hasCaseNameOverflowed" class="room-title-show-more" appTooltip [text]="getCaseNameAndNumber()" colour="grey" [isDesktopOnly]=false>
+        <div
+          *ngIf="hasCaseNameOverflowed"
+          class="room-title-show-more"
+          appTooltip
+          [text]="getCaseNameAndNumber()"
+          colour="grey"
+          [isDesktopOnly]="false"
+        >
           (show more)
         </div>
       </div>
-      <app-private-consultation-room-controls class="govuk-grid-width-half"
+      <app-private-consultation-room-controls
+        class="govuk-grid-width-half"
         #hearingControls
         [conferenceId]="conference.id"
         [participant]="participant"
@@ -30,15 +38,15 @@
     </div>
   </div>
 
-    <div *ngIf="isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': panelStates['Participants'] }">
-        <app-private-consultation-participants
-            *ngIf="isPrivateConsultation"
-            [conference]="hearing.getConference()"
-            [participantEndpoints]="participantEndpoints"
-            [roomLabel]="this.participant.current_room?.label"
-        >
-        </app-private-consultation-participants>
-    </div>
+  <div *ngIf="isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': panelStates['Participants'] }">
+    <app-private-consultation-participants
+      *ngIf="isPrivateConsultation"
+      [conference]="hearing.getConference()"
+      [participantEndpoints]="participantEndpoints"
+      [roomLabel]="this.participant.current_room?.label"
+    >
+    </app-private-consultation-participants>
+  </div>
 
   <div class="video-wrapper">
     <video
@@ -81,9 +89,7 @@
 <div *ngIf="!loadingData && hearing && showExtraContent" class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <div style="margin-bottom: 0">
-      <h1 class="govuk-heading-xl">
-        {{ 'joh-waiting-room.your-video-hearing' | translate }} {{ getConferenceStatusText() }}
-      </h1>
+      <h1 class="govuk-heading-xl">{{ 'joh-waiting-room.your-video-hearing' | translate }} {{ getConferenceStatusText() }}</h1>
     </div>
 
     <div class="govuk-grid-row govuk-!-margin-bottom-4" *ngIf="!showVideo">
@@ -122,7 +128,7 @@
             <strong>{{ hearing.caseNumber }}</strong>
           </td>
           <td class="govuk-table__cell hearing-details-col2-width">
-            {{ hearing.scheduledStartTime | translateDate : 'dd MMMM yyyy' }}
+            {{ hearing.scheduledStartTime | translateDate: 'dd MMMM yyyy' }}
             <span class="govuk-!-font-weight-bold">
               {{ hearing.scheduledStartTime | date: 'HH:mm' }} {{ 'joh-waiting-room.to' | translate }}
               {{ hearing.scheduledEndTime | date: 'HH:mm' }}
@@ -202,10 +208,7 @@
   </div>
 
   <div class="govuk-grid-column-one-third" [ngClass]="{ 'no-mass': !showExtraContent }">
-    <app-judge-participant-status-list
-      [conference]="hearing.getConference()"
-    >
-    </app-judge-participant-status-list>
+    <app-judge-participant-status-list [conference]="hearing.getConference()"> </app-judge-participant-status-list>
   </div>
 </div>
 

@@ -11,7 +11,14 @@
           <div class="header-content-grid govuk-body">
             <div class="room-title">
               <h1 #roomTitleLabel class="room-title-label">{{ getCaseNameAndNumber() }}</h1>
-              <div *ngIf="hasCaseNameOverflowed" class="room-title-show-more" appTooltip [text]="getCaseNameAndNumber()" colour="grey" [isDesktopOnly]=false>
+              <div
+                *ngIf="hasCaseNameOverflowed"
+                class="room-title-show-more"
+                appTooltip
+                [text]="getCaseNameAndNumber()"
+                colour="grey"
+                [isDesktopOnly]="false"
+              >
                 (show more)
               </div>
             </div>
@@ -129,7 +136,7 @@
           <strong>{{ conference.case_number }}</strong>
         </td>
         <td class="govuk-table__cell hearing-details-col2-width">
-          {{ hearing.scheduledStartTime | translateDate : 'dd MMMM yyyy' }}
+          {{ hearing.scheduledStartTime | translateDate: 'dd MMMM yyyy' }}
           <span class="govuk-!-font-weight-bold">
             {{ hearing.scheduledStartTime | date: 'HH:mm' }} {{ 'judge-waiting-room.to' | translate }}
             {{ hearing.scheduledEndTime | date: 'HH:mm' }}
@@ -237,10 +244,7 @@
   </div>
 
   <div class="govuk-grid-column-one-third" [ngClass]="{ 'no-mass': showVideo }">
-    <app-judge-participant-status-list
-      [conference]="conference"
-    >
-    </app-judge-participant-status-list>
+    <app-judge-participant-status-list [conference]="conference"> </app-judge-participant-status-list>
   </div>
 </div>
 

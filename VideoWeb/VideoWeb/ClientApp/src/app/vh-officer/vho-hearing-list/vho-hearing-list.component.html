@@ -7,13 +7,9 @@
     id="{{ conference.id }}-summary"
   >
     <div>
-      <span class="copyTooltip" id="{{ conference.id }}-copyTooltip"
-        >
+      <span class="copyTooltip" id="{{ conference.id }}-copyTooltip">
         <i class="fad fa-link copy-links-wrapper" aria-hidden="true"></i>
-        <span
-          class="copyTooltipText"
-          id="{{ conference.id }}-copyTooltipText"
-          >
+        <span class="copyTooltipText" id="{{ conference.id }}-copyTooltipText">
           <div><app-copy-id [conference]="conference"></app-copy-id></div>
           <div><app-copy-quick-link [conferenceId]="conference.id"></app-copy-quick-link></div>
           <div *ngIf="conference.isJoinByPhone">
@@ -36,7 +32,9 @@
     </ng-container>
     <div class="title listItemBig" id="{{ conference.id }}-case-name">{{ conference.caseName }}</div>
     <div class="listed listItemGrey" id="{{ conference.id }}-duration">{{ getDuration(conference) }}</div>
-    <div class="crest"><img src="/assets/images/black_crest.png" class="icons" [attr.alt]="'vho-hearing-list.crest-icon-alt' | translate" /></div>
+    <div class="crest">
+      <img src="/assets/images/black_crest.png" class="icons" [attr.alt]="'vho-hearing-list.crest-icon-alt' | translate" />
+    </div>
     <div class="ref listItemGreySmall" id="{{ conference.id }}-case-number">{{ conference.caseNumber }}</div>
     <div class="judge listItemBold" id="{{ conference.id }}-judge">{{ conference.judgeName }}</div>
     <div class="venue listItem" id="{{ conference.id }}-venue">{{ conference.hearingVenueName }}</div>

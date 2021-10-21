@@ -1,22 +1,12 @@
-<div id="liveclock"
-  class="outer_face"
-  [class.ontime]="isOnTime"
-  [class.isstarting]="isStarting"
-  [class.delayed]="isDelayed">
+<div id="liveclock" class="outer_face" [class.ontime]="isOnTime" [class.isstarting]="isStarting" [class.delayed]="isDelayed">
   <div class="marker oneseven"></div>
   <div class="marker twoeight"></div>
   <div class="marker fourten"></div>
   <div class="marker fiveeleven"></div>
 
-  <div class="inner_face"
-    [class.ontime]="isOnTime"
-    [class.isstarting]="isStarting"
-    [class.delayed]="isDelayed">
-    <div #hourHand
-      class="hand hour"></div>
-    <div #minuteHand
-      class="hand minute"></div>
-    <div #secondHand
-      class="hand second"></div>
+  <div class="inner_face" [class.ontime]="isOnTime" [class.isstarting]="isStarting" [class.delayed]="isDelayed">
+    <div #hourHand class="hand hour"></div>
+    <div #minuteHand class="hand minute"></div>
+    <div #secondHand class="hand second"></div>
   </div>
 </div>

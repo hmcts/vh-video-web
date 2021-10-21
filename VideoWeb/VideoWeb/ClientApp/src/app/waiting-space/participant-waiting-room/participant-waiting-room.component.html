@@ -6,9 +6,9 @@
   <div class="header-bar">
     <div class="govuk-body" [class]="!isJohRoom && isPrivateConsultation ? 'header-content-grid-with-lock' : 'header-content-grid'">
       <ng-container *ngIf="!isJohRoom && isPrivateConsultation">
-          <div class="room-title">
-              <h1 #roomTitleLabel class="room-title-label">{{ getRoomName() }}</h1>
-          </div>
+        <div class="room-title">
+          <h1 #roomTitleLabel class="room-title-label">{{ getRoomName() }}</h1>
+        </div>
         <div class="room-status">
           <span class="lock-badge" [class]="this.participant?.current_room?.locked ? 'locked' : 'unlocked'">{{
             (this.participant?.current_room?.locked ? 'participant-waiting-room.locked' : 'participant-waiting-room.unlocked') | translate
@@ -24,7 +24,14 @@
       <ng-container *ngIf="isJohRoom || !isPrivateConsultation">
         <div class="room-title">
           <h1 #roomTitleLabel class="room-title-label">{{ getCaseNameAndNumber() }}</h1>
-          <div *ngIf="hasCaseNameOverflowed" class="room-title-show-more" appTooltip [text]="getCaseNameAndNumber()" colour="grey" [isDesktopOnly]=false>
+          <div
+            *ngIf="hasCaseNameOverflowed"
+            class="room-title-show-more"
+            appTooltip
+            [text]="getCaseNameAndNumber()"
+            colour="grey"
+            [isDesktopOnly]="false"
+          >
             (show more)
           </div>
         </div>
@@ -114,9 +121,7 @@
 <div *ngIf="!loadingData && hearing && showExtraContent" class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <div style="margin-bottom: 0">
-      <h1 class="govuk-heading-xl">
-        {{ 'participant-waiting-room.your-video-hearing' | translate }} {{ getConferenceStatusText() }}
-      </h1>
+      <h1 class="govuk-heading-xl">{{ 'participant-waiting-room.your-video-hearing' | translate }} {{ getConferenceStatusText() }}</h1>
     </div>
 
     <div class="govuk-grid-row govuk-!-margin-bottom-4" *ngIf="!showVideo">
@@ -155,7 +160,7 @@
             <strong>{{ hearing.caseNumber }}</strong>
           </td>
           <td class="govuk-table__cell hearing-details-col2-width">
-            {{ hearing.scheduledStartTime | translateDate  : 'dd MMMM yyyy'  }}
+            {{ hearing.scheduledStartTime | translateDate: 'dd MMMM yyyy' }}
             <span class="govuk-!-font-weight-bold">
               {{ hearing.scheduledStartTime | date: 'HH:mm' }} {{ 'participant-waiting-room.to' | translate }}
               {{ hearing.scheduledEndTime | date: 'HH:mm' }}

@@ -16,7 +16,8 @@
 <div *ngIf="showEquipmentFaultMessage" class="govuk-!-margin-top-6">
   <h1 class="govuk-heading-xl">{{ 'judge-self-test.problems-with-your-equipment' | translate }}</h1>
   <p class="govuk-body govuk-!-margin-top-7">
-    {{ 'judge-self-test.please-call-beforenumber' | translate }}<span class="govuk-!-font-weight-bold">{{ contact.phone }}</span>{{ 'judge-self-test.please-call-afternumber' | translate }}
+    {{ 'judge-self-test.please-call-beforenumber' | translate }}<span class="govuk-!-font-weight-bold">{{ contact.phone }}</span
+    >{{ 'judge-self-test.please-call-afternumber' | translate }}
   </p>
 
   <p class="govuk-body">
@@ -32,16 +33,11 @@
     data-module="govuk-button"
     (click)="equipmentWorksHandler()"
   >
-  {{ 'judge-self-test.continue' | translate }}
+    {{ 'judge-self-test.continue' | translate }}
   </button>
 
-  <button
-    id="check-equipment-btn"
-    class="govuk-button govuk-button--secondary"
-    data-module="govuk-button"
-    (click)="restartTest()"
-  >
-  {{ 'judge-self-test.check-equipment-again' | translate }}
+  <button id="check-equipment-btn" class="govuk-button govuk-button--secondary" data-module="govuk-button" (click)="restartTest()">
+    {{ 'judge-self-test.check-equipment-again' | translate }}
   </button>
 </div>
 

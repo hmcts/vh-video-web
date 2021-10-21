@@ -7,7 +7,7 @@
   </div>
   <div class="govuk-grid-column-full">
     <p id="tooltip-hearing-role-{{ participant.id }}" class="govuk-!-margin-bottom-1">
-      {{this.getHearingRole()}}
+      {{ this.getHearingRole() }}
     </p>
   </div>
   <div class="govuk-grid-column-full" *ngIf="participant.isQuickLinkUser">
@@ -17,7 +17,7 @@
     <p *ngIf="participant.showCaseRole" id="tooltip-case-role-{{ participant.id }}" class="govuk-!-margin-bottom-1">
       {{ participant.caseGroup }}
     </p>
-  </div>    
+  </div>
   <div class="govuk-grid-column-full">
     <a id="tooltip-email-{{ participant.id }}" class="govuk-body-s govuk-link vh-overflow" href="mailto:{{ participant.contactEmail }}">{{
       participant.contactEmail

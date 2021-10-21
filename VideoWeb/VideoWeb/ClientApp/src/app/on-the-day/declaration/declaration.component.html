@@ -6,7 +6,8 @@
 <form [formGroup]="declarationForm" class="govuk-form-group" (ngSubmit)="onSubmit()">
   <div [ngClass]="declarationForm.invalid && submitted ? 'govuk-form-group--error' : 'govuk-form-group'">
     <div *ngIf="declarationForm.invalid && submitted" class="govuk-error-message">
-      <span class="govuk-visually-hidden">{{ 'declaration.error' | translate }}</span> {{ 'declaration.please-tick-the-box-to-confirm-no-recording' | translate }}
+      <span class="govuk-visually-hidden">{{ 'declaration.error' | translate }}</span>
+      {{ 'declaration.please-tick-the-box-to-confirm-no-recording' | translate }}
     </div>
     <div class="govuk-warning-text">
       <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
@@ -35,15 +36,8 @@
     </fieldset>
   </div>
   <div class="govuk-body govuk-!-margin-top-3">
-    <button
-      id="nextButton"
-      class="govuk-button"
-      data-module="govuk-button"
-      style="margin-right: 25px;"
-      (click)="onSubmit()"
-      type="button"
-    >
-    {{ 'declaration.continue' | translate }}
+    <button id="nextButton" class="govuk-button" data-module="govuk-button" style="margin-right: 25px" (click)="onSubmit()" type="button">
+      {{ 'declaration.continue' | translate }}
     </button>
   </div>
   <app-contact-us-folding></app-contact-us-folding>

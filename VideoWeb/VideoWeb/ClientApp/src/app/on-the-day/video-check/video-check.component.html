@@ -46,14 +46,8 @@
         </fieldset>
       </div>
       <div class="govuk-!-margin-top-6">
-        <button
-          id="continue-btn"
-          class="govuk-button govuk-!-margin-right-1"
-          data-module="govuk-button"
-          type="button"
-          (click)="onSubmit()"
-        >
-        {{ 'video-check.continue' | translate }}
+        <button id="continue-btn" class="govuk-button govuk-!-margin-right-1" data-module="govuk-button" type="button" (click)="onSubmit()">
+          {{ 'video-check.continue' | translate }}
         </button>
 
         <button
@@ -63,7 +57,7 @@
           type="button"
           (click)="checkEquipmentAgain()"
         >
-        {{ 'video-check.check-my-equipment-again' | translate }}
+          {{ 'video-check.check-my-equipment-again' | translate }}
         </button>
       </div>
     </form>

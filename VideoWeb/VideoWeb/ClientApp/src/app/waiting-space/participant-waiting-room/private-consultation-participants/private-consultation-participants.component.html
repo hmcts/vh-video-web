@@ -1,78 +1,80 @@
 <div class="container">
-    <h2 class="govuk-heading-s white">{{ 'private-consultation-participants.participants' | translate }}</h2>
-    <div class="participant-grid">
-        <ng-container *ngIf="isJohConsultation()">
-            <ng-container *ngFor="let groupMember of johRoles">
-                <ng-container *ngIf="getMemberParticipantsByRole(groupMember).length > 0">
-                    <div  class="language-icon">
-                        <img  class="small-crest" src="/assets/images/UkGovCrestWhite.png"[attr.alt]="'private-consultation-participants.crest-icon-alt' | translate" />                    
-                    </div>
-                    <div class="member-group">
-                        <ng-container *ngFor="let participant of getMemberParticipantsByRole(groupMember); trackBy: trackParticipant">        
-                            <app-participant-item
-                                [participant]="participant"
-                                [interpreter]="participant?.interpreter"
-                                [conferenceId]="conference.id"
-                                [roomLabel]="roomLabel"
-                                [participantCallStatuses]="participantCallStatuses"
-                                [canInvite]="canInvite"
-                                >
-                            </app-participant-item>                              
-                        </ng-container>
-                    </div>
-                </ng-container>
+  <h2 class="govuk-heading-s white">{{ 'private-consultation-participants.participants' | translate }}</h2>
+  <div class="participant-grid">
+    <ng-container *ngIf="isJohConsultation()">
+      <ng-container *ngFor="let groupMember of johRoles">
+        <ng-container *ngIf="getMemberParticipantsByRole(groupMember).length > 0">
+          <div class="language-icon">
+            <img
+              class="small-crest"
+              src="/assets/images/UkGovCrestWhite.png"
+              [attr.alt]="'private-consultation-participants.crest-icon-alt' | translate"
+            />
+          </div>
+          <div class="member-group">
+            <ng-container *ngFor="let participant of getMemberParticipantsByRole(groupMember); trackBy: trackParticipant">
+              <app-participant-item
+                [participant]="participant"
+                [interpreter]="participant?.interpreter"
+                [conferenceId]="conference.id"
+                [roomLabel]="roomLabel"
+                [participantCallStatuses]="participantCallStatuses"
+                [canInvite]="canInvite"
+              >
+              </app-participant-item>
             </ng-container>
+          </div>
         </ng-container>
-        <ng-container  *ngFor="let participant of getPrivateConsultationParticipants(); trackBy: trackParticipant">
-            <div  class="member-group">
-                <app-participant-item
-                                [participant]="participant"
-                                [interpreter]="participant?.interpreter"
-                                [conferenceId]="conference.id"
-                                [roomLabel]="roomLabel"
-                                [participantCallStatuses]="participantCallStatuses"
-                                [canInvite]="canInvite"
-                                >
-                </app-participant-item>
-            </div>
-        </ng-container>
+      </ng-container>
+    </ng-container>
+    <ng-container *ngFor="let participant of getPrivateConsultationParticipants(); trackBy: trackParticipant">
+      <div class="member-group">
+        <app-participant-item
+          [participant]="participant"
+          [interpreter]="participant?.interpreter"
+          [conferenceId]="conference.id"
+          [roomLabel]="roomLabel"
+          [participantCallStatuses]="participantCallStatuses"
+          [canInvite]="canInvite"
+        >
+        </app-participant-item>
+      </div>
+    </ng-container>
 
-
-        <ng-container *ngFor="let endpoint of endpoints">
-            <div class="endpoint-row">
-                <div class="header-left"  [class]="getRowClasses(endpoint)">
-                    <app-invite-participant *ngIf="canCallEndpoint(endpoint)"
-                        [endpointId]="endpoint.id"
-                        [conferenceId]="conference.id"
-                        [roomLabel]="roomLabel">
-                    </app-invite-participant>
-                    <span *ngIf="isParticipantInCurrentRoom(endpoint)"
-                        class="fas fa-check"
-                        aria-hidden="true"></span>
-                </div>
-                <div [class]="getRowClasses(endpoint)"><span
-                        [class]="participantNameClass(endpoint)">{{endpoint.display_name}}</span></div>
-                <div [class]="getRowClasses(endpoint)"
-                    class="text-right">
-                    <span [class]="getParticipantStatusClasses(endpoint)"
-                        [innerHTML]="getParticipantStatus(endpoint)"></span>
-                </div>
-            </div>
-        </ng-container>
-        <ng-container *ngIf="isJohConsultation()">
-            <ng-container  *ngFor="let participant of getWitnessesAndObservers(); trackBy: trackParticipant">
-                <div  class="member-group">
-                    <app-participant-item
-                                    [participant]="participant"
-                                    [interpreter]="participant?.interpreter"
-                                    [conferenceId]="conference.id"
-                                    [roomLabel]="roomLabel"
-                                    [participantCallStatuses]="participantCallStatuses"
-                                    [canInvite]="canInvite"
-                                    >
-                    </app-participant-item>
-                </div>
-            </ng-container>
-        </ng-container>
-    </div>
+    <ng-container *ngFor="let endpoint of endpoints">
+      <div class="endpoint-row">
+        <div class="header-left" [class]="getRowClasses(endpoint)">
+          <app-invite-participant
+            *ngIf="canCallEndpoint(endpoint)"
+            [endpointId]="endpoint.id"
+            [conferenceId]="conference.id"
+            [roomLabel]="roomLabel"
+          >
+          </app-invite-participant>
+          <span *ngIf="isParticipantInCurrentRoom(endpoint)" class="fas fa-check" aria-hidden="true"></span>
+        </div>
+        <div [class]="getRowClasses(endpoint)">
+          <span [class]="participantNameClass(endpoint)">{{ endpoint.display_name }}</span>
+        </div>
+        <div [class]="getRowClasses(endpoint)" class="text-right">
+          <span [class]="getParticipantStatusClasses(endpoint)" [innerHTML]="getParticipantStatus(endpoint)"></span>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="isJohConsultation()">
+      <ng-container *ngFor="let participant of getWitnessesAndObservers(); trackBy: trackParticipant">
+        <div class="member-group">
+          <app-participant-item
+            [participant]="participant"
+            [interpreter]="participant?.interpreter"
+            [conferenceId]="conference.id"
+            [roomLabel]="roomLabel"
+            [participantCallStatuses]="participantCallStatuses"
+            [canInvite]="canInvite"
+          >
+          </app-participant-item>
+        </div>
+      </ng-container>
+    </ng-container>
+  </div>
 </div>

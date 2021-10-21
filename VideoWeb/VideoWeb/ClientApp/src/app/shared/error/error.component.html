@@ -1,57 +1,64 @@
 <div class="govuk-grid-row govuk-!-padding-top-4" *ngIf="!connectionError">
-    <div class="govuk-grid-column-full">
-        <h1 class="govuk-heading-xl">{{'error.problem-with-service' | translate}}</h1>
-        <p class="govuk-body">{{'error.try-later' | translate}}</p>
-        <p class="govuk-body">{{'error.need-to-speak' | translate}}</p>
-    </div>
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-xl">{{ 'error.problem-with-service' | translate }}</h1>
+    <p class="govuk-body">{{ 'error.try-later' | translate }}</p>
+    <p class="govuk-body">{{ 'error.need-to-speak' | translate }}</p>
+  </div>
 </div>
 <div class="govuk-grid-row govuk-!-padding-top-4" *ngIf="connectionError">
-    <div class="govuk-grid-column-full">
-        <div *ngIf="!isExtensionOrFirewallIssue; else firewallError">
-            <h1 *ngIf="hasInternetConnection" class="govuk-heading-xl">{{ errorMessageTitle | translate}}</h1>
-            <h1 *ngIf="!hasInternetConnection" class="govuk-heading-xl">{{'error.problem-with-connection' | translate}}</h1>
-            <p *ngIf="hasInternetConnection" class="govuk-body">{{ errorMessageBody | translate}}</p>
-            <p *ngIf="!hasInternetConnection" class="govuk-body">
-                {{'error.you-not-connected' | translate}}
-            </p>
-        </div>
-        <ng-template #firewallError>
-            <h1 class="govuk-heading-xl">{{'error.problem-with-connection' | translate}}</h1>
-            <p class="govuk-body">{{'error.check-security-settings' | translate}}</p>
-            <p class="govuk-body">{{'error.keep-seeing-message' | translate}}</p>
-            <div class="govuk-body govuk-!-margin-top-8">
-                {{'error.find-out-more' | translate}} 
-                <a class="govuk-link vh-new-line" target="_blank"
-                   href="https://www.gov.uk/guidance/hmcts-video-hearings-service-guidance-for-joining-a-hearing"
-                   rel="noopener">
-                    https://www.gov.uk/guidance/hmcts-video-hearings-service-guidance-for-joining-a-hearing
-                </a>
-            </div>
-            <div class="govuk-body">
-                {{'error.computer-part-of-network' | translate}}
-                <a class="govuk-link vh-new-line" target="_blank"
-                   href="https://www.gov.uk/government/publications/video-hearings-service-join-from-a-corporate-network"
-                   rel="noopener">
-                    https://www.gov.uk/government/publications/video-hearings-service-join-from-a-corporate-network
-                </a>
-            </div>
-        </ng-template>
-
-        <div class="govuk-!-padding-top-4 govuk-!-padding-bottom-4">
-            <button *ngIf="showReconnect"
-                    id="reconnect-btn"
-                    class="govuk-button govuk-!-margin-right-1"
-                    data-module="govuk-button"
-                    type="button"
-                    (click)="reconnect()"
-                    [attr.aria-label]="'error.button-reconnect' | translate">
-                {{'error.button-reconnect' | translate}} 
-            </button>
-        </div>
-        <h2 class="govuk-heading-m">{{'error.contact-for-help' | translate}}</h2>
-        <p class="govuk-body">{{'error.call-vh-team' | translate}} <strong>0300 303 0655</strong></p>
-
+  <div class="govuk-grid-column-full">
+    <div *ngIf="!isExtensionOrFirewallIssue; else firewallError">
+      <h1 *ngIf="hasInternetConnection" class="govuk-heading-xl">{{ errorMessageTitle | translate }}</h1>
+      <h1 *ngIf="!hasInternetConnection" class="govuk-heading-xl">{{ 'error.problem-with-connection' | translate }}</h1>
+      <p *ngIf="hasInternetConnection" class="govuk-body">{{ errorMessageBody | translate }}</p>
+      <p *ngIf="!hasInternetConnection" class="govuk-body">
+        {{ 'error.you-not-connected' | translate }}
+      </p>
     </div>
+    <ng-template #firewallError>
+      <h1 class="govuk-heading-xl">{{ 'error.problem-with-connection' | translate }}</h1>
+      <p class="govuk-body">{{ 'error.check-security-settings' | translate }}</p>
+      <p class="govuk-body">{{ 'error.keep-seeing-message' | translate }}</p>
+      <div class="govuk-body govuk-!-margin-top-8">
+        {{ 'error.find-out-more' | translate }}
+        <a
+          class="govuk-link vh-new-line"
+          target="_blank"
+          href="https://www.gov.uk/guidance/hmcts-video-hearings-service-guidance-for-joining-a-hearing"
+          rel="noopener"
+        >
+          https://www.gov.uk/guidance/hmcts-video-hearings-service-guidance-for-joining-a-hearing
+        </a>
+      </div>
+      <div class="govuk-body">
+        {{ 'error.computer-part-of-network' | translate }}
+        <a
+          class="govuk-link vh-new-line"
+          target="_blank"
+          href="https://www.gov.uk/government/publications/video-hearings-service-join-from-a-corporate-network"
+          rel="noopener"
+        >
+          https://www.gov.uk/government/publications/video-hearings-service-join-from-a-corporate-network
+        </a>
+      </div>
+    </ng-template>
+
+    <div class="govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+      <button
+        *ngIf="showReconnect"
+        id="reconnect-btn"
+        class="govuk-button govuk-!-margin-right-1"
+        data-module="govuk-button"
+        type="button"
+        (click)="reconnect()"
+        [attr.aria-label]="'error.button-reconnect' | translate"
+      >
+        {{ 'error.button-reconnect' | translate }}
+      </button>
+    </div>
+    <h2 class="govuk-heading-m">{{ 'error.contact-for-help' | translate }}</h2>
+    <p class="govuk-body">{{ 'error.call-vh-team' | translate }} <strong>0300 303 0655</strong></p>
+  </div>
 </div>
 
 <app-contact-us-folding></app-contact-us-folding>

@@ -24,16 +24,11 @@
     (click)="continueParticipantJourney()"
     data-prevent-double-click="true"
   >
-  {{ 'participant-self-test.continue' | translate }}
+    {{ 'participant-self-test.continue' | translate }}
   </button>
 
-  <button
-    id="check-equipment-btn"
-    class="govuk-button govuk-button--secondary"
-    data-module="govuk-button"
-    (click)="restartTest()"
-  >
-  {{ 'participant-self-test.watch-the-video-again' | translate }}
+  <button id="check-equipment-btn" class="govuk-button govuk-button--secondary" data-module="govuk-button" (click)="restartTest()">
+    {{ 'participant-self-test.watch-the-video-again' | translate }}
   </button>
 </div>
 
