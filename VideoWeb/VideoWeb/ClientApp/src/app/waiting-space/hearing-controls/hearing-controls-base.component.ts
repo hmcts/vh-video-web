@@ -405,8 +405,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     isAnotherHostInHearing(participants: ParticipantModel[]): boolean {
-        let isAnotherHostInHearing = false;
-
         const hosts = participants.filter(
             x =>
                 x.id !== this.participant.id &&
@@ -414,13 +412,13 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         );
 
         if (hosts.length === 0) {
-            return isAnotherHostInHearing;
+            return false;
         }
 
         if (hosts.some(host => host.status === ParticipantStatus.InHearing)) {
             return true;
         }
 
-        return isAnotherHostInHearing;
+        return false;
     }
 }
