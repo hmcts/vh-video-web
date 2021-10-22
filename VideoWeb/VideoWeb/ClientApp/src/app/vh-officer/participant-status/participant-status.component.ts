@@ -90,7 +90,7 @@ export class ParticipantStatusComponent implements OnInit {
 
         this.logger.debug('[ParticipantStatus] - Subscribing to EventHub reconnects');
         this.eventHubSubscriptions.add(
-            this.eventService.getServiceReconnected().subscribe(async () => {
+            this.eventService.getServiceConnected().subscribe(async () => {
                 this.logger.info(`[ParticipantStatus] - EventHub reconnected for vh officer`);
                 await this.refreshConferenceDataDuringDisconnect();
             })

@@ -84,5 +84,21 @@ namespace VideoWeb.Common.Models
         {
             return CivilianRooms.FirstOrDefault(room => room.Participants.Contains(participantId));
         }
+
+        public HearingLayout GetRecommendedLayout()
+        {
+            var numOfParticipantsIncJudge = Participants.Count + Endpoints.Count;
+            if (numOfParticipantsIncJudge >= 10)
+            {
+                return HearingLayout.TwoPlus21;
+            }
+
+            if (numOfParticipantsIncJudge >= 6 && numOfParticipantsIncJudge <= 9)
+            {
+                return HearingLayout.OnePlus7;
+            }
+
+            return HearingLayout.Dynamic;
+        }
     }
 }

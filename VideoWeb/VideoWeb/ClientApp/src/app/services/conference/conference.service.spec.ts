@@ -95,7 +95,7 @@ describe('ConferenceService', () => {
         eventsSubject = new Subject<Event>();
         getSpiedPropertyGetter(routerSpy, 'events').and.returnValue(eventsSubject.asObservable());
 
-        eventsServiceSpy = jasmine.createSpyObj<EventsService>('EventsService', ['getServiceReconnected', 'getHearingStatusMessage']);
+        eventsServiceSpy = jasmine.createSpyObj<EventsService>('EventsService', ['getServiceConnected', 'getHearingStatusMessage']);
         getHearingStatusMessageSubject = new Subject<ConferenceStatusMessage>();
         getHearingStatusMessage$ = getHearingStatusMessageSubject.asObservable();
         eventsServiceSpy.getHearingStatusMessage.and.returnValue(getHearingStatusMessage$);

@@ -1,14 +1,16 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import { LangChangeEvent } from '@ngx-translate/core';
+import { of } from 'rxjs';
 import { ConferenceResponse, HearingLayout } from 'src/app/services/clients/api-client';
+import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
-import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
 import { SelectHearingLayoutComponent } from './select-hearing-layout.component';
 
 describe('SelectHearingLayoutComponent', () => {
+    let hearingLayoutServiceSpy: jasmine.SpyObj<HearingLayoutService>;
     let component: SelectHearingLayoutComponent;
-    const videoCallService = videoCallServiceSpy;
     let conference: ConferenceResponse;
     const translateService = translateServiceSpy;
     const headingButton = document.createElement('button');
@@ -18,7 +20,11 @@ describe('SelectHearingLayoutComponent', () => {
 
     beforeEach(() => {
         conference = new ConferenceTestData().getConferenceDetailNow();
-        component = new SelectHearingLayoutComponent(videoCallService, translateService);
+        hearingLayoutServiceSpy = jasmine.createSpyObj<HearingLayoutService>(
+            ['getCurrentLayout', 'updateCurrentLayout'],
+            ['currentLayout$', 'recommendedLayout$']
+        );
+        component = new SelectHearingLayoutComponent(hearingLayoutServiceSpy, translateService);
         component.conference = conference;
         textButton.innerHTML = 'Open all';
         document.getElementById = jasmine.createSpy('accordion-choose-layout-heading').and.returnValue(headingButton);
@@ -31,12 +37,45 @@ describe('SelectHearingLayoutComponent', () => {
         (<any>window).GOVUKFrontend = { initAll() {} };
     });
 
-    it('should use cached layout preference on init', () => {
-        const layout = HearingLayout.Dynamic;
-        videoCallService.getPreferredLayout.and.returnValue(layout);
-        component.ngOnInit();
-        expect(component.selectedLayout).toBe(layout);
-        expect(component.currentButtonContentKey).toBe(buttonContentKeyWhenOpen);
+    describe('currentLayout$', () => {
+        it('should return currentLayout$ from hearingLayoutService', () => {
+            // Arrange
+            const expectedCurrentLayout$ = of(HearingLayout.Dynamic);
+            getSpiedPropertyGetter(hearingLayoutServiceSpy, 'currentLayout$').and.returnValue(expectedCurrentLayout$);
+
+            // Act
+            const currentLayout$ = component.currentLayout$;
+
+            // Assert
+            expect(currentLayout$).toBe(expectedCurrentLayout$);
+        });
+    });
+
+    describe('recommendedLayout$', () => {
+        it('should return recommendedLayout$ from hearingLayoutService', () => {
+            // Arrange
+            const expectedRecommendedLayout$ = of(HearingLayout.Dynamic);
+            getSpiedPropertyGetter(hearingLayoutServiceSpy, 'recommendedLayout$').and.returnValue(expectedRecommendedLayout$);
+
+            // Act
+            const recommendedLayout$ = component.recommendedLayout$;
+
+            // Assert
+            expect(recommendedLayout$).toBe(expectedRecommendedLayout$);
+        });
+    });
+
+    describe('updateSelectedLayout', () => {
+        it('should call updateCurrentLayout in hearingLayoutService with the selected layout', () => {
+            // Arrange
+            const expectedLayout = HearingLayout.OnePlus7;
+
+            // Act
+            component.updateSelectedLayout(expectedLayout);
+
+            // Assert
+            expect(hearingLayoutServiceSpy.updateCurrentLayout).toHaveBeenCalledOnceWith(expectedLayout);
+        });
     });
 
     it('should translate button text on text click', () => {
@@ -64,58 +103,6 @@ describe('SelectHearingLayoutComponent', () => {
         expect(component.currentButtonContentKey).toBe(buttonContentKeyWhenClosed);
     }));
 
-    it('should use recommended layout when cached layout preference is empty on init', () => {
-        const layout = HearingLayout.OnePlus7;
-        videoCallService.getPreferredLayout.and.returnValue(null);
-        spyOn(component, 'recommendedLayout').and.returnValue(layout);
-        component.ngOnInit();
-        expect(component.selectedLayout).toBe(layout);
-    });
-
-    const recommendLayoutForTestCases = [
-        { numOfParticipantsIncJudge: 1, expected: HearingLayout.Dynamic },
-        { numOfParticipantsIncJudge: 2, expected: HearingLayout.Dynamic },
-        { numOfParticipantsIncJudge: 3, expected: HearingLayout.Dynamic },
-        { numOfParticipantsIncJudge: 4, expected: HearingLayout.Dynamic },
-        { numOfParticipantsIncJudge: 5, expected: HearingLayout.Dynamic },
-        { numOfParticipantsIncJudge: 6, expected: HearingLayout.OnePlus7 },
-        { numOfParticipantsIncJudge: 7, expected: HearingLayout.OnePlus7 },
-        { numOfParticipantsIncJudge: 8, expected: HearingLayout.OnePlus7 },
-        { numOfParticipantsIncJudge: 9, expected: HearingLayout.OnePlus7 },
-        { numOfParticipantsIncJudge: 10, expected: HearingLayout.TwoPlus21 },
-        { numOfParticipantsIncJudge: 11, expected: HearingLayout.TwoPlus21 },
-        { numOfParticipantsIncJudge: 12, expected: HearingLayout.TwoPlus21 }
-    ];
-
-    recommendLayoutForTestCases.forEach(test => {
-        it(`should recommend layout ${test.expected} when number of participants is ${test.numOfParticipantsIncJudge}`, () => {
-            expect(component.recommendLayoutFor(test.numOfParticipantsIncJudge)).toBe(test.expected);
-        });
-    });
-
-    it(`should recommend layout when endpoints is null`, () => {
-        component.conference.endpoints = null;
-        expect(component.recommendedLayout()).toBeDefined();
-    });
-
-    it('should save selected layout', () => {
-        const layout = HearingLayout.Dynamic;
-        component.updateSelectedLayout(layout);
-        expect(component.selectedLayout).toBe(layout);
-        expect(videoCallService.updatePreferredLayout).toHaveBeenCalledWith(component.conference.id, layout);
-    });
-
-    it('should return selected layout', () => {
-        const layout = HearingLayout.OnePlus7;
-        component.selectedLayout = layout;
-        expect(component.getSelectedOrPreferredLayout()).toBe(layout);
-    });
-
-    it('should return recommended layout', () => {
-        component.selectedLayout = undefined;
-        expect(component.getSelectedOrPreferredLayout()).toBe(HearingLayout.OnePlus7);
-    });
-
     it('should return true when accordian is open', () => {
         const accordian: HTMLDivElement = document.createElement('div');
         document.getElementById = jasmine.createSpy('accordian-container').and.returnValue(accordian);
@@ -128,27 +115,6 @@ describe('SelectHearingLayoutComponent', () => {
         const accordian: HTMLDivElement = document.createElement('div');
         document.getElementById = jasmine.createSpy('accordian-container').and.returnValue(accordian);
         expect(component.isAccordianOpen).toBeFalsy();
-    });
-
-    it('should return true when dynamic is recommended', () => {
-        spyOn(component, 'recommendedLayout').and.returnValue(HearingLayout.Dynamic);
-        expect(component.isRecommendedLayout(HearingLayout.Dynamic)).toBeTruthy();
-        expect(component.isRecommendedLayout(HearingLayout.OnePlus7)).toBeFalsy();
-        expect(component.isRecommendedLayout(HearingLayout.TwoPlus21)).toBeFalsy();
-    });
-
-    it('should return true when 2+1 is recommended', () => {
-        spyOn(component, 'recommendedLayout').and.returnValue(HearingLayout.TwoPlus21);
-        expect(component.isRecommendedLayout(HearingLayout.Dynamic)).toBeFalsy();
-        expect(component.isRecommendedLayout(HearingLayout.OnePlus7)).toBeFalsy();
-        expect(component.isRecommendedLayout(HearingLayout.TwoPlus21)).toBeTruthy();
-    });
-
-    it('should return true when 1+7 is recommended', () => {
-        spyOn(component, 'recommendedLayout').and.returnValue(HearingLayout.OnePlus7);
-        expect(component.isRecommendedLayout(HearingLayout.Dynamic)).toBeFalsy();
-        expect(component.isRecommendedLayout(HearingLayout.OnePlus7)).toBeTruthy();
-        expect(component.isRecommendedLayout(HearingLayout.TwoPlus21)).toBeFalsy();
     });
 
     describe('onLangChange event', () => {
