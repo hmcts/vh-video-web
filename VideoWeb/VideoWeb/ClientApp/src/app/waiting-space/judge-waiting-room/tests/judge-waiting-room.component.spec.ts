@@ -369,14 +369,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         });
     });
 
-    it('hearing in session returns false when the conference is not in session', () => {
-        const statuses = [ConferenceStatus.Closed, ConferenceStatus.NotStarted, ConferenceStatus.Paused, ConferenceStatus.Suspended];
-        statuses.forEach(currentStatus => {
-            component.conference.status = currentStatus;
-            expect(component.isHearingInSession()).toBe(false);
-        });
-    });
-
     it('should handle error when get conference fails', async () => {
         const error = { status: 401, isApiException: true };
         videoWebService.getConferenceById.and.rejectWith(error);
