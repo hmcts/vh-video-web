@@ -574,7 +574,7 @@
     "hearing-layout-changed": {
       "title": "Mae {{name}}",
       "message": "wedi newid cynllun y gwrandawiad.",
-      "dismiss": "Dismiss"
+      "dismiss": "Gwrthod"
     }
   },
   "consultation-error": {

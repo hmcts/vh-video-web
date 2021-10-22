@@ -1005,17 +1005,18 @@ export abstract class WaitingRoomBaseDirective {
             return;
         }
 
+        console.log('a');
         const participant = this.findParticipant(hearingLayoutMessage.changedById);
         if (participant.id === this.getLoggedParticipant().id) {
             return;
         }
+        console.log('b');
 
         this.logger.debug(`[WR] - Hearing Layout Changed showing notification`, participant);
         this.notificationToastrService.showHearingLayoutchanged(
             participant,
             this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
         );
-        return;
     }
 
     protected validateIsForConference(conferenceId: string): boolean {
