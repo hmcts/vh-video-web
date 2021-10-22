@@ -361,9 +361,9 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     leave(confirmation: boolean, participants: ParticipantModel[]) {
         this.displayLeaveHearingPopup = false;
         if (confirmation) {
-            const isAnotherHostPresent = this.isAnotherHostPresent(participants);
+            const isAnotherHostInHearing = this.isAnotherHostInHearing(participants);
 
-            if (isAnotherHostPresent) {
+            if (isAnotherHostInHearing) {
                 this.videoCallService.leaveHearing(this.conferenceId, this.participant.id).then(() => {
                     this.leaveHearing.emit();
                 });
@@ -404,7 +404,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.changeDeviceToggle.emit();
     }
 
-    isAnotherHostPresent(participants: ParticipantModel[]): boolean {
+    isAnotherHostInHearing(participants: ParticipantModel[]): boolean {
         let isAnotherHostInHearing = false;
 
         const hosts = participants.filter(
@@ -417,12 +417,9 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             return isAnotherHostInHearing;
         }
 
-        hosts.forEach(host => {
-            if (host.status === ParticipantStatus.InHearing) {
-                isAnotherHostInHearing = true;
-                return;
-            }
-        });
+        if (hosts.some(host => host.status === ParticipantStatus.InHearing)) {
+            return true;
+        }
 
         return isAnotherHostInHearing;
     }

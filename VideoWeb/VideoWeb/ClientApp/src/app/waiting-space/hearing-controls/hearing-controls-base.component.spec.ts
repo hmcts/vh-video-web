@@ -718,17 +718,16 @@ describe('HearingControlsBaseComponent', () => {
 
         it('should not make any api calls if confirmation was cancelled', () => {
             component.leave(false, []);
-            expect(videoCallService.dismissParticipantFromHearing.calls.count()).toBe(0);
-            expect(videoCallService.suspendHearing.calls.count()).toBe(0);
+            expect(videoCallService.dismissParticipantFromHearing).not.toHaveBeenCalled();
+            expect(videoCallService.suspendHearing).not.toHaveBeenCalled();
         });
 
         it('should dismiss participant if confirmed leaving and another host is present', done => {
             component.displayLeaveHearingPopup = true;
             const participantsModel = [];
-            const spy = spyOn(component, 'isAnotherHostPresent').and.returnValue(true);
+            spyOn(component, 'isAnotherHostInHearing').and.returnValue(true);
             videoCallServiceSpy.leaveHearing.and.returnValue(Promise.resolve());
             component.leaveHearing.subscribe(event => {
-                expect(true).toBeTruthy();
                 done();
             });
 
@@ -738,7 +737,7 @@ describe('HearingControlsBaseComponent', () => {
         });
 
         it('should suspend the hearing if confirmed leaving and another host is not present', () => {
-            spyOn(component, 'isAnotherHostPresent').and.returnValue(false);
+            spyOn(component, 'isAnotherHostInHearing').and.returnValue(false);
 
             component.leave(true, []);
 
@@ -746,7 +745,7 @@ describe('HearingControlsBaseComponent', () => {
         });
     });
 
-    describe('isAnotherHostPresent', () => {
+    describe('isAnotherHostInHearing', () => {
         beforeEach(() => {});
 
         it('returns false if there is no host', () => {
@@ -767,9 +766,9 @@ describe('HearingControlsBaseComponent', () => {
                 )
             ];
 
-            const isAnotherHostPresent = component.isAnotherHostPresent(participants);
+            const isAnotherHostInHearing = component.isAnotherHostInHearing(participants);
 
-            expect(isAnotherHostPresent).toBeFalse();
+            expect(isAnotherHostInHearing).toBeFalse();
         });
 
         it('returns false if there is no other host', () => {
@@ -790,12 +789,12 @@ describe('HearingControlsBaseComponent', () => {
                 )
             ];
 
-            const isAnotherHostPresent = component.isAnotherHostPresent(participants);
+            const isAnotherHostInHearing = component.isAnotherHostInHearing(participants);
 
-            expect(isAnotherHostPresent).toBeFalse();
+            expect(isAnotherHostInHearing).toBeFalse();
         });
 
-        it('returns true if there is another host', () => {
+        it('returns false if another host is not in hearing', () => {
             const participants = [
                 new ParticipantModel(
                     '7879c48a-f513-4d3b-bb1b-151831427507',
@@ -827,9 +826,9 @@ describe('HearingControlsBaseComponent', () => {
                 )
             ];
 
-            const isAnotherHostPresent = component.isAnotherHostPresent(participants);
+            const isAnotherHostInHearing = component.isAnotherHostInHearing(participants);
 
-            expect(isAnotherHostPresent).toBeFalse();
+            expect(isAnotherHostInHearing).toBeFalse();
         });
     });
 });

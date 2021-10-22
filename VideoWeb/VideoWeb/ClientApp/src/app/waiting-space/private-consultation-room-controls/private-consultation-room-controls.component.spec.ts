@@ -603,9 +603,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
             component.leave(true);
 
-            expect(spy.calls.count()).toBe(1);
-            expect(spy.calls.mostRecent().args[0]).toBe(true);
-            expect(spy.calls.mostRecent().args[1]).toBe(participantServiceSpy.participants);
+            expect(spy).toHaveBeenCalledTimes(1);
+            expect(spy).toHaveBeenCalledWith(true, participantServiceSpy.participants);
         });
     });
 });
