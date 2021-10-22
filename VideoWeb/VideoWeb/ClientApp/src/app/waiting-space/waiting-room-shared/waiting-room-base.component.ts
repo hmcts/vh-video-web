@@ -996,7 +996,6 @@ export abstract class WaitingRoomBaseDirective {
 
     private handleHearingLayoutUpdatedMessage(hearingLayoutMessage: HearingLayoutChanged) {
         this.logger.debug(`[WR] - Hearing layout changed message recieved`, hearingLayoutMessage);
-
         if (!this.validateIsForConference(hearingLayoutMessage.conferenceId)) {
             return;
         }
@@ -1004,13 +1003,10 @@ export abstract class WaitingRoomBaseDirective {
         if (!this.isHost()) {
             return;
         }
-
-        console.log('a');
         const participant = this.findParticipant(hearingLayoutMessage.changedById);
         if (participant.id === this.getLoggedParticipant().id) {
             return;
         }
-        console.log('b');
 
         this.logger.debug(`[WR] - Hearing Layout Changed showing notification`, participant);
         this.notificationToastrService.showHearingLayoutchanged(
