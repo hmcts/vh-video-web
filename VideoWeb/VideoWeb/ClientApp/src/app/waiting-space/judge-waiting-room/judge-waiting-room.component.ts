@@ -181,11 +181,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             let participants = this.participantService.participants;
 
             if (conferenceStatus.oldStatus === ConferenceStatus.NotStarted) {
-                this.videoControlService.setSpotlightStatus(
-                    participants.find(p => p.role === Role.Judge),
-                    true
-                );
-
+                const judgeFromParticipants = participants.find(p => p.role === Role.Judge);
+                this.videoControlService.setSpotlightStatus(judgeFromParticipants, true);
+                this.videoControlCacheService.setSpotlightStatus(judgeFromParticipants.id, true);
                 participants = participants.filter(participant => participant.role !== Role.Judge);
             }
 

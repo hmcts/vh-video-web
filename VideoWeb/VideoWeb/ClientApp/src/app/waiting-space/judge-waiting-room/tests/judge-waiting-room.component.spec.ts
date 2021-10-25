@@ -709,6 +709,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
             // Assert
             expect(videoControlServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(judgeParticipant, true);
+            expect(videoControlCacheServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(judgeParticipant.id, true);
             expect(videoControlServiceSpy.restoreParticipantsSpotlight).toHaveBeenCalledTimes(nonJudgeParticipants.length + vmrs.length);
             nonJudgeParticipants.forEach(x => expect(videoControlServiceSpy.restoreParticipantsSpotlight).toHaveBeenCalledWith(x));
             vmrs.forEach(x => expect(videoControlServiceSpy.restoreParticipantsSpotlight).toHaveBeenCalledWith(x));
