@@ -94,6 +94,47 @@ describe('WaitingRoomComponent message and clock', () => {
         videoWebService.getConferenceById.calls.reset();
     });
 
+    describe('updateShowVideo', () => {
+        const dualHostRoles = [Role.Judge, Role.StaffMember];
+        const nonDualHostRoles = [
+            Role.None,
+            Role.CaseAdmin,
+            Role.VideoHearingsOfficer,
+            Role.HearingFacilitationSupport,
+            Role.Individual,
+            Role.Representative,
+            Role.JudicialOfficeHolder,
+            Role.QuickLinkParticipant,
+            Role.QuickLinkObserver
+        ];
+
+        dualHostRoles.forEach(role => {
+            it(`returns dualHostHasSignalledToJoinHearing as true when hearing in session and the participant is a ${role.toLocaleLowerCase()}`, () => {
+                component.connected = true;
+                component.dualHostHasSignalledToJoinHearing = true;
+                component.participant.role = role;
+                component.conference.status = ConferenceStatus.InSession;
+
+                component.updateShowVideo();
+
+                expect(component.dualHostHasSignalledToJoinHearing).toBe(true);
+            });
+        });
+
+        nonDualHostRoles.forEach(role => {
+            it(`returns dualHostHasSignalledToJoinHearing as false when hearing in session and the participant is a ${role.toLocaleLowerCase()}`, () => {
+                component.connected = true;
+                component.dualHostHasSignalledToJoinHearing = true;
+                component.participant.role = role;
+                component.conference.status = ConferenceStatus.InSession;
+
+                component.updateShowVideo();
+
+                expect(component.dualHostHasSignalledToJoinHearing).toBe(false);
+            });
+        });
+    });
+
     describe('toggle Panel', () => {
         const participantPanelName = 'Participants';
         const chatPanelName = 'Chat';
@@ -445,6 +486,38 @@ describe('WaitingRoomComponent message and clock', () => {
 
         expect(roomClosingToastrService.showRoomClosingAlert).toHaveBeenCalledWith(component.hearing, date);
         expect(roomClosingToastrService.currentToast).toBeTruthy();
+    });
+
+    describe('shouldCurrentUserJoinHearing', () => {
+        it('should return false if user is a host and has not signalled to join hearing', () => {
+            component.dualHostHasSignalledToJoinHearing = false;
+            const spy = spyOn(component, 'isHost').and.returnValue(true);
+
+            const shouldCurrentUserJoinHearing = component.shouldCurrentUserJoinHearing();
+
+            expect(spy).toHaveBeenCalledTimes(1);
+            expect(shouldCurrentUserJoinHearing).toBeFalsy();
+        });
+
+        it('should return true if user is not a host', () => {
+            component.dualHostHasSignalledToJoinHearing = false;
+            const spy = spyOn(component, 'isHost').and.returnValue(false);
+
+            const shouldCurrentUserJoinHearing = component.shouldCurrentUserJoinHearing();
+
+            expect(spy).toHaveBeenCalledTimes(1);
+            expect(shouldCurrentUserJoinHearing).toBeTrue();
+        });
+
+        it('should return true if user is a host and has signalled to join the hearing', () => {
+            component.dualHostHasSignalledToJoinHearing = true;
+            const spy = spyOn(component, 'isHost').and.returnValue(true);
+
+            const shouldCurrentUserJoinHearing = component.shouldCurrentUserJoinHearing();
+
+            expect(spy).toHaveBeenCalledTimes(1);
+            expect(shouldCurrentUserJoinHearing).toBeTrue();
+        });
     });
 
     describe('call', () => {
