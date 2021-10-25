@@ -243,6 +243,5 @@ namespace VideoWeb.UnitTests.Caching
                 .TheNext(1).With(x => x.Role = Role.VideoHearingsOfficer)
                 .TheRest().With(x => x.Role = Role.Individual).Build().ToList();
         }
-
     }
 }

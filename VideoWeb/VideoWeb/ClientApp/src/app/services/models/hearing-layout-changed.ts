@@ -1,6 +1,6 @@
 import { HearingLayout } from '../clients/api-client';
 
-export default class HearingLayoutChanged {
+export class HearingLayoutChanged {
     constructor(
         public conferenceId: string,
         public changedById: string,
