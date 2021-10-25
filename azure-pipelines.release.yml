@@ -192,11 +192,13 @@ stages:
               - Dev
               - AAT
               - Sandbox
-              - Demo
           - group: FeatureFlags_Test
             env:
               - Test1
               - Test2
+          - group: FeatureFlags_Demo
+            env:
+              - Demo
           - group: FeatureFlags_PreProd
             env:
               - PreProd
