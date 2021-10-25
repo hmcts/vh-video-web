@@ -33,6 +33,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     @Output() public lockConsultation = new EventEmitter<boolean>();
     @Output() public togglePanel = new EventEmitter<string>();
     @Output() public changeDeviceToggle = new EventEmitter();
+    @Output() public leaveHearing = new EventEmitter();
 
     audioOnly = false;
 
@@ -44,6 +45,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     remoteMuted: boolean;
     selfViewOpen: boolean;
     displayConfirmPopup: boolean;
+    displayLeaveHearingPopup: boolean;
     participantSpotlightUpdateSubscription: Subscription;
     isSpotlighted: boolean;
 
@@ -356,6 +358,21 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         }
     }
 
+    leave(confirmation: boolean, participants: ParticipantModel[]) {
+        this.displayLeaveHearingPopup = false;
+        if (confirmation) {
+            const isAnotherHostInHearing = this.isAnotherHostInHearing(participants);
+
+            if (isAnotherHostInHearing) {
+                this.videoCallService.leaveHearing(this.conferenceId, this.participant.id).then(() => {
+                    this.leaveHearing.emit();
+                });
+            } else {
+                this.videoCallService.suspendHearing(this.conferenceId);
+            }
+        }
+    }
+
     displayConfirmationDialog() {
         this.displayConfirmPopup = true;
     }
@@ -385,5 +402,21 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     changeDeviceSelected() {
         this.changeDeviceToggle.emit();
+    }
+
+    isAnotherHostInHearing(participants: ParticipantModel[]): boolean {
+        const hosts = participants.filter(
+            x => x.id !== this.participant.id && (x.hearingRole === HearingRole.JUDGE || x.hearingRole === HearingRole.STAFF_MEMBER)
+        );
+
+        if (hosts.length === 0) {
+            return false;
+        }
+
+        if (hosts.some(host => host.status === ParticipantStatus.InHearing)) {
+            return true;
+        }
+
+        return false;
     }
 }
