@@ -145,6 +145,7 @@ stages:
             env:
               - Preview
               - Dev
+              - Demo
               - AAT
               - Sandbox
               - Test1
@@ -191,6 +192,7 @@ stages:
               - Dev
               - AAT
               - Sandbox
+              - Demo
           - group: FeatureFlags_Test
             env:
               - Test1
