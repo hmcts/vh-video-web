@@ -8,7 +8,7 @@ namespace VideoWeb.Common.Caching
 {
     public interface IConsultationInvitationCache
     {
-        Task Write(ConsultationInvitation consultationInvitation);
-        Task<ConsultationInvitation> Read(Guid invitationId);
+        Task WriteToCache(ConsultationInvitation consultationInvitation);
+        Task<ConsultationInvitation> ReadFromCache(Guid invitationId);
     }
 }

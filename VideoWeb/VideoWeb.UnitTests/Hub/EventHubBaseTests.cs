@@ -19,6 +19,7 @@ using VideoApi.Contract.Enums;
 using VideoWeb.Common.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
+using VideoWeb.EventHub.Services;
 
 namespace VideoWeb.UnitTests.Hub
 {
@@ -34,6 +35,7 @@ namespace VideoWeb.UnitTests.Hub
         protected ClaimsPrincipal Claims;
         protected Mock<IConferenceCache> ConferenceCacheMock;
         protected Mock<IHeartbeatRequestMapper> HeartbeatMapper;
+        protected Mock<IHearingLayoutService> hearingLayoutServiceMock;
 
         [SetUp]
         public void Setup()
@@ -118,11 +120,12 @@ namespace VideoWeb.UnitTests.Hub
         protected Conference CreateTestConference(string participantUsername, bool withLinked = false)
         {
             var conferenceId = Guid.NewGuid();
-            var participants = Builder<Participant>.CreateListOfSize(5)
+            var participants = Builder<Participant>.CreateListOfSize(6)
                 .All().With(x=> x.Id = Guid.NewGuid()).With(x=>x.Username = Faker.Internet.Email())
                 .With(x => x.LinkedParticipants = new List<LinkedParticipant>())
                 .TheFirst(1).With(x => x.Role = Role.Judge)
                 .TheNext(2).With(x=> x.Role = Role.JudicialOfficeHolder)
+                .TheNext(1).With(x => x.Role = Role.StaffMember)
                 .TheNext(1).With(x => x.Role = Role.Individual).With(x => x.Username = participantUsername)
                 .TheNext(1).With(x => x.Role = Role.Individual)
                 .Build().ToList();

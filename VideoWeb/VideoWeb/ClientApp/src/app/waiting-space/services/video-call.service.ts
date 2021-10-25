@@ -203,6 +203,10 @@ export class VideoCallService {
     }
 
     makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number) {
+        this.logger.info(`${this.loggerPrefix} make pexip call`, {
+            pexipNode: pexipNode
+        });
+        this.stopPresentation();
         this.initCallTag();
         this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, null);
     }
@@ -210,6 +214,7 @@ export class VideoCallService {
     disconnectFromCall() {
         if (this.pexipAPI) {
             this.logger.info(`${this.loggerPrefix} Disconnecting from pexip node.`);
+            this.stopPresentation();
             this.pexipAPI.disconnect();
             this.hasDisconnected$.next();
             this.hasDisconnected$.complete();
@@ -344,18 +349,6 @@ export class VideoCallService {
         this.pexipAPI.clearAllBuzz();
     }
 
-    updatePreferredLayout(conferenceId: string, layout: HearingLayout) {
-        this.logger.info(`${this.loggerPrefix} Updating preferred layout`, { conference: conferenceId, layout });
-        const record = this.preferredLayoutCache.get();
-        record[conferenceId] = layout;
-        this.preferredLayoutCache.set(record);
-    }
-
-    getPreferredLayout(conferenceId: string) {
-        const record = this.preferredLayoutCache.get();
-        return record[conferenceId];
-    }
-
     startHearing(conferenceId: string, layout: HearingLayout): Promise<void> {
         this.logger.info(`${this.loggerPrefix} Attempting to start hearing`, { conference: conferenceId, layout });
         const request = new StartHearingRequest({
@@ -369,9 +362,27 @@ export class VideoCallService {
         return this.apiClient.pauseVideoHearing(conferenceId).toPromise();
     }
 
+    suspendHearing(conferenceId: string): Promise<void> {
+        this.logger.info(`${this.loggerPrefix} Attempting to suspend hearing`, { conference: conferenceId });
+        return this.apiClient.suspendVideoHearing(conferenceId).toPromise();
+    }
+
+    leaveHearing(conferenceId: string, participantId: string): Promise<void> {
+        this.logger.info(`${this.loggerPrefix} Attempting to suspend hearing`, { conference: conferenceId });
+        return this.apiClient.leaveHearing(conferenceId, participantId).toPromise();
+    }
+
     endHearing(conferenceId: string): Promise<void> {
         this.logger.info(`${this.loggerPrefix} Attempting to end hearing`, { conference: conferenceId });
         return this.apiClient.endVideoHearing(conferenceId).toPromise();
+    }
+
+    async joinHearingInSession(conferenceId: string, participantId: string) {
+        this.logger.info(`${this.loggerPrefix} Attempting to call participant into hearing`, {
+            conference: conferenceId,
+            participant: participantId
+        });
+        return this.apiClient.joinHearingInSession(conferenceId, participantId).toPromise();
     }
 
     async callParticipantIntoHearing(conferenceId: string, participantId: string) {

@@ -9,7 +9,8 @@ import {
     EndpointStatus,
     ParticipantResponse,
     ParticipantStatus,
-    RoomSummaryResponse
+    RoomSummaryResponse,
+    HearingLayout
 } from 'src/app/services/clients/api-client';
 import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
@@ -31,7 +32,8 @@ import {
     hearingCountdownCompleteSubjectMock,
     onEventsHubReadySubjectMock,
     eventsServiceSpy,
-    getParticipantsUpdatedSubjectMock
+    getParticipantsUpdatedSubjectMock,
+    hearingLayoutChangedSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import {
     clockService,
@@ -77,6 +79,7 @@ import { ClockService } from 'src/app/services/clock.service';
 import { Participant } from 'src/app/shared/models/participant';
 import { createTrue } from 'typescript';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
+import { HearingLayoutChanged } from 'src/app/services/models/hearing-layout-changed';
 
 describe('WaitingRoomComponent EventHub Call', () => {
     let fixture: ComponentFixture<WRTestComponent>;
@@ -90,6 +93,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
     const eventHubReconnectSubject = eventHubReconnectSubjectMock;
     const hearingTransferSubject = hearingTransferSubjectMock;
     const endpointStatusSubject = endpointStatusSubjectMock;
+    const hearingLayoutChangedSubject = hearingLayoutChangedSubjectMock;
     const invitationId = Guid.create().toString();
     let logged: LoggedParticipantResponse;
     let activatedRoute: ActivatedRoute;
@@ -1584,6 +1588,132 @@ describe('WaitingRoomComponent EventHub Call', () => {
                     expect(updatedParticipant.display_name).toBe(testParticipant.display_name);
                     expect(updatedParticipant.status).toBe(ParticipantStatus.NotSignedIn);
                 });
+            });
+        });
+    });
+
+    describe('getHearingLayoutChanged', () => {
+        const testConferenceId = 'TestConferenceId';
+        const testConference = new ConferenceResponse();
+        testConference.id = testConferenceId;
+        const testHearing = new Hearing(testConference);
+        const testParticipant = new ParticipantResponse();
+        testParticipant.id = 'p1Id';
+        testParticipant.status = ParticipantStatus.InHearing;
+
+        const testParticipantAlert = new ParticipantResponse();
+        testParticipantAlert.id = 'p1Id';
+        testParticipantAlert.status = ParticipantStatus.InHearing;
+        const differentConferenceId = 'DifferentConferenceId';
+
+        const participant = globalConference.participants.filter(x => x.id !== globalParticipant.id)[0];
+        let testHearingLayoutMessage;
+        let findParticipantSpy;
+        let getLoggedParticipantSpy;
+        let isHostSpy;
+
+        beforeEach(() => {
+            component.hearing = testHearing;
+            component.conference.participants = [];
+            component.participant = participant;
+            testHearingLayoutMessage = new HearingLayoutChanged(
+                testConferenceId,
+                testParticipant.id,
+                HearingLayout.Dynamic,
+                HearingLayout.OnePlus7
+            );
+            isHostSpy = spyOn(component, 'isHost');
+            isHostSpy.and.returnValue(true);
+            getLoggedParticipantSpy = component['getLoggedParticipant'] = jasmine.createSpy('getLoggedParticipant');
+            getLoggedParticipantSpy.and.returnValue({ id: 'p2Id' });
+
+            findParticipantSpy = component['findParticipant'] = jasmine.createSpy('findParticipant');
+        });
+
+        describe('when is not', () => {
+            it('a correct conference', () => {
+                // Arrange
+                testHearingLayoutMessage = new HearingLayoutChanged(
+                    differentConferenceId,
+                    testParticipant.id,
+                    HearingLayout.Dynamic,
+                    HearingLayout.OnePlus7
+                );
+
+                // Act
+                hearingLayoutChangedSubjectMock.next(testHearingLayoutMessage);
+
+                // Assert
+                expect(component.isHost).not.toHaveBeenCalled();
+                expect(findParticipantSpy).not.toHaveBeenCalled();
+                expect(getLoggedParticipantSpy).not.toHaveBeenCalled();
+                expect(notificationToastrService.showHearingLayoutchanged).not.toHaveBeenCalled();
+            });
+
+            it('a Dual Host participant', () => {
+                // Arrange
+                isHostSpy.and.returnValue(false);
+
+                // Act
+                hearingLayoutChangedSubjectMock.next(testHearingLayoutMessage);
+
+                // Assert
+                expect(component.isHost).toHaveBeenCalledTimes(1);
+                expect(findParticipantSpy).not.toHaveBeenCalled();
+                expect(getLoggedParticipantSpy).not.toHaveBeenCalled();
+                expect(notificationToastrService.showHearingLayoutchanged).not.toHaveBeenCalled();
+            });
+
+            it('same participant changing layout should not see alert', () => {
+                // Arrange
+                findParticipantSpy.and.returnValues({ id: 'p2Id' });
+
+                // Act
+                hearingLayoutChangedSubjectMock.next(testHearingLayoutMessage);
+
+                // Assert
+                expect(component.isHost).toHaveBeenCalledTimes(1);
+                expect(findParticipantSpy).toHaveBeenCalledTimes(1);
+                expect(getLoggedParticipantSpy).toHaveBeenCalledTimes(1);
+                expect(notificationToastrService.showHearingLayoutchanged).not.toHaveBeenCalled();
+            });
+        });
+
+        describe('when is correct conference, dual host and eligible participant', () => {
+            it('should show toast for in hearing', () => {
+                // Arrange
+                component.participant.status = ParticipantStatus.InHearing;
+                findParticipantSpy.and.returnValues(testParticipantAlert);
+
+                // Act
+                hearingLayoutChangedSubjectMock.next(testHearingLayoutMessage);
+
+                // Assert
+                expect(notificationToastrService.showHearingLayoutchanged).toHaveBeenCalledWith(testParticipant, true);
+            });
+
+            it('should show toast for in consultation', () => {
+                // Arrange
+                component.participant.status = ParticipantStatus.InConsultation;
+                findParticipantSpy.and.returnValues(testParticipantAlert);
+
+                // Act
+                hearingLayoutChangedSubjectMock.next(testHearingLayoutMessage);
+
+                // Assert
+                expect(notificationToastrService.showHearingLayoutchanged).toHaveBeenCalledWith(testParticipant, true);
+            });
+
+            it('should show toast for not in hearing or consultation', () => {
+                // Arrange
+                component.participant.status = ParticipantStatus.Available;
+                findParticipantSpy.and.returnValues(testParticipantAlert);
+
+                // Act
+                hearingLayoutChangedSubjectMock.next(testHearingLayoutMessage);
+
+                // Assert
+                expect(notificationToastrService.showHearingLayoutchanged).toHaveBeenCalledWith(testParticipant, false);
             });
         });
     });
