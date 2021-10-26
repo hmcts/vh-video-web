@@ -489,7 +489,7 @@
   "individual-participant-status-list": {
     "crest-icon-alt": "Arwyddlun Gwasanaeth Llysoedd a Thribiwnlysoedd EM",
     "panel-members": "Aelodau'r panel",
-    "staff-members": "Aelodau'r staff",
+    "staff-member": "Aelod o staff",
     "wingers": "Asgellwyr",
     "participants": "Cyfranogwyr",
     "for": "",
@@ -570,6 +570,11 @@
       "message-without-party": "{{role}} wedi cael ei (h)ychwanegu at y gwrandawiad.",
       "message-with-party": "{{role}} ({{party}}) wedi cael ei (h)ychwanegu at y gwrandawiad.",
       "dismiss": "Gwrthod"
+    },
+    "hearing-layout-changed": {
+      "title": "Mae {{name}}",
+      "message": "wedi newid cynllun y gwrandawiad.",
+      "dismiss": "Gwrthod"
     }
   },
   "consultation-error": {
@@ -604,7 +609,8 @@
     "hearing-controls": "Rheolyddion y gwrandawiad",
     "consultation-controls": "Rheolaethau Ymgynghori",
     "show-chat-window": "Dangos y rhestr negeseuon",
-    "hide-chat-window": "Cuddio’r rhestr negeseuon"
+    "hide-chat-window": "Cuddio’r rhestr negeseuon",
+    "leave-hearing": "Leave Hearing"
   },
   "judge-waiting-room": {
     "switch-to-main-screen": "Dychwelyd i'r brif sgrin",
@@ -624,7 +630,8 @@
       "suspended": "Rydym wedi hysbysu'r tîm gwrandawiadau fideo am hyn ac mi wnawn hefyd roi gwybod i'r cyfranogwyr eraill. Ffoniwch ni nawr ar <strong>{{phone}}</strong>.",
       "closed": "Mae'r ystafell ymgynghori ar gael am hyd at 30 munud ar ôl i'r gwrandawiad orffen. ",
       "consultation-room-will-close-at": "Bydd yr ystafell ymgynghori yn cau am ",
-      "warning": "Rhybudd"
+      "warning": "Rhybudd",
+      "in-session": "Mae aelod o staff y llys wedi agor y gwrandawiad"
     },
     "please-wait-while-we-connect-you": "Arhoswch tra byddwn yn eich cysylltu...",
     "hearing-is-being-recorded": {
@@ -636,7 +643,8 @@
     "buttons": {
       "start-video-hearing": "Dechrau'r gwrandawiad fideo",
       "enter-consultation-room": "Ymuno ag ystafell ymgynghori",
-      "resume-video-hearing": "Parhau â'r gwrandawiad fideo"
+      "resume-video-hearing": "Parhau â'r gwrandawiad fideo",
+      "join-hearing": "Ymuno â'r gwrandawiad "
     },
     "hearing-paused": "Gwrandawiad wedi'i atal dros dro",
     "hearing-suspended": "Gwrandawiad wedi'i ohirio",
@@ -727,7 +735,7 @@
     "connected": "Wedi cysylltu",
     "wingers": "Asgellwyr",
     "panel-members": "Aelodau'r panel",
-    "staff-members": "Aelodau'r staff",
+    "staff-member": "Aelod o staff",
     "participants": "Cyfranogwyr",
     "video-access-points": "Pwyntiau mynediad fideo",
     "observers": "Sylwebwyr",
@@ -812,6 +820,14 @@
     "cancel-close": "Cadw'r gwrandawiad ar agor",
     "close-hearing-label": "Cadarnhau cau'r gwrandawiad",
     "cancel-close-label": "Canslo cau'r gwrandawiad"
+  },
+  "confirm-leave-hearing-popup": {
+    "title": "You are about to leave this hearing",
+    "message": "Ensure the judge or another responsible officer is still present before leaving the hearing.",
+    "leave-hearing": "Leave hearing",
+    "leave-hearing-label": "Confirm leaving the hearing",
+    "cancel-leave": "Cancel",
+    "cancel-leave-label": "Cancel leaving the hearing"
   },
   "chat-panel": {
     "loading": "Wrthi'n llwytho...",

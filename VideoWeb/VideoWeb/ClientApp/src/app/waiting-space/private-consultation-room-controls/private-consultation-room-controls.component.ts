@@ -22,10 +22,11 @@ import { VideoCallService } from '../services/video-call.service';
         'showConsultationControls',
         'unreadMessageCount'
     ],
-    outputs: ['leaveConsultation', 'lockConsultation', 'togglePanel', 'changeDeviceToggle']
+    outputs: ['leaveConsultation', 'lockConsultation', 'togglePanel', 'changeDeviceToggle', 'leaveHearing']
 })
 export class PrivateConsultationRoomControlsComponent extends HearingControlsBaseComponent {
     showContextMenu = false;
+
     @Input() public canToggleParticipantsPanel: boolean;
     @Input() public isChatVisible: boolean;
 
@@ -48,5 +49,9 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
 
     canLeaveConsultation() {
         return this.participant?.status === ParticipantStatus.InConsultation;
+    }
+
+    leave(confirmation: boolean) {
+        super.leave(confirmation, this.participantService.participants);
     }
 }
