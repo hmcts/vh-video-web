@@ -708,8 +708,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             });
 
             // Assert
-            expect(videoControlServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(judgeParticipant, true);
-            expect(videoControlServiceSpy.restoreParticipantsSpotlight).toHaveBeenCalledTimes(nonJudgeParticipants.length + vmrs.length);
+            expect(videoControlCacheServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(judgeParticipant.id, true);
+            expect(videoControlServiceSpy.restoreParticipantsSpotlight).toHaveBeenCalledTimes(nonVmrParticipants.length + vmrs.length);
             nonJudgeParticipants.forEach(x => expect(videoControlServiceSpy.restoreParticipantsSpotlight).toHaveBeenCalledWith(x));
             vmrs.forEach(x => expect(videoControlServiceSpy.restoreParticipantsSpotlight).toHaveBeenCalledWith(x));
         });
