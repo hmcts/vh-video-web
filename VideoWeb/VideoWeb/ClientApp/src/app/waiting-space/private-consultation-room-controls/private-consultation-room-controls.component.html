@@ -311,5 +311,5 @@
 <app-confirm-leave-hearing-popup *ngIf='displayLeaveHearingPopup'
     (popupAnswered)='leave($event)'></app-confirm-leave-hearing-popup>
 
-<app-confirm-close-hearing-popup *ngIf='!isPrivateConsultation && isJudge && displayConfirmPopup'
+<app-confirm-close-hearing-popup *ngIf='canShowCloseHearingPopup'
     (popupAnswered)='close($event)'></app-confirm-close-hearing-popup>
