@@ -14,7 +14,7 @@ import { ConferenceService } from './conference/conference.service';
 import { EventsService } from './events.service';
 import { HearingLayoutService } from './hearing-layout.service';
 import { Logger } from './logging/logger-base';
-import HearingLayoutChanged from './models/hearing-layout-changed';
+import { HearingLayoutChanged } from './models/hearing-layout-changed';
 
 describe('HearingLayoutService', () => {
     let service: HearingLayoutService;

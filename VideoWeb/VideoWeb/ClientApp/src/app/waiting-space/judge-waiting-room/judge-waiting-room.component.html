@@ -11,7 +11,14 @@
           <div class="header-content-grid govuk-body">
             <div class="room-title">
               <h1 #roomTitleLabel class="room-title-label">{{ getCaseNameAndNumber() }}</h1>
-              <div *ngIf="hasCaseNameOverflowed" class="room-title-show-more" appTooltip [text]="getCaseNameAndNumber()" colour="grey" [isDesktopOnly]=false>
+              <div
+                *ngIf="hasCaseNameOverflowed"
+                class="room-title-show-more"
+                appTooltip
+                [text]="getCaseNameAndNumber()"
+                colour="grey"
+                [isDesktopOnly]="false"
+              >
                 (show more)
               </div>
             </div>
@@ -27,6 +34,7 @@
               (leaveConsultation)="leaveConsultation()"
               (togglePanel)="togglePanel($event)"
               (changeDeviceToggle)="showChooseCameraDialog()"
+              (leaveHearing)="leaveHearing()"
             >
             </app-private-consultation-room-controls>
           </div>
@@ -129,7 +137,7 @@
           <strong>{{ conference.case_number }}</strong>
         </td>
         <td class="govuk-table__cell hearing-details-col2-width">
-          {{ hearing.scheduledStartTime | translateDate : 'dd MMMM yyyy' }}
+          {{ hearing.scheduledStartTime | translateDate: 'dd MMMM yyyy' }}
           <span class="govuk-!-font-weight-bold">
             {{ hearing.scheduledStartTime | date: 'HH:mm' }} {{ 'judge-waiting-room.to' | translate }}
             {{ hearing.scheduledEndTime | date: 'HH:mm' }}
@@ -168,6 +176,12 @@
       [innerHTML]="'judge-waiting-room.hearing-messages.suspended' | translate: { phone: '0300 303 0655' }"
     ></p>
 
+    <p
+      class="govuk-body govuk-!-margin-bottom-3"
+      *ngIf="isHearingInSession()"
+      [innerHTML]="'judge-waiting-room.hearing-messages.in-session' | translate"
+    ></p>
+
     <div *ngIf="hearing.isClosed()">
       <p class="govuk-body govuk-!-margin-bottom-3" [innerHTML]="'judge-waiting-room.hearing-messages.closed' | translate"></p>
       <div class="govuk-warning-text">
@@ -204,6 +218,7 @@
       >
         {{ 'judge-waiting-room.buttons.start-video-hearing' | translate }}
       </button>
+
       <button
         [disabled]="!isParticipantInCorrectWaitingRoomState()"
         *ngIf="hearingPaused() || hearingSuspended()"
@@ -212,6 +227,16 @@
         (click)="displayConfirmStartPopup()"
       >
         {{ 'judge-waiting-room.buttons.resume-video-hearing' | translate }}
+      </button>
+      <button
+        [disabled]="!isParticipantInCorrectWaitingRoomState()"
+        id="join-hearing-button"
+        *ngIf="isHearingInSession()"
+        type="button"
+        class="govuk-button govuk-button--start govuk-!-margin-right-3 vh-btn-text"
+        (click)="joinHearingInSession()"
+      >
+        {{ 'judge-waiting-room.buttons.join-hearing' | translate }}
       </button>
       <button
         class="govuk-button govuk-button--bigblue vh-btn-text"
@@ -237,10 +262,7 @@
   </div>
 
   <div class="govuk-grid-column-one-third" [ngClass]="{ 'no-mass': showVideo }">
-    <app-judge-participant-status-list
-      [conference]="conference"
-    >
-    </app-judge-participant-status-list>
+    <app-judge-participant-status-list [conference]="conference"> </app-judge-participant-status-list>
   </div>
 </div>
 

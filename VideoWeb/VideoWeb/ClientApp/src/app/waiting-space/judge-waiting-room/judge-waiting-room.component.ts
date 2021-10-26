@@ -178,15 +178,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         if (conferenceStatus.newStatus === ConferenceStatus.InSession) {
             this.logger.info(`${this.loggerPrefixJudge} spotlighting judge as it is the start of the hearing`);
 
-            let participants = this.participantService.participants;
+            const participants = this.participantService.participants;
 
             if (conferenceStatus.oldStatus === ConferenceStatus.NotStarted) {
-                this.videoControlService.setSpotlightStatus(
-                    participants.find(p => p.role === Role.Judge),
-                    true
-                );
-
-                participants = participants.filter(participant => participant.role !== Role.Judge);
+                this.videoControlCacheService.setSpotlightStatus(participants.find(p => p.role === Role.Judge).id, true);
             }
 
             participants.forEach(participant => {
@@ -358,10 +353,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             status: this.conference.status
         });
 
-        this.conferenceStartedBy = this.participant.id;
         this.hearingLayoutService.currentLayout$.pipe(take(1)).subscribe(async layout => {
             try {
                 await this.videoCallService.startHearing(this.hearing.id, layout);
+                this.dualHostHasSignalledToJoinHearing = true;
             } catch (err) {
                 this.logger.error(`${this.loggerPrefixJudge} Failed to ${action} a hearing for conference`, err, {
                     conference: this.conferenceId,
@@ -392,6 +387,15 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     hearingPaused(): boolean {
         return this.conference.status === ConferenceStatus.Paused;
+    }
+
+    isHearingInSession(): boolean {
+        return this.conference.status === ConferenceStatus.InSession;
+    }
+
+    async joinHearingInSession() {
+        await this.videoCallService.joinHearingInSession(this.conferenceId, this.participant.id);
+        this.dualHostHasSignalledToJoinHearing = true;
     }
 
     initAudioRecordingInterval() {
@@ -469,5 +473,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         } else {
             this.leaveJudicialConsultation();
         }
+    }
+
+    leaveHearing() {
+        this.dualHostHasSignalledToJoinHearing = false;
     }
 }

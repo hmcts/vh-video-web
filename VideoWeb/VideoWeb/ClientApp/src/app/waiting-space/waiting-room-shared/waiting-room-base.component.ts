@@ -27,6 +27,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
+import { HearingLayoutChanged } from 'src/app/services/models/hearing-layout-changed';
 import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
@@ -58,7 +59,6 @@ export abstract class WaitingRoomBaseDirective {
     audioOnly: boolean;
     hearingStartingAnnounced: boolean;
     privateConsultationAccordianExpanded = false;
-
     loadingData: boolean;
     errorCount: number;
     hearing: Hearing;
@@ -87,6 +87,7 @@ export abstract class WaitingRoomBaseDirective {
     displayStartPrivateConsultationModal: boolean;
     displayJoinPrivateConsultationModal: boolean;
     conferenceStartedBy: string;
+    dualHostHasSignalledToJoinHearing = false;
 
     panelTypes = ['Participants', 'Chat'];
     panelStates = {
@@ -455,9 +456,17 @@ export abstract class WaitingRoomBaseDirective {
             })
         );
 
+        this.logger.debug('[WR] - Subscribing to participants update complete message');
         this.eventHubSubscription$.add(
             this.eventService.getParticipantsUpdated().subscribe(async participantsUpdatedMessage => {
                 this.handleParticipantsUpdatedMessage(participantsUpdatedMessage);
+            })
+        );
+
+        this.logger.debug('[WR] - Subscribing to hearing layout update complete message');
+        this.eventHubSubscription$.add(
+            this.eventService.getHearingLayoutChanged().subscribe(async hearingLayout => {
+                this.handleHearingLayoutUpdatedMessage(hearingLayout);
             })
         );
     }
@@ -984,6 +993,28 @@ export abstract class WaitingRoomBaseDirective {
         });
         this.participant = this.getLoggedParticipant();
     }
+
+    private handleHearingLayoutUpdatedMessage(hearingLayoutMessage: HearingLayoutChanged) {
+        this.logger.debug(`[WR] - Hearing layout changed message recieved`, hearingLayoutMessage);
+        if (!this.validateIsForConference(hearingLayoutMessage.conferenceId)) {
+            return;
+        }
+
+        if (!this.isHost()) {
+            return;
+        }
+        const participant = this.findParticipant(hearingLayoutMessage.changedById);
+        if (participant.id === this.getLoggedParticipant().id) {
+            return;
+        }
+
+        this.logger.debug(`[WR] - Hearing Layout Changed showing notification`, participant);
+        this.notificationToastrService.showHearingLayoutchanged(
+            participant,
+            this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
+        );
+    }
+
     protected validateIsForConference(conferenceId: string): boolean {
         if (conferenceId !== this.hearing.id) {
             this.logger.info(`${this.loggerPrefix} message not for current conference`);
@@ -1030,6 +1061,9 @@ export abstract class WaitingRoomBaseDirective {
             showingVideo: false,
             reason: ''
         };
+        if (this.dualHostHasSignalledToJoinHearing && !this.isHost()) {
+            this.dualHostHasSignalledToJoinHearing = false;
+        }
         if (!this.connected) {
             logPaylod.showingVideo = false;
             logPaylod.reason = 'Not showing video because not connecting to pexip node';
@@ -1039,6 +1073,7 @@ export abstract class WaitingRoomBaseDirective {
             this.isPrivateConsultation = false;
             return;
         }
+
         if (
             this.hearing.isInSession() &&
             !this.isOrHasWitnessLink() &&
@@ -1084,10 +1119,11 @@ export abstract class WaitingRoomBaseDirective {
         this.conferenceStartedBy = null;
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
+        this.dualHostHasSignalledToJoinHearing = false;
     }
 
     shouldCurrentUserJoinHearing(): boolean {
-        return this.conferenceStartedBy === this.participant.id || !this.isHost();
+        return !this.isHost() || this.dualHostHasSignalledToJoinHearing;
     }
 
     isHost(): boolean {
