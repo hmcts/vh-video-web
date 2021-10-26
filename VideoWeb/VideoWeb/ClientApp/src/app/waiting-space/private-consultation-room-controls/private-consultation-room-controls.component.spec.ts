@@ -500,6 +500,16 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             // Assert
             expect(result).toBeTrue();
         });
+        it('should show close hearing pop when click close button', () => {
+            // Arrange
+            spyOnProperty(component, 'isHost').and.returnValue(true);
+            component.displayConfirmPopup = true;
+            component.isPrivateConsultation = false;
+
+            // Assert
+            expect(component.isHost).toBeTrue();
+            expect(component.canShowCloseHearingPopup).toBeTrue();
+        });
 
         it('should return false when participant is null', () => {
             // Arrange
