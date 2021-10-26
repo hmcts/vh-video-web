@@ -4,9 +4,9 @@
     ".NETCoreApp,Version=v3.1": {
       "BookingsApi.Client": {
         "type": "Direct",
-        "requested": "[1.27.12, )",
-        "resolved": "1.27.12",
-        "contentHash": "yqGpvcnUUukgTSzqahqM6zsAx7EANDY5uSzWIknk9yH7+tp09/QkTHrW8GiGIYpnhLgUkiuKVGfDnNoDnzfHIw==",
+        "requested": "[1.28.1, )",
+        "resolved": "1.28.1",
+        "contentHash": "wS29EysW1/XCdzxyqLfES5+vD+FCyBvmBlFO7oG+G9PeOb4O7Y5l++j/Si26dAbQ4y606KgZs1K/WFXH9XKF0w==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
           "Newtonsoft.Json": "12.0.3"
@@ -260,9 +260,9 @@
       },
       "VH.AcceptanceTests.Common": {
         "type": "Direct",
-        "requested": "[1.21.60, )",
-        "resolved": "1.21.60",
-        "contentHash": "awYbKWaBxzTanSHf697uDcGL7XNIyDiOwbj2qXZUwGlA5QB5uDT5CHk9tj3CrD5MUVN4ZWOZJQ1Gj5J5TW07eQ==",
+        "requested": "[1.21.59, )",
+        "resolved": "1.21.59",
+        "contentHash": "Kqty3xRr9gns0OcNVTc1lf4Bl7kvcFjVDNQt/7hyxFWn28Da50SeRBVNqj52T7loMqmDejo910PQsvmg1xN7SA==",
         "dependencies": {
           "Appium.WebDriver": "4.3.1",
           "Azure.Storage.Blobs": "12.8.0",
@@ -304,9 +304,9 @@
       },
       "VideoApi.Client": {
         "type": "Direct",
-        "requested": "[1.27.12, )",
-        "resolved": "1.27.12",
-        "contentHash": "i0tvDjT1fizLPevmrlFhgx4oA/DLAQBmAjW6BM3LIC9ExaBeCrvyBJ3wUm6EYjwfuaUgfbqLqeemymgK/UM3LQ==",
+        "requested": "[1.28.0, )",
+        "resolved": "1.28.0",
+        "contentHash": "xTFugTvOffBJ96vy2kbiaMO894YQGSV5sniKtW5+B1oL8OSCuhzT+xGMkZV5s8euWmtx6SydvzzxkwQ7Sortfg==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
           "Newtonsoft.Json": "12.0.3"
