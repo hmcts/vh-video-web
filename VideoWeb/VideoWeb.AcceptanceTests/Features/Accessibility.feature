@@ -1,3 +1,4 @@
+@Smoketest
 Feature: Accessibility
 	In order to ensure video web is accessible to all users
 	As a service
