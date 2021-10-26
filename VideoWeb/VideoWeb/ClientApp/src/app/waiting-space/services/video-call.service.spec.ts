@@ -51,10 +51,13 @@ describe('VideoCallService', () => {
         apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
             'startOrResumeVideoHearing',
             'pauseVideoHearing',
+            'suspendVideoHearing',
+            'leaveHearing',
             'endVideoHearing',
             'callParticipant',
             'dismissParticipant',
-            'getParticipantRoomForParticipant'
+            'getParticipantRoomForParticipant',
+            'joinHearingInSession'
         ]);
 
         userMediaService = jasmine.createSpyObj<UserMediaService>(
@@ -230,6 +233,21 @@ describe('VideoCallService', () => {
         expect(apiClient.pauseVideoHearing).toHaveBeenCalledWith(conferenceId);
     });
 
+    it('should make api call to suspend hearing', async () => {
+        apiClient.suspendVideoHearing.and.returnValue(of());
+        const conferenceId = Guid.create().toString();
+        await service.suspendHearing(conferenceId);
+        expect(apiClient.suspendVideoHearing).toHaveBeenCalledWith(conferenceId);
+    });
+
+    it('should make api call to leave hearing', async () => {
+        apiClient.leaveHearing.and.returnValue(of());
+        const conferenceId = Guid.create().toString();
+        const participantId = Guid.create().toString();
+        await service.leaveHearing(conferenceId, participantId);
+        expect(apiClient.leaveHearing).toHaveBeenCalledWith(conferenceId, participantId);
+    });
+
     it('should make api end call on end hearing', async () => {
         apiClient.endVideoHearing.and.returnValue(of());
         const conferenceId = Guid.create().toString();
@@ -243,6 +261,14 @@ describe('VideoCallService', () => {
         const witnessId = Guid.create().toString();
         await service.callParticipantIntoHearing(conferenceId, witnessId);
         expect(apiClient.callParticipant).toHaveBeenCalledWith(conferenceId, witnessId);
+    });
+
+    it('makes api to join a video hearing currently in session', async () => {
+        apiClient.joinHearingInSession.and.returnValue(of());
+        const conferenceId = Guid.create().toString();
+        const witnessId = Guid.create().toString();
+        await service.joinHearingInSession(conferenceId, witnessId);
+        expect(apiClient.joinHearingInSession).toHaveBeenCalledWith(conferenceId, witnessId);
     });
 
     it('should make api dismiss witness on dismiss witness', async () => {
