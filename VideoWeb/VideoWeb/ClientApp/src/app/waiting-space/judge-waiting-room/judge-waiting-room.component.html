@@ -62,14 +62,13 @@
 
         <div class="video-wrapper">
           <video
+            appForcePlayVideo
             id="incomingFeedJudgePrivate"
             #incomingFeed
             (playing)="updateVideoStreamMuteStatus()"
             [srcObject]="presentationStream && !streamInMain ? presentationStream : stream"
-            autoplay
             height="auto"
             class="incomingFeedPrivate"
-            playsinline
           >
             {{ 'judge-waiting-room.browser-support-message' | translate }}
           </video>
@@ -82,12 +81,11 @@
             colour="grey"
           >
             <video
+              appForcePlayVideo
               [srcObject]="presentationStream && !streamInMain ? stream : presentationStream"
-              autoplay
               height="auto"
               poster="/assets/images/empty_crest.jpg"
               class="fill-container"
-              playsinline
             >
               {{ 'judge-waiting-room.browser-support-message' | translate }}
             </video>

@@ -130,7 +130,7 @@
             <span class='far fa-users'></span>
         </div>
         <div class='show-for-medium-only'>
-            
+
             <ng-container *ngIf='isHost && !isPrivateConsultation'>
                 <div class="flexBar"></div>
 
@@ -139,7 +139,7 @@
                     (click)="displayLeaveHearingPopup = !displayLeaveHearingPopup">
                     <span class='fad fa-sign-out-alt fa-flip-horizontal leave-hearing-button'></span>
                 </div>
-                
+
                 <div class="flexBar"></div>
             </ng-container>
 
@@ -239,7 +239,7 @@
                     (click)="displayLeaveHearingPopup = !displayLeaveHearingPopup">
                     <span class='fad fa-sign-out-alt fa-flip-horizontal leave-hearing-button'></span>
                 </div>
-    
+
                 <div class="flexBar"></div>
             </ng-container>
 
@@ -275,8 +275,8 @@
 </app-self-view>
 
 <div class="outgoing-present-video-container">
-    <video [ngClass]="{ 'vh-fade-in': this.screenShareStream, 'vh-fade-out': !this.screenShareStream }"
-        id="outgoingFeedPresentVideo" [muted]="true" [srcObject]="this.screenShareStream" autoplay playsinline height="auto">
+    <video appForcePlayVideo [ngClass]="{ 'vh-fade-in': this.screenShareStream, 'vh-fade-out': !this.screenShareStream }"
+        id="outgoingFeedPresentVideo" [muted]="true" [srcObject]="this.screenShareStream" height="auto">
         {{ 'private-consultation-room-controls.browser-support' | translate }}
     </video>
 </div>
