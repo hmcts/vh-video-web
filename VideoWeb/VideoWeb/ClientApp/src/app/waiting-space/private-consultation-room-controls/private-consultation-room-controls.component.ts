@@ -42,6 +42,9 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         super(videoCallService, eventService, deviceTypeService, logger, participantService, translateService, userMediaService);
         this.canToggleParticipantsPanel = true;
     }
+    get canShowCloseHearingPopup(): boolean {
+        return !this.isPrivateConsultation && this.isHost && this.displayConfirmPopup;
+    }
 
     canCloseOrPauseHearing() {
         return this.participant?.status === ParticipantStatus.InHearing;
