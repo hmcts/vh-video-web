@@ -846,4 +846,114 @@ describe('NotificationToastrService', () => {
             expect(toastComponentInstance.vhToastOptions.color).toBe(expectedInHearingColor);
         });
     });
+
+    describe('showHearingLayoutChanged', () => {
+        let mockToast: ActiveToast<VhToastComponent>;
+        const expectedToastId = 2;
+        const testParticipant = new ParticipantResponse();
+        testParticipant.display_name = 'TestParticipantDisplayName';
+
+        const translatedNameMessage = 'TranslatedNameMessage';
+
+        const translatedMessage = 'TranslatedMessage';
+
+        const expectedButtonTranslationString = 'notification-toastr.hearing-layout-changed.dismiss';
+        const expectedInHearingColor = 'white';
+        const expectedNotInHearingColor = 'black';
+
+        beforeEach(() => {
+            toastrService.show.calls.reset();
+            toastrService.remove.calls.reset();
+            translateServiceSpy.instant.calls.reset();
+            mockToast = {
+                toastId: expectedToastId,
+                toastRef: {
+                    componentInstance: {}
+                }
+            } as ActiveToast<VhToastComponent>;
+
+            translateServiceSpy.instant
+                .withArgs('notification-toastr.hearing-layout-changed.message', jasmine.any(Object))
+                .and.returnValue(translatedMessage);
+
+            translateServiceSpy.instant
+                .withArgs('notification-toastr.hearing-layout-changed.title', {
+                    name: testParticipant.name
+                })
+                .and.returnValue(translatedNameMessage);
+        });
+
+        it('should call toastr.show with the correct parameters', () => {
+            toastrService.show.and.returnValue(mockToast);
+
+            // Act
+            service.showHearingLayoutchanged(testParticipant, true);
+
+            // Assert
+            expect(toastrService.show).toHaveBeenCalledOnceWith('', '', {
+                timeOut: 0,
+                extendedTimeOut: 0,
+                tapToDismiss: false,
+                toastComponent: VhToastComponent
+            });
+        });
+
+        it('should have a button to close the toast', () => {
+            // Arrange
+            const expectedHoverColor = 'green';
+            toastrService.show.and.returnValue(mockToast);
+
+            // Act
+            const toastComponentInstance = service.showHearingLayoutchanged(testParticipant, true);
+
+            // Assert
+            expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(1);
+            expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy();
+            expect(toastComponentInstance.vhToastOptions.buttons[0].hoverColour).toBe(expectedHoverColor);
+            expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedButtonTranslationString);
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedButtonTranslationString);
+        });
+
+        it('should call toastr.remove with the toast id when the button action is triggered', () => {
+            // Arrange
+            toastrService.show.and.returnValue(mockToast);
+
+            const toastComponentInstance = service.showHearingLayoutchanged(testParticipant, true);
+            const button = toastComponentInstance.vhToastOptions.buttons[0];
+
+            // Act
+            button.action();
+
+            // Assert
+            expect(toastrService.remove).toHaveBeenCalledOnceWith(expectedToastId);
+        });
+
+        it('should NOT call toastr.remove with the toast id when the NO action is triggered', () => {
+            // Arrange
+            toastrService.show.and.returnValue(mockToast);
+            const toastComponentInstance = service.showHearingLayoutchanged(testParticipant, true);
+
+            // Act
+            toastComponentInstance.vhToastOptions.onNoAction();
+
+            // Assert
+            expect(toastrService.remove).not.toHaveBeenCalled();
+        });
+
+        it('should have the color black when NOT in hearing', () => {
+            // Act
+            const toastComponentInstance = service.showHearingLayoutchanged(testParticipant, false);
+
+            // Assert
+            expect(toastComponentInstance.vhToastOptions.color).toBe(expectedNotInHearingColor);
+        });
+
+        it('should have the color white when in hearing', () => {
+            // Act
+            const toastComponentInstance = service.showHearingLayoutchanged(testParticipant, true);
+
+            // Assert
+            expect(toastComponentInstance.vhToastOptions.color).toBe(expectedInHearingColor);
+        });
+    });
 });
