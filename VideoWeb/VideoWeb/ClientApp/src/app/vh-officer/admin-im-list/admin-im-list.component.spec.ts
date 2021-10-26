@@ -1,63 +1,64 @@
-import { ConferenceResponseVho, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { ConferenceResponseVho, ParticipantContactDetailsResponseVho, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ErrorService } from 'src/app/services/error.service';
 import { Hearing } from 'src/app/shared/models/hearing';
+import { ParticipantStatusReader } from 'src/app/shared/models/participant-status-reader';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { AdminImListComponent } from './admin-im-list.component';
 
 describe('AdminImListComponent', () => {
+    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
+    let errorServiceSpy: jasmine.SpyObj<ErrorService>;
+    const eventsService = eventsServiceSpy;
+    let participantStatusReaderSpy: jasmine.SpyObj<ParticipantStatusReader>;
+    let participants: ParticipantContactDetailsResponseVho[];
     let component: AdminImListComponent;
     let conference: ConferenceResponseVho;
     let hearing: Hearing;
 
+    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
+        'getParticipantsWithContactDetailsByConferenceId',
+        'raiseSelfTestFailureEvent'
+    ]);
+    errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', [
+        'goToServiceError',
+        'handleApiError',
+        'returnHomeIfUnauthorised'
+    ]);
+
+    participantStatusReaderSpy = jasmine.createSpyObj<ParticipantStatusReader>(
+        'ParticipantStatusReader',
+        ['getStatusAsText', 'getStatusAsTextForHost'],
+        { inAnotherHearingText: 'In Another Hearing' }
+    );
+
     beforeEach(() => {
+        participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(
+            '174DFEFB-8EF2-4093-801D-621DF852021D',
+            'MyVenue'
+        );
+        videoWebServiceSpy.getParticipantsWithContactDetailsByConferenceId.and.returnValue(Promise.resolve(participants));
+
+        component = new AdminImListComponent(
+            videoWebServiceSpy,
+            errorServiceSpy,
+            eventsService,
+            new MockLogger(),
+            participantStatusReaderSpy
+        );
         conference = new ConferenceTestData().getConferenceDetailNow();
-        component = new AdminImListComponent();
         hearing = new Hearing(conference);
         component.hearing = hearing;
     });
 
-    it('should populate list of participants to IM on init', () => {
+    it('should initalise data', fakeAsync(() => {
         component.ngOnInit();
-        expect(component.imParticipants.length).toBe(hearing.participants.length);
-    });
-
-    it('should populate only judge to IM on init', () => {
-        component.initImParticipants(true);
-        expect(component.imParticipants.length).toBe(1);
-    });
-
-    it('should populate list of participants to IM on init', () => {
-        component.initImParticipants(false);
-        expect(component.imParticipants.length).toBe(hearing.participants.length);
-    });
-
-    it('should update and emit selected participant on select', () => {
-        component.currentParticipant = null;
-        spyOn(component.selectedParticipant, 'emit');
-        const participant = hearing.participants[0];
-
-        component.selectParticipant(participant);
-
-        expect(component.currentParticipant).toBe(participant);
-        expect(component.selectedParticipant.emit).toHaveBeenCalledWith(participant);
-    });
-
-    const isParticipantAvailableTestCases = [
-        { role: Role.Judge, status: ParticipantStatus.Available, expected: true },
-        { role: Role.Judge, status: ParticipantStatus.InHearing, expected: true },
-        { role: Role.Judge, status: ParticipantStatus.InConsultation, expected: false },
-        { role: Role.Judge, status: ParticipantStatus.Disconnected, expected: false },
-        { role: Role.Individual, status: ParticipantStatus.Available, expected: true },
-        { role: Role.Individual, status: ParticipantStatus.InHearing, expected: false },
-        { role: Role.Individual, status: ParticipantStatus.InConsultation, expected: false },
-        { role: Role.Individual, status: ParticipantStatus.Disconnected, expected: false }
-    ];
-
-    isParticipantAvailableTestCases.forEach(test => {
-        it(`should return availability as ${test.expected} when participant is ${test.role} and is ${test.status}`, () => {
-            const participant = hearing.participants[0];
-            participant.base.role = test.role;
-            participant.base.status = test.status;
-            expect(component.isParticipantAvailable(participant)).toBe(test.expected);
-        });
-    });
+        flushMicrotasks();
+        expect(component.participants).not.toBeNull();
+        expect(component.participants.length).toBe(4);
+        expect(component.loadingData).toBeFalsy();
+    }));
 });
