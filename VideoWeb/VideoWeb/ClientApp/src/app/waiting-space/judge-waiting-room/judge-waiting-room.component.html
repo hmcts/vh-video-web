@@ -154,7 +154,7 @@
       {{ getConferenceStatusText() }}
     </h1>
 
-    <app-select-hearing-layout *ngIf="!hearing.isClosed() && !hearing.isInSession()" [conference]="conference"></app-select-hearing-layout>
+    <app-select-hearing-layout *ngIf="showHearingLayoutSelection()" [conference]="conference"></app-select-hearing-layout>
 
     <h2 class="govuk-heading-m" *ngIf="isNotStarted()">{{ 'judge-waiting-room.is-everyone-connected' | translate }}</h2>
 

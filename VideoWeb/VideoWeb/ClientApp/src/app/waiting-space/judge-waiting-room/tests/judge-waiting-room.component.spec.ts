@@ -308,6 +308,31 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.isPaused()).toBeFalsy();
     });
 
+    it('showHearingLayoutSelection returns false when hearing is closed', () => {
+        component.conference.status = ConferenceStatus.Closed;
+        expect(component.showHearingLayoutSelection()).toBe(false);
+    });
+
+    it('showHearingLayoutSelection returns true when hearing has not started', () => {
+        component.conference.status = ConferenceStatus.NotStarted;
+        expect(component.showHearingLayoutSelection()).toBe(true);
+    });
+
+    it('showHearingLayoutSelection returns true when hearing is suspended', () => {
+        component.conference.status = ConferenceStatus.Suspended;
+        expect(component.showHearingLayoutSelection()).toBe(true);
+    });
+
+    it('showHearingLayoutSelection returns true when hearing is paused', () => {
+        component.conference.status = ConferenceStatus.Paused;
+        expect(component.showHearingLayoutSelection()).toBe(true);
+    });
+
+    it('showHearingLayoutSelection returns false when hearing is in session', () => {
+        component.conference.status = ConferenceStatus.InSession;
+        expect(component.showHearingLayoutSelection()).toBe(false);
+    });
+
     it('should return true when conference is not started', async () => {
         component.conference.status = ConferenceStatus.NotStarted;
         expect(component.isNotStarted()).toBeTruthy();
