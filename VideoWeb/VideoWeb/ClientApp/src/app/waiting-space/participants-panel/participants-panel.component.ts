@@ -168,12 +168,14 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         if (!participant) {
             return;
         }
+        participant.updateParticipant(participant.isMicRemoteMuted(), message.handRaised, participant.hasSpotlight());
+
         this.logger.debug(`${this.loggerPrefix} Participant hand raised status has been updated`, {
             conference: this.conferenceId,
             participant: participant.id,
+            participants: this.participants,
             handRaised: message.handRaised
         });
-        participant.updateParticipant(participant.isMicRemoteMuted(), message.handRaised, participant.hasSpotlight());
     }
 
     handleParticipantMediaStatusChange(message: ParticipantMediaStatusMessage) {
@@ -181,16 +183,18 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         if (!participant) {
             return;
         }
-        this.logger.debug(`${this.loggerPrefix} Participant device status has been updated`, {
-            conference: this.conferenceId,
-            participant: participant.id,
-            mediaStatus: message.mediaStatus
-        });
         participant.updateParticipantDeviceStatus(
             message.mediaStatus.is_local_audio_muted,
             message.mediaStatus.is_local_video_muted,
             message.participantId
         );
+
+        this.logger.debug(`${this.loggerPrefix} Participant device status has been updated`, {
+            conference: this.conferenceId,
+            participant: participant.id,
+            participants: this.participants,
+            mediaStatus: message.mediaStatus
+        });
     }
 
     handleHearingTransferChange(message: HearingTransfer) {
@@ -198,12 +202,14 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         if (!participant) {
             return;
         }
+        participant.updateTransferringInStatus(message.transferDirection === TransferDirection.In, message.participantId);
+
         this.logger.debug(`${this.loggerPrefix} Participant status has been updated`, {
             conference: this.conferenceId,
             participant: participant.id,
+            participants: this.participants,
             transferDirection: message.transferDirection
         });
-        participant.updateTransferringInStatus(message.transferDirection === TransferDirection.In, message.participantId);
     }
 
     handleUpdatedConferenceVideoCall(updatedConference: ConferenceUpdated): void {
@@ -239,6 +245,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.logger.debug(`${this.loggerPrefix} Participant has been updated in video call`, {
             conference: this.conferenceId,
             participant: participant.id,
+            participants: this.participants,
             pexipParticipant: participant.pexipId,
             isRemoteMuted: participant.isMicRemoteMuted(),
             handRaised: participant.hasHandRaised(),
@@ -251,13 +258,16 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         if (!participant) {
             return;
         }
+
+        participant.updateStatus(message.status, message.participantId);
+        participant.updateTransferringInStatus(false, message.participantId);
+
         this.logger.debug(`${this.loggerPrefix} Participant status has been updated`, {
             conference: this.conferenceId,
             participant: participant.id,
+            participants: this.participants,
             status: message.status
         });
-        participant.updateStatus(message.status, message.participantId);
-        participant.updateTransferringInStatus(false, message.participantId);
     }
 
     handleEndpointStatusChange(message: EndpointStatusMessage) {
