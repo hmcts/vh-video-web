@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
@@ -41,7 +40,6 @@ namespace VideoWeb.Controllers
         [HttpGet("{conferenceId}/participants")]
         [SwaggerOperation(OperationId = "GetVideoEndpointsForConference")]
         [ProducesResponseType(typeof(List<VideoEndpointResponse>), (int)HttpStatusCode.OK)]
-        [Authorize("Host")]
         public async Task<IActionResult> GetVideoEndpointsForConferenceAsync(Guid conferenceId)
         {
             try
