@@ -28,6 +28,7 @@ import { ParticipantUpdated } from '../models/video-call-models';
 import { PrivateConsultationRoomControlsComponent } from '../private-consultation-room-controls/private-consultation-room-controls.component';
 import { HearingControlsBaseComponent } from './hearing-controls-base.component';
 import { globalConference } from '../waiting-room-shared/tests/waiting-room-base-setup';
+import { CaseTypeGroup } from '../models/case-type-group';
 
 describe('HearingControlsBaseComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -701,5 +702,133 @@ describe('HearingControlsBaseComponent', () => {
         spyOn(component.changeDeviceToggle, 'emit');
         component.changeDeviceSelected();
         expect(component.changeDeviceToggle.emit).toHaveBeenCalled();
+    });
+
+    describe('leave', () => {
+        beforeEach(() => {
+            videoCallService.dismissParticipantFromHearing.calls.reset();
+            videoCallService.suspendHearing.calls.reset();
+        });
+
+        it('should not display the leave hearing popup', () => {
+            component.displayLeaveHearingPopup = true;
+            component.leave(false, []);
+            expect(component.displayLeaveHearingPopup).toBeFalsy();
+        });
+
+        it('should not make any api calls if confirmation was cancelled', () => {
+            component.leave(false, []);
+            expect(videoCallService.dismissParticipantFromHearing).not.toHaveBeenCalled();
+            expect(videoCallService.suspendHearing).not.toHaveBeenCalled();
+        });
+
+        it('should dismiss participant if confirmed leaving and another host is present', done => {
+            component.displayLeaveHearingPopup = true;
+            const participantsModel = [];
+            spyOn(component, 'isAnotherHostInHearing').and.returnValue(true);
+            videoCallServiceSpy.leaveHearing.and.returnValue(Promise.resolve());
+            component.leaveHearing.subscribe(event => {
+                done();
+            });
+
+            component.leave(true, participantsModel);
+
+            expect(videoCallService.leaveHearing).toHaveBeenCalledOnceWith(component.conferenceId, component.participant.id);
+        });
+
+        it('should suspend the hearing if confirmed leaving and another host is not present', () => {
+            spyOn(component, 'isAnotherHostInHearing').and.returnValue(false);
+
+            component.leave(true, []);
+
+            expect(videoCallService.suspendHearing).toHaveBeenCalledOnceWith(component.conferenceId);
+        });
+    });
+
+    describe('isAnotherHostInHearing', () => {
+        beforeEach(() => {});
+
+        it('returns false if there is no host', () => {
+            const participants = [
+                new ParticipantModel(
+                    '7879c48a-f513-4d3b-bb1b-151831427507',
+                    'Participant Name',
+                    'DisplayName',
+                    `Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507`,
+                    CaseTypeGroup.NONE,
+                    Role.Individual,
+                    HearingRole.LITIGANT_IN_PERSON,
+                    false,
+                    null,
+                    null,
+                    ParticipantStatus.Available,
+                    null
+                )
+            ];
+
+            const isAnotherHostInHearing = component.isAnotherHostInHearing(participants);
+
+            expect(isAnotherHostInHearing).toBeFalse();
+        });
+
+        it('returns false if there is no other host', () => {
+            const participants = [
+                new ParticipantModel(
+                    '7879c48a-f513-4d3b-bb1b-151831427507',
+                    'Participant Name',
+                    'DisplayName',
+                    `Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507`,
+                    CaseTypeGroup.JUDGE,
+                    Role.Judge,
+                    HearingRole.JUDGE,
+                    false,
+                    null,
+                    null,
+                    ParticipantStatus.Available,
+                    null
+                )
+            ];
+
+            const isAnotherHostInHearing = component.isAnotherHostInHearing(participants);
+
+            expect(isAnotherHostInHearing).toBeFalse();
+        });
+
+        it('returns false if another host is not in hearing', () => {
+            const participants = [
+                new ParticipantModel(
+                    '7879c48a-f513-4d3b-bb1b-151831427507',
+                    'Participant Name',
+                    'DisplayName',
+                    `Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507`,
+                    CaseTypeGroup.JUDGE,
+                    Role.Judge,
+                    HearingRole.JUDGE,
+                    false,
+                    null,
+                    null,
+                    ParticipantStatus.Available,
+                    null
+                ),
+                new ParticipantModel(
+                    '240e3ffb-65e6-45a7-a491-0e60b9524831',
+                    'Participant Name',
+                    'DisplayName',
+                    `Role;DisplayName;240e3ffb-65e6-45a7-a491-0e60b9524831`,
+                    CaseTypeGroup.STAFF_MEMBER,
+                    Role.StaffMember,
+                    HearingRole.STAFF_MEMBER,
+                    false,
+                    null,
+                    null,
+                    ParticipantStatus.Available,
+                    null
+                )
+            ];
+
+            const isAnotherHostInHearing = component.isAnotherHostInHearing(participants);
+
+            expect(isAnotherHostInHearing).toBeFalse();
+        });
     });
 });

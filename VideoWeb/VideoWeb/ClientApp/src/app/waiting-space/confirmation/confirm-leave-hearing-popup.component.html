@@ -1,0 +1,31 @@
+<div id="confirm-leave-hearing-modal" class="vh-popup-overlay">
+  <div class="modal-content">
+    <h1 class="govuk-heading-m">{{'confirm-leave-hearing-popup.title' | translate}}</h1>
+
+    <p class="govuk-body govuk-!-margin-bottom-9">
+      {{'confirm-leave-hearing-popup.message' | translate}}
+    </p>
+
+    <button
+      id="btnConfirmLeave"
+      class="govuk-button govuk-!-margin-right-1"
+      type="button"
+      data-module="govuk-button"
+      [attr.aria-label]="'confirm-leave-hearing-popup.leave-hearing-label' | translate"
+      (click)="respondWithYes()"
+    >
+    {{'confirm-leave-hearing-popup.leave-hearing' | translate}}
+    </button>
+
+    <button
+      id="btnCancelLeave"
+      class="govuk-button govuk-button--secondary"
+      type="button"
+      data-module="govuk-button"
+      [attr.aria-label]="'confirm-leave-hearing-popup.cancel-leave-label' | translate"
+      (click)="respondWithNo()"
+    >
+    {{'confirm-leave-hearing-popup.cancel-leave' | translate}}
+    </button>
+  </div>
+</div>
