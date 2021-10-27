@@ -325,7 +325,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         return this.hearing.isPaused() || this.hearing.isSuspended();
     }
 
-    showHearingLayoutSelection(): boolean {
+    get canShowHearingLayoutSelection() {
         return !this.hearing.isClosed() && !this.hearing.isInSession();
     }
 
