@@ -325,6 +325,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         return this.hearing.isPaused() || this.hearing.isSuspended();
     }
 
+    get canShowHearingLayoutSelection() {
+        return !this.hearing.isClosed() && !this.hearing.isInSession();
+    }
+
     displayConfirmStartPopup() {
         this.logger.debug(`${this.loggerPrefixJudge} Display start hearing confirmation popup`, {
             conference: this.conferenceId,
