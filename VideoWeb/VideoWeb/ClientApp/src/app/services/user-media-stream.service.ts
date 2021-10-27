@@ -7,6 +7,7 @@ import { UserMediaService } from './user-media.service';
 import { skip, take, takeUntil } from 'rxjs/operators';
 import { MediaStreamService } from './media-stream.service';
 import { mustProvideAMicrophoneDeviceError } from './errors/must-provide-a-microphone-device.error';
+import { AudioOnlyImageService } from './audio-only-image.service';
 
 @Injectable({
     providedIn: 'root'
@@ -15,6 +16,7 @@ export class UserMediaStreamService {
     private readonly loggerPrefix = '[UserMediaStreamService] -';
 
     private currentStream: MediaStream;
+    private audioOnlyImageStream: MediaStream;
 
     private isAudioOnly = false;
 
@@ -54,7 +56,12 @@ export class UserMediaStreamService {
         return this.streamModifiedSubject.asObservable();
     }
 
-    constructor(private logger: Logger, private userMediaService: UserMediaService, private mediaStreamService: MediaStreamService) {
+    constructor(
+        private logger: Logger,
+        private userMediaService: UserMediaService,
+        private mediaStreamService: MediaStreamService,
+        private audioOnlyImageService: AudioOnlyImageService
+    ) {
         this.logger.debug(
             `${this.loggerPrefix} Constructor called. Attempting to get active devices from userMediaService to initialise the stream.`
         );
@@ -118,8 +125,38 @@ export class UserMediaStreamService {
             });
 
             this.activeCameraStream?.getVideoTracks().forEach(track => this.currentStream.removeTrack(track));
-            this.activeCameraStreamSubject.next(null);
+
+            this.audioOnlyImageService
+                .getAudioOnlyImageStream()
+                .pipe(take(1))
+                .subscribe(stream => {
+                    this.audioOnlyImageStream = stream;
+
+                    this.logger.debug(`${this.loggerPrefix} adding audio only image tracks.`, {
+                        audioOnly: this.isAudioOnly,
+                        activeCamera: this.activeCameraStream,
+                        audioOnlyImage: this.audioOnlyImageStream,
+                        currentStream: this.currentStream
+                    });
+
+                    this.audioOnlyImageStream.getTracks().forEach(track => this.currentStream.addTrack(track));
+
+                    this.activeCameraStreamSubject.next(this.audioOnlyImageStream);
+                    this.streamModifiedSubject.next();
+                });
         } else {
+            this.logger.debug(`${this.loggerPrefix} removing audio only image tracks.`, {
+                audioOnly: this.isAudioOnly,
+                activeCamera: this.activeCameraStream,
+                audioOnlyImage: this.audioOnlyImageStream,
+                currentStream: this.currentStream
+            });
+            this.audioOnlyImageStream.getTracks().forEach(track => {
+                this.currentStream.removeTrack(track);
+                track.stop();
+            });
+            this.audioOnlyImageStream = null;
+
             this.logger.debug(`${this.loggerPrefix} adding active camera tracks.`, {
                 audioOnly: this.isAudioOnly,
                 activeCamera: this.activeCameraStream,
@@ -128,14 +165,14 @@ export class UserMediaStreamService {
 
             this.activeCameraStream?.getVideoTracks().forEach(track => this.currentStream.addTrack(track));
             this.activeCameraStreamSubject.next(this.activeCameraStream);
+            this.streamModifiedSubject.next();
         }
-
-        this.streamModifiedSubject.next();
 
         this.logger.info(`${this.loggerPrefix} Audio only update complete.`, {
             audioOnly: this.isAudioOnly,
             activeCamera: this.activeCameraStream,
-            currentStream: this.currentStream
+            currentStream: this.currentStream,
+            currentStreamTracks: this.currentStream.getTracks().map(x => x.label)
         });
     }
 

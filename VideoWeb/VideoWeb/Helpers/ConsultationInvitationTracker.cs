@@ -32,7 +32,7 @@ namespace VideoWeb.Helpers
                 return Guid.Empty;
             
             var consultationInvitation = ConsultationInvitation.Create(requestedParticipantId, roomLabel, requestedParticipant.LinkedParticipants.Select(linkedParticipant => linkedParticipant.LinkedId));
-            await _consultationInvitationCache.Write(consultationInvitation);
+            await _consultationInvitationCache.WriteToCache(consultationInvitation);
             return consultationInvitation.InvitationId;
         }
 
@@ -41,30 +41,30 @@ namespace VideoWeb.Helpers
             if (invitationId == Guid.Empty)
                 return null;
             
-            return await _consultationInvitationCache.Read(invitationId);
+            return await _consultationInvitationCache.ReadFromCache(invitationId);
         }
 
         public async Task UpdateConsultationResponse(Guid invitationId, Guid participantId, ConsultationAnswer answer)
         {
-            var invitation = await _consultationInvitationCache.Read(invitationId);
+            var invitation = await _consultationInvitationCache.ReadFromCache(invitationId);
 
             if (invitation == null)
                 return;
 
             invitation.InvitedParticipantResponses[participantId] = answer;
 
-            await _consultationInvitationCache.Write(invitation);
+            await _consultationInvitationCache.WriteToCache(invitation);
         }
 
         public async Task<bool> HaveAllParticipantsAccepted(Guid invitationId)
         {
-            var invitation = await _consultationInvitationCache.Read(invitationId);
+            var invitation = await _consultationInvitationCache.ReadFromCache(invitationId);
             return invitation?.HaveAllAccepted ?? false;
         }
 
         public async Task<bool> HaveAllParticipantsResponded(Guid invitationId)
         {
-            var invitation = await _consultationInvitationCache.Read(invitationId);
+            var invitation = await _consultationInvitationCache.ReadFromCache(invitationId);
             return invitation?.HaveAllResponded ?? false;
         }
     }

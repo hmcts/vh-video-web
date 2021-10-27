@@ -27,11 +27,13 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
+import { HearingLayoutChanged } from 'src/app/services/models/hearing-layout-changed';
 import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
+import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { Room } from 'src/app/shared/models/room';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { HearingRole } from '../models/hearing-role-model';
@@ -57,7 +59,6 @@ export abstract class WaitingRoomBaseDirective {
     audioOnly: boolean;
     hearingStartingAnnounced: boolean;
     privateConsultationAccordianExpanded = false;
-
     loadingData: boolean;
     errorCount: number;
     hearing: Hearing;
@@ -85,6 +86,8 @@ export abstract class WaitingRoomBaseDirective {
     displayDeviceChangeModal: boolean;
     displayStartPrivateConsultationModal: boolean;
     displayJoinPrivateConsultationModal: boolean;
+    conferenceStartedBy: string;
+    dualHostHasSignalledToJoinHearing = false;
 
     panelTypes = ['Participants', 'Chat'];
     panelStates = {
@@ -428,7 +431,7 @@ export abstract class WaitingRoomBaseDirective {
 
         this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub reconnects`);
         this.eventHubSubscription$.add(
-            this.eventService.getServiceReconnected().subscribe(async () => {
+            this.eventService.getServiceConnected().subscribe(async () => {
                 this.logger.info(`${this.loggerPrefix} EventHub re-connected`, {
                     conference: this.conferenceId,
                     participant: this.participant.id
@@ -453,28 +456,17 @@ export abstract class WaitingRoomBaseDirective {
             })
         );
 
+        this.logger.debug('[WR] - Subscribing to participants update complete message');
         this.eventHubSubscription$.add(
             this.eventService.getParticipantsUpdated().subscribe(async participantsUpdatedMessage => {
-                this.logger.debug(`[WR] - Participants Updated`, participantsUpdatedMessage.participants);
-                const newParticipants = participantsUpdatedMessage.participants.filter(
-                    x => !this.conference.participants.find(y => y.id === x.id)
-                );
-                newParticipants.forEach(participant => {
-                    this.logger.debug(`[WR] - Participant added, showing notification`, participant);
-                    this.notificationToastrService.showParticipantAdded(
-                        participant,
-                        this.participant.status === ParticipantStatus.InHearing ||
-                            this.participant.status === ParticipantStatus.InConsultation
-                    );
-                });
+                this.handleParticipantsUpdatedMessage(participantsUpdatedMessage);
+            })
+        );
 
-                this.conference.participants = [...participantsUpdatedMessage.participants].map(participant => {
-                    const currentParticipant = this.conference.participants.find(x => x.id === participant.id);
-                    participant.current_room = currentParticipant ? currentParticipant.current_room : null;
-                    participant.status = currentParticipant ? currentParticipant.status : ParticipantStatus.NotSignedIn;
-                    return participant;
-                });
-                this.participant = this.getLoggedParticipant();
+        this.logger.debug('[WR] - Subscribing to hearing layout update complete message');
+        this.eventHubSubscription$.add(
+            this.eventService.getHearingLayoutChanged().subscribe(async hearingLayout => {
+                this.handleHearingLayoutUpdatedMessage(hearingLayout);
             })
         );
     }
@@ -976,6 +968,53 @@ export abstract class WaitingRoomBaseDirective {
         this.toggleVideoStreamMute(false);
     }
 
+    private handleParticipantsUpdatedMessage(participantsUpdatedMessage: ParticipantsUpdatedMessage) {
+        this.logger.debug(`[WR] - Participants updated message recieved`, participantsUpdatedMessage.participants);
+
+        if (!this.validateIsForConference(participantsUpdatedMessage.conferenceId)) {
+            return;
+        }
+
+        const newParticipants = participantsUpdatedMessage.participants.filter(x => !this.conference.participants.find(y => y.id === x.id));
+
+        newParticipants.forEach(participant => {
+            this.logger.debug(`[WR] - Participant added, showing notification`, participant);
+            this.notificationToastrService.showParticipantAdded(
+                participant,
+                this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
+            );
+        });
+
+        this.conference.participants = [...participantsUpdatedMessage.participants].map(participant => {
+            const currentParticipant = this.conference.participants.find(x => x.id === participant.id);
+            participant.current_room = currentParticipant ? currentParticipant.current_room : null;
+            participant.status = currentParticipant ? currentParticipant.status : ParticipantStatus.NotSignedIn;
+            return participant;
+        });
+        this.participant = this.getLoggedParticipant();
+    }
+
+    private handleHearingLayoutUpdatedMessage(hearingLayoutMessage: HearingLayoutChanged) {
+        this.logger.debug(`[WR] - Hearing layout changed message recieved`, hearingLayoutMessage);
+        if (!this.validateIsForConference(hearingLayoutMessage.conferenceId)) {
+            return;
+        }
+
+        if (!this.isHost()) {
+            return;
+        }
+        const participant = this.findParticipant(hearingLayoutMessage.changedById);
+        if (participant.id === this.getLoggedParticipant().id) {
+            return;
+        }
+
+        this.logger.debug(`[WR] - Hearing Layout Changed showing notification`, participant);
+        this.notificationToastrService.showHearingLayoutchanged(
+            participant,
+            this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
+        );
+    }
+
     protected validateIsForConference(conferenceId: string): boolean {
         if (conferenceId !== this.hearing.id) {
             this.logger.info(`${this.loggerPrefix} message not for current conference`);
@@ -1022,6 +1061,9 @@ export abstract class WaitingRoomBaseDirective {
             showingVideo: false,
             reason: ''
         };
+        if (this.dualHostHasSignalledToJoinHearing && !this.isHost()) {
+            this.dualHostHasSignalledToJoinHearing = false;
+        }
         if (!this.connected) {
             logPaylod.showingVideo = false;
             logPaylod.reason = 'Not showing video because not connecting to pexip node';
@@ -1032,7 +1074,12 @@ export abstract class WaitingRoomBaseDirective {
             return;
         }
 
-        if (this.hearing.isInSession() && !this.isOrHasWitnessLink() && !this.isQuickLinkParticipant()) {
+        if (
+            this.hearing.isInSession() &&
+            !this.isOrHasWitnessLink() &&
+            !this.isQuickLinkParticipant() &&
+            this.shouldCurrentUserJoinHearing()
+        ) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because hearing is in session';
             this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
@@ -1069,8 +1116,18 @@ export abstract class WaitingRoomBaseDirective {
         logPaylod.reason = 'Not showing video because hearing is not in session and user is not in consultation';
         this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
         this.showVideo = false;
+        this.conferenceStartedBy = null;
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
+        this.dualHostHasSignalledToJoinHearing = false;
+    }
+
+    shouldCurrentUserJoinHearing(): boolean {
+        return !this.isHost() || this.dualHostHasSignalledToJoinHearing;
+    }
+
+    isHost(): boolean {
+        return this.participant.role === Role.Judge || this.participant.role === Role.StaffMember;
     }
 
     showChooseCameraDialog() {

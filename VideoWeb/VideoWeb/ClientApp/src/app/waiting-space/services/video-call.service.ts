@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
 import { skip, take, takeUntil } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ApiClient, HearingLayout, SharedParticipantRoom, StartHearingRequest } from 'src/app/services/clients/api-client';
@@ -55,6 +55,7 @@ export class VideoCallService {
 
     pexipAPI: PexipClient;
     localOutgoingStream: any;
+    streamModifiedSubscription: Subscription;
 
     constructor(
         private logger: Logger,
@@ -86,9 +87,9 @@ export class VideoCallService {
         this.pexipAPI.screenshare_fps = 30;
 
         this.userMediaService.initialise();
-        this.userMediaStreamService.currentStream$
-            .pipe(take(1))
-            .subscribe(currentStream => (this.pexipAPI.user_media_stream = currentStream));
+        this.logger.debug(`${this.loggerPrefix} attempting to setup user media stream`);
+        this.pexipAPI.user_media_stream = await this.userMediaStreamService.currentStream$.pipe(take(1)).toPromise();
+        this.logger.debug(`${this.loggerPrefix} set user media stream`);
 
         this.pexipAPI.onSetup = this.handleSetup.bind(this);
 
@@ -161,14 +162,19 @@ export class VideoCallService {
 
     private handleConnect(stream: MediaStream | URL) {
         if (this.renegotiating || this.justRenegotiated) {
-            this.logger.warn(`${this.loggerPrefix} Not handling pexip connect event as it was during a renegotation`);
+            this.logger.warn(
+                `${this.loggerPrefix} Not initialising heartbeat or subscribing to stream modified as it was during a renegotation`
+            );
             this.justRenegotiated = false;
-            return;
+        } else {
+            this.kinlyHeartbeatService.initialiseHeartbeat(this.pexipAPI);
+
+            if (!this.streamModifiedSubscription) {
+                this.streamModifiedSubscription = this.userMediaStreamService.streamModified$
+                    .pipe(takeUntil(this.hasDisconnected$))
+                    .subscribe(() => this.renegotiateCall());
+            }
         }
-
-        this.kinlyHeartbeatService.initialiseHeartbeat(this.pexipAPI);
-
-        this.userMediaStreamService.streamModified$.pipe(takeUntil(this.hasDisconnected$)).subscribe(() => this.renegotiateCall());
 
         this.onConnectedSubject.next(new ConnectedCall(stream));
     }
@@ -197,6 +203,10 @@ export class VideoCallService {
     }
 
     makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number) {
+        this.logger.info(`${this.loggerPrefix} make pexip call`, {
+            pexipNode: pexipNode
+        });
+        this.stopPresentation();
         this.initCallTag();
         this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, null);
     }
@@ -204,7 +214,10 @@ export class VideoCallService {
     disconnectFromCall() {
         if (this.pexipAPI) {
             this.logger.info(`${this.loggerPrefix} Disconnecting from pexip node.`);
+            this.stopPresentation();
             this.pexipAPI.disconnect();
+            this.hasDisconnected$.next();
+            this.hasDisconnected$.complete();
             this.kinlyHeartbeatService.stopHeartbeat();
         } else {
             throw new Error(`${this.loggerPrefix} Pexip Client has not been initialised.`);
@@ -336,18 +349,6 @@ export class VideoCallService {
         this.pexipAPI.clearAllBuzz();
     }
 
-    updatePreferredLayout(conferenceId: string, layout: HearingLayout) {
-        this.logger.info(`${this.loggerPrefix} Updating preferred layout`, { conference: conferenceId, layout });
-        const record = this.preferredLayoutCache.get();
-        record[conferenceId] = layout;
-        this.preferredLayoutCache.set(record);
-    }
-
-    getPreferredLayout(conferenceId: string) {
-        const record = this.preferredLayoutCache.get();
-        return record[conferenceId];
-    }
-
     startHearing(conferenceId: string, layout: HearingLayout): Promise<void> {
         this.logger.info(`${this.loggerPrefix} Attempting to start hearing`, { conference: conferenceId, layout });
         const request = new StartHearingRequest({
@@ -361,9 +362,27 @@ export class VideoCallService {
         return this.apiClient.pauseVideoHearing(conferenceId).toPromise();
     }
 
+    suspendHearing(conferenceId: string): Promise<void> {
+        this.logger.info(`${this.loggerPrefix} Attempting to suspend hearing`, { conference: conferenceId });
+        return this.apiClient.suspendVideoHearing(conferenceId).toPromise();
+    }
+
+    leaveHearing(conferenceId: string, participantId: string): Promise<void> {
+        this.logger.info(`${this.loggerPrefix} Attempting to suspend hearing`, { conference: conferenceId });
+        return this.apiClient.leaveHearing(conferenceId, participantId).toPromise();
+    }
+
     endHearing(conferenceId: string): Promise<void> {
         this.logger.info(`${this.loggerPrefix} Attempting to end hearing`, { conference: conferenceId });
         return this.apiClient.endVideoHearing(conferenceId).toPromise();
+    }
+
+    async joinHearingInSession(conferenceId: string, participantId: string) {
+        this.logger.info(`${this.loggerPrefix} Attempting to call participant into hearing`, {
+            conference: conferenceId,
+            participant: participantId
+        });
+        return this.apiClient.joinHearingInSession(conferenceId, participantId).toPromise();
     }
 
     async callParticipantIntoHearing(conferenceId: string, participantId: string) {

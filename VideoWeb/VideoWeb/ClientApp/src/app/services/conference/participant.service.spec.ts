@@ -1235,40 +1235,4 @@ describe('ParticipantService', () => {
             expect(result).toBeNull();
         }));
     });
-
-    describe('getParticipantOrRoomById', () => {
-        it('should return a participant if the ID is a Guid', () => {
-            // Arrange
-            const participantId = Guid.create().toString();
-            participantOne.id = participantId.toString();
-            const participants = asParticipantModelsFromUserResponse([participantOne, participantTwo]);
-            spyOnProperty(sut, 'participants').and.returnValue(participants);
-
-            const vmrs = [VirtualMeetingRoomModel.fromRoomSummaryResponse(vmrParticipantOne.interpreter_room)];
-            spyOnProperty(sut, 'virtualMeetingRooms').and.returnValue(vmrs);
-
-            // Act
-            const result = sut.getParticipantOrVirtualMeetingRoomById(participantId);
-
-            // Assert
-            expect(result).toBe(participants[0]);
-        });
-
-        it('should return a virtual meeting room if the ID is a VMR', () => {
-            // Arrange
-            const participantId = Guid.create().toString();
-            participantOne.id = participantId.toString();
-            const participants = asParticipantModelsFromUserResponse([participantOne, participantTwo]);
-            spyOnProperty(sut, 'participants').and.returnValue(participants);
-
-            const vmrs = [VirtualMeetingRoomModel.fromRoomSummaryResponse(vmrParticipantOne.interpreter_room)];
-            spyOnProperty(sut, 'virtualMeetingRooms').and.returnValue(vmrs);
-
-            // Act
-            const result = sut.getParticipantOrVirtualMeetingRoomById(vmrs[0].id);
-
-            // Assert
-            expect(result).toBe(vmrs[0]);
-        });
-    });
 });

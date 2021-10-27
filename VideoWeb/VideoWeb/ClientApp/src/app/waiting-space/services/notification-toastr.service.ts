@@ -339,6 +339,43 @@ export class NotificationToastrService {
         return toast.toastRef.componentInstance as VhToastComponent;
     }
 
+    showHearingLayoutchanged(participant: ParticipantResponse, inHearing: boolean = false): VhToastComponent {
+        const messageBody = this.translateService.instant('notification-toastr.hearing-layout-changed.message');
+
+        let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${this.translateService.instant(
+            'notification-toastr.hearing-layout-changed.title',
+            {
+                name: participant.name
+            }
+        )}</span>`;
+        message += `<span class="toast-content toast-body">${messageBody}</span>`;
+
+        const toast = this.toastr.show('', '', {
+            timeOut: 0,
+            extendedTimeOut: 0,
+            tapToDismiss: false,
+            toastComponent: VhToastComponent
+        });
+        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
+            color: inHearing ? 'white' : 'black',
+            htmlBody: message,
+            onNoAction: async () => {
+                this.logger.info(`${this.loggerPrefix} No action called on hearing layout change alert`);
+            },
+            buttons: [
+                {
+                    label: this.translateService.instant('notification-toastr.hearing-layout-changed.dismiss'),
+                    hoverColour: 'green',
+                    action: async () => {
+                        this.toastr.remove(toast.toastId);
+                    }
+                }
+            ]
+        };
+
+        return toast.toastRef.componentInstance as VhToastComponent;
+    }
+
     private translateHearingRole(hearingRole: string) {
         return this.translateService.instant('hearing-role.' + this.stringToTranslateId(hearingRole));
     }

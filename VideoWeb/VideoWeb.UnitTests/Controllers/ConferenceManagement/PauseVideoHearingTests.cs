@@ -28,13 +28,13 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithUsername(participant.Username)
                 .WithRole(AppRoles.CitizenRole).Build();
 
-            Controller = SetupControllerWithClaims(user);
+            var Controller = SetupControllerWithClaims(user);
 
             var result = await Controller.PauseVideoHearingAsync(TestConference.Id);
             var typedResult = (UnauthorizedObjectResult) result;
             typedResult.Should().NotBeNull();
 
-            VideoApiClientMock.Verify(x => x.PauseVideoHearingAsync(TestConference.Id), Times.Never);
+            _mocker.Mock<IVideoApiClient>().Verify(x => x.PauseVideoHearingAsync(TestConference.Id), Times.Never);
         }
 
         [Test]
@@ -44,13 +44,13 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithUsername("notforconference@hmcts.net")
                 .WithRole(AppRoles.JudgeRole).Build();
 
-            Controller = SetupControllerWithClaims(user);
+            var Controller = SetupControllerWithClaims(user);
             
             var result = await Controller.PauseVideoHearingAsync(TestConference.Id);
             var typedResult = (UnauthorizedObjectResult) result;
             typedResult.Should().NotBeNull();
             
-            VideoApiClientMock.Verify(x => x.PauseVideoHearingAsync(TestConference.Id), Times.Never);
+            _mocker.Mock<IVideoApiClient>().Verify(x => x.PauseVideoHearingAsync(TestConference.Id), Times.Never);
         }
 
         [Test]
@@ -61,12 +61,12 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithUsername(participant.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
             
-            Controller = SetupControllerWithClaims(user);
+            var Controller = SetupControllerWithClaims(user);
             
             var responseMessage = "Could not pause a video hearing";
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", (int) HttpStatusCode.InternalServerError,
                 responseMessage, null, default, null);
-            VideoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.PauseVideoHearingAsync(TestConference.Id))
                 .ThrowsAsync(apiException);
             
@@ -85,13 +85,13 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithUsername(participant.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
             
-            Controller = SetupControllerWithClaims(user);
+            var Controller = SetupControllerWithClaims(user);
             
             var result = await Controller.PauseVideoHearingAsync(TestConference.Id);
             var typedResult = (AcceptedResult) result;
             typedResult.Should().NotBeNull();
             
-            VideoApiClientMock.Verify(x => x.PauseVideoHearingAsync(TestConference.Id), Times.Once);
+            _mocker.Mock<IVideoApiClient>().Verify(x => x.PauseVideoHearingAsync(TestConference.Id), Times.Once);
         }
     }
 }

@@ -99,10 +99,14 @@ namespace VideoWeb.UnitTests.Mappings
                 {
                     participantResponse.TiledDisplayName.StartsWith("JUDGE").Should().BeTrue();
                 }
+                if (participantResponse.Role == Role.StaffMember)
+                {
+                    participantResponse.TiledDisplayName.StartsWith("CLERK").Should().BeTrue();
+                }
 
                 if (position[0].StartsWith("CIVILIAN") || position[0].StartsWith("WITNESS"))
                 {
-                    tiledNames.Count(x => x.StartsWith(position[0])).Should().Be(6);
+                    tiledNames.Count(x => x.StartsWith(position[0])).Should().Be(5);
                 }
             }
         }

@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Camera } from '@mediapipe/camera_utils';
 import { Results, SelfieSegmentation } from '@mediapipe/selfie_segmentation';
-import { Observable, ReplaySubject, Subject } from 'rxjs';
+import { from, Observable, of, ReplaySubject, Subject } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { browsers } from '../shared/browser.constants';
 import { ConfigService } from './api/config.service';
 import { DeviceTypeService } from './device-type.service';
 import { Logger } from './logging/logger-base';
 import { BackgroundFilter } from './models/background-filter';
-import { SessionStorage } from './session-storage';
 
 @Injectable({
     providedIn: 'root'
@@ -18,9 +18,6 @@ export class VideoFilterService {
     private _canvasWidth = 1280;
     private _canvasHeight = 720;
     private _enableVideoFilters: boolean;
-
-    private readonly preferredFilterCache: SessionStorage<BackgroundFilter>;
-    readonly PREFERRED_FILTER_KEY = 'vh.preferred.filter';
 
     private _onFilterChanged = new Subject<BackgroundFilter | null>();
     get onFilterChanged$(): Observable<BackgroundFilter | null> {
@@ -73,21 +70,14 @@ export class VideoFilterService {
                 this.blurRadius = settings.blur_radius;
             }
         });
-        this.preferredFilterCache = new SessionStorage(this.PREFERRED_FILTER_KEY);
 
-        if (!this.preferredFilterCache.get()) {
-            this.filterOn = false;
-            this.activeFilter = null;
-        } else {
-            this.activeFilter = this.preferredFilterCache.get();
-            this.filterOn = true;
-        }
-
+        this.filterOn = false;
+        this.activeFilter = null;
         this.filterOnSubject.next(this.filterOn);
 
         this.selfieSegmentation = new SelfieSegmentation({
             locateFile: file => {
-                return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1.1629494320/${file}`;
+                return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1.1632777926/${file}`;
             }
         });
         this.selfieSegmentation.setOptions({
@@ -97,17 +87,17 @@ export class VideoFilterService {
         this.selfieSegmentation.onResults(results => this.onSelfieSegmentationResults(results));
     }
 
-    initFilterFromMediaStream(stream: MediaStream) {
+    initFilterFromMediaStream(stream: MediaStream): Observable<void> {
         if (this.videoElement && (this.videoElement?.srcObject as MediaStream)?.id !== stream.id) {
             this.logger.debug(`${this.loggerPrefix} camera stream has changed`);
             this.updateCameraStream(stream);
         }
         if (this.canvasStream) {
-            return;
+            this.logger.debug(`${this.loggerPrefix} canvas already exists returning`);
+            return of(void 0);
         }
 
-        this._canvasWidth = stream.getVideoTracks()[0].getSettings().width;
-        this._canvasHeight = stream.getVideoTracks()[0].getSettings().height;
+        this.updateCanvasSize(stream);
 
         this.logger.debug(`${this.loggerPrefix} initialising stream for filter`);
         this.videoElement = document.createElement('video');
@@ -130,14 +120,27 @@ export class VideoFilterService {
                     this.logger.error(`${this.loggerPrefix} failed to send image to self segmentation mask`, err);
                 }
             },
-            width: this._canvasWidth,
-            height: this._canvasHeight
+            width: 1280,
+            height: 720
         });
-        camera.start();
+
+        return from(camera.start()).pipe(
+            tap(() => {
+                this.videoElement.srcObject = stream;
+            })
+        );
     }
 
     updateCameraStream(stream: MediaStream) {
         this.videoElement.srcObject = stream;
+        this.canvasElement.width = this._canvasWidth;
+        this.canvasElement.height = this._canvasHeight;
+    }
+
+    updateCanvasSize(stream: MediaStream) {
+        const settings = stream.getVideoTracks()[0].getSettings();
+        this._canvasWidth = settings.width;
+        this._canvasHeight = settings.height;
     }
 
     startFilteredStream(): MediaStream {
@@ -148,13 +151,11 @@ export class VideoFilterService {
     updateFilter(filter: BackgroundFilter | null) {
         this.logger.debug(`${this.loggerPrefix} Updating filter to ${filter}`);
         if (filter) {
-            this.preferredFilterCache.set(filter);
             this.activeFilter = filter;
             this.filterOn = true;
             this.logger.debug(`${this.loggerPrefix} Filter on`);
             this._onFilterChanged.next(filter);
         } else {
-            this.preferredFilterCache.clear();
             this.activeFilter = null;
             this.filterOn = false;
             this.logger.debug(`${this.loggerPrefix} Filter off`);
@@ -167,9 +168,32 @@ export class VideoFilterService {
     }
 
     doesSupportVideoFiltering() {
+        if (!this._enableVideoFilters) {
+            this.logger.info(`${this.loggerPrefix} Custom backgrounds not supported - feature is disabled`);
+            return false;
+        }
+
         const allowedBrowser = !this.deviceTypeService.getBrowserName().includes(browsers.Safari);
-        return this._enableVideoFilters && allowedBrowser && this.deviceTypeService.isDesktop();
+        if (!allowedBrowser) {
+            this.logger.info(`${this.loggerPrefix} Custom backgrounds not supported - Browser is not supported for video filtering`);
+            return false;
+        }
+
+        if (!this.isWebGL2Supported()) {
+            this.logger.info(`${this.loggerPrefix} Custom backgrounds not supported - WebGl2 is not supported on client`);
+            return false;
+        }
+
+        if (!this.deviceTypeService.isDesktop()) {
+            this.logger.info(`${this.loggerPrefix} Custom backgrounds not supported - Client is not a desktop`);
+            return false;
+        }
+
+        this.logger.info(`${this.loggerPrefix} Custom backgrounds supported`);
+        return true;
     }
+
+    private isWebGL2Supported = () => !!document.createElement('canvas').getContext('webgl2');
 
     private onSelfieSegmentationResults(results: Results): void {
         // Draw the overlays.
@@ -214,7 +238,17 @@ export class VideoFilterService {
     private applyVirtualBackgroundEffect() {
         const imageObject = this.getImageForBackground();
         this.canvasCtx.imageSmoothingEnabled = true;
-        this.canvasCtx.drawImage(imageObject, 0, 0, this.canvasElement.width, this.canvasElement.height);
+        this.canvasCtx.drawImage(
+            imageObject,
+            0,
+            0,
+            imageObject.width,
+            imageObject.height,
+            0,
+            0,
+            this.canvasElement.width,
+            this.canvasElement.height
+        );
     }
 
     private getImageForBackground(): HTMLImageElement {

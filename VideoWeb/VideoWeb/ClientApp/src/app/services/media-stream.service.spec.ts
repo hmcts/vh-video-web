@@ -1,6 +1,6 @@
 import { fakeAsync, flush } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { ReplaySubject } from 'rxjs';
+import { of, ReplaySubject } from 'rxjs';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { ErrorService } from './error.service';
@@ -15,7 +15,9 @@ describe('MediaStreamService', () => {
             video: {
                 deviceId: {
                     exact: device.deviceId
-                }
+                },
+                width: 1280,
+                height: 720
             }
         } as MediaStreamConstraints;
     };
@@ -169,6 +171,7 @@ describe('MediaStreamService', () => {
                 // Arrange
                 const resolvedStream = new MediaStream();
                 mediaDevicesSpy.getUserMedia.and.resolveTo(resolvedStream);
+                videoFilterStreamServiceSpy.initFilterFromMediaStream.and.returnValue(of(void 0));
                 videoFilterStreamServiceSpy.startFilteredStream.and.returnValue(filterStream);
 
                 filterOnSubject.next(true);

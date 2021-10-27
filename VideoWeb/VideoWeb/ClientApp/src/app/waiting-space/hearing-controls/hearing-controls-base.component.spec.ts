@@ -27,6 +27,8 @@ import { HearingRole } from '../models/hearing-role-model';
 import { ParticipantUpdated } from '../models/video-call-models';
 import { PrivateConsultationRoomControlsComponent } from '../private-consultation-room-controls/private-consultation-room-controls.component';
 import { HearingControlsBaseComponent } from './hearing-controls-base.component';
+import { globalConference } from '../waiting-room-shared/tests/waiting-room-base-setup';
+import { CaseTypeGroup } from '../models/case-type-group';
 
 describe('HearingControlsBaseComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -61,6 +63,7 @@ describe('HearingControlsBaseComponent', () => {
     const logger: Logger = new MockLogger();
 
     const testData = new VideoCallTestData();
+    let conference: ConferenceResponse;
 
     let participantServiceSpy: jasmine.SpyObj<ParticipantService>;
 
@@ -72,7 +75,7 @@ describe('HearingControlsBaseComponent', () => {
 
         participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
             'ParticipantService',
-            ['getParticipantOrVirtualMeetingRoomById'],
+            [],
             ['loggedInParticipant$', 'onParticipantSpotlightStatusChanged$']
         );
         const loggedInParticipantSubject = new BehaviorSubject<ParticipantModel>(
@@ -93,6 +96,7 @@ describe('HearingControlsBaseComponent', () => {
             translateService,
             userMediaServiceSpy
         );
+        conference = new ConferenceTestData().getConferenceNow();
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;
         component.isPrivateConsultation = false;
@@ -102,6 +106,21 @@ describe('HearingControlsBaseComponent', () => {
 
     afterEach(() => {
         component.ngOnDestroy();
+    });
+    it('should return true for staff member', () => {
+        component.participant = conference.participants.find(x => x.role === Role.StaffMember);
+
+        expect(component.isHost).toBe(true);
+    });
+    it('should return true for judge', () => {
+        component.participant = conference.participants.find(x => x.role === Role.Judge);
+
+        expect(component.isHost).toBe(true);
+    });
+    it('should return true for individual', () => {
+        component.participant = conference.participants.find(x => x.role === Role.Individual);
+
+        expect(component.isHost).toBe(false);
     });
 
     describe('on audio only changed', () => {
@@ -551,6 +570,16 @@ describe('HearingControlsBaseComponent', () => {
         expect(videoCallService.toggleMute).toHaveBeenCalledTimes(1);
     });
 
+    it('should reset mute on countdown complete for staffmember', () => {
+        videoCallService.toggleMute.calls.reset();
+        component.audioMuted = true;
+        component.participant = gloalConference.participants.filter(x => x.role === Role.StaffMember)[0];
+
+        hearingCountdownCompleteSubjectMock.next(gloalConference.id);
+
+        expect(videoCallService.toggleMute).toHaveBeenCalledTimes(1);
+    });
+
     it('should not reset mute on countdown complete for another hearing', () => {
         videoCallService.toggleMute.calls.reset();
         component.audioMuted = true;
@@ -630,7 +659,6 @@ describe('HearingControlsBaseComponent', () => {
             HearingRole.INTERPRETER,
             HearingRole.JUDGE,
             HearingRole.MACKENZIE_FRIEND,
-            HearingRole.OBSERVER,
             HearingRole.PANEL_MEMBER,
             HearingRole.PROSECUTION,
             HearingRole.PROSECUTION_ADVOCATE,
@@ -649,7 +677,7 @@ describe('HearingControlsBaseComponent', () => {
             });
         });
 
-        const nonAllowedHearingRoles = [HearingRole.WITNESS];
+        const nonAllowedHearingRoles = [HearingRole.WITNESS, HearingRole.OBSERVER];
         nonAllowedHearingRoles.forEach(hearingRole => {
             it(`returns "false" when device is a desktop device and user has the '${hearingRole}' HearingRole`, () => {
                 deviceTypeService.isDesktop.and.returnValue(true);
@@ -674,5 +702,133 @@ describe('HearingControlsBaseComponent', () => {
         spyOn(component.changeDeviceToggle, 'emit');
         component.changeDeviceSelected();
         expect(component.changeDeviceToggle.emit).toHaveBeenCalled();
+    });
+
+    describe('leave', () => {
+        beforeEach(() => {
+            videoCallService.dismissParticipantFromHearing.calls.reset();
+            videoCallService.suspendHearing.calls.reset();
+        });
+
+        it('should not display the leave hearing popup', () => {
+            component.displayLeaveHearingPopup = true;
+            component.leave(false, []);
+            expect(component.displayLeaveHearingPopup).toBeFalsy();
+        });
+
+        it('should not make any api calls if confirmation was cancelled', () => {
+            component.leave(false, []);
+            expect(videoCallService.dismissParticipantFromHearing).not.toHaveBeenCalled();
+            expect(videoCallService.suspendHearing).not.toHaveBeenCalled();
+        });
+
+        it('should dismiss participant if confirmed leaving and another host is present', done => {
+            component.displayLeaveHearingPopup = true;
+            const participantsModel = [];
+            spyOn(component, 'isAnotherHostInHearing').and.returnValue(true);
+            videoCallServiceSpy.leaveHearing.and.returnValue(Promise.resolve());
+            component.leaveHearing.subscribe(event => {
+                done();
+            });
+
+            component.leave(true, participantsModel);
+
+            expect(videoCallService.leaveHearing).toHaveBeenCalledOnceWith(component.conferenceId, component.participant.id);
+        });
+
+        it('should suspend the hearing if confirmed leaving and another host is not present', () => {
+            spyOn(component, 'isAnotherHostInHearing').and.returnValue(false);
+
+            component.leave(true, []);
+
+            expect(videoCallService.suspendHearing).toHaveBeenCalledOnceWith(component.conferenceId);
+        });
+    });
+
+    describe('isAnotherHostInHearing', () => {
+        beforeEach(() => {});
+
+        it('returns false if there is no host', () => {
+            const participants = [
+                new ParticipantModel(
+                    '7879c48a-f513-4d3b-bb1b-151831427507',
+                    'Participant Name',
+                    'DisplayName',
+                    `Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507`,
+                    CaseTypeGroup.NONE,
+                    Role.Individual,
+                    HearingRole.LITIGANT_IN_PERSON,
+                    false,
+                    null,
+                    null,
+                    ParticipantStatus.Available,
+                    null
+                )
+            ];
+
+            const isAnotherHostInHearing = component.isAnotherHostInHearing(participants);
+
+            expect(isAnotherHostInHearing).toBeFalse();
+        });
+
+        it('returns false if there is no other host', () => {
+            const participants = [
+                new ParticipantModel(
+                    '7879c48a-f513-4d3b-bb1b-151831427507',
+                    'Participant Name',
+                    'DisplayName',
+                    `Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507`,
+                    CaseTypeGroup.JUDGE,
+                    Role.Judge,
+                    HearingRole.JUDGE,
+                    false,
+                    null,
+                    null,
+                    ParticipantStatus.Available,
+                    null
+                )
+            ];
+
+            const isAnotherHostInHearing = component.isAnotherHostInHearing(participants);
+
+            expect(isAnotherHostInHearing).toBeFalse();
+        });
+
+        it('returns false if another host is not in hearing', () => {
+            const participants = [
+                new ParticipantModel(
+                    '7879c48a-f513-4d3b-bb1b-151831427507',
+                    'Participant Name',
+                    'DisplayName',
+                    `Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507`,
+                    CaseTypeGroup.JUDGE,
+                    Role.Judge,
+                    HearingRole.JUDGE,
+                    false,
+                    null,
+                    null,
+                    ParticipantStatus.Available,
+                    null
+                ),
+                new ParticipantModel(
+                    '240e3ffb-65e6-45a7-a491-0e60b9524831',
+                    'Participant Name',
+                    'DisplayName',
+                    `Role;DisplayName;240e3ffb-65e6-45a7-a491-0e60b9524831`,
+                    CaseTypeGroup.STAFF_MEMBER,
+                    Role.StaffMember,
+                    HearingRole.STAFF_MEMBER,
+                    false,
+                    null,
+                    null,
+                    ParticipantStatus.Available,
+                    null
+                )
+            ];
+
+            const isAnotherHostInHearing = component.isAnotherHostInHearing(participants);
+
+            expect(isAnotherHostInHearing).toBeFalse();
+        });
     });
 });

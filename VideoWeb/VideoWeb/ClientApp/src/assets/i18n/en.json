@@ -256,7 +256,9 @@
     "sign-into-the-conference": "Sign into the conference",
     "select": "Select",
     "not-ready-to-start": "Not ready to start",
-    "conference-status-heading": "Status/Action"
+    "conference-status-heading": "Status/Action",
+    "staff-member": "Staff Member",
+    "staff-members": "Staff Members"
   },
   "judge-self-test": {
     "please-wait-to-be-connected": "Please wait to be connected...",
@@ -344,7 +346,7 @@
     "unavailable": "Unavailable",
     "wingers": "Wingers",
     "panel-members": "Panel members",
-    "staff-members": "Staff members",
+    "staff-member": "Staff member",
     "participants": "Participants",
     "observers": "Observers",
     "video-access-points": "Video access points",
@@ -398,7 +400,7 @@
     "cancel": "Cancel",
     "wingers": "Wingers",
     "panel-members": "Panel members",
-    "staff-members": "Staff members",
+    "staff-member": "Staff member",
     "participants": "Participants",
     "video-access-points": "Video access points",
     "observers": "Observers",
@@ -428,12 +430,14 @@
       "suspended": "The video hearings team has been alerted and we're informing the participants. Please call us now on <strong>{{phone}}</strong>.",
       "closed": "The consultation room is available for up to 2 hours after the hearing has finished.",
       "warning": "Warning",
-      "consultation-room-will-close-at": "The consultation room will close at"
+      "consultation-room-will-close-at": "The consultation room will close at",
+      "in-session": "A member of court staff has opened the hearing"
     },
     "buttons": {
       "start-video-hearing": "Start video hearing",
       "resume-video-hearing": "Resume video hearing",
-      "enter-consultation-room": "Enter consultation room"
+      "enter-consultation-room": "Enter consultation room",
+      "join-hearing": "Join the hearing"
     },
     "warning": "Warning",
     "please-wait-while-we-connect-you": "Please wait while we connect you...",
@@ -616,8 +620,10 @@
     "change-camera-mic": "Change your camera and microphone",
     "context-menu": "Open Menu",
     "hearing-controls": "Hearing controls",
+    "consultation-controls": "Consultation controls",
     "show-chat-window": "Show messages list",
-    "hide-chat-window": "Hide messages list"
+    "hide-chat-window": "Hide messages list",
+    "leave-hearing": "Leave Hearing"
   },
   "chat-panel": {
     "heading": "VH Officer messages",
@@ -649,6 +655,7 @@
     "expert": "Expert",
     "interpreter": "Interpreter",
     "judge": "Judge",
+    "staff-member": "Staff Member",
     "litigant-in-person": "Litigant in person",
     "litigation-friend": "Litigation friend",
     "macKenzie-friend": "MacKenzie friend",
@@ -730,6 +737,7 @@
     "panelmember": "PanelMember",
     "none": "None",
     "judge": "Judge",
+    "staffmember": "Staff Member",
     "applicant": "Applicant",
     "panel member": "Panel Member",
     "defendant": "Defendant",
@@ -830,6 +838,14 @@
     "close-hearing-label": "Confirm closing the hearing",
     "cancel-close": "Keep hearing open",
     "cancel-close-label": "Cancel closing the hearing"
+  },
+  "confirm-leave-hearing-popup": {
+    "title": "You are about to leave this hearing",
+    "message": "Ensure the judge or another responsible officer is still present before leaving the hearing.",
+    "leave-hearing": "Leave hearing",
+    "leave-hearing-label": "Confirm leaving the hearing",
+    "cancel-leave": "Cancel",
+    "cancel-leave-label": "Cancel leaving the hearing"
   },
   "venue-list": {
     "title": "Select your hearing lists",
@@ -1042,6 +1058,11 @@
       "title": "{{name}}",
       "message-without-party": "{{role}} has been added to the hearing.",
       "message-with-party": "{{role}} ({{party}}) has been added to the hearing.",
+      "dismiss": "Dismiss"
+    },
+    "hearing-layout-changed": {
+      "title": "{{name}}",
+      "message": "has changed the hearing layout.",
       "dismiss": "Dismiss"
     }
   },

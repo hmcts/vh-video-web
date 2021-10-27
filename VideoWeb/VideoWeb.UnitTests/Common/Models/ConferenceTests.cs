@@ -1,8 +1,11 @@
+using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using VideoApi.Contract.Requests;
 using VideoWeb.Common.Models;
 
 namespace VideoWeb.UnitTests.Common.Models
@@ -41,6 +44,23 @@ namespace VideoWeb.UnitTests.Common.Models
             // Assert
             conference.Participants.Should().HaveCount(startingList.Count + 1);
             conference.Participants.Should().Contain(participant2);
+        }
+
+        [TestCase(3, 2, HearingLayout.Dynamic)]
+        [TestCase(3, 3, HearingLayout.OnePlus7)]
+        [TestCase(6, 3, HearingLayout.OnePlus7)]
+        [TestCase(6, 4, HearingLayout.TwoPlus21)]
+        public void Should_return_correct_layout_for_the_number_of_participants_and_endpoints(int numberOfParticipants, int numberOfEndpoints, HearingLayout expectedLayout)
+        {
+            // Arrange
+            conference.Participants = Builder<Participant>.CreateListOfSize(numberOfParticipants).Build().ToList();
+            conference.Endpoints = Builder<Endpoint>.CreateListOfSize(numberOfEndpoints).Build().ToList();
+
+            // Act
+            var recommendedLayout = conference.GetRecommendedLayout();
+
+            // Assert
+            recommendedLayout.Should().Be(expectedLayout);
         }
     }
 }

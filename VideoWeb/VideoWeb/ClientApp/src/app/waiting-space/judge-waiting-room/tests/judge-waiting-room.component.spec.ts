@@ -43,11 +43,12 @@ import { VideoControlService } from 'src/app/services/conference/video-control.s
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { VideoControlCacheService } from 'src/app/services/conference/video-control-cache.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
-import { Observable, Subject } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { VirtualMeetingRoomModel } from 'src/app/services/conference/models/virtual-meeting-room.model';
 import { HearingRole } from '../../models/hearing-role-model';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
+import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     const participantOneId = Guid.create().toString();
@@ -138,6 +139,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     let unloadDetectorServiceSpy: jasmine.SpyObj<UnloadDetectorService>;
     let shouldUnloadSubject: Subject<void>;
     let shouldReloadSubject: Subject<void>;
+    let hearingLayoutServiceSpy: jasmine.SpyObj<HearingLayoutService>;
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -209,6 +211,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         ]);
         videoControlCacheServiceSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', ['setSpotlightStatus']);
 
+        hearingLayoutServiceSpy = jasmine.createSpyObj<HearingLayoutService>([], ['currentLayout$']);
+
         component = new JudgeWaitingRoomComponent(
             activatedRoute,
             videoWebService,
@@ -231,7 +235,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             participantServiceSpy,
             videoControlServiceSpy,
             videoControlCacheServiceSpy,
-            unloadDetectorServiceSpy
+            unloadDetectorServiceSpy,
+            hearingLayoutServiceSpy
         );
 
         consultationInvitiationService.getInvitation.and.returnValue(consultationInvitiation);
@@ -343,6 +348,27 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.hearingPaused()).toBeFalsy();
     });
 
+    describe('isHearingInSession', () => {
+        const invalidConferenceStatus = [
+            ConferenceStatus.NotStarted,
+            ConferenceStatus.Paused,
+            ConferenceStatus.Suspended,
+            ConferenceStatus.Closed
+        ];
+
+        it('hearing in session returns true when the conference is in session', () => {
+            component.conference.status = ConferenceStatus.InSession;
+            expect(component.isHearingInSession()).toBe(true);
+        });
+
+        invalidConferenceStatus.forEach(status => {
+            it(`hearing in session returns false when the conference is ${status}`, () => {
+                component.conference.status = status;
+                expect(component.isHearingInSession()).toBe(false);
+            });
+        });
+    });
+
     it('should handle error when get conference fails', async () => {
         const error = { status: 401, isApiException: true };
         videoWebService.getConferenceById.and.rejectWith(error);
@@ -350,20 +376,39 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(errorService.handleApiError).toHaveBeenCalledWith(error);
     });
 
-    it('should start the hearing', async () => {
-        const layout = HearingLayout.TwoPlus21;
-        videoCallService.getPreferredLayout.and.returnValue(layout);
-        await component.startHearing();
-        expect(videoCallService.startHearing).toHaveBeenCalledWith(component.conference.id, layout);
+    it('should mark host as not wanting to join the hearing', async () => {
+        component.dualHostHasSignalledToJoinHearing = true;
+
+        await component.leaveHearing();
+
+        expect(component.dualHostHasSignalledToJoinHearing).toBeFalse();
     });
+
+    it('should start the hearing', fakeAsync(() => {
+        component.dualHostHasSignalledToJoinHearing = false;
+        const layout = HearingLayout.TwoPlus21;
+        getSpiedPropertyGetter(hearingLayoutServiceSpy, 'currentLayout$').and.returnValue(of(layout));
+        component.startHearing();
+        flush();
+
+        expect(component.dualHostHasSignalledToJoinHearing).toBeTrue();
+        expect(videoCallService.startHearing).toHaveBeenCalledWith(component.conference.id, layout);
+    }));
 
     it('should handle api error when start hearing fails', async () => {
         const error = { status: 500, isApiException: true };
         videoCallService.startHearing.and.returnValue(Promise.reject(error));
         const layout = HearingLayout.TwoPlus21;
-        videoCallService.getPreferredLayout.and.returnValue(layout);
+        getSpiedPropertyGetter(hearingLayoutServiceSpy, 'currentLayout$').and.returnValue(of(layout));
         await component.startHearing();
         expect(errorService.handleApiError).toHaveBeenCalledWith(error);
+    });
+
+    it('calls join hearing in session endpoint and updates dualHostHasSignalledToJoinHearing to be true', async () => {
+        await component.joinHearingInSession();
+
+        expect(videoCallService.joinHearingInSession).toHaveBeenCalledWith(component.conferenceId, component.participant.id);
+        expect(component.dualHostHasSignalledToJoinHearing).toBe(true);
     });
 
     it('should continue with no recording when judge dismisses the audio recording alert mid hearing', async () => {
@@ -568,8 +613,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
     it('should start hearing when confirmation answered yes', fakeAsync(() => {
         // Arrange
-        videoCallService.getPreferredLayout.calls.reset();
-
         component.displayConfirmStartHearingPopup = true;
         videoCallService.startHearing.calls.reset();
         videoCallService.startHearing.and.resolveTo();
@@ -579,7 +622,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         spyOnProperty(component, 'conferenceId', 'get').and.returnValue(conferenceId);
 
         const hearingLayout = HearingLayout.Dynamic;
-        videoCallService.getPreferredLayout.and.returnValue(hearingLayout);
+        getSpiedPropertyGetter(hearingLayoutServiceSpy, 'currentLayout$').and.returnValue(of(hearingLayout));
 
         const hearingId = Guid.create();
         spyOnProperty(component.hearing, 'id', 'get').and.returnValue(hearingId);
@@ -589,7 +632,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         flush();
 
         // Assert
-        expect(videoCallService.getPreferredLayout).toHaveBeenCalledOnceWith(conferenceId);
         expect(component.displayConfirmStartHearingPopup).toBeFalsy();
         expect(videoCallService.startHearing).toHaveBeenCalledOnceWith(hearingId, hearingLayout);
     }));
@@ -619,6 +661,32 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         deviceTypeService.isIpad.and.returnValue(true);
         component.showVideo = true;
         expect(component.defineIsIMEnabled()).toBeFalsy();
+    });
+
+    it('should not pull the JUDGE in to the hearing when JUDGE is in Waiting Room and hearing started by the STAFFMEMBER', fakeAsync(() => {
+        component.ngOnInit();
+        component.connected = true;
+        component.conference.status = ConferenceStatus.InSession;
+        component.conferenceStartedBy = component.conference.participants.find(p => p.role === Role.StaffMember).id;
+        component.participant = component.conference.participants.find(p => p.role === Role.Judge);
+
+        component.updateShowVideo();
+
+        expect(component.conference.participants.find(p => p.role === Role.Judge).status).toBe(ParticipantStatus.Available);
+        expect(component.conferenceStartedBy).toBe(null);
+    }));
+
+    it('should not pull the STAFFMEMBER in to the hearing when STAFFMEMBER is in Waiting Room and hearing started by the JUDGE', () => {
+        component.ngOnInit();
+        component.connected = true;
+        component.conference.status = ConferenceStatus.InSession;
+        component.conferenceStartedBy = component.conference.participants.find(p => p.role === Role.Judge).id;
+        component.participant = component.conference.participants.find(p => p.role === Role.StaffMember);
+
+        component.updateShowVideo();
+
+        expect(component.conference.participants.find(p => p.role === Role.StaffMember).status).toBe(ParticipantStatus.Available);
+        expect(component.conferenceStartedBy).toBe(null);
     });
 
     describe('onConferenceStatusChanged', () => {

@@ -5,12 +5,12 @@ import { MockLogger } from '../testing/mocks/mock-logger';
 import { EventsService } from './events.service';
 import { Logger } from './logging/logger-base';
 import { InstantMessage } from './models/instant-message';
-import { fakeAsync, tick } from '@angular/core/testing';
+import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { EventsHubService } from './events-hub.service';
 import { Heartbeat } from '../shared/models/heartbeat';
 import { TransferDirection } from './models/hearing-transfer';
 import { ParticipantMediaStatus } from '../shared/models/participant-media-status';
-import { ParticipantResponse } from './clients/api-client';
+import { HearingLayout, ParticipantResponse } from './clients/api-client';
 
 describe('EventsService', () => {
     function spyPropertyGetter<T, K extends keyof T>(spyObj: jasmine.SpyObj<T>, propName: K): jasmine.Spy<() => T[K]> {
@@ -26,10 +26,10 @@ describe('EventsService', () => {
         loggerMock = new MockLogger();
         eventsHubServiceSpy = jasmine.createSpyObj<EventsHubService>(
             'EventsHubService',
-            ['start', 'stop', 'getServiceReconnected', 'getServiceDisconnected'],
+            ['start', 'stop', 'getServiceConnected', 'getServiceDisconnected'],
             ['connection', 'onEventsHubReady']
         );
-        eventsHubServiceSpy.getServiceReconnected.and.returnValue(new Observable<any>());
+        eventsHubServiceSpy.getServiceConnected.and.returnValue(new Observable<any>());
         eventsHubServiceSpy.getServiceDisconnected.and.returnValue(new Observable<number>());
         spyPropertyGetter(eventsHubServiceSpy, 'onEventsHubReady').and.returnValue(new Observable());
         serviceUnderTest = new EventsService(loggerMock, eventsHubServiceSpy);
@@ -44,7 +44,7 @@ describe('EventsService', () => {
         // Arrange
 
         // Act
-        subscription$.add(serviceUnderTest.getServiceReconnected().subscribe());
+        subscription$.add(serviceUnderTest.getServiceConnected().subscribe());
         subscription$.add(serviceUnderTest.getServiceDisconnected().subscribe());
         subscription$.add(serviceUnderTest.getParticipantStatusMessage().subscribe());
         subscription$.add(serviceUnderTest.getHearingStatusMessage().subscribe());
@@ -61,9 +61,10 @@ describe('EventsService', () => {
         subscription$.add(serviceUnderTest.getRoomUpdate().subscribe());
         subscription$.add(serviceUnderTest.getRoomTransfer().subscribe());
         subscription$.add(serviceUnderTest.getHeartbeat().subscribe());
-        subscription$.add(serviceUnderTest.getServiceReconnected().subscribe());
+        subscription$.add(serviceUnderTest.getServiceConnected().subscribe());
         subscription$.add(serviceUnderTest.getServiceDisconnected().subscribe());
         subscription$.add(serviceUnderTest.getParticipantsUpdated().subscribe());
+        subscription$.add(serviceUnderTest.getHearingLayoutChanged().subscribe());
 
         // Assert
         expect(subscription$).toBeTruthy();
@@ -90,10 +91,10 @@ describe('EventsService', () => {
             // Arrange
 
             // Act
-            serviceUnderTest.getServiceReconnected();
+            serviceUnderTest.getServiceConnected();
 
             // Assert
-            expect(eventsHubServiceSpy.getServiceReconnected).toHaveBeenCalledTimes(1);
+            expect(eventsHubServiceSpy.getServiceConnected).toHaveBeenCalledTimes(1);
         });
     });
 
@@ -136,7 +137,7 @@ describe('EventsService', () => {
     });
 
     describe('handlers', () => {
-        const expectedNumberOfRegisterations = 17;
+        const expectedNumberOfRegisterations = 18;
 
         describe('registerHandlers', () => {
             it('should register the handlers if they are NOT already registered', () => {

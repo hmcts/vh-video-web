@@ -146,7 +146,7 @@
 .dropdown-content {
   display: block;
   position: absolute;
-  right: -6.25rem;
+  right: -3.75rem;
   left: auto;
   background-color: govuk-colour('white');
   color: black;
@@ -181,9 +181,8 @@
   @include responds-to(large) {
     display: inline-flex;
   }
+}
 
-  .horizontal-spacer {
-    padding-bottom: 10px;
-    border-bottom: 2px solid govuk-colour('mid-grey');
-  }
+.leave-hearing-button {
+  color: #28a197;
 }

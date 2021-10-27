@@ -123,7 +123,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
         this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub reconnects`);
         this.eventHubSubscriptions.add(
-            this.eventService.getServiceReconnected().subscribe(async () => {
+            this.eventService.getServiceConnected().subscribe(async () => {
                 this.logger.info(`${this.loggerPrefix} EventHub reconnected for vh officer`);
                 await this.refreshConferenceDataDuringDisconnect();
             })

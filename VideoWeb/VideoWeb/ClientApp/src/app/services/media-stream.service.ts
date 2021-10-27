@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, from, of } from 'rxjs';
-import { catchError, map, mergeMap, retry } from 'rxjs/operators';
+import { catchError, map, mergeMap, retry, take } from 'rxjs/operators';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { CallError } from '../waiting-space/models/video-call-models';
 import { ErrorService } from './error.service';
@@ -28,6 +28,9 @@ export class MediaStreamService {
     }
 
     getStreamForMic(device: UserMediaDevice): Observable<MediaStream> {
+        this.logger.info(
+            `${this.loggerPrefix} getting microphone with the device label ${device.label} and ID ${device.deviceId} ${device.deviceId}`
+        );
         return from(this.navigator.mediaDevices.getUserMedia({ audio: { deviceId: { exact: device.deviceId } } }))
             .pipe(retry(3))
             .pipe(
@@ -40,18 +43,24 @@ export class MediaStreamService {
     }
 
     getStreamForCam(device: UserMediaDevice): Observable<MediaStream> {
-        return from(this.navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId } } }))
+        this.logger.info(`${this.loggerPrefix} getting camera with the device label ${device.label} and ID ${device.deviceId}`);
+        return from(this.navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId }, width: 1280, height: 720 } }))
             .pipe(retry(3))
             .pipe(
                 mergeMap(stream => {
                     if (this.videoFilterService.doesSupportVideoFiltering()) {
                         return this.videoFilterService.filterOn$.pipe(
-                            map(filterOn => {
+                            mergeMap(filterOn => {
                                 if (filterOn) {
-                                    this.videoFilterService.initFilterFromMediaStream(stream);
-                                    return this.videoFilterService.startFilteredStream();
+                                    return this.videoFilterService.initFilterFromMediaStream(stream).pipe(
+                                        take(1),
+                                        map(() => {
+                                            this.logger.info(`${this.loggerPrefix} MAP`);
+                                            return this.videoFilterService.startFilteredStream();
+                                        })
+                                    );
                                 } else {
-                                    return stream;
+                                    return of(stream);
                                 }
                             })
                         );

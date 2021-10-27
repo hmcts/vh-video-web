@@ -9,6 +9,7 @@ using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using UserApi.Contract.Responses;
+using System.Threading;
 
 namespace VideoWeb.UnitTests
 {
@@ -28,7 +29,7 @@ namespace VideoWeb.UnitTests
             var profile = Builder<UserProfile>.CreateNew().Build();
             var serialized = JsonConvert.SerializeObject(profile, SerializerSettings);
             var rawData = Encoding.UTF8.GetBytes(serialized);
-            _distributedCacheMock.Setup(x => x.Get(profile.UserName)).Returns(rawData);
+            _distributedCacheMock.Setup(x => x.GetAsync(profile.UserName, CancellationToken.None)).ReturnsAsync(rawData);
 
             var cache = new DistributedUserCache(_distributedCacheMock.Object);
             var callCount = 0;

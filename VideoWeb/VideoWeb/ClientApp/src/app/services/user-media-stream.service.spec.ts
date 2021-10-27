@@ -1,8 +1,9 @@
 import { fakeAsync, flush } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { of, ReplaySubject, Subject } from 'rxjs';
+import { of, ReplaySubject } from 'rxjs';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
 import { UserMediaDevice } from '../shared/models/user-media-device';
+import { AudioOnlyImageService } from './audio-only-image.service';
 import { mustProvideAMicrophoneDeviceError } from './errors/must-provide-a-microphone-device.error';
 import { Logger } from './logging/logger-base';
 import { MediaStreamService } from './media-stream.service';
@@ -24,17 +25,16 @@ describe('UserMediaStreamService', () => {
         return stream;
     };
 
-    const cameraOneDevice = new UserMediaDevice('Camera 1', Guid.create().toString(), 'videoinput', '');
-    const cameraOneStream = mediaStreamBuilder(cameraOneDevice);
-
-    const cameraTwoDevice = new UserMediaDevice('Camera 2', Guid.create().toString(), 'videoinput', '');
-    const cameraTwoStream = mediaStreamBuilder(cameraTwoDevice);
-
-    const microphoneOneDevice = new UserMediaDevice('Microphone 1', Guid.create().toString(), 'audioinput', '');
-    const microphoneOneStream = mediaStreamBuilder(microphoneOneDevice);
-
-    const microphoneTwoDevice = new UserMediaDevice('Microphone 2', Guid.create().toString(), 'audioinput', '');
-    const microphoneTwoStream = mediaStreamBuilder(microphoneTwoDevice);
+    let cameraOneDevice = new UserMediaDevice('Camera 1', Guid.create().toString(), 'videoinput', '');
+    let cameraOneStream = mediaStreamBuilder(cameraOneDevice);
+    let audioOnlyImageDevice = new UserMediaDevice('Audio Only', Guid.create().toString(), 'videoinput', '');
+    let audioOnlyImageStream = mediaStreamBuilder(audioOnlyImageDevice);
+    let cameraTwoDevice = new UserMediaDevice('Camera 2', Guid.create().toString(), 'videoinput', '');
+    let cameraTwoStream = mediaStreamBuilder(cameraTwoDevice);
+    let microphoneOneDevice = new UserMediaDevice('Microphone 1', Guid.create().toString(), 'audioinput', '');
+    let microphoneOneStream = mediaStreamBuilder(microphoneOneDevice);
+    let microphoneTwoDevice = new UserMediaDevice('Microphone 2', Guid.create().toString(), 'audioinput', '');
+    let microphoneTwoStream = mediaStreamBuilder(microphoneTwoDevice);
 
     let sut: UserMediaStreamService;
 
@@ -44,10 +44,22 @@ describe('UserMediaStreamService', () => {
     let activeMicrophoneDeviceSubject: ReplaySubject<UserMediaDevice>;
     let isAudioOnlySubject: ReplaySubject<boolean>;
     let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
+    let audioOnlyImageServiceSpy: jasmine.SpyObj<AudioOnlyImageService>;
 
     let mediaStreamServiceSpy: jasmine.SpyObj<MediaStreamService>;
 
     beforeEach(fakeAsync(() => {
+        cameraOneDevice = new UserMediaDevice('Camera 1', Guid.create().toString(), 'videoinput', '');
+        cameraOneStream = mediaStreamBuilder(cameraOneDevice);
+        audioOnlyImageDevice = new UserMediaDevice('Audio Only', Guid.create().toString(), 'videoinput', '');
+        audioOnlyImageStream = mediaStreamBuilder(audioOnlyImageDevice);
+        cameraTwoDevice = new UserMediaDevice('Camera 2', Guid.create().toString(), 'videoinput', '');
+        cameraTwoStream = mediaStreamBuilder(cameraTwoDevice);
+        microphoneOneDevice = new UserMediaDevice('Microphone 1', Guid.create().toString(), 'audioinput', '');
+        microphoneOneStream = mediaStreamBuilder(microphoneOneDevice);
+        microphoneTwoDevice = new UserMediaDevice('Microphone 2', Guid.create().toString(), 'audioinput', '');
+        microphoneTwoStream = mediaStreamBuilder(microphoneTwoDevice);
+
         loggerSpy = jasmine.createSpyObj<Logger>(['debug', 'info', 'warn', 'error']);
 
         activeCameraDeviceSubject = new ReplaySubject<UserMediaDevice>(1);
@@ -87,10 +99,13 @@ describe('UserMediaStreamService', () => {
         mediaStreamServiceSpy.getStreamForMic.withArgs(microphoneOneDevice).and.returnValue(of(microphoneOneStream));
         mediaStreamServiceSpy.getStreamForMic.withArgs(microphoneTwoDevice).and.returnValue(of(microphoneTwoStream));
 
-        sut = new UserMediaStreamService(loggerSpy, userMediaServiceSpy, mediaStreamServiceSpy);
+        audioOnlyImageServiceSpy = jasmine.createSpyObj<AudioOnlyImageService>(['getAudioOnlyImageStream']);
+
+        sut = new UserMediaStreamService(loggerSpy, userMediaServiceSpy, mediaStreamServiceSpy, audioOnlyImageServiceSpy);
 
         activeCameraDeviceSubject.next(cameraOneDevice);
         activeMicrophoneDeviceSubject.next(microphoneOneDevice);
+        audioOnlyImageServiceSpy.getAudioOnlyImageStream.and.returnValue(of(audioOnlyImageStream));
         flush();
     }));
 
@@ -150,7 +165,7 @@ describe('UserMediaStreamService', () => {
 
         it('should NOT add the new tracks to the active stream from the new camera when it is audio only', fakeAsync(() => {
             // Arrange
-            const expectedNumberOfTracks = 1; // Only audio track
+            const expectedNumberOfTracks = 2; // Audio track + Audio Only Image Track
             isAudioOnlySubject.next(true);
             flush();
 
@@ -249,7 +264,7 @@ describe('UserMediaStreamService', () => {
     });
 
     describe('on is audio only changed', () => {
-        it('should emit null for the active video stream when audio only', fakeAsync(() => {
+        it('should emit the audio only image stream for the active video stream when audio only', fakeAsync(() => {
             // Act
             let stream: MediaStream | null = new MediaStream();
             sut.activeCameraStream$.subscribe(result => (stream = result));
@@ -258,7 +273,7 @@ describe('UserMediaStreamService', () => {
             flush();
 
             // Assert
-            expect(stream).toBeNull();
+            expect(stream).toBe(audioOnlyImageStream);
         }));
 
         it('should emit stream for the active video stream when NOT audio only', fakeAsync(() => {
@@ -276,7 +291,7 @@ describe('UserMediaStreamService', () => {
 
         it('should remove the existing tracks for the active video camera when audio only is true', fakeAsync(() => {
             // Arrange
-            const expectedNumberOfTracks = 1; // Only audio track
+            const expectedNumberOfTracks = 2; // Audio track + Audio Only Image Track
 
             // Act
             let currentStream: MediaStream | null = null;
@@ -289,7 +304,7 @@ describe('UserMediaStreamService', () => {
             // Assert
             cameraOneStream.getVideoTracks().forEach(track => {
                 expect(currentStream.removeTrack).toHaveBeenCalledWith(track);
-                expect(track.stop).toHaveBeenCalled();
+                expect(track.stop).not.toHaveBeenCalled();
             });
 
             const currentStreamTracks = currentStream.getTracks();
@@ -299,9 +314,33 @@ describe('UserMediaStreamService', () => {
             expect(currentStreamTracks.find(track => track.label === microphoneOneDevice.label)).toBeTruthy();
         }));
 
+        it('should add the tracks for the active only image stream when audio only is true', fakeAsync(() => {
+            // Arrange
+            const expectedNumberOfTracks = 2; // Audio track + Audio Only Image Track
+
+            // Act
+            let currentStream: MediaStream | null = null;
+            sut.currentStream$.subscribe(stream => (currentStream = stream));
+            flush();
+
+            isAudioOnlySubject.next(true);
+            flush();
+
+            // Assert
+            audioOnlyImageStream.getVideoTracks().forEach(track => {
+                expect(currentStream.addTrack).toHaveBeenCalledWith(track);
+            });
+
+            const currentStreamTracks = currentStream.getTracks();
+            expect(currentStreamTracks).toBeTruthy();
+            expect(currentStreamTracks.length).toEqual(expectedNumberOfTracks);
+            expect(currentStreamTracks.find(track => track.label === audioOnlyImageDevice.label)).toBeTruthy();
+            expect(currentStreamTracks.find(track => track.label === microphoneOneDevice.label)).toBeTruthy();
+        }));
+
         it('should add the tracks for the active video camera when audio only is changed back to false', fakeAsync(() => {
             // Arrange
-            const expectedNumberOfTracks = 2; // Only audio track
+            const expectedNumberOfTracks = 2;
 
             isAudioOnlySubject.next(true);
             flush();
@@ -316,6 +355,33 @@ describe('UserMediaStreamService', () => {
 
             // Assert
             cameraOneStream.getVideoTracks().forEach(track => {
+                expect(currentStream.addTrack).toHaveBeenCalledWith(track);
+            });
+
+            const currentStreamTracks = currentStream.getTracks();
+            expect(currentStreamTracks).toBeTruthy();
+            expect(currentStreamTracks.length).toEqual(expectedNumberOfTracks);
+            expect(currentStreamTracks.find(track => track.label === cameraOneDevice.label)).toBeTruthy();
+            expect(currentStreamTracks.find(track => track.label === microphoneOneDevice.label)).toBeTruthy();
+        }));
+
+        it('should remove the tracks for the active only image stream when audio only is false', fakeAsync(() => {
+            // Arrange
+            const expectedNumberOfTracks = 2;
+
+            isAudioOnlySubject.next(true);
+            flush();
+
+            // Act
+            let currentStream: MediaStream | null = null;
+            sut.currentStream$.subscribe(stream => (currentStream = stream));
+            flush();
+
+            isAudioOnlySubject.next(false);
+            flush();
+
+            // Assert
+            audioOnlyImageStream.getVideoTracks().forEach(track => {
                 expect(currentStream.removeTrack).toHaveBeenCalledWith(track);
                 expect(track.stop).toHaveBeenCalled();
             });
@@ -323,7 +389,7 @@ describe('UserMediaStreamService', () => {
             const currentStreamTracks = currentStream.getTracks();
             expect(currentStreamTracks).toBeTruthy();
             expect(currentStreamTracks.length).toEqual(expectedNumberOfTracks);
-            expect(currentStreamTracks.find(track => track.label === cameraOneDevice.label)).toBeTruthy();
+            expect(currentStreamTracks.find(track => track.label === audioOnlyImageDevice.label)).toBeFalsy();
             expect(currentStreamTracks.find(track => track.label === microphoneOneDevice.label)).toBeTruthy();
         }));
     });

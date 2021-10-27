@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import { ConferenceForHostResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { JudgeHearingSummary } from 'src/app/shared/models/JudgeHearingSummary';
@@ -21,11 +20,7 @@ export class JudgeHearingTableComponent implements OnInit {
 
     @Output() selectedConference = new EventEmitter<ConferenceForHostResponse>();
 
-    constructor(private logger: Logger, private translate: TranslateService) {}
-
-    getTranslation(key: string) {
-        return this.translate.instant(`judge-hearing-table.${key}`);
-    }
+    constructor(private logger: Logger) {}
 
     ngOnInit() {
         this.hearings = this.conferenceForHostResponse.map(c => new JudgeHearingSummary(c));

@@ -60,7 +60,7 @@ namespace VideoWeb.UnitTests.Common.Caching
             var invitation = ConsultationInvitation.Create(participantGuid, roomLabel, new[] {linkedParticipantGuid});
 
             // Act
-            await _sut.Write(invitation);
+            await _sut.WriteToCache(invitation);
 
             // Assert
             (await ReadFromCache<ConsultationInvitation>(invitation.InvitationId)).Should().BeEquivalentTo(invitation);
@@ -78,7 +78,7 @@ namespace VideoWeb.UnitTests.Common.Caching
             await WriteToCache(storedInvitation.InvitationId, storedInvitation);
             
             // Act
-            var invitation = await _sut.Read(storedInvitation.InvitationId);
+            var invitation = await _sut.ReadFromCache(storedInvitation.InvitationId);
 
             // Assert
             invitation.Should().BeEquivalentTo(storedInvitation);
@@ -95,7 +95,7 @@ namespace VideoWeb.UnitTests.Common.Caching
                 ConsultationInvitation.Create(participantGuid, roomLabel, new[] {linkedParticipantGuid});
 
             // Act
-            var invitation = await _sut.Read(storedInvitation.InvitationId);
+            var invitation = await _sut.ReadFromCache(storedInvitation.InvitationId);
 
             // Assert
             invitation.Should().BeNull();

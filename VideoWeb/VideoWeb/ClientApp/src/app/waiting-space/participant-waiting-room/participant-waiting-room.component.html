@@ -24,7 +24,7 @@
       <ng-container *ngIf="isJohRoom || !isPrivateConsultation">
         <div class="room-title">
           <h1 #roomTitleLabel class="room-title-label">{{ getCaseNameAndNumber() }}</h1>
-          <div *ngIf="hasCaseNameOverflowed" class="room-title-show-more" appTooltip [text]="getCaseNameAndNumber()" colour="grey">
+          <div *ngIf="hasCaseNameOverflowed" class="room-title-show-more" appTooltip [text]="getCaseNameAndNumber()" colour="grey" [isDesktopOnly]=false>
             (show more)
           </div>
         </div>
@@ -82,6 +82,7 @@
         height="auto"
         poster="/assets/images/empty_crest.jpg"
         class="fill-container"
+        playsinline
       >
         {{ 'participant-waiting-room.browser-support' | translate }}
       </video>
@@ -103,7 +104,7 @@
         [attr.alt]="'participant-waiting-room.witness-transferring-warning-image' | translate"
       />
       <h2 class="govuk-heading-m white govuk-!-margin-top-5" [innerHTML]="'participant-waiting-room.hearing-ready' | translate"></h2>
-      <video id="outgoingFeedVideoTransfer" [muted]="true" [srcObject]="outgoingStream" autoplay height="auto">
+      <video id="outgoingFeedVideoTransfer" [muted]="true" [srcObject]="outgoingStream" autoplay height="auto" playsinline>
         {{ 'participant-waiting-room.browser-support' | translate }}
       </video>
     </div>
