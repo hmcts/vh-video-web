@@ -178,15 +178,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         if (conferenceStatus.newStatus === ConferenceStatus.InSession) {
             this.logger.info(`${this.loggerPrefixJudge} spotlighting judge as it is the start of the hearing`);
 
-            let participants = this.participantService.participants;
+            const participants = this.participantService.participants;
 
             if (conferenceStatus.oldStatus === ConferenceStatus.NotStarted) {
-                this.videoControlService.setSpotlightStatus(
-                    participants.find(p => p.role === Role.Judge),
-                    true
-                );
-
-                participants = participants.filter(participant => participant.role !== Role.Judge);
+                this.videoControlCacheService.setSpotlightStatus(participants.find(p => p.role === Role.Judge).id, true);
             }
 
             participants.forEach(participant => {
@@ -328,6 +323,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     isPaused(): boolean {
         return this.hearing.isPaused() || this.hearing.isSuspended();
+    }
+
+    get canShowHearingLayoutSelection() {
+        return !this.hearing.isClosed() && !this.hearing.isInSession();
     }
 
     displayConfirmStartPopup() {
