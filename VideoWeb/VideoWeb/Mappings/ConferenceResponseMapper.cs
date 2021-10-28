@@ -13,14 +13,6 @@ namespace VideoWeb.Mappings
 
         private readonly IMapTo<EndpointResponse, int, VideoEndpointResponse> _videoEndpointResponseMapper;
 
-        public const string Aberdeen = "Aberdeen Tribunal Hearing Centre";
-        public const string Dundee = "Dundee Tribunal Hearing Centre";
-        public const string Edinburgh = "Edinburgh Employment Tribunal";
-        public const string Glasgow = "Glasgow Tribunals Centre";
-        public const string Inverness = "Inverness Employment Tribunal";
-
-        private readonly List<string> ScottishHearingVenues = new List<string> { Aberdeen, Dundee, Edinburgh, Glasgow, Inverness };
-
         public ConferenceResponseMapper(IMapTo<ParticipantDetailsResponse, ParticipantResponse> participantResponseMapper, IMapTo<EndpointResponse, int, VideoEndpointResponse> videoEndpointResponseMapper)
         {
             _participantResponseMapper = participantResponseMapper;
@@ -43,8 +35,7 @@ namespace VideoWeb.Mappings
                 HearingVenueName = conference.HearingVenueName,
                 AudioRecordingRequired = conference.AudioRecordingRequired,
                 HearingRefId = conference.HearingId,
-                Endpoints = MapEndpoints(conference),
-                HearingVenueIsScottish = ScottishHearingVenues.Any(venueName => venueName == conference.HearingVenueName)
+                Endpoints = MapEndpoints(conference)
             };
 
             if (conference.MeetingRoom != null)

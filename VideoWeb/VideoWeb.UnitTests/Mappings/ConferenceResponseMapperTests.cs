@@ -17,9 +17,6 @@ namespace VideoWeb.UnitTests.Mappings
         private ConferenceResponseMapper _sut;
         private AutoMock _mocker;
 
-
-        //private List<string> ScottishHearingVenues = new List<string> { Aberdeen, Dundee, Edinburgh, Glasgow, Inverness };
-
         [SetUp]
         public void Setup()
         {
@@ -30,6 +27,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .Build();
             _sut = _mocker.Create<ConferenceResponseMapper>(parameters);
         }
+       
 
         [Test]
         public void Should_map_all_properties()
@@ -103,28 +101,6 @@ namespace VideoWeb.UnitTests.Mappings
             response.ParticipantUri.Should().Be(meetingRoom.ParticipantUri);
             response.PexipNodeUri.Should().Be(meetingRoom.PexipNode);
             response.PexipSelfTestNodeUri.Should().NotBeNullOrWhiteSpace();
-        }
-
-        [Test]
-        [TestCase(ConferenceResponseMapper.Aberdeen, true)]
-        [TestCase(ConferenceResponseMapper.Dundee, true)]
-        [TestCase(ConferenceResponseMapper.Edinburgh, true)]
-        [TestCase(ConferenceResponseMapper.Glasgow, true)]
-        [TestCase(ConferenceResponseMapper.Inverness, true)]
-        [TestCase("Crown Court", false)]
-        [TestCase("Birmingham", false)]
-        [TestCase(null, false)]
-        [TestCase("", false)]
-        public void Maps_Venue_Flag_Correctly(string venueName, bool expectedValue)
-        {
-            var conference = Builder<ConferenceDetailsResponse>.CreateNew()
-                .Build();
-
-            conference.HearingVenueName = venueName;
-
-            var response = _sut.Map(conference);
-
-            response.HearingVenueIsScottish.Should().Be(expectedValue);
         }
     }
 }

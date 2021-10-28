@@ -87,7 +87,5 @@ namespace VideoWeb.Contract.Responses
         /// The video access endpoints in the conference
         /// </summary>
         public List<VideoEndpointResponse> Endpoints { get; set; }
-
-        public bool HearingVenueIsScottish { get; set; }
     }
 }
