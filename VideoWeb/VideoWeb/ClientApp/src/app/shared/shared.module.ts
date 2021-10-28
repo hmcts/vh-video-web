@@ -156,7 +156,8 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         NgxDatePipe,
         HyphenatePipe,
         LoadingComponent,
-        VideoFilterComponent
+        VideoFilterComponent,
+        ForcePlayVideoDirective
     ]
 })
 export class SharedModule {}
