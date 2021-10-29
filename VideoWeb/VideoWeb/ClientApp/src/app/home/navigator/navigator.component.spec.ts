@@ -8,6 +8,7 @@ import { NavigatorComponent } from './navigator.component';
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { of } from 'rxjs';
+import { FeatureFlagService } from '../../services/feature-flag.service';
 
 describe('NavigatorComponent', () => {
     let component: NavigatorComponent;
@@ -15,6 +16,7 @@ describe('NavigatorComponent', () => {
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
     let deviceTypeServiceSpy: jasmine.SpyObj<DeviceTypeService>;
+    let featureFlagServiceSpy: jasmine.SpyObj<FeatureFlagService>;
     let errorServiceSpy: jasmine.SpyObj<ErrorService>;
     let clientSettingsResponse: ClientSettingsResponse;
 
@@ -28,13 +30,15 @@ describe('NavigatorComponent', () => {
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings']);
+        featureFlagServiceSpy = jasmine.createSpyObj<FeatureFlagService>('FeatureFlagService', ['getFeatureFlagByName']);
         deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isMobile', 'isTablet', 'isDesktop', 'isIOS', 'isAndroid']);
         errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['handleApiError']);
         configServiceSpy.getClientSettings.and.returnValue(of(clientSettingsResponse));
+        featureFlagServiceSpy.getFeatureFlagByName.and.returnValue(of(true));
     });
 
     beforeEach(() => {
-        component = new NavigatorComponent(router, profileServiceSpy, errorServiceSpy, deviceTypeServiceSpy, configServiceSpy);
+        component = new NavigatorComponent(router, profileServiceSpy, errorServiceSpy, deviceTypeServiceSpy, configServiceSpy, featureFlagServiceSpy);
         router.navigate.and.callFake(() => Promise.resolve(true));
     });
 
@@ -48,6 +52,19 @@ describe('NavigatorComponent', () => {
         const profile = new UserProfileResponse({ role: Role.JudicialOfficeHolder });
         component.navigateToHearingList(profile);
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeHearingList]);
+    });
+
+    it('should go to staff member hearing list if user is a StaffMember and staff-member-feature is ON', async () => {
+        featureFlagServiceSpy.getFeatureFlagByName.and.returnValue(of(false));
+        const profile = new UserProfileResponse({ role: Role.StaffMember });
+        component.navigateToHearingList(profile);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.StaffMemberHearingList]);
+    });
+
+    it('should go to unauthorized list if user is a StaffMember and staff-member-feature is OFF', async () => {
+        const profile = new UserProfileResponse({ role: Role.StaffMember });
+        component.navigateToHearingList(profile);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.Unauthorised]);
     });
 
     it('should go to admin venue list if user is a vho', () => {
