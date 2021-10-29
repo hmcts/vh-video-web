@@ -38,7 +38,14 @@ describe('NavigatorComponent', () => {
     });
 
     beforeEach(() => {
-        component = new NavigatorComponent(router, profileServiceSpy, errorServiceSpy, deviceTypeServiceSpy, configServiceSpy, featureFlagServiceSpy);
+        component = new NavigatorComponent(
+            router,
+            profileServiceSpy,
+            errorServiceSpy,
+            deviceTypeServiceSpy,
+            configServiceSpy,
+            featureFlagServiceSpy
+        );
         router.navigate.and.callFake(() => Promise.resolve(true));
     });
 

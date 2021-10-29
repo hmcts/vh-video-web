@@ -52,7 +52,7 @@ export class NavigatorComponent implements OnInit {
     }
 
     navigateToHearingList(userProfile: UserProfileResponse) {
-          if (userProfile.role === Role.Judge || userProfile.role === Role.JudicialOfficeHolder) {
+        if (userProfile.role === Role.Judge || userProfile.role === Role.JudicialOfficeHolder) {
             this.router.navigate([pageUrls.JudgeHearingList]);
         } else if (userProfile.role === Role.StaffMember) {
             this.router.navigate([this.staffMemberNavigation]);
