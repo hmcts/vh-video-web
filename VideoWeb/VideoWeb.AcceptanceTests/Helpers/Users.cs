@@ -50,6 +50,12 @@ namespace VideoWeb.AcceptanceTests.Helpers
                 return users.First(x => x.UserType == UserType.Judge);
             }
 
+            if (user.Contains("staff member") ||
+                user.Contains("staffmember"))
+            {
+                return users.First(x => x.UserType == UserType.StaffMember);
+            }
+
             if (user.Contains("individual"))
             {
                 return GetAllUsersOfType(users, UserType.Individual)[index];

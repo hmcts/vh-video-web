@@ -7,6 +7,8 @@ namespace VideoWeb.AcceptanceTests.Journeys
         Participant,
         PanelMemberOrWinger,
         SelfTest,
-        Vho
+        Vho,
+        StaffMember,
+        StaffMemberSelftest,
     }
 }
