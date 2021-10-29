@@ -12,7 +12,7 @@ namespace VideoWeb.AcceptanceTests.Journeys
             return new List<Page>()
             {
                 Page.Login,
-                Page.JudgeHearingList,
+                Page.StaffMemberHearingList,
                 Page.EquipmentCheck,
                 Page.SwitchOnCamAndMic,
                 Page.PracticeVideoHearing
