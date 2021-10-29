@@ -151,6 +151,7 @@ export class VideoFilterService {
     updateFilter(filter: BackgroundFilter | null) {
         this.logger.debug(`${this.loggerPrefix} Updating filter to ${filter}`);
         if (filter) {
+            this.monitorLostGlContext();
             this.selfieSegmentation.reset();
             this.activeFilter = filter;
             this.filterOn = true;
@@ -159,6 +160,7 @@ export class VideoFilterService {
         } else {
             this.activeFilter = null;
             this.filterOn = false;
+            this.stopMonitoringLostGlContext();
             this.logger.debug(`${this.loggerPrefix} Filter off`);
             this._onFilterChanged.next(null);
         }
@@ -272,5 +274,26 @@ export class VideoFilterService {
         imageObject.src = imagePath;
         this.imgs.set(this.activeFilter, imageObject);
         return imageObject;
+    }
+
+    monitorLostGlContext() {
+        if (console.defaultWarn) {
+            return;
+        }
+        const self = this;
+        console.defaultWarn = console.warn.bind(console);
+        console.warn = function () {
+            // default &  console.warn()
+            console.defaultWarn.apply(console, arguments);
+            // new & array data
+            const args = Array.from(arguments);
+            if (args.find(a => a.includes('CONTEXT_LOST_WEBGL')) && self.selfieSegmentation) {
+                self.selfieSegmentation.reset();
+            }
+        };
+    }
+
+    stopMonitoringLostGlContext() {
+        console.defaultWarn = null;
     }
 }
