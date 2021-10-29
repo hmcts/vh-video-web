@@ -1123,11 +1123,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     shouldCurrentUserJoinHearing(): boolean {
-        return (
-            !this.isHost() ||
-            this.dualHostHasSignalledToJoinHearing ||
-            (this.isHost() && this.participant.status === ParticipantStatus.InHearing)
-        );
+        return this.isHost() ? this.dualHostHasSignalledToJoinHearing || this.participant.status === ParticipantStatus.InHearing : true;
     }
 
     isHost(): boolean {

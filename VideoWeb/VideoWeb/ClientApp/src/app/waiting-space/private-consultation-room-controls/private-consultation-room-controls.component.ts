@@ -56,8 +56,10 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         return !this.isPrivateConsultation && this.isHost && this.displayConfirmPopup;
     }
 
-    get canJoinHearing(): boolean {
-        return this.conferenceStatus.newStatus === ConferenceStatus.InSession;
+    get canJoinHearingFromConsultation(): boolean {
+        return (
+            this.conferenceStatus.newStatus === ConferenceStatus.InSession && this.participant.status === ParticipantStatus.InConsultation
+        );
     }
 
     async joinHearingFromConsultation() {

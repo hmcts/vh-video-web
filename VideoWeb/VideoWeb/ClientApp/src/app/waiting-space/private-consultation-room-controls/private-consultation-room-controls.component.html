@@ -120,7 +120,7 @@
                             }}</span></span>
                 </div>
 
-                <div *ngIf='showConsultationControls && canJoinHearing' id='join-hearing-from-consultation-button'
+                <div *ngIf='showConsultationControls && canJoinHearingFromConsultation' id='join-hearing-from-consultation-button'
                     class='icon-button-dark hide-for-medium' data-module='govuk-button' (click)='joinHearingFromConsultation()'>
                     <span class='far fa-sign-in-alt'><span class='context-item'>{{
                             'private-consultation-room-controls.join-hearing-from-consultation' | translate }}</span></span>
@@ -164,7 +164,7 @@
                 {{ 'private-consultation-room-controls.close' | translate }}
             </button>
 
-            <button *ngIf='showConsultationControls && canJoinHearing' type="button"
+            <button *ngIf='showConsultationControls && canJoinHearingFromConsultation' type="button"
                 id='join-hearing-from-consultation-button-landscape' class='small-button green' data-module='govuk-button'
                 (click)='joinHearingFromConsultation()'>
                 {{
@@ -278,7 +278,7 @@
                 {{ 'private-consultation-room-controls.lock-the-room-toggle-' + roomLocked | translate }}
             </button>
 
-            <button *ngIf='showConsultationControls && canJoinHearing' type="button" id='join-hearing-from-consultation-button-desktop'
+            <button *ngIf='showConsultationControls && canJoinHearingFromConsultation' type="button" id='join-hearing-from-consultation-button-desktop'
                 class='small-button green' data-module='govuk-button' (click)='joinHearingFromConsultation()'>
                 {{
                 'private-consultation-room-controls.join-hearing-from-consultation' | translate }}
