@@ -1074,6 +1074,17 @@ export abstract class WaitingRoomBaseDirective {
             return;
         }
 
+        if (this.participant.status === ParticipantStatus.InConsultation) {
+            logPaylod.showingVideo = true;
+            logPaylod.reason = 'Showing video because participant is in a consultation';
+            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
+            this.displayDeviceChangeModal = false;
+            this.showVideo = true;
+            this.isPrivateConsultation = true;
+            this.showConsultationControls = !this.isAdminConsultation;
+            return;
+        }
+
         if (
             this.hearing.isInSession() &&
             !this.isOrHasWitnessLink() &&
@@ -1101,17 +1112,6 @@ export abstract class WaitingRoomBaseDirective {
             return;
         }
 
-        if (this.participant.status === ParticipantStatus.InConsultation) {
-            logPaylod.showingVideo = true;
-            logPaylod.reason = 'Showing video because participant is in a consultation';
-            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
-            this.displayDeviceChangeModal = false;
-            this.showVideo = true;
-            this.isPrivateConsultation = true;
-            this.showConsultationControls = !this.isAdminConsultation;
-            return;
-        }
-
         logPaylod.showingVideo = false;
         logPaylod.reason = 'Not showing video because hearing is not in session and user is not in consultation';
         this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
@@ -1123,7 +1123,11 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     shouldCurrentUserJoinHearing(): boolean {
-        return !this.isHost() || this.dualHostHasSignalledToJoinHearing;
+        return (
+            !this.isHost() ||
+            this.dualHostHasSignalledToJoinHearing ||
+            (this.isHost() && this.participant.status === ParticipantStatus.InHearing)
+        );
     }
 
     isHost(): boolean {

@@ -1,6 +1,9 @@
 import { Component, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { ParticipantStatus } from 'src/app/services/clients/api-client';
+import { takeUntil } from 'rxjs/operators';
+import { ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ConferenceService } from 'src/app/services/conference/conference.service';
+import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -29,6 +32,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
 
     @Input() public canToggleParticipantsPanel: boolean;
     @Input() public isChatVisible: boolean;
+    private conferenceStatus: ConferenceStatusChanged;
 
     constructor(
         protected videoCallService: VideoCallService,
@@ -37,13 +41,27 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         protected logger: Logger,
         protected participantService: ParticipantService,
         protected translateService: TranslateService,
-        protected userMediaService: UserMediaService
+        protected userMediaService: UserMediaService,
+        conferenceService: ConferenceService
     ) {
         super(videoCallService, eventService, deviceTypeService, logger, participantService, translateService, userMediaService);
         this.canToggleParticipantsPanel = true;
+
+        conferenceService.onCurrentConferenceStatusChanged$.pipe(takeUntil(this.destroyedSubject)).subscribe(status => {
+            this.conferenceStatus = status;
+        });
     }
+
     get canShowCloseHearingPopup(): boolean {
         return !this.isPrivateConsultation && this.isHost && this.displayConfirmPopup;
+    }
+
+    get canJoinHearing(): boolean {
+        return this.conferenceStatus.newStatus === ConferenceStatus.InSession;
+    }
+
+    async joinHearingFromConsultation() {
+        await this.videoCallService.joinHearingInSession(this.conferenceId, this.participant.id);
     }
 
     canCloseOrPauseHearing() {

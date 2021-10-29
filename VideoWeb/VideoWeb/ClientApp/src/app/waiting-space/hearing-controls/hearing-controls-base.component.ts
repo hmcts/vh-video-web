@@ -49,7 +49,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     participantSpotlightUpdateSubscription: Subscription;
     isSpotlighted: boolean;
 
-    private destroyedSubject = new Subject<void>();
+    protected destroyedSubject = new Subject<void>();
 
     protected constructor(
         protected videoCallService: VideoCallService,
