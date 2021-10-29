@@ -151,6 +151,7 @@ export class VideoFilterService {
     updateFilter(filter: BackgroundFilter | null) {
         this.logger.debug(`${this.loggerPrefix} Updating filter to ${filter}`);
         if (filter) {
+            this.selfieSegmentation.reset();
             this.activeFilter = filter;
             this.filterOn = true;
             this.logger.debug(`${this.loggerPrefix} Filter on`);
