@@ -777,7 +777,7 @@ describe('NotificationToastrService', () => {
             // Arrange
             const expectedHoverColor = 'green';
             toastrService.show.and.returnValue(mockToast);
-            const btnId = 'notification-toastr-participant-added-dismiss',
+            const btnId = 'notification-toastr-participant-added-dismiss';
 
             // Act
             const toastComponentInstance = service.showParticipantAdded(testParticipant, true);
@@ -1039,7 +1039,7 @@ describe('NotificationToastrService', () => {
 
             // Assert
             expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(1);
-            expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy()
+            expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy();
             expect(toastComponentInstance.vhToastOptions.buttons[0].id).toBe(btnId);
             expect(toastComponentInstance.vhToastOptions.buttons[0].cssClass).toBe(expectedHoverColor);
             expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedButtonTranslationString);
