@@ -316,12 +316,14 @@ describe('NotificationToastrService', () => {
             toastrService.show.and.returnValue(mockToast);
             toastrService.toasts = [mockToast];
             const p = new Participant(globalParticipant);
+            const btnId = 'notification-toastr-invite-accept';
 
             // Act
             service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], false);
             await mockToast.toastRef.componentInstance.vhToastOptions.buttons[0].action();
 
             // Assert
+            expect(mockToast.toastRef.componentInstance.vhToastOptions.buttons[0].id).toBe(btnId);
             expect(mockToast.toastRef.componentInstance.vhToastOptions.buttons[0].cssClass).toBe('green');
             expect(mockToast.toastRef.componentInstance.vhToastOptions.buttons[0].label).toBe('notification-toastr.invite.accept');
             expect(consultationService.respondToConsultationRequest).toHaveBeenCalledWith(
@@ -347,12 +349,14 @@ describe('NotificationToastrService', () => {
             toastrService.show.and.returnValue(mockToast);
             toastrService.toasts = [mockToast];
             const p = new Participant(globalParticipant);
+            const btnId = 'notification-toastr-invite-decline';
 
             // Act
             service.showConsultationInvite(roomLabel, globalConference.id, invitation, p, p, [p], [], false);
             await mockToast.toastRef.componentInstance.vhToastOptions.buttons[1].action();
 
             // Assert
+            expect(mockToast.toastRef.componentInstance.vhToastOptions.buttons[1].id).toBe(btnId);
             expect(mockToast.toastRef.componentInstance.vhToastOptions.buttons[1].cssClass).toBe('red');
             expect(mockToast.toastRef.componentInstance.vhToastOptions.buttons[1].label).toBe('notification-toastr.invite.decline');
             expect(consultationService.respondToConsultationRequest).toHaveBeenCalledWith(
@@ -600,6 +604,7 @@ describe('NotificationToastrService', () => {
             // Arrange
             const expectedHoverColor = 'red';
             toastrService.show.and.returnValue(mockToast);
+            const btnId = 'notification-toastr-create-consultation-notification-close';
 
             // Act
             const toastComponentInstance = service.createConsultationNotificationToast(expectedMessage, true);
@@ -607,6 +612,7 @@ describe('NotificationToastrService', () => {
             // Assert
             expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(1);
             expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy();
+            expect(toastComponentInstance.vhToastOptions.buttons[0].id).toBe(btnId);
             expect(toastComponentInstance.vhToastOptions.buttons[0].cssClass).toBe(expectedHoverColor);
             expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedButtonTranslationString);
             expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedButtonTranslationString);
@@ -771,6 +777,7 @@ describe('NotificationToastrService', () => {
             // Arrange
             const expectedHoverColor = 'green';
             toastrService.show.and.returnValue(mockToast);
+            const btnId = 'notification-toastr-participant-added-dismiss',
 
             // Act
             const toastComponentInstance = service.showParticipantAdded(testParticipant, true);
@@ -778,6 +785,7 @@ describe('NotificationToastrService', () => {
             // Assert
             expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(1);
             expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy();
+            expect(toastComponentInstance.vhToastOptions.buttons[0].id).toBe(btnId);
             expect(toastComponentInstance.vhToastOptions.buttons[0].cssClass).toBe(expectedHoverColor);
             expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedButtonTranslationString);
             expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedButtonTranslationString);
@@ -897,9 +905,11 @@ describe('NotificationToastrService', () => {
             // Arrange
             toastrService.show.and.returnValue(mockToast);
 
+            const btnJoinHearingId = 'notification-toastr-hearing-started-join-hearing';
             const expectedJoinHearingButtonCssClass = 'hearing-started-join-hearing';
             const expectedJoinHearingButtonTranslationString = 'notification-toastr.hearing-started.join-hearing';
 
+            const btnDismissId = 'notification-toastr-hearing-started-dismiss';
             const expectedDismissCssClass = 'hearing-started-dismiss';
             const expectedDismissButtonTranslationString = 'notification-toastr.hearing-started.dismiss';
 
@@ -909,11 +919,13 @@ describe('NotificationToastrService', () => {
             // Assert
             expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(2);
             expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy();
+            expect(toastComponentInstance.vhToastOptions.buttons[0].id).toBe(btnJoinHearingId);
             expect(toastComponentInstance.vhToastOptions.buttons[0].cssClass).toBe(expectedJoinHearingButtonCssClass);
             expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedJoinHearingButtonTranslationString);
             expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedJoinHearingButtonTranslationString);
 
             expect(toastComponentInstance.vhToastOptions.buttons[1]).toBeTruthy();
+            expect(toastComponentInstance.vhToastOptions.buttons[1].id).toBe(btnDismissId);
             expect(toastComponentInstance.vhToastOptions.buttons[1].cssClass).toBe(expectedDismissCssClass);
             expect(toastComponentInstance.vhToastOptions.buttons[1].label).toBe(expectedDismissButtonTranslationString);
             expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedDismissButtonTranslationString);
@@ -1019,6 +1031,7 @@ describe('NotificationToastrService', () => {
         it('should have a button to close the toast', () => {
             // Arrange
             const expectedHoverColor = 'green';
+            const btnId = 'notification-toastr-hearing-layout-changed-dismiss';
             toastrService.show.and.returnValue(mockToast);
 
             // Act
@@ -1026,7 +1039,8 @@ describe('NotificationToastrService', () => {
 
             // Assert
             expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(1);
-            expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy();
+            expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy()
+            expect(toastComponentInstance.vhToastOptions.buttons[0].id).toBe(btnId);
             expect(toastComponentInstance.vhToastOptions.buttons[0].cssClass).toBe(expectedHoverColor);
             expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedButtonTranslationString);
             expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedButtonTranslationString);

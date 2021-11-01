@@ -334,7 +334,7 @@ export class NotificationToastrService {
             },
             buttons: [
                 {
-                    id: 'notification-toastr.participant-added-dismiss',
+                    id: 'notification-toastr-participant-added-dismiss',
                     label: this.translateService.instant('notification-toastr.participant-added.dismiss'),
                     cssClass: 'green',
                     action: async () => {
@@ -371,7 +371,7 @@ export class NotificationToastrService {
             },
             buttons: [
                 {
-                    id: 'notification-toastr.hearing-layout-changed-dismiss',
+                    id: 'notification-toastr-hearing-layout-changed-dismiss',
                     label: this.translateService.instant('notification-toastr.hearing-layout-changed.dismiss'),
                     cssClass: 'green',
                     action: async () => {
