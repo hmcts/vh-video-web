@@ -2,6 +2,7 @@ import { builder } from '@testpossessed/ts-data-builder';
 import { Guid } from 'guid-typescript';
 import * as moment from 'moment';
 import {
+    ConferenceForHostResponse,
     ConferenceForVhOfficerResponse,
     ConferenceResponse,
     ConferenceResponseVho,
@@ -65,6 +66,20 @@ export class ConferenceTestData {
             status: ConferenceStatus.NotStarted,
             participants: this.getListOfParticipants(),
             hearing_venue_name: 'Birmingham'
+        });
+    }
+
+    getConferenceForHostResponse(): ConferenceForHostResponse {
+        return new ConferenceForHostResponse({
+            id: '363725D0-E3D6-4D4A-8D0A-E8E57575FBC4',
+            case_name: 'C V I',
+            case_number: '123ABC',
+            case_type: 'Financial Tax Remedy',
+            scheduled_date_time: new Date(),
+            scheduled_duration: 50,
+            status: ConferenceStatus.NotStarted,
+            participants: this.getListOfParticipants(),
+            hearing_venue_is_scottish: true
         });
     }
 

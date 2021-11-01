@@ -3,14 +3,34 @@ import { JudgeHearingTableComponent } from './judge-hearing-table.component';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { JudgeHearingSummary } from 'src/app/shared/models/JudgeHearingSummary';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
+import { BehaviorSubject } from 'rxjs';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 
 describe('JudgeHearingTableComponent', () => {
-    const component: JudgeHearingTableComponent = new JudgeHearingTableComponent(new MockLogger());
+    let component: JudgeHearingTableComponent;
     const testData = new ConferenceTestData();
+    let mockedHearingVenueFlagsService: HearingVenueFlagsService;
+    let hearingVenueIsScottishSubject: BehaviorSubject<boolean>;
 
     beforeEach(() => {
+        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+            'HearingVenueFlagsService',
+            [],
+            ['HearingVenueIsScottish']
+        );
+        hearingVenueIsScottishSubject = new BehaviorSubject(false);
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(hearingVenueIsScottishSubject);
+
+        component = new JudgeHearingTableComponent(new MockLogger(), mockedHearingVenueFlagsService);
         component.conferences = testData.getTestData();
         component.ngOnInit();
+    });
+
+    it('re sets hearing venue flag to false ', () => {
+        const nextSpy = spyOn(hearingVenueIsScottishSubject, 'next');
+        component.ngOnInit();
+        expect(nextSpy).toHaveBeenCalledWith(false);
     });
 
     it('should emit when conference has been selected', () => {

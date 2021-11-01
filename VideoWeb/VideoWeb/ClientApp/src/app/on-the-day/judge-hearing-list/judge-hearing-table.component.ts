@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ConferenceForHostResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { JudgeHearingSummary } from 'src/app/shared/models/JudgeHearingSummary';
 import { ParticipantSummary } from 'src/app/shared/models/participant-summary';
@@ -20,12 +21,12 @@ export class JudgeHearingTableComponent implements OnInit {
 
     @Output() selectedConference = new EventEmitter<ConferenceForHostResponse>();
 
-    constructor(private logger: Logger) {}
+    constructor(private logger: Logger, private hearingVenueFlagsService: HearingVenueFlagsService) {}
 
     ngOnInit() {
         this.hearings = this.conferenceForHostResponse.map(c => new JudgeHearingSummary(c));
         const last = this.hearings.pop();
-
+        this.hearingVenueFlagsService.HearingVenueIsScottish.next(false);
         this.hearings.push(last);
     }
 

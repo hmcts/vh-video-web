@@ -1,11 +1,13 @@
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { of, Subscription, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subscription, throwError } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ScreenHelper } from 'src/app/shared/screen-helper';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -27,6 +29,8 @@ describe('JudgeHearingListComponent', () => {
     const conferences = new ConferenceTestData().getTestData();
 
     let videoWebService: jasmine.SpyObj<VideoWebService>;
+    let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
+    let hearingVenueIsScottishSubject: BehaviorSubject<boolean>;
     let screenHelper: jasmine.SpyObj<ScreenHelper>;
     let errorService: jasmine.SpyObj<ErrorService>;
     let router: jasmine.SpyObj<Router>;
@@ -36,6 +40,11 @@ describe('JudgeHearingListComponent', () => {
     const eventsService = eventsServiceSpy;
 
     beforeAll(() => {
+        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+            'HearingVenueFlagsService',
+            [],
+            ['HearingVenueIsScottish']
+        );
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForJudge', 'getCurrentParticipant']);
 
         errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
@@ -54,6 +63,8 @@ describe('JudgeHearingListComponent', () => {
     });
 
     beforeEach(() => {
+        hearingVenueIsScottishSubject = new BehaviorSubject(false);
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(hearingVenueIsScottishSubject);
         component = new JudgeHearingListComponent(
             videoWebService,
             errorService,
@@ -61,7 +72,8 @@ describe('JudgeHearingListComponent', () => {
             profileService,
             logger,
             eventsService,
-            screenHelper
+            screenHelper,
+            mockedHearingVenueFlagsService
         );
         component.conferences = conferences;
         videoWebService.getConferencesForJudge.and.returnValue(of(conferences));
@@ -130,6 +142,29 @@ describe('JudgeHearingListComponent', () => {
         tick();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeWaitingRoom, conference.id]);
     }));
+
+    it('calls setHearingVenueIsScottish service when the hearing venue is in scotland', fakeAsync(() => {
+        const nextSpy = spyOn(hearingVenueIsScottishSubject, 'next');
+        const conference = new ConferenceTestData().getConferenceForHostResponse();
+        const judge = conference.participants.find(x => x.role === Role.Judge);
+        videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(new LoggedParticipantResponse({ participant_id: judge.id })));
+
+        component.onConferenceSelected(conference);
+        expect(nextSpy).toHaveBeenCalledWith(true);
+    }));
+
+    it('calls setHearingVenueIsScottish service when the hearing venue is not in scotland', fakeAsync(() => {
+        const nextSpy = spyOn(hearingVenueIsScottishSubject, 'next');
+        const conference = new ConferenceTestData().getConferenceForHostResponse();
+        conference.hearing_venue_is_scottish = false;
+        const judge = conference.participants.find(x => x.role === Role.Judge);
+        videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(new LoggedParticipantResponse({ participant_id: judge.id })));
+
+        component.onConferenceSelected(conference);
+
+        expect(nextSpy).toHaveBeenCalledWith(false);
+    }));
+
     it('should navigate to judge waiting room when conference is selected for user as a staffmember in the conference', fakeAsync(() => {
         const conference = conferences[1];
         const staffMember = conference.participants.find(x => x.role === Role.StaffMember);
