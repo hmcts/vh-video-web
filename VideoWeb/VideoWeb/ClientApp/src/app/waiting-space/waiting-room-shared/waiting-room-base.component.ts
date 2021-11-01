@@ -868,10 +868,9 @@ export abstract class WaitingRoomBaseDirective {
         this.conference.status = message.status;
         if (message.status === ConferenceStatus.InSession) {
             this.countdownComplete = false;
-            if (this.isHost() &&  this.participant.status === ParticipantStatus.InConsultation) {
+            if (this.isHost() && this.participant.status === ParticipantStatus.InConsultation) {
                 this.notificationToastrService.showHearingStarted(this.conference.id, this.participant.id);
-             }
-
+            }
         }
 
         if (message.status === ConferenceStatus.Closed) {

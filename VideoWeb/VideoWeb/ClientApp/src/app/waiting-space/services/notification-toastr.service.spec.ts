@@ -37,7 +37,14 @@ describe('NotificationToastrService', () => {
         translateServiceSpy.instant.and.callFake(k => k);
         videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>('VideoCallService', ['joinHearingInSession']);
         videoCallServiceSpy.joinHearingInSession.and.returnValue(Promise.resolve());
-        service = new NotificationToastrService(logger, toastrService, consultationService, notificationSoundsService, translateServiceSpy, videoCallServiceSpy);
+        service = new NotificationToastrService(
+            logger,
+            toastrService,
+            consultationService,
+            notificationSoundsService,
+            translateServiceSpy,
+            videoCallServiceSpy
+        );
         roomLabel = 'Meeting room 1';
         consultationService.respondToConsultationRequest.calls.reset();
         notificationSoundsService.playConsultationRequestRingtone.calls.reset();
@@ -869,7 +876,6 @@ describe('NotificationToastrService', () => {
                     componentInstance: {}
                 }
             } as ActiveToast<VhToastComponent>;
-
         });
 
         it('should call toastr.show with the correct parameters', () => {
@@ -927,7 +933,7 @@ describe('NotificationToastrService', () => {
             expect(toastrService.remove).toHaveBeenCalledOnceWith(expectedToastId);
         });
 
-        it('should call joinHearingInSession with join hearing button action is triggered', async() => {
+        it('should call joinHearingInSession with join hearing button action is triggered', async () => {
             // Arrange
 
             const toastComponentInstance = service.showHearingStarted(conferneceId.toString(), testParticipant.id);

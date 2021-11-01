@@ -393,7 +393,7 @@ export class NotificationToastrService {
             timeOut: 0,
             extendedTimeOut: 0,
             tapToDismiss: false,
-            toastComponent: VhToastComponent,
+            toastComponent: VhToastComponent
         });
         (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
             color: 'white',
