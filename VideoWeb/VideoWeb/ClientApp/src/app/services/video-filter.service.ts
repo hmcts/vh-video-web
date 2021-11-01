@@ -118,6 +118,7 @@ export class VideoFilterService {
                     }
                 } catch (err) {
                     this.logger.error(`${this.loggerPrefix} failed to send image to self segmentation mask`, err);
+                    this.selfieSegmentation.reset();
                 }
             },
             width: 1280,
