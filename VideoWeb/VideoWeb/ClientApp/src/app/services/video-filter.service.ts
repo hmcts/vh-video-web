@@ -18,6 +18,7 @@ export class VideoFilterService {
     private _canvasWidth = 1280;
     private _canvasHeight = 720;
     private _enableVideoFilters: boolean;
+    private _failCount = 0;
 
     private _onFilterChanged = new Subject<BackgroundFilter | null>();
     get onFilterChanged$(): Observable<BackgroundFilter | null> {
@@ -118,7 +119,16 @@ export class VideoFilterService {
                     }
                 } catch (err) {
                     this.logger.error(`${this.loggerPrefix} failed to send image to self segmentation mask`, err);
-                    this.selfieSegmentation.reset();
+                    if (this._failCount < 3) {
+                        this._failCount++;
+                        this.selfieSegmentation.reset();
+                    } else {
+                        this.logger.error(
+                            `${this.loggerPrefix} failed to send image to self segmentation mask multiple times. Turning filter off`,
+                            err
+                        );
+                        this.updateFilter(null);
+                    }
                 }
             },
             width: 1280,
@@ -154,12 +164,14 @@ export class VideoFilterService {
         if (filter) {
             this.monitorLostGlContext();
             this.selfieSegmentation.reset();
+            this._failCount = 0;
             this.activeFilter = filter;
             this.filterOn = true;
             this.logger.debug(`${this.loggerPrefix} Filter on`);
             this._onFilterChanged.next(filter);
         } else {
             this.activeFilter = null;
+            this._failCount = 0;
             this.filterOn = false;
             this.stopMonitoringLostGlContext();
             this.logger.debug(`${this.loggerPrefix} Filter off`);
