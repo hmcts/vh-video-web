@@ -130,12 +130,17 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     describe('canJoinHearingFromConsultation', () => {
         const testCases: { shouldShow: boolean; newConferenceStatus: ConferenceStatus; participantStatus: ParticipantStatus }[] = [];
         for (const conferenceStatus in ConferenceStatus) {
-            for (const participantStatus in ParticipantStatus) {
-                testCases.push({
-                    shouldShow: conferenceStatus === ConferenceStatus.InSession && participantStatus === ParticipantStatus.InConsultation,
-                    newConferenceStatus: <ConferenceStatus>conferenceStatus,
-                    participantStatus: <ParticipantStatus>participantStatus
-                });
+            if (conferenceStatus) {
+                for (const participantStatus in ParticipantStatus) {
+                    if (participantStatus) {
+                        testCases.push({
+                            shouldShow:
+                                conferenceStatus === ConferenceStatus.InSession && participantStatus === ParticipantStatus.InConsultation,
+                            newConferenceStatus: <ConferenceStatus>conferenceStatus,
+                            participantStatus: <ParticipantStatus>participantStatus
+                        });
+                    }
+                }
             }
         }
 
