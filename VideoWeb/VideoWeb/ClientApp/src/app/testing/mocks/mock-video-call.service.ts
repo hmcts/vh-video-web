@@ -28,6 +28,8 @@ export const onScreenshareStoppedMock = new Subject<StoppedScreenshare>();
 export const onPresentationConnectedMock = new Subject<ConnectedPresentation>();
 export const onPresentationDisconnectedMock = new Subject<DisconnectedPresentation>();
 export const onPresentationMock = new Subject<Presentation>();
+export const onVideoEvidenceSharedMock = new Subject<void>();
+export const onVideoEvidenceStoppedMock = new Subject<void>();
 
 export const pexipCallMock = jasmine.createSpyObj<PexRTCCall>('PexRTCCall', [], ['mutedAudio', 'mutedVideo']);
 export const pexipApiMock = jasmine.createSpyObj<PexipClient>('PexipClient', [], { call: pexipCallMock });
@@ -77,7 +79,11 @@ videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>(
         'selectScreen',
         'retrieveInterpreterRoom',
         'retrieveWitnessInterpreterRoom',
-        'retrieveJudicialRoom'
+        'retrieveJudicialRoom',
+        'onVideoEvidenceShared',
+        'onVideoEvidenceStopped',
+        'selectScreenWithMicrophone',
+        'stopScreenWithMicrophone'
     ],
     {
         pexipAPI: pexipApiMock
@@ -97,3 +103,5 @@ videoCallServiceSpy.onScreenshareStopped.and.returnValue(onScreenshareStoppedMoc
 videoCallServiceSpy.onPresentationConnected.and.returnValue(onPresentationConnectedMock.asObservable());
 videoCallServiceSpy.onPresentationDisconnected.and.returnValue(onPresentationDisconnectedMock.asObservable());
 videoCallServiceSpy.onPresentation.and.returnValue(onPresentationMock.asObservable());
+videoCallServiceSpy.onVideoEvidenceShared.and.returnValue(onVideoEvidenceSharedMock.asObservable());
+videoCallServiceSpy.onVideoEvidenceStopped.and.returnValue(onVideoEvidenceStoppedMock.asObservable());
