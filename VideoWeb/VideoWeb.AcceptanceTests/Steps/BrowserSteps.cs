@@ -145,6 +145,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].LastWindowName = _browsers[_c.CurrentUser].SwitchTab(url);
         }
 
+        [When(@"the user is on the (.*) page")]
         [Then(@"the user is on the (.*) page")]
         [Then(@"they should be on the (.*) page")]
         public void ThenTheUserIsOnThePage(string page)
