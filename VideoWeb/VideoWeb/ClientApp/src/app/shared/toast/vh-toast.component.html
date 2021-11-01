@@ -13,6 +13,7 @@
 <div class="actions" *ngIf="vhToastOptions.buttons">
     <div class="action" *ngFor="let btn of vhToastOptions.buttons">
         <button
+        id={{btn.id}}
         class="small-button grey"
         [class.green]="btn.cssClass === 'green'"
         [class.join-hearing-button]="btn.cssClass === 'hearing-started-join-hearing'"

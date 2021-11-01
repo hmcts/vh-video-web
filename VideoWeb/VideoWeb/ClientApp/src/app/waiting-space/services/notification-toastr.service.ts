@@ -127,6 +127,7 @@ export class NotificationToastrService {
             },
             buttons: [
                 {
+                    id: 'notification-toastr-invite-accept',
                     label: this.translateService.instant('notification-toastr.invite.accept'),
                     cssClass: 'green',
                     action: async () => {
@@ -135,6 +136,7 @@ export class NotificationToastrService {
                     }
                 },
                 {
+                    id: 'notification-toastr-invite-decline',
                     label: this.translateService.instant('notification-toastr.invite.decline'),
                     cssClass: 'red',
                     action: async () => {
@@ -216,6 +218,7 @@ export class NotificationToastrService {
             },
             buttons: [
                 {
+                    id: 'notification-toastr-create-consultation-notification-close',
                     label: this.translateService.instant('notification-toastr.linked-participants.button-close'),
                     cssClass: 'red',
                     action: async () => {
@@ -259,6 +262,7 @@ export class NotificationToastrService {
             },
             buttons: [
                 {
+                    id: 'notification-toastr-poor-connection-dismiss',
                     label: this.translateService.instant('notification-toastr.poor-connection.dismiss'),
                     cssClass: 'green',
                     action: async () => {
@@ -283,6 +287,7 @@ export class NotificationToastrService {
             htmlBody: message,
             buttons: [
                 {
+                    id: 'notification-toastr-audio-recording-error.dismiss',
                     label: this.translateService.instant('notification-toastr.poor-connection.dismiss'),
                     cssClass: 'green',
                     action: async () => {
@@ -329,6 +334,7 @@ export class NotificationToastrService {
             },
             buttons: [
                 {
+                    id: 'notification-toastr.participant-added-dismiss',
                     label: this.translateService.instant('notification-toastr.participant-added.dismiss'),
                     cssClass: 'green',
                     action: async () => {
@@ -365,6 +371,7 @@ export class NotificationToastrService {
             },
             buttons: [
                 {
+                    id: 'notification-toastr.hearing-layout-changed-dismiss',
                     label: this.translateService.instant('notification-toastr.hearing-layout-changed.dismiss'),
                     cssClass: 'green',
                     action: async () => {
@@ -403,6 +410,7 @@ export class NotificationToastrService {
             },
             buttons: [
                 {
+                    id: 'notification-toastr-hearing-started-join-hearing',
                     label: this.translateService.instant('notification-toastr.hearing-started.join-hearing'),
                     cssClass: 'hearing-started-join-hearing',
                     action: async () => {
@@ -410,6 +418,7 @@ export class NotificationToastrService {
                     }
                 },
                 {
+                    id: 'notification-toastr-hearing-started-dismiss',
                     label: this.translateService.instant('notification-toastr.hearing-started.dismiss'),
                     cssClass: 'hearing-started-dismiss',
                     action: async () => {
