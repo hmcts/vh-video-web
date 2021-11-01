@@ -62,15 +62,23 @@ describe('NavigatorComponent', () => {
     });
 
     it('should go to staff member hearing list if user is a StaffMember and staff-member-feature is ON', async () => {
-        featureFlagServiceSpy.getFeatureFlagByName.and.returnValue(of(false));
         const profile = new UserProfileResponse({ role: Role.StaffMember });
         component.navigateToHearingList(profile);
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.StaffMemberHearingList]);
     });
 
     it('should go to unauthorized list if user is a StaffMember and staff-member-feature is OFF', async () => {
+        featureFlagServiceSpy.getFeatureFlagByName.and.returnValue(of(false));
+        const localComponent = new NavigatorComponent(
+            router,
+            profileServiceSpy,
+            errorServiceSpy,
+            deviceTypeServiceSpy,
+            configServiceSpy,
+            featureFlagServiceSpy
+        );
         const profile = new UserProfileResponse({ role: Role.StaffMember });
-        component.navigateToHearingList(profile);
+        localComponent.navigateToHearingList(profile);
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.Unauthorised]);
     });
 
