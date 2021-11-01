@@ -858,7 +858,7 @@ describe('NotificationToastrService', () => {
             expect(toastComponentInstance.vhToastOptions.color).toBe(expectedInHearingColor);
         });
     });
-    fdescribe('showHearingStarted', () => {
+    describe('showHearingStarted', () => {
         let mockToast: ActiveToast<VhToastComponent>;
         const expectedToastId = 2;
         const testParticipant = new ParticipantResponse();
