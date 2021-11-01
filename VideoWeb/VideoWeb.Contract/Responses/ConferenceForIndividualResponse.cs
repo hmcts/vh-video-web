@@ -34,5 +34,10 @@ namespace VideoWeb.Contract.Responses
         /// The conference closed datetime
         /// </summary>
         public DateTime? ClosedDateTime { get; set; }
+
+        /// <summary>
+        /// Flags true when hearing venue is in Scotland
+        /// </summary>
+        public bool HearingVenueIsScottish { get; set; }
     }
 }
