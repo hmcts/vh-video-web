@@ -596,6 +596,7 @@
         "participant-muted": "Participant muted"
     },
     "private-consultation-room-controls": {
+        "join-hearing-from-consultation": "Join hearing",
         "browser-support": "Your browser does not support video",
         "leave": "Leave",
         "lock-the-room-toggle-false": "Lock the room ",
@@ -623,8 +624,8 @@
         "consultation-controls": "Consultation controls",
         "show-chat-window": "Show messages list",
         "hide-chat-window": "Hide messages list",
-        "leave-hearing": "Leave Hearing"
-    "share-video-evidence": "Share video or audio",
+        "leave-hearing": "Leave Hearing",
+        "share-video-evidence": "Share video or audio",
         "share-document-evidence": "Share documents",
         "unsupported-dynamic-evidence": "Video sharing is not supported on this browser"
     },
@@ -871,607 +872,264 @@
                     "4": "navigate most of the website using speech recognition software",
                     "5": "listen to most of the website using a screen reader"
                 },
-                "vh-team": "Video hearings team: {{phone}}",
-                "individual-participant-status-list-label": "list of participants in hearing",
-                "warning": "Warning"
+                "paragraph4": "We’ve also made the website text as simple as possible to understand.",
+                "abilityNet": "AbilityNet",
+                "paragraph5": "has advice on making your device easier to use if you have a disability."
             },
-            "invite-participant": {
-                "invite-this-person": "Invite this person to the meeting"
+            "how-accessible": {
+                "heading": "How accessible is this website?",
+                "paragraph1": "Fully video hearings provide an additional channel for conducting a hearing. While they are being made as accessible as possible, they may not be suitable for everyone.",
+                "paragraph2": "The video hearings service includes a triage process so that people can make the court aware of any particular condition or impairment that may impact their ability to take part in a video hearing.",
+                "paragraph3": "It will always be for a judge to decide whether to use the option of a fully video hearing, and to ensure the interests of justice are served in any given hearing.",
+                "paragraph4": "During testing by DAC, users with cognitive impairment and dyslexia were able to navigate the website ‘completely independently, with no issues’. The access issues reported particularly affected those who are visually impaired or use voice activation technology."
             },
-            "join-private-consultation": {
-                "join": "Join a private meeting",
-                "warning": "Warning",
-                "confidential-declaration": "All meetings outside the hearing are confidential and not recorded as part of court or tribunal proceedings",
-                "video-access-point": "Video access point",
-                "continue": "Continue",
-                "close": "Close",
-                "for": "for",
-                "no-meetings-to-join": "There are no meetings to join"
-            },
-            "start-private-consultation": {
-                "invite": "Invite others to a private meeting",
-                "warning": "Warning",
-                "confidential-declaration": "All meetings outside the hearing are confidential and not recorded as part of court or tribunal proceedings",
-                "video-access-point": "Video access point",
-                "continue": "Continue",
-                "close": "Close",
-                "for": "for",
-                "unavailable": "Unavailable",
-                "in": "In"
-            },
-            "private-consultation-participants": {
-                "calling": "Calling...",
-                "declined": "Declined",
-                "failed": "Failed",
-                "no-answer": "No Answer",
-                "transferring": "Transferring",
-                "not-available": "Not available",
-                "crest-icon-alt": "Crest",
-                "participants": "Participants"
-            },
-            "participants-panel": {
-                "for": "for",
-                "joining": "Joining",
-                "not-joined": "Not joined",
-                "disconnected": "DISCONNECTED",
-                "red": "red",
-                "blue": "blue",
-                "grey": "grey",
-                "participants": "Participants",
-                "mute-lock": "Mute & lock",
-                "mute-tooltip": "Mute all participants and prevent them from unmuting",
-                "unmute-lock": "Unlock mute",
-                "unmute-tooltip": "Allow all participants to unmute",
-                "lower-hands": "Lower hands",
-                "lower-hand": "Lower hand",
-                "lower-hands-tooltip": "Lower all raised hands",
-                "crest": "HMCTS Crest",
-                "camera-off": "Camera off",
-                "remove-spotlight": " (remove spotlight)",
-                "click-to-spotlight": " (click to spotlight)",
-                "loading-participants": "Loading Participants",
-                "joining1": "Joining...",
-                "call-witness": "Call witness",
-                "participant-unavailable": "{{ role }} unavailable",
-                "admit-participant": "Admit {{ role }}",
-                "participant-available": "Available",
-                "mute-participant": "Mute participant",
-                "microphone-muted-icon": "Microphone muted icon",
-                "microphone-on-icon": "Microphone on icon",
-                "participant-muted": "Participant muted"
-            },
-            "private-consultation-room-controls": {
-                "join-hearing-from-consultation": "Join hearing",
-                "browser-support": "Your browser does not support video",
-                "leave": "Leave",
-                "lock-the-room-toggle-false": "Lock the room ",
-                "lock-the-room-toggle-true": "Unlock the room ",
-                "close": "Close",
-                "pause": "Pause",
-                "hand-raise-toggle-true": "Lower hand",
-                "hand-raise-toggle-false": "Raise hand",
-                "remote-muted": "Judge has muted you. Raise your hand to speak.",
-                "audio-mute-toggle-true": "Unmute microphone",
-                "audio-mute-toggle-false": "Mute microphone",
-                "video-mute-toggle-true": "Turn on camera",
-                "video-mute-toggle-false": "Turn off camera",
-                "selfview-toggle-true": "Hide my self-view",
-                "selfview-toggle-false": "Show my self-view",
-                "participants-panel": "Participants Panel",
-                "chat-panel": "Chat Panel",
-                "share-my-screen": "Share my screen",
-                "start-sharing-screen": "Start sharing screen",
-                "stop-sharing-my-screen": "Stop sharing my screen",
-                "stop-sharing-screen": "Stop sharing screen",
-                "change-camera-mic": "Change your camera and microphone",
-                "context-menu": "Open Menu",
-                "hearing-controls": "Hearing controls",
-                "consultation-controls": "Consultation controls",
-                "show-chat-window": "Show messages list",
-                "hide-chat-window": "Hide messages list",
-                "leave-hearing": "Leave Hearing"
-            },
-            "chat-panel": {
-                "heading": "VH Officer messages",
-                "loading": "Loading..."
-            },
-            "select-hearing-layout": {
-                "choose-hearing-layout": "Choose hearing layout",
-                "open-all": "Open all",
-                "close-all": "Close all"
-            },
-            "hearing-layout": {
-                "layout-image-alt": "Layout image for {{layout}}",
-                "recommended": "recommended",
-                "title-1-plus-7": "1 main speaker",
-                "title-2-plus-21": "2 main speakers",
-                "title-dynamic": "Dynamic",
-                "description-1-plus-7": "Up to 7 participants on screen. The current speaker appears in the main window.",
-                "description-2-plus-21": "Up to 21 participants on screen. The current speakers appear in 2 main windows.",
-                "description-dynamic": "Layout automatically adapts to the number of participants."
-            },
-            "hearing-role": {
-                "app": "App",
-                "app-advocate": "App Advocate",
-                "appellant-lip": "Appellant LIP",
-                "applicant-lip": "Applicant LIP",
-                "barrister": "Barrister",
-                "claimant-lip": "Claimant LIP",
-                "defendant-lip": "Defendant LIP",
-                "expert": "Expert",
-                "interpreter": "Interpreter",
-                "judge": "Judge",
-                "staff-member": "Staff Member",
-                "litigant-in-person": "Litigant in person",
-                "litigation-friend": "Litigation friend",
-                "macKenzie-friend": "MacKenzie friend",
-                "observer": "Observer",
-                "panel-member": "Panel Member",
-                "presenting-officer": "Presenting Officer",
-                "prosecution": "Prosecution",
-                "prosecution-advocate": "Prosecution Advocate",
-                "representative": "Representative",
-                "respondent": "Respondent",
-                "respondent-Advocate": "Respondent Advocate",
-                "respondent-lip": "Respondent LIP",
-                "special-counsel": "Special Counsel",
-                "solicitor": "Solicitor",
-                "state-lip": "State LIP",
-                "winger": "Winger",
-                "witness": "Witness",
-                "intermediary": "Intermediary",
-                "video-access-point": "Video access point",
-                "quick-link-participant": "Participant",
-                "quick-link-observer": "Observer"
-            },
-            "case-role": {
-                "appellant": "Appellant",
-                "applicant": "Applicant",
-                "claimant": "Claimant",
-                "defendant": "Defendant",
-                "home-office": "Home Office",
-                "judge": "Judge",
-                "none": "None",
-                "observer": "Observer",
-                "panel-member": "Panel Member",
-                "respondent": "Respondent",
-                "state": "State"
-            },
-            "case-type": {
-                "adoption": "Adoption",
-                "children-act": "Children Act",
-                "civil": "Civil",
-                "civil-money-claims": "Civil Money Claims",
-                "court-of-appeal-criminal-division": "Court of Appeal Criminal Division",
-                "divorce": "Divorce",
-                "employment-tribunal": "Employment Tribunal",
-                "family-law-act": "Family Law Act",
-                "financial-remedy": "Financial Remedy",
-                "generic": "Generic",
-                "grc---charity": "GRC - Charity",
-                "grc---crb": "GRC - CRB",
-                "grc---dvsa": "GRC - DVSA",
-                "grc---environment": "GRC - Environment",
-                "grc---estate-agents": "GRC - Estate Agents",
-                "grc---food": "GRC - Food",
-                "grc---gambling": "GRC - Gambling",
-                "grc---immigration-services": "GRC - Immigration Services",
-                "grc---information-rights": "GRC - Information Rights",
-                "grc---pensions-regulation": "GRC - Pensions Regulation",
-                "grc---professional-regulations": "GRC - Professional Regulations",
-                "grc---query-jurisdiction": "GRC - Query Jurisdiction",
-                "grc---welfare-of-animals": "GRC - Welfare of Animals",
-                "grc---ej": "GRC - EJ",
-                "housing-&-planning-act": "Housing & Planning Act",
-                "housing-act": "Housing Act",
-                "immigration-and-asylum": "Immigration and Asylum",
-                "land-registration": "Land Registration",
-                "leasehold-enfranchisement": "Leasehold Enfranchisement",
-                "leasehold-management": "Leasehold Management",
-                "park-homes": "Park Homes",
-                "placement": "Placement",
-                "private-law": "Private Law",
-                "public-law---care": "Public Law - Care",
-                "rents": "Rents",
-                "right-to-buy": "Right to buy",
-                "tax": "Tax",
-                "tribunal": "Tribunal"
-            },
-            "case-type-group": {
-                "state": "State",
-                "observer": "Observer",
-                "panelmember": "PanelMember",
-                "none": "None",
-                "judge": "Judge",
-                "staffmember": "Staff Member",
-                "applicant": "Applicant",
-                "panel member": "Panel Member",
-                "defendant": "Defendant",
-                "respondent": "Respondent",
-                "appellant": "Appellant",
-                "claimant": "Claimant"
-            },
-            "user-role": {
-                "case-admin": "Case admin",
-                "video-hearings-officer": "Video hearings officer",
-                "hearing-facilitation-support-(ctrt-clerk)": "Hearing facilitation support (CTRT Clerk)",
-                "judge": "Judge",
-                "individual": "Individual",
-                "representative": "Representative",
-                "judicial-office-holder": "Judicial Office Holder",
-                "quick-link-participant": "Participant",
-                "quick-link-observer": "Observer"
-            },
-            "participant-status": {
-                "none": "None",
-                "notsignedin": "Not signed in",
-                "unabletojoin": "Unable to join",
-                "joining": "Joining",
-                "available": "Available",
-                "inhearing": "In hearing",
-                "inconsultation": "In consultation",
-                "disconnected": "Disconnected",
-                "hmcts-crest": "HM Courts & Tribunals Service crest"
-            },
-            "endpoint-status": {
-                "notyetjoined": "Not yet joined",
-                "connected": "Connected",
-                "disconnected": "Disconnected",
-                "inconsultation": "In consultation"
-            },
-            "conference-status": {
-                "notstarted": "Not Started",
-                "insession": "In Session",
-                "paused": "Paused",
-                "suspended": "Suspended",
-                "closed": "Closed"
-            },
-            "confirm-start-hearing-popup": {
-                "hearing-about-to-start": "You are about to {{ action }} this hearing",
-                "participant-sees-countdown-timer": "Participants will see a countdown timer before the hearing begins.",
-                "private-consultations": "Any participants in private consultations will automatically be brought into the hearing.",
-                "confirm-start-hearing": "Confirm start hearing",
-                "hearing": "hearing",
-                "cancel-start-hearing": "Cancel start hearing",
-                "cancel": "Cancel",
-                "resume": "resume",
-                "start": "start"
-            },
-            "copy-telephone-id": {
-                "alt": "Copy joining by phone details to clipboard",
-                "display-text": "Copy joining by phone details to clipboard",
-                "tooltip-copied": "Details copied to clipboard"
-            },
-            "participant-network-status": {
-                "icon-alt": "Open instant messaging chat window arrow"
-            },
-            "pending-tasks": {
-                "alert-icon": "alerts icon"
-            },
-            "audio-alert": {
-                "warning-icon": "warning exclamation mark",
-                "title": "Warning",
-                "message": "There’s a problem with recording. Some or all of the audio for this hearing may not be recorded."
-            },
-            "unread-messages": {
-                "im-image-alt": "instant message icon"
-            },
-            "vho-hearing-list": {
-                "crest-icon-alt": "crest icon"
-            },
-            "court-room-filters": {
-                "apply-filters-alt": "Apply selected filters",
-                "cancel-filters-alt": "Cancel filters"
-            },
-            "copy-id": {
-                "alt": "Copy conference id icon",
-                "display-text": "Copy hearing ID to clipboard",
-                "tooltip-copied": "Conference ID copied to clipboard"
-            },
-            "copy-quick-link": {
-                "tooltip-copied": "Join by quick link details copied to clipboard",
-                "display-text": "Copy join by quick link details to clipboard"
-            },
-            "admin-im-list": {
-                "judge-icon-alt": "Judge icon",
-                "representing": "Representing",
-                "unavailable": "Unavailable"
-            },
-            "confirm-close-hearing-popup": {
-                "title": "You are about to close this hearing",
-                "message": "Close the hearing if you have completed proceedings. Once closed, the hearing is ended and cannot be re-opened.",
-                "close-hearing": "Close hearing",
-                "close-hearing-label": "Confirm closing the hearing",
-                "cancel-close": "Keep hearing open",
-                "cancel-close-label": "Cancel closing the hearing"
-            },
-            "confirm-leave-hearing-popup": {
-                "title": "You are about to leave this hearing",
-                "message": "Ensure the judge or another responsible officer is still present before leaving the hearing.",
-                "leave-hearing": "Leave hearing",
-                "leave-hearing-label": "Confirm leaving the hearing",
-                "cancel-leave": "Cancel",
-                "cancel-leave-label": "Cancel leaving the hearing"
-            },
-            "venue-list": {
-                "title": "Select your hearing lists",
-                "label": "Venue name {{name}}",
-                "allocation-list-label": "Venue allocation list"
-            },
-            "accessibility": {
-                "crest-image-alt": "HMCTS logo crest image",
-                "menu": {
-                    "heading": "Contents",
-                    "accessibility-statement": {
-                        "heading": "Accessibility statement for the HMCTS video hearing service",
-                        "paragraph1": "This service allows all participants to take part in a court hearing by video - from their home, office or somewhere else using a laptop or desktop computer.",
-                        "paragraph2": "This accessibility statement is based on evaluation conducted by the Digital Accessibility Centre (DAC), Neath, during September 2019.",
-                        "paragraph3": "This website is run by HM Courts and Tribunals Service. We want as many people as possible to be able to use this service. For example, this means you should be able to:",
-                        "list": {
-                            "1": "change colours, contrast levels and fonts",
-                            "2": "zoom in up to 300% without the text spilling off the screen",
-                            "3": "navigate most of the website using just a keyboard",
-                            "4": "navigate most of the website using speech recognition software",
-                            "5": "listen to most of the website using a screen reader"
-                        },
-                        "paragraph4": "We’ve also made the website text as simple as possible to understand.",
-                        "abilityNet": "AbilityNet",
-                        "paragraph5": "has advice on making your device easier to use if you have a disability."
-                    },
-                    "how-accessible": {
-                        "heading": "How accessible is this website?",
-                        "paragraph1": "Fully video hearings provide an additional channel for conducting a hearing. While they are being made as accessible as possible, they may not be suitable for everyone.",
-                        "paragraph2": "The video hearings service includes a triage process so that people can make the court aware of any particular condition or impairment that may impact their ability to take part in a video hearing.",
-                        "paragraph3": "It will always be for a judge to decide whether to use the option of a fully video hearing, and to ensure the interests of justice are served in any given hearing.",
-                        "paragraph4": "During testing by DAC, users with cognitive impairment and dyslexia were able to navigate the website ‘completely independently, with no issues’. The access issues reported particularly affected those who are visually impaired or use voice activation technology."
-                    },
-                    "cannot-access": {
-                        "heading": "What to do if you cannot access parts of this website",
-                        "paragraph1": "If you need help to access the information on this website, contact the video hearings team:",
-                        "paragraph2": "Available between 9am and 5pm, Monday to Friday.",
-                        "list": {
-                            "1": "email {{email}}",
-                            "2": "call {{phone}}"
-                        }
-                    },
-                    "reporting-accessibility": {
-                        "heading": "Reporting accessibility problems with this website",
-                        "paragraph1": "We’re always looking to improve the accessibility of this website. If you find any problems not listed on this page or think we’re not meeting accessibility requirements, contact the video hearings team (above)."
-                    },
-                    "enforcement-procedure": {
-                        "heading": "Enforcement procedure",
-                        "paragraph1": "The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018 (the ‘accessibility regulations’). If you’re not happy with how we respond to your complaint, ",
-                        "paragraph2": "contact the Equality Advisory and Support Service (EASS)"
-                    },
-                    "technical-information": {
-                        "heading": "Technical information about this website’s accessibility",
-                        "paragraph1": "HM Courts and Tribunals Service is committed to making its website accessible, in accordance with the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018.",
-                        "paragraph2": {
-                            "1": "This website is partially compliant with the",
-                            "2": "Web Content Accessibility Guidelines version 2.1",
-                            "3": "AA standard, due to the non-compliances listed below."
-                        },
-                        "paragraph3": "paragraph1"
-                    },
-                    "non-accessible-content": {
-                        "heading": "Non accessible content",
-                        "paragraph1": "A number of accessibility and usability issues were reported. These particularly impacted those who are visually impaired or use voice activation technology. Most issues were resolved before the private beta was released. Those that remain are shown below."
-                    },
-                    "non-compliance-accessibility-regulations": {
-                        "heading": "Non compliance with the accessibility regulations",
-                        "sub-heading1": "Information videos",
-                        "paragraph1": "We currently use video to help users see what their experience would be like either attending a court building or taking part in a video hearing. This has proved popular in user testing and we’ll make the necessary changes to make the videos more accessible by the end of 2019.",
-                        "sub-heading2": "Equipment check",
-                        "paragraph2": "We use video to help users test whether their computer equipment is suitable for a video hearing. This has caused some accessibility issues, detailed below.",
-                        "paragraph3": "We use a visual method to indicate to the user that their microphone is working. This is not suitable for those with visual impairments. We’re considering providing an audible indicator so they know their microphone is picking up sound.",
-                        "paragraph4": "The video intentionally has no controls. It needs to play to the end to detect the strength of the user’s internet connection. This takes at least 20 to 30 seconds. We’ve added an explanation.",
-                        "paragraph5": "By Spring 2020 we’ll review the way we help users test their equipment to address the accessibility issues identified in the DAC report."
-                    },
-                    "not-within-the-scope": {
-                        "heading": "Not within scope/not applicable",
-                        "paragraph1": "In preparing for a video hearing, potential participants are asked a series of questions. These are presented as one question per page, with the option of a ‘yes’ or ‘no’ answer. DAC advised that we should group the ‘yes’ and ‘no’ buttons to assist screen reader users. (WCAG reference 1.3.1 – A). This advice reflects guidance for longer forms with separate groups of questions on a single page, which is not applicable in this instance."
-                    },
-                    "how-we-tested-this-website": {
-                        "heading": "How we tested this website",
-                        "paragraph1": "The website was tested by the Digital Accessibility Centre, Neath, during September 2019.",
-                        "paragraph2": "This is an excerpt from their report explaining their methodology:",
-                        "paragraph3": "The website was tested by a team of experienced auditors, many of who are disabled individuals and users of adaptive technology. The combination of subjective pan-disability user feedback and comprehensive technical auditing allows us to measure how the website performs technically and practically, thereby offering an essential added dimension to our test results that other methods of testing cannot provide.",
-                        "sub-heading1": "User testing:",
-                        "paragraph4": "Manual accessibility checking was conducted by a team of disabled individuals, using a range of adaptive technologies (hardware and software designed to facilitate the use of computers by people with disabilities).",
-                        "sub-heading2": "Technical auditing:",
-                        "paragraph5": "Technical auditing involves the experienced application of a number of technical auditing and standards compliance assessment tools. This combined with an extensive knowledge of WCAG, its application and wider global practice provides the DAC website with further credibility and quality."
-                    }
-                },
-                "contents": "Contents"
-            },
-            "privacy-policy": {
-                "crest-image-alt": "HMCTS logo crest image",
-                "heading": "Our privacy policy for the video hearings service",
-                "print-button": "Print",
-                "paragraph1": "The video hearings service is managed by HM Courts and Tribunals Service (HMCTS).",
-                "paragraph2": "When you use this service we (HMCTS) will ask you to provide some personal data. This policy explains why we collect your personal data, what we do with it and your rights.",
-                "why-we-collect": {
-                    "heading": "Why we collect your personal data",
-                    "paragraph": "We collect your personal data so you can take part in a video hearing and to meet legal requirements. We also collect data to improve the service."
-                },
-                "what-we-do": {
-                    "heading": "What we do with your personal data",
-                    "paragraph1": "Your personal data is processed by our staff in the UK, and the data is stored within the EEA.",
-                    "paragraph2": "HMCTS is an executive agency of the Ministry of Justice. The Ministry of Justice is known as the 'data controller' of the personal data you provide. The Ministry's personal information charter explains more about how we process data."
-                },
-                "what-we-collect": {
-                    "heading": "The data we collect",
-                    "paragraph": "The personal data we collect includes:",
-                    "list": {
-                        "1": "your name, address and contact details, including your email address and telephone number",
-                        "2": "details of your company and your role, if applicable",
-                        "3": "details of anyone who acts on your behalf or anyone that you act for in a video hearing",
-                        "4": "information we gather to assess your suitability for a video hearing",
-                        "5": "information about your video hearing",
-                        "6": "information that tells us if you open an email from us, or click on a link in an email",
-                        "7": "the login details you use to access the video hearings service",
-                        "8": "information about the way you access this service including your IP address, internet speed, computer operating system and the browser you use to access the internet. We do this by",
-                        "8-cookies": "using cookies"
-                    }
-                },
-                "how-long": {
-                    "heading": "How long we keep your data",
-                    "paragraph": "The video hearings service will keep this information for 3 months after the date your hearing is booked to take place. We'll then delete it. Information about your application or your case is held by a different department in HMCTS and different arrangements may apply."
-                },
-                "shoring-and-sharing": {
-                    "heading": "Storing and sharing your data internationally",
-                    "paragraph": "Sometimes your personal data will be stored outside the UK. When we do this, we comply with data protection law."
-                },
-                "your-rights": {
-                    "heading": "Your rights",
-                    "paragraph1": "You can ask:",
-                    "list-ask": {
-                        "1": "to see the personal data that we hold on you",
-                        "2": "to have the personal data corrected",
-                        "3": "to have the personal data removed or deleted (this will depend on the circumstances, for example, if you decide not to continue with your case)",
-                        "4": "that access to the personal data is restricted (for example, you can ask to have your data stored for longer and not automatically deleted)"
-                    },
-                    "paragraph2": "If you want to see the personal data that we hold on you, you can:",
-                    "list-see": {
-                        "1-1": "complete a form to",
-                        "1-link": "make a subject access request.",
-                        "1-2": "Your request goes to the MoJ as data controller.",
-                        "2": "write to us: Disclosure Team, Post point 10.38, 102 Petty France, London, SW1H 9AJ"
-                    },
-                    "paragraph3": "You can ask for more information about:",
-                    "list-more": {
-                        "1": "agreements we have on sharing information with other organisations",
-                        "2": "when we are allowed to pass on personal information without telling you",
-                        "3": "our instructions to staff on how to collect, use or delete your personal information",
-                        "4": "how we check that the information we hold is accurate and up to date"
-                    },
-                    "paragraph4": "You can contact the MoJ data protection officer by:",
-                    "list-contact": {
-                        "1": "writing to us: Post point 10.38, 102 Petty France, London, SW1H 9AJ",
-                        "2": "emailing:"
-                    }
-                },
-                "how-to-complain": {
-                    "heading": "How to complain",
-                    "paragraph1-1": "See our ",
-                    "paragraph1-link": "complaints procedure",
-                    "paragraph1-2": "if you want to complain about how we've handled your personal data.",
-                    "paragraph2-1": "Write to: Post point 10.38, 102 Petty France, London, SW1H 9AJ",
-                    "paragraph2-2": "Email: ",
-                    "paragraph3-1": "You can also complain to the ",
-                    "paragraph3-link": "Information Commissioner's Office",
-                    "paragraph3-2": "if you're not satisfied with our response or believe we're not processing your personal data lawfully."
-                },
-                "hearings-recorded": {
-                    "heading": "Where hearings are recorded",
-                    "paragraph1": "The process for recording video hearings is the same as for hearings held in a court or tribunal building:",
-                    "list": {
-                        "1": "hearings at the Crown Court and at civil and family courts are always recorded",
-                        "2-1": "tribunal hearings are not always recorded. ",
-                        "2-link": "Contact the tribunal",
-                        "2-2": " to find out if the hearing was recorded.",
-                        "3": "hearings at magistrates' courts are never recorded."
-                    },
-                    "paragraph2-1": "Where hearings are recorded you may ",
-                    "paragraph2-link": "apply for a transcript.",
-                    "paragraph3": "Participants must not record or take any images of the hearing."
+            "cannot-access": {
+                "heading": "What to do if you cannot access parts of this website",
+                "paragraph1": "If you need help to access the information on this website, contact the video hearings team:",
+                "paragraph2": "Available between 9am and 5pm, Monday to Friday.",
+                "list": {
+                    "1": "email {{email}}",
+                    "2": "call {{phone}}"
                 }
             },
-            "wr-participant-list-shared": {
-                "for": "for",
-                "representative": "Representative"
+            "reporting-accessibility": {
+                "heading": "Reporting accessibility problems with this website",
+                "paragraph1": "We’re always looking to improve the accessibility of this website. If you find any problems not listed on this page or think we’re not meeting accessibility requirements, contact the video hearings team (above)."
             },
-            "notification-toastr": {
-                "invite": {
-                    "call-from": "Call from {{name}}",
-                    "video-hearing-officer": "Video hearings officer",
-                    "with": "with",
-                    "accept": "Accept",
-                    "decline": "Decline"
-                },
-                "linked-participants": {
-                    "waiting-single": "Waiting for {{name}} to accept the invitation from {{invitedBy}}.",
-                    "waiting-multiple": "Waiting for {{number}} other participants to accept the invitation from {{invitedBy}}.",
-                    "rejected": "{{rejector}} rejected the invitation from {{invitedBy}}.",
-                    "button-close": "Close"
-                },
-                "poor-connection": {
-                    "title": "Alert",
-                    "message": "Your internet connection is poor. People may have trouble seeing and hearing you.",
-                    "dismiss": "Dismiss"
-                },
-                "participant-added": {
-                    "title": "{{name}}",
-                    "message-without-party": "{{role}} has been added to the hearing.",
-                    "message-with-party": "{{role}} ({{party}}) has been added to the hearing.",
-                    "dismiss": "Dismiss"
-                },
-                "hearing-layout-changed": {
-                    "title": "{{name}}",
-                    "message": "has changed the hearing layout.",
-                    "dismiss": "Dismiss"
-                }
+            "enforcement-procedure": {
+                "heading": "Enforcement procedure",
+                "paragraph1": "The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018 (the ‘accessibility regulations’). If you’re not happy with how we respond to your complaint, ",
+                "paragraph2": "contact the Equality Advisory and Support Service (EASS)"
             },
-            "consultation-service": {
-                "judge-room": "Judge Room",
-                "judge-room-short": "Judge Room",
-                "meeting-room": "Meeting Room",
-                "meeting-room-short": "Room"
-            },
-            "idp-selection": {
-                "title": "Select your account type to sign in",
-                "description": "You'll need to select the correct option and have a valid email address and password to sign in.",
-                "ejud": {
-                    "title": "Judicial Office Holder",
-                    "description": "If you are a judge or panel member, select this option (your email will end with @ejudiciary.net)."
+            "technical-information": {
+                "heading": "Technical information about this website’s accessibility",
+                "paragraph1": "HM Courts and Tribunals Service is committed to making its website accessible, in accordance with the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018.",
+                "paragraph2": {
+                    "1": "This website is partially compliant with the",
+                    "2": "Web Content Accessibility Guidelines version 2.1",
+                    "3": "AA standard, due to the non-compliances listed below."
                 },
-                "vhaad": {
-                    "title": "Hearing Participant",
-                    "description": "If you are participating in a video hearing in any other capacity, select this option."
-                },
-                "next": "Next",
-                "error-title": "There is a problem:",
-                "select-a-provider": "Select an account type to continue."
+                "paragraph3": "paragraph1"
             },
-            "quick-participant-landing-page": {
-                "page-title": "Enter your details to join your hearing",
-                "paragraph1": "Please tell us your name and your role in the hearing.",
-                "problem-with-form": "There is a problem",
-                "problem-with-special-char": "You entered some characters that are not allowed.",
-                "problem-with-special-char-recommendation": "You may use accents, apostrophes and hyphens but no other symbols.",
-                "name-label": "Your full name",
-                "name-error-empty": "Please enter your full name",
-                "name-error-special-char": "You've entered characters that are not allowed",
-                "role-label": "What is your role in the hearing?",
-                "role-error": "Please choose your role in the hearing",
-                "roles": {
-                    "QuickLinkParticipant": {
-                        "title": "Participant",
-                        "description": "You have been called to take part in the hearing."
-                    },
-                    "QuickLinkObserver": {
-                        "title": "Observer",
-                        "description": "You are observing the hearing, but not taking part."
-                    }
-                },
-                "button-continue": "Continue"
+            "non-accessible-content": {
+                "heading": "Non accessible content",
+                "paragraph1": "A number of accessibility and usability issues were reported. These particularly impacted those who are visually impaired or use voice activation technology. Most issues were resolved before the private beta was released. Those that remain are shown below."
             },
-            "quick-participant-errors": {
-                "invalid-page": {
-                    "heading": "The link you've used can't be recognised",
-                    "body": "Please check the link you were sent. If it still doesn't work, call 0300 303 0655 for immediate contact with a video hearings officer."
-                }
+            "non-compliance-accessibility-regulations": {
+                "heading": "Non compliance with the accessibility regulations",
+                "sub-heading1": "Information videos",
+                "paragraph1": "We currently use video to help users see what their experience would be like either attending a court building or taking part in a video hearing. This has proved popular in user testing and we’ll make the necessary changes to make the videos more accessible by the end of 2019.",
+                "sub-heading2": "Equipment check",
+                "paragraph2": "We use video to help users test whether their computer equipment is suitable for a video hearing. This has caused some accessibility issues, detailed below.",
+                "paragraph3": "We use a visual method to indicate to the user that their microphone is working. This is not suitable for those with visual impairments. We’re considering providing an audible indicator so they know their microphone is picking up sound.",
+                "paragraph4": "The video intentionally has no controls. It needs to play to the end to detect the strength of the user’s internet connection. This takes at least 20 to 30 seconds. We’ve added an explanation.",
+                "paragraph5": "By Spring 2020 we’ll review the way we help users test their equipment to address the accessibility issues identified in the DAC report."
             },
-            "loading": "Loading please wait...",
-            "video-filter": {
-                "title": "Choose a custom background",
-                "none": "None",
-                "none-alt": "Remove all filters",
-                "blur": "Blurred",
-                "blur-alt": "Apply the blurred background filter",
-                "hmcts": "HMCTS",
-                "hmcts-alt": "Apply the background with the HMCTS crest",
-                "scts": "SCTS",
-                "scts-alt": "Apply the background with the SCTS crest"
+            "not-within-the-scope": {
+                "heading": "Not within scope/not applicable",
+                "paragraph1": "In preparing for a video hearing, potential participants are asked a series of questions. These are presented as one question per page, with the option of a ‘yes’ or ‘no’ answer. DAC advised that we should group the ‘yes’ and ‘no’ buttons to assist screen reader users. (WCAG reference 1.3.1 – A). This advice reflects guidance for longer forms with separate groups of questions on a single page, which is not applicable in this instance."
+            },
+            "how-we-tested-this-website": {
+                "heading": "How we tested this website",
+                "paragraph1": "The website was tested by the Digital Accessibility Centre, Neath, during September 2019.",
+                "paragraph2": "This is an excerpt from their report explaining their methodology:",
+                "paragraph3": "The website was tested by a team of experienced auditors, many of who are disabled individuals and users of adaptive technology. The combination of subjective pan-disability user feedback and comprehensive technical auditing allows us to measure how the website performs technically and practically, thereby offering an essential added dimension to our test results that other methods of testing cannot provide.",
+                "sub-heading1": "User testing:",
+                "paragraph4": "Manual accessibility checking was conducted by a team of disabled individuals, using a range of adaptive technologies (hardware and software designed to facilitate the use of computers by people with disabilities).",
+                "sub-heading2": "Technical auditing:",
+                "paragraph5": "Technical auditing involves the experienced application of a number of technical auditing and standards compliance assessment tools. This combined with an extensive knowledge of WCAG, its application and wider global practice provides the DAC website with further credibility and quality."
             }
+        },
+        "contents": "Contents"
+    },
+    "privacy-policy": {
+        "crest-image-alt": "HMCTS logo crest image",
+        "heading": "Our privacy policy for the video hearings service",
+        "print-button": "Print",
+        "paragraph1": "The video hearings service is managed by HM Courts and Tribunals Service (HMCTS).",
+        "paragraph2": "When you use this service we (HMCTS) will ask you to provide some personal data. This policy explains why we collect your personal data, what we do with it and your rights.",
+        "why-we-collect": {
+            "heading": "Why we collect your personal data",
+            "paragraph": "We collect your personal data so you can take part in a video hearing and to meet legal requirements. We also collect data to improve the service."
+        },
+        "what-we-do": {
+            "heading": "What we do with your personal data",
+            "paragraph1": "Your personal data is processed by our staff in the UK, and the data is stored within the EEA.",
+            "paragraph2": "HMCTS is an executive agency of the Ministry of Justice. The Ministry of Justice is known as the 'data controller' of the personal data you provide. The Ministry's personal information charter explains more about how we process data."
+        },
+        "what-we-collect": {
+            "heading": "The data we collect",
+            "paragraph": "The personal data we collect includes:",
+            "list": {
+                "1": "your name, address and contact details, including your email address and telephone number",
+                "2": "details of your company and your role, if applicable",
+                "3": "details of anyone who acts on your behalf or anyone that you act for in a video hearing",
+                "4": "information we gather to assess your suitability for a video hearing",
+                "5": "information about your video hearing",
+                "6": "information that tells us if you open an email from us, or click on a link in an email",
+                "7": "the login details you use to access the video hearings service",
+                "8": "information about the way you access this service including your IP address, internet speed, computer operating system and the browser you use to access the internet. We do this by",
+                "8-cookies": "using cookies"
+            }
+        },
+        "how-long": {
+            "heading": "How long we keep your data",
+            "paragraph": "The video hearings service will keep this information for 3 months after the date your hearing is booked to take place. We'll then delete it. Information about your application or your case is held by a different department in HMCTS and different arrangements may apply."
+        },
+        "shoring-and-sharing": {
+            "heading": "Storing and sharing your data internationally",
+            "paragraph": "Sometimes your personal data will be stored outside the UK. When we do this, we comply with data protection law."
+        },
+        "your-rights": {
+            "heading": "Your rights",
+            "paragraph1": "You can ask:",
+            "list-ask": {
+                "1": "to see the personal data that we hold on you",
+                "2": "to have the personal data corrected",
+                "3": "to have the personal data removed or deleted (this will depend on the circumstances, for example, if you decide not to continue with your case)",
+                "4": "that access to the personal data is restricted (for example, you can ask to have your data stored for longer and not automatically deleted)"
+            },
+            "paragraph2": "If you want to see the personal data that we hold on you, you can:",
+            "list-see": {
+                "1-1": "complete a form to",
+                "1-link": "make a subject access request.",
+                "1-2": "Your request goes to the MoJ as data controller.",
+                "2": "write to us: Disclosure Team, Post point 10.38, 102 Petty France, London, SW1H 9AJ"
+            },
+            "paragraph3": "You can ask for more information about:",
+            "list-more": {
+                "1": "agreements we have on sharing information with other organisations",
+                "2": "when we are allowed to pass on personal information without telling you",
+                "3": "our instructions to staff on how to collect, use or delete your personal information",
+                "4": "how we check that the information we hold is accurate and up to date"
+            },
+            "paragraph4": "You can contact the MoJ data protection officer by:",
+            "list-contact": {
+                "1": "writing to us: Post point 10.38, 102 Petty France, London, SW1H 9AJ",
+                "2": "emailing:"
+            }
+        },
+        "how-to-complain": {
+            "heading": "How to complain",
+            "paragraph1-1": "See our ",
+            "paragraph1-link": "complaints procedure",
+            "paragraph1-2": "if you want to complain about how we've handled your personal data.",
+            "paragraph2-1": "Write to: Post point 10.38, 102 Petty France, London, SW1H 9AJ",
+            "paragraph2-2": "Email: ",
+            "paragraph3-1": "You can also complain to the ",
+            "paragraph3-link": "Information Commissioner's Office",
+            "paragraph3-2": "if you're not satisfied with our response or believe we're not processing your personal data lawfully."
+        },
+        "hearings-recorded": {
+            "heading": "Where hearings are recorded",
+            "paragraph1": "The process for recording video hearings is the same as for hearings held in a court or tribunal building:",
+            "list": {
+                "1": "hearings at the Crown Court and at civil and family courts are always recorded",
+                "2-1": "tribunal hearings are not always recorded. ",
+                "2-link": "Contact the tribunal",
+                "2-2": " to find out if the hearing was recorded.",
+                "3": "hearings at magistrates' courts are never recorded."
+            },
+            "paragraph2-1": "Where hearings are recorded you may ",
+            "paragraph2-link": "apply for a transcript.",
+            "paragraph3": "Participants must not record or take any images of the hearing."
         }
+    },
+    "wr-participant-list-shared": {
+        "for": "for",
+        "representative": "Representative"
+    },
+    "notification-toastr": {
+        "invite": {
+            "call-from": "Call from {{name}}",
+            "video-hearing-officer": "Video hearings officer",
+            "with": "with",
+            "accept": "Accept",
+            "decline": "Decline"
+        },
+        "linked-participants": {
+            "waiting-single": "Waiting for {{name}} to accept the invitation from {{invitedBy}}.",
+            "waiting-multiple": "Waiting for {{number}} other participants to accept the invitation from {{invitedBy}}.",
+            "rejected": "{{rejector}} rejected the invitation from {{invitedBy}}.",
+            "button-close": "Close"
+        },
+        "poor-connection": {
+            "title": "Alert",
+            "message": "Your internet connection is poor. People may have trouble seeing and hearing you.",
+            "dismiss": "Dismiss"
+        },
+        "participant-added": {
+            "title": "{{name}}",
+            "message-without-party": "{{role}} has been added to the hearing.",
+            "message-with-party": "{{role}} ({{party}}) has been added to the hearing.",
+            "dismiss": "Dismiss"
+        },
+        "hearing-layout-changed": {
+            "title": "{{name}}",
+            "message": "has changed the hearing layout.",
+            "dismiss": "Dismiss"
+        }
+    },
+    "consultation-service": {
+        "judge-room": "Judge Room",
+        "judge-room-short": "Judge Room",
+        "meeting-room": "Meeting Room",
+        "meeting-room-short": "Room"
+    },
+    "idp-selection": {
+        "title": "Select your account type to sign in",
+        "description": "You'll need to select the correct option and have a valid email address and password to sign in.",
+        "ejud": {
+            "title": "Judicial Office Holder",
+            "description": "If you are a judge or panel member, select this option (your email will end with @ejudiciary.net)."
+        },
+        "vhaad": {
+            "title": "Hearing Participant",
+            "description": "If you are participating in a video hearing in any other capacity, select this option."
+        },
+        "next": "Next",
+        "error-title": "There is a problem:",
+        "select-a-provider": "Select an account type to continue."
+    },
+    "quick-participant-landing-page": {
+        "page-title": "Enter your details to join your hearing",
+        "paragraph1": "Please tell us your name and your role in the hearing.",
+        "problem-with-form": "There is a problem",
+        "problem-with-special-char": "You entered some characters that are not allowed.",
+        "problem-with-special-char-recommendation": "You may use accents, apostrophes and hyphens but no other symbols.",
+        "name-label": "Your full name",
+        "name-error-empty": "Please enter your full name",
+        "name-error-special-char": "You've entered characters that are not allowed",
+        "role-label": "What is your role in the hearing?",
+        "role-error": "Please choose your role in the hearing",
+        "roles": {
+            "QuickLinkParticipant": {
+                "title": "Participant",
+                "description": "You have been called to take part in the hearing."
+            },
+            "QuickLinkObserver": {
+                "title": "Observer",
+                "description": "You are observing the hearing, but not taking part."
+            }
+        },
+        "button-continue": "Continue"
+    },
+    "quick-participant-errors": {
+        "invalid-page": {
+            "heading": "The link you've used can't be recognised",
+            "body": "Please check the link you were sent. If it still doesn't work, call 0300 303 0655 for immediate contact with a video hearings officer."
+        }
+    },
+    "loading": "Loading please wait...",
+    "video-filter": {
+        "title": "Choose a custom background",
+        "none": "None",
+        "none-alt": "Remove all filters",
+        "blur": "Blurred",
+        "blur-alt": "Apply the blurred background filter",
+        "hmcts": "HMCTS",
+        "hmcts-alt": "Apply the background with the HMCTS crest",
+        "scts": "SCTS",
+        "scts-alt": "Apply the background with the SCTS crest"
+    }
+}
