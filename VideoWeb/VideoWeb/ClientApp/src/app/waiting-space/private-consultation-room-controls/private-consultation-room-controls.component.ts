@@ -58,12 +58,12 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
 
     get canJoinHearingFromConsultation(): boolean {
         return (
-            this.conferenceStatus.newStatus === ConferenceStatus.InSession && this.participant.status === ParticipantStatus.InConsultation
+            this.conferenceStatus?.newStatus === ConferenceStatus.InSession && this.participant?.status === ParticipantStatus.InConsultation
         );
     }
 
     async joinHearingFromConsultation() {
-        await this.videoCallService.joinHearingInSession(this.conferenceId, this.participant.id);
+        await this.videoCallService.joinHearingInSession(this.conferenceId, this.participant?.id);
     }
 
     canCloseOrPauseHearing() {

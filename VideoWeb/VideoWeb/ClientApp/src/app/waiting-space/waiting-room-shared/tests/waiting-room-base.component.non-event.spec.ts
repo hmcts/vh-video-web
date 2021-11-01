@@ -489,8 +489,9 @@ describe('WaitingRoomComponent message and clock', () => {
     });
 
     describe('shouldCurrentUserJoinHearing', () => {
-        it('should return false if user is a host and has not signalled to join hearing', () => {
+        it('should return false if user is a host and has not signalled to join hearing and is not in the hearing', () => {
             component.dualHostHasSignalledToJoinHearing = false;
+            component.participant.status = ParticipantStatus.Available;
             const spy = spyOn(component, 'isHost').and.returnValue(true);
 
             const shouldCurrentUserJoinHearing = component.shouldCurrentUserJoinHearing();
@@ -499,9 +500,10 @@ describe('WaitingRoomComponent message and clock', () => {
             expect(shouldCurrentUserJoinHearing).toBeFalsy();
         });
 
-        it('should return true if user is not a host', () => {
+        it('should return true if user is a host and has not signalled to join hearing and but is in the hearing', () => {
             component.dualHostHasSignalledToJoinHearing = false;
-            const spy = spyOn(component, 'isHost').and.returnValue(false);
+            component.participant.status = ParticipantStatus.InHearing;
+            const spy = spyOn(component, 'isHost').and.returnValue(true);
 
             const shouldCurrentUserJoinHearing = component.shouldCurrentUserJoinHearing();
 
@@ -511,7 +513,18 @@ describe('WaitingRoomComponent message and clock', () => {
 
         it('should return true if user is a host and has signalled to join the hearing', () => {
             component.dualHostHasSignalledToJoinHearing = true;
+            component.participant.status = ParticipantStatus.Available;
             const spy = spyOn(component, 'isHost').and.returnValue(true);
+
+            const shouldCurrentUserJoinHearing = component.shouldCurrentUserJoinHearing();
+
+            expect(spy).toHaveBeenCalledTimes(1);
+            expect(shouldCurrentUserJoinHearing).toBeTrue();
+        });
+
+        it('should return true if user is not a host', () => {
+            component.dualHostHasSignalledToJoinHearing = false;
+            const spy = spyOn(component, 'isHost').and.returnValue(false);
 
             const shouldCurrentUserJoinHearing = component.shouldCurrentUserJoinHearing();
 
