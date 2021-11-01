@@ -38,7 +38,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly ScenarioContext _scenario;
         private bool audioRecordingRequired = false;
         private string hearingVenue = "Birmingham Civil and Family Justice Centre";
-        private int delayMinutes = 0;
+        private int delayMinutes = 0; 
 
         public DataSetupSteps(TestContext c, ScenarioContext scenario)
         {
@@ -51,21 +51,16 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             GivenIHaveAHearingWithUser();
         }
-
-        [Given(@"I have a hearing with a (.*) and I include a (.*)")]
+         
         [Given(@"I have a hearing with a (.*)")]
         [Given(@"I have a hearing with an (.*)")]
         [Given(@"I have another hearing with another (.*)")]
         [Given(@"I have a CACD hearing with a (.*)")]
-        public void GivenIHaveAHearingWithUser(string user1 = DEFAULT_USER, string user2 = "")
+        public void GivenIHaveAHearingWithUser(string user = DEFAULT_USER)
         {
-            var userTypes = GetUserType(user1);
-
-            if (user2.ToLower() == "staff member")
-                userTypes.Add(UserType.StaffMember);
-
+            var userTypes = GetUserType(user);
             AllocateUsers(userTypes);
-            if(user1.ToLower() == "winger")
+            if(user.ToLower() == "winger")
             {
                 CreateCACDHearing(delayMinutes);
             }
@@ -123,7 +118,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         [Given(@"I have another hearing in (.*) minutes time")]
         public void GivenIHaveAnotherHearingAndAConferenceInMinutesTime(int minutes)
-        {
+        {            
             CheckThatTheHearingWillBeCreatedForToday(_c.TimeZone.Adjust(DateTime.Now.ToUniversalTime().AddMinutes(minutes)));
             delayMinutes = minutes;
             GivenIHaveAnotherHearingAndAConference();
@@ -161,7 +156,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                           .WithUsers(_c.Test.Users)
                           .WithCACDCaseType()
                           .WithScheduledTime(_c.TimeZone.Adjust(DateTime.Now.ToUniversalTime().AddMinutes(minutes)))
-                          .Build();
+                          .Build();           
             SendTheHearingRequest(request);
         }
 
@@ -263,8 +258,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         private static List<UserType> CreateUserTypes(
-            int individualsAndRepresentatives = DEFAULT_INDIVIDUALS_WITH_REPRESENTATIVES,
-            int observers = DEFAULT_OBSERVERS,
+            int individualsAndRepresentatives = DEFAULT_INDIVIDUALS_WITH_REPRESENTATIVES, 
+            int observers = DEFAULT_OBSERVERS, 
             int panelMembers = DEFAULT_PANEL_MEMBERS,
             int wingers = DEFAULT_WINGERS,
             int individualsAndInterpreters = DEFAULT_INDIVIDUALS_WITH_INTERPRETERS)
@@ -291,7 +286,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 userTypes.Add(UserType.Winger);
             }
-
+            
             for (var i = 0; i < individualsAndInterpreters; i++)
             {
                 userTypes.Add(UserType.Individual);

@@ -18,8 +18,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By ObserverRow(Guid participantId) => By.Id($"p-row-{participantId:D}-observer");
         public static By ObserverName(Guid participantId) => By.Id($"p-{participantId:D}-name-observer");
         public static By ObserverStatus(Guid participantId) => By.Id($"p-{participantId:D}-status-observer");
-        public static By StaffMemberStatus(Guid participantId) => By.Id($"p-{participantId:D}-status-staff-member");
-
+        
         public static By ParticipantWithInterpreter(Guid interpreteeId)
         {
             var interpeteeXPath = $"//div[@id='p-row-{interpreteeId}-participant']/../following-sibling::div//div[starts-with(@id,'p-row')]";

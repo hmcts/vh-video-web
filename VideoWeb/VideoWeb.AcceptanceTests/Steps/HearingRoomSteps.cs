@@ -51,9 +51,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             Thread.Sleep(TimeSpan.FromSeconds(PauseCloseTransferDuration));
         }
 
-        [Then(@"the Staff Member closes the hearing")]
-        [When(@"the Staff Member closes the hearing")]
-        [Then(@"the Judge closes the hearing")]
         [When(@"the Judge closes the hearing")]
         public void WhenTheJudgeClosesTheHearing()
         {
@@ -83,7 +80,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Judge is on the Hearing Room page for (.*) minutes")]
         [Then(@"the participant is on the Hearing Room page for (.*) minute")]
         [Then(@"the participant is on the Hearing Room page for (.*) minutes")]
-        [Then(@"the Staff Member is on the Hearing Room page for (.*) minutes")]
         public void ThenTheUserIsOnTheHearingRoomPageForMinutes(int minutes)
         {
             Thread.Sleep(TimeSpan.FromMinutes(minutes));
@@ -113,7 +109,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser]).Feed(HearingRoomPage.IncomingVideoFeed);
         }
 
-        [Then(@"the Staff Member can see the participants")]
         [Then(@"the Judge can see the participants")]
         public void ThenTheJudgeCanSeeTheOtherParticipants()
         {

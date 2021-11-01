@@ -338,9 +338,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             }
         }
 
-        [When(@"the Staff Member starts the hearing")]
         [When(@"the Judge starts the hearing")]
-        [Then(@"the Staff Member starts the hearing")]
         public void ProgressToNextPage()
         {
             Thread.Sleep(TimeSpan.FromSeconds(ExtraTimeAfterReachingWaitingRoom));
@@ -350,7 +348,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.StartVideoHearingButton);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.ConfirmStartHearingButton).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.ConfirmStartHearingButton);
-            NUnit.Framework.TestContext.WriteLine($"Hearing has started by '{_c.CurrentUser.UserType}'");
         }
 
         [Then(@"the number of people in the consultation room is (.*)")]
@@ -394,11 +391,6 @@ namespace VideoWeb.AcceptanceTests.Steps
                 {
                     participant = "Winger";
                     panelElement = JudgeParticipantPanel.WingerStatus(user.Id);
-                }
-                else if (user.HearingRole.Equals("Staff Member", StringComparison.OrdinalIgnoreCase))
-                {
-                    participant = "Staff Member";
-                    panelElement = JudgeParticipantPanel.StaffMemberStatus(user.Id);
                 }
                 else
                 {

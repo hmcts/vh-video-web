@@ -30,7 +30,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly DeclarationSteps _declarationSteps;
         private readonly WaitingRoomSteps _waitingRoomSteps;
         private readonly HearingRoomSteps _hearingRoomSteps;
-        private readonly StaffMemberHearingListSteps _staffMemberHearingListSteps;
 
         public ProgressionSteps(
             TestContext testContext, 
@@ -49,8 +48,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             RulesSteps rulesSteps, 
             DeclarationSteps declarationSteps,
             WaitingRoomSteps waitingRoomSteps, 
-            BrowserSteps browserSteps,
-            StaffMemberHearingListSteps staffMemberHearingListSteps)
+            BrowserSteps browserSteps)
         {
             _c = testContext;
             _dataSetupSteps = dataSetupSteps;
@@ -69,7 +67,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             _rulesSteps = rulesSteps;
             _declarationSteps = declarationSteps;
             _hearingRoomSteps = hearingRoomSteps;
-            _staffMemberHearingListSteps = staffMemberHearingListSteps;
         }
 
         [Given(@"(?:a|an) (.*) and (?:a|an|their) (.*) are in the waiting room (.*) minutes before a hearing")]
@@ -90,7 +87,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserSteps.GivenANewBrowserIsOpenFor(user);
             Progression(FromString(user), page);
         }
-
+        
         [Given(@"the (.*) user with an Interpreter has progressed to the (.*) page")]
         public void GivenIHaveAnInterpreterAndHaveProgressedToThePage(string user, string page)
         {
@@ -116,7 +113,6 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         [Given(@"the (.*) user has progressed to the (.*) page for the existing hearing")]
         [When(@"the (.*) user has progressed to the (.*) page for the existing hearing")]
-        [Then(@"the (.*) user has progressed to the (.*) page for the existing hearing")]
         public void GivenHearingExistsAndIAmOnThePage(string user, string page)
         {
             NUnit.Framework.TestContext.WriteLine($"User is {user} and page is {page.ToString()}");
@@ -136,10 +132,6 @@ namespace VideoWeb.AcceptanceTests.Steps
                     return Journey.Judge;
                 case "judge self test":
                     return Journey.JudgeSelftest;
-                case "staff member":
-                    return Journey.StaffMember;
-                case "staff member self test":
-                    return Journey.StaffMemberSelftest;
                 case "individual self test":
                 case "representative self test":
                 case "panel member self test":
@@ -184,9 +176,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 {Journey.Participant, new ParticipantJourney()},
                 {Journey.PanelMemberOrWinger, new PanelMemberOrWingerJourney()},
                 {Journey.SelfTest, new SelfTestJourney()},
-                {Journey.Vho, new VhoJourney()},
-                {Journey.StaffMember, new StaffMemberJourney()},
-                {Journey.StaffMemberSelftest, new StaffMemberSelfTestJourney()},
+                {Journey.Vho, new VhoJourney()}
             };
             journeys[userJourney].VerifyUserIsApplicableToJourney(_c.CurrentUser.UserType);
             journeys[userJourney].VerifyDestinationIsInThatJourney(endPage);
@@ -227,9 +217,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 {Page.Declaration, _declarationSteps},
                 {Page.WaitingRoom, _waitingRoomSteps},
                 {Page.JudgeWaitingRoomPage, _waitingRoomSteps},
-                {Page.HearingRoom, _hearingRoomSteps},
-                {Page.StaffMemberHearingList, _staffMemberHearingListSteps},
-                {Page.StaffMemberWaitingRoomPage, _waitingRoomSteps}
+                {Page.HearingRoom, _hearingRoomSteps}
             };
         }
 
