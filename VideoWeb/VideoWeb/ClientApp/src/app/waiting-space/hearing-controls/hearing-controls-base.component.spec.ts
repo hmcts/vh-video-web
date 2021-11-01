@@ -7,6 +7,7 @@ import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { browsers } from 'src/app/shared/browser.constants';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-hand-raised-message';
@@ -22,12 +23,16 @@ import {
 } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
-import { onParticipantUpdatedMock, videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
+import {
+    onParticipantUpdatedMock,
+    onVideoEvidenceSharedMock,
+    onVideoEvidenceStoppedMock,
+    videoCallServiceSpy
+} from 'src/app/testing/mocks/mock-video-call.service';
 import { HearingRole } from '../models/hearing-role-model';
 import { ParticipantUpdated } from '../models/video-call-models';
 import { PrivateConsultationRoomControlsComponent } from '../private-consultation-room-controls/private-consultation-room-controls.component';
 import { HearingControlsBaseComponent } from './hearing-controls-base.component';
-import { globalConference } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { CaseTypeGroup } from '../models/case-type-group';
 
 describe('HearingControlsBaseComponent', () => {
@@ -58,7 +63,10 @@ describe('HearingControlsBaseComponent', () => {
     const onParticipantUpdatedSubject = onParticipantUpdatedMock;
     const translateService = translateServiceSpy;
 
-    const deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', ['isDesktop']);
+    const dynamicScreenShareStartedSubject = onVideoEvidenceSharedMock;
+    const dynamicScreenShareStoppedSubject = onVideoEvidenceStoppedMock;
+
+    const deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', ['isDesktop', 'getBrowserName']);
 
     const logger: Logger = new MockLogger();
 
@@ -234,6 +242,39 @@ describe('HearingControlsBaseComponent', () => {
             // Assert
             expect(component.isSpotlighted).toBeFalse();
         }));
+    });
+
+    describe('onVideoEvidenceSharing', () => {
+        it('should set sharingDynamicEvidence to true when video evidence sharing has started', fakeAsync(() => {
+            component.sharingDynamicEvidence = false;
+            dynamicScreenShareStartedSubject.next();
+
+            flush();
+
+            expect(component.sharingDynamicEvidence).toBeTrue();
+        }));
+
+        it('should set sharingDynamicEvidence to false when video evidence sharing has stopped', fakeAsync(() => {
+            component.sharingDynamicEvidence = true;
+            dynamicScreenShareStoppedSubject.next();
+
+            flush();
+
+            expect(component.sharingDynamicEvidence).toBeFalse();
+        }));
+
+        it('should trigger screen with micrphone selection when dynamic evidence sharing is started', async () => {
+            await component.startScreenShareWithMicrophone();
+            expect(videoCallService.selectScreenWithMicrophone).toHaveBeenCalled();
+        });
+
+        it('should stop screen share with micrphone when sharingDynamicEvidence is true and screenshare has been stopped', () => {
+            component.sharingDynamicEvidence = true;
+
+            component.stopScreenShare();
+
+            expect(videoCallService.stopScreenWithMicrophone).toHaveBeenCalled();
+        });
     });
 
     it('should open self-view by default for judge', () => {
@@ -694,6 +735,24 @@ describe('HearingControlsBaseComponent', () => {
                 component.participant.role = role;
                 component.ngOnInit();
                 expect(component.canShowScreenShareButton).toBeFalsy();
+            });
+        });
+    });
+
+    describe('canShowDynamicEvidenceShareButton', () => {
+        const testCases = [
+            { browserName: browsers.Chrome, expected: true },
+            { browserName: browsers.MSEdgeChromium, expected: true },
+            { browserName: browsers.Brave, expected: false },
+            { browserName: browsers.Firefox, expected: false },
+            { browserName: browsers.MSEdge, expected: false },
+            { browserName: browsers.Safari, expected: false }
+        ];
+
+        testCases.forEach(testcase => {
+            it(`should return ${testcase.expected} when browser is ${testcase.browserName}`, () => {
+                deviceTypeService.getBrowserName.and.returnValue(testcase.browserName);
+                expect(component.canShowDynamicEvidenceShareButton).toBe(testcase.expected);
             });
         });
     });
