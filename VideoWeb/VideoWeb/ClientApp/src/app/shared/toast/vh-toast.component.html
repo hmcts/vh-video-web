@@ -13,9 +13,12 @@
 <div class="actions" *ngIf="vhToastOptions.buttons">
     <div class="action" *ngFor="let btn of vhToastOptions.buttons">
         <button
+        id={{btn.id}}
         class="small-button grey"
-        [class.green]="btn.hoverColour === 'green'"
-        [class.red]="btn.hoverColour === 'red'"
+        [class.green]="btn.cssClass === 'green'"
+        [class.join-hearing-button]="btn.cssClass === 'hearing-started-join-hearing'"
+        [class.hearing-started-dismiss-button]="btn.cssClass === 'hearing-started-dismiss'"
+        [class.red]="btn.cssClass === 'red'"
         data-module="govuk-button"
         (click)="handleAction(btn.action)">{{btn.label}}</button>
     </div>

@@ -5,7 +5,8 @@
   position: relative;
   overflow: hidden;
   padding: 20px !important;
-  width: 180px !important;
+  width: auto !important;
+  max-width: 300px;
   border-radius: 2px;
   display: flex;
   flex-direction: column;
@@ -50,6 +51,23 @@
     background: rgba(80, 90, 95, 1);
     &:hover {
       background: rgba(80, 90, 95, 0.7);
+    }
+  }
+
+  &.join-hearing-button {
+    color: #ffffff;
+    background: #00703c;
+    box-shadow: rgb(146 145 145) 0px 2px 0px;
+    &:hover {
+      background: #005a30;
+    }
+  }
+  &.hearing-started-dismiss-button {
+    color: black;
+    background: govuk-colour('light-grey');
+    box-shadow: rgb(146 145 145) 0px 2px 0px;
+    &:hover {
+      background: govuk-colour('mid-grey');
     }
   }
   &.green:hover {

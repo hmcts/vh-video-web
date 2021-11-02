@@ -813,9 +813,6 @@
   "unread-messages": {
     "im-image-alt": "instant message icon"
   },
-  "vho-hearing-list": {
-    "crest-icon-alt": "crest icon"
-  },
   "court-room-filters": {
     "apply-filters-alt": "Apply selected filters",
     "cancel-filters-alt": "Cancel filters"
@@ -1066,6 +1063,12 @@
     "hearing-layout-changed": {
       "title": "{{name}}",
       "message": "has changed the hearing layout.",
+      "dismiss": "Dismiss"
+    },
+    "hearing-started": {
+      "title":"Alert!",
+      "join-hearing": "Join hearing",
+      "message":"The hearing is now in session.",
       "dismiss": "Dismiss"
     }
   },

@@ -401,22 +401,12 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(errorService.handleApiError).toHaveBeenCalledWith(error);
     });
 
-    it('should mark host as not wanting to join the hearing', async () => {
-        component.dualHostHasSignalledToJoinHearing = true;
-
-        await component.leaveHearing();
-
-        expect(component.dualHostHasSignalledToJoinHearing).toBeFalse();
-    });
-
     it('should start the hearing', fakeAsync(() => {
-        component.dualHostHasSignalledToJoinHearing = false;
         const layout = HearingLayout.TwoPlus21;
         getSpiedPropertyGetter(hearingLayoutServiceSpy, 'currentLayout$').and.returnValue(of(layout));
         component.startHearing();
         flush();
 
-        expect(component.dualHostHasSignalledToJoinHearing).toBeTrue();
         expect(videoCallService.startHearing).toHaveBeenCalledWith(component.conference.id, layout);
     }));
 
@@ -429,11 +419,10 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(errorService.handleApiError).toHaveBeenCalledWith(error);
     });
 
-    it('calls join hearing in session endpoint and updates dualHostHasSignalledToJoinHearing to be true', async () => {
+    it('calls join hearing in session endpoint', async () => {
         await component.joinHearingInSession();
 
         expect(videoCallService.joinHearingInSession).toHaveBeenCalledWith(component.conferenceId, component.participant.id);
-        expect(component.dualHostHasSignalledToJoinHearing).toBe(true);
     });
 
     it('should continue with no recording when judge dismisses the audio recording alert mid hearing', async () => {
