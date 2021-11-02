@@ -16,6 +16,9 @@ import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-security.service';
 import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
+import { BehaviorSubject } from 'rxjs';
 
 describe('IndividualParticipantStatusListComponent consultations', () => {
     let component: IndividualParticipantStatusListComponent;
@@ -37,8 +40,15 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     let logged: LoggedParticipantResponse;
     let activatedRoute: ActivatedRoute;
     const translateService = translateServiceSpy;
+    let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
 
     beforeAll(() => {
+        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+            'HearingVenueFlagsService',
+            [],
+            ['HearingVenueIsScottish']
+        );
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(new BehaviorSubject(false));
         oidcSecurityService = mockOidcSecurityService;
 
         consultationService = consultationServiceSpyFactory();
@@ -75,7 +85,8 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
             logger,
             videoWebService,
             activatedRoute,
-            translateService
+            translateService,
+            mockedHearingVenueFlagsService
         );
 
         component.conference = conference;

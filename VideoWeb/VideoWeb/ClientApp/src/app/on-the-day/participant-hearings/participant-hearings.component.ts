@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceForIndividualResponse, LoggedParticipantResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from '../../shared/page-url.constants';
 
@@ -25,7 +26,8 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
         private errorService: ErrorService,
         private router: Router,
         private logger: Logger,
-        private translate: TranslateService
+        private translate: TranslateService,
+        private hearingVenueFlagsService: HearingVenueFlagsService
     ) {
         this.loadingData = true;
     }
@@ -87,6 +89,7 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
 
     async onConferenceSelected(conference: ConferenceForIndividualResponse) {
         this.logger.debug('[ParticipantHearings] - Loading conference details', { conference: conference.id });
+        this.hearingVenueFlagsService.HearingVenueIsScottish.next(conference.hearing_venue_is_scottish);
         this.videoWebService.setActiveIndividualConference(conference);
         try {
             if (!this.loggedInParticipant) {

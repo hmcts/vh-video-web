@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
@@ -11,6 +12,7 @@ import {
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingRole } from '../models/hearing-role-model';
@@ -31,6 +33,8 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
     newStaffMemberDisplayName: string;
     isUserJudge: boolean;
     isStaffMember: boolean;
+    hearingVenueIsInScotland = false;
+    hearingVenueFlagsServiceSubscription$: Subscription;
 
     hearing: Hearing;
 
@@ -40,7 +44,8 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         protected logger: Logger,
         protected videoWebService: VideoWebService,
         protected route: ActivatedRoute,
-        protected translateService: TranslateService
+        protected translateService: TranslateService,
+        private hearingVenueFlagsService: HearingVenueFlagsService
     ) {
         super(consultationService, eventService, videoWebService, logger, translateService);
     }
@@ -50,10 +55,14 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
         this.initParticipants();
         this.addSharedEventHubSubcribers();
+        this.hearingVenueFlagsServiceSubscription$ = this.hearingVenueFlagsService.HearingVenueIsScottish.subscribe(
+            value => (this.hearingVenueIsInScotland = value)
+        );
     }
 
     ngOnDestroy() {
         this.executeTeardown();
+        this.hearingVenueFlagsServiceSubscription$.unsubscribe();
     }
 
     initParticipants() {

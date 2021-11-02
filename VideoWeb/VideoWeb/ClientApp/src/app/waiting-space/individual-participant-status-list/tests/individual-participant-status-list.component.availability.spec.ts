@@ -16,6 +16,9 @@ import { eventsServiceSpy, participantStatusSubjectMock } from 'src/app/testing/
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
+import { BehaviorSubject } from 'rxjs';
 
 describe('IndividualParticipantStatusListComponent Participant Status and Availability', () => {
     let component: IndividualParticipantStatusListComponent;
@@ -32,7 +35,15 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
     let logged: LoggedParticipantResponse;
     const translateService = translateServiceSpy;
 
+    let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
+
     beforeAll(() => {
+        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+            'HearingVenueFlagsService',
+            [],
+            ['HearingVenueIsScottish']
+        );
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(new BehaviorSubject(false));
         conference = new ConferenceTestData().getConferenceDetailFuture();
         participantsObserverPanelMember = new ConferenceTestData().getListOfParticipantsObserverAndPanelMembers();
         participantsWinger = new ConferenceTestData().getListOfParticipantsWingers();
@@ -61,7 +72,8 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
             logger,
             videoWebService,
             activatedRoute,
-            translateService
+            translateService,
+            mockedHearingVenueFlagsService
         );
         conference = new ConferenceTestData().getConferenceDetailFuture();
         component.conference = conference;
@@ -75,6 +87,17 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
 
     afterEach(() => {
         component.ngOnDestroy();
+    });
+
+    it('returns true for hearingVenueIsInScotland when hearing venue is in scotland', () => {
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(new BehaviorSubject(true));
+        component.ngOnInit();
+        expect(component.hearingVenueIsInScotland).toBe(true);
+    });
+
+    it('unsubscribes on destroy', () => {
+        component.ngOnDestroy();
+        expect(component.hearingVenueFlagsServiceSubscription$.closed).toBeTruthy();
     });
 
     const participantStatusTestCases = [

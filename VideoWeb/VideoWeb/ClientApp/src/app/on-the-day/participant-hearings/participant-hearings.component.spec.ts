@@ -1,15 +1,17 @@
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { of, Subscription, throwError } from 'rxjs';
+import { BehaviorSubject, of, Subscription, throwError } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { LoggedParticipantResponse, Role } from '../../services/clients/api-client';
+import { ConferenceForIndividualResponse, LoggedParticipantResponse, Role } from '../../services/clients/api-client';
 import { ParticipantHearingsComponent } from './participant-hearings.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 
 describe('ParticipantHearingList', () => {
     let component: ParticipantHearingsComponent;
@@ -43,7 +45,16 @@ describe('ParticipantHearingList', () => {
     const logger: Logger = new MockLogger();
     const translateService = translateServiceSpy;
 
+    let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
+    let hearingVenueIsScottishSubject: BehaviorSubject<boolean>;
+
     beforeAll(() => {
+        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+            'HearingVenueFlagsService',
+            [],
+            ['HearingVenueIsScottish']
+        );
+
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
             'getConferencesForIndividual',
             'setActiveIndividualConference',
@@ -62,12 +73,46 @@ describe('ParticipantHearingList', () => {
     });
 
     beforeEach(() => {
+        hearingVenueIsScottishSubject = new BehaviorSubject(false);
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(hearingVenueIsScottishSubject);
+
         translateService.instant.calls.reset();
 
-        component = new ParticipantHearingsComponent(videoWebService, errorService, router, logger, translateService);
+        component = new ParticipantHearingsComponent(
+            videoWebService,
+            errorService,
+            router,
+            logger,
+            translateService,
+            mockedHearingVenueFlagsService
+        );
         component.conferences = conferences;
         videoWebService.getConferencesForIndividual.and.returnValue(of(conferences));
     });
+
+    it('calls setHearingVenueIsScottish service when the hearing venue is in scotland', fakeAsync(() => {
+        const nextSpy = spyOn(hearingVenueIsScottishSubject, 'next');
+        const conference = new ConferenceForIndividualResponse();
+        conference.hearing_venue_is_scottish = true;
+
+        component.onConferenceSelected(conference);
+
+        tick(100);
+
+        expect(nextSpy).toHaveBeenCalledWith(true);
+    }));
+
+    it('calls setHearingVenueIsScottish service when the hearing venue is not in scotland', fakeAsync(() => {
+        const nextSpy = spyOn(hearingVenueIsScottishSubject, 'next');
+        const conference = new ConferenceForIndividualResponse();
+        conference.hearing_venue_is_scottish = false;
+
+        component.onConferenceSelected(conference);
+
+        tick(100);
+
+        expect(nextSpy).toHaveBeenCalledWith(false);
+    }));
 
     it('should handle api error with error service when unable to retrieve hearings for individual', fakeAsync(() => {
         videoWebService.getConferencesForIndividual.and.returnValue(throwError({ status: 401, isApiException: true }));

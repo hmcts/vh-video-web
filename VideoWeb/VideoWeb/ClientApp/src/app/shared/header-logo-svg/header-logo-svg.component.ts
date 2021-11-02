@@ -1,7 +1,23 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 
 @Component({
     selector: 'app-header-logo-svg',
     templateUrl: './header-logo-svg.component.html'
 })
-export class HeaderLogoSvgComponent {}
+export class HeaderLogoSvgComponent implements OnInit, OnDestroy {
+    hearingVenueIsInScotland = false;
+    hearingVenueFlagsServiceSubscription: Subscription;
+    constructor(private hearingVenueFlagsService: HearingVenueFlagsService) {}
+
+    ngOnInit() {
+        this.hearingVenueFlagsServiceSubscription = this.hearingVenueFlagsService.HearingVenueIsScottish.subscribe(
+            value => (this.hearingVenueIsInScotland = value)
+        );
+    }
+
+    ngOnDestroy() {
+        this.hearingVenueFlagsServiceSubscription.unsubscribe();
+    }
+}

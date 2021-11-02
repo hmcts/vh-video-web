@@ -5,6 +5,7 @@ import { filter } from 'rxjs/operators';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from '../page-url.constants';
 import { Subscription } from 'rxjs';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 @Component({
     selector: 'app-footer',
     templateUrl: './footer.component.html',
@@ -15,8 +16,15 @@ export class FooterComponent implements OnInit, OnDestroy {
     privacyPolicyUri = pageUrls.PrivacyPolicy;
     accessibilityUri = pageUrls.Accessibility;
     routerEventsSubscription$: Subscription = new Subscription();
+    hearingVenueIsInScotland = false;
+    hearingVenueFlagsServiceSubscription$: Subscription;
 
-    constructor(private router: Router, private translate: TranslateService, private logger: Logger) {
+    constructor(
+        private router: Router,
+        private translate: TranslateService,
+        private logger: Logger,
+        private hearingVenueFlagsService: HearingVenueFlagsService
+    ) {
         this.routerEventsSubscription$.add(
             this.router.events.pipe(filter((event: RouterEvent) => event instanceof NavigationEnd)).subscribe(x => {
                 this.hideContactUs();
@@ -26,10 +34,15 @@ export class FooterComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.hideContactUs();
+
+        this.hearingVenueFlagsServiceSubscription$ = this.hearingVenueFlagsService.HearingVenueIsScottish.subscribe(
+            value => (this.hearingVenueIsInScotland = value)
+        );
     }
 
     ngOnDestroy(): void {
         this.routerEventsSubscription$.unsubscribe();
+        this.hearingVenueFlagsServiceSubscription$.unsubscribe();
     }
 
     hideContactUs() {

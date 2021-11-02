@@ -1,17 +1,22 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
 import { ConferenceForIndividualResponse } from 'src/app/services/clients/api-client';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 
 @Component({
     selector: 'app-hearing-list-table',
     templateUrl: './hearing-list-table.component.html'
 })
-export class HearingListTableComponent {
+export class HearingListTableComponent implements OnInit {
     @Input() conferences: ConferenceForIndividualResponse[];
     @Output() selectedConference = new EventEmitter<ConferenceForIndividualResponse>();
 
-    constructor(private translate: TranslateService) {}
+    constructor(private translate: TranslateService, private hearingVenueFlagsService: HearingVenueFlagsService) {}
+
+    ngOnInit() {
+        this.hearingVenueFlagsService.HearingVenueIsScottish.next(false);
+    }
 
     signIntoConference(conference: ConferenceForIndividualResponse) {
         this.selectedConference.emit(conference);

@@ -1,4 +1,7 @@
 import * as moment from 'moment';
+import { BehaviorSubject } from 'rxjs';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { HearingListTableComponent } from './hearing-list-table.component';
@@ -7,11 +10,26 @@ describe('HearingListTableComponent', () => {
     let component: HearingListTableComponent;
     const translateService = translateServiceSpy;
     const testData = new ConferenceTestData();
+    let mockedHearingVenueFlagsService: HearingVenueFlagsService;
+    let hearingVenueIsScottishSubject: BehaviorSubject<boolean>;
 
     beforeEach(() => {
+        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+            'HearingVenueFlagsService',
+            [],
+            ['HearingVenueIsScottish']
+        );
+        hearingVenueIsScottishSubject = new BehaviorSubject(false);
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(hearingVenueIsScottishSubject);
         translateService.instant.calls.reset();
-        component = new HearingListTableComponent(translateService);
+        component = new HearingListTableComponent(translateService, mockedHearingVenueFlagsService);
         component.conferences = testData.getTestData();
+    });
+
+    it('re sets hearing venue flag to false ', () => {
+        const nextSpy = spyOn(hearingVenueIsScottishSubject, 'next');
+        component.ngOnInit();
+        expect(nextSpy).toHaveBeenCalledWith(false);
     });
 
     it('should not show sign in when start time is more 30 minutes from start time', () => {

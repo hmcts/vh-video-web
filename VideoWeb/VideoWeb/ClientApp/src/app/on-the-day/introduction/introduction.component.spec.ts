@@ -6,6 +6,9 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { IntroductionComponent } from './introduction.component';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
+import { BehaviorSubject } from 'rxjs';
 
 describe('IntroductionComponent', () => {
     let component: IntroductionComponent;
@@ -20,7 +23,16 @@ describe('IntroductionComponent', () => {
     let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
     participantStatusUpdateService = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
 
+    let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
+
     beforeAll(() => {
+        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+            'HearingVenueFlagsService',
+            [],
+            ['HearingVenueIsScottish']
+        );
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(new BehaviorSubject(false));
+
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getActiveIndividualConference']);
 
         videoWebServiceSpy.getActiveIndividualConference.and.returnValue(confLite);
@@ -28,7 +40,14 @@ describe('IntroductionComponent', () => {
     });
 
     beforeEach(async () => {
-        component = new IntroductionComponent(router, activatedRoute, videoWebServiceSpy, participantStatusUpdateService, new MockLogger());
+        component = new IntroductionComponent(
+            router,
+            activatedRoute,
+            videoWebServiceSpy,
+            participantStatusUpdateService,
+            new MockLogger(),
+            mockedHearingVenueFlagsService
+        );
         router.navigate.calls.reset();
         await component.ngOnInit();
     });
@@ -41,5 +60,16 @@ describe('IntroductionComponent', () => {
     it('should navigate to equipment check', () => {
         component.goToEquipmentCheck();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.EquipmentCheck, conference.id]);
+    });
+
+    it('returns true for hearingVenueIsInScotland when hearing venue is in scotland', () => {
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(new BehaviorSubject(true));
+        component.ngOnInit();
+        expect(component.hearingVenueIsInScotland).toBe(true);
+    });
+
+    it('unsubscribes on destroy', () => {
+        component.ngOnDestroy();
+        expect(component.hearingVenueFlagsServiceSubscription$.closed).toBeTruthy();
     });
 });

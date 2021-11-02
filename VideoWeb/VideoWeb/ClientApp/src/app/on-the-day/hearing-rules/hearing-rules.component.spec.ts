@@ -4,6 +4,9 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { HearingRulesComponent } from './hearing-rules.component';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
+import { BehaviorSubject } from 'rxjs';
 
 describe('HearingRulesComponent', () => {
     let component: HearingRulesComponent;
@@ -14,13 +17,27 @@ describe('HearingRulesComponent', () => {
 
     let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
 
+    let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
+
     beforeAll(() => {
+        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+            'HearingVenueFlagsService',
+            [],
+            ['HearingVenueIsScottish']
+        );
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(new BehaviorSubject(false));
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
         participantStatusUpdateService = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
     });
 
     beforeEach(() => {
-        component = new HearingRulesComponent(router, activatedRoute, participantStatusUpdateService, new MockLogger());
+        component = new HearingRulesComponent(
+            router,
+            activatedRoute,
+            participantStatusUpdateService,
+            new MockLogger(),
+            mockedHearingVenueFlagsService
+        );
         router.navigate.calls.reset();
         component.ngOnInit();
     });
@@ -34,5 +51,16 @@ describe('HearingRulesComponent', () => {
     it('should navigate to declaration', () => {
         component.goToDeclaration();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.Declaration, conference.id]);
+    });
+
+    it('returns true for hearingVenueIsInScotland when hearing venue is in scotland', () => {
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(new BehaviorSubject(true));
+        component.ngOnInit();
+        expect(component.hearingVenueIsInScotland).toBe(true);
+    });
+
+    it('unsubscribes on destroy', () => {
+        component.ngOnDestroy();
+        expect(component.hearingVenueFlagsServiceSubscription$.closed).toBeTruthy();
     });
 });

@@ -17,6 +17,9 @@ import { Logger } from '../../services/logging/logger-base';
 import { JudgeParticipantStatusListComponent } from './judge-participant-status-list.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { HearingRole } from '../models/hearing-role-model';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
+import { BehaviorSubject } from 'rxjs';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 
 describe('JudgeParticipantStatusListComponent', () => {
     const testData = new ConferenceTestData();
@@ -30,8 +33,15 @@ describe('JudgeParticipantStatusListComponent', () => {
     let activatedRoute: ActivatedRoute;
     const translateService = translateServiceSpy;
     let editedStaffMember;
+    let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
 
     beforeAll(() => {
+        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+            'HearingVenueFlagsService',
+            [],
+            ['HearingVenueIsScottish']
+        );
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(new BehaviorSubject(false));
         consultationService = consultationServiceSpyFactory();
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['updateParticipantDetails', 'getObfuscatedName']);
         const logged = new LoggedParticipantResponse({
@@ -57,7 +67,8 @@ describe('JudgeParticipantStatusListComponent', () => {
             logger,
             videoWebService,
             activatedRoute,
-            translateService
+            translateService,
+            mockedHearingVenueFlagsService
         );
         component.conference = conference;
         component.ngOnInit();
@@ -67,6 +78,17 @@ describe('JudgeParticipantStatusListComponent', () => {
     afterEach(() => {
         jasmine.getEnv().allowRespy(true);
         component.ngOnDestroy();
+    });
+
+    it('returns true for hearingVenueIsInScotland when hearing venue is in scotland', () => {
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(new BehaviorSubject(true));
+        component.ngOnInit();
+        expect(component.hearingVenueIsInScotland).toBe(true);
+    });
+
+    it('unsubscribes on destroy', () => {
+        component.ngOnDestroy();
+        expect(component.hearingVenueFlagsServiceSubscription$.closed).toBeTruthy();
     });
 
     it('should create', () => {
@@ -246,9 +268,11 @@ describe('JudgeParticipantStatusListComponent', () => {
             expect(component.getEndpointStatusCss(endpoint)).toBe(test.expected);
         });
     });
+
     it('should return false when user is not judge', () => {
         expect(component.isUserJudge).toBeFalsy();
     });
+
     it('should return true when user is judge', fakeAsync(async () => {
         const logged = new LoggedParticipantResponse({
             participant_id: conference.participants.find(x => x.role === Role.Judge).id,
@@ -264,7 +288,8 @@ describe('JudgeParticipantStatusListComponent', () => {
             logger,
             videoWebService,
             activatedRoute,
-            translateService
+            translateService,
+            mockedHearingVenueFlagsService
         );
         component.conference = conference;
         component.ngOnInit();

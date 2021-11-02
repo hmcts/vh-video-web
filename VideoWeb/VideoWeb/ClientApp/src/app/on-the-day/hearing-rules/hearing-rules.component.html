@@ -7,7 +7,7 @@
   <div class="govuk-grid-column-one-quarter">
     <div class="image">
       <img
-        src="/assets/images/HmctsCrest.png"
+        [src]="hearingVenueIsInScotland ? '/assets/images/scottish-crest-circle.png': '/assets/images/HmctsCrest.png'"
         class="govuk-header__logotype-crest crest"
         [attr.alt]="'hearing-rules.hm-courts-and-tribunals-service-crest' | translate"
       />
