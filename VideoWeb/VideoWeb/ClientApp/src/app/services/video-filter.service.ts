@@ -301,6 +301,7 @@ export class VideoFilterService {
             // new & array data
             const args = Array.from(arguments);
             if (args.find(a => a.includes('CONTEXT_LOST_WEBGL')) && self.selfieSegmentation) {
+                self.logger.info(`${this.loggerPrefix} WEBGL context lost, resetting segmentation`);
                 self.selfieSegmentation.reset();
             }
         };
