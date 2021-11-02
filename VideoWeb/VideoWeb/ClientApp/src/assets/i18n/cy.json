@@ -575,6 +575,12 @@
       "title": "Mae {{name}}",
       "message": "wedi newid cynllun y gwrandawiad.",
       "dismiss": "Gwrthod"
+    },
+    "hearing-started": {
+      "title":" Rhybudd!",
+      "join-hearing": " Ymuno â'r gwrandawiad",
+      "message":"Mae'r gwrandawiad bellach yn mynd rhagddo.",
+      "dismiss": "Gwrthod"
     }
   },
   "consultation-error": {
