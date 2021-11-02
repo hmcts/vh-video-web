@@ -12,7 +12,8 @@ export interface VhToastOptions {
 
 export interface VhToastButton {
     label: string;
-    hoverColour?: 'red' | 'green';
+    id: string;
+    cssClass?: 'red' | 'green' | 'hearing-started-dismiss' | 'hearing-started-join-hearing';
     action: () => void;
 }
 
