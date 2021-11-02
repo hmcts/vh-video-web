@@ -6,20 +6,29 @@ import { ErrorService } from '../../services/error.service';
 import { pageUrls } from '../../shared/page-url.constants';
 import { UserProfileResponse, Role } from '../../services/clients/api-client';
 import { ConfigService } from 'src/app/services/api/config.service';
-import { take } from 'rxjs/operators';
+import { first, take } from 'rxjs/operators';
+import { FeatureFlagService } from '../../services/feature-flag.service';
 
 @Component({
     selector: 'app-navigator',
     templateUrl: './navigator.component.html'
 })
 export class NavigatorComponent implements OnInit {
+    staffMemberNavigation: string = pageUrls.StaffMemberHearingList;
+
     constructor(
         private router: Router,
         private profileService: ProfileService,
         private errorService: ErrorService,
         private deviceTypeService: DeviceTypeService,
-        private configService: ConfigService
-    ) {}
+        private configService: ConfigService,
+        private featureFlagService: FeatureFlagService
+    ) {
+        this.featureFlagService
+            .getFeatureFlagByName('StaffMemberFeature')
+            .pipe(first())
+            .subscribe(result => (this.staffMemberNavigation = result ? pageUrls.StaffMemberHearingList : pageUrls.Unauthorised));
+    }
 
     ngOnInit() {
         this.configService
@@ -46,7 +55,7 @@ export class NavigatorComponent implements OnInit {
         if (userProfile.role === Role.Judge || userProfile.role === Role.JudicialOfficeHolder) {
             this.router.navigate([pageUrls.JudgeHearingList]);
         } else if (userProfile.role === Role.StaffMember) {
-            this.router.navigate([pageUrls.StaffMemberHearingList]);
+            this.router.navigate([this.staffMemberNavigation]);
         } else if (userProfile.role === Role.VideoHearingsOfficer) {
             this.router.navigate([pageUrls.AdminVenueList]);
         } else if (
