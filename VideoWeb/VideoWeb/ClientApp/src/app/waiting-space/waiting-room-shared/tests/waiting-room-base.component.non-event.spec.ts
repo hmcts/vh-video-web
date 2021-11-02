@@ -1,4 +1,4 @@
-import { fakeAsync, tick } from '@angular/core/testing';
+import { fakeAsync } from '@angular/core/testing';
 import { ActiveToast } from 'ngx-toastr';
 import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
@@ -16,12 +16,9 @@ import {
     TokenResponse
 } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
-import { SelectedUserMediaDevice } from 'src/app/shared/models/selected-user-media-device';
-import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { RoomClosingToastComponent } from 'src/app/shared/toast/room-closing/room-closing-toast.component';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { VideoCallPreferences } from '../../services/video-call-preferences.mode';
 import {
     activatedRoute,
     clockService,
@@ -92,47 +89,6 @@ describe('WaitingRoomComponent message and clock', () => {
         component.participant = participant;
         component.connected = true; // assume connected to pexip
         videoWebService.getConferenceById.calls.reset();
-    });
-
-    describe('updateShowVideo', () => {
-        const dualHostRoles = [Role.Judge, Role.StaffMember];
-        const nonDualHostRoles = [
-            Role.None,
-            Role.CaseAdmin,
-            Role.VideoHearingsOfficer,
-            Role.HearingFacilitationSupport,
-            Role.Individual,
-            Role.Representative,
-            Role.JudicialOfficeHolder,
-            Role.QuickLinkParticipant,
-            Role.QuickLinkObserver
-        ];
-
-        dualHostRoles.forEach(role => {
-            it(`returns dualHostHasSignalledToJoinHearing as true when hearing in session and the participant is a ${role.toLocaleLowerCase()}`, () => {
-                component.connected = true;
-                component.dualHostHasSignalledToJoinHearing = true;
-                component.participant.role = role;
-                component.conference.status = ConferenceStatus.InSession;
-
-                component.updateShowVideo();
-
-                expect(component.dualHostHasSignalledToJoinHearing).toBe(true);
-            });
-        });
-
-        nonDualHostRoles.forEach(role => {
-            it(`returns dualHostHasSignalledToJoinHearing as false when hearing in session and the participant is a ${role.toLocaleLowerCase()}`, () => {
-                component.connected = true;
-                component.dualHostHasSignalledToJoinHearing = true;
-                component.participant.role = role;
-                component.conference.status = ConferenceStatus.InSession;
-
-                component.updateShowVideo();
-
-                expect(component.dualHostHasSignalledToJoinHearing).toBe(false);
-            });
-        });
     });
 
     describe('toggle Panel', () => {
@@ -490,7 +446,6 @@ describe('WaitingRoomComponent message and clock', () => {
 
     describe('shouldCurrentUserJoinHearing', () => {
         it('should return false if user is a host and has not signalled to join hearing', () => {
-            component.dualHostHasSignalledToJoinHearing = false;
             const spy = spyOn(component, 'isHost').and.returnValue(true);
 
             const shouldCurrentUserJoinHearing = component.shouldCurrentUserJoinHearing();
@@ -500,7 +455,6 @@ describe('WaitingRoomComponent message and clock', () => {
         });
 
         it('should return true if user is not a host', () => {
-            component.dualHostHasSignalledToJoinHearing = false;
             const spy = spyOn(component, 'isHost').and.returnValue(false);
 
             const shouldCurrentUserJoinHearing = component.shouldCurrentUserJoinHearing();
@@ -510,9 +464,8 @@ describe('WaitingRoomComponent message and clock', () => {
         });
 
         it('should return true if user is a host and has signalled to join the hearing', () => {
-            component.dualHostHasSignalledToJoinHearing = true;
             const spy = spyOn(component, 'isHost').and.returnValue(true);
-
+            component.participant.status = ParticipantStatus.InHearing;
             const shouldCurrentUserJoinHearing = component.shouldCurrentUserJoinHearing();
 
             expect(spy).toHaveBeenCalledTimes(1);
