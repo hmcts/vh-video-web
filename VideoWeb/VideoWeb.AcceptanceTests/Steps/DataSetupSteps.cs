@@ -39,6 +39,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private bool audioRecordingRequired = false;
         private string hearingVenue = "Birmingham Civil and Family Justice Centre";
         private int delayMinutes = 0;
+        private bool _shouldIncludeStaffMember = false;
 
         public DataSetupSteps(TestContext c, ScenarioContext scenario)
         {
@@ -52,6 +53,13 @@ namespace VideoWeb.AcceptanceTests.Steps
             GivenIHaveAHearingWithUser();
         }
 
+        [Given(@"I have a scheduled hearing with a (.*) and a Staff Member")]
+        public void GivenIHaveAHearingWithUserAndStaffMember(string user = DEFAULT_USER)
+        {
+            _shouldIncludeStaffMember = true;
+            GivenIHaveAHearingWithUser(user);
+        }
+
         [Given(@"I have a hearing with a (.*)")]
         [Given(@"I have a hearing with an (.*)")]
         [Given(@"I have another hearing with another (.*)")]
@@ -60,7 +68,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var userTypes = GetUserType(user);
 
-            if (user.ToLower().Contains("staff member"))
+            if (_shouldIncludeStaffMember)
                 userTypes.Add(UserType.StaffMember);
 
             AllocateUsers(userTypes);
