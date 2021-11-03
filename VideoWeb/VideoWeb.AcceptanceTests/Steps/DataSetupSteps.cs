@@ -71,6 +71,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             if (_shouldIncludeStaffMember)
                 userTypes.Add(UserType.StaffMember);
 
+            NUnit.Framework.TestContext.WriteLine($"{userTypes.Count()} user(s) created. They are: '{string.Join(", ", userTypes.ToArray())}'.");
+
             AllocateUsers(userTypes);
             if(user.ToLower() == "winger")
             {
