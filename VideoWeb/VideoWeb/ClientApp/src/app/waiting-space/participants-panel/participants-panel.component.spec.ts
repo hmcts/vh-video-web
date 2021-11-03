@@ -40,7 +40,7 @@ import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.serv
 import { VideoControlService } from 'src/app/services/conference/video-control.service';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { CaseTypeGroup } from '../models/case-type-group';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { PanelModel } from '../models/panel-model-base';
 import { JudgeContextMenuComponent } from '../judge-context-menu/judge-context-menu.component';
@@ -56,6 +56,8 @@ import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { TooltipDirective } from 'src/app/shared/directives/tooltip.directive';
 import { ParticipantAlertComponent } from '../participant-alert/participant-alert.component';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
@@ -85,8 +87,15 @@ describe('ParticipantsPanelComponent', () => {
     let hyphenateSpy: jasmine.Spy;
     let translateSpy: jasmine.Spy;
     let lowerCaseSpy: jasmine.Spy;
+    let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
 
     beforeAll(() => {
+        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+            'HearingVenueFlagsService',
+            [],
+            ['HearingVenueIsScottish']
+        );
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(new BehaviorSubject(false));
         jasmine.getEnv().allowRespy(true);
     });
     afterAll(() => {
@@ -161,6 +170,10 @@ describe('ParticipantsPanelComponent', () => {
                 {
                     provide: ParticipantPanelModelMapper,
                     useValue: participantPanelModelMapperSpy
+                },
+                {
+                    provide: HearingVenueFlagsService,
+                    useValue: mockedHearingVenueFlagsService
                 }
             ]
         }).compileComponents();
@@ -195,6 +208,17 @@ describe('ParticipantsPanelComponent', () => {
 
     afterEach(() => {
         component.ngOnDestroy();
+    });
+
+    it('returns true for hearingVenueIsInScotland when hearing venue is in scotland', () => {
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(new BehaviorSubject(true));
+        component.ngOnInit();
+        expect(component.hearingVenueIsInScotland).toBe(true);
+    });
+
+    it('unsubscribes on destroy', () => {
+        component.ngOnDestroy();
+        expect(component.hearingVenueFlagsServiceSubscription$.closed).toBeTruthy();
     });
 
     it('should get participant sorted list, the judge is first, then panel members and finally observers are the last one', fakeAsync(() => {

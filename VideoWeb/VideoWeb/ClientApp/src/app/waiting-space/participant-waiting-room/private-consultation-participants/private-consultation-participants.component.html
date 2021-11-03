@@ -5,7 +5,9 @@
             <ng-container *ngFor="let groupMember of johRoles">
                 <ng-container *ngIf="getMemberParticipantsByRole(groupMember).length > 0">
                     <div  class="language-icon">
-                        <img  class="small-crest" src="/assets/images/UkGovCrestWhite.png"[attr.alt]="'private-consultation-participants.crest-icon-alt' | translate" />                    
+                        <img  class="small-crest" 
+                        [src]="hearingVenueIsInScotland ? '/assets/images/scot-crest-white.png': '/assets/images/UkGovCrestWhite.png'"
+                        [attr.alt]="'private-consultation-participants.crest-icon-alt' | translate" />                    
                     </div>
                     <div class="member-group">
                         <ng-container *ngFor="let participant of getMemberParticipantsByRole(groupMember); trackBy: trackParticipant">        

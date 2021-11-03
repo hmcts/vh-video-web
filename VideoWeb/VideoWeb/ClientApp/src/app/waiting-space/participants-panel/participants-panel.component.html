@@ -45,7 +45,7 @@
       >
         <span *ngIf="participant.isJudge">
           <img
-            src="/assets/images/UkGovCrestWhite.png"
+            [src]="hearingVenueIsInScotland ? '/assets/images/scot-crest-white.png': '/assets/images/UkGovCrestWhite.png'"
             class="panel-icon panel-icon-crest"
             [attr.alt]="'participants-panel.crest' | translate"
           />
@@ -61,7 +61,7 @@
         </span>
         <span *ngIf="participant.isJudicialOfficeHolder">
           <img
-            src="/assets/images/UkGovCrestWhite.png"
+            [src]="hearingVenueIsInScotland ? '/assets/images/scot-crest-white.png': '/assets/images/UkGovCrestWhite.png'"
             class="panel-icon panel-icon-crest"
             [attr.alt]="'participants-panel.crest' | translate"
           />

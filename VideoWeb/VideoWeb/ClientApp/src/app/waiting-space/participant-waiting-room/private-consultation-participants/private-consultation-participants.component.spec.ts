@@ -30,6 +30,9 @@ import { RequestedConsultationMessage } from 'src/app/services/models/requested-
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { HearingRole } from '../../models/hearing-role-model';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
+import { BehaviorSubject } from 'rxjs';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 
 describe('PrivateConsultationParticipantsComponent', () => {
     let component: PrivateConsultationParticipantsComponent;
@@ -45,8 +48,15 @@ describe('PrivateConsultationParticipantsComponent', () => {
     let logged: LoggedParticipantResponse;
     let activatedRoute: ActivatedRoute;
     const translateService = translateServiceSpy;
+    let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
 
     beforeAll(() => {
+        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+            'HearingVenueFlagsService',
+            [],
+            ['HearingVenueIsScottish']
+        );
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(new BehaviorSubject(false));
         oidcSecurityService = mockOidcSecurityService;
 
         consultationService = consultationServiceSpyFactory();
@@ -78,7 +88,8 @@ describe('PrivateConsultationParticipantsComponent', () => {
             logger,
             videoWebService,
             activatedRoute,
-            translateService
+            translateService,
+            mockedHearingVenueFlagsService
         );
 
         component.conference = conference;
@@ -99,6 +110,17 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('returns true for hearingVenueIsInScotland when hearing venue is in scotland', () => {
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(new BehaviorSubject(true));
+        component.ngOnInit();
+        expect(component.hearingVenueIsInScotland).toBe(true);
+    });
+
+    it('unsubscribes on destroy', () => {
+        component.ngOnDestroy();
+        expect(component.hearingVenueFlagsServiceSubscription$.closed).toBeTruthy();
     });
 
     it('should return participant available', () => {

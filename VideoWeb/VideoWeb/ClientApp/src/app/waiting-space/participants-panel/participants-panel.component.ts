@@ -6,6 +6,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ParticipantResponse } from 'src/app/services/clients/api-client';
 import { VideoControlService } from 'src/app/services/conference/video-control.service';
 import { EventsService } from 'src/app/services/events.service';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
@@ -42,6 +43,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     isMuteAll = false;
     conferenceId: string;
     readonly idPrefix = 'participants-panel';
+    hearingVenueIsInScotland = false;
+    hearingVenueFlagsServiceSubscription$: Subscription;
 
     videoCallSubscription$ = new Subscription();
     eventhubSubscription$ = new Subscription();
@@ -57,7 +60,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private eventService: EventsService,
         private logger: Logger,
         protected translateService: TranslateService,
-        private mapper: ParticipantPanelModelMapper
+        private mapper: ParticipantPanelModelMapper,
+        private hearingVenueFlagsService: HearingVenueFlagsService
     ) {}
 
     ngOnInit() {
@@ -66,6 +70,10 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             this.setupVideoCallSubscribers();
             this.setupEventhubSubscribers();
         });
+
+        this.hearingVenueFlagsServiceSubscription$ = this.hearingVenueFlagsService.HearingVenueIsScottish.subscribe(
+            value => (this.hearingVenueIsInScotland = value)
+        );
     }
 
     toggleMuteParticipantEventHandler(e: ToggleMuteParticipantEvent) {
@@ -93,6 +101,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.eventhubSubscription$.unsubscribe();
         this.participantsSubscription$.unsubscribe();
         this.resetAllWitnessTransferTimeouts();
+        this.hearingVenueFlagsServiceSubscription$.unsubscribe();
     }
 
     resetWitnessTransferTimeout(participantId: string) {

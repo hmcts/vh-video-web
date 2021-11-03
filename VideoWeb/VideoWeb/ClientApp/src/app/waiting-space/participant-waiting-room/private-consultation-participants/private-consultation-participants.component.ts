@@ -16,6 +16,8 @@ import { ActivatedRoute } from '@angular/router';
 import { HearingRole } from '../../models/hearing-role-model';
 import { TranslateService } from '@ngx-translate/core';
 import { ParticipantListItem } from '../participant-list-item';
+import { Subscription } from 'rxjs';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 
 @Component({
     selector: 'app-private-consultation-participants',
@@ -25,6 +27,8 @@ import { ParticipantListItem } from '../participant-list-item';
 export class PrivateConsultationParticipantsComponent extends WRParticipantStatusListDirective implements OnInit, OnDestroy {
     @Input() roomLabel: string;
     participantCallStatuses = {};
+    hearingVenueIsInScotland = false;
+    hearingVenueFlagsServiceSubscription$: Subscription;
 
     constructor(
         protected consultationService: ConsultationService,
@@ -32,7 +36,8 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         protected logger: Logger,
         protected videoWebService: VideoWebService,
         protected route: ActivatedRoute,
-        protected translateService: TranslateService
+        protected translateService: TranslateService,
+        protected hearingVenueFlagsService: HearingVenueFlagsService
     ) {
         super(consultationService, eventService, videoWebService, logger, translateService);
         this.loggerPrefix = '[PrivateConsultationParticipantsComponent] - ';
@@ -43,10 +48,14 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         this.initParticipants();
         this.setupSubscribers();
         this.setupInviteStatusSubscribers();
+        this.hearingVenueFlagsServiceSubscription$ = this.hearingVenueFlagsService.HearingVenueIsScottish.subscribe(
+            value => (this.hearingVenueIsInScotland = value)
+        );
     }
 
     ngOnDestroy() {
         this.executeTeardown();
+        this.hearingVenueFlagsServiceSubscription$.unsubscribe();
     }
 
     setupInviteStatusSubscribers() {
