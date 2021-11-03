@@ -10,6 +10,7 @@ import { Guid } from 'guid-typescript';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { TranslateService } from '@ngx-translate/core';
 import { ConsultationInvitation } from './consultation-invitation.service';
+import { VideoCallService } from './video-call.service';
 
 @Injectable()
 export class NotificationToastrService {
@@ -19,7 +20,8 @@ export class NotificationToastrService {
         private toastr: ToastrService,
         private consultationService: ConsultationService,
         private notificationSoundService: NotificationSoundsService,
-        private translateService: TranslateService
+        private translateService: TranslateService,
+        private videoCallService: VideoCallService
     ) {
         this.notificationSoundService.initConsultationRequestRingtone();
     }
@@ -125,16 +127,18 @@ export class NotificationToastrService {
             },
             buttons: [
                 {
+                    id: 'notification-toastr-invite-accept',
                     label: this.translateService.instant('notification-toastr.invite.accept'),
-                    hoverColour: 'green',
+                    cssClass: 'green',
                     action: async () => {
                         await respondToConsultationRequest(ConsultationAnswer.Accepted);
                         this.toastr.remove(toast.toastId);
                     }
                 },
                 {
+                    id: 'notification-toastr-invite-decline',
                     label: this.translateService.instant('notification-toastr.invite.decline'),
-                    hoverColour: 'red',
+                    cssClass: 'red',
                     action: async () => {
                         await respondToConsultationRequest(ConsultationAnswer.Rejected);
                         this.toastr.remove(toast.toastId);
@@ -214,8 +218,9 @@ export class NotificationToastrService {
             },
             buttons: [
                 {
+                    id: 'notification-toastr-create-consultation-notification-close',
                     label: this.translateService.instant('notification-toastr.linked-participants.button-close'),
-                    hoverColour: 'red',
+                    cssClass: 'red',
                     action: async () => {
                         this.toastr.remove(toast.toastId);
                     }
@@ -257,8 +262,9 @@ export class NotificationToastrService {
             },
             buttons: [
                 {
+                    id: 'notification-toastr-poor-connection-dismiss',
                     label: this.translateService.instant('notification-toastr.poor-connection.dismiss'),
-                    hoverColour: 'green',
+                    cssClass: 'green',
                     action: async () => {
                         this.toastr.remove(toast.toastId);
                     }
@@ -281,8 +287,9 @@ export class NotificationToastrService {
             htmlBody: message,
             buttons: [
                 {
+                    id: 'notification-toastr-audio-recording-error.dismiss',
                     label: this.translateService.instant('notification-toastr.poor-connection.dismiss'),
-                    hoverColour: 'green',
+                    cssClass: 'green',
                     action: async () => {
                         this.toastr.remove(toast.toastId);
                         callback();
@@ -327,8 +334,9 @@ export class NotificationToastrService {
             },
             buttons: [
                 {
+                    id: 'notification-toastr-participant-added-dismiss',
                     label: this.translateService.instant('notification-toastr.participant-added.dismiss'),
-                    hoverColour: 'green',
+                    cssClass: 'green',
                     action: async () => {
                         this.toastr.remove(toast.toastId);
                     }
@@ -341,7 +349,6 @@ export class NotificationToastrService {
 
     showHearingLayoutchanged(participant: ParticipantResponse, inHearing: boolean = false): VhToastComponent {
         const messageBody = this.translateService.instant('notification-toastr.hearing-layout-changed.message');
-
         let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${this.translateService.instant(
             'notification-toastr.hearing-layout-changed.title',
             {
@@ -364,8 +371,56 @@ export class NotificationToastrService {
             },
             buttons: [
                 {
+                    id: 'notification-toastr-hearing-layout-changed-dismiss',
                     label: this.translateService.instant('notification-toastr.hearing-layout-changed.dismiss'),
-                    hoverColour: 'green',
+                    cssClass: 'green',
+                    action: async () => {
+                        this.toastr.remove(toast.toastId);
+                    }
+                }
+            ]
+        };
+
+        return toast.toastRef.componentInstance as VhToastComponent;
+    }
+
+    showHearingStarted(conferenceId: string, participantId: string): VhToastComponent {
+        const messageBody = this.translateService.instant('notification-toastr.hearing-started.message');
+        const title = this.translateService.instant('notification-toastr.hearing-started.title');
+
+        let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${title}</span>`;
+        message += `<span class="toast-content toast-body">${messageBody}</span>`;
+        const joinHearingFromAlert = async () => {
+            this.logger.info(
+                `${this.loggerPrefix} Participant ${participantId} is join Hearing conference ${conferenceId} from Hearing Started Alert`
+            );
+            await this.videoCallService.joinHearingInSession(conferenceId, participantId);
+        };
+        const toast = this.toastr.show('', '', {
+            timeOut: 0,
+            extendedTimeOut: 0,
+            tapToDismiss: false,
+            toastComponent: VhToastComponent
+        });
+        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
+            color: 'white',
+            htmlBody: message,
+            onNoAction: async () => {
+                this.logger.info(`${this.loggerPrefix} No action called on hearing started alert`);
+            },
+            buttons: [
+                {
+                    id: 'notification-toastr-hearing-started-join-hearing',
+                    label: this.translateService.instant('notification-toastr.hearing-started.join-hearing'),
+                    cssClass: 'hearing-started-join-hearing',
+                    action: async () => {
+                        await joinHearingFromAlert();
+                    }
+                },
+                {
+                    id: 'notification-toastr-hearing-started-dismiss',
+                    label: this.translateService.instant('notification-toastr.hearing-started.dismiss'),
+                    cssClass: 'hearing-started-dismiss',
                     action: async () => {
                         this.toastr.remove(toast.toastId);
                     }

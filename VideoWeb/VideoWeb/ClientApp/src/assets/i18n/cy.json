@@ -575,6 +575,12 @@
       "title": "Mae {{name}}",
       "message": "wedi newid cynllun y gwrandawiad.",
       "dismiss": "Gwrthod"
+    },
+    "hearing-started": {
+      "title":" Rhybudd!",
+      "join-hearing": " Ymuno â'r gwrandawiad",
+      "message":"Mae'r gwrandawiad bellach yn mynd rhagddo.",
+      "dismiss": "Gwrthod"
     }
   },
   "consultation-error": {
@@ -610,7 +616,10 @@
     "consultation-controls": "Rheolaethau Ymgynghori",
     "show-chat-window": "Dangos y rhestr negeseuon",
     "hide-chat-window": "Cuddio’r rhestr negeseuon",
-    "leave-hearing": "Leave Hearing"
+    "leave-hearing": "Leave Hearing",
+    "share-video-evidence": "Rhannu fideo neu sain",
+    "share-document-evidence": "Rhannu dogfennau",
+    "unsupported-dynamic-evidence": "Nid yw’r swyddogaeth rhannu fideos yn cael ei gefnogi ar y porwr hwn"
   },
   "judge-waiting-room": {
     "switch-to-main-screen": "Dychwelyd i'r brif sgrin",
@@ -822,12 +831,12 @@
     "cancel-close-label": "Canslo cau'r gwrandawiad"
   },
   "confirm-leave-hearing-popup": {
-    "title": "You are about to leave this hearing",
-    "message": "Ensure the judge or another responsible officer is still present before leaving the hearing.",
-    "leave-hearing": "Leave hearing",
-    "leave-hearing-label": "Confirm leaving the hearing",
-    "cancel-leave": "Cancel",
-    "cancel-leave-label": "Cancel leaving the hearing"
+    "title": "Rydych chi ar fin gadael y gwrandawiad hwn",
+    "message": "Sicrhewch fod y barnwr neu swyddog cyfrifol arall o staff yn parhau'n bresennol cyn gadael y gwrandawiad.",
+    "leave-hearing": "Gadael y gwrandawiad",
+    "leave-hearing-label": "Cadarnhau gadael y gwrandawiad",
+    "cancel-leave": "Canslo",
+    "cancel-leave-label": "Canslo gadael y gwrandawiad"
   },
   "chat-panel": {
     "loading": "Wrthi'n llwytho...",
@@ -1056,10 +1065,7 @@
   },
   "app": {
     "skip-to-main-content": "Ymlaen i'r prif gynnwys"
-  },
-  "vho-hearing-list": {
-    "crest-icon-alt": "eicon yr arwyddlun"
-  },
+  }, 
   "unread-messages": {
     "im-image-alt": "eicon negeseuon gwib"
   },

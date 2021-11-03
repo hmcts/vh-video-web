@@ -623,7 +623,10 @@
     "consultation-controls": "Consultation controls",
     "show-chat-window": "Show messages list",
     "hide-chat-window": "Hide messages list",
-    "leave-hearing": "Leave Hearing"
+    "leave-hearing": "Leave Hearing",
+    "share-video-evidence": "Share video or audio",
+    "share-document-evidence": "Share documents",
+    "unsupported-dynamic-evidence": "Video sharing is not supported on this browser"
   },
   "chat-panel": {
     "heading": "VH Officer messages",
@@ -809,9 +812,6 @@
   },
   "unread-messages": {
     "im-image-alt": "instant message icon"
-  },
-  "vho-hearing-list": {
-    "crest-icon-alt": "crest icon"
   },
   "court-room-filters": {
     "apply-filters-alt": "Apply selected filters",
@@ -1063,6 +1063,12 @@
     "hearing-layout-changed": {
       "title": "{{name}}",
       "message": "has changed the hearing layout.",
+      "dismiss": "Dismiss"
+    },
+    "hearing-started": {
+      "title":"Alert!",
+      "join-hearing": "Join hearing",
+      "message":"The hearing is now in session.",
       "dismiss": "Dismiss"
     }
   },
