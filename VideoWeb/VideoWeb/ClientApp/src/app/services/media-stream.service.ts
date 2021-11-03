@@ -49,22 +49,25 @@ export class MediaStreamService {
             .pipe(
                 mergeMap(stream => {
                     if (this.videoFilterService.doesSupportVideoFiltering()) {
+                        this.logger.info(`${this.loggerPrefix} video filtering is supported`);
                         return this.videoFilterService.filterOn$.pipe(
                             mergeMap(filterOn => {
                                 if (filterOn) {
                                     return this.videoFilterService.initFilterFromMediaStream(stream).pipe(
                                         take(1),
                                         map(() => {
-                                            this.logger.info(`${this.loggerPrefix} MAP`);
+                                            this.logger.debug(`${this.loggerPrefix} Returning filtered stream`);
                                             return this.videoFilterService.startFilteredStream();
                                         })
                                     );
                                 } else {
+                                    this.logger.debug(`${this.loggerPrefix} Returning unfiltered stream`);
                                     return of(stream);
                                 }
                             })
                         );
                     } else {
+                        this.logger.info(`${this.loggerPrefix} video filtering is NOT supported`);
                         return of(stream);
                     }
                 }),
