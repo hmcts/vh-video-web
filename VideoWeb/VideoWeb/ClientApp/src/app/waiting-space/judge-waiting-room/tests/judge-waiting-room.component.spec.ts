@@ -26,6 +26,7 @@ import {
     heartbeatModelMapper,
     initAllWRDependencies,
     logger,
+    mockedHearingVenueFlagsService,
     notificationSoundsService,
     notificationToastrService,
     roomClosingToastrService,
@@ -49,6 +50,7 @@ import { VirtualMeetingRoomModel } from 'src/app/services/conference/models/virt
 import { HearingRole } from '../../models/hearing-role-model';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     const participantOneId = Guid.create().toString();
@@ -236,7 +238,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             videoControlServiceSpy,
             videoControlCacheServiceSpy,
             unloadDetectorServiceSpy,
-            hearingLayoutServiceSpy
+            hearingLayoutServiceSpy,
+            mockedHearingVenueFlagsService
         );
 
         consultationInvitiationService.getInvitation.and.returnValue(consultationInvitiation);

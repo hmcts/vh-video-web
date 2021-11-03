@@ -13,6 +13,7 @@ import {
     heartbeatModelMapper,
     initAllWRDependencies,
     logger,
+    mockedHearingVenueFlagsService,
     notificationSoundsService,
     notificationToastrService,
     roomClosingToastrService,
@@ -58,7 +59,8 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
             clockService,
             translateService,
             consultationInvitiationService,
-            unloadDetectorServiceSpy
+            unloadDetectorServiceSpy,
+            mockedHearingVenueFlagsService
         );
     });
 

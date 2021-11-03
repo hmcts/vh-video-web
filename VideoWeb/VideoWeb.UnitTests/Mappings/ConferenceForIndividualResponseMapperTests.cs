@@ -31,8 +31,8 @@ namespace VideoWeb.UnitTests.Mappings
 
             var conference = Builder<Conference>.CreateNew()
                 .With(x => x.Id = Guid.NewGuid())
+                .With(x => x.HearingVenueIsScottish = true)
                 .Build();
-            conference.HearingVenueIsScottish = true;
 
             var response = _sut.Map(conference);
 
