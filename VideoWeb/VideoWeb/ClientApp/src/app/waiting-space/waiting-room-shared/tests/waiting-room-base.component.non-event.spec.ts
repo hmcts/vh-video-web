@@ -343,7 +343,7 @@ describe('WaitingRoomComponent message and clock', () => {
 
         await component.getConferenceClosedTime(component.conference.id);
 
-        expect(nextSpy).toHaveBeenCalledWith(false);
+        expect(nextSpy).toHaveBeenCalledWith(true);
     });
 
     it('getConferenceClosedTime sets HearingVenueIsScottish property to false when hearing venue is not in scotland', async () => {
@@ -352,7 +352,7 @@ describe('WaitingRoomComponent message and clock', () => {
         const closedConference = new ConferenceResponse(Object.assign({}, globalConference));
         closedConference.status = ConferenceStatus.Closed;
         closedConference.closed_date_time = new Date();
-        closedConference.hearing_venue_is_scottish = true;
+        closedConference.hearing_venue_is_scottish = false;
         const expectedParticipant = new ParticipantResponse(globalConference.participants[0].toJSON());
 
         spyOn(component, 'getLoggedParticipant').and.returnValue(expectedParticipant);
@@ -362,7 +362,7 @@ describe('WaitingRoomComponent message and clock', () => {
 
         await component.getConferenceClosedTime(component.conference.id);
 
-        expect(nextSpy).toHaveBeenCalledWith(true);
+        expect(nextSpy).toHaveBeenCalledWith(false);
     });
 
     it('should get the conference for closed time', async () => {
