@@ -34,6 +34,8 @@ import { ParticipantUpdated } from '../models/video-call-models';
 import { PrivateConsultationRoomControlsComponent } from '../private-consultation-room-controls/private-consultation-room-controls.component';
 import { HearingControlsBaseComponent } from './hearing-controls-base.component';
 import { CaseTypeGroup } from '../models/case-type-group';
+import { ConferenceService } from 'src/app/services/conference/conference.service';
+import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
 
 describe('HearingControlsBaseComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -78,6 +80,9 @@ describe('HearingControlsBaseComponent', () => {
     let isAudioOnlySubject: Subject<boolean>;
     let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
 
+    let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
+    let onCurrentConferenceStatusSubject: Subject<ConferenceStatusChanged>;
+
     beforeEach(() => {
         translateService.instant.calls.reset();
 
@@ -95,6 +100,10 @@ describe('HearingControlsBaseComponent', () => {
         isAudioOnlySubject = new Subject<boolean>();
         getSpiedPropertyGetter(userMediaServiceSpy, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
 
+        conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>([], ['onCurrentConferenceStatusChanged$']);
+        onCurrentConferenceStatusSubject = new Subject<ConferenceStatusChanged>();
+        getSpiedPropertyGetter(conferenceServiceSpy, 'onCurrentConferenceStatusChanged$').and.returnValue(onCurrentConferenceStatusSubject);
+
         component = new PrivateConsultationRoomControlsComponent(
             videoCallService,
             eventsService,
@@ -102,7 +111,8 @@ describe('HearingControlsBaseComponent', () => {
             logger,
             participantServiceSpy,
             translateService,
-            userMediaServiceSpy
+            userMediaServiceSpy,
+            conferenceServiceSpy
         );
         conference = new ConferenceTestData().getConferenceNow();
         component.participant = globalParticipant;

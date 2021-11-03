@@ -51,7 +51,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     isSpotlighted: boolean;
     showEvidenceContextMenu: boolean;
 
-    private destroyedSubject = new Subject<void>();
+    protected destroyedSubject = new Subject<void>();
     sharingDynamicEvidence: boolean;
 
     protected constructor(
