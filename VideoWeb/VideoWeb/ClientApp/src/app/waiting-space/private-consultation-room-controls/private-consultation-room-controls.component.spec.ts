@@ -1,6 +1,7 @@
 import { Guid } from 'guid-typescript';
 import {
     ConferenceResponse,
+    ConferenceStatus,
     ParticipantForUserResponse,
     ParticipantStatus,
     Role,
@@ -34,6 +35,9 @@ import { ParticipantModel } from 'src/app/shared/models/participant';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { HearingControlsBaseComponent } from '../hearing-controls/hearing-controls-base.component';
 import { CaseTypeGroup } from '../models/case-type-group';
+import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
+import { ConferenceService } from 'src/app/services/conference/conference.service';
+import { fakeAsync, flush } from '@angular/core/testing';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -74,6 +78,9 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     let isAudioOnlySubject: Subject<boolean>;
     let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
 
+    let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
+    let onCurrentConferenceStatusSubject: Subject<ConferenceStatusChanged>;
+
     beforeEach(() => {
         translateService.instant.calls.reset();
 
@@ -92,6 +99,10 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         );
         getSpiedPropertyGetter(participantServiceSpy, 'loggedInParticipant$').and.returnValue(loggedInParticipantSubject.asObservable());
 
+        conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>([], ['onCurrentConferenceStatusChanged$']);
+        onCurrentConferenceStatusSubject = new Subject<ConferenceStatusChanged>();
+        getSpiedPropertyGetter(conferenceServiceSpy, 'onCurrentConferenceStatusChanged$').and.returnValue(onCurrentConferenceStatusSubject);
+
         component = new PrivateConsultationRoomControlsComponent(
             videoCallService,
             eventsService,
@@ -99,7 +110,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             logger,
             participantServiceSpy,
             translateService,
-            userMediaServiceSpy
+            userMediaServiceSpy,
+            conferenceServiceSpy
         );
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;
@@ -113,6 +125,51 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
     afterEach(() => {
         component.ngOnDestroy();
+    });
+
+    describe('canJoinHearingFromConsultation', () => {
+        const testCases: { shouldShow: boolean; newConferenceStatus: ConferenceStatus; participantStatus: ParticipantStatus }[] = [];
+        for (const conferenceStatus in ConferenceStatus) {
+            if (conferenceStatus) {
+                for (const participantStatus in ParticipantStatus) {
+                    if (participantStatus) {
+                        testCases.push({
+                            shouldShow:
+                                conferenceStatus === ConferenceStatus.InSession && participantStatus === ParticipantStatus.InConsultation,
+                            newConferenceStatus: <ConferenceStatus>conferenceStatus,
+                            participantStatus: <ParticipantStatus>participantStatus
+                        });
+                    }
+                }
+            }
+        }
+
+        for (const testCase of testCases) {
+            it(`should ${testCase.shouldShow ? '' : 'NOT'} show the join hearing button when the new status is ${
+                testCase.newConferenceStatus
+            } and the participant status is ${testCase.participantStatus}`, fakeAsync(() => {
+                // Arrange
+                onCurrentConferenceStatusSubject.next({ oldStatus: null, newStatus: testCase.newConferenceStatus });
+                component.participant.status = testCase.participantStatus;
+
+                // Act
+                const shouldShow = component.canJoinHearingFromConsultation;
+
+                // Assert
+                expect(shouldShow).toEqual(testCase.shouldShow);
+            }));
+        }
+    });
+
+    describe('joinHearingFromConsultation', () => {
+        it('should call videoCallService.joinHearingInSession', fakeAsync(() => {
+            // Act
+            component.joinHearingFromConsultation();
+            flush();
+
+            // Assert
+            expect(videoCallServiceSpy.joinHearingInSession).toHaveBeenCalledWith(component.conferenceId, component.participant.id);
+        }));
     });
 
     it('should open self-view by default for judge', () => {
