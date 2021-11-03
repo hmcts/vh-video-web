@@ -52,20 +52,19 @@ namespace VideoWeb.AcceptanceTests.Steps
             GivenIHaveAHearingWithUser();
         }
 
-        [Given(@"I have a hearing with a (.*) and I include a (.*)")]
         [Given(@"I have a hearing with a (.*)")]
         [Given(@"I have a hearing with an (.*)")]
         [Given(@"I have another hearing with another (.*)")]
         [Given(@"I have a CACD hearing with a (.*)")]
-        public void GivenIHaveAHearingWithUser(string user1 = DEFAULT_USER, string user2 = "")
+        public void GivenIHaveAHearingWithUser(string user = DEFAULT_USER)
         {
-            var userTypes = GetUserType(user1);
+            var userTypes = GetUserType(user);
 
-            if (user2.ToLower() == "staff member")
+            if (user.ToLower().Contains("staff member"))
                 userTypes.Add(UserType.StaffMember);
 
             AllocateUsers(userTypes);
-            if(user1.ToLower() == "winger")
+            if(user.ToLower() == "winger")
             {
                 CreateCACDHearing(delayMinutes);
             }
