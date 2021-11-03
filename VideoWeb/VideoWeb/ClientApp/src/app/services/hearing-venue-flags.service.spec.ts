@@ -10,9 +10,17 @@ describe('HearingVenueFlagsService', () => {
         service = TestBed.inject(HearingVenueFlagsService);
     });
 
-    it('IsHearingVenueScottish returns false by default', done => {
-        service.HearingVenueIsScottish.subscribe(response => {
+    it('getHearingVenueIsScottish returns current value', done => {
+        service.hearingVenueIsScottish$.subscribe(response => {
             expect(response).toBe(false);
+            done();
+        });
+    });
+
+    it('setHearingVenueIsScottish updates current value', done => {
+        service.setHearingVenueIsScottish(true);
+        service.hearingVenueIsScottish$.subscribe(response => {
+            expect(response).toBe(true);
             done();
         });
     });

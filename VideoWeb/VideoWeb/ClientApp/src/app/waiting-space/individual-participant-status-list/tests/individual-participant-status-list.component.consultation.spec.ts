@@ -41,14 +41,9 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     let activatedRoute: ActivatedRoute;
     const translateService = translateServiceSpy;
     let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
+    let hearingVenueIsScottishSubject: BehaviorSubject<boolean>;
 
     beforeAll(() => {
-        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
-            'HearingVenueFlagsService',
-            [],
-            ['HearingVenueIsScottish']
-        );
-        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(new BehaviorSubject(false));
         oidcSecurityService = mockOidcSecurityService;
 
         consultationService = consultationServiceSpyFactory();
@@ -63,6 +58,13 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     });
 
     beforeEach(() => {
+        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+            'HearingVenueFlagsService',
+            ['setHearingVenueIsScottish'],
+            ['hearingVenueIsScottish$']
+        );
+        hearingVenueIsScottishSubject = new BehaviorSubject(false);
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'hearingVenueIsScottish$').and.returnValue(hearingVenueIsScottishSubject);
         conference = new ConferenceTestData().getConferenceDetailFuture();
         conference.participants.forEach(p => {
             p.status = ParticipantStatus.Available;
@@ -97,6 +99,12 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
 
     afterEach(() => {
         component.ngOnDestroy();
+    });
+
+    it('returns true for hearingVenueIsInScotland when hearing venue is in scotland', () => {
+        hearingVenueIsScottishSubject.next(true);
+        component.ngOnInit();
+        expect(component.hearingVenueIsInScotland).toBe(true);
     });
 
     it('should init properties and setup ringtone on init', async () => {

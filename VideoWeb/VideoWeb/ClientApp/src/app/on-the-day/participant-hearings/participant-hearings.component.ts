@@ -89,7 +89,7 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
 
     async onConferenceSelected(conference: ConferenceForIndividualResponse) {
         this.logger.debug('[ParticipantHearings] - Loading conference details', { conference: conference.id });
-        this.hearingVenueFlagsService.HearingVenueIsScottish.next(conference.hearing_venue_is_scottish);
+        this.hearingVenueFlagsService.setHearingVenueIsScottish(conference.hearing_venue_is_scottish);
         this.videoWebService.setActiveIndividualConference(conference);
         try {
             if (!this.loggedInParticipant) {

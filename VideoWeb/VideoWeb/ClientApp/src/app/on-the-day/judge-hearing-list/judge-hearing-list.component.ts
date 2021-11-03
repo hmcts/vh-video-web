@@ -100,7 +100,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
 
     onConferenceSelected(conference: ConferenceForHostResponse) {
         this.logger.debug('[JudgeHearingList] - Signing into judge waiting room', { conference: conference.id });
-        this.hearingVenueFlagsService.HearingVenueIsScottish.next(conference.hearing_venue_is_scottish);
+        this.hearingVenueFlagsService.setHearingVenueIsScottish(conference.hearing_venue_is_scottish);
         this.videoWebService.getCurrentParticipant(conference.id).then(x => {
             const useJudgeWaitingRoom = conference.participants.find(
                 p => p.id === x.participant_id && p.hearing_role === HearingRole.JUDGE

@@ -34,14 +34,9 @@ describe('JudgeParticipantStatusListComponent', () => {
     const translateService = translateServiceSpy;
     let editedStaffMember;
     let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
+    let hearingVenueIsScottishSubject: BehaviorSubject<boolean>;
 
     beforeAll(() => {
-        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
-            'HearingVenueFlagsService',
-            [],
-            ['HearingVenueIsScottish']
-        );
-        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(new BehaviorSubject(false));
         consultationService = consultationServiceSpyFactory();
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['updateParticipantDetails', 'getObfuscatedName']);
         const logged = new LoggedParticipantResponse({
@@ -56,6 +51,13 @@ describe('JudgeParticipantStatusListComponent', () => {
     });
 
     beforeEach(() => {
+        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+            'HearingVenueFlagsService',
+            ['setHearingVenueIsScottish'],
+            ['hearingVenueIsScottish$']
+        );
+        hearingVenueIsScottishSubject = new BehaviorSubject(false);
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'hearingVenueIsScottish$').and.returnValue(hearingVenueIsScottishSubject);
         conference = testData.getConferenceDetailNow();
         const participantObserverPanelMember = testData.getListOfParticipantsObserverAndPanelMembers();
         participantObserverPanelMember.forEach(x => conference.participants.push(x));
@@ -81,8 +83,7 @@ describe('JudgeParticipantStatusListComponent', () => {
     });
 
     it('returns true for hearingVenueIsInScotland when hearing venue is in scotland', () => {
-        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(new BehaviorSubject(true));
-        component.ngOnInit();
+        hearingVenueIsScottishSubject.next(true);
         expect(component.hearingVenueIsInScotland).toBe(true);
     });
 

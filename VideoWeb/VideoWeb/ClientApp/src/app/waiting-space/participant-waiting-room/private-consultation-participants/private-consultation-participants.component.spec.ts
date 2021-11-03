@@ -49,14 +49,9 @@ describe('PrivateConsultationParticipantsComponent', () => {
     let activatedRoute: ActivatedRoute;
     const translateService = translateServiceSpy;
     let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
+    let hearingVenueIsScottishSubject: BehaviorSubject<boolean>;
 
     beforeAll(() => {
-        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
-            'HearingVenueFlagsService',
-            [],
-            ['HearingVenueIsScottish']
-        );
-        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(new BehaviorSubject(false));
         oidcSecurityService = mockOidcSecurityService;
 
         consultationService = consultationServiceSpyFactory();
@@ -67,6 +62,14 @@ describe('PrivateConsultationParticipantsComponent', () => {
     });
 
     beforeEach(() => {
+        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+            'HearingVenueFlagsService',
+            ['setHearingVenueIsScottish'],
+            ['hearingVenueIsScottish$']
+        );
+        hearingVenueIsScottishSubject = new BehaviorSubject(false);
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'hearingVenueIsScottish$').and.returnValue(hearingVenueIsScottishSubject);
+
         consultationService.consultationNameToString.calls.reset();
         conference = new ConferenceTestData().getConferenceDetailFuture();
         conference.participants.forEach(p => {
@@ -113,8 +116,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
     });
 
     it('returns true for hearingVenueIsInScotland when hearing venue is in scotland', () => {
-        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(new BehaviorSubject(true));
-        component.ngOnInit();
+        hearingVenueIsScottishSubject.next(true);
         expect(component.hearingVenueIsInScotland).toBe(true);
     });
 

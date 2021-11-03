@@ -34,7 +34,7 @@ export class IntroductionComponent extends ParticipantStatusBaseDirective implem
     ngOnInit() {
         this.getConference();
 
-        this.hearingVenueFlagsServiceSubscription$ = this.hearingVenueFlagsService.HearingVenueIsScottish.subscribe(
+        this.hearingVenueFlagsServiceSubscription$ = this.hearingVenueFlagsService.hearingVenueIsScottish$.subscribe(
             value => (this.hearingVenueIsInScotland = value)
         );
     }

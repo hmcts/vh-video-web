@@ -71,7 +71,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             this.setupEventhubSubscribers();
         });
 
-        this.hearingVenueFlagsServiceSubscription$ = this.hearingVenueFlagsService.HearingVenueIsScottish.subscribe(
+        this.hearingVenueFlagsServiceSubscription$ = this.hearingVenueFlagsService.hearingVenueIsScottish$.subscribe(
             value => (this.hearingVenueIsInScotland = value)
         );
     }

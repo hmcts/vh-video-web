@@ -49,12 +49,6 @@ describe('ParticipantHearingList', () => {
     let hearingVenueIsScottishSubject: BehaviorSubject<boolean>;
 
     beforeAll(() => {
-        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
-            'HearingVenueFlagsService',
-            [],
-            ['HearingVenueIsScottish']
-        );
-
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
             'getConferencesForIndividual',
             'setActiveIndividualConference',
@@ -73,8 +67,13 @@ describe('ParticipantHearingList', () => {
     });
 
     beforeEach(() => {
+        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+            'HearingVenueFlagsService',
+            ['setHearingVenueIsScottish'],
+            ['hearingVenueIsScottish$']
+        );
         hearingVenueIsScottishSubject = new BehaviorSubject(false);
-        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(hearingVenueIsScottishSubject);
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'hearingVenueIsScottish$').and.returnValue(hearingVenueIsScottishSubject);
 
         translateService.instant.calls.reset();
 
@@ -91,7 +90,6 @@ describe('ParticipantHearingList', () => {
     });
 
     it('calls setHearingVenueIsScottish service when the hearing venue is in scotland', fakeAsync(() => {
-        const nextSpy = spyOn(hearingVenueIsScottishSubject, 'next');
         const conference = new ConferenceForIndividualResponse();
         conference.hearing_venue_is_scottish = true;
 
@@ -99,7 +97,7 @@ describe('ParticipantHearingList', () => {
 
         tick(100);
 
-        expect(nextSpy).toHaveBeenCalledWith(true);
+        expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(true);
     }));
 
     it('calls setHearingVenueIsScottish service when the hearing venue is not in scotland', fakeAsync(() => {
@@ -111,7 +109,7 @@ describe('ParticipantHearingList', () => {
 
         tick(100);
 
-        expect(nextSpy).toHaveBeenCalledWith(false);
+        expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(false);
     }));
 
     it('should handle api error with error service when unable to retrieve hearings for individual', fakeAsync(() => {

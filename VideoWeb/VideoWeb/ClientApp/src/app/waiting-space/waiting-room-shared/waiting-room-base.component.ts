@@ -179,7 +179,7 @@ export abstract class WaitingRoomBaseDirective {
     async getConference(): Promise<void> {
         try {
             const data = await this.videoWebService.getConferenceById(this.conferenceId);
-            this.hearingVenueFlagsService.HearingVenueIsScottish.next(data.hearing_venue_is_scottish);
+            this.hearingVenueFlagsService.setHearingVenueIsScottish(data.hearing_venue_is_scottish);
             this.errorCount = 0;
             this.loadingData = false;
             this.countdownComplete = data.status === ConferenceStatus.InSession;
@@ -206,7 +206,7 @@ export abstract class WaitingRoomBaseDirective {
     async getConferenceClosedTime(conferenceId: string): Promise<void> {
         try {
             this.conference = await this.videoWebService.getConferenceById(conferenceId);
-            this.hearingVenueFlagsService.HearingVenueIsScottish.next(this.conference.hearing_venue_is_scottish);
+            this.hearingVenueFlagsService.setHearingVenueIsScottish(this.conference.hearing_venue_is_scottish);
             this.hearing = new Hearing(this.conference);
             this.participant = this.getLoggedParticipant();
 

@@ -55,7 +55,7 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
         this.initParticipants();
         this.addSharedEventHubSubcribers();
-        this.hearingVenueFlagsServiceSubscription$ = this.hearingVenueFlagsService.HearingVenueIsScottish.subscribe(
+        this.hearingVenueFlagsServiceSubscription$ = this.hearingVenueFlagsService.hearingVenueIsScottish$.subscribe(
             value => (this.hearingVenueIsInScotland = value)
         );
     }

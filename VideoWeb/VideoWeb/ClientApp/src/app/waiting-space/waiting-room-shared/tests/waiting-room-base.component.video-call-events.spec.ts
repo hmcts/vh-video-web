@@ -50,7 +50,11 @@ import { WRTestComponent } from './WRTestComponent';
 
 describe('WaitingRoomComponent Video Call', () => {
     let component: WRTestComponent;
-    let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
+    const mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+        'HearingVenueFlagsService',
+        ['setHearingVenueIsScottish'],
+        ['hearingVenueIsScottish$']
+    );
     const mockHeartbeat = {
         kill: jasmine.createSpy()
     };

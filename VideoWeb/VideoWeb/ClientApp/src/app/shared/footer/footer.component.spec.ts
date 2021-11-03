@@ -24,14 +24,17 @@ describe('FooterComponent', () => {
     let location: Location;
     let router: Router;
     let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
+    let hearingVenueIsScottishSubject: BehaviorSubject<boolean>;
 
     configureTestSuite(() => {
         mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
             'HearingVenueFlagsService',
-            [],
-            ['HearingVenueIsScottish']
+            ['setHearingVenueIsScottish'],
+            ['hearingVenueIsScottish$']
         );
-        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(new BehaviorSubject(false));
+        hearingVenueIsScottishSubject = new BehaviorSubject(false);
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'hearingVenueIsScottish$').and.returnValue(hearingVenueIsScottishSubject);
+
         TestBed.configureTestingModule({
             declarations: [
                 FooterComponent,
@@ -126,9 +129,7 @@ describe('FooterComponent', () => {
     });
 
     it('returns true for hearingVenueIsInScotland when hearing venue is in scotland', () => {
-        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(new BehaviorSubject(true));
-        component.ngOnInit();
-        fixture.detectChanges();
+        hearingVenueIsScottishSubject.next(true);
         expect(component.hearingVenueIsInScotland).toBe(true);
     });
 

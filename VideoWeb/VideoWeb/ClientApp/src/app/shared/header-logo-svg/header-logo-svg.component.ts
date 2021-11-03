@@ -12,7 +12,7 @@ export class HeaderLogoSvgComponent implements OnInit, OnDestroy {
     constructor(private hearingVenueFlagsService: HearingVenueFlagsService) {}
 
     ngOnInit() {
-        this.hearingVenueFlagsServiceSubscription = this.hearingVenueFlagsService.HearingVenueIsScottish.subscribe(
+        this.hearingVenueFlagsServiceSubscription = this.hearingVenueFlagsService.hearingVenueIsScottish$.subscribe(
             value => (this.hearingVenueIsInScotland = value)
         );
     }

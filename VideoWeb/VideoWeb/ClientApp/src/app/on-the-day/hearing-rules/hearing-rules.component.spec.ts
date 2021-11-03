@@ -19,18 +19,22 @@ describe('HearingRulesComponent', () => {
 
     let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
 
+    let scottishHearingVenueSubject = new BehaviorSubject(false);
+
     beforeAll(() => {
-        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
-            'HearingVenueFlagsService',
-            [],
-            ['HearingVenueIsScottish']
-        );
-        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(new BehaviorSubject(false));
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
         participantStatusUpdateService = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
     });
 
     beforeEach(() => {
+        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+            'HearingVenueFlagsService',
+            ['setHearingVenueIsScottish'],
+            ['hearingVenueIsScottish$']
+        );
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'hearingVenueIsScottish$').and.returnValue(
+            scottishHearingVenueSubject.asObservable()
+        );
         component = new HearingRulesComponent(
             router,
             activatedRoute,
@@ -54,8 +58,7 @@ describe('HearingRulesComponent', () => {
     });
 
     it('returns true for hearingVenueIsInScotland when hearing venue is in scotland', () => {
-        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(new BehaviorSubject(true));
-        component.ngOnInit();
+        scottishHearingVenueSubject.next(true);
         expect(component.hearingVenueIsInScotland).toBe(true);
     });
 

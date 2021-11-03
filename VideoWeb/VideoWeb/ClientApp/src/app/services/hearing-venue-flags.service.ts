@@ -5,5 +5,11 @@ import { BehaviorSubject } from 'rxjs';
     providedIn: 'root'
 })
 export class HearingVenueFlagsService {
-    public HearingVenueIsScottish = new BehaviorSubject(false);
+    private _hearingVenueIsScottish = new BehaviorSubject(false);
+
+    public hearingVenueIsScottish$ = this._hearingVenueIsScottish.asObservable();
+
+    public setHearingVenueIsScottish(isScottish: boolean): void {
+        this._hearingVenueIsScottish.next(isScottish);
+    }
 }

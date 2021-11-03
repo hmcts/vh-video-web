@@ -1,14 +1,14 @@
 import { convertToParamMap, Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { ConferenceLite } from 'src/app/services/models/conference-lite';
+import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { IntroductionComponent } from './introduction.component';
-import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
-import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
-import { BehaviorSubject } from 'rxjs';
+import { IntroductionComponent } from './introduction.component';
 
 describe('IntroductionComponent', () => {
     let component: IntroductionComponent;
@@ -25,21 +25,25 @@ describe('IntroductionComponent', () => {
 
     let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
 
-    beforeAll(() => {
-        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
-            'HearingVenueFlagsService',
-            [],
-            ['HearingVenueIsScottish']
-        );
-        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(new BehaviorSubject(false));
+    let scottishHearingVenueSubject = new BehaviorSubject(false);
 
+    beforeAll(() => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getActiveIndividualConference']);
 
         videoWebServiceSpy.getActiveIndividualConference.and.returnValue(confLite);
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
     });
 
-    beforeEach(async () => {
+    beforeEach(() => {
+        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+            'HearingVenueFlagsService',
+            ['setHearingVenueIsScottish'],
+            ['hearingVenueIsScottish$']
+        );
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'hearingVenueIsScottish$').and.returnValue(
+            scottishHearingVenueSubject.asObservable()
+        );
+
         component = new IntroductionComponent(
             router,
             activatedRoute,
@@ -49,12 +53,12 @@ describe('IntroductionComponent', () => {
             mockedHearingVenueFlagsService
         );
         router.navigate.calls.reset();
-        await component.ngOnInit();
+        component.ngOnInit();
     });
 
-    it('should define conferece id on init', async () => {
+    it('should define conferece id on init', () => {
         component.conferenceId = null;
-        await component.ngOnInit();
+        component.ngOnInit();
         expect(component.conferenceId).toBe(conference.id);
     });
     it('should navigate to equipment check', () => {
@@ -63,8 +67,7 @@ describe('IntroductionComponent', () => {
     });
 
     it('returns true for hearingVenueIsInScotland when hearing venue is in scotland', () => {
-        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(new BehaviorSubject(true));
-        component.ngOnInit();
+        scottishHearingVenueSubject.next(true);
         expect(component.hearingVenueIsInScotland).toBe(true);
     });
 

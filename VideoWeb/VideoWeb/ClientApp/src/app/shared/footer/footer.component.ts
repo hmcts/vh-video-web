@@ -35,7 +35,7 @@ export class FooterComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.hideContactUs();
 
-        this.hearingVenueFlagsServiceSubscription$ = this.hearingVenueFlagsService.HearingVenueIsScottish.subscribe(
+        this.hearingVenueFlagsServiceSubscription$ = this.hearingVenueFlagsService.hearingVenueIsScottish$.subscribe(
             value => (this.hearingVenueIsInScotland = value)
         );
     }

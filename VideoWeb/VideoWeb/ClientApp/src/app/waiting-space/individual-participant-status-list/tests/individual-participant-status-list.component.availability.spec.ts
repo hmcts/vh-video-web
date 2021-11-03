@@ -36,14 +36,9 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
     const translateService = translateServiceSpy;
 
     let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
+    const scottishHearingVenueSubject = new BehaviorSubject(false);
 
     beforeAll(() => {
-        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
-            'HearingVenueFlagsService',
-            [],
-            ['HearingVenueIsScottish']
-        );
-        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(new BehaviorSubject(false));
         conference = new ConferenceTestData().getConferenceDetailFuture();
         participantsObserverPanelMember = new ConferenceTestData().getListOfParticipantsObserverAndPanelMembers();
         participantsWinger = new ConferenceTestData().getListOfParticipantsWingers();
@@ -60,6 +55,12 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
     });
 
     beforeEach(() => {
+        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+            'HearingVenueFlagsService',
+            ['setHearingVenueIsScottish'],
+            ['hearingVenueIsScottish$']
+        );
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'hearingVenueIsScottish$').and.returnValue(scottishHearingVenueSubject);
         translateService.instant.calls.reset();
         activatedRoute = <any>{
             snapshot: { data: { loggedUser: logged } }
@@ -87,12 +88,6 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
 
     afterEach(() => {
         component.ngOnDestroy();
-    });
-
-    it('returns true for hearingVenueIsInScotland when hearing venue is in scotland', () => {
-        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(new BehaviorSubject(true));
-        component.ngOnInit();
-        expect(component.hearingVenueIsInScotland).toBe(true);
     });
 
     it('unsubscribes on destroy', () => {

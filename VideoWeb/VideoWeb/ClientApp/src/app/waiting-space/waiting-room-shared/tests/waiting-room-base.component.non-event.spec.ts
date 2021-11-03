@@ -1,11 +1,11 @@
-import { fakeAsync, tick } from '@angular/core/testing';
-import { ActiveToast } from 'ngx-toastr';
+import { ElementRef } from '@angular/core';
+import { fakeAsync } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { ActiveToast } from 'ngx-toastr';
+import { Subscription } from 'rxjs';
 import {
     ConferenceResponse,
     ConferenceStatus,
-    SharedParticipantRoom,
     LinkedParticipantResponse,
     LinkType,
     LoggedParticipantResponse,
@@ -13,15 +13,14 @@ import {
     ParticipantStatus,
     Role,
     RoomSummaryResponse,
-    TokenResponse
+    SharedParticipantRoom
 } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
-import { SelectedUserMediaDevice } from 'src/app/shared/models/selected-user-media-device';
-import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { RoomClosingToastComponent } from 'src/app/shared/toast/room-closing/room-closing-toast.component';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { VideoCallPreferences } from '../../services/video-call-preferences.mode';
+import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
+import { HearingRole } from '../../models/hearing-role-model';
 import {
     activatedRoute,
     clockService,
@@ -44,15 +43,9 @@ import {
     videoWebService
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
-import { HearingRole } from '../../models/hearing-role-model';
-import { ElementRef } from '@angular/core';
-import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
-import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
-import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 
 describe('WaitingRoomComponent message and clock', () => {
     let component: WRTestComponent;
-    let hearingVenueIsScottishSubject: BehaviorSubject<boolean>;
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -71,8 +64,6 @@ describe('WaitingRoomComponent message and clock', () => {
     });
 
     beforeEach(() => {
-        hearingVenueIsScottishSubject = new BehaviorSubject(false);
-        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(hearingVenueIsScottishSubject);
         component = new WRTestComponent(
             activatedRoute,
             videoWebService,
@@ -262,13 +253,12 @@ describe('WaitingRoomComponent message and clock', () => {
         globalConference.hearing_venue_is_scottish = true;
         videoWebService.getConferenceById.and.resolveTo(globalConference);
         videoWebService.getAllowedEndpointsForConference.and.resolveTo([]);
-        const nextSpy = spyOn(hearingVenueIsScottishSubject, 'next');
 
         // Act
         await component.getConference();
 
         // Assert
-        expect(nextSpy).toHaveBeenCalledWith(true);
+        expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(true);
     }));
 
     it('getConference sets HearingVenueIsScottish property to false when hearing venue is not in scotland', fakeAsync(async () => {
@@ -280,13 +270,12 @@ describe('WaitingRoomComponent message and clock', () => {
         globalConference.hearing_venue_is_scottish = false;
         videoWebService.getConferenceById.and.resolveTo(globalConference);
         videoWebService.getAllowedEndpointsForConference.and.resolveTo([]);
-        const nextSpy = spyOn(hearingVenueIsScottishSubject, 'next');
 
         // Act
         await component.getConference();
 
         // Assert
-        expect(nextSpy).toHaveBeenCalledWith(false);
+        expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(false);
     }));
 
     it('should handle api error with error service when get conference fails', async () => {
@@ -339,11 +328,10 @@ describe('WaitingRoomComponent message and clock', () => {
         spyOn(component, 'getLoggedParticipant').and.returnValue(expectedParticipant);
 
         videoWebService.getConferenceById.and.resolveTo(closedConference);
-        const nextSpy = spyOn(hearingVenueIsScottishSubject, 'next');
 
         await component.getConferenceClosedTime(component.conference.id);
 
-        expect(nextSpy).toHaveBeenCalledWith(true);
+        expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(true);
     });
 
     it('getConferenceClosedTime sets HearingVenueIsScottish property to false when hearing venue is not in scotland', async () => {
@@ -358,11 +346,10 @@ describe('WaitingRoomComponent message and clock', () => {
         spyOn(component, 'getLoggedParticipant').and.returnValue(expectedParticipant);
 
         videoWebService.getConferenceById.and.resolveTo(closedConference);
-        const nextSpy = spyOn(hearingVenueIsScottishSubject, 'next');
 
         await component.getConferenceClosedTime(component.conference.id);
 
-        expect(nextSpy).toHaveBeenCalledWith(false);
+        expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(false);
     });
 
     it('should get the conference for closed time', async () => {

@@ -15,7 +15,7 @@ export class HearingListTableComponent implements OnInit {
     constructor(private translate: TranslateService, private hearingVenueFlagsService: HearingVenueFlagsService) {}
 
     ngOnInit() {
-        this.hearingVenueFlagsService.HearingVenueIsScottish.next(false);
+        this.hearingVenueFlagsService.setHearingVenueIsScottish(false);
     }
 
     signIntoConference(conference: ConferenceForIndividualResponse) {

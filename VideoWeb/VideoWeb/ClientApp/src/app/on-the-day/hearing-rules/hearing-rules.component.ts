@@ -30,7 +30,7 @@ export class HearingRulesComponent extends ParticipantStatusBaseDirective implem
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
 
-        this.hearingVenueFlagsServiceSubscription$ = this.hearingVenueFlagsService.HearingVenueIsScottish.subscribe(
+        this.hearingVenueFlagsServiceSubscription$ = this.hearingVenueFlagsService.hearingVenueIsScottish$.subscribe(
             value => (this.hearingVenueIsInScotland = value)
         );
     }

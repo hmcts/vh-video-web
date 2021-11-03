@@ -40,11 +40,6 @@ describe('JudgeHearingListComponent', () => {
     const eventsService = eventsServiceSpy;
 
     beforeAll(() => {
-        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
-            'HearingVenueFlagsService',
-            [],
-            ['HearingVenueIsScottish']
-        );
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForJudge', 'getCurrentParticipant']);
 
         errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
@@ -63,8 +58,13 @@ describe('JudgeHearingListComponent', () => {
     });
 
     beforeEach(() => {
+        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+            'HearingVenueFlagsService',
+            ['setHearingVenueIsScottish'],
+            ['hearingVenueIsScottish$']
+        );
         hearingVenueIsScottishSubject = new BehaviorSubject(false);
-        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'HearingVenueIsScottish').and.returnValue(hearingVenueIsScottishSubject);
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'hearingVenueIsScottish$').and.returnValue(hearingVenueIsScottishSubject);
         component = new JudgeHearingListComponent(
             videoWebService,
             errorService,
@@ -144,17 +144,15 @@ describe('JudgeHearingListComponent', () => {
     }));
 
     it('calls setHearingVenueIsScottish service when the hearing venue is in scotland', fakeAsync(() => {
-        const nextSpy = spyOn(hearingVenueIsScottishSubject, 'next');
         const conference = new ConferenceTestData().getConferenceForHostResponse();
         const judge = conference.participants.find(x => x.role === Role.Judge);
         videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(new LoggedParticipantResponse({ participant_id: judge.id })));
 
         component.onConferenceSelected(conference);
-        expect(nextSpy).toHaveBeenCalledWith(true);
+        expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(true);
     }));
 
     it('calls setHearingVenueIsScottish service when the hearing venue is not in scotland', fakeAsync(() => {
-        const nextSpy = spyOn(hearingVenueIsScottishSubject, 'next');
         const conference = new ConferenceTestData().getConferenceForHostResponse();
         conference.hearing_venue_is_scottish = false;
         const judge = conference.participants.find(x => x.role === Role.Judge);
@@ -162,7 +160,7 @@ describe('JudgeHearingListComponent', () => {
 
         component.onConferenceSelected(conference);
 
-        expect(nextSpy).toHaveBeenCalledWith(false);
+        expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(false);
     }));
 
     it('should navigate to judge waiting room when conference is selected for user as a staffmember in the conference', fakeAsync(() => {

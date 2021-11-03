@@ -48,7 +48,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         this.initParticipants();
         this.setupSubscribers();
         this.setupInviteStatusSubscribers();
-        this.hearingVenueFlagsServiceSubscription$ = this.hearingVenueFlagsService.HearingVenueIsScottish.subscribe(
+        this.hearingVenueFlagsServiceSubscription$ = this.hearingVenueFlagsService.hearingVenueIsScottish$.subscribe(
             value => (this.hearingVenueIsInScotland = value)
         );
     }

@@ -67,8 +67,8 @@ export const jwToken = new TokenResponse({
 export function initAllWRDependencies() {
     mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
         'HearingVenueFlagsService',
-        [],
-        ['HearingVenueIsScottish']
+        ['setHearingVenueIsScottish'],
+        ['hearingVenueIsScottish$']
     );
     videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
         'getConferenceById',
