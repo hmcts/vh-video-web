@@ -95,9 +95,9 @@
       },
       "VideoApi.Client": {
         "type": "Direct",
-        "requested": "[1.31.3, )",
-        "resolved": "1.31.3",
-        "contentHash": "r/bir1lguANJeZsZs8AqWpx1BFbN5enlGL+ay4gj3WuMqGXWcuRNxIRB6x7UA+wtWB+SBfTTV0XJp+MD4q58ow==",
+        "requested": "[1.28.1, )",
+        "resolved": "1.28.1",
+        "contentHash": "Ez7jWOk8ns7Y12YXZB2RgjesrgrcXCAfFwU7Hkv06IfSFyPcCXaS54qYzfHCuXtdm+54txy3NeS62zXNpOHNEQ==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
           "Newtonsoft.Json": "12.0.3"
@@ -2685,7 +2685,7 @@
           "Swashbuckle.AspNetCore.Newtonsoft": "5.0.0",
           "UserApi.Client": "1.27.0",
           "VH.Core.Configuration": "0.1.12",
-          "VideoApi.Client": "1.31.3",
+          "VideoApi.Client": "1.28.1",
           "VideoWeb.Common": "1.0.0",
           "VideoWeb.Contract": "1.0.0",
           "VideoWeb.EventHub": "1.0.0"
@@ -2704,7 +2704,7 @@
           "StackExchange.Redis": "2.1.28",
           "System.IdentityModel.Tokens.Jwt": "5.6.0",
           "UserApi.Client": "1.27.0",
-          "VideoApi.Client": "1.31.3"
+          "VideoApi.Client": "1.28.1"
         }
       },
       "videoweb.contract": {
@@ -2712,7 +2712,7 @@
         "dependencies": {
           "BookingsApi.Client": "1.27.12",
           "UserApi.Client": "1.27.0",
-          "VideoApi.Client": "1.31.3",
+          "VideoApi.Client": "1.28.1",
           "VideoWeb.Common": "1.0.0"
         }
       },
@@ -2725,7 +2725,7 @@
           "Microsoft.Extensions.Caching.Abstractions": "3.1.10",
           "System.Text.Json": "4.7.1",
           "UserApi.Client": "1.27.0",
-          "VideoApi.Client": "1.31.3",
+          "VideoApi.Client": "1.28.1",
           "VideoWeb.Common": "1.0.0",
           "VideoWeb.Contract": "1.0.0"
         }
