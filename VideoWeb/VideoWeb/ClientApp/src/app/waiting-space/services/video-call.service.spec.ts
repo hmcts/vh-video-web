@@ -21,6 +21,7 @@ import { mockCamStream, mockMicStream } from '../waiting-room-shared/tests/waiti
 import { ParticipantUpdated } from '../models/video-call-models';
 import { VideoCallEventsService } from './video-call-events.service';
 import { VideoCallService } from './video-call.service';
+import { StreamMixerService } from 'src/app/services/stream-mixer.service';
 
 const config = new ClientSettingsResponse({
     kinly_turn_server: 'turnserver',
@@ -44,6 +45,7 @@ describe('VideoCallService', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
     let kinlyHeartbeatServiceSpy: jasmine.SpyObj<KinlyHeartbeatService>;
     let videoCallEventsServiceSpy: jasmine.SpyObj<VideoCallEventsService>;
+    let streamMixerServiceSpy: jasmine.SpyObj<StreamMixerService>;
 
     beforeEach(fakeAsync(() => {
         apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
@@ -64,7 +66,10 @@ describe('VideoCallService', () => {
             ['connectedVideoDevices$', 'connectedMicrophoneDevices$', 'isAudioOnly$']
         );
 
-        userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>([], ['currentStream$', 'streamModified$']);
+        userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>(
+            [],
+            ['currentStream$', 'streamModified$', 'activeMicrophoneStream$']
+        );
         currentStreamSubject = new ReplaySubject<MediaStream>(1);
         getSpiedPropertyGetter(userMediaStreamService, 'currentStream$').and.returnValue(currentStreamSubject.asObservable());
         streamModifiedSubject = new Subject<void>();
@@ -102,6 +107,8 @@ describe('VideoCallService', () => {
             'renegotiate'
         ]);
 
+        streamMixerServiceSpy = jasmine.createSpyObj<StreamMixerService>('StreamMixerService', ['mergeAudioStreams']);
+
         service = new VideoCallService(
             logger,
             userMediaService,
@@ -109,7 +116,8 @@ describe('VideoCallService', () => {
             apiClient,
             configServiceSpy,
             kinlyHeartbeatServiceSpy,
-            videoCallEventsServiceSpy
+            videoCallEventsServiceSpy,
+            streamMixerServiceSpy
         );
 
         currentStreamSubject.next(mockCamStream);
@@ -393,6 +401,8 @@ describe('VideoCallService', () => {
             expect(service.onPresentationDisconnected()).toBeDefined();
             expect(service.onScreenshareConnected()).toBeDefined();
             expect(service.onScreenshareStopped()).toBeDefined();
+            expect(service.onVideoEvidenceShared()).toBeDefined();
+            expect(service.onVideoEvidenceStopped()).toBeDefined();
             expect(service.pexipAPI.turn_server).toBeDefined();
             expect(service.pexipAPI.turn_server.url).toContain(config.kinly_turn_server);
             expect(service.pexipAPI.turn_server.username).toContain(config.kinly_turn_server_user);
@@ -456,6 +466,120 @@ describe('VideoCallService', () => {
             expect(result).toBeTruthy();
             expect(result).toEqual(expectedUpdate);
             expect(videoCallEventsServiceSpy.handleParticipantUpdated).toHaveBeenCalledOnceWith(expectedUpdate);
+        }));
+    });
+
+    describe('start dynamic evidence sharing', () => {
+        let screenStream: jasmine.SpyObj<MediaStream>;
+        let screenVideoTrack: jasmine.SpyObj<MediaStreamTrack>;
+        let screenAudioTrack: jasmine.SpyObj<MediaStreamTrack>;
+
+        let micStream: jasmine.SpyObj<MediaStream>;
+        let micAudioTrack: jasmine.SpyObj<MediaStreamTrack>;
+
+        let activeMicrophoneStreamSubject: ReplaySubject<MediaStream>;
+
+        let mergedStream: jasmine.SpyObj<MediaStream>;
+        let mergedAudioTrack: jasmine.SpyObj<MediaStreamTrack>;
+
+        beforeEach(() => {
+            micStream = jasmine.createSpyObj<MediaStream>('MediaStream', [
+                'addTrack',
+                'removeTrack',
+                'getTracks',
+                'getVideoTracks',
+                'getAudioTracks'
+            ]);
+            micAudioTrack = jasmine.createSpyObj<MediaStreamTrack>('MediaStreamTrack', ['stop'], ['label', 'id']);
+            getSpiedPropertyGetter(micAudioTrack, 'label').and.returnValue('micAudioTrack');
+            micStream.getAudioTracks.and.returnValue([micAudioTrack]);
+            micStream.getTracks.and.returnValue([micAudioTrack]);
+
+            activeMicrophoneStreamSubject = new ReplaySubject<MediaStream>(1);
+            getSpiedPropertyGetter(userMediaStreamService, 'activeMicrophoneStream$').and.returnValue(
+                activeMicrophoneStreamSubject.asObservable()
+            );
+            activeMicrophoneStreamSubject.next(micStream);
+
+            screenStream = jasmine.createSpyObj<MediaStream>('MediaStream', [
+                'addTrack',
+                'removeTrack',
+                'getTracks',
+                'getVideoTracks',
+                'getAudioTracks'
+            ]);
+            screenVideoTrack = jasmine.createSpyObj<MediaStreamTrack>('MediaStreamTrack', ['stop', 'addEventListener'], ['label', 'id']);
+            screenVideoTrack.addEventListener.and.callThrough();
+            screenAudioTrack = jasmine.createSpyObj<MediaStreamTrack>('MediaStreamTrack', ['stop'], ['label', 'id']);
+
+            getSpiedPropertyGetter(screenAudioTrack, 'label').and.returnValue('screenAudioTrack');
+            getSpiedPropertyGetter(screenVideoTrack, 'label').and.returnValue('screenVideoTrack');
+            getSpiedPropertyGetter(screenVideoTrack, 'id').and.returnValue(Guid.create().toString());
+
+            screenStream.getTracks.and.returnValue([screenVideoTrack, screenAudioTrack]);
+            screenStream.getVideoTracks.and.returnValue([screenVideoTrack]);
+            screenStream.getAudioTracks.and.returnValue([screenAudioTrack]);
+
+            mergedAudioTrack = jasmine.createSpyObj<MediaStreamTrack>('MediaStreamTrack', ['stop'], ['label', 'id']);
+            getSpiedPropertyGetter(mergedAudioTrack, 'label').and.returnValue('mergedAudioTrack');
+            mergedStream = jasmine.createSpyObj<MediaStream>('MediaStream', [
+                'addTrack',
+                'removeTrack',
+                'getTracks',
+                'getVideoTracks',
+                'getAudioTracks'
+            ]);
+            mergedStream.getAudioTracks.and.returnValue([mergedAudioTrack]);
+            mergedStream.getTracks.and.returnValue([mergedAudioTrack]);
+            mergedStream.getVideoTracks.and.returnValue([screenVideoTrack]);
+
+            streamMixerServiceSpy.mergeAudioStreams.and.returnValue(mergedStream);
+            userMediaService.selectScreenToShare.and.returnValue(Promise.resolve(screenStream));
+        });
+
+        it('should replace pexip media stream with screen and mic stream', fakeAsync(async () => {
+            spyOn<any>(service, 'renegotiateCall').and.callThrough();
+            service.pexipAPI.user_media_stream = screenStream;
+
+            await service.selectScreenWithMicrophone();
+
+            flush();
+
+            expect(service['renegotiateCall']).toHaveBeenCalled();
+            expect(service.pexipAPI.user_media_stream).not.toBe(mockCamStream);
+        }));
+    });
+
+    describe('stop dynamic evidence sharing', () => {
+        let screenStream: jasmine.SpyObj<MediaStream>;
+        let videoTrack: jasmine.SpyObj<MediaStreamTrack>;
+        let audioTrack: jasmine.SpyObj<MediaStreamTrack>;
+
+        beforeEach(() => {
+            screenStream = jasmine.createSpyObj<MediaStream>(['addTrack', 'removeTrack', 'getTracks', 'getVideoTracks', 'getAudioTracks']);
+            videoTrack = jasmine.createSpyObj<MediaStreamTrack>(['stop'], ['label', 'id']);
+            audioTrack = jasmine.createSpyObj<MediaStreamTrack>(['stop'], ['label', 'id']);
+
+            getSpiedPropertyGetter(videoTrack, 'label').and.returnValue(Guid.create().toString());
+            getSpiedPropertyGetter(videoTrack, 'id').and.returnValue(Guid.create().toString());
+
+            screenStream.getTracks.and.returnValue([videoTrack, audioTrack]);
+            screenStream.getVideoTracks.and.returnValue([videoTrack]);
+            screenStream.getAudioTracks.and.returnValue([audioTrack]);
+        });
+
+        it('should replace pexip media stream with original user stream', fakeAsync(() => {
+            spyOn<any>(service, 'renegotiateCall').and.callThrough();
+            service.pexipAPI.user_media_stream = screenStream;
+
+            service.stopScreenWithMicrophone();
+
+            flush();
+            discardPeriodicTasks();
+
+            expect(service['renegotiateCall']).toHaveBeenCalled();
+            expect(service.pexipAPI.user_media_stream).not.toEqual(screenStream);
+            expect(service.pexipAPI.user_media_stream).toEqual(mockCamStream);
         }));
     });
 });

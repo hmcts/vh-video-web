@@ -18,6 +18,7 @@ export class VideoFilterService {
     private _canvasWidth = 1280;
     private _canvasHeight = 720;
     private _enableVideoFilters: boolean;
+    private _failCount = 0;
 
     private _onFilterChanged = new Subject<BackgroundFilter | null>();
     get onFilterChanged$(): Observable<BackgroundFilter | null> {
@@ -118,6 +119,16 @@ export class VideoFilterService {
                     }
                 } catch (err) {
                     this.logger.error(`${this.loggerPrefix} failed to send image to self segmentation mask`, err);
+                    if (this._failCount < 3) {
+                        this._failCount++;
+                        this.selfieSegmentation.reset();
+                    } else {
+                        this.logger.error(
+                            `${this.loggerPrefix} failed to send image to self segmentation mask multiple times. Turning filter off`,
+                            err
+                        );
+                        this.updateFilter(null);
+                    }
                 }
             },
             width: 1280,
@@ -151,13 +162,18 @@ export class VideoFilterService {
     updateFilter(filter: BackgroundFilter | null) {
         this.logger.debug(`${this.loggerPrefix} Updating filter to ${filter}`);
         if (filter) {
+            this.monitorLostGlContext();
+            this.selfieSegmentation.reset();
+            this._failCount = 0;
             this.activeFilter = filter;
             this.filterOn = true;
             this.logger.debug(`${this.loggerPrefix} Filter on`);
             this._onFilterChanged.next(filter);
         } else {
             this.activeFilter = null;
+            this._failCount = 0;
             this.filterOn = false;
+            this.stopMonitoringLostGlContext();
             this.logger.debug(`${this.loggerPrefix} Filter off`);
             this._onFilterChanged.next(null);
         }
@@ -271,5 +287,27 @@ export class VideoFilterService {
         imageObject.src = imagePath;
         this.imgs.set(this.activeFilter, imageObject);
         return imageObject;
+    }
+
+    monitorLostGlContext() {
+        if (console.defaultWarn) {
+            return;
+        }
+        const self = this;
+        console.defaultWarn = console.warn.bind(console);
+        console.warn = function () {
+            // default &  console.warn()
+            console.defaultWarn.apply(console, arguments);
+            // new & array data
+            const args = Array.from(arguments);
+            if (args.find(a => a.includes('CONTEXT_LOST_WEBGL')) && self.selfieSegmentation) {
+                self.logger.info(`${this.loggerPrefix} WEBGL context lost, resetting segmentation`);
+                self.selfieSegmentation.reset();
+            }
+        };
+    }
+
+    stopMonitoringLostGlContext() {
+        console.defaultWarn = null;
     }
 }

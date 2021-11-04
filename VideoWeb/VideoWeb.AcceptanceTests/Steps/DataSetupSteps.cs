@@ -38,7 +38,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly ScenarioContext _scenario;
         private bool audioRecordingRequired = false;
         private string hearingVenue = "Birmingham Civil and Family Justice Centre";
-        private int delayMinutes = 0; 
+        private int delayMinutes = 0;
+        private bool _shouldIncludeStaffMember = false;
 
         public DataSetupSteps(TestContext c, ScenarioContext scenario)
         {
@@ -51,7 +52,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             GivenIHaveAHearingWithUser();
         }
-         
+
+        [Given(@"I have a scheduled hearing with a (.*) and a Staff Member")]
+        public void GivenIHaveAHearingWithUserAndStaffMember(string user = DEFAULT_USER)
+        {
+            _shouldIncludeStaffMember = true;
+            GivenIHaveAHearingWithUser(user);
+        }
+
         [Given(@"I have a hearing with a (.*)")]
         [Given(@"I have a hearing with an (.*)")]
         [Given(@"I have another hearing with another (.*)")]
@@ -59,6 +67,12 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void GivenIHaveAHearingWithUser(string user = DEFAULT_USER)
         {
             var userTypes = GetUserType(user);
+
+            if (_shouldIncludeStaffMember)
+                userTypes.Add(UserType.StaffMember);
+
+            NUnit.Framework.TestContext.WriteLine($"{userTypes.Count()} user(s) created. They are: '{string.Join(", ", userTypes.ToArray())}'.");
+
             AllocateUsers(userTypes);
             if(user.ToLower() == "winger")
             {
@@ -118,7 +132,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         [Given(@"I have another hearing in (.*) minutes time")]
         public void GivenIHaveAnotherHearingAndAConferenceInMinutesTime(int minutes)
-        {            
+        {
             CheckThatTheHearingWillBeCreatedForToday(_c.TimeZone.Adjust(DateTime.Now.ToUniversalTime().AddMinutes(minutes)));
             delayMinutes = minutes;
             GivenIHaveAnotherHearingAndAConference();
@@ -156,7 +170,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                           .WithUsers(_c.Test.Users)
                           .WithCACDCaseType()
                           .WithScheduledTime(_c.TimeZone.Adjust(DateTime.Now.ToUniversalTime().AddMinutes(minutes)))
-                          .Build();           
+                          .Build();
             SendTheHearingRequest(request);
         }
 
@@ -258,8 +272,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         private static List<UserType> CreateUserTypes(
-            int individualsAndRepresentatives = DEFAULT_INDIVIDUALS_WITH_REPRESENTATIVES, 
-            int observers = DEFAULT_OBSERVERS, 
+            int individualsAndRepresentatives = DEFAULT_INDIVIDUALS_WITH_REPRESENTATIVES,
+            int observers = DEFAULT_OBSERVERS,
             int panelMembers = DEFAULT_PANEL_MEMBERS,
             int wingers = DEFAULT_WINGERS,
             int individualsAndInterpreters = DEFAULT_INDIVIDUALS_WITH_INTERPRETERS)
@@ -286,7 +300,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 userTypes.Add(UserType.Winger);
             }
-            
+
             for (var i = 0; i < individualsAndInterpreters; i++)
             {
                 userTypes.Add(UserType.Individual);

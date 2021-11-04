@@ -88,7 +88,6 @@ export abstract class WaitingRoomBaseDirective {
     displayStartPrivateConsultationModal: boolean;
     displayJoinPrivateConsultationModal: boolean;
     conferenceStartedBy: string;
-    dualHostHasSignalledToJoinHearing = false;
 
     panelTypes = ['Participants', 'Chat'];
     panelStates = {
@@ -873,6 +872,9 @@ export abstract class WaitingRoomBaseDirective {
         this.conference.status = message.status;
         if (message.status === ConferenceStatus.InSession) {
             this.countdownComplete = false;
+            if (this.isHost() && this.participant.status === ParticipantStatus.InConsultation) {
+                this.notificationToastrService.showHearingStarted(this.conference.id, this.participant.id);
+            }
         }
 
         if (message.status === ConferenceStatus.Closed) {
@@ -1065,9 +1067,6 @@ export abstract class WaitingRoomBaseDirective {
             showingVideo: false,
             reason: ''
         };
-        if (this.dualHostHasSignalledToJoinHearing && !this.isHost()) {
-            this.dualHostHasSignalledToJoinHearing = false;
-        }
         if (!this.connected) {
             logPaylod.showingVideo = false;
             logPaylod.reason = 'Not showing video because not connecting to pexip node';
@@ -1123,11 +1122,10 @@ export abstract class WaitingRoomBaseDirective {
         this.conferenceStartedBy = null;
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
-        this.dualHostHasSignalledToJoinHearing = false;
     }
 
     shouldCurrentUserJoinHearing(): boolean {
-        return !this.isHost() || this.dualHostHasSignalledToJoinHearing;
+        return !this.isHost() || this.participant.status === ParticipantStatus.InHearing;
     }
 
     isHost(): boolean {

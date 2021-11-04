@@ -363,7 +363,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.hearingLayoutService.currentLayout$.pipe(take(1)).subscribe(async layout => {
             try {
                 await this.videoCallService.startHearing(this.hearing.id, layout);
-                this.dualHostHasSignalledToJoinHearing = true;
             } catch (err) {
                 this.logger.error(`${this.loggerPrefixJudge} Failed to ${action} a hearing for conference`, err, {
                     conference: this.conferenceId,
@@ -402,7 +401,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     async joinHearingInSession() {
         await this.videoCallService.joinHearingInSession(this.conferenceId, this.participant.id);
-        this.dualHostHasSignalledToJoinHearing = true;
     }
 
     initAudioRecordingInterval() {
@@ -480,9 +478,5 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         } else {
             this.leaveJudicialConsultation();
         }
-    }
-
-    leaveHearing() {
-        this.dualHostHasSignalledToJoinHearing = false;
     }
 }

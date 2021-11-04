@@ -1,4 +1,4 @@
-import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { fakeAsync, flush, flushMicrotasks } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { ConferenceResponse, ConferenceStatus, ParticipantResponse } from 'src/app/services/clients/api-client';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
@@ -88,7 +88,7 @@ describe('JohWaitingRoomComponent eventhub events', () => {
         const message = new ConferenceStatusMessage(globalConference.id, status);
         notificationSoundsService.playHearingAlertSound.calls.reset();
         hearingStatusSubject.next(message);
-        flushMicrotasks();
+        flush();
 
         expect(notificationSoundsService.playHearingAlertSound).toHaveBeenCalled();
     }));
@@ -99,7 +99,7 @@ describe('JohWaitingRoomComponent eventhub events', () => {
         notificationSoundsService.stopHearingAlertSound.calls.reset();
 
         hearingStatusSubject.next(message);
-        flushMicrotasks();
+        flush();
 
         expect(notificationSoundsService.stopHearingAlertSound).toHaveBeenCalled();
     }));
@@ -110,7 +110,7 @@ describe('JohWaitingRoomComponent eventhub events', () => {
         notificationSoundsService.playHearingAlertSound.calls.reset();
 
         hearingStatusSubject.next(message);
-        flushMicrotasks();
+        flush();
 
         expect(notificationSoundsService.playHearingAlertSound).toHaveBeenCalledTimes(0);
     }));

@@ -9,6 +9,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { browsers } from 'src/app/shared/browser.constants';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-hand-raised-message';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
@@ -48,8 +49,10 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     displayLeaveHearingPopup: boolean;
     participantSpotlightUpdateSubscription: Subscription;
     isSpotlighted: boolean;
+    showEvidenceContextMenu: boolean;
 
-    private destroyedSubject = new Subject<void>();
+    protected destroyedSubject = new Subject<void>();
+    sharingDynamicEvidence: boolean;
 
     protected constructor(
         protected videoCallService: VideoCallService,
@@ -65,6 +68,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.selfViewOpen = false;
         this.isSpotlighted = false;
         this.displayConfirmPopup = false;
+        this.showEvidenceContextMenu = false;
     }
 
     get canShowScreenShareButton(): boolean {
@@ -72,7 +76,13 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             this.participant?.hearing_role !== HearingRole.WITNESS &&
             this.participant?.hearing_role !== HearingRole.OBSERVER &&
             this.participant?.role !== Role.QuickLinkObserver;
-        return this.deviceTypeService.isDesktop() && isAllowedRole;
+        return this.deviceTypeService.isDesktop() && isAllowedRole && !this.sharingDynamicEvidence;
+    }
+
+    get canShowDynamicEvidenceShareButton(): boolean {
+        const supportedBrowsers = [browsers.Chrome, browsers.MSEdgeChromium];
+        const browser = this.deviceTypeService.getBrowserName();
+        return supportedBrowsers.some(x => x.toUpperCase() === browser.toUpperCase());
     }
 
     get isJudge(): boolean {
@@ -179,6 +189,10 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
         this.participantSpotlightUpdateSubscription?.unsubscribe();
         this.participantSpotlightUpdateSubscription = null;
+
+        if (this.sharingDynamicEvidence) {
+            this.videoCallService.stopScreenWithMicrophone();
+        }
     }
 
     get handToggleText(): string {
@@ -214,6 +228,16 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             .onScreenshareStopped()
             .pipe(takeUntil(this.destroyedSubject))
             .subscribe(discconnectedScreenShare => this.handleScreenShareStopped(discconnectedScreenShare));
+
+        this.videoCallService
+            .onVideoEvidenceShared()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(() => (this.sharingDynamicEvidence = true));
+
+        this.videoCallService
+            .onVideoEvidenceStopped()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(() => (this.sharingDynamicEvidence = false));
     }
 
     handleScreenShareConnected(connectedScreenShare: ConnectedScreenshare): void {
@@ -390,10 +414,19 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     async startScreenShare() {
         await this.videoCallService.selectScreen();
         this.videoCallService.startScreenShare();
+        this.sharingDynamicEvidence = false;
+    }
+
+    async startScreenShareWithMicrophone() {
+        await this.videoCallService.selectScreenWithMicrophone();
     }
 
     stopScreenShare() {
-        this.videoCallService.stopScreenShare();
+        if (this.sharingDynamicEvidence) {
+            this.videoCallService.stopScreenWithMicrophone();
+        } else {
+            this.videoCallService.stopScreenShare();
+        }
     }
 
     togglePanelStatus(panelName: string) {

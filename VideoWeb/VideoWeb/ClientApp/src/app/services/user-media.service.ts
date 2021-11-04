@@ -118,7 +118,7 @@ export class UserMediaService {
             this.setActiveMicrophone(microphone);
         }
 
-        this.setIsAudioOnly(false);
+        this.updateIsAudioOnly(false);
     }
 
     private checkActiveDevicesAreStillConnected(availableDevices: UserMediaDevice[]): void {

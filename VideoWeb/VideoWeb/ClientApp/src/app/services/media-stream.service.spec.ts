@@ -44,7 +44,7 @@ describe('MediaStreamService', () => {
     let filterOnSubject: ReplaySubject<boolean>;
 
     beforeEach(() => {
-        loggerSpy = jasmine.createSpyObj<Logger>(['info', 'error']);
+        loggerSpy = jasmine.createSpyObj<Logger>(['debug', 'info', 'error']);
         errorServiceSpy = jasmine.createSpyObj<ErrorService>(['handlePexipError']);
         mediaDevicesSpy = jasmine.createSpyObj<MediaDevices>(['getUserMedia']);
         navigatorSpy = jasmine.createSpyObj<Navigator>([], ['mediaDevices']);
