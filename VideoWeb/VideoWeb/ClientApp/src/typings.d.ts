@@ -7,6 +7,10 @@ interface HTMLCanvasElement {
     captureStream(frameRate?: number): MediaStream;
 }
 
+interface Console {
+    defaultWarn;
+}
+
 declare interface PexRTC {
     PexRTC(): PexipClient;
 }
