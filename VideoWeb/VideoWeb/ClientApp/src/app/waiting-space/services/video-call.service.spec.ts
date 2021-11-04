@@ -435,7 +435,8 @@ describe('VideoCallService', () => {
                 });
             }
 
-            for (const browser in BROWSERS) {
+            const h264SupportedBrowsers = [BROWSERS.CHROME, BROWSERS.MS_EDGE, BROWSERS.MS_EDGE_CHROMIUM, BROWSERS.SAMSUNG];
+            for (const browser of h264SupportedBrowsers) {
                 it(`should NOT disable h264 when the browser is ${browser}`, async () => {
                     // Arrange
                     deviceTypeServiceSpy.getBrowserName.and.returnValue(browser);
