@@ -1,5 +1,6 @@
 import { Directive, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ComponentStore } from '@ngrx/component-store';
 import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
@@ -21,6 +22,7 @@ import {
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
+import { PexipDisplayNameModel } from 'src/app/services/conference/models/pexip-display-name.model';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -36,6 +38,7 @@ import { Participant } from 'src/app/shared/models/participant';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { Room } from 'src/app/shared/models/room';
 import { pageUrls } from 'src/app/shared/page-url.constants';
+import { IConferenceParticipantsStatus } from '../models/conference-participants-status';
 import { HearingRole } from '../models/hearing-role-model';
 import {
     CallError,
@@ -120,7 +123,8 @@ export abstract class WaitingRoomBaseDirective {
         protected notificationToastrService: NotificationToastrService,
         protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService,
-        protected consultationInvitiationService: ConsultationInvitationService
+        protected consultationInvitiationService: ConsultationInvitationService,
+        protected store: ComponentStore<IConferenceParticipantsStatus>
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;
@@ -128,6 +132,8 @@ export abstract class WaitingRoomBaseDirective {
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
         this.errorCount = 0;
+        const state = {};
+        this.store.setState(state);
     }
 
     isParticipantInCorrectWaitingRoomState(): boolean {
@@ -632,6 +638,20 @@ export abstract class WaitingRoomBaseDirective {
 
     async setupPexipEventSubscriptionAndClient() {
         this.logger.debug(`${this.loggerPrefix} Setting up pexip client and event subscriptions`);
+        this.videoCallSubscription$.add(this.videoCallService.onParticipantUpdated().subscribe(up => {
+            this.logger.debug(`${this.loggerPrefix} Setting up pexip client and event subscriptions`, up.uuid);
+            const state = {};
+            const pexipDisplayNameModel = PexipDisplayNameModel.fromString(up.pexipDisplayName)
+            this.logger.debug(`${this.loggerPrefix} Setting up participant remote mute status for`, pexipDisplayNameModel.participantOrVmrId);
+            state[pexipDisplayNameModel.participantOrVmrId] = { isRemoteMuted: up.isRemoteMuted };
+            state[up.uuid] = { isRemoteMuted: up.isRemoteMuted };
+            this.store.state$.subscribe(s => {
+                console.log('[Prasanna]', s[pexipDisplayNameModel.participantOrVmrId]);
+            }
+            );
+            this.logger.debug(`${this.loggerPrefix} Setting up participant remote mute status for ${pexipDisplayNameModel.participantOrVmrId} is '${up.isRemoteMuted}''`,);
+            this.store.setState(state);
+        }));
 
         this.videoCallSubscription$.add(this.videoCallService.onCallSetup().subscribe(setup => this.handleCallSetup(setup)));
         this.videoCallSubscription$.add(

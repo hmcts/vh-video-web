@@ -22,11 +22,14 @@ import { TranslateService } from '@ngx-translate/core';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { take, takeUntil } from 'rxjs/operators';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
+import { ComponentStore } from '@ngrx/component-store';
+import { IConferenceParticipantsStatus } from '../models/conference-participants-status';
 
 @Component({
     selector: 'app-participant-waiting-room',
     templateUrl: './participant-waiting-room.component.html',
-    styleUrls: ['../waiting-room-global-styles.scss', './participant-waiting-room.component.scss']
+    styleUrls: ['../waiting-room-global-styles.scss', './participant-waiting-room.component.scss'],
+    providers: [ComponentStore]
 })
 export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
     private readonly loggerPrefixParticipant = '[Participant WR] -';
@@ -55,7 +58,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         protected clockService: ClockService,
         protected translateService: TranslateService,
         protected consultationInvitiationService: ConsultationInvitationService,
-        private unloadDetectorService: UnloadDetectorService
+        private unloadDetectorService: UnloadDetectorService,
+        protected store: ComponentStore<IConferenceParticipantsStatus>
     ) {
         super(
             route,
@@ -72,7 +76,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             notificationToastrService,
             roomClosingToastrService,
             clockService,
-            consultationInvitiationService
+            consultationInvitiationService,
+            store
         );
     }
 

@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ComponentStore } from '@ngrx/component-store';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
@@ -14,6 +15,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
+import { IConferenceParticipantsStatus } from '../models/conference-participants-status';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
@@ -24,7 +26,8 @@ import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-ba
 @Component({
     selector: 'app-joh-waiting-room',
     templateUrl: './joh-waiting-room.component.html',
-    styleUrls: ['../waiting-room-global-styles.scss', './joh-waiting-room.component.scss']
+    styleUrls: ['../waiting-room-global-styles.scss', './joh-waiting-room.component.scss'],
+    providers: [ComponentStore]
 })
 export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
     private readonly loggerPrefixJOH = '[JOH WR] -';
@@ -48,7 +51,9 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         protected clockService: ClockService,
         protected translateService: TranslateService,
         protected consultationInvitiationService: ConsultationInvitationService,
-        private unloadDetectorService: UnloadDetectorService
+        private unloadDetectorService: UnloadDetectorService,
+        store: ComponentStore<IConferenceParticipantsStatus>
+
     ) {
         super(
             route,
@@ -65,7 +70,8 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
             notificationToastrService,
             roomClosingToastrService,
             clockService,
-            consultationInvitiationService
+            consultationInvitiationService,
+            store
         );
     }
 
