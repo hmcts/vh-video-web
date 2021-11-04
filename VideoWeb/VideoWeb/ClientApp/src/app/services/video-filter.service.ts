@@ -162,7 +162,7 @@ export class VideoFilterService {
     updateFilter(filter: BackgroundFilter | null) {
         this.logger.debug(`${this.loggerPrefix} Updating filter to ${filter}`);
         if (filter) {
-            this.monitorLostGlContext();
+            this.startMonitoringLostGlContext();
             this.selfieSegmentation.reset();
             this._failCount = 0;
             this.activeFilter = filter;
@@ -289,7 +289,7 @@ export class VideoFilterService {
         return imageObject;
     }
 
-    monitorLostGlContext() {
+    startMonitoringLostGlContext() {
         if (console.defaultWarn) {
             return;
         }
