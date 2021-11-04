@@ -47,7 +47,7 @@
           <img
             [src]="hearingVenueIsInScotland ? '/assets/images/scot-crest-white.png': '/assets/images/UkGovCrestWhite.png'"
             class="panel-icon panel-icon-crest"
-            [attr.alt]="'participants-panel.crest' | translate"
+            [attr.alt]="hearingVenueIsInScotland ? ('participants-panel.scottish-crest' | translate): ('participants-panel.crest' | translate)"
           />
           <br />
         </span>
@@ -63,7 +63,7 @@
           <img
             [src]="hearingVenueIsInScotland ? '/assets/images/scot-crest-white.png': '/assets/images/UkGovCrestWhite.png'"
             class="panel-icon panel-icon-crest"
-            [attr.alt]="'participants-panel.crest' | translate"
+            [attr.alt]="hearingVenueIsInScotland ? ('participants-panel.scottish-crest' | translate): ('participants-panel.crest' | translate)"
           />
           <br />
         </span>

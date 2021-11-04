@@ -19,7 +19,7 @@ describe('HearingRulesComponent', () => {
 
     let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
 
-    let scottishHearingVenueSubject = new BehaviorSubject(false);
+    const scottishHearingVenueSubject = new BehaviorSubject(false);
 
     beforeAll(() => {
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);

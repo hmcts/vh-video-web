@@ -25,7 +25,7 @@ describe('IntroductionComponent', () => {
 
     let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
 
-    let scottishHearingVenueSubject = new BehaviorSubject(false);
+    const scottishHearingVenueSubject = new BehaviorSubject(false);
 
     beforeAll(() => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getActiveIndividualConference']);

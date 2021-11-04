@@ -7,7 +7,7 @@
           src="/assets/images/govuk-crest.png"
           height="50"
           class="govuk-header__logotype-crest"
-          [attr.alt]="'judge-participant-status-list.crest-alt' | translate"
+          [attr.alt]="hearingVenueIsInScotland ? ('judge-participant-status-list.scottish-crest' | translate): ('judge-participant-status-list.crest-alt' | translate)"
         />
       </div>
 

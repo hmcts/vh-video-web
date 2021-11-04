@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { BehaviorSubject } from 'rxjs';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
+import { TranslatePipeMock } from 'src/app/testing/mocks/mock-translation-pipe';
 import { getSpiedPropertyGetter } from '../jasmine-helpers/property-helpers';
 
 import { HeaderLogoSvgComponent } from './header-logo-svg.component';
@@ -21,7 +22,7 @@ describe('HeaderLogoSvgComponent', () => {
         hearingVenueIsScottishSubject = new BehaviorSubject(false);
         getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'hearingVenueIsScottish$').and.returnValue(hearingVenueIsScottishSubject);
         await TestBed.configureTestingModule({
-            declarations: [HeaderLogoSvgComponent],
+            declarations: [HeaderLogoSvgComponent, TranslatePipeMock],
             providers: [{ provide: HearingVenueFlagsService, useValue: mockedHearingVenueFlagsService }]
         }).compileComponents();
     });

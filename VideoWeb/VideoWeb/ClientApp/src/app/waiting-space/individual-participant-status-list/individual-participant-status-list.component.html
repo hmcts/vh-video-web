@@ -11,7 +11,8 @@
             <img [src]="hearingVenueIsInScotland ? '/assets/images/scottish-crest-footer.png': '/assets/images/govuk-crest.png'"
                  height='50'
                  class='govuk-header__logotype-crest'
-                 [attr.alt]="'individual-participant-status-list.crest-icon-alt' | translate" />
+                 [attr.alt]="hearingVenueIsInScotland ? ('individual-participant-status-list.scottish-crest' | translate): ('individual-participant-status-list.crest-icon-alt' | translate)"
+                 />
         </div>
     </div>
     <div class='vh-line govuk-!-margin-bottom-3'></div>

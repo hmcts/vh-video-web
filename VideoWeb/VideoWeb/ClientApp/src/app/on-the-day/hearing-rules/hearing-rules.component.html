@@ -9,7 +9,7 @@
       <img
         [src]="hearingVenueIsInScotland ? '/assets/images/scottish-crest-circle.png': '/assets/images/HmctsCrest.png'"
         class="govuk-header__logotype-crest crest"
-        [attr.alt]="'hearing-rules.hm-courts-and-tribunals-service-crest' | translate"
+        [attr.alt]="hearingVenueIsInScotland ? ('hearing-rules.scottish-crest' | translate): ('hearing-rules.hm-courts-and-tribunals-service-crest' | translate)"
       />
     </div>
   </div>
