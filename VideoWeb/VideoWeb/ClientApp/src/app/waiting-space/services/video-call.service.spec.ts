@@ -571,6 +571,7 @@ describe('VideoCallService', () => {
         it('should replace pexip media stream with original user stream', fakeAsync(() => {
             spyOn<any>(service, 'renegotiateCall').and.callThrough();
             service.pexipAPI.user_media_stream = screenStream;
+            service['_displayStream'] = screenStream;
 
             service.stopScreenWithMicrophone();
 
