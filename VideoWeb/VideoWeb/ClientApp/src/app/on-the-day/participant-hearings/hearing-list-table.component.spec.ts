@@ -1,7 +1,5 @@
 import * as moment from 'moment';
-import { BehaviorSubject } from 'rxjs';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
-import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { HearingListTableComponent } from './hearing-list-table.component';
@@ -10,7 +8,7 @@ describe('HearingListTableComponent', () => {
     let component: HearingListTableComponent;
     const translateService = translateServiceSpy;
     const testData = new ConferenceTestData();
-    let mockedHearingVenueFlagsService: HearingVenueFlagsService;
+    let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
 
     beforeEach(() => {
         mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
