@@ -132,8 +132,7 @@ export abstract class WaitingRoomBaseDirective {
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
         this.errorCount = 0;
-        const state = {};
-        this.store.setState(state);
+        this.store.setState({});
     }
 
     isParticipantInCorrectWaitingRoomState(): boolean {
@@ -639,18 +638,14 @@ export abstract class WaitingRoomBaseDirective {
     async setupPexipEventSubscriptionAndClient() {
         this.logger.debug(`${this.loggerPrefix} Setting up pexip client and event subscriptions`);
         this.videoCallSubscription$.add(this.videoCallService.onParticipantUpdated().subscribe(up => {
-            this.logger.debug(`${this.loggerPrefix} Setting up pexip client and event subscriptions`, up.uuid);
             const state = {};
-            const pexipDisplayNameModel = PexipDisplayNameModel.fromString(up.pexipDisplayName)
-            this.logger.debug(`${this.loggerPrefix} Setting up participant remote mute status for`, pexipDisplayNameModel.participantOrVmrId);
-            state[pexipDisplayNameModel.participantOrVmrId] = { isRemoteMuted: up.isRemoteMuted };
-            state[up.uuid] = { isRemoteMuted: up.isRemoteMuted };
-            this.store.state$.subscribe(s => {
-                console.log('[Prasanna]', s[pexipDisplayNameModel.participantOrVmrId]);
+            const pexipDisplayNameModel = PexipDisplayNameModel.fromString(up.pexipDisplayName);
+            if (pexipDisplayNameModel === null) {
+                return;
             }
-            );
+            state[pexipDisplayNameModel.participantOrVmrId] = { isRemoteMuted: up.isRemoteMuted };
             this.logger.debug(`${this.loggerPrefix} Setting up participant remote mute status for ${pexipDisplayNameModel.participantOrVmrId} is '${up.isRemoteMuted}''`,);
-            this.store.setState(state);
+            this.store.patchState(state);
         }));
 
         this.videoCallSubscription$.add(this.videoCallService.onCallSetup().subscribe(setup => this.handleCallSetup(setup)));

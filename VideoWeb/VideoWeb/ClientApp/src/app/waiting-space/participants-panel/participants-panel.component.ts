@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { ComponentStore } from '@ngrx/component-store';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -21,6 +22,7 @@ import {
 import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-hand-raised-message';
 import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
 import { CaseTypeGroup } from '../models/case-type-group';
+import { IConferenceParticipantsStatus } from '../models/conference-participants-status';
 import { HearingRole } from '../models/hearing-role-model';
 import { LinkedParticipantPanelModel } from '../models/linked-participant-panel-model';
 import { PanelModel } from '../models/panel-model-base';
@@ -32,7 +34,8 @@ import { VideoCallService } from '../services/video-call.service';
 @Component({
     selector: 'app-participants-panel',
     templateUrl: './participants-panel.component.html',
-    styleUrls: ['./participants-panel.component.scss']
+    styleUrls: ['./participants-panel.component.scss'],
+    providers: [ComponentStore]
 })
 export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     private readonly loggerPrefix = '[ParticipantsPanel] -';
@@ -57,11 +60,18 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private eventService: EventsService,
         private logger: Logger,
         protected translateService: TranslateService,
-        private mapper: ParticipantPanelModelMapper
-    ) {}
+        private mapper: ParticipantPanelModelMapper,
+        protected store: ComponentStore<IConferenceParticipantsStatus>
+    ) {
+    }
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+        console.log('[Prasanna]', this.store);
+
+        this.store.state$.subscribe(s => {
+            console.log('[Prasanna]', s);
+        });
         this.getParticipantsList().then(() => {
             this.setupVideoCallSubscribers();
             this.setupEventhubSubscribers();
@@ -108,6 +118,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     setupVideoCallSubscribers() {
         this.logger.debug(`${this.loggerPrefix} Setting up pexip video call subscribers`);
+
         this.videoCallSubscription$.add(
             this.videoCallService
                 .onParticipantUpdated()
