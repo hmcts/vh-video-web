@@ -308,6 +308,7 @@ export class VideoFilterService {
     }
 
     stopMonitoringLostGlContext() {
+        console.warn = console.defaultWarn;
         console.defaultWarn = null;
     }
 }
