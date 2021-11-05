@@ -3,8 +3,7 @@
   flex-flow: column;
 }
 
-.govuk-footer__copyright-logo,
-.govuk-footer__copyright-logo-scts {
+.govuk-footer__copyright-logo {
   display: inline-block;
   min-width: 125px;
   padding-top: 112px;
@@ -16,7 +15,7 @@
   white-space: nowrap;
 }
 
-.govuk-footer__copyright-logo {
+.govuk-footer-background-hmcts {
   background-image: url('/assets/images/govuk-crest.png');
 }
 
@@ -27,7 +26,7 @@
 @media only screen and (-webkit-min-device-pixel-ratio: 2),
   only screen and (min-resolution: 192dpi),
   only screen and (min-resolution: 2dppx) {
-  .govuk-footer__copyright-logo {
+  .govuk-footer-background-hmcts {
     background-image: url('/assets/images/govuk-crest-2x.png');
   }
 }
