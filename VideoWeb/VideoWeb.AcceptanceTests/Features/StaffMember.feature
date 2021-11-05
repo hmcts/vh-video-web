@@ -20,7 +20,7 @@ Scenario: Judicial Office Holder waiting room with StaffMember
 #@VIH-8266
 @HearingTest @Smoketest-Extended
 Scenario: Staff Member starts hearing with Judge in Waiting Room 
-  Given I have a hearing with a Judge and I include a Staff Member
+  Given I have a scheduled hearing with a Judge and a Staff Member
 	And the first Individual user has progressed to the Waiting Room page for the existing hearing
 	And the second Individual user has progressed to the Waiting Room page for the existing hearing
 	And the Judge user has progressed to the Judge Waiting Room page for the existing hearing
@@ -43,7 +43,7 @@ Scenario: Staff Member starts hearing with Judge in Waiting Room
 #@VIH-8266
 @HearingTest @Smoketest-Extended
 Scenario: Staff Member starts hearing with judge not connected
-  Given I have a hearing with a Judge and I include a Staff Member
+  Given I have a scheduled hearing with a Judge and a Staff Member
 	And the first Individual user has progressed to the Waiting Room page for the existing hearing
 	And the second Individual user has progressed to the Waiting Room page for the existing hearing
 	And the Staff Member user has progressed to the Staff Member Waiting Room page for the existing hearing
@@ -66,7 +66,7 @@ Scenario: Staff Member starts hearing with judge not connected
 #@VIH-8266
 @HearingTest @Smoketest-Extended
 Scenario: Judge starts the hearing with Staff Member in Waiting Room
-  Given I have a hearing with a Judge and I include a Staff Member
+  Given I have a scheduled hearing with a Judge and a Staff Member
 	And the first Individual user has progressed to the Waiting Room page for the existing hearing
 	And the second Individual user has progressed to the Waiting Room page for the existing hearing
 	And the Staff Member user has progressed to the Staff Member Waiting Room page for the existing hearing
@@ -89,7 +89,7 @@ Scenario: Judge starts the hearing with Staff Member in Waiting Room
 #@VIH-8266
 @HearingTest @Smoketest-Extended
 Scenario: Judge starts hearing with Staff Member not connected
-  Given I have a hearing with a Judge and I include a Staff Member
+  Given I have a scheduled hearing with a Judge and a Staff Member
 	And the first Individual user has progressed to the Waiting Room page for the existing hearing
 	And the second Individual user has progressed to the Waiting Room page for the existing hearing
 	And the Judge user has progressed to the Judge Waiting Room page for the existing hearing

@@ -348,7 +348,7 @@ export class VideoCallService {
     }
 
     lowerHandById(pexipParticipantId: string, conferenceId: string, participantId: string) {
-        this.logger.info(`${this.loggerPrefix} Attempting to mute all participants`, {
+        this.logger.info(`${this.loggerPrefix} Attempting lower hand by ID`, {
             pexipId: pexipParticipantId,
             conference: conferenceId,
             participant: participantId
