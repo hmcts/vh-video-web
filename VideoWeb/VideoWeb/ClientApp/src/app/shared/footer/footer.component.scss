@@ -4,7 +4,7 @@
 }
 
 .govuk-footer__copyright-logo,
-.govuk-footer__copyright-logo-scottish {
+.govuk-footer__copyright-logo-scts {
   display: inline-block;
   min-width: 125px;
   padding-top: 112px;
@@ -16,23 +16,19 @@
   white-space: nowrap;
 }
 
-.govuk-footer-background-uk {
+.govuk-footer__copyright-logo {
   background-image: url('/assets/images/govuk-crest.png');
 }
 
-.govuk-footer-background-scottish {
+.govuk-footer-background-scts {
   background-image: url('/assets/images/scottish-crest-grey.png');
 }
 
 @media only screen and (-webkit-min-device-pixel-ratio: 2),
   only screen and (min-resolution: 192dpi),
   only screen and (min-resolution: 2dppx) {
-  .govuk-footer-background-uk {
+  .govuk-footer__copyright-logo {
     background-image: url('/assets/images/govuk-crest-2x.png');
-  }
-
-  .govuk-footer-background-scottish {
-    background-image: url('/assets/images/scottish-crest-grey.png');
   }
 }
 .govuk-footer__licence-description {
