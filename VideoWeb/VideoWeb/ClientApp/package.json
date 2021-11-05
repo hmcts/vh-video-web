@@ -94,7 +94,7 @@
     "ng-bullet": "^1.0.3",
     "ng-mocks": "^12.4.0",
     "nswag": "^13.13.2",
-    "prettier": "^2.2.1",
+    "prettier": "^2.4.1",
     "puppeteer": "^10.4.0",
     "run-script-os": "^1.1.6",
     "sass": "^1.32.4",

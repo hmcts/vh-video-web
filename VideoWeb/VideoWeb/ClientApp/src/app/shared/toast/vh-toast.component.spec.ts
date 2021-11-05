@@ -25,11 +25,7 @@ describe('VhToastComponent', () => {
             onActivateTick: false,
             newestOnTop: false
         };
-        const toastRef = new ToastRef(
-            new OverlayRef(
-                jasmine.createSpyObj<BasePortalHost>('BasePortalHost', ['detach'])
-            )
-        );
+        const toastRef = new ToastRef(new OverlayRef(jasmine.createSpyObj<BasePortalHost>('BasePortalHost', ['detach'])));
         toastPackage = new ToastPackage(1, config, 'tast toast', 'test', 'test', toastRef);
         component = new VhToastComponent(toastrService, toastPackage);
         const onNoActionSpy = jasmine.createSpy().and.callFake(function () {
