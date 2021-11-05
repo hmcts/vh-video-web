@@ -16,8 +16,8 @@ describe('MediaStreamService', () => {
                 deviceId: {
                     exact: device.deviceId
                 },
-                width: 1280,
-                height: 720
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
             }
         } as MediaStreamConstraints;
     };
@@ -55,12 +55,8 @@ describe('MediaStreamService', () => {
             ['filterOn', 'filterOn$']
         );
         const filterStreamTracks = [];
-        filterStreamTracks.push(
-            jasmine.createSpyObj<MediaStreamTrack>(['stop'])
-        );
-        filterStreamTracks.push(
-            jasmine.createSpyObj<MediaStreamTrack>(['stop'])
-        );
+        filterStreamTracks.push(jasmine.createSpyObj<MediaStreamTrack>(['stop']));
+        filterStreamTracks.push(jasmine.createSpyObj<MediaStreamTrack>(['stop']));
         filterStream = jasmine.createSpyObj<MediaStream>(['getTracks']);
         filterStream.getTracks.and.returnValue(filterStreamTracks);
 
@@ -82,15 +78,9 @@ describe('MediaStreamService', () => {
         it('should call the constructor for media stream and pass the tracks when they are provided', () => {
             // Arrange
             const tracks = [];
-            tracks.push(
-                jasmine.createSpyObj<MediaStreamTrack>(['stop'])
-            );
-            tracks.push(
-                jasmine.createSpyObj<MediaStreamTrack>(['stop'])
-            );
-            tracks.push(
-                jasmine.createSpyObj<MediaStreamTrack>(['stop'])
-            );
+            tracks.push(jasmine.createSpyObj<MediaStreamTrack>(['stop']));
+            tracks.push(jasmine.createSpyObj<MediaStreamTrack>(['stop']));
+            tracks.push(jasmine.createSpyObj<MediaStreamTrack>(['stop']));
 
             // Act
             sut.initialiseNewStream(tracks);
