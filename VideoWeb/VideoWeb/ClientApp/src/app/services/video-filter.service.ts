@@ -19,6 +19,7 @@ export class VideoFilterService {
     private _canvasHeight = 720;
     private _enableVideoFilters: boolean;
     private _failCount = 0;
+    private _isPillarBox = true;
 
     private _onFilterChanged = new Subject<BackgroundFilter | null>();
     get onFilterChanged$(): Observable<BackgroundFilter | null> {
@@ -61,7 +62,7 @@ export class VideoFilterService {
 
     selfieSegmentation: SelfieSegmentation;
     activeFilter: BackgroundFilter;
-    imgs: Map<BackgroundFilter, HTMLImageElement> = new Map();
+    imgs: Map<string, HTMLImageElement> = new Map();
 
     constructor(private logger: Logger, private configService: ConfigService, private deviceTypeService: DeviceTypeService) {
         this.configService.getClientSettings().subscribe(settings => {
@@ -150,8 +151,16 @@ export class VideoFilterService {
 
     updateCanvasSize(stream: MediaStream) {
         const settings = stream.getVideoTracks()[0].getSettings();
+        this.checkCameraStreamAspectRatio(settings);
+
         this._canvasWidth = settings.width;
         this._canvasHeight = settings.height;
+    }
+
+    checkCameraStreamAspectRatio(settings: MediaTrackSettings) {
+        const sixteenByNineAspectRatio = '1.78';
+        const aspectRatio = settings.aspectRatio.toFixed(2);
+        this._isPillarBox = aspectRatio !== sixteenByNineAspectRatio;
     }
 
     startFilteredStream(): MediaStream {
@@ -268,24 +277,28 @@ export class VideoFilterService {
     }
 
     private getImageForBackground(): HTMLImageElement {
-        if (this.imgs.has(this.activeFilter)) {
-            return this.imgs.get(this.activeFilter);
-        }
-
         let imageName = '';
         if (this.activeFilter === BackgroundFilter.HMCTS) {
             imageName = 'VhBgFilterHMCTS';
         } else if (this.activeFilter === BackgroundFilter.SCTS) {
             imageName = 'VhBgFilterSCTS';
         }
+
+        if (this._isPillarBox) {
+            imageName += '_pillarbox';
+        }
+
+        if (this.imgs.has(imageName)) {
+            return this.imgs.get(imageName);
+        }
+
         const imagePath = `/assets/images/${imageName}.jpg`;
 
         this.logger.debug(`${this.loggerPrefix} retrieving image for filter ${this.activeFilter} from ${imagePath}`);
-
         // With Background image
         const imageObject = new Image();
         imageObject.src = imagePath;
-        this.imgs.set(this.activeFilter, imageObject);
+        this.imgs.set(imageName, imageObject);
         return imageObject;
     }
 
@@ -308,6 +321,7 @@ export class VideoFilterService {
     }
 
     stopMonitoringLostGlContext() {
+        console.warn = console.defaultWarn;
         console.defaultWarn = null;
     }
 }

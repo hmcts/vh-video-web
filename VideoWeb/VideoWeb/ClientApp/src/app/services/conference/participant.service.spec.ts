@@ -583,10 +583,10 @@ describe('ParticipantService', () => {
                 const newPexipId = 'new-pexip-id';
                 const participantId = participantOne.id;
                 const pexipName = `pexip-name-${participantId}`;
-                const participantUpdated = ({
+                const participantUpdated = {
                     pexipDisplayName: pexipName,
                     uuid: newPexipId
-                } as unknown) as ParticipantUpdated;
+                } as unknown as ParticipantUpdated;
 
                 spyOnProperty(sut, 'participants', 'get').and.returnValue([participantOne]);
 
@@ -604,15 +604,15 @@ describe('ParticipantService', () => {
                 const pexipNameOne = `pexip-name-${participantOneId}`;
                 const pexipNameTwo = `pexip-name-${participantTwoId}`;
 
-                const participantUpdatedOne = ({
+                const participantUpdatedOne = {
                     pexipDisplayName: pexipNameOne,
                     uuid: pexipIdOne
-                } as unknown) as ParticipantUpdated;
+                } as unknown as ParticipantUpdated;
 
-                const participantUpdatedTwo = ({
+                const participantUpdatedTwo = {
                     pexipDisplayName: pexipNameTwo,
                     uuid: pexipIdTwo
-                } as unknown) as ParticipantUpdated;
+                } as unknown as ParticipantUpdated;
 
                 spyOnProperty(sut, 'participants', 'get').and.returnValue(
                     asParticipantModelsFromUserResponse([participantOne, participantTwo])
@@ -635,20 +635,20 @@ describe('ParticipantService', () => {
                 const pexipNameOne = `pexip-name-${participantOneId}`;
                 const pexipNameTwo = `pexip-name-${participantTwoId}`;
 
-                const participantUpdatedOne = ({
+                const participantUpdatedOne = {
                     pexipDisplayName: pexipNameOne,
                     uuid: pexipIdOne
-                } as unknown) as ParticipantUpdated;
+                } as unknown as ParticipantUpdated;
 
-                const participantUpdatedTwo = ({
+                const participantUpdatedTwo = {
                     pexipDisplayName: pexipNameTwo,
                     uuid: pexipIdTwo
-                } as unknown) as ParticipantUpdated;
+                } as unknown as ParticipantUpdated;
 
-                const participantUpdatedThree = ({
+                const participantUpdatedThree = {
                     pexipDisplayName: pexipNameOne,
                     uuid: pexipIdThree
-                } as unknown) as ParticipantUpdated;
+                } as unknown as ParticipantUpdated;
 
                 spyOnProperty(sut, 'participants', 'get').and.returnValue(
                     asParticipantModelsFromUserResponse([participantOne, participantTwo])
@@ -669,10 +669,10 @@ describe('ParticipantService', () => {
                 const pexipId = 'pexip-id';
                 const participantId = Guid.create().toString();
                 const pexipName = `pexip-name-${participantId}`;
-                const participantUpdated = ({
+                const participantUpdated = {
                     pexipDisplayName: pexipName,
                     uuid: pexipId
-                } as unknown) as ParticipantUpdated;
+                } as unknown as ParticipantUpdated;
 
                 const expectedValue: { [participantId: string]: string } = {};
 
@@ -693,10 +693,10 @@ describe('ParticipantService', () => {
                 // Arrange
                 const pexipId = 'pexip-id';
                 const pexipName = `pexip-name-${vmrId}`;
-                const participantUpdated = ({
+                const participantUpdated = {
                     pexipDisplayName: pexipName,
                     uuid: pexipId
-                } as unknown) as ParticipantUpdated;
+                } as unknown as ParticipantUpdated;
 
                 const participants = asParticipantModelsFromUserResponse([
                     participantOne,
@@ -727,10 +727,10 @@ describe('ParticipantService', () => {
                 const newPexipId = 'new-pexip-id';
                 const participantId = participant.id;
                 const pexipName = `pexip-name-${participantId}`;
-                const participantUpdated = ({
+                const participantUpdated = {
                     pexipDisplayName: pexipName,
                     uuid: newPexipId
-                } as unknown) as ParticipantUpdated;
+                } as unknown as ParticipantUpdated;
                 participant.pexipId = null;
 
                 spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
@@ -757,10 +757,10 @@ describe('ParticipantService', () => {
                 const newPexipId = 'new-pexip-id';
                 const participantId = participant.id;
                 const pexipName = `pexip-name-${participantId}`;
-                const participantUpdated = ({
+                const participantUpdated = {
                     pexipDisplayName: pexipName,
                     uuid: newPexipId
-                } as unknown) as ParticipantUpdated;
+                } as unknown as ParticipantUpdated;
                 participant.pexipId = 'old-pexip-id';
 
                 spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
@@ -785,10 +785,10 @@ describe('ParticipantService', () => {
                 // Arrange
                 const pexipId = 'pexip-id';
                 const pexipName = `pexip-name-${vmrId}`;
-                const participantUpdated = ({
+                const participantUpdated = {
                     pexipDisplayName: pexipName,
                     uuid: pexipId
-                } as unknown) as ParticipantUpdated;
+                } as unknown as ParticipantUpdated;
 
                 const participants = asParticipantModelsFromUserResponse([
                     participantOne,
@@ -836,10 +836,10 @@ describe('ParticipantService', () => {
                 // Arrange
                 const pexipId = 'pexip-id';
                 const pexipName = `pexip-name-${vmrId}`;
-                const participantUpdated = ({
+                const participantUpdated = {
                     pexipDisplayName: pexipName,
                     uuid: pexipId
-                } as unknown) as ParticipantUpdated;
+                } as unknown as ParticipantUpdated;
 
                 const participants = asParticipantModelsFromUserResponse([
                     participantOne,
@@ -892,11 +892,11 @@ describe('ParticipantService', () => {
                 const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
                 const participantId = participant.id;
                 const pexipName = `pexip-name-${participantId}`;
-                const participantUpdated = ({
+                const participantUpdated = {
                     pexipDisplayName: pexipName,
                     uuid: pexipId,
                     isSpotlighted: true
-                } as unknown) as ParticipantUpdated;
+                } as unknown as ParticipantUpdated;
 
                 let result: ParticipantModel = null;
                 const subscriber = sut.onParticipantSpotlightStatusChanged$.subscribe(spotlightUpdate => {
@@ -925,11 +925,11 @@ describe('ParticipantService', () => {
                 const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
                 const participantId = participant.id;
                 const pexipName = `pexip-name-${participantId}`;
-                const participantUpdated = ({
+                const participantUpdated = {
                     pexipDisplayName: pexipName,
                     uuid: pexipId,
                     isSpotlighted: true
-                } as unknown) as ParticipantUpdated;
+                } as unknown as ParticipantUpdated;
 
                 let result: ParticipantModel = null;
                 const subscriber = sut.onParticipantSpotlightStatusChanged$.subscribe(spotlightUpdate => {
@@ -955,11 +955,11 @@ describe('ParticipantService', () => {
                 const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
                 const participantId = participant.id;
                 const pexipName = `pexip-name-${participantId}`;
-                const participantUpdated = ({
+                const participantUpdated = {
                     pexipDisplayName: pexipName,
                     uuid: pexipId,
                     isSpotlighted: false
-                } as unknown) as ParticipantUpdated;
+                } as unknown as ParticipantUpdated;
 
                 let result: ParticipantModel = null;
                 const subscriber = sut.onParticipantHandRaisedStatusChanged$.subscribe(spotlightUpdate => {
@@ -987,11 +987,11 @@ describe('ParticipantService', () => {
                 const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
                 const participantId = participant.id;
                 const pexipName = `pexip-name-${participantId}`;
-                const participantUpdated = ({
+                const participantUpdated = {
                     pexipDisplayName: pexipName,
                     uuid: pexipId,
                     isRemoteMuted: true
-                } as unknown) as ParticipantUpdated;
+                } as unknown as ParticipantUpdated;
 
                 let result: ParticipantModel = null;
                 const subscriber = sut.onParticipantRemoteMuteStatusChanged$.subscribe(spotlightUpdate => {
@@ -1020,11 +1020,11 @@ describe('ParticipantService', () => {
                 const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
                 const participantId = participant.id;
                 const pexipName = `pexip-name-${participantId}`;
-                const participantUpdated = ({
+                const participantUpdated = {
                     pexipDisplayName: pexipName,
                     uuid: pexipId,
                     isRemoteMuted: true
-                } as unknown) as ParticipantUpdated;
+                } as unknown as ParticipantUpdated;
 
                 let result: ParticipantModel = null;
                 const subscriber = sut.onParticipantRemoteMuteStatusChanged$.subscribe(spotlightUpdate => {
@@ -1050,11 +1050,11 @@ describe('ParticipantService', () => {
                 const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
                 const participantId = participant.id;
                 const pexipName = `pexip-name-${participantId}`;
-                const participantUpdated = ({
+                const participantUpdated = {
                     pexipDisplayName: pexipName,
                     uuid: pexipId,
                     isRemoteMuted: false
-                } as unknown) as ParticipantUpdated;
+                } as unknown as ParticipantUpdated;
 
                 let result: ParticipantModel = null;
                 const subscriber = sut.onParticipantHandRaisedStatusChanged$.subscribe(spotlightUpdate => {
@@ -1082,11 +1082,11 @@ describe('ParticipantService', () => {
                 const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
                 const participantId = participant.id;
                 const pexipName = `pexip-name-${participantId}`;
-                const participantUpdated = ({
+                const participantUpdated = {
                     pexipDisplayName: pexipName,
                     uuid: pexipId,
                     handRaised: true
-                } as unknown) as ParticipantUpdated;
+                } as unknown as ParticipantUpdated;
 
                 let result: ParticipantModel = null;
                 const subscriber = sut.onParticipantRemoteMuteStatusChanged$.subscribe(spotlightUpdate => {
@@ -1115,11 +1115,11 @@ describe('ParticipantService', () => {
                 const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
                 const participantId = participant.id;
                 const pexipName = `pexip-name-${participantId}`;
-                const participantUpdated = ({
+                const participantUpdated = {
                     pexipDisplayName: pexipName,
                     uuid: pexipId,
                     handRaised: true
-                } as unknown) as ParticipantUpdated;
+                } as unknown as ParticipantUpdated;
 
                 let result: ParticipantModel = null;
                 const subscriber = sut.onParticipantHandRaisedStatusChanged$.subscribe(spotlightUpdate => {
@@ -1145,11 +1145,11 @@ describe('ParticipantService', () => {
                 const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
                 const participantId = participant.id;
                 const pexipName = `pexip-name-${participantId}`;
-                const participantUpdated = ({
+                const participantUpdated = {
                     pexipDisplayName: pexipName,
                     uuid: pexipId,
                     handRaised: false
-                } as unknown) as ParticipantUpdated;
+                } as unknown as ParticipantUpdated;
 
                 let result: ParticipantModel = null;
                 const subscriber = sut.onParticipantHandRaisedStatusChanged$.subscribe(spotlightUpdate => {
