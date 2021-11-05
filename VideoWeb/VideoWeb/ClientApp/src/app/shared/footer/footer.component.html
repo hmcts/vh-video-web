@@ -36,7 +36,7 @@
             <div class="govuk-footer__meta-item">
                 <div>
                     <a class="link-container" aria-label="'footer.copyright-info-link-label' | translate" href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/">
-                        <span [ngClass]="hearingVenueIsInScotland ? 'govuk-footer__copyright-logo-scottish' : 'govuk-footer__copyright-logo'" role="presentation"></span>
+                        <span [ngClass]="(hearingVenueIsInScotland$ | async) ? 'govuk-footer__copyright-logo-scottish' : 'govuk-footer__copyright-logo'" role="presentation"></span>
                         <span class="govuk-footer__link">{{'footer.copyright' | translate }}</span>
                     </a>
                 </div>

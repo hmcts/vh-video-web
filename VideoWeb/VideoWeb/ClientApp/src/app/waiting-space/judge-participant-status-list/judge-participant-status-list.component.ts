@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
@@ -33,8 +33,7 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
     newStaffMemberDisplayName: string;
     isUserJudge: boolean;
     isStaffMember: boolean;
-    hearingVenueIsInScotland = false;
-    hearingVenueFlagsServiceSubscription$: Subscription;
+    hearingVenueIsInScotland$: Observable<boolean>;
 
     hearing: Hearing;
 
@@ -55,14 +54,11 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
         this.initParticipants();
         this.addSharedEventHubSubcribers();
-        this.hearingVenueFlagsServiceSubscription$ = this.hearingVenueFlagsService.hearingVenueIsScottish$.subscribe(
-            value => (this.hearingVenueIsInScotland = value)
-        );
+        this.hearingVenueIsInScotland$ = this.hearingVenueFlagsService.hearingVenueIsScottish$;
     }
 
     ngOnDestroy() {
         this.executeTeardown();
-        this.hearingVenueFlagsServiceSubscription$.unsubscribe();
     }
 
     initParticipants() {

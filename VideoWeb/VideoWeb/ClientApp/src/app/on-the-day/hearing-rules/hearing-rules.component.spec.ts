@@ -1,12 +1,12 @@
 import { convertToParamMap, Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
+import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { HearingRulesComponent } from './hearing-rules.component';
-import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
-import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
-import { BehaviorSubject } from 'rxjs';
+import { HearingRulesComponent } from './hearing-rules.component';
 
 describe('HearingRulesComponent', () => {
     let component: HearingRulesComponent;
@@ -57,13 +57,11 @@ describe('HearingRulesComponent', () => {
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.Declaration, conference.id]);
     });
 
-    it('returns true for hearingVenueIsInScotland when hearing venue is in scotland', () => {
+    it('returns true for hearingVenueIsInScotland when hearing venue is in scotland', done => {
         scottishHearingVenueSubject.next(true);
-        expect(component.hearingVenueIsInScotland).toBe(true);
-    });
-
-    it('unsubscribes on destroy', () => {
-        component.ngOnDestroy();
-        expect(component.hearingVenueFlagsServiceSubscription$.closed).toBeTruthy();
+        component.hearingVenueIsScottish$.subscribe(scottishVenueFlag => {
+            expect(scottishVenueFlag).toBe(true);
+            done();
+        });
     });
 });

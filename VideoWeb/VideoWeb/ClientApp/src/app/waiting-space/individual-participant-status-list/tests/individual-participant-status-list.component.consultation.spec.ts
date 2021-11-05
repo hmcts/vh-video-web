@@ -104,7 +104,9 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     it('returns true for hearingVenueIsInScotland when hearing venue is in scotland', () => {
         hearingVenueIsScottishSubject.next(true);
         component.ngOnInit();
-        expect(component.hearingVenueIsInScotland).toBe(true);
+        component.hearingVenueIsInScotland$.subscribe(isScottish => {
+            expect(isScottish).toBe(true);
+        });
     });
 
     it('should init properties and setup ringtone on init', async () => {

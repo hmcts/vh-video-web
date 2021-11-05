@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ParticipantResponse } from 'src/app/services/clients/api-client';
 import { VideoControlService } from 'src/app/services/conference/video-control.service';
@@ -43,8 +43,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     isMuteAll = false;
     conferenceId: string;
     readonly idPrefix = 'participants-panel';
-    hearingVenueIsInScotland = false;
-    hearingVenueFlagsServiceSubscription$: Subscription;
+    hearingVenueIsInScotland$: Observable<boolean>;
 
     videoCallSubscription$ = new Subscription();
     eventhubSubscription$ = new Subscription();
@@ -71,9 +70,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             this.setupEventhubSubscribers();
         });
 
-        this.hearingVenueFlagsServiceSubscription$ = this.hearingVenueFlagsService.hearingVenueIsScottish$.subscribe(
-            value => (this.hearingVenueIsInScotland = value)
-        );
+        this.hearingVenueIsInScotland$ = this.hearingVenueFlagsService.hearingVenueIsScottish$;
     }
 
     toggleMuteParticipantEventHandler(e: ToggleMuteParticipantEvent) {
@@ -101,7 +98,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.eventhubSubscription$.unsubscribe();
         this.participantsSubscription$.unsubscribe();
         this.resetAllWitnessTransferTimeouts();
-        this.hearingVenueFlagsServiceSubscription$.unsubscribe();
     }
 
     resetWitnessTransferTimeout(participantId: string) {

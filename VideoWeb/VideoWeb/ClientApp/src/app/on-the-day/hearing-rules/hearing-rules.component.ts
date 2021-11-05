@@ -1,21 +1,20 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { pageUrls } from 'src/app/shared/page-url.constants';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Observable } from 'rxjs';
 import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
-import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
-import { Logger } from 'src/app/services/logging/logger-base';
-import { Subscription } from 'rxjs';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
     selector: 'app-hearing-rules',
     templateUrl: './hearing-rules.component.html',
     styleUrls: ['./hearing-rules.component.scss']
 })
-export class HearingRulesComponent extends ParticipantStatusBaseDirective implements OnInit, OnDestroy {
+export class HearingRulesComponent extends ParticipantStatusBaseDirective implements OnInit {
     conferenceId: string;
-    hearingVenueIsInScotland = false;
-    hearingVenueFlagsServiceSubscription$: Subscription;
+    hearingVenueIsScottish$: Observable<boolean>;
 
     constructor(
         private router: Router,
@@ -30,13 +29,7 @@ export class HearingRulesComponent extends ParticipantStatusBaseDirective implem
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
 
-        this.hearingVenueFlagsServiceSubscription$ = this.hearingVenueFlagsService.hearingVenueIsScottish$.subscribe(
-            value => (this.hearingVenueIsInScotland = value)
-        );
-    }
-
-    ngOnDestroy() {
-        this.hearingVenueFlagsServiceSubscription$.unsubscribe();
+        this.hearingVenueIsScottish$ = this.hearingVenueFlagsService.hearingVenueIsScottish$;
     }
 
     goToDeclaration() {

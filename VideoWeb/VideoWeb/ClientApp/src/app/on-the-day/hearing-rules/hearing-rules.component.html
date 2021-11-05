@@ -7,9 +7,9 @@
   <div class="govuk-grid-column-one-quarter">
     <div class="image">
       <img
-        [src]="hearingVenueIsInScotland ? '/assets/images/scottish-crest-circle.png': '/assets/images/HmctsCrest.png'"
+        [src]="(hearingVenueIsScottish$ | async) ? '/assets/images/scottish-crest-circle.png': '/assets/images/HmctsCrest.png'"
         class="govuk-header__logotype-crest crest"
-        [attr.alt]="hearingVenueIsInScotland ? ('hearing-rules.scottish-crest' | translate): ('hearing-rules.hm-courts-and-tribunals-service-crest' | translate)"
+        [attr.alt]="(hearingVenueIsScottish$ | async) ? ('hearing-rules.scottish-crest' | translate): ('hearing-rules.hm-courts-and-tribunals-service-crest' | translate)"
       />
     </div>
   </div>

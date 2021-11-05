@@ -4,9 +4,9 @@
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-quarter vh-crest-column">
           <img
-            [src]="hearingVenueIsInScotland ? '/assets/images/scottish-crest-circle.png': '/assets/images/BluePanelIdent.png'"
+            [src]="(hearingVenueIsInScotland$ | async) ? '/assets/images/scottish-crest-circle.png': '/assets/images/BluePanelIdent.png'"
             class="govuk-header__logotype-crest govuk-!-margin-bottom-6"
-            [attr.alt]="hearingVenueIsInScotland ? ('introduction.scottish-crest' | translate): ('introduction.hm-courts-and-tribunals-service-crest' | translate)"
+            [attr.alt]="(hearingVenueIsInScotland$ | async) ? ('introduction.scottish-crest' | translate): ('introduction.hm-courts-and-tribunals-service-crest' | translate)"
           />
         </div>
         <div class="govuk-grid-column-three-quarters">

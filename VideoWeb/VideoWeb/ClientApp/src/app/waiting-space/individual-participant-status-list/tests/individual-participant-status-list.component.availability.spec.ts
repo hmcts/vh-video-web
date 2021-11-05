@@ -90,11 +90,6 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
         component.ngOnDestroy();
     });
 
-    it('unsubscribes on destroy', () => {
-        component.ngOnDestroy();
-        expect(component.hearingVenueFlagsServiceSubscription$.closed).toBeTruthy();
-    });
-
     const participantStatusTestCases = [
         { status: ParticipantStatus.Available, expected: 'individual-participant-status-list.available' },
         { status: ParticipantStatus.InConsultation, expected: 'individual-participant-status-list.unavailable' },

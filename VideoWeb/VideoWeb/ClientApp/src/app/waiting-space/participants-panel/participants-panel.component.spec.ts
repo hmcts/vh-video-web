@@ -215,12 +215,9 @@ describe('ParticipantsPanelComponent', () => {
 
     it('returns true for hearingVenueIsInScotland when hearing venue is in scotland', () => {
         scottishHearingVenueSubject.next(true);
-        expect(component.hearingVenueIsInScotland).toBe(true);
-    });
-
-    it('unsubscribes on destroy', () => {
-        component.ngOnDestroy();
-        expect(component.hearingVenueFlagsServiceSubscription$.closed).toBeTruthy();
+        component.hearingVenueIsInScotland$.subscribe(isScottish => {
+            expect(isScottish).toBe(true);
+        });
     });
 
     it('should get participant sorted list, the judge is first, then panel members and finally observers are the last one', fakeAsync(() => {

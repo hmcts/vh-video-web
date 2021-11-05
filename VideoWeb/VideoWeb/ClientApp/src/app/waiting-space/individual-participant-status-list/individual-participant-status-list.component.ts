@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ParticipantResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
@@ -17,8 +17,7 @@ import { WRParticipantStatusListDirective } from '../waiting-room-shared/wr-part
 })
 export class IndividualParticipantStatusListComponent extends WRParticipantStatusListDirective implements OnInit, OnDestroy {
     wingers: ParticipantResponse[];
-    hearingVenueIsInScotland = false;
-    hearingVenueFlagsServiceSubscription$ = new Subscription();
+    hearingVenueIsInScotland$: Observable<boolean>;
 
     constructor(
         protected consultationService: ConsultationService,
@@ -37,14 +36,11 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         this.initParticipants();
         this.addSharedEventHubSubcribers();
 
-        this.hearingVenueFlagsServiceSubscription$ = this.hearingVenueFlagsService.hearingVenueIsScottish$.subscribe(
-            value => (this.hearingVenueIsInScotland = value)
-        );
+        this.hearingVenueIsInScotland$ = this.hearingVenueFlagsService.hearingVenueIsScottish$;
     }
 
     ngOnDestroy(): void {
         this.executeTeardown();
-        this.hearingVenueFlagsServiceSubscription$.unsubscribe();
     }
 
     getParticipantStatusText(participant: ParticipantResponse): string {

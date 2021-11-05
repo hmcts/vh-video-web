@@ -130,11 +130,8 @@ describe('FooterComponent', () => {
 
     it('returns true for hearingVenueIsInScotland when hearing venue is in scotland', () => {
         hearingVenueIsScottishSubject.next(true);
-        expect(component.hearingVenueIsInScotland).toBe(true);
-    });
-
-    it('unsubscribes on destroy', () => {
-        component.ngOnDestroy();
-        expect(component.hearingVenueFlagsServiceSubscription$.closed).toBeTruthy();
+        component.hearingVenueIsInScotland$.subscribe(isScottish => {
+            expect(isScottish).toBe(true);
+        });
     });
 });
