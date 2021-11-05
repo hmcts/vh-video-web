@@ -4,9 +4,15 @@
 
     <div class="moj-header__logo">
 
-    <img role="presentation" id="header-logo-scot" class="moj-header__logotype-crest" *ngIf="hearingVenueIsScottish$ | async;else ukCrestSvg" src="/assets/images/scot-crest-white.png" height="40" [attr.alt]="'participants-panel.scottish-crest' | translate"/>
+      <ng-container
+       *ngIf="hearingVenueIsScottish$ | async; then sctsCrest; else hmctsCrest">
+      </ng-container>
 
-    <ng-template #ukCrestSvg>
+    <ng-template #sctsCrest>
+      <img role="presentation" id="header-logo-scot" class="moj-header__logotype-crest" src="/assets/images/scot-crest-white.png" height="40" [attr.alt]="'participants-panel.scottish-crest' | translate"/>
+    </ng-template>
+
+    <ng-template #hmctsCrest>
       <app-header-logo-svg></app-header-logo-svg>
     </ng-template>
 

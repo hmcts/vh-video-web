@@ -17,19 +17,17 @@
 
 .govuk-footer-background-hmcts {
   background-image: url('/assets/images/govuk-crest.png');
+  @media only screen and (-webkit-min-device-pixel-ratio: 2),
+    only screen and (min-resolution: 192dpi),
+    only screen and (min-resolution: 2dppx) {
+    background-image: url('/assets/images/govuk-crest-2x.png');
+  }
 }
 
 .govuk-footer-background-scts {
   background-image: url('/assets/images/scottish-crest-grey.png');
 }
 
-@media only screen and (-webkit-min-device-pixel-ratio: 2),
-  only screen and (min-resolution: 192dpi),
-  only screen and (min-resolution: 2dppx) {
-  .govuk-footer-background-hmcts {
-    background-image: url('/assets/images/govuk-crest-2x.png');
-  }
-}
 .govuk-footer__licence-description {
   margin-left: 5px;
 }
