@@ -59,6 +59,7 @@ export class VideoCallService {
 
     pexipAPI: PexipClient;
     streamModifiedSubscription: Subscription;
+    private _displayStream: MediaStream;
 
     constructor(
         private logger: Logger,
@@ -425,6 +426,8 @@ export class VideoCallService {
     async selectScreenWithMicrophone() {
         this.logger.info(`${this.loggerPrefix} mixing screen and microphone stream`);
         const displayStream = await this.userMediaService.selectScreenToShare();
+        // capture the original screen stream to stop sharing screen when the button is clicked
+        this._displayStream = displayStream;
         this.userMediaStreamService.activeMicrophoneStream$.pipe(take(1)).subscribe(micStream => {
             const mixStream = this.streamMixerService.mergeAudioStreams(displayStream, micStream);
             mixStream.addTrack(displayStream.getVideoTracks()[0]);
@@ -441,7 +444,14 @@ export class VideoCallService {
 
     stopScreenWithMicrophone() {
         this.logger.info(`${this.loggerPrefix} stopping mixed screen and microphone stream`);
-        this.pexipAPI.user_media_stream.getTracks().forEach(t => t.stop());
+        this._displayStream.getTracks().forEach(t => {
+            t.stop();
+        });
+        this.pexipAPI.user_media_stream.getTracks().forEach(t => {
+            if (t.readyState === 'live') {
+                t.stop();
+            }
+        });
         this.userMediaStreamService.currentStream$.pipe(take(1)).subscribe(currentStream => {
             this.pexipAPI.user_media_stream = currentStream;
             this.renegotiateCall();
