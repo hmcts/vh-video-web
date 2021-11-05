@@ -23,7 +23,6 @@ import { VhoQueryService } from './services/vho-query-service.service';
 import { TasksTableComponent } from './tasks-table/tasks-table.component';
 import { UnreadMessagesParticipantComponent } from './unread-messages-participant/unread-messages-participant.component';
 import { UnreadMessagesComponent } from './unread-messages/unread-messages.component';
-import { VenueListComponent } from './venue-list/venue-list.component';
 import { VhOfficerRoutingModule } from './vh-officer-routing.module';
 import { VhoChatComponent } from './vho-chat/vho-chat.component';
 import { VhoHearingListComponent } from './vho-hearing-list/vho-hearing-list.component';
@@ -43,7 +42,6 @@ import { CopyQuickLinkComponent } from './copy-quick-link/copy-quick-link.compon
         VhoChatComponent,
         ParticipantNetworkStatusComponent,
         MonitoringGraphComponent,
-        VenueListComponent,
         PendingTasksComponent,
         UnreadMessagesComponent,
         CommandCentreComponent,

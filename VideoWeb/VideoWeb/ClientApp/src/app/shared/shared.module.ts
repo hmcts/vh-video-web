@@ -49,6 +49,9 @@ import { SecurityConfigSetupService } from '../security/security-config-setup.se
 import { HeaderLogoSvgComponent } from './header-logo-svg/header-logo-svg.component';
 import { VideoFilterComponent } from './video-filter/video-filter.component';
 import { HyphenatePipe } from './pipes/hyphenate.pipe';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { VenueListComponent } from './venue-list/venue-list.component';
+import { VhoQueryService } from '../vh-officer/services/vho-query-service.service';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -76,7 +79,8 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         ToastrModule.forRoot({
             toastComponent: RoomClosingToastComponent
         }),
-        TranslateModule
+        TranslateModule,
+        NgSelectModule
     ],
     declarations: [
         HeaderComponent,
@@ -109,7 +113,8 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         HyphenatePipe,
         LoadingComponent,
         HeaderLogoSvgComponent,
-        VideoFilterComponent
+        VideoFilterComponent,
+        VenueListComponent
     ],
     providers: [
         { provide: Logger, useClass: LoggerService },
@@ -125,7 +130,8 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         ScreenHelper,
         TestLanguageService,
         DatePipe,
-        ParticipantPanelModelMapper
+        ParticipantPanelModelMapper,
+        VhoQueryService
     ],
     exports: [
         HeaderComponent,
@@ -154,7 +160,8 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         NgxDatePipe,
         HyphenatePipe,
         LoadingComponent,
-        VideoFilterComponent
+        VideoFilterComponent,
+        VenueListComponent
     ]
 })
 export class SharedModule {}
