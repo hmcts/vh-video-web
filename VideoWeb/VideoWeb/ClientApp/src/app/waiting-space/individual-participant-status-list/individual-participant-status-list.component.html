@@ -8,7 +8,7 @@
             </p>
         </div>
         <div class='govuk-grid-column-one-half vh-mb5'>
-            <img [src]="(hearingVenueIsInScotland$ | async) ? '/assets/images/scottish-crest-footer.png': '/assets/images/govuk-crest.png'"
+            <img [src]="(hearingVenueIsInScotland$ | async) ? '/assets/images/scottish-crest-grey.png': '/assets/images/govuk-crest.png'"
                  height='50'
                  class='govuk-header__logotype-crest'
                  [attr.alt]="(hearingVenueIsInScotland$ | async) ? ('individual-participant-status-list.scottish-crest' | translate): ('individual-participant-status-list.crest-icon-alt' | translate)"

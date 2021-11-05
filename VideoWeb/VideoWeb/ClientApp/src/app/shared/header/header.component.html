@@ -4,7 +4,11 @@
 
     <div class="moj-header__logo">
 
-    <app-header-logo-svg></app-header-logo-svg>
+    <img role="presentation" id="header-logo-scot" class="moj-header__logotype-crest" *ngIf="hearingVenueIsScottish$ | async;else ukCrestSvg" src="/assets/images/scot-crest-white.png" height="40" [attr.alt]="'participants-panel.scottish-crest' | translate"/>
+
+    <ng-template #ukCrestSvg>
+      <app-header-logo-svg></app-header-logo-svg>
+    </ng-template>
 
       <span class="moj-header__link moj-header__link--organisation-name" id="header-logo">
             {{'header.hm-courts' | translate}} &amp; {{'header.tribunals-service' | translate}}          

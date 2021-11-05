@@ -1,6 +1,6 @@
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, of, Subscription, throwError } from 'rxjs';
+import { BehaviorSubject, of, Subscription, throwError } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
@@ -82,6 +82,11 @@ describe('JudgeHearingListComponent', () => {
 
     afterEach(() => {
         component.ngOnDestroy();
+    });
+
+    it('re sets hearing venue flag to false ', () => {
+        component.ngOnInit();
+        expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(false);
     });
 
     it('should handle api error with error service when unable to retrieve hearings for judge', fakeAsync(() => {

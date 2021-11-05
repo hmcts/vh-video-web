@@ -54,6 +54,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
         });
         this.retrieveHearingsForUser();
         this.setupSubscribers();
+        this.hearingVenueFlagsService.setHearingVenueIsScottish(false);
         this.interval = setInterval(() => {
             this.retrieveHearingsForUser();
         }, 30000);

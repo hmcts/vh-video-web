@@ -1,5 +1,4 @@
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
-import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { JudgeHearingSummary } from 'src/app/shared/models/JudgeHearingSummary';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
@@ -8,23 +7,11 @@ import { JudgeHearingTableComponent } from './judge-hearing-table.component';
 describe('JudgeHearingTableComponent', () => {
     let component: JudgeHearingTableComponent;
     const testData = new ConferenceTestData();
-    let mockedHearingVenueFlagsService: HearingVenueFlagsService;
 
     beforeEach(() => {
-        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
-            'HearingVenueFlagsService',
-            ['setHearingVenueIsScottish'],
-            ['hearingVenueIsScottish$']
-        );
-
-        component = new JudgeHearingTableComponent(new MockLogger(), mockedHearingVenueFlagsService);
+        component = new JudgeHearingTableComponent(new MockLogger());
         component.conferences = testData.getTestData();
         component.ngOnInit();
-    });
-
-    it('re sets hearing venue flag to false ', () => {
-        component.ngOnInit();
-        expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(false);
     });
 
     it('should emit when conference has been selected', () => {
