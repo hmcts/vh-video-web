@@ -3,11 +3,14 @@
     <div class="govuk-!-margin-top-4">
       <div class="govuk-grid-column-one-third">
         <img
-          [src]="(hearingVenueIsInScotland$ | async) ? '/assets/images/scottish-crest-grey.png': '/assets/images/govuk-crest.png'"
-          src="/assets/images/govuk-crest.png"
-          height="50"
+          appCrestLogoImageSource
+          [sctsImageSource]="'/assets/images/scottish-crest-grey.png'"
+          [sctsAltText]=" ('judge-participant-status-list.scottish-crest' | translate)"
+          [hmctsImageSource]="'/assets/images/govuk-crest.png'"
+          [hmctsAltText]=" ('judge-participant-status-list.crest-alt' | translate)"
+          alt="" 
           class="govuk-header__logotype-crest"
-          [attr.alt]="(hearingVenueIsInScotland$ | async) ? ('judge-participant-status-list.scottish-crest' | translate): ('judge-participant-status-list.crest-alt' | translate)"
+          height="50"
         />
       </div>
 

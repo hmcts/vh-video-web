@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
 import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
@@ -13,7 +12,6 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 })
 export class HearingRulesComponent extends ParticipantStatusBaseDirective implements OnInit {
     conferenceId: string;
-    hearingVenueIsScottish$: Observable<boolean>;
 
     constructor(
         private router: Router,

@@ -5,9 +5,14 @@
             <ng-container *ngFor="let groupMember of johRoles">
                 <ng-container *ngIf="getMemberParticipantsByRole(groupMember).length > 0">
                     <div  class="language-icon">
-                        <img  class="small-crest" 
-                        [src]="(hearingVenueIsInScotland$ | async) ? '/assets/images/scot-crest-white.png': '/assets/images/UkGovCrestWhite.png'"
-                        [attr.alt]="'private-consultation-participants.crest-icon-alt' | translate" />                    
+                        <img  class="small-crest"
+                        appCrestLogoImageSource
+                        [sctsImageSource]="'/assets/images/scot-crest-white.png'"
+                        [sctsAltText]=" ('private-consultation-participants.crest-icon-alt' | translate)"
+                        [hmctsImageSource]="'/assets/images/UkGovCrestWhite.png'"
+                        [hmctsAltText]=" ('private-consultation-participants.crest-icon-alt' | translate)"
+                        alt="" 
+                        />                    
                     </div>
                     <div class="member-group">
                         <ng-container *ngFor="let participant of getMemberParticipantsByRole(groupMember); trackBy: trackParticipant">        

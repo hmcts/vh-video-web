@@ -1,7 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
@@ -13,7 +12,6 @@ import {
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
-import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { HearingRole } from '../../models/hearing-role-model';
 import { WRParticipantStatusListDirective } from '../../waiting-room-shared/wr-participant-list-shared.component';
@@ -27,7 +25,6 @@ import { ParticipantListItem } from '../participant-list-item';
 export class PrivateConsultationParticipantsComponent extends WRParticipantStatusListDirective implements OnInit, OnDestroy {
     @Input() roomLabel: string;
     participantCallStatuses = {};
-    hearingVenueIsInScotland$: Observable<boolean>;
 
     constructor(
         protected consultationService: ConsultationService,
@@ -35,8 +32,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         protected logger: Logger,
         protected videoWebService: VideoWebService,
         protected route: ActivatedRoute,
-        protected translateService: TranslateService,
-        protected hearingVenueFlagsService: HearingVenueFlagsService
+        protected translateService: TranslateService
     ) {
         super(consultationService, eventService, videoWebService, logger, translateService);
         this.loggerPrefix = '[PrivateConsultationParticipantsComponent] - ';
@@ -47,7 +43,6 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         this.initParticipants();
         this.setupSubscribers();
         this.setupInviteStatusSubscribers();
-        this.hearingVenueIsInScotland$ = this.hearingVenueFlagsService.hearingVenueIsScottish$;
     }
 
     ngOnDestroy() {

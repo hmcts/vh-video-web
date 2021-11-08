@@ -1,10 +1,10 @@
-import { fakeAsync, tick } from '@angular/core/testing';
+import { fakeAsync } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import {
     ConferenceResponse,
-    LoggedParticipantResponse,
     EndpointStatus,
+    LoggedParticipantResponse,
     ParticipantStatus,
     Role
 } from 'src/app/services/clients/api-client';
@@ -12,14 +12,11 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation.service';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { VideoWebService } from '../../services/api/video-web.service';
 import { Logger } from '../../services/logging/logger-base';
-import { JudgeParticipantStatusListComponent } from './judge-participant-status-list.component';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { HearingRole } from '../models/hearing-role-model';
-import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
-import { BehaviorSubject } from 'rxjs';
-import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
+import { JudgeParticipantStatusListComponent } from './judge-participant-status-list.component';
 
 describe('JudgeParticipantStatusListComponent', () => {
     const testData = new ConferenceTestData();
@@ -33,8 +30,6 @@ describe('JudgeParticipantStatusListComponent', () => {
     let activatedRoute: ActivatedRoute;
     const translateService = translateServiceSpy;
     let editedStaffMember;
-    let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
-    let hearingVenueIsScottishSubject: BehaviorSubject<boolean>;
 
     beforeAll(() => {
         consultationService = consultationServiceSpyFactory();
@@ -51,13 +46,6 @@ describe('JudgeParticipantStatusListComponent', () => {
     });
 
     beforeEach(() => {
-        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
-            'HearingVenueFlagsService',
-            ['setHearingVenueIsScottish'],
-            ['hearingVenueIsScottish$']
-        );
-        hearingVenueIsScottishSubject = new BehaviorSubject(false);
-        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'hearingVenueIsScottish$').and.returnValue(hearingVenueIsScottishSubject);
         conference = testData.getConferenceDetailNow();
         const participantObserverPanelMember = testData.getListOfParticipantsObserverAndPanelMembers();
         participantObserverPanelMember.forEach(x => conference.participants.push(x));
@@ -69,8 +57,7 @@ describe('JudgeParticipantStatusListComponent', () => {
             logger,
             videoWebService,
             activatedRoute,
-            translateService,
-            mockedHearingVenueFlagsService
+            translateService
         );
         component.conference = conference;
         component.ngOnInit();
@@ -80,14 +67,6 @@ describe('JudgeParticipantStatusListComponent', () => {
     afterEach(() => {
         jasmine.getEnv().allowRespy(true);
         component.ngOnDestroy();
-    });
-
-    it('returns true for hearingVenueIsInScotland when hearing venue is in scotland', done => {
-        hearingVenueIsScottishSubject.next(true);
-        component.hearingVenueIsInScotland$.subscribe(isScottish => {
-            expect(isScottish).toBe(true);
-            done();
-        });
     });
 
     it('should create', () => {
@@ -287,8 +266,7 @@ describe('JudgeParticipantStatusListComponent', () => {
             logger,
             videoWebService,
             activatedRoute,
-            translateService,
-            mockedHearingVenueFlagsService
+            translateService
         );
         component.conference = conference;
         component.ngOnInit();
