@@ -35,7 +35,7 @@ describe('UnloadDetectorService', () => {
         renderer2Mock = new Renderer2Mock();
         spyOn(renderer2Mock, 'listen').and.callThrough();
 
-        renderer2FactorySpy.createRenderer.withArgs(null, null).and.returnValue((renderer2Mock as unknown) as Renderer2);
+        renderer2FactorySpy.createRenderer.withArgs(null, null).and.returnValue(renderer2Mock as unknown as Renderer2);
     });
 
     describe('when on desktop', () => {

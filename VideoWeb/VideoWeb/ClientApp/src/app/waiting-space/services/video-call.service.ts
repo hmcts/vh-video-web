@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
+import { BROWSERS } from 'ngx-device-detector';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { skip, take, takeUntil } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ApiClient, HearingLayout, SharedParticipantRoom, StartHearingRequest } from 'src/app/services/clients/api-client';
 import { KinlyHeartbeatService } from 'src/app/services/conference/kinly-heartbeat.service';
+import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { StreamMixerService } from 'src/app/services/stream-mixer.service';
@@ -59,6 +61,7 @@ export class VideoCallService {
 
     pexipAPI: PexipClient;
     streamModifiedSubscription: Subscription;
+    private _displayStream: MediaStream;
 
     constructor(
         private logger: Logger,
@@ -68,7 +71,8 @@ export class VideoCallService {
         private configService: ConfigService,
         private kinlyHeartbeatService: KinlyHeartbeatService,
         private videoCallEventsService: VideoCallEventsService,
-        private streamMixerService: StreamMixerService
+        private streamMixerService: StreamMixerService,
+        private deviceTypeService: DeviceTypeService
     ) {
         this.preferredLayoutCache = new SessionStorage(this.PREFERRED_LAYOUT_KEY);
 
@@ -144,6 +148,14 @@ export class VideoCallService {
             this.pexipAPI.user_media_stream = currentStream;
             this.renegotiateCall();
         });
+
+        this.setEncoder();
+    }
+
+    private setEncoder() {
+        if (this.deviceTypeService.getBrowserName() === BROWSERS.FIREFOX || this.deviceTypeService.isIOS()) {
+            this.enableH264(false);
+        }
     }
 
     initTurnServer() {
@@ -425,6 +437,8 @@ export class VideoCallService {
     async selectScreenWithMicrophone() {
         this.logger.info(`${this.loggerPrefix} mixing screen and microphone stream`);
         const displayStream = await this.userMediaService.selectScreenToShare();
+        // capture the original screen stream to stop sharing screen when the button is clicked
+        this._displayStream = displayStream;
         this.userMediaStreamService.activeMicrophoneStream$.pipe(take(1)).subscribe(micStream => {
             const mixStream = this.streamMixerService.mergeAudioStreams(displayStream, micStream);
             mixStream.addTrack(displayStream.getVideoTracks()[0]);
@@ -441,7 +455,14 @@ export class VideoCallService {
 
     stopScreenWithMicrophone() {
         this.logger.info(`${this.loggerPrefix} stopping mixed screen and microphone stream`);
-        this.pexipAPI.user_media_stream.getTracks().forEach(t => t.stop());
+        this._displayStream.getTracks().forEach(t => {
+            t.stop();
+        });
+        this.pexipAPI.user_media_stream.getTracks().forEach(t => {
+            if (t.readyState === 'live') {
+                t.stop();
+            }
+        });
         this.userMediaStreamService.currentStream$.pipe(take(1)).subscribe(currentStream => {
             this.pexipAPI.user_media_stream = currentStream;
             this.renegotiateCall();
