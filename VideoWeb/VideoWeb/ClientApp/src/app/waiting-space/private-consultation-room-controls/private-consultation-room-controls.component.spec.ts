@@ -128,17 +128,32 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     });
 
     describe('canJoinHearingFromConsultation', () => {
-        const testCases: { shouldShow: boolean; newConferenceStatus: ConferenceStatus; participantStatus: ParticipantStatus }[] = [];
-        for (const conferenceStatus in ConferenceStatus) {
-            if (conferenceStatus) {
-                for (const participantStatus in ParticipantStatus) {
-                    if (participantStatus) {
-                        testCases.push({
-                            shouldShow:
-                                conferenceStatus === ConferenceStatus.InSession && participantStatus === ParticipantStatus.InConsultation,
-                            newConferenceStatus: <ConferenceStatus>conferenceStatus,
-                            participantStatus: <ParticipantStatus>participantStatus
-                        });
+        const testCases: {
+            isHost: Boolean;
+            shouldShow: boolean;
+            newConferenceStatus: ConferenceStatus;
+            participantStatus: ParticipantStatus;
+        }[] = [];
+        for (const isHost of [false, true]) {
+            for (const conferenceStatus of [
+                ConferenceStatus.InSession,
+                ConferenceStatus.Paused,
+                ConferenceStatus.NotStarted,
+                ConferenceStatus.Suspended
+            ]) {
+                if (conferenceStatus) {
+                    for (const participantStatus of [ParticipantStatus.InConsultation, ParticipantStatus.InHearing]) {
+                        if (participantStatus) {
+                            testCases.push({
+                                isHost: isHost,
+                                shouldShow:
+                                    conferenceStatus === ConferenceStatus.InSession &&
+                                    participantStatus === ParticipantStatus.InConsultation &&
+                                    isHost,
+                                newConferenceStatus: <ConferenceStatus>conferenceStatus,
+                                participantStatus: <ParticipantStatus>participantStatus
+                            });
+                        }
                     }
                 }
             }
@@ -147,10 +162,13 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         for (const testCase of testCases) {
             it(`should ${testCase.shouldShow ? '' : 'NOT'} show the join hearing button when the new status is ${
                 testCase.newConferenceStatus
-            } and the participant status is ${testCase.participantStatus}`, fakeAsync(() => {
+            } and the participant status is ${testCase.participantStatus} and the participant is ${
+                testCase.isHost ? '' : 'NOT'
+            } a host`, fakeAsync(() => {
                 // Arrange
                 onCurrentConferenceStatusSubject.next({ oldStatus: null, newStatus: testCase.newConferenceStatus });
                 component.participant.status = testCase.participantStatus;
+                spyOnProperty(component, 'isHost').and.returnValue(testCase.isHost);
 
                 // Act
                 const shouldShow = component.canJoinHearingFromConsultation;
