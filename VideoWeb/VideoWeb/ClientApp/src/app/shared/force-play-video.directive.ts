@@ -24,14 +24,6 @@ export class ForcePlayVideoDirective implements AfterViewInit {
         this.videoElement.play();
 
         setTimeout(() => {
-            const child = this.renderer.createElement('p') as HTMLParagraphElement;
-            child.style.color = 'white';
-            child.innerHTML = `${this.videoElement.width}x${this.videoElement.height} and ${this.videoElement.videoWidth}x${
-                this.videoElement.videoHeight
-            } and ${(this.videoElement.srcObject as MediaStream)?.getVideoTracks()[0]?.label}`;
-
-            this.videoElement.parentElement.appendChild(child);
-
             this.videoElement.play();
         }, 5000);
     }
@@ -43,6 +35,7 @@ export class ForcePlayVideoDirective implements AfterViewInit {
         this.renderer.setAttribute(
             this.videoElement,
             'poster',
+            // TODO: REMOVE
             'https://i.guim.co.uk/img/media/f1459b35b58255f2ee15e63e34e3b04a07e8825e/296_0_1328_797/master/1328.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=9a2675dd0648b61c2ce4f9021f9ad7e7'
         );
 
