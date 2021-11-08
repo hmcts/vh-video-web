@@ -1,6 +1,5 @@
 import { Directive, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ComponentStore } from '@ngrx/component-store';
 import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
@@ -38,7 +37,6 @@ import { Participant } from 'src/app/shared/models/participant';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { Room } from 'src/app/shared/models/room';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { IConferenceParticipantsStatus } from '../models/conference-participants-status';
 import { HearingRole } from '../models/hearing-role-model';
 import {
     CallError,
@@ -53,6 +51,7 @@ import { PrivateConsultationRoomControlsComponent } from '../private-consultatio
 import { ConsultationInvitation, ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
+import { ParticipantRemotemuteStoreService } from '../services/participant-remotemute-store.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 
@@ -124,7 +123,7 @@ export abstract class WaitingRoomBaseDirective {
         protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService,
         protected consultationInvitiationService: ConsultationInvitationService,
-        protected store: ComponentStore<IConferenceParticipantsStatus>
+        protected store: ParticipantRemotemuteStoreService
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;
@@ -132,7 +131,6 @@ export abstract class WaitingRoomBaseDirective {
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
         this.errorCount = 0;
-        this.store.setState({});
     }
 
     isParticipantInCorrectWaitingRoomState(): boolean {

@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ComponentStore } from '@ngrx/component-store';
 import { TranslateService } from '@ngx-translate/core';
 import { merge, Subject, Subscription } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
@@ -25,11 +24,11 @@ import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-map
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
-import { IConferenceParticipantsStatus } from '../models/conference-participants-status';
 import { CallError } from '../models/video-call-models';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
+import { ParticipantRemotemuteStoreService } from '../services/participant-remotemute-store.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
@@ -37,8 +36,7 @@ import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-ba
 @Component({
     selector: 'app-judge-waiting-room',
     templateUrl: './judge-waiting-room.component.html',
-    styleUrls: ['./judge-waiting-room.component.scss', '../waiting-room-global-styles.scss'],
-    providers: [ComponentStore]
+    styleUrls: ['./judge-waiting-room.component.scss', '../waiting-room-global-styles.scss']
 })
 export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
     private readonly loggerPrefixJudge = '[Judge WR] -';
@@ -89,7 +87,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected videoControlCacheService: VideoControlCacheService,
         private unloadDetectorService: UnloadDetectorService,
         private hearingLayoutService: HearingLayoutService,
-        store: ComponentStore<IConferenceParticipantsStatus>
+        store: ParticipantRemotemuteStoreService
     ) {
         super(
             route,
