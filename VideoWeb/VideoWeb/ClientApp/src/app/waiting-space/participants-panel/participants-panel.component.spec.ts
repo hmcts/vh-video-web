@@ -6,12 +6,11 @@ import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Guid } from 'guid-typescript';
 import { MockComponent, MockDirective, MockPipe, ngMocks } from 'ng-mocks';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { VideoControlService } from 'src/app/services/conference/video-control.service';
 import { EventsService } from 'src/app/services/events.service';
-import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
@@ -86,8 +85,6 @@ describe('ParticipantsPanelComponent', () => {
     let hyphenateSpy: jasmine.Spy;
     let translateSpy: jasmine.Spy;
     let lowerCaseSpy: jasmine.Spy;
-    let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
-    const scottishHearingVenueSubject = new BehaviorSubject(false);
 
     beforeAll(() => {
         jasmine.getEnv().allowRespy(true);
@@ -100,11 +97,6 @@ describe('ParticipantsPanelComponent', () => {
         hyphenateSpy = jasmine.createSpy('transform').and.callThrough();
         translateSpy = jasmine.createSpy('transform').and.callThrough();
         lowerCaseSpy = jasmine.createSpy('transform').and.callThrough();
-        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
-            'HearingVenueFlagsService',
-            ['setHearingVenueIsScottish'],
-            ['hearingVenueIsScottish$']
-        );
 
         videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', [
             'setSpotlightStatus',
@@ -121,9 +113,6 @@ describe('ParticipantsPanelComponent', () => {
             'mapFromParticipantModel',
             'mapFromParticipantUserResponseArray'
         ]);
-        spyOnProperty(mockedHearingVenueFlagsService, 'hearingVenueIsScottish$').and.returnValue(
-            scottishHearingVenueSubject.asObservable()
-        );
         spyOnProperty(participantServiceSpy, 'onParticipantsUpdated$').and.returnValue(participantsUpdatedSubject.asObservable());
 
         await TestBed.configureTestingModule({
@@ -173,10 +162,6 @@ describe('ParticipantsPanelComponent', () => {
                 {
                     provide: ParticipantPanelModelMapper,
                     useValue: participantPanelModelMapperSpy
-                },
-                {
-                    provide: HearingVenueFlagsService,
-                    useValue: mockedHearingVenueFlagsService
                 }
             ]
         }).compileComponents();
@@ -211,13 +196,6 @@ describe('ParticipantsPanelComponent', () => {
 
     afterEach(() => {
         component.ngOnDestroy();
-    });
-
-    it('returns true for hearingVenueIsInScotland when hearing venue is in scotland', () => {
-        scottishHearingVenueSubject.next(true);
-        component.hearingVenueIsInScotland$.subscribe(isScottish => {
-            expect(isScottish).toBe(true);
-        });
     });
 
     it('should get participant sorted list, the judge is first, then panel members and finally observers are the last one', fakeAsync(() => {

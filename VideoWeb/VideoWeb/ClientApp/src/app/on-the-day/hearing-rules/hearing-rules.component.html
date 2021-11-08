@@ -7,9 +7,12 @@
   <div class="govuk-grid-column-one-quarter">
     <div class="image">
       <img
-        [src]="(hearingVenueIsScottish$ | async) ? '/assets/images/scottish-crest-circle.png': '/assets/images/HmctsCrest.png'"
+        appCrestLogoImageSource
+        [sctsImageSource]="'/assets/images/scottish-crest-circle.png'"
+        [sctsAltText]=" ('hearing-rules.scottish-crest' | translate)"
+        [hmctsImageSource]="'/assets/images/HmctsCrest.png'"
+        [hmctsAltText]=" ('hearing-rules.hm-courts-and-tribunals-service-crest' | translate)"
         class="govuk-header__logotype-crest crest"
-        [attr.alt]="(hearingVenueIsScottish$ | async) ? ('hearing-rules.scottish-crest' | translate): ('hearing-rules.hm-courts-and-tribunals-service-crest' | translate)"
       />
     </div>
   </div>

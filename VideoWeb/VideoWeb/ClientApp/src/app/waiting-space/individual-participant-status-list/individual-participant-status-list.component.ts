@@ -6,7 +6,6 @@ import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ParticipantResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
-import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { WRParticipantStatusListDirective } from '../waiting-room-shared/wr-participant-list-shared.component';
 
@@ -25,8 +24,7 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         protected logger: Logger,
         protected videoWebService: VideoWebService,
         protected route: ActivatedRoute,
-        protected translateService: TranslateService,
-        private hearingVenueFlagsService: HearingVenueFlagsService
+        protected translateService: TranslateService
     ) {
         super(consultationService, eventService, videoWebService, logger, translateService);
     }
@@ -35,8 +33,6 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
         this.initParticipants();
         this.addSharedEventHubSubcribers();
-
-        this.hearingVenueIsInScotland$ = this.hearingVenueFlagsService.hearingVenueIsScottish$;
     }
 
     ngOnDestroy(): void {

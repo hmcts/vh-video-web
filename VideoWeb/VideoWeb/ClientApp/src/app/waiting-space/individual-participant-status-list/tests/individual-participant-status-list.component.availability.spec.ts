@@ -14,11 +14,8 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation.service';
 import { eventsServiceSpy, participantStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
-import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
-import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
-import { BehaviorSubject } from 'rxjs';
+import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
 
 describe('IndividualParticipantStatusListComponent Participant Status and Availability', () => {
     let component: IndividualParticipantStatusListComponent;
@@ -34,9 +31,6 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
     let activatedRoute: ActivatedRoute;
     let logged: LoggedParticipantResponse;
     const translateService = translateServiceSpy;
-
-    let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
-    const scottishHearingVenueSubject = new BehaviorSubject(false);
 
     beforeAll(() => {
         conference = new ConferenceTestData().getConferenceDetailFuture();
@@ -55,12 +49,6 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
     });
 
     beforeEach(() => {
-        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
-            'HearingVenueFlagsService',
-            ['setHearingVenueIsScottish'],
-            ['hearingVenueIsScottish$']
-        );
-        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'hearingVenueIsScottish$').and.returnValue(scottishHearingVenueSubject);
         translateService.instant.calls.reset();
         activatedRoute = <any>{
             snapshot: { data: { loggedUser: logged } }
@@ -73,8 +61,7 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
             logger,
             videoWebService,
             activatedRoute,
-            translateService,
-            mockedHearingVenueFlagsService
+            translateService
         );
         conference = new ConferenceTestData().getConferenceDetailFuture();
         component.conference = conference;

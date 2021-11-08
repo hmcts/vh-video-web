@@ -14,11 +14,8 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation.service';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-security.service';
-import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
-import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
-import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
-import { BehaviorSubject } from 'rxjs';
+import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
 
 describe('IndividualParticipantStatusListComponent consultations', () => {
     let component: IndividualParticipantStatusListComponent;
@@ -40,8 +37,6 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     let logged: LoggedParticipantResponse;
     let activatedRoute: ActivatedRoute;
     const translateService = translateServiceSpy;
-    let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
-    let hearingVenueIsScottishSubject: BehaviorSubject<boolean>;
 
     beforeAll(() => {
         oidcSecurityService = mockOidcSecurityService;
@@ -58,13 +53,6 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     });
 
     beforeEach(() => {
-        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
-            'HearingVenueFlagsService',
-            ['setHearingVenueIsScottish'],
-            ['hearingVenueIsScottish$']
-        );
-        hearingVenueIsScottishSubject = new BehaviorSubject(false);
-        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'hearingVenueIsScottish$').and.returnValue(hearingVenueIsScottishSubject);
         conference = new ConferenceTestData().getConferenceDetailFuture();
         conference.participants.forEach(p => {
             p.status = ParticipantStatus.Available;
@@ -87,8 +75,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
             logger,
             videoWebService,
             activatedRoute,
-            translateService,
-            mockedHearingVenueFlagsService
+            translateService
         );
 
         component.conference = conference;
@@ -99,14 +86,6 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
 
     afterEach(() => {
         component.ngOnDestroy();
-    });
-
-    it('returns true for hearingVenueIsInScotland when hearing venue is in scotland', () => {
-        hearingVenueIsScottishSubject.next(true);
-        component.ngOnInit();
-        component.hearingVenueIsInScotland$.subscribe(isScottish => {
-            expect(isScottish).toBe(true);
-        });
     });
 
     it('should init properties and setup ringtone on init', async () => {
