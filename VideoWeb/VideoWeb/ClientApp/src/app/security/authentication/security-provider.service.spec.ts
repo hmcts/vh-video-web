@@ -30,8 +30,8 @@ describe('SecurityServiceProviderService', () => {
 
         service = new SecurityServiceProvider(
             securityConfigSetupServiceSpy,
-            quickLinkSecurityServiceSpy as unknown as QuickLinkSecurityService,
-            oidcSecurityServiceSpy as unknown as OidcSecurityService
+            (quickLinkSecurityServiceSpy as unknown) as QuickLinkSecurityService,
+            (oidcSecurityServiceSpy as unknown) as OidcSecurityService
         );
     });
 
