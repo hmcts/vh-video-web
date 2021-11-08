@@ -110,6 +110,7 @@ describe('VenueListComponent', () => {
         expect(result[1].courtsRooms[1].selected).toBeTrue();
     }));
     it('should update filter records with select options from filter in storage', fakeAsync(() => {
+        const currentStorage = roomSessionStorage.get();
         component.selectedVenues = selectedJudgeNames;
         venueAccounts[0].courtsRooms[0].selected = false;
         venueAccounts[1].courtsRooms[0].selected = false;
@@ -130,6 +131,7 @@ describe('VenueListComponent', () => {
         expect(result[1].courtsRooms[0].courtRoom).toBe('Room 01');
         expect(result[1].courtsRooms[0].selected).toBeFalse();
         expect(result[1].courtsRooms[1].selected).toBeTrue();
+        roomSessionStorage.set(currentStorage);
     }));
     it('should not get court rooms accounts if no venues selected', fakeAsync(() => {
         component.selectedVenues = null;
