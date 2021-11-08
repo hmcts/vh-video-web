@@ -55,8 +55,12 @@ describe('MediaStreamService', () => {
             ['filterOn', 'filterOn$']
         );
         const filterStreamTracks = [];
-        filterStreamTracks.push(jasmine.createSpyObj<MediaStreamTrack>(['stop']));
-        filterStreamTracks.push(jasmine.createSpyObj<MediaStreamTrack>(['stop']));
+        filterStreamTracks.push(
+            jasmine.createSpyObj<MediaStreamTrack>(['stop'])
+        );
+        filterStreamTracks.push(
+            jasmine.createSpyObj<MediaStreamTrack>(['stop'])
+        );
         filterStream = jasmine.createSpyObj<MediaStream>(['getTracks']);
         filterStream.getTracks.and.returnValue(filterStreamTracks);
 
@@ -78,9 +82,15 @@ describe('MediaStreamService', () => {
         it('should call the constructor for media stream and pass the tracks when they are provided', () => {
             // Arrange
             const tracks = [];
-            tracks.push(jasmine.createSpyObj<MediaStreamTrack>(['stop']));
-            tracks.push(jasmine.createSpyObj<MediaStreamTrack>(['stop']));
-            tracks.push(jasmine.createSpyObj<MediaStreamTrack>(['stop']));
+            tracks.push(
+                jasmine.createSpyObj<MediaStreamTrack>(['stop'])
+            );
+            tracks.push(
+                jasmine.createSpyObj<MediaStreamTrack>(['stop'])
+            );
+            tracks.push(
+                jasmine.createSpyObj<MediaStreamTrack>(['stop'])
+            );
 
             // Act
             sut.initialiseNewStream(tracks);

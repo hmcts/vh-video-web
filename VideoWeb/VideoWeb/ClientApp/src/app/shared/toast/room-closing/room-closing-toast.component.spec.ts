@@ -40,7 +40,11 @@ describe('RoomClosingToastComponent', () => {
             onActivateTick: false,
             newestOnTop: false
         };
-        const toastRef = new ToastRef(new OverlayRef(jasmine.createSpyObj<BasePortalHost>('BasePortalHost', ['detach'])));
+        const toastRef = new ToastRef(
+            new OverlayRef(
+                jasmine.createSpyObj<BasePortalHost>('BasePortalHost', ['detach'])
+            )
+        );
         toastPackage = new ToastPackage(1, config, 'tast toast', 'test', 'test', toastRef);
 
         // create ClockService
