@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -30,12 +31,27 @@ namespace VideoWeb.Extensions
             var eventhubPath = videoHearingServicesConfiguration.EventHubPath;
             var internalEventSecret = Convert.FromBase64String(videoHearingServicesConfiguration.InternalEventSecret);
 
+            serviceCollection.AddSingleton<RsaSecurityKey>(provider => {
+                // It's required to register the RSA key with depedency injection.
+                // If you don't do this, the RSA instance will be prematurely disposed.
+
+                RSA rsa = RSA.Create();
+                rsa.ImportRSAPublicKey(
+                    source: Convert.FromBase64String(quickLinksConfiguration.JwtProviderSecret),
+                    bytesRead: out int _
+                );
+
+                return new RsaSecurityKey(rsa);
+            });
+
+
             var providerSchemes = new List<IProviderSchemes>
             {
                 new VhAadScheme(azureAdConfiguration, eventhubPath),
                 new EJudiciaryScheme(eventhubPath, eJudAdConfiguration),
-                new QuickLinksScheme(quickLinksConfiguration, eventhubPath)
+                new QuickLinksScheme(quickLinksConfiguration, eventhubPath, serviceCollection)
             };
+
 
             var authenticationBuilder = serviceCollection.AddAuthentication(options =>
                 {
