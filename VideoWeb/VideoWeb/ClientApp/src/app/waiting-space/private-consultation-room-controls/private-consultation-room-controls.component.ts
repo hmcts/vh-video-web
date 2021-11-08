@@ -58,7 +58,9 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
 
     get canJoinHearingFromConsultation(): boolean {
         return (
-            this.conferenceStatus?.newStatus === ConferenceStatus.InSession && this.participant?.status === ParticipantStatus.InConsultation
+            this.conferenceStatus?.newStatus === ConferenceStatus.InSession &&
+            this.participant?.status === ParticipantStatus.InConsultation &&
+            this.isHost
         );
     }
 
