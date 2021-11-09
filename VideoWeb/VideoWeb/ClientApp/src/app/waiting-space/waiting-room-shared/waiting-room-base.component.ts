@@ -88,6 +88,7 @@ export abstract class WaitingRoomBaseDirective {
     displayStartPrivateConsultationModal: boolean;
     displayJoinPrivateConsultationModal: boolean;
     conferenceStartedBy: string;
+    shouldUpdateHostShowVideo = false;
 
     panelTypes = ['Participants', 'Chat'];
     panelStates = {
@@ -1074,6 +1075,7 @@ export abstract class WaitingRoomBaseDirective {
             this.showVideo = false;
             this.showConsultationControls = false;
             this.isPrivateConsultation = false;
+            this.shouldUpdateHostShowVideo = false;
             return;
         }
 
@@ -1125,7 +1127,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     shouldCurrentUserJoinHearing(): boolean {
-        return !this.isHost() || this.participant.status === ParticipantStatus.InHearing;
+        return !this.isHost() || this.participant.status === ParticipantStatus.InHearing || this.shouldUpdateHostShowVideo;
     }
 
     isHost(): boolean {

@@ -426,6 +426,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         await component.joinHearingInSession();
 
         expect(videoCallService.joinHearingInSession).toHaveBeenCalledWith(component.conferenceId, component.participant.id);
+        expect(component.shouldUpdateHostShowVideo).toBeTrue();
     });
 
     it('should continue with no recording when judge dismisses the audio recording alert mid hearing', async () => {
@@ -651,6 +652,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         // Assert
         expect(component.displayConfirmStartHearingPopup).toBeFalsy();
         expect(videoCallService.startHearing).toHaveBeenCalledOnceWith(hearingId, hearingLayout);
+        expect(component.shouldUpdateHostShowVideo).toBeTrue();
     }));
 
     it('should not enable IM when hearing has not been initalised', () => {
@@ -692,6 +694,15 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.conference.participants.find(p => p.role === Role.Judge).status).toBe(ParticipantStatus.Available);
         expect(component.conferenceStartedBy).toBe(null);
     }));
+
+    it('should set shouldUpdateHostShowVideo to false when participant not connecting to pexip', async () => {
+        component.shouldUpdateHostShowVideo = true;
+        component.connected = false;
+
+        component.updateShowVideo();
+
+        expect(component.shouldUpdateHostShowVideo).toBeFalse();
+    });
 
     it('should not pull the STAFFMEMBER in to the hearing when STAFFMEMBER is in Waiting Room and hearing started by the JUDGE', () => {
         component.ngOnInit();
