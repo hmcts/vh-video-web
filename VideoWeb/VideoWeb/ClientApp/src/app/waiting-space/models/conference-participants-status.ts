@@ -1,5 +1,5 @@
 export interface IConferenceParticipantsStatus {
-    [participantId: string]: IParticipatRemoteMuteStatus
+    [participantId: string]: IParticipatRemoteMuteStatus;
 }
 
 export interface IParticipatRemoteMuteStatus {
