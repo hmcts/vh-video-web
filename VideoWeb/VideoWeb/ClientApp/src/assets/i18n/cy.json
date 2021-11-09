@@ -1066,6 +1066,8 @@
   },
   "venue-list": {
     "title": "Dewis eich gwrandawiadau",
+    "selection-default-text": "Dewis rhestr",
+    "selection-button-text": "Gweld gwrandawiadau",
     "label": "Enw'r lleoliad {{name}}",
     "allocation-list-label": "Rhestr lleoliadau"
   },

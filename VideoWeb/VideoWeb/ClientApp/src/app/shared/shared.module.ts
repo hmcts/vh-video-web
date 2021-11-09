@@ -49,6 +49,9 @@ import { SecurityConfigSetupService } from '../security/security-config-setup.se
 import { HeaderLogoSvgComponent } from './header-logo-svg/header-logo-svg.component';
 import { VideoFilterComponent } from './video-filter/video-filter.component';
 import { HyphenatePipe } from './pipes/hyphenate.pipe';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { VenueListComponent } from './venue-list/venue-list.component';
+import { VhoQueryService } from '../vh-officer/services/vho-query-service.service';
 import { CrestLogoImageSourceDirective } from './directives/crest-logo-image-source.directive';
 
 export function getSettings(configService: ConfigService) {
@@ -77,7 +80,8 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         ToastrModule.forRoot({
             toastComponent: RoomClosingToastComponent
         }),
-        TranslateModule
+        TranslateModule,
+        NgSelectModule
     ],
     declarations: [
         HeaderComponent,
@@ -111,6 +115,7 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         LoadingComponent,
         HeaderLogoSvgComponent,
         VideoFilterComponent,
+        VenueListComponent,
         CrestLogoImageSourceDirective
     ],
     providers: [
@@ -127,7 +132,8 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         ScreenHelper,
         TestLanguageService,
         DatePipe,
-        ParticipantPanelModelMapper
+        ParticipantPanelModelMapper,
+        VhoQueryService
     ],
     exports: [
         HeaderComponent,
@@ -157,6 +163,7 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         HyphenatePipe,
         LoadingComponent,
         VideoFilterComponent,
+        VenueListComponent,
         CrestLogoImageSourceDirective
     ]
 })

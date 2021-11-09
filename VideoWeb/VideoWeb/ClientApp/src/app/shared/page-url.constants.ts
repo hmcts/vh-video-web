@@ -23,6 +23,7 @@ export const pageUrls = {
     // Staff Member
     StaffMemberHearingList: 'staff-member/hearing-list',
     StaffMemberWaitingRoom: 'staff-member/waiting-room',
+    StaffMemberHearingSelection: 'staff-member/hearing-selection',
 
     // participant
     ParticipantHearingList: 'participant/hearing-list',
