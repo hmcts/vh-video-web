@@ -16,7 +16,7 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("hearing-venues")]
-    [Authorize(AppRoles.VhOfficerRole)]
+    [Authorize(AppRoles.VenueManagementRole)]
     public class VenuesController : Controller
     {
         private readonly ILogger<VenuesController> _logger;

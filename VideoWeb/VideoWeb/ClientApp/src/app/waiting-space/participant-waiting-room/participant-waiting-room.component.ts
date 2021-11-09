@@ -23,6 +23,7 @@ import { ConsultationInvitationService } from '../services/consultation-invitati
 import { take, takeUntil } from 'rxjs/operators';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -57,7 +58,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         protected translateService: TranslateService,
         protected consultationInvitiationService: ConsultationInvitationService,
         private unloadDetectorService: UnloadDetectorService,
-        protected store: ParticipantRemoteMuteStoreService
+        protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
+        protected hearingVenueFlagsService: HearingVenueFlagsService
     ) {
         super(
             route,
@@ -75,7 +77,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             roomClosingToastrService,
             clockService,
             consultationInvitiationService,
-            store
+            participantRemoteMuteStoreService,
+            hearingVenueFlagsService
         );
     }
 

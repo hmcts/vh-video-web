@@ -17,32 +17,50 @@
         </div>
     </div>
 
-    <div class="panel-container-list participants-grid" id="panelList">
-        <ng-container *ngFor="let participant of participants">
-            <!-- Column 1 -->
-            <div [class]="{ yellow: participant.hasSpotlight(), red: participant.isDisconnected() }" appTooltip
-                [isDesktopOnly]=false [text]="getPanelRowTooltipText(participant)"
-                [colour]="getPanelRowTooltipColour(participant)">
-                <span *ngIf="participant.isJudge">
-                    <img src="/assets/images/UkGovCrestWhite.png" class="panel-icon panel-icon-crest"
-                        [attr.alt]="'participants-panel.crest' | translate" />
-                    <br />
-                </span>
-                <span *ngIf="isEndpoint(participant)">
-                    <span class="far fa-webcam type-icon"> </span>
-                    <br />
-                </span>
-                <span *ngIf="isLinkedParticipantAndAnInterpreter(participant)">
-                    <span class="fas fa-language type-icon"> </span>
-                    <br />
-                </span>
-                <span *ngIf="participant.isJudicialOfficeHolder">
-                    <img src="/assets/images/UkGovCrestWhite.png" class="panel-icon panel-icon-crest"
-                        [attr.alt]="'participants-panel.crest' | translate" />
-                    <br />
-                </span>
-                <span class="wrap-anywhere" innerHtml="{{ participant.displayName | MultiLinePipe }}"></span>
-            </div>
+  <div class="panel-container-list participants-grid" id="panelList">
+    <ng-container *ngFor="let participant of participants">
+      <!-- Column 1 -->
+      <div
+        [class]="{ yellow: participant.hasSpotlight(), red: participant.isDisconnected() }"
+        appTooltip
+        [isDesktopOnly]=false
+        [text]="getPanelRowTooltipText(participant)"
+        [colour]="getPanelRowTooltipColour(participant)"
+      >
+        <span *ngIf="participant.isJudge">
+          <img
+            appCrestLogoImageSource
+            [sctsImageSource]="'/assets/images/scot-crest-white.png'"
+            [sctsAltText]=" ('participants-panel.scottish-crest' | translate)"
+            [hmctsImageSource]="'/assets/images/UkGovCrestWhite.png'"
+            [hmctsAltText]=" ('participants-panel.crest' | translate)"
+            class="panel-icon panel-icon-crest"
+            alt=""
+          />
+          <br />
+        </span>
+        <span *ngIf="isEndpoint(participant)">
+          <span class="far fa-webcam type-icon"> </span>
+          <br />
+        </span>
+        <span *ngIf="isLinkedParticipantAndAnInterpreter(participant)">
+          <span class="fas fa-language type-icon"> </span>
+          <br />
+        </span>
+        <span *ngIf="participant.isJudicialOfficeHolder">
+          <img
+            appCrestLogoImageSource
+            [sctsImageSource]="'/assets/images/scot-crest-white.png'"
+            [sctsAltText]=" ('participants-panel.scottish-crest' | translate)"
+            [hmctsImageSource]="'/assets/images/UkGovCrestWhite.png'"
+            [hmctsAltText]=" ('participants-panel.crest' | translate)"
+            class="panel-icon panel-icon-crest"
+            alt=""
+          />
+          <br />
+        </span>
+        <span class="wrap-anywhere" innerHtml="{{ participant.displayName | MultiLinePipe }}"></span>
+      </div>
 
             <ng-container *ngIf="!isParticipantDisconnected(participant); else participantDisconnected">
                 <!-- Column 2 -->

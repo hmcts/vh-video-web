@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { pageUrls } from 'src/app/shared/page-url.constants';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
-import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
     selector: 'app-hearing-rules',

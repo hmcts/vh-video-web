@@ -31,7 +31,8 @@ namespace VideoWeb.Mappings
                 ClosedDateTime = conference.ClosedDateTime,
                 ScheduledDateTime = conference.ScheduledDateTime,
                 Participants = conference.Participants.Select(_participantForHostResponseMapper.Map).ToList(),
-                NumberOfEndpoints = conference.NumberOfEndpoints
+                NumberOfEndpoints = conference.NumberOfEndpoints,
+                HearingVenueIsScottish = conference.HearingVenueIsScottish
             };
         }
     }

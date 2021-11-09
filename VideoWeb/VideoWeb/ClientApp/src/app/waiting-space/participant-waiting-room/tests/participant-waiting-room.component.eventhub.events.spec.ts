@@ -18,6 +18,7 @@ import {
     heartbeatModelMapper,
     initAllWRDependencies,
     logger,
+    mockedHearingVenueFlagsService,
     notificationSoundsService,
     notificationToastrService,
     roomClosingToastrService,
@@ -69,7 +70,8 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
             translateService,
             consultationInvitiationService,
             unloadDetectorServiceSpy,
-            participantRemoteMuteStoreServiceSpy
+            participantRemoteMuteStoreServiceSpy,
+            mockedHearingVenueFlagsService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));

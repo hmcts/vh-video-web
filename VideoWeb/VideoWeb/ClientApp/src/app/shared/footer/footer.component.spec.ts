@@ -14,14 +14,27 @@ import { DashboardStubComponent } from 'src/app/testing/stubs/dashboard-stub';
 import { UnsupportedBrowserStubComponent } from 'src/app/testing/stubs/unsupported-browser-stub';
 
 import { FooterComponent } from './footer.component';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
+import { BehaviorSubject } from 'rxjs';
+import { getSpiedPropertyGetter } from '../jasmine-helpers/property-helpers';
 
 describe('FooterComponent', () => {
     let component: FooterComponent;
     let fixture: ComponentFixture<FooterComponent>;
     let location: Location;
     let router: Router;
+    let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
+    let hearingVenueIsScottishSubject: BehaviorSubject<boolean>;
 
     configureTestSuite(() => {
+        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+            'HearingVenueFlagsService',
+            ['setHearingVenueIsScottish'],
+            ['hearingVenueIsScottish$']
+        );
+        hearingVenueIsScottishSubject = new BehaviorSubject(false);
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'hearingVenueIsScottish$').and.returnValue(hearingVenueIsScottishSubject);
+
         TestBed.configureTestingModule({
             declarations: [
                 FooterComponent,
@@ -39,7 +52,8 @@ describe('FooterComponent', () => {
             ],
             providers: [
                 { provide: TranslateService, useValue: translateServiceSpy },
-                { provide: Logger, useClass: MockLogger }
+                { provide: Logger, useClass: MockLogger },
+                { provide: HearingVenueFlagsService, useValue: mockedHearingVenueFlagsService }
             ],
             schemas: [NO_ERRORS_SCHEMA]
         });
@@ -112,5 +126,12 @@ describe('FooterComponent', () => {
         // Assert
         expect(translateServiceSpy.setDefaultLang).toHaveBeenCalledOnceWith('tl');
         expect(translateServiceSpy.use).toHaveBeenCalledOnceWith('tl');
+    });
+
+    it('returns true for hearingVenueIsInScotland when hearing venue is in scotland', () => {
+        hearingVenueIsScottishSubject.next(true);
+        component.hearingVenueIsInScotland$.subscribe(isScottish => {
+            expect(isScottish).toBe(true);
+        });
     });
 });

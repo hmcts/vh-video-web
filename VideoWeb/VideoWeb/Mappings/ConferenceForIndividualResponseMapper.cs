@@ -17,7 +17,8 @@ namespace VideoWeb.Mappings
                 CaseNumber = conference.CaseNumber,
                 ScheduledDateTime = conference.ScheduledDateTime,
                 Status = Enum.Parse<ConferenceStatus>(conference.Status.ToString()),
-                ClosedDateTime = conference.ClosedDateTime
+                ClosedDateTime = conference.ClosedDateTime,
+                HearingVenueIsScottish = conference.HearingVenueIsScottish
             };
         }
     }
