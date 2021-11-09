@@ -51,7 +51,7 @@ import { PrivateConsultationRoomControlsComponent } from '../private-consultatio
 import { ConsultationInvitation, ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
-import { ParticipantRemotemuteStoreService } from '../services/participant-remotemute-store.service';
+import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 
@@ -123,7 +123,7 @@ export abstract class WaitingRoomBaseDirective {
         protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService,
         protected consultationInvitiationService: ConsultationInvitationService,
-        protected store: ParticipantRemotemuteStoreService
+        protected store: ParticipantRemoteMuteStoreService
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;
@@ -635,16 +635,24 @@ export abstract class WaitingRoomBaseDirective {
 
     async setupPexipEventSubscriptionAndClient() {
         this.logger.debug(`${this.loggerPrefix} Setting up pexip client and event subscriptions`);
-        this.videoCallSubscription$.add(this.videoCallService.onParticipantUpdated().subscribe(up => {
-            const state = {};
-            const pexipDisplayNameModel = PexipDisplayNameModel.fromString(up.pexipDisplayName);
-            if (pexipDisplayNameModel === null) {
-                return;
-            }
-            state[pexipDisplayNameModel.participantOrVmrId] = { isRemoteMuted: up.isRemoteMuted };
-            this.logger.debug(`${this.loggerPrefix} Setting up participant remote mute status for ${pexipDisplayNameModel.participantOrVmrId} is '${up.isRemoteMuted}''`,);
-            this.store.patchState(state);
-        }));
+        this.videoCallSubscription$.add(
+            this.videoCallService.onParticipantUpdated().subscribe(participantUpdate => {
+                const pexipDisplayNameModel = PexipDisplayNameModel.fromString(participantUpdate.pexipDisplayName);
+
+                if (pexipDisplayNameModel === null) {
+                    this.logger.warn(
+                        `${this.loggerPrefix} Could NOT parse pexip display (${participantUpdate.pexipDisplayName}) name when handling participant update.`
+                    );
+                    return;
+                }
+
+                this.logger.debug(
+                    `${this.loggerPrefix} Setting up participant remote mute status for ${pexipDisplayNameModel.participantOrVmrId} is '${participantUpdate.isRemoteMuted}''`
+                );
+
+                this.store.updateRemoteMuteStatus(pexipDisplayNameModel.participantOrVmrId, participantUpdate.isRemoteMuted);
+            })
+        );
 
         this.videoCallSubscription$.add(this.videoCallService.onCallSetup().subscribe(setup => this.handleCallSetup(setup)));
         this.videoCallSubscription$.add(

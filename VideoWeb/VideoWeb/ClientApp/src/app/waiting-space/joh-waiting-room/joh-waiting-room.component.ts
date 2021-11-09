@@ -17,7 +17,7 @@ import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-map
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
-import { ParticipantRemotemuteStoreService } from '../services/participant-remotemute-store.service';
+import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
@@ -50,8 +50,7 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         protected translateService: TranslateService,
         protected consultationInvitiationService: ConsultationInvitationService,
         private unloadDetectorService: UnloadDetectorService,
-        store: ParticipantRemotemuteStoreService
-
+        store: ParticipantRemoteMuteStoreService
     ) {
         super(
             route,

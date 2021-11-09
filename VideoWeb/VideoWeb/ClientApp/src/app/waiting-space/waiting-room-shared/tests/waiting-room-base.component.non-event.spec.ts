@@ -43,6 +43,7 @@ import { WRTestComponent } from './WRTestComponent';
 import { HearingRole } from '../../models/hearing-role-model';
 import { ElementRef } from '@angular/core';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
+import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
 
 describe('WaitingRoomComponent message and clock', () => {
     let component: WRTestComponent;
@@ -63,7 +64,10 @@ describe('WaitingRoomComponent message and clock', () => {
         });
     });
 
+    let participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
+
     beforeEach(() => {
+        participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
         component = new WRTestComponent(
             activatedRoute,
             videoWebService,
@@ -79,7 +83,8 @@ describe('WaitingRoomComponent message and clock', () => {
             notificationToastrService,
             roomClosingToastrService,
             clockService,
-            consultationInvitiationService
+            consultationInvitiationService,
+            participantRemoteMuteStoreServiceSpy
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));

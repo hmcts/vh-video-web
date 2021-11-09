@@ -28,7 +28,7 @@ import { CallError } from '../models/video-call-models';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
-import { ParticipantRemotemuteStoreService } from '../services/participant-remotemute-store.service';
+import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
@@ -87,7 +87,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected videoControlCacheService: VideoControlCacheService,
         private unloadDetectorService: UnloadDetectorService,
         private hearingLayoutService: HearingLayoutService,
-        store: ParticipantRemotemuteStoreService
+        store: ParticipantRemoteMuteStoreService
     ) {
         super(
             route,
@@ -109,7 +109,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         );
         this.displayConfirmStartHearingPopup = false;
         this.hearingStartingAnnounced = true; // no need to play announcements for a judge
-
     }
 
     ngOnInit() {

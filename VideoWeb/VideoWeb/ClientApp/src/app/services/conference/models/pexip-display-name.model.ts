@@ -11,7 +11,7 @@ export class PexipDisplayNameModel {
         public displayName: string,
         public participantOrVmrId: string,
         public heartbeatMode: HeartbeatMode = HeartbeatMode.NoHeartbeat
-    ) { }
+    ) {}
 
     static fromString(pexipDisplayName: string): PexipDisplayNameModel {
         const parts = pexipDisplayName.split(';');
@@ -26,7 +26,6 @@ export class PexipDisplayNameModel {
                 parts[1] === HeartbeatMode.Heartbeat ? HeartbeatMode.Heartbeat : HeartbeatMode.NoHeartbeat
             );
         } else {
-            //throw invalidPexipDisplayNameFormatError(pexipDisplayName);
             return null;
         }
     }

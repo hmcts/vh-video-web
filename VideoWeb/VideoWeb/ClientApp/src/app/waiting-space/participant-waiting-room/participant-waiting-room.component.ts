@@ -22,7 +22,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { take, takeUntil } from 'rxjs/operators';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
-import { ParticipantRemotemuteStoreService } from '../services/participant-remotemute-store.service';
+import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -57,7 +57,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         protected translateService: TranslateService,
         protected consultationInvitiationService: ConsultationInvitationService,
         private unloadDetectorService: UnloadDetectorService,
-        protected store: ParticipantRemotemuteStoreService
+        protected store: ParticipantRemoteMuteStoreService
     ) {
         super(
             route,

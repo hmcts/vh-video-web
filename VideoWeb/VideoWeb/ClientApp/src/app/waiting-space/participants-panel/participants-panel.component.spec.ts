@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, flush, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { Guid } from 'guid-typescript';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -25,7 +25,8 @@ import {
     participantHandRaisedStatusSubjectMock,
     participantMediaStatusSubjectMock,
     participantStatusSubjectMock,
-    getParticipantsUpdatedSubjectMock
+    getParticipantsUpdatedSubjectMock,
+    participantRemoteMuteStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import { onConferenceUpdatedMock, onParticipantUpdatedMock, videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
@@ -56,6 +57,12 @@ import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { TooltipDirective } from 'src/app/shared/directives/tooltip.directive';
 import { ParticipantAlertComponent } from '../participant-alert/participant-alert.component';
+import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
+import {
+    conferenceParticipantsStatusSubject,
+    createParticipantRemoteMuteStoreServiceSpy
+} from '../services/mock-participant-remote-mute-store.service';
+import { IConferenceParticipantsStatus } from '../models/conference-participants-status';
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
@@ -161,6 +168,10 @@ describe('ParticipantsPanelComponent', () => {
                 {
                     provide: ParticipantPanelModelMapper,
                     useValue: participantPanelModelMapperSpy
+                },
+                {
+                    provide: ParticipantRemoteMuteStoreService,
+                    useValue: createParticipantRemoteMuteStoreServiceSpy()
                 }
             ]
         }).compileComponents();
@@ -228,6 +239,28 @@ describe('ParticipantsPanelComponent', () => {
 
         expect(logger.error).toHaveBeenCalled();
     });
+
+    it('should get the remote mute state from the remote mute status service', fakeAsync(() => {
+        // Arrange
+        const participant = component.participants[0];
+        const participantId = participant.id;
+        const isMuted = true;
+
+        participant.updateParticipant(!isMuted, participant.hasHandRaised(), participant.hasSpotlight());
+
+        const state: IConferenceParticipantsStatus = {};
+        state[participantId] = { isRemoteMuted: isMuted };
+
+        component.ngOnInit();
+        flush();
+
+        // Act
+        conferenceParticipantsStatusSubject.next(state);
+        flush();
+
+        // Assert
+        expect(participant.isMicRemoteMuted()).toEqual(isMuted);
+    }));
 
     it('should process eventhub participant updates', () => {
         component.setupEventhubSubscribers();

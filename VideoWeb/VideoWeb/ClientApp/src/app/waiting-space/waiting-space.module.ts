@@ -33,7 +33,7 @@ import { ParticipantItemComponent } from './participant-waiting-room/private-con
 import { SelfViewComponent } from './private-consultation-room-controls/self-view/self-view.component';
 import { ContextMenuHeaderComponent } from './private-consultation-room-controls/context-menu-header/context-menu-header.component';
 import { ConfirmLeaveHearingPopupComponent } from './confirmation/confirm-leave-hearing-popup.component';
-import { ParticipantRemotemuteStoreService } from './services/participant-remotemute-store.service';
+import { ParticipantRemoteMuteStoreService } from './services/participant-remote-mute-store.service';
 
 @NgModule({
     imports: [SharedModule, WaitingSpaceRoutingModule],
@@ -66,6 +66,13 @@ import { ParticipantRemotemuteStoreService } from './services/participant-remote
         SelfViewComponent,
         ContextMenuHeaderComponent
     ],
-    providers: [VideoCallService, NotificationSoundsService, NotificationToastrService, RoomClosingToastrService, LoggedUserResolveService, ParticipantRemotemuteStoreService]
+    providers: [
+        VideoCallService,
+        NotificationSoundsService,
+        NotificationToastrService,
+        RoomClosingToastrService,
+        LoggedUserResolveService,
+        ParticipantRemoteMuteStoreService
+    ]
 })
-export class WaitingSpaceModule { }
+export class WaitingSpaceModule {}
