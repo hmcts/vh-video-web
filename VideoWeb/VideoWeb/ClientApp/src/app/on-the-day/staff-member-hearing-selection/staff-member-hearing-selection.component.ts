@@ -4,6 +4,4 @@ import { Component } from '@angular/core';
     selector: 'app-staff-member-hearing-selection',
     templateUrl: './staff-member-hearing-selection.component.html'
 })
-export class StaffMemberHearingSelectionComponent {
-    constructor() {}
-}
+export class StaffMemberHearingSelectionComponent {}
