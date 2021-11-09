@@ -6,7 +6,7 @@
   <div class="govuk-grid-column-three-quarters">
     <ng-select id="venue-allocation-list" class="custom"
       [attr.aria-label]="'venue-list.allocation-list-label' | translate" [items]="venues" [multiple]="true"
-      bindLabel="name" bindValue="name" placeholder="Choose lists" [(ngModel)]="selectedVenues" [closeOnSelect]="false"
+      bindLabel="name" bindValue="name" [placeholder]="'venue-list.selection-default-text' | translate" [(ngModel)]="selectedVenues" [closeOnSelect]="false"
       (change)="updateSelection()" [clearSearchOnAdd]="true" [selectOnTab]="true">
       <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
         <input id="venue-{{ index }}" type="checkbox" [ngModel]="item$.selected"
@@ -16,7 +16,7 @@
     </ng-select>
   </div>
   <div class="govuk-grid-column-one-quarter">
-    <input type="button" [disabled]="!venuesSelected" value="View hearings" (click)="goToHearingList()"
+    <input type="button" [disabled]="!venuesSelected" [value]="'venue-list.selection-button-text' | translate" (click)="goToHearingList()"
       id="select-venue-allocation-btn" class="govuk-button" />
   </div>
 </div>
