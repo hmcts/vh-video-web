@@ -66,8 +66,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         private userMediaService: UserMediaService,
         private userMediaStreamService: UserMediaStreamService,
         private videoFilterService: VideoFilterService,
-        private videoCallService: VideoCallService,
-        private navigator: Navigator
+        private videoCallService: VideoCallService
     ) {}
 
     ngOnInit() {
@@ -235,9 +234,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         this.didTestComplete = false;
         const conferenceAlias = 'testcall2';
         const tokenOptions = btoa(`${this.token.expires_on};${this.selfTestParticipantId};${this.token.token}`);
-        if (this.navigator.userAgent.toLowerCase().indexOf('firefox') !== -1) {
-            this.videoCallService.enableH264(false);
-        }
+
         this.videoCallService.makeCall(
             this.selfTestPexipNode,
             `${conferenceAlias};${tokenOptions}`,

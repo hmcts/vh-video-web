@@ -39,6 +39,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private bool audioRecordingRequired = false;
         private string hearingVenue = "Birmingham Civil and Family Justice Centre";
         private int delayMinutes = 0;
+        private bool _shouldIncludeStaffMember = false;
 
         public DataSetupSteps(TestContext c, ScenarioContext scenario)
         {
@@ -52,20 +53,28 @@ namespace VideoWeb.AcceptanceTests.Steps
             GivenIHaveAHearingWithUser();
         }
 
-        [Given(@"I have a hearing with a (.*) and I include a (.*)")]
+        [Given(@"I have a scheduled hearing with a (.*) and a Staff Member")]
+        public void GivenIHaveAHearingWithUserAndStaffMember(string user = DEFAULT_USER)
+        {
+            _shouldIncludeStaffMember = true;
+            GivenIHaveAHearingWithUser(user);
+        }
+
         [Given(@"I have a hearing with a (.*)")]
         [Given(@"I have a hearing with an (.*)")]
         [Given(@"I have another hearing with another (.*)")]
         [Given(@"I have a CACD hearing with a (.*)")]
-        public void GivenIHaveAHearingWithUser(string user1 = DEFAULT_USER, string user2 = "")
+        public void GivenIHaveAHearingWithUser(string user = DEFAULT_USER)
         {
-            var userTypes = GetUserType(user1);
+            var userTypes = GetUserType(user);
 
-            if (user2.ToLower() == "staff member")
+            if (_shouldIncludeStaffMember)
                 userTypes.Add(UserType.StaffMember);
 
+            NUnit.Framework.TestContext.WriteLine($"{userTypes.Count()} user(s) created. They are: '{string.Join(", ", userTypes.ToArray())}'.");
+
             AllocateUsers(userTypes);
-            if(user1.ToLower() == "winger")
+            if(user.ToLower() == "winger")
             {
                 CreateCACDHearing(delayMinutes);
             }

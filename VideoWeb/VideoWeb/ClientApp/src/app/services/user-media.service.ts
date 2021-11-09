@@ -14,8 +14,8 @@ export class UserMediaService {
     readonly defaultStreamConstraints = {
         audio: true,
         video: {
-            width: 1280,
-            height: 720
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
         }
     };
     navigator: Navigator = navigator;
@@ -118,7 +118,7 @@ export class UserMediaService {
             this.setActiveMicrophone(microphone);
         }
 
-        this.setIsAudioOnly(false);
+        this.updateIsAudioOnly(false);
     }
 
     private checkActiveDevicesAreStillConnected(availableDevices: UserMediaDevice[]): void {

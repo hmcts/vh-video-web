@@ -1,2 +1,3 @@
 *.component.html
 *.orig
+*.DS_Store
