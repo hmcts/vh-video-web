@@ -4,7 +4,17 @@
 
     <div class="moj-header__logo">
 
-    <app-header-logo-svg></app-header-logo-svg>
+      <ng-container
+       *ngIf="hearingVenueIsScottish$ | async; then sctsCrest; else hmctsCrest">
+      </ng-container>
+
+    <ng-template #sctsCrest>
+      <img role="presentation" id="header-logo-scot" class="moj-header__logotype-crest" src="/assets/images/scot-crest-white.png" height="40" [attr.alt]="'participants-panel.scottish-crest' | translate"/>
+    </ng-template>
+
+    <ng-template #hmctsCrest>
+      <app-header-logo-svg></app-header-logo-svg>
+    </ng-template>
 
       <span class="moj-header__link moj-header__link--organisation-name" id="header-logo">
             {{'header.hm-courts' | translate}} &amp; {{'header.tribunals-service' | translate}}          

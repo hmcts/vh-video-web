@@ -31,6 +31,7 @@ namespace VideoWeb.UnitTests.Mappings
 
             var conference = Builder<Conference>.CreateNew()
                 .With(x => x.Id = Guid.NewGuid())
+                .With(x => x.HearingVenueIsScottish = true)
                 .Build();
 
             var response = _sut.Map(conference);
@@ -41,6 +42,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.CaseName.Should().Be(conference.CaseName);
             response.Status.Should().Be(conference.Status);
             response.ClosedDateTime.Should().Be(conference.ClosedDateTime);
+            response.HearingVenueIsScottish.Should().Be(conference.HearingVenueIsScottish);
         }
     }
 }

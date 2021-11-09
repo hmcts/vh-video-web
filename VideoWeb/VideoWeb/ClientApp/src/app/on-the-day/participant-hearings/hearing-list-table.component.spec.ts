@@ -1,4 +1,5 @@
 import * as moment from 'moment';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { HearingListTableComponent } from './hearing-list-table.component';
@@ -7,11 +8,22 @@ describe('HearingListTableComponent', () => {
     let component: HearingListTableComponent;
     const translateService = translateServiceSpy;
     const testData = new ConferenceTestData();
+    let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
 
     beforeEach(() => {
+        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+            'HearingVenueFlagsService',
+            ['setHearingVenueIsScottish'],
+            ['hearingVenueIsScottish$']
+        );
         translateService.instant.calls.reset();
-        component = new HearingListTableComponent(translateService);
+        component = new HearingListTableComponent(translateService, mockedHearingVenueFlagsService);
         component.conferences = testData.getTestData();
+    });
+
+    it('re sets hearing venue flag to false ', () => {
+        component.ngOnInit();
+        expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(false);
     });
 
     it('should not show sign in when start time is more 30 minutes from start time', () => {

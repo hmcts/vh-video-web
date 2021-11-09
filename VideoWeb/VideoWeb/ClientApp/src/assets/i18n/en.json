@@ -205,6 +205,7 @@
         "must-be-alone-unless-you-have-the-judges-permission": "must be alone unless you have the judge’s permission to have someone with you",
         "must-ask-the-judges-permission-to-move-away-from-screen": "must ask the judge's permission if you need to move away from your screen",
         "hm-courts-and-tribunals-service-crest": "HM Courts &amp; Tribunals Service crest",
+        "scottish-crest": "SCTS Crest",
         "continue": "Continue"
     },
     "independent-self-test": {
@@ -218,6 +219,7 @@
     },
     "introduction": {
         "hm-courts-and-tribunals-service-crest": "HM Courts &amp; Tribunals Service crest",
+        "scottish-crest": "SCTS Crest",
         "get-ready-for-the-hearing": "Get ready for the hearing",
         "next-we-are-going-to": "Next, we're going to:",
         "check-that-your-equipment-is-working": "check that your equipment is working",
@@ -351,6 +353,7 @@
         "observers": "Observers",
         "video-access-points": "Video access points",
         "for": "for",
+        "scottish-crest": "SCTS Crest",
         "crest-icon-alt": "HM Courts & Tribunals Service crest"
     },
     "joh-waiting-room": {
@@ -394,6 +397,7 @@
     },
     "judge-participant-status-list": {
         "crest-alt": "HM Courts &amp; Tribunals Service crest",
+        "scottish-crest": "SCTS Crest",
         "edit": "Edit",
         "judge": "Judge",
         "save": "Save",
@@ -581,6 +585,7 @@
         "lower-hand": "Lower hand",
         "lower-hands-tooltip": "Lower all raised hands",
         "crest": "HMCTS Crest",
+        "scottish-crest": "SCTS Crest",
         "camera-off": "Camera off",
         "remove-spotlight": " (remove spotlight)",
         "click-to-spotlight": " (click to spotlight)",

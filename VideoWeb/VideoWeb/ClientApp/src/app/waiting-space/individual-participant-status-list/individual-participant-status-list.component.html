@@ -8,11 +8,16 @@
             </p>
         </div>
         <div class='govuk-grid-column-one-half vh-mb5'>
-            <img src='/assets/images/govuk-crest.png'
+            <img 
+                 appCrestLogoImageSource
+                 [sctsImageSource]="'/assets/images/scottish-crest-grey.png'"
+                 [sctsAltText]=" ('individual-participant-status-list.scottish-crest' | translate)"
+                 [hmctsImageSource]="'/assets/images/govuk-crest.png'"
+                 [hmctsAltText]=" ('individual-participant-status-list.crest-icon-alt' | translate)"
                  height='50'
-                 width='50'
                  class='govuk-header__logotype-crest'
-                 [attr.alt]="'individual-participant-status-list.crest-icon-alt' | translate" />
+                 alt=""
+                 />
         </div>
     </div>
     <div class='vh-line govuk-!-margin-bottom-3'></div>

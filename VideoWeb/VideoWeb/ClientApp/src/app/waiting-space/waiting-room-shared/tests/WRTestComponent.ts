@@ -14,6 +14,7 @@ import { NotificationToastrService } from 'src/app/waiting-space/services/notifi
 import { RoomClosingToastrService } from 'src/app/waiting-space/services/room-closing-toast.service';
 import { ConsultationInvitationService } from '../../services/consultation-invitation.service';
 import { Component } from '@angular/core';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 
 @Component({
     selector: 'app-test-waiting-room',
@@ -35,7 +36,8 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
         protected notificationToastrService: NotificationToastrService,
         protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService,
-        protected consultationInvitiationService: ConsultationInvitationService
+        protected consultationInvitiationService: ConsultationInvitationService,
+        protected hearingVenueFlagsService: HearingVenueFlagsService
     ) {
         super(
             route,
@@ -52,7 +54,8 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
             notificationToastrService,
             roomClosingToastrService,
             clockService,
-            consultationInvitiationService
+            consultationInvitiationService,
+            hearingVenueFlagsService
         );
     }
 }

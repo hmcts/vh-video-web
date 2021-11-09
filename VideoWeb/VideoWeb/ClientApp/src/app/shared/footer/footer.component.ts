@@ -4,7 +4,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { filter } from 'rxjs/operators';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from '../page-url.constants';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 @Component({
     selector: 'app-footer',
     templateUrl: './footer.component.html',
@@ -15,8 +16,14 @@ export class FooterComponent implements OnInit, OnDestroy {
     privacyPolicyUri = pageUrls.PrivacyPolicy;
     accessibilityUri = pageUrls.Accessibility;
     routerEventsSubscription$: Subscription = new Subscription();
+    hearingVenueIsInScotland$: Observable<boolean>;
 
-    constructor(private router: Router, private translate: TranslateService, private logger: Logger) {
+    constructor(
+        private router: Router,
+        private translate: TranslateService,
+        private logger: Logger,
+        private hearingVenueFlagsService: HearingVenueFlagsService
+    ) {
         this.routerEventsSubscription$.add(
             this.router.events.pipe(filter((event: RouterEvent) => event instanceof NavigationEnd)).subscribe(x => {
                 this.hideContactUs();
@@ -26,6 +33,8 @@ export class FooterComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.hideContactUs();
+
+        this.hearingVenueIsInScotland$ = this.hearingVenueFlagsService.hearingVenueIsScottish$;
     }
 
     ngOnDestroy(): void {

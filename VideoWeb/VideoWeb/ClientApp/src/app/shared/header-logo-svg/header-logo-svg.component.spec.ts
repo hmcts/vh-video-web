@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { HeaderLogoSvgComponent } from './header-logo-svg.component';
 
 describe('HeaderLogoSvgComponent', () => {

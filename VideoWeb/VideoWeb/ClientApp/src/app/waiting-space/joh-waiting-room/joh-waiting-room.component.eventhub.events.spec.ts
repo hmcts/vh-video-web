@@ -17,6 +17,7 @@ import {
     heartbeatModelMapper,
     initAllWRDependencies,
     logger,
+    mockedHearingVenueFlagsService,
     notificationSoundsService,
     notificationToastrService,
     roomClosingToastrService,
@@ -29,6 +30,7 @@ import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.serv
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 
 describe('JohWaitingRoomComponent eventhub events', () => {
     let component: JohWaitingRoomComponent;
@@ -64,7 +66,8 @@ describe('JohWaitingRoomComponent eventhub events', () => {
             clockService,
             translateService,
             consultationInvitiationService,
-            unloadDetectorServiceSpy
+            unloadDetectorServiceSpy,
+            mockedHearingVenueFlagsService
         );
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));

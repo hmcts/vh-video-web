@@ -288,6 +288,7 @@
   },
   "introduction": {
     "hm-courts-and-tribunals-service-crest": "Arwyddlun Gwasanaeth Llysoedd a Thribiwnlysoedd EM",
+    "scottish-crest": "Arwydd Crest",
     "get-ready-for-the-hearing": "Paratoi ar gyfer y gwrandawiad",
     "next-we-are-going-to": "Nesaf, rydym yn mynd i:",
     "check-that-your-equipment-is-working": "wirio bod eich offer yn gweithio",
@@ -411,6 +412,7 @@
   "hearing-rules": {
     "court-rules": "Rheolau'r llys",
     "hm-courts-and-tribunals-service-crest": "Arwyddlun Gwasanaeth Llysoedd a Thribiwnlysoedd EM",
+    "scottish-crest": "Arwydd Crest",
     "you-must-follow-courtroom-rules": "Mae'n rhaid ichi ddilyn yr un rheolau ag y byddech yn gwneud mewn ystafell llys draddodiadol. ",
     "this-means-you": "Golyga hyn:",
     "can-only-drink-water": "y gallwch ond yfed d?r",
@@ -488,6 +490,7 @@
   },
   "individual-participant-status-list": {
     "crest-icon-alt": "Arwyddlun Gwasanaeth Llysoedd a Thribiwnlysoedd EM",
+    "scottish-crest": "Arwydd Crest",
     "panel-members": "Aelodau'r panel",
     "staff-member": "Aelod o staff",
     "wingers": "Asgellwyr",
@@ -749,6 +752,7 @@
     "participants": "Cyfranogwyr",
     "video-access-points": "Pwyntiau mynediad fideo",
     "observers": "Sylwebwyr",
+    "scottish-crest": "Arwydd Crest",
     "crest-alt": "Arwyddlun Gwasanaeth Llysoedd a Thribiwnlysoedd EM"
   },
   "participant-status": {
@@ -788,6 +792,7 @@
     "lower-hands": "Rhoi pob llaw i lawr",
     "lower-hands-tooltip": "Rhoi pob llaw sydd i fyny i lawr",
     "crest": "Arwyddlun GLlTEM",
+    "scottish-crest": "Arwydd Crest",
     "joining": "Yn ymuno",
     "not-joined": "Heb ymuno",
     "disconnected": "WEDI COLLI CYSYLLTIAD",
