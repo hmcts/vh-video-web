@@ -45,9 +45,13 @@
       >
         <span *ngIf="participant.isJudge">
           <img
-            src="/assets/images/UkGovCrestWhite.png"
+            appCrestLogoImageSource
+            [sctsImageSource]="'/assets/images/scot-crest-white.png'"
+            [sctsAltText]=" ('participants-panel.scottish-crest' | translate)"
+            [hmctsImageSource]="'/assets/images/UkGovCrestWhite.png'"
+            [hmctsAltText]=" ('participants-panel.crest' | translate)"
             class="panel-icon panel-icon-crest"
-            [attr.alt]="'participants-panel.crest' | translate"
+            alt=""
           />
           <br />
         </span>
@@ -61,9 +65,13 @@
         </span>
         <span *ngIf="participant.isJudicialOfficeHolder">
           <img
-            src="/assets/images/UkGovCrestWhite.png"
+            appCrestLogoImageSource
+            [sctsImageSource]="'/assets/images/scot-crest-white.png'"
+            [sctsAltText]=" ('participants-panel.scottish-crest' | translate)"
+            [hmctsImageSource]="'/assets/images/UkGovCrestWhite.png'"
+            [hmctsAltText]=" ('participants-panel.crest' | translate)"
             class="panel-icon panel-icon-crest"
-            [attr.alt]="'participants-panel.crest' | translate"
+            alt=""
           />
           <br />
         </span>

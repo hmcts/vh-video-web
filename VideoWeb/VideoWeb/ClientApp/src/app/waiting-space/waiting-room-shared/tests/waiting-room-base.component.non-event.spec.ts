@@ -1,11 +1,11 @@
+import { ElementRef } from '@angular/core';
 import { fakeAsync } from '@angular/core/testing';
-import { ActiveToast } from 'ngx-toastr';
 import { Guid } from 'guid-typescript';
+import { ActiveToast } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import {
     ConferenceResponse,
     ConferenceStatus,
-    SharedParticipantRoom,
     LinkedParticipantResponse,
     LinkType,
     LoggedParticipantResponse,
@@ -13,12 +13,14 @@ import {
     ParticipantStatus,
     Role,
     RoomSummaryResponse,
-    TokenResponse
+    SharedParticipantRoom
 } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { RoomClosingToastComponent } from 'src/app/shared/toast/room-closing/room-closing-toast.component';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
+import { HearingRole } from '../../models/hearing-role-model';
 import {
     activatedRoute,
     clockService,
@@ -32,6 +34,7 @@ import {
     heartbeatModelMapper,
     initAllWRDependencies,
     logger,
+    mockedHearingVenueFlagsService,
     notificationSoundsService,
     notificationToastrService,
     roomClosingToastrService,
@@ -40,9 +43,6 @@ import {
     videoWebService
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
-import { HearingRole } from '../../models/hearing-role-model';
-import { ElementRef } from '@angular/core';
-import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 
 describe('WaitingRoomComponent message and clock', () => {
     let component: WRTestComponent;
@@ -79,7 +79,8 @@ describe('WaitingRoomComponent message and clock', () => {
             notificationToastrService,
             roomClosingToastrService,
             clockService,
-            consultationInvitiationService
+            consultationInvitiationService,
+            mockedHearingVenueFlagsService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
@@ -202,6 +203,40 @@ describe('WaitingRoomComponent message and clock', () => {
         expect(component.participant).toBeDefined();
     }));
 
+    it('getConference sets HearingVenueIsScottish property to true when hearing venue is in scotland', fakeAsync(async () => {
+        // Arrange
+        component.hearing = undefined;
+        component.conference = undefined;
+        component.participant = undefined;
+        component.connected = false;
+        globalConference.hearing_venue_is_scottish = true;
+        videoWebService.getConferenceById.and.resolveTo(globalConference);
+        videoWebService.getAllowedEndpointsForConference.and.resolveTo([]);
+
+        // Act
+        await component.getConference();
+
+        // Assert
+        expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(true);
+    }));
+
+    it('getConference sets HearingVenueIsScottish property to false when hearing venue is not in scotland', fakeAsync(async () => {
+        // Arrange
+        component.hearing = undefined;
+        component.conference = undefined;
+        component.participant = undefined;
+        component.connected = false;
+        globalConference.hearing_venue_is_scottish = false;
+        videoWebService.getConferenceById.and.resolveTo(globalConference);
+        videoWebService.getAllowedEndpointsForConference.and.resolveTo([]);
+
+        // Act
+        await component.getConference();
+
+        // Assert
+        expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(false);
+    }));
+
     it('should handle api error with error service when get conference fails', async () => {
         component.hearing = undefined;
         component.conference = undefined;
@@ -238,6 +273,42 @@ describe('WaitingRoomComponent message and clock', () => {
         expect(component.participant).toBeDefined();
         expect(component.participant).toBe(expectedParticipant);
         expect(originalParticipant.id).toBe(component.participant.id);
+    });
+
+    it('getConferenceClosedTime sets HearingVenueIsScottish property to true when hearing venue is in scotland', async () => {
+        component.hearing.getConference().status = ConferenceStatus.InSession;
+        component.hearing.getConference().closed_date_time = null;
+        const closedConference = new ConferenceResponse(Object.assign({}, globalConference));
+        closedConference.status = ConferenceStatus.Closed;
+        closedConference.closed_date_time = new Date();
+        closedConference.hearing_venue_is_scottish = true;
+        const expectedParticipant = new ParticipantResponse(globalConference.participants[0].toJSON());
+
+        spyOn(component, 'getLoggedParticipant').and.returnValue(expectedParticipant);
+
+        videoWebService.getConferenceById.and.resolveTo(closedConference);
+
+        await component.getConferenceClosedTime(component.conference.id);
+
+        expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(true);
+    });
+
+    it('getConferenceClosedTime sets HearingVenueIsScottish property to false when hearing venue is not in scotland', async () => {
+        component.hearing.getConference().status = ConferenceStatus.InSession;
+        component.hearing.getConference().closed_date_time = null;
+        const closedConference = new ConferenceResponse(Object.assign({}, globalConference));
+        closedConference.status = ConferenceStatus.Closed;
+        closedConference.closed_date_time = new Date();
+        closedConference.hearing_venue_is_scottish = false;
+        const expectedParticipant = new ParticipantResponse(globalConference.participants[0].toJSON());
+
+        spyOn(component, 'getLoggedParticipant').and.returnValue(expectedParticipant);
+
+        videoWebService.getConferenceById.and.resolveTo(closedConference);
+
+        await component.getConferenceClosedTime(component.conference.id);
+
+        expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(false);
     });
 
     it('should get the conference for closed time', async () => {

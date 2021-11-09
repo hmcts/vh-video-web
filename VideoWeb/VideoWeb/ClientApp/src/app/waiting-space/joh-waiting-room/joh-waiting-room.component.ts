@@ -10,6 +10,7 @@ import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
@@ -48,7 +49,8 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         protected clockService: ClockService,
         protected translateService: TranslateService,
         protected consultationInvitiationService: ConsultationInvitationService,
-        private unloadDetectorService: UnloadDetectorService
+        private unloadDetectorService: UnloadDetectorService,
+        protected hearingVenueFlagsService: HearingVenueFlagsService
     ) {
         super(
             route,
@@ -65,7 +67,8 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
             notificationToastrService,
             roomClosingToastrService,
             clockService,
-            consultationInvitiationService
+            consultationInvitiationService,
+            hearingVenueFlagsService
         );
     }
 

@@ -1,11 +1,11 @@
 import { convertToParamMap, Router } from '@angular/router';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceLite } from 'src/app/services/models/conference-lite';
+import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { IntroductionComponent } from './introduction.component';
-import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
+import { IntroductionComponent } from './introduction.component';
 
 describe('IntroductionComponent', () => {
     let component: IntroductionComponent;
@@ -27,17 +27,18 @@ describe('IntroductionComponent', () => {
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
     });
 
-    beforeEach(async () => {
+    beforeEach(() => {
         component = new IntroductionComponent(router, activatedRoute, videoWebServiceSpy, participantStatusUpdateService, new MockLogger());
         router.navigate.calls.reset();
-        await component.ngOnInit();
+        component.ngOnInit();
     });
 
-    it('should define conferece id on init', async () => {
+    it('should define conferece id on init', () => {
         component.conferenceId = null;
-        await component.ngOnInit();
+        component.ngOnInit();
         expect(component.conferenceId).toBe(conference.id);
     });
+
     it('should navigate to equipment check', () => {
         component.goToEquipmentCheck();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.EquipmentCheck, conference.id]);

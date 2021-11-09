@@ -24,6 +24,7 @@ import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
@@ -120,7 +121,8 @@ export abstract class WaitingRoomBaseDirective {
         protected notificationToastrService: NotificationToastrService,
         protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService,
-        protected consultationInvitiationService: ConsultationInvitationService
+        protected consultationInvitiationService: ConsultationInvitationService,
+        protected hearingVenueFlagsService: HearingVenueFlagsService
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;
@@ -176,6 +178,7 @@ export abstract class WaitingRoomBaseDirective {
     async getConference(): Promise<void> {
         try {
             const data = await this.videoWebService.getConferenceById(this.conferenceId);
+            this.hearingVenueFlagsService.setHearingVenueIsScottish(data.hearing_venue_is_scottish);
             this.errorCount = 0;
             this.loadingData = false;
             this.countdownComplete = data.status === ConferenceStatus.InSession;
@@ -202,6 +205,7 @@ export abstract class WaitingRoomBaseDirective {
     async getConferenceClosedTime(conferenceId: string): Promise<void> {
         try {
             this.conference = await this.videoWebService.getConferenceById(conferenceId);
+            this.hearingVenueFlagsService.setHearingVenueIsScottish(this.conference.hearing_venue_is_scottish);
             this.hearing = new Hearing(this.conference);
             this.participant = this.getLoggedParticipant();
 

@@ -27,7 +27,6 @@ namespace VideoWeb.UnitTests.Mappings
                 .Build();
             _sut = _mocker.Create<ConferenceResponseMapper>(parameters);
         }
-       
 
         [Test]
         public void Should_map_all_properties()
@@ -54,6 +53,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.CurrentStatus = ConferenceState.Suspended)
                 .With(x => x.Participants = participants)
                 .With(x => x.MeetingRoom = meetingRoom)
+                .With(x => x.HearingVenueIsScottish = true)
                 .Build();
 
             var response = _sut.Map(conference);
@@ -65,6 +65,8 @@ namespace VideoWeb.UnitTests.Mappings
             response.ScheduledDateTime.Should().Be(conference.ScheduledDateTime);
             response.ScheduledDuration.Should().Be(conference.ScheduledDuration);
             response.Status.Should().Be(expectedConferenceStatus);
+            response.HearingVenueIsScottish.Should().Be(conference.HearingVenueIsScottish);
+
 
             var participantsResponse = response.Participants;
             participantsResponse.Should().NotBeNullOrEmpty();

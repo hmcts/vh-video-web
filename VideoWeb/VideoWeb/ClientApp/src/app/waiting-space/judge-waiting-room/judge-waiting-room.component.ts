@@ -18,6 +18,7 @@ import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
@@ -85,7 +86,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected videoControlService: VideoControlService,
         protected videoControlCacheService: VideoControlCacheService,
         private unloadDetectorService: UnloadDetectorService,
-        private hearingLayoutService: HearingLayoutService
+        private hearingLayoutService: HearingLayoutService,
+        protected hearingVenueFlagsService: HearingVenueFlagsService
     ) {
         super(
             route,
@@ -102,7 +104,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             notificationToastrService,
             roomClosingToastrService,
             clockService,
-            consultationInvitiationService
+            consultationInvitiationService,
+            hearingVenueFlagsService
         );
         this.displayConfirmStartHearingPopup = false;
         this.hearingStartingAnnounced = true; // no need to play announcements for a judge

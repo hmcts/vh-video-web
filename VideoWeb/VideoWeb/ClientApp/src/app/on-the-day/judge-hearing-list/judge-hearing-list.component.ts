@@ -7,6 +7,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceForHostResponse, LoggedParticipantResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { vhContactDetails } from 'src/app/shared/contact-information';
@@ -41,7 +42,8 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
         private profileService: ProfileService,
         private logger: Logger,
         private eventsService: EventsService,
-        private screenHelper: ScreenHelper
+        private screenHelper: ScreenHelper,
+        private hearingVenueFlagsService: HearingVenueFlagsService
     ) {
         this.loadingData = true;
     }
@@ -52,6 +54,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
         });
         this.retrieveHearingsForUser();
         this.setupSubscribers();
+        this.hearingVenueFlagsService.setHearingVenueIsScottish(false);
         this.interval = setInterval(() => {
             this.retrieveHearingsForUser();
         }, 30000);
@@ -98,6 +101,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
 
     onConferenceSelected(conference: ConferenceForHostResponse) {
         this.logger.debug('[JudgeHearingList] - Signing into judge waiting room', { conference: conference.id });
+        this.hearingVenueFlagsService.setHearingVenueIsScottish(conference.hearing_venue_is_scottish);
         this.videoWebService.getCurrentParticipant(conference.id).then(x => {
             const useJudgeWaitingRoom = conference.participants.find(
                 p => p.id === x.participant_id && p.hearing_role === HearingRole.JUDGE
