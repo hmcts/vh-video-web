@@ -56,7 +56,7 @@ export class UserMediaService {
         return this.activeMicrophoneDeviceSubject.asObservable();
     }
 
-    private isAudioOnly = false;
+    private isAudioOnly = true;
     private isAudioOnlySubject = new ReplaySubject<boolean>(1);
     get isAudioOnly$(): Observable<boolean> {
         return this.isAudioOnlySubject.asObservable();
