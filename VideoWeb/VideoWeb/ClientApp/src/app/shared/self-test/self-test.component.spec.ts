@@ -96,8 +96,7 @@ describe('SelfTestComponent', () => {
             userMediaServiceSpy,
             userMediaStreamServiceSpy,
             videoFilterServiceSpy,
-            videoCallServiceSpy,
-            navigatorSpy
+            videoCallServiceSpy
         );
     });
 
@@ -415,25 +414,6 @@ describe('SelfTestComponent', () => {
                 expectedMaxBandwidth
             );
         }));
-
-        it('should disable h264 if the userAgent contains firefox', () => {
-            // Arrange
-            getSpiedPropertyGetter(navigatorSpy, 'userAgent').and.returnValue('afirefoxa');
-
-            // Act
-            component.call();
-
-            // Assert
-            expect(videoCallServiceSpy.enableH264).toHaveBeenCalledOnceWith(false);
-        });
-
-        it('should NOT disable h264 if the userAgent does NOT contain firefox', () => {
-            // Act
-            component.call();
-
-            // Assert
-            expect(videoCallServiceSpy.enableH264).not.toHaveBeenCalled();
-        });
     });
 
     describe('replayVideo', () => {
