@@ -32,12 +32,6 @@ export class ForcePlayVideoDirective implements AfterViewInit {
         this.logger.info(`${this.loggerPrefix} - configureVideoElement - adding playsinline and autoplay attributes.`);
         this.renderer.setAttribute(this.videoElement, 'playsinline', 'true');
         this.renderer.setAttribute(this.videoElement, 'autoplay', 'true');
-        this.renderer.setAttribute(
-            this.videoElement,
-            'poster',
-            // TODO: REMOVE
-            'https://i.guim.co.uk/img/media/f1459b35b58255f2ee15e63e34e3b04a07e8825e/296_0_1328_797/master/1328.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=9a2675dd0648b61c2ce4f9021f9ad7e7'
-        );
 
         if (!!this.mute) {
             this.renderer.setAttribute(this.videoElement, 'muted', 'true');
