@@ -362,8 +362,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
         this.hearingLayoutService.currentLayout$.pipe(take(1)).subscribe(async layout => {
             try {
-                await this.videoCallService.startHearing(this.hearing.id, layout);
                 this.hostWantsToJoinHearing = true;
+                await this.videoCallService.startHearing(this.hearing.id, layout);
             } catch (err) {
                 this.logger.error(`${this.loggerPrefixJudge} Failed to ${action} a hearing for conference`, err, {
                     conference: this.conferenceId,
