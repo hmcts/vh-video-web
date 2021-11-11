@@ -401,8 +401,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     async joinHearingInSession() {
-        await this.videoCallService.joinHearingInSession(this.conferenceId, this.participant.id);
         this.hostWantsToJoinHearing = true;
+        await this.videoCallService.joinHearingInSession(this.conferenceId, this.participant.id);
     }
 
     shouldCurrentUserJoinHearing(): boolean {
