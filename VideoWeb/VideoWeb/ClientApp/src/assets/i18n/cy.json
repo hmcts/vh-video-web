@@ -284,7 +284,8 @@
   },
   "back-navigation": {
     "back": "Yn ôl",
-    "return-to-video-hearing-list": "Dychwelyd i'r rhestr gwrandawiadau fideo "
+    "return-to-video-hearing-list": "Dychwelyd i'r rhestr gwrandawiadau fideo ",
+    "navigate-back-to-select-venues": "Choose lists"
   },
   "introduction": {
     "hm-courts-and-tribunals-service-crest": "Arwyddlun Gwasanaeth Llysoedd a Thribiwnlysoedd EM",

@@ -2,14 +2,14 @@ import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { JudgeHearingSummary } from 'src/app/shared/models/JudgeHearingSummary';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { JudgeHearingTableComponent } from './judge-hearing-table.component';
+import { HostHearingTableComponent } from './host-hearing-table.component';
 
-describe('JudgeHearingTableComponent', () => {
-    let component: JudgeHearingTableComponent;
+describe('HostHearingTableComponent', () => {
+    let component: HostHearingTableComponent;
     const testData = new ConferenceTestData();
 
     beforeEach(() => {
-        component = new JudgeHearingTableComponent(new MockLogger());
+        component = new HostHearingTableComponent(new MockLogger());
         component.conferences = testData.getTestData();
         component.ngOnInit();
     });

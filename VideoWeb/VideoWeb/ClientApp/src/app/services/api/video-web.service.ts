@@ -42,6 +42,10 @@ export class VideoWebService implements IVideoWebApiService {
         return this.apiClient.getConferencesForHost();
     }
 
+    getConferencesForStaffMember(): Observable<ConferenceForHostResponse[]> {
+        return this.apiClient.getConferencesForHost();
+    }
+
     getConferencesForIndividual(): Observable<ConferenceForIndividualResponse[]> {
         return this.apiClient.getConferencesForIndividual();
     }

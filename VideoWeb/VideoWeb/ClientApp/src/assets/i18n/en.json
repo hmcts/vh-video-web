@@ -40,7 +40,8 @@
   },
   "back-navigation": {
     "back": "Back",
-    "return-to-video-hearing-list": "Return to video hearing list"
+    "return-to-video-hearing-list": "Return to video hearing list",
+    "navigate-back-to-select-venues": "Choose lists"
   },
   "beta-banner": {
     "beta": "beta",
