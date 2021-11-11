@@ -462,7 +462,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     shouldCurrentUserJoinHearing(): boolean {
-        return !this.isHost() || this.participant.status === ParticipantStatus.InHearing || this.hostWantsToJoinHearing;
+        return this.participant.status === ParticipantStatus.InHearing || this.hostWantsToJoinHearing;
     }
 
     initAudioRecordingInterval() {

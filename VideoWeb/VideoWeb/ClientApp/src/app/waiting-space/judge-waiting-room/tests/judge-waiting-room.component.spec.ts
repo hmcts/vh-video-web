@@ -559,30 +559,17 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
     describe('shouldCurrentUserJoinHearing', () => {
         it('should return false if user is a host and status is not InHearing', () => {
-            const spy = spyOn(component, 'isHost').and.returnValue(true);
             component.participant.status = ParticipantStatus.Available;
 
             const shouldCurrentUserJoinHearing = component.shouldCurrentUserJoinHearing();
 
-            expect(spy).toHaveBeenCalledTimes(1);
             expect(shouldCurrentUserJoinHearing).toBeFalsy();
         });
 
-        it('should return true if user is not a host', () => {
-            const spy = spyOn(component, 'isHost').and.returnValue(false);
-
-            const shouldCurrentUserJoinHearing = component.shouldCurrentUserJoinHearing();
-
-            expect(spy).toHaveBeenCalledTimes(1);
-            expect(shouldCurrentUserJoinHearing).toBeTrue();
-        });
-
         it('should return true if user is a host and current status is InHearing', () => {
-            const spy = spyOn(component, 'isHost').and.returnValue(true);
             component.participant.status = ParticipantStatus.InHearing;
             const shouldCurrentUserJoinHearing = component.shouldCurrentUserJoinHearing();
 
-            expect(spy).toHaveBeenCalledTimes(1);
             expect(shouldCurrentUserJoinHearing).toBeTrue();
         });
     });
