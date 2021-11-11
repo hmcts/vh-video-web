@@ -50,7 +50,6 @@ import { VirtualMeetingRoomModel } from 'src/app/services/conference/models/virt
 import { HearingRole } from '../../models/hearing-role-model';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
-import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     const participantOneId = Guid.create().toString();
@@ -426,7 +425,13 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         await component.joinHearingInSession();
 
         expect(videoCallService.joinHearingInSession).toHaveBeenCalledWith(component.conferenceId, component.participant.id);
-        expect(component.hostWantsToJoinHearing).toBeTrue();
+        expect(component.shouldCurrentUserJoinHearing()).toBeTrue();
+    });
+
+    it('calls join hearing in session endpoint', async () => {
+        const logPaylod = {};
+        component.handleNotConnected(logPaylod);
+        expect(component.hostWantsToJoinHearing).toBeFalse();
     });
 
     it('should continue with no recording when judge dismisses the audio recording alert mid hearing', async () => {
@@ -550,6 +555,36 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         component.showVideo = true;
         await component.retrieveAudioStreamInfo(globalConference.id);
         expect(component.audioErrorToastOpen).toBeTruthy();
+    });
+
+    describe('shouldCurrentUserJoinHearing', () => {
+        it('should return false if user is a host and status is not InHearing', () => {
+            const spy = spyOn(component, 'isHost').and.returnValue(true);
+            component.participant.status = ParticipantStatus.Available;
+
+            const shouldCurrentUserJoinHearing = component.shouldCurrentUserJoinHearing();
+
+            expect(spy).toHaveBeenCalledTimes(1);
+            expect(shouldCurrentUserJoinHearing).toBeFalsy();
+        });
+
+        it('should return true if user is not a host', () => {
+            const spy = spyOn(component, 'isHost').and.returnValue(false);
+
+            const shouldCurrentUserJoinHearing = component.shouldCurrentUserJoinHearing();
+
+            expect(spy).toHaveBeenCalledTimes(1);
+            expect(shouldCurrentUserJoinHearing).toBeTrue();
+        });
+
+        it('should return true if user is a host and current status is InHearing', () => {
+            const spy = spyOn(component, 'isHost').and.returnValue(true);
+            component.participant.status = ParticipantStatus.InHearing;
+            const shouldCurrentUserJoinHearing = component.shouldCurrentUserJoinHearing();
+
+            expect(spy).toHaveBeenCalledTimes(1);
+            expect(shouldCurrentUserJoinHearing).toBeTrue();
+        });
     });
 
     describe('conferenceRecordingInSessionForSeconds property', () => {

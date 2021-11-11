@@ -88,7 +88,6 @@ export abstract class WaitingRoomBaseDirective {
     displayStartPrivateConsultationModal: boolean;
     displayJoinPrivateConsultationModal: boolean;
     conferenceStartedBy: string;
-    hostWantsToJoinHearing = false;
 
     panelTypes = ['Participants', 'Chat'];
     panelStates = {
@@ -1060,6 +1059,15 @@ export abstract class WaitingRoomBaseDirective {
         await this.consultationService.leaveConsultation(this.conference, this.participant);
     }
 
+    handleNotConnected(logPaylod) {
+        logPaylod.showingVideo = false;
+        logPaylod.reason = 'Not showing video because not connecting to pexip node';
+        this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
+        this.showVideo = false;
+        this.showConsultationControls = false;
+        this.isPrivateConsultation = false;
+    }
+
     updateShowVideo(): void {
         const logPaylod = {
             conference: this.conferenceId,
@@ -1069,22 +1077,11 @@ export abstract class WaitingRoomBaseDirective {
             reason: ''
         };
         if (!this.connected) {
-            logPaylod.showingVideo = false;
-            logPaylod.reason = 'Not showing video because not connecting to pexip node';
-            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
-            this.showVideo = false;
-            this.showConsultationControls = false;
-            this.isPrivateConsultation = false;
-            this.hostWantsToJoinHearing = false;
+            this.handleNotConnected(logPaylod);
             return;
         }
 
-        if (
-            this.hearing.isInSession() &&
-            !this.isOrHasWitnessLink() &&
-            !this.isQuickLinkParticipant() &&
-            this.shouldCurrentUserJoinHearing()
-        ) {
+        if (this.hearing.isInSession() && !this.isOrHasWitnessLink() && !this.isQuickLinkParticipant()) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because hearing is in session';
             this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
@@ -1124,10 +1121,6 @@ export abstract class WaitingRoomBaseDirective {
         this.conferenceStartedBy = null;
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
-    }
-
-    shouldCurrentUserJoinHearing(): boolean {
-        return !this.isHost() || this.participant.status === ParticipantStatus.InHearing;
     }
 
     isHost(): boolean {
