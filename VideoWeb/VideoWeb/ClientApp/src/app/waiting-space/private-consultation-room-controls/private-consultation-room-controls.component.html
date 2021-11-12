@@ -324,9 +324,8 @@
 </app-self-view>
 
 <div class="outgoing-present-video-container">
-    <video [ngClass]="{ 'vh-fade-in': this.screenShareStream, 'vh-fade-out': !this.screenShareStream }"
-        id="outgoingFeedPresentVideo" [muted]="true" [srcObject]="this.screenShareStream" autoplay playsinline
-        height="auto">
+    <video appForcePlayVideo [ngClass]="{ 'vh-fade-in': this.screenShareStream, 'vh-fade-out': !this.screenShareStream }"
+        id="outgoingFeedPresentVideo" [mute]="true" [srcObject]="this.screenShareStream" height="auto">
         {{ 'private-consultation-room-controls.browser-support' | translate }}
     </video>
 </div>
