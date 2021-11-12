@@ -259,7 +259,9 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                 await this.eventService.publishRemoteMuteStatus(this.conferenceId, p.id, updatedParticipant.isRemoteMuted);
             });
         }
-        this.participantRemoteMuteStoreService.patchState({ [participant.id]: { isRemoteMuted: participant.isMicRemoteMuted() } });
+
+        this.participantRemoteMuteStoreService.updateRemoteMuteStatus(participant.id, participant.isMicRemoteMuted());
+
         this.logger.debug(`${this.loggerPrefix} Participant has been updated in video call`, {
             conference: this.conferenceId,
             participant: participant.id,
