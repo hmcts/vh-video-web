@@ -1,4 +1,5 @@
 import { fakeAsync, flush, tick } from '@angular/core/testing';
+import { Guid } from 'guid-typescript';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { ConferenceResponse, ConferenceStatus, ParticipantResponse, TokenResponse } from 'src/app/services/clients/api-client';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
@@ -14,7 +15,9 @@ import {
     onCallTransferredMock,
     onPresentationConnectedMock,
     onPresentationDisconnectedMock,
-    onPresentationMock
+    onPresentationMock,
+    videoCallServiceSpy,
+    onParticipantUpdatedMock
 } from 'src/app/testing/mocks/mock-video-call.service';
 import {
     CallSetup,
@@ -23,9 +26,11 @@ import {
     DisconnectedCall,
     Presentation,
     ConnectedPresentation,
-    DisconnectedPresentation
+    DisconnectedPresentation,
+    ParticipantUpdated
 } from '../../models/video-call-models';
 import { PrivateConsultationRoomControlsComponent } from '../../private-consultation-room-controls/private-consultation-room-controls.component';
+import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
 import {
     activatedRoute,
     clockService,
@@ -68,11 +73,13 @@ describe('WaitingRoomComponent Video Call', () => {
     const onPresentationDisconnected = onPresentationDisconnectedMock;
     const onPresentation = onPresentationMock;
 
-    beforeAll(() => {
-        initAllWRDependencies();
-    });
+    let participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
     beforeEach(async () => {
+        participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
+
+        initAllWRDependencies();
+
         component = new WRTestComponent(
             activatedRoute,
             videoWebService,
@@ -89,6 +96,7 @@ describe('WaitingRoomComponent Video Call', () => {
             roomClosingToastrService,
             clockService,
             consultationInvitiationService,
+            participantRemoteMuteStoreServiceSpy,
             mockedHearingVenueFlagsService
         );
 
@@ -124,6 +132,37 @@ describe('WaitingRoomComponent Video Call', () => {
         flush();
 
         expect(videoCallService.makeCall).toHaveBeenCalled();
+    }));
+
+    it('should listen for participant updates event and update the remote mute status service', fakeAsync(() => {
+        // Arrange
+        const participantId = Guid.create().toString();
+        const isMuted = true;
+
+        // Act
+        onParticipantUpdatedMock.next(
+            ParticipantUpdated.fromPexipParticipant({
+                buzz_time: 0,
+                call_tag: null,
+                display_name: `ROLE;NO_HEARBEAT;NAME;${participantId}`,
+                external_node_uuid: '',
+                has_media: true,
+                is_audio_only_call: '',
+                is_external: false,
+                is_muted: isMuted ? 'YES' : 'NO',
+                is_video_call: 'true',
+                local_alias: '',
+                mute_supported: 'true',
+                protocol: '',
+                spotlight: 0,
+                start_time: 0,
+                uuid: ''
+            })
+        );
+        flush();
+
+        // Assert
+        expect(participantRemoteMuteStoreServiceSpy.updateRemoteMuteStatus).toHaveBeenCalledOnceWith(participantId, isMuted);
     }));
 
     it('should init pexip setup to be called on start', () => {
