@@ -42,14 +42,13 @@
 
   <div class="video-wrapper">
     <video
+      appForcePlayVideo
       #incomingFeed
       (playing)="updateVideoStreamMuteStatus()"
       id="incomingFeedPrivate"
-      autoplay
       [srcObject]="presentationStream && !streamInMain ? presentationStream : stream"
       height="auto"
       poster="/assets/images/empty_crest.jpg"
-      playsinline
     >
       {{ 'joh-waiting-room.browser-doesnt-support-video' | translate }}
     </video>
@@ -62,12 +61,11 @@
       colour="grey"
     >
       <video
+        appForcePlayVideo
         [srcObject]="presentationStream && !streamInMain ? stream : presentationStream"
-        autoplay
         height="auto"
         poster="/assets/images/empty_crest.jpg"
         class="fill-container"
-        playsinline
       >
         {{ 'joh-waiting-room.browser-doesnt-support-video' | translate }}
       </video>
