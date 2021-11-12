@@ -2,10 +2,10 @@ import { Router } from '@angular/router';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { VhoStorageKeys } from '../services/models/session-keys';
+import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
 import { VenueListComponent } from './venue-list.component';
 import { CourtRoomsAccountResponse, HearingVenueResponse } from 'src/app/services/clients/api-client';
-import { CourtRoomsAccounts } from '../services/models/court-rooms-accounts';
+import { CourtRoomsAccounts } from '../../vh-officer/services/models/court-rooms-accounts';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
@@ -110,6 +110,7 @@ describe('VenueListComponent', () => {
         expect(result[1].courtsRooms[1].selected).toBeTrue();
     }));
     it('should update filter records with select options from filter in storage', fakeAsync(() => {
+        const currentStorage = roomSessionStorage.get();
         component.selectedVenues = selectedJudgeNames;
         venueAccounts[0].courtsRooms[0].selected = false;
         venueAccounts[1].courtsRooms[0].selected = false;
@@ -130,6 +131,7 @@ describe('VenueListComponent', () => {
         expect(result[1].courtsRooms[0].courtRoom).toBe('Room 01');
         expect(result[1].courtsRooms[0].selected).toBeFalse();
         expect(result[1].courtsRooms[1].selected).toBeTrue();
+        roomSessionStorage.set(currentStorage);
     }));
     it('should not get court rooms accounts if no venues selected', fakeAsync(() => {
         component.selectedVenues = null;

@@ -22,6 +22,7 @@ import { PluraliseTextPipe } from '../shared/pipes/pluraliseText.pipe';
 import { SelfTestActionsComponent } from './self-test-actions/self-test-actions.component';
 import { UnsupportedDeviceComponent } from '../shared/unsupported-device/unsupported-device.component';
 import { QuickLinksComponent } from './quick-links/quick-links.component';
+import { StaffMemberHearingSelectionComponent } from './staff-member-hearing-selection/staff-member-hearing-selection.component';
 
 @NgModule({
     imports: [CommonModule, SharedModule, OnTheDayRoutingModule],
@@ -45,7 +46,8 @@ import { QuickLinksComponent } from './quick-links/quick-links.component';
         IndependentSelfTestComponent,
         PluraliseTextPipe,
         SelfTestActionsComponent,
-        QuickLinksComponent
+        QuickLinksComponent,
+        StaffMemberHearingSelectionComponent
     ],
     exports: [DeclarationComponent]
 })

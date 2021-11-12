@@ -1,6 +1,7 @@
 import { fakeAsync, flush, tick } from '@angular/core/testing';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { ConferenceResponse, ConferenceStatus, ParticipantResponse, TokenResponse } from 'src/app/services/clients/api-client';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -49,6 +50,11 @@ import { WRTestComponent } from './WRTestComponent';
 
 describe('WaitingRoomComponent Video Call', () => {
     let component: WRTestComponent;
+    const mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+        'HearingVenueFlagsService',
+        ['setHearingVenueIsScottish'],
+        ['hearingVenueIsScottish$']
+    );
     const mockHeartbeat = {
         kill: jasmine.createSpy()
     };
@@ -82,7 +88,8 @@ describe('WaitingRoomComponent Video Call', () => {
             notificationToastrService,
             roomClosingToastrService,
             clockService,
-            consultationInvitiationService
+            consultationInvitiationService,
+            mockedHearingVenueFlagsService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));

@@ -35,7 +35,8 @@ namespace VideoWeb.Mappings
                 HearingVenueName = conference.HearingVenueName,
                 AudioRecordingRequired = conference.AudioRecordingRequired,
                 HearingRefId = conference.HearingId,
-                Endpoints = MapEndpoints(conference)
+                Endpoints = MapEndpoints(conference),
+                HearingVenueIsScottish = conference.HearingVenueIsScottish
             };
 
             if (conference.MeetingRoom != null)

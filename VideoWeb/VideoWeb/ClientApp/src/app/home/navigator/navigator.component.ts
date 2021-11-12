@@ -27,7 +27,7 @@ export class NavigatorComponent implements OnInit {
         this.featureFlagService
             .getFeatureFlagByName('StaffMemberFeature')
             .pipe(first())
-            .subscribe(result => (this.staffMemberNavigation = result ? pageUrls.StaffMemberHearingList : pageUrls.Unauthorised));
+            .subscribe(result => (this.staffMemberNavigation = result ? pageUrls.StaffMemberHearingSelection : pageUrls.Unauthorised));
     }
 
     ngOnInit() {

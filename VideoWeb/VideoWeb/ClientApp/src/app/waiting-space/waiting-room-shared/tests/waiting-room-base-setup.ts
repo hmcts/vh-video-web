@@ -20,6 +20,7 @@ import { NotificationToastrService } from 'src/app/waiting-space/services/notifi
 import { RoomClosingToastrService } from 'src/app/waiting-space/services/room-closing-toast.service';
 import { ToastrService } from 'ngx-toastr';
 import { ConsultationInvitationService } from '../../services/consultation-invitation.service';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 const conferenceTestData = new ConferenceTestData();
 
 export let component: WRTestComponent;
@@ -55,6 +56,7 @@ export let toastrService: jasmine.SpyObj<ToastrService>;
 export let logger: jasmine.SpyObj<Logger>;
 export const mockCamStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
 export const mockMicStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getAudioTracks']);
+export let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
 export const testDataDevice = new MediaDeviceTestData();
 export const jwToken = new TokenResponse({
     expires_on: '06/10/2020 01:13:00',
@@ -62,6 +64,11 @@ export const jwToken = new TokenResponse({
 });
 
 export function initAllWRDependencies() {
+    mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+        'HearingVenueFlagsService',
+        ['setHearingVenueIsScottish'],
+        ['hearingVenueIsScottish$']
+    );
     videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
         'getConferenceById',
         'getObfuscatedName',

@@ -61,10 +61,10 @@ describe('NavigatorComponent', () => {
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeHearingList]);
     });
 
-    it('should go to staff member hearing list if user is a StaffMember and staff-member-feature is ON', async () => {
+    it('should go to staff member hearing selection if user is a StaffMember and staff-member-feature is ON', async () => {
         const profile = new UserProfileResponse({ role: Role.StaffMember });
         component.navigateToHearingList(profile);
-        expect(router.navigate).toHaveBeenCalledWith([pageUrls.StaffMemberHearingList]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.StaffMemberHearingSelection]);
     });
 
     it('should go to unauthorized list if user is a StaffMember and staff-member-feature is OFF', async () => {

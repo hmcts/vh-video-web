@@ -22,6 +22,7 @@ import { UnsupportedDeviceComponent } from '../shared/unsupported-device/unsuppo
 import { ParticipantStatusGuard } from '../security/participant-status.guard';
 import { BackLinkDetails } from '../shared/models/back-link-details';
 import { StaffMemberGuard } from '../security/staff-member.guard';
+import { StaffMemberHearingSelectionComponent } from './staff-member-hearing-selection/staff-member-hearing-selection.component';
 
 export const routes: Routes = [
     {
@@ -33,6 +34,12 @@ export const routes: Routes = [
     {
         path: `${pageUrls.StaffMemberHearingList}`,
         component: JudgeHearingListComponent,
+        canActivate: [StaffMemberGuard],
+        data: { title: 'Staff Member hearing list' }
+    },
+    {
+        path: `${pageUrls.StaffMemberHearingSelection}`,
+        component: StaffMemberHearingSelectionComponent,
         canActivate: [StaffMemberGuard],
         data: { title: 'Staff Member hearing list' }
     },

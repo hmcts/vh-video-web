@@ -40,6 +40,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Participants = participants)
                 .With(x => x.NumberOfEndpoints = 2)
                 .With(x => x.ClosedDateTime = DateTime.UtcNow.AddMinutes(-10))
+                .With(x => x.HearingVenueIsScottish = true)
                 .Build();
 
             var response = _sut.Map(conference);
@@ -54,6 +55,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.Status.ToString().Should().Be(conference.Status.ToString());
             response.Participants.Count.Should().Be(participants.Count);
             response.NumberOfEndpoints.Should().Be(conference.NumberOfEndpoints);
+            response.HearingVenueIsScottish.Should().Be(conference.HearingVenueIsScottish);
         }
     }
 }

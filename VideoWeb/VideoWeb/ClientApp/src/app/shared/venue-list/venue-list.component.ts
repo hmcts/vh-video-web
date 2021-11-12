@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { SessionStorage } from 'src/app/services/session-storage';
-import { VhoStorageKeys } from '../services/models/session-keys';
+import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
 import { CourtRoomsAccounts } from 'src/app/vh-officer/services/models/court-rooms-accounts';
 import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 import { Logger } from 'src/app/services/logging/logger-base';
