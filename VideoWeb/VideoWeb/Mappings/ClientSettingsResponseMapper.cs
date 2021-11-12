@@ -33,6 +33,7 @@ namespace VideoWeb.Mappings
                 EnableAndroidSupport = servicesConfiguration.EnableAndroidSupport,
                 EnableIOSMobileSupport = servicesConfiguration.EnableIOSMobileSupport,
                 EnableIOSTabletSupport = servicesConfiguration.EnableIOSTabletSupport,
+                EnableDynamicEvidenceSharing = servicesConfiguration.EnableDynamicEvidenceSharing,
                 BlurRadius = servicesConfiguration.BlurRadius
             };
         }
