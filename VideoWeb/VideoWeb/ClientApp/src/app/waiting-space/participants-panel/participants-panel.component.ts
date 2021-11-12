@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ParticipantResponse } from 'src/app/services/clients/api-client';
 import { VideoControlService } from 'src/app/services/conference/video-control.service';
@@ -27,6 +28,7 @@ import { PanelModel } from '../models/panel-model-base';
 import { ParticipantPanelModel } from '../models/participant-panel-model';
 import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
 import { VideoEndpointPanelModel } from '../models/video-endpoint-panel-model';
+import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 import { VideoCallService } from '../services/video-call.service';
 
 @Component({
@@ -57,14 +59,28 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private eventService: EventsService,
         private logger: Logger,
         protected translateService: TranslateService,
-        private mapper: ParticipantPanelModelMapper
+        private mapper: ParticipantPanelModelMapper,
+        protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService
     ) {}
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+
         this.getParticipantsList().then(() => {
             this.setupVideoCallSubscribers();
             this.setupEventhubSubscribers();
+
+            this.participantRemoteMuteStoreService.conferenceParticipantsStatus$.pipe(take(1)).subscribe(state => {
+                this.participants.forEach(participant => {
+                    if (state.hasOwnProperty(participant.id)) {
+                        participant.updateParticipant(
+                            state[participant.id].isRemoteMuted,
+                            participant.hasHandRaised(),
+                            participant.hasSpotlight()
+                        );
+                    }
+                });
+            });
         });
     }
 
@@ -108,6 +124,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     setupVideoCallSubscribers() {
         this.logger.debug(`${this.loggerPrefix} Setting up pexip video call subscribers`);
+
         this.videoCallSubscription$.add(
             this.videoCallService
                 .onParticipantUpdated()
@@ -242,6 +259,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                 await this.eventService.publishRemoteMuteStatus(this.conferenceId, p.id, updatedParticipant.isRemoteMuted);
             });
         }
+        this.participantRemoteMuteStoreService.patchState({ [participant.id]: { isRemoteMuted: participant.isMicRemoteMuted() } });
         this.logger.debug(`${this.loggerPrefix} Participant has been updated in video call`, {
             conference: this.conferenceId,
             participant: participant.id,

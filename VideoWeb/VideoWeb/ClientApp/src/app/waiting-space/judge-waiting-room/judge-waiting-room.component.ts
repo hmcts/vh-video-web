@@ -29,6 +29,7 @@ import { CallError } from '../models/video-call-models';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
+import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
@@ -88,6 +89,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected videoControlCacheService: VideoControlCacheService,
         private unloadDetectorService: UnloadDetectorService,
         private hearingLayoutService: HearingLayoutService,
+        protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
         protected hearingVenueFlagsService: HearingVenueFlagsService
     ) {
         super(
@@ -106,6 +108,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             roomClosingToastrService,
             clockService,
             consultationInvitiationService,
+            participantRemoteMuteStoreService,
             hearingVenueFlagsService
         );
         this.displayConfirmStartHearingPopup = false;

@@ -22,6 +22,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { take, takeUntil } from 'rxjs/operators';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
+import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 
 @Component({
@@ -57,6 +58,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         protected translateService: TranslateService,
         protected consultationInvitiationService: ConsultationInvitationService,
         private unloadDetectorService: UnloadDetectorService,
+        protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
         protected hearingVenueFlagsService: HearingVenueFlagsService
     ) {
         super(
@@ -75,6 +77,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             roomClosingToastrService,
             clockService,
             consultationInvitiationService,
+            participantRemoteMuteStoreService,
             hearingVenueFlagsService
         );
     }
