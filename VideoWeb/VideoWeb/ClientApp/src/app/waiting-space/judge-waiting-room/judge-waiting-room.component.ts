@@ -200,62 +200,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             });
         }
     }
-
-    handleNotConnected(logPaylod) {
-        super.handleNotConnected(logPaylod);
-        this.hostWantsToJoinHearing = false;
-    }
-
-    updateShowVideo(): void {
-        const logPaylod = {
-            conference: this.conferenceId,
-            caseName: this.conference.case_name,
-            participant: this.participant.id,
-            showingVideo: false,
-            reason: ''
-        };
-        if (!this.connected) {
-            this.handleNotConnected(logPaylod);
-            return;
-        }
-
-        if (
-            this.hearing.isInSession() &&
-            !this.isOrHasWitnessLink() &&
-            !this.isQuickLinkParticipant() &&
-            this.shouldCurrentUserJoinHearing()
-        ) {
-            logPaylod.showingVideo = true;
-            logPaylod.reason = 'Showing video because hearing is in session';
-            this.logger.debug(`${this.loggerPrefixJudge} ${logPaylod.reason}`, logPaylod);
-            this.displayDeviceChangeModal = false;
-            this.showVideo = true;
-            this.showConsultationControls = false;
-            this.isPrivateConsultation = false;
-            return;
-        }
-
-        if (this.participant.status === ParticipantStatus.InConsultation) {
-            logPaylod.showingVideo = true;
-            logPaylod.reason = 'Showing video because participant is in a consultation';
-            this.logger.debug(`${this.loggerPrefixJudge} ${logPaylod.reason}`, logPaylod);
-            this.displayDeviceChangeModal = false;
-            this.showVideo = true;
-            this.isPrivateConsultation = true;
-            this.showConsultationControls = !this.isAdminConsultation;
-            return;
-        }
-
-        logPaylod.showingVideo = false;
-        logPaylod.reason = 'Not showing video because hearing is not in session and user is not in consultation';
-        this.logger.debug(`${this.loggerPrefixJudge} ${logPaylod.reason}`, logPaylod);
-        this.showVideo = false;
-        this.conferenceStartedBy = null;
-        this.showConsultationControls = false;
-        this.isPrivateConsultation = false;
-        this.hostWantsToJoinHearing = false;
-    }
-
     restoreSpotlightState(): void {
         this.participantService.participants.forEach(participant => {
             this.restoreSpotlightIfParticipantIsNotInAVMR(participant);
@@ -466,6 +410,11 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     shouldCurrentUserJoinHearing(): boolean {
         return this.participant.status === ParticipantStatus.InHearing || this.hostWantsToJoinHearing;
+    }
+
+    resetVideoFlags() {
+        super.resetVideoFlags();
+        this.hostWantsToJoinHearing = false;
     }
 
     initAudioRecordingInterval() {

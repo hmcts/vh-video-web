@@ -435,12 +435,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.shouldCurrentUserJoinHearing()).toBeTrue();
     });
 
-    it('calls join hearing in session endpoint', async () => {
-        const logPaylod = {};
-        component.handleNotConnected(logPaylod);
-        expect(component.hostWantsToJoinHearing).toBeFalse();
-    });
-
     it('should continue with no recording when judge dismisses the audio recording alert mid hearing', async () => {
         const toast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', { actioned: true });
         notificationToastrService.showAudioRecordingError.and.returnValue(toast);
