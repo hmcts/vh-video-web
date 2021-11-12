@@ -6315,6 +6315,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
     enable_android_support?: boolean;
     enable_ios_mobile_support?: boolean;
     enable_ios_tablet_support?: boolean;
+    enable_dynamic_evidence_sharing?: boolean;
     blur_radius?: number;
 
     constructor(data?: IClientSettingsResponse) {
@@ -6341,6 +6342,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
             this.enable_android_support = _data['enable_android_support'];
             this.enable_ios_mobile_support = _data['enable_ios_mobile_support'];
             this.enable_ios_tablet_support = _data['enable_ios_tablet_support'];
+            this.enable_dynamic_evidence_sharing = _data['enable_dynamic_evidence_sharing'];
             this.blur_radius = _data['blur_radius'];
         }
     }
@@ -6366,6 +6368,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
         data['enable_android_support'] = this.enable_android_support;
         data['enable_ios_mobile_support'] = this.enable_ios_mobile_support;
         data['enable_ios_tablet_support'] = this.enable_ios_tablet_support;
+        data['enable_dynamic_evidence_sharing'] = this.enable_dynamic_evidence_sharing;
         data['blur_radius'] = this.blur_radius;
         return data;
     }
@@ -6385,6 +6388,7 @@ export interface IClientSettingsResponse {
     enable_android_support?: boolean;
     enable_ios_mobile_support?: boolean;
     enable_ios_tablet_support?: boolean;
+    enable_dynamic_evidence_sharing?: boolean;
     blur_radius?: number;
 }
 
@@ -7417,6 +7421,8 @@ export enum EventType {
     Disconnected = 'Disconnected',
     Transfer = 'Transfer',
     Help = 'Help',
+    Start = 'Start',
+    CountdownFinished = 'CountdownFinished',
     Pause = 'Pause',
     Close = 'Close',
     Leave = 'Leave',
@@ -7427,8 +7433,6 @@ export enum EventType {
     Suspend = 'Suspend',
     VhoCall = 'VhoCall',
     ParticipantNotSignedIn = 'ParticipantNotSignedIn',
-    Start = 'Start',
-    CountdownFinished = 'CountdownFinished',
     EndpointJoined = 'EndpointJoined',
     EndpointDisconnected = 'EndpointDisconnected',
     EndpointTransfer = 'EndpointTransfer',

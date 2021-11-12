@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { takeUntil } from 'rxjs/operators';
+import { ConfigService } from 'src/app/services/api/config.service';
 import { ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
@@ -33,6 +34,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     @Input() public canToggleParticipantsPanel: boolean;
     @Input() public isChatVisible: boolean;
     private conferenceStatus: ConferenceStatusChanged;
+    enableDynamicEvidenceSharing = false;
 
     constructor(
         protected videoCallService: VideoCallService,
@@ -42,7 +44,8 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         protected participantService: ParticipantService,
         protected translateService: TranslateService,
         protected userMediaService: UserMediaService,
-        conferenceService: ConferenceService
+        conferenceService: ConferenceService,
+        configSerivce: ConfigService
     ) {
         super(videoCallService, eventService, deviceTypeService, logger, participantService, translateService, userMediaService);
         this.canToggleParticipantsPanel = true;
@@ -50,6 +53,11 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         conferenceService.onCurrentConferenceStatusChanged$.pipe(takeUntil(this.destroyedSubject)).subscribe(status => {
             this.conferenceStatus = status;
         });
+
+        configSerivce
+            .getClientSettings()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(settings => (this.enableDynamicEvidenceSharing = settings.enable_dynamic_evidence_sharing));
     }
 
     get canShowCloseHearingPopup(): boolean {

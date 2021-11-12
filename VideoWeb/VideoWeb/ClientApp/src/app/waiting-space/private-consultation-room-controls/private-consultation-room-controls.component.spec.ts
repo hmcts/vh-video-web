@@ -1,5 +1,6 @@
 import { Guid } from 'guid-typescript';
 import {
+    ClientSettingsResponse,
     ConferenceResponse,
     ConferenceStatus,
     ParticipantForUserResponse,
@@ -38,6 +39,7 @@ import { CaseTypeGroup } from '../models/case-type-group';
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { fakeAsync, flush } from '@angular/core/testing';
+import { ConfigService } from 'src/app/services/api/config.service';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -80,8 +82,13 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
     let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
     let onCurrentConferenceStatusSubject: Subject<ConferenceStatusChanged>;
+    let configServiceSpy: jasmine.SpyObj<ConfigService>;
+    let clientSettingsResponse: ClientSettingsResponse;
 
     beforeEach(() => {
+        clientSettingsResponse = new ClientSettingsResponse({
+            enable_dynamic_evidence_sharing: false
+        });
         translateService.instant.calls.reset();
 
         participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
@@ -89,6 +96,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             [],
             ['loggedInParticipant$', 'participants']
         );
+        configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings']);
+        configServiceSpy.getClientSettings.and.returnValue(of(clientSettingsResponse));
 
         userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>([], ['isAudioOnly$']);
         isAudioOnlySubject = new Subject<boolean>();
@@ -111,7 +120,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             participantServiceSpy,
             translateService,
             userMediaServiceSpy,
-            conferenceServiceSpy
+            conferenceServiceSpy,
+            configServiceSpy
         );
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;
@@ -188,6 +198,50 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             // Assert
             expect(videoCallServiceSpy.joinHearingInSession).toHaveBeenCalledWith(component.conferenceId, component.participant.id);
         }));
+    });
+
+    it('enableDynamicEvidenceSharing returns false when dynamic evidence sharing is disabled', () => {
+        configServiceSpy.getClientSettings.and.returnValue(
+            of(
+                new ClientSettingsResponse({
+                    enable_dynamic_evidence_sharing: false
+                })
+            )
+        );
+        const _component = new PrivateConsultationRoomControlsComponent(
+            videoCallService,
+            eventsService,
+            deviceTypeService,
+            logger,
+            participantServiceSpy,
+            translateService,
+            userMediaServiceSpy,
+            conferenceServiceSpy,
+            configServiceSpy
+        );
+        expect(_component.enableDynamicEvidenceSharing).toBe(false);
+    });
+
+    it('enableDynamicEvidenceSharing returns true when dynamic evidence sharing is enabled', () => {
+        configServiceSpy.getClientSettings.and.returnValue(
+            of(
+                new ClientSettingsResponse({
+                    enable_dynamic_evidence_sharing: true
+                })
+            )
+        );
+        const _component = new PrivateConsultationRoomControlsComponent(
+            videoCallService,
+            eventsService,
+            deviceTypeService,
+            logger,
+            participantServiceSpy,
+            translateService,
+            userMediaServiceSpy,
+            conferenceServiceSpy,
+            configServiceSpy
+        );
+        expect(_component.enableDynamicEvidenceSharing).toBe(true);
     });
 
     it('should open self-view by default for judge', () => {

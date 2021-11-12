@@ -1,7 +1,13 @@
 import { fakeAsync, flush } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
-import { ConferenceResponse, ParticipantForUserResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
+import {
+    ClientSettingsResponse,
+    ConferenceResponse,
+    ParticipantForUserResponse,
+    ParticipantStatus,
+    Role
+} from 'src/app/services/clients/api-client';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -36,6 +42,7 @@ import { HearingControlsBaseComponent } from './hearing-controls-base.component'
 import { CaseTypeGroup } from '../models/case-type-group';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
+import { ConfigService } from 'src/app/services/api/config.service';
 
 describe('HearingControlsBaseComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -82,8 +89,13 @@ describe('HearingControlsBaseComponent', () => {
 
     let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
     let onCurrentConferenceStatusSubject: Subject<ConferenceStatusChanged>;
+    let configServiceSpy: jasmine.SpyObj<ConfigService>;
+    let clientSettingsResponse: ClientSettingsResponse;
 
     beforeEach(() => {
+        clientSettingsResponse = new ClientSettingsResponse({
+            enable_dynamic_evidence_sharing: false
+        });
         translateService.instant.calls.reset();
 
         participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
@@ -104,6 +116,8 @@ describe('HearingControlsBaseComponent', () => {
         onCurrentConferenceStatusSubject = new Subject<ConferenceStatusChanged>();
         getSpiedPropertyGetter(conferenceServiceSpy, 'onCurrentConferenceStatusChanged$').and.returnValue(onCurrentConferenceStatusSubject);
 
+        configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings']);
+        configServiceSpy.getClientSettings.and.returnValue(of(clientSettingsResponse));
         component = new PrivateConsultationRoomControlsComponent(
             videoCallService,
             eventsService,
@@ -112,7 +126,8 @@ describe('HearingControlsBaseComponent', () => {
             participantServiceSpy,
             translateService,
             userMediaServiceSpy,
-            conferenceServiceSpy
+            conferenceServiceSpy,
+            configServiceSpy
         );
         conference = new ConferenceTestData().getConferenceNow();
         component.participant = globalParticipant;
