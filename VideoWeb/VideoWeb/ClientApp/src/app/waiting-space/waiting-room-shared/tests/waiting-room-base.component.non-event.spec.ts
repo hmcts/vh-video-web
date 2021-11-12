@@ -43,6 +43,7 @@ import {
     videoWebService
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
+import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
 
 describe('WaitingRoomComponent message and clock', () => {
     let component: WRTestComponent;
@@ -63,7 +64,10 @@ describe('WaitingRoomComponent message and clock', () => {
         });
     });
 
+    let participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
+
     beforeEach(() => {
+        participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
         component = new WRTestComponent(
             activatedRoute,
             videoWebService,
@@ -80,6 +84,7 @@ describe('WaitingRoomComponent message and clock', () => {
             roomClosingToastrService,
             clockService,
             consultationInvitiationService,
+            participantRemoteMuteStoreServiceSpy,
             mockedHearingVenueFlagsService
         );
 
