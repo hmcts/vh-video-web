@@ -47,6 +47,7 @@
     "@microsoft/signalr": "^3.1.20",
     "@ministryofjustice/frontend": "^1.0.0",
     "@ng-select/ng-select": "^5.0.15",
+    "@ngrx/component-store": "^11.1.1",
     "@ngx-translate/core": "^13.0.0",
     "@ngx-translate/http-loader": "^6.0.0",
     "angular-auth-oidc-client": "^11.6.4",

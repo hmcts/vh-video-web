@@ -42,6 +42,7 @@ import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.com
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
+import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
 
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let component: ParticipantWaitingRoomComponent;
@@ -72,6 +73,8 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         preferences.audioOnly = false;
     });
 
+    let participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
+
     beforeEach(() => {
         unloadDetectorServiceSpy = jasmine.createSpyObj<UnloadDetectorService>(
             'UnloadDetectorService',
@@ -93,6 +96,8 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             snapshot: { data: { loggedUser: logged }, paramMap: convertToParamMap({ conferenceId: globalConference.id }) }
         };
 
+        participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
+
         component = new ParticipantWaitingRoomComponent(
             activatedRoute,
             videoWebService,
@@ -111,6 +116,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             translateService,
             consultationInvitiationService,
             unloadDetectorServiceSpy,
+            participantRemoteMuteStoreServiceSpy,
             mockedHearingVenueFlagsService
         );
 
