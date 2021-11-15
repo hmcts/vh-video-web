@@ -40,6 +40,7 @@ import { ConferenceStatusChanged } from 'src/app/services/conference/models/conf
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { fakeAsync, flush } from '@angular/core/testing';
 import { ConfigService } from 'src/app/services/api/config.service';
+import { FeatureFlagService } from 'src/app/services/feature-flag.service';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -84,7 +85,12 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     let onCurrentConferenceStatusSubject: Subject<ConferenceStatusChanged>;
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
     let clientSettingsResponse: ClientSettingsResponse;
+    let featureFlagServiceSpy: jasmine.SpyObj<FeatureFlagService>;
 
+    beforeAll(() => {
+        featureFlagServiceSpy = jasmine.createSpyObj<FeatureFlagService>('FeatureFlagService', ['getFeatureFlagByName']);
+        featureFlagServiceSpy.getFeatureFlagByName.and.returnValue(of(true));
+    });
     beforeEach(() => {
         clientSettingsResponse = new ClientSettingsResponse({
             enable_dynamic_evidence_sharing: false
@@ -121,7 +127,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             translateService,
             userMediaServiceSpy,
             conferenceServiceSpy,
-            configServiceSpy
+            configServiceSpy,
+            featureFlagServiceSpy
         );
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;
@@ -199,6 +206,24 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             expect(videoCallServiceSpy.joinHearingInSession).toHaveBeenCalledWith(component.conferenceId, component.participant.id);
         }));
     });
+    describe('StaffMemberFeature', () => {
+        it('should show leave button when staff member feature is enabled', async () => {
+            // Act
+            featureFlagServiceSpy.getFeatureFlagByName.and.returnValue(of(true));
+            spyOnProperty(component, 'isHost').and.returnValue(true);
+            component.isPrivateConsultation = false;
+            // Assert
+            expect(component.canShowLeaveButton).toBeTrue();
+        });
+        it('should show leave button when staff member feature is enabled', async () => {
+            // Act
+            featureFlagServiceSpy.getFeatureFlagByName.and.returnValue(of(false));
+            spyOnProperty(component, 'isHost').and.returnValue(true);
+            component.isPrivateConsultation = false;
+            // Assert
+            expect(component.canShowLeaveButton).toBeFalse();
+        });
+    });
 
     it('enableDynamicEvidenceSharing returns false when dynamic evidence sharing is disabled', () => {
         configServiceSpy.getClientSettings.and.returnValue(
@@ -217,7 +242,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             translateService,
             userMediaServiceSpy,
             conferenceServiceSpy,
-            configServiceSpy
+            configServiceSpy,
+            featureFlagServiceSpy
         );
         expect(_component.enableDynamicEvidenceSharing).toBe(false);
     });
@@ -239,7 +265,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             translateService,
             userMediaServiceSpy,
             conferenceServiceSpy,
-            configServiceSpy
+            configServiceSpy,
+            featureFlagServiceSpy
         );
         expect(_component.enableDynamicEvidenceSharing).toBe(true);
     });

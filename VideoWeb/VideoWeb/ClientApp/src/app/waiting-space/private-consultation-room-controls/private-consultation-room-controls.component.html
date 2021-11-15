@@ -274,7 +274,7 @@
                 <span class="far fa-hand-paper" [class]="{ yellow: handRaised }"></span>
             </div>
 
-            <ng-container *ngIf='isHost && !isPrivateConsultation'>
+            <ng-container *ngIf='canShowLeaveButton'>
                 <div class="flexBar"></div>
 
                 <div id='leave-hearing-desktop' class="icon-button" appTooltip colour='grey'
