@@ -1083,8 +1083,37 @@ export abstract class WaitingRoomBaseDirective {
         await this.consultationService.leaveConsultation(this.conference, this.participant);
     }
 
+    resetVideoFlags() {
+        this.showVideo = false;
+        this.showConsultationControls = false;
+        this.isPrivateConsultation = false;
+    }
+
+    willShowHearing() {
+        if (this.hearing.isInSession() && this.shouldCurrentUserJoinHearing()) {
+            this.displayDeviceChangeModal = false;
+            this.showVideo = true;
+            this.showConsultationControls = false;
+            this.isPrivateConsultation = false;
+            return true;
+        }
+        return false;
+    }
+
+    willShowConsultation(): boolean {
+        if (this.participant.status === ParticipantStatus.InConsultation) {
+            this.displayDeviceChangeModal = false;
+            this.showVideo = true;
+            this.isPrivateConsultation = true;
+            this.showConsultationControls = !this.isAdminConsultation;
+
+            return true;
+        }
+        return false;
+    }
+
     updateShowVideo(): void {
-        const logPaylod = {
+        const logPayload = {
             conference: this.conferenceId,
             caseName: this.conference.case_name,
             participant: this.participant.id,
@@ -1092,35 +1121,24 @@ export abstract class WaitingRoomBaseDirective {
             reason: ''
         };
         if (!this.connected) {
-            logPaylod.showingVideo = false;
-            logPaylod.reason = 'Not showing video because not connecting to pexip node';
-            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
-            this.showVideo = false;
-            this.showConsultationControls = false;
-            this.isPrivateConsultation = false;
+            logPayload.showingVideo = false;
+            logPayload.reason = 'Not showing video because not connecting to pexip node';
+            this.logger.debug(`${this.loggerPrefix} ${logPayload.reason}`, logPayload);
+            this.resetVideoFlags();
             return;
         }
 
-        if (
-            this.hearing.isInSession() &&
-            !this.isOrHasWitnessLink() &&
-            !this.isQuickLinkParticipant() &&
-            this.shouldCurrentUserJoinHearing()
-        ) {
-            logPaylod.showingVideo = true;
-            logPaylod.reason = 'Showing video because hearing is in session';
-            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
-            this.displayDeviceChangeModal = false;
-            this.showVideo = true;
-            this.showConsultationControls = false;
-            this.isPrivateConsultation = false;
+        if (this.willShowHearing()) {
+            logPayload.showingVideo = true;
+            logPayload.reason = 'Showing video because hearing is in session';
+            this.logger.debug(`${this.loggerPrefix} ${logPayload.reason}`, logPayload);
             return;
         }
 
         if ((this.isOrHasWitnessLink() || this.isQuickLinkParticipant()) && this.participant.status === ParticipantStatus.InHearing) {
-            logPaylod.showingVideo = true;
-            logPaylod.reason = 'Showing video because witness is in hearing';
-            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
+            logPayload.showingVideo = true;
+            logPayload.reason = 'Showing video because witness is in hearing';
+            this.logger.debug(`${this.loggerPrefix} ${logPayload.reason}`, logPayload);
             this.displayDeviceChangeModal = false;
             this.showVideo = true;
             this.showConsultationControls = false;
@@ -1128,28 +1146,22 @@ export abstract class WaitingRoomBaseDirective {
             return;
         }
 
-        if (this.participant.status === ParticipantStatus.InConsultation) {
-            logPaylod.showingVideo = true;
-            logPaylod.reason = 'Showing video because participant is in a consultation';
-            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
-            this.displayDeviceChangeModal = false;
-            this.showVideo = true;
-            this.isPrivateConsultation = true;
-            this.showConsultationControls = !this.isAdminConsultation;
+        if (this.willShowConsultation()) {
+            logPayload.showingVideo = true;
+            logPayload.reason = 'Showing video because participant is in a consultation';
+            this.logger.debug(`${this.loggerPrefix} ${logPayload.reason}`, logPayload);
             return;
         }
 
-        logPaylod.showingVideo = false;
-        logPaylod.reason = 'Not showing video because hearing is not in session and user is not in consultation';
-        this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
-        this.showVideo = false;
+        logPayload.showingVideo = false;
+        logPayload.reason = 'Not showing video because hearing is not in session and user is not in consultation';
+        this.logger.debug(`${this.loggerPrefix} ${logPayload.reason}`, logPayload);
         this.conferenceStartedBy = null;
-        this.showConsultationControls = false;
-        this.isPrivateConsultation = false;
+        this.resetVideoFlags();
     }
 
     shouldCurrentUserJoinHearing(): boolean {
-        return !this.isHost() || this.participant.status === ParticipantStatus.InHearing;
+        return !this.isOrHasWitnessLink() && !this.isQuickLinkParticipant();
     }
 
     isHost(): boolean {

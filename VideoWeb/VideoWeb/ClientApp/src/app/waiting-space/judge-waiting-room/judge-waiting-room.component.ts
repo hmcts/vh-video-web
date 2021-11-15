@@ -50,6 +50,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     audioRecordingStreamCheckIntervalSeconds = 10;
     conferenceRecordingInSessionForSeconds = 0;
     expanedPanel = true;
+    hostWantsToJoinHearing = false;
     displayConfirmStartHearingPopup: boolean;
 
     unreadMessageCount = 0;
@@ -199,7 +200,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             });
         }
     }
-
     restoreSpotlightState(): void {
         this.participantService.participants.forEach(participant => {
             this.restoreSpotlightIfParticipantIsNotInAVMR(participant);
@@ -365,6 +365,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
         this.hearingLayoutService.currentLayout$.pipe(take(1)).subscribe(async layout => {
             try {
+                this.hostWantsToJoinHearing = true;
                 await this.videoCallService.startHearing(this.hearing.id, layout);
             } catch (err) {
                 this.logger.error(`${this.loggerPrefixJudge} Failed to ${action} a hearing for conference`, err, {
@@ -403,7 +404,17 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     async joinHearingInSession() {
+        this.hostWantsToJoinHearing = true;
         await this.videoCallService.joinHearingInSession(this.conferenceId, this.participant.id);
+    }
+
+    shouldCurrentUserJoinHearing(): boolean {
+        return this.participant.status === ParticipantStatus.InHearing || this.hostWantsToJoinHearing;
+    }
+
+    resetVideoFlags() {
+        super.resetVideoFlags();
+        this.hostWantsToJoinHearing = false;
     }
 
     initAudioRecordingInterval() {
