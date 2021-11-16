@@ -27,7 +27,6 @@ export class NoSleepService {
         private logger: Logger
     ) {
         this.renderer = renderer2Factory.createRenderer(null, null);
-        // TODO: Handle this properly
         this.renderer.listen(window, 'touchstart', () => this.touchStartSubject.next());
         this.userMediaStreamService.currentStream$.subscribe(stream => {
             this.onStreamChange(stream);
