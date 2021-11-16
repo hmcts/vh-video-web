@@ -27,6 +27,7 @@ export class NoSleepService {
         private logger: Logger
     ) {
         this.renderer = renderer2Factory.createRenderer(null, null);
+        // TODO: Handle this properly
         this.renderer.listen(window, 'touchstart', () => this.touchStartSubject.next());
         this.userMediaStreamService.currentStream$.subscribe(stream => {
             this.onStreamChange(stream);
@@ -45,8 +46,10 @@ export class NoSleepService {
         containerElement.setAttribute('role', 'none');
 
         this.videoElement = this.document.createElement('video');
-        this.videoElement.muted = true;
         this.videoElement.setAttribute('playsInLine', 'true');
+        this.videoElement.setAttribute('id', 'no-sleep-video');
+
+        this.videoElement.muted = true;
         this.videoElement.style.opacity = '0';
         this.videoElement.style.top = '0';
         this.videoElement.style.width = '100px';
@@ -74,6 +77,7 @@ export class NoSleepService {
     private start() {
         this.logger.info(`${this.loggerPrefix} starting`);
         this.videoElement.play();
+        this.videoElement.muted = true;
     }
 
     disable() {
@@ -87,6 +91,7 @@ export class NoSleepService {
         this.currentStream = stream;
         if (this.videoElement) {
             this.videoElement.srcObject = this.currentStream;
+            this.videoElement.muted = true;
         }
     }
 }
