@@ -27,7 +27,7 @@
     <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
     <PackageReference Include="NBuilder" Version="6.1.0" />
     <PackageReference Include="UserApi.Client" Version="1.27.0" />
-    <PackageReference Include="VideoApi.Client" Version="1.28.1" />
+    <PackageReference Include="VideoApi.Client" Version="1.31.5" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VideoWeb.Common\VideoWeb.Common.csproj" />

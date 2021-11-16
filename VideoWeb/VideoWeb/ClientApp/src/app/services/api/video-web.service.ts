@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { VhoStorageKeys } from 'src/app/vh-officer/services/models/session-keys';
 import {
     AddMediaEventRequest,
     AddSelfTestFailureEventRequest,
@@ -33,9 +34,11 @@ import { IVideoWebApiService } from './video-web-service.interface';
 export class VideoWebService implements IVideoWebApiService {
     readonly ACTIVE_CONFERENCE_KEY = 'vh.active.conference';
     private readonly activeConferencesCache: SessionStorage<ConferenceLite>;
+    private readonly judgeAllocationStorage: SessionStorage<string[]>;
 
     constructor(private apiClient: ApiClient) {
         this.activeConferencesCache = new SessionStorage<ConferenceLite>(this.ACTIVE_CONFERENCE_KEY);
+        this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
     }
 
     getConferencesForJudge(): Observable<ConferenceForHostResponse[]> {
@@ -43,7 +46,8 @@ export class VideoWebService implements IVideoWebApiService {
     }
 
     getConferencesForStaffMember(): Observable<ConferenceForHostResponse[]> {
-        return this.apiClient.getConferencesForHost();
+        const venues = this.judgeAllocationStorage.get();
+        return this.apiClient.getConferencesForStaffMember(venues);
     }
 
     getConferencesForIndividual(): Observable<ConferenceForIndividualResponse[]> {

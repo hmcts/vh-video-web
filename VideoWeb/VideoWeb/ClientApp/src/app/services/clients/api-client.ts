@@ -1128,6 +1128,99 @@ export class ApiClient {
     }
 
     /**
+     * Get conferences today for staff member with the specifed hearing venue names
+     * @param hearingVenueNames (optional)
+     * @return Success
+     */
+    getConferencesForStaffMember(hearingVenueNames: string[] | undefined): Observable<ConferenceForHostResponse[]> {
+        let url_ = this.baseUrl + '/conferences/staffmember?';
+        if (hearingVenueNames === null) throw new Error("The parameter 'hearingVenueNames' cannot be null.");
+        else if (hearingVenueNames !== undefined)
+            hearingVenueNames &&
+                hearingVenueNames.forEach(item => {
+                    url_ += 'hearingVenueNames=' + encodeURIComponent('' + item) + '&';
+                });
+        url_ = url_.replace(/[?&]$/, '');
+
+        let options_: any = {
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({
+                Accept: 'application/json'
+            })
+        };
+
+        return this.http
+            .request('get', url_, options_)
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processGetConferencesForStaffMember(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processGetConferencesForStaffMember(<any>response_);
+                        } catch (e) {
+                            return <Observable<ConferenceForHostResponse[]>>(<any>_observableThrow(e));
+                        }
+                    } else return <Observable<ConferenceForHostResponse[]>>(<any>_observableThrow(response_));
+                })
+            );
+    }
+
+    protected processGetConferencesForStaffMember(response: HttpResponseBase): Observable<ConferenceForHostResponse[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result200: any = null;
+                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    if (Array.isArray(resultData200)) {
+                        result200 = [] as any;
+                        for (let item of resultData200) result200!.push(ConferenceForHostResponse.fromJS(item));
+                    } else {
+                        result200 = <any>null;
+                    }
+                    return _observableOf(result200);
+                })
+            );
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result400: any = null;
+                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result400 = ProblemDetails.fromJS(resultData400);
+                    return throwException('Bad Request', status, _responseText, _headers, result400);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<ConferenceForHostResponse[]>(<any>null);
+    }
+
+    /**
      * Get conferences today for individual or representative excluding those that have been closed for over 120 minutes
      * @return Success
      */
@@ -7417,6 +7510,8 @@ export enum EventType {
     Disconnected = 'Disconnected',
     Transfer = 'Transfer',
     Help = 'Help',
+    Start = 'Start',
+    CountdownFinished = 'CountdownFinished',
     Pause = 'Pause',
     Close = 'Close',
     Leave = 'Leave',
@@ -7427,8 +7522,6 @@ export enum EventType {
     Suspend = 'Suspend',
     VhoCall = 'VhoCall',
     ParticipantNotSignedIn = 'ParticipantNotSignedIn',
-    Start = 'Start',
-    CountdownFinished = 'CountdownFinished',
     EndpointJoined = 'EndpointJoined',
     EndpointDisconnected = 'EndpointDisconnected',
     EndpointTransfer = 'EndpointTransfer',
