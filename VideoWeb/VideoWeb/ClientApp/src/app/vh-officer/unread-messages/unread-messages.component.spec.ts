@@ -5,18 +5,19 @@ import { UnreadAdminMessageResponse, UnreadInstantMessageConferenceCountResponse
 import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
 import { ConferenceMessageAnswered } from 'src/app/services/models/conference-message-answered';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { adminAnsweredChatSubjectMock, eventsServiceSpy, messageSubjectMock } from 'src/app/testing/mocks/mock-events-service';
+import { adminAnsweredChatSubjectMock, messageSubjectMock } from 'src/app/testing/mocks/mock-im-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { InstantMessage } from '../../services/models/instant-message';
 import { Hearing } from '../../shared/models/hearing';
 import { UnreadMessagesComponent } from './unread-messages.component';
 import { UnreadAdminMessageModelMapper } from 'src/app/shared/mappers/unread-messages-model-mapper';
 import { UnreadAdminMessageModel } from 'src/app/waiting-space/models/unread-admin-message-model';
+import { imEventsServiceSpy } from 'src/app/testing/mocks/mock-im-events-service';
 
 describe('UnreadMessagesComponent', () => {
     let component: UnreadMessagesComponent;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    const eventsService = eventsServiceSpy;
+    const imEventsService = imEventsServiceSpy;
     let eventbus: jasmine.SpyObj<EventBusService>;
     const conference = new ConferenceTestData().getConferenceDetailNow();
     let logger: MockLogger;
@@ -57,7 +58,7 @@ describe('UnreadMessagesComponent', () => {
 
         unreadAdminMessageModelSpy.mapUnreadMessageResponseArray.and.returnValue(unreadMessages);
 
-        component = new UnreadMessagesComponent(videoWebServiceSpy, eventsService, logger, eventbus, unreadAdminMessageModelSpy);
+        component = new UnreadMessagesComponent(videoWebServiceSpy, imEventsService, logger, eventbus, unreadAdminMessageModelSpy);
 
         component.hearing = new Hearing(conference);
 

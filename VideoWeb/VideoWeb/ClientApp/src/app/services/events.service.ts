@@ -4,7 +4,6 @@ import { Heartbeat } from '../shared/models/heartbeat';
 import { Room } from '../shared/models/room';
 import { ParticipantMediaStatus } from '../shared/models/participant-media-status';
 import { ParticipantMediaStatusMessage } from '../shared/models/participant-media-status-message';
-import { ConferenceMessageAnswered } from './models/conference-message-answered';
 import {
     ConferenceStatus,
     ConsultationAnswer,
@@ -22,7 +21,6 @@ import { ConferenceStatusMessage } from './models/conference-status-message';
 import { EndpointStatusMessage } from './models/EndpointStatusMessage';
 import { HearingTransfer, TransferDirection } from './models/hearing-transfer';
 import { HelpMessage } from './models/help-message';
-import { InstantMessage } from './models/instant-message';
 import { HeartbeatHealth, ParticipantHeartbeat } from './models/participant-heartbeat';
 import { ParticipantStatusMessage } from './models/participant-status-message';
 import { RoomTransfer } from '../shared/models/room-transfer';
@@ -58,8 +56,6 @@ export class EventsService {
     private requestedConsultationMessageSubject = new Subject<RequestedConsultationMessage>();
     private consultationRequestResponseMessageSubject = new Subject<ConsultationRequestResponseMessage>();
 
-    private messageSubject = new Subject<InstantMessage>();
-    private adminAnsweredChatSubject = new Subject<ConferenceMessageAnswered>();
     private participantHeartbeat = new Subject<ParticipantHeartbeat>();
     private hearingTransferSubject = new Subject<HearingTransfer>();
     private participantMediaStatusSubject = new Subject<ParticipantMediaStatusMessage>();
@@ -138,19 +134,6 @@ export class EventsService {
             );
             this.logger.debug('[EventsService] - ConsultationRequestResponseMessage received', message);
             this.consultationRequestResponseMessageSubject.next(message);
-        },
-
-        ReceiveMessage: (conferenceId: string, from: string, to: string, message: string, timestamp: Date, messageUuid: string) => {
-            const date = new Date(timestamp);
-            const chat = new InstantMessage({ conferenceId, id: messageUuid, to, from, message, timestamp: date });
-            this.logger.debug('[EventsService] - ReceiveMessage received', chat);
-            this.messageSubject.next(chat);
-        },
-
-        AdminAnsweredChat: (conferenceId: string, participantId: string) => {
-            const payload = new ConferenceMessageAnswered(conferenceId, participantId);
-            this.logger.debug('[EventsService] - AdminAnsweredChat received', payload);
-            this.adminAnsweredChatSubject.next(payload);
         },
 
         HearingTransfer: (conferenceId: string, participantId: string, hearingPosition: TransferDirection) => {
@@ -307,14 +290,6 @@ export class EventsService {
         return this.consultationRequestResponseMessageSubject.asObservable();
     }
 
-    getChatMessage(): Observable<InstantMessage> {
-        return this.messageSubject.asObservable();
-    }
-
-    getAdminAnsweredChat(): Observable<ConferenceMessageAnswered> {
-        return this.adminAnsweredChatSubject.asObservable();
-    }
-
     getHeartbeat(): Observable<ParticipantHeartbeat> {
         return this.participantHeartbeat.asObservable();
     }
@@ -348,22 +323,6 @@ export class EventsService {
 
     getHearingLayoutChanged(): Observable<HearingLayoutChanged> {
         return this.hearingLayoutChangedSubject.asObservable();
-    }
-
-    async sendMessage(instantMessage: InstantMessage) {
-        this.logger.debug('[EventsService] - Sent message to EventHub', instantMessage);
-        try {
-            await this.eventsHubConnection.send(
-                'SendMessage',
-                instantMessage.conferenceId,
-                instantMessage.message,
-                instantMessage.to,
-                instantMessage.id
-            );
-        } catch (err) {
-            this.logger.error(`[EventsService] - Unable to send im from ${instantMessage.from}`, err);
-            throw err;
-        }
     }
 
     async sendHeartbeat(conferenceId: string, participantId: string, heartbeat: Heartbeat) {

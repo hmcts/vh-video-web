@@ -1,7 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { UnreadAdminMessageResponse } from 'src/app/services/clients/api-client';
-import { EventsService } from 'src/app/services/events.service';
+import { ImEventsService } from 'src/app/services/im-events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { Hearing } from 'src/app/shared/models/hearing';
@@ -19,8 +19,8 @@ export class UnreadMessagesParticipantComponent extends UnreadMessagesComponentB
 
     unreadMessages: UnreadAdminMessageResponse;
 
-    constructor(private videoWebService: VideoWebService, protected eventsService: EventsService, protected logger: Logger) {
-        super(eventsService, logger);
+    constructor(private videoWebService: VideoWebService, protected imEventsService: ImEventsService, protected logger: Logger) {
+        super(imEventsService, logger);
     }
 
     ngOnInit() {

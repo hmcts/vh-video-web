@@ -16,7 +16,7 @@ import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ChatResponse } from 'src/app/services/clients/api-client';
-import { EventsService } from 'src/app/services/events.service';
+import { ImEventsService } from 'src/app/services/im-events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { ChatBaseComponent } from 'src/app/shared/chat/chat-base.component';
@@ -44,14 +44,14 @@ export abstract class ChatWindowBaseComponent extends ChatBaseComponent implemen
     constructor(
         protected videoWebService: VideoWebService,
         protected profileService: ProfileService,
-        protected eventService: EventsService,
+        protected imEventService: ImEventsService,
         protected logger: Logger,
         securityServiceProviderService: SecurityServiceProvider,
         protected imHelper: ImHelper,
         protected route: ActivatedRoute,
         protected translateService: TranslateService
     ) {
-        super(videoWebService, profileService, eventService, logger, securityServiceProviderService, imHelper, translateService);
+        super(videoWebService, profileService, imEventService, logger, securityServiceProviderService, imHelper, translateService);
     }
 
     _participantUsername: string;

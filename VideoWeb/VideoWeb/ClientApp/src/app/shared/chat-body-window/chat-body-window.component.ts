@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { EventsService } from 'src/app/services/events.service';
+``import { ImEventsService } from 'src/app/services/im-events.service';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 
 @Component({
@@ -13,7 +13,7 @@ export class ChatBodyWindowComponent {
 
     retryMessages: InstantMessage[] = [];
 
-    constructor(private eventsService: EventsService) {}
+    constructor(private imEventsService: ImEventsService) {}
 
     get allMessages(): InstantMessage[] {
         return [].concat(this.messagesReceived, this.pendingMessages);
@@ -24,7 +24,7 @@ export class ChatBodyWindowComponent {
             return;
         }
         this.retryMessages.push(instantMessage);
-        await this.eventsService.sendMessage(instantMessage);
+        await this.imEventsService.sendMessage(instantMessage);
     }
 
     hasMessageFailed(instantMessage: InstantMessage) {

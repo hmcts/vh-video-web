@@ -3,7 +3,6 @@ import { Subject, Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { LoggedParticipantResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
-import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { Hearing } from 'src/app/shared/models/hearing';
@@ -12,6 +11,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
 import { takeUntil } from 'rxjs/operators';
+import { ImEventsService } from 'src/app/services/im-events.service';
 
 @Component({
     selector: 'app-chat-base-component',
@@ -33,7 +33,7 @@ export abstract class ChatBaseComponent implements OnDestroy {
     protected constructor(
         protected videoWebService: VideoWebService,
         protected profileService: ProfileService,
-        protected eventService: EventsService,
+        protected imEventService: ImEventsService,
         protected logger: Logger,
         securityServiceProviderService: SecurityServiceProvider,
         protected imHelper: ImHelper,
@@ -70,7 +70,7 @@ export abstract class ChatBaseComponent implements OnDestroy {
                 });
         });
 
-        return this.eventService.getChatMessage().subscribe({
+        return this.imEventService.getChatMessage().subscribe({
             next: async message => {
                 await this.handleIncomingMessage(message);
             }
@@ -192,7 +192,7 @@ export abstract class ChatBaseComponent implements OnDestroy {
 
     async sendInstantMessage(instantMessage: InstantMessage) {
         this.addMessageToPending(instantMessage);
-        await this.eventService.sendMessage(instantMessage);
+        await this.imEventService.sendMessage(instantMessage);
         this.removeMessageFromPending(instantMessage);
         this.disableScrollDown = false;
         this.scrollToBottom();

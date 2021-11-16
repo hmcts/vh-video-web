@@ -1,11 +1,11 @@
-import { EventsService } from 'src/app/services/events.service';
+import { ImEventsService } from 'src/app/services/im-events.service';
 import { ChatBodyWindowComponent } from './chat-body-window.component';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { Guid } from 'guid-typescript';
 
 describe('ChatBodyWindowComponent', () => {
     let component: ChatBodyWindowComponent;
-    let eventsService: jasmine.SpyObj<EventsService>;
+    let imEventsService: jasmine.SpyObj<ImEventsService>;
 
     const imPending = new InstantMessage({
         conferenceId: Guid.create().toString(),
@@ -30,11 +30,11 @@ describe('ChatBodyWindowComponent', () => {
     });
 
     beforeAll(() => {
-        eventsService = jasmine.createSpyObj<EventsService>('EventsService', ['sendMessage']);
+        imEventsService = jasmine.createSpyObj<ImEventsService>('EventsService', ['sendMessage']);
     });
 
     beforeEach(() => {
-        component = new ChatBodyWindowComponent(eventsService);
+        component = new ChatBodyWindowComponent(imEventsService);
         component.messagesReceived = [];
         component.pendingMessages = [];
     });
@@ -57,7 +57,7 @@ describe('ChatBodyWindowComponent', () => {
             timestamp: new Date(new Date().toUTCString())
         });
         await component.retry(im);
-        expect(eventsService.sendMessage).toHaveBeenCalledWith(im);
+        expect(imEventsService.sendMessage).toHaveBeenCalledWith(im);
     });
     it('should not send message on retry if it was already send', async () => {
         const im = new InstantMessage({
@@ -71,10 +71,10 @@ describe('ChatBodyWindowComponent', () => {
             timestamp: new Date(new Date().toUTCString())
         });
         component.retryMessages.push(im);
-        eventsService.sendMessage.calls.reset();
+        imEventsService.sendMessage.calls.reset();
 
         await component.retry(im);
-        expect(eventsService.sendMessage).toHaveBeenCalledTimes(0);
+        expect(imEventsService.sendMessage).toHaveBeenCalledTimes(0);
     });
 
     it('should return false if message is in received list', () => {

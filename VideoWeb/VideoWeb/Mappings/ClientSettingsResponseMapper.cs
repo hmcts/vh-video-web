@@ -23,6 +23,7 @@ namespace VideoWeb.Mappings
             {
                 AppInsightsInstrumentationKey = azureAdConfiguration.ApplicationInsights.InstrumentationKey,
                 EventHubPath = servicesConfiguration.EventHubPath,
+                ImEventHubPath = servicesConfiguration.ImEventHubPath,
                 JoinByPhoneFromDate = kinlyConfiguration.JoinByPhoneFromDate,
                 KinlyTurnServer = kinlyConfiguration.TurnServer,
                 KinlyTurnServerUser = kinlyConfiguration.TurnServerUser,

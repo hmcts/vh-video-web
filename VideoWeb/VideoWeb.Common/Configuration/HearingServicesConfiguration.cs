@@ -8,9 +8,12 @@ namespace VideoWeb.Common.Configuration
         public string VideoApiResourceId { get; set; }
         public string VideoWebUrl { get; set; }
         public string VideoWebResourceId { get; set; }
+        public string InstantMessagingWebUrl { get; set; }
+        public string InstantMessagingebResourceId { get; set; }
         public string UserApiUrl { get; set; }
         public string UserApiResourceId { get; set; }
         public string EventHubPath { get; set; }
+        public string ImEventHubPath { get; set; }
         public string EmailReformDomain { get; set; }
         public string InternalEventSecret { get; set; }
         public bool EnableVideoFilters { get; set; }

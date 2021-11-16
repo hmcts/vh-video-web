@@ -2,7 +2,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { UnreadAdminMessageResponse } from 'src/app/services/clients/api-client';
-import { EventsService } from 'src/app/services/events.service';
+import { ImEventsService } from 'src/app/services/im-events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Hearing } from '../../shared/models/hearing';
 import { UnreadMessagesComponentBase } from '../unread-messages-shared/unread-message-base.component';
@@ -24,12 +24,12 @@ export class UnreadMessagesComponent extends UnreadMessagesComponentBase impleme
 
     constructor(
         private videoWebService: VideoWebService,
-        protected eventsService: EventsService,
+        protected imEventsService: ImEventsService,
         protected logger: Logger,
         private eventbus: EventBusService,
         private mapper: UnreadAdminMessageModelMapper
     ) {
-        super(eventsService, logger);
+        super(imEventsService, logger);
     }
 
     ngOnInit() {

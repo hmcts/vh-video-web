@@ -8,7 +8,8 @@ import { InstantMessage } from 'src/app/services/models/instant-message';
 import { ImHelper } from 'src/app/shared/im-helper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { eventsServiceSpy, messageSubjectMock } from 'src/app/testing/mocks/mock-events-service';
+import { messageSubjectMock } from 'src/app/testing/mocks/mock-im-events-service';
+import { imEventsServiceSpy } from 'src/app/testing/mocks/mock-im-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { adminTestProfile, judgeTestProfile } from '../../testing/data/test-profiles';
 import { VhoChatComponent } from './vho-chat.component';
@@ -17,10 +18,11 @@ import { SecurityServiceProvider } from 'src/app/security/authentication/securit
 import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 
+
 describe('VhoChatComponent', () => {
     let component: VhoChatComponent;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    const eventsService = eventsServiceSpy;
+    const imEventsService = imEventsServiceSpy;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
     let conference: ConferenceResponse;
     let hearing: Hearing;
@@ -83,7 +85,7 @@ describe('VhoChatComponent', () => {
         component = new VhoChatComponent(
             videoWebServiceSpy,
             profileServiceSpy,
-            eventsService,
+            imEventsService,
             new MockLogger(),
             securityServiceProviderServiceSpy,
             new ImHelper(),
@@ -214,8 +216,8 @@ describe('VhoChatComponent', () => {
     it('should send message to hub', async () => {
         const message = 'test';
         await component.sendMessage(message);
-        expect(eventsService.sendMessage.calls.mostRecent().args[0]).toBeInstanceOf(InstantMessage);
-        const lastArg = <InstantMessage>eventsService.sendMessage.calls.mostRecent().args[0];
+        expect(imEventsService.sendMessage.calls.mostRecent().args[0]).toBeInstanceOf(InstantMessage);
+        const lastArg = <InstantMessage>imEventsService.sendMessage.calls.mostRecent().args[0];
         expect(lastArg.conferenceId).toBe(conference.id);
         expect(lastArg.message).toBe(message);
         expect(lastArg.to).toBe(component.participant.id);

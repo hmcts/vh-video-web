@@ -1,5 +1,5 @@
 import { Subscription } from 'rxjs';
-import { EventsService } from 'src/app/services/events.service';
+import { ImEventsService } from 'src/app/services/im-events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceMessageAnswered } from 'src/app/services/models/conference-message-answered';
 import { InstantMessage } from 'src/app/services/models/instant-message';
@@ -8,7 +8,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 export abstract class UnreadMessagesComponentBase {
     messagesSubscription$: Subscription = new Subscription();
 
-    protected constructor(protected eventsService: EventsService, protected logger: Logger) {}
+    protected constructor(protected imEventsService: ImEventsService, protected logger: Logger) {}
 
     abstract get unreadCount(): number;
     abstract getHearing(): Hearing;
@@ -23,14 +23,14 @@ export abstract class UnreadMessagesComponentBase {
 
     setupSubscribers() {
         this.messagesSubscription$.add(
-            this.eventsService.getAdminAnsweredChat().subscribe(message => {
+            this.imEventsService.getAdminAnsweredChat().subscribe(message => {
                 this.logger.debug(`[UnreadMesssage] - An admin has answered ${message.conferenceId}`);
                 this.handleAdminAnsweredChat(message);
             })
         );
 
         this.messagesSubscription$.add(
-            this.eventsService.getChatMessage().subscribe(message => {
+            this.imEventsService.getChatMessage().subscribe(message => {
                 this.logger.debug(`[UnreadMesssage] - An admin has received a message ${message.conferenceId}`);
                 this.handleImReceived(message);
             })

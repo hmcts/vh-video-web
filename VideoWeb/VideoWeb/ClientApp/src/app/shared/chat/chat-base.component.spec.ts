@@ -1,14 +1,15 @@
 import { ElementRef } from '@angular/core';
 import { Guid } from 'guid-typescript';
+import { of, Subject } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse, LoggedParticipantResponse, Role } from 'src/app/services/clients/api-client';
-import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { adminTestProfile } from 'src/app/testing/data/test-profiles';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
+import { ImEventsService } from 'src/app/services/im-events.service';
+import { imEventsServiceSpy } from 'src/app/testing/mocks/mock-im-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { ImHelper } from '../im-helper';
 import { Hearing } from '../models/hearing';
@@ -18,7 +19,6 @@ import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.serv
 import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
 import { getSpiedPropertyGetter } from '../jasmine-helpers/property-helpers';
-import { of, Subject } from 'rxjs';
 
 class ChatBaseTest extends ChatBaseComponent {
     content: ElementRef<HTMLElement>;
@@ -28,13 +28,13 @@ class ChatBaseTest extends ChatBaseComponent {
     constructor(
         protected videoWebService: VideoWebService,
         protected profileService: ProfileService,
-        protected eventService: EventsService,
+        protected imEventsService: ImEventsService,
         protected logger: Logger,
         protected securityServiceProviderService: SecurityServiceProvider,
         protected imHelper: ImHelper,
         protected translateService: TranslateService
     ) {
-        super(videoWebService, profileService, eventService, logger, securityServiceProviderService, imHelper, translateService);
+        super(videoWebService, profileService, imEventsService, logger, securityServiceProviderService, imHelper, translateService);
     }
 
     sendMessage(messageBody: string): void {
@@ -57,7 +57,7 @@ class ChatBaseTest extends ChatBaseComponent {
 describe('ChatBaseComponent', () => {
     let component: ChatBaseComponent;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    const eventsService = eventsServiceSpy;
+    const imEventsService = imEventsServiceSpy;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
     let conference: ConferenceResponse;
     let hearing: Hearing;
@@ -99,7 +99,7 @@ describe('ChatBaseComponent', () => {
         component = new ChatBaseTest(
             videoWebServiceSpy,
             profileServiceSpy,
-            eventsService,
+            imEventsService,
             new MockLogger(),
             securityServiceProviderServiceSpy,
             new ImHelper(),

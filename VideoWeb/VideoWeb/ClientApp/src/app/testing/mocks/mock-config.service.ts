@@ -20,6 +20,7 @@ export class MockConfigService {
         e_jud_idp_settings: this.ejudSettings,
         vh_idp_settings: this.vhAdSettings,
         event_hub_path: 'evenhub',
+        im_event_hub_path: 'imeventhub',
         join_by_phone_from_date: '2020-09-01',
         app_insights_instrumentation_key: 'appinsights'
     });

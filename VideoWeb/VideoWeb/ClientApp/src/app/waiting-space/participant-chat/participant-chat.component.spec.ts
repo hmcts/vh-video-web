@@ -7,7 +7,7 @@ import { InstantMessage } from 'src/app/services/models/instant-message';
 import { ImHelper } from 'src/app/shared/im-helper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
+import { imEventsServiceSpy } from 'src/app/testing/mocks/mock-im-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { adminTestProfile, judgeTestProfile } from '../../testing/data/test-profiles';
 import { ParticipantChatComponent } from './participant-chat.component';
@@ -26,7 +26,7 @@ describe('ParticipantChatComponent', () => {
 
     let videoWebService: jasmine.SpyObj<VideoWebService>;
     const judgeUsername = judgeTestProfile.username;
-    const eventsService = eventsServiceSpy;
+    const imEventsService = imEventsServiceSpy;
     let profileService: jasmine.SpyObj<ProfileService>;
     let activatedRoute: ActivatedRoute;
 
@@ -89,7 +89,7 @@ describe('ParticipantChatComponent', () => {
         component = new ParticipantChatComponent(
             videoWebService,
             profileService,
-            eventsService,
+            imEventsService,
             new MockLogger(),
             new ImHelper(),
             activatedRoute,
@@ -235,8 +235,8 @@ describe('ParticipantChatComponent', () => {
             role: hearing.participants[2].role
         });
         await component.sendMessage(message);
-        expect(eventsService.sendMessage.calls.mostRecent().args[0]).toBeInstanceOf(InstantMessage);
-        const lastArg = <InstantMessage>eventsService.sendMessage.calls.mostRecent().args[0];
+        expect(imEventsService.sendMessage.calls.mostRecent().args[0]).toBeInstanceOf(InstantMessage);
+        const lastArg = <InstantMessage>imEventsService.sendMessage.calls.mostRecent().args[0];
         expect(lastArg.conferenceId).toBe(conference.id);
         expect(lastArg.message).toBe(message);
         expect(lastArg.to).toBe(component.DEFAULT_ADMIN_USERNAME);

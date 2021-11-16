@@ -27,7 +27,6 @@ export const consultationRequestResponseMessageSubjectMock = new Subject<Consult
 export const eventHubDisconnectSubjectMock = new Subject<number>();
 export const eventHubReconnectSubjectMock = new Subject();
 export const requestedConsultationMessageSubjectMock = new Subject<RequestedConsultationMessage>();
-export const messageSubjectMock = new Subject<InstantMessage>();
 export const heartbeatSubjectMock = new Subject<ParticipantHeartbeat>();
 export const hearingTransferSubjectMock = new Subject<HearingTransfer>();
 export const participantMediaStatusSubjectMock = new Subject<ParticipantMediaStatusMessage>();
@@ -55,8 +54,6 @@ eventsServiceSpy = jasmine.createSpyObj<EventsService>(
         'getServiceConnected',
         'sendHeartbeat',
         'getRequestedConsultationMessage',
-        'getChatMessage',
-        'sendMessage',
         'getHeartbeat',
         'getHearingTransfer',
         'sendTransferRequest',
@@ -64,7 +61,6 @@ eventsServiceSpy = jasmine.createSpyObj<EventsService>(
         'sendMediaStatus',
         'getRoomUpdate',
         'getRoomTransfer',
-        'getAdminAnsweredChat',
         'getParticipantRemoteMuteStatusMessage',
         'getParticipantHandRaisedMessage',
         'publishParticipantHandRaisedStatus',
@@ -84,7 +80,6 @@ eventsServiceSpy.getConsultationRequestResponseMessage.and.returnValue(consultat
 eventsServiceSpy.getServiceDisconnected.and.returnValue(eventHubDisconnectSubjectMock.asObservable());
 eventsServiceSpy.getServiceConnected.and.returnValue(eventHubReconnectSubjectMock.asObservable());
 eventsServiceSpy.getRequestedConsultationMessage.and.returnValue(requestedConsultationMessageSubjectMock.asObservable());
-eventsServiceSpy.getChatMessage.and.returnValue(messageSubjectMock.asObservable());
 eventsServiceSpy.getHeartbeat.and.returnValue(heartbeatSubjectMock.asObservable());
 eventsServiceSpy.getHearingTransfer.and.returnValue(hearingTransferSubjectMock.asObservable());
 eventsServiceSpy.getParticipantMediaStatusMessage.and.returnValue(participantMediaStatusSubjectMock.asObservable());
@@ -92,7 +87,6 @@ eventsServiceSpy.getParticipantRemoteMuteStatusMessage.and.returnValue(participa
 eventsServiceSpy.getParticipantHandRaisedMessage.and.returnValue(participantHandRaisedStatusSubjectMock.asObservable());
 eventsServiceSpy.getRoomUpdate.and.returnValue(roomUpdateSubjectMock.asObservable());
 eventsServiceSpy.getRoomTransfer.and.returnValue(roomTransferSubjectMock.asObservable());
-eventsServiceSpy.getAdminAnsweredChat.and.returnValue(adminAnsweredChatSubjectMock.asObservable());
 eventsServiceSpy.onEventsHubReady.and.returnValue(onEventsHubReadySubjectMock.asObservable());
 eventsServiceSpy.getParticipantsUpdated.and.returnValue(getParticipantsUpdatedSubjectMock.asObservable());
 eventsServiceSpy.getHearingLayoutChanged.and.returnValue(hearingLayoutChangedSubjectMock.asObservable());

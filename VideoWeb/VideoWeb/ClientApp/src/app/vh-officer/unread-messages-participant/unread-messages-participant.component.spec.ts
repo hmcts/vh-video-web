@@ -1,6 +1,5 @@
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { UnreadAdminMessageResponse } from 'src/app/services/clients/api-client';
-import { EventsService } from 'src/app/services/events.service';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { Hearing } from '../../shared/models/hearing';
@@ -10,7 +9,8 @@ import { Participant } from 'src/app/shared/models/participant';
 import { ConferenceMessageAnswered } from 'src/app/services/models/conference-message-answered';
 import { Guid } from 'guid-typescript';
 import { InstantMessage } from 'src/app/services/models/instant-message';
-import { adminAnsweredChatSubjectMock, eventsServiceSpy, messageSubjectMock } from 'src/app/testing/mocks/mock-events-service';
+import { adminAnsweredChatSubjectMock, messageSubjectMock } from 'src/app/testing/mocks/mock-im-events-service';
+import { imEventsServiceSpy } from 'src/app/testing/mocks/mock-im-events-service';
 
 describe('UnreadMessagesParticipantComponent', () => {
     let component: UnreadMessagesParticipantComponent;
@@ -34,7 +34,7 @@ describe('UnreadMessagesParticipantComponent', () => {
         });
         videoWebServiceSpy.getUnreadMessagesForParticipant.and.callFake(() => Promise.resolve(unreadMessageResponse));
 
-        component = new UnreadMessagesParticipantComponent(videoWebServiceSpy, eventsServiceSpy, logger);
+        component = new UnreadMessagesParticipantComponent(videoWebServiceSpy, imEventsServiceSpy, logger);
         component.unreadMessages = unreadMessageResponse;
         component.hearing = new Hearing(conference);
         component.participant = new Participant(participant);
