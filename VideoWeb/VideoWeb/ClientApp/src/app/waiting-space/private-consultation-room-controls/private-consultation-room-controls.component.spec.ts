@@ -214,14 +214,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             component.isPrivateConsultation = false;
             // Assert
             expect(component.canShowLeaveButton).toBeTrue();
-        });
-        it('should show leave button when staff member feature is enabled', async () => {
-            // Act
-            featureFlagServiceSpy.getFeatureFlagByName.and.returnValue(of(false));
-            spyOnProperty(component, 'isHost').and.returnValue(true);
-            component.isPrivateConsultation = false;
-            // Assert
-            expect(component.canShowLeaveButton).toBeFalse();
+            expect(component.isStaffMemberFeatureEnabled).toBeTrue();
         });
     });
 
