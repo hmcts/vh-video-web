@@ -1,10 +1,10 @@
-import { AfterViewInit, Directive, ElementRef, Input, OnChanges, OnInit, Renderer2, RendererFactory2, SimpleChanges } from '@angular/core';
+import { Directive, ElementRef, Input, OnChanges, OnInit, Renderer2, RendererFactory2, SimpleChanges } from '@angular/core';
 import { Logger } from '../services/logging/logger-base';
 
 @Directive({
     selector: '[appForcePlayVideo]'
 })
-export class ForcePlayVideoDirective implements OnInit, OnChanges, AfterViewInit {
+export class ForcePlayVideoDirective implements OnInit, OnChanges {
     private readonly loggerPrefix = '[ForcePlayVideoDirective] -';
     private renderer: Renderer2;
     @Input() mute: boolean | null = null;
@@ -22,14 +22,6 @@ export class ForcePlayVideoDirective implements OnInit, OnChanges, AfterViewInit
     ngOnInit(): void {
         this.configureVideoElement();
         this.addEventListeners();
-    }
-
-    ngAfterViewInit(): void {
-        this.videoElement.play();
-
-        setTimeout(() => {
-            this.videoElement.play();
-        }, 5000);
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -59,6 +51,11 @@ export class ForcePlayVideoDirective implements OnInit, OnChanges, AfterViewInit
         this.unsubscribeFromMouseDownCallback = this.renderer.listen('window', 'mousedown', this.onMouseDownOrTouchStart.bind(this));
         this.logger.info(`${this.loggerPrefix} - addEventListeners - adding touchstart handler.`);
         this.unsubscribeFromTouchStartCallback = this.renderer.listen('window', 'touchstart', this.onMouseDownOrTouchStart.bind(this));
+
+        this.videoElement.oncanplay = event => {
+            this.logger.info(`${this.loggerPrefix} - videoElement.oncanplay - playing video`);
+            this.videoElement.play();
+        };
     }
 
     private onMouseDownOrTouchStart() {

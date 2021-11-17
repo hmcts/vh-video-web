@@ -2,7 +2,7 @@ import { ElementRef, Renderer2, RendererFactory2, SimpleChange } from '@angular/
 import { fakeAsync, tick } from '@angular/core/testing';
 import { Logger } from '../services/logging/logger-base';
 import { ForcePlayVideoDirective } from './force-play-video.directive';
-import { getSpiedPropertyGetter } from './jasmine-helpers/property-helpers';
+import { getSpiedPropertyGetter, getSpiedPropertySetter } from './jasmine-helpers/property-helpers';
 
 describe('ForcePlayVideoDirective', () => {
     let elementRefSpy: jasmine.SpyObj<ElementRef>;
@@ -13,11 +13,16 @@ describe('ForcePlayVideoDirective', () => {
 
     let directive: ForcePlayVideoDirective;
 
+    let onCanPlayCallback: (event: any) => void = null;
+
     beforeEach(() => {
         elementRefSpy = jasmine.createSpyObj<ElementRef>([], ['nativeElement']);
-        nativeElementSpy = jasmine.createSpyObj<HTMLVideoElement>(['play']);
+        nativeElementSpy = jasmine.createSpyObj<HTMLVideoElement>(['play'], ['oncanplay']);
 
         getSpiedPropertyGetter(elementRefSpy, 'nativeElement').and.returnValue(nativeElementSpy);
+        getSpiedPropertySetter(nativeElementSpy, 'oncanplay').and.callFake((callback: (event: any) => void) => {
+            onCanPlayCallback = callback;
+        });
 
         renderer2FactorySpy = jasmine.createSpyObj<RendererFactory2>(['createRenderer']);
         renderer2Spy = jasmine.createSpyObj<Renderer2>(['setAttribute', 'listen']);
@@ -82,17 +87,15 @@ describe('ForcePlayVideoDirective', () => {
             expect(renderer2Spy.listen).toHaveBeenCalledWith('window', 'mousedown', jasmine.anything());
             expect(renderer2Spy.listen).toHaveBeenCalledWith('window', 'touchstart', jasmine.anything());
         });
-    });
 
-    describe('ngAfterViewInit', () => {
-        it('should call play and then call play after five seconds', fakeAsync(() => {
+        it('should subscribe to the on video ready to play event', () => {
             // Act
-            directive.ngAfterViewInit();
-            tick(5000);
+            directive.ngOnInit();
 
             // Assert
-            expect(nativeElementSpy.play).toHaveBeenCalledTimes(2);
-        }));
+            expect(getSpiedPropertySetter(nativeElementSpy, 'oncanplay')).toHaveBeenCalledOnceWith(jasmine.anything());
+            expect(onCanPlayCallback).toBeTruthy();
+        });
     });
 
     describe('ngOnChanges', () => {
@@ -130,6 +133,19 @@ describe('ForcePlayVideoDirective', () => {
 
             // Assert
             expect(renderer2Spy.setAttribute).toHaveBeenCalledOnceWith(nativeElementSpy, 'muted', 'true');
+        });
+    });
+
+    describe('when can play', () => {
+        it('should try to play immediately', () => {
+            // Arrange
+            directive.ngOnInit();
+
+            // Act
+            onCanPlayCallback(null);
+
+            // Assert
+            expect(nativeElementSpy.play).toHaveBeenCalledTimes(1);
         });
     });
 
