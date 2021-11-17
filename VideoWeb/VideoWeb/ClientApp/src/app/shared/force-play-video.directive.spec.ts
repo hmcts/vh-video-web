@@ -4,7 +4,7 @@ import { Logger } from '../services/logging/logger-base';
 import { ForcePlayVideoDirective } from './force-play-video.directive';
 import { getSpiedPropertyGetter, getSpiedPropertySetter } from './jasmine-helpers/property-helpers';
 
-fdescribe('ForcePlayVideoDirective', () => {
+describe('ForcePlayVideoDirective', () => {
     let elementRefSpy: jasmine.SpyObj<ElementRef>;
     let nativeElementSpy: jasmine.SpyObj<HTMLVideoElement>;
     let renderer2FactorySpy: jasmine.SpyObj<RendererFactory2>;
