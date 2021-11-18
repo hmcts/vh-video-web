@@ -301,6 +301,8 @@ stages:
             value: $(EnableIOSTabletSupport)
           - name: VhServices:EnableVideoFilters
             value: $(EnableVideoFilters)
+          - name: VhServices:EnableDynamicEvidenceSharing
+            value: $(EnableDynamicEvidenceSharing)
 
           # Quick Links Configuration
           - name: QuickLinks:Issuer
@@ -346,6 +348,8 @@ stages:
             value: $(EnableIOSTabletSupport)
           - name: VhServices:EnableVideoFilters
             value: $(EnableVideoFilters)
+          - name: VhServices:EnableDynamicEvidenceSharing
+            value: $(EnableDynamicEvidenceSharing)
 
           # AzureAd
           - name: AzureAd:TenantId

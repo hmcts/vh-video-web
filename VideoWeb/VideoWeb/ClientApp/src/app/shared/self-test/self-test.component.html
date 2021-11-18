@@ -8,7 +8,7 @@
     <p class="govuk-body-l">{{ 'self-test.to-be-connected' | translate }}</p>
   </div>
   <div *ngIf="displayFeed" class="govuk-grid-column-full">
-    <video *ngIf="streamsActive" id="incomingStream" [srcObject]="this.incomingStream" autoplay playsinline width="65%" height="auto">
+    <video appForcePlayVideo *ngIf="streamsActive" id="incomingStream" [srcObject]="this.incomingStream" width="65%" height="auto">
       {{ 'self-test.browser-not-support' | translate }}
     </video>
   </div>
@@ -18,15 +18,14 @@
   <div class="self-view-container">
     <div>
       <video
+        appForcePlayVideo
+        [mute]="true"
         *ngIf="streamsActive"
         id="outgoingStream"
-        [muted]="true"
         [srcObject]="this.outgoingStream"
-        autoplay
         width="100%"
         height="auto"
         class="selfie-view"
-        playsinline
       >
         {{ 'self-test.browser-not-support' | translate }}
       </video>

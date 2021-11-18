@@ -43,6 +43,7 @@ import {
     videoWebService
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
+import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
 
 describe('WaitingRoomComponent message and clock', () => {
     let component: WRTestComponent;
@@ -63,7 +64,10 @@ describe('WaitingRoomComponent message and clock', () => {
         });
     });
 
+    let participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
+
     beforeEach(() => {
+        participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
         component = new WRTestComponent(
             activatedRoute,
             videoWebService,
@@ -80,6 +84,7 @@ describe('WaitingRoomComponent message and clock', () => {
             roomClosingToastrService,
             clockService,
             consultationInvitiationService,
+            participantRemoteMuteStoreServiceSpy,
             mockedHearingVenueFlagsService
         );
 
@@ -513,36 +518,6 @@ describe('WaitingRoomComponent message and clock', () => {
 
         expect(roomClosingToastrService.showRoomClosingAlert).toHaveBeenCalledWith(component.hearing, date);
         expect(roomClosingToastrService.currentToast).toBeTruthy();
-    });
-
-    describe('shouldCurrentUserJoinHearing', () => {
-        it('should return false if user is a host and status is not InHearing', () => {
-            const spy = spyOn(component, 'isHost').and.returnValue(true);
-            component.participant.status = ParticipantStatus.Available;
-
-            const shouldCurrentUserJoinHearing = component.shouldCurrentUserJoinHearing();
-
-            expect(spy).toHaveBeenCalledTimes(1);
-            expect(shouldCurrentUserJoinHearing).toBeFalsy();
-        });
-
-        it('should return true if user is not a host', () => {
-            const spy = spyOn(component, 'isHost').and.returnValue(false);
-
-            const shouldCurrentUserJoinHearing = component.shouldCurrentUserJoinHearing();
-
-            expect(spy).toHaveBeenCalledTimes(1);
-            expect(shouldCurrentUserJoinHearing).toBeTrue();
-        });
-
-        it('should return true if user is a host and current status is InHearing', () => {
-            const spy = spyOn(component, 'isHost').and.returnValue(true);
-            component.participant.status = ParticipantStatus.InHearing;
-            const shouldCurrentUserJoinHearing = component.shouldCurrentUserJoinHearing();
-
-            expect(spy).toHaveBeenCalledTimes(1);
-            expect(shouldCurrentUserJoinHearing).toBeTrue();
-        });
     });
 
     describe('call', () => {

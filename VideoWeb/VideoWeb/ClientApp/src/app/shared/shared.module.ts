@@ -49,6 +49,7 @@ import { SecurityConfigSetupService } from '../security/security-config-setup.se
 import { HeaderLogoSvgComponent } from './header-logo-svg/header-logo-svg.component';
 import { VideoFilterComponent } from './video-filter/video-filter.component';
 import { HyphenatePipe } from './pipes/hyphenate.pipe';
+import { ForcePlayVideoDirective } from './force-play-video.directive';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { VenueListComponent } from './venue-list/venue-list.component';
 import { VhoQueryService } from '../vh-officer/services/vho-query-service.service';
@@ -115,6 +116,7 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         LoadingComponent,
         HeaderLogoSvgComponent,
         VideoFilterComponent,
+        ForcePlayVideoDirective,
         VenueListComponent,
         CrestLogoImageSourceDirective
     ],
@@ -163,6 +165,7 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         HyphenatePipe,
         LoadingComponent,
         VideoFilterComponent,
+        ForcePlayVideoDirective,
         VenueListComponent,
         CrestLogoImageSourceDirective
     ]

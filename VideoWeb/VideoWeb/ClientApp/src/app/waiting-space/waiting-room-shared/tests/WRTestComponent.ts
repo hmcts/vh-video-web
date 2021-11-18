@@ -14,6 +14,7 @@ import { NotificationToastrService } from 'src/app/waiting-space/services/notifi
 import { RoomClosingToastrService } from 'src/app/waiting-space/services/room-closing-toast.service';
 import { ConsultationInvitationService } from '../../services/consultation-invitation.service';
 import { Component } from '@angular/core';
+import { ParticipantRemoteMuteStoreService } from '../../services/participant-remote-mute-store.service';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 
 @Component({
@@ -37,6 +38,7 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
         protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService,
         protected consultationInvitiationService: ConsultationInvitationService,
+        protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
         protected hearingVenueFlagsService: HearingVenueFlagsService
     ) {
         super(
@@ -55,6 +57,7 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
             roomClosingToastrService,
             clockService,
             consultationInvitiationService,
+            participantRemoteMuteStoreService,
             hearingVenueFlagsService
         );
     }
