@@ -14,7 +14,10 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { eventsServiceSpy, hearingStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { HostHearingListComponent } from './host-hearing-list.component-base';
-import { MockedHearingListComponent } from './mocked-hearing-list.component';
+
+class MockedHearingListComponent extends HostHearingListComponent {
+    retrieveHearingsForUser() {}
+}
 
 describe('JudgeHearingListComponent', () => {
     let component: HostHearingListComponent;
