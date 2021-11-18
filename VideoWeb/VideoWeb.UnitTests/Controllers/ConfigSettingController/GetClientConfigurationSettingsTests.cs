@@ -51,6 +51,7 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
             {
                 VideoApiUrl = "https://vh-video-api/",
                 EnableVideoFilters = true,
+                EnableDynamicEvidenceSharing = true,
                 BlurRadius = 20
             };
 
@@ -72,6 +73,7 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
             var okObjectResult = (OkObjectResult)result.Result;
             var clientSettings = (ClientSettingsResponse)okObjectResult.Value;
             clientSettings.JoinByPhoneFromDate.Should().Be(kinlyConfiguration.JoinByPhoneFromDate);
+            clientSettings.EnableDynamicEvidenceSharing.Should().Be(servicesConfiguration.EnableDynamicEvidenceSharing);
         }
 
         [Test]

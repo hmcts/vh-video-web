@@ -21,6 +21,7 @@ import {
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
+import { PexipDisplayNameModel } from 'src/app/services/conference/models/pexip-display-name.model';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -51,6 +52,7 @@ import { PrivateConsultationRoomControlsComponent } from '../private-consultatio
 import { ConsultationInvitation, ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
+import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 
@@ -122,6 +124,7 @@ export abstract class WaitingRoomBaseDirective {
         protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService,
         protected consultationInvitiationService: ConsultationInvitationService,
+        protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
         protected hearingVenueFlagsService: HearingVenueFlagsService
     ) {
         this.isAdminConsultation = false;
@@ -636,6 +639,27 @@ export abstract class WaitingRoomBaseDirective {
 
     async setupPexipEventSubscriptionAndClient() {
         this.logger.debug(`${this.loggerPrefix} Setting up pexip client and event subscriptions`);
+        this.videoCallSubscription$.add(
+            this.videoCallService.onParticipantUpdated().subscribe(participantUpdate => {
+                const pexipDisplayNameModel = PexipDisplayNameModel.fromString(participantUpdate.pexipDisplayName);
+
+                if (pexipDisplayNameModel === null) {
+                    this.logger.warn(
+                        `${this.loggerPrefix} Could NOT parse pexip display (${participantUpdate.pexipDisplayName}) name when handling participant update.`
+                    );
+                    return;
+                }
+
+                this.logger.debug(
+                    `${this.loggerPrefix} Setting up participant remote mute status for ${pexipDisplayNameModel.participantOrVmrId} is '${participantUpdate.isRemoteMuted}''`
+                );
+
+                this.participantRemoteMuteStoreService.updateRemoteMuteStatus(
+                    pexipDisplayNameModel.participantOrVmrId,
+                    participantUpdate.isRemoteMuted
+                );
+            })
+        );
 
         this.videoCallSubscription$.add(this.videoCallService.onCallSetup().subscribe(setup => this.handleCallSetup(setup)));
         this.videoCallSubscription$.add(
@@ -1059,8 +1083,37 @@ export abstract class WaitingRoomBaseDirective {
         await this.consultationService.leaveConsultation(this.conference, this.participant);
     }
 
+    resetVideoFlags() {
+        this.showVideo = false;
+        this.showConsultationControls = false;
+        this.isPrivateConsultation = false;
+    }
+
+    willShowHearing() {
+        if (this.hearing.isInSession() && this.shouldCurrentUserJoinHearing()) {
+            this.displayDeviceChangeModal = false;
+            this.showVideo = true;
+            this.showConsultationControls = false;
+            this.isPrivateConsultation = false;
+            return true;
+        }
+        return false;
+    }
+
+    willShowConsultation(): boolean {
+        if (this.participant.status === ParticipantStatus.InConsultation) {
+            this.displayDeviceChangeModal = false;
+            this.showVideo = true;
+            this.isPrivateConsultation = true;
+            this.showConsultationControls = !this.isAdminConsultation;
+
+            return true;
+        }
+        return false;
+    }
+
     updateShowVideo(): void {
-        const logPaylod = {
+        const logPayload = {
             conference: this.conferenceId,
             caseName: this.conference.case_name,
             participant: this.participant.id,
@@ -1068,35 +1121,24 @@ export abstract class WaitingRoomBaseDirective {
             reason: ''
         };
         if (!this.connected) {
-            logPaylod.showingVideo = false;
-            logPaylod.reason = 'Not showing video because not connecting to pexip node';
-            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
-            this.showVideo = false;
-            this.showConsultationControls = false;
-            this.isPrivateConsultation = false;
+            logPayload.showingVideo = false;
+            logPayload.reason = 'Not showing video because not connecting to pexip node';
+            this.logger.debug(`${this.loggerPrefix} ${logPayload.reason}`, logPayload);
+            this.resetVideoFlags();
             return;
         }
 
-        if (
-            this.hearing.isInSession() &&
-            !this.isOrHasWitnessLink() &&
-            !this.isQuickLinkParticipant() &&
-            this.shouldCurrentUserJoinHearing()
-        ) {
-            logPaylod.showingVideo = true;
-            logPaylod.reason = 'Showing video because hearing is in session';
-            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
-            this.displayDeviceChangeModal = false;
-            this.showVideo = true;
-            this.showConsultationControls = false;
-            this.isPrivateConsultation = false;
+        if (this.willShowHearing()) {
+            logPayload.showingVideo = true;
+            logPayload.reason = 'Showing video because hearing is in session';
+            this.logger.debug(`${this.loggerPrefix} ${logPayload.reason}`, logPayload);
             return;
         }
 
         if ((this.isOrHasWitnessLink() || this.isQuickLinkParticipant()) && this.participant.status === ParticipantStatus.InHearing) {
-            logPaylod.showingVideo = true;
-            logPaylod.reason = 'Showing video because witness is in hearing';
-            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
+            logPayload.showingVideo = true;
+            logPayload.reason = 'Showing video because witness is in hearing';
+            this.logger.debug(`${this.loggerPrefix} ${logPayload.reason}`, logPayload);
             this.displayDeviceChangeModal = false;
             this.showVideo = true;
             this.showConsultationControls = false;
@@ -1104,28 +1146,22 @@ export abstract class WaitingRoomBaseDirective {
             return;
         }
 
-        if (this.participant.status === ParticipantStatus.InConsultation) {
-            logPaylod.showingVideo = true;
-            logPaylod.reason = 'Showing video because participant is in a consultation';
-            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
-            this.displayDeviceChangeModal = false;
-            this.showVideo = true;
-            this.isPrivateConsultation = true;
-            this.showConsultationControls = !this.isAdminConsultation;
+        if (this.willShowConsultation()) {
+            logPayload.showingVideo = true;
+            logPayload.reason = 'Showing video because participant is in a consultation';
+            this.logger.debug(`${this.loggerPrefix} ${logPayload.reason}`, logPayload);
             return;
         }
 
-        logPaylod.showingVideo = false;
-        logPaylod.reason = 'Not showing video because hearing is not in session and user is not in consultation';
-        this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
-        this.showVideo = false;
+        logPayload.showingVideo = false;
+        logPayload.reason = 'Not showing video because hearing is not in session and user is not in consultation';
+        this.logger.debug(`${this.loggerPrefix} ${logPayload.reason}`, logPayload);
         this.conferenceStartedBy = null;
-        this.showConsultationControls = false;
-        this.isPrivateConsultation = false;
+        this.resetVideoFlags();
     }
 
     shouldCurrentUserJoinHearing(): boolean {
-        return !this.isHost() || this.participant.status === ParticipantStatus.InHearing;
+        return !this.isOrHasWitnessLink() && !this.isQuickLinkParticipant();
     }
 
     isHost(): boolean {

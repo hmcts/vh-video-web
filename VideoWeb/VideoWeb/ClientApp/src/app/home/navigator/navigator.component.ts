@@ -14,7 +14,7 @@ import { FeatureFlagService } from '../../services/feature-flag.service';
     templateUrl: './navigator.component.html'
 })
 export class NavigatorComponent implements OnInit {
-    staffMemberNavigation: string = pageUrls.StaffMemberHearingList;
+    staffMemberNavigation: string = pageUrls.StaffMemberHearingSelection;
 
     constructor(
         private router: Router,
