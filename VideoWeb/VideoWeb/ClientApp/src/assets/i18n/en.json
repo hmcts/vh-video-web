@@ -238,7 +238,7 @@
   },
   "judge-hearing-table": {
     "time": "Time",
-    "aria-label": "Hearing list table",
+    "description": "Hearing list table",
     "judge": "Judge",
     "hearing": "Hearing",
     "attendees": "Attendees",

@@ -246,7 +246,7 @@
   },
   "judge-hearing-table": {
     "time": "Amser",
-    "aria-label": "Hearing list table",
+    "description": "Hearing list table",
     "judge": "Barnwr",
     "hearing": "Gwrandawiad",
     "attendees": "Yn bresennol",
