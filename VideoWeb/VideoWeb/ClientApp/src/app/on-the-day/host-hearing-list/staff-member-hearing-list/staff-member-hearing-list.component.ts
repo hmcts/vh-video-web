@@ -8,14 +8,16 @@ import { EventsService } from 'src/app/services/events.service';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ScreenHelper } from 'src/app/shared/screen-helper';
-import { HostHearingListComponent } from '../host-hearing-list.component-base';
+import { HostHearingListBaseComponentDirective } from '../host-hearing-list.component-base';
 
 @Component({
     selector: 'app-staff-member-hearing-list',
     templateUrl: '../host-hearing-list.component.html',
     styleUrls: ['../host-hearing-list.component.scss']
 })
-export class StaffMemberHearingListComponent extends HostHearingListComponent implements OnInit {
+export class StaffMemberHearingListComponent extends HostHearingListBaseComponentDirective implements OnInit {
+    private _loggerPrefix = '[StaffMemberHearingList] -';
+
     constructor(
         private errorService: ErrorService,
         protected videoWebService: VideoWebService,
@@ -30,11 +32,11 @@ export class StaffMemberHearingListComponent extends HostHearingListComponent im
     }
 
     retrieveHearingsForUser() {
-        this.logger.debug('[JudgeHearingList] - Updating hearing list');
+        this.logger.debug(`${this._loggerPrefix} Updating hearing list`);
         this.conferencesSubscription.add(
             this.videoWebService.getConferencesForStaffMember().subscribe({
                 next: (data: ConferenceForHostResponse[]) => {
-                    this.logger.debug('[JudgeHearingList] - Got updated list');
+                    this.logger.debug(`${this._loggerPrefix} Got updated list`);
                     this.loadingData = false;
                     this.conferences = data;
                     if (this.conferences.length > 0) {
@@ -42,7 +44,7 @@ export class StaffMemberHearingListComponent extends HostHearingListComponent im
                     }
                 },
                 error: error => {
-                    this.logger.warn('[JudgeHearingList] - There was a problem updating the hearing list');
+                    this.logger.warn(`${this._loggerPrefix} There was a problem updating the hearing list`);
                     this.loadingData = false;
                     this.screenHelper.enableFullScreen(false);
                     this.errorService.handleApiError(error);

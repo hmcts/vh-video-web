@@ -15,7 +15,7 @@ import { ScreenHelper } from 'src/app/shared/screen-helper';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 
 @Directive()
-export abstract class HostHearingListComponent implements OnInit, OnDestroy {
+export abstract class HostHearingListBaseComponentDirective implements OnInit, OnDestroy {
     contact = {
         phone: vhContactDetails.phone
     };

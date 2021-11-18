@@ -13,14 +13,14 @@ import { ScreenHelper } from 'src/app/shared/screen-helper';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { eventsServiceSpy, hearingStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { HostHearingListComponent } from './host-hearing-list.component-base';
+import { HostHearingListBaseComponentDirective } from './host-hearing-list.component-base';
 
-class MockedHearingListComponent extends HostHearingListComponent {
+class MockedHearingListComponent extends HostHearingListBaseComponentDirective {
     retrieveHearingsForUser() {}
 }
 
 describe('JudgeHearingListComponent', () => {
-    let component: HostHearingListComponent;
+    let component: HostHearingListBaseComponentDirective;
 
     const mockProfile: UserProfileResponse = new UserProfileResponse({
         display_name: 'John Doe',

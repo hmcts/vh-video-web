@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { HostHearingListComponent } from 'src/app/on-the-day/host-hearing-list/host-hearing-list.component-base';
+import { HostHearingListBaseComponentDirective } from 'src/app/on-the-day/host-hearing-list/host-hearing-list.component-base';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceForHostResponse, LoggedParticipantResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
@@ -17,7 +17,7 @@ import { ScreenHelper } from 'src/app/shared/screen-helper';
     templateUrl: '../host-hearing-list.component.html',
     styleUrls: ['../host-hearing-list.component.scss']
 })
-export class JudgeHearingListComponent extends HostHearingListComponent implements OnInit, OnDestroy {
+export class JudgeHearingListComponent extends HostHearingListBaseComponentDirective implements OnInit, OnDestroy {
     conferences: ConferenceForHostResponse[];
     conferencesSubscription = new Subscription();
     hearingListForm: FormGroup;
