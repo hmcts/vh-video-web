@@ -19,7 +19,7 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [Route("api/accounts")]
     [ApiController]
-    [Authorize(AppRoles.VenueManagementRole)]
+    [Authorize(AppRoles.VhOfficerRole)]
     public class UserDataController : ControllerBase
     {
         private readonly ILogger<UserDataController> _logger;

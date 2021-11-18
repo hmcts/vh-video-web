@@ -6,14 +6,14 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { CourtRoomsAccounts } from 'src/app/vh-officer/services/models/court-rooms-accounts';
 import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 import { pageUrls } from '../../page-url.constants';
-import { VenueListComponent } from '../venue-list.component';
+import { VenueListComponentDirective } from '../venue-list.component';
 
 @Component({
     selector: 'app-vh-officer-venue-list',
     templateUrl: '../venue-list.component.html',
     styleUrls: ['../venue-list.component.scss']
 })
-export class VhOfficerVenueListComponent extends VenueListComponent implements OnInit {
+export class VhOfficerVenueListComponent extends VenueListComponentDirective implements OnInit {
     constructor(
         protected videoWebService: VideoWebService,
         protected router: Router,

@@ -9,7 +9,7 @@ import { HearingVenueResponse } from '../../services/clients/api-client';
 import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
 
 @Directive()
-export abstract class VenueListComponent implements OnInit {
+export abstract class VenueListComponentDirective implements OnInit {
     protected readonly judgeAllocationStorage: SessionStorage<string[]>;
     protected readonly courtAccountsAllocationStorage: SessionStorage<CourtRoomsAccounts[]>;
     venues: HearingVenueResponse[];

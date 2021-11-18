@@ -8,14 +8,14 @@ import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 import { CourtRoomsAccounts } from '../../vh-officer/services/models/court-rooms-accounts';
 import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
-import { VenueListComponent } from './venue-list.component';
+import { VenueListComponentDirective } from './venue-list.component';
 
-class MockedVenueListComponent extends VenueListComponent {
+class MockedVenueListComponent extends VenueListComponentDirective {
     goToHearingList() {}
 }
 
 describe('VenueListComponent', () => {
-    let component: VenueListComponent;
+    let component: VenueListComponentDirective;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     let router: jasmine.SpyObj<Router>;
     let vhoQueryService: jasmine.SpyObj<VhoQueryService>;

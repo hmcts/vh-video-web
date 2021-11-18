@@ -4,14 +4,14 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 import { pageUrls } from '../../page-url.constants';
-import { VenueListComponent } from '../venue-list.component';
+import { VenueListComponentDirective } from '../venue-list.component';
 
 @Component({
     selector: 'app-staff-member-venue-list',
     templateUrl: '../venue-list.component.html',
     styleUrls: ['../venue-list.component.scss']
 })
-export class StaffMemberVenueListComponent extends VenueListComponent {
+export class StaffMemberVenueListComponent extends VenueListComponentDirective {
     constructor(
         protected videoWebService: VideoWebService,
         protected router: Router,
