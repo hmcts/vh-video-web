@@ -3,6 +3,7 @@
     "skip-to-main-content": "Skip to main content"
   },
   "hearing-list-table": {
+    "aria-label": "hearing-list-table",
     "date-and-time": "Date & time",
     "hearing-details": "Hearing details",
     "case-number": "Case number",
@@ -238,6 +239,7 @@
   },
   "judge-hearing-table": {
     "time": "Time",
+    "aria-label": "Hearing list table",
     "judge": "Judge",
     "hearing": "Hearing",
     "attendees": "Attendees",
