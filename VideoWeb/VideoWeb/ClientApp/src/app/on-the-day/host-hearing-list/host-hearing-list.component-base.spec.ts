@@ -14,10 +14,7 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { eventsServiceSpy, hearingStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { HostHearingListComponent } from './host-hearing-list.component-base';
-
-class MockHearingListComponent extends HostHearingListComponent {
-    retrieveHearingsForUser() {}
-}
+import { MockedHearingListComponent } from './mocked-hearing-list.component';
 
 describe('JudgeHearingListComponent', () => {
     let component: HostHearingListComponent;
@@ -38,7 +35,6 @@ describe('JudgeHearingListComponent', () => {
     let router: jasmine.SpyObj<Router>;
     let profileService: jasmine.SpyObj<ProfileService>;
     const logger: Logger = new MockLogger();
-    var intervalId;
 
     const eventsService = eventsServiceSpy;
 
@@ -62,7 +58,7 @@ describe('JudgeHearingListComponent', () => {
         );
         hearingVenueIsScottishSubject = new BehaviorSubject(false);
         getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'hearingVenueIsScottish$').and.returnValue(hearingVenueIsScottishSubject);
-        component = new MockHearingListComponent(
+        component = new MockedHearingListComponent(
             videoWebService,
             router,
             profileService,
@@ -76,7 +72,6 @@ describe('JudgeHearingListComponent', () => {
     });
 
     afterEach(() => {
-        clearInterval(intervalId);
         component.ngOnDestroy();
     });
 
