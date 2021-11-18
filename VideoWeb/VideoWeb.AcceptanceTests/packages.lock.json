@@ -260,9 +260,9 @@
       },
       "VH.AcceptanceTests.Common": {
         "type": "Direct",
-        "requested": "[1.21.60, )",
-        "resolved": "1.21.60",
-        "contentHash": "awYbKWaBxzTanSHf697uDcGL7XNIyDiOwbj2qXZUwGlA5QB5uDT5CHk9tj3CrD5MUVN4ZWOZJQ1Gj5J5TW07eQ==",
+        "requested": "[1.21.61, )",
+        "resolved": "1.21.61",
+        "contentHash": "xvKnlM1fm5sPiIqeTlv+PGcpYgHHkDieMKelvmxvEtHvzssI+VQV1iPNHldm8T4v/gtvOvPvtzhm/DYwMZPnig==",
         "dependencies": {
           "Appium.WebDriver": "4.3.1",
           "Azure.Storage.Blobs": "12.8.0",
@@ -291,7 +291,7 @@
           "Selenium.Firefox.WebDriver": "0.27.0",
           "Selenium.Support": "3.141.0",
           "Selenium.WebDriver": "3.141.0",
-          "Selenium.WebDriver.ChromeDriver": "94.0.4606.6100",
+          "Selenium.WebDriver.ChromeDriver": "96.0.4664.4500",
           "Selenium.WebDriver.IEDriver": "3.150.1.2",
           "Selenium.WebDriver.MicrosoftDriver": "17.17134.0",
           "SpecFlow": "3.6.23",
@@ -1339,8 +1339,8 @@
       },
       "Selenium.WebDriver.ChromeDriver": {
         "type": "Transitive",
-        "resolved": "94.0.4606.6100",
-        "contentHash": "3mk0sCbTR0bCvis1VbIR6SF8PxRXQgwHjIg1bVve0DmQqC8muxoxIYdVrb3oL42cmGqVUoAxRFN/MWDHGKWYIw=="
+        "resolved": "96.0.4664.4500",
+        "contentHash": "7bH+2/bX4IqPXxnMsbD820pCb1DFLeESIbjpUL/Zgq5wfKJHTxtknrQ1wnlMJmWtbpoNcj6Zck7OfoIVstl3zQ=="
       },
       "StackExchange.Redis": {
         "type": "Transitive",
