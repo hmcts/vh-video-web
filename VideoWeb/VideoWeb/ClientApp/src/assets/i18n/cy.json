@@ -225,6 +225,7 @@
   },
   "hearing-list-table": {
     "date-and-time": "Dyddiad ac amser",
+    "description": "Tabl rhestr o wrandawiadau",
     "hearing-details": "Manylion y gwrandawiad",
     "case-number": "Rhif yr achos",
     "button": {
@@ -246,7 +247,7 @@
   },
   "judge-hearing-table": {
     "time": "Amser",
-    "description": "Hearing list table",
+    "description": "Tabl rhestr o wrandawiadau",
     "judge": "Barnwr",
     "hearing": "Gwrandawiad",
     "attendees": "Yn bresennol",
