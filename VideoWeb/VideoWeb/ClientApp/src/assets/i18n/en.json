@@ -4,6 +4,7 @@
   },
   "hearing-list-table": {
     "date-and-time": "Date & time",
+    "description": "Hearing list table",
     "hearing-details": "Hearing details",
     "case-number": "Case number",
     "sign-in": "Sign in {{date}}",
