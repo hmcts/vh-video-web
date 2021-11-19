@@ -246,6 +246,7 @@
   },
   "judge-hearing-table": {
     "time": "Amser",
+    "description": "Hearing list table",
     "judge": "Barnwr",
     "hearing": "Gwrandawiad",
     "attendees": "Yn bresennol",
@@ -284,7 +285,8 @@
   },
   "back-navigation": {
     "back": "Yn ôl",
-    "return-to-video-hearing-list": "Dychwelyd i'r rhestr gwrandawiadau fideo "
+    "return-to-video-hearing-list": "Dychwelyd i'r rhestr gwrandawiadau fideo ",
+    "navigate-back-to-select-venues": "Dewis rhestr"
   },
   "introduction": {
     "hm-courts-and-tribunals-service-crest": "Arwyddlun Gwasanaeth Llysoedd a Thribiwnlysoedd EM",

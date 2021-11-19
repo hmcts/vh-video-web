@@ -1,32 +1,27 @@
-import { Component, OnInit } from '@angular/core';
+import { Directive, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
-import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
 import { CourtRoomsAccounts } from 'src/app/vh-officer/services/models/court-rooms-accounts';
 import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
-import { Logger } from 'src/app/services/logging/logger-base';
-import { CourtRoomsAccountResponse, HearingVenueResponse } from '../../services/clients/api-client';
+import { HearingVenueResponse } from '../../services/clients/api-client';
+import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
 
-@Component({
-    selector: 'app-venue-list',
-    templateUrl: './venue-list.component.html',
-    styleUrls: ['./venue-list.component.scss']
-})
-export class VenueListComponent implements OnInit {
-    private readonly judgeAllocationStorage: SessionStorage<string[]>;
-    private readonly courtAccountsAllocationStorage: SessionStorage<CourtRoomsAccounts[]>;
+@Directive()
+export abstract class VenueListComponentDirective implements OnInit {
+    protected readonly judgeAllocationStorage: SessionStorage<string[]>;
+    protected readonly courtAccountsAllocationStorage: SessionStorage<CourtRoomsAccounts[]>;
     venues: HearingVenueResponse[];
     selectedVenues: string[];
     venueListLoading: boolean;
     filterCourtRoomsAccounts: CourtRoomsAccounts[];
 
     constructor(
-        private videoWebService: VideoWebService,
-        private router: Router,
-        private vhoQueryService: VhoQueryService,
-        private logger: Logger
+        protected videoWebService: VideoWebService,
+        protected router: Router,
+        protected vhoQueryService: VhoQueryService,
+        protected logger: Logger
     ) {
         this.selectedVenues = [];
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
@@ -50,33 +45,5 @@ export class VenueListComponent implements OnInit {
         this.judgeAllocationStorage.set(this.selectedVenues);
     }
 
-    getFiltersCourtRoomsAccounts(response: CourtRoomsAccountResponse[]) {
-        if (this.venuesSelected) {
-            this.filterCourtRoomsAccounts = response.map(x => new CourtRoomsAccounts(x.first_name, x.last_names, true));
-            const previousFilter = this.courtAccountsAllocationStorage.get();
-            if (previousFilter) {
-                previousFilter.forEach(x => this.updateFilterSelection(x));
-            }
-            this.courtAccountsAllocationStorage.set(this.filterCourtRoomsAccounts);
-            this.logger.info('[VenueList] - Venue selection is changed');
-        } else {
-            this.logger.warn('[VenueList] - No venues selected');
-        }
-    }
-
-    updateFilterSelection(filterVenue: CourtRoomsAccounts) {
-        const courtroomAccount = this.filterCourtRoomsAccounts.find(x => x.venue === filterVenue.venue);
-        if (courtroomAccount) {
-            courtroomAccount.selected = filterVenue.selected;
-            courtroomAccount.updateRoomSelection(filterVenue.courtsRooms);
-        }
-    }
-
-    goToHearingList() {
-        this.updateSelection();
-        this.vhoQueryService.getCourtRoomsAccounts(this.selectedVenues).then(response => {
-            this.getFiltersCourtRoomsAccounts(response);
-            this.router.navigateByUrl(pageUrls.AdminHearingList);
-        });
-    }
+    abstract goToHearingList();
 }

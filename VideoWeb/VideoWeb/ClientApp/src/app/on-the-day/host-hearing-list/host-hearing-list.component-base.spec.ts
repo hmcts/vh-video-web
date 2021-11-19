@@ -1,9 +1,9 @@
-import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
+import { fakeAsync, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { BehaviorSubject, of, Subscription, throwError } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ErrorService } from 'src/app/services/error.service';
+import { ConferenceStatus, LoggedParticipantResponse, Role, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
@@ -13,11 +13,14 @@ import { ScreenHelper } from 'src/app/shared/screen-helper';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { eventsServiceSpy, hearingStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { ConferenceStatus, LoggedParticipantResponse, Role, UserProfileResponse } from '../../services/clients/api-client';
-import { JudgeHearingListComponent } from './judge-hearing-list.component';
+import { HostHearingListBaseComponentDirective } from './host-hearing-list.component-base';
+
+class MockedHearingListComponent extends HostHearingListBaseComponentDirective {
+    retrieveHearingsForUser() {}
+}
 
 describe('JudgeHearingListComponent', () => {
-    let component: JudgeHearingListComponent;
+    let component: HostHearingListBaseComponentDirective;
 
     const mockProfile: UserProfileResponse = new UserProfileResponse({
         display_name: 'John Doe',
@@ -32,7 +35,6 @@ describe('JudgeHearingListComponent', () => {
     let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
     let hearingVenueIsScottishSubject: BehaviorSubject<boolean>;
     let screenHelper: jasmine.SpyObj<ScreenHelper>;
-    let errorService: jasmine.SpyObj<ErrorService>;
     let router: jasmine.SpyObj<Router>;
     let profileService: jasmine.SpyObj<ProfileService>;
     const logger: Logger = new MockLogger();
@@ -41,12 +43,6 @@ describe('JudgeHearingListComponent', () => {
 
     beforeAll(() => {
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForJudge', 'getCurrentParticipant']);
-
-        errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
-            'goToServiceError',
-            'handleApiError',
-            'returnHomeIfUnauthorised'
-        ]);
 
         profileService = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
 
@@ -65,9 +61,8 @@ describe('JudgeHearingListComponent', () => {
         );
         hearingVenueIsScottishSubject = new BehaviorSubject(false);
         getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'hearingVenueIsScottish$').and.returnValue(hearingVenueIsScottishSubject);
-        component = new JudgeHearingListComponent(
+        component = new MockedHearingListComponent(
             videoWebService,
-            errorService,
             router,
             profileService,
             logger,
@@ -76,7 +71,6 @@ describe('JudgeHearingListComponent', () => {
             mockedHearingVenueFlagsService
         );
         component.conferences = conferences;
-        videoWebService.getConferencesForJudge.and.returnValue(of(conferences));
         screenHelper.enableFullScreen.calls.reset();
     });
 
@@ -89,37 +83,18 @@ describe('JudgeHearingListComponent', () => {
         expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(false);
     });
 
-    it('should handle api error with error service when unable to retrieve hearings for judge', fakeAsync(() => {
-        videoWebService.getConferencesForJudge.and.returnValue(throwError({ status: 401, isApiException: true }));
-        component.retrieveHearingsForUser();
-        expect(component.loadingData).toBeFalsy();
-        expect(errorService.handleApiError).toHaveBeenCalled();
-    }));
-
-    it('should show no hearings message when judge has no conferences', fakeAsync(() => {
-        videoWebService.getConferencesForJudge.and.returnValue(of([]));
-
-        component.retrieveHearingsForUser();
-        flushMicrotasks();
-
-        expect(component.hasHearings()).toBeFalsy();
-        expect(screenHelper.enableFullScreen).toHaveBeenCalledTimes(0);
-    }));
-
-    it('should retrieve conferences and setup interval on init', fakeAsync(() => {
-        component.conferences = null;
-        const interval = jasmine.createSpyObj<NodeJS.Timeout>('NodeJS.Timeout', ['ref', 'unref']);
-        spyOn(global, 'setInterval').and.returnValue(<any>interval);
-
+    it('calls the retrieveHearingsForUser twice', () => {
+        jasmine.clock().install();
+        spyOn(component, 'retrieveHearingsForUser');
         component.ngOnInit();
-        flushMicrotasks();
 
-        expect(screenHelper.enableFullScreen).toHaveBeenCalledWith(true);
-        expect(component.profile).toBe(mockProfile);
-        expect(component.conferences).toBe(conferences);
-        expect(setInterval).toHaveBeenCalled();
-        expect(component.interval).toBe(interval);
-    }));
+        expect(component.retrieveHearingsForUser).toHaveBeenCalledTimes(1);
+
+        jasmine.clock().tick(30001);
+
+        expect(component.retrieveHearingsForUser).toHaveBeenCalledTimes(2);
+        jasmine.clock().uninstall();
+    });
 
     it('should show hearings when judge has conferences', () => {
         component.conferences = conferences;
@@ -188,6 +163,7 @@ describe('JudgeHearingListComponent', () => {
         tick();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.JOHWaitingRoom, conference.id]);
     }));
+
     it('should update conference status when message arrives', () => {
         const conference = conferences[0];
         const message = new ConferenceStatusMessage(conference.id, ConferenceStatus.Closed);

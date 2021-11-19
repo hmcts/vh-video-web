@@ -76,6 +76,35 @@ namespace VideoWeb.Controllers
         }
 
         /// <summary>
+        /// Get conferences today for staff member with the specifed hearing venue names
+        /// </summary>
+        /// <returns>List of conferences, if any</returns>
+        [HttpGet("staffmember")]
+        [ProducesResponseType(typeof(List<ConferenceForHostResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [SwaggerOperation(OperationId = "GetConferencesForStaffMember")]
+        [Authorize("Judicial")]
+        public async Task<ActionResult<List<ConferenceForHostResponse>>> GetConferencesForStaffMemberAsync([FromQuery] IEnumerable<string> hearingVenueNames)
+        {
+            _logger.LogDebug("GetConferencesForStaffMember");
+
+            try
+            {
+                var conferenceForHostResponseMapper = _mapperFactory.Get<HostConference, ConferenceForHostResponse>();
+                var conferencesForStaffMember = await _videoApiClient.GetConferencesTodayForStaffMemberByHearingVenueNameAsync(hearingVenueNames);
+                var response = conferencesForStaffMember
+                    .Select(conferenceForHostResponseMapper.Map)
+                    .ToList();
+                return Ok(response);
+            }
+            catch (VideoApiException e)
+            {
+                _logger.LogError(e, "Unable to get conferences for staff member");
+                return StatusCode(e.StatusCode, e.Response);
+            }
+        }
+
+        /// <summary>
         /// Get conferences today for individual or representative excluding those that have been closed for over 120 minutes
         /// </summary>
         /// <returns>List of conferences, if any</returns>

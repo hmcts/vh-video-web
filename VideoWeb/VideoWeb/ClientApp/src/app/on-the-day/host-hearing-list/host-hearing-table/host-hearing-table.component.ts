@@ -5,11 +5,11 @@ import { JudgeHearingSummary } from 'src/app/shared/models/JudgeHearingSummary';
 import { ParticipantSummary } from 'src/app/shared/models/participant-summary';
 
 @Component({
-    selector: 'app-judge-hearing-table',
-    templateUrl: './judge-hearing-table.component.html',
-    styleUrls: ['./judge-hearing-table.component.scss']
+    selector: 'app-host-hearing-table',
+    templateUrl: './host-hearing-table.component.html',
+    styleUrls: ['./host-hearing-table.component.scss']
 })
-export class JudgeHearingTableComponent implements OnInit {
+export class HostHearingTableComponent implements OnInit {
     private conferenceForHostResponse: ConferenceForHostResponse[];
     hearings: JudgeHearingSummary[];
 
