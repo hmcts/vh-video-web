@@ -44,7 +44,7 @@
     <video
       appForcePlayVideo
       #incomingFeed
-      (playing)="updateVideoStreamMuteStatus()"
+      [mute]="shouldMuteHearing()"
       id="incomingFeedPrivate"
       [srcObject]="presentationStream && !streamInMain ? presentationStream : stream"
       height="auto"

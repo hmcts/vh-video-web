@@ -64,7 +64,7 @@
             appForcePlayVideo
             id="incomingFeedJudgePrivate"
             #incomingFeed
-            (playing)="updateVideoStreamMuteStatus()"
+            [mute]="shouldMuteHearing()"
             [srcObject]="presentationStream && !streamInMain ? presentationStream : stream"
             height="auto"
             class="incomingFeedPrivate"

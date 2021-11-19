@@ -61,7 +61,7 @@
       appForcePlayVideo
       id="incomingFeedPrivate"
       #incomingFeed
-      (playing)="updateVideoStreamMuteStatus()"
+      [mute]="shouldMuteHearing()"
       [srcObject]="presentationStream && !streamInMain ? presentationStream : stream"
       poster="/assets/images/empty_crest.jpg"
     >

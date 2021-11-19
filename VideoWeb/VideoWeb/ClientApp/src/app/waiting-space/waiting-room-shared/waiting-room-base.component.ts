@@ -103,7 +103,6 @@ export abstract class WaitingRoomBaseDirective {
     loggedInUser: LoggedParticipantResponse;
     linkedParticipantRoom: SharedParticipantRoom;
 
-    @ViewChild('incomingFeed', { static: false }) videoStream: ElementRef<HTMLVideoElement>;
     @ViewChild('roomTitleLabel', { static: false }) roomTitleLabel: ElementRef<HTMLDivElement>;
     @ViewChild('hearingControls', { static: false }) hearingControls: PrivateConsultationRoomControlsComponent;
     countdownComplete: boolean;
@@ -909,25 +908,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     shouldMuteHearing(): boolean {
-        return !this.countdownComplete && this.hearing.isInSession();
-    }
-
-    updateVideoStreamMuteStatus() {
-        if (this.shouldMuteHearing()) {
-            this.toggleVideoStreamMute(true);
-        } else {
-            this.toggleVideoStreamMute(false);
-        }
-    }
-
-    toggleVideoStreamMute(muted: boolean): void {
-        if (this.videoStream) {
-            this.logger.debug(`${this.loggerPrefix} Updating video stream mute status to ${muted}`, {
-                conference: this.conferenceId,
-                participant: this.participant.id
-            });
-            this.videoStream.nativeElement.muted = muted;
-        }
+        return !this.countdownComplete && this.participant.status !== ParticipantStatus.InHearing;
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): void {
@@ -995,7 +976,6 @@ export abstract class WaitingRoomBaseDirective {
             return;
         }
         this.countdownComplete = true;
-        this.toggleVideoStreamMute(false);
     }
 
     private handleParticipantsUpdatedMessage(participantsUpdatedMessage: ParticipantsUpdatedMessage) {
