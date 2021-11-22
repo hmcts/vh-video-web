@@ -35,7 +35,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         private AutoMock _mocker;
         private ParticipantsController _sut;
         private ConferenceDetailsResponse _testConference;
-        private const string Username = "john@hmcts.net";
+        private const string Username = "staff_member@hmcts.net";
 
         [SetUp]
         public void Setup()

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -18,7 +18,9 @@ namespace VideoWeb.Services
 {
     public interface IParticipantService
     {
-        AddStaffMemberRequest InitialiseAddStaffMemberRequest(UserProfileResponse staffMemberProfile, string staffMemberEmail, ClaimsPrincipal user);
+        AddStaffMemberRequest InitialiseAddStaffMemberRequest(UserProfileResponse staffMemberProfile,
+            string staffMemberEmail, ClaimsPrincipal user);
+
         bool CanStaffMemberJoinConference(ConferenceDetailsResponse originalConference);
         Task UpdateConferenceCache(ConferenceDetailsResponse response);
     }
@@ -29,6 +31,8 @@ namespace VideoWeb.Services
         private readonly ILogger<ParticipantsController> _logger;
         private readonly IMapperFactory _mapperFactory;
         private readonly IParticipantsUpdatedEventNotifier _participantsUpdatedEventNotifier;
+        private readonly int startingSoonMinutesThreshold = 30;
+        private readonly int closedMinutesThreshold = 30;
 
         public ParticipantService(IConferenceCache conferenceCache, ILogger<ParticipantsController> logger,
             IMapperFactory mapperFactory, IParticipantsUpdatedEventNotifier participantsUpdatedEventNotifier)
@@ -56,19 +60,20 @@ namespace VideoWeb.Services
         }
 
         public bool CanStaffMemberJoinConference(ConferenceDetailsResponse originalConference)
-            {
-            return originalConference.ScheduledDateTime < DateTime.UtcNow.AddMinutes(30) ||
-                   (originalConference.ClosedDateTime != null && originalConference.ClosedDateTime > DateTime.UtcNow.AddMinutes(-120));
-            }
-            
-            public async Task UpdateConferenceCache(ConferenceDetailsResponse response)
-            {
-                _logger.LogTrace($"Updating conference in cache: {JsonSerializer.Serialize(response)}");
-                var conferenceMapper = _mapperFactory.Get<ConferenceDetailsResponse, Conference>();
-                var conference = conferenceMapper.Map(response);
+        {
+            return originalConference.ScheduledDateTime < DateTime.UtcNow.AddMinutes(startingSoonMinutesThreshold) ||
+                   (originalConference.ClosedDateTime != null && originalConference.ClosedDateTime >
+                       DateTime.UtcNow.AddMinutes(-closedMinutesThreshold));
+        }
 
-                await _conferenceCache.UpdateConferenceAsync(conference);
-                await _participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference);
-            }
+        public async Task UpdateConferenceCache(ConferenceDetailsResponse response)
+        {
+            _logger.LogTrace($"Updating conference in cache: {JsonSerializer.Serialize(response)}");
+            var conferenceMapper = _mapperFactory.Get<ConferenceDetailsResponse, Conference>();
+            var conference = conferenceMapper.Map(response);
+
+            await _conferenceCache.UpdateConferenceAsync(conference);
+            await _participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference);
+        }
     }
 }
