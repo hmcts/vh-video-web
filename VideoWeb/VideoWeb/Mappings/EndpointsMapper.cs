@@ -4,12 +4,8 @@ using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
-    public abstract class EndpointsMapper : IMapTo<EndpointResponse, Endpoint>
+    public class EndpointsMapper : IMapTo<EndpointResponse, Endpoint>
     {
-        protected EndpointsMapper()
-        {
-        }
-
         public Endpoint Map(EndpointResponse endpoint)
         {
             return new Endpoint
