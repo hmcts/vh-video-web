@@ -37,6 +37,7 @@ using VideoApi.Client;
 using VideoWeb.EventHub.Services;
 using VideoWeb.Swagger;
 using VideoWeb.Helpers.Interfaces;
+using VideoWeb.Services;
 
 namespace VideoWeb.Extensions
 {
@@ -114,7 +115,8 @@ namespace VideoWeb.Extensions
             services.AddScoped<IConsultationNotifier, ConsultationNotifier>();
             services.AddScoped<IHearingLayoutService, HearingLayoutService>();
             services.AddScoped<IHearingLayoutCache, DistributedHearingLayoutCache>();
-
+            services.AddScoped<IParticipantService, ParticipantService>();
+            
             RegisterMappers(services);
 
             var container = services.BuildServiceProvider();

@@ -26,7 +26,7 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<EndpointResponse, int, VideoEndpointResponse>()).Returns(_mocker.Create<EndpointsResponseMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<EndpointResponse, int, VideoEndpointResponse>()).Returns(_mocker.Create<VideoEndpointsResponseMapper>());
             _controller = _mocker.Create<EndpointsController>();
         }
         

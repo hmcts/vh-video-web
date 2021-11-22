@@ -1,32 +1,24 @@
-using System;
 using VideoWeb.Common.Models;
-using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
 using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
-    public class EndpointsResponseMapper : IMapTo<EndpointResponse, int, VideoEndpointResponse>
+    public class EndpointsResponseMapper : IMapTo<EndpointResponse, Endpoint>
     {
-        private readonly IMapTo<RoomResponse, RoomSummaryResponse> _roomResponseMapper;
 
-        public EndpointsResponseMapper(IMapTo<RoomResponse, RoomSummaryResponse> roomResponseMapper)
+        public EndpointsResponseMapper()
         {
-            _roomResponseMapper = roomResponseMapper;
         }
 
-        public VideoEndpointResponse Map(EndpointResponse endpoint, int index)
+        public Endpoint Map(EndpointResponse endpoint)
         {
-            var status = Enum.Parse<EndpointStatus>(endpoint.Status.ToString());
-            var pexipDisplayName = $"PSTN;{endpoint.DisplayName};{endpoint.Id}";
-            return new VideoEndpointResponse
+            return new Endpoint
             {
                 DisplayName = endpoint.DisplayName,
                 Id = endpoint.Id,
-                Status = status,
+                EndpointStatus =  (EndpointStatus)((int)endpoint.Status),
                 DefenceAdvocateUsername = endpoint.DefenceAdvocate,
-                PexipDisplayName = pexipDisplayName,
-                CurrentRoom = _roomResponseMapper.Map(endpoint.CurrentRoom)
             };
         }
     }

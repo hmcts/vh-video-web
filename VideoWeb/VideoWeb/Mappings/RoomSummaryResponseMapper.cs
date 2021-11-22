@@ -4,18 +4,18 @@ using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
-    public class RoomResponseMapper : IMapTo<RoomSummaryResponse, RoomResponse>
+    public class RoomSummaryResponseMapper : IMapTo<RoomResponse, RoomSummaryResponse>
     {
-        public RoomResponse Map(RoomSummaryResponse input)
+        public RoomSummaryResponse Map(RoomResponse input)
         {
             if (input == null)
             {
                 return null;
             }
 
-            return new RoomResponse
+            return new RoomSummaryResponse
             {
-                Id = long.Parse(input.Id),
+                Id = input.Id.ToString(),
                 Label = input.Label,
                 Locked = input.Locked
             };

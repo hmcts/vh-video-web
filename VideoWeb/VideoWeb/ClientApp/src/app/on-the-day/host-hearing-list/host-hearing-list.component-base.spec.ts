@@ -42,7 +42,7 @@ describe('JudgeHearingListComponent', () => {
     const eventsService = eventsServiceSpy;
 
     beforeAll(() => {
-        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForJudge', 'getCurrentParticipant']);
+        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForJudge', 'getCurrentParticipant', 'staffMemberJoinConference']);
 
         profileService = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
 
@@ -144,11 +144,12 @@ describe('JudgeHearingListComponent', () => {
     }));
 
     it('should navigate to judge waiting room when conference is selected for user as a staffmember in the conference', fakeAsync(() => {
-        const conference = conferences[1];
+        const conference = new ConferenceTestData().getConferenceForHostResponse();
         const staffMember = conference.participants.find(x => x.role === Role.StaffMember);
-        videoWebService.getCurrentParticipant.and.returnValue(
-            Promise.resolve(new LoggedParticipantResponse({ participant_id: staffMember.id }))
-        );
+        router.navigate.calls.reset();
+        profileService.getUserProfile.and.returnValue(Promise.resolve(staffMember));
+
+        videoWebService.staffMemberJoinConference.and.returnValue(Promise.resolve(conference))
 
         component.onConferenceSelected(conference);
         tick();
@@ -156,6 +157,7 @@ describe('JudgeHearingListComponent', () => {
     }));
 
     it('should navigate to panel member waiting room when conference is selected for user as a panel member in the conference', fakeAsync(() => {
+        profileService.getUserProfile.and.returnValue(Promise.resolve(mockProfile));
         const conference = conferences[0];
         const part = conference.participants.find(x => x.role === Role.JudicialOfficeHolder);
         videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(new LoggedParticipantResponse({ participant_id: part.id })));

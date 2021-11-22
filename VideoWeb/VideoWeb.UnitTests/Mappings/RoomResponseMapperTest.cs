@@ -5,7 +5,7 @@ using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class RoomResponseMapperTest : BaseMockerSutTestSetup<RoomResponseMapper>
+    public class RoomResponseMapperTest : BaseMockerSutTestSetup<RoomSummaryResponseMapper>
     {
         [Test]
         public void Should_return_null_if_input_is_null()
