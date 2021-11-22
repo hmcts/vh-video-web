@@ -126,7 +126,7 @@ describe('ForcePlayVideoDirective', () => {
             // Act
             directive.ngOnChanges(changes);
 
-            // Asserts
+            // Assert
             expect(directive.videoElement.muted).toBe(true);
         });
     });
