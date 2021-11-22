@@ -40,9 +40,11 @@ export class ForcePlayVideoDirective implements OnInit, OnChanges {
 
     private updateMute() {
         if (!!this.mute) {
-            this.renderer.setAttribute(this.videoElement, 'muted', 'true');
+            // this.videoElement.muted = true;
+            this.renderer.setProperty(this.videoElement, 'muted', 'true');
         } else {
-            this.renderer.setAttribute(this.videoElement, 'muted', 'false');
+            // this.videoElement.muted = false;
+            this.renderer.setProperty(this.videoElement, 'muted', 'false');
         }
     }
 

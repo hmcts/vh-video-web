@@ -908,7 +908,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     shouldMuteHearing(): boolean {
-        return !this.countdownComplete && this.participant.status !== ParticipantStatus.InHearing;
+        return !(this.countdownComplete && this.participant.status === ParticipantStatus.InHearing);
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): void {
