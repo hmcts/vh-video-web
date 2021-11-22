@@ -10,12 +10,12 @@ namespace VideoWeb.Mappings
     public class ConferenceDetailsResponseMapper : IMapTo<ConferenceDetailsResponse, Conference>
     {
         private readonly IMapTo<ParticipantDetailsResponse, Participant> _participantDetailsResponseMapper;
-        private readonly IMapTo<EndpointResponse, Endpoint> _endpointResponseMapper;
+        private readonly IMapTo<EndpointResponse, Endpoint> _endpointMapper;
 
         public ConferenceDetailsResponseMapper(IMapTo<ParticipantDetailsResponse, Participant> participantDetailsResponseMapper, IMapTo<EndpointResponse, Endpoint> endpointResponseMapper)
         {
             _participantDetailsResponseMapper = participantDetailsResponseMapper;
-            _endpointResponseMapper = endpointResponseMapper;
+            _endpointMapper = endpointResponseMapper;
         }
 
         public Conference Map(ConferenceDetailsResponse conference)
@@ -24,7 +24,7 @@ namespace VideoWeb.Mappings
             {
                 Id = conference.Id,
                 Participants = conference.Participants.Select(_participantDetailsResponseMapper.Map).ToList(),
-                Endpoints = conference.Endpoints.Select(_endpointResponseMapper.Map).ToList()
+                Endpoints = conference.Endpoints.Select(_endpointMapper.Map).ToList()
             };
         }
     }

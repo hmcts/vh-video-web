@@ -53,7 +53,7 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventControllerTests
 
             var parameters = new ParameterBuilder(_mocker)
                 .AddTypedParameters<ParticipantResponseMapper>()
-                .AddTypedParameters<VideoEndpointsResponseMapper>()
+                .AddTypedParameters<EndpointsResponseMapper>()
                 .AddTypedParameters<ParticipantForHostResponseMapper>()
                 .AddTypedParameters<ParticipantResponseForVhoMapper>()
                 .AddTypedParameters<ParticipantForUserResponseMapper>()

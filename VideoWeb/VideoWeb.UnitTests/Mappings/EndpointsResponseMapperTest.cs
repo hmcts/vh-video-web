@@ -7,7 +7,7 @@ using VHEndpointStatus = VideoWeb.Common.Models.EndpointStatus;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class EndpointsResponseMapperTest : BaseMockerSutTestSetup<VideoEndpointsResponseMapper>
+    public class EndpointsResponseMapperTest : BaseMockerSutTestSetup<EndpointsResponseMapper>
     {
         [TestCase(EndpointState.Connected, VHEndpointStatus.Connected)]
         [TestCase(EndpointState.Disconnected, VHEndpointStatus.Disconnected)]
