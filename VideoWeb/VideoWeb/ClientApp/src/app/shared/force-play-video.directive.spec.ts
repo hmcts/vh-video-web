@@ -44,10 +44,9 @@ describe('ForcePlayVideoDirective', () => {
             directive.ngOnInit();
 
             // Assert
-            expect(renderer2Spy.setAttribute).toHaveBeenCalledTimes(3);
+            expect(renderer2Spy.setAttribute).toHaveBeenCalledTimes(2);
             expect(renderer2Spy.setAttribute).toHaveBeenCalledWith(nativeElementSpy, 'playsinline', 'true');
             expect(renderer2Spy.setAttribute).toHaveBeenCalledWith(nativeElementSpy, 'autoplay', 'true');
-            expect(renderer2Spy.setAttribute).toHaveBeenCalledWith(nativeElementSpy, 'muted', 'false');
         });
 
         it('should add the plays inline attribute and the auto play attribute and also set mute attribute to false if mute is false', () => {
@@ -58,10 +57,9 @@ describe('ForcePlayVideoDirective', () => {
             directive.ngOnInit();
 
             // Assert
-            expect(renderer2Spy.setAttribute).toHaveBeenCalledTimes(3);
+            expect(renderer2Spy.setAttribute).toHaveBeenCalledTimes(2);
             expect(renderer2Spy.setAttribute).toHaveBeenCalledWith(nativeElementSpy, 'playsinline', 'true');
             expect(renderer2Spy.setAttribute).toHaveBeenCalledWith(nativeElementSpy, 'autoplay', 'true');
-            expect(renderer2Spy.setAttribute).toHaveBeenCalledWith(nativeElementSpy, 'muted', 'false');
         });
 
         it('should add the plays inline attribute and the auto play attribute and also set mute attribute to true if mute is true', () => {
@@ -72,10 +70,9 @@ describe('ForcePlayVideoDirective', () => {
             directive.ngOnInit();
 
             // Assert
-            expect(renderer2Spy.setAttribute).toHaveBeenCalledTimes(3);
+            expect(renderer2Spy.setAttribute).toHaveBeenCalledTimes(2);
             expect(renderer2Spy.setAttribute).toHaveBeenCalledWith(nativeElementSpy, 'playsinline', 'true');
             expect(renderer2Spy.setAttribute).toHaveBeenCalledWith(nativeElementSpy, 'autoplay', 'true');
-            expect(renderer2Spy.setAttribute).toHaveBeenCalledWith(nativeElementSpy, 'muted', 'true');
         });
 
         it('should subscribe to the on window click and on window touch events', () => {
@@ -122,17 +119,15 @@ describe('ForcePlayVideoDirective', () => {
             const changes = {
                 mute: new SimpleChange(false, true, false)
             };
-
             directive.ngOnInit();
-            renderer2Spy.setAttribute.calls.reset();
 
             directive.mute = true;
 
             // Act
             directive.ngOnChanges(changes);
 
-            // Assert
-            expect(renderer2Spy.setAttribute).toHaveBeenCalledOnceWith(nativeElementSpy, 'muted', 'true');
+            // Asserts
+            expect(directive.videoElement.muted).toBe(true);
         });
     });
 

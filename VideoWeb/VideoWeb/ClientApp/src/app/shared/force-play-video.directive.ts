@@ -11,7 +11,7 @@ export class ForcePlayVideoDirective implements OnInit, OnChanges {
     private unsubscribeFromMouseDownCallback: () => void;
     private unsubscribeFromTouchStartCallback: () => void;
 
-    private get videoElement(): HTMLVideoElement {
+    public get videoElement(): HTMLVideoElement {
         return this.elementRef.nativeElement as HTMLVideoElement;
     }
 
@@ -40,11 +40,9 @@ export class ForcePlayVideoDirective implements OnInit, OnChanges {
 
     private updateMute() {
         if (!!this.mute) {
-            // this.videoElement.muted = true;
-            this.renderer.setProperty(this.videoElement, 'muted', 'true');
+            this.videoElement.muted = true;
         } else {
-            // this.videoElement.muted = false;
-            this.renderer.setProperty(this.videoElement, 'muted', 'false');
+            this.videoElement.muted = false;
         }
     }
 
