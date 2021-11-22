@@ -42,7 +42,11 @@ describe('JudgeHearingListComponent', () => {
     const eventsService = eventsServiceSpy;
 
     beforeAll(() => {
-        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForJudge', 'getCurrentParticipant', 'staffMemberJoinConference']);
+        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
+            'getConferencesForJudge',
+            'getCurrentParticipant',
+            'staffMemberJoinConference'
+        ]);
 
         profileService = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
 
@@ -149,7 +153,7 @@ describe('JudgeHearingListComponent', () => {
         router.navigate.calls.reset();
         profileService.getUserProfile.and.returnValue(Promise.resolve(staffMember));
 
-        videoWebService.staffMemberJoinConference.and.returnValue(Promise.resolve(conference))
+        videoWebService.staffMemberJoinConference.and.returnValue(Promise.resolve(conference));
 
         component.onConferenceSelected(conference);
         tick();

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -57,8 +57,8 @@ namespace VideoWeb.Services
 
         public bool CanStaffMemberJoinConference(ConferenceDetailsResponse originalConference)
             {
-                return originalConference.ScheduledDateTime < DateTime.UtcNow.AddMinutes(30) || 
-                       (originalConference.ClosedDateTime != null && originalConference.ClosedDateTime > DateTime.UtcNow.AddMinutes(-120));
+            return originalConference.ScheduledDateTime < DateTime.UtcNow.AddMinutes(30) ||
+                   (originalConference.ClosedDateTime != null && originalConference.ClosedDateTime > DateTime.UtcNow.AddMinutes(-120));
             }
             
             public async Task UpdateConferenceCache(ConferenceDetailsResponse response)

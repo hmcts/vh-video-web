@@ -83,7 +83,6 @@ export abstract class HostHearingListBaseComponentDirective implements OnInit, O
         this.logger.debug('[JudgeHearingList] - Signing into judge waiting room', { conference: conference.id });
         this.hearingVenueFlagsService.setHearingVenueIsScottish(conference.hearing_venue_is_scottish);
         this.profileService.getUserProfile().then(profile => {
-            debugger;
             if (profile.role === Role.StaffMember) {
                 this.videoWebService
                     .staffMemberJoinConference(conference.id, new StaffMemberJoinConferenceRequest({ username: profile.username }))
@@ -93,8 +92,7 @@ export abstract class HostHearingListBaseComponentDirective implements OnInit, O
                         },
                         err => console.error(err)
                     );
-            }
-            else {
+            } else {
                 this.videoWebService.getCurrentParticipant(conference.id).then(x => {
                     const useJudgeWaitingRoom = conference.participants.find(
                         p => p.id === x.participant_id && p.hearing_role === HearingRole.JUDGE
