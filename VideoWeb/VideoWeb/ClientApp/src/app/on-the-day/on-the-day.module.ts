@@ -6,8 +6,8 @@ import { CameraCheckComponent } from './camera-check/camera-check.component';
 import { DeclarationComponent } from './declaration/declaration.component';
 import { EquipmentCheckComponent } from './equipment-check/equipment-check.component';
 import { HearingRulesComponent } from './hearing-rules/hearing-rules.component';
-import { JudgeHearingListComponent } from './judge-hearing-list/judge-hearing-list.component';
-import { JudgeHearingTableComponent } from './judge-hearing-list/judge-hearing-table.component';
+import { JudgeHearingListComponent } from './host-hearing-list/judge-hearing-list/judge-hearing-list.component';
+import { HostHearingTableComponent } from './host-hearing-list/host-hearing-table/host-hearing-table.component';
 import { MicrophoneCheckComponent } from './microphone-check/microphone-check.component';
 import { OnTheDayRoutingModule } from './on-the-day-routing.module';
 import { HearingListTableComponent } from './participant-hearings/hearing-list-table.component';
@@ -23,6 +23,7 @@ import { SelfTestActionsComponent } from './self-test-actions/self-test-actions.
 import { UnsupportedDeviceComponent } from '../shared/unsupported-device/unsupported-device.component';
 import { QuickLinksComponent } from './quick-links/quick-links.component';
 import { StaffMemberHearingSelectionComponent } from './staff-member-hearing-selection/staff-member-hearing-selection.component';
+import { StaffMemberHearingListComponent } from './host-hearing-list/staff-member-hearing-list/staff-member-hearing-list.component';
 
 @NgModule({
     imports: [CommonModule, SharedModule, OnTheDayRoutingModule],
@@ -34,7 +35,7 @@ import { StaffMemberHearingSelectionComponent } from './staff-member-hearing-sel
         EquipmentCheckComponent,
         CameraAndMicrophoneComponent,
         JudgeHearingListComponent,
-        JudgeHearingTableComponent,
+        HostHearingTableComponent,
         CameraCheckComponent,
         MicrophoneCheckComponent,
         VideoCheckComponent,
@@ -47,7 +48,8 @@ import { StaffMemberHearingSelectionComponent } from './staff-member-hearing-sel
         PluraliseTextPipe,
         SelfTestActionsComponent,
         QuickLinksComponent,
-        StaffMemberHearingSelectionComponent
+        StaffMemberHearingSelectionComponent,
+        StaffMemberHearingListComponent
     ],
     exports: [DeclarationComponent]
 })

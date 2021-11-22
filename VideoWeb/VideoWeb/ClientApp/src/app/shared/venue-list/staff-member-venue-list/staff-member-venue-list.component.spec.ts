@@ -6,16 +6,13 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
-import { CourtRoomsAccounts } from '../../vh-officer/services/models/court-rooms-accounts';
-import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
-import { VenueListComponentDirective } from './venue-list.component';
+import { CourtRoomsAccounts } from '../../../vh-officer/services/models/court-rooms-accounts';
+import { VhoStorageKeys } from '../../../vh-officer/services/models/session-keys';
+import { pageUrls } from '../../page-url.constants';
+import { StaffMemberVenueListComponent } from './staff-member-venue-list.component';
 
-class MockedVenueListComponent extends VenueListComponentDirective {
-    goToHearingList() {}
-}
-
-describe('VenueListComponent', () => {
-    let component: VenueListComponentDirective;
+describe('StaffMemerVenueListComponent', () => {
+    let component: StaffMemberVenueListComponent;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     let router: jasmine.SpyObj<Router>;
     let vhoQueryService: jasmine.SpyObj<VhoQueryService>;
@@ -55,25 +52,14 @@ describe('VenueListComponent', () => {
     });
 
     beforeEach(() => {
-        component = new MockedVenueListComponent(videoWebServiceSpy, router, vhoQueryService, logger);
+        component = new StaffMemberVenueListComponent(videoWebServiceSpy, router, vhoQueryService, logger);
         videoWebServiceSpy.getVenues.and.returnValue(of(venueNames));
         vhoQueryService.getCourtRoomsAccounts.and.returnValue(Promise.resolve(courtAccounts));
         venueSessionStorage.clear();
     });
 
-    it('should retrieve and populate venues on init', () => {
-        expect(component.venues).toBeUndefined();
-        component.ngOnInit();
-        expect(component.venues).toBeDefined();
-    });
-
-    it('should return false when no allocations are selected', () => {
-        component.selectedVenues = [];
-        expect(component.venuesSelected).toBeFalsy();
-    });
-
-    it('should return true when allocations are selected', () => {
-        component.selectedVenues = [venueNames[0].name];
-        expect(component.venuesSelected).toBeTruthy();
+    it('should navigate to staff member hearing list', () => {
+        component.goToHearingList();
+        expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.StaffMemberHearingList);
     });
 });

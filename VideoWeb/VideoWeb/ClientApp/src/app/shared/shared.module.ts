@@ -51,9 +51,10 @@ import { VideoFilterComponent } from './video-filter/video-filter.component';
 import { HyphenatePipe } from './pipes/hyphenate.pipe';
 import { ForcePlayVideoDirective } from './force-play-video.directive';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { VenueListComponent } from './venue-list/venue-list.component';
 import { VhoQueryService } from '../vh-officer/services/vho-query-service.service';
 import { CrestLogoImageSourceDirective } from './directives/crest-logo-image-source.directive';
+import { StaffMemberVenueListComponent } from './venue-list/staff-member-venue-list/staff-member-venue-list.component';
+import { VhOfficerVenueListComponent } from './venue-list/vh-officer-venue-list/vh-officer-venue-list.component';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -117,8 +118,9 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         HeaderLogoSvgComponent,
         VideoFilterComponent,
         ForcePlayVideoDirective,
-        VenueListComponent,
-        CrestLogoImageSourceDirective
+        CrestLogoImageSourceDirective,
+        StaffMemberVenueListComponent,
+        VhOfficerVenueListComponent
     ],
     providers: [
         { provide: Logger, useClass: LoggerService },
@@ -166,8 +168,9 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         LoadingComponent,
         VideoFilterComponent,
         ForcePlayVideoDirective,
-        VenueListComponent,
-        CrestLogoImageSourceDirective
+        CrestLogoImageSourceDirective,
+        StaffMemberVenueListComponent,
+        VhOfficerVenueListComponent
     ]
 })
 export class SharedModule {}
