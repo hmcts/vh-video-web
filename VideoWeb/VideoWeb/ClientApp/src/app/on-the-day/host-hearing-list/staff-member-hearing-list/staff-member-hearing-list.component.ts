@@ -62,13 +62,12 @@ export class StaffMemberHearingListComponent extends HostHearingListBaseComponen
             this.profileService.getUserProfile().then(profile => {
                 if (conferenceResponse.participants.some(x => x.user_name === profile.username)) {
                     this.router.navigate([pageUrls.StaffMemberWaitingRoom, conference.id]);
-                }
-                else {
+                } else {
                     this.videoWebService
-                    .staffMemberJoinConference(conference.id, new StaffMemberJoinConferenceRequest({ username: profile.username }))
-                    .then(updatedConference => {
-                        this.router.navigate([pageUrls.StaffMemberWaitingRoom, updatedConference.id]);
-                    });
+                        .staffMemberJoinConference(conference.id, new StaffMemberJoinConferenceRequest({ username: profile.username }))
+                        .then(updatedConference => {
+                            this.router.navigate([pageUrls.StaffMemberWaitingRoom, updatedConference.id]);
+                        });
                 }
             });
         });
