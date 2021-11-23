@@ -86,12 +86,10 @@ export abstract class HostHearingListBaseComponentDirective implements OnInit, O
             if (profile.role === Role.StaffMember) {
                 this.videoWebService
                     .staffMemberJoinConference(conference.id, new StaffMemberJoinConferenceRequest({ username: profile.username }))
-                    .then(
-                        updatedConference => {
-                            this.logger.debug('[HearingList] - Signing into Staff waiting room', { conference: conference.id });
-                            this.router.navigate([pageUrls.StaffMemberWaitingRoom, updatedConference.id]);
-                        },
-                    );
+                    .then(updatedConference => {
+                        this.logger.debug('[HearingList] - Signing into Staff waiting room', { conference: conference.id });
+                        this.router.navigate([pageUrls.StaffMemberWaitingRoom, updatedConference.id]);
+                    });
             } else {
                 this.videoWebService.getCurrentParticipant(conference.id).then(x => {
                     const useJudgeWaitingRoom = conference.participants.find(

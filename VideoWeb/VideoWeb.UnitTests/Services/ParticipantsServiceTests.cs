@@ -22,6 +22,7 @@ using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Services
 {
+    [TestFixture]
     public class ParticipantsServiceTests
     {
         private AutoMock _mocker;

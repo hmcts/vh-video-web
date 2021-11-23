@@ -87,6 +87,19 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
         }
+        [Test]
+                public async Task Should_return_ok_when_staff_member_already_added_to_conference()
+                {
+                    var conferenceId = _testConference.Id;
+                    _testConference.Participants.Find(x => x.UserRole == UserRole.StaffMember).Username = Username;
+                    _mocker.Mock<IVideoApiClient>()
+                        .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
+                        .ReturnsAsync(_testConference);
+
+                    var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId, new StaffMemberJoinConferenceRequest{ Username = Username});
+                    var typedResult = (OkObjectResult)result;
+                    typedResult.Should().NotBeNull();
+                }
         
         [Test]
         public async Task Should_throw_error_when_add_staff_member_throws_error()
@@ -170,12 +183,14 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         private static ConferenceDetailsResponse CreateValidConferenceResponse(string username = "john@hmcts.net")
         {
             var judge = new ParticipantDetailsResponseBuilder(UserRole.Judge, "Judge").Build();
+            var staffMember = new ParticipantDetailsResponseBuilder(UserRole.StaffMember, "StaffMember").Build();
+
             var individualDefendant = new ParticipantDetailsResponseBuilder(UserRole.Individual, "Defendant").Build();
             var panelMember =
                 new ParticipantDetailsResponseBuilder(UserRole.JudicialOfficeHolder, "Panel Member").Build();
             var participants = new List<ParticipantDetailsResponse>()
             {
-                individualDefendant, judge, panelMember
+                individualDefendant, judge, panelMember, staffMember
             };
             if (!string.IsNullOrWhiteSpace(username))
             {
