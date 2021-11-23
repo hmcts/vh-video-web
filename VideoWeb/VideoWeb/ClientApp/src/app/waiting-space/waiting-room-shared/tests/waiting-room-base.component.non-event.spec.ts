@@ -618,31 +618,25 @@ describe('WaitingRoomComponent message and clock', () => {
         });
     });
 
-    it('should mute video stream when hearing is in session and countdown is not complete', () => {
+    it('should mute video stream when participant is not in hearing', () => {
         component.countdownComplete = false;
-        component.hearing.getConference().status = ConferenceStatus.InSession;
-        spyOn(component, 'toggleVideoStreamMute');
+        component.participant.status = ParticipantStatus.Available;
 
-        component.updateVideoStreamMuteStatus();
-        expect(component.toggleVideoStreamMute).toHaveBeenCalledWith(true);
+        expect(component.shouldMuteHearing()).toBe(true);
     });
 
-    it('should not mute video stream when hearing is in session and countdown is complete', () => {
+    it('should mute video stream when participant is in hearing and countdown is not complete', () => {
+        component.countdownComplete = false;
+        component.participant.status = ParticipantStatus.InHearing;
+
+        expect(component.shouldMuteHearing()).toBe(true);
+    });
+
+    it('should not mute video stream when participant is in hearing and countdown is complete', () => {
         component.countdownComplete = true;
-        component.hearing.getConference().status = ConferenceStatus.InSession;
-        spyOn(component, 'toggleVideoStreamMute');
+        component.participant.status = ParticipantStatus.InHearing;
 
-        component.updateVideoStreamMuteStatus();
-        expect(component.toggleVideoStreamMute).toHaveBeenCalledWith(false);
-    });
-
-    it('should not mute video stream when hearing is in not in session and countdown is not complete', () => {
-        component.countdownComplete = false;
-        component.hearing.getConference().status = ConferenceStatus.Paused;
-        spyOn(component, 'toggleVideoStreamMute');
-
-        component.updateVideoStreamMuteStatus();
-        expect(component.toggleVideoStreamMute).toHaveBeenCalledWith(false);
+        expect(component.shouldMuteHearing()).toBe(false);
     });
 
     it('should return false if case name has not been truncated', () => {
