@@ -60,7 +60,7 @@ export class StaffMemberHearingListComponent extends HostHearingListBaseComponen
         this.videoWebService.getConferenceById(conference.id).then(conferenceResponse => {
             this.hearingVenueFlagsService.setHearingVenueIsScottish(conference.hearing_venue_is_scottish);
             this.profileService.getUserProfile().then(profile => {
-                if (conferenceResponse.participants.some(x => x.user_name == profile.username)) {
+                if (conferenceResponse.participants.some(x => x.user_name === profile.username)) {
                     this.router.navigate([pageUrls.StaffMemberWaitingRoom, conference.id]);
                 }
                 this.videoWebService
