@@ -1,4 +1,4 @@
-import { Directive, ElementRef, Input, OnChanges, OnInit, Renderer2, RendererFactory2, SimpleChanges } from '@angular/core';
+import { Directive, ElementRef, OnInit, Renderer2, RendererFactory2 } from '@angular/core';
 import { Logger } from '../services/logging/logger-base';
 
 @Directive({
