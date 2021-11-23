@@ -43,6 +43,7 @@ namespace VideoWeb.UnitTests.Services
                 LastName = "LastName",
                 Username = "Username",
                 DisplayName = "DisplayName",
+                Name = "FullName"
             };
             _claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(Role.StaffMember.ToString()).Build();
 
