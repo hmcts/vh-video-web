@@ -39,33 +39,7 @@ describe('ForcePlayVideoDirective', () => {
     });
 
     describe('ngOnInit', () => {
-        it('should add the plays inline attribute and the auto play attribute and also set mute attribute to false by default', () => {
-            // Act
-            directive.ngOnInit();
-
-            // Assert
-            expect(renderer2Spy.setAttribute).toHaveBeenCalledTimes(2);
-            expect(renderer2Spy.setAttribute).toHaveBeenCalledWith(nativeElementSpy, 'playsinline', 'true');
-            expect(renderer2Spy.setAttribute).toHaveBeenCalledWith(nativeElementSpy, 'autoplay', 'true');
-        });
-
-        it('should add the plays inline attribute and the auto play attribute and also set mute attribute to false if mute is false', () => {
-            // Arrange
-            directive.mute = false;
-
-            // Act
-            directive.ngOnInit();
-
-            // Assert
-            expect(renderer2Spy.setAttribute).toHaveBeenCalledTimes(2);
-            expect(renderer2Spy.setAttribute).toHaveBeenCalledWith(nativeElementSpy, 'playsinline', 'true');
-            expect(renderer2Spy.setAttribute).toHaveBeenCalledWith(nativeElementSpy, 'autoplay', 'true');
-        });
-
-        it('should add the plays inline attribute and the auto play attribute and also set mute attribute to true if mute is true', () => {
-            // Arrange
-            directive.mute = true;
-
+        it('should add the plays inline attribute and the auto play attribute', () => {
             // Act
             directive.ngOnInit();
 
@@ -92,42 +66,6 @@ describe('ForcePlayVideoDirective', () => {
             // Assert
             expect(getSpiedPropertySetter(nativeElementSpy, 'oncanplay')).toHaveBeenCalledOnceWith(jasmine.anything());
             expect(onCanPlayCallback).toBeTruthy();
-        });
-    });
-
-    describe('ngOnChanges', () => {
-        it('should NOT update the mute attribute if the state has NOT changed', () => {
-            // Arrange
-            directive.mute = false;
-            const changes = {
-                mute: new SimpleChange(false, false, false)
-            };
-
-            directive.ngOnInit();
-            renderer2Spy.setAttribute.calls.reset();
-
-            // Act
-            directive.ngOnChanges(changes);
-
-            // Assert
-            expect(renderer2Spy.setAttribute).not.toHaveBeenCalled();
-        });
-
-        it('should update the mute attribute if the state has changed', () => {
-            // Arrange
-            directive.mute = false;
-            const changes = {
-                mute: new SimpleChange(false, true, false)
-            };
-            directive.ngOnInit();
-
-            directive.mute = true;
-
-            // Act
-            directive.ngOnChanges(changes);
-
-            // Assert
-            expect(directive.videoElement.muted).toBe(true);
         });
     });
 
