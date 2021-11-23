@@ -88,6 +88,7 @@ export abstract class HostHearingListBaseComponentDirective implements OnInit, O
                     .staffMemberJoinConference(conference.id, new StaffMemberJoinConferenceRequest({ username: profile.username }))
                     .then(
                         updatedConference => {
+                            this.logger.debug('[HearingList] - Signing into Staff waiting room', { conference: conference.id });
                             this.router.navigate([pageUrls.StaffMemberWaitingRoom, updatedConference.id]);
                         },
                     );
@@ -97,8 +98,10 @@ export abstract class HostHearingListBaseComponentDirective implements OnInit, O
                         p => p.id === x.participant_id && p.hearing_role === HearingRole.JUDGE
                     );
                     if (useJudgeWaitingRoom) {
+                        this.logger.debug('[HearingList] - Signing into judge waiting room', { conference: conference.id });
                         this.router.navigate([pageUrls.JudgeWaitingRoom, conference.id]);
                     } else {
+                        this.logger.debug('[HearingList] - Signing into JOH waiting room', { conference: conference.id });
                         this.router.navigate([pageUrls.JOHWaitingRoom, conference.id]);
                     }
                 });
