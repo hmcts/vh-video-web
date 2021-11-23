@@ -43,10 +43,11 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _mocker = AutoMock.GetLoose();
             _mocker.Mock<IUserApiClient>()
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(new UserProfile(){Email = "staff_member@hmcts.net"});
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ClaimsPrincipal, UserProfileResponse>()).Returns(_mocker.Create<ClaimsPrincipalToUserProfileResponseMapper>());
+                .ReturnsAsync(new UserProfile() { Email = "staff_member@hmcts.net" });
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ClaimsPrincipal, UserProfileResponse>())
+                .Returns(_mocker.Create<ClaimsPrincipalToUserProfileResponseMapper>());
 
-            var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(Role.StaffMember.ToString()).Build();
+            var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.StaffMember).Build();
             _testConference = CreateValidConferenceResponse();
             var context = new ControllerContext
             {
@@ -74,33 +75,22 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 UserRole = UserRole.StaffMember,
                 ContactEmail = "FirstName_LastName@hmcts.net"
             };
-            _mocker.Mock<IParticipantService>().Setup(x => x.CanStaffMemberJoinConference(_testConference)).Returns(true);
+            _mocker.Mock<IParticipantService>().Setup(x => x.CanStaffMemberJoinConference(_testConference))
+                .Returns(true);
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(_testConference);
-            
+
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.AddStaffMemberToConferenceAsync(It.IsAny<Guid>(), addStaffMemberRequest))
                 .Returns(Task.FromResult(default(object)));
 
-            var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId, new StaffMemberJoinConferenceRequest{ Username = "Staff_UserName"});
+            var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId,
+                new StaffMemberJoinConferenceRequest { Username = "Staff_UserName" });
             var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
         }
-        [Test]
-                public async Task Should_return_ok_when_staff_member_already_added_to_conference()
-                {
-                    var conferenceId = _testConference.Id;
-                    _testConference.Participants.Find(x => x.UserRole == UserRole.StaffMember).Username = Username;
-                    _mocker.Mock<IVideoApiClient>()
-                        .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
-                        .ReturnsAsync(_testConference);
 
-                    var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId, new StaffMemberJoinConferenceRequest{ Username = Username});
-                    var typedResult = (OkObjectResult)result;
-                    typedResult.Should().NotBeNull();
-                }
-        
         [Test]
         public async Task Should_throw_error_when_add_staff_member_throws_error()
         {
@@ -108,16 +98,18 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var errorResponse = $"Unable to add staff member for conference: {conferenceId}";
             var videoApiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
                 errorResponse, null, default, null);
-            _mocker.Mock<IParticipantService>().Setup(x => x.CanStaffMemberJoinConference(_testConference)).Returns(true);
+            _mocker.Mock<IParticipantService>().Setup(x => x.CanStaffMemberJoinConference(_testConference))
+                .Returns(true);
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(_testConference);
-            
+
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.AddStaffMemberToConferenceAsync(It.IsAny<Guid>(), It.IsAny<AddStaffMemberRequest>()))
                 .ThrowsAsync(videoApiException);
 
-            var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId, new StaffMemberJoinConferenceRequest{ Username = "Staff_UserName"} );
+            var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId,
+                new StaffMemberJoinConferenceRequest { Username = "Staff_UserName" });
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
             typedResult.Value.Should().Be(errorResponse);
@@ -127,7 +119,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         public async Task Should_throw_error_when_get_user_throws_error()
         {
             var conferenceId = _testConference.Id;
-            var errorResponse = $"Unable to get current staff member " + $"Username{Username} profile for conference: {conferenceId}";
+            var errorResponse = $"Unable to get current staff member " +
+                                $"Username{Username} profile for conference: {conferenceId}";
             var userApiException = new UserApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
                 $"Unable to get current staff member " + $"Username{Username} profile for conference: {conferenceId}",
                 null, default, null);
@@ -136,8 +129,9 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 .ThrowsAsync(userApiException);
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
-                .ReturnsAsync(_testConference); 
-            _mocker.Mock<IParticipantService>().Setup(x => x.CanStaffMemberJoinConference(_testConference)).Returns(true);
+                .ReturnsAsync(_testConference);
+            _mocker.Mock<IParticipantService>().Setup(x => x.CanStaffMemberJoinConference(_testConference))
+                .Returns(true);
 
             var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId,
                 new StaffMemberJoinConferenceRequest { Username = Username });
@@ -145,7 +139,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
             typedResult.Value.Should().Be(errorResponse);
         }
-        
+
         [Test]
         public async Task Should_throw_error_when_get_conference_details_throws_error()
         {
@@ -153,17 +147,17 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var errorResponse = $"Unable to get conferenceDetails conference: {conferenceId}";
             var videoApiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
                 errorResponse, null, default, null);
-            
+
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
-                .ThrowsAsync(videoApiException); 
+                .ThrowsAsync(videoApiException);
             var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId,
                 new StaffMemberJoinConferenceRequest { Username = Username });
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
             typedResult.Value.Should().Be(errorResponse);
         }
-        
+
         [Test]
         public async Task Should_throw_error_when_CanStaffMemberJoinConference_return_false()
         {
@@ -172,14 +166,15 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(_testConference);
-            _mocker.Mock<IParticipantService>().Setup(x => x.CanStaffMemberJoinConference(_testConference)).Returns(false);
+            _mocker.Mock<IParticipantService>().Setup(x => x.CanStaffMemberJoinConference(_testConference))
+                .Returns(false);
 
             var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId,
                 new StaffMemberJoinConferenceRequest { Username = Username });
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }
-        
+
         private static ConferenceDetailsResponse CreateValidConferenceResponse(string username = "john@hmcts.net")
         {
             var judge = new ParticipantDetailsResponseBuilder(UserRole.Judge, "Judge").Build();

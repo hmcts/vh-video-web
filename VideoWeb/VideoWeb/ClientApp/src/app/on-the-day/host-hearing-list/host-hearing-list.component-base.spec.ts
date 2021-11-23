@@ -42,11 +42,7 @@ describe('JudgeHearingListComponent', () => {
     const eventsService = eventsServiceSpy;
 
     beforeAll(() => {
-        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
-            'getConferencesForJudge',
-            'getCurrentParticipant',
-            'staffMemberJoinConference'
-        ]);
+        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForJudge', 'getCurrentParticipant']);
 
         profileService = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
 
@@ -145,19 +141,6 @@ describe('JudgeHearingListComponent', () => {
         component.onConferenceSelected(conference);
 
         expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(false);
-    }));
-
-    it('should navigate to judge waiting room when conference is selected for user as a staffmember in the conference', fakeAsync(() => {
-        const conference = new ConferenceTestData().getConferenceForHostResponse();
-        const staffMember = conference.participants.find(x => x.role === Role.StaffMember);
-        router.navigate.calls.reset();
-        profileService.getUserProfile.and.returnValue(Promise.resolve(staffMember));
-
-        videoWebService.staffMemberJoinConference.and.returnValue(Promise.resolve(conference));
-
-        component.onConferenceSelected(conference);
-        tick();
-        expect(router.navigate).toHaveBeenCalledWith([pageUrls.StaffMemberWaitingRoom, conference.id]);
     }));
 
     it('should navigate to panel member waiting room when conference is selected for user as a panel member in the conference', fakeAsync(() => {

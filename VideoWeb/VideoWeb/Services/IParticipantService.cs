@@ -43,6 +43,10 @@ namespace VideoWeb.Services
             _participantsUpdatedEventNotifier = participantsUpdatedEventNotifier;
         }
 
+        public ParticipantService()
+        {
+        }
+
         public AddStaffMemberRequest InitialiseAddStaffMemberRequest(UserProfileResponse staffMemberProfile,
             string staffMemberEmail, ClaimsPrincipal user)
         {

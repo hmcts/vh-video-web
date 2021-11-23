@@ -1,4 +1,4 @@
-import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -14,6 +14,7 @@ import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 
 import { StaffMemberHearingListComponent } from './staff-member-hearing-list.component';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 
 describe('StaffMemberHearingListComponent', () => {
     let component: StaffMemberHearingListComponent;
@@ -41,7 +42,9 @@ describe('StaffMemberHearingListComponent', () => {
     beforeAll(() => {
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
             'getConferencesForStaffMember',
-            'getCurrentParticipant'
+            'getCurrentParticipant',
+            'staffMemberJoinConference',
+            'getConferenceById'
         ]);
 
         errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
@@ -101,6 +104,18 @@ describe('StaffMemberHearingListComponent', () => {
         component.retrieveHearingsForUser();
         expect(component.loadingData).toBe(false);
         expect(errorService.handleApiError).toHaveBeenCalled();
+    }));
+
+    it('should navigate to staff waiting room when conference is selected for user as a staffmember in the conference', fakeAsync(() => {
+        const conference = new ConferenceTestData().getConferenceForHostResponse();
+        const staffMember = conference.participants.find(x => x.role === Role.StaffMember);
+        router.navigate.calls.reset();
+        profileService.getUserProfile.and.returnValue(Promise.resolve(staffMember));
+        videoWebService.getConferenceById.and.returnValue(Promise.resolve(conference));
+        videoWebService.staffMemberJoinConference.and.returnValue(Promise.resolve(conference));
+        component.onConferenceSelected(conference);
+        tick();
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.StaffMemberWaitingRoom, conference.id]);
     }));
 
     it('should show no hearings message when judge has no conferences', fakeAsync(() => {

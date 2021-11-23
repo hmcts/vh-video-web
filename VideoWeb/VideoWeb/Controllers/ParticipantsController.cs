@@ -347,12 +347,6 @@ namespace VideoWeb.Controllers
             {
                 var originalConference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
 
-                if (originalConference.Participants.Any(x=>x.Username==username))
-                {
-                    _logger.LogDebug($"Staff Member {username} is already in this conference {conferenceId}");
-                    return Ok(originalConference);
-                }
-
                 if (!_participantService.CanStaffMemberJoinConference(originalConference))
                 {
                     _logger.LogWarning("Staff Member only can view hearing within 30 minutes of the Start time and 2 hours after the hearing has closed");

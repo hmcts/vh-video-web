@@ -4,13 +4,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import {
-    ConferenceForHostResponse,
-    LoggedParticipantResponse,
-    Role,
-    StaffMemberJoinConferenceRequest,
-    UserProfileResponse
-} from 'src/app/services/clients/api-client';
+import { ConferenceForHostResponse, LoggedParticipantResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -82,27 +76,17 @@ export abstract class HostHearingListBaseComponentDirective implements OnInit, O
     onConferenceSelected(conference: ConferenceForHostResponse) {
         this.logger.debug('[JudgeHearingList] - Signing into judge waiting room', { conference: conference.id });
         this.hearingVenueFlagsService.setHearingVenueIsScottish(conference.hearing_venue_is_scottish);
-        this.profileService.getUserProfile().then(profile => {
-            if (profile.role === Role.StaffMember) {
-                this.videoWebService
-                    .staffMemberJoinConference(conference.id, new StaffMemberJoinConferenceRequest({ username: profile.username }))
-                    .then(updatedConference => {
-                        this.logger.debug('[HearingList] - Signing into Staff waiting room', { conference: conference.id });
-                        this.router.navigate([pageUrls.StaffMemberWaitingRoom, updatedConference.id]);
-                    });
+
+        this.videoWebService.getCurrentParticipant(conference.id).then(x => {
+            const useJudgeWaitingRoom = conference.participants.find(
+                p => p.id === x.participant_id && p.hearing_role === HearingRole.JUDGE
+            );
+            if (useJudgeWaitingRoom) {
+                this.logger.debug('[HearingList] - Signing into judge waiting room', { conference: conference.id });
+                this.router.navigate([pageUrls.JudgeWaitingRoom, conference.id]);
             } else {
-                this.videoWebService.getCurrentParticipant(conference.id).then(x => {
-                    const useJudgeWaitingRoom = conference.participants.find(
-                        p => p.id === x.participant_id && p.hearing_role === HearingRole.JUDGE
-                    );
-                    if (useJudgeWaitingRoom) {
-                        this.logger.debug('[HearingList] - Signing into judge waiting room', { conference: conference.id });
-                        this.router.navigate([pageUrls.JudgeWaitingRoom, conference.id]);
-                    } else {
-                        this.logger.debug('[HearingList] - Signing into JOH waiting room', { conference: conference.id });
-                        this.router.navigate([pageUrls.JOHWaitingRoom, conference.id]);
-                    }
-                });
+                this.logger.debug('[HearingList] - Signing into JOH waiting room', { conference: conference.id });
+                this.router.navigate([pageUrls.JOHWaitingRoom, conference.id]);
             }
         });
     }

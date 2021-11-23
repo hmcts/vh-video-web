@@ -43,7 +43,8 @@ namespace VideoWeb.Mappings
                 HearingRole = participant.HearingRole,
                 CurrentRoom = _roomResponseMapper.Map(participant.CurrentRoom),
                 InterpreterRoom = _roomResponseMapper.Map(participant.CurrentInterpreterRoom),
-                LinkedParticipants = links
+                LinkedParticipants = links,
+                UserName = participant.Username
             };
 
             if (role == Role.Judge)

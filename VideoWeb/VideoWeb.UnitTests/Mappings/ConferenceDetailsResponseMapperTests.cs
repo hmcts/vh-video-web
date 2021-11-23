@@ -11,9 +11,9 @@ using VideoApi.Contract.Enums;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class ConferenceDetailsResponseMapperTests
+    public class ConferenceMapperTests
     {
-        private ConferenceDetailsResponseMapper _sut;
+        private ConferenceMapper _sut;
         private AutoMock _mocker;
 
         [SetUp]
@@ -26,7 +26,7 @@ namespace VideoWeb.UnitTests.Mappings
             _mocker.Mock<IMapperFactory>()
                 .Setup(x => x.Get<EndpointResponse, Endpoint>())
                 .Returns(_mocker.Create<EndpointsMapper>());
-            _sut = _mocker.Create<ConferenceDetailsResponseMapper>();
+            _sut = _mocker.Create<ConferenceMapper>();
         }
 
         [Test]

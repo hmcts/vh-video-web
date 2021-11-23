@@ -17,7 +17,7 @@ namespace VideoWeb.Mappings
                 DisplayName = participant.DisplayName,
                 Representee = participant.Representee,
                 CaseTypeGroup = participant.CaseTypeGroup,
-                HearingRole = participant.HearingRole
+                HearingRole = participant.HearingRole,
             };
         }
     }

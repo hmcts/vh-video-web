@@ -5403,6 +5403,7 @@ export class ParticipantForHostResponse implements IParticipantForHostResponse {
     representee?: string | undefined;
     case_type_group?: string | undefined;
     hearing_role?: string | undefined;
+    user_name?: string | undefined;
 
     constructor(data?: IParticipantForHostResponse) {
         if (data) {
@@ -5420,6 +5421,7 @@ export class ParticipantForHostResponse implements IParticipantForHostResponse {
             this.representee = _data['representee'];
             this.case_type_group = _data['case_type_group'];
             this.hearing_role = _data['hearing_role'];
+            this.user_name = _data['user_name'];
         }
     }
 
@@ -5438,6 +5440,7 @@ export class ParticipantForHostResponse implements IParticipantForHostResponse {
         data['representee'] = this.representee;
         data['case_type_group'] = this.case_type_group;
         data['hearing_role'] = this.hearing_role;
+        data['user_name'] = this.user_name;
         return data;
     }
 }
@@ -5452,6 +5455,7 @@ export interface IParticipantForHostResponse {
     representee?: string | undefined;
     case_type_group?: string | undefined;
     hearing_role?: string | undefined;
+    user_name?: string | undefined;
 }
 
 export class ConferenceForHostResponse implements IConferenceForHostResponse {
@@ -5724,6 +5728,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
     first_name?: string | undefined;
     last_name?: string | undefined;
     hearing_role?: string | undefined;
+    user_name?: string | undefined;
     current_room?: RoomSummaryResponse | undefined;
     interpreter_room?: RoomSummaryResponse | undefined;
     linked_participants?: LinkedParticipantResponse[] | undefined;
@@ -5749,6 +5754,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
             this.first_name = _data['first_name'];
             this.last_name = _data['last_name'];
             this.hearing_role = _data['hearing_role'];
+            this.user_name = _data['user_name'];
             this.current_room = _data['current_room'] ? RoomSummaryResponse.fromJS(_data['current_room']) : <any>undefined;
             this.interpreter_room = _data['interpreter_room'] ? RoomSummaryResponse.fromJS(_data['interpreter_room']) : <any>undefined;
             if (Array.isArray(_data['linked_participants'])) {
@@ -5778,6 +5784,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
         data['first_name'] = this.first_name;
         data['last_name'] = this.last_name;
         data['hearing_role'] = this.hearing_role;
+        data['user_name'] = this.user_name;
         data['current_room'] = this.current_room ? this.current_room.toJSON() : <any>undefined;
         data['interpreter_room'] = this.interpreter_room ? this.interpreter_room.toJSON() : <any>undefined;
         if (Array.isArray(this.linked_participants)) {
@@ -5805,6 +5812,7 @@ export interface IParticipantForUserResponse {
     first_name?: string | undefined;
     last_name?: string | undefined;
     hearing_role?: string | undefined;
+    user_name?: string | undefined;
     current_room?: RoomSummaryResponse | undefined;
     interpreter_room?: RoomSummaryResponse | undefined;
     linked_participants?: LinkedParticipantResponse[] | undefined;
@@ -6168,6 +6176,7 @@ export class ParticipantResponse implements IParticipantResponse {
     first_name?: string | undefined;
     last_name?: string | undefined;
     hearing_role?: string | undefined;
+    user_name?: string | undefined;
     current_room?: RoomSummaryResponse | undefined;
     interpreter_room?: RoomSummaryResponse | undefined;
     linked_participants?: LinkedParticipantResponse[] | undefined;
@@ -6193,6 +6202,7 @@ export class ParticipantResponse implements IParticipantResponse {
             this.first_name = _data['first_name'];
             this.last_name = _data['last_name'];
             this.hearing_role = _data['hearing_role'];
+            this.user_name = _data['user_name'];
             this.current_room = _data['current_room'] ? RoomSummaryResponse.fromJS(_data['current_room']) : <any>undefined;
             this.interpreter_room = _data['interpreter_room'] ? RoomSummaryResponse.fromJS(_data['interpreter_room']) : <any>undefined;
             if (Array.isArray(_data['linked_participants'])) {
@@ -6222,6 +6232,7 @@ export class ParticipantResponse implements IParticipantResponse {
         data['first_name'] = this.first_name;
         data['last_name'] = this.last_name;
         data['hearing_role'] = this.hearing_role;
+        data['user_name'] = this.user_name;
         data['current_room'] = this.current_room ? this.current_room.toJSON() : <any>undefined;
         data['interpreter_room'] = this.interpreter_room ? this.interpreter_room.toJSON() : <any>undefined;
         if (Array.isArray(this.linked_participants)) {
@@ -6250,6 +6261,7 @@ export interface IParticipantResponse {
     first_name?: string | undefined;
     last_name?: string | undefined;
     hearing_role?: string | undefined;
+    user_name?: string | undefined;
     current_room?: RoomSummaryResponse | undefined;
     interpreter_room?: RoomSummaryResponse | undefined;
     linked_participants?: LinkedParticipantResponse[] | undefined;
@@ -8575,7 +8587,6 @@ export class UserProfileResponse implements IUserProfileResponse {
     display_name?: string | undefined;
     username?: string | undefined;
     name?: string | undefined;
-    contact_email?: string | undefined;
 
     constructor(data?: IUserProfileResponse) {
         if (data) {
@@ -8593,7 +8604,6 @@ export class UserProfileResponse implements IUserProfileResponse {
             this.display_name = _data['display_name'];
             this.username = _data['username'];
             this.name = _data['name'];
-            this.contact_email = _data['contact_email'];
         }
     }
 
@@ -8612,7 +8622,6 @@ export class UserProfileResponse implements IUserProfileResponse {
         data['display_name'] = this.display_name;
         data['username'] = this.username;
         data['name'] = this.name;
-        data['contact_email'] = this.contact_email;
         return data;
     }
 }
@@ -8624,7 +8633,6 @@ export interface IUserProfileResponse {
     display_name?: string | undefined;
     username?: string | undefined;
     name?: string | undefined;
-    contact_email?: string | undefined;
 }
 
 export class QuickLinkParticipantJoinRequest implements IQuickLinkParticipantJoinRequest {
