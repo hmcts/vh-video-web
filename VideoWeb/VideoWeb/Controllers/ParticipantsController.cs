@@ -358,15 +358,13 @@ namespace VideoWeb.Controllers
                     conferenceId);
 
                 var userProfile = await _userApiClient.GetUserByAdUserNameAsync(username);
-                var staffMemberEmail = userProfile.Email;
+
                 var claimsPrincipalToUserProfileResponseMapper =
                     _mapperFactory.Get<ClaimsPrincipal, UserProfileResponse>();
-                var staffMemberProfile = claimsPrincipalToUserProfileResponseMapper.Map(User);
-
-                if (staffMemberProfile.Role == Role.StaffMember)
-                {
-                    await _videoApiClient.AddStaffMemberToConferenceAsync(conferenceId, _participantService.InitialiseAddStaffMemberRequest(staffMemberProfile, staffMemberEmail, User));
-                }
+                var staffMemberProfile = claimsPrincipalToUserProfileResponseMapper.Map(User); 
+                
+                await _videoApiClient.AddStaffMemberToConferenceAsync(conferenceId, _participantService.InitialiseAddStaffMemberRequest(staffMemberProfile, userProfile.Email, User));
+                
                 var updatedConference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
                 await _participantService.UpdateConferenceCache(updatedConference);
                 return Ok(updatedConference);
