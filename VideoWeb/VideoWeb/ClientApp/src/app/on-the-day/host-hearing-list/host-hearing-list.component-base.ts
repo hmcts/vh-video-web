@@ -87,10 +87,9 @@ export abstract class HostHearingListBaseComponentDirective implements OnInit, O
                 this.videoWebService
                     .staffMemberJoinConference(conference.id, new StaffMemberJoinConferenceRequest({ username: profile.username }))
                     .then(
-                        val => {
-                            this.router.navigate([pageUrls.StaffMemberWaitingRoom, conference.id]);
+                        updatedConference => {
+                            this.router.navigate([pageUrls.StaffMemberWaitingRoom, updatedConference.id]);
                         },
-                        err => console.error(err)
                     );
             } else {
                 this.videoWebService.getCurrentParticipant(conference.id).then(x => {
