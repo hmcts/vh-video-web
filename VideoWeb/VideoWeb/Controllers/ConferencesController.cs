@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -250,6 +251,11 @@ namespace VideoWeb.Controllers
         public async Task<ActionResult<ConferenceResponse>> GetConferenceByIdAsync(Guid conferenceId)
         {
             _logger.LogDebug("GetConferenceById");
+            
+            var claimsPrincipalToUserProfileResponseMapper =
+                _mapperFactory.Get<ClaimsPrincipal, UserProfileResponse>();
+            var userProfile = claimsPrincipalToUserProfileResponseMapper.Map(User);
+            
             if (conferenceId == Guid.Empty)
             {
                 _logger.LogWarning("Unable to get conference when id is not provided");
@@ -257,8 +263,7 @@ namespace VideoWeb.Controllers
                 return BadRequest(ModelState);
             }
 
-            var username = User.Identity.Name.ToLower().Trim();
-
+            var username = userProfile.Name.ToLower().Trim();
             ConferenceDetailsResponse conference;
             try
             {
@@ -271,7 +276,7 @@ namespace VideoWeb.Controllers
             }
 
             var exceededTimeLimit = !ConferenceHelper.HasNotPassed(conference.CurrentStatus, conference.ClosedDateTime);
-            if (conference.Participants.All(x => x.Username.ToLower().Trim() != username) || exceededTimeLimit)
+            if (userProfile.Role != Role.StaffMember && (conference.Participants.All(x => x.Username.ToLower().Trim() != username) || exceededTimeLimit))
             {
                 _logger.LogInformation(
                     $"Unauthorised to view conference details {conferenceId} because user is neither a VH " +

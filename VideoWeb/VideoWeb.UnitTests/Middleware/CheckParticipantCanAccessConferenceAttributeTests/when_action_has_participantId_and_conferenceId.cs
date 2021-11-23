@@ -19,13 +19,13 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
             // arrange
             var actionArguments = new Dictionary<string, object>
             {
-                {"participantId", _participantId},
-                {"conferenceId", _conferenceId}
+                {"participantId", ParticipantId},
+                {"conferenceId", ConferenceId}
             };
 
-            var user = _userBuilder.WithUsername(USER_NAME).WithRole(appRole).Build();
+            var user = UserBuilder.WithUsername(UserName).WithRole(appRole).Build();
 
-            _conferenceCache.Setup(x => x.GetOrAddConferenceAsync(
+            ConferenceCache.Setup(x => x.GetOrAddConferenceAsync(
                     It.IsAny<Guid>(),
                     It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 // conference doesn't exist (null)
@@ -34,13 +34,13 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
             SetupActionExecutingContext(actionArguments, user);
 
             // act
-            await _sut.OnActionExecutionAsync(_actionExecutingContext, () => Task.FromResult(_actionExecutedContext));
+            await Sut.OnActionExecutionAsync(ActionExecutingContext, () => Task.FromResult(ActionExecutedContext));
 
             // assert
-            _actionExecutingContext.Result.Should().BeOfType<NotFoundObjectResult>();
-            _actionExecutingContext.ModelState.ErrorCount.Should().Be(1);
-            var message404 = $"Conference with id:'{_conferenceId}' not found.";
-            _actionExecutingContext.ModelState["CheckParticipantCanAccessConference"]
+            ActionExecutingContext.Result.Should().BeOfType<NotFoundObjectResult>();
+            ActionExecutingContext.ModelState.ErrorCount.Should().Be(1);
+            var message404 = $"Conference with id:'{ConferenceId}' not found.";
+            ActionExecutingContext.ModelState["CheckParticipantCanAccessConference"]
                 .Errors.First().ErrorMessage
                 .Should().Be(message404);
         }
@@ -52,16 +52,16 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
             // arrange
             var actionArguments = new Dictionary<string, object>
             {
-                {"participantId", _participantId},
-                {"conferenceId", _conferenceId}
+                {"participantId", ParticipantId},
+                {"conferenceId", ConferenceId}
             };
 
-            var user = _userBuilder.WithUsername(USER_NAME).WithRole(appRole).Build();
+            var user = UserBuilder.WithUsername(UserName).WithRole(appRole).Build();
 
             var conference = new Conference
             {
                 // conference exists...
-                Id = _conferenceId,
+                Id = ConferenceId,
                 Participants = new List<Participant>
                 {
                     new Participant
@@ -72,7 +72,7 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
                     }
                 }
             };
-            _conferenceCache.Setup(x => x.GetOrAddConferenceAsync(
+            ConferenceCache.Setup(x => x.GetOrAddConferenceAsync(
                     It.IsAny<Guid>(),
                     It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .ReturnsAsync(conference);
@@ -80,13 +80,13 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
             SetupActionExecutingContext(actionArguments, user);
 
             // act
-            await _sut.OnActionExecutionAsync(_actionExecutingContext, () => Task.FromResult(_actionExecutedContext));
+            await Sut.OnActionExecutionAsync(ActionExecutingContext, () => Task.FromResult(ActionExecutedContext));
 
             // assert
-            _actionExecutingContext.Result.Should().BeOfType<UnauthorizedObjectResult>();
-            _actionExecutingContext.ModelState.ErrorCount.Should().Be(1);
+            ActionExecutingContext.Result.Should().BeOfType<UnauthorizedObjectResult>();
+            ActionExecutingContext.ModelState.ErrorCount.Should().Be(1);
             var message401 = "User does not belong to this conference.";
-            _actionExecutingContext.ModelState["CheckParticipantCanAccessConference"]
+            ActionExecutingContext.ModelState["CheckParticipantCanAccessConference"]
                 .Errors.First().ErrorMessage
                 .Should().Be(message401);
         }
@@ -98,28 +98,28 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
             // arrange
             var actionArguments = new Dictionary<string, object>
             {
-                {"participantId", _participantId},
-                {"conferenceId", _conferenceId}
+                {"participantId", ParticipantId},
+                {"conferenceId", ConferenceId}
             };
 
-            var user = _userBuilder.WithUsername(USER_NAME).WithRole(appRole).Build();
+            var user = UserBuilder.WithUsername(UserName).WithRole(appRole).Build();
 
             var conference = new Conference
             {
                 // conference exists...
-                Id = _conferenceId,
+                Id = ConferenceId,
                 Participants = new List<Participant>
                 {
                     new Participant
                     {
                         // ...and user is a part of it
-                        Username = USER_NAME,
-                        Id = _participantId
+                        Username = UserName,
+                        Id = ParticipantId
                     }
                 }
             };
 
-            _conferenceCache.Setup(x => x.GetOrAddConferenceAsync(
+            ConferenceCache.Setup(x => x.GetOrAddConferenceAsync(
                     It.IsAny<Guid>(),
                     It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .ReturnsAsync(conference);
@@ -127,10 +127,10 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
             SetupActionExecutingContext(actionArguments, user);
 
             // act
-            await _sut.OnActionExecutionAsync(_actionExecutingContext, () => Task.FromResult(_actionExecutedContext));
+            await Sut.OnActionExecutionAsync(ActionExecutingContext, () => Task.FromResult(ActionExecutedContext));
 
             // assert
-            _actionExecutingContext.Result.Should().BeOfType<OkResult>();
+            ActionExecutingContext.Result.Should().BeOfType<OkResult>();
         }
     }
 }

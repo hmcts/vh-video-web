@@ -143,19 +143,8 @@ describe('JudgeHearingListComponent', () => {
         expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(false);
     }));
 
-    it('should navigate to judge waiting room when conference is selected for user as a staffmember in the conference', fakeAsync(() => {
-        const conference = conferences[1];
-        const staffMember = conference.participants.find(x => x.role === Role.StaffMember);
-        videoWebService.getCurrentParticipant.and.returnValue(
-            Promise.resolve(new LoggedParticipantResponse({ participant_id: staffMember.id }))
-        );
-
-        component.onConferenceSelected(conference);
-        tick();
-        expect(router.navigate).toHaveBeenCalledWith([pageUrls.StaffMemberWaitingRoom, conference.id]);
-    }));
-
     it('should navigate to panel member waiting room when conference is selected for user as a panel member in the conference', fakeAsync(() => {
+        profileService.getUserProfile.and.returnValue(Promise.resolve(mockProfile));
         const conference = conferences[0];
         const part = conference.participants.find(x => x.role === Role.JudicialOfficeHolder);
         videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(new LoggedParticipantResponse({ participant_id: part.id })));

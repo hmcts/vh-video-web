@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceForHostResponse } from 'src/app/services/clients/api-client';
+import { ConferenceForHostResponse, StaffMemberJoinConferenceRequest } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ScreenHelper } from 'src/app/shared/screen-helper';
 import { HostHearingListBaseComponentDirective } from '../host-hearing-list.component-base';
 
@@ -51,5 +52,24 @@ export class StaffMemberHearingListComponent extends HostHearingListBaseComponen
                 }
             })
         );
+    }
+
+    onConferenceSelected(conference: ConferenceForHostResponse) {
+        this.logger.debug('[StaffMemberHearingList] - Signing into judge waiting room', { conference: conference.id });
+
+        this.videoWebService.getConferenceById(conference.id).then(conferenceResponse => {
+            this.hearingVenueFlagsService.setHearingVenueIsScottish(conference.hearing_venue_is_scottish);
+            this.profileService.getUserProfile().then(profile => {
+                if (conferenceResponse.participants.some(x => x.user_name === profile.username)) {
+                    this.router.navigate([pageUrls.StaffMemberWaitingRoom, conference.id]);
+                } else {
+                    this.videoWebService
+                        .staffMemberJoinConference(conference.id, new StaffMemberJoinConferenceRequest({ username: profile.username }))
+                        .then(updatedConference => {
+                            this.router.navigate([pageUrls.StaffMemberWaitingRoom, updatedConference.id]);
+                        });
+                }
+            });
+        });
     }
 }

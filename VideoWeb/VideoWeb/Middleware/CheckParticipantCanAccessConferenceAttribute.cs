@@ -33,6 +33,11 @@ namespace VideoWeb.Middleware
                 await next();
                 return;
             }
+            if (context.HttpContext.User.IsInRole(AppRoles.StaffMember))
+            {
+                await next();
+                return;
+            }
 
             var conferenceId = GetActionArgument(context, "conferenceId");
             if (conferenceId == Guid.Empty)

@@ -14,6 +14,8 @@ namespace VideoWeb.UnitTests.Builders
             { 
                 new Claim("preferred_username", Username),
                 new Claim(ClaimTypes.NameIdentifier, "userId"),
+                new Claim(ClaimTypes.GivenName, "John"),
+                new Claim(ClaimTypes.Surname, "Doe"),
                 new Claim("name", "John Doe")
             };
         }
