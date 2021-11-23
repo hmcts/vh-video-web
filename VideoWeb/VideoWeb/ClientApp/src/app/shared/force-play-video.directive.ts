@@ -1,17 +1,16 @@
-import { Directive, ElementRef, Input, OnChanges, OnInit, Renderer2, RendererFactory2, SimpleChanges } from '@angular/core';
+import { Directive, ElementRef, OnInit, Renderer2, RendererFactory2 } from '@angular/core';
 import { Logger } from '../services/logging/logger-base';
 
 @Directive({
     selector: '[appForcePlayVideo]'
 })
-export class ForcePlayVideoDirective implements OnInit, OnChanges {
+export class ForcePlayVideoDirective implements OnInit {
     private readonly loggerPrefix = '[ForcePlayVideoDirective] -';
     private renderer: Renderer2;
-    @Input() mute: boolean | null = null;
     private unsubscribeFromMouseDownCallback: () => void;
     private unsubscribeFromTouchStartCallback: () => void;
 
-    private get videoElement(): HTMLVideoElement {
+    public get videoElement(): HTMLVideoElement {
         return this.elementRef.nativeElement as HTMLVideoElement;
     }
 
@@ -24,26 +23,10 @@ export class ForcePlayVideoDirective implements OnInit, OnChanges {
         this.addEventListeners();
     }
 
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes['mute']?.currentValue !== changes['mute']?.previousValue) {
-            this.updateMute();
-        }
-    }
-
     private configureVideoElement() {
         this.logger.info(`${this.loggerPrefix} - configureVideoElement - adding playsinline and autoplay attributes.`);
         this.renderer.setAttribute(this.videoElement, 'playsinline', 'true');
         this.renderer.setAttribute(this.videoElement, 'autoplay', 'true');
-
-        this.updateMute();
-    }
-
-    private updateMute() {
-        if (!!this.mute) {
-            this.renderer.setAttribute(this.videoElement, 'muted', 'true');
-        } else {
-            this.renderer.setAttribute(this.videoElement, 'muted', 'false');
-        }
     }
 
     private addEventListeners() {

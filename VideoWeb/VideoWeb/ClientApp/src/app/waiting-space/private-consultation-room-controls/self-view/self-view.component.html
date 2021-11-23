@@ -1,5 +1,5 @@
 <div class="video-container">
-    <video appForcePlayVideo [mute]="true" [ngClass]="{ 'vh-fade-in': isOpen, 'vh-fade-out': !isOpen, 'spotlighted-border': showSpotlightedBorder }"
+    <video appForcePlayVideo mute="true" [ngClass]="{ 'vh-fade-in': isOpen, 'vh-fade-out': !isOpen, 'spotlighted-border': showSpotlightedBorder }"
         id="outgoingFeedVideo" [srcObject]="this.videoSource" width="100%" height="auto">
         {{ 'private-consultation-room-controls.browser-support' | translate }}
     </video>

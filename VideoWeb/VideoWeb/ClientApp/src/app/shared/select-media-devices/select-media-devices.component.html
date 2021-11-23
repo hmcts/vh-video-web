@@ -10,7 +10,7 @@
                 <!-- Left hand side -->
                 <div class="govuk-grid-column-one-half">
                     <div class="govuk-grid-column-full">
-                        <video appForcePlayVideo [mute]="true" id="preferredCameraStream"
+                        <video appForcePlayVideo mute="true" id="preferredCameraStream"
                             [srcObject]="selectedCameraStream" width="100%" height="auto"
                             [ngClass]="{'selfie-view': connectWithCameraOn}">
                             {{ 'select-media-devices.browser-support' | translate }}

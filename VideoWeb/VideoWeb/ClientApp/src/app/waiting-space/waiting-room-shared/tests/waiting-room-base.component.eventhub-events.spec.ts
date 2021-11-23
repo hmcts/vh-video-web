@@ -489,32 +489,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
         expect(globalParticipant.current_room).toBeNull();
     }));
 
-    it('should set property to true when countdown is complete for hearing', () => {
-        component.countdownComplete = false;
-        const videoElement = document.createElement('video');
-        videoElement.muted = true;
-        const elemRef = new ElementRef(videoElement);
-        component.videoStream = elemRef;
-
-        hearingCountdownCompleteSubjectMock.next(component.conferenceId);
-
-        expect(component.countdownComplete).toBeTruthy();
-        expect(component.videoStream.nativeElement.muted).toBeFalsy();
-    });
-
-    it('should ignore countdown complete for another hearing', () => {
-        component.countdownComplete = false;
-        const videoElement = document.createElement('video');
-        videoElement.muted = true;
-        const elemRef = new ElementRef(videoElement);
-        component.videoStream = elemRef;
-
-        hearingCountdownCompleteSubjectMock.next(Guid.create().toString());
-
-        expect(component.countdownComplete).toBeFalsy();
-        expect(component.videoStream.nativeElement.muted).toBeTruthy();
-    });
-
     describe('createOrUpdateWaitingOnLinkedParticipantsNotification', () => {
         beforeEach(() => {
             notificationToastrService.showWaitingForLinkedParticipantsToAccept.calls.reset();
