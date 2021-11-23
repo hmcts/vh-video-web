@@ -93,9 +93,5 @@ namespace VideoWeb.Contract.Responses
         /// The participant hearing role in conference
         /// </summary>
         public string HearingRole { get; set; }
-        // <summary>
-        /// The participant User Name in conference
-        /// </summary>
-        public string UserName { get; set; }
     }
 }
