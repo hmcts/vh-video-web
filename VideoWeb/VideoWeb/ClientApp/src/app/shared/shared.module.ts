@@ -56,7 +56,7 @@ import { CrestLogoImageSourceDirective } from './directives/crest-logo-image-sou
 import { StaffMemberVenueListComponent } from './venue-list/staff-member-venue-list/staff-member-venue-list.component';
 import { VhOfficerVenueListComponent } from './venue-list/vh-officer-venue-list/vh-officer-venue-list.component';
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faLanguage } from '@fortawesome/free-solid-svg-icons';
+import { faLanguage, faMicrophone } from '@fortawesome/free-solid-svg-icons';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -179,6 +179,6 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
 })
 export class SharedModule {
     constructor(library: FaIconLibrary) {
-        library.addIcons(faLanguage);
+        library.addIcons(faLanguage, faMicrophone);
     }
 }

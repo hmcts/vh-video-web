@@ -44,7 +44,7 @@
           <br />
         </span>
         <span *ngIf="isLinkedParticipantAndAnInterpreter(participant)">
-          <span class="fas fa-language type-icon"> </span>
+          <fa-icon icon="language" class="type-icon"> </fa-icon>
           <br />
         </span>
         <span *ngIf="participant.isJudicialOfficeHolder">
@@ -82,12 +82,12 @@
                   (participant.isMicRemoteMuted() ? 'participants-panel.microphone-muted-icon' : 'participants-panel.microphone-on-icon')
                     | translate
                 " (click)="toggleMuteParticipant(participant); $event.stopPropagation()" />
-                            <span *ngIf="!participant.isMicRemoteMuted()" appTooltip [text]="
+                            <fa-icon *ngIf="!participant.isMicRemoteMuted()" appTooltip [text]="
                   (participant.isLocalMicMuted() ? 'participants-panel.participant-muted' : 'participants-panel.mute-participant')
                     | translate
-                " colour="grey" class="fas fa-microphone icon-button" [class]="{ red: participant.isLocalMicMuted() }"
+                " colour="grey" icon="microphone" class="icon-button" [class]="{ red: participant.isLocalMicMuted() }"
                                 (click)="toggleMuteParticipant(participant); $event.stopPropagation()">
-                            </span>
+                            </fa-icon>
                         </ng-container>
                     </div>
                     <div *ngIf="participant.isCallable && !participant.isInHearing()"
