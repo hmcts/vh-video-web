@@ -55,6 +55,8 @@ import { VhoQueryService } from '../vh-officer/services/vho-query-service.servic
 import { CrestLogoImageSourceDirective } from './directives/crest-logo-image-source.directive';
 import { StaffMemberVenueListComponent } from './venue-list/staff-member-venue-list/staff-member-venue-list.component';
 import { VhOfficerVenueListComponent } from './venue-list/vh-officer-venue-list/vh-officer-venue-list.component';
+import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faLanguage } from '@fortawesome/free-solid-svg-icons';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -83,7 +85,8 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
             toastComponent: RoomClosingToastComponent
         }),
         TranslateModule,
-        NgSelectModule
+        NgSelectModule,
+        FontAwesomeModule
     ],
     declarations: [
         HeaderComponent,
@@ -170,7 +173,12 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         ForcePlayVideoDirective,
         CrestLogoImageSourceDirective,
         StaffMemberVenueListComponent,
-        VhOfficerVenueListComponent
+        VhOfficerVenueListComponent,
+        FontAwesomeModule
     ]
 })
-export class SharedModule {}
+export class SharedModule {
+    constructor(library: FaIconLibrary) {
+        library.addIcons(faLanguage);
+    }
+}
