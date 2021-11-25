@@ -145,6 +145,7 @@ stages:
             env:
               - Preview
               - Dev
+              - Demo
               - AAT
               - Sandbox
               - Test1
@@ -195,6 +196,9 @@ stages:
             env:
               - Test1
               - Test2
+          - group: FeatureFlags_Demo
+            env:
+              - Demo
           - group: FeatureFlags_PreProd
             env:
               - PreProd
@@ -301,6 +305,8 @@ stages:
             value: $(EnableIOSTabletSupport)
           - name: VhServices:EnableVideoFilters
             value: $(EnableVideoFilters)
+          - name: VhServices:EnableDynamicEvidenceSharing
+            value: $(EnableDynamicEvidenceSharing)
 
           # Quick Links Configuration
           - name: QuickLinks:Issuer
@@ -346,6 +352,8 @@ stages:
             value: $(EnableIOSTabletSupport)
           - name: VhServices:EnableVideoFilters
             value: $(EnableVideoFilters)
+          - name: VhServices:EnableDynamicEvidenceSharing
+            value: $(EnableDynamicEvidenceSharing)
 
           # AzureAd
           - name: AzureAd:TenantId
