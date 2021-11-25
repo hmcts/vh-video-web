@@ -1,8 +1,7 @@
-using System;
-using System.Linq;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
+using VideoWeb.Helpers;
 using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.Mappings
@@ -16,7 +15,7 @@ namespace VideoWeb.Mappings
             var node = sharedRoom.PexipNode.Replace("https://", string.Empty);
             var tilePrefix = isWitness ? "WITNESS" : "CIVILIAN";
             var tileDisplayName =
-                $"{tilePrefix};{participant.DisplayName};{participant.Id}";
+                $"{tilePrefix};${ParticipantTilePositionHelper.NoHeartbeat};{participant.DisplayName};{participant.Id}";
             return new SharedParticipantRoom
             {
                 PexipNode = node,
