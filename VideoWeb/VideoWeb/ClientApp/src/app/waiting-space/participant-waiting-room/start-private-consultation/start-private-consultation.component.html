@@ -37,8 +37,18 @@
                 <br>
               </ng-container>
               <label id="p-{{ participant.id }}-status-participant"
-                class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
-                [innerHTML]="getParticipantStatus(participant)">
+                class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}">
+                <ng-container *ngIf="getParticipantDisabled(participant); then unavailable; else available">
+                </ng-container>
+                <ng-template #unavailable>
+                  {{ 'start-private-consultation.unavailable' | translate }}
+                </ng-template>
+                <ng-template #available>
+                  <ng-container *ngIf="isInConsultationRoom(participant)">
+                    <span>{{'start-private-consultation.in' | translate}} {{consultationNameToString(participant.current_room.label)}}</span>
+                    <fa-icon *ngIf="participant.current_room.locked"icon="lock"></fa-icon>
+                  </ng-container>
+                </ng-template>
               </label>
             </label>
           </div>
