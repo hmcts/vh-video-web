@@ -129,7 +129,7 @@ export class StartPrivateConsultationComponent implements OnChanges {
                 this.translateService.instant('start-private-consultation.in') +
                 ' ' +
                 this.consultationService.consultationNameToString(participant.current_room.label, false).toLowerCase() +
-                (participant.current_room.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
+                (participant.current_room.locked ? ' <fa-icon class="lock"></fa-icon>' : '')
             );
         }
     }
@@ -143,7 +143,7 @@ export class StartPrivateConsultationComponent implements OnChanges {
                 this.translateService.instant('start-private-consultation.in') +
                 ' ' +
                 this.consultationService.consultationNameToString(endpoint.current_room.label, false).toLowerCase() +
-                (endpoint.current_room.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
+                (endpoint.current_room.locked ? ' <fa-icon icon="lock"></fa-icon>' : '')
             );
         }
     }
