@@ -120,7 +120,7 @@
                     <div *ngIf="!participant.isJudge && participant.hasHandRaised()" class="icon-button" appTooltip
                         [text]="'participants-panel.lower-hand' | translate" colour="grey"
                         (click)="lowerParticipantHand(participant); $event.stopPropagation()">
-                        <fa-icon icon="hand-paper" class="yellow"></fa-icon>
+                        <fa-icon [icon]="['far', 'hand-paper']" class="yellow"></fa-icon>
                     </div>
                 </div>
 

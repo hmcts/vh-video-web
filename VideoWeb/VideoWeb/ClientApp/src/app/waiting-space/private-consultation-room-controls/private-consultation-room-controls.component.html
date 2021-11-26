@@ -32,14 +32,15 @@
                 </div>
                 <div class='icon-button-dark' id='toggle-media-device-img' colour='grey'
                     (click)='changeDeviceSelected()'>
-                    <span><fa-icon icon="sliders-h"></fa-icon><span
-                            class='context-item'>{{'private-consultation-room-controls.change-camera-mic' |
-                            translate}}</span></span>
+                    <span>
+                        <fa-icon icon="sliders-h"></fa-icon>
+                        <span class='context-item'>{{'private-consultation-room-controls.change-camera-mic' | translate}}</span>
+                    </span>
                 </div>
                 <div class='icon-button-dark' id='toggle-self-view-img' *ngIf='!audioOnly' colour='grey'
                     (click)='toggleView()'>
                     <span>
-                        <fa-icon [icon]="selfViewOpen ? 'eye' : 'eye-slash'"></fa-icon>
+                        <fa-icon [icon]="selfViewOpen ? ['far', 'eye'] : ['far', 'eye-slash']"></fa-icon>
                         <span class='context-item'>
                             {{(selfViewOpen
                             ? 'private-consultation-room-controls.selfview-toggle-true'
@@ -91,11 +92,13 @@
                 </div>
                 <div class='icon-button-dark' id='toggle-hand-raised-img' *ngIf='!isPrivateConsultation && !isHost'
                     colour='grey' (click)='toggleHandRaised()'>
-                    <span class='far fa-hand-paper'>
+                    <span>
+                        <fa-icon [icon]="['far', 'hand-paper']"></fa-icon>
                         <span class='context-item'> {{(handRaised
                             ? 'private-consultation-room-controls.hand-raise-toggle-true'
                             : 'private-consultation-room-controls.hand-raise-toggle-false') | translate
-                            }}</span></span>
+                            }}</span>
+                        </span>
                 </div>
                 <div *ngIf='!isPrivateConsultation && isHost' id='leave-hearing'
                     class='icon-button-dark hide-for-medium' data-module='govuk-button'
@@ -107,7 +110,7 @@
                     class='icon-button-dark hide-for-medium' data-module='govuk-button' (click)='pause()'
                     [hidden]='!canCloseOrPauseHearing()'>
                     <span>
-                        <fa-icon icon='pause-circle'></fa-icon>
+                        <fa-icon [icon]="['far', 'pause-circle']"></fa-icon>
                         <span class='context-item'>{{'private-consultation-room-controls.pause' | translate }}
                         </span>
                     </span>
@@ -196,7 +199,7 @@
             <div class="icon-button" id="toggle-chat-panel-desktop" appTooltip *ngIf="isHost && !isPrivateConsultation"
                 [text]="'private-consultation-room-controls.chat-panel' | translate" colour="grey" disableChildTooltip
                 (click)="togglePanelStatus('Chat')">
-                <fa-icon icon="comment"></fa-icon>
+                <fa-icon [icon]="['far', 'comment']"></fa-icon>
                 <span class="badge" *ngIf="unreadMessageCount > 0">{{ unreadMessageCount > 9 ? '9+' : unreadMessageCount
                     }}</span>
             </div>
@@ -213,7 +216,7 @@
                         disableChildTooltip
                         appTooltip
                         [text]="'private-consultation-room-controls.share-video-evidence' | translate" colour="grey">
-                        <span class="action"><fa-icon icon="play-circle" aria-hidden="true"></fa-icon>
+                        <span class="action"><fa-icon [icon]="['far', 'play-circle']" aria-hidden="true"></fa-icon>
                             <span style="margin-left:4px;">{{ 'private-consultation-room-controls.share-video-evidence' | translate }}</span>
                         </span>
                     </div>
@@ -246,7 +249,7 @@
             <div class="icon-button" id="toggle-media-device-img-desktop" appTooltip
                 [text]="'private-consultation-room-controls.change-camera-mic' | translate" colour="grey"
                 (click)="changeDeviceSelected()">
-                <fa-icon class="sliders-h"></fa-icon>
+                <fa-icon icon="sliders-h"></fa-icon>
             </div>
 
             <div class="icon-button" id="toggle-self-view-img-desktop" appTooltip *ngIf="!audioOnly" [text]="
@@ -254,7 +257,7 @@
             ? 'private-consultation-room-controls.selfview-toggle-true'
             : 'private-consultation-room-controls.selfview-toggle-false') | translate" colour="grey"
                 (click)="toggleView()">
-                <fa-icon [icon]="selfViewOpen ? 'fa-eye' : 'fa-eye-slash'"></fa-icon>
+                <fa-icon [icon]="selfViewOpen ? ['far', 'eye'] : ['far', 'eye-slash']"></fa-icon>
             </div>
 
             <div class="icon-button" id="toggle-video-mute-img-desktop" appTooltip *ngIf="!isJudge && !audioOnly"
@@ -286,7 +289,7 @@
             ? 'private-consultation-room-controls.hand-raise-toggle-true'
             : 'private-consultation-room-controls.hand-raise-toggle-false') | translate" colour="grey"
                 (click)="toggleHandRaised()">
-                <fa-icon icon="hand-paper" [class]="{ yellow: handRaised }"></fa-icon>
+                <fa-icon [icon]="['far', 'hand-paper']" [class]="{ yellow: handRaised }"></fa-icon>
             </div>
 
             <ng-container *ngIf='canShowLeaveButton'>
