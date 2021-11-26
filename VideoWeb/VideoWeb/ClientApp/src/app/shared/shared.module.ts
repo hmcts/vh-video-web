@@ -56,7 +56,29 @@ import { CrestLogoImageSourceDirective } from './directives/crest-logo-image-sou
 import { StaffMemberVenueListComponent } from './venue-list/staff-member-venue-list/staff-member-venue-list.component';
 import { VhOfficerVenueListComponent } from './venue-list/vh-officer-venue-list/vh-officer-venue-list.component';
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faLanguage, faMicrophone } from '@fortawesome/free-solid-svg-icons';
+import {
+    faCheck,
+    faChevronDown,
+    faChevronUp,
+    faEllipsisH,
+    faExclamationCircle,
+    faExclamationTriangle,
+    faLanguage,
+    faLink,
+    faLock,
+    faMicrophone,
+    faMicrophoneSlash,
+    faPhoneAlt,
+    faQuestionCircle,
+    faSignInAlt,
+    faSignOutAlt,
+    faSlidersH,
+    faThumbtack,
+    faTv,
+    faVideo,
+    faVideoSlash
+} from '@fortawesome/free-solid-svg-icons';
+import { faAddressCard, faComment, faEye, faEyeSlash, faHandPaper, faPauseCircle, faPlayCircle } from '@fortawesome/free-regular-svg-icons';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -179,6 +201,34 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
 })
 export class SharedModule {
     constructor(library: FaIconLibrary) {
-        library.addIcons(faLanguage, faMicrophone);
+        library.addIcons(
+            faAddressCard,
+            faCheck,
+            faChevronDown,
+            faChevronUp,
+            faComment,
+            faEllipsisH,
+            faExclamationCircle,
+            faExclamationTriangle,
+            faEye,
+            faEyeSlash,
+            faHandPaper,
+            faLanguage,
+            faLink,
+            faLock,
+            faPauseCircle,
+            faPhoneAlt,
+            faPlayCircle,
+            faMicrophone,
+            faMicrophoneSlash,
+            faQuestionCircle,
+            faSignInAlt,
+            faSignOutAlt,
+            faSlidersH,
+            faThumbtack,
+            faTv,
+            faVideo,
+            faVideoSlash
+        );
     }
 }

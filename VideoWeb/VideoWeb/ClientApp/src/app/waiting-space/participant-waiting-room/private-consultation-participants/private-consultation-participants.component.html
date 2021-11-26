@@ -53,9 +53,9 @@
                         [conferenceId]="conference.id"
                         [roomLabel]="roomLabel">
                     </app-invite-participant>
-                    <span *ngIf="isParticipantInCurrentRoom(endpoint)"
-                        class="fas fa-check"
-                        aria-hidden="true"></span>
+                    <fa-icon *ngIf="isParticipantInCurrentRoom(endpoint)"
+                        icon="check"
+                        aria-hidden="true"></fa-icon>
                 </div>
                 <div [class]="getRowClasses(endpoint)"><span
                         [class]="participantNameClass(endpoint)">{{endpoint.display_name}}</span></div>
