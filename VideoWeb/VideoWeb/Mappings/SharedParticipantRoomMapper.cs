@@ -15,7 +15,7 @@ namespace VideoWeb.Mappings
             var node = sharedRoom.PexipNode.Replace("https://", string.Empty);
             var tilePrefix = isWitness ? "WITNESS" : "CIVILIAN";
             var tileDisplayName =
-                $"{tilePrefix};${ParticipantTilePositionHelper.NoHeartbeat};{participant.DisplayName};{participant.Id}";
+                $"{tilePrefix};{ParticipantTilePositionHelper.NoHeartbeat};{participant.DisplayName};{participant.Id}";
             return new SharedParticipantRoom
             {
                 PexipNode = node,
