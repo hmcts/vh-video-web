@@ -10,7 +10,8 @@ import {
     ParticipantResponse,
     ParticipantStatus,
     RoomSummaryResponse,
-    HearingLayout
+    HearingLayout,
+    Role
 } from 'src/app/services/clients/api-client';
 import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
@@ -347,6 +348,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
         spyOn(component, 'disconnect');
         component.participant.status = ParticipantStatus.InHearing;
         component.conference.status = ConferenceStatus.InSession;
+        component.participant.role = Role.None;
 
         const newParticipantStatus = ParticipantStatus.InConsultation;
         const newConferenceStatus = ConferenceStatus.Paused;
@@ -373,6 +375,24 @@ describe('WaitingRoomComponent EventHub Call', () => {
         expect(component.conference.status).toBe(newConferenceStatus);
         expect(component.conference).toEqual(newConference);
     }));
+
+    it('does not disconnect judge from pexip before the first attempt to reconnect to event hub has been made', () => {
+        component.participant.role = Role.Judge;
+        spyOn(component, 'disconnect');
+
+        component.handleEventHubDisconnection(1);
+
+        expect(component.disconnect).not.toHaveBeenCalled();
+    });
+
+    it('disconnects judge from pexip after the first attempt to reconnect to event hub has been un successful', () => {
+        component.participant.role = Role.Judge;
+        spyOn(component, 'disconnect');
+
+        component.handleEventHubDisconnection(2);
+
+        expect(component.disconnect).toHaveBeenCalledTimes(1);
+    });
 
     it('should go to service error when disconnected from eventhub more than 7 times', () => {
         eventHubDisconnectSubject.next(8);
