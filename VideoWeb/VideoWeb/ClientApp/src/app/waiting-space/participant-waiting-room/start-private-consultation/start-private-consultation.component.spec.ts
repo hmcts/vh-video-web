@@ -4,6 +4,7 @@ import {
     EndpointStatus,
     LinkType,
     LoggedParticipantResponse,
+    ParticipantResponse,
     ParticipantStatus,
     Role,
     RoomSummaryResponse
@@ -142,13 +143,6 @@ describe('StartPrivateConsultationComponent', () => {
         expect(component.getEndpointStatusCss(endpoint)).toEqual('in-consultation');
     });
 
-    it('should return unavailable participant status', () => {
-        const participant = conference.participants[0];
-        participant.status = ParticipantStatus.Disconnected;
-        const expectedText = 'start-private-consultation.unavailable';
-        expect(component.getParticipantStatus(participant)).toEqual(expectedText);
-    });
-
     it('should return enabled for participant with all linked participants available', () => {
         const participant = { status: ParticipantStatus.Available, linked_participants: [{ linked_id: '12345' }] };
         component.participants = [{ id: '12345', status: ParticipantStatus.Available }] as any[];
@@ -159,23 +153,6 @@ describe('StartPrivateConsultationComponent', () => {
         const participant = { status: ParticipantStatus.Available, linked_participants: [{ linked_id: '12345' }] };
         component.participants = [{ id: '12345', status: ParticipantStatus.NotSignedIn }] as any[];
         expect(component.getParticipantDisabled(participant as any)).toBe(true);
-    });
-
-    it('should return in consultaion participant status', () => {
-        const participant = conference.participants[0];
-        participant.status = ParticipantStatus.InConsultation;
-        participant.current_room = new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' });
-        expect(component.getParticipantStatus(participant)).toContain('start-private-consultation.in participantconsultationroom1');
-        expect(consultationService.consultationNameToString).toHaveBeenCalledWith('ParticipantConsultationRoom1', false);
-    });
-
-    it('should return in judge consultaion participant status', () => {
-        const participant = conference.participants[0];
-        participant.status = ParticipantStatus.InConsultation;
-        participant.current_room = new RoomSummaryResponse({ label: 'JudgeJOHConsultationRoom1' });
-        translateService.instant.calls.reset();
-        expect(component.getParticipantStatus(participant)).toContain('start-private-consultation.in judgejohconsultationroom1');
-        expect(consultationService.consultationNameToString).toHaveBeenCalledWith('JudgeJOHConsultationRoom1', false);
     });
 
     it('should return unavailable endpoint status', () => {
@@ -226,5 +203,28 @@ describe('StartPrivateConsultationComponent', () => {
         expect(component.filteredParticipants[0].interpreter.id).toBe('1');
         expect(component.filteredParticipants[1].id).toBe('3');
         expect(component.filteredParticipants[2].id).toBe('4');
+    });
+
+    describe('isInConsultationRoom', () => {
+        const participant = new ParticipantResponse();
+
+        beforeEach(() => {
+            participant.status = ParticipantStatus.InConsultation;
+            participant.current_room = new RoomSummaryResponse();
+        });
+
+        it('should return true when participant status is InConsultation and current room is not null', () => {
+            expect(component.isInConsultationRoom(participant)).toBe(true);
+        });
+
+        it('should return false when participant status is not InConsultation', () => {
+            participant.status = ParticipantStatus.Available;
+            expect(component.isInConsultationRoom(participant)).toBe(false);
+        });
+
+        it('should return false when room is null', () => {
+            participant.current_room = null;
+            expect(component.isInConsultationRoom(participant)).toBe(false);
+        });
     });
 });

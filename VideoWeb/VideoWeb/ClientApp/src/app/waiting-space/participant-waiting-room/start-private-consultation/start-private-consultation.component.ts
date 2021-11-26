@@ -120,20 +120,6 @@ export class StartPrivateConsultationComponent implements OnChanges {
         }
     }
 
-    getParticipantStatus(participant: ParticipantResponse): string {
-        if (this.getParticipantDisabled(participant)) {
-            return this.translateService.instant('start-private-consultation.unavailable');
-        }
-        if (participant.status === ParticipantStatus.InConsultation && participant.current_room != null) {
-            return (
-                this.translateService.instant('start-private-consultation.in') +
-                ' ' +
-                this.consultationService.consultationNameToString(participant.current_room.label, false).toLowerCase() +
-                (participant.current_room.locked ? ' <fa-icon icon="lock"></fa-icon>' : '<span>Do not commit this span</span>')
-            );
-        }
-    }
-
     isInConsultationRoom(participant: ParticipantResponse): boolean {
         return participant.status === ParticipantStatus.InConsultation && participant.current_room != null;
     }
