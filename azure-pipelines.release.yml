@@ -4,6 +4,11 @@ parameters:
     type: string
     default: refs/heads/master
 
+  - name: RunACTests
+    displayName: Run Acceptance Tests
+    type: boolean
+    default: false
+
   - name: environment
     displayName: Environment
     type: string
