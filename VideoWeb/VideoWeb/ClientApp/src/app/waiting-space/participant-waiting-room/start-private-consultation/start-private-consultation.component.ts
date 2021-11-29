@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { ConsultationService } from 'src/app/services/api/consultation.service';
 import {
     AllowedEndpointResponse,
     EndpointStatus,
@@ -29,7 +28,7 @@ export class StartPrivateConsultationComponent implements OnChanges {
     @Input() endpoints: VideoEndpointResponse[];
     @Output() continue = new EventEmitter<{ participants: string[]; endpoints: string[] }>();
     @Output() cancel = new EventEmitter();
-    constructor(private translateService: TranslateService, private consultationService: ConsultationService) {}
+    constructor(private translateService: TranslateService) {}
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.participants) {
@@ -120,26 +119,12 @@ export class StartPrivateConsultationComponent implements OnChanges {
         }
     }
 
-    isInConsultationRoom(participant: ParticipantResponse): boolean {
+    participantIsInConsultationRoom(participant: ParticipantResponse): boolean {
         return participant.status === ParticipantStatus.InConsultation && participant.current_room != null;
     }
 
-    consultationNameToString(roomLabel: string): string {
-        return this.consultationService.consultationNameToString(roomLabel, false).toLowerCase();
-    }
-
-    getEndpointStatus(endpoint: VideoEndpointResponse): string {
-        if (this.getEndpointDisabled(endpoint)) {
-            return this.translateService.instant('start-private-consultation.unavailable');
-        }
-        if (endpoint.status === EndpointStatus.InConsultation && endpoint.current_room != null) {
-            return (
-                this.translateService.instant('start-private-consultation.in') +
-                ' ' +
-                this.consultationService.consultationNameToString(endpoint.current_room.label, false).toLowerCase() +
-                (endpoint.current_room.locked ? ' <fa-icon icon="lock"></fa-icon>' : '')
-            );
-        }
+    endpointIsInConsultationRoom(endpoint: VideoEndpointResponse): boolean {
+        return endpoint.status === EndpointStatus.InConsultation && endpoint.current_room != null;
     }
 
     trackParticipant(index: number, item: ParticipantListItem) {

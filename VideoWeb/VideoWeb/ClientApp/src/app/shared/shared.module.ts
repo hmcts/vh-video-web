@@ -79,6 +79,7 @@ import {
     faVideoSlash
 } from '@fortawesome/free-solid-svg-icons';
 import { faAddressCard, faComment, faEye, faEyeSlash, faHandPaper, faPauseCircle, faPlayCircle } from '@fortawesome/free-regular-svg-icons';
+import { RoomNameDirective } from './directives/room-name.directive';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -145,7 +146,8 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         ForcePlayVideoDirective,
         CrestLogoImageSourceDirective,
         StaffMemberVenueListComponent,
-        VhOfficerVenueListComponent
+        VhOfficerVenueListComponent,
+        RoomNameDirective
     ],
     providers: [
         { provide: Logger, useClass: LoggerService },
@@ -196,7 +198,8 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         CrestLogoImageSourceDirective,
         StaffMemberVenueListComponent,
         VhOfficerVenueListComponent,
-        FontAwesomeModule
+        FontAwesomeModule,
+        RoomNameDirective
     ]
 })
 export class SharedModule {
