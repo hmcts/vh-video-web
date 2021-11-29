@@ -124,10 +124,18 @@ describe('LinkedParticipantPanelModel', () => {
         expect(model.isAvailable()).toBeFalsy();
     });
 
-    it('should return isAvailable: true when a participant is available', () => {
+    it('should return isAvailable: false when only one participant is available', () => {
         participants[0].status = ParticipantStatus.Available;
+        participants[1].status = ParticipantStatus.NotSignedIn;
         createLinkedModel();
-        expect(model.isAvailable()).toBeTruthy();
+        expect(model.isAvailable()).toBeFalse();
+    });
+
+    it('should return isAvailable: true when all participants are available', () => {
+        participants[0].status = ParticipantStatus.Available;
+        participants[1].status = ParticipantStatus.Available;
+        createLinkedModel();
+        expect(model.isAvailable()).toBeTrue();
     });
 
     it('should return isInConsultation: true when a participant is InConsultation', () => {

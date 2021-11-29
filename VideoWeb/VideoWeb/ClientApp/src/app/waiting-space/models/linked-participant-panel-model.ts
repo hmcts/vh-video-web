@@ -77,7 +77,7 @@ export class LinkedParticipantPanelModel extends PanelModel {
     }
 
     isAvailable(): boolean {
-        return this.participants.some(p => p.isAvailable());
+        return this.participants.every(p => p.isAvailable());
     }
 
     isInConsultation(): boolean {
