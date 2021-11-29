@@ -132,15 +132,19 @@ describe('ParticipantPanelModel', () => {
 
         describe('isCallable', () => {
             const testCases = [
-                { isWitness: false, isQuickLinkUser: false, expectation: false },
-                { isWitness: true, isQuickLinkUser: false, expectation: true },
-                { isWitness: false, isQuickLinkUser: true, expectation: true },
-                { isWitness: true, isQuickLinkUser: true, expectation: true }
+                { isWitness: false, isQuickLinkUser: false, isInterpreter: false, expectation: false },
+                { isWitness: true, isQuickLinkUser: false, isInterpreter: false, expectation: true },
+                { isWitness: false, isQuickLinkUser: true, isInterpreter: false, expectation: true },
+                { isWitness: true, isQuickLinkUser: true, isInterpreter: false, expectation: true },
+                { isWitness: false, isQuickLinkUser: false, isInterpreter: true, expectation: true },
+                { isWitness: false, isQuickLinkUser: false, isInterpreter: true, expectation: true },
+                { isWitness: true, isQuickLinkUser: false, isInterpreter: true, expectation: true }
             ];
             testCases.forEach(testCase => {
                 it(`should return ${testCase.expectation} when isWitness is ${testCase.isWitness} and isQuickLinkUser is ${testCase.isQuickLinkUser}`, () => {
                     spyOnProperty(model, 'isWitness').and.returnValue(testCase.isWitness);
                     spyOnProperty(model, 'isQuickLinkUser').and.returnValue(testCase.isQuickLinkUser);
+                    spyOnProperty(model, 'isInterpreter').and.returnValue(testCase.isInterpreter);
                     expect(model.isCallable).toBe(testCase.expectation);
                 });
             });
