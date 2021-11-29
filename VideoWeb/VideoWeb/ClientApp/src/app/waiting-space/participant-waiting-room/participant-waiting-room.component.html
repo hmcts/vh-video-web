@@ -101,7 +101,7 @@
         [attr.alt]="'participant-waiting-room.witness-transferring-warning-image' | translate"
       />
       <h2 class="govuk-heading-m white govuk-!-margin-top-5" [innerHTML]="'participant-waiting-room.hearing-ready' | translate"></h2>
-      <video appForcePlayVideo muted="true" id="outgoingFeedVideoTransfer" [srcObject]="outgoingStream" height="auto">
+      <video appForcePlayVideo [muted]="true" id="outgoingFeedVideoTransfer" [srcObject]="outgoingStream" height="auto">
         {{ 'participant-waiting-room.browser-support' | translate }}
       </video>
     </div>
