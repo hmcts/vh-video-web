@@ -189,7 +189,7 @@ describe('WaitingRoomComponent Video Call', () => {
 
         onConnectedSubject.next(payload);
 
-        expect(component.stream).toBeDefined();
+        expect(component.callStream).toBeDefined();
         expect(component.errorCount).toBe(0);
         expect(component.connected).toBeTruthy();
         expect(component.assignStream).toHaveBeenCalled();
@@ -202,7 +202,7 @@ describe('WaitingRoomComponent Video Call', () => {
 
         onConnectedSubject.next(payload);
 
-        expect(component.stream).toBeDefined();
+        expect(component.callStream).toBeDefined();
         expect(component.errorCount).toBe(0);
         expect(component.connected).toBeTruthy();
         expect(component.assignStream).toHaveBeenCalledTimes(0);
@@ -271,9 +271,9 @@ describe('WaitingRoomComponent Video Call', () => {
 
     it('should dettach current stream on transfer', () => {
         const incomingStream = <any>{};
-        component.stream = incomingStream;
+        component.callStream = incomingStream;
         onTransferSubject.next('new_room');
-        expect(component.stream).toBeNull();
+        expect(component.callStream).toBeNull();
     });
 
     it('should retrieve presentation if started', () => {

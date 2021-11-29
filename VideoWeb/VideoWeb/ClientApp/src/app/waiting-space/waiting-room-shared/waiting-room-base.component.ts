@@ -75,7 +75,7 @@ export abstract class WaitingRoomBaseDirective {
     clockSubscription$: Subscription = new Subscription();
     currentTime: Date;
 
-    stream: MediaStream | URL;
+    callStream: MediaStream | URL;
     connected: boolean;
     outgoingStream: MediaStream | URL;
     presentationStream: MediaStream | URL;
@@ -815,7 +815,7 @@ export abstract class WaitingRoomBaseDirective {
         if (this.connected) {
             this.videoCallService.disconnectFromCall();
         }
-        this.stream = null;
+        this.callStream = null;
         this.outgoingStream = null;
         this.connected = false;
         this.showVideo = false;
@@ -844,13 +844,11 @@ export abstract class WaitingRoomBaseDirective {
         this.errorCount = 0;
         this.connected = true;
         this.logger.debug(`${this.loggerPrefix} Successfully connected to hearing`, { conference: this.conferenceId });
-        this.stream = callConnected.stream;
-        const incomingFeedElement = document.getElementById('incomingFeed') as any;
-        if (this.stream) {
+        this.callStream = callConnected.stream;
+
+        if (this.callStream) {
+            this.callStream = callConnected.stream;
             this.updateShowVideo();
-            if (incomingFeedElement) {
-                this.assignStream(incomingFeedElement, callConnected.stream);
-            }
         }
         if (this.hearingControls && !this.audioOnly && this.hearingControls.videoMuted) {
             await this.hearingControls.toggleVideoMute();
@@ -882,7 +880,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     handleCallTransfer(): void {
-        this.stream = null;
+        this.callStream = null;
     }
 
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
