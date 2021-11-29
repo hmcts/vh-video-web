@@ -1,7 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { ConsultationAnswer, ParticipantResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ParticipantResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
 
 @Component({
     selector: 'app-participant-item',
@@ -16,6 +14,7 @@ export class ParticipantItemComponent {
     @Input() roomLabel: string;
     @Input() conferenceId: string;
     @Input() canInvite: boolean;
+    @Input() status: string;
 
     constructor() {}
     getRowClasses(participant: any): string {

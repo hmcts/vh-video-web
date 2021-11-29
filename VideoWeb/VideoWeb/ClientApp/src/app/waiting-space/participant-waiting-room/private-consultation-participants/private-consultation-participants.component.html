@@ -23,6 +23,7 @@
                                 [roomLabel]="roomLabel"
                                 [participantCallStatuses]="participantCallStatuses"
                                 [canInvite]="canInvite"
+                                [status]="getParticipantStatus(participant)"
                                 >
                             </app-participant-item>                              
                         </ng-container>
@@ -39,6 +40,7 @@
                                 [roomLabel]="roomLabel"
                                 [participantCallStatuses]="participantCallStatuses"
                                 [canInvite]="canInvite"
+                                [status]="getParticipantStatus(participant)"
                                 >
                 </app-participant-item>
             </div>
@@ -71,6 +73,7 @@
                                     [roomLabel]="roomLabel"
                                     [participantCallStatuses]="participantCallStatuses"
                                     [canInvite]="canInvite"
+                                    [status]="getParticipantStatus(participant)"
                                     >
                     </app-participant-item>
                 </div>
