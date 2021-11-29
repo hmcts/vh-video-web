@@ -19,7 +19,7 @@
     <div>
       <video
         appForcePlayVideo
-        muted="true"
+        [muted]="true"
         *ngIf="streamsActive"
         id="outgoingStream"
         [srcObject]="this.outgoingStream"
