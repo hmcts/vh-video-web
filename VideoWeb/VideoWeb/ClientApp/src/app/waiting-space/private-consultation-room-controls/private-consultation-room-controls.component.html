@@ -122,7 +122,7 @@
                     data-module='govuk-button' (click)='displayConfirmationDialog()'
                     [hidden]='!canCloseOrPauseHearing()'>
                     <span>
-                        <fa-icon icon='stop-circle'></fa-icon>
+                        <fa-icon [icon]="['far', 'stop-circle']"></fa-icon>
                         <span class='context-item'>{{'private-consultation-room-controls.close' | translate }}</span>
                     </span>
                 </div>

@@ -80,7 +80,16 @@ import {
     faVideo,
     faVideoSlash
 } from '@fortawesome/free-solid-svg-icons';
-import { faAddressCard, faComment, faEye, faEyeSlash, faHandPaper, faPauseCircle, faPlayCircle } from '@fortawesome/free-regular-svg-icons';
+import {
+    faAddressCard,
+    faComment,
+    faEye,
+    faEyeSlash,
+    faHandPaper,
+    faPauseCircle,
+    faPlayCircle,
+    faStopCircle
+} from '@fortawesome/free-regular-svg-icons';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -229,6 +238,7 @@ export class SharedModule {
             faSignInAlt,
             faSignOutAlt,
             faSlidersH,
+            faStopCircle,
             faThumbtack,
             faTv,
             faVideo,
