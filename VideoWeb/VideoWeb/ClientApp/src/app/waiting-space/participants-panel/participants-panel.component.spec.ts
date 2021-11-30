@@ -63,6 +63,7 @@ import {
 import { IConferenceParticipantsStatus } from '../models/conference-participants-status';
 import { VideoCallService } from '../services/video-call.service';
 import { ParticipantsPanelComponent } from './participants-panel.component';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();

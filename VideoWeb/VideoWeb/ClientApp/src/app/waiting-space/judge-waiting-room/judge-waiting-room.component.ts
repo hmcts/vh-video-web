@@ -65,6 +65,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         return this.panelStates['Chat'];
     }
 
+    get areParticipantsVisible() {
+        return this.panelStates['Participants'];
+    }
+
     constructor(
         protected route: ActivatedRoute,
         protected videoWebService: VideoWebService,

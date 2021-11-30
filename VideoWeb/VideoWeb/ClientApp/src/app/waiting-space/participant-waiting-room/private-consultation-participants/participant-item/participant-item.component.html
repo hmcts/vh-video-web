@@ -1,6 +1,6 @@
 <div class="language-icon"
     *ngIf="interpreter">
-    <span class="far fa-language"></span>
+    <fa-icon icon="language"></fa-icon>
 </div>
 <div [ngClass]="{'participant-endpoint-row': interpreter == null ,
      'individual-endpoint-row': interpreter != null  }">
@@ -11,9 +11,9 @@
             [conferenceId]="conferenceId"
             [roomLabel]="roomLabel">
         </app-invite-participant>
-        <span *ngIf="isParticipantInCurrentRoom(participant)"
-            class="fas fa-check"
-            aria-hidden="true"></span>
+        <fa-icon *ngIf="isParticipantInCurrentRoom(participant)"
+            class="check"
+            aria-hidden="true"></fa-icon>
     </div>
     <div [class]="getRowClasses(participant)">
         <span class="wrap-anywhere" [ngClass]="participantNameClass(participant)">{{participant.display_name}}</span>

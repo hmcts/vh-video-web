@@ -4,6 +4,7 @@ import {
     EndpointStatus,
     LinkType,
     LoggedParticipantResponse,
+    ParticipantResponse,
     ParticipantStatus,
     Role,
     RoomSummaryResponse

@@ -22,7 +22,7 @@
                 [disabled]="roomDetails.locked"
                 (change)="setSelectedRoom(roomDetails.label)" />
             <label class="govuk-label govuk-radios__label" for="{{roomDetails.label}}">
-                <span class="govuk-!-font-weight-bold">{{roomDetails.displayName}} <span *ngIf="roomDetails.locked" class="fas fa-lock-alt"></span></span>
+                <span class="govuk-!-font-weight-bold">{{roomDetails.displayName}} <fa-icon *ngIf="roomDetails.locked" icon="lock"></fa-icon></span>
                 <ul>
                   <li *ngFor="let participant of roomDetails.participants">
                     <span class="govuk-!-font-weight-bold">{{participant.display_name}}</span> {{getParticipantHearingRoleText(participant)}}

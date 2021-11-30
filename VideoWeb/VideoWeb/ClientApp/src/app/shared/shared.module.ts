@@ -55,6 +55,45 @@ import { VhoQueryService } from '../vh-officer/services/vho-query-service.servic
 import { CrestLogoImageSourceDirective } from './directives/crest-logo-image-source.directive';
 import { StaffMemberVenueListComponent } from './venue-list/staff-member-venue-list/staff-member-venue-list.component';
 import { VhOfficerVenueListComponent } from './venue-list/vh-officer-venue-list/vh-officer-venue-list.component';
+import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+    faCheck,
+    faChevronDown,
+    faChevronUp,
+    faCommentAlt as faCommentAltSolid,
+    faEllipsisH,
+    faExclamationCircle,
+    faExclamationTriangle,
+    faFileAlt,
+    faLanguage,
+    faLink,
+    faLock,
+    faMicrophone,
+    faMicrophoneSlash,
+    faPhone,
+    faPhoneAlt,
+    faQuestionCircle,
+    faShareSquare,
+    faSignInAlt,
+    faSignOutAlt,
+    faSlidersH,
+    faThumbtack,
+    faTv,
+    faUser as faUserSolid,
+    faVideo,
+    faVideoSlash
+} from '@fortawesome/free-solid-svg-icons';
+import {
+    faAddressCard,
+    faCommentAlt as faCommentAltRegular,
+    faEye,
+    faEyeSlash,
+    faHandPaper,
+    faPauseCircle,
+    faPlayCircle,
+    faStopCircle,
+    faUser as faUserRegular
+} from '@fortawesome/free-regular-svg-icons';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -83,7 +122,8 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
             toastComponent: RoomClosingToastComponent
         }),
         TranslateModule,
-        NgSelectModule
+        NgSelectModule,
+        FontAwesomeModule
     ],
     declarations: [
         HeaderComponent,
@@ -170,7 +210,47 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         ForcePlayVideoDirective,
         CrestLogoImageSourceDirective,
         StaffMemberVenueListComponent,
-        VhOfficerVenueListComponent
+        VhOfficerVenueListComponent,
+        FontAwesomeModule
     ]
 })
-export class SharedModule {}
+export class SharedModule {
+    constructor(library: FaIconLibrary) {
+        library.addIcons(
+            faAddressCard,
+            faCheck,
+            faChevronDown,
+            faChevronUp,
+            faCommentAltRegular,
+            faCommentAltSolid,
+            faEllipsisH,
+            faExclamationCircle,
+            faExclamationTriangle,
+            faEye,
+            faEyeSlash,
+            faFileAlt,
+            faHandPaper,
+            faLanguage,
+            faLink,
+            faLock,
+            faPauseCircle,
+            faPhone,
+            faPhoneAlt,
+            faPlayCircle,
+            faMicrophone,
+            faMicrophoneSlash,
+            faQuestionCircle,
+            faShareSquare,
+            faSignInAlt,
+            faSignOutAlt,
+            faSlidersH,
+            faStopCircle,
+            faThumbtack,
+            faTv,
+            faUserRegular,
+            faUserSolid,
+            faVideo,
+            faVideoSlash
+        );
+    }
+}

@@ -2,43 +2,47 @@
     <div class='icons-container'>
         <div class='icon-button dropdown' id='toggle-context-menu' colour='grey'
             [class]="{ 'dropdown-opaque': showContextMenu }" (click)='showContextMenu = !showContextMenu'>
-            <span class='far fa-ellipsis-h'></span>
+            <fa-icon icon='ellipsis-h'></fa-icon>
             <div *ngIf='showContextMenu' class='dropdown-content show'>
                     <app-context-menu-header [isPrivateConsultation]='isPrivateConsultation'></app-context-menu-header>
                 <div class='icon-button-dark' id='toggle-chat-panel' *ngIf='isHost && !isPrivateConsultation'
                     colour='grey' (click)="togglePanelStatus('Chat')">
-                    <span class='far fa-comment'>
-                        <span class='context-item'>
-                            {{
-                            (isChatVisible ? 'private-consultation-room-controls.hide-chat-window' :
-                            'private-consultation-room-controls.show-chat-window') | translate
-                            }}
-                        </span>
+                    <fa-icon [icon]="[isChatVisible ? 'fas' : 'far', 'comment-alt']">
+                    </fa-icon>
+                    <span class='context-item'>
+                        {{
+                        (isChatVisible ? 'private-consultation-room-controls.hide-chat-window' :
+                        'private-consultation-room-controls.show-chat-window') | translate
+                        }}
                     </span>
                     <span class='badge' *ngIf='unreadMessageCount > 0'>{{ unreadMessageCount > 9 ? '9+' :
                         unreadMessageCount }}</span>
                 </div>
                 <div class='icon-button-dark' id='start-screenshare-img'
                     *ngIf='!screenShareStream && canShowScreenShareButton' colour='grey' (click)='startScreenShare()'>
-                    <span class='fak fa-start-screen-share'><span
-                            class='context-item'>{{'private-consultation-room-controls.share-my-screen' |
-                            translate}}</span></span>
+                    <fa-icon icon='share-square'></fa-icon>
+                    <span class='context-item'>
+                        {{'private-consultation-room-controls.share-my-screen' | translate}}
+                    </span>
                 </div>
                 <div *ngIf='screenShareStream || sharingDynamicEvidence' class='icon-button-dark' id='stop-screenshare-img' colour='red'
                     (click)='stopScreenShare()'>
-                    <span class='fak fa-stop-screen-share'><span
-                            class='context-item'>{{'private-consultation-room-controls.stop-sharing-my-screen' |
-                            translate}}</span></span>
+                    <fa-icon icon='share-square' rotate="180"></fa-icon>
+                    <span class='context-item'>
+                        {{'private-consultation-room-controls.stop-sharing-my-screen' | translate}}
+                    </span>
                 </div>
                 <div class='icon-button-dark' id='toggle-media-device-img' colour='grey'
                     (click)='changeDeviceSelected()'>
-                    <span class='far fa-sliders-h'><span
-                            class='context-item'>{{'private-consultation-room-controls.change-camera-mic' |
-                            translate}}</span></span>
+                    <span>
+                        <fa-icon icon="sliders-h"></fa-icon>
+                        <span class='context-item'>{{'private-consultation-room-controls.change-camera-mic' | translate}}</span>
+                    </span>
                 </div>
                 <div class='icon-button-dark' id='toggle-self-view-img' *ngIf='!audioOnly' colour='grey'
                     (click)='toggleView()'>
-                    <span class='far' [class]="selfViewOpen ? 'fa-eye' : 'fa-eye-slash'">
+                    <span>
+                        <fa-icon [icon]="selfViewOpen ? ['far', 'eye'] : ['far', 'eye-slash']"></fa-icon>
                         <span class='context-item'>
                             {{(selfViewOpen
                             ? 'private-consultation-room-controls.selfview-toggle-true'
@@ -49,7 +53,8 @@
                 </div>
                 <div class='icon-button-dark' id='toggle-video-mute-img' *ngIf='!isJudge && !audioOnly' colour='grey'
                     (click)='toggleVideoMute()'>
-                    <span class='far' [class]="videoMuted ? 'fa-video-slash' : 'fa-video'">
+                    <span>
+                        <fa-icon [icon]="videoMuted ? 'video-slash' : 'video'"></fa-icon>
                         <span class='context-item'>
                             {{(videoMuted
                             ? 'private-consultation-room-controls.video-mute-toggle-true'
@@ -61,7 +66,8 @@
 
                 <div class='icon-button-dark' id='toggle-audio-mute-img' *ngIf='!remoteMuted || isJudge' colour='grey'
                     (click)='toggleMute()'>
-                    <span class='far' [class]="audioMuted ? 'fa-microphone-slash' : 'fa-microphone'">
+                    <span>
+                        <fa-icon [icon]="audioMuted ? 'microphone-slash' : 'microphone'"></fa-icon>
                         <span class='context-item'>
                             {{(audioMuted
                             ? 'private-consultation-room-controls.audio-mute-toggle-true'
@@ -73,7 +79,9 @@
 
                 <div class='icon-button-dark' id='toggle-audio-mute-locked-img' *ngIf='remoteMuted && !isHost'
                     colour='grey'>
-                    <span class='far fa-microphone-slash red'> <span class='context-item'>
+                    <span class="red"> 
+                        <fa-icon icon='microphone-slash'></fa-icon>
+                        <span class='context-item'>
                             {{(audioMuted
                             ? 'private-consultation-room-controls.audio-mute-toggle-true'
                             : 'private-consultation-room-controls.audio-mute-toggle-false') | translate
@@ -86,50 +94,62 @@
                 </div>
                 <div class='icon-button-dark' id='toggle-hand-raised-img' *ngIf='!isPrivateConsultation && !isHost'
                     colour='grey' (click)='toggleHandRaised()'>
-                    <span class='far fa-hand-paper'>
+                    <span>
+                        <fa-icon [icon]="['far', 'hand-paper']"></fa-icon>
                         <span class='context-item'> {{(handRaised
                             ? 'private-consultation-room-controls.hand-raise-toggle-true'
                             : 'private-consultation-room-controls.hand-raise-toggle-false') | translate
-                            }}</span></span>
+                            }}</span>
+                        </span>
                 </div>
                 <div *ngIf='!isPrivateConsultation && isHost' id='leave-hearing'
                     class='icon-button-dark hide-for-medium' data-module='govuk-button'
                     (click)='displayLeaveHearingPopup = true'>
-                    <span class='fad fa-sign-out-alt fa-flip-horizontal'></span><span class='context-item'>{{
+                    <fa-icon icon='sign-out-alt' flip="horizontal"></fa-icon><span class='context-item'>{{
                         'private-consultation-room-controls.leave-hearing' | translate }}</span>
                 </div>
                 <div *ngIf='!isPrivateConsultation && isHost' id='pause-hearing'
                     class='icon-button-dark hide-for-medium' data-module='govuk-button' (click)='pause()'
                     [hidden]='!canCloseOrPauseHearing()'>
-                    <span class='far fa-pause-circle'><span class='context-item'>{{
-                            'private-consultation-room-controls.pause' | translate }}</span></span>
+                    <span>
+                        <fa-icon [icon]="['far', 'pause-circle']"></fa-icon>
+                        <span class='context-item'>{{'private-consultation-room-controls.pause' | translate }}
+                        </span>
+                    </span>
                 </div>
 
                 <div *ngIf='!isPrivateConsultation && isHost' id='end-hearing' class='icon-button-dark hide-for-medium'
                     data-module='govuk-button' (click)='displayConfirmationDialog()'
                     [hidden]='!canCloseOrPauseHearing()'>
-                    <span class='far fa-stop-circle'><span class='context-item'>{{
-                            'private-consultation-room-controls.close' | translate }}</span></span>
+                    <span>
+                        <fa-icon [icon]="['far', 'stop-circle']"></fa-icon>
+                        <span class='context-item'>{{'private-consultation-room-controls.close' | translate }}</span>
+                    </span>
                 </div>
 
                 <div *ngIf='isPrivateConsultation && showConsultationControls && !isJOHConsultation && !isJOHRoom'
                     id='lockButton' class='icon-button-dark' [class]="roomLocked ? 'greygreen' : 'greyred'"
                     data-module='govuk-button' (click)='lockPrivateConsultation(!roomLocked)'>
-                    <span class='far fa-lock-alt'> <span class='context-item'>{{
-                            'private-consultation-room-controls.lock-the-room-toggle-' + roomLocked | translate
-                            }}</span></span>
+                    <span>
+                        <fa-icon class='lock'></fa-icon>
+                        <span class='context-item'>{{'private-consultation-room-controls.lock-the-room-toggle-' + roomLocked | translate}}</span>
+                    </span>
                 </div>
 
                 <div *ngIf='showConsultationControls && canJoinHearingFromConsultation' id='join-hearing-from-consultation-button'
                     class='icon-button-dark hide-for-medium' data-module='govuk-button' (click)='joinHearingFromConsultation()'>
-                    <span class='far fa-sign-in-alt'><span class='context-item'>{{
-                            'private-consultation-room-controls.join-hearing-from-consultation' | translate }}</span></span>
+                    <span>
+                        <fa-icon icon="sign-in-alt"></fa-icon>
+                        <span class='context-item'>{{'private-consultation-room-controls.join-hearing-from-consultation' | translate }}</span>
+                    </span>
                 </div>
 
                 <div *ngIf='showConsultationControls' id='leaveButton' class='icon-button-dark hide-for-medium'
                     data-module='govuk-button' (click)='leavePrivateConsultation()' [hidden]='!canLeaveConsultation()'>
-                    <span class='far fa-sign-out-alt'><span class='context-item'>{{
-                            'private-consultation-room-controls.leave' | translate }}</span></span>
+                    <span>
+                        <fa-icon icon='sign-out-alt'></fa-icon>
+                        <span class='context-item'>{{'private-consultation-room-controls.leave' | translate }}</span>
+                    </span>
                 </div>
             </div>
         </div>
@@ -137,7 +157,7 @@
         <div class='icon-button' id='toggle-participants-panel' appTooltip *ngIf="canToggleParticipantsPanel"
             [text]="'private-consultation-room-controls.participants-panel' | translate" colour='grey'
             (click)="togglePanelStatus('Participants')">
-            <span class='far fa-users'></span>
+            <fa-icon [icon]="[areParticipantsVisible ? 'fas' : 'far', 'user']"></fa-icon>
         </div>
         <div class='show-for-medium-only'>
 
@@ -147,7 +167,7 @@
                 <div class='icon-button' id='leave-hearing-landscape' appTooltip colour='grey'
                     [text]="'private-consultation-room-controls.leave-hearing' | translate"
                     (click)="displayLeaveHearingPopup = !displayLeaveHearingPopup">
-                    <span class='fad fa-sign-out-alt fa-flip-horizontal leave-hearing-button'></span>
+                    <fa-icon icon="sign-out-alt" flip="horizontal" class='leave-hearing-button'></fa-icon>
                 </div>
 
                 <div class="flexBar"></div>
@@ -181,7 +201,7 @@
             <div class="icon-button" id="toggle-chat-panel-desktop" appTooltip *ngIf="isHost && !isPrivateConsultation"
                 [text]="'private-consultation-room-controls.chat-panel' | translate" colour="grey" disableChildTooltip
                 (click)="togglePanelStatus('Chat')">
-                <span class="far fa-comment"></span>
+                <fa-icon [icon]="[isChatVisible ? 'fas' : 'far', 'comment-alt']"></fa-icon>
                 <span class="badge" *ngIf="unreadMessageCount > 0">{{ unreadMessageCount > 9 ? '9+' : unreadMessageCount
                     }}</span>
             </div>
@@ -190,7 +210,7 @@
                 *ngIf="!screenShareStream && canShowScreenShareButton" appTooltip
                 [text]="'private-consultation-room-controls.share-my-screen' | translate" colour="grey"
                 (click)="showEvidenceContextMenu = !showEvidenceContextMenu">
-                <span class="fak fa-start-screen-share"></span>
+                <fa-icon icon='share-square'></fa-icon>
 
                 <div id="shareDropdown" class="dropdown-content govuk-!-padding-0" [ngClass]="{ 'show': showEvidenceContextMenu }">
                     <div id="shareDropdown-startEvidenceSharing" *ngIf="enableDynamicEvidenceSharing && canShowDynamicEvidenceShareButton"
@@ -198,21 +218,21 @@
                         disableChildTooltip
                         appTooltip
                         [text]="'private-consultation-room-controls.share-video-evidence' | translate" colour="grey">
-                        <span class="action"><i class="fad fa-play-circle" aria-hidden="true"></i>
+                        <span class="action"><fa-icon [icon]="['far', 'play-circle']" aria-hidden="true"></fa-icon>
                             <span style="margin-left:4px;">{{ 'private-consultation-room-controls.share-video-evidence' | translate }}</span>
                         </span>
                     </div>
                     <div id="shareDropdown-unsupportedEvidenceSharing" *ngIf="enableDynamicEvidenceSharing && !canShowDynamicEvidenceShareButton"
                         appTooltip
                         [text]="'private-consultation-room-controls.unsupported-dynamic-evidence' | translate" colour="red">
-                        <p class="unsupported-sharing govuk-!-padding-2 govuk-!-margin-bottom-0"><i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+                        <p class="unsupported-sharing govuk-!-padding-2 govuk-!-margin-bottom-0"><fa-icon icon="exclamation-circle" aria-hidden="true"></fa-icon>
                             <span style="margin-left:4px;">{{ 'private-consultation-room-controls.unsupported-dynamic-evidence' | translate }}</span>
                         </p>
                     </div>
                     <div id="shareDropdown-startDocumentSharing" (click)="startScreenShare()"
                         appTooltip
                         [text]="'private-consultation-room-controls.share-document-evidence' | translate" colour="grey">
-                        <span class="action"><i class="fad fa-file-alt" aria-hidden="true"></i>
+                        <span class="action"><fa-icon icon='file-alt'></fa-icon>
                             <span style="margin-left:4px;">{{ 'private-consultation-room-controls.share-document-evidence' | translate }}</span>
                         </span>
                     </div>
@@ -223,7 +243,7 @@
             <div *ngIf="screenShareStream || sharingDynamicEvidence" class="icon-button" id="stop-screenshare-img-desktop" appTooltip
                 [text]="'private-consultation-room-controls.stop-sharing-my-screen' | translate" colour="red"
                 (click)="stopScreenShare()">
-                <span class="fak fa-stop-screen-share"></span>
+                <fa-icon icon='share-square' class="yellow" rotate="180"></fa-icon>
             </div>
 
             <div class="flexBar"></div>
@@ -231,7 +251,7 @@
             <div class="icon-button" id="toggle-media-device-img-desktop" appTooltip
                 [text]="'private-consultation-room-controls.change-camera-mic' | translate" colour="grey"
                 (click)="changeDeviceSelected()">
-                <span class="far fa-sliders-h"></span>
+                <fa-icon icon="sliders-h"></fa-icon>
             </div>
 
             <div class="icon-button" id="toggle-self-view-img-desktop" appTooltip *ngIf="!audioOnly" [text]="
@@ -239,7 +259,7 @@
             ? 'private-consultation-room-controls.selfview-toggle-true'
             : 'private-consultation-room-controls.selfview-toggle-false') | translate" colour="grey"
                 (click)="toggleView()">
-                <span class="far" [class]="selfViewOpen ? 'fa-eye' : 'fa-eye-slash'"></span>
+                <fa-icon [icon]="selfViewOpen ? ['far', 'eye'] : ['far', 'eye-slash']"></fa-icon>
             </div>
 
             <div class="icon-button" id="toggle-video-mute-img-desktop" appTooltip *ngIf="!isJudge && !audioOnly"
@@ -248,7 +268,7 @@
             ? 'private-consultation-room-controls.video-mute-toggle-true'
             : 'private-consultation-room-controls.video-mute-toggle-false') | translate" colour="grey"
                 (click)="toggleVideoMute()">
-                <span class="far" [class]="videoMuted ? 'fa-video-slash' : 'fa-video'"></span>
+                <fa-icon [icon]="videoMuted ? 'video-slash' : 'video'"></fa-icon>
             </div>
 
             <div class="icon-button" id="toggle-audio-mute-img-desktop" appTooltip *ngIf="!remoteMuted || isHost"
@@ -257,12 +277,12 @@
             ? 'private-consultation-room-controls.audio-mute-toggle-true'
             : 'private-consultation-room-controls.audio-mute-toggle-false') | translate" colour="grey"
                 (click)="toggleMute()">
-                <span class="far" [class]="audioMuted ? 'fa-microphone-slash' : 'fa-microphone'"></span>
+                <fa-icon [icon]="audioMuted ? 'microphone-slash' : 'microphone'"></fa-icon>
             </div>
 
             <div class="icon-button" id="toggle-audio-mute-locked-img-desktop" appTooltip *ngIf="remoteMuted && !isHost"
                 [text]="'private-consultation-room-controls.remote-muted' | translate" colour="grey">
-                <span class="far fa-microphone-slash red"></span>
+                <fa-icon icon="microphone-slash" class="red"></fa-icon>
             </div>
 
             <div class="icon-button" id="toggle-hand-raised-img-desktop" appTooltip
@@ -271,7 +291,7 @@
             ? 'private-consultation-room-controls.hand-raise-toggle-true'
             : 'private-consultation-room-controls.hand-raise-toggle-false') | translate" colour="grey"
                 (click)="toggleHandRaised()">
-                <span class="far fa-hand-paper" [class]="{ yellow: handRaised }"></span>
+                <fa-icon [icon]="['far', 'hand-paper']" [class]="{ yellow: handRaised }"></fa-icon>
             </div>
 
             <ng-container *ngIf='canShowLeaveButton'>
@@ -280,7 +300,7 @@
                 <div id='leave-hearing-desktop' class="icon-button" appTooltip colour='grey'
                     [text]="'private-consultation-room-controls.leave-hearing' | translate"
                     (click)="displayLeaveHearingPopup = !displayLeaveHearingPopup">
-                    <span class='fad fa-sign-out-alt fa-flip-horizontal leave-hearing-button'></span>
+                    <fa-icon icon="sign-out-alt" flip="horizontal" class='leave-hearing-button'></fa-icon>
                 </div>
 
                 <div class="flexBar"></div>

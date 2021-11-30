@@ -1,16 +1,18 @@
 <div *ngIf="isNetworkPoor">
-  <span 
+  <fa-icon 
     appTooltip
     [text]="'participant-alert.network-connection-is-poor' | translate"
     colour="yellow"
-    class="far fa-exclamation-triangle yellow panel-icon">
-  </span>
+    class="yellow panel-icon"
+    icon="exclamation-triangle">
+  </fa-icon>
 </div>
 <div *ngIf="isDisconnected">
-  <span 
+  <fa-icon 
     appTooltip
     [text]="'participant-alert.disconnected' | translate"
     colour="red"
-    class="far fa-exclamation-circle red panel-icon no-click">
-  </span>
+    icon="exclamation-circle"
+    class="red panel-icon no-click">
+  </fa-icon>
 </div>
