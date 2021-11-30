@@ -20,15 +20,17 @@
                 </div>
                 <div class='icon-button-dark' id='start-screenshare-img'
                     *ngIf='!screenShareStream && canShowScreenShareButton' colour='grey' (click)='startScreenShare()'>
-                    <span class='fak fa-start-screen-share'><span
-                            class='context-item'>{{'private-consultation-room-controls.share-my-screen' |
-                            translate}}</span></span>
+                    <fa-icon icon='share-square'></fa-icon>
+                    <span class='context-item'>
+                        {{'private-consultation-room-controls.share-my-screen' | translate}}
+                    </span>
                 </div>
                 <div *ngIf='screenShareStream || sharingDynamicEvidence' class='icon-button-dark' id='stop-screenshare-img' colour='red'
                     (click)='stopScreenShare()'>
-                    <span class='fak fa-stop-screen-share'><span
-                            class='context-item'>{{'private-consultation-room-controls.stop-sharing-my-screen' |
-                            translate}}</span></span>
+                    <fa-icon icon='share-square' class="yellow"></fa-icon>
+                    <span class='context-item'>
+                        {{'private-consultation-room-controls.stop-sharing-my-screen' | translate}}
+                    </span>
                 </div>
                 <div class='icon-button-dark' id='toggle-media-device-img' colour='grey'
                     (click)='changeDeviceSelected()'>
@@ -208,7 +210,7 @@
                 *ngIf="!screenShareStream && canShowScreenShareButton" appTooltip
                 [text]="'private-consultation-room-controls.share-my-screen' | translate" colour="grey"
                 (click)="showEvidenceContextMenu = !showEvidenceContextMenu">
-                <span class="fak fa-start-screen-share"></span>
+                <fa-icon icon='share-square'></fa-icon>
 
                 <div id="shareDropdown" class="dropdown-content govuk-!-padding-0" [ngClass]="{ 'show': showEvidenceContextMenu }">
                     <div id="shareDropdown-startEvidenceSharing" *ngIf="enableDynamicEvidenceSharing && canShowDynamicEvidenceShareButton"
@@ -230,7 +232,7 @@
                     <div id="shareDropdown-startDocumentSharing" (click)="startScreenShare()"
                         appTooltip
                         [text]="'private-consultation-room-controls.share-document-evidence' | translate" colour="grey">
-                        <span class="action"><i class="fad fa-file-alt" aria-hidden="true"></i>
+                        <span class="action"><fa-icon icon='file-alt'></fa-icon>
                             <span style="margin-left:4px;">{{ 'private-consultation-room-controls.share-document-evidence' | translate }}</span>
                         </span>
                     </div>
@@ -241,7 +243,7 @@
             <div *ngIf="screenShareStream || sharingDynamicEvidence" class="icon-button" id="stop-screenshare-img-desktop" appTooltip
                 [text]="'private-consultation-room-controls.stop-sharing-my-screen' | translate" colour="red"
                 (click)="stopScreenShare()">
-                <span class="fak fa-stop-screen-share"></span>
+                <fa-icon icon='share-square' class="yellow"></fa-icon>
             </div>
 
             <div class="flexBar"></div>
