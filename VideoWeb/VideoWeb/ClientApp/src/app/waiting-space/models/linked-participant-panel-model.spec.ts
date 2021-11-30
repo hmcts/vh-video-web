@@ -6,7 +6,7 @@ import { LinkedParticipantPanelModel } from './linked-participant-panel-model';
 import { ParticipantPanelModel } from './participant-panel-model';
 import { ParticipantPanelModelMapper } from '../../shared/mappers/participant-panel-model-mapper';
 
-fdescribe('LinkedParticipantPanelModel', () => {
+describe('LinkedParticipantPanelModel', () => {
     let model: LinkedParticipantPanelModel;
     let participants: ParticipantForUserResponse[];
     let johs: ParticipantForUserResponse[];
