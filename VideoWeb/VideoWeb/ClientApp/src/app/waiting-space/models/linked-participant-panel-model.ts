@@ -46,7 +46,11 @@ export class LinkedParticipantPanelModel extends PanelModel {
     }
 
     get isCallableAndReadyToJoin(): boolean {
-        return this.participants.every(p => p.isCallableAndReadyToJoin);
+        if (this.isWitness) {
+            return this.isAvailable();
+        } else {
+            return this.participants.every(p => p.isCallableAndReadyToJoin);
+        }
     }
 
     get isCallableAndReadyToBeDismissed(): boolean {
@@ -77,7 +81,11 @@ export class LinkedParticipantPanelModel extends PanelModel {
     }
 
     isAvailable(): boolean {
-        return this.participants.some(p => p.isAvailable());
+        if (this.isWitness) {
+            return this.participants.every(p => p.isAvailable());
+        } else {
+            return this.participants.some(p => p.isAvailable());
+        }
     }
 
     isInConsultation(): boolean {
