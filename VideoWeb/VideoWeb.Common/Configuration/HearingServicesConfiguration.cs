@@ -19,5 +19,6 @@ namespace VideoWeb.Common.Configuration
         public bool EnableIOSTabletSupport { get; set; }
         public bool EnableDynamicEvidenceSharing { get; set; }
         public int BlurRadius { get; set; }
+        public string WowzaRecorderPexipDisplayName { get; set; }
     }
 }

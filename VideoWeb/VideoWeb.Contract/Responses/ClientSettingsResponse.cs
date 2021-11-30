@@ -74,5 +74,10 @@ namespace VideoWeb.Contract.Responses
         /// Blur radius in pixels
         /// </summary>
         public int BlurRadius { get; set; }
+
+        /// <summary>
+        /// The pexip display name that kinly give to the recorder
+        /// </summary>
+        public string WowzaRecorderPexipDisplayName { get; set; }
     }
 }

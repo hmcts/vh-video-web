@@ -44,6 +44,8 @@ export class VideoCallService {
     private onErrorSubject = new Subject<CallError>();
     private onCallTransferSubject = new Subject<any>();
     private onParticipantUpdatedSubject = new Subject<ParticipantUpdated>();
+    private onParticipantCreatedSubject = new Subject<ParticipantUpdated>();
+    private onParticipantDeletedSubject = new Subject<Guid>();
     private onConferenceUpdatedSubject = new Subject<ConferenceUpdated>();
 
     private onConnectedScreenshareSubject = new Subject<ConnectedScreenshare>();
@@ -58,6 +60,7 @@ export class VideoCallService {
     private hasDisconnected$ = new Subject();
     private renegotiating = false;
     private justRenegotiated = false;
+    private readonly pexipParticipantEventType = 'PexipParticipantUpdate';
 
     pexipAPI: PexipClient;
     streamModifiedSubscription: Subscription;
@@ -109,7 +112,11 @@ export class VideoCallService {
         // https://docs.pexip.com/api_client/api_pexrtc.htm#disconnect
         this.pexipAPI.onDisconnect = this.handleServerDisconnect.bind(this);
 
+        this.pexipAPI.onParticipantCreate = this.handleParticipantCreate.bind(this);
+
         this.pexipAPI.onParticipantUpdate = this.handleParticipantUpdate.bind(this);
+
+        this.pexipAPI.onParticipantDelete = this.handleParticipantDelete.bind(this);
 
         this.pexipAPI.onConferenceUpdate = function (conferenceUpdate) {
             self.onConferenceUpdatedSubject.next(new ConferenceUpdated(conferenceUpdate.guests_muted));
@@ -195,9 +202,35 @@ export class VideoCallService {
         this.onConnectedSubject.next(new ConnectedCall(stream));
     }
 
+    private handleParticipantCreate(participantUpdate: PexipParticipant) {
+        this.logger.event('ParticipantCreate', {
+            pexipParticipantId: participantUpdate.uuid,
+            event: participantUpdate,
+            type: this.pexipParticipantEventType
+        });
+
+        this.onParticipantCreatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
+    }
+
     private handleParticipantUpdate(participantUpdate: PexipParticipant) {
+        this.logger.event('ParticipantUpdate', {
+            pexipParticipantId: participantUpdate.uuid,
+            event: participantUpdate,
+            type: this.pexipParticipantEventType
+        });
+
         this.videoCallEventsService.handleParticipantUpdated(ParticipantUpdated.fromPexipParticipant(participantUpdate));
         this.onParticipantUpdatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
+    }
+
+    private handleParticipantDelete(participantDeleted: PexipParticipantDeleted) {
+        this.logger.event('ParticipantDelete', {
+            pexipParticipantId: participantDeleted.uuid,
+            event: participantDeleted,
+            type: this.pexipParticipantEventType
+        });
+
+        this.onParticipantDeletedSubject.next(Guid.parse(participantDeleted.uuid));
     }
 
     private handleError(error: string) {
@@ -264,8 +297,16 @@ export class VideoCallService {
         return this.onErrorSubject.asObservable();
     }
 
+    onParticipantCreated(): Observable<ParticipantUpdated> {
+        return this.onParticipantCreatedSubject.asObservable();
+    }
+
     onParticipantUpdated(): Observable<ParticipantUpdated> {
         return this.onParticipantUpdatedSubject.asObservable();
+    }
+
+    onParticipantDeleted(): Observable<Guid> {
+        return this.onParticipantDeletedSubject.asObservable();
     }
 
     onConferenceUpdated(): Observable<ConferenceUpdated> {

@@ -52,6 +52,7 @@ import { UnloadDetectorService } from 'src/app/services/unload-detector.service'
 import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
 import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
+import { AudioRecordingStatusServiceService } from 'src/app/services/conference/audio-recording-status-service.service';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     const participantOneId = Guid.create().toString();
@@ -143,7 +144,9 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     let shouldUnloadSubject: Subject<void>;
     let shouldReloadSubject: Subject<void>;
     let hearingLayoutServiceSpy: jasmine.SpyObj<HearingLayoutService>;
+    let audioRecordingStatusServiceSpy: jasmine.SpyObj<AudioRecordingStatusServiceService>;
     let participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
+    let isRecorderInCallSubject: Subject<boolean>;
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -219,6 +222,11 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
+        audioRecordingStatusServiceSpy = jasmine.createSpyObj<AudioRecordingStatusServiceService>([], ['isRecorderInCall$']);
+        isRecorderInCallSubject = new Subject<boolean>();
+
+        getSpiedPropertyGetter(audioRecordingStatusServiceSpy, 'isRecorderInCall$').and.returnValue(isRecorderInCallSubject.asObservable());
+
         component = new JudgeWaitingRoomComponent(
             activatedRoute,
             videoWebService,
@@ -244,7 +252,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             unloadDetectorServiceSpy,
             hearingLayoutServiceSpy,
             participantRemoteMuteStoreServiceSpy,
-            mockedHearingVenueFlagsService
+            mockedHearingVenueFlagsService,
+            audioRecordingStatusServiceSpy
         );
 
         consultationInvitiationService.getInvitation.and.returnValue(consultationInvitiation);

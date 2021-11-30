@@ -8,6 +8,7 @@ import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
+import { AudioRecordingStatusServiceService } from 'src/app/services/conference/audio-recording-status-service.service';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
 import { VirtualMeetingRoomModel } from 'src/app/services/conference/models/virtual-meeting-room.model';
@@ -90,7 +91,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         private unloadDetectorService: UnloadDetectorService,
         private hearingLayoutService: HearingLayoutService,
         protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
-        protected hearingVenueFlagsService: HearingVenueFlagsService
+        protected hearingVenueFlagsService: HearingVenueFlagsService,
+        private audioRecordingStatusService: AudioRecordingStatusServiceService
     ) {
         super(
             route,
@@ -117,6 +119,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     ngOnInit() {
         this.init();
+
+        this.audioRecordingStatusService.isRecorderInCall$.subscribe();
     }
 
     private init() {

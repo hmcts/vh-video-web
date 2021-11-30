@@ -34,7 +34,8 @@ namespace VideoWeb.Mappings
                 EnableIOSMobileSupport = servicesConfiguration.EnableIOSMobileSupport,
                 EnableIOSTabletSupport = servicesConfiguration.EnableIOSTabletSupport,
                 EnableDynamicEvidenceSharing = servicesConfiguration.EnableDynamicEvidenceSharing,
-                BlurRadius = servicesConfiguration.BlurRadius
+                BlurRadius = servicesConfiguration.BlurRadius,
+                WowzaRecorderPexipDisplayName = servicesConfiguration.WowzaRecorderPexipDisplayName
             };
         }
 
