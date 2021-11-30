@@ -128,7 +128,6 @@ describe('ParticipantsPanelComponent', () => {
                 ParticipantsPanelComponent,
                 MockComponent(JudgeContextMenuComponent),
                 MockComponent(ParticipantAlertComponent),
-                // MockComponent(FaIconComponent),
                 MockDirective(TooltipDirective),
                 MockPipe(TranslatePipe, translateSpy),
                 MockPipe(HyphenatePipe, hyphenateSpy),

@@ -105,7 +105,7 @@
                 <div *ngIf='!isPrivateConsultation && isHost' id='leave-hearing'
                     class='icon-button-dark hide-for-medium' data-module='govuk-button'
                     (click)='displayLeaveHearingPopup = true'>
-                    <fa-icon class="flip-horizontal" icon='sign-out-alt'></fa-icon><span class='context-item'>{{
+                    <fa-icon icon='sign-out-alt' flip="horizontal"></fa-icon><span class='context-item'>{{
                         'private-consultation-room-controls.leave-hearing' | translate }}</span>
                 </div>
                 <div *ngIf='!isPrivateConsultation && isHost' id='pause-hearing'
@@ -167,7 +167,7 @@
                 <div class='icon-button' id='leave-hearing-landscape' appTooltip colour='grey'
                     [text]="'private-consultation-room-controls.leave-hearing' | translate"
                     (click)="displayLeaveHearingPopup = !displayLeaveHearingPopup">
-                    <fa-icon icon="sign-out-alt" class='fa-flip-horizontal leave-hearing-button'></fa-icon>
+                    <fa-icon icon="sign-out-alt" flip="horizontal" class='leave-hearing-button'></fa-icon>
                 </div>
 
                 <div class="flexBar"></div>
@@ -300,7 +300,7 @@
                 <div id='leave-hearing-desktop' class="icon-button" appTooltip colour='grey'
                     [text]="'private-consultation-room-controls.leave-hearing' | translate"
                     (click)="displayLeaveHearingPopup = !displayLeaveHearingPopup">
-                    <fa-icon icon="sign-out-alt" class='fa-flip-horizontal leave-hearing-button'></fa-icon>
+                    <fa-icon icon="sign-out-alt" flip="horizontal" class='leave-hearing-button'></fa-icon>
                 </div>
 
                 <div class="flexBar"></div>
