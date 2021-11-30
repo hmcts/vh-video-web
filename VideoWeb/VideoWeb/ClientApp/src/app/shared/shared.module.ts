@@ -60,6 +60,7 @@ import {
     faCheck,
     faChevronDown,
     faChevronUp,
+    faComment as faCommentSolid,
     faEllipsisH,
     faExclamationCircle,
     faExclamationTriangle,
@@ -78,19 +79,20 @@ import {
     faSlidersH,
     faThumbtack,
     faTv,
-    faUsers,
+    faUser as faUserSolid,
     faVideo,
     faVideoSlash
 } from '@fortawesome/free-solid-svg-icons';
 import {
     faAddressCard,
-    faComment,
+    faComment as faCommentRegular,
     faEye,
     faEyeSlash,
     faHandPaper,
     faPauseCircle,
     faPlayCircle,
-    faStopCircle
+    faStopCircle,
+    faUser as faUserRegular
 } from '@fortawesome/free-regular-svg-icons';
 
 export function getSettings(configService: ConfigService) {
@@ -219,7 +221,8 @@ export class SharedModule {
             faCheck,
             faChevronDown,
             faChevronUp,
-            faComment,
+            faCommentRegular,
+            faCommentSolid,
             faEllipsisH,
             faExclamationCircle,
             faExclamationTriangle,
@@ -244,7 +247,8 @@ export class SharedModule {
             faStopCircle,
             faThumbtack,
             faTv,
-            faUsers,
+            faUserRegular,
+            faUserSolid,
             faVideo,
             faVideoSlash
         );
