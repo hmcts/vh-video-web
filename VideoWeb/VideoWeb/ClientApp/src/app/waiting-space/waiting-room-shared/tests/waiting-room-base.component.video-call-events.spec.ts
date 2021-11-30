@@ -179,35 +179,6 @@ describe('WaitingRoomComponent Video Call', () => {
         expect(component.outgoingStream).toBeDefined();
     });
 
-    it('should define incoming stream when video call has connected', () => {
-        const mockedDocElement = document.createElement('div');
-        document.getElementById = jasmine.createSpy('incomingFeed').and.returnValue(mockedDocElement);
-
-        spyOn(component, 'assignStream');
-        const incomingStream = <any>{};
-        const payload = new ConnectedCall(incomingStream);
-
-        onConnectedSubject.next(payload);
-
-        expect(component.callStream).toBeDefined();
-        expect(component.errorCount).toBe(0);
-        expect(component.connected).toBeTruthy();
-        expect(component.assignStream).toHaveBeenCalled();
-    });
-
-    it('should not define incoming stream when video call has connected but not stream if given', () => {
-        spyOn(component, 'assignStream');
-        const incomingStream = null;
-        const payload = new ConnectedCall(incomingStream);
-
-        onConnectedSubject.next(payload);
-
-        expect(component.callStream).toBeDefined();
-        expect(component.errorCount).toBe(0);
-        expect(component.connected).toBeTruthy();
-        expect(component.assignStream).toHaveBeenCalledTimes(0);
-    });
-
     it('should toggle video mute when call connects as a full video but camera is still muted', fakeAsync(() => {
         // arrange
         component.audioOnly = false;

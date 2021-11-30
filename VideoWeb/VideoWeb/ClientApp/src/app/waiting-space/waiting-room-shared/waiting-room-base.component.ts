@@ -821,14 +821,6 @@ export abstract class WaitingRoomBaseDirective {
         this.showVideo = false;
     }
 
-    assignStream(videoElement, stream) {
-        if (typeof MediaStream !== 'undefined' && stream instanceof MediaStream) {
-            videoElement.srcObject = stream;
-        } else {
-            videoElement.src = stream;
-        }
-    }
-
     handleCallSetup(callSetup: CallSetup) {
         const logPayload = {
             conference: this.conferenceId,
