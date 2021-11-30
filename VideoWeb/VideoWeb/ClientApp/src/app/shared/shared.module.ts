@@ -78,6 +78,7 @@ import {
     faSlidersH,
     faThumbtack,
     faTv,
+    faUsers,
     faVideo,
     faVideoSlash
 } from '@fortawesome/free-solid-svg-icons';
@@ -243,6 +244,7 @@ export class SharedModule {
             faStopCircle,
             faThumbtack,
             faTv,
+            faUsers,
             faVideo,
             faVideoSlash
         );
