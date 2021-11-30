@@ -6,7 +6,7 @@ import { LinkedParticipantPanelModel } from './linked-participant-panel-model';
 import { ParticipantPanelModel } from './participant-panel-model';
 import { ParticipantPanelModelMapper } from '../../shared/mappers/participant-panel-model-mapper';
 
-describe('LinkedParticipantPanelModel', () => {
+fdescribe('LinkedParticipantPanelModel', () => {
     let model: LinkedParticipantPanelModel;
     let participants: ParticipantForUserResponse[];
     let johs: ParticipantForUserResponse[];
@@ -124,17 +124,25 @@ describe('LinkedParticipantPanelModel', () => {
         expect(model.isAvailable()).toBeFalsy();
     });
 
-    it('should return isAvailable: false when only one participant is available', () => {
+    it('should return isAvailable: false when a participant is in hearing', () => {
         participants[0].status = ParticipantStatus.Available;
-        participants[1].status = ParticipantStatus.NotSignedIn;
+        participants[0].hearing_role = HearingRole.WITNESS;
         createLinkedModel();
-        expect(model.isAvailable()).toBeFalse();
+        expect(model.isAvailable()).toBeFalsy();
     });
 
-    it('should return isAvailable: true when all participants are available', () => {
+    it('should return isAvailable: false when a participant is in hearing', () => {
         participants[0].status = ParticipantStatus.Available;
         participants[1].status = ParticipantStatus.Available;
+        participants[0].hearing_role = HearingRole.WITNESS;
         createLinkedModel();
+        expect(model.isAvailable()).toBeTrue();
+    });
+
+    it('should return isAvailable: true when participants is available', () => {
+        participants[0].status = ParticipantStatus.Available;
+        createLinkedModel();
+        1;
         expect(model.isAvailable()).toBeTrue();
     });
 

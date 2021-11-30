@@ -23,7 +23,7 @@ export class ParticipantPanelModel extends IndividualPanelModel {
         return this.isCallable && this.isInHearing();
     }
     get isCallable(): boolean {
-        return this.isWitness || this.isQuickLinkUser || this.isInterpreter;
+        return this.isWitness || this.isQuickLinkUser;
     }
 
     isInHearing(): boolean {
