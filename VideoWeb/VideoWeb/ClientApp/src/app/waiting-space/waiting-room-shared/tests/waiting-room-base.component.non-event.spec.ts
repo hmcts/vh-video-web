@@ -621,6 +621,23 @@ describe('WaitingRoomComponent message and clock', () => {
     it('should mute video stream when participant is not in hearing', () => {
         component.countdownComplete = false;
         component.participant.status = ParticipantStatus.Available;
+        spyOnProperty(component.hearing, 'status', 'get').and.returnValue(ConferenceStatus.Suspended);
+
+        expect(component.shouldMuteHearing()).toBe(true);
+    });
+
+    it('should mute video stream when participant is in hearing but the hearing status is not in session', () => {
+        component.countdownComplete = false;
+        component.participant.status = ParticipantStatus.InHearing;
+        spyOnProperty(component.hearing, 'status', 'get').and.returnValue(ConferenceStatus.Suspended);
+
+        expect(component.shouldMuteHearing()).toBe(true);
+    });
+
+    it('should mute video stream when participant is not in hearing', () => {
+        component.countdownComplete = false;
+        component.participant.status = ParticipantStatus.Available;
+        spyOnProperty(component.hearing, 'status', 'get').and.returnValue(ConferenceStatus.Suspended);
 
         expect(component.shouldMuteHearing()).toBe(true);
     });
@@ -628,6 +645,7 @@ describe('WaitingRoomComponent message and clock', () => {
     it('should mute video stream when participant is in hearing and countdown is not complete', () => {
         component.countdownComplete = false;
         component.participant.status = ParticipantStatus.InHearing;
+        spyOnProperty(component.hearing, 'status', 'get').and.returnValue(ConferenceStatus.InSession);
 
         expect(component.shouldMuteHearing()).toBe(true);
     });
@@ -635,6 +653,7 @@ describe('WaitingRoomComponent message and clock', () => {
     it('should not mute video stream when participant is in hearing and countdown is complete', () => {
         component.countdownComplete = true;
         component.participant.status = ParticipantStatus.InHearing;
+        spyOnProperty(component.hearing, 'status', 'get').and.returnValue(ConferenceStatus.InSession);
 
         expect(component.shouldMuteHearing()).toBe(false);
     });

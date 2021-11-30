@@ -75,7 +75,7 @@ export abstract class WaitingRoomBaseDirective {
     clockSubscription$: Subscription = new Subscription();
     currentTime: Date;
 
-    stream: MediaStream | URL;
+    callStream: MediaStream | URL;
     connected: boolean;
     outgoingStream: MediaStream | URL;
     presentationStream: MediaStream | URL;
@@ -815,18 +815,10 @@ export abstract class WaitingRoomBaseDirective {
         if (this.connected) {
             this.videoCallService.disconnectFromCall();
         }
-        this.stream = null;
+        this.callStream = null;
         this.outgoingStream = null;
         this.connected = false;
         this.showVideo = false;
-    }
-
-    assignStream(videoElement, stream) {
-        if (typeof MediaStream !== 'undefined' && stream instanceof MediaStream) {
-            videoElement.srcObject = stream;
-        } else {
-            videoElement.src = stream;
-        }
     }
 
     handleCallSetup(callSetup: CallSetup) {
@@ -844,13 +836,10 @@ export abstract class WaitingRoomBaseDirective {
         this.errorCount = 0;
         this.connected = true;
         this.logger.debug(`${this.loggerPrefix} Successfully connected to hearing`, { conference: this.conferenceId });
-        this.stream = callConnected.stream;
-        const incomingFeedElement = document.getElementById('incomingFeed') as any;
-        if (this.stream) {
+        this.callStream = callConnected.stream;
+
+        if (this.callStream) {
             this.updateShowVideo();
-            if (incomingFeedElement) {
-                this.assignStream(incomingFeedElement, callConnected.stream);
-            }
         }
         if (this.hearingControls && !this.audioOnly && this.hearingControls.videoMuted) {
             await this.hearingControls.toggleVideoMute();
@@ -882,7 +871,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     handleCallTransfer(): void {
-        this.stream = null;
+        this.callStream = null;
     }
 
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
@@ -896,7 +885,6 @@ export abstract class WaitingRoomBaseDirective {
         this.hearing.getConference().status = message.status;
         this.conference.status = message.status;
         if (message.status === ConferenceStatus.InSession) {
-            this.countdownComplete = false;
             if (this.isHost() && this.participant.status === ParticipantStatus.InConsultation) {
                 this.notificationToastrService.showHearingStarted(this.conference.id, this.participant.id);
             }
@@ -905,12 +893,21 @@ export abstract class WaitingRoomBaseDirective {
         if (message.status === ConferenceStatus.Closed) {
             this.getConferenceClosedTime(this.hearing.id);
         }
+
+        // Countdown only starts when hearing status becomes "In Session". The countdown cannot be considered complete
+        // when the hearing status changes to any other as there is no countdown. So it should always reset to false on
+        // status changes
+        this.countdownComplete = false;
         this.presentationStream = null;
         this.videoCallService.stopScreenShare();
     }
 
     shouldMuteHearing(): boolean {
-        return !(this.countdownComplete && this.participant.status === ParticipantStatus.InHearing);
+        return !(
+            this.countdownComplete &&
+            this.participant.status === ParticipantStatus.InHearing &&
+            this.hearing.status === ConferenceStatus.InSession
+        );
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): void {

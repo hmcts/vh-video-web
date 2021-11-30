@@ -1,14 +1,14 @@
-import { Directive, ElementRef, OnInit, Renderer2, RendererFactory2 } from '@angular/core';
+import { Directive, ElementRef, OnDestroy, OnInit, Renderer2, RendererFactory2 } from '@angular/core';
 import { Logger } from '../services/logging/logger-base';
 
 @Directive({
     selector: '[appForcePlayVideo]'
 })
-export class ForcePlayVideoDirective implements OnInit {
+export class ForcePlayVideoDirective implements OnInit, OnDestroy {
     private readonly loggerPrefix = '[ForcePlayVideoDirective] -';
     private renderer: Renderer2;
-    private unsubscribeFromMouseDownCallback: () => void;
-    private unsubscribeFromTouchStartCallback: () => void;
+    private unsubscribeFromMouseDownCallback: () => void | null = null;
+    private unsubscribeFromTouchStartCallback: () => void | null = null;
 
     public get videoElement(): HTMLVideoElement {
         return this.elementRef.nativeElement as HTMLVideoElement;
@@ -44,7 +44,28 @@ export class ForcePlayVideoDirective implements OnInit {
     private onMouseDownOrTouchStart() {
         this.logger.info(`${this.loggerPrefix} - onMouseDownOrTouchStart - playing video.`);
         this.videoElement.play();
+
+        this.logger.info(`${this.loggerPrefix} - onMouseDownOrTouchStart - unsubscribing from mouse down callback.`);
         this.unsubscribeFromMouseDownCallback();
+        this.unsubscribeFromMouseDownCallback = null;
+
+        this.logger.info(`${this.loggerPrefix} - onMouseDownOrTouchStart - unsubscribing from touch start callback.`);
         this.unsubscribeFromTouchStartCallback();
+        this.unsubscribeFromTouchStartCallback = null;
+    }
+
+    ngOnDestroy(): void {
+        this.logger.info(`${this.loggerPrefix} - ngOnDestroy - unsubscribing from remaining listeners.`);
+        if (this.unsubscribeFromMouseDownCallback) {
+            this.logger.info(`${this.loggerPrefix} - ngOnDestroy - unsubscribing from mouse down callback.`);
+            this.unsubscribeFromMouseDownCallback();
+            this.unsubscribeFromMouseDownCallback = null;
+        }
+
+        if (this.unsubscribeFromTouchStartCallback) {
+            this.logger.info(`${this.loggerPrefix} - ngOnDestroy - unsubscribing from touch start callback.`);
+            this.unsubscribeFromTouchStartCallback();
+            this.unsubscribeFromTouchStartCallback = null;
+        }
     }
 }
