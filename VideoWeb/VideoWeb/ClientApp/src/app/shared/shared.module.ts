@@ -60,7 +60,7 @@ import {
     faCheck,
     faChevronDown,
     faChevronUp,
-    faComment as faCommentSolid,
+    faCommentAlt as faCommentAltSolid,
     faEllipsisH,
     faExclamationCircle,
     faExclamationTriangle,
@@ -85,7 +85,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import {
     faAddressCard,
-    faComment as faCommentRegular,
+    faCommentAlt as faCommentAltRegular,
     faEye,
     faEyeSlash,
     faHandPaper,
@@ -221,8 +221,8 @@ export class SharedModule {
             faCheck,
             faChevronDown,
             faChevronUp,
-            faCommentRegular,
-            faCommentSolid,
+            faCommentAltRegular,
+            faCommentAltSolid,
             faEllipsisH,
             faExclamationCircle,
             faExclamationTriangle,
