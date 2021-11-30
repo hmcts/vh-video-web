@@ -585,7 +585,9 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     async handleEventHubDisconnection(reconnectionAttempt: number) {
-        this.disconnect();
+        if (this.participant.role !== Role.Judge || reconnectionAttempt > 1) {
+            this.disconnect();
+        }
 
         const logPayload = {
             conference: this.conferenceId,

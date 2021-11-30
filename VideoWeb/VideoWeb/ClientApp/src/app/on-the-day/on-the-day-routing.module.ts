@@ -38,7 +38,11 @@ export const routes: Routes = [
         canActivate: [StaffMemberGuard],
         data: {
             title: 'Staff Member hearing list',
-            backLink: new BackLinkDetails('back-navigation.navigate-back-to-select-venues', pageUrls.StaffMemberHearingSelection)
+            backLink: new BackLinkDetails(
+                'back-navigation.navigate-back-to-select-venues',
+                pageUrls.StaffMemberHearingSelection,
+                'backlink-margin-left'
+            )
         }
     },
     {

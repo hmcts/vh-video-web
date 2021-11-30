@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common.Models;
+using VideoWeb.Helpers;
 using VideoWeb.Mappings;
 
 namespace VideoWeb.UnitTests.Mappings
@@ -28,7 +29,7 @@ namespace VideoWeb.UnitTests.Mappings
             result.PexipNode.Should().Be(testVmr.PexipNode);
             result.ParticipantJoinUri.Should().Be(testVmr.ParticipantJoinUri);
             result.DisplayName.Should().Be(testVmr.Label);
-            result.TileDisplayName.Should().EndWith($"{participant.DisplayName};{participant.Id}");
+            result.TileDisplayName.Should().Be($"CIVILIAN;{ParticipantTilePositionHelper.NoHeartbeat};{participant.DisplayName};{participant.Id}");
         }
 
         [Test]
@@ -77,8 +78,7 @@ namespace VideoWeb.UnitTests.Mappings
             result.PexipNode.Should().Be(testVmr.PexipNode);
             result.ParticipantJoinUri.Should().Be(testVmr.ParticipantJoinUri);
             result.DisplayName.Should().Be(testVmr.Label);
-            result.TileDisplayName.Should().EndWith($"{participant.DisplayName};{participant.Id}");
-            result.TileDisplayName.Should().StartWith("WITNESS");
+            result.TileDisplayName.Should().Be($"WITNESS;{ParticipantTilePositionHelper.NoHeartbeat};{participant.DisplayName};{participant.Id}");
         }
 
         [Test]
@@ -100,8 +100,7 @@ namespace VideoWeb.UnitTests.Mappings
             result.PexipNode.Should().Be(testVmr.PexipNode);
             result.ParticipantJoinUri.Should().Be(testVmr.ParticipantJoinUri);
             result.DisplayName.Should().Be(testVmr.Label);
-            result.TileDisplayName.Should().EndWith($"{participant.DisplayName};{participant.Id}");
-            result.TileDisplayName.Should().StartWith("CIVILIAN");
+            result.TileDisplayName.Should().Be($"CIVILIAN;{ParticipantTilePositionHelper.NoHeartbeat};{participant.DisplayName};{participant.Id}");
         }
     }
 }
