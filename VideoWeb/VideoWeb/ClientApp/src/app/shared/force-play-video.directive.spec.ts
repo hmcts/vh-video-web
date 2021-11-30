@@ -161,4 +161,43 @@ describe('ForcePlayVideoDirective', () => {
             expect(unsubscribedFromTouchStart).toBeTrue();
         });
     });
+
+    describe('ngOnDestroy', () => {
+        it('should unsubscribe from the event listeners', () => {
+            // Arrange
+            let touchStartCallback: (event: any) => void;
+            let unsubscribedFromMouseDown = false;
+
+            const unsubscribeFromMouseDown = () => {
+                unsubscribedFromMouseDown = true;
+            };
+
+            let unsubscribedFromTouchStart = false;
+            const unsubscribeFromTouchStart = () => {
+                unsubscribedFromTouchStart = true;
+            };
+
+            renderer2Spy.listen.and.callFake((target: any, eventName: string, callback: (event: any) => boolean | void) => {
+                if (eventName === 'mousedown') {
+                    return unsubscribeFromMouseDown;
+                } else if (eventName === 'touchstart') {
+                    touchStartCallback = callback;
+                    return unsubscribeFromTouchStart;
+                }
+
+                return () => {};
+            });
+
+            directive.ngOnInit();
+
+            nativeElementSpy.play.calls.reset();
+
+            // Act
+            directive.ngOnDestroy();
+
+            // Assert
+            expect(unsubscribedFromMouseDown).toBeTrue();
+            expect(unsubscribedFromTouchStart).toBeTrue();
+        });
+    });
 });

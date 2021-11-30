@@ -64,9 +64,8 @@
           <video
             appForcePlayVideo
             id="incomingFeedJudgePrivate"
-            #incomingFeed
             [muted]="shouldMuteHearing()"
-            [srcObject]="presentationStream && !streamInMain ? presentationStream : stream"
+            [srcObject]="presentationStream && !streamInMain ? presentationStream : callStream"
             height="auto"
             class="incomingFeedPrivate"
           >
@@ -82,7 +81,7 @@
           >
             <video
               appForcePlayVideo
-              [srcObject]="presentationStream && !streamInMain ? stream : presentationStream"
+              [srcObject]="presentationStream && !streamInMain ? callStream : presentationStream"
               height="auto"
               poster="/assets/images/empty_crest.jpg"
               class="fill-container"
