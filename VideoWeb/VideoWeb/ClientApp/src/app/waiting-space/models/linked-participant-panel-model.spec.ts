@@ -124,14 +124,14 @@ describe('LinkedParticipantPanelModel', () => {
         expect(model.isAvailable()).toBeFalsy();
     });
 
-    it('should return isAvailable: false when a participant is in hearing', () => {
+    it('should return isAvailable: false when only one participant is available', () => {
         participants[0].status = ParticipantStatus.Available;
         participants[0].hearing_role = HearingRole.WITNESS;
         createLinkedModel();
         expect(model.isAvailable()).toBeFalsy();
     });
 
-    it('should return isAvailable: false when a participant is in hearing', () => {
+    it('should return isAvailable: true when all participants are available', () => {
         participants[0].status = ParticipantStatus.Available;
         participants[1].status = ParticipantStatus.Available;
         participants[0].hearing_role = HearingRole.WITNESS;
@@ -139,11 +139,10 @@ describe('LinkedParticipantPanelModel', () => {
         expect(model.isAvailable()).toBeTrue();
     });
 
-    it('should return isAvailable: true when participants is available', () => {
+    it('should return isAvailable: true when a participant is available', () => {
         participants[0].status = ParticipantStatus.Available;
         createLinkedModel();
-        1;
-        expect(model.isAvailable()).toBeTrue();
+        expect(model.isAvailable()).toBeTruthy();
     });
 
     it('should return isInConsultation: true when a participant is InConsultation', () => {
