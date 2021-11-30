@@ -839,7 +839,6 @@ export abstract class WaitingRoomBaseDirective {
         this.callStream = callConnected.stream;
 
         if (this.callStream) {
-            this.callStream = callConnected.stream;
             this.updateShowVideo();
         }
         if (this.hearingControls && !this.audioOnly && this.hearingControls.videoMuted) {
