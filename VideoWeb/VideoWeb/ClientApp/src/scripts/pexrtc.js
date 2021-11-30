@@ -2560,7 +2560,8 @@ function PexRTC() {
 
     if (
         (self.safari_ver == 0 && (self.chrome_ver >= 56 || navigator.userAgent.indexOf('OS X') != -1)) ||
-        (self.safari_ver > 14 && !self.is_mobile)
+        (self.safari_ver > 14 && !self.is_mobile) ||
+        self.safari_ver == 15.1
     ) {
         // Disable H.264 to work around various issues:
         //   - H.264 hw accelerated decoding fails for some versions
@@ -2910,7 +2911,7 @@ PexRTC.prototype.refreshToken = function () {
                     self.onRoleUpdate(self.role);
                 }
             }
-        } else if (old_token == self.token) {
+        } else if (old_token == self.token && self.state != 'DISCONNECTING') {
             // Only error out if the token hasn't changed under us
             return self.handleError(msg.result || msg.reason);
         }
@@ -4032,6 +4033,11 @@ PexRTC.prototype.disconnect = function (reason, referral) {
     self.onLog('Disconnecting...');
     self.conference_extension = null;
 
+    if (self.token_refresh) {
+        clearInterval(self.token_refresh);
+        self.token_refresh = null;
+    }
+
     if (referral) {
         self.disconnectCall(true);
     } else {
@@ -4044,10 +4050,7 @@ PexRTC.prototype.disconnect = function (reason, referral) {
         self.event_source.close();
         self.event_source = null;
     }
-    if (self.token_refresh) {
-        clearInterval(self.token_refresh);
-        self.token_refresh = null;
-    }
+
     if (self.token) {
         var params = {};
         if (self.error) {
