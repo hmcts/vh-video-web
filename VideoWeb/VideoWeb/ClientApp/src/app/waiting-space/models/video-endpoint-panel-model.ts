@@ -2,11 +2,11 @@ import { EndpointStatus, Role, VideoEndpointResponse } from '../../services/clie
 import { IndividualPanelModel } from './individual-panel-model';
 
 export class VideoEndpointPanelModel extends IndividualPanelModel {
-    public endpointStatus: EndpointStatus;
+    public status: EndpointStatus;
 
     constructor(endpoint: VideoEndpointResponse) {
         super(endpoint.id, endpoint.display_name, Role.Individual, 'Endpoint', endpoint.pexip_display_name, 'Video access point', '');
-        this.endpointStatus = endpoint.status;
+        this.status = endpoint.status;
     }
 
     get isCallableAndReadyToJoin(): boolean {
@@ -21,19 +21,19 @@ export class VideoEndpointPanelModel extends IndividualPanelModel {
     }
 
     isInHearing(): boolean {
-        return this.endpointStatus === EndpointStatus.Connected;
+        return this.status === EndpointStatus.Connected;
     }
 
     isDisconnected(): boolean {
-        return this.endpointStatus === EndpointStatus.Disconnected;
+        return this.status === EndpointStatus.Disconnected;
     }
 
     isAvailable(): boolean {
-        return this.endpointStatus === EndpointStatus.Connected;
+        return this.status === EndpointStatus.Connected;
     }
 
     isInConsultation(): boolean {
-        return this.endpointStatus === EndpointStatus.InConsultation;
+        return this.status === EndpointStatus.InConsultation;
     }
 
     hasParticipant(participantId: string): boolean {
@@ -41,6 +41,6 @@ export class VideoEndpointPanelModel extends IndividualPanelModel {
     }
 
     updateStatus(status: EndpointStatus, participantId?: string) {
-        this.endpointStatus = status;
+        this.status = status;
     }
 }

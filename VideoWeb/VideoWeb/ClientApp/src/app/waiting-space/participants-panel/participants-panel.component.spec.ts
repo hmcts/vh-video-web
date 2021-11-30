@@ -312,7 +312,7 @@ describe('ParticipantsPanelComponent', () => {
 
         const updatedEp = component.participants.find(x => x.id === message.endpointId);
         expect(updatedEp).toBeInstanceOf(VideoEndpointPanelModel);
-        expect((<VideoEndpointPanelModel>updatedEp).endpointStatus).toBe(status);
+        expect((<VideoEndpointPanelModel>updatedEp).status).toBe(status);
     });
 
     it('should not process eventhub endpoint updates not in list', () => {
