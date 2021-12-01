@@ -16,7 +16,6 @@ export class ParticipantItemComponent {
     @Input() canInvite: boolean;
     @Input() status: string;
 
-    constructor() {}
     getRowClasses(participant: any): string {
         if (this.isParticipantInCurrentRoom(participant)) {
             return 'yellow';
