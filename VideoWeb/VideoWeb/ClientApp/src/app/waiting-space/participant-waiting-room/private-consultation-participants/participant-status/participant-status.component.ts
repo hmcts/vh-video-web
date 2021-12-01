@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ConsultationAnswer, EndpointResponse, ParticipantResponse } from 'src/app/services/clients/api-client';
 
 @Component({
@@ -6,15 +6,12 @@ import { ConsultationAnswer, EndpointResponse, ParticipantResponse } from 'src/a
     templateUrl: './participant-status.component.html',
     styleUrls: ['./participant-status.component.scss']
 })
-export class ParticipantStatusComponent implements OnInit {
+export class ParticipantStatusComponent {
     ConsultationAnswer = ConsultationAnswer;
     @Input() entity: ParticipantResponse | EndpointResponse;
     @Input() status: string;
     @Input() roomLabel: string;
     private availableStatuses = ['Available', 'Connected', 'InConsultation'];
-    constructor() {}
-
-    ngOnInit(): void {}
 
     isAvailable(): boolean {
         console.log(this.entity);

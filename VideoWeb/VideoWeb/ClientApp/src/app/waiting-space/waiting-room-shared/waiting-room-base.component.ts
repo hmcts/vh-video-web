@@ -158,6 +158,10 @@ export abstract class WaitingRoomBaseDirective {
         ).length;
     }
 
+    get areParticipantsVisible() {
+        return this.panelStates['Participants'];
+    }
+
     getLoggedParticipant(): ParticipantResponse {
         return this.conference.participants.find(x => x.id === this.loggedInUser.participant_id);
     }
