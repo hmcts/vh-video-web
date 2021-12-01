@@ -17,17 +17,20 @@ describe('AudioRecordingStatusServiceService', () => {
     let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
     let onParticipantCreatedSubject: Subject<ParticipantUpdated>;
     let onParticipantDeletedSubject: Subject<Guid>;
+    let onCallTransferedSubject: Subject<string>;
 
     beforeEach(() => {
         configServiceSpy = jasmine.createSpyObj<ConfigService>(['getClientSettings']);
         getClientSettingsSubject = new Subject<ClientSettingsResponse>();
         configServiceSpy.getClientSettings.and.returnValue(getClientSettingsSubject.asObservable());
 
-        videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>(['onParticipantCreated', 'onParticipantDeleted']);
+        videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>(['onParticipantCreated', 'onParticipantDeleted', 'onCallTransferred']);
         onParticipantCreatedSubject = new Subject<ParticipantUpdated>();
         videoCallServiceSpy.onParticipantCreated.and.returnValue(onParticipantCreatedSubject);
         onParticipantDeletedSubject = new Subject<Guid>();
         videoCallServiceSpy.onParticipantDeleted.and.returnValue(onParticipantDeletedSubject);
+        onCallTransferedSubject = new Subject<string>();
+        videoCallServiceSpy.onCallTransferred.and.returnValue(onCallTransferedSubject);
 
         TestBed.configureTestingModule({
             providers: [
@@ -49,6 +52,7 @@ describe('AudioRecordingStatusServiceService', () => {
         const recorderDisplayName = 'test';
         const onParticipantCreatedSubscribeSpy = spyOn(onParticipantCreatedSubject, 'subscribe');
         const onParticipantDeletedSubscribeSpy = spyOn(onParticipantDeletedSubject, 'subscribe');
+        const onCallTransferedSubscribeSpy = spyOn(onCallTransferedSubject, 'subscribe');
 
         // Act
         getClientSettingsSubject.next({ wowza_recorder_pexip_display_name: recorderDisplayName } as ClientSettingsResponse);
@@ -57,6 +61,25 @@ describe('AudioRecordingStatusServiceService', () => {
         // Assert
         expect(onParticipantCreatedSubscribeSpy).toHaveBeenCalledTimes(1);
         expect(onParticipantDeletedSubscribeSpy).toHaveBeenCalledTimes(1);
+        expect(onCallTransferedSubscribeSpy).toHaveBeenCalledTimes(1);
+    }));
+
+    it('should emit isRecorderInCall$ with false when the call is transferred', fakeAsync(() => {
+        // Arrange
+        const recorderDisplayName = 'test';
+        getClientSettingsSubject.next({ wowza_recorder_pexip_display_name: recorderDisplayName } as ClientSettingsResponse);
+        onParticipantCreatedSubject.next({ pexipDisplayName: recorderDisplayName, uuid: Guid.EMPTY } as ParticipantUpdated);
+        flush();
+
+        // Act
+        let isRecorderInCall: boolean | null = null;
+        service.isRecorderInCall$.pipe(skip(1)).subscribe(value => (isRecorderInCall = value));
+
+        onCallTransferedSubject.next('alias');
+        flush();
+
+        // Assert
+        expect(isRecorderInCall).toBeFalse();
     }));
 
     it('should emit isRecorderInCall$ with true when the recorder participant is created', fakeAsync(() => {
