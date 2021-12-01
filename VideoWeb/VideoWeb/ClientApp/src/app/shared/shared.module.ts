@@ -160,7 +160,8 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         ForcePlayVideoDirective,
         CrestLogoImageSourceDirective,
         StaffMemberVenueListComponent,
-        VhOfficerVenueListComponent
+        VhOfficerVenueListComponent,
+        RoomNameDirective
     ],
     providers: [
         { provide: Logger, useClass: LoggerService },
@@ -211,7 +212,8 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         CrestLogoImageSourceDirective,
         StaffMemberVenueListComponent,
         VhOfficerVenueListComponent,
-        FontAwesomeModule
+        FontAwesomeModule,
+        RoomNameDirective
     ]
 })
 export class SharedModule {

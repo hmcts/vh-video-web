@@ -15,6 +15,7 @@ import { WRParticipantStatusListDirective } from '../waiting-room-shared/wr-part
     styleUrls: ['./individual-participant-status-list.component.scss']
 })
 export class IndividualParticipantStatusListComponent extends WRParticipantStatusListDirective implements OnInit, OnDestroy {
+    ParticipantStatus = ParticipantStatus;
     wingers: ParticipantResponse[];
     hearingVenueIsInScotland$: Observable<boolean>;
 
@@ -62,29 +63,12 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         }
     }
 
-    getParticipantStatus(participant: ParticipantResponse): string {
-        if (
-            (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) ||
-            this.hasUnavailableLinkedParticipants(participant)
-        ) {
-            return this.translateService.instant('individual-participant-status-list.unavailable');
+    getParticipantStatus(participant: ParticipantResponse): ParticipantStatus {
+        if (this.hasUnavailableLinkedParticipants(participant)) {
+            return null;
         }
 
-        if (participant.status === ParticipantStatus.Available) {
-            return this.translateService.instant('individual-participant-status-list.available');
-        }
-
-        if (participant.status === ParticipantStatus.InConsultation && participant.current_room != null) {
-            return (
-                'In ' +
-                this.camelToSpaced(
-                    participant.current_room.label
-                        .replace('ParticipantConsultationRoom', 'MeetingRoom')
-                        .replace('JudgeJOHConsultationRoom', 'JudgeRoom')
-                ).toLowerCase() +
-                (participant.current_room.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
-            );
-        }
+        return participant.status;
     }
 
     isLoggedInParticipant(participant: ParticipantResponse) {
