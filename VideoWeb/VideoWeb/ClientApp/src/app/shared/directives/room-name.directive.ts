@@ -1,20 +1,27 @@
-import { Directive, ElementRef, Input, OnInit, Renderer2 } from '@angular/core';
+import { Directive, ElementRef, Input, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Directive({
     selector: '[appRoomName]'
 })
-export class RoomNameDirective implements OnInit {
+export class RoomNameDirective implements OnInit, OnDestroy {
     @Input() roomLabel: string;
     @Input() shortName = false;
+    private destroyed$ = new Subject();
 
     constructor(private translateService: TranslateService, private element: ElementRef, private renderer2: Renderer2) {}
 
     ngOnInit(): void {
         this.setElement();
-        this.translateService.onLangChange.subscribe(x => {
+        this.translateService.onLangChange.pipe(takeUntil(this.destroyed$)).subscribe(x => {
             this.setElement();
         });
+    }
+
+    ngOnDestroy(): void {
+        this.destroyed$.next();
     }
 
     setElement(): void {
