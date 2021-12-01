@@ -159,10 +159,6 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     get areParticipantsVisible() {
-        console.log(
-            '🚀Faz - ~ file: waiting-room-base.component.ts ~ line 163 ~ WaitingRoomBaseDirective ~ getareParticipantsVisible ~ this.panelStates',
-            this.panelStates
-        );
         return this.panelStates['Participants'];
     }
 
