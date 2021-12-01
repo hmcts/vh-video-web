@@ -40,7 +40,8 @@ declare interface PexipClient {
     onParticipantUpdate: (participantUpdate: PexipParticipant) => void;
     onParticipantDelete: (participantDeleted: PexipParticipantDeleted) => void;
     onConferenceUpdate: (conferenceUpdate: PexipConference) => void;
-    onCallTransfer: (reason: any) => void;
+    // Informs the client that the call has been transferred to a new conference with the given alias.
+    onCallTransfer: (alias: string) => void;
     renegotiate: (sendUpdate: boolean) => void;
 
     /**

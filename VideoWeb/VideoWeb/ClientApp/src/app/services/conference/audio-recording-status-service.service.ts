@@ -17,8 +17,8 @@ export class AudioRecordingStatusServiceService {
 
     private isRecorderInCallSubject = new BehaviorSubject<boolean>(false);
 
-    constructor(private configService: ConfigService, private videoCallService: VideoCallService, private loggerService: LoggerService) {
-        this.configService.getClientSettings().subscribe(settings => this.initialise(settings));
+    constructor(configService: ConfigService, private videoCallService: VideoCallService, private loggerService: LoggerService) {
+        configService.getClientSettings().subscribe(settings => this.initialise(settings));
     }
 
     get isRecorderInCall$(): Observable<boolean> {
@@ -33,12 +33,20 @@ export class AudioRecordingStatusServiceService {
 
         this.videoCallService.onParticipantCreated().subscribe(participant => this.handleParticipantCreated(participant));
         this.videoCallService.onParticipantDeleted().subscribe(pexipParticipantId => this.handleParticipantDeleted(pexipParticipantId));
+        this.videoCallService.onCallTransferred().subscribe(alias => this.handleCallTransfered(alias));
 
         this.isRecorderInCall$.subscribe(isRecorderInCall =>
             this.loggerService.event('RecorderIsInCall', {
-                isRecorderInCall: isRecorderInCall
+                isRecorderInCall: isRecorderInCall,
+                recorderPexipId: this.recorderPexipId
             })
         );
+    }
+
+    handleCallTransfered(alias: any): void {
+        this.loggerService.info(`${this.loggerPrefix} call transfered to ${alias} resetting recorder details`);
+        this.recorderPexipId = null;
+        this.isRecorderInCallSubject.next(false);
     }
 
     private handleParticipantCreated(participant: ParticipantUpdated) {

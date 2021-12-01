@@ -22,8 +22,8 @@ export class LoggerService implements Logger {
     ) {
         properties = properties ?? {};
         if (typeof properties === 'object') {
-            properties[conferenceIdKey] = this.conferenceService?.currentConference.id;
-            properties[conferenceStatusKey] = this.conferenceService?.currentConference.status;
+            properties[conferenceIdKey] = this.conferenceService?.currentConference?.id;
+            properties[conferenceStatusKey] = this.conferenceService?.currentConference?.status;
         }
 
         return properties;

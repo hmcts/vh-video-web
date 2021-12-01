@@ -203,17 +203,17 @@ export class VideoCallService {
     }
 
     private handleParticipantCreate(participantUpdate: PexipParticipant) {
-        this.logger.event('ParticipantCreate', {
+        this.logger.event('PexipParticipantCreate', {
             pexipParticipantId: participantUpdate.uuid,
             event: participantUpdate,
-            type: this.pexipParticipantEventType
+            type: this.pexipParticipantEventType.toString()
         });
 
         this.onParticipantCreatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
     }
 
     private handleParticipantUpdate(participantUpdate: PexipParticipant) {
-        this.logger.event('ParticipantUpdate', {
+        this.logger.event('PexipParticipantUpdate', {
             pexipParticipantId: participantUpdate.uuid,
             event: participantUpdate,
             type: this.pexipParticipantEventType
@@ -224,7 +224,7 @@ export class VideoCallService {
     }
 
     private handleParticipantDelete(participantDeleted: PexipParticipantDeleted) {
-        this.logger.event('ParticipantDelete', {
+        this.logger.event('PexipParticipantDelete', {
             pexipParticipantId: participantDeleted.uuid,
             event: participantDeleted,
             type: this.pexipParticipantEventType
