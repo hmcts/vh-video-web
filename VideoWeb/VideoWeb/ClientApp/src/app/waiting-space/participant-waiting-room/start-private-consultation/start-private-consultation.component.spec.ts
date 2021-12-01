@@ -7,12 +7,12 @@ import {
     ParticipantResponse,
     ParticipantStatus,
     Role,
-    RoomSummaryResponse
+    RoomSummaryResponse,
+    VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { StartPrivateConsultationComponent } from './start-private-consultation.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
-import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation.service';
 import { HearingRole } from '../../models/hearing-role-model';
 
 describe('StartPrivateConsultationComponent', () => {
@@ -185,5 +185,51 @@ describe('StartPrivateConsultationComponent', () => {
         expect(component.filteredParticipants[0].interpreter.id).toBe('1');
         expect(component.filteredParticipants[1].id).toBe('3');
         expect(component.filteredParticipants[2].id).toBe('4');
+    });
+
+    describe('participantIsInConsultationRoom', () => {
+        let participant: ParticipantResponse;
+        const allStatuses = Object.values(ParticipantStatus);
+        const validStatuses = [ParticipantStatus.InConsultation];
+        beforeEach(() => {
+            participant = new ParticipantResponse();
+        });
+
+        allStatuses.forEach(status => {
+            it(`should return false when status is ${status} and room is null`, () => {
+                participant.status = status;
+                expect(component.participantIsInConsultationRoom(participant)).toBeFalse();
+            });
+
+            const expectedValue = validStatuses.includes(status);
+            it(`should return ${expectedValue} when status is ${status} and room is NOT null`, () => {
+                participant.current_room = new RoomSummaryResponse();
+                participant.status = status;
+                expect(component.participantIsInConsultationRoom(participant)).toBe(expectedValue);
+            });
+        });
+    });
+
+    describe('endpointIsInConsultationRoom', () => {
+        let endpoint: VideoEndpointResponse;
+        const allStatuses = Object.values(EndpointStatus);
+        const validStatuses = [EndpointStatus.InConsultation];
+        beforeEach(() => {
+            endpoint = new VideoEndpointResponse();
+        });
+
+        allStatuses.forEach(status => {
+            it(`should return false when status is ${status} and room is null`, () => {
+                endpoint.status = status;
+                expect(component.endpointIsInConsultationRoom(endpoint)).toBeFalse();
+            });
+
+            const expectedValue = validStatuses.includes(status);
+            it(`should return ${expectedValue} when status is ${status} and room is NOT null`, () => {
+                endpoint.current_room = new RoomSummaryResponse();
+                endpoint.status = status;
+                expect(component.endpointIsInConsultationRoom(endpoint)).toBe(expectedValue);
+            });
+        });
     });
 });
