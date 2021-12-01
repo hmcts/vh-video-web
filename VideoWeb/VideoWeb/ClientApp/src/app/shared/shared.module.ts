@@ -56,7 +56,6 @@ import { CrestLogoImageSourceDirective } from './directives/crest-logo-image-sou
 import { StaffMemberVenueListComponent } from './venue-list/staff-member-venue-list/staff-member-venue-list.component';
 import { VhOfficerVenueListComponent } from './venue-list/vh-officer-venue-list/vh-officer-venue-list.component';
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { RoomNameDirective } from './directives/room-name.directive';
 import {
     faCheck,
     faChevronDown,
@@ -163,7 +162,6 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         CrestLogoImageSourceDirective,
         StaffMemberVenueListComponent,
         VhOfficerVenueListComponent,
-        RoomNameDirective,
         RoomNamePipe
     ],
     providers: [
@@ -216,7 +214,6 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         StaffMemberVenueListComponent,
         VhOfficerVenueListComponent,
         FontAwesomeModule,
-        RoomNameDirective,
         RoomNamePipe
     ]
 })
