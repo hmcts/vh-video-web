@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { MockComponent, MockPipe } from 'ng-mocks';
 import {
     EndpointResponse,
     EndpointState,
@@ -6,6 +8,7 @@ import {
     ParticipantStatus,
     RoomSummaryResponse
 } from 'src/app/services/clients/api-client';
+import { RoomNamePipe } from 'src/app/shared/pipes/room-name.pipe';
 
 import { ParticipantStatusComponent } from './participant-status.component';
 
@@ -18,7 +21,7 @@ describe('ParticipantStatusComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [ParticipantStatusComponent]
+            declarations: [ParticipantStatusComponent, MockPipe(RoomNamePipe), MockComponent(FaIconComponent)]
         }).compileComponents();
     });
 
