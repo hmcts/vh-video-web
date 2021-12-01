@@ -39,6 +39,7 @@
           [outgoingStream]="outgoingStream"
           [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
           [showConsultationControls]="showConsultationControls"
+          [areParticipantsVisible]="!isParticipantsPanelHidden"
           (leaveConsultation)="showLeaveConsultationModal()"
           (lockConsultation)="setRoomLock($event)"
           (changeDeviceToggle)="showChooseCameraDialog()"

@@ -14,7 +14,6 @@ export class ParticipantStatusComponent {
     private availableStatuses = ['Available', 'Connected', 'InConsultation'];
 
     isAvailable(): boolean {
-        console.log(this.entity);
         return this.availableStatuses.indexOf(this.entity.status) >= 0;
     }
 

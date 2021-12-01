@@ -45,7 +45,6 @@ describe('ParticipantStatusComponent', () => {
                     testParticipant = new ParticipantResponse();
                     testParticipant.status = status;
                     component.entity = testParticipant;
-                    console.log('test', testParticipant);
                     expect(component.isAvailable()).toBe(shouldBeAvailable);
                 });
             });
