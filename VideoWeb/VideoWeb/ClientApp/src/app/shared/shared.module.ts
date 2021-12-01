@@ -56,6 +56,7 @@ import { CrestLogoImageSourceDirective } from './directives/crest-logo-image-sou
 import { StaffMemberVenueListComponent } from './venue-list/staff-member-venue-list/staff-member-venue-list.component';
 import { VhOfficerVenueListComponent } from './venue-list/vh-officer-venue-list/vh-officer-venue-list.component';
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { RoomNameDirective } from './directives/room-name.directive';
 import {
     faCheck,
     faChevronDown,
@@ -94,6 +95,7 @@ import {
     faStopCircle,
     faUser as faUserRegular
 } from '@fortawesome/free-regular-svg-icons';
+import { RoomNamePipe } from './pipes/room-name.pipe';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -161,7 +163,8 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         CrestLogoImageSourceDirective,
         StaffMemberVenueListComponent,
         VhOfficerVenueListComponent,
-        RoomNameDirective
+        RoomNameDirective,
+        RoomNamePipe
     ],
     providers: [
         { provide: Logger, useClass: LoggerService },
@@ -213,7 +216,8 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         StaffMemberVenueListComponent,
         VhOfficerVenueListComponent,
         FontAwesomeModule,
-        RoomNameDirective
+        RoomNameDirective,
+        RoomNamePipe
     ]
 })
 export class SharedModule {

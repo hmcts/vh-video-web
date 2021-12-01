@@ -42,8 +42,8 @@
                 </ng-container>
                 <ng-template #available>
                   <ng-container *ngIf="participantIsInConsultationRoom(participant)">
-                    <span>{{'start-private-consultation.in' | translate}} </span> 
-                    <span appRoomName [roomLabel]="participant.current_room.label"></span> 
+                    <span>{{ 'start-private-consultation.in' | translate }} </span> 
+                    <span>{{ participant.current_room.label | roomName | lowercase}} </span>
                     <fa-icon *ngIf="participant.current_room.locked" icon="lock"></fa-icon>
                   </ng-container>
                 </ng-template>
@@ -74,8 +74,8 @@
 
                 <ng-template #available>
                   <ng-container *ngIf="endpointIsInConsultationRoom(endpoint)">
-                    <span>{{'start-private-consultation.in' | translate}} </span> 
-                    <span appRoomName [roomLabel]="endpoint.current_room.label"></span> 
+                    <span>{{ 'start-private-consultation.in' | translate }} </span> 
+                    <span>{{ endpoint.current_room.label | roomName | lowercase}} </span>
                     <fa-icon *ngIf="endpoint.current_room.locked" icon="lock"></fa-icon>
                   </ng-container>
                 </ng-template>

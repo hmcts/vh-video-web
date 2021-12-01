@@ -34,7 +34,7 @@
             <ng-container *ngSwitchDefault>
                 <ng-container *ngIf="entity.current_room?.label; else noRoomLabel">
                     <div class="outline">
-                        <span appRoomName [roomLabel]="entity.current_room.label" shortName="true"></span> 
+                        <span>{{ entity.current_room.label | roomName : true }} </span>
                         <fa-icon *ngIf="entity.current_room.locked" icon="lock"></fa-icon>
                     </div>
                 </ng-container>
