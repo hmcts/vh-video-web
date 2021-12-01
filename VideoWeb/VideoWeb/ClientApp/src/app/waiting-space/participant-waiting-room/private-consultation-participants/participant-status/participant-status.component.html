@@ -39,7 +39,7 @@
                     </div>
                 </ng-container>
                 <ng-template #noRoomLabel>
-                    <ng-container *ngIf="isParticipantAvailable()">
+                    <ng-container *ngIf="!isAvailable()">
                         {{ 'private-consultation-participants.not-available' | translate }}
                     </ng-container>
                 </ng-template>

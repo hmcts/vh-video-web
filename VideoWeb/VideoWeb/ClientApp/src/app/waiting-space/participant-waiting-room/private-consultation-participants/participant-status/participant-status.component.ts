@@ -11,17 +11,17 @@ export class ParticipantStatusComponent implements OnInit {
     @Input() entity: ParticipantResponse | EndpointResponse;
     @Input() status: string;
     @Input() roomLabel: string;
-
+    private availableStatuses = ['Available', 'Connected', 'InConsultation'];
     constructor() {}
 
     ngOnInit(): void {}
 
-    isParticipantAvailable(): boolean {
-        const availableStatuses = ['Available', 'Connected', 'InConsultation'];
-        return availableStatuses.indexOf(this.entity.status) >= 0;
+    isAvailable(): boolean {
+        console.log(this.entity);
+        return this.availableStatuses.indexOf(this.entity.status) >= 0;
     }
 
     isInCurrentRoom(): boolean {
-        return this.entity.current_room?.label === this.roomLabel;
+        return this.entity?.current_room?.label === this.roomLabel;
     }
 }

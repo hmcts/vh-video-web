@@ -4,10 +4,10 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
     LoggedParticipantResponse,
+    ParticipantResponse,
     ParticipantResponseVho,
     ParticipantStatus,
-    Role,
-    RoomSummaryResponse
+    Role
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -124,35 +124,46 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         expect(component.getParticipantStatusCss(participant)).toEqual('in-consultation');
     });
 
-    it('should return participant unavailable status', () => {
-        const participant = component.conference.participants[0];
-        participant.status = ParticipantStatus.Disconnected;
-        expect(component.getParticipantStatus(participant)).toEqual('individual-participant-status-list.unavailable');
-    });
+    describe('getParticipantStatus', () => {
+        let participant: ParticipantResponse;
+        const allStatuses = Object.values(ParticipantStatus);
+        beforeEach(() => {
+            participant = new ParticipantResponse();
+        });
 
-    it('should return participant in consultation status', () => {
-        const participant = component.conference.participants[0];
-        participant.status = ParticipantStatus.InConsultation;
-        participant.current_room = new RoomSummaryResponse();
-        participant.current_room.label = 'MeetingRoom1';
-        expect(component.getParticipantStatus(participant)).toEqual('In meeting room 1');
-    });
+        it('should return status when has no linked participants', () => {
+            participant.linked_participants = [];
+            allStatuses.forEach(status => {
+                participant.status = status;
+                expect(component.getParticipantStatus(participant)).toEqual(status);
+            });
+        });
 
-    it('should return unavailable status', () => {
-        const participant = component.conference.participants[0];
-        component.nonJudgeParticipants = [
-            {
-                id: '1',
-                status: ParticipantStatus.NotSignedIn
-            } as any
-        ];
-        participant.status = ParticipantStatus.Available;
-        participant.linked_participants = [
-            {
-                linked_id: '1'
-            } as any
-        ];
-        expect(component.getParticipantStatus(participant)).toEqual('individual-participant-status-list.unavailable');
+        describe('has linked participant', () => {
+            const availableStatuses = [ParticipantStatus.Available, ParticipantStatus.InConsultation];
+            const mainParticipantStatus = ParticipantStatus.Available;
+            allStatuses.forEach(status => {
+                it(`should return null when linked participant is not available or status when available ${status}`, () => {
+                    component.nonJudgeParticipants = [
+                        {
+                            id: '1',
+                            status: status
+                        } as any
+                    ];
+                    participant.status = mainParticipantStatus;
+                    participant.linked_participants = [
+                        {
+                            linked_id: '1'
+                        } as any
+                    ];
+                    if (availableStatuses.includes(status)) {
+                        expect(component.getParticipantStatus(participant)).toEqual(mainParticipantStatus);
+                    } else {
+                        expect(component.getParticipantStatus(participant)).toBeNull();
+                    }
+                });
+            });
+        });
     });
 
     it('should return true for logged in participant', () => {
