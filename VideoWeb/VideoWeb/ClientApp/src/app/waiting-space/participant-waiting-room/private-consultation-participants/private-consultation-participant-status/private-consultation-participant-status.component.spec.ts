@@ -12,7 +12,7 @@ import { RoomNamePipe } from 'src/app/shared/pipes/room-name.pipe';
 
 import { PrivateConsultationParticipantStatusComponent } from './private-consultation-participant-status.component';
 
-describe('ParticipantStatusComponent', () => {
+describe('PrivateConsultationParticipantStatusComponent', () => {
     let component: PrivateConsultationParticipantStatusComponent;
     let fixture: ComponentFixture<PrivateConsultationParticipantStatusComponent>;
     let testParticipant: ParticipantResponse;
