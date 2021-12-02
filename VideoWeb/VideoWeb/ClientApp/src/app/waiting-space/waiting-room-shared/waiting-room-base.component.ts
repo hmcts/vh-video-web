@@ -933,7 +933,7 @@ export abstract class WaitingRoomBaseDirective {
         if (message.status === ParticipantStatus.Disconnected && participant) {
             participant.current_room = null;
         }
-        if (!currentConferenceParticipants.some(p => this.isAnyHostInHearing(p))) {
+        if (!this.isAHostInHearing(currentConferenceParticipants)) {
             this.isTransferringIn = false;
         }
     }
@@ -1151,11 +1151,8 @@ export abstract class WaitingRoomBaseDirective {
         return this.participant.role === Role.Judge || this.participant.role === Role.StaffMember;
     }
 
-    isAnyHostInHearing(participant: ParticipantResponse) {
-        return (
-            (participant.role === Role.Judge && participant.status === ParticipantStatus.InHearing) ||
-            (participant.role === Role.StaffMember && participant.status === ParticipantStatus.InHearing)
-        );
+    isAHostInHearing(participants: ParticipantResponse[]): boolean {
+        return participants.some(p => (p.role === Role.Judge || p.role === Role.StaffMember) && p.status === ParticipantStatus.InHearing);
     }
 
     showChooseCameraDialog() {
