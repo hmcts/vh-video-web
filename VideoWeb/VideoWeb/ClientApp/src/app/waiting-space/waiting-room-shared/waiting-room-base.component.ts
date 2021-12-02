@@ -933,7 +933,7 @@ export abstract class WaitingRoomBaseDirective {
         if (message.status === ParticipantStatus.Disconnected && participant) {
             participant.current_room = null;
         }
-        if (!this.isAHostInHearing(currentConferenceParticipants)) {
+        if (!this.hasAHostInHearing(currentConferenceParticipants)) {
             this.isTransferringIn = false;
         }
     }
@@ -1151,7 +1151,7 @@ export abstract class WaitingRoomBaseDirective {
         return this.participant.role === Role.Judge || this.participant.role === Role.StaffMember;
     }
 
-    isAHostInHearing(participants: ParticipantResponse[]): boolean {
+    hasAHostInHearing(participants: ParticipantResponse[]): boolean {
         return participants.some(p => (p.role === Role.Judge || p.role === Role.StaffMember) && p.status === ParticipantStatus.InHearing);
     }
 
