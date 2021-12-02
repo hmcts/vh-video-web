@@ -33,7 +33,7 @@ export class EventsHubService implements OnDestroy {
         return this._reconnectionTimes;
     }
 
-    private _serverTimeoutTime = 300000;
+    private _serverTimeoutTime = 60000;
     get serverTimeoutTime() {
         return this._serverTimeoutTime;
     }
