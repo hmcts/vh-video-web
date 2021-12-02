@@ -10,20 +10,14 @@ export const LOG_ADAPTER = new InjectionToken<LogAdapter>('LogAdapter');
 })
 export class LoggerService implements Logger {
     static currentConferenceIdPropertyKey = 'currentConferenceId';
-    static currentConferenceStatusPropertyKey = 'currentConferenceStatus';
 
     public conferenceService: ConferenceService;
     constructor(@Inject(LOG_ADAPTER) private adapters: LogAdapter[]) {}
 
-    addConferenceIdToProperties(
-        properties?: any,
-        conferenceIdKey: string = LoggerService.currentConferenceIdPropertyKey,
-        conferenceStatusKey: string = LoggerService.currentConferenceStatusPropertyKey
-    ) {
+    addConferenceIdToProperties(properties?: any, conferenceIdKey: string = LoggerService.currentConferenceIdPropertyKey) {
         properties = properties ?? {};
         if (typeof properties === 'object') {
-            properties[conferenceIdKey] = this.conferenceService?.currentConference?.id;
-            properties[conferenceStatusKey] = this.conferenceService?.currentConference?.status;
+            properties[conferenceIdKey] = this.conferenceService?.currentConference?.id ?? null;
         }
 
         return properties;

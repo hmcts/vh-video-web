@@ -34,7 +34,6 @@ describe('LoggerService', () => {
             message: message
         };
         expectedProperties[LoggerService.currentConferenceIdPropertyKey] = conferenceId;
-        expectedProperties[LoggerService.currentConferenceStatusPropertyKey] = conferenceStatus;
 
         getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference').and.returnValue(conference);
 
@@ -60,7 +59,6 @@ describe('LoggerService', () => {
             message: message
         };
         expectedProperties[LoggerService.currentConferenceIdPropertyKey] = conferenceId;
-        expectedProperties[LoggerService.currentConferenceStatusPropertyKey] = conferenceStatus;
 
         getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference').and.returnValue(conference);
 
@@ -85,7 +83,6 @@ describe('LoggerService', () => {
             message: message
         };
         expectedProperties[LoggerService.currentConferenceIdPropertyKey] = conferenceId;
-        expectedProperties[LoggerService.currentConferenceStatusPropertyKey] = conferenceStatus;
 
         getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference').and.returnValue(conference);
 
@@ -110,7 +107,6 @@ describe('LoggerService', () => {
             message: message
         };
         expectedProperties[LoggerService.currentConferenceIdPropertyKey] = conferenceId;
-        expectedProperties[LoggerService.currentConferenceStatusPropertyKey] = conferenceStatus;
 
         getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference').and.returnValue(conference);
 
@@ -129,16 +125,14 @@ describe('LoggerService', () => {
             const conferenceStatus = ConferenceStatus.InSession;
             const conference = { id: conferenceId, status: conferenceStatus } as ConferenceResponse;
             const conferenceIdPropertyKey = 'conference-id';
-            const conferenceStatusPropertyKey = 'conference-status';
             let properties = {};
             getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference').and.returnValue(conference);
 
             // Act
-            properties = service.addConferenceIdToProperties(properties, conferenceIdPropertyKey, conferenceStatusPropertyKey);
+            properties = service.addConferenceIdToProperties(properties, conferenceIdPropertyKey);
 
             // Assert
             expect(properties[conferenceIdPropertyKey]).toEqual(conferenceId);
-            expect(properties[conferenceStatusPropertyKey]).toEqual(conferenceStatus);
         });
 
         it('should NOT add conference id to properties if they are NOT an object', () => {
@@ -148,17 +142,15 @@ describe('LoggerService', () => {
             const conferenceStatus = ConferenceStatus.InSession;
             const conference = { id: conferenceId, status: conferenceStatus } as ConferenceResponse;
             const conferenceIdPropertyKey = 'conference-id';
-            const conferenceStatusPropertyKey = 'conference-status';
             let properties = 'hello';
             getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference').and.returnValue(conference);
 
             // Act
-            properties = service.addConferenceIdToProperties(properties, conferenceIdPropertyKey, conferenceStatusPropertyKey);
+            properties = service.addConferenceIdToProperties(properties, conferenceIdPropertyKey);
 
             // Assert
             expect(properties).toEqual(properties);
             expect(properties[conferenceIdPropertyKey]).toBeFalsy();
-            expect(properties[conferenceStatusPropertyKey]).toBeFalsy();
         });
     });
 });

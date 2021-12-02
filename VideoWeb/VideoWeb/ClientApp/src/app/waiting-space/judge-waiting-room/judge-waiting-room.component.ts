@@ -459,9 +459,15 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 if (!audioStreamWorking && !this.continueWithNoRecording && this.showVideo) {
                     this.logger.debug(`${this.loggerPrefixJudge} not recording when expected, show alert`);
                     this.showAudioRecordingAlert();
+                    this.logger.event('WowzaApiRecorderStatus', { isHealthy: false, reason: 'response was false' });
+                    return;
                 }
+
+                this.logger.event('WowzaApiRecorderStatus', { isHealthy: true, reason: 'response was true' });
             } catch (error) {
                 this.logger.error(`${this.loggerPrefixJudge} Failed to get audio stream info`, error, { conference: this.conferenceId });
+
+                this.logger.event('WowzaApiRecorderStatus', { isHealthy: false, reason: 'api error' });
 
                 if (!this.continueWithNoRecording) {
                     this.logger.info(`${this.loggerPrefixJudge} Should not continue without a recording. Show alert.`, {

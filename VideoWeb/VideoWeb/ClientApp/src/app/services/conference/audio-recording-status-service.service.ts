@@ -34,19 +34,17 @@ export class AudioRecordingStatusServiceService {
         this.videoCallService.onParticipantCreated().subscribe(participant => this.handleParticipantCreated(participant));
         this.videoCallService.onParticipantDeleted().subscribe(pexipParticipantId => this.handleParticipantDeleted(pexipParticipantId));
         this.videoCallService.onCallTransferred().subscribe(alias => this.handleCallTransfered(alias));
-
-        this.isRecorderInCall$.subscribe(isRecorderInCall =>
-            this.loggerService.event('RecorderIsInCall', {
-                isRecorderInCall: isRecorderInCall,
-                recorderPexipId: this.recorderPexipId
-            })
-        );
     }
 
     handleCallTransfered(alias: any): void {
         this.loggerService.info(`${this.loggerPrefix} call transfered to ${alias} resetting recorder details`);
         this.recorderPexipId = null;
         this.isRecorderInCallSubject.next(false);
+        this.loggerService.event('RecorderIsInCall', {
+            isRecorderInCall: false,
+            recorderPexipId: this.recorderPexipId,
+            reason: 'call was transferred'
+        });
     }
 
     private handleParticipantCreated(participant: ParticipantUpdated) {
@@ -58,6 +56,11 @@ export class AudioRecordingStatusServiceService {
             this.recorderPexipId = Guid.parse(participant.uuid);
 
             this.isRecorderInCallSubject.next(true);
+            this.loggerService.event('RecorderIsInCall', {
+                isRecorderInCall: false,
+                recorderPexipId: this.recorderPexipId,
+                reason: 'participant created'
+            });
         }
     }
 
@@ -70,6 +73,11 @@ export class AudioRecordingStatusServiceService {
             this.recorderPexipId = null;
 
             this.isRecorderInCallSubject.next(false);
+            this.loggerService.event('RecorderIsInCall', {
+                isRecorderInCall: false,
+                recorderPexipId: this.recorderPexipId,
+                reason: 'participant deleted'
+            });
         }
     }
 }
