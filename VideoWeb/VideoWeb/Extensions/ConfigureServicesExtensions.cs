@@ -146,26 +146,26 @@ namespace VideoWeb.Extensions
             };
 
             var connectionStrings = container.GetService<ConnectionStrings>();
-            services.AddSignalR(hubOptions =>
-            {
-                hubOptions.EnableDetailedErrors = true;
-                hubOptions.ClientTimeoutInterval = TimeSpan.FromMilliseconds(60000);
-                hubOptions.KeepAliveInterval = TimeSpan.FromMilliseconds(30000);
-            })
-            .AddAzureSignalR(options =>
-            {
-                options.ConnectionString = connectionStrings.SignalR;
-                options.ClaimsProvider = context => context.User.Claims;
-            })
-            .AddNewtonsoftJsonProtocol(options =>
-            {
-                options.PayloadSerializerSettings.Formatting = Formatting.None;
-                options.PayloadSerializerSettings.ContractResolver = contractResolver;
-                options.PayloadSerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-                options.PayloadSerializerSettings.Converters.Add(
-                    new StringEnumConverter());
-            })
-            .AddHubOptions<EventHub.Hub.EventHub>(options => { options.EnableDetailedErrors = true; });
+            services.AddSignalR()
+                .AddAzureSignalR(options =>
+                {
+                    options.ConnectionString = connectionStrings.SignalR;
+                    options.ClaimsProvider = context => context.User.Claims;
+                })
+                .AddNewtonsoftJsonProtocol(options =>
+                {
+                    options.PayloadSerializerSettings.Formatting = Formatting.None;
+                    options.PayloadSerializerSettings.ContractResolver = contractResolver;
+                    options.PayloadSerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+                    options.PayloadSerializerSettings.Converters.Add(
+                        new StringEnumConverter());
+                })
+                .AddHubOptions<EventHub.Hub.EventHub>(options => 
+                { 
+                    options.EnableDetailedErrors = true;
+                    options.ClientTimeoutInterval = TimeSpan.FromMilliseconds(60000);
+                    options.KeepAliveInterval = TimeSpan.FromMilliseconds(30000);
+                });
 
             services.AddStackExchangeRedisCache(options => { options.Configuration = connectionStrings.RedisCache; });
             return services;
