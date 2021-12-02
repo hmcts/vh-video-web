@@ -59,8 +59,8 @@
                         icon="check"
                         aria-hidden="true"></fa-icon>
                 </div>
-                <app-participant-status [entity]="endpoint" [status]="getParticipantStatus(endpoint)" [roomLabel]="roomLabel">
-                </app-participant-status>
+                <app-private-consultation-participant-status [entity]="endpoint" [status]="getParticipantStatus(endpoint)" [roomLabel]="roomLabel">
+                </app-private-consultation-participant-status>
             </div>
         </ng-container>
         <ng-container *ngIf="isJohConsultation()">

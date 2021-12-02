@@ -2,11 +2,11 @@ import { Component, Input } from '@angular/core';
 import { ConsultationAnswer, EndpointResponse, ParticipantResponse } from 'src/app/services/clients/api-client';
 
 @Component({
-    selector: 'app-participant-status',
-    templateUrl: './participant-status.component.html',
-    styleUrls: ['./participant-status.component.scss']
+    selector: 'app-private-consultation-participant-status',
+    templateUrl: './private-consultation-participant-status.component.html',
+    styleUrls: ['./private-consultation-participant-status.component.scss']
 })
-export class ParticipantStatusComponent {
+export class PrivateConsultationParticipantStatusComponent {
     ConsultationAnswer = ConsultationAnswer;
     @Input() entity: ParticipantResponse | EndpointResponse;
     @Input() status: string;

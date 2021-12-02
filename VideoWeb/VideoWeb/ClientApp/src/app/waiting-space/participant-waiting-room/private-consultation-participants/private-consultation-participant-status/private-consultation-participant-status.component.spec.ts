@@ -10,23 +10,23 @@ import {
 } from 'src/app/services/clients/api-client';
 import { RoomNamePipe } from 'src/app/shared/pipes/room-name.pipe';
 
-import { ParticipantStatusComponent } from './participant-status.component';
+import { PrivateConsultationParticipantStatusComponent } from './private-consultation-participant-status.component';
 
 describe('ParticipantStatusComponent', () => {
-    let component: ParticipantStatusComponent;
-    let fixture: ComponentFixture<ParticipantStatusComponent>;
+    let component: PrivateConsultationParticipantStatusComponent;
+    let fixture: ComponentFixture<PrivateConsultationParticipantStatusComponent>;
     let testParticipant: ParticipantResponse;
     let testEndpoint: EndpointResponse;
     const availableStatusStrings = ['Available', 'Connected', 'InConsultation'];
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [ParticipantStatusComponent, MockPipe(RoomNamePipe), MockComponent(FaIconComponent)]
+            declarations: [PrivateConsultationParticipantStatusComponent, MockPipe(RoomNamePipe), MockComponent(FaIconComponent)]
         }).compileComponents();
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(ParticipantStatusComponent);
+        fixture = TestBed.createComponent(PrivateConsultationParticipantStatusComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
