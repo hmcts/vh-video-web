@@ -160,7 +160,12 @@ namespace VideoWeb.Extensions
                     options.PayloadSerializerSettings.Converters.Add(
                         new StringEnumConverter());
                 })
-                .AddHubOptions<EventHub.Hub.EventHub>(options => { options.EnableDetailedErrors = true; });
+                .AddHubOptions<EventHub.Hub.EventHub>(options => 
+                { 
+                    options.EnableDetailedErrors = true;
+                    options.ClientTimeoutInterval = TimeSpan.FromMilliseconds(60000);
+                    options.KeepAliveInterval = TimeSpan.FromMilliseconds(30000);
+                });
 
             services.AddStackExchangeRedisCache(options => { options.Configuration = connectionStrings.RedisCache; });
             return services;
