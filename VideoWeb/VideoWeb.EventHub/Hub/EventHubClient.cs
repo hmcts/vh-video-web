@@ -81,7 +81,7 @@ namespace VideoWeb.EventHub.Hub
             }
             else
             {
-                _logger.LogWarning(exception,
+                _logger.LogError(exception,
                     "There was an error when disconnecting from chat hub server-side: {Username}", userName);
             }
 
