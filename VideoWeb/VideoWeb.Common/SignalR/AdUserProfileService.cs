@@ -30,10 +30,10 @@ namespace VideoWeb.Common.SignalR
             try
             {
                 var userName = participantUserName;
-                if (!participantUserName.EndsWith(QuickLinkParticipantConst.Domain))
+                if (!IsQuickLinkParticipant(userName))
                 {
                     var profile = await _userApiClient.GetUserByAdUserNameAsync(participantUserName);
-                    userName = profile.FirstName + " " + profile.LastName;
+                    userName = $"{profile.FirstName} {profile.LastName}";
                 }
 
                 var obfuscatedUsername = System.Text.RegularExpressions.Regex.Replace(userName, @"(?!\b)\w", "*");
@@ -47,7 +47,7 @@ namespace VideoWeb.Common.SignalR
 
         public async Task<UserProfile> GetUserAsync(string username)
         {
-            if (username.EndsWith(QuickLinkParticipantConst.Domain))
+            if (IsQuickLinkParticipant(username))
             {
                 var quickNonparticipant = await _videoApiClient.GetQuickLinkParticipantByUserNameAsync(username);
                 return new UserProfile()
@@ -61,6 +61,11 @@ namespace VideoWeb.Common.SignalR
             var usernameClean = username.ToLower().Trim();
             var profile = await _userApiClient.GetUserByAdUserNameAsync(usernameClean);
             return profile;
+        }
+
+        private bool IsQuickLinkParticipant(string userName)
+        {
+            return userName.EndsWith(QuickLinkParticipantConst.Domain);
         }
     }
 }
