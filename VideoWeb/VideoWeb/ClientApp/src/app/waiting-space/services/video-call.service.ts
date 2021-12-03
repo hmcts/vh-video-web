@@ -94,6 +94,11 @@ export class VideoCallService {
         this.initTurnServer();
         this.pexipAPI.screenshare_fps = 30;
 
+        this.pexipAPI.onLog = (message: string, ...args: any[]) => {
+            const pexipLoggerPrefix = '[PexipApi] - ';
+            this.logger.info(`${pexipLoggerPrefix} ${message}`, ...args);
+        };
+
         this.userMediaService.initialise();
         this.logger.debug(`${this.loggerPrefix} attempting to setup user media stream`);
         this.pexipAPI.user_media_stream = await this.userMediaStreamService.currentStream$.pipe(take(1)).toPromise();
