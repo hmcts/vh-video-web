@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { merge, Subject, Subscription } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
+import { CountdownStatusService } from 'src/app/conference/countdown-status.service';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -94,7 +95,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         private unloadDetectorService: UnloadDetectorService,
         private hearingLayoutService: HearingLayoutService,
         protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
-        protected hearingVenueFlagsService: HearingVenueFlagsService
+        protected hearingVenueFlagsService: HearingVenueFlagsService,
+        private countDownStatusService: CountdownStatusService
     ) {
         super(
             route,
@@ -129,6 +131,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.errorCount = 0;
         this.logger.debug(`${this.loggerPrefixJudge} Loading judge waiting room`);
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
+        this.countDownStatusService.isCountdownFinished.pipe(takeUntil(this.destroyedSubject)).subscribe(x => {
+            console.log('Muki ja - contdown complete status: ', x);
+        });
 
         this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.destroyedSubject)).subscribe(() => this.onShouldUnload());
         this.unloadDetectorService.shouldReload.pipe(take(1)).subscribe(() => this.onShouldReload());

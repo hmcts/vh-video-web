@@ -37,6 +37,8 @@ declare interface PexipClient {
     onError: (reason: any) => void;
     onDisconnect: (reason: any) => void;
     onParticipantUpdate: (participantUpdate: PexipParticipant) => void;
+    onParticipantCreate: (participantUpdate: PexipParticipant) => void;
+    onParticipantDelete: (participantUpdate: PexipParticipant) => void;
     onConferenceUpdate: (conferenceUpdate: PexipConference) => void;
     onCallTransfer: (reason: any) => void;
     renegotiate: (sendUpdate: boolean) => void;
@@ -185,4 +187,8 @@ declare interface PexRTCCall {
     recv_video: boolean;
     video_source: any;
     audio_source: any;
+}
+
+declare interface PexipParticipantDeleted {
+    uuid: string;
 }

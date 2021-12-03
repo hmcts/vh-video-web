@@ -44,6 +44,8 @@ export class VideoCallService {
     private onErrorSubject = new Subject<CallError>();
     private onCallTransferSubject = new Subject<any>();
     private onParticipantUpdatedSubject = new Subject<ParticipantUpdated>();
+    private onParticipantCreatedSubject = new Subject<ParticipantUpdated>();
+    private onParticipantDeletedSubject = new Subject<Guid>();
     private onConferenceUpdatedSubject = new Subject<ConferenceUpdated>();
 
     private onConnectedScreenshareSubject = new Subject<ConnectedScreenshare>();
@@ -62,7 +64,7 @@ export class VideoCallService {
     pexipAPI: PexipClient;
     streamModifiedSubscription: Subscription;
     private _displayStream: MediaStream;
-
+    private readonly pexipParticipantEventType = 'PexipParticipantUpdate';
     constructor(
         private logger: Logger,
         private userMediaService: UserMediaService,
@@ -110,6 +112,8 @@ export class VideoCallService {
         this.pexipAPI.onDisconnect = this.handleServerDisconnect.bind(this);
 
         this.pexipAPI.onParticipantUpdate = this.handleParticipantUpdate.bind(this);
+        this.pexipAPI.onParticipantCreate = this.handleParticipantCreate.bind(this);
+        this.pexipAPI.onParticipantDelete = this.handleParticipantDelete.bind(this);
 
         this.pexipAPI.onConferenceUpdate = function (conferenceUpdate) {
             self.onConferenceUpdatedSubject.next(new ConferenceUpdated(conferenceUpdate.guests_muted));
@@ -298,6 +302,34 @@ export class VideoCallService {
 
     onVideoEvidenceStopped(): Observable<void> {
         return this.onVideoEvidenceStoppedSubject.asObservable();
+    }
+
+    private handleParticipantCreate(participantUpdate: PexipParticipant) {
+        this.logger.event('PexipParticipantCreate', {
+            pexipParticipantId: participantUpdate.uuid,
+            event: participantUpdate,
+            type: this.pexipParticipantEventType.toString()
+        });
+
+        this.onParticipantCreatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
+    }
+
+    private handleParticipantDelete(participantDeleted: PexipParticipantDeleted) {
+        this.logger.event('PexipParticipantDelete', {
+            pexipParticipantId: participantDeleted.uuid,
+            event: participantDeleted,
+            type: this.pexipParticipantEventType
+        });
+
+        this.onParticipantDeletedSubject.next(Guid.parse(participantDeleted.uuid));
+    }
+
+    onParticipantCreated(): Observable<ParticipantUpdated> {
+        return this.onParticipantCreatedSubject.asObservable();
+    }
+
+    onParticipantDeleted(): Observable<Guid> {
+        return this.onParticipantDeletedSubject.asObservable();
     }
 
     toggleMute(conferenceId: string, participantId: string): boolean {

@@ -21,6 +21,7 @@ export class ParticipantUpdated {
     public pexipDisplayName: string;
     public uuid: string;
     public isAudioOnlyCall: boolean;
+    m;
     public isVideoCall: boolean;
     public protocol: string;
 
