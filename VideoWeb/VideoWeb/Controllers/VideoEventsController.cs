@@ -98,6 +98,7 @@ namespace VideoWeb.Controllers
                 eventProperties.Add("sourceEventId", request.EventId);
                 eventProperties.Add("eventType", request.EventType.ToString());
                 eventProperties.Add("timestamp", DateTime.Now.ToString("u"));
+                eventProperties.Add("conferenceId", request.ConferenceId);
 
                 _telemetryClient.TrackEvent("KinlyCallbackHandled", eventProperties);
                 return NoContent();
