@@ -1,7 +1,14 @@
 import { OnInit, ViewChild, Directive } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, ParticipantResponse, SelfTestPexipResponse, TestCallScoreResponse } from 'src/app/services/clients/api-client';
+import {
+    ConferenceResponse,
+    ParticipantResponse,
+    Role,
+    SelfTestPexipResponse,
+    TestCallScoreResponse
+} from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { vhContactDetails } from 'src/app/shared/contact-information';
@@ -14,6 +21,7 @@ export abstract class BaseSelfTestComponentDirective implements OnInit {
 
     testInProgress: boolean;
     hideSelfTest = false;
+    isStaffMember = false;
 
     loadingData: boolean;
     conference: ConferenceResponse;
@@ -29,13 +37,14 @@ export abstract class BaseSelfTestComponentDirective implements OnInit {
     constructor(
         protected route: ActivatedRoute,
         protected videoWebService: VideoWebService,
+        protected profileService: ProfileService,
         protected errorService: ErrorService,
         protected logger: Logger
     ) {
         this.showEquipmentFaultMessage = false;
     }
 
-    ngOnInit() {
+    async ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         if (this.conferenceId) {
             this.logger.debug('[SelfTest] - Conference id found, initialising test from conference details');
@@ -45,6 +54,8 @@ export abstract class BaseSelfTestComponentDirective implements OnInit {
             this.getPexipConfig();
         }
         this.testInProgress = false;
+        const profile = await this.profileService.getUserProfile();
+        this.isStaffMember = profile.role === Role.StaffMember;
     }
 
     async getConference(): Promise<void> {
