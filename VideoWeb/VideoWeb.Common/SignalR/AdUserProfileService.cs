@@ -65,7 +65,7 @@ namespace VideoWeb.Common.SignalR
 
         private bool IsQuickLinkParticipant(string userName)
         {
-            return userName.EndsWith(QuickLinkParticipantConst.Domain);
+            return userName.ToLowerInvariant().EndsWith(QuickLinkParticipantConst.Domain);
         }
     }
 }
