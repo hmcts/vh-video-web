@@ -19,9 +19,10 @@ namespace VideoWeb.Common.SignalR
         private readonly IUserApiClient _userApiClient;
         private readonly IVideoApiClient _videoApiClient;
 
-        public AdUserProfileService(IUserApiClient userApiClient)
+        public AdUserProfileService(IUserApiClient userApiClient, IVideoApiClient videoApiClient)
         {
             _userApiClient = userApiClient;
+            _videoApiClient = videoApiClient;
         }
 
         public async Task<string> GetObfuscatedUsernameAsync(string participantUserName)
@@ -46,20 +47,19 @@ namespace VideoWeb.Common.SignalR
 
         public async Task<UserProfile> GetUserAsync(string username)
         {
-            if (!username.EndsWith(QuickLinkParticipantConst.Domain))
+            if (username.EndsWith(QuickLinkParticipantConst.Domain))
             {
                 var quickNonparticipant = await _videoApiClient.GetQuickLinkParticipantByUserNameAsync(username);
                 return new UserProfile()
                 {
                     UserName = username,
                     DisplayName = quickNonparticipant.DisplayName,
-                    UserRole = UserRole.QuickLinkParticipant.ToString()
+                    UserRole = quickNonparticipant.UserRole.ToString()
                 };
             }
             
             var usernameClean = username.ToLower().Trim();
             var profile = await _userApiClient.GetUserByAdUserNameAsync(usernameClean);
-
             return profile;
         }
     }
