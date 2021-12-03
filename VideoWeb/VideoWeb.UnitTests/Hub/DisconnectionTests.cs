@@ -46,7 +46,7 @@ namespace VideoWeb.UnitTests.Hub
 
             LoggerMock.Verify(
                 x => x.Log(
-                    LogLevel.Warning,
+                    LogLevel.Error,
                     It.IsAny<EventId>(),
                     It.Is<It.IsAnyType>((o, t) => o.ToString().StartsWith("There was an error when disconnecting from chat hub server-side")),
                     exception,
