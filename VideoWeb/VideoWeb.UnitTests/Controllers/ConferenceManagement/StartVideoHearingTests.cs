@@ -136,9 +136,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             typedResult.Should().NotBeNull();
 
             _mocker.Mock<IVideoApiClient>().Verify(x => x.StartOrResumeVideoHearingAsync(TestConference.Id,
-                It.Is<StartHearingRequest>(r => r.Layout == HearingLayout.Dynamic && r.ParticipantsToForceTransfer.SequenceEqual(expectedParticipantsToForceTransfer) && r.MuteGuests == true)), Times.Once);
+                It.Is<StartHearingRequest>(r => r.Layout == HearingLayout.Dynamic && r.ParticipantsToForceTransfer.SequenceEqual(expectedParticipantsToForceTransfer) && r.MuteGuests == false)), Times.Once);
             _mocker.Mock<IVideoApiClient>().Verify(x => x.StartOrResumeVideoHearingAsync(TestConference.Id,
-                It.Is<StartHearingRequest>(r => r.Layout == HearingLayout.Dynamic && r.ParticipantsToForceTransfer.SequenceEqual(expectedParticipantsToNotForceTransfer) && r.MuteGuests == true)), Times.Never);
+                It.Is<StartHearingRequest>(r => r.Layout == HearingLayout.Dynamic && r.ParticipantsToForceTransfer.SequenceEqual(expectedParticipantsToNotForceTransfer) && r.MuteGuests == false)), Times.Never);
         }
     }
 }
