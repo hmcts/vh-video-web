@@ -824,4 +824,24 @@ describe('WaitingRoomComponent message and clock', () => {
             });
         });
     });
+
+    describe('areParticipantsVisible', () => {
+        it('should return true when panelStates participants is true', () => {
+            component.panelStates = {
+                Participants: true,
+                Chat: false
+            };
+
+            expect(component.areParticipantsVisible).toBeTrue();
+        });
+
+        it('should return false when panelStates participants is false', () => {
+            component.panelStates = {
+                Participants: false,
+                Chat: false
+            };
+
+            expect(component.areParticipantsVisible).toBeFalse();
+        });
+    });
 });

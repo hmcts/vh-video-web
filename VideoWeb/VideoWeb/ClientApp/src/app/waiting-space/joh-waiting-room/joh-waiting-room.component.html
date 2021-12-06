@@ -22,6 +22,7 @@
         [outgoingStream]="outgoingStream"
         [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
         [showConsultationControls]="showConsultationControls"
+        [areParticipantsVisible]="areParticipantsVisible"
         (leaveConsultation)="showLeaveConsultationModal()"
         (changeDeviceToggle)="showChooseCameraDialog()"
         (togglePanel)="togglePanel($event)"
@@ -30,7 +31,7 @@
     </div>
   </div>
 
-    <div *ngIf="isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': panelStates['Participants'] }">
+    <div *ngIf="isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': !panelStates['Participants'] }">
         <app-private-consultation-participants
             *ngIf="isPrivateConsultation"
             [conference]="hearing.getConference()"
