@@ -40,6 +40,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.LastName.Should().Be(lastname);
             response.DisplayName.Should().Be(displayName);
             response.Username.Should().Be(username);
+            response.Name.Should().Be($"{firstName} {lastname}");
         }
 
         [Test]
