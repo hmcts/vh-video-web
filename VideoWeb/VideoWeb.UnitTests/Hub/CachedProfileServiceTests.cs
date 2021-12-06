@@ -8,6 +8,7 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.SignalR;
 using UserApi.Client;
 using UserApi.Contract.Responses;
+using VideoApi.Client;
 
 namespace VideoWeb.UnitTests.Hub
 {
@@ -17,9 +18,11 @@ namespace VideoWeb.UnitTests.Hub
         private Mock<IUserApiClient> _userApiClientMock;
         private DictionaryUserCache _userCache;
         private CachedProfileService _cachedProfileService;
-        
+        private Mock<IVideoApiClient> _videoApiClient;
+
         private readonly string _username = "test@aa.com";
         private UserProfile _profile;
+        
 
         [SetUp]
         public void Setup()
@@ -27,7 +30,8 @@ namespace VideoWeb.UnitTests.Hub
             _profile = InitProfile(_username);
             _userApiClientMock = new Mock<IUserApiClient>();
             _userCache = new DictionaryUserCache();
-            _adUserProfileService = new AdUserProfileService(_userApiClientMock.Object);
+            _videoApiClient = new Mock<IVideoApiClient>();
+            _adUserProfileService = new AdUserProfileService(_userApiClientMock.Object, _videoApiClient.Object);
             _cachedProfileService = new CachedProfileService(_adUserProfileService, _userCache);
         }
 
