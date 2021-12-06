@@ -44,6 +44,7 @@ import {
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
 import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 
 describe('WaitingRoomComponent message and clock', () => {
     let component: WRTestComponent;
@@ -95,6 +96,64 @@ describe('WaitingRoomComponent message and clock', () => {
         component.participant = participant;
         component.connected = true; // assume connected to pexip
         videoWebService.getConferenceById.calls.reset();
+    });
+
+    describe('handleParticipantStatusChange', () => {
+        it('sets isTransferringIn to true when the judge is in hearing', () => {
+            const judge = component.conference.participants.find(x => x.role === Role.Judge);
+            judge.status = ParticipantStatus.InHearing;
+            component.isTransferringIn = true;
+            component.handleParticipantStatusChange({
+                status: ParticipantStatus.InHearing,
+                participantId: judge.id,
+                username: judge.user_name,
+                conferenceId: component.conferenceId
+            } as ParticipantStatusMessage);
+
+            expect(component.isTransferringIn).toBe(true);
+        });
+
+        it('sets isTransferringIn to false when the judge is not in hearing', () => {
+            const judge = component.conference.participants.find(x => x.role === Role.Judge);
+            judge.status = ParticipantStatus.Available;
+            component.isTransferringIn = true;
+            component.handleParticipantStatusChange({
+                status: ParticipantStatus.Available,
+                participantId: judge.id,
+                username: judge.user_name,
+                conferenceId: component.conferenceId
+            } as ParticipantStatusMessage);
+
+            expect(component.isTransferringIn).toBe(false);
+        });
+
+        it('sets isTransferringIn to true when the staff member is in hearing', () => {
+            const staffMember = component.conference.participants.find(x => x.role === Role.StaffMember);
+            staffMember.status = ParticipantStatus.InHearing;
+            component.isTransferringIn = true;
+            component.handleParticipantStatusChange({
+                status: ParticipantStatus.InHearing,
+                participantId: staffMember.id,
+                username: staffMember.user_name,
+                conferenceId: component.conferenceId
+            } as ParticipantStatusMessage);
+
+            expect(component.isTransferringIn).toBe(true);
+        });
+
+        it('sets isTransferringIn to false when the staff member is not in hearing', () => {
+            const staffMember = component.conference.participants.find(x => x.role === Role.StaffMember);
+            staffMember.status = ParticipantStatus.Available;
+            component.isTransferringIn = true;
+            component.handleParticipantStatusChange({
+                status: ParticipantStatus.Available,
+                participantId: staffMember.id,
+                username: staffMember.user_name,
+                conferenceId: component.conferenceId
+            } as ParticipantStatusMessage);
+
+            expect(component.isTransferringIn).toBe(false);
+        });
     });
 
     describe('toggle Panel', () => {

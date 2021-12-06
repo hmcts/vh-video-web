@@ -918,7 +918,8 @@ export abstract class WaitingRoomBaseDirective {
         if (!this.validateIsForConference(message.conferenceId)) {
             return;
         }
-        const participant = this.hearing.getConference().participants.find(p => p.id === message.participantId);
+        const currentConferenceParticipants = this.hearing.getConference().participants;
+        const participant = currentConferenceParticipants.find(p => p.id === message.participantId);
         const isMe = this.participant.id === participant.id;
         if (isMe) {
             this.participant.status = message.status;
@@ -935,6 +936,9 @@ export abstract class WaitingRoomBaseDirective {
         }
         if (message.status === ParticipantStatus.Disconnected && participant) {
             participant.current_room = null;
+        }
+        if (!this.hasAHostInHearing(currentConferenceParticipants)) {
+            this.isTransferringIn = false;
         }
     }
 
@@ -1149,6 +1153,10 @@ export abstract class WaitingRoomBaseDirective {
 
     isHost(): boolean {
         return this.participant.role === Role.Judge || this.participant.role === Role.StaffMember;
+    }
+
+    hasAHostInHearing(participants: ParticipantResponse[]): boolean {
+        return participants.some(p => (p.role === Role.Judge || p.role === Role.StaffMember) && p.status === ParticipantStatus.InHearing);
     }
 
     showChooseCameraDialog() {
