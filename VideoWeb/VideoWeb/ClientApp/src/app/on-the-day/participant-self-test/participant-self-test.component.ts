@@ -13,6 +13,7 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { BaseSelfTestComponentDirective } from '../models/base-self-test.component';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
+import { ProfileService } from 'src/app/services/api/profile.service';
 
 @Component({
     selector: 'app-participant-self-test',
@@ -25,11 +26,12 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective
         private router: Router,
         protected route: ActivatedRoute,
         protected videoWebService: VideoWebService,
+        protected profileService: ProfileService,
         protected errorService: ErrorService,
         protected logger: Logger,
         private participantStatusUpdateService: ParticipantStatusUpdateService
     ) {
-        super(route, videoWebService, errorService, logger);
+        super(route, videoWebService, profileService, errorService, logger);
     }
 
     onSelfTestCompleted(testcallScore: TestCallScoreResponse): void {
