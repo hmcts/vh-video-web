@@ -1,0 +1,20 @@
+.text-right {
+  text-align: right;
+}
+
+.yellow {
+  color: govuk-colour('yellow');
+}
+.red {
+  color: govuk-colour('red');
+}
+.white {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.outline {
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 2px;
+  padding: 4px;
+  color: rgba(255, 255, 255, 0.9);
+}
