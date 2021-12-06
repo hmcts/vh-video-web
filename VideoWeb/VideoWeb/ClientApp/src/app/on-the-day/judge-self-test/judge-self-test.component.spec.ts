@@ -1,6 +1,6 @@
 import { convertToParamMap, Router, ActivatedRoute } from '@angular/router';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { TestCallScoreResponse, TestScore, SelfTestPexipResponse } from 'src/app/services/clients/api-client';
+import { TestCallScoreResponse, TestScore, SelfTestPexipResponse, UserProfileResponse, Role } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -9,14 +9,17 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { JudgeSelfTestComponent } from './judge-self-test.component';
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { ProfileService } from 'src/app/services/api/profile.service';
 
 describe('JudgeSelfTestComponent', () => {
     let component: JudgeSelfTestComponent;
     const conference = new ConferenceTestData().getConferenceDetailNow();
+    const profile = new UserProfileResponse({ role: Role.Individual });
 
     let router: jasmine.SpyObj<Router>;
     const activatedRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
     let videoWebService: jasmine.SpyObj<VideoWebService>;
+    let profileService: jasmine.SpyObj<ProfileService>;
     let errorService: jasmine.SpyObj<ErrorService>;
     const logger: Logger = new MockLogger();
 
@@ -26,7 +29,9 @@ describe('JudgeSelfTestComponent', () => {
 
     beforeAll(() => {
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById', 'getPexipConfig']);
+        profileService = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
 
+        profileService.getUserProfile.and.returnValue(Promise.resolve(profile));
         videoWebService.getConferenceById.and.returnValue(Promise.resolve(conference));
         videoWebService.getPexipConfig.and.returnValue(Promise.resolve(pexipConfig));
 
@@ -40,7 +45,7 @@ describe('JudgeSelfTestComponent', () => {
     });
 
     beforeEach(() => {
-        component = new JudgeSelfTestComponent(router, activatedRoute, videoWebService, errorService, logger);
+        component = new JudgeSelfTestComponent(router, activatedRoute, videoWebService, profileService, errorService, logger);
         component.conference = conference;
         component.conferenceId = conference.id;
         router.navigateByUrl.calls.reset();
@@ -58,9 +63,16 @@ describe('JudgeSelfTestComponent', () => {
         expect(component.testInProgress).toBeFalsy();
     }));
 
+    it('should get conference when id is found in params', fakeAsync(() => {
+        component.ngOnInit();
+        flushMicrotasks();
+
+        expect(component.isStaffMember).toBeFalse();
+    }));
+
     it('should get pexip config when when id is not found in params', fakeAsync(() => {
         const emptyParamsRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({}) } };
-        component = new JudgeSelfTestComponent(router, emptyParamsRoute, videoWebService, errorService, logger);
+        component = new JudgeSelfTestComponent(router, emptyParamsRoute, videoWebService, profileService, errorService, logger);
 
         component.ngOnInit();
         flushMicrotasks();

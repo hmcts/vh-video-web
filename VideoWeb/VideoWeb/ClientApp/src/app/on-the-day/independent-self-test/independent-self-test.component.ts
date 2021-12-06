@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -15,14 +16,19 @@ export class IndependentSelfTestComponent extends BaseSelfTestComponentDirective
         private router: Router,
         protected route: ActivatedRoute,
         protected videoWebService: VideoWebService,
+        protected profileService: ProfileService,
         protected errorService: ErrorService,
         protected logger: Logger
     ) {
-        super(route, videoWebService, errorService, logger);
+        super(route, videoWebService, profileService, errorService, logger);
     }
 
     equipmentWorksHandler() {
-        this.router.navigateByUrl(pageUrls.ParticipantHearingList);
+        if (this.isStaffMember) {
+            this.router.navigateByUrl(pageUrls.StaffMemberHearingList);
+        } else {
+            this.router.navigateByUrl(pageUrls.ParticipantHearingList);
+        }
         this.hideSelfTest = true;
     }
 
