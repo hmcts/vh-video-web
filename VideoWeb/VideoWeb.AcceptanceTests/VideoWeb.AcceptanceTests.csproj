@@ -63,7 +63,7 @@
     <PackageReference Include="TestApi.Client" Version="1.27.1" />
     <PackageReference Include="UserApi.Client" Version="1.27.0" />
     <PackageReference Include="VH.AcceptanceTests.Common" Version="1.21.61" />
-    <PackageReference Include="VideoApi.Client" Version="1.28.4" />
+    <PackageReference Include="VideoApi.Client" Version="1.28.6" />
   </ItemGroup>
 
   <ItemGroup>
