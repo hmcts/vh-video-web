@@ -263,7 +263,7 @@ namespace VideoWeb.Controllers
                 return BadRequest(ModelState);
             }
 
-            var username = userProfile.Name.ToLower().Trim();
+            var username = userProfile.Username.ToLower().Trim();
             ConferenceDetailsResponse conference;
             try
             {
