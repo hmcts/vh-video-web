@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -31,6 +32,7 @@ namespace VideoWeb.Controllers
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<VideoEventsController> _logger;
         private readonly IMapperFactory _mapperFactory;
+        private readonly TelemetryClient _telemetryClient;
 
 
         public VideoEventsController(
@@ -38,13 +40,15 @@ namespace VideoWeb.Controllers
             IEventHandlerFactory eventHandlerFactory,
             IConferenceCache conferenceCache,
             ILogger<VideoEventsController> logger,
-            IMapperFactory mapperFactory)
+            IMapperFactory mapperFactory,
+            TelemetryClient telemetryClient)
         {
             _videoApiClient = videoApiClient;
             _eventHandlerFactory = eventHandlerFactory;
             _conferenceCache = conferenceCache;
             _logger = logger;
             _mapperFactory = mapperFactory;
+            _telemetryClient = telemetryClient;
         }
 
         [HttpPost]
@@ -55,6 +59,8 @@ namespace VideoWeb.Controllers
         {
             try
             {
+                _telemetryClient.TrackCustomEvent("KinlyCallback", request);
+            
                 var conferenceId = Guid.Parse(request.ConferenceId);
                 var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
                 {
@@ -76,16 +82,25 @@ namespace VideoWeb.Controllers
                 // DO NOT USE Task.WhenAll because the handlers are not thread safe and will overwrite Source<Variable> for each run
                 foreach (var e in events)
                 {
+                    _telemetryClient.TrackCustomEvent("SentGeneratedEventToVideoApi", e);
                     await SendEventToVideoApi(e);
                 }
 
                 callbackEvents.RemoveRepeatedVhoCallConferenceEvents();
                 foreach (var cb in callbackEvents)
                 {
+                    _telemetryClient.TrackCustomEvent("SentGeneratedEventToUI", cb);
                     await PublishEventToUi(cb);
                 }
 
                 await GenerateTransferEventOnVmrParticipantJoining(conference, request);
+                var eventProperties = new Dictionary<string, string>();
+                eventProperties.Add("sourceEventId", request.EventId);
+                eventProperties.Add("eventType", request.EventType.ToString());
+                eventProperties.Add("timestamp", DateTime.Now.ToString("u"));
+                eventProperties.Add("conferenceId", request.ConferenceId);
+
+                _telemetryClient.TrackEvent("KinlyCallbackHandled", eventProperties);
                 return NoContent();
             }
             catch (VideoApiException e)
