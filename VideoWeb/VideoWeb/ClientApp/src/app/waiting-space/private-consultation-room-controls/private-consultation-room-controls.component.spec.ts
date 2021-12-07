@@ -743,6 +743,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     describe('leave', () => {
         it('should call super leave method with participants', () => {
             const spy = spyOn(HearingControlsBaseComponent.prototype, 'leave');
+            spyOn(component.leaveHearing, 'emit');
+            spyOn(component, 'isAnotherHostInHearing').and.returnValue(true);
             getSpiedPropertyGetter(participantServiceSpy, 'participants').and.returnValue([
                 new ParticipantModel(
                     '7879c48a-f513-4d3b-bb1b-151831427507',
@@ -762,6 +764,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
             component.leave(true);
 
+            expect(component.leaveHearing.emit).toHaveBeenCalled();
             expect(spy).toHaveBeenCalledTimes(1);
             expect(spy).toHaveBeenCalledWith(true, participantServiceSpy.participants);
         });

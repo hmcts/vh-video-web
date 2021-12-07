@@ -493,4 +493,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             this.leaveJudicialConsultation();
         }
     }
+
+    leaveHearing() {
+        this.hostWantsToJoinHearing = false;
+    }
 }
