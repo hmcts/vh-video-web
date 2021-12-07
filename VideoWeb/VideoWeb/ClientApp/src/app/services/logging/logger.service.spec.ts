@@ -4,22 +4,61 @@ import { LoggerService, LOG_ADAPTER } from './logger.service';
 import { LogAdapter } from './log-adapter';
 import { ConferenceService } from '../conference/conference.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
+import { ActivatedRoute, ActivatedRouteSnapshot, convertToParamMap, Router } from '@angular/router';
+import { ConferenceResponse } from '../clients/api-client';
+import { Subject } from 'rxjs';
 
 describe('LoggerService', () => {
     let logAdapter: jasmine.SpyObj<LogAdapter>;
     let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
     let service: LoggerService;
+    let activatedRouteSpy: jasmine.SpyObj<ActivatedRoute>;
+    let activatedRouteFirstChildSpy: jasmine.SpyObj<ActivatedRoute>;
+    let routerSpy: jasmine.SpyObj<Router>;
 
     beforeEach(() => {
+        routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate'], ['events']);
+
+        activatedRouteSpy = jasmine.createSpyObj<ActivatedRoute>('ActivatedRoute', ['toString'], ['firstChild', 'snapshot', 'paramsMap']);
+        activatedRouteFirstChildSpy = jasmine.createSpyObj<ActivatedRoute>('ActivatedRoute', ['toString'], ['paramMap']);
+
+        getSpiedPropertyGetter(activatedRouteSpy, 'firstChild').and.returnValue(activatedRouteFirstChildSpy);
+
         logAdapter = jasmine.createSpyObj<LogAdapter>(['trackException', 'trackEvent', 'info']);
         conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>('ConferenceService', ['getConferenceById'], ['currentConferenceId']);
-        service = new LoggerService([logAdapter]);
-        service.conferenceService = conferenceServiceSpy;
+        service = new LoggerService([logAdapter], routerSpy, activatedRouteSpy);
     });
 
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
+
+    it('should call set the conference ID to what it is in the param map', fakeAsync(() => {
+        // Arrange
+        const conferenceId = 'conference-id';
+        const routeSnapshot = new ActivatedRouteSnapshot();
+        getSpiedPropertyGetter(activatedRouteSpy, 'snapshot').and.returnValue(routeSnapshot);
+        spyOnProperty(routeSnapshot, 'paramMap', 'get').and.returnValue(
+            convertToParamMap({
+                conferenceId: conferenceId
+            })
+        );
+
+        // Act
+        sut.initialiseConferenceFromActiveRoute();
+
+        getConferenceSubject.next(expectedConferenceResult);
+        flush();
+
+        // Assert
+        expect(apiClientSpy.getConferenceById).toHaveBeenCalledOnceWith(conferenceId);
+        expect(getConference$.subscribe).toHaveBeenCalledTimes(1);
+        expect(currentConferenceResult).toBeTruthy();
+        expect(sut.currentConference).toEqual(expectedConferenceResult);
+        expect(sut.currentConferenceId).toEqual(expectedConferenceResult.id);
+        expect(currentConferenceResult).toEqual(expectedConferenceResult);
+        expect(conferenceStatusResult).toEqual(expectedConferenceStatusResult);
+    }));
 
     it('should log events to all adapters', () => {
         // Arrange
