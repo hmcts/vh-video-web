@@ -21,8 +21,6 @@ export class ConferenceService {
         private apiClient: ApiClient,
         private logger: LoggerService
     ) {
-        logger.conferenceService = this;
-
         this.initialiseConferenceFromActiveRoute();
         router.events
             .pipe(
