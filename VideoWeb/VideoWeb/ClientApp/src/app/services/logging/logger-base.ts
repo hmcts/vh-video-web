@@ -2,6 +2,7 @@
  * Application wide logger abstracting where logs end up.
  */
 export abstract class Logger {
+    abstract pexRtcInfo(message: string, properties?: any): void;
     abstract debug(message: string, properties?: any): void;
     abstract info(message: string, properties?: any): void;
     abstract warn(message: string, properties?: any): void;
