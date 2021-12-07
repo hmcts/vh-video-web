@@ -1,23 +1,23 @@
-import { TestBed, inject } from '@angular/core/testing';
-
-import { LoggerService, LOG_ADAPTER } from './logger.service';
+import { fakeAsync, flush } from '@angular/core/testing';
+import { LoggerService } from './logger.service';
 import { LogAdapter } from './log-adapter';
 import { ConferenceService } from '../conference/conference.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
-import { ActivatedRoute, ActivatedRouteSnapshot, convertToParamMap, Router } from '@angular/router';
-import { ConferenceResponse } from '../clients/api-client';
+import { ActivatedRoute, ActivatedRouteSnapshot, convertToParamMap, Event, NavigationEnd, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 
 describe('LoggerService', () => {
     let logAdapter: jasmine.SpyObj<LogAdapter>;
-    let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
     let service: LoggerService;
     let activatedRouteSpy: jasmine.SpyObj<ActivatedRoute>;
     let activatedRouteFirstChildSpy: jasmine.SpyObj<ActivatedRoute>;
     let routerSpy: jasmine.SpyObj<Router>;
+    let eventsSubject: Subject<Event>;
 
     beforeEach(() => {
         routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate'], ['events']);
+        eventsSubject = new Subject<Event>();
+        getSpiedPropertyGetter(routerSpy, 'events').and.returnValue(eventsSubject.asObservable());
 
         activatedRouteSpy = jasmine.createSpyObj<ActivatedRoute>('ActivatedRoute', ['toString'], ['firstChild', 'snapshot', 'paramsMap']);
         activatedRouteFirstChildSpy = jasmine.createSpyObj<ActivatedRoute>('ActivatedRoute', ['toString'], ['paramMap']);
@@ -25,7 +25,7 @@ describe('LoggerService', () => {
         getSpiedPropertyGetter(activatedRouteSpy, 'firstChild').and.returnValue(activatedRouteFirstChildSpy);
 
         logAdapter = jasmine.createSpyObj<LogAdapter>(['trackException', 'trackEvent', 'info']);
-        conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>('ConferenceService', ['getConferenceById'], ['currentConferenceId']);
+
         service = new LoggerService([logAdapter], routerSpy, activatedRouteSpy);
     });
 
@@ -33,7 +33,7 @@ describe('LoggerService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should call set the conference ID to what it is in the param map', fakeAsync(() => {
+    it('should set the conference ID to what it is in the param map', fakeAsync(() => {
         // Arrange
         const conferenceId = 'conference-id';
         const routeSnapshot = new ActivatedRouteSnapshot();
@@ -45,108 +45,191 @@ describe('LoggerService', () => {
         );
 
         // Act
-        sut.initialiseConferenceFromActiveRoute();
-
-        getConferenceSubject.next(expectedConferenceResult);
+        eventsSubject.next(new NavigationEnd(null, null, null));
         flush();
 
         // Assert
-        expect(apiClientSpy.getConferenceById).toHaveBeenCalledOnceWith(conferenceId);
-        expect(getConference$.subscribe).toHaveBeenCalledTimes(1);
-        expect(currentConferenceResult).toBeTruthy();
-        expect(sut.currentConference).toEqual(expectedConferenceResult);
-        expect(sut.currentConferenceId).toEqual(expectedConferenceResult.id);
-        expect(currentConferenceResult).toEqual(expectedConferenceResult);
-        expect(conferenceStatusResult).toEqual(expectedConferenceStatusResult);
+        expect(service.currentConferenceId).toEqual(conferenceId);
     }));
 
-    it('should log events to all adapters', () => {
+    it('should update the conference ID to what it is in the param map when a second nav end happens', fakeAsync(() => {
         // Arrange
-        const message = 'msg';
-        const properties = {
-            message: message
-        };
+        const oldConferenceId = 'old-conference-id';
+        const newConferenceId = 'conference-id';
+        const routeSnapshot = new ActivatedRouteSnapshot();
+        getSpiedPropertyGetter(activatedRouteSpy, 'snapshot').and.returnValue(routeSnapshot);
+        const paramMapSpy = spyOnProperty(routeSnapshot, 'paramMap', 'get');
+        paramMapSpy.and.returnValue(
+            convertToParamMap({
+                conferenceId: oldConferenceId
+            })
+        );
 
-        const conferenceId = 'conference-id';
-        const expectedProperties = {
-            message: message
-        };
-        expectedProperties[LoggerService.currentConferenceIdPropertyKey] = conferenceId;
+        eventsSubject.next(new NavigationEnd(null, null, null));
+        flush();
 
-        getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
+        paramMapSpy.and.returnValue(
+            convertToParamMap({
+                conferenceId: newConferenceId
+            })
+        );
 
         // Act
-        service.event(message, properties);
+        eventsSubject.next(new NavigationEnd(null, null, null));
+        flush();
 
         // Assert
-        expect(logAdapter.trackEvent).toHaveBeenCalledWith(message, expectedProperties);
+        expect(service.currentConferenceId).toEqual(newConferenceId);
+    }));
+
+    it('set conference id conference id to null if it is not in the param map', fakeAsync(() => {
+        // Arrange
+        const routeSnapshotSpy = jasmine.createSpyObj<ActivatedRouteSnapshot>(
+            'ActivatedRouteSnapshot',
+            ['toString'],
+            ['firstChild', 'paramMap']
+        );
+        getSpiedPropertyGetter(activatedRouteSpy, 'snapshot').and.returnValue(routeSnapshotSpy);
+        getSpiedPropertyGetter(routeSnapshotSpy, 'paramMap').and.returnValue(convertToParamMap({}));
+
+        // Act
+        eventsSubject.next(new NavigationEnd(null, null, null));
+        flush();
+
+        // Assert
+        expect(service.currentConferenceId).toEqual(null);
+    }));
+
+    describe('logging methods', () => {
+        const conferenceId = 'conference-id';
+        beforeEach(fakeAsync(() => {
+            const routeSnapshotSpy = jasmine.createSpyObj<ActivatedRouteSnapshot>(
+                'ActivatedRouteSnapshot',
+                ['toString'],
+                ['firstChild', 'paramMap']
+            );
+            getSpiedPropertyGetter(activatedRouteSpy, 'snapshot').and.returnValue(routeSnapshotSpy);
+            getSpiedPropertyGetter(routeSnapshotSpy, 'paramMap').and.returnValue(
+                convertToParamMap({
+                    conferenceId: conferenceId
+                })
+            );
+            eventsSubject.next(new NavigationEnd(null, null, null));
+            flush();
+        }));
+
+        it('should log events to all adapters', () => {
+            // Arrange
+            const message = 'msg';
+            const properties = {
+                message: message
+            };
+
+            const expectedProperties = {
+                message: message
+            };
+            expectedProperties[LoggerService.currentConferenceIdPropertyKey] = conferenceId;
+
+            // Act
+            service.event(message, properties);
+
+            // Assert
+            expect(logAdapter.trackEvent).toHaveBeenCalledWith(message, expectedProperties);
+        });
+
+        it('should log errors to all adapters', () => {
+            // Arrange
+            const error = new Error();
+            const message = 'msg';
+            const properties = {
+                message: message
+            };
+
+            const expectedProperties = {
+                message: message
+            };
+            expectedProperties[LoggerService.currentConferenceIdPropertyKey] = conferenceId;
+
+            // Act
+            service.error(message, error, properties);
+
+            // Assert
+            expect(logAdapter.trackException).toHaveBeenCalledWith(message, error, expectedProperties);
+        });
+
+        it('should add conference id to the properties', () => {
+            // Arrange
+            const message = 'msg';
+            const properties = {
+                message: message
+            };
+
+            const expectedProperties = {
+                message: message
+            };
+            expectedProperties[LoggerService.currentConferenceIdPropertyKey] = conferenceId;
+
+            // Act
+            service.info(message, properties);
+
+            // Assert
+            expect(logAdapter.info).toHaveBeenCalledWith(message, expectedProperties);
+        });
+
+        it('should add conference id to the properties when no properties are provided', () => {
+            // Arrange
+            const message = 'msg';
+            const properties = {
+                message: message
+            };
+
+            const expectedProperties = {
+                message: message
+            };
+            expectedProperties[LoggerService.currentConferenceIdPropertyKey] = conferenceId;
+
+            // Act
+            service.info(message, properties);
+
+            // Assert
+            expect(logAdapter.info).toHaveBeenCalledWith(message, expectedProperties);
+        });
     });
 
-    it('should log errors to all adapters', () => {
+    it('should log pexRtcInfo', () => {
         // Arrange
-        const error = new Error();
-        const message = 'msg';
-        const properties = {
-            message: message
-        };
-
         const conferenceId = 'conference-id';
-        const expectedProperties = {
-            message: message
-        };
-        expectedProperties[LoggerService.currentConferenceIdPropertyKey] = conferenceId;
+        let properties = {};
 
-        getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
+        service.currentConferenceId = conferenceId;
+
+        const message = 'message';
+        const expectedMessage = `[PexipApi] - Current Conference ID: ${conferenceId} - ${message}`;
 
         // Act
-        service.error(message, error, properties);
+        service.pexRtcInfo(message);
 
         // Assert
-        expect(logAdapter.trackException).toHaveBeenCalledWith(message, error, expectedProperties);
+        expect(logAdapter.info).toHaveBeenCalledWith(expectedMessage, undefined);
     });
 
-    it('should add conference id to the properties', () => {
+    it('should log pexRtcInfo with properties', () => {
         // Arrange
-        const message = 'msg';
-        const properties = {
-            message: message
-        };
-
         const conferenceId = 'conference-id';
-        const expectedProperties = {
-            message: message
+        let properties = {
+            hello: 'world'
         };
-        expectedProperties[LoggerService.currentConferenceIdPropertyKey] = conferenceId;
 
-        getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
+        service.currentConferenceId = conferenceId;
+
+        const message = 'message';
+        const expectedMessage = `[PexipApi] - Current Conference ID: ${conferenceId} - ${message}`;
 
         // Act
-        service.info(message, properties);
+        service.pexRtcInfo(message, properties);
 
         // Assert
-        expect(logAdapter.info).toHaveBeenCalledWith(message, expectedProperties);
-    });
-
-    it('should add conference id to the properties when no properties are provided', () => {
-        // Arrange
-        const message = 'msg';
-        const properties = {
-            message: message
-        };
-
-        const conferenceId = 'conference-id';
-        const expectedProperties = {
-            message: message
-        };
-        expectedProperties[LoggerService.currentConferenceIdPropertyKey] = conferenceId;
-
-        getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
-
-        // Act
-        service.info(message, properties);
-
-        // Assert
-        expect(logAdapter.info).toHaveBeenCalledWith(message, expectedProperties);
+        expect(logAdapter.info).toHaveBeenCalledWith(expectedMessage, properties);
     });
 
     describe('addConferenceIdToProperties', () => {
@@ -155,7 +238,8 @@ describe('LoggerService', () => {
             const conferenceId = 'conference-id';
             const conferenceIdPropertyKey = 'conference-id';
             let properties = {};
-            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
+
+            service.currentConferenceId = conferenceId;
 
             // Act
             properties = service.addConferenceIdToProperties(properties, conferenceIdPropertyKey);
@@ -169,7 +253,8 @@ describe('LoggerService', () => {
             const conferenceId = 'conference-id';
             const conferenceIdPropertyKey = 'conference-id';
             let properties = 'hello';
-            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
+
+            service.currentConferenceId = conferenceId;
 
             // Act
             properties = service.addConferenceIdToProperties(properties, conferenceIdPropertyKey);

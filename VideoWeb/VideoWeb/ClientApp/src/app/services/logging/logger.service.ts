@@ -20,7 +20,7 @@ export class LoggerService implements Logger {
                 map(this.getConferenceIdFromRoute)
             )
             .subscribe(paramMap => {
-                this.currentConferenceId = paramMap?.get('conferenceId');
+                this.currentConferenceId = paramMap?.get('conferenceId') ?? null;
             });
     }
 
