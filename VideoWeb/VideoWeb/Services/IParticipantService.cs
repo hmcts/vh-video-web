@@ -56,7 +56,7 @@ namespace VideoWeb.Services
                 LastName = staffMemberProfile.LastName,
                 Username = staffMemberProfile.Username,
                 HearingRole = HearingRoleName.StaffMember,
-                Name = user.Identity.Name,
+                Name = staffMemberProfile.Name,
                 DisplayName = staffMemberProfile.DisplayName,
                 UserRole = UserRole.StaffMember,
                 ContactEmail = staffMemberEmail

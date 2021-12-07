@@ -94,6 +94,7 @@ import {
     faStopCircle,
     faUser as faUserRegular
 } from '@fortawesome/free-regular-svg-icons';
+import { RoomNamePipe } from './pipes/room-name.pipe';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -160,7 +161,8 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         ForcePlayVideoDirective,
         CrestLogoImageSourceDirective,
         StaffMemberVenueListComponent,
-        VhOfficerVenueListComponent
+        VhOfficerVenueListComponent,
+        RoomNamePipe
     ],
     providers: [
         { provide: Logger, useClass: LoggerService },
@@ -211,7 +213,8 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         CrestLogoImageSourceDirective,
         StaffMemberVenueListComponent,
         VhOfficerVenueListComponent,
-        FontAwesomeModule
+        FontAwesomeModule,
+        RoomNamePipe
     ]
 })
 export class SharedModule {

@@ -6,6 +6,8 @@ import {
     AllowedEndpointResponse,
     ConferenceResponse,
     ConsultationAnswer,
+    EndpointResponse,
+    EndpointState,
     EndpointStatus,
     LoggedParticipantResponse,
     ParticipantResponse,
@@ -134,13 +136,6 @@ describe('PrivateConsultationParticipantsComponent', () => {
         const p = conference.participants[0];
         p.current_room.label = 'test-room-two';
         expect(component.getRowClasses(p)).toEqual('');
-    });
-
-    it('should get same room status', () => {
-        component.roomLabel = 'test-room';
-        const p = conference.participants[0];
-        p.current_room.label = 'test-room';
-        expect(component.getParticipantStatus(p)).toEqual('');
     });
 
     it('should return can call participant', () => {
@@ -278,89 +273,40 @@ describe('PrivateConsultationParticipantsComponent', () => {
         expect(component.participantCallStatuses['Participant1']).toBeNull();
     });
 
-    it('should get participant status in current room', () => {
+    it('should get participant status', () => {
         component.roomLabel = 'Room1';
-        const participant = new ParticipantResponse({
-            current_room: {
-                label: 'Room1'
-            } as RoomSummaryResponse
-        });
-
-        const result = component.getParticipantStatus(participant);
-
-        // Assert
-        expect(result).toBe('');
-    });
-
-    it('should get status from participant', () => {
-        component.roomLabel = 'Room1';
-        const statuses = [
-            ['Calling', 'private-consultation-participants.calling'],
-            ['Transferring', 'private-consultation-participants.transferring'],
-            ['Accepted', 'private-consultation-participants.transferring'],
-            ['Rejected', 'private-consultation-participants.declined'],
-            ['Failed', 'private-consultation-participants.failed'],
-            ['None', 'private-consultation-participants.no-answer']
-        ];
-        statuses.forEach(([status, resultText]) => {
+        const allStatuses = Object.values(ParticipantStatus);
+        allStatuses.forEach(status => {
+            const statusString = status.toString();
+            const participantId = 'Participant1';
             const participant = new ParticipantResponse({
-                id: 'Participant1'
+                id: participantId
             });
-            component.participantCallStatuses['Participant1'] = status;
+            component.participantCallStatuses[participantId] = statusString;
 
-            translateService.instant.calls.reset();
             const result = component.getParticipantStatus(participant);
 
             // Assert
-            expect(result).toBe(resultText);
+            expect(result).toBe(statusString);
         });
     });
 
-    it('should get participant status Other Room', () => {
+    it('should get endpoint status', () => {
         component.roomLabel = 'Room1';
-        const participant = new ParticipantResponse({
-            current_room: {
-                label: 'ParticipantConsultationRoom10'
-            } as RoomSummaryResponse,
-            id: 'Participant1'
+        const allStatuses = Object.values(EndpointState);
+        allStatuses.forEach(status => {
+            const statusString = status.toString();
+            const endpointId = 'Endpoint1';
+            const endpoint = new EndpointResponse({
+                id: endpointId
+            });
+            component.participantCallStatuses[endpointId] = statusString;
+
+            const result = component.getParticipantStatus(endpoint);
+
+            // Assert
+            expect(result).toBe(statusString);
         });
-
-        const result = component.getParticipantStatus(participant);
-
-        // Assert
-        expect(result).toBe('ParticipantConsultationRoom10');
-        expect(consultationService.consultationNameToString).toHaveBeenCalledWith('ParticipantConsultationRoom10', true);
-    });
-
-    it('should get participant status Judge Room', () => {
-        component.roomLabel = 'Room1';
-        const participant = new ParticipantResponse({
-            current_room: {
-                label: 'JudgeJOHConsultationRoom10'
-            } as RoomSummaryResponse,
-            id: 'Participant1'
-        });
-
-        const result = component.getParticipantStatus(participant);
-
-        // Assert
-        expect(result).toBe('JudgeJOHConsultationRoom10');
-        expect(consultationService.consultationNameToString).toHaveBeenCalledWith('JudgeJOHConsultationRoom10', true);
-    });
-
-    it('should get participant status disconnected', () => {
-        component.roomLabel = 'Room1';
-        const participant = new ParticipantResponse({
-            id: 'Participant1',
-            status: ParticipantStatus.Disconnected
-        });
-
-        translateService.instant.calls.reset();
-        const expectedText = 'private-consultation-participants.not-available';
-        const result = component.getParticipantStatus(participant);
-
-        // Assert
-        expect(result).toBe(expectedText);
     });
 
     it('should get participant available if available', () => {
@@ -418,74 +364,6 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
         // Assert
         expect(result).toBeFalse();
-    });
-
-    it('should get status class from participant', () => {
-        component.roomLabel = 'Room1';
-        const statuses = [
-            ['Calling', 'yellow'],
-            ['Transferring', 'yellow'],
-            ['Accepted', 'yellow'],
-            ['Rejected', 'red'],
-            ['Failed', 'red'],
-            ['None', 'red']
-        ];
-        statuses.forEach(([status, resultClass]) => {
-            const participant = new ParticipantResponse({
-                id: 'Participant1'
-            });
-            component.participantCallStatuses['Participant1'] = status;
-
-            const result = component.getParticipantStatusClasses(participant);
-
-            // Assert
-            expect(result).toBe(resultClass);
-        });
-    });
-
-    it('should get status class Other Room', () => {
-        component.roomLabel = 'Room1';
-        const participant = new ParticipantResponse({
-            current_room: {
-                label: 'ParticipantConsultationRoom10'
-            } as RoomSummaryResponse,
-            id: 'Participant1',
-            status: ParticipantStatus.InConsultation
-        });
-
-        const result = component.getParticipantStatusClasses(participant);
-
-        // Assert
-        expect(result).toBe('outline');
-    });
-
-    it('should get status same room default', () => {
-        component.roomLabel = 'Room1';
-        const participant = new ParticipantResponse({
-            current_room: {
-                label: 'Room1'
-            } as RoomSummaryResponse,
-            id: 'Participant1',
-            status: ParticipantStatus.InConsultation
-        });
-
-        const result = component.getParticipantStatusClasses(participant);
-
-        // Assert
-        expect(result).toBe('white');
-    });
-
-    it('should get status same not inconsultation', () => {
-        component.roomLabel = 'Room1';
-        const participant = new ParticipantResponse({
-            id: 'Participant1',
-            status: ParticipantStatus.Available
-        });
-
-        const result = component.getParticipantStatusClasses(participant);
-
-        // Assert
-        expect(result).toBe('white');
     });
 
     it('should get participants to a private consultation room', () => {

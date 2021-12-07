@@ -1,0 +1,49 @@
+<div [ngClass]="{'yellow': isInCurrentRoom()}" class="text-right">
+    <ng-container *ngIf="!isInCurrentRoom()">
+        <ng-container [ngSwitch]="status">
+            <ng-container *ngSwitchCase="'Calling'">
+                <span class="yellow">
+                    {{ 'private-consultation-participants.calling' | translate }}
+                </span>
+            </ng-container>
+            <ng-container *ngSwitchCase="ConsultationAnswer.Rejected">
+                <span class="red">
+                    {{ 'private-consultation-participants.declined' | translate }}
+                </span>
+            </ng-container>
+            <ng-container *ngSwitchCase="ConsultationAnswer.Failed">
+                <span class="red">
+                    {{ 'private-consultation-participants.failed' | translate }}
+                </span>
+            </ng-container>
+            <ng-container *ngSwitchCase="ConsultationAnswer.None">
+                <span class="red">
+                    {{ 'private-consultation-participants.no-answer' | translate }}
+                </span>
+            </ng-container>
+            <ng-container *ngSwitchCase="ConsultationAnswer.Transferring">
+                <span class="yellow">
+                    {{ 'private-consultation-participants.Transferring' | translate }}
+                </span>
+            </ng-container>
+            <ng-container *ngSwitchCase="ConsultationAnswer.Accepted">
+                <span class="yellow">
+                    {{ 'private-consultation-participants.Transferring' | translate }}
+                </span>
+            </ng-container>
+            <ng-container *ngSwitchDefault>
+                <ng-container *ngIf="entity.current_room?.label; else noRoomLabel">
+                    <div class="outline">
+                        <span>{{ entity.current_room.label | roomName : true }} </span>
+                        <fa-icon *ngIf="entity.current_room.locked" icon="lock"></fa-icon>
+                    </div>
+                </ng-container>
+                <ng-template #noRoomLabel>
+                    <ng-container *ngIf="!isAvailable()">
+                        {{ 'private-consultation-participants.not-available' | translate }}
+                    </ng-container>
+                </ng-template>
+            </ng-container>
+        </ng-container>
+    </ng-container>
+</div>

@@ -18,11 +18,8 @@
     <div [class]="getRowClasses(participant)">
         <span class="wrap-anywhere" [ngClass]="participantNameClass(participant)">{{participant.display_name}}</span>
     </div>
-    <div [class]="getRowClasses(participant)"
-        class="text-right">
-        <div [class]="getParticipantStatusClasses(participant)"
-            [innerHTML]="getParticipantStatus(participant)"></div>
-    </div>
+    <app-private-consultation-participant-status [entity]="participant" [status]="status" [roomLabel]="roomLabel">
+    </app-private-consultation-participant-status>
 </div>
 
 <div *ngIf="interpreter"
