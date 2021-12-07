@@ -96,7 +96,7 @@ export class VideoCallService {
 
         this.pexipAPI.onLog = (message: string, ...args: any[]) => {
             const pexipLoggerPrefix = '[PexipApi] - ';
-            this.logger.info(`${pexipLoggerPrefix} ${message}`, ...args);
+            this.logger.pexRtcInfo(`${pexipLoggerPrefix} ${message}`, ...args);
         };
 
         this.userMediaService.initialise();
