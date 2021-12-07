@@ -1,5 +1,7 @@
 import { Inject, Injectable, InjectionToken } from '@angular/core';
-import { ConferenceService } from '../conference/conference.service';
+import { ActivatedRouteSnapshot, NavigationEnd, ParamMap, Router } from '@angular/router';
+import { filter, map } from 'rxjs/operators';
+import { activatedRoute } from 'src/app/waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
 import { LogAdapter } from './log-adapter';
 import { Logger } from './logger-base';
 
@@ -10,14 +12,32 @@ export const LOG_ADAPTER = new InjectionToken<LogAdapter>('LogAdapter');
 })
 export class LoggerService implements Logger {
     static currentConferenceIdPropertyKey = 'currentConferenceId';
+    private currentConferenceId: string | null;
 
-    public conferenceService: ConferenceService;
-    constructor(@Inject(LOG_ADAPTER) private adapters: LogAdapter[]) {}
+    constructor(@Inject(LOG_ADAPTER) private adapters: LogAdapter[], router: Router) {
+        router.events
+            .pipe(
+                filter(x => x instanceof NavigationEnd),
+                map(() => activatedRoute.snapshot),
+                map(paramMap => this.getConferenceIdFromRoute(paramMap))
+            )
+            .subscribe(params => {
+                this.currentConferenceId = params?.get('conferenceId') ?? null;
+            });
+    }
+
+    private getConferenceIdFromRoute(route: ActivatedRouteSnapshot): ParamMap {
+        while (route && !route.paramMap?.has('conferenceId')) {
+            route = route?.firstChild;
+        }
+
+        return route?.paramMap;
+    }
 
     addConferenceIdToProperties(properties?: any, conferenceIdKey: string = LoggerService.currentConferenceIdPropertyKey) {
-        properties = properties ?? {};
+        properties = { properties } ?? {};
         if (typeof properties === 'object') {
-            properties[conferenceIdKey] = this.conferenceService?.currentConferenceId;
+            properties[conferenceIdKey] = this.currentConferenceId ?? null;
         }
 
         return properties;
@@ -46,5 +66,11 @@ export class LoggerService implements Logger {
     event(event: string, properties?: any) {
         properties = this.addConferenceIdToProperties(properties);
         this.adapters.forEach(logger => logger.trackEvent(event, properties));
+    }
+
+    pexRtcMessage(message: string, properties?: any) {
+        this.adapters.forEach(logger =>
+            logger.info(`[PexipAPI] - Current Conference ID: ${this.currentConferenceId} - ${message}`, properties)
+        );
     }
 }

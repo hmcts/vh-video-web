@@ -95,8 +95,7 @@ export class VideoCallService {
         this.pexipAPI.screenshare_fps = 30;
 
         this.pexipAPI.onLog = (message: string, ...args: any[]) => {
-            const pexipLoggerPrefix = '[PexipApi] - ';
-            this.logger.info(`${pexipLoggerPrefix} ${message}`, ...args);
+            this.logger.pexRtcMessage(`${message}`, ...args);
         };
 
         this.userMediaService.initialise();
