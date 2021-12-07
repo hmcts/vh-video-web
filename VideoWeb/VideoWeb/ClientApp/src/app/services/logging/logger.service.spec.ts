@@ -199,7 +199,7 @@ describe('LoggerService', () => {
     it('should log pexRtcInfo', () => {
         // Arrange
         const conferenceId = 'conference-id';
-        let properties = {};
+        const properties = {};
 
         service.currentConferenceId = conferenceId;
 
@@ -216,7 +216,7 @@ describe('LoggerService', () => {
     it('should log pexRtcInfo with properties', () => {
         // Arrange
         const conferenceId = 'conference-id';
-        let properties = {
+        const properties = {
             hello: 'world'
         };
 
