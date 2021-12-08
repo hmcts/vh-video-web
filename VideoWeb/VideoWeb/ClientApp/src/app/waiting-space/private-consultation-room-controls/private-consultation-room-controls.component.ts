@@ -34,6 +34,8 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
 
     @Input() public canToggleParticipantsPanel: boolean;
     @Input() public isChatVisible: boolean;
+    @Input() public areParticipantsVisible: boolean;
+
     private conferenceStatus: ConferenceStatusChanged;
     enableDynamicEvidenceSharing = false;
     isStaffMemberFeatureEnabled = false;

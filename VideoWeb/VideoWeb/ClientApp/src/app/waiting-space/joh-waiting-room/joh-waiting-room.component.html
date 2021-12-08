@@ -22,6 +22,7 @@
         [outgoingStream]="outgoingStream"
         [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
         [showConsultationControls]="showConsultationControls"
+        [areParticipantsVisible]="areParticipantsVisible"
         (leaveConsultation)="showLeaveConsultationModal()"
         (changeDeviceToggle)="showChooseCameraDialog()"
         (togglePanel)="togglePanel($event)"
@@ -30,7 +31,7 @@
     </div>
   </div>
 
-    <div *ngIf="isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': panelStates['Participants'] }">
+    <div *ngIf="isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': !panelStates['Participants'] }">
         <app-private-consultation-participants
             *ngIf="isPrivateConsultation"
             [conference]="hearing.getConference()"
@@ -43,10 +44,9 @@
   <div class="video-wrapper">
     <video
       appForcePlayVideo
-      #incomingFeed
       [muted]="shouldMuteHearing()"
       id="incomingFeedPrivate"
-      [srcObject]="presentationStream && !streamInMain ? presentationStream : stream"
+      [srcObject]="presentationStream && !streamInMain ? presentationStream : callStream"
       height="auto"
       poster="/assets/images/empty_crest.jpg"
     >
@@ -62,7 +62,7 @@
     >
       <video
         appForcePlayVideo
-        [srcObject]="presentationStream && !streamInMain ? stream : presentationStream"
+        [srcObject]="presentationStream && !streamInMain ? callStream : presentationStream"
         height="auto"
         poster="/assets/images/empty_crest.jpg"
         class="fill-container"

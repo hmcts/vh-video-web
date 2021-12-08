@@ -44,6 +44,7 @@ import {
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
 import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 
 describe('WaitingRoomComponent message and clock', () => {
     let component: WRTestComponent;
@@ -95,6 +96,64 @@ describe('WaitingRoomComponent message and clock', () => {
         component.participant = participant;
         component.connected = true; // assume connected to pexip
         videoWebService.getConferenceById.calls.reset();
+    });
+
+    describe('handleParticipantStatusChange', () => {
+        it('sets isTransferringIn to true when the judge is in hearing', () => {
+            const judge = component.conference.participants.find(x => x.role === Role.Judge);
+            judge.status = ParticipantStatus.InHearing;
+            component.isTransferringIn = true;
+            component.handleParticipantStatusChange({
+                status: ParticipantStatus.InHearing,
+                participantId: judge.id,
+                username: judge.user_name,
+                conferenceId: component.conferenceId
+            } as ParticipantStatusMessage);
+
+            expect(component.isTransferringIn).toBe(true);
+        });
+
+        it('sets isTransferringIn to false when the judge is not in hearing', () => {
+            const judge = component.conference.participants.find(x => x.role === Role.Judge);
+            judge.status = ParticipantStatus.Available;
+            component.isTransferringIn = true;
+            component.handleParticipantStatusChange({
+                status: ParticipantStatus.Available,
+                participantId: judge.id,
+                username: judge.user_name,
+                conferenceId: component.conferenceId
+            } as ParticipantStatusMessage);
+
+            expect(component.isTransferringIn).toBe(false);
+        });
+
+        it('sets isTransferringIn to true when the staff member is in hearing', () => {
+            const staffMember = component.conference.participants.find(x => x.role === Role.StaffMember);
+            staffMember.status = ParticipantStatus.InHearing;
+            component.isTransferringIn = true;
+            component.handleParticipantStatusChange({
+                status: ParticipantStatus.InHearing,
+                participantId: staffMember.id,
+                username: staffMember.user_name,
+                conferenceId: component.conferenceId
+            } as ParticipantStatusMessage);
+
+            expect(component.isTransferringIn).toBe(true);
+        });
+
+        it('sets isTransferringIn to false when the staff member is not in hearing', () => {
+            const staffMember = component.conference.participants.find(x => x.role === Role.StaffMember);
+            staffMember.status = ParticipantStatus.Available;
+            component.isTransferringIn = true;
+            component.handleParticipantStatusChange({
+                status: ParticipantStatus.Available,
+                participantId: staffMember.id,
+                username: staffMember.user_name,
+                conferenceId: component.conferenceId
+            } as ParticipantStatusMessage);
+
+            expect(component.isTransferringIn).toBe(false);
+        });
     });
 
     describe('toggle Panel', () => {
@@ -621,6 +680,23 @@ describe('WaitingRoomComponent message and clock', () => {
     it('should mute video stream when participant is not in hearing', () => {
         component.countdownComplete = false;
         component.participant.status = ParticipantStatus.Available;
+        spyOnProperty(component.hearing, 'status', 'get').and.returnValue(ConferenceStatus.Suspended);
+
+        expect(component.shouldMuteHearing()).toBe(true);
+    });
+
+    it('should mute video stream when participant is in hearing but the hearing status is not in session', () => {
+        component.countdownComplete = false;
+        component.participant.status = ParticipantStatus.InHearing;
+        spyOnProperty(component.hearing, 'status', 'get').and.returnValue(ConferenceStatus.Suspended);
+
+        expect(component.shouldMuteHearing()).toBe(true);
+    });
+
+    it('should mute video stream when participant is not in hearing', () => {
+        component.countdownComplete = false;
+        component.participant.status = ParticipantStatus.Available;
+        spyOnProperty(component.hearing, 'status', 'get').and.returnValue(ConferenceStatus.Suspended);
 
         expect(component.shouldMuteHearing()).toBe(true);
     });
@@ -628,6 +704,7 @@ describe('WaitingRoomComponent message and clock', () => {
     it('should mute video stream when participant is in hearing and countdown is not complete', () => {
         component.countdownComplete = false;
         component.participant.status = ParticipantStatus.InHearing;
+        spyOnProperty(component.hearing, 'status', 'get').and.returnValue(ConferenceStatus.InSession);
 
         expect(component.shouldMuteHearing()).toBe(true);
     });
@@ -635,6 +712,7 @@ describe('WaitingRoomComponent message and clock', () => {
     it('should not mute video stream when participant is in hearing and countdown is complete', () => {
         component.countdownComplete = true;
         component.participant.status = ParticipantStatus.InHearing;
+        spyOnProperty(component.hearing, 'status', 'get').and.returnValue(ConferenceStatus.InSession);
 
         expect(component.shouldMuteHearing()).toBe(false);
     });
@@ -744,6 +822,26 @@ describe('WaitingRoomComponent message and clock', () => {
                 // Assert
                 expect(result).toBeTrue();
             });
+        });
+    });
+
+    describe('areParticipantsVisible', () => {
+        it('should return true when panelStates participants is true', () => {
+            component.panelStates = {
+                Participants: true,
+                Chat: false
+            };
+
+            expect(component.areParticipantsVisible).toBeTrue();
+        });
+
+        it('should return false when panelStates participants is false', () => {
+            component.panelStates = {
+                Participants: false,
+                Chat: false
+            };
+
+            expect(component.areParticipantsVisible).toBeFalse();
         });
     });
 });

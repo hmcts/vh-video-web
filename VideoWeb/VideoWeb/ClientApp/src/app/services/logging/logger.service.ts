@@ -1,5 +1,6 @@
 import { Inject, Injectable, InjectionToken } from '@angular/core';
-import { ConferenceService } from '../conference/conference.service';
+import { ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, ParamMap, Router } from '@angular/router';
+import { filter, map } from 'rxjs/operators';
 import { LogAdapter } from './log-adapter';
 import { Logger } from './logger-base';
 
@@ -10,17 +11,40 @@ export const LOG_ADAPTER = new InjectionToken<LogAdapter>('LogAdapter');
 })
 export class LoggerService implements Logger {
     static currentConferenceIdPropertyKey = 'currentConferenceId';
+    currentConferenceId: string | null = null;
+    constructor(@Inject(LOG_ADAPTER) private adapters: LogAdapter[], router: Router, activatedRoute: ActivatedRoute) {
+        router.events
+            .pipe(
+                filter(x => x instanceof NavigationEnd),
+                map(() => activatedRoute.snapshot),
+                map(this.getConferenceIdFromRoute)
+            )
+            .subscribe(paramMap => {
+                this.currentConferenceId = paramMap?.get('conferenceId') ?? null;
+            });
+    }
 
-    public conferenceService: ConferenceService;
-    constructor(@Inject(LOG_ADAPTER) private adapters: LogAdapter[]) {}
+    private getConferenceIdFromRoute(route: ActivatedRouteSnapshot): ParamMap {
+        while (route && !route.paramMap?.has('conferenceId')) {
+            route = route?.firstChild;
+        }
+
+        return route?.paramMap;
+    }
 
     addConferenceIdToProperties(properties?: any, conferenceIdKey: string = LoggerService.currentConferenceIdPropertyKey) {
         properties = properties ?? {};
         if (typeof properties === 'object') {
-            properties[conferenceIdKey] = this.conferenceService?.currentConference?.id ?? null;
+            properties[conferenceIdKey] = this.currentConferenceId ?? null;
         }
 
         return properties;
+    }
+
+    pexRtcInfo(message: string, properties?: any): void {
+        this.adapters.forEach(logger =>
+            logger.info(`[PexipApi] - Current Conference ID: ${this.currentConferenceId} - ${message}`, properties)
+        );
     }
 
     debug(message: string, properties?: any): void {

@@ -63,6 +63,8 @@ import {
 import { IConferenceParticipantsStatus } from '../models/conference-participants-status';
 import { VideoCallService } from '../services/video-call.service';
 import { ParticipantsPanelComponent } from './participants-panel.component';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { RoomNamePipe } from 'src/app/shared/pipes/room-name.pipe';
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
@@ -127,11 +129,13 @@ describe('ParticipantsPanelComponent', () => {
                 ParticipantsPanelComponent,
                 MockComponent(JudgeContextMenuComponent),
                 MockComponent(ParticipantAlertComponent),
+                MockComponent(FaIconComponent),
                 MockDirective(TooltipDirective),
                 MockPipe(TranslatePipe, translateSpy),
                 MockPipe(HyphenatePipe, hyphenateSpy),
                 MockPipe(LowerCasePipe, lowerCaseSpy),
-                MockPipe(MultilinePipe)
+                MockPipe(MultilinePipe),
+                MockPipe(RoomNamePipe)
             ],
             providers: [
                 {

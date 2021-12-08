@@ -100,7 +100,7 @@
                        class='govuk-heading-s govuk-!-margin-bottom-0'>
             <span *ngIf='hasInterpreterLink(participant)'
                   class='vh-interpreter-icon'>
-              <em class='far fa-2x fa-language'></em>
+              <fa-icon icon="language" size="2x"></fa-icon>
             </span>
                         {{ participant.name }}
                     </p>
@@ -119,8 +119,20 @@
                     <div *ngIf='!isLoggedInParticipant(participant)'
                          class='govuk-body-s govuk-!-margin-bottom-3'>
                         <label id='p-{{ participant.id }}-status-participant'
-                               class='govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}'
-                               [innerHTML]='getParticipantStatus(participant)'>
+                               class='govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}'>
+                               <ng-container [ngSwitch]="getParticipantStatus(participant)">
+                                    <ng-container *ngSwitchCase="ParticipantStatus.Available">
+                                        {{ "individual-participant-status-list.available" | translate }}
+                                    </ng-container>
+                                    <ng-container *ngSwitchCase="ParticipantStatus.InConsultation">
+                                        <span>{{ 'start-private-consultation.in' | translate}} </span> 
+                                        <span>{{ participant.current_room.label | roomName | lowercase }} </span>
+                                        <fa-icon *ngIf="participant.current_room.locked" icon="lock"></fa-icon>
+                                    </ng-container>
+                                    <ng-container *ngSwitchDefault>
+                                        {{ "individual-participant-status-list.unavailable" | translate }}
+                                    </ng-container>
+                               </ng-container>
                         </label>
                     </div>
                     <div class='vh-line'
