@@ -1030,5 +1030,10 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             // Assert
             expect(videoControlCacheServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(participant.id, false);
         });
+
+        it('should return hostWantsToJoinHearing false when leave hearing button has been clicked', () => {
+            component.leaveHearing();
+            expect(component.hostWantsToJoinHearing).toBeFalse();
+        });
     });
 });
