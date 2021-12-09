@@ -324,6 +324,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     isParticipantInHearing(participant: PanelModel): boolean {
+        console.log('[prasanna]', participant.isLocalMicMuted());
         return participant.isInHearing();
     }
 
