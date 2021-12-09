@@ -139,6 +139,43 @@ describe('VideoControlCacheService', () => {
             );
         });
 
+        it('should update the value in the hearingControlStates and should update the cache and should retain existing propertie values', () => {
+            // Arrange
+            const conferenceId = 'conference-id';
+            const participantId = 'participant-id';
+            const isLocalAudioMuted = true;
+            const isLocalVideoMuted = true;
+            const isSpotlighted = false;
+
+            const initialHearingControlsState: IHearingControlsState = { participantStates: {} };
+            initialHearingControlsState.participantStates[participantId] = {
+                isLocalAudioMuted: isLocalAudioMuted,
+                isLocalVideoMuted: isLocalVideoMuted,
+                isSpotlighted: !isSpotlighted
+            };
+
+            const expectedHearingControlsState: IHearingControlsState = { participantStates: {} };
+            expectedHearingControlsState.participantStates[participantId] = {
+                isLocalAudioMuted: isLocalAudioMuted,
+                isLocalVideoMuted: isLocalVideoMuted,
+                isSpotlighted: isSpotlighted
+            };
+
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
+
+            service['hearingControlStates'] = initialHearingControlsState;
+
+            // Act
+            service.setSpotlightStatus(participantId, isSpotlighted);
+
+            // Assert
+            expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
+            expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).toHaveBeenCalledOnceWith(
+                conferenceId,
+                expectedHearingControlsState
+            );
+        });
+
         it('should do nothing if the hearing control state is not initialised', () => {
             // Arrange
             const conferenceId = 'conference-id';
@@ -174,7 +211,7 @@ describe('VideoControlCacheService', () => {
             expect(result).toBeFalse();
         });
 
-        it('should return the value for the participant (false)', () => {
+        it('should return the value for the participant (true)', () => {
             // Arrange
             const participantId = 'participant-id';
             const initialHearingControlsState: IHearingControlsState = { participantStates: {} };
@@ -207,13 +244,348 @@ describe('VideoControlCacheService', () => {
         it('should return false if the state has NOT being retrieved', () => {
             // Arrange
             const participantId = 'participant-id';
-            const initialHearingControlsState: IHearingControlsState = { participantStates: {} };
-            initialHearingControlsState.participantStates[participantId] = { isSpotlighted: true };
-
             service['hearingControlStates'] = null;
 
             // Act
             const result = service.getSpotlightStatus(participantId);
+
+            // Assert
+            expect(result).toBeFalse();
+        });
+    });
+
+    describe('setLocalAudioMuted', () => {
+        it('should add new value in the hearingControlStates and should update the cache', () => {
+            // Arrange
+            const conferenceId = 'conference-id';
+            const participantId = 'participant-id';
+            const isLocalAudioMuted = true;
+
+            const initialHearingControlsState: IHearingControlsState = { participantStates: {} };
+
+            const expectedHearingControlsState: IHearingControlsState = { participantStates: {} };
+            expectedHearingControlsState.participantStates[participantId] = { isLocalAudioMuted: isLocalAudioMuted };
+
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
+
+            service['hearingControlStates'] = initialHearingControlsState;
+
+            // Act
+            service.setLocalAudioMuted(participantId, isLocalAudioMuted);
+
+            // Assert
+            expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
+            expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).toHaveBeenCalledOnceWith(
+                conferenceId,
+                expectedHearingControlsState
+            );
+        });
+
+        it('should update the value in the hearingControlStates and should update the cache', () => {
+            // Arrange
+            const conferenceId = 'conference-id';
+            const participantId = 'participant-id';
+            const isLocalAudioMuted = true;
+
+            const initialHearingControlsState: IHearingControlsState = { participantStates: {} };
+            initialHearingControlsState.participantStates[participantId] = { isLocalAudioMuted: !isLocalAudioMuted };
+
+            const expectedHearingControlsState: IHearingControlsState = { participantStates: {} };
+            expectedHearingControlsState.participantStates[participantId] = { isLocalAudioMuted: isLocalAudioMuted };
+
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
+
+            service['hearingControlStates'] = initialHearingControlsState;
+
+            // Act
+            service.setLocalAudioMuted(participantId, isLocalAudioMuted);
+
+            // Assert
+            expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
+            expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).toHaveBeenCalledOnceWith(
+                conferenceId,
+                expectedHearingControlsState
+            );
+        });
+
+        it('should update the value in the hearingControlStates and should update the cache and should retain existing propertie values', () => {
+            // Arrange
+            const conferenceId = 'conference-id';
+            const participantId = 'participant-id';
+            const isLocalAudioMuted = true;
+            const isLocalVideoMuted = true;
+            const isSpotlighted = false;
+
+            const initialHearingControlsState: IHearingControlsState = { participantStates: {} };
+            initialHearingControlsState.participantStates[participantId] = {
+                isLocalAudioMuted: !isLocalAudioMuted,
+                isLocalVideoMuted: isLocalVideoMuted,
+                isSpotlighted: isSpotlighted
+            };
+
+            const expectedHearingControlsState: IHearingControlsState = { participantStates: {} };
+            expectedHearingControlsState.participantStates[participantId] = {
+                isLocalAudioMuted: isLocalAudioMuted,
+                isLocalVideoMuted: isLocalVideoMuted,
+                isSpotlighted: isSpotlighted
+            };
+
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
+
+            service['hearingControlStates'] = initialHearingControlsState;
+
+            // Act
+            service.setLocalAudioMuted(participantId, isLocalAudioMuted);
+
+            // Assert
+            expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
+            expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).toHaveBeenCalledOnceWith(
+                conferenceId,
+                expectedHearingControlsState
+            );
+        });
+
+        it('should do nothing if the hearing control state is not initialised', () => {
+            // Arrange
+            const conferenceId = 'conference-id';
+            const participantId = 'participant-id';
+            const isLocalVideoMuted = true;
+
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
+
+            service['hearingControlStates'] = null;
+
+            // Act
+            service.setLocalAudioMuted(participantId, isLocalVideoMuted);
+
+            // Assert
+            expect(service['hearingControlStates']).toEqual(null);
+            expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('getLocalAudioMuted', () => {
+        it('should return the value for the participant (false)', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const initialHearingControlsState: IHearingControlsState = { participantStates: {} };
+            initialHearingControlsState.participantStates[participantId] = { isLocalAudioMuted: false };
+
+            service['hearingControlStates'] = initialHearingControlsState;
+
+            // Act
+            const result = service.getLocalAudioMuted(participantId);
+
+            // Assert
+            expect(result).toBeFalse();
+        });
+
+        it('should return the value for the participant (true)', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const initialHearingControlsState: IHearingControlsState = { participantStates: {} };
+            initialHearingControlsState.participantStates[participantId] = { isLocalAudioMuted: true };
+
+            service['hearingControlStates'] = initialHearingControlsState;
+
+            // Act
+            const result = service.getLocalAudioMuted(participantId);
+
+            // Assert
+            expect(result).toBeTrue();
+        });
+
+        it('should return false if the participant cannot be found', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const initialHearingControlsState: IHearingControlsState = { participantStates: {} };
+            initialHearingControlsState.participantStates[participantId] = { isLocalAudioMuted: true };
+
+            service['hearingControlStates'] = initialHearingControlsState;
+
+            // Act
+            const result = service.getLocalAudioMuted('not' + participantId);
+
+            // Assert
+            expect(result).toBeFalse();
+        });
+
+        it('should return false if the state has NOT being retrieved', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            service['hearingControlStates'] = null;
+
+            // Act
+            const result = service.getLocalAudioMuted(participantId);
+
+            // Assert
+            expect(result).toBeFalse();
+        });
+    });
+
+    describe('setLocalVideoMuted', () => {
+        it('should add new value in the hearingControlStates and should update the cache', () => {
+            // Arrange
+            const conferenceId = 'conference-id';
+            const participantId = 'participant-id';
+            const isLocalVideoMuted = true;
+
+            const initialHearingControlsState: IHearingControlsState = { participantStates: {} };
+
+            const expectedHearingControlsState: IHearingControlsState = { participantStates: {} };
+            expectedHearingControlsState.participantStates[participantId] = { isLocalVideoMuted: isLocalVideoMuted };
+
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
+
+            service['hearingControlStates'] = initialHearingControlsState;
+
+            // Act
+            service.setLocalVideoMuted(participantId, isLocalVideoMuted);
+
+            // Assert
+            expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
+            expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).toHaveBeenCalledOnceWith(
+                conferenceId,
+                expectedHearingControlsState
+            );
+        });
+
+        it('should update the value in the hearingControlStates and should update the cache', () => {
+            // Arrange
+            const conferenceId = 'conference-id';
+            const participantId = 'participant-id';
+            const isLocalVideoMuted = true;
+
+            const initialHearingControlsState: IHearingControlsState = { participantStates: {} };
+            initialHearingControlsState.participantStates[participantId] = { isLocalVideoMuted: !isLocalVideoMuted };
+
+            const expectedHearingControlsState: IHearingControlsState = { participantStates: {} };
+            expectedHearingControlsState.participantStates[participantId] = { isLocalVideoMuted: isLocalVideoMuted };
+
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
+
+            service['hearingControlStates'] = initialHearingControlsState;
+
+            // Act
+            service.setLocalVideoMuted(participantId, isLocalVideoMuted);
+
+            // Assert
+            expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
+            expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).toHaveBeenCalledOnceWith(
+                conferenceId,
+                expectedHearingControlsState
+            );
+        });
+
+        it('should update the value in the hearingControlStates and should update the cache and should retain existing propertie values', () => {
+            // Arrange
+            const conferenceId = 'conference-id';
+            const participantId = 'participant-id';
+            const isLocalAudioMuted = true;
+            const isLocalVideoMuted = true;
+            const isSpotlighted = false;
+
+            const initialHearingControlsState: IHearingControlsState = { participantStates: {} };
+            initialHearingControlsState.participantStates[participantId] = {
+                isLocalAudioMuted: isLocalAudioMuted,
+                isLocalVideoMuted: !isLocalVideoMuted,
+                isSpotlighted: isSpotlighted
+            };
+
+            const expectedHearingControlsState: IHearingControlsState = { participantStates: {} };
+            expectedHearingControlsState.participantStates[participantId] = {
+                isLocalAudioMuted: isLocalAudioMuted,
+                isLocalVideoMuted: isLocalVideoMuted,
+                isSpotlighted: isSpotlighted
+            };
+
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
+
+            service['hearingControlStates'] = initialHearingControlsState;
+
+            // Act
+            service.setLocalVideoMuted(participantId, isLocalAudioMuted);
+
+            // Assert
+            expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
+            expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).toHaveBeenCalledOnceWith(
+                conferenceId,
+                expectedHearingControlsState
+            );
+        });
+
+        it('should do nothing if the hearing control state is not initialised', () => {
+            // Arrange
+            const conferenceId = 'conference-id';
+            const participantId = 'participant-id';
+            const isLocalVideoMuted = true;
+
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
+
+            service['hearingControlStates'] = null;
+
+            // Act
+            service.setLocalVideoMuted(participantId, isLocalVideoMuted);
+
+            // Assert
+            expect(service['hearingControlStates']).toEqual(null);
+            expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('getLocalVideoMuted', () => {
+        it('should return the value for the participant (false)', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const initialHearingControlsState: IHearingControlsState = { participantStates: {} };
+            initialHearingControlsState.participantStates[participantId] = { isLocalVideoMuted: false };
+
+            service['hearingControlStates'] = initialHearingControlsState;
+
+            // Act
+            const result = service.getLocalVideoMuted(participantId);
+
+            // Assert
+            expect(result).toBeFalse();
+        });
+
+        it('should return the value for the participant (true)', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const initialHearingControlsState: IHearingControlsState = { participantStates: {} };
+            initialHearingControlsState.participantStates[participantId] = { isLocalVideoMuted: true };
+
+            service['hearingControlStates'] = initialHearingControlsState;
+
+            // Act
+            const result = service.getLocalVideoMuted(participantId);
+
+            // Assert
+            expect(result).toBeTrue();
+        });
+
+        it('should return false if the participant cannot be found', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const initialHearingControlsState: IHearingControlsState = { participantStates: {} };
+            initialHearingControlsState.participantStates[participantId] = { isLocalVideoMuted: true };
+
+            service['hearingControlStates'] = initialHearingControlsState;
+
+            // Act
+            const result = service.getLocalVideoMuted('not' + participantId);
+
+            // Assert
+            expect(result).toBeFalse();
+        });
+
+        it('should return false if the state has NOT being retrieved', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            service['hearingControlStates'] = null;
+
+            // Act
+            const result = service.getLocalVideoMuted(participantId);
 
             // Assert
             expect(result).toBeFalse();
