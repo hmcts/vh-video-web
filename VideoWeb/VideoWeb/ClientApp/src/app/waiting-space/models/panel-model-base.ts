@@ -136,8 +136,8 @@ export abstract class PanelModel {
     }
 
     updateParticipantDeviceStatus(isAudioMuted: boolean, isVideoMuted: boolean, participantId?: string) {
-        this.isLocalVideoMuted = isVideoMuted;
-        this.isLocalAudioMuted = isAudioMuted;
+        this.isLocalVideoMuted = isVideoMuted ?? this.isLocalVideoMuted;
+        this.isLocalAudioMuted = isAudioMuted ?? this.isLocalAudioMuted;
     }
 
     isMicRemoteMuted(): boolean {

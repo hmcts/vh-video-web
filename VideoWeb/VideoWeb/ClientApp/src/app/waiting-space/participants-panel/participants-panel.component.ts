@@ -67,9 +67,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
 
         this.getParticipantsList().then(() => {
-            this.setupVideoCallSubscribers();
-            this.setupEventhubSubscribers();
-
             this.participantRemoteMuteStoreService.conferenceParticipantsStatus$.pipe(take(1)).subscribe(state => {
                 this.participants.forEach(participant => {
                     if (state.hasOwnProperty(participant.id)) {
@@ -83,6 +80,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                     }
                 });
             });
+            this.setupVideoCallSubscribers();
+            this.setupEventhubSubscribers();
         });
     }
 

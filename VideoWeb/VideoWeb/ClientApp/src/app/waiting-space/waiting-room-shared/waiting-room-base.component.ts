@@ -954,9 +954,6 @@ export abstract class WaitingRoomBaseDirective {
         if (!this.validateIsForConference(message.conferenceId)) {
             return;
         }
-        console.log('[prasanna]', message.participantId);
-        console.log('[prasanna]', message.mediaStatus.is_local_audio_muted);
-
         this.participantRemoteMuteStoreService.updateLocalMuteStatus(message.participantId, message.mediaStatus.is_local_audio_muted, message.mediaStatus.is_local_video_muted);
     }
 
