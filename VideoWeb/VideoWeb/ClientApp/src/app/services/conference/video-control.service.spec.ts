@@ -307,7 +307,7 @@ describe('VideoControlService', () => {
         });
     });
 
-    fdescribe('setLocalAudioMuteById', () => {
+    describe('setLocalAudioMuteById', () => {
         it('should call setLocalAudioMuted in the cache service (false)', () => {
             // Arrange
             const participantId = 'participant-id';
@@ -333,7 +333,7 @@ describe('VideoControlService', () => {
         });
     });
 
-    fdescribe('getLocalAudioMutedById', () => {
+    describe('getLocalAudioMutedById', () => {
         it('should call and return the value from getLocalAudioMuted in the cache service (false)', () => {
             // Arrange
             const participantId = 'participant-id';
@@ -363,7 +363,7 @@ describe('VideoControlService', () => {
         });
     });
 
-    fdescribe('setLocalVideoMuteById', () => {
+    describe('setLocalVideoMuteById', () => {
         it('should call setLocalAudioMuted in the cache service (false)', () => {
             // Arrange
             const participantId = 'participant-id';
@@ -389,7 +389,7 @@ describe('VideoControlService', () => {
         });
     });
 
-    fdescribe('getLocalVideoMutedById', () => {
+    describe('getLocalVideoMutedById', () => {
         it('should call and return the value from getLocalAudioMuted in the cache service (false)', () => {
             // Arrange
             const participantId = 'participant-id';
