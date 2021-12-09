@@ -41,13 +41,13 @@ variables:
   - ${{ if ne(variables['Build.Reason'], 'ResourceTrigger') }}:
       - ${{ if containsValue(parameters.prodEnvs, parameters.environment) }}:
           - group: vh-prod
-      - ${{ if not(containsValue(parameters.prodEnvs, parameters.environment)) }}:
-          - group: vh-preview
+      - ? ${{ if not(containsValue(parameters.prodEnvs, parameters.environment)) }}
+        : - group: vh-preview
   - ${{ if eq(variables['Build.Reason'], 'ResourceTrigger') }}:
-      - ${{ if or(startswith(variables['Build.SourceBranch'], 'refs/heads/release/'), startswith(variables['Build.SourceBranch'], 'refs/heads/hotfix/')) }}:
-          - group: vh-prod
-      - ${{ if not(or(startswith(variables['Build.SourceBranch'], 'refs/heads/release/'), startswith(variables['Build.SourceBranch'], 'refs/heads/hotfix/'))) }}:
-          - group: vh-preview
+      - ? ${{ if or(startswith(variables['Build.SourceBranch'], 'refs/heads/release/'), startswith(variables['Build.SourceBranch'], 'refs/heads/hotfix/')) }}
+        : - group: vh-prod
+      - ? ${{ if not(or(startswith(variables['Build.SourceBranch'], 'refs/heads/release/'), startswith(variables['Build.SourceBranch'], 'refs/heads/hotfix/'))) }}
+        : - group: vh-preview
 
 trigger: none
 pr: none
@@ -87,6 +87,7 @@ stages:
         appName: vh-video-web-$(environment)
         resourceGroup: vh-video-web-$(environment)
         testCaseFilter: TestCategory=smoketest
+        runACTests: $(runACTests)
         dependentApps:
           - name: vh-user-api-$(environment)
             resourceGroup: vh-user-api-$(environment)
