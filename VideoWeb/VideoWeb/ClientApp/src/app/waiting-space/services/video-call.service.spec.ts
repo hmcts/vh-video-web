@@ -174,10 +174,13 @@ describe('VideoCallService', () => {
     });
 
     it('should disconnect from pexip when call is disconnected', () => {
+        const setupClientSpy = spyOn(service, 'setupClient');
+
         service.pexipAPI = pexipSpy;
         service.disconnectFromCall();
         expect(pexipSpy.disconnect).toHaveBeenCalled();
         expect(kinlyHeartbeatServiceSpy.stopHeartbeat).toHaveBeenCalledTimes(1);
+        expect(setupClientSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should not disconnect from pexip when api has not been initialised', () => {
@@ -414,6 +417,26 @@ describe('VideoCallService', () => {
             expect(service.pexipAPI.turn_server.url).toContain(config.kinly_turn_server);
             expect(service.pexipAPI.turn_server.username).toContain(config.kinly_turn_server_user);
             expect(service.pexipAPI.turn_server.credential).toContain(config.kinly_turn_server_credential);
+        });
+
+        it('should setup the client again when an error occurs', () => {
+            // Arrange
+            const setupClientSpy = spyOn(service, 'setupClient');
+            // Act
+            service.pexipAPI.onError('reason');
+
+            // Assert
+            expect(setupClientSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should setup the client again when a server disconnect occurs', () => {
+            // Arrange
+            const setupClientSpy = spyOn(service, 'setupClient');
+            // Act
+            service.pexipAPI.onDisconnect('reason');
+
+            // Assert
+            expect(setupClientSpy).toHaveBeenCalledTimes(1);
         });
 
         describe('set encoder', () => {
