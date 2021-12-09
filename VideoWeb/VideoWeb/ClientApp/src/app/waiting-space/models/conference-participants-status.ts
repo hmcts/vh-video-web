@@ -3,7 +3,7 @@ export interface IConferenceParticipantsStatus {
 }
 
 export interface IParticipatRemoteMuteStatus {
-    isRemoteMuted: boolean;
-    isLocalAudioMuted: boolean;
-    isLocalVideoMuted: boolean;
+    isRemoteMuted?: boolean;
+    isLocalAudioMuted?: boolean;
+    isLocalVideoMuted?: boolean;
 }
