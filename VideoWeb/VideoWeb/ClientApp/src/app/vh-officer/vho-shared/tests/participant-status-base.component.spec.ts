@@ -21,7 +21,7 @@ import {
 } from './participant-status-base-setup';
 import { ParticipantStatusTestComponent } from './ParticipantStatusTestComponent';
 
-describe('Participant Status Base Component Tests', () => {
+fdescribe('Participant Status Base Component Tests', () => {
     let component: ParticipantStatusTestComponent;
     let fixture: ComponentFixture<ParticipantStatusTestComponent>;
     let participants: ParticipantContactDetailsResponseVho[];
@@ -130,6 +130,27 @@ describe('Participant Status Base Component Tests', () => {
             judge1InAnotherHearing.username,
             judge1InAnotherHearing.conference_id,
             ParticipantStatus.InHearing
+        );
+
+        participantStatusSubjectMock.next(message);
+
+        expect(component.participants[0].status).toBe(ParticipantStatus.Disconnected);
+        expect(component.participants[0].statusText).toBe(inAnotherHearingText);
+    });
+
+    it('should update participant status when participant same judge in different conference is in a hearing', () => {
+        const inAnotherHearingText = 'In Another Hearing';
+        participantStatusReaderSpy.inAnotherHearingText = inAnotherHearingText;
+        component.setupEventHubSubscribers();
+        const judge1 = participants[2];
+        const judge1InAnotherHearing = participants[3];
+        component.participants = [new ParticipantContactDetails(judge1)];
+        component.participants[0].status = ParticipantStatus.Disconnected;
+        const message = new ParticipantStatusMessage(
+            judge1InAnotherHearing.id,
+            judge1InAnotherHearing.username,
+            judge1InAnotherHearing.conference_id,
+            ParticipantStatus.Available
         );
 
         participantStatusSubjectMock.next(message);
