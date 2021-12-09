@@ -57,7 +57,7 @@ export class AudioRecordingStatusServiceService {
 
             this.isRecorderInCallSubject.next(true);
             this.loggerService.event('RecorderIsInCall', {
-                isRecorderInCall: false,
+                isRecorderInCall: true,
                 recorderPexipId: this.recorderPexipId,
                 reason: 'participant created'
             });
