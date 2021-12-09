@@ -35,6 +35,7 @@ import { ParticipantStatusMessage } from 'src/app/services/models/participant-st
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
+import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { Room } from 'src/app/shared/models/room';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -297,6 +298,13 @@ export abstract class WaitingRoomBaseDirective {
             this.eventService.getEndpointStatusMessage().subscribe(message => {
                 this.handleEndpointStatusChange(message);
                 this.updateShowVideo();
+            })
+        );
+
+        this.logger.debug(`${this.loggerPrefix} Subscribing to local audio and video mute status...`);
+        this.eventHubSubscription$.add(
+            this.eventService.getParticipantMediaStatusMessage().subscribe(message => {
+                this.handleLocalAudioVideoMuteStatus(message);
             })
         );
 
@@ -942,6 +950,17 @@ export abstract class WaitingRoomBaseDirective {
         if (!this.hasAHostInHearing(currentConferenceParticipants)) {
             this.isTransferringIn = false;
         }
+    }
+
+    handleLocalAudioVideoMuteStatus(message: ParticipantMediaStatusMessage) {
+        if (!this.validateIsForConference(message.conferenceId)) {
+            return;
+        }
+        this.participantRemoteMuteStoreService.updateLocalMuteStatus(
+            message.participantId,
+            message.mediaStatus.is_local_audio_muted,
+            message.mediaStatus.is_local_video_muted
+        );
     }
 
     handleEndpointStatusChange(message: EndpointStatusMessage) {
