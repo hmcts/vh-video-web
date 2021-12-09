@@ -125,7 +125,13 @@ export class LinkedParticipantPanelModel extends PanelModel {
         }
     }
 
-    updateParticipant(isRemoteMuted: boolean, handRaised: boolean, spotlighted: boolean, isLocalAudioMuted?: boolean, isLocalVideoMuted?: boolean) {
+    updateParticipant(
+        isRemoteMuted: boolean,
+        handRaised: boolean,
+        spotlighted: boolean,
+        isLocalAudioMuted?: boolean,
+        isLocalVideoMuted?: boolean
+    ) {
         this.isRemoteMuted = isRemoteMuted;
         this.isSpotlighted = spotlighted;
         this.updateParticipantDeviceStatus(isLocalAudioMuted, isLocalVideoMuted);

@@ -61,7 +61,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         protected translateService: TranslateService,
         private mapper: ParticipantPanelModelMapper,
         protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService
-    ) { }
+    ) {}
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
@@ -186,7 +186,13 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         if (!participant) {
             return;
         }
-        participant.updateParticipant(participant.isMicRemoteMuted(), message.handRaised, participant.hasSpotlight(), participant.isLocalMicMuted(), participant.isLocalCameraOff());
+        participant.updateParticipant(
+            participant.isMicRemoteMuted(),
+            message.handRaised,
+            participant.hasSpotlight(),
+            participant.isLocalMicMuted(),
+            participant.isLocalCameraOff()
+        );
 
         this.logger.debug(`${this.loggerPrefix} Participant hand raised status has been updated`, {
             conference: this.conferenceId,
@@ -610,8 +616,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                     currentParticipant?.hasHandRaised(),
                     currentParticipant?.hasSpotlight(),
                     currentParticipant?.isLocalMicMuted(),
-                    currentParticipant?.isLocalCameraOff(),
-
+                    currentParticipant?.isLocalCameraOff()
                 );
                 participant.assignPexipId(currentParticipant?.pexipId);
             }

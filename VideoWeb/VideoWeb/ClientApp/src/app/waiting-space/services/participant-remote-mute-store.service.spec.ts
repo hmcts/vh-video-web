@@ -68,15 +68,17 @@ describe('ParticipantRemoteMuteStoreService', () => {
             const patchStateSpy = spyOn(service, 'patchState');
 
             const expectedState = {};
-            expectedState[participantId] = { isLocalAudioMuted: isLocalAudioMuted, isLocalVideoMuted: isLocalVideoMuted } as IParticipatRemoteMuteStatus;
+            expectedState[participantId] = {
+                isLocalAudioMuted: isLocalAudioMuted,
+                isLocalVideoMuted: isLocalVideoMuted
+            } as IParticipatRemoteMuteStatus;
 
             // Act
             service.updateLocalMuteStatus(participantId, isLocalAudioMuted, isLocalVideoMuted);
 
             // Assert
             expect(patchStateSpy).toHaveBeenCalledOnceWith(expectedState);
-        }
-
+        };
     });
     describe('conferenceParticipantsStatus$', () => {
         it('returns state$', () => {
