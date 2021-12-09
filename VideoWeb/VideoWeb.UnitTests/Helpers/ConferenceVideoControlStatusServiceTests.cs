@@ -38,7 +38,7 @@ namespace VideoWeb.UnitTests.Helpers
         } 
         
         [Test]
-        public async Task SetVideoControlStateForConference_should_NOT_update_cache_with_null()
+        public async Task SetVideoControlStateForConference_should_update_cache_with_null()
         {
             // Arrange
             Guid conferenceId = Guid.NewGuid();
@@ -47,7 +47,7 @@ namespace VideoWeb.UnitTests.Helpers
             await _sut.SetVideoControlStateForConference(conferenceId, null);
 
             // Assert
-            _mocker.Mock<IConferenceVideoControlStatusCache>().Verify(x => x.WriteToCache(conferenceId, It.IsAny<ConferenceVideoControlStatuses>()), Times.Never);
+            _mocker.Mock<IConferenceVideoControlStatusCache>().Verify(x => x.WriteToCache(conferenceId, null), Times.Once);
         } 
 
         

@@ -12,6 +12,7 @@ using VideoWeb.Common.Models;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Enums;
+using VideoWeb.Contract.Request;
 using VideoWeb.Helpers;
 using VideoWeb.EventHub.Services;
 
@@ -27,14 +28,16 @@ namespace VideoWeb.Controllers
         private readonly ILogger<ConferenceManagementController> _logger;
         private readonly IConferenceCache _conferenceCache;
         private readonly IHearingLayoutService _hearingLayoutService;
+        private readonly IConferenceVideoControlStatusService _conferenceVideoControlStatusService;
 
         public ConferenceManagementController(IVideoApiClient videoApiClient,
-            ILogger<ConferenceManagementController> logger, IConferenceCache conferenceCache, IHearingLayoutService hearingLayoutService)
+            ILogger<ConferenceManagementController> logger, IConferenceCache conferenceCache, IHearingLayoutService hearingLayoutService, IConferenceVideoControlStatusService conferenceVideoControlStatusService)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
             _conferenceCache = conferenceCache;
             _hearingLayoutService = hearingLayoutService;
+            _conferenceVideoControlStatusService = conferenceVideoControlStatusService;
         }
 
         /// <summary>
@@ -78,7 +81,76 @@ namespace VideoWeb.Controllers
                 return StatusCode(ex.StatusCode, ex.Response);
             }
         }
+        
+        /// <summary>
+        /// Returns the video control statuses for the conference
+        /// </summary>
+        /// <param name="conferenceId">conference id</param>
+        /// <returns>Ok status</returns>
+        /// <returns>Forbidden status</returns>
+        /// <returns>Not Found status</returns>
+        [HttpGet("{conferenceId}/getVideoControlStatuses")]
+        [SwaggerOperation(OperationId = "GetVideoControlStatuses")]
+        [ProducesResponseType(typeof(ConferenceVideoControlStatuses), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetVideoControlStatusesForConference(Guid conferenceId)
+        {
+            try
+            {
+                _logger.LogDebug("Getting the video control statuses for {conferenceId}", conferenceId);
+                var videoControlStatuses = await _conferenceVideoControlStatusService.GetVideoControlStateForConference(conferenceId);
 
+                if (videoControlStatuses == null) {
+                    _logger.LogWarning("video control statuses didn't have a value returning NotFound. This was for {conferenceId}", conferenceId);
+                    return NotFound();
+                }
+
+                _logger.LogTrace("Got video control statuses ({videoControlStatuses}) for {conferenceId}", videoControlStatuses, conferenceId);
+                return Ok(videoControlStatuses);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Could not get video control statuses for {conferenceId} an unkown exception was thrown", conferenceId);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+        }
+        
+        /// <summary>
+        /// Updates the video control statuses for the conference
+        /// </summary>
+        /// <param name="conferenceId">conference id</param>
+        /// <returns>Ok status</returns>
+        /// <returns>Forbidden status</returns>
+        /// <returns>Not Found status</returns>
+        [HttpPut("{conferenceId}/setVideoControlStatuses")]
+        [SwaggerOperation(OperationId = "GetVideoControlStatuses")]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> SetVideoControlStatusesForConference(Guid conferenceId, [FromBody]SetConferenceVideoControlStatusesRequest setVideoControlStatusesRequest)
+        {
+            try
+            {
+                var videoControlStatuses = setVideoControlStatusesRequest == null ? null : new ConferenceVideoControlStatuses()
+                {
+                    ParticipantIdToVideoControlStatusMap =
+                        setVideoControlStatusesRequest.ParticipantIdToVideoControlStatusMap
+                };
+                
+                _logger.LogDebug("Setting the video control statuses for {conferenceId}", conferenceId);
+                await _conferenceVideoControlStatusService.SetVideoControlStateForConference(conferenceId, videoControlStatuses);
+
+                _logger.LogTrace("Set video control statuses ({videoControlStatuses}) for {conferenceId}", videoControlStatuses, conferenceId);
+                return Accepted();
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Could not set video control statuses for {conferenceId} an unkown exception was thrown", conferenceId);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+        }
+        
         /// <summary>
         /// Returns the active layout for a conference
         /// </summary>
@@ -86,7 +158,7 @@ namespace VideoWeb.Controllers
         /// <returns>Ok status</returns>
         /// <returns>Forbidden status</returns>
         /// <returns>Not Found status</returns>
-        [HttpPost("{conferenceId}/getlayout")]
+        [HttpGet("{conferenceId}/getlayout")]
         [SwaggerOperation(OperationId = "GetLayoutForHearing")]
         [ProducesResponseType(typeof(HearingLayout), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]

@@ -18,8 +18,6 @@ namespace VideoWeb.Helpers
         public async Task SetVideoControlStateForConference(Guid conferenceId,
             ConferenceVideoControlStatuses? conferenceVideoControlStatuses)
         {
-            if (conferenceVideoControlStatuses == null) return;
-
             await _conferenceVideoControlStatusCache.WriteToCache(conferenceId, conferenceVideoControlStatuses);
         }
         
