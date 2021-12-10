@@ -1,22 +1,27 @@
 import { async } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { of } from 'rxjs';
 import { ProfileService } from '../services/api/profile.service';
 import { Role, UserProfileResponse } from '../services/clients/api-client';
 import { MockLogger } from '../testing/mocks/mock-logger';
+import { AuthGuard } from './auth.guard';
 import { ParticipantGuard } from './participant.guard';
 
 describe('ParticipantGuard', () => {
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
     let guard: ParticipantGuard;
     let router: jasmine.SpyObj<Router>;
+    let authGuard: jasmine.SpyObj<AuthGuard>;
 
     beforeAll(() => {
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
+        authGuard = jasmine.createSpyObj<AuthGuard>('AuthGuard', ['canActivate']);
+        authGuard.canActivate.and.returnValue(of(true));
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
     });
 
     beforeEach(() => {
-        guard = new ParticipantGuard(profileServiceSpy, router, new MockLogger());
+        guard = new ParticipantGuard(profileServiceSpy, router, new MockLogger(), authGuard);
     });
 
     it('should not be able to activate component if role is VHOfficer', async () => {
@@ -69,5 +74,11 @@ describe('ParticipantGuard', () => {
         const result = await guard.canActivate(null, null);
         expect(result).toBeFalsy();
         expect(router.navigate).toHaveBeenCalledWith(['/logout']);
+    });
+    it('should logout when user profile cannot be retrieved', async () => {
+        authGuard.canActivate.and.returnValue(of(false));
+        const result = await guard.canActivate(null, null);
+        expect(result).toBeFalsy();
+        expect(router.navigate).toHaveBeenCalledWith(['/login']);
     });
 });
