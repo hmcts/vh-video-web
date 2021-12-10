@@ -86,6 +86,7 @@ export class VideoCallService {
      * the user's preferred camera and microphone (if selected)
      */
     async setupClient(): Promise<void> {
+        this.logger.info(`${this.loggerPrefix} setting up client.`);
         this.hasDisconnected$ = new Subject();
 
         const self = this;
@@ -206,7 +207,7 @@ export class VideoCallService {
     }
 
     private handleError(error: string) {
-        this.kinlyHeartbeatService.stopHeartbeat();
+        this.cleanUpConnection();
 
         this.onErrorSubject.next(new CallError(error));
     }
@@ -215,11 +216,8 @@ export class VideoCallService {
     // https://docs.pexip.com/api_client/api_pexrtc.htm#onDisconnect
     private handleServerDisconnect(reason: string) {
         this.logger.debug(`${this.loggerPrefix} handling server disconnection`);
-        this.hasDisconnected$.next();
-        this.hasDisconnected$.complete();
 
-        this.kinlyHeartbeatService.stopHeartbeat();
-
+        this.cleanUpConnection();
         this.onDisconnected.next(new DisconnectedCall(reason));
     }
 
@@ -237,12 +235,18 @@ export class VideoCallService {
             this.logger.info(`${this.loggerPrefix} Disconnecting from pexip node.`);
             this.stopPresentation();
             this.pexipAPI.disconnect();
-            this.hasDisconnected$.next();
-            this.hasDisconnected$.complete();
-            this.kinlyHeartbeatService.stopHeartbeat();
+            this.cleanUpConnection();
         } else {
             throw new Error(`${this.loggerPrefix} Pexip Client has not been initialised.`);
         }
+    }
+
+    private cleanUpConnection() {
+        this.logger.warn(`${this.loggerPrefix} Cleaning up connection.`);
+        this.hasDisconnected$.next();
+        this.hasDisconnected$.complete();
+        this.kinlyHeartbeatService.stopHeartbeat();
+        this.setupClient();
     }
 
     connect(pin: string, extension: string) {

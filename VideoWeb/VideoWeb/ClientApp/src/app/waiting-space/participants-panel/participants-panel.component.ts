@@ -67,20 +67,21 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
 
         this.getParticipantsList().then(() => {
-            this.setupVideoCallSubscribers();
-            this.setupEventhubSubscribers();
-
             this.participantRemoteMuteStoreService.conferenceParticipantsStatus$.pipe(take(1)).subscribe(state => {
                 this.participants.forEach(participant => {
                     if (state.hasOwnProperty(participant.id)) {
                         participant.updateParticipant(
                             state[participant.id].isRemoteMuted,
                             participant.hasHandRaised(),
-                            participant.hasSpotlight()
+                            participant.hasSpotlight(),
+                            state[participant.id].isLocalAudioMuted,
+                            state[participant.id].isLocalVideoMuted
                         );
                     }
                 });
             });
+            this.setupVideoCallSubscribers();
+            this.setupEventhubSubscribers();
         });
     }
 
@@ -185,7 +186,13 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         if (!participant) {
             return;
         }
-        participant.updateParticipant(participant.isMicRemoteMuted(), message.handRaised, participant.hasSpotlight());
+        participant.updateParticipant(
+            participant.isMicRemoteMuted(),
+            message.handRaised,
+            participant.hasSpotlight(),
+            participant.isLocalMicMuted(),
+            participant.isLocalCameraOff()
+        );
 
         this.logger.debug(`${this.loggerPrefix} Participant hand raised status has been updated`, {
             conference: this.conferenceId,
@@ -607,7 +614,9 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                 participant.updateParticipant(
                     currentParticipant?.isMicRemoteMuted(),
                     currentParticipant?.hasHandRaised(),
-                    currentParticipant?.hasSpotlight()
+                    currentParticipant?.hasSpotlight(),
+                    currentParticipant?.isLocalMicMuted(),
+                    currentParticipant?.isLocalCameraOff()
                 );
                 participant.assignPexipId(currentParticipant?.pexipId);
             }
