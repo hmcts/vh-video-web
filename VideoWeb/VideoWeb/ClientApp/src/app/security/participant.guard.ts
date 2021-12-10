@@ -13,11 +13,11 @@ import { SecurityServiceProvider } from './authentication/security-provider.serv
 })
 export class ParticipantGuard extends AuthBaseGuard implements CanActivate {
     constructor(
+        protected featureFlagService: FeatureFlagService,
         securityServiceProviderService: SecurityServiceProvider,
         protected userProfileService: ProfileService,
         protected router: Router,
-        protected logger: Logger,
-        protected featureFlagService: FeatureFlagService
+        protected logger: Logger
     ) {
         super(securityServiceProviderService, router, logger, featureFlagService);
     }

@@ -33,7 +33,7 @@ describe('ParticipantGuard', () => {
     });
 
     beforeEach(() => {
-        guard = new ParticipantGuard(securityServiceProviderServiceSpy, profileServiceSpy, router, new MockLogger(), featureFlagServiceSpy);
+        guard = new ParticipantGuard(featureFlagServiceSpy, securityServiceProviderServiceSpy, profileServiceSpy, router, new MockLogger());
     });
 
     it('should not be able to activate component if role is VHOfficer', async () => {
