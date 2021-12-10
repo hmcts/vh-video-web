@@ -47,12 +47,12 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var conferenceId = Guid.NewGuid();
             var conferenceVideoControlStatusesRequest = new SetConferenceVideoControlStatusesRequest()
             {
-                ParticipantIdToVideoControlStatusMap = new Dictionary<Guid, SetConferenceVideoControlStatusesRequest.VideoControlStatusRequest>()
+                ParticipantIdToVideoControlStatusMap = new Dictionary<string, SetConferenceVideoControlStatusesRequest.VideoControlStatusRequest>()
             };
             
             var conferenceVideoControlStatuses = new ConferenceVideoControlStatuses()
             {
-                ParticipantIdToVideoControlStatusMap = new Dictionary<Guid, VideoControlStatus>()
+                ParticipantIdToVideoControlStatusMap = new Dictionary<string, VideoControlStatus>()
             };
 
             _mocker.Mock<IMapperFactory>()

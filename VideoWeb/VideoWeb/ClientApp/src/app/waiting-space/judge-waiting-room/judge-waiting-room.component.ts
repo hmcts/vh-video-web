@@ -141,6 +141,20 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 if (this.conference.audio_recording_required) {
                     this.initAudioRecordingInterval();
                 }
+
+                this.conference.participants
+                    .map(participant => participant.id)
+                    .forEach(participantId => {
+                        const audio = this.videoControlCacheService.getLocalAudioMuted(participantId);
+                        const video = this.videoControlCacheService.getLocalVideoMuted(participantId);
+                        this.logger.info(`${this.loggerPrefixJudge} Updating store with audio and video`, {
+                            audio: audio,
+                            video: video,
+                            participantId: participantId
+                        });
+
+                        this.participantRemoteMuteStoreService.updateLocalMuteStatus(participantId, audio, video);
+                    });
             });
         } catch (error) {
             this.logger.error(`${this.loggerPrefixJudge} Failed to initialise the judge waiting room`, error);

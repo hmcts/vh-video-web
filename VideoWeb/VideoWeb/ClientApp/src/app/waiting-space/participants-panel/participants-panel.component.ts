@@ -80,6 +80,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                     }
                 });
             });
+
             this.setupVideoCallSubscribers();
             this.setupEventhubSubscribers();
         });
