@@ -3,23 +3,27 @@ import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from
 import { take } from 'rxjs/operators';
 import { ProfileService } from '../services/api/profile.service';
 import { Role } from '../services/clients/api-client';
+import { FeatureFlagService } from '../services/feature-flag.service';
 import { Logger } from '../services/logging/logger-base';
-import { AuthGuard } from './auth.guard';
+import { AuthBaseGuard } from './auth-base.guard';
+import { SecurityServiceProvider } from './authentication/security-provider.service';
 
 @Injectable({
     providedIn: 'root'
 })
-export class ParticipantGuard implements CanActivate {
+export class ParticipantGuard extends AuthBaseGuard implements CanActivate {
     constructor(
-        private userProfileService: ProfileService,
-        private router: Router,
-        private logger: Logger,
-        private _authGuard: AuthGuard
-    ) {}
+        securityServiceProviderService: SecurityServiceProvider,
+        protected userProfileService: ProfileService,
+        protected router: Router,
+        protected logger: Logger,
+        protected featureFlagService: FeatureFlagService
+    ) {
+        super(securityServiceProviderService, router, logger, featureFlagService);
+    }
 
     async canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
-        return this._authGuard
-            .canActivate(next, state)
+        return this.isUserAuthorized(next, state)
             .pipe(take(1))
             .toPromise()
             .then(async (auth: boolean) => {
