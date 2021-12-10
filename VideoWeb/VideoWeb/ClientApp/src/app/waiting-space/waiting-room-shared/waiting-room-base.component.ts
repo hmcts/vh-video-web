@@ -107,6 +107,7 @@ export abstract class WaitingRoomBaseDirective {
     @ViewChild('roomTitleLabel', { static: false }) roomTitleLabel: ElementRef<HTMLDivElement>;
     @ViewChild('hearingControls', { static: false }) hearingControls: PrivateConsultationRoomControlsComponent;
     countdownComplete: boolean;
+    hasTriedToLeaveConsultation: boolean;
 
     protected constructor(
         protected route: ActivatedRoute,
@@ -916,9 +917,10 @@ export abstract class WaitingRoomBaseDirective {
 
     shouldMuteHearing(): boolean {
         return !(
-            this.countdownComplete &&
-            this.participant.status === ParticipantStatus.InHearing &&
-            this.hearing.status === ConferenceStatus.InSession
+            (this.countdownComplete &&
+                this.participant.status === ParticipantStatus.InHearing &&
+                this.hearing.status === ConferenceStatus.InSession) ||
+            (this.participant.status === ParticipantStatus.InConsultation && !this.hasTriedToLeaveConsultation)
         );
     }
 
@@ -1067,6 +1069,7 @@ export abstract class WaitingRoomBaseDirective {
         };
         this.logger.info(`${this.loggerPrefix} Participant is attempting to leave the private consultation`, logPayload);
         try {
+            this.hasTriedToLeaveConsultation = true;
             await this.consultationService.leaveConsultation(this.conference, this.participant);
         } catch (error) {
             this.logger.error(`${this.loggerPrefix} Failed to leave private consultation`, error, logPayload);
@@ -1078,6 +1081,7 @@ export abstract class WaitingRoomBaseDirective {
             conference: this.conference?.id,
             participant: this.participant.id
         });
+        this.hasTriedToLeaveConsultation = false;
         await this.consultationService.joinJudicialConsultationRoom(this.conference, this.participant);
     }
 
@@ -1086,6 +1090,7 @@ export abstract class WaitingRoomBaseDirective {
             conference: this.conference?.id,
             participant: this.participant.id
         });
+        this.hasTriedToLeaveConsultation = true;
         await this.consultationService.leaveConsultation(this.conference, this.participant);
     }
 
