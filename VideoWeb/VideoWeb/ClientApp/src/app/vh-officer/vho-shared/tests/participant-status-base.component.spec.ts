@@ -21,7 +21,7 @@ import {
 } from './participant-status-base-setup';
 import { ParticipantStatusTestComponent } from './ParticipantStatusTestComponent';
 
-fdescribe('Participant Status Base Component Tests', () => {
+describe('Participant Status Base Component Tests', () => {
     let component: ParticipantStatusTestComponent;
     let fixture: ComponentFixture<ParticipantStatusTestComponent>;
     let participants: ParticipantContactDetailsResponseVho[];
