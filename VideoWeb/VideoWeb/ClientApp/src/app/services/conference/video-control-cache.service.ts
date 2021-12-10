@@ -53,7 +53,7 @@ export class VideoControlCacheService {
         );
     }
 
-    setSpotlightStatus(participantId: string, spotlightValue: boolean) {
+    setSpotlightStatus(participantId: string, spotlightValue: boolean, syncChanges: boolean = true) {
         this.logger.info(`${this.loggerPrefix} Setting spotlight status.`, {
             participantId: participantId,
             oldValue: this.hearingControlStates?.participantStates[participantId]?.isSpotlighted ?? null,
@@ -71,9 +71,11 @@ export class VideoControlCacheService {
             this.hearingControlStates.participantStates[participantId].isSpotlighted = spotlightValue;
         }
 
-        this.storageService
-            .saveHearingStateForConference(this.conferenceService.currentConferenceId, this.hearingControlStates)
-            .subscribe();
+        if (syncChanges) {
+            this.storageService
+                .saveHearingStateForConference(this.conferenceService.currentConferenceId, this.hearingControlStates)
+                .subscribe();
+        }
     }
 
     getSpotlightStatus(participantId: string): boolean {
@@ -84,7 +86,7 @@ export class VideoControlCacheService {
         return this.hearingControlStates?.participantStates[participantId]?.isSpotlighted ?? false;
     }
 
-    setLocalAudioMuted(participantId: string, localAudioMuted: boolean) {
+    setLocalAudioMuted(participantId: string, localAudioMuted: boolean, syncChanges: boolean = false) {
         this.logger.info(`${this.loggerPrefix} Setting local audio muted.`, {
             participantId: participantId,
             oldValue: this.hearingControlStates?.participantStates[participantId]?.isLocalAudioMuted ?? null,
@@ -102,9 +104,11 @@ export class VideoControlCacheService {
             this.hearingControlStates.participantStates[participantId].isLocalAudioMuted = localAudioMuted;
         }
 
-        this.storageService
-            .saveHearingStateForConference(this.conferenceService.currentConferenceId, this.hearingControlStates)
-            .subscribe();
+        if (syncChanges) {
+            this.storageService
+                .saveHearingStateForConference(this.conferenceService.currentConferenceId, this.hearingControlStates)
+                .subscribe();
+        }
     }
 
     getLocalAudioMuted(participantId: string): boolean {
@@ -115,7 +119,7 @@ export class VideoControlCacheService {
         return this.hearingControlStates?.participantStates[participantId]?.isLocalAudioMuted ?? false;
     }
 
-    setLocalVideoMuted(participantId: string, localVideoMuted: boolean) {
+    setLocalVideoMuted(participantId: string, localVideoMuted: boolean, syncChanges: boolean = false) {
         this.logger.info(`${this.loggerPrefix} Setting local video muted.`, {
             participantId: participantId,
             oldValue: this.hearingControlStates?.participantStates[participantId]?.isLocalVideoMuted ?? null,
@@ -133,9 +137,11 @@ export class VideoControlCacheService {
             this.hearingControlStates.participantStates[participantId].isLocalVideoMuted = localVideoMuted;
         }
 
-        this.storageService
-            .saveHearingStateForConference(this.conferenceService.currentConferenceId, this.hearingControlStates)
-            .subscribe();
+        if (syncChanges) {
+            this.storageService
+                .saveHearingStateForConference(this.conferenceService.currentConferenceId, this.hearingControlStates)
+                .subscribe();
+        }
     }
 
     getLocalVideoMuted(participantId: string): boolean {
