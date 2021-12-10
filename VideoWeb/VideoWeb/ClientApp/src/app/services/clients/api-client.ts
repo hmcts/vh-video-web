@@ -263,11 +263,108 @@ export class ApiClient {
     }
 
     /**
+     * Updates the video control statuses for the conference
+     * @param conferenceId conference id
+     * @param body (optional)
+     * @return Success
+     */
+    setVideoControlStatusesForConference(
+        conferenceId: string,
+        body: SetConferenceVideoControlStatusesRequest | undefined
+    ): Observable<void> {
+        let url_ = this.baseUrl + '/conferences/{conferenceId}/setVideoControlStatuses';
+        if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
+        url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
+        url_ = url_.replace(/[?&]$/, '');
+
+        const content_ = JSON.stringify(body);
+
+        let options_: any = {
+            body: content_,
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({
+                'Content-Type': 'application/json-patch+json'
+            })
+        };
+
+        return this.http
+            .request('put', url_, options_)
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processSetVideoControlStatusesForConference(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processSetVideoControlStatusesForConference(<any>response_);
+                        } catch (e) {
+                            return <Observable<void>>(<any>_observableThrow(e));
+                        }
+                    } else return <Observable<void>>(<any>_observableThrow(response_));
+                })
+            );
+    }
+
+    protected processSetVideoControlStatusesForConference(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 202) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return _observableOf<void>(<any>null);
+                })
+            );
+        } else if (status === 403) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result403: any = null;
+                    let resultData403 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result403 = ProblemDetails.fromJS(resultData403);
+                    return throwException('Forbidden', status, _responseText, _headers, result403);
+                })
+            );
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result404: any = null;
+                    let resultData404 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result404 = ProblemDetails.fromJS(resultData404);
+                    return throwException('Not Found', status, _responseText, _headers, result404);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
      * Returns the video control statuses for the conference
      * @param conferenceId conference id
      * @return Success
      */
-    getVideoControlStatuses(conferenceId: string): Observable<ConferenceVideoControlStatuses> {
+    getVideoControlStatusesForConference(conferenceId: string): Observable<ConferenceVideoControlStatuses> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/getVideoControlStatuses';
         if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
@@ -285,14 +382,14 @@ export class ApiClient {
             .request('get', url_, options_)
             .pipe(
                 _observableMergeMap((response_: any) => {
-                    return this.processGetVideoControlStatuses(response_);
+                    return this.processGetVideoControlStatusesForConference(response_);
                 })
             )
             .pipe(
                 _observableCatch((response_: any) => {
                     if (response_ instanceof HttpResponseBase) {
                         try {
-                            return this.processGetVideoControlStatuses(<any>response_);
+                            return this.processGetVideoControlStatusesForConference(<any>response_);
                         } catch (e) {
                             return <Observable<ConferenceVideoControlStatuses>>(<any>_observableThrow(e));
                         }
@@ -301,7 +398,7 @@ export class ApiClient {
             );
     }
 
-    protected processGetVideoControlStatuses(response: HttpResponseBase): Observable<ConferenceVideoControlStatuses> {
+    protected processGetVideoControlStatusesForConference(response: HttpResponseBase): Observable<ConferenceVideoControlStatuses> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
@@ -353,100 +450,6 @@ export class ApiClient {
             );
         }
         return _observableOf<ConferenceVideoControlStatuses>(<any>null);
-    }
-
-    /**
-     * Updates the video control statuses for the conference
-     * @param conferenceId conference id
-     * @param body (optional)
-     * @return Success
-     */
-    getVideoControlStatuses2(conferenceId: string, body: SetConferenceVideoControlStatusesRequest | undefined): Observable<void> {
-        let url_ = this.baseUrl + '/conferences/{conferenceId}/setVideoControlStatuses';
-        if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
-        url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
-        url_ = url_.replace(/[?&]$/, '');
-
-        const content_ = JSON.stringify(body);
-
-        let options_: any = {
-            body: content_,
-            observe: 'response',
-            responseType: 'blob',
-            headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
-            })
-        };
-
-        return this.http
-            .request('put', url_, options_)
-            .pipe(
-                _observableMergeMap((response_: any) => {
-                    return this.processGetVideoControlStatuses2(response_);
-                })
-            )
-            .pipe(
-                _observableCatch((response_: any) => {
-                    if (response_ instanceof HttpResponseBase) {
-                        try {
-                            return this.processGetVideoControlStatuses2(<any>response_);
-                        } catch (e) {
-                            return <Observable<void>>(<any>_observableThrow(e));
-                        }
-                    } else return <Observable<void>>(<any>_observableThrow(response_));
-                })
-            );
-    }
-
-    protected processGetVideoControlStatuses2(response: HttpResponseBase): Observable<void> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {};
-        if (response.headers) {
-            for (let key of response.headers.keys()) {
-                _headers[key] = response.headers.get(key);
-            }
-        }
-        if (status === 202) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return _observableOf<void>(<any>null);
-                })
-            );
-        } else if (status === 403) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result403: any = null;
-                    let resultData403 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result403 = ProblemDetails.fromJS(resultData403);
-                    return throwException('Forbidden', status, _responseText, _headers, result403);
-                })
-            );
-        } else if (status === 404) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result404: any = null;
-                    let resultData404 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result404 = ProblemDetails.fromJS(resultData404);
-                    return throwException('Not Found', status, _responseText, _headers, result404);
-                })
-            );
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('Unauthorized', status, _responseText, _headers);
-                })
-            );
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
-                })
-            );
-        }
-        return _observableOf<void>(<any>null);
     }
 
     /**
@@ -5558,6 +5561,110 @@ export interface IStartHearingRequest {
     mute_guests?: boolean | undefined;
 }
 
+export class SetConferenceVideoControlStatusesRequest_VideoControlStatusRequest
+    implements ISetConferenceVideoControlStatusesRequest_VideoControlStatusRequest
+{
+    is_spotlighted?: boolean;
+    is_local_audio_muted?: boolean;
+    is_local_video_muted?: boolean;
+
+    constructor(data?: ISetConferenceVideoControlStatusesRequest_VideoControlStatusRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.is_spotlighted = _data['is_spotlighted'];
+            this.is_local_audio_muted = _data['is_local_audio_muted'];
+            this.is_local_video_muted = _data['is_local_video_muted'];
+        }
+    }
+
+    static fromJS(data: any): SetConferenceVideoControlStatusesRequest_VideoControlStatusRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new SetConferenceVideoControlStatusesRequest_VideoControlStatusRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['is_spotlighted'] = this.is_spotlighted;
+        data['is_local_audio_muted'] = this.is_local_audio_muted;
+        data['is_local_video_muted'] = this.is_local_video_muted;
+        return data;
+    }
+}
+
+export interface ISetConferenceVideoControlStatusesRequest_VideoControlStatusRequest {
+    is_spotlighted?: boolean;
+    is_local_audio_muted?: boolean;
+    is_local_video_muted?: boolean;
+}
+
+export class SetConferenceVideoControlStatusesRequest implements ISetConferenceVideoControlStatusesRequest {
+    participant_id_to_video_control_status_map?:
+        | { [key: string]: SetConferenceVideoControlStatusesRequest_VideoControlStatusRequest }
+        | undefined;
+
+    constructor(data?: ISetConferenceVideoControlStatusesRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (_data['participant_id_to_video_control_status_map']) {
+                this.participant_id_to_video_control_status_map = {} as any;
+                for (let key in _data['participant_id_to_video_control_status_map']) {
+                    if (_data['participant_id_to_video_control_status_map'].hasOwnProperty(key))
+                        (<any>this.participant_id_to_video_control_status_map)![key] = _data['participant_id_to_video_control_status_map'][
+                            key
+                        ]
+                            ? SetConferenceVideoControlStatusesRequest_VideoControlStatusRequest.fromJS(
+                                  _data['participant_id_to_video_control_status_map'][key]
+                              )
+                            : new SetConferenceVideoControlStatusesRequest_VideoControlStatusRequest();
+                }
+            }
+        }
+    }
+
+    static fromJS(data: any): SetConferenceVideoControlStatusesRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new SetConferenceVideoControlStatusesRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (this.participant_id_to_video_control_status_map) {
+            data['participant_id_to_video_control_status_map'] = {};
+            for (let key in this.participant_id_to_video_control_status_map) {
+                if (this.participant_id_to_video_control_status_map.hasOwnProperty(key))
+                    (<any>data['participant_id_to_video_control_status_map'])[key] = this.participant_id_to_video_control_status_map[key]
+                        ? this.participant_id_to_video_control_status_map[key].toJSON()
+                        : <any>undefined;
+            }
+        }
+        return data;
+    }
+}
+
+export interface ISetConferenceVideoControlStatusesRequest {
+    participant_id_to_video_control_status_map?:
+        | { [key: string]: SetConferenceVideoControlStatusesRequest_VideoControlStatusRequest }
+        | undefined;
+}
+
 export class VideoControlStatus implements IVideoControlStatus {
     is_spotlighted?: boolean;
     is_local_audio_muted?: boolean;
@@ -5651,59 +5758,6 @@ export class ConferenceVideoControlStatuses implements IConferenceVideoControlSt
 }
 
 export interface IConferenceVideoControlStatuses {
-    participant_id_to_video_control_status_map?: { [key: string]: VideoControlStatus } | undefined;
-}
-
-export class SetConferenceVideoControlStatusesRequest implements ISetConferenceVideoControlStatusesRequest {
-    participant_id_to_video_control_status_map?: { [key: string]: VideoControlStatus } | undefined;
-
-    constructor(data?: ISetConferenceVideoControlStatusesRequest) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            if (_data['participant_id_to_video_control_status_map']) {
-                this.participant_id_to_video_control_status_map = {} as any;
-                for (let key in _data['participant_id_to_video_control_status_map']) {
-                    if (_data['participant_id_to_video_control_status_map'].hasOwnProperty(key))
-                        (<any>this.participant_id_to_video_control_status_map)![key] = _data['participant_id_to_video_control_status_map'][
-                            key
-                        ]
-                            ? VideoControlStatus.fromJS(_data['participant_id_to_video_control_status_map'][key])
-                            : new VideoControlStatus();
-                }
-            }
-        }
-    }
-
-    static fromJS(data: any): SetConferenceVideoControlStatusesRequest {
-        data = typeof data === 'object' ? data : {};
-        let result = new SetConferenceVideoControlStatusesRequest();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (this.participant_id_to_video_control_status_map) {
-            data['participant_id_to_video_control_status_map'] = {};
-            for (let key in this.participant_id_to_video_control_status_map) {
-                if (this.participant_id_to_video_control_status_map.hasOwnProperty(key))
-                    (<any>data['participant_id_to_video_control_status_map'])[key] = this.participant_id_to_video_control_status_map[key]
-                        ? this.participant_id_to_video_control_status_map[key].toJSON()
-                        : <any>undefined;
-            }
-        }
-        return data;
-    }
-}
-
-export interface ISetConferenceVideoControlStatusesRequest {
     participant_id_to_video_control_status_map?: { [key: string]: VideoControlStatus } | undefined;
 }
 

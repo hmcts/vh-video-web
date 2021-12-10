@@ -6,6 +6,13 @@ namespace VideoWeb.Contract.Request
 {
     public class SetConferenceVideoControlStatusesRequest
     {
-        public Dictionary<Guid, VideoControlStatus> ParticipantIdToVideoControlStatusMap { get; set; }
+        public class VideoControlStatusRequest
+        {
+            public bool IsSpotlighted { get; set; }
+            public bool IsLocalAudioMuted { get; set; }
+            public bool IsLocalVideoMuted { get; set; }
+        }
+    
+        public Dictionary<string, VideoControlStatusRequest> ParticipantIdToVideoControlStatusMap { get; set; }
     }
 }

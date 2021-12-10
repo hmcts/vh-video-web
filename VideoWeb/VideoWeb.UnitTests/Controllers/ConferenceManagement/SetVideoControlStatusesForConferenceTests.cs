@@ -12,19 +12,32 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Services;
+using VideoWeb.Mappings;
+using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 {
     public class SetVideoControlStatusesForConferenceTests
     {
+        private class FakeMapper : IMapTo<SetConferenceVideoControlStatusesRequest, ConferenceVideoControlStatuses>
+        {
+            public ConferenceVideoControlStatuses ReturnValue { get; set; } = null;
+            public ConferenceVideoControlStatuses Map(SetConferenceVideoControlStatusesRequest input)
+            {
+                return ReturnValue;
+            }
+        }
+        
         private AutoMock _mocker;
         private ConferenceManagementController _sut;
+        private FakeMapper _fakeMapper;
 
         [SetUp]
         public void SetUp()
         {
             _mocker = AutoMock.GetLoose();
             _sut = _mocker.Create<ConferenceManagementController>();
+            _fakeMapper = new FakeMapper();
         }
 
         [Test]
@@ -32,17 +45,27 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         {
             // Arrange
             var conferenceId = Guid.NewGuid();
-            var map = new Dictionary<Guid, VideoControlStatus>();
             var conferenceVideoControlStatusesRequest = new SetConferenceVideoControlStatusesRequest()
             {
-                ParticipantIdToVideoControlStatusMap = map
+                ParticipantIdToVideoControlStatusMap = new Dictionary<Guid, SetConferenceVideoControlStatusesRequest.VideoControlStatusRequest>()
+            };
+            
+            var conferenceVideoControlStatuses = new ConferenceVideoControlStatuses()
+            {
+                ParticipantIdToVideoControlStatusMap = new Dictionary<Guid, VideoControlStatus>()
             };
 
+            _mocker.Mock<IMapperFactory>()
+                .Setup(x => x.Get<SetConferenceVideoControlStatusesRequest, ConferenceVideoControlStatuses>())
+                .Returns(_fakeMapper);
+
+            _fakeMapper.ReturnValue = conferenceVideoControlStatuses;
+            
             // Act
             var response = await _sut.SetVideoControlStatusesForConference(conferenceId, conferenceVideoControlStatusesRequest);
 
             // Assert
-            _mocker.Mock<IConferenceVideoControlStatusService>().Verify(x => x.SetVideoControlStateForConference(conferenceId, It.Is<ConferenceVideoControlStatuses>(y => y.ParticipantIdToVideoControlStatusMap == map)), Times.Once);
+            _mocker.Mock<IConferenceVideoControlStatusService>().Verify(x => x.SetVideoControlStateForConference(conferenceId, It.Is<ConferenceVideoControlStatuses>(y => y.ParticipantIdToVideoControlStatusMap == conferenceVideoControlStatuses.ParticipantIdToVideoControlStatusMap)), Times.Once);
             response.Should().BeAssignableTo<AcceptedResult>();
         }
 
@@ -53,6 +76,12 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var conferenceId = Guid.NewGuid();
             var map = new Dictionary<Guid, VideoControlStatus>();
 
+            _mocker.Mock<IMapperFactory>()
+                .Setup(x => x.Get<SetConferenceVideoControlStatusesRequest, ConferenceVideoControlStatuses>())
+                .Returns(_fakeMapper);
+
+            _fakeMapper.ReturnValue = null;
+            
             // Act
             var response = await _sut.SetVideoControlStatusesForConference(conferenceId, null);
 

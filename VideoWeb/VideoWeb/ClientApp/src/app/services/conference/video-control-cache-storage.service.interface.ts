@@ -15,6 +15,6 @@ export interface IHearingControlStates {
 }
 
 export interface IVideoControlCacheStorageService {
-    saveHearingStateForConference(currentConferenceId: string, hearingControlStates: IHearingControlsState);
+    saveHearingStateForConference(currentConferenceId: string, hearingControlStates: IHearingControlsState): Observable<void>;
     loadHearingStateForConference(id: string): Observable<IHearingControlsState>;
 }

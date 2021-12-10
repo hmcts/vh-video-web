@@ -21,9 +21,9 @@ namespace VideoWeb.Helpers
             await _conferenceVideoControlStatusCache.WriteToCache(conferenceId, conferenceVideoControlStatuses);
         }
         
-        public Task<ConferenceVideoControlStatuses?> GetVideoControlStateForConference(Guid conferenceId)
+        public async Task<ConferenceVideoControlStatuses?> GetVideoControlStateForConference(Guid conferenceId)
         {
-            return _conferenceVideoControlStatusCache.ReadFromCache(conferenceId);
+            return await _conferenceVideoControlStatusCache.ReadFromCache(conferenceId);
         }
     }
 }

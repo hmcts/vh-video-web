@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { take } from 'rxjs/operators';
 import { LoggerService } from '../logging/logger.service';
 import { ConferenceService } from './conference.service';
-import { VideoControlCacheLocalStorageService } from './video-control-cache-local-storage.service';
+import { DistributedVideoControlCacheService } from './distributed-video-control-cache.service';
 import { IHearingControlsState } from './video-control-cache-storage.service.interface';
 
 @Injectable({
@@ -15,7 +15,7 @@ export class VideoControlCacheService {
 
     constructor(
         private conferenceService: ConferenceService,
-        private storageService: VideoControlCacheLocalStorageService,
+        private storageService: DistributedVideoControlCacheService,
         private logger: LoggerService
     ) {
         this.conferenceService.currentConference$.subscribe(conference => {
@@ -29,6 +29,9 @@ export class VideoControlCacheService {
                 .pipe(take(1))
                 .subscribe(state => {
                     this.hearingControlStates = state;
+                    this.logger.info(`${this.loggerPrefix} initialised state for ${conference.id}.`, {
+                        hearingControlStates: this.hearingControlStates
+                    });
                 });
         });
     }
@@ -51,10 +54,16 @@ export class VideoControlCacheService {
             this.hearingControlStates.participantStates[participantId].isSpotlighted = spotlightValue;
         }
 
-        this.storageService.saveHearingStateForConference(this.conferenceService.currentConferenceId, this.hearingControlStates);
+        this.storageService
+            .saveHearingStateForConference(this.conferenceService.currentConferenceId, this.hearingControlStates)
+            .subscribe();
     }
 
     getSpotlightStatus(participantId: string): boolean {
+        this.logger.info(`${this.loggerPrefix} Getting spotlight status.`, {
+            participantId: participantId,
+            value: this.hearingControlStates?.participantStates[participantId]?.isSpotlighted ?? null
+        });
         return this.hearingControlStates?.participantStates[participantId]?.isSpotlighted ?? false;
     }
 
@@ -76,10 +85,16 @@ export class VideoControlCacheService {
             this.hearingControlStates.participantStates[participantId].isLocalAudioMuted = localAudioMuted;
         }
 
-        this.storageService.saveHearingStateForConference(this.conferenceService.currentConferenceId, this.hearingControlStates);
+        this.storageService
+            .saveHearingStateForConference(this.conferenceService.currentConferenceId, this.hearingControlStates)
+            .subscribe();
     }
 
     getLocalAudioMuted(participantId: string): boolean {
+        this.logger.info(`${this.loggerPrefix} Getting local audio muted.`, {
+            participantId: participantId,
+            value: this.hearingControlStates?.participantStates[participantId]?.isLocalAudioMuted ?? null
+        });
         return this.hearingControlStates?.participantStates[participantId]?.isLocalAudioMuted ?? false;
     }
 
@@ -101,10 +116,16 @@ export class VideoControlCacheService {
             this.hearingControlStates.participantStates[participantId].isLocalVideoMuted = localVideoMuted;
         }
 
-        this.storageService.saveHearingStateForConference(this.conferenceService.currentConferenceId, this.hearingControlStates);
+        this.storageService
+            .saveHearingStateForConference(this.conferenceService.currentConferenceId, this.hearingControlStates)
+            .subscribe();
     }
 
     getLocalVideoMuted(participantId: string): boolean {
+        this.logger.info(`${this.loggerPrefix} Getting local video muted.`, {
+            participantId: participantId,
+            value: this.hearingControlStates?.participantStates[participantId]?.isLocalVideoMuted ?? null
+        });
         return this.hearingControlStates?.participantStates[participantId]?.isLocalVideoMuted ?? false;
     }
 }
