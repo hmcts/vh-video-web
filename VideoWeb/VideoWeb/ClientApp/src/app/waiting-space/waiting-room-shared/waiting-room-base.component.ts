@@ -35,6 +35,7 @@ import { ParticipantStatusMessage } from 'src/app/services/models/participant-st
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
+import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { Room } from 'src/app/shared/models/room';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -106,6 +107,7 @@ export abstract class WaitingRoomBaseDirective {
     @ViewChild('roomTitleLabel', { static: false }) roomTitleLabel: ElementRef<HTMLDivElement>;
     @ViewChild('hearingControls', { static: false }) hearingControls: PrivateConsultationRoomControlsComponent;
     countdownComplete: boolean;
+    hasTriedToLeaveConsultation: boolean;
 
     protected constructor(
         protected route: ActivatedRoute,
@@ -296,6 +298,13 @@ export abstract class WaitingRoomBaseDirective {
             this.eventService.getEndpointStatusMessage().subscribe(message => {
                 this.handleEndpointStatusChange(message);
                 this.updateShowVideo();
+            })
+        );
+
+        this.logger.debug(`${this.loggerPrefix} Subscribing to local audio and video mute status...`);
+        this.eventHubSubscription$.add(
+            this.eventService.getParticipantMediaStatusMessage().subscribe(message => {
+                this.handleLocalAudioVideoMuteStatus(message);
             })
         );
 
@@ -908,9 +917,10 @@ export abstract class WaitingRoomBaseDirective {
 
     shouldMuteHearing(): boolean {
         return !(
-            this.countdownComplete &&
-            this.participant.status === ParticipantStatus.InHearing &&
-            this.hearing.status === ConferenceStatus.InSession
+            (this.countdownComplete &&
+                this.participant.status === ParticipantStatus.InHearing &&
+                this.hearing.status === ConferenceStatus.InSession) ||
+            (this.participant.status === ParticipantStatus.InConsultation && !this.hasTriedToLeaveConsultation)
         );
     }
 
@@ -940,6 +950,17 @@ export abstract class WaitingRoomBaseDirective {
         if (!this.hasAHostInHearing(currentConferenceParticipants)) {
             this.isTransferringIn = false;
         }
+    }
+
+    handleLocalAudioVideoMuteStatus(message: ParticipantMediaStatusMessage) {
+        if (!this.validateIsForConference(message.conferenceId)) {
+            return;
+        }
+        this.participantRemoteMuteStoreService.updateLocalMuteStatus(
+            message.participantId,
+            message.mediaStatus.is_local_audio_muted,
+            message.mediaStatus.is_local_video_muted
+        );
     }
 
     handleEndpointStatusChange(message: EndpointStatusMessage) {
@@ -1048,6 +1069,7 @@ export abstract class WaitingRoomBaseDirective {
         };
         this.logger.info(`${this.loggerPrefix} Participant is attempting to leave the private consultation`, logPayload);
         try {
+            this.hasTriedToLeaveConsultation = true;
             await this.consultationService.leaveConsultation(this.conference, this.participant);
         } catch (error) {
             this.logger.error(`${this.loggerPrefix} Failed to leave private consultation`, error, logPayload);
@@ -1059,6 +1081,7 @@ export abstract class WaitingRoomBaseDirective {
             conference: this.conference?.id,
             participant: this.participant.id
         });
+        this.hasTriedToLeaveConsultation = false;
         await this.consultationService.joinJudicialConsultationRoom(this.conference, this.participant);
     }
 
@@ -1067,6 +1090,7 @@ export abstract class WaitingRoomBaseDirective {
             conference: this.conference?.id,
             participant: this.participant.id
         });
+        this.hasTriedToLeaveConsultation = true;
         await this.consultationService.leaveConsultation(this.conference, this.participant);
     }
 

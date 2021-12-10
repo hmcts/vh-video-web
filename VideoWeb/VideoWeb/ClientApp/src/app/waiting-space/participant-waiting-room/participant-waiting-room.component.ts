@@ -274,6 +274,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             conference: this.conference?.id,
             participant: this.participant.id
         });
+        this.hasTriedToLeaveConsultation = false;
         await this.consultationService.createParticipantConsultationRoom(this.conference, this.participant, participants, endpoints);
         this.closeStartPrivateConsultationModal();
         this.privateConsultationAccordianExpanded = false;
@@ -285,6 +286,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             participant: this.participant.id,
             roomLabel: roomLabel
         });
+        this.hasTriedToLeaveConsultation = false;
         await this.consultationService.joinPrivateConsultationRoom(this.conference.id, this.participant.id, roomLabel);
         this.closeJoinPrivateConsultationModal();
         this.privateConsultationAccordianExpanded = false;
