@@ -61,7 +61,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         protected translateService: TranslateService,
         private mapper: ParticipantPanelModelMapper,
         protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService
-    ) {}
+    ) { }
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
@@ -628,15 +628,13 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         combined.forEach(participant => {
             const currentParticipant = this.participants.find(r => r.id === participant.id);
             if (currentParticipant) {
-                participant.updateParticipant(
-                    currentParticipant?.isMicRemoteMuted(),
-                    currentParticipant?.hasHandRaised(),
-                    currentParticipant?.hasSpotlight(),
-                    currentParticipant?.id,
-                    currentParticipant?.isLocalMicMuted(),
-                    currentParticipant?.isLocalCameraOff()
-                );
-                participant.assignPexipId(currentParticipant?.pexipId);
+                if (currentParticipant instanceof LinkedParticipantPanelModel) {
+                    currentParticipant.participants.forEach(linkedParticpant => {
+                        this.updateParticipant(participant, linkedParticpant);
+                    })
+                } else {
+                    this.updateParticipant(participant, currentParticipant);
+                }
             }
         });
 
@@ -651,5 +649,17 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             return x.orderInTheList > z.orderInTheList ? 1 : -1;
         });
         this.participants = combined;
+    }
+
+    private updateParticipant(participant: PanelModel, participantToBeUpdated: PanelModel) {
+        participant.updateParticipant(
+            participantToBeUpdated?.isMicRemoteMuted(),
+            participantToBeUpdated?.hasHandRaised(),
+            participantToBeUpdated?.hasSpotlight(),
+            participantToBeUpdated?.id,
+            participantToBeUpdated?.isLocalMicMuted(),
+            participantToBeUpdated?.isLocalCameraOff()
+        );
+        participant.assignPexipId(participantToBeUpdated?.pexipId);
     }
 }
