@@ -5,8 +5,8 @@ import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-
 import { ConferenceResponse } from '../clients/api-client';
 import { LoggerService } from '../logging/logger.service';
 import { ConferenceService } from './conference.service';
-import { VideoControlCacheLocalStorageService } from './video-control-cache-local-storage.service';
-import { IHearingControlsState, IVideoControlCacheStorageService } from './video-control-cache-storage.service.interface';
+import { DistributedVideoControlCacheService } from './distributed-video-control-cache.service';
+import { IHearingControlsState } from './video-control-cache-storage.service.interface';
 import { VideoControlCacheService } from './video-control-cache.service';
 
 describe('VideoControlCacheService', () => {
@@ -14,7 +14,7 @@ describe('VideoControlCacheService', () => {
     let currentConferenceSubject: Subject<ConferenceResponse>;
     let currentConference$: Observable<ConferenceResponse>;
 
-    let videoControlCacheStorageServiceSpy: jasmine.SpyObj<VideoControlCacheLocalStorageService>;
+    let videoControlCacheStorageServiceSpy: jasmine.SpyObj<DistributedVideoControlCacheService>;
     let loadHearingStateForConferenceSubject: Subject<IHearingControlsState>;
     let loadHearingStateForConference$: Observable<IHearingControlsState>;
 
@@ -33,7 +33,7 @@ describe('VideoControlCacheService', () => {
         currentConference$ = currentConferenceSubject.asObservable();
         getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference$').and.returnValue(currentConference$);
 
-        videoControlCacheStorageServiceSpy = jasmine.createSpyObj<VideoControlCacheLocalStorageService>(
+        videoControlCacheStorageServiceSpy = jasmine.createSpyObj<DistributedVideoControlCacheService>(
             'VideoControlCacheLocalStorageService',
             ['saveHearingStateForConference', 'loadHearingStateForConference']
         );
