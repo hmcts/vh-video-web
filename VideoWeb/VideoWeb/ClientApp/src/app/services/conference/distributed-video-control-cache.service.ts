@@ -23,20 +23,23 @@ export class DistributedVideoControlCacheService implements IVideoControlCacheSt
     constructor(private apiClient: ApiClient, private logger: Logger) {}
 
     private mapToRequest(hearingControlStates: IHearingControlsState) {
-        if (!hearingControlStates) return null;
+        if (!hearingControlStates) {
+            return null;
+        }
 
         const setConferenceVideoControlStatusesRequest = {
             participant_id_to_video_control_status_map: {}
         } as SetConferenceVideoControlStatusesRequest;
 
         if (hearingControlStates) {
-            for (let key in hearingControlStates.participantStates) {
-                if (hearingControlStates.participantStates.hasOwnProperty(key))
+            for (const key in hearingControlStates.participantStates) {
+                if (hearingControlStates.participantStates.hasOwnProperty(key)) {
                     setConferenceVideoControlStatusesRequest.participant_id_to_video_control_status_map[key] = {
                         is_spotlighted: hearingControlStates.participantStates[key].isSpotlighted ?? false,
                         is_local_audio_muted: hearingControlStates.participantStates[key].isLocalAudioMuted ?? false,
                         is_local_video_muted: hearingControlStates.participantStates[key].isLocalVideoMuted ?? false
                     } as SetConferenceVideoControlStatusesRequest_VideoControlStatusRequest;
+                }
             }
         }
 
@@ -57,20 +60,24 @@ export class DistributedVideoControlCacheService implements IVideoControlCacheSt
     }
 
     private mapFromResponse(response: ConferenceVideoControlStatuses) {
-        if (!response) return null;
+        if (!response) {
+            return null;
+        }
 
         const mappedResponse = {} as IHearingControlsState;
         mappedResponse.participantStates = {} as { [participantId: string]: IParticipantControlsState };
 
-        if (response.participant_id_to_video_control_status_map)
-            for (let key in response.participant_id_to_video_control_status_map) {
-                if (response.participant_id_to_video_control_status_map.hasOwnProperty(key))
+        if (response.participant_id_to_video_control_status_map) {
+            for (const key in response.participant_id_to_video_control_status_map) {
+                if (response.participant_id_to_video_control_status_map.hasOwnProperty(key)) {
                     mappedResponse.participantStates[key] = {
                         isSpotlighted: response.participant_id_to_video_control_status_map[key].is_spotlighted,
                         isLocalAudioMuted: response.participant_id_to_video_control_status_map[key].is_local_audio_muted,
                         isLocalVideoMuted: response.participant_id_to_video_control_status_map[key].is_local_video_muted
                     } as IParticipantControlsState;
+                }
             }
+        }
 
         return mappedResponse;
     }

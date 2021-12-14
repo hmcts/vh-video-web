@@ -61,7 +61,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         protected translateService: TranslateService,
         private mapper: ParticipantPanelModelMapper,
         protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService
-    ) { }
+    ) {}
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
@@ -268,7 +268,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
         participant.assignPexipId(updatedParticipant.uuid);
         if (participant instanceof LinkedParticipantPanelModel) {
-
             participant.updateParticipant(updatedParticipant.isRemoteMuted, null, updatedParticipant.isSpotlighted, participant.id);
         } else {
             participant.updateParticipant(
@@ -631,7 +630,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                 if (currentParticipant instanceof LinkedParticipantPanelModel) {
                     currentParticipant.participants.forEach(linkedParticpant => {
                         this.updateParticipant(participant, linkedParticpant);
-                    })
+                    });
                 } else {
                     this.updateParticipant(participant, currentParticipant);
                 }
