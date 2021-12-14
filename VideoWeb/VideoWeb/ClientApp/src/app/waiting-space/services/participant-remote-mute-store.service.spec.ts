@@ -19,25 +19,53 @@ describe('ParticipantRemoteMuteStoreService', () => {
     });
 
     describe('updateRemoteMuteStatus', () => {
-        it('should call patchState', () => {
+        it('should call updateRemoteMutePatchCallBack', () => {
             // Arrange
             const participantId = Guid.create().toString();
             const isRemoteMuted = true;
-
-            const patchStateSpy = spyOn(service, 'patchState');
-
-            const expectedState = {};
-            expectedState[participantId] = { isRemoteMuted: isRemoteMuted } as IParticipatRemoteMuteStatus;
-
+            const updateRemoteMutePatchCallBackSpy = spyOn(service, 'updateRemoteMutePatchCallBack');
             // Act
             service.updateRemoteMuteStatus(participantId, isRemoteMuted);
 
             // Assert
-            expect(patchStateSpy).toHaveBeenCalledOnceWith(expectedState);
+            expect(updateRemoteMutePatchCallBackSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('updateRemoteMutePatchCallBack updates isRemoteMuted', () => {
+            // Arrange
+            const participantId = Guid.create().toString();
+            const expectedPexipId = '1234';
+            const currentState = {};
+            currentState[participantId] = {
+                isRemoteMuted: false,
+                isLocalAudioMuted: false,
+                isLocalVideoMuted: false,
+                pexipId: expectedPexipId
+            } as IConferenceParticipantsStatus;
+
+            const updatedState = service.updateRemoteMutePatchCallBack(participantId, true, currentState);
+
+            expect(updatedState[participantId].isRemoteMuted).toBe(true);
+            expect(updatedState[participantId].isLocalAudioMuted).toBe(false);
+            expect(updatedState[participantId].isLocalVideoMuted).toBe(false);
+            expect(updatedState[participantId].pexipId).toBe(expectedPexipId);
         });
     });
 
     describe('updateLocalMuteStatus', () => {
+        it('should call updateRemoteMutePatchCallBack', () => {
+            // Arrange
+            const participantId = Guid.create().toString();
+            const updateRemoteMutePatchCallBackSpy = spyOn(service, 'updateLocalMutePatchCallBack');
+            // Act
+            service.updateLocalMuteStatus(participantId, false, false);
+
+            // Assert
+            expect(updateRemoteMutePatchCallBackSpy).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('updateLocalMutePatchCallBack', () => {
         it('should call patchState isLocalAudioMuted is true', () => {
             // Arrange
             const participantId = Guid.create().toString();
@@ -66,6 +94,7 @@ describe('ParticipantRemoteMuteStoreService', () => {
 
         const commonActAndAssert = (participantId: string, isLocalAudioMuted: boolean, isLocalVideoMuted: boolean) => {
             const patchStateSpy = spyOn(service, 'patchState');
+            const expectedPexipId = '1234';
 
             const expectedState = {};
             expectedState[participantId] = {
@@ -73,11 +102,24 @@ describe('ParticipantRemoteMuteStoreService', () => {
                 isLocalVideoMuted: isLocalVideoMuted
             } as IParticipatRemoteMuteStatus;
 
+            const currentState = {};
+            currentState[participantId] = {
+                isRemoteMuted: false,
+                isLocalAudioMuted: false,
+                isLocalVideoMuted: false,
+                pexipId: expectedPexipId
+            } as IConferenceParticipantsStatus;
+
             // Act
-            service.updateLocalMuteStatus(participantId, isLocalAudioMuted, isLocalVideoMuted);
+            const updatedState = service.updateLocalMutePatchCallBack(participantId, isLocalAudioMuted, isLocalVideoMuted, currentState);
 
             // Assert
-            expect(patchStateSpy).toHaveBeenCalledOnceWith(expectedState);
+            // expect(patchStateSpy).toHaveBeenCalledOnceWith(expectedState);
+            // expect(patchStateSpy).toHaveBeenCalledTimes(1);
+            expect(updatedState[participantId].isRemoteMuted).toBe(false);
+            expect(updatedState[participantId].isLocalAudioMuted).toBe(isLocalAudioMuted);
+            expect(updatedState[participantId].isLocalVideoMuted).toBe(isLocalVideoMuted);
+            expect(updatedState[participantId].pexipId).toBe(expectedPexipId);
         };
     });
     describe('conferenceParticipantsStatus$', () => {

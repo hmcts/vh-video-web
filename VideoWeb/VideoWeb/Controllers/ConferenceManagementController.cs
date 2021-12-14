@@ -138,7 +138,7 @@ namespace VideoWeb.Controllers
 
                 if (videoControlStatuses == null) {
                     _logger.LogWarning("video control statuses didn't have a value returning NotFound. This was for {conferenceId}", conferenceId);
-                    return Ok(new ConferenceVideoControlStatuses()
+                    return NotFound(new ConferenceVideoControlStatuses()
                     {
                         ParticipantIdToVideoControlStatusMap = new Dictionary<string, VideoControlStatus>()
                     });

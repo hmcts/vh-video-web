@@ -9,35 +9,45 @@ const INITIAL_STATE: IConferenceParticipantsStatus = {};
     providedIn: 'root'
 })
 export class ParticipantRemoteMuteStoreService extends ComponentStore<IConferenceParticipantsStatus> {
-    assignPexipId(participantOrVmrId: string, pexipId: string) {
-        this.patchState(state => {
-            const newState = { ...state };
-            newState[participantOrVmrId] = { ...newState[participantOrVmrId] };
-            newState[participantOrVmrId].pexipId = pexipId;
-
-            return newState;
-        });
-    }
     constructor() {
         super(INITIAL_STATE);
     }
 
     updateRemoteMuteStatus(participantOrVmrId: string, isRemoteMuted: boolean) {
-        this.patchState(state => {
-            const newState = { ...state };
-            newState[participantOrVmrId] = { ...newState[participantOrVmrId] };
-            newState[participantOrVmrId].isRemoteMuted = isRemoteMuted;
+        this.patchState(state => this.updateRemoteMutePatchCallBack(participantOrVmrId, isRemoteMuted, state));
+    }
 
-            return newState;
-        });
+    updateRemoteMutePatchCallBack(participantOrVmrId: string, isRemoteMuted: boolean, state: IConferenceParticipantsStatus) {
+        const newState = { ...state };
+        newState[participantOrVmrId] = { ...newState[participantOrVmrId] };
+        newState[participantOrVmrId].isRemoteMuted = isRemoteMuted;
+
+        return newState;
     }
 
     updateLocalMuteStatus(participantOrVmrId: string, isLocalAudioMuted: boolean, isLocalVideoMuted: boolean) {
+        this.patchState(state => this.updateLocalMutePatchCallBack(participantOrVmrId, isLocalAudioMuted, isLocalVideoMuted, state));
+    }
+
+    updateLocalMutePatchCallBack(
+        participantOrVmrId: string,
+        isLocalAudioMuted: boolean,
+        isLocalVideoMuted: boolean,
+        state: IConferenceParticipantsStatus
+    ) {
+        const newState = { ...state };
+        newState[participantOrVmrId] = { ...newState[participantOrVmrId] };
+        newState[participantOrVmrId].isLocalAudioMuted = isLocalAudioMuted;
+        newState[participantOrVmrId].isLocalVideoMuted = isLocalVideoMuted;
+
+        return newState;
+    }
+
+    assignPexipId(participantOrVmrId: string, pexipId: string) {
         this.patchState(state => {
             const newState = { ...state };
             newState[participantOrVmrId] = { ...newState[participantOrVmrId] };
-            newState[participantOrVmrId].isLocalAudioMuted = isLocalAudioMuted;
-            newState[participantOrVmrId].isLocalVideoMuted = isLocalVideoMuted;
+            newState[participantOrVmrId].pexipId = pexipId;
 
             return newState;
         });

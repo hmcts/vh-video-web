@@ -1,6 +1,5 @@
 import { fakeAsync, flush } from '@angular/core/testing';
-import { Subject } from 'rxjs';
-import { Observable } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { ConferenceResponse } from '../clients/api-client';
 import { LoggerService } from '../logging/logger.service';
@@ -41,6 +40,7 @@ describe('VideoControlCacheService', () => {
         loadHearingStateForConferenceSubject = new Subject<IHearingControlsState>();
         loadHearingStateForConference$ = loadHearingStateForConferenceSubject.asObservable();
         videoControlCacheStorageServiceSpy.loadHearingStateForConference.and.returnValue(loadHearingStateForConference$);
+        videoControlCacheStorageServiceSpy.saveHearingStateForConference.and.returnValue(of(null));
 
         loggerServiceSpy = jasmine.createSpyObj<LoggerService>('LoggerService', ['info', 'warn']);
 
@@ -103,7 +103,6 @@ describe('VideoControlCacheService', () => {
 
             // Act
             service.setSpotlightStatus(participantId, spotlight);
-
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
             expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).toHaveBeenCalledOnceWith(
@@ -271,7 +270,7 @@ describe('VideoControlCacheService', () => {
             service['hearingControlStates'] = initialHearingControlsState;
 
             // Act
-            service.setLocalAudioMuted(participantId, isLocalAudioMuted);
+            service.setLocalAudioMuted(participantId, isLocalAudioMuted, true);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
@@ -298,7 +297,7 @@ describe('VideoControlCacheService', () => {
             service['hearingControlStates'] = initialHearingControlsState;
 
             // Act
-            service.setLocalAudioMuted(participantId, isLocalAudioMuted);
+            service.setLocalAudioMuted(participantId, isLocalAudioMuted, true);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
@@ -335,7 +334,7 @@ describe('VideoControlCacheService', () => {
             service['hearingControlStates'] = initialHearingControlsState;
 
             // Act
-            service.setLocalAudioMuted(participantId, isLocalAudioMuted);
+            service.setLocalAudioMuted(participantId, isLocalAudioMuted, true);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
@@ -440,7 +439,7 @@ describe('VideoControlCacheService', () => {
             service['hearingControlStates'] = initialHearingControlsState;
 
             // Act
-            service.setLocalVideoMuted(participantId, isLocalVideoMuted);
+            service.setLocalVideoMuted(participantId, isLocalVideoMuted, true);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
@@ -467,7 +466,7 @@ describe('VideoControlCacheService', () => {
             service['hearingControlStates'] = initialHearingControlsState;
 
             // Act
-            service.setLocalVideoMuted(participantId, isLocalVideoMuted);
+            service.setLocalVideoMuted(participantId, isLocalVideoMuted, true);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
@@ -504,7 +503,7 @@ describe('VideoControlCacheService', () => {
             service['hearingControlStates'] = initialHearingControlsState;
 
             // Act
-            service.setLocalVideoMuted(participantId, isLocalAudioMuted);
+            service.setLocalVideoMuted(participantId, isLocalAudioMuted, true);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);

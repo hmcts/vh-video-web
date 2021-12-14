@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FluentAssertions;
@@ -53,7 +53,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var response = await _sut.GetVideoControlStatusesForConference(conferenceId);
             
             // Assert
-            response.Should().BeAssignableTo<NotFoundResult>();
+            response.Should().BeAssignableTo<NotFoundObjectResult>();
         }
     }
 }
