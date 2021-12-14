@@ -1,5 +1,6 @@
-﻿
+
 using System;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
@@ -27,6 +28,7 @@ namespace VideoWeb.UnitTests.Services
     {
         private AutoMock _mocker;
         private ConferenceDetailsResponse _testConference;
+        private ParticipantDetailsResponse _participantDetailsResponse;
         private IParticipantService _service;
         private UserProfileResponse _staffMemberProfile;
         private const string ContactEmail = "staffMemberEmail@hmcts.net";
@@ -37,6 +39,7 @@ namespace VideoWeb.UnitTests.Services
         {
             _mocker = AutoMock.GetLoose();
             _testConference = Builder<ConferenceDetailsResponse>.CreateNew().Build();
+            _participantDetailsResponse = Builder<ParticipantDetailsResponse>.CreateNew().Build();
             _service = _mocker.Create<ParticipantService>();
             _staffMemberProfile = new UserProfileResponse
             {
@@ -107,6 +110,32 @@ namespace VideoWeb.UnitTests.Services
 
             _mocker.Mock<IParticipantsUpdatedEventNotifier>()
                 .Verify(x => x.PushParticipantsUpdatedEvent(conference), Times.Once);
+        }
+
+        [Test]
+        public async Task AddStaffMemberToConferenceCache_Updates_UpdateConferenceAsync()
+        {
+            // Arrange
+            var conference = new Conference();
+            var participantResponse = new Participant();
+            var addStaffMemberResponse = new AddStaffMemberResponse();
+            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.IsAny<Guid>(), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).Returns(Task.FromResult(conference));
+            _mocker.Mock<IMapTo<ParticipantDetailsResponse, Participant>>()
+               .Setup(x => x.Map(It.Is<ParticipantDetailsResponse>(x => x == _participantDetailsResponse)))
+               .Returns(participantResponse);
+
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantDetailsResponse, Participant>())
+                .Returns(_mocker.Mock<IMapTo<ParticipantDetailsResponse, Participant>>().Object);
+
+            //Act
+            await _service.AddStaffMemberToConferenceCache(addStaffMemberResponse);
+
+            // Assert
+            _mocker.Mock<IConferenceCache>()
+                .Verify(x => x.UpdateConferenceAsync(It.Is<Conference>(y => y == conference)), Times.Once());
+            _mocker.Mock<IParticipantsUpdatedEventNotifier>()
+                .Verify(x => x.PushParticipantsUpdatedEvent(It.Is<Conference>(y => y == conference)), Times.Once());
+
         }
     }
 }

@@ -128,7 +128,7 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "GetVideoControlStatusesForConference")]
         [ProducesResponseType(typeof(ConferenceVideoControlStatuses), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ConferenceVideoControlStatuses), (int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetVideoControlStatusesForConference(Guid conferenceId)
         {
             try
