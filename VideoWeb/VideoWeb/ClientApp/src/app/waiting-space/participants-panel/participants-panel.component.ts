@@ -207,7 +207,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             participant.isLocalCameraOff()
         );
 
-
         this.logger.debug(`${this.loggerPrefix} Participant hand raised status has been updated`, {
             conference: this.conferenceId,
             participant: participant.id,

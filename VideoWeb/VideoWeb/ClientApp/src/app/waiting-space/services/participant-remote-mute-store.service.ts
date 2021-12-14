@@ -43,6 +43,16 @@ export class ParticipantRemoteMuteStoreService extends ComponentStore<IConferenc
         });
     }
 
+    updateLocalMuteStatus(participantOrVmrId: string, isLocalAudioMuted: boolean, isLocalVideoMuted: boolean) {
+        const state = {};
+        state[participantOrVmrId] = {
+            isLocalAudioMuted: isLocalAudioMuted,
+            isLocalVideoMuted: isLocalVideoMuted
+        } as IParticipatRemoteMuteStatus;
+
+        this.patchState(state);
+    }
+
     get conferenceParticipantsStatus$(): Observable<IConferenceParticipantsStatus> {
         return this.state$;
     }
