@@ -130,7 +130,7 @@ export class HearingSummary extends HearingBase {
     }
 
     get telephoneConferenceNumber(): string {
-        return this.conference.telephone_conference_number;
+        return this.conference.telephone_conference_numbers;
     }
     get createdDateTime(): Date {
         return this.conference.created_date_time;

@@ -5834,7 +5834,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
     started_date_time?: Date | undefined;
     closed_date_time?: Date | undefined;
     telephone_conference_id?: string | undefined;
-    telephone_conference_number?: string | undefined;
+    telephone_conference_numbers?: string | undefined;
     created_date_time?: Date | undefined;
 
     constructor(data?: IConferenceForVhOfficerResponse) {
@@ -5862,7 +5862,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
             this.started_date_time = _data['started_date_time'] ? new Date(_data['started_date_time'].toString()) : <any>undefined;
             this.closed_date_time = _data['closed_date_time'] ? new Date(_data['closed_date_time'].toString()) : <any>undefined;
             this.telephone_conference_id = _data['telephone_conference_id'];
-            this.telephone_conference_number = _data['telephone_conference_number'];
+            this.telephone_conference_numbers = _data['telephone_conference_numbers'];
             this.created_date_time = _data['created_date_time'] ? new Date(_data['created_date_time'].toString()) : <any>undefined;
         }
     }
@@ -5891,7 +5891,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
         data['started_date_time'] = this.started_date_time ? this.started_date_time.toISOString() : <any>undefined;
         data['closed_date_time'] = this.closed_date_time ? this.closed_date_time.toISOString() : <any>undefined;
         data['telephone_conference_id'] = this.telephone_conference_id;
-        data['telephone_conference_number'] = this.telephone_conference_number;
+        data['telephone_conference_numbers'] = this.telephone_conference_numbers;
         data['created_date_time'] = this.created_date_time ? this.created_date_time.toISOString() : <any>undefined;
         return data;
     }
@@ -5913,7 +5913,7 @@ export interface IConferenceForVhOfficerResponse {
     started_date_time?: Date | undefined;
     closed_date_time?: Date | undefined;
     telephone_conference_id?: string | undefined;
-    telephone_conference_number?: string | undefined;
+    telephone_conference_numbers?: string | undefined;
     created_date_time?: Date | undefined;
 }
 

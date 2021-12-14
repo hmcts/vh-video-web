@@ -22,7 +22,7 @@ describe('CopyIdComponent', () => {
     beforeEach(() => {
         component = new CopyTelephoneIdComponent(clipboardServiceSpy, translateServiceSpy);
         component.telephoneId = hearing.telephoneConferenceId;
-        component.telephoneNumber = hearing.telephoneConferenceNumber;
+        component.telephoneNumbers = hearing.telephoneConferenceNumber;
         component.ngOnInit();
     });
 
