@@ -1,14 +1,12 @@
 
-using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using VideoApi.Contract.Consts;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
@@ -52,7 +50,6 @@ namespace VideoWeb.UnitTests.Services
                 Name = "FullName"
             };
             _claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(Role.StaffMember.ToString()).Build();
-
         }
 
         [Test]
