@@ -207,6 +207,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             participant.isLocalCameraOff()
         );
 
+
         this.logger.debug(`${this.loggerPrefix} Participant hand raised status has been updated`, {
             conference: this.conferenceId,
             participant: participant.id,
@@ -268,6 +269,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
         participant.assignPexipId(updatedParticipant.uuid);
         if (participant instanceof LinkedParticipantPanelModel) {
+
             participant.updateParticipant(updatedParticipant.isRemoteMuted, null, updatedParticipant.isSpotlighted, participant.id);
         } else {
             participant.updateParticipant(
@@ -296,7 +298,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             isSpotlighted: participant.hasSpotlight()
         });
     }
-
     handleParticipantStatusChange(message: ParticipantStatusMessage): void {
         const participant = this.participants.find(x => x.hasParticipant(message.participantId));
         if (!participant) {
