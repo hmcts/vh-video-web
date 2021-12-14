@@ -115,6 +115,8 @@ namespace VideoWeb.Extensions
             services.AddScoped<IConsultationNotifier, ConsultationNotifier>();
             services.AddScoped<IHearingLayoutService, HearingLayoutService>();
             services.AddScoped<IHearingLayoutCache, DistributedHearingLayoutCache>();
+            services.AddScoped<IConferenceVideoControlStatusService, ConferenceVideoControlStatusService>();
+            services.AddScoped<IConferenceVideoControlStatusCache, DistributedConferenceVideoControlStatusCache>();
             services.AddScoped<IParticipantService, ParticipantService>();
             
             RegisterMappers(services);

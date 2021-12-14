@@ -55,7 +55,11 @@ describe('VideoControlService', () => {
 
         videoControlCacheServiceSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', [
             'setSpotlightStatus',
-            'getSpotlightStatus'
+            'getSpotlightStatus',
+            'setLocalVideoMuted',
+            'getLocalVideoMuted',
+            'setLocalAudioMuted',
+            'getLocalAudioMuted'
         ]);
 
         loggerSpy = jasmine.createSpyObj<LoggerService>('Logger', ['error', 'warn', 'info']);
@@ -300,6 +304,118 @@ describe('VideoControlService', () => {
 
             // Assert
             expect(videoCallServiceSpy.spotlightParticipant).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('setLocalAudioMuteById', () => {
+        it('should call setLocalAudioMuted in the cache service (false)', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const localAudioMuted = false;
+
+            // Act
+            sut.setLocalAudioMutedById(participantId, localAudioMuted);
+
+            // Assert
+            expect(videoControlCacheServiceSpy.setLocalAudioMuted).toHaveBeenCalledOnceWith(participantId, localAudioMuted);
+        });
+
+        it('should call setLocalAudioMuted in the cache service (true)', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const localAudioMuted = true;
+
+            // Act
+            sut.setLocalAudioMutedById(participantId, localAudioMuted);
+
+            // Assert
+            expect(videoControlCacheServiceSpy.setLocalAudioMuted).toHaveBeenCalledOnceWith(participantId, localAudioMuted);
+        });
+    });
+
+    describe('getLocalAudioMutedById', () => {
+        it('should call and return the value from getLocalAudioMuted in the cache service (false)', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const localAudioMuted = false;
+            videoControlCacheServiceSpy.getLocalAudioMuted.and.returnValue(localAudioMuted);
+
+            // Act
+            const result = sut.getLocalAudioMutedById(participantId);
+
+            // Assert
+            expect(result).toEqual(localAudioMuted);
+            expect(videoControlCacheServiceSpy.getLocalAudioMuted).toHaveBeenCalledOnceWith(participantId);
+        });
+
+        it('should call and return the value from getLocalAudioMuted in the cache service (true)', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const localAudioMuted = true;
+            videoControlCacheServiceSpy.getLocalAudioMuted.and.returnValue(localAudioMuted);
+
+            // Act
+            const result = sut.getLocalAudioMutedById(participantId);
+
+            // Assert
+            expect(result).toEqual(localAudioMuted);
+            expect(videoControlCacheServiceSpy.getLocalAudioMuted).toHaveBeenCalledOnceWith(participantId);
+        });
+    });
+
+    describe('setLocalVideoMuteById', () => {
+        it('should call setLocalAudioMuted in the cache service (false)', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const localVideoMuted = false;
+
+            // Act
+            sut.setLocalVideoMutedById(participantId, localVideoMuted);
+
+            // Assert
+            expect(videoControlCacheServiceSpy.setLocalVideoMuted).toHaveBeenCalledOnceWith(participantId, localVideoMuted);
+        });
+
+        it('should call setLocalAudioMuted in the cache service (true)', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const localVideoMuted = true;
+
+            // Act
+            sut.setLocalVideoMutedById(participantId, localVideoMuted);
+
+            // Assert
+            expect(videoControlCacheServiceSpy.setLocalVideoMuted).toHaveBeenCalledOnceWith(participantId, localVideoMuted);
+        });
+    });
+
+    describe('getLocalVideoMutedById', () => {
+        it('should call and return the value from getLocalAudioMuted in the cache service (false)', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const localVideoMuted = false;
+            videoControlCacheServiceSpy.getLocalVideoMuted.and.returnValue(localVideoMuted);
+
+            // Act
+            const result = sut.getLocalVideoMutedById(participantId);
+
+            // Assert
+            expect(result).toEqual(localVideoMuted);
+            expect(videoControlCacheServiceSpy.getLocalVideoMuted).toHaveBeenCalledOnceWith(participantId);
+        });
+
+        it('should call and return the value from getLocalAudioMuted in the cache service (true)', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const localVideoMuted = true;
+            videoControlCacheServiceSpy.getLocalVideoMuted.and.returnValue(localVideoMuted);
+
+            // Act
+            const result = sut.getLocalVideoMutedById(participantId);
+
+            // Assert
+            expect(result).toEqual(localVideoMuted);
+            expect(videoControlCacheServiceSpy.getLocalVideoMuted).toHaveBeenCalledOnceWith(participantId);
         });
     });
 });

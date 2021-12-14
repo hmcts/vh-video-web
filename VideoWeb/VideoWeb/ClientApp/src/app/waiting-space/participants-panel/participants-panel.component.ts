@@ -134,6 +134,12 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
         this.videoCallSubscription$.add(
             this.videoCallService
+                .onParticipantCreated()
+                .subscribe(createdParticipant => this.handleParticipantUpdatedInVideoCall(createdParticipant))
+        );
+
+        this.videoCallSubscription$.add(
+            this.videoCallService
                 .onParticipantUpdated()
                 .subscribe(updatedParticipant => this.handleParticipantUpdatedInVideoCall(updatedParticipant))
         );
@@ -263,15 +269,14 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
         participant.assignPexipId(updatedParticipant.uuid);
         if (participant instanceof LinkedParticipantPanelModel) {
-            participant.updateParticipant(updatedParticipant.isRemoteMuted, null, updatedParticipant.isSpotlighted, participant.id, participant.isLocalMicMuted(), participant.isLocalCameraOff());
+
+            participant.updateParticipant(updatedParticipant.isRemoteMuted, null, updatedParticipant.isSpotlighted, participant.id);
         } else {
             participant.updateParticipant(
                 updatedParticipant.isRemoteMuted,
                 updatedParticipant.handRaised,
                 updatedParticipant.isSpotlighted,
-                participant.id,
-                participant.isLocalMicMuted(),
-                participant.isLocalCameraOff()
+                participant.id
             );
         }
 
@@ -646,6 +651,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         });
         this.participants = combined;
     }
+
     private updateParticipant(participant: PanelModel, participantToBeUpdated: PanelModel) {
         participant.updateParticipant(
             participantToBeUpdated?.isMicRemoteMuted(),

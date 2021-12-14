@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { merge, Subject, Subscription } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
+import { take, takeUntil, tap } from 'rxjs/operators';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -10,6 +10,7 @@ import { ConferenceStatus, ParticipantStatus, Role } from 'src/app/services/clie
 import { ClockService } from 'src/app/services/clock.service';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
+import { PexipDisplayNameModel } from 'src/app/services/conference/models/pexip-display-name.model';
 import { VirtualMeetingRoomModel } from 'src/app/services/conference/models/virtual-meeting-room.model';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { VideoControlCacheService } from 'src/app/services/conference/video-control-cache.service';
@@ -131,6 +132,69 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
         this.initialiseVideoControlCacheLogic();
 
+        this.videoCallService
+            .onParticipantCreated()
+            .pipe(
+                takeUntil(this.destroyedSubject),
+                tap(createdParticipant => {
+                    this.logger.debug(`${this.loggerPrefixJudge} participant created`, {
+                        pexipId: createdParticipant.uuid,
+                        dispayName: createdParticipant.pexipDisplayName
+                    });
+                })
+            )
+            .subscribe(createdParticipant => {
+                const participantDisplayName = PexipDisplayNameModel.fromString(createdParticipant.pexipDisplayName);
+                this.participantRemoteMuteStoreService.assignPexipId(participantDisplayName.participantOrVmrId, createdParticipant.uuid);
+                this.logger.debug(`${this.loggerPrefixJudge} stored pexip ID updated`, {
+                    pexipId: createdParticipant.uuid,
+                    participantId: participantDisplayName.participantOrVmrId
+                });
+            });
+
+        this.videoCallService
+            .onParticipantUpdated()
+            .pipe(
+                takeUntil(this.destroyedSubject),
+                tap(createdParticipant => {
+                    this.logger.debug(`${this.loggerPrefixJudge} participant updated`, {
+                        pexipId: createdParticipant.uuid,
+                        dispayName: createdParticipant.pexipDisplayName
+                    });
+                })
+            )
+            .subscribe(createdParticipant => {
+                const participantDisplayName = PexipDisplayNameModel.fromString(createdParticipant.pexipDisplayName);
+                this.participantRemoteMuteStoreService.assignPexipId(participantDisplayName.participantOrVmrId, createdParticipant.uuid);
+                this.logger.debug(`${this.loggerPrefixJudge} stored pexip ID updated`, {
+                    pexipId: createdParticipant.uuid,
+                    participantId: participantDisplayName.participantOrVmrId
+                });
+            });
+
+        this.eventService
+            .getParticipantMediaStatusMessage()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(participantStatusMessage => {
+                if (participantStatusMessage.conferenceId === this.conference.id) {
+                    this.videoControlCacheService.setLocalAudioMuted(
+                        participantStatusMessage.participantId,
+                        participantStatusMessage.mediaStatus.is_local_audio_muted
+                    );
+
+                    this.videoControlCacheService.setLocalVideoMuted(
+                        participantStatusMessage.participantId,
+                        participantStatusMessage.mediaStatus.is_local_video_muted
+                    );
+
+                    this.participantRemoteMuteStoreService.updateLocalMuteStatus(
+                        participantStatusMessage.participantId,
+                        participantStatusMessage.mediaStatus.is_local_audio_muted,
+                        participantStatusMessage.mediaStatus.is_local_video_muted
+                    );
+                }
+            });
+
         try {
             this.logger.debug(`${this.loggerPrefixJudge} Defined default devices in cache`);
             this.connected = false;
@@ -141,6 +205,20 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 if (this.conference.audio_recording_required) {
                     this.initAudioRecordingInterval();
                 }
+
+                this.conference.participants
+                    .map(participant => participant.id)
+                    .forEach(participantId => {
+                        const audio = this.videoControlCacheService.getLocalAudioMuted(participantId);
+                        const video = this.videoControlCacheService.getLocalVideoMuted(participantId);
+                        this.logger.info(`${this.loggerPrefixJudge} Updating store with audio and video`, {
+                            audio: audio,
+                            video: video,
+                            participantId: participantId
+                        });
+
+                        this.participantRemoteMuteStoreService.updateLocalMuteStatus(participantId, audio, video);
+                    });
             });
         } catch (error) {
             this.logger.error(`${this.loggerPrefixJudge} Failed to initialise the judge waiting room`, error);

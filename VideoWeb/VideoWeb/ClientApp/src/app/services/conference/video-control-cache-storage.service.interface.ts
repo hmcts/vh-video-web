@@ -5,7 +5,9 @@ export interface IHearingControlsState {
 }
 
 export interface IParticipantControlsState {
-    isSpotlighted: boolean;
+    isSpotlighted?: boolean;
+    isLocalAudioMuted?: boolean;
+    isLocalVideoMuted?: boolean;
 }
 
 export interface IHearingControlStates {
@@ -13,6 +15,6 @@ export interface IHearingControlStates {
 }
 
 export interface IVideoControlCacheStorageService {
-    saveHearingStateForConference(currentConferenceId: string, hearingControlStates: IHearingControlsState);
+    saveHearingStateForConference(currentConferenceId: string, hearingControlStates: IHearingControlsState): Observable<void>;
     loadHearingStateForConference(id: string): Observable<IHearingControlsState>;
 }

@@ -138,6 +138,30 @@ describe('Participant Status Base Component Tests', () => {
         expect(component.participants[0].statusText).toBe(inAnotherHearingText);
     });
 
+    it('should update participant status as in hearing when the host is available in a different conference', () => {
+        const inAnotherHearingText = 'In Another Hearing';
+        participantStatusReaderSpy.inAnotherHearingText = inAnotherHearingText;
+
+        const judge1 = participants[2];
+        const judge1InAnotherHearing = participants[3];
+
+        component.setupEventHubSubscribers();
+        component.participants = [new ParticipantContactDetails(judge1)];
+        component.participants[0].status = ParticipantStatus.Disconnected;
+
+        const message = new ParticipantStatusMessage(
+            judge1InAnotherHearing.id,
+            judge1InAnotherHearing.username,
+            judge1InAnotherHearing.conference_id,
+            ParticipantStatus.Available
+        );
+
+        participantStatusSubjectMock.next(message);
+
+        expect(component.participants[0].status).toBe(ParticipantStatus.Disconnected);
+        expect(component.participants[0].statusText).toBe(inAnotherHearingText);
+    });
+
     it('should update participant status when participant same judge is not in different hearing', () => {
         participantStatusReaderSpy.getStatusAsTextForHost.and.returnValue('Unavailable');
         component.setupEventHubSubscribers();

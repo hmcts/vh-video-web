@@ -130,7 +130,8 @@ namespace VideoWeb.Controllers
 
         private async Task AddQuickLinkParticipantToConferenceCache(AddQuickLinkParticipantResponse response)
         {
-            var conference = await _conferenceCache.GetOrAddConferenceAsync(response.ConferenceId, () => _videoApiClient.GetConferenceDetailsByIdAsync(response.ConferenceId));
+            var conference = await _conferenceCache.GetOrAddConferenceAsync(response.ConferenceId, 
+                () => _videoApiClient.GetConferenceDetailsByIdAsync(response.ConferenceId));
                 
             var requestToParticipantMapper = _mapperFactory.Get<ParticipantDetailsResponse, Participant>();
             conference.AddParticipant(requestToParticipantMapper.Map(response.ParticipantDetails));
