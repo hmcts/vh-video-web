@@ -1,5 +1,6 @@
 
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ using VideoApi.Contract.Responses;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
+using VideoWeb.EventHub.Exceptions;
 using VideoWeb.Helpers.Interfaces;
 using VideoWeb.Mappings;
 using VideoWeb.Mappings.Interfaces;
@@ -93,7 +95,7 @@ namespace VideoWeb.UnitTests.Services
         {
             // Arrange
             var conference = new Conference();
-            
+
             _mocker.Mock<IMapTo<ConferenceDetailsResponse, Conference>>()
                 .Setup(x => x.Map(It.Is<ConferenceDetailsResponse>(x => x == _testConference)))
                 .Returns(conference);
@@ -135,7 +137,79 @@ namespace VideoWeb.UnitTests.Services
                 .Verify(x => x.UpdateConferenceAsync(It.Is<Conference>(y => y == conference)), Times.Once());
             _mocker.Mock<IParticipantsUpdatedEventNotifier>()
                 .Verify(x => x.PushParticipantsUpdatedEvent(It.Is<Conference>(y => y == conference)), Times.Once());
+        }
 
+        [Test]
+        public async Task AddStaffMemberToConferenceCache_when_coference_is_in_cache()
+        {
+            // Arrange
+            var conference = new Conference();
+
+            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.IsAny<Guid>(), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).Returns(Task.FromResult(conference));
+
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantDetailsResponse, Participant>())
+                .Returns(_mocker.Mock<IMapTo<ParticipantDetailsResponse, Participant>>().Object);
+
+            var addStaffMemberResponse = new AddStaffMemberResponse
+            {
+                ConferenceId = Guid.NewGuid(),
+                ParticipantDetails = _participantDetailsResponse
+            };
+
+            // Act
+            await _service.AddStaffMemberToConferenceCache(addStaffMemberResponse);
+
+            // Assert
+            _mocker.Mock<IConferenceCache>()
+                .Verify(x => x.UpdateConferenceAsync(It.Is<Conference>(y => y == conference)), Times.Once());
+            _mocker.Mock<IParticipantsUpdatedEventNotifier>()
+                .Verify(x => x.PushParticipantsUpdatedEvent(It.Is<Conference>(y => y == conference)), Times.Once());
+        }
+
+        [Test]
+        public void AddStaffMemberToConferenceCache_when_coference_is_NULL()
+        {
+            // Arrange
+            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.IsAny<Guid>(), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).Returns(Task.FromResult(null as Conference));
+            var addStaffMemberResponse = new AddStaffMemberResponse
+            {
+                ConferenceId = Guid.NewGuid(),
+                ParticipantDetails = _participantDetailsResponse
+            };
+
+            // Act and Assert
+            Assert.ThrowsAsync<ConferenceNotFoundException>(async () => await _service.AddStaffMemberToConferenceCache(addStaffMemberResponse));
+        }
+
+        [Test]
+        public async Task AddStaffMemberToConferenceCache_when_coference_is_mapping_Participantdetails_to_participant()
+        {
+            // Arrange
+            var conference = new Conference();
+            var participantResponse = new Participant();
+
+            _mocker.Mock<IConferenceCache>()
+                .Setup(x => x.GetOrAddConferenceAsync(It.IsAny<Guid>(), It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Returns(Task.FromResult(conference));
+
+            _mocker.Mock<IMapTo<ParticipantDetailsResponse, Participant>>()
+               .Setup(x => x.Map(It.Is<ParticipantDetailsResponse>(x => x == _participantDetailsResponse)))
+               .Returns(participantResponse);
+
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantDetailsResponse, Participant>())
+                .Returns(_mocker.Mock<IMapTo<ParticipantDetailsResponse, Participant>>().Object);
+
+            var addStaffMemberResponse = new AddStaffMemberResponse
+            {
+                ConferenceId = Guid.NewGuid(),
+                ParticipantDetails = _participantDetailsResponse
+            };
+
+            // Act
+            await _service.AddStaffMemberToConferenceCache(addStaffMemberResponse);
+
+            // Assert
+            conference.Participants.Count.Should().Be(1);
         }
     }
 }

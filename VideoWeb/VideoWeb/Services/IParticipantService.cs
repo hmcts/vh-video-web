@@ -12,6 +12,7 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
+using VideoWeb.EventHub.Exceptions;
 using VideoWeb.Helpers.Interfaces;
 using VideoWeb.Mappings;
 
@@ -88,6 +89,11 @@ namespace VideoWeb.Services
         {
             var conference = await _conferenceCache.GetOrAddConferenceAsync(response.ConferenceId,
                 () => _videoApiClient.GetConferenceDetailsByIdAsync(response.ConferenceId));
+
+            if (conference == null)
+            {
+                throw new ConferenceNotFoundException(response.ConferenceId);
+            }
 
             var requestToParticipantMapper = _mapperFactory.Get<ParticipantDetailsResponse, Participant>();
             conference.AddParticipant(requestToParticipantMapper.Map(response.ParticipantDetails));
