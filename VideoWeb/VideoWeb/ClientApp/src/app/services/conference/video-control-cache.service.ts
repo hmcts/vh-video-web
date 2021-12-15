@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map, take, tap } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 import { LoggerService } from '../logging/logger.service';
 import { ConferenceService } from './conference.service';
 import { DistributedVideoControlCacheService } from './distributed-video-control-cache.service';
@@ -35,22 +34,6 @@ export class VideoControlCacheService {
                     });
                 });
         });
-    }
-
-    refreshCache(): Observable<void> {
-        this.logger.info(`${this.loggerPrefix} refreshing state for ${this.conferenceService.currentConferenceId}.`, {
-            oldHearingControlStates: this.hearingControlStates
-        });
-        return this.storageService.loadHearingStateForConference(this.conferenceService.currentConferenceId).pipe(
-            take(1),
-            tap(state => {
-                this.hearingControlStates = state;
-                this.logger.info(`${this.loggerPrefix} refreshed state for ${this.conferenceService.currentConferenceId}.`, {
-                    hearingControlStates: this.hearingControlStates
-                });
-            }),
-            map(() => void 0)
-        );
     }
 
     setSpotlightStatus(participantId: string, spotlightValue: boolean, syncChanges: boolean = true) {
