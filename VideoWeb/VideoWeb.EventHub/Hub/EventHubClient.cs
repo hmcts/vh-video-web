@@ -29,15 +29,17 @@ namespace VideoWeb.EventHub.Hub
         private readonly IVideoApiClient _videoApiClient;
         private readonly IConferenceCache _conferenceCache;
         private readonly IHeartbeatRequestMapper _heartbeatRequestMapper;
+        private readonly IConferenceVideoControlStatusService _conferenceVideoControlStatusService;
         private readonly HearingServicesConfiguration _servicesConfiguration;
 
         public EventHub(IUserProfileService userProfileService, IVideoApiClient videoApiClient,
-            ILogger<EventHub> logger, IConferenceCache conferenceCache, IHeartbeatRequestMapper heartbeatRequestMapper, IOptions<HearingServicesConfiguration> servicesConfiguration)
+            ILogger<EventHub> logger, IConferenceCache conferenceCache, IHeartbeatRequestMapper heartbeatRequestMapper, IOptions<HearingServicesConfiguration> servicesConfiguration, IConferenceVideoControlStatusService conferenceVideoControlStatusService)
         {
             _userProfileService = userProfileService;
             _logger = logger;
             _conferenceCache = conferenceCache;
             _heartbeatRequestMapper = heartbeatRequestMapper;
+            _conferenceVideoControlStatusService = conferenceVideoControlStatusService;
             _videoApiClient = videoApiClient;
             _servicesConfiguration = servicesConfiguration.Value;
         }
@@ -400,6 +402,8 @@ namespace VideoWeb.EventHub.Hub
                         conferenceId);
                     throw new ParticipantNotFoundException(conferenceId, Context.User.Identity.Name);
                 }
+
+                await _conferenceVideoControlStatusService.UpdateMediaStatusForParticipantInConference(conferenceId, participant.Id.ToString(), mediaStatus);
 
                 var groupNames = new List<string> { VhOfficersGroupName };
                 groupNames.AddRange(conference.Participants.Where(x => x.IsHost()).Select(h => h.Username.ToLowerInvariant()));

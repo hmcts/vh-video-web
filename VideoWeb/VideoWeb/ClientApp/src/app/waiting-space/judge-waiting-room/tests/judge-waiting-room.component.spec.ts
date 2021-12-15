@@ -213,7 +213,11 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             'setSpotlightStatus',
             'restoreParticipantsSpotlight'
         ]);
-        videoControlCacheServiceSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', ['setSpotlightStatus']);
+        videoControlCacheServiceSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', [
+            'setSpotlightStatus',
+            'getLocalAudioMuted',
+            'getLocalVideoMuted'
+        ]);
 
         hearingLayoutServiceSpy = jasmine.createSpyObj<HearingLayoutService>([], ['currentLayout$']);
 

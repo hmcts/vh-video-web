@@ -45,6 +45,7 @@ export class VideoCallService {
     private onCallTransferSubject = new Subject<any>();
     private onParticipantUpdatedSubject = new Subject<ParticipantUpdated>();
     private onConferenceUpdatedSubject = new Subject<ConferenceUpdated>();
+    private onParticipantCreatedSubject = new Subject<ParticipantUpdated>();
 
     private onConnectedScreenshareSubject = new Subject<ConnectedScreenshare>();
     private onStoppedScreenshareSubject = new Subject<StoppedScreenshare>();
@@ -116,6 +117,7 @@ export class VideoCallService {
         this.pexipAPI.onDisconnect = this.handleServerDisconnect.bind(this);
 
         this.pexipAPI.onParticipantUpdate = this.handleParticipantUpdate.bind(this);
+        this.pexipAPI.onParticipantCreate = this.handleParticipantCreated.bind(this);
 
         this.pexipAPI.onConferenceUpdate = function (conferenceUpdate) {
             self.onConferenceUpdatedSubject.next(new ConferenceUpdated(conferenceUpdate.guests_muted));
@@ -201,6 +203,12 @@ export class VideoCallService {
         this.onConnectedSubject.next(new ConnectedCall(stream));
     }
 
+    private handleParticipantCreated(participantUpdate: PexipParticipant) {
+        this.logger.debug(`${this.loggerPrefix} handling participant created`);
+
+        this.onParticipantCreatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
+    }
+
     private handleParticipantUpdate(participantUpdate: PexipParticipant) {
         this.videoCallEventsService.handleParticipantUpdated(ParticipantUpdated.fromPexipParticipant(participantUpdate));
         this.onParticipantUpdatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
@@ -271,6 +279,10 @@ export class VideoCallService {
 
     onError(): Observable<CallError> {
         return this.onErrorSubject.asObservable();
+    }
+
+    onParticipantCreated(): Observable<ParticipantUpdated> {
+        return this.onParticipantCreatedSubject.asObservable();
     }
 
     onParticipantUpdated(): Observable<ParticipantUpdated> {
