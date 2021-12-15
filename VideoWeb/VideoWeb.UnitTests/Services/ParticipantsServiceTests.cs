@@ -88,30 +88,6 @@ namespace VideoWeb.UnitTests.Services
         }
 
         [Test]
-        public async Task Should_update_conference_cache()
-        {
-            // Arrange
-            var conference = new Conference();
-
-            _mocker.Mock<IMapTo<ConferenceDetailsResponse, Conference>>()
-                .Setup(x => x.Map(It.Is<ConferenceDetailsResponse>(x => x == _testConference)))
-                .Returns(conference);
-
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDetailsResponse, Conference>())
-                .Returns(_mocker.Mock<IMapTo<ConferenceDetailsResponse, Conference>>().Object);
-
-            // Act
-            await _service.UpdateConferenceCache(_testConference);
-
-            // Assert
-            _mocker.Mock<IConferenceCache>()
-                .Verify(x => x.UpdateConferenceAsync(It.Is<Conference>(y => y == conference)), Times.Once());
-
-            _mocker.Mock<IParticipantsUpdatedEventNotifier>()
-                .Verify(x => x.PushParticipantsUpdatedEvent(conference), Times.Once);
-        }
-
-        [Test]
         public async Task AddStaffMemberToConferenceCache_Updates_UpdateConferenceAsync()
         {
             // Arrange

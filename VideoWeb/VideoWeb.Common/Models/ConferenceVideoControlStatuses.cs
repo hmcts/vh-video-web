@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace VideoWeb.Common.Models
@@ -18,10 +18,14 @@ namespace VideoWeb.Common.Models
             foreach (var (key, videoControlStatus) in ParticipantIdToVideoControlStatusMap)
             {
                 var comparisonvideoControlStatus = comparisonConferenceVideoControlStatuses.ParticipantIdToVideoControlStatusMap[key];
-                areEqual = areEqual && videoControlStatus.CompareTo(comparisonvideoControlStatus) > 0;
+                //areEqual = areEqual && videoControlStatus.CompareTo(comparisonvideoControlStatus) > 0;
+                if (!(areEqual && videoControlStatus.CompareTo(comparisonvideoControlStatus) > 0))
+                {
+                    return 0;
+                }
             }
 
-            return areEqual ? 1 : 0;
+            return  1;
         }
     }
 }
