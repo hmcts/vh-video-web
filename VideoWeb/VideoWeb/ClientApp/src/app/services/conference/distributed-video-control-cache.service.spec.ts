@@ -18,13 +18,14 @@ describe('DistributedVideoControlCacheService', () => {
             'getCurrentParticipant',
             'getParticipantsByConferenceId',
             'getVideoEndpointsForConference',
-            'setVideoControlStatusesForConference'
+            'setVideoControlStatusesForConference',
+            'getVideoControlStatusesForConference'
         ]);
 
         service = new DistributedVideoControlCacheService(apiClientSpy, loggerServiceSpy);
     });
 
-    fdescribe('saveHearingStateForConference', () => {
+    describe('saveHearingStateForConference', () => {
         const conferenceId = 'confernece-id';
         const participantId = 'participant-id';
 
@@ -50,7 +51,37 @@ describe('DistributedVideoControlCacheService', () => {
             service.saveHearingStateForConference(conferenceId, hearingControlsState);
 
             // Assert
+            expect(loggerServiceSpy.info).toHaveBeenCalledTimes(1);
+        });
+    });
 
+    describe('loadHearingStateForConference', () => {
+        const conferenceId = 'confernece-id';
+        const participantId = 'participant-id';
+
+        let hearingControlsState: IHearingControlsState;
+        let participantStates: { [participantId: string]: IParticipantControlsState };
+
+        beforeEach(() => {
+            participantStates = {};
+            participantStates[participantId] = { isLocalAudioMuted: true, isLocalVideoMuted: false };
+
+            hearingControlsState = { participantStates };
+        });
+        it('should write the new hearing control states into the cache', () => {
+            // Arrange
+            const expectedHearingControlStates = {} as IHearingControlStates;
+            expectedHearingControlStates[conferenceId] = {
+                participantStates: participantStates
+            };
+
+            apiClientSpy.getVideoControlStatusesForConference.and.returnValue(of());
+
+            // Act
+            service.loadHearingStateForConference(conferenceId);
+
+            // Assert
+            expect(loggerServiceSpy.info).toHaveBeenCalledTimes(1);
         });
     });
 });
