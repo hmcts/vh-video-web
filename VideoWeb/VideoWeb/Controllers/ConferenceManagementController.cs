@@ -1,19 +1,18 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Swashbuckle.AspNetCore.Annotations;
+using VideoApi.Client;
+using VideoApi.Contract.Enums;
+using VideoApi.Contract.Requests;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
-using VideoApi.Client;
-using VideoApi.Contract.Requests;
-using VideoApi.Contract.Enums;
 using VideoWeb.Contract.Request;
-using VideoWeb.Helpers;
 using VideoWeb.EventHub.Services;
 using VideoWeb.Mappings;
 

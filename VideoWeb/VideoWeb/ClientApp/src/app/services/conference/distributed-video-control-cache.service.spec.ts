@@ -1,21 +1,56 @@
-import { HttpClientModule } from '@angular/common/http';
-import { TestBed } from '@angular/core/testing';
-import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { Logger } from '../logging/logger-base';
+import { of } from 'rxjs';
+import { ApiClient } from '../clients/api-client';
+import { LoggerService } from '../logging/logger.service';
+
 import { DistributedVideoControlCacheService } from './distributed-video-control-cache.service';
+import { IHearingControlsState, IHearingControlStates, IParticipantControlsState } from './video-control-cache-storage.service.interface';
+import { Logger } from '../logging/logger-base';
 
 describe('DistributedVideoControlCacheService', () => {
     let service: DistributedVideoControlCacheService;
+    let loggerServiceSpy: jasmine.SpyObj<LoggerService>;
+    let apiClientSpy: jasmine.SpyObj<ApiClient>;
 
     beforeEach(() => {
-        TestBed.configureTestingModule({
-            imports: [HttpClientModule],
-            providers: [{ provide: Logger, useClass: MockLogger }]
-        });
-        service = TestBed.inject(DistributedVideoControlCacheService);
+        loggerServiceSpy = jasmine.createSpyObj<LoggerService>('Logger', ['debug', 'info', 'warn', 'event', 'error']);
+        apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', [
+            'getConferenceById',
+            'getCurrentParticipant',
+            'getParticipantsByConferenceId',
+            'getVideoEndpointsForConference',
+            'setVideoControlStatusesForConference'
+        ]);
+
+        service = new DistributedVideoControlCacheService(apiClientSpy, loggerServiceSpy);
     });
 
-    it('should be created', () => {
-        expect(service).toBeTruthy();
+    fdescribe('saveHearingStateForConference', () => {
+        const conferenceId = 'confernece-id';
+        const participantId = 'participant-id';
+
+        let hearingControlsState: IHearingControlsState;
+        let participantStates: { [participantId: string]: IParticipantControlsState };
+
+        beforeEach(() => {
+            participantStates = {};
+            participantStates[participantId] = { isLocalAudioMuted: true, isLocalVideoMuted: false };
+
+            hearingControlsState = { participantStates };
+        });
+        it('should write the new hearing control states into the cache', () => {
+            // Arrange
+            const expectedHearingControlStates = {} as IHearingControlStates;
+            expectedHearingControlStates[conferenceId] = {
+                participantStates: participantStates
+            };
+
+            apiClientSpy.setVideoControlStatusesForConference.and.returnValue(of());
+
+            // Act
+            service.saveHearingStateForConference(conferenceId, hearingControlsState);
+
+            // Assert
+
+        });
     });
 });

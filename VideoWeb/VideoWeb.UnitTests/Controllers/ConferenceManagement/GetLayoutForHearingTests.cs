@@ -1,23 +1,15 @@
 using Autofac.Extras.Moq;
+using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Net;
 using System.Threading.Tasks;
+using VideoApi.Client;
 using VideoApi.Contract.Requests;
-using VideoApi.Contract.Responses;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
-using FluentAssertions;
-using VideoApi.Client;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
-using VideoWeb.UnitTests.Builders;
-using System.Net;
-using VideoWeb.Helpers;
 using VideoWeb.EventHub.Services;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
