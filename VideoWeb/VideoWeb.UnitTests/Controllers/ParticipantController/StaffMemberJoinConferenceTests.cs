@@ -83,7 +83,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
 
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.AddStaffMemberToConferenceAsync(It.IsAny<Guid>(), addStaffMemberRequest))
-                .Returns(Task.FromResult(new AddStaffMemberResponse()));
+                .Returns(Task.FromResult(default(AddStaffMemberResponse)));
 
             var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId,
                 new StaffMemberJoinConferenceRequest { Username = "Staff_UserName" });
