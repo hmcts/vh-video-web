@@ -30,6 +30,7 @@ import {
 import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-security.service';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { HearingRole } from '../../models/hearing-role-model';
+import { ParticipantListItem } from '../participant-list-item';
 import { PrivateConsultationParticipantsComponent } from './private-consultation-participants.component';
 
 describe('PrivateConsultationParticipantsComponent', () => {
@@ -589,18 +590,26 @@ describe('PrivateConsultationParticipantsComponent', () => {
             expect(result).toEqual([]);
         });
 
-        it('should return nothing if is not joh consultation', () => {
+        it('should return list in correct order for joh consultation', () => {
+            const mappedWitness: ParticipantListItem = { ...witness };
+            const mappedRegularObserver: ParticipantListItem = { ...regularObserver };
+            const mappedQuickLinkObserver1: ParticipantListItem = { ...quickLinkObserver1 };
+            const mappedQuickLinkObserver2: ParticipantListItem = { ...quickLinkObserver2 };
+
             spyOn(component, 'isJohConsultation').and.returnValue(true);
             const result = component.getWitnessesAndObservers();
+            console.table(result);
 
-            expect(result).not.toContain(litigantInPerson);
-            expect(result).toContain(witness);
-            expect(result).toContain(regularObserver);
-            expect(result).toContain(quickLinkObserver1);
-            expect(result).toContain(quickLinkObserver2);
+            expect(result[0]).toEqual(mappedWitness);
 
-            expect(result.indexOf(witness)).toBeLessThan(result.indexOf(regularObserver));
-            expect(result.indexOf(quickLinkObserver1)).toBeLessThan(result.indexOf(quickLinkObserver2));
+            const observersOrdered = [mappedRegularObserver, mappedQuickLinkObserver1, mappedQuickLinkObserver2].sort((a, b) =>
+                a.display_name.localeCompare(b.display_name)
+            );
+
+            expect(result.length).toBe(observersOrdered.length + 1);
+            for (let i = 0; i < observersOrdered.length; i++) {
+                expect(result[i + 1]).toEqual(observersOrdered[i]);
+            }
         });
     });
 });
