@@ -128,16 +128,14 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
                     c.hearing_role !== HearingRole.WINGER
             )
             .map(c => {
-                const interpreterLink = c.linked_participants.find(x => x.link_type === LinkType.Interpreter);
-                const participant: ParticipantListItem = { ...c };
-                if (c.linked_participants && interpreterLink) {
-                    participant.interpreter = this.participantsInConsultation.find(x => x.id === interpreterLink.linked_id);
-                }
-                return participant;
+                return this.mapResponseToListItem(c);
             });
         const quickLinkParticipants = this.participantsInConsultation
             .filter(p => p.role === Role.QuickLinkParticipant)
-            .sort((a, b) => a.display_name.localeCompare(b.display_name));
+            .sort((a, b) => a.display_name.localeCompare(b.display_name))
+            .map(c => {
+                return this.mapResponseToListItem(c);
+            });
         return [...regularParticipants, ...quickLinkParticipants];
     }
 
@@ -146,7 +144,11 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     getMemberParticipantsByRole(role: any): ParticipantListItem[] {
-        return this.participantsInConsultation.filter(p => p.hearing_role === role);
+        return this.participantsInConsultation
+            .filter(p => p.hearing_role === role)
+            .map(c => {
+                return this.mapResponseToListItem(c);
+            });
     }
 
     getWitnessesAndObservers(): ParticipantListItem[] {
@@ -156,7 +158,10 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         const witnesses = this.getMemberParticipantsByRole(HearingRole.WITNESS);
         const observers = this.participantsInConsultation
             .filter(p => p.hearing_role === HearingRole.OBSERVER || p.role === Role.QuickLinkObserver)
-            .sort((a, b) => a.display_name.localeCompare(b.display_name));
+            .sort((a, b) => a.display_name.localeCompare(b.display_name))
+            .map(c => {
+                return this.mapResponseToListItem(c);
+            });
         return [...witnesses, ...observers];
     }
 
@@ -183,5 +188,14 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
 
     trackParticipant(index: number, item: ParticipantListItem) {
         return item.status;
+    }
+
+    private mapResponseToListItem(participantResponse: ParticipantResponse): ParticipantListItem {
+        const interpreterLink = participantResponse.linked_participants.find(x => x.link_type === LinkType.Interpreter);
+        const participant: ParticipantListItem = { ...participantResponse };
+        if (participantResponse.linked_participants && interpreterLink) {
+            participant.interpreter = this.participantsInConsultation.find(x => x.id === interpreterLink.linked_id);
+        }
+        return participant;
     }
 }
