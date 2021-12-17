@@ -29,7 +29,7 @@ export class VideoControlCacheLocalStorageService implements IVideoControlCacheS
         state[conferenceId] = hearingControlStates;
 
         this.localStorageService.save(this.localStorageKey, state);
-        return true;
+        return of(void 0);
     }
 
     loadHearingStateForConference(conferenceId: string): Observable<IHearingControlsState> {

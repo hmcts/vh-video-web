@@ -125,20 +125,21 @@ export abstract class PanelModel {
     }
 
     assignPexipId(pexipId: string) {
-        this.pexipId = pexipId;
+        this.pexipId = pexipId ?? this.pexipId;
     }
 
     updateParticipant(
         isRemoteMuted: boolean,
         handRaised: boolean,
         spotlighted: boolean,
+        participantId?: string,
         isLocalAudioMuted?: boolean,
         isLocalVideoMuted?: boolean
     ) {
         this.isRemoteMuted = isRemoteMuted;
         this.handRaised = handRaised;
         this.isSpotlighted = spotlighted;
-        this.updateParticipantDeviceStatus(isLocalAudioMuted, isLocalVideoMuted);
+        this.updateParticipantDeviceStatus(isLocalAudioMuted, isLocalVideoMuted, participantId);
     }
 
     updateParticipantDeviceStatus(isAudioMuted: boolean, isVideoMuted: boolean, participantId?: string) {

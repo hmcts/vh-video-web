@@ -5,15 +5,16 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using VideoApi.Contract.Requests;
+using VideoWeb.Common.Models;
 
 namespace VideoWeb.Common.Caching
 {
-    public class DistributedHearingLayoutCache : RedisCacheBase<Guid, HearingLayout?>, IHearingLayoutCache
+    public class DistributedConferenceVideoControlStatusCache : RedisCacheBase<Guid, ConferenceVideoControlStatuses?>, IConferenceVideoControlStatusCache
     {
-        private readonly string _entryPrefix = "layout_";
+        private readonly string _entryPrefix = "video_control_statuses_";
         public override DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
         
-        public DistributedHearingLayoutCache(IDistributedCache distributedCache) : base(distributedCache)
+        public DistributedConferenceVideoControlStatusCache(IDistributedCache distributedCache) : base(distributedCache)
         {
             CacheEntryOptions = new DistributedCacheEntryOptions
             {
