@@ -142,7 +142,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     get johRoles(): string[] {
-        return [HearingRole.JUDGE, HearingRole.PANEL_MEMBER, HearingRole.WINGER];
+        return [HearingRole.JUDGE, HearingRole.PANEL_MEMBER, HearingRole.FINANCIAL_MEMBER, HearingRole.MEDICAL_MEMBER, HearingRole.LEGAL_MEMBER, HearingRole.DISABILITY_MEMBER, HearingRole.WINGER];
     }
 
     getMemberParticipantsByRole(role: any): ParticipantListItem[] {
