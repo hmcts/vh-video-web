@@ -101,7 +101,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     isJohInCurrentRoom(participant: ParticipantResponse): boolean {
         return (
             this.isParticipantInCurrentRoom(participant) &&
-            (participant.hearing_role === HearingRole.PANEL_MEMBER ||
+            (this.isParticipantPanelMember(participant.hearing_role) ||
                 participant.hearing_role === HearingRole.WINGER ||
                 participant.hearing_role === HearingRole.JUDGE)
         );
@@ -124,7 +124,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
             .filter(
                 c =>
                     c.hearing_role !== HearingRole.JUDGE &&
-                    c.hearing_role !== HearingRole.PANEL_MEMBER &&
+                    !this.isParticipantPanelMember(c.hearing_role) &&
                     c.hearing_role !== HearingRole.WINGER
             )
             .map(c => {

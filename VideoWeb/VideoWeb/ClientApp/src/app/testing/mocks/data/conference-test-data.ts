@@ -23,6 +23,7 @@ import {
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { InstantMessage } from 'src/app/services/models/instant-message';
+import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { AlertFilter, AlertsStatus, HearingsFilter, StatusFilter } from '../../../shared/models/hearings-filter';
 
@@ -436,6 +437,17 @@ export class ConferenceTestData {
             linked_participants: []
         });
 
+        const participant14 = new ParticipantForUserResponse({
+            id: '5555-1111-1234-1234',
+            status: ParticipantStatus.NotSignedIn,
+            display_name: 'Medical Member',
+            role: Role.JudicialOfficeHolder,
+            case_type_group: CaseTypeGroup.PANEL_MEMBER,
+            hearing_role: HearingRole.MEDICAL_MEMBER,
+            tiled_display_name: 'Medical Member;5555-1111-1234-1234',
+            linked_participants: []
+        });
+
         participants.push(participant1);
         participants.push(participant2);
         participants.push(participant3);
@@ -449,6 +461,7 @@ export class ConferenceTestData {
         participants.push(participant11);
         participants.push(participant12);
         participants.push(participant13);
+        participants.push(participant14);
         return participants;
     }
 

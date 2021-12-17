@@ -23,7 +23,7 @@ export class JudgeHearingSummary extends HearingSummary {
     }
 
     get panelMembers(): ParticipantSummary[] {
-        return this.participants.filter(x => x.hearingRole === HearingRole.PANEL_MEMBER && x.role === Role.JudicialOfficeHolder);
+        return this.participants.filter(x => x.isParticipantPanelMember && x.role === Role.JudicialOfficeHolder);
     }
 
     get wingers(): ParticipantSummary[] {
