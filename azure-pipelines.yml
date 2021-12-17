@@ -335,7 +335,6 @@ extends:
                 - '[*]VideoWeb.Swagger.*'
                 - '[*]VideoWeb.Views.*'
                 - '[*]VideoWeb.UnitTests.*'
-                - '[*]VideoWeb.Services.*'
                 - '[*]Testing.Common.*'
             sonarCloud_ExtraProperties: |
                 sonar.exclusions=**/node_modules/**,**/*.spec.ts, *.spec.ts, **/ClientApp/src/*, **/ClientApp/coverage/**/**, **/ConfigureServicesExtensions.cs, **/Startup.cs, **/Program.cs, **/Testing.Common/**, **/VideoWeb.UnitTests/**, **/VideoWeb.Common/**, **/VideoWeb/Swagger/**, **/VideoWeb/Extensions/**, **/ClientApp/src/scripts/*.js

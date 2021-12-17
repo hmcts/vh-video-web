@@ -5,7 +5,10 @@ import { ParticipantRemoteMuteStoreService } from './participant-remote-mute-sto
 
 export const conferenceParticipantsStatusSubject = new Subject<IConferenceParticipantsStatus>();
 export const createParticipantRemoteMuteStoreServiceSpy = () => {
-    const spy = jasmine.createSpyObj<ParticipantRemoteMuteStoreService>(['updateRemoteMuteStatus'], ['conferenceParticipantsStatus$']);
+    const spy = jasmine.createSpyObj<ParticipantRemoteMuteStoreService>(
+        ['updateRemoteMuteStatus', 'updateLocalMuteStatus'],
+        ['conferenceParticipantsStatus$']
+    );
     getSpiedPropertyGetter(spy, 'conferenceParticipantsStatus$').and.returnValue(conferenceParticipantsStatusSubject.asObservable());
 
     return spy;

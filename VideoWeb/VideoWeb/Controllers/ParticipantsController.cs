@@ -24,6 +24,7 @@ using VideoApi.Contract.Requests;
 using VideoApi.Contract.Enums;
 using VideoWeb.Middleware;
 using VideoWeb.Services;
+using System.Text.Json;
 
 namespace VideoWeb.Controllers
 {
@@ -363,10 +364,12 @@ namespace VideoWeb.Controllers
                     _mapperFactory.Get<ClaimsPrincipal, UserProfileResponse>();
                 var staffMemberProfile = claimsPrincipalToUserProfileResponseMapper.Map(User); 
                 
-                await _videoApiClient.AddStaffMemberToConferenceAsync(conferenceId, _participantService.InitialiseAddStaffMemberRequest(staffMemberProfile, userProfile.Email, User));
+                var response = await _videoApiClient.AddStaffMemberToConferenceAsync(conferenceId, _participantService.InitialiseAddStaffMemberRequest(staffMemberProfile, userProfile.Email, User));
+
+                await _participantService.AddStaffMemberToConferenceCache(response);
                 
                 var updatedConference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-                await _participantService.UpdateConferenceCache(updatedConference);
+              
                 return Ok(updatedConference);
             }
             catch (VideoApiException e)

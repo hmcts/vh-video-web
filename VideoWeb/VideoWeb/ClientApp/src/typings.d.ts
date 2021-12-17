@@ -37,6 +37,7 @@ declare interface PexipClient {
     onConnect: (stream: MediaStream | URL) => void;
     onError: (reason: any) => void;
     onDisconnect: (reason: any) => void;
+    onParticipantCreate: (participantUpdate: PexipParticipant) => void;
     onParticipantUpdate: (participantUpdate: PexipParticipant) => void;
     onConferenceUpdate: (conferenceUpdate: PexipConference) => void;
     onCallTransfer: (reason: any) => void;
