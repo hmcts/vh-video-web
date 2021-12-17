@@ -205,7 +205,16 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     }
 
     protected filterPanelMembers(): void {
-        this.panelMembers = this.conference.participants.filter(x => x.hearing_role === HearingRole.PANEL_MEMBER);
+        this.panelMembers = this.conference.participants.filter(x => this.isParticipantPanelMember(x.hearing_role));
+    }
+    protected isParticipantPanelMember(hearingRole: string): boolean {
+        return (
+            hearingRole === HearingRole.MEDICAL_MEMBER ||
+            hearingRole === HearingRole.FINANCIAL_MEMBER ||
+            hearingRole === HearingRole.LEGAL_MEMBER ||
+            hearingRole === HearingRole.DISABILITY_MEMBER ||
+            hearingRole === HearingRole.PANEL_MEMBER
+        );
     }
 
     protected filterJudge(): void {

@@ -1,4 +1,5 @@
 import { ParticipantForHostResponse, ParticipantForUserResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 
 export class ParticipantSummary {
@@ -60,6 +61,16 @@ export class ParticipantSummary {
 
     get hearingRole(): string {
         return this.participant.hearing_role;
+    }
+
+    get isParticipantPanelMember(): boolean {
+        return (
+            this.participant.hearing_role === HearingRole.MEDICAL_MEMBER ||
+            this.participant.hearing_role === HearingRole.FINANCIAL_MEMBER ||
+            this.participant.hearing_role === HearingRole.LEGAL_MEMBER ||
+            this.participant.hearing_role === HearingRole.DISABILITY_MEMBER ||
+            this.participant.hearing_role === HearingRole.PANEL_MEMBER
+        );
     }
 
     get participantHertBeatHealth(): ParticipantHeartbeat {
