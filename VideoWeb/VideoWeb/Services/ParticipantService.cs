@@ -1,7 +1,10 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using VideoApi.Client;
 using VideoApi.Contract.Consts;
@@ -13,6 +16,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Exceptions;
+using VideoWeb.EventHub.Hub;
 using VideoWeb.Helpers.Interfaces;
 using VideoWeb.Mappings;
 
@@ -23,19 +27,21 @@ namespace VideoWeb.Services
         private readonly IVideoApiClient _videoApiClient;
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<ParticipantsController> _logger;
+        private readonly IHubContext<EventHub.Hub.EventHub, IEventHubClient> _hubContext;
         private readonly IMapperFactory _mapperFactory;
         private readonly IParticipantsUpdatedEventNotifier _participantsUpdatedEventNotifier;
         private readonly int startingSoonMinutesThreshold = 30;
         private readonly int closedMinutesThreshold = 30;
 
         public ParticipantService(IVideoApiClient videoApiClient, IConferenceCache conferenceCache, ILogger<ParticipantsController> logger,
-            IMapperFactory mapperFactory, IParticipantsUpdatedEventNotifier participantsUpdatedEventNotifier)
+            IMapperFactory mapperFactory, IParticipantsUpdatedEventNotifier participantsUpdatedEventNotifier, IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext)
         {
             _videoApiClient = videoApiClient;
             _conferenceCache = conferenceCache;
             _logger = logger;
             _mapperFactory = mapperFactory;
             _participantsUpdatedEventNotifier = participantsUpdatedEventNotifier;
+            _hubContext = hubContext;
         }
 
         public ParticipantService()
@@ -81,6 +87,19 @@ namespace VideoWeb.Services
             _logger.LogTrace($"Updating conference in cache: {JsonSerializer.Serialize(conference)}");
             await _conferenceCache.UpdateConferenceAsync(conference);
             await _participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference);
+
+            var hosts = conference.Participants
+                   .Where(participant => participant.IsHost())
+                   .Select(participant => participant.Username.ToLowerInvariant()).ToList();
+
+            _logger.LogTrace("Sending message to {hosts} for participant updated in {conferenceId}.", hosts.ToArray(), conference.Id);
+
+            var participantsMapper = _mapperFactory.Get<List<Participant>, List<ParticipantResponse>>();
+            var participants = participantsMapper.Map(conference.Participants);
+
+            await _hubContext.Clients
+                .Groups(hosts)
+                .ParticipantsUpdatedMessage(conference.Id, participants);
         }
     }
 }

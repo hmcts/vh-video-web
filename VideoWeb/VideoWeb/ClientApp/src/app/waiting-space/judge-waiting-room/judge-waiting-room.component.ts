@@ -145,7 +145,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             )
             .subscribe(createdParticipant => {
                 const participantDisplayName = PexipDisplayNameModel.fromString(createdParticipant.pexipDisplayName);
-                this.participantRemoteMuteStoreService.assignPexipId(participantDisplayName.participantOrVmrId, createdParticipant.uuid);
+                if (createdParticipant.uuid && participantDisplayName.participantOrVmrId) {
+                    this.participantRemoteMuteStoreService.assignPexipId(participantDisplayName.participantOrVmrId, createdParticipant.uuid);
+                }
                 this.logger.debug(`${this.loggerPrefixJudge} stored pexip ID updated`, {
                     pexipId: createdParticipant.uuid,
                     participantId: participantDisplayName.participantOrVmrId
@@ -156,18 +158,20 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             .onParticipantUpdated()
             .pipe(
                 takeUntil(this.destroyedSubject),
-                tap(createdParticipant => {
+                tap(updatedParticipant => {
                     this.logger.debug(`${this.loggerPrefixJudge} participant updated`, {
-                        pexipId: createdParticipant.uuid,
-                        dispayName: createdParticipant.pexipDisplayName
+                        pexipId: updatedParticipant.uuid,
+                        dispayName: updatedParticipant.pexipDisplayName
                     });
                 })
             )
-            .subscribe(createdParticipant => {
-                const participantDisplayName = PexipDisplayNameModel.fromString(createdParticipant.pexipDisplayName);
-                this.participantRemoteMuteStoreService.assignPexipId(participantDisplayName.participantOrVmrId, createdParticipant.uuid);
+            .subscribe(updatedParticipant => {
+                const participantDisplayName = PexipDisplayNameModel.fromString(updatedParticipant.pexipDisplayName);
+                if (updatedParticipant.uuid && participantDisplayName.participantOrVmrId) {
+                    this.participantRemoteMuteStoreService.assignPexipId(participantDisplayName.participantOrVmrId, updatedParticipant.uuid);
+                }
                 this.logger.debug(`${this.loggerPrefixJudge} stored pexip ID updated`, {
-                    pexipId: createdParticipant.uuid,
+                    pexipId: updatedParticipant.uuid,
                     participantId: participantDisplayName.participantOrVmrId
                 });
             });
