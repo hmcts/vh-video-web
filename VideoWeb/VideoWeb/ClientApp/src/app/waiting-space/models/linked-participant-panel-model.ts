@@ -18,8 +18,9 @@ export class LinkedParticipantPanelModel extends PanelModel {
         const caseTypeGroup = lip.caseTypeGroup;
         const hearingRole = lip.hearingRole;
         const representee = lip.representee;
-
+        participants.forEach(p => p['isLocalAudioMuted'] = true);
         const model = new LinkedParticipantPanelModel(roomid, displayName, role, caseTypeGroup, pexipName, hearingRole, representee);
+        model['isLocalAudioMuted'] = true;
         model.participants = participants;
         return model;
     }
@@ -31,8 +32,10 @@ export class LinkedParticipantPanelModel extends PanelModel {
         const role = joh.role;
         const caseTypeGroup = joh.caseTypeGroup;
         const hearingRole = joh.hearingRole;
+        participants.forEach(p => p['isLocalAudioMuted'] = true);
 
         const model = new LinkedParticipantPanelModel(roomid, displayName, role, caseTypeGroup, pexipName, hearingRole, null);
+        model['isLocalAudioMuted'] = true;
         model.participants = participants;
         return model;
     }
