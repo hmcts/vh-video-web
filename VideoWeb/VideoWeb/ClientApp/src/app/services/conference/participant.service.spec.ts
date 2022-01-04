@@ -188,7 +188,7 @@ describe('ParticipantService', () => {
 
         loggerSpy = jasmine.createSpyObj<LoggerService>('Logger', ['error', 'warn', 'info']);
         const participantRemoteMuteStoreServiceSpy = jasmine.createSpyObj<ParticipantRemoteMuteStoreService>(
-            ['updateRemoteMuteStatus', 'updateLocalMuteStatus'],
+            ['updateRemoteMuteStatus', 'updateLocalMuteStatus', 'assignPexipId'],
             ['conferenceParticipantsStatus$']
         );
 
