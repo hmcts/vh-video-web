@@ -199,7 +199,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                     const mappedList = this.mapper.mapFromParticipantUserResponseArray(message.participants);
                     const newlyAddedParticipants = mappedList.filter(({ id: newId }) => !this.nonEndpointParticipants.some(({ id: oldId }) => newId === oldId));
                     newlyAddedParticipants.forEach(np => this.nonEndpointParticipants.push(np));
-                    this.setParticipants();
+                    this.updateParticipants();
                 }
             })
         );
@@ -656,6 +656,46 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             ? false
             : true;
     }
+    private updateParticipants() {
+        const combined = [...this.nonEndpointParticipants, ...this.endpointParticipants];
+        combined.forEach(item => {
+            const currentParticipant = this.participants.find(r => r.id === item.id);
+            if (currentParticipant) {
+                currentParticipant.updateParticipant(
+                    currentParticipant?.isMicRemoteMuted(),
+                    currentParticipant?.hasHandRaised(),
+                    currentParticipant?.hasSpotlight(),
+                    currentParticipant?.id,
+                    currentParticipant?.isLocalMicMuted(),
+                    currentParticipant?.isLocalCameraOff()
+                );
+                if (currentParticipant?.pexipId) {
+                    currentParticipant.assignPexipId(currentParticipant?.pexipId);
+                }
+            } else {
+                this.logger.warn(`${this.loggerPrefix} current participant is not in the list`, {
+                    conference: this.conferenceId,
+                    participant: item.id
+                });
+            }
+        });
+
+        this.getOrderedParticipants(combined);
+    }
+
+    private getOrderedParticipants(combined: PanelModel[]) {
+        combined.sort((x, z) => {
+            if (x.orderInTheList === z.orderInTheList) {
+                // 3 here means regular participants and should be grouped by caseTypeGroup
+                if (x.orderInTheList !== 3 || x.caseTypeGroup === z.caseTypeGroup) {
+                    return x.displayName.localeCompare(z.displayName);
+                }
+                return x.caseTypeGroup.localeCompare(z.caseTypeGroup);
+            }
+            return x.orderInTheList > z.orderInTheList ? 1 : -1;
+        });
+        this.participants = combined;
+    }
 
     private setParticipants() {
         const combined = [...this.nonEndpointParticipants, ...this.endpointParticipants];
@@ -677,17 +717,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             }
         });
 
-        combined.sort((x, z) => {
-            if (x.orderInTheList === z.orderInTheList) {
-                // 3 here means regular participants and should be grouped by caseTypeGroup
-                if (x.orderInTheList !== 3 || x.caseTypeGroup === z.caseTypeGroup) {
-                    return x.displayName.localeCompare(z.displayName);
-                }
-                return x.caseTypeGroup.localeCompare(z.caseTypeGroup);
-            }
-            return x.orderInTheList > z.orderInTheList ? 1 : -1;
-        });
-        this.participants = combined;
+        this.getOrderedParticipants(combined);
+
     }
 
     private updateParticipant(participant: PanelModel, participantToBeUpdated: PanelModel) {

@@ -69,7 +69,7 @@ export class VideoControlCacheService {
         return this.hearingControlStates?.participantStates[participantId]?.isSpotlighted ?? false;
     }
 
-    setLocalAudioMuted(participantId: string, localAudioMuted: boolean, syncChanges: boolean = false) {
+    setLocalAudioMuted(participantId: string, localAudioMuted: boolean, syncChanges: boolean = true) {
         this.logger.info(`${this.loggerPrefix} Setting local audio muted.`, {
             participantId: participantId,
             oldValue: this.hearingControlStates?.participantStates[participantId]?.isLocalAudioMuted ?? null,
@@ -102,7 +102,7 @@ export class VideoControlCacheService {
         return this.hearingControlStates?.participantStates[participantId]?.isLocalAudioMuted ?? false;
     }
 
-    setLocalVideoMuted(participantId: string, localVideoMuted: boolean, syncChanges: boolean = false) {
+    setLocalVideoMuted(participantId: string, localVideoMuted: boolean, syncChanges: boolean = true) {
         this.logger.info(`${this.loggerPrefix} Setting local video muted.`, {
             participantId: participantId,
             oldValue: this.hearingControlStates?.participantStates[participantId]?.isLocalVideoMuted ?? null,
