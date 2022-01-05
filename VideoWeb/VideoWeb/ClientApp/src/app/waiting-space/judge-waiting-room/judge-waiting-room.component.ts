@@ -161,23 +161,23 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             .onParticipantUpdated()
             .pipe(
                 takeUntil(this.destroyedSubject),
-                tap(updatedParticipant => {
+                tap(createdParticipant => {
                     this.logger.debug(`${this.loggerPrefixJudge} participant updated`, {
-                        pexipId: updatedParticipant.uuid,
-                        dispayName: updatedParticipant.pexipDisplayName
+                        pexipId: createdParticipant.uuid,
+                        dispayName: createdParticipant.pexipDisplayName
                     });
                 })
             )
-            .subscribe(updatedParticipant => {
-                const participantDisplayName = PexipDisplayNameModel.fromString(updatedParticipant.pexipDisplayName);
-                if (updatedParticipant.uuid && participantDisplayName?.participantOrVmrId) {
+            .subscribe(createdParticipant => {
+                const participantDisplayName = PexipDisplayNameModel.fromString(createdParticipant.pexipDisplayName);
+                if (createdParticipant.uuid && participantDisplayName?.participantOrVmrId) {
                     this.participantRemoteMuteStoreService.assignPexipId(
                         participantDisplayName.participantOrVmrId,
-                        updatedParticipant.uuid
+                        createdParticipant.uuid
                     );
                 }
                 this.logger.debug(`${this.loggerPrefixJudge} stored pexip ID updated`, {
-                    pexipId: updatedParticipant.uuid,
+                    pexipId: createdParticipant.uuid,
                     participantId: participantDisplayName.participantOrVmrId
                 });
             });
