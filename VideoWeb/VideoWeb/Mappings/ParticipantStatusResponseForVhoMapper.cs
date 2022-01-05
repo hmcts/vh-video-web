@@ -6,6 +6,7 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
 using VideoApi.Contract.Responses;
 using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
+using VideoApi.Contract.Enums;
 
 namespace VideoWeb.Mappings
 {
@@ -23,7 +24,8 @@ namespace VideoWeb.Mappings
                 .Select(x =>
                 {
                     var status = Enum.Parse<ParticipantStatus>(x.ParticipantStatus.ToString());
-                    var hostInHearing = hostsInHearings.Where(j => j.Username == x.Username && j.Id != x.Id);
+                    var hostInHearing = hostsInHearings.Where(j => j.Username == x.Username && j.Id != x.Id && 
+                        (j.Status == ParticipantState.InHearing || j.Status == ParticipantState.Available));
                     var links = x.LinkedParticipants.Select(x =>
                         new Contract.Responses.LinkedParticipantResponse
                         {
