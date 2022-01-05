@@ -70,9 +70,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
         this.getParticipantsList().then(() => {
             this.participantRemoteMuteStoreService.conferenceParticipantsStatus$.pipe(take(1)).subscribe(state => {
-                this.logger.debug(`${this.loggerPrefix} state ParticipantsUpdatedMessage`, {
-                    state: state
-                });
                 this.participants.forEach(participant => {
                     if (state.hasOwnProperty(participant.id)) {
                         this.logger.debug(`${this.loggerPrefix} restoring pexip ID`, {
