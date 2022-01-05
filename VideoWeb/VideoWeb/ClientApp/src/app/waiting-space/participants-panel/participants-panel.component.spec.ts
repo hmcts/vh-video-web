@@ -245,27 +245,72 @@ describe('ParticipantsPanelComponent', () => {
         expect(logger.error).toHaveBeenCalled();
     });
 
-    it('should get the remote mute state from the remote mute status service', fakeAsync(() => {
-        // Arrange
-        const participant = component.participants[0];
-        const participantId = participant.id;
-        const isMuted = true;
+    describe('conferenceParticipantsStatusSubject updated', () => {
+        it('should get the remote mute state from the remote mute status service', fakeAsync(() => {
+            // Arrange
+            const participant = component.participants[0];
+            const participantId = participant.id;
+            const isMuted = true;
 
-        participant.updateParticipant(!isMuted, participant.hasHandRaised(), participant.hasSpotlight());
+            participant.updateParticipant(!isMuted, participant.hasHandRaised(), participant.hasSpotlight());
 
-        const state: IConferenceParticipantsStatus = {};
-        state[participantId] = { isRemoteMuted: isMuted };
+            const state: IConferenceParticipantsStatus = {};
+            state[participantId] = { isRemoteMuted: isMuted };
 
-        component.ngOnInit();
-        flush();
+            component.ngOnInit();
+            flush();
 
-        // Act
-        conferenceParticipantsStatusSubject.next(state);
-        flush();
+            // Act
+            conferenceParticipantsStatusSubject.next(state);
+            flush();
 
-        // Assert
-        expect(participant.isMicRemoteMuted()).toEqual(isMuted);
-    }));
+            // Assert
+            expect(participant.isMicRemoteMuted()).toEqual(isMuted);
+        }));
+
+        describe('assignPexipId', () => {
+            let participant: PanelModel;
+            let participantId: string;
+            let state: IConferenceParticipantsStatus;
+
+            beforeEach(() => {
+                participant = component.participants[0];
+                participantId = participant.id;
+                spyOn(participant, 'assignPexipId');
+                state = {};
+            });
+
+            it('should call assignPexipId when state contains pexipId', fakeAsync(() => {
+                const testPexipId = 'testPexipId';
+                state[participantId] = { pexipId: testPexipId };
+
+                component.ngOnInit();
+                flush();
+
+                // Act
+                conferenceParticipantsStatusSubject.next(state);
+                flush();
+
+                // Assert
+                expect(participant.assignPexipId).toHaveBeenCalledTimes(1);
+                expect(participant.assignPexipId).toHaveBeenCalledWith(testPexipId);
+            }));
+
+            it('should NOT call assignPexipId when state does not contain pexipId', fakeAsync(() => {
+                state[participantId] = { pexipId: undefined };
+
+                component.ngOnInit();
+                flush();
+
+                // Act
+                conferenceParticipantsStatusSubject.next(state);
+                flush();
+
+                // Assert
+                expect(participant.assignPexipId).not.toHaveBeenCalled();
+            }));
+        });
+    });
 
     it('should process eventhub participant updates', () => {
         component.setupEventhubSubscribers();
