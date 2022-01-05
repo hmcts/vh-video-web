@@ -52,8 +52,10 @@ import { UnloadDetectorService } from 'src/app/services/unload-detector.service'
 import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
 import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
+import { ParticipantUpdated } from '../../models/video-call-models';
+import { ParticipantRemoteMuteStoreService } from '../../services/participant-remote-mute-store.service';
 
-describe('JudgeWaitingRoomComponent when conference exists', () => {
+fdescribe('JudgeWaitingRoomComponent when conference exists', () => {
     const participantOneId = Guid.create().toString();
     const participantOne = new ParticipantForUserResponse({
         id: participantOneId,
@@ -272,6 +274,41 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         if (component.audioRecordingInterval) {
             clearInterval(component.callbackTimeout);
         }
+    });
+
+    const pexipParticipant: PexipParticipant = {
+        buzz_time: 0,
+        call_tag: Guid.create().toString(),
+        display_name: `T1;John Doe;${participantOne.id}`,
+        has_media: true,
+        is_audio_only_call: 'No',
+        is_muted: 'Yes',
+        is_external: false,
+        is_video_call: 'Yes',
+        mute_supported: 'Yes',
+        local_alias: null,
+        start_time: new Date().getTime(),
+        uuid: Guid.create().toString(),
+        spotlight: 0,
+        external_node_uuid: null,
+        protocol: 'webrtc'
+    };
+
+    it('should call assignPexipId when uuis and pexip id contains in the participantDisplayName', () => {
+        let participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+
+        component.assignPexipIdToRemoteStore(participantUpdated);
+
+        expect(participantRemoteMuteStoreServiceSpy.assignPexipId).toHaveBeenCalled();
+    });
+
+    it('should NOT call assignPexipId when participantDisplayName does not contain uuid', () => {
+        let participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+        participantUpdated.uuid = undefined;
+
+        component.assignPexipIdToRemoteStore(participantUpdated);
+
+        expect(participantRemoteMuteStoreServiceSpy.assignPexipId).not.toHaveBeenCalled();
     });
 
     it('should create', () => {
