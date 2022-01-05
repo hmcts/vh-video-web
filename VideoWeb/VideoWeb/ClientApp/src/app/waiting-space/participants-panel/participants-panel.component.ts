@@ -63,8 +63,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private mapper: ParticipantPanelModelMapper,
         private participantService: ParticipantService,
         private participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService
-    ) {
-    }
+    ) {}
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
@@ -197,7 +196,9 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             this.eventService.getParticipantsUpdated().subscribe(async message => {
                 if (message.conferenceId === this.conferenceId) {
                     const mappedList = this.mapper.mapFromParticipantUserResponseArray(message.participants);
-                    const newlyAddedParticipants = mappedList.filter(({ id: newId }) => !this.nonEndpointParticipants.some(({ id: oldId }) => newId === oldId));
+                    const newlyAddedParticipants = mappedList.filter(
+                        ({ id: newId }) => !this.nonEndpointParticipants.some(({ id: oldId }) => newId === oldId)
+                    );
                     newlyAddedParticipants.forEach(np => this.nonEndpointParticipants.push(np));
                     this.updateParticipants();
                 }
@@ -239,7 +240,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                 participant.hasSpotlight(),
                 message.participantId,
                 message.mediaStatus.is_local_audio_muted,
-                message.mediaStatus.is_local_video_muted);
+                message.mediaStatus.is_local_video_muted
+            );
         }
 
         participant.updateParticipantDeviceStatus(
@@ -295,14 +297,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             participant.assignPexipId(updatedParticipant.uuid);
         }
         if (participant instanceof LinkedParticipantPanelModel) {
-            this.logger.info(`${this.loggerPrefix} updatedParticipant.pexipDisplayName lp`, {
-                updatedParticipantPexipDisplayName: updatedParticipant.pexipDisplayName
-            });
             participant.updateParticipant(updatedParticipant.isRemoteMuted, null, updatedParticipant.isSpotlighted, participant.id);
         } else {
-            this.logger.info(`${this.loggerPrefix} updatedParticipant.pexipDisplayName`, {
-                updatedParticipantPexipDisplayName: updatedParticipant.pexipDisplayName
-            });
             participant.updateParticipant(
                 updatedParticipant.isRemoteMuted,
                 updatedParticipant.handRaised,
@@ -649,10 +645,10 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     private showCaseRole(participant: PanelModel) {
         return participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
-        participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
-        participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase() ||
-        participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
-        participant.caseTypeGroup.toLowerCase() === 'endpoint'
+            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
+            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase() ||
+            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
+            participant.caseTypeGroup.toLowerCase() === 'endpoint'
             ? false
             : true;
     }
@@ -718,7 +714,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         });
 
         this.getOrderedParticipants(combined);
-
     }
 
     private updateParticipant(participant: PanelModel, participantToBeUpdated: PanelModel) {

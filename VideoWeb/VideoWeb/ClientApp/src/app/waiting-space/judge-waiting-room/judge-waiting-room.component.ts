@@ -145,8 +145,11 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             )
             .subscribe(createdParticipant => {
                 const participantDisplayName = PexipDisplayNameModel.fromString(createdParticipant.pexipDisplayName);
-                if (createdParticipant.uuid && participantDisplayName.participantOrVmrId) {
-                    this.participantRemoteMuteStoreService.assignPexipId(participantDisplayName.participantOrVmrId, createdParticipant.uuid);
+                if (createdParticipant.uuid && participantDisplayName?.participantOrVmrId) {
+                    this.participantRemoteMuteStoreService.assignPexipId(
+                        participantDisplayName.participantOrVmrId,
+                        createdParticipant.uuid
+                    );
                 }
                 this.logger.debug(`${this.loggerPrefixJudge} stored pexip ID updated`, {
                     pexipId: createdParticipant.uuid,
@@ -167,8 +170,11 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             )
             .subscribe(updatedParticipant => {
                 const participantDisplayName = PexipDisplayNameModel.fromString(updatedParticipant.pexipDisplayName);
-                if (updatedParticipant.uuid && participantDisplayName.participantOrVmrId) {
-                    this.participantRemoteMuteStoreService.assignPexipId(participantDisplayName.participantOrVmrId, updatedParticipant.uuid);
+                if (updatedParticipant.uuid && participantDisplayName?.participantOrVmrId) {
+                    this.participantRemoteMuteStoreService.assignPexipId(
+                        participantDisplayName.participantOrVmrId,
+                        updatedParticipant.uuid
+                    );
                 }
                 this.logger.debug(`${this.loggerPrefixJudge} stored pexip ID updated`, {
                     pexipId: updatedParticipant.uuid,
