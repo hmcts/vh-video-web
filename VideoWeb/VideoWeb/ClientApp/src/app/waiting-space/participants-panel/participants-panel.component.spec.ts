@@ -483,7 +483,39 @@ describe('ParticipantsPanelComponent', () => {
         expect(component.isMuteAll).toBeFalsy();
     });
 
-    xit('should process video call participant updates', () => {
+    describe('handleParticipantUpdatedInVideoCall', () => {
+        let pat: PanelModel;
+        let pexipParticipant: PexipParticipant;
+        let updatedParticipant: ParticipantUpdated;
+        beforeEach(() => {
+            pat = component.participants.filter(x => x.role !== Role.Judge)[0];
+            pexipParticipant = videoCallTestData.getExamplePexipParticipant(pat.pexipDisplayName);
+            updatedParticipant = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+        });
+
+        describe('uuid update', () => {
+            beforeEach(() => {
+                spyOn(pat, 'assignPexipId');
+            });
+
+            it('should not assignPexipId when no uuid', () => {
+                updatedParticipant.uuid = undefined;
+                component.handleParticipantUpdatedInVideoCall(updatedParticipant);
+                expect(pat.assignPexipId).not.toHaveBeenCalled();
+            });
+
+            it('should assignPexipId when uuid', () => {
+                const testUuid = '2ae17bd3-39df-41ae-a382-950d3480ea7c';
+                updatedParticipant.uuid = testUuid;
+                component.handleParticipantUpdatedInVideoCall(updatedParticipant);
+
+                expect(pat.assignPexipId).toHaveBeenCalledTimes(1);
+                expect(pat.assignPexipId).toHaveBeenCalledWith(testUuid);
+            });
+        });
+    });
+
+    it('should process video call participant updates', () => {
         component.setupVideoCallSubscribers();
         const pat = component.participants.filter(x => x.role !== Role.Judge)[0];
         const pexipParticipant = videoCallTestData.getExamplePexipParticipant(pat.pexipDisplayName);
@@ -500,7 +532,7 @@ describe('ParticipantsPanelComponent', () => {
         expect(result.hasSpotlight()).toBeTruthy();
     });
 
-    xit('should process video call participant updates for linked participant and publish remote mute status', () => {
+    it('should process video call participant updates for linked participant and publish remote mute status', () => {
         component.setupVideoCallSubscribers();
         const pat = component.participants.filter(p => p instanceof LinkedParticipantPanelModel)[0] as LinkedParticipantPanelModel;
         const displayName = `I1;${pat.pexipDisplayName};${pat.id}`;

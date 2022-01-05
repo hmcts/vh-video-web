@@ -230,6 +230,10 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     handleParticipantMediaStatusChange(message: ParticipantMediaStatusMessage) {
         const participant = this.participants.find(x => x.hasParticipant(message.participantId));
+        console.log(
+            '🚀Faz - ~ file: participants-panel.component.ts ~ line 237 ~ ParticipantsPanelComponent ~ handleParticipantMediaStatusChange ~ this.participants',
+            this.participants
+        );
         if (!participant) {
             return;
         }
@@ -288,10 +292,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             });
             return;
         }
-
-        this.participantService.virtualMeetingRooms.forEach(vmr => {
-            this.participantRemoteMuteStoreService.assignPexipId(vmr.id, vmr.pexipId);
-        });
 
         if (updatedParticipant.uuid) {
             participant.assignPexipId(updatedParticipant.uuid);
