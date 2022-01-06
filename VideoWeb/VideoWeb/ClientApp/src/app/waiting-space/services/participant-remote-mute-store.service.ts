@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ComponentStore } from '@ngrx/component-store';
 import { Observable } from 'rxjs';
-import { IConferenceParticipantsStatus, IParticipatRemoteMuteStatus } from '../models/conference-participants-status';
+import { IConferenceParticipantsStatus } from '../models/conference-participants-status';
 
 const INITIAL_STATE: IConferenceParticipantsStatus = {};
 
@@ -14,20 +14,43 @@ export class ParticipantRemoteMuteStoreService extends ComponentStore<IConferenc
     }
 
     updateRemoteMuteStatus(participantOrVmrId: string, isRemoteMuted: boolean) {
-        const state = {};
-        state[participantOrVmrId] = { isRemoteMuted: isRemoteMuted } as IParticipatRemoteMuteStatus;
+        this.patchState(state => this.updateRemoteMutePatchCallBack(participantOrVmrId, isRemoteMuted, state));
+    }
 
-        this.patchState(state);
+    updateRemoteMutePatchCallBack(participantOrVmrId: string, isRemoteMuted: boolean, state: IConferenceParticipantsStatus) {
+        const newState = { ...state };
+        newState[participantOrVmrId] = { ...newState[participantOrVmrId] };
+        newState[participantOrVmrId].isRemoteMuted = isRemoteMuted;
+
+        return newState;
     }
 
     updateLocalMuteStatus(participantOrVmrId: string, isLocalAudioMuted: boolean, isLocalVideoMuted: boolean) {
-        const state = {};
-        state[participantOrVmrId] = {
-            isLocalAudioMuted: isLocalAudioMuted,
-            isLocalVideoMuted: isLocalVideoMuted
-        } as IParticipatRemoteMuteStatus;
+        this.patchState(state => this.updateLocalMutePatchCallBack(participantOrVmrId, isLocalAudioMuted, isLocalVideoMuted, state));
+    }
 
-        this.patchState(state);
+    updateLocalMutePatchCallBack(
+        participantOrVmrId: string,
+        isLocalAudioMuted: boolean,
+        isLocalVideoMuted: boolean,
+        state: IConferenceParticipantsStatus
+    ) {
+        const newState = { ...state };
+        newState[participantOrVmrId] = { ...newState[participantOrVmrId] };
+        newState[participantOrVmrId].isLocalAudioMuted = isLocalAudioMuted;
+        newState[participantOrVmrId].isLocalVideoMuted = isLocalVideoMuted;
+
+        return newState;
+    }
+
+    assignPexipId(participantOrVmrId: string, pexipId: string) {
+        this.patchState(state => {
+            const newState = { ...state };
+            newState[participantOrVmrId] = { ...newState[participantOrVmrId] };
+            newState[participantOrVmrId].pexipId = pexipId;
+
+            return newState;
+        });
     }
 
     get conferenceParticipantsStatus$(): Observable<IConferenceParticipantsStatus> {

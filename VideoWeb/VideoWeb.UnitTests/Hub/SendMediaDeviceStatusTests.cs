@@ -35,6 +35,9 @@ namespace VideoWeb.UnitTests.Hub
             await Hub.SendMediaDeviceStatus(conferenceId, participant.Id, deviceStatus);
             
             VerifyMessageCallCount(conference, participant.Id, deviceStatus, Times.Once());
+            ConferenceVideoControlStatusService.Verify(
+                x => x.UpdateMediaStatusForParticipantInConference(conferenceId, participant.Id.ToString(),
+                    deviceStatus), Times.Once);
         }
 
         [Test]

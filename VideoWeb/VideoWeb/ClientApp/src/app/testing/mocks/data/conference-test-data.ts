@@ -96,7 +96,7 @@ export class ConferenceTestData {
             status: ConferenceStatus.NotStarted,
             participants: this.getListOfParticipants(),
             telephone_conference_id: '0345855',
-            telephone_conference_number: '+441234567890'
+            telephone_conference_numbers: '+441234567890'
         });
     }
 
@@ -116,7 +116,7 @@ export class ConferenceTestData {
             started_date_time: null,
             closed_date_time: null,
             telephone_conference_id: '0345855',
-            telephone_conference_number: '+441234567890'
+            telephone_conference_numbers: '+441234567890,+440987654321'
         });
     }
 

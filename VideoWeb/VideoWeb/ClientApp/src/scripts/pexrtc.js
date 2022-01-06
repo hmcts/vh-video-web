@@ -2897,23 +2897,27 @@ PexRTC.prototype.refreshToken = function () {
     var old_token = self.token;
     self.sendRequest('refresh_token', null, function (e) {
         self.onLog('PexRTC.refreshToken response', e.target.responseText);
-        var msg = {};
-        try {
-            msg = JSON.parse(e.target.responseText);
-        } catch (error) {
-            msg.reason = e.target.status + ' ' + e.target.statusText;
-        }
-        if (e.target.status == 200) {
-            self.token = msg.result.token;
-            if (msg.result.role != self.role) {
-                self.role = msg.result.role;
-                if (self.onRoleUpdate) {
-                    self.onRoleUpdate(self.role);
-                }
+        if (self.state != 'DISCONNECTING' && self.state != 'IDLE') {
+            var msg = {};
+            try {
+                msg = JSON.parse(e.target.responseText);
+            } catch (error) {
+                msg.reason = e.target.status + ' ' + e.target.statusText;
             }
-        } else if (old_token == self.token && self.state != 'DISCONNECTING') {
-            // Only error out if the token hasn't changed under us
-            return self.handleError(msg.result || msg.reason);
+            if (e.target.status == 200) {
+                self.token = msg.result.token;
+                if (msg.result.role != self.role) {
+                    self.role = msg.result.role;
+                    if (self.onRoleUpdate) {
+                        self.onRoleUpdate(self.role);
+                    }
+                }
+            } else if (old_token == self.token) {
+                // Only error out if the token hasn't changed under us
+                return self.handleError(msg.result || msg.reason);
+            }
+        } else {
+            self.onLog('PexRTC.refreshToken not updating token');
         }
     });
 };

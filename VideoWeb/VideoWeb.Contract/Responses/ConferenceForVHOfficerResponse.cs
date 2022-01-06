@@ -69,7 +69,7 @@ namespace VideoWeb.Contract.Responses
         /// <summary>
         /// The telephone conference number to dial
         /// </summary>
-        public string TelephoneConferenceNumber { get; set; }
+        public string TelephoneConferenceNumbers { get; set; }
         /// <summary>
         /// Created date time as UTC
         /// </summary>
