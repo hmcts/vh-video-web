@@ -143,7 +143,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         return [HearingRole.JUDGE, HearingRole.PANEL_MEMBER, HearingRole.WINGER];
     }
 
-    getMemberParticipantsByRole(role: any): ParticipantListItem[] {
+    getMemberParticipantsByHearingRole(role: any): ParticipantListItem[] {
         return this.participantsInConsultation
             .filter(p => p.hearing_role === role)
             .sort((a, b) => a.display_name.localeCompare(b.display_name))
@@ -156,7 +156,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         if (!this.isJohConsultation()) {
             return [];
         }
-        const witnesses = this.getMemberParticipantsByRole(HearingRole.WITNESS);
+        const witnesses = this.getMemberParticipantsByHearingRole(HearingRole.WITNESS);
         const observers = this.participantsInConsultation
             .filter(p => p.hearing_role === HearingRole.OBSERVER || p.role === Role.QuickLinkObserver)
             .sort((a, b) => a.display_name.localeCompare(b.display_name))
