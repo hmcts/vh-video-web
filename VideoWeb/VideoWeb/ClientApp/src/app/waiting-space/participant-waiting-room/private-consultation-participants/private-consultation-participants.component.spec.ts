@@ -530,14 +530,26 @@ describe('PrivateConsultationParticipantsComponent', () => {
             linked_participants: []
         });
 
-        const witness = new ParticipantResponse({
-            id: 'witness_id',
+        const witness1 = new ParticipantResponse({
+            id: 'witness1_id',
             status: ParticipantStatus.Available,
-            display_name: 'witness_display_name',
+            display_name: 'witness1_display_name',
             role: Role.Individual,
-            representee: 'witness_representee',
-            case_type_group: 'witness_applicant',
-            tiled_display_name: 'witness_tiledDisplayName',
+            representee: 'witness1_representee',
+            case_type_group: 'witness1_applicant',
+            tiled_display_name: 'witness1_tiledDisplayName',
+            hearing_role: HearingRole.WITNESS,
+            linked_participants: []
+        });
+
+        const witness2 = new ParticipantResponse({
+            id: 'witness2_id',
+            status: ParticipantStatus.Available,
+            display_name: 'witness2_display_name',
+            role: Role.Individual,
+            representee: 'witness2_representee',
+            case_type_group: 'witness2_applicant',
+            tiled_display_name: 'witness2_tiledDisplayName',
             hearing_role: HearingRole.WITNESS,
             linked_participants: []
         });
@@ -578,7 +590,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
             linked_participants: []
         });
 
-        const testParticipants = [litigantInPerson, witness, regularObserver, quickLinkObserver2, quickLinkObserver1];
+        const testParticipants = [litigantInPerson, regularObserver, quickLinkObserver2, quickLinkObserver1, witness2, witness1];
 
         beforeEach(() => {
             component.participantsInConsultation = testParticipants;
@@ -591,25 +603,24 @@ describe('PrivateConsultationParticipantsComponent', () => {
         });
 
         it('should return list in correct order for joh consultation', () => {
-            const mappedWitness: ParticipantListItem = { ...witness };
+            const mappedWitness1: ParticipantListItem = { ...witness1 };
+            const mappedWitness2: ParticipantListItem = { ...witness2 };
             const mappedRegularObserver: ParticipantListItem = { ...regularObserver };
             const mappedQuickLinkObserver1: ParticipantListItem = { ...quickLinkObserver1 };
             const mappedQuickLinkObserver2: ParticipantListItem = { ...quickLinkObserver2 };
 
             spyOn(component, 'isJohConsultation').and.returnValue(true);
             const result = component.getWitnessesAndObservers();
-            console.table(result);
 
-            expect(result[0]).toEqual(mappedWitness);
+            const witnessesOrdered = [mappedWitness1, mappedWitness2].sort((a, b) => a.display_name.localeCompare(b.display_name));
 
             const observersOrdered = [mappedRegularObserver, mappedQuickLinkObserver1, mappedQuickLinkObserver2].sort((a, b) =>
                 a.display_name.localeCompare(b.display_name)
             );
 
-            expect(result.length).toBe(observersOrdered.length + 1);
-            for (let i = 0; i < observersOrdered.length; i++) {
-                expect(result[i + 1]).toEqual(observersOrdered[i]);
-            }
+            expect(result.length).toBe(witnessesOrdered.length + observersOrdered.length);
+            expect(result.slice(0, witnessesOrdered.length)).toEqual(witnessesOrdered);
+            expect(result.slice(witnessesOrdered.length)).toEqual(observersOrdered);
         });
     });
 });

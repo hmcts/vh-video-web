@@ -146,6 +146,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     getMemberParticipantsByRole(role: any): ParticipantListItem[] {
         return this.participantsInConsultation
             .filter(p => p.hearing_role === role)
+            .sort((a, b) => a.display_name.localeCompare(b.display_name))
             .map(c => {
                 return this.mapResponseToListItem(c);
             });
