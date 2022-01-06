@@ -295,7 +295,7 @@ fdescribe('JudgeWaitingRoomComponent when conference exists', () => {
     };
 
     it('should call assignPexipId when uuis and pexip id contains in the participantDisplayName', () => {
-        let participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+        const participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
 
         component.assignPexipIdToRemoteStore(participantUpdated);
 
@@ -303,7 +303,7 @@ fdescribe('JudgeWaitingRoomComponent when conference exists', () => {
     });
 
     it('should NOT call assignPexipId when participantDisplayName does not contain uuid', () => {
-        let participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+        const participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
         participantUpdated.uuid = undefined;
 
         component.assignPexipIdToRemoteStore(participantUpdated);
