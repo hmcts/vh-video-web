@@ -55,7 +55,7 @@ import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.s
 import { ParticipantUpdated } from '../../models/video-call-models';
 import { ParticipantRemoteMuteStoreService } from '../../services/participant-remote-mute-store.service';
 
-fdescribe('JudgeWaitingRoomComponent when conference exists', () => {
+describe('JudgeWaitingRoomComponent when conference exists', () => {
     const participantOneId = Guid.create().toString();
     const participantOne = new ParticipantForUserResponse({
         id: participantOneId,
