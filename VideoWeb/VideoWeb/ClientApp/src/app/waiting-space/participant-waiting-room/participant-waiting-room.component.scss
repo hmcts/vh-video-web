@@ -24,6 +24,9 @@
 .room-status {
   margin-top: 7px;
   margin-left: 10px;
+  @media screen and (min-width: $breakpoint-small) {
+    margin-left: -10px;
+  }
 }
 
 .room-status-desc {
