@@ -25,7 +25,7 @@ namespace VideoWeb.Mappings
                 {
                     var status = Enum.Parse<ParticipantStatus>(x.ParticipantStatus.ToString());
                     var hostInHearing = hostsInHearings.Where(j => j.Username == x.Username && j.Id != x.Id && 
-                        (j.Status == ParticipantState.InHearing || j.Status == ParticipantState.Available));
+                        (j.Status == ParticipantState.InHearing || j.Status == ParticipantState.InConsultation  || j.Status == ParticipantState.Available));
                     var links = x.LinkedParticipants.Select(x =>
                         new Contract.Responses.LinkedParticipantResponse
                         {

@@ -24,11 +24,13 @@ namespace VideoWeb.UnitTests.Mappings
             var judge1 = CreateParticipant("judge1");
             var judge2 = CreateParticipant("judge2");
             var judge3 = CreateParticipant("judge3");
+            var judge4 = CreateParticipant("judge4");
             var judge2DifferentHearing = CreateParticipant("judge2");
             var judge3DifferentHearing = CreateParticipant("judge3");
+            var judge4DifferentHearing = CreateParticipant("judge4");
             conference.Participants = new List<Participant>
             {
-                judge1, judge2, judge3
+                judge1, judge2, judge3, judge4
             };
 
             var judgesInHearings = new List<ParticipantInHearingResponse>
@@ -36,7 +38,9 @@ namespace VideoWeb.UnitTests.Mappings
                 new ParticipantInHearingResponse
                     {Id = judge2DifferentHearing.Id, Username = judge2.Username, Status = ParticipantState.InHearing},
                 new ParticipantInHearingResponse
-                    {Id = judge3DifferentHearing.Id, Username = judge3.Username, Status = ParticipantState.InHearing}
+                    {Id = judge3DifferentHearing.Id, Username = judge3.Username, Status = ParticipantState.InConsultation},
+                new ParticipantInHearingResponse
+                    {Id = judge4DifferentHearing.Id, Username = judge4.Username, Status = ParticipantState.Available}
             };
 
             var results = _sut.Map(conference, judgesInHearings).ToList();
@@ -44,6 +48,7 @@ namespace VideoWeb.UnitTests.Mappings
             AssertResponseItem(results.ElementAt(0), conference.Participants[0], conferenceId, false);
             AssertResponseItem(results.ElementAt(1), conference.Participants[1], conferenceId, true);
             AssertResponseItem(results.ElementAt(2), conference.Participants[2], conferenceId, true);
+            AssertResponseItem(results.ElementAt(3), conference.Participants[3], conferenceId, true);
         }
 
         [Test]
