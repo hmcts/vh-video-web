@@ -107,7 +107,6 @@ export abstract class ParticipantStatusDirective {
                 thisJudge.hostInAnotherHearing =
                     message.status === ParticipantStatus.InHearing || message.status === ParticipantStatus.Available;
                 this.setParticipantStatus(thisJudge.status, thisJudge);
-                return;
             }
         }
 
