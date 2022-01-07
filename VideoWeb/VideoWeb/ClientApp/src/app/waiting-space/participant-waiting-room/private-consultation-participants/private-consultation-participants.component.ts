@@ -192,9 +192,9 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     private mapResponseToListItem(participantResponse: ParticipantResponse): ParticipantListItem {
-        const interpreterLink = participantResponse.linked_participants.find(x => x.link_type === LinkType.Interpreter);
         const participant: ParticipantListItem = { ...participantResponse };
-        if (participantResponse.linked_participants && interpreterLink) {
+        const interpreterLink = participantResponse.linked_participants?.find(x => x.link_type === LinkType.Interpreter);
+        if (interpreterLink) {
             participant.interpreter = this.participantsInConsultation.find(x => x.id === interpreterLink.linked_id);
         }
         return participant;
