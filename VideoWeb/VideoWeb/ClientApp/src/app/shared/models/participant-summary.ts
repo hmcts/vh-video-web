@@ -1,6 +1,6 @@
 import { ParticipantForHostResponse, ParticipantForUserResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
-import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
+import { HearingRoleHelper } from '../helpers/hearing-role-helper';
 
 export class ParticipantSummary {
     protected participant: ParticipantForUserResponse;
@@ -64,13 +64,7 @@ export class ParticipantSummary {
     }
 
     get isParticipantPanelMember(): boolean {
-        return (
-            this.participant.hearing_role === HearingRole.MEDICAL_MEMBER ||
-            this.participant.hearing_role === HearingRole.FINANCIAL_MEMBER ||
-            this.participant.hearing_role === HearingRole.LEGAL_MEMBER ||
-            this.participant.hearing_role === HearingRole.DISABILITY_MEMBER ||
-            this.participant.hearing_role === HearingRole.PANEL_MEMBER
-        );
+        return HearingRoleHelper.isPanelMember(this.participant.hearing_role);
     }
 
     get participantHertBeatHealth(): ParticipantHeartbeat {

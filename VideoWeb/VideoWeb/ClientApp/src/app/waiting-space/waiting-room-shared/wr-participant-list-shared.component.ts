@@ -7,16 +7,18 @@ import {
     AllowedEndpointResponse,
     ConferenceResponse,
     EndpointStatus,
+    LinkType,
     LoggedParticipantResponse,
     ParticipantResponse,
     ParticipantStatus,
     Role,
-    VideoEndpointResponse,
-    LinkType
+    VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { HearingRoleHelper } from 'src/app/shared/helpers/hearing-role-helper';
+
 import { HearingRole } from '../models/hearing-role-model';
 
 @Directive()
@@ -208,13 +210,7 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
         this.panelMembers = this.conference.participants.filter(x => this.isParticipantPanelMember(x.hearing_role));
     }
     protected isParticipantPanelMember(hearingRole: string): boolean {
-        return (
-            hearingRole === HearingRole.MEDICAL_MEMBER ||
-            hearingRole === HearingRole.FINANCIAL_MEMBER ||
-            hearingRole === HearingRole.LEGAL_MEMBER ||
-            hearingRole === HearingRole.DISABILITY_MEMBER ||
-            hearingRole === HearingRole.PANEL_MEMBER
-        );
+        return HearingRoleHelper.isPanelMember(hearingRole);
     }
 
     protected filterJudge(): void {
