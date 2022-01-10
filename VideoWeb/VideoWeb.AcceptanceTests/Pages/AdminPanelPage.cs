@@ -22,5 +22,6 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By TaskFromUser(long taskId) => By.Id($"{taskId:D}-from-user");
         public static By ParticipantInWaitingRoom(Guid participantId) => By.Id($"{participantId}-WaitingRoom");
         public static By ParticipantInHearingRoom(Guid participantId) => By.Id($"{participantId}-HearingRoom");
+        public static By AdminIframeError = By.Id("sub-frame-error");
     }
 }
