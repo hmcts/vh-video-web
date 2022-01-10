@@ -24,6 +24,7 @@
 .room-status {
   margin-top: 7px;
   margin-left: 10px;
+  white-space: nowrap;
   @media screen and (min-width: $breakpoint-small) {
     margin-left: -10px;
   }
