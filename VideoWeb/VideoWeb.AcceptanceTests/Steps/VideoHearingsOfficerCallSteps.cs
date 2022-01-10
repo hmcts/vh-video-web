@@ -40,6 +40,16 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser].Driver.SwitchTo().Frame(AdminPanelPage.AdminIframeId);
             Thread.Sleep(TimeSpan.FromSeconds(SecondsDelayBeforeCallingTheParticipant));
+
+            try
+            {
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.AdminIframeError).Displayed.Should().BeFalse();
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Unable to click the participant '" + GetParticipantDisplayName(text) + "' in iframe because login.microsoftonline.com refused to connect.");
+            }
+
             _browsers[_c.CurrentUser].Click(AdminPanelPage.ParticipantInIframe(GetParticipantDisplayName(text)));
             Thread.Sleep(TimeSpan.FromSeconds(SecondsDelayBeforeCallingTheParticipant));
             _browsers[_c.CurrentUser].Click(AdminPanelPage.VhoPrivateConsultationLink);
