@@ -72,6 +72,7 @@ export class DistributedVideoControlCacheService implements IVideoControlCacheSt
                 if (response.participant_id_to_video_control_status_map.hasOwnProperty(participantOrVmrId)) {
                     mappedResponse.participantStates[participantOrVmrId] = {
                         isSpotlighted: response.participant_id_to_video_control_status_map[participantOrVmrId].is_spotlighted,
+                        isRemoteMuted: true,
                         isLocalAudioMuted: response.participant_id_to_video_control_status_map[participantOrVmrId].is_local_audio_muted,
                         isLocalVideoMuted: response.participant_id_to_video_control_status_map[participantOrVmrId].is_local_video_muted
                     } as IParticipantControlsState;

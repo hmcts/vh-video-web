@@ -54,6 +54,7 @@ import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { ParticipantUpdated } from '../../models/video-call-models';
 import { ParticipantRemoteMuteStoreService } from '../../services/participant-remote-mute-store.service';
+import { PexipDisplayNameModel } from '../../../services/conference/models/pexip-display-name.model';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     const participantOneId = Guid.create().toString();
@@ -294,7 +295,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         protocol: 'webrtc'
     };
 
-    it('should call assignPexipId when uuis and pexip id contains in the participantDisplayName', () => {
+    it('should call assignPexipId when uuid and pexip id contains in the participantDisplayName', () => {
         const participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
 
         component.assignPexipIdToRemoteStore(participantUpdated);

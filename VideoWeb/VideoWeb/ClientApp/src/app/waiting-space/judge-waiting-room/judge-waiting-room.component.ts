@@ -215,7 +215,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     assignPexipIdToRemoteStore(participant: ParticipantUpdated): void {
         const participantDisplayName = PexipDisplayNameModel.fromString(participant.pexipDisplayName);
-        if (participant.uuid && participantDisplayName?.participantOrVmrId) {
+        if (participant.uuid && participantDisplayName.participantOrVmrId) {
             this.participantRemoteMuteStoreService.assignPexipId(participantDisplayName.participantOrVmrId, participant.uuid);
         }
         this.logger.debug(`${this.loggerPrefixJudge} stored pexip ID updated`, {

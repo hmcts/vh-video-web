@@ -128,6 +128,21 @@ export class VideoControlService {
         return this.videoControlCacheService.getLocalAudioMuted(id);
     }
 
+    setRemoteMutedById(id: string, remoteMuted: boolean) {
+        this.logger.info(`${this.loggerPrefix} Attempting to set remote mute status of participant/vmr with ID ${id}.`, {
+            localAudioMuted: remoteMuted,
+            participantOrVmrId: id
+        });
+        this.videoControlCacheService.setRemoteMutedStatus(id, remoteMuted);
+    }
+
+    getRemoteMutedById(id: string): boolean {
+        this.logger.info(`${this.loggerPrefix} Attempting to get remote mute status of participant/vmr with ID ${id}.`, {
+            participantOrVmrId: id
+        });
+        return this.videoControlCacheService.getRemoteMutedStatus(id);
+    }
+
     setLocalVideoMutedById(id: string, localVideoMuted: boolean) {
         this.logger.info(`${this.loggerPrefix} Attempting to set local video mute status of participant/vmr with ID ${id}.`, {
             localVideoMuted: localVideoMuted,

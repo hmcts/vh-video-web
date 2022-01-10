@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ParticipantResponse } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, ParticipantResponse } from 'src/app/services/clients/api-client';
 import { VideoControlService } from 'src/app/services/conference/video-control.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -30,6 +30,8 @@ import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-mode
 import { VideoEndpointPanelModel } from '../models/video-endpoint-panel-model';
 import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 import { VideoCallService } from '../services/video-call.service';
+import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
+import { DistributedVideoControlCacheService } from '../../services/conference/distributed-video-control-cache.service';
 
 @Component({
     selector: 'app-participants-panel',
@@ -53,6 +55,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     constructor(
         private videoWebService: VideoWebService,
+        private videoControlCacheService: VideoControlCacheService,
         private route: ActivatedRoute,
         private videoCallService: VideoCallService,
         private videoControlService: VideoControlService,
@@ -60,13 +63,43 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private logger: Logger,
         private translateService: TranslateService,
         private mapper: ParticipantPanelModelMapper,
+        private storageService: DistributedVideoControlCacheService,
         private participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService
-    ) {}
+    ) {
+    }
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
 
         this.getParticipantsList().then(() => {
+            this.isConferenceInSession(this.conferenceId).then(inSessionConference => {
+                if (inSessionConference) {
+
+                    this.storageService
+                        .loadHearingStateForConference(this.conferenceId)
+                        .pipe(take(1))
+                        .subscribe(state => {
+                            this.logger.info(`${this.loggerPrefix} initialised state for ${this.conferenceId}.`, {
+                                hearingControlStates: state
+                            });
+                        });
+                    this.participants
+                        .map(participant => participant.id)
+                        .forEach(participantId => {
+                            const audio = this.videoControlCacheService.getLocalAudioMuted(participantId);
+                            const video = this.videoControlCacheService.getLocalVideoMuted(participantId);
+                            const spot = this.videoControlCacheService.getSpotlightStatus(participantId);
+                            this.logger.info(`${this.loggerPrefix} Updating store with audio and video`, {
+                                audio: audio,
+                                video: video,
+                                spot: spot,
+                                participantId: participantId
+                            });
+
+                            this.participantRemoteMuteStoreService.updateLocalMuteStatus(participantId, audio, video);
+                        });
+                }
+            });
             this.participantRemoteMuteStoreService.conferenceParticipantsStatus$.pipe(take(1)).subscribe(state => {
                 this.participants.forEach(participant => {
                     if (state.hasOwnProperty(participant.id)) {
@@ -93,6 +126,18 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             this.setupVideoCallSubscribers();
             this.setupEventhubSubscribers();
         });
+
+    }
+
+    async isConferenceInSession(conferenceId: string): Promise<boolean> {
+        let conferenceStatus = false;
+        const conference = await this.videoWebService.getConferenceById(conferenceId);
+
+
+        if (conference.status === ConferenceStatus.InSession) {
+            conferenceStatus = true;
+        }
+        return conferenceStatus;
     }
 
     toggleMuteParticipantEventHandler(e: ToggleMuteParticipantEvent) {
@@ -229,7 +274,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         if (!participant) {
             return;
         }
-        if (participant instanceof LinkedParticipantPanelModel && participant.hearingRole === HearingRole.INTERPRETER) {
+        if (participant instanceof LinkedParticipantPanelModel) {
             participant.updateParticipant(
                 participant.isMicRemoteMuted(),
                 participant.hasHandRaised(),
@@ -444,6 +489,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             });
             this.videoCallService.muteAllParticipants(true, this.conferenceId);
         }
+        this.videoControlCacheService.setRemoteMutedStatus(p.id, newMuteStatus);
     }
 
     lowerAllHands() {
@@ -637,37 +683,16 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     private showCaseRole(participant: PanelModel) {
         return participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
-            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
-            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase() ||
-            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
-            participant.caseTypeGroup.toLowerCase() === 'endpoint'
+        participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
+        participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase() ||
+        participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
+        participant.caseTypeGroup.toLowerCase() === 'endpoint'
             ? false
             : true;
     }
+
     private updateParticipants() {
         const combined = [...this.nonEndpointParticipants, ...this.endpointParticipants];
-        combined.forEach(item => {
-            const currentParticipant = this.participants.find(r => r.id === item.id);
-            if (currentParticipant) {
-                currentParticipant.updateParticipant(
-                    currentParticipant?.isMicRemoteMuted(),
-                    currentParticipant?.hasHandRaised(),
-                    currentParticipant?.hasSpotlight(),
-                    currentParticipant?.id,
-                    currentParticipant?.isLocalMicMuted(),
-                    currentParticipant?.isLocalCameraOff()
-                );
-                if (currentParticipant?.pexipId) {
-                    currentParticipant.assignPexipId(currentParticipant?.pexipId);
-                }
-            } else {
-                this.logger.warn(`${this.loggerPrefix} current participant is not in the list`, {
-                    conference: this.conferenceId,
-                    participant: item.id
-                });
-            }
-        });
-
         this.getOrderedParticipants(combined);
     }
 
@@ -717,8 +742,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             participantToBeUpdated?.isLocalMicMuted(),
             participantToBeUpdated?.isLocalCameraOff()
         );
-        if (participantToBeUpdated?.pexipId) {
-            participant.assignPexipId(participantToBeUpdated?.pexipId);
-        }
+        participant.assignPexipId(participantToBeUpdated?.pexipId);
     }
 }
