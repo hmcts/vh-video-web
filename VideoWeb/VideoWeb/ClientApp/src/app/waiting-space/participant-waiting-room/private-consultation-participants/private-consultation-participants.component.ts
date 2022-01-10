@@ -130,12 +130,9 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
             .map(c => {
                 return this.mapResponseToListItem(c);
             });
-        const quickLinkParticipants = this.participantsInConsultation
-            .filter(p => p.role === Role.QuickLinkParticipant)
-            .sort((a, b) => a.display_name.localeCompare(b.display_name))
-            .map(c => {
-                return this.mapResponseToListItem(c);
-            });
+        const quickLinkParticipants = this.sortAndMapToListItem(
+            this.participantsInConsultation.filter(p => p.role === Role.QuickLinkParticipant)
+        );
         return [...regularParticipants, ...quickLinkParticipants];
     }
 
@@ -144,12 +141,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     getMemberParticipantsByHearingRole(role: any): ParticipantListItem[] {
-        return this.participantsInConsultation
-            .filter(p => p.hearing_role === role)
-            .sort((a, b) => a.display_name.localeCompare(b.display_name))
-            .map(c => {
-                return this.mapResponseToListItem(c);
-            });
+        return this.sortAndMapToListItem(this.participantsInConsultation.filter(p => p.hearing_role === role));
     }
 
     getWitnessesAndObservers(): ParticipantListItem[] {
@@ -157,12 +149,9 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
             return [];
         }
         const witnesses = this.getMemberParticipantsByHearingRole(HearingRole.WITNESS);
-        const observers = this.participantsInConsultation
-            .filter(p => p.hearing_role === HearingRole.OBSERVER || p.role === Role.QuickLinkObserver)
-            .sort((a, b) => a.display_name.localeCompare(b.display_name))
-            .map(c => {
-                return this.mapResponseToListItem(c);
-            });
+        const observers = this.sortAndMapToListItem(
+            this.participantsInConsultation.filter(p => p.hearing_role === HearingRole.OBSERVER || p.role === Role.QuickLinkObserver)
+        );
         return [...witnesses, ...observers];
     }
 
@@ -198,5 +187,13 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
             participant.interpreter = this.participantsInConsultation.find(x => x.id === interpreterLink.linked_id);
         }
         return participant;
+    }
+
+    private sortAndMapToListItem(participantResponses: Array<ParticipantResponse>): Array<ParticipantListItem> {
+        return participantResponses
+            .sort((a, b) => a.display_name.localeCompare(b.display_name))
+            .map(c => {
+                return this.mapResponseToListItem(c);
+            });
     }
 }
