@@ -101,7 +101,6 @@ export abstract class ParticipantStatusDirective {
         if (!this.participants) {
             return;
         }
-
         if (this.conferenceId !== message.conferenceId) {
             const thisJudge = this.participants.find(x => x.username === message.username);
             if (thisJudge) {
