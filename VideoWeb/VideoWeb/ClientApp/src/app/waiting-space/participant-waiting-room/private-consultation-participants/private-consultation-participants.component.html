@@ -3,7 +3,7 @@
     <div class="participant-grid">
         <ng-container *ngIf="isJohConsultation()">
             <ng-container *ngFor="let groupMember of johRoles">
-                <ng-container *ngIf="getMemberParticipantsByRole(groupMember).length > 0">
+                <ng-container *ngIf="getMemberParticipantsByHearingRole(groupMember).length > 0">
                     <div  class="language-icon">
                         <img  class="small-crest"
                         appCrestLogoImageSource
@@ -15,7 +15,7 @@
                         />                    
                     </div>
                     <div class="member-group">
-                        <ng-container *ngFor="let participant of getMemberParticipantsByRole(groupMember); trackBy: trackParticipant">        
+                        <ng-container *ngFor="let participant of getMemberParticipantsByHearingRole(groupMember); trackBy: trackParticipant">        
                             <app-participant-item
                                 [participant]="participant"
                                 [interpreter]="participant?.interpreter"
