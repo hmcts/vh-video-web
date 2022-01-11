@@ -58,10 +58,16 @@ namespace VideoWeb.EventHub.Hub
 
         private async Task AddUserToConferenceGroups(bool isAdmin)
         {
-            var conferenceIds = await GetConferenceIds(isAdmin);
+           var conferenceIds = await GetConferenceIds(isAdmin);
             var tasks = conferenceIds.Select(c => Groups.AddToGroupAsync(Context.ConnectionId, c.ToString())).ToArray();
 
             await Task.WhenAll(tasks);
+        }
+
+        public async Task AddToGroup(string conferenceId)
+        {
+            //Clients.Groups
+            await Groups.AddToGroupAsync(Context.ConnectionId, conferenceId);
         }
 
         private async Task AddUserToUserGroup(bool isAdmin)
