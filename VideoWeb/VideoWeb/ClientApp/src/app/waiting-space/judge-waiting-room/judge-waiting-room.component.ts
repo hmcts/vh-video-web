@@ -145,10 +145,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             )
             .subscribe(createdParticipant => {
                 const participantDisplayName = PexipDisplayNameModel.fromString(createdParticipant.pexipDisplayName);
-                this.participantRemoteMuteStoreService.assignPexipId(participantDisplayName.participantOrVmrId, createdParticipant.uuid);
+                this.participantRemoteMuteStoreService.assignPexipId(participantDisplayName?.participantOrVmrId, createdParticipant.uuid);
                 this.logger.debug(`${this.loggerPrefixJudge} stored pexip ID updated`, {
                     pexipId: createdParticipant.uuid,
-                    participantId: participantDisplayName.participantOrVmrId
+                    participantId: participantDisplayName?.participantOrVmrId
                 });
             });
 
@@ -165,10 +165,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             )
             .subscribe(createdParticipant => {
                 const participantDisplayName = PexipDisplayNameModel.fromString(createdParticipant.pexipDisplayName);
-                this.participantRemoteMuteStoreService.assignPexipId(participantDisplayName.participantOrVmrId, createdParticipant.uuid);
+                this.participantRemoteMuteStoreService.assignPexipId(participantDisplayName?.participantOrVmrId, createdParticipant.uuid);
                 this.logger.debug(`${this.loggerPrefixJudge} stored pexip ID updated`, {
                     pexipId: createdParticipant.uuid,
-                    participantId: participantDisplayName.participantOrVmrId
+                    participantId: participantDisplayName?.participantOrVmrId
                 });
             });
 

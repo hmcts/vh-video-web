@@ -8,7 +8,7 @@
             </p>
         </div>
         <div class='govuk-grid-column-one-half vh-mb5'>
-            <img 
+            <img
                  appCrestLogoImageSource
                  [sctsImageSource]="'/assets/images/scottish-crest-grey.png'"
                  [sctsAltText]=" ('individual-participant-status-list.scottish-crest' | translate)"
@@ -125,8 +125,8 @@
                                         {{ "individual-participant-status-list.available" | translate }}
                                     </ng-container>
                                     <ng-container *ngSwitchCase="ParticipantStatus.InConsultation">
-                                        <span>{{ 'start-private-consultation.in' | translate}} </span> 
-                                        <span>{{ participant.current_room.label | roomName | lowercase }} </span>
+                                        <span>{{ 'start-private-consultation.in' | translate}} </span>
+                                        <span>{{ participant.current_room?.label | roomName | lowercase }} </span>
                                         <fa-icon *ngIf="participant.current_room.locked" icon="lock"></fa-icon>
                                     </ng-container>
                                     <ng-container *ngSwitchDefault>

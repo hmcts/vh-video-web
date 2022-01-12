@@ -147,7 +147,7 @@
                 <div *ngIf='showConsultationControls' id='leaveButton' class='icon-button-dark hide-for-medium'
                     data-module='govuk-button' (click)='leavePrivateConsultation()' [hidden]='!canLeaveConsultation()'>
                     <span>
-                        <fa-icon icon='sign-out-alt'></fa-icon>
+                        <fa-icon icon='sign-out-alt' flip="horizontal"></fa-icon>
                         <span class='context-item'>{{'private-consultation-room-controls.leave' | translate }}</span>
                     </span>
                 </div>

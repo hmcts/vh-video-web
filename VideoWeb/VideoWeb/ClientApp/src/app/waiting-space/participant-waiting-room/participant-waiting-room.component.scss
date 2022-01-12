@@ -24,6 +24,10 @@
 .room-status {
   margin-top: 7px;
   margin-left: 10px;
+  white-space: nowrap;
+  @include responds-to(small) {
+    margin-left: -10px;
+  }
 }
 
 .room-status-desc {
