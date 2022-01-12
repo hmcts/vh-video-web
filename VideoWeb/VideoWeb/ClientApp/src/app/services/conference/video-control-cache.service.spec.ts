@@ -50,9 +50,6 @@ describe('VideoControlCacheService', () => {
     describe('initialisation', () => {
         it('should NOT load the hearing state if there is no current conference', fakeAsync(() => {
             // Arrange
-            const conferenceId = 'conference-id';
-            const conference = { id: conferenceId } as ConferenceResponse;
-
             const hearingControlsState: IHearingControlsState = { participantStates: {} };
 
             // Act
@@ -63,7 +60,7 @@ describe('VideoControlCacheService', () => {
 
             // Assert
             expect(videoControlCacheStorageServiceSpy.loadHearingStateForConference).not.toHaveBeenCalled();
-            expect(service['hearingControlStates']).toBeFalsy();
+            expect(service['hearingControlStates']).toEqual(hearingControlsState);
         }));
 
         it('should load the hearing state for the current conference', fakeAsync(() => {
@@ -138,7 +135,7 @@ describe('VideoControlCacheService', () => {
             );
         });
 
-        it('should update the value in the hearingControlStates and should update the cache and should retain existing propertie values', () => {
+        it('should update the value in the hearingControlStates and should update the cache and should retain existing property values', () => {
             // Arrange
             const conferenceId = 'conference-id';
             const participantId = 'participant-id';

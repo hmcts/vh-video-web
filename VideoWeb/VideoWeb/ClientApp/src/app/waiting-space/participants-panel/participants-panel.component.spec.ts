@@ -45,7 +45,14 @@ import {
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { onConferenceUpdatedMock, onParticipantUpdatedMock, videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
-import { EndpointStatus, ParticipantResponse, ParticipantStatus, Role } from '../../services/clients/api-client';
+import {
+    ConferenceResponse,
+    ConferenceStatus,
+    EndpointStatus,
+    ParticipantResponse,
+    ParticipantStatus,
+    Role
+} from '../../services/clients/api-client';
 import { JudgeContextMenuComponent } from '../judge-context-menu/judge-context-menu.component';
 import { CaseTypeGroup } from '../models/case-type-group';
 import { HearingRole } from '../models/hearing-role-model';
@@ -65,6 +72,7 @@ import { VideoCallService } from '../services/video-call.service';
 import { ParticipantsPanelComponent } from './participants-panel.component';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { RoomNamePipe } from 'src/app/shared/pipes/room-name.pipe';
+import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
@@ -73,8 +81,13 @@ describe('ParticipantsPanelComponent', () => {
     participants = participants.concat(testData.getListOfLinkedParticipants().concat(testData.getListOfLinkedParticipants(true)));
     const endpoints = testData.getListOfEndpoints();
     const videoCallTestData = new VideoCallTestData();
+    let videoControlCacheServiceSpy: jasmine.SpyObj<VideoControlCacheService>;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    videoWebServiceSpy = jasmine.createSpyObj('VideoWebService', ['getParticipantsByConferenceId', 'getEndpointsForConference']);
+    videoWebServiceSpy = jasmine.createSpyObj('VideoWebService', [
+        'getParticipantsByConferenceId',
+        'getEndpointsForConference',
+        'getConferenceById'
+    ]);
     videoWebServiceSpy.getParticipantsByConferenceId.and.returnValue(Promise.resolve(participants));
     videoWebServiceSpy.getEndpointsForConference.and.returnValue(Promise.resolve(endpoints));
     const activatedRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: conferenceId }) } };
@@ -109,7 +122,8 @@ describe('ParticipantsPanelComponent', () => {
 
         videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', [
             'setSpotlightStatus',
-            'setSpotlightStatusById'
+            'setSpotlightStatusById',
+            'setRemoteMuteStatusById'
         ]);
 
         participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
@@ -123,6 +137,17 @@ describe('ParticipantsPanelComponent', () => {
             'mapFromParticipantUserResponseArray'
         ]);
         spyOnProperty(participantServiceSpy, 'onParticipantsUpdated$').and.returnValue(participantsUpdatedSubject.asObservable());
+
+        videoControlCacheServiceSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', [
+            'setSpotlightStatus',
+            'getSpotlightStatus',
+            'setLocalVideoMuted',
+            'getLocalVideoMuted',
+            'setLocalAudioMuted',
+            'getLocalAudioMuted',
+            'setRemoteMutedStatus',
+            'getRemoteMutedStatus'
+        ]);
 
         await TestBed.configureTestingModule({
             declarations: [
@@ -141,6 +166,10 @@ describe('ParticipantsPanelComponent', () => {
                 {
                     provide: VideoWebService,
                     useValue: videoWebServiceSpy
+                },
+                {
+                    provide: VideoControlCacheService,
+                    useValue: videoControlCacheServiceSpy
                 },
                 {
                     provide: ActivatedRoute,
@@ -214,6 +243,8 @@ describe('ParticipantsPanelComponent', () => {
     });
 
     it('should get participant sorted list, the judge is first, then panel members and finally observers are the last one', fakeAsync(() => {
+        const response = new ConferenceResponse({ status: ConferenceStatus.NotStarted });
+        videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(response));
         const mappedParticipants = mapper.mapFromParticipantUserResponseArray(participants);
         participantPanelModelMapperSpy.mapFromParticipantUserResponseArray.and.returnValue(mappedParticipants);
         const allJOHs = participants.filter(x => x.role === Role.JudicialOfficeHolder);
@@ -251,6 +282,8 @@ describe('ParticipantsPanelComponent', () => {
             const participant = component.participants[0];
             const participantId = participant.id;
             const isMuted = true;
+            const response = new ConferenceResponse({ status: ConferenceStatus.NotStarted });
+            videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(response));
 
             participant.updateParticipant(!isMuted, participant.hasHandRaised(), participant.hasSpotlight());
 
@@ -278,6 +311,8 @@ describe('ParticipantsPanelComponent', () => {
                 participantId = participant.id;
                 spyOn(participant, 'assignPexipId');
                 state = {};
+                const response = new ConferenceResponse({ status: ConferenceStatus.NotStarted });
+                videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(response));
             });
 
             it('should call assignPexipId when state contains pexipId', fakeAsync(() => {

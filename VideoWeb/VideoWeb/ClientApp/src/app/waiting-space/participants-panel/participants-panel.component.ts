@@ -31,7 +31,6 @@ import { VideoEndpointPanelModel } from '../models/video-endpoint-panel-model';
 import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 import { VideoCallService } from '../services/video-call.service';
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
-import { DistributedVideoControlCacheService } from '../../services/conference/distributed-video-control-cache.service';
 
 @Component({
     selector: 'app-participants-panel',
@@ -63,7 +62,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private logger: Logger,
         private translateService: TranslateService,
         private mapper: ParticipantPanelModelMapper,
-        private storageService: DistributedVideoControlCacheService,
         private participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService
     ) {}
 
@@ -73,14 +71,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.getParticipantsList().then(() => {
             this.isConferenceInSession(this.conferenceId).then(inSessionConference => {
                 if (inSessionConference) {
-                    this.storageService
-                        .loadHearingStateForConference(this.conferenceId)
-                        .pipe(take(1))
-                        .subscribe(state => {
-                            this.logger.info(`${this.loggerPrefix} initialised state for ${this.conferenceId}.`, {
-                                hearingControlStates: state
-                            });
-                        });
                     this.participants.forEach(participant => {
                         const localAudioMuted = this.videoControlCacheService.getLocalAudioMuted(participant.id);
                         const localVideoMuted = this.videoControlCacheService.getLocalVideoMuted(participant.id);
@@ -298,7 +288,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             message.mediaStatus.is_local_video_muted,
             message.participantId
         );
-        this.videoControlCacheService.setLocalAudioMuted(message.participantId, message.mediaStatus.is_local_audio_muted, true);
+        this.videoControlCacheService.setLocalAudioMuted(message.participantId, message.mediaStatus.is_local_audio_muted);
         this.logger.debug(`${this.loggerPrefix} Participant device status has been updated`, {
             conference: this.conferenceId,
             participant: participant.id,
@@ -477,14 +467,13 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to toggle mute for participant`, {
             conference: this.conferenceId,
             participant: p.id,
-            displayName: p.displayName,
             pexipParticipant: p.pexipId,
             current: p.isMicRemoteMuted(),
             new: newMuteStatus
         });
 
         this.videoCallService.muteParticipant(p.pexipId, newMuteStatus, this.conferenceId, p.id);
-        this.videoControlCacheService.setRemoteMutedStatus(p.id, newMuteStatus);
+        this.videoControlService.setRemoteMuteStatusById(p.id, p.pexipId, !newMuteStatus);
         if (mutedParticipants.length === 1 && this.isMuteAll) {
             // check if last person to be unmuted manually
             this.logger.debug(`${this.loggerPrefix} Judge has manually unmuted the last muted participant. Unmuting conference`, {

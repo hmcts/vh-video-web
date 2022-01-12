@@ -312,6 +312,15 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(participantRemoteMuteStoreServiceSpy.assignPexipId).not.toHaveBeenCalled();
     });
 
+    it('should NOT call assignPexipId when participantDisplayName does not contain display name ', () => {
+        const participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+        spyOn(PexipDisplayNameModel, 'fromString').and.returnValue(null);
+
+        component.assignPexipIdToRemoteStore(participantUpdated);
+
+        expect(participantRemoteMuteStoreServiceSpy.assignPexipId).not.toHaveBeenCalled();
+    });
+
     it('should create', () => {
         expect(component).toBeTruthy();
     });
