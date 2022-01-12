@@ -65,8 +65,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private mapper: ParticipantPanelModelMapper,
         private storageService: DistributedVideoControlCacheService,
         private participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService
-    ) {
-    }
+    ) {}
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
@@ -74,7 +73,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.getParticipantsList().then(() => {
             this.isConferenceInSession(this.conferenceId).then(inSessionConference => {
                 if (inSessionConference) {
-
                     this.storageService
                         .loadHearingStateForConference(this.conferenceId)
                         .pipe(take(1))
@@ -83,39 +81,33 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                                 hearingControlStates: state
                             });
                         });
-                    this.participants
-                        .forEach(participant => {
-                            const localAudioMuted = this.videoControlCacheService.getLocalAudioMuted(participant.id);
-                            const localVideoMuted = this.videoControlCacheService.getLocalVideoMuted(participant.id);
-                            const remoteMutedStatus = this.videoControlCacheService.getRemoteMutedStatus(participant.id);
-                            const spotlightStatus = this.videoControlCacheService.getSpotlightStatus(participant.id);
-                            this.logger.info(`${this.loggerPrefix} Updating store with audio and video`, {
-                                audio: localAudioMuted,
-                                video: localVideoMuted,
-                                remoteMutedStatus: remoteMutedStatus,
-                                participantId: participant.id,
-                                participantName: participant.displayName
-                            });
-                            if (participant instanceof LinkedParticipantPanelModel) {
-                                participant.updateParticipant(remoteMutedStatus, null, spotlightStatus, participant.id);
-                            } else {
-                                participant.updateParticipant(
-                                    remoteMutedStatus,
-                                    participant.hasHandRaised(),
-                                    spotlightStatus,
-                                    participant.id
-                                );
-                            }
-
-                            if (participant instanceof LinkedParticipantPanelModel) {
-                                participant.participants.forEach(async p => {
-                                    await this.eventService.publishRemoteMuteStatus(this.conferenceId, p.id, remoteMutedStatus);
-                                });
-                            }
-
-                            this.participantRemoteMuteStoreService.updateRemoteMuteStatus(participant.id, remoteMutedStatus);
-                            this.participantRemoteMuteStoreService.updateLocalMuteStatus(participant.id, localAudioMuted, localVideoMuted);
+                    this.participants.forEach(participant => {
+                        const localAudioMuted = this.videoControlCacheService.getLocalAudioMuted(participant.id);
+                        const localVideoMuted = this.videoControlCacheService.getLocalVideoMuted(participant.id);
+                        const remoteMutedStatus = this.videoControlCacheService.getRemoteMutedStatus(participant.id);
+                        const spotlightStatus = this.videoControlCacheService.getSpotlightStatus(participant.id);
+                        this.logger.info(`${this.loggerPrefix} Updating store with audio and video`, {
+                            audio: localAudioMuted,
+                            video: localVideoMuted,
+                            remoteMutedStatus: remoteMutedStatus,
+                            participantId: participant.id,
+                            participantName: participant.displayName
                         });
+                        if (participant instanceof LinkedParticipantPanelModel) {
+                            participant.updateParticipant(remoteMutedStatus, null, spotlightStatus, participant.id);
+                        } else {
+                            participant.updateParticipant(remoteMutedStatus, participant.hasHandRaised(), spotlightStatus, participant.id);
+                        }
+
+                        if (participant instanceof LinkedParticipantPanelModel) {
+                            participant.participants.forEach(async p => {
+                                await this.eventService.publishRemoteMuteStatus(this.conferenceId, p.id, remoteMutedStatus);
+                            });
+                        }
+
+                        this.participantRemoteMuteStoreService.updateRemoteMuteStatus(participant.id, remoteMutedStatus);
+                        this.participantRemoteMuteStoreService.updateLocalMuteStatus(participant.id, localAudioMuted, localVideoMuted);
+                    });
                 }
             });
             this.participantRemoteMuteStoreService.conferenceParticipantsStatus$.pipe(take(1)).subscribe(state => {
@@ -144,13 +136,11 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             this.setupVideoCallSubscribers();
             this.setupEventhubSubscribers();
         });
-
     }
 
     async isConferenceInSession(conferenceId: string): Promise<boolean> {
         let conferenceStatus = false;
         const conference = await this.videoWebService.getConferenceById(conferenceId);
-
 
         if (conference.status === ConferenceStatus.InSession) {
             conferenceStatus = true;
@@ -703,10 +693,10 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     private showCaseRole(participant: PanelModel) {
         return participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
-        participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
-        participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase() ||
-        participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
-        participant.caseTypeGroup.toLowerCase() === 'endpoint'
+            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
+            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase() ||
+            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
+            participant.caseTypeGroup.toLowerCase() === 'endpoint'
             ? false
             : true;
     }
