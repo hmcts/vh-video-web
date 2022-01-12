@@ -88,7 +88,6 @@ namespace VideoWeb.Extensions
         public static IServiceCollection AddCustomTypes(this IServiceCollection services)
         {
             services.AddScoped<CheckParticipantCanAccessConferenceAttribute>();
-            services.AddScoped<EventHub.Hub.EventHub>();
             services.AddControllers().AddControllersAsServices();
 
             services.AddMemoryCache();

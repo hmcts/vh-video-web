@@ -36,8 +36,6 @@ namespace VideoWeb.Controllers
         private readonly ILogger<InternalEventController> _logger;
         private readonly IMapperFactory _mapperFactory;
         private readonly INewConferenceAddedEventNotifier _newConferenceAddedEventNotifier;
-        private readonly EventHub.Hub.EventHub eventHub;
-        private readonly IHubContext<EventHub.Hub.EventHub> hubContext;
 
         public InternalEventController(
             IVideoApiClient videoApiClient,
@@ -45,9 +43,7 @@ namespace VideoWeb.Controllers
             IConferenceCache conferenceCache,
             ILogger<InternalEventController> logger,
             IMapperFactory mapperFactory,
-            INewConferenceAddedEventNotifier newConferenceAddedEventNotifier,
-            EventHub.Hub.EventHub eventHub,
-            IHubContext<EventHub.Hub.EventHub> hubContext)
+            INewConferenceAddedEventNotifier newConferenceAddedEventNotifier)
         {
             _videoApiClient = videoApiClient;
             _participantsUpdatedEventNotifier = participantsUpdatedEventNotifier;
@@ -55,8 +51,6 @@ namespace VideoWeb.Controllers
             _logger = logger;
             _mapperFactory = mapperFactory;
             _newConferenceAddedEventNotifier = newConferenceAddedEventNotifier;
-            this.eventHub = eventHub;
-            this.hubContext = hubContext;
         }
 
         [HttpPost("ConferenceAdded")]
@@ -65,9 +59,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> ConferenceAdded(Guid conferenceId)
         {
-            //await eventHub.AddToGroup(conferenceId.ToString());
             await _newConferenceAddedEventNotifier.PushNewConferenceAddedEvent(conferenceId);
-            //hubContext.Groups.
             return NoContent();
         }
 

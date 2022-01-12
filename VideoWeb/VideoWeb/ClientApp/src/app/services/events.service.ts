@@ -1,10 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
+import { HearingLayoutChanged } from 'src/app/services/models/hearing-layout-changed';
 import { Heartbeat } from '../shared/models/heartbeat';
-import { Room } from '../shared/models/room';
+import { ParticipantHandRaisedMessage } from '../shared/models/participant-hand-raised-message';
 import { ParticipantMediaStatus } from '../shared/models/participant-media-status';
 import { ParticipantMediaStatusMessage } from '../shared/models/participant-media-status-message';
-import { ConferenceMessageAnswered } from './models/conference-message-answered';
+import { ParticipantRemoteMuteMessage } from '../shared/models/participant-remote-mute-message';
+import { ParticipantsUpdatedMessage } from '../shared/models/participants-updated-message';
+import { Room } from '../shared/models/room';
+import { RoomTransfer } from '../shared/models/room-transfer';
 import {
     ConferenceStatus,
     ConsultationAnswer,
@@ -13,24 +17,18 @@ import {
     ParticipantResponse,
     ParticipantStatus
 } from './clients/api-client';
+import { EventsHubService } from './events-hub.service';
 import { Logger } from './logging/logger-base';
-
-import { ConsultationRequestResponseMessage } from './models/consultation-request-response-message';
-import { RequestedConsultationMessage } from './models/requested-consultation-message';
-
+import { ConferenceMessageAnswered } from './models/conference-message-answered';
 import { ConferenceStatusMessage } from './models/conference-status-message';
+import { ConsultationRequestResponseMessage } from './models/consultation-request-response-message';
 import { EndpointStatusMessage } from './models/EndpointStatusMessage';
 import { HearingTransfer, TransferDirection } from './models/hearing-transfer';
 import { HelpMessage } from './models/help-message';
 import { InstantMessage } from './models/instant-message';
 import { HeartbeatHealth, ParticipantHeartbeat } from './models/participant-heartbeat';
 import { ParticipantStatusMessage } from './models/participant-status-message';
-import { RoomTransfer } from '../shared/models/room-transfer';
-import { ParticipantHandRaisedMessage } from '../shared/models/participant-hand-raised-message';
-import { ParticipantRemoteMuteMessage } from '../shared/models/participant-remote-mute-message';
-import { EventsHubService } from './events-hub.service';
-import { ParticipantsUpdatedMessage } from '../shared/models/participants-updated-message';
-import { HearingLayoutChanged } from 'src/app/services/models/hearing-layout-changed';
+import { RequestedConsultationMessage } from './models/requested-consultation-message';
 
 @Injectable({
     providedIn: 'root'
@@ -76,6 +74,10 @@ export class EventsService {
             const message = new ParticipantStatusMessage(participantId, username, conferenceId, status);
             this.logger.debug('[EventsService] - ParticipantStatusMessage received', message);
             this.participantStatusSubject.next(message);
+        },
+
+        NewConferenceAddedMessage: (conferenceId: string) => {
+            this.eventsHubConnection.invoke('AddToGroup', conferenceId);
         },
 
         EndpointStatusMessage: (endpointId: string, conferenceId: string, status: EndpointStatus) => {
