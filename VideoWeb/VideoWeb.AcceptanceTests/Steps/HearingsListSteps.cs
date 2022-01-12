@@ -42,10 +42,23 @@ namespace VideoWeb.AcceptanceTests.Steps
                                _c.CurrentUser.UserType == UserType.Winger ||
                                _c.CurrentUser.UserType == UserType.PanelMember) ? JudgeHearingListPage.StartHearingButton(_c.Test.Conference.Id) : ParticipantHearingListPage.SignInButton(_c.Test.Conference.Id);
                 var tolerance = _c.CurrentUser.UserType == UserType.Judge ? 30 : ToleranceInMinutes * 60;
+                CheckForNoHearingsMessage();
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantHearingListPage.HearingListPageTitle).Displayed.Should().BeTrue();
                 _browsers[_c.CurrentUser].ScrollTo(element);
                 _browsers[_c.CurrentUser].Click(element, tolerance);
             }           
+        }
+
+        private void CheckForNoHearingsMessage()
+        {
+            try
+            {
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantHearingListPage.NoHearingsWarningMessage).Displayed.Should().BeFalse();
+            }
+            catch
+            {
+                throw new Exception("There are no video hearings booked to choose from");
+            }
         }
 
         [When(@"the user clicks on the Check Equipment button")]

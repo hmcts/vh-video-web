@@ -35,15 +35,29 @@ namespace VideoWeb.AcceptanceTests.Steps
                 WhenTheJudgeClicksTheCheckEquipmentButton();
             }
             else
-                {
+            {
                 var caseNameElement = JudgeHearingListPage.CaseName(_c.Test.Conference.Id);
+                checkForNoHearingsMessage();
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(caseNameElement, Convert.ToInt32(_c.VideoWebConfig.consultationRoomTimeout));
                 _browsers[_c.CurrentUser].ScrollTo(caseNameElement);
                 _browsers[_c.CurrentUser].Click(JudgeHearingListPage.StartHearingButton(_c.Test.Conference.Id));
                 Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser]);
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(WaitingRoomPage.HearingCaseDetails, 60).Displayed.Should().BeTrue();
-                }
+            }
         }
+
+        private void checkForNoHearingsMessage()
+        {
+            try
+            {
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeHearingListPage.NoHearingsWarningMessage).Displayed.Should().BeFalse();
+            }
+            catch
+            {
+                throw new Exception("There are no video hearings booked to choose from");
+            }
+        }
+
         public void WhenTheJudgeClicksTheCheckEquipmentButton()
         {
             _browsers[_c.CurrentUser].Click(JudgeHearingListPage.CheckEquipmentButton);
