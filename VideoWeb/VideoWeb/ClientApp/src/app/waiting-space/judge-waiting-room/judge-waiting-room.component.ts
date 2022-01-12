@@ -149,14 +149,14 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             .onParticipantUpdated()
             .pipe(
                 takeUntil(this.destroyedSubject),
-                tap(createdParticipant => {
+                tap(updatedParticipant => {
                     this.logger.debug(`${this.loggerPrefixJudge} participant updated`, {
-                        pexipId: createdParticipant.uuid,
-                        dispayName: createdParticipant.pexipDisplayName
+                        pexipId: updatedParticipant.uuid,
+                        dispayName: updatedParticipant.pexipDisplayName
                     });
                 })
             )
-            .subscribe(createdParticipant => this.assignPexipIdToRemoteStore(createdParticipant));
+            .subscribe(updatedParticipant => this.assignPexipIdToRemoteStore(updatedParticipant));
 
         this.eventService
             .getParticipantMediaStatusMessage()

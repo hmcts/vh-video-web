@@ -17,7 +17,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="UserApi.Client" Version="1.27.0" />
+    <PackageReference Include="UserApi.Client" Version="1.27.1" />
     <PackageReference Include="VideoApi.Client" Version="1.28.11" />
   </ItemGroup>
 
