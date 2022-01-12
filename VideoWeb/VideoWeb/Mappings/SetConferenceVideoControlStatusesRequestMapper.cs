@@ -21,6 +21,7 @@ namespace VideoWeb.Mappings
             {
                 conferenceVideoControlStatusesMap.Add(key, new VideoControlStatus()
                 {
+                    IsRemoteMuted  = value.IsRemoteMuted,
                     IsSpotlighted = value.IsSpotlighted,
                     IsLocalAudioMuted = value.IsLocalAudioMuted,
                     IsLocalVideoMuted = value.IsLocalVideoMuted

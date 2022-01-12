@@ -24,10 +24,11 @@ namespace VideoWeb.UnitTests.Mappings
         {
             var input = new SetConferenceVideoControlStatusesRequest();
             input.ParticipantIdToVideoControlStatusMap = new Dictionary<string, VideoControlStatusRequest>();
-            input.ParticipantIdToVideoControlStatusMap.Add("first entry", new VideoControlStatusRequest { IsLocalAudioMuted = true, IsLocalVideoMuted = true, IsSpotlighted = true });
+            input.ParticipantIdToVideoControlStatusMap.Add("first entry", new VideoControlStatusRequest { IsLocalAudioMuted = true, IsLocalVideoMuted = true, IsSpotlighted = true, IsRemoteMuted = true});
             var result = _sut.Map(input);
             result.ParticipantIdToVideoControlStatusMap.Should().NotBeNull();
             result.ParticipantIdToVideoControlStatusMap["first entry"].IsSpotlighted.Should().BeTrue();
+            result.ParticipantIdToVideoControlStatusMap["first entry"].IsRemoteMuted.Should().BeTrue();
             result.ParticipantIdToVideoControlStatusMap["first entry"].IsLocalVideoMuted.Should().BeTrue();
             result.ParticipantIdToVideoControlStatusMap["first entry"].IsLocalAudioMuted.Should().BeTrue();
         }

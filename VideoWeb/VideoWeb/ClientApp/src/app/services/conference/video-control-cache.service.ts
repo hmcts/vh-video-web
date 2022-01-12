@@ -11,7 +11,7 @@ import { IHearingControlsState } from './video-control-cache-storage.service.int
 export class VideoControlCacheService {
     private loggerPrefix = '[VideoControlCacheService] -';
 
-    private hearingControlStates: IHearingControlsState | null = null;
+    private hearingControlStates: IHearingControlsState | null = { participantStates: {} };
 
     constructor(
         private conferenceService: ConferenceService,

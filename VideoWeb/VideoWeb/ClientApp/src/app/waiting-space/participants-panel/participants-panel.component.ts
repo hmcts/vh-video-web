@@ -84,19 +84,37 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                             });
                         });
                     this.participants
-                        .map(participant => participant.id)
-                        .forEach(participantId => {
-                            const audio = this.videoControlCacheService.getLocalAudioMuted(participantId);
-                            const video = this.videoControlCacheService.getLocalVideoMuted(participantId);
-                            const spot = this.videoControlCacheService.getSpotlightStatus(participantId);
+                        .forEach(participant => {
+                            const localAudioMuted = this.videoControlCacheService.getLocalAudioMuted(participant.id);
+                            const localVideoMuted = this.videoControlCacheService.getLocalVideoMuted(participant.id);
+                            const remoteMutedStatus = this.videoControlCacheService.getRemoteMutedStatus(participant.id);
+                            const spotlightStatus = this.videoControlCacheService.getSpotlightStatus(participant.id);
                             this.logger.info(`${this.loggerPrefix} Updating store with audio and video`, {
-                                audio: audio,
-                                video: video,
-                                spot: spot,
-                                participantId: participantId
+                                audio: localAudioMuted,
+                                video: localVideoMuted,
+                                remoteMutedStatus: remoteMutedStatus,
+                                participantId: participant.id,
+                                participantName: participant.displayName
                             });
+                            if (participant instanceof LinkedParticipantPanelModel) {
+                                participant.updateParticipant(remoteMutedStatus, null, spotlightStatus, participant.id);
+                            } else {
+                                participant.updateParticipant(
+                                    remoteMutedStatus,
+                                    participant.hasHandRaised(),
+                                    spotlightStatus,
+                                    participant.id
+                                );
+                            }
 
-                            this.participantRemoteMuteStoreService.updateLocalMuteStatus(participantId, audio, video);
+                            if (participant instanceof LinkedParticipantPanelModel) {
+                                participant.participants.forEach(async p => {
+                                    await this.eventService.publishRemoteMuteStatus(this.conferenceId, p.id, remoteMutedStatus);
+                                });
+                            }
+
+                            this.participantRemoteMuteStoreService.updateRemoteMuteStatus(participant.id, remoteMutedStatus);
+                            this.participantRemoteMuteStoreService.updateLocalMuteStatus(participant.id, localAudioMuted, localVideoMuted);
                         });
                 }
             });
@@ -290,6 +308,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             message.mediaStatus.is_local_video_muted,
             message.participantId
         );
+        this.videoControlCacheService.setLocalAudioMuted(message.participantId, message.mediaStatus.is_local_audio_muted, true);
         this.logger.debug(`${this.loggerPrefix} Participant device status has been updated`, {
             conference: this.conferenceId,
             participant: participant.id,
@@ -468,12 +487,14 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to toggle mute for participant`, {
             conference: this.conferenceId,
             participant: p.id,
+            displayName: p.displayName,
             pexipParticipant: p.pexipId,
             current: p.isMicRemoteMuted(),
             new: newMuteStatus
         });
 
         this.videoCallService.muteParticipant(p.pexipId, newMuteStatus, this.conferenceId, p.id);
+        this.videoControlCacheService.setRemoteMutedStatus(p.id, newMuteStatus);
         if (mutedParticipants.length === 1 && this.isMuteAll) {
             // check if last person to be unmuted manually
             this.logger.debug(`${this.loggerPrefix} Judge has manually unmuted the last muted participant. Unmuting conference`, {
@@ -489,7 +510,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             });
             this.videoCallService.muteAllParticipants(true, this.conferenceId);
         }
-        this.videoControlCacheService.setRemoteMutedStatus(p.id, newMuteStatus);
     }
 
     lowerAllHands() {

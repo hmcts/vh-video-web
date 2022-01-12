@@ -36,6 +36,7 @@ export class DistributedVideoControlCacheService implements IVideoControlCacheSt
                 if (hearingControlStates.participantStates.hasOwnProperty(participantOrVmrId)) {
                     setConferenceVideoControlStatusesRequest.participant_id_to_video_control_status_map[participantOrVmrId] = {
                         is_spotlighted: hearingControlStates.participantStates[participantOrVmrId].isSpotlighted ?? false,
+                        is_remote_muted: hearingControlStates.participantStates[participantOrVmrId].isRemoteMuted ?? false,
                         is_local_audio_muted: hearingControlStates.participantStates[participantOrVmrId].isLocalAudioMuted ?? false,
                         is_local_video_muted: hearingControlStates.participantStates[participantOrVmrId].isLocalVideoMuted ?? false
                     } as SetConferenceVideoControlStatusesRequest_VideoControlStatusRequest;
@@ -72,14 +73,13 @@ export class DistributedVideoControlCacheService implements IVideoControlCacheSt
                 if (response.participant_id_to_video_control_status_map.hasOwnProperty(participantOrVmrId)) {
                     mappedResponse.participantStates[participantOrVmrId] = {
                         isSpotlighted: response.participant_id_to_video_control_status_map[participantOrVmrId].is_spotlighted,
-                        isRemoteMuted: true,
+                        isRemoteMuted: response.participant_id_to_video_control_status_map[participantOrVmrId].is_remote_muted,
                         isLocalAudioMuted: response.participant_id_to_video_control_status_map[participantOrVmrId].is_local_audio_muted,
                         isLocalVideoMuted: response.participant_id_to_video_control_status_map[participantOrVmrId].is_local_video_muted
                     } as IParticipantControlsState;
                 }
             }
         }
-
         return mappedResponse;
     }
 
