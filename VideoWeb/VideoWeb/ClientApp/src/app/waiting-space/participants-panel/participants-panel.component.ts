@@ -32,7 +32,6 @@ import { ParticipantRemoteMuteStoreService } from '../services/participant-remot
 import { VideoCallService } from '../services/video-call.service';
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 
-
 @Component({
     selector: 'app-participants-panel',
     templateUrl: './participants-panel.component.html',
@@ -65,8 +64,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private translateService: TranslateService,
         private mapper: ParticipantPanelModelMapper,
         private participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService
-    ) {
-    }
+    ) {}
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
@@ -74,7 +72,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.getParticipantsList().then(() => {
             this.participantRemoteMuteStoreService.conferenceParticipantsStatus$.pipe(take(1)).subscribe(state => {
                 this.participants.forEach(participant => {
-
                     if (state.hasOwnProperty(participant.id)) {
                         this.logger.debug(`${this.loggerPrefix} restoring pexip ID`, {
                             participantId: participant.id,
@@ -93,7 +90,11 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                         if (participant instanceof LinkedParticipantPanelModel) {
                             participant.participants.forEach(async linkedParticipant => {
                                 this.participantRemoteMuteStoreService.updateRemoteMuteStatus(linkedParticipant.id, remoteMutedStatus);
-                                this.participantRemoteMuteStoreService.updateLocalMuteStatus(linkedParticipant.id, localAudioMuted, localVideoMuted);
+                                this.participantRemoteMuteStoreService.updateLocalMuteStatus(
+                                    linkedParticipant.id,
+                                    localAudioMuted,
+                                    localVideoMuted
+                                );
                                 linkedParticipant.updateParticipant(
                                     state[linkedParticipant.id]?.isRemoteMuted,
                                     participant.hasHandRaised(),
@@ -460,7 +461,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
         this.videoControlService.setRemoteMuteStatusById(p.id, p.pexipId, newMuteStatus);
 
-
         if (mutedParticipants.length === 1 && this.isMuteAll) {
             // check if last person to be unmuted manually
             this.logger.debug(`${this.loggerPrefix} Judge has manually unmuted the last muted participant. Unmuting conference`, {
@@ -669,10 +669,10 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     private showCaseRole(participant: PanelModel) {
         return participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
-        participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
-        participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase() ||
-        participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
-        participant.caseTypeGroup.toLowerCase() === 'endpoint'
+            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
+            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase() ||
+            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
+            participant.caseTypeGroup.toLowerCase() === 'endpoint'
             ? false
             : true;
     }
