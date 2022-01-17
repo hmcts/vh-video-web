@@ -108,7 +108,7 @@ namespace VideoWeb.Controllers
                 {
                     await _consultationNotifier.NotifyConsultationResponseAsync(conference, request.InvitationId, request.RoomLabel, request.RequestedForId, ConsultationAnswer.Transferring);
                     await _videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
-                } 
+                }
                 else if (request.Answer != ConsultationAnswer.Accepted)
                 {
                     await _videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
@@ -126,8 +126,8 @@ namespace VideoWeb.Controllers
 
         [HttpPost("joinPrivateConsultation")]
         [SwaggerOperation(OperationId = "JoinPrivateConsultation")]
-        [ProducesResponseType((int) HttpStatusCode.Accepted)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> JoinPrivateConsultation(JoinPrivateConsultationRequest request)
         {
@@ -147,7 +147,7 @@ namespace VideoWeb.Controllers
 
                 var consultationRequestMapper = _mapperFactory.Get<JoinPrivateConsultationRequest, ConsultationRequestResponse>();
                 var mappedRequest = consultationRequestMapper.Map(request);
-                
+
                 await _videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
                 await _consultationNotifier.NotifyParticipantTransferring(conference, request.ParticipantId, request.RoomLabel);
             }
@@ -159,12 +159,13 @@ namespace VideoWeb.Controllers
 
             return Accepted();
         }
-        
+
         [HttpPost("start")]
         [SwaggerOperation(OperationId = "StartOrJoinConsultation")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
         public async Task<IActionResult> StartConsultationAsync(StartPrivateConsultationRequest request)
         {
             try
@@ -217,6 +218,10 @@ namespace VideoWeb.Controllers
                 }
                 else
                 {
+                    if (!CanStartJohConsultation())
+                    {
+                        return Forbid();
+                    }
                     await _videoApiClient.StartPrivateConsultationAsync(mappedRequest);
                 }
 
@@ -321,6 +326,11 @@ namespace VideoWeb.Controllers
         {
             return _conferenceCache.GetOrAddConferenceAsync(conferenceId,
                 () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
+        }
+
+        private bool CanStartJohConsultation()
+        {
+            return User.IsInRole(AppRoles.JudgeRole) || User.IsInRole(AppRoles.StaffMember) || User.IsInRole(AppRoles.JudicialOfficeHolderRole);
         }
     }
 }
