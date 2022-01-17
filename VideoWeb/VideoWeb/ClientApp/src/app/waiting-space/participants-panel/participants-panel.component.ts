@@ -52,7 +52,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     participantsSubscription$ = new Subscription();
 
     transferTimeout: { [id: string]: NodeJS.Timeout } = {};
-    @Input() countdownComplete: boolean;
+    @Input() isCountdownCompleted: boolean;
 
     constructor(
         private videoWebService: VideoWebService,
@@ -85,22 +85,13 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                             participant.assignPexipId(state[participant.id].pexipId);
                         }
                     }
-                    if (this.countdownComplete) {
+                    if (this.isCountdownCompleted) {
                         const localAudioMuted = this.videoControlCacheService.getLocalAudioMuted(participant.id);
                         const localVideoMuted = this.videoControlCacheService.getLocalVideoMuted(participant.id);
                         const remoteMutedStatus = this.videoControlCacheService.getRemoteMutedStatus(participant.id);
-                        const spotLightStatus = this.videoControlCacheService.getRemoteMutedStatus(participant.id);
 
                         if (participant instanceof LinkedParticipantPanelModel) {
                             participant.participants.forEach(async linkedParticipant => {
-                                this.logger.info(`${this.loggerPrefix} Updating store with audio and video from cache lp`, {
-                                    audio: localAudioMuted,
-                                    video: localVideoMuted,
-                                    spotLightStatus: spotLightStatus,
-                                    remoteMutedStatus: remoteMutedStatus,
-                                    participantId: linkedParticipant.id,
-                                    participantName: participant.displayName
-                                });
                                 this.participantRemoteMuteStoreService.updateRemoteMuteStatus(linkedParticipant.id, remoteMutedStatus);
                                 this.participantRemoteMuteStoreService.updateLocalMuteStatus(linkedParticipant.id, localAudioMuted, localVideoMuted);
                                 linkedParticipant.updateParticipant(
@@ -113,14 +104,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                                 );
                             });
                         } else {
-                            this.logger.info(`${this.loggerPrefix} Updating store with audio and video from cache lpn`, {
-                                audio: localAudioMuted,
-                                video: localVideoMuted,
-                                spotLightStatus: spotLightStatus,
-                                remoteMutedStatus: remoteMutedStatus,
-                                participantId: participant.id,
-                                participantName: participant.displayName
-                            });
                             this.participantRemoteMuteStoreService.updateRemoteMuteStatus(participant.id, remoteMutedStatus);
                             this.participantRemoteMuteStoreService.updateLocalMuteStatus(participant.id, localAudioMuted, localVideoMuted);
                         }
