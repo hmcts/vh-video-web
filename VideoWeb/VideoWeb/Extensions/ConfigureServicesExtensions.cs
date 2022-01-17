@@ -88,7 +88,6 @@ namespace VideoWeb.Extensions
         public static IServiceCollection AddCustomTypes(this IServiceCollection services)
         {
             services.AddScoped<CheckParticipantCanAccessConferenceAttribute>();
-
             services.AddControllers().AddControllersAsServices();
 
             services.AddMemoryCache();
@@ -140,6 +139,7 @@ namespace VideoWeb.Extensions
 
             services.AddScoped<IEventHandlerFactory, EventHandlerFactory>();
             services.AddScoped<IParticipantsUpdatedEventNotifier, ParticipantsUpdatedEventNotifier>();
+            services.AddScoped<INewConferenceAddedEventNotifier, NewConferenceAddedEventNotifier>();
             RegisterEventHandlers(services);
 
             var contractResolver = new DefaultContractResolver

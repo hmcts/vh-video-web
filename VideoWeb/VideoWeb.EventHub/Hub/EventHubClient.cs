@@ -58,10 +58,18 @@ namespace VideoWeb.EventHub.Hub
 
         private async Task AddUserToConferenceGroups(bool isAdmin)
         {
-            var conferenceIds = await GetConferenceIds(isAdmin);
+           var conferenceIds = await GetConferenceIds(isAdmin);
             var tasks = conferenceIds.Select(c => Groups.AddToGroupAsync(Context.ConnectionId, c.ToString())).ToArray();
 
             await Task.WhenAll(tasks);
+        }
+
+        public async Task AddToGroup(string conferenceId)
+        {
+            if (IsSenderAdmin())
+            {
+                await Groups.AddToGroupAsync(Context.ConnectionId, conferenceId);
+            }
         }
 
         private async Task AddUserToUserGroup(bool isAdmin)
@@ -165,7 +173,7 @@ namespace VideoWeb.EventHub.Hub
 
             var isRecipientAdmin = await IsRecipientAdmin(participantTo);
             _logger.LogDebug("{Username} is recipient admin: {IsSenderAdmin}", userName, isSenderAdmin);
-            // only admins and participants in the conference can send or receive a message within a conference channel
+            //only admins and participants in the conference can send or receive a message within a conference channel
             var from = Context.User.Identity.Name.ToLowerInvariant();
             var participantUsername = isSenderAdmin ? participantTo : from;
             var isAllowed =
