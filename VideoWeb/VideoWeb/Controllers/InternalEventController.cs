@@ -20,6 +20,7 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
 using System.Text.Json;
 using VideoWeb.Helpers.Interfaces;
+using Microsoft.AspNetCore.SignalR;
 
 namespace VideoWeb.Controllers
 {
@@ -34,19 +35,32 @@ namespace VideoWeb.Controllers
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<InternalEventController> _logger;
         private readonly IMapperFactory _mapperFactory;
+        private readonly INewConferenceAddedEventNotifier _newConferenceAddedEventNotifier;
 
         public InternalEventController(
             IVideoApiClient videoApiClient,
             IParticipantsUpdatedEventNotifier participantsUpdatedEventNotifier,
             IConferenceCache conferenceCache,
             ILogger<InternalEventController> logger,
-            IMapperFactory mapperFactory)
+            IMapperFactory mapperFactory,
+            INewConferenceAddedEventNotifier newConferenceAddedEventNotifier)
         {
             _videoApiClient = videoApiClient;
             _participantsUpdatedEventNotifier = participantsUpdatedEventNotifier;
             _conferenceCache = conferenceCache;
             _logger = logger;
             _mapperFactory = mapperFactory;
+            _newConferenceAddedEventNotifier = newConferenceAddedEventNotifier;
+        }
+
+        [HttpPost("ConferenceAdded")]
+        [SwaggerOperation(OperationId = "ConferenceAdded")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> ConferenceAdded(Guid conferenceId)
+        {
+            await _newConferenceAddedEventNotifier.PushNewConferenceAddedEvent(conferenceId);
+            return NoContent();
         }
 
         [HttpPost("ParticipantsUpdated")]

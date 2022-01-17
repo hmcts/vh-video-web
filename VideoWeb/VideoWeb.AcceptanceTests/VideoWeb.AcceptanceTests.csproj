@@ -36,7 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BookingsApi.Client" Version="1.28.2" />
+    <PackageReference Include="BookingsApi.Client" Version="1.28.8" />
     <PackageReference Include="DotNetSeleniumExtras.PageObjects" Version="3.11.0" />
     <PackageReference Include="DotNetSeleniumExtras.WaitHelpers" Version="3.11.0" />
     <PackageReference Include="Faker.NETCore" Version="1.0.2" />
@@ -56,13 +56,12 @@
     <PackageReference Include="Selenium.WebDriver" Version="3.141.0" />
     <PackageReference Include="Selenium.WebDriver.IEDriver" Version="3.150.1.2" />
     <PackageReference Include="Selenium.WebDriver.MicrosoftDriver" Version="17.17134.0" />
-    <PackageReference Include="SpecFlow" Version="3.6.23" />
-    <PackageReference Include="SpecFlow.NUnit" Version="3.6.23" />
-    <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.6.23" />
+    <PackageReference Include="SpecFlow" Version="3.9.40" />
+    <PackageReference Include="SpecFlow.NUnit" Version="3.9.40" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
     <PackageReference Include="TestApi.Client" Version="1.27.1" />
-    <PackageReference Include="UserApi.Client" Version="1.27.0" />
-    <PackageReference Include="VH.AcceptanceTests.Common" Version="1.21.61" />
+    <PackageReference Include="UserApi.Client" Version="1.27.1" />
+    <PackageReference Include="VH.AcceptanceTests.Common" Version="1.21.64" />
     <PackageReference Include="VideoApi.Client" Version="1.28.11" />
   </ItemGroup>
 
