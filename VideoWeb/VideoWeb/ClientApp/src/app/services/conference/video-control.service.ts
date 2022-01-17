@@ -140,8 +140,8 @@ export class VideoControlService {
                 pexipId: pexipId
             }
         );
-
         this.videoCallService.muteParticipant(pexipId, remoteMuteStatus, this.conferenceService.currentConferenceId, id);
+        this.videoControlCacheService.setRemoteMutedStatus(id, remoteMuteStatus);
 
         this.logger.info(`${this.loggerPrefix} Attempted to make call to pexip to update remote mute status. Subscribing for update.`, {
             remoteMuteStatus: remoteMuteStatus,
@@ -181,14 +181,13 @@ export class VideoControlService {
                 take(1)
             )
             .subscribe(update => {
-                this.logger.info(`${this.loggerPrefix} Update received. Attempting to update cache.`, {
+                this.logger.info(`${this.loggerPrefix} Update received. Attempting to update cache for remote mute.`, {
                     requestedValue: remoteMuteStatus,
                     updatedValue: update.isRemoteMuted,
                     wasValueChangedPerRequest: remoteMuteStatus === update.isRemoteMuted,
                     conferenceId: conferenceId,
                     participantId: id
                 });
-
                 this.videoControlCacheService.setRemoteMutedStatus(id, update.isRemoteMuted);
             });
     }

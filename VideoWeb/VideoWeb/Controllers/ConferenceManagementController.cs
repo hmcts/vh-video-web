@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
 using VideoApi.Client;
 using VideoApi.Contract.Enums;
@@ -104,6 +105,7 @@ namespace VideoWeb.Controllers
                 var videoControlStatuses = mapper.Map(setVideoControlStatusesRequest);
                 
                 _logger.LogDebug("Setting the video control statuses for {conferenceId}", conferenceId);
+                _logger.LogDebug($"Conference in cache values: {JsonSerializer.Serialize(videoControlStatuses)}");
                 await _conferenceVideoControlStatusService.SetVideoControlStateForConference(conferenceId, videoControlStatuses);
 
                 _logger.LogTrace("Set video control statuses ({videoControlStatuses}) for {conferenceId}", videoControlStatuses, conferenceId);
@@ -133,6 +135,11 @@ namespace VideoWeb.Controllers
             try
             {
                 _logger.LogDebug("Getting the video control statuses for {conferenceId}", conferenceId);
+                var conference = await GetConference(conferenceId);
+                if (conference.CurrentStatus == ConferenceState.NotStarted)
+                {
+                    return Ok("Conference is not started");
+                }
                 var videoControlStatuses = await _conferenceVideoControlStatusService.GetVideoControlStateForConference(conferenceId);
 
                 if (videoControlStatuses == null) {

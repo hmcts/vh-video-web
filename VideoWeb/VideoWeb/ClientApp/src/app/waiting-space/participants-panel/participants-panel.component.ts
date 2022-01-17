@@ -1,10 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceStatus, ParticipantResponse } from 'src/app/services/clients/api-client';
+import { ParticipantResponse } from 'src/app/services/clients/api-client';
 import { VideoControlService } from 'src/app/services/conference/video-control.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -32,6 +32,7 @@ import { ParticipantRemoteMuteStoreService } from '../services/participant-remot
 import { VideoCallService } from '../services/video-call.service';
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 
+
 @Component({
     selector: 'app-participants-panel',
     templateUrl: './participants-panel.component.html',
@@ -51,6 +52,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     participantsSubscription$ = new Subscription();
 
     transferTimeout: { [id: string]: NodeJS.Timeout } = {};
+    @Input() countdownComplete: boolean;
 
     constructor(
         private videoWebService: VideoWebService,
@@ -63,79 +65,80 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private translateService: TranslateService,
         private mapper: ParticipantPanelModelMapper,
         private participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService
-    ) {}
+    ) {
+    }
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
 
         this.getParticipantsList().then(() => {
-            this.isConferenceInSession(this.conferenceId).then(inSessionConference => {
-                if (inSessionConference) {
-                    this.participants.forEach(participant => {
-                        const localAudioMuted = this.videoControlCacheService.getLocalAudioMuted(participant.id);
-                        const localVideoMuted = this.videoControlCacheService.getLocalVideoMuted(participant.id);
-                        const remoteMutedStatus = this.videoControlCacheService.getRemoteMutedStatus(participant.id);
-                        const spotlightStatus = this.videoControlCacheService.getSpotlightStatus(participant.id);
-                        this.logger.info(`${this.loggerPrefix} Updating store with audio and video`, {
-                            audio: localAudioMuted,
-                            video: localVideoMuted,
-                            remoteMutedStatus: remoteMutedStatus,
-                            participantId: participant.id,
-                            participantName: participant.displayName
-                        });
-                        if (participant instanceof LinkedParticipantPanelModel) {
-                            participant.updateParticipant(remoteMutedStatus, null, spotlightStatus, participant.id);
-                        } else {
-                            participant.updateParticipant(remoteMutedStatus, participant.hasHandRaised(), spotlightStatus, participant.id);
-                        }
-
-                        if (participant instanceof LinkedParticipantPanelModel) {
-                            participant.participants.forEach(async p => {
-                                await this.eventService.publishRemoteMuteStatus(this.conferenceId, p.id, remoteMutedStatus);
-                            });
-                        }
-
-                        this.participantRemoteMuteStoreService.updateRemoteMuteStatus(participant.id, remoteMutedStatus);
-                        this.participantRemoteMuteStoreService.updateLocalMuteStatus(participant.id, localAudioMuted, localVideoMuted);
-                    });
-                }
-            });
             this.participantRemoteMuteStoreService.conferenceParticipantsStatus$.pipe(take(1)).subscribe(state => {
                 this.participants.forEach(participant => {
+
                     if (state.hasOwnProperty(participant.id)) {
                         this.logger.debug(`${this.loggerPrefix} restoring pexip ID`, {
                             participantId: participant.id,
-                            pexipId: state[participant.id].pexipId
+                            pexipId: state[participant.id].pexipId,
+                            state: state
                         });
                         if (state[participant.id].pexipId) {
                             participant.assignPexipId(state[participant.id].pexipId);
                         }
-
-                        participant.updateParticipant(
-                            state[participant.id].isRemoteMuted,
-                            participant.hasHandRaised(),
-                            participant.hasSpotlight(),
-                            participant.id,
-                            state[participant.id].isLocalAudioMuted,
-                            state[participant.id].isLocalVideoMuted
-                        );
                     }
+                    if (this.countdownComplete) {
+                        const localAudioMuted = this.videoControlCacheService.getLocalAudioMuted(participant.id);
+                        const localVideoMuted = this.videoControlCacheService.getLocalVideoMuted(participant.id);
+                        const remoteMutedStatus = this.videoControlCacheService.getRemoteMutedStatus(participant.id);
+                        const spotLightStatus = this.videoControlCacheService.getRemoteMutedStatus(participant.id);
+
+                        if (participant instanceof LinkedParticipantPanelModel) {
+                            participant.participants.forEach(async linkedParticipant => {
+                                this.logger.info(`${this.loggerPrefix} Updating store with audio and video from cache lp`, {
+                                    audio: localAudioMuted,
+                                    video: localVideoMuted,
+                                    spotLightStatus: spotLightStatus,
+                                    remoteMutedStatus: remoteMutedStatus,
+                                    participantId: linkedParticipant.id,
+                                    participantName: participant.displayName
+                                });
+                                this.participantRemoteMuteStoreService.updateRemoteMuteStatus(linkedParticipant.id, remoteMutedStatus);
+                                this.participantRemoteMuteStoreService.updateLocalMuteStatus(linkedParticipant.id, localAudioMuted, localVideoMuted);
+                                linkedParticipant.updateParticipant(
+                                    state[linkedParticipant.id]?.isRemoteMuted,
+                                    participant.hasHandRaised(),
+                                    participant.hasSpotlight(),
+                                    participant.id,
+                                    state[linkedParticipant.id]?.isLocalAudioMuted,
+                                    state[linkedParticipant.id]?.isLocalVideoMuted
+                                );
+                            });
+                        } else {
+                            this.logger.info(`${this.loggerPrefix} Updating store with audio and video from cache lpn`, {
+                                audio: localAudioMuted,
+                                video: localVideoMuted,
+                                spotLightStatus: spotLightStatus,
+                                remoteMutedStatus: remoteMutedStatus,
+                                participantId: participant.id,
+                                participantName: participant.displayName
+                            });
+                            this.participantRemoteMuteStoreService.updateRemoteMuteStatus(participant.id, remoteMutedStatus);
+                            this.participantRemoteMuteStoreService.updateLocalMuteStatus(participant.id, localAudioMuted, localVideoMuted);
+                        }
+                    }
+                    participant.updateParticipant(
+                        state[participant.id]?.isRemoteMuted,
+                        participant.hasHandRaised(),
+                        participant.hasSpotlight(),
+                        participant.id,
+                        state[participant.id]?.isLocalAudioMuted,
+                        state[participant.id]?.isLocalVideoMuted
+                    );
                 });
             });
 
             this.setupVideoCallSubscribers();
             this.setupEventhubSubscribers();
         });
-    }
-
-    async isConferenceInSession(conferenceId: string): Promise<boolean> {
-        let conferenceStatus = false;
-        const conference = await this.videoWebService.getConferenceById(conferenceId);
-
-        if (conference.status === ConferenceStatus.InSession) {
-            conferenceStatus = true;
-        }
-        return conferenceStatus;
     }
 
     toggleMuteParticipantEventHandler(e: ToggleMuteParticipantEvent) {
@@ -472,8 +475,9 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             new: newMuteStatus
         });
 
-        this.videoCallService.muteParticipant(p.pexipId, newMuteStatus, this.conferenceId, p.id);
-        this.videoControlService.setRemoteMuteStatusById(p.id, p.pexipId, !newMuteStatus);
+        this.videoControlService.setRemoteMuteStatusById(p.id, p.pexipId, newMuteStatus);
+
+
         if (mutedParticipants.length === 1 && this.isMuteAll) {
             // check if last person to be unmuted manually
             this.logger.debug(`${this.loggerPrefix} Judge has manually unmuted the last muted participant. Unmuting conference`, {
@@ -682,10 +686,10 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     private showCaseRole(participant: PanelModel) {
         return participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
-            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
-            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase() ||
-            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
-            participant.caseTypeGroup.toLowerCase() === 'endpoint'
+        participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
+        participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase() ||
+        participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
+        participant.caseTypeGroup.toLowerCase() === 'endpoint'
             ? false
             : true;
     }
