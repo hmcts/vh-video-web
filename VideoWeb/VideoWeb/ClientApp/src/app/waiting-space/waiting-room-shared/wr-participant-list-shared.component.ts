@@ -18,6 +18,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { HearingRoleHelper } from 'src/app/shared/helpers/hearing-role-helper';
+import { CaseTypeGroup } from '../models/case-type-group';
 
 import { HearingRole } from '../models/hearing-role-model';
 
@@ -33,8 +34,6 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     observers: ParticipantResponse[];
     panelMembers: ParticipantResponse[];
     wingers: ParticipantResponse[];
-
-    participantsInConsultation: ParticipantResponse[];
 
     eventHubSubscriptions$ = new Subscription();
     loggedInUser: LoggedParticipantResponse;
@@ -64,7 +63,6 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
         this.filterPanelMembers();
         this.filterObservers();
         this.filterWingers();
-        this.filterParticipantInConsultation();
         this.endpoints = this.conference.endpoints;
     }
 
@@ -124,6 +122,7 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
             x =>
                 x.role !== Role.Judge &&
                 x.role !== Role.JudicialOfficeHolder &&
+                x.case_type_group !== CaseTypeGroup.OBSERVER &&
                 x.hearing_role !== HearingRole.OBSERVER &&
                 x.role !== Role.QuickLinkObserver &&
                 x.role !== Role.QuickLinkParticipant &&
@@ -198,7 +197,12 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
 
     protected filterObservers(): void {
         this.observers = this.conference.participants
-            .filter(x => x.hearing_role === HearingRole.OBSERVER || x.role === Role.QuickLinkObserver)
+            .filter(
+                x =>
+                    x.case_type_group === CaseTypeGroup.OBSERVER ||
+                    x.hearing_role === HearingRole.OBSERVER ||
+                    x.role === Role.QuickLinkObserver
+            )
             .sort((a, b) => a.display_name.localeCompare(b.display_name));
     }
 
@@ -219,17 +223,6 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
 
     protected filterStaffMember(): void {
         this.staffMembers = this.conference.participants.filter(x => x.role === Role.StaffMember);
-    }
-
-    protected filterParticipantInConsultation(): void {
-        this.participantsInConsultation = [
-            this.judge,
-            ...this.panelMembers,
-            ...this.staffMembers,
-            ...this.wingers,
-            ...this.nonJudgeParticipants,
-            ...this.observers
-        ];
     }
 
     get canInvite(): boolean {

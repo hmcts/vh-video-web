@@ -2,9 +2,9 @@
     <h2 class="govuk-heading-s white">{{ 'private-consultation-participants.participants' | translate }}</h2>
     <div class="participant-grid">
         <ng-container *ngIf="isJohConsultation()">
-            <ng-container *ngFor="let groupMember of johRoles">
-                <ng-container *ngIf="getMemberParticipantsByHearingRole(groupMember).length > 0">
-                    <div  class="language-icon">
+            <ng-container *ngFor="let group of johGroups">
+                <ng-container *ngIf="group.length > 0">
+                    <div class="language-icon">
                         <img  class="small-crest"
                         appCrestLogoImageSource
                         [sctsImageSource]="'/assets/images/scot-crest-white.png'"
@@ -15,7 +15,7 @@
                         />                    
                     </div>
                     <div class="member-group">
-                        <ng-container *ngFor="let participant of getMemberParticipantsByHearingRole(groupMember); trackBy: trackParticipant">        
+                        <ng-container *ngFor="let participant of group; trackBy: trackParticipant">        
                             <app-participant-item
                                 [participant]="participant"
                                 [interpreter]="participant?.interpreter"
@@ -32,7 +32,7 @@
             </ng-container>
         </ng-container>
         <ng-container  *ngFor="let participant of getPrivateConsultationParticipants(); trackBy: trackParticipant">
-            <div  class="member-group">
+            <div class="member-group">
                 <app-participant-item
                                 [participant]="participant"
                                 [interpreter]="participant?.interpreter"

@@ -746,7 +746,7 @@
   "case-type-group": {
     "state": "State",
     "observer": "Observer",
-    "panelmember": "PanelMember",
+    "panelmember": "Panel Member",
     "none": "None",
     "judge": "Judge",
     "staffmember": "Staff Member",
