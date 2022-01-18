@@ -63,8 +63,8 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="5.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="5.0.0" />
-    <PackageReference Include="UserApi.Client" Version="1.27.0" />
-    <PackageReference Include="VH.Core.Configuration" Version="0.1.12" />
+    <PackageReference Include="UserApi.Client" Version="1.27.1" />
+    <PackageReference Include="VH.Core.Configuration" Version="0.1.13" />
     <PackageReference Include="VideoApi.Client" Version="1.28.11" />
   </ItemGroup>
 
