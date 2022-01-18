@@ -24,6 +24,7 @@ import { take, takeUntil } from 'rxjs/operators';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
+import { CaseTypeGroup } from '../models/case-type-group';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -260,6 +261,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
                 p.id !== this.participant.id &&
                 p.role !== Role.JudicialOfficeHolder &&
                 p.role !== Role.Judge &&
+                p.case_type_group !== CaseTypeGroup.OBSERVER &&
                 p.hearing_role !== HearingRole.OBSERVER &&
                 p.hearing_role !== HearingRole.WITNESS
         );

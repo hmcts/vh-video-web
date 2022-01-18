@@ -597,7 +597,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     private getHearingRole(participant: PanelModel): string {
-        if (participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase()) {
+        if (participant.caseTypeGroup?.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase()) {
             return '';
         }
         const translatedtext = this.getTranslatedText('for');

@@ -35,21 +35,20 @@
                     </div>
                 </ng-container>
             </ng-container>
-            <ng-container *ngFor="let staffMember of staffMembers">
-                <ng-container *ngTemplateOutlet="johIcon"></ng-container>
-                <div class="member-group">
-                    <app-participant-item
-                        [participant]="staffMember"
-                        [conferenceId]="conference.id"
-                        [roomLabel]="roomLabel"
-                        [participantCallStatuses]="participantCallStatuses"
-                        [canInvite]="canInvite"
-                        [status]="getParticipantStatus(staffMember)"
-                        >
-                    </app-participant-item>           
-                </div>
-            </ng-container>
         </ng-container> 
+        <ng-container *ngFor="let staffMember of staffMembers">
+            <div class="member-group">
+                <app-participant-item
+                    [participant]="staffMember"
+                    [conferenceId]="conference.id"
+                    [roomLabel]="roomLabel"
+                    [participantCallStatuses]="participantCallStatuses"
+                    [canInvite]="canInvite"
+                    [status]="getParticipantStatus(staffMember)"
+                    >
+                </app-participant-item>           
+            </div>
+        </ng-container>
         <ng-container  *ngFor="let participant of getPrivateConsultationParticipants(); trackBy: trackParticipant">
             <div class="member-group">
                 <app-participant-item
