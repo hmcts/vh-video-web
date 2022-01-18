@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 
 namespace VideoWeb.Common.Models
 {
     public class VideoControlStatus : IComparable<VideoControlStatus>
     {
         public bool IsRemoteMuted { get; set; }
+        public bool IsHandRaised { get; set; }
         public bool IsSpotlighted { get; set; }
         public bool IsLocalAudioMuted { get; set; }
         public bool IsLocalVideoMuted { get; set; }
@@ -12,6 +13,7 @@ namespace VideoWeb.Common.Models
         {
             bool areEqual = IsSpotlighted == comparison.IsSpotlighted && 
                             IsRemoteMuted == comparison.IsRemoteMuted && 
+                            IsHandRaised == comparison.IsHandRaised && 
                             IsLocalAudioMuted == comparison.IsLocalAudioMuted && 
                             IsLocalVideoMuted == comparison.IsLocalVideoMuted;
             return areEqual ? 1 : 0;

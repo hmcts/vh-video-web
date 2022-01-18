@@ -13,6 +13,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { HearingControlsBaseComponent } from '../hearing-controls/hearing-controls-base.component';
 import { VideoCallService } from '../services/video-call.service';
+import { VideoControlService } from '../../services/conference/video-control.service';
 
 @Component({
     selector: 'app-private-consultation-room-controls',
@@ -46,12 +47,13 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         protected logger: Logger,
         protected participantService: ParticipantService,
         protected translateService: TranslateService,
+        protected videoControlService: VideoControlService,
         protected userMediaService: UserMediaService,
         conferenceService: ConferenceService,
         configSerivce: ConfigService,
         featureFlagService: FeatureFlagService
     ) {
-        super(videoCallService, eventService, deviceTypeService, logger, participantService, translateService, userMediaService);
+        super(videoCallService, eventService, deviceTypeService, logger, participantService, translateService, videoControlService, userMediaService);
         this.canToggleParticipantsPanel = true;
 
         conferenceService.onCurrentConferenceStatusChanged$.pipe(takeUntil(this.destroyedSubject)).subscribe(status => {

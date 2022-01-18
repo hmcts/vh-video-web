@@ -219,6 +219,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         videoControlCacheServiceSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', [
             'setSpotlightStatus',
             'getLocalAudioMuted',
+            'setRemoteMutedStatus',
             'getLocalVideoMuted'
         ]);
 

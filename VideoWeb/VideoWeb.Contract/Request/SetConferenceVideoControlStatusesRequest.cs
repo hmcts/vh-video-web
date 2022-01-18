@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using VideoWeb.Common.Models;
 
@@ -11,6 +11,7 @@ namespace VideoWeb.Contract.Request
             public bool IsSpotlighted { get; set; }
             public bool IsLocalAudioMuted { get; set; }
             public bool IsRemoteMuted { get; set; }
+            public bool IsHandRaised { get; set; }
             public bool IsLocalVideoMuted { get; set; }
         }
     

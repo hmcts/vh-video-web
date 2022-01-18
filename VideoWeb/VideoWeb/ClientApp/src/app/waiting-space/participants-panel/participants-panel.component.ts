@@ -86,9 +86,18 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                         const localAudioMuted = this.videoControlCacheService.getLocalAudioMuted(participant.id);
                         const localVideoMuted = this.videoControlCacheService.getLocalVideoMuted(participant.id);
                         const remoteMutedStatus = this.videoControlCacheService.getRemoteMutedStatus(participant.id);
+                        const handRaise = this.videoControlCacheService.getHandRaiseStatus(participant.id);
 
                         if (participant instanceof LinkedParticipantPanelModel) {
                             participant.participants.forEach(async linkedParticipant => {
+                                this.logger.info(`${this.loggerPrefix} Updating store with audio and video from cache lp`, {
+                                    audio: localAudioMuted,
+                                    video: localVideoMuted,
+                                    remoteMutedStatus: remoteMutedStatus,
+                                    handRaiseStatus: handRaise,
+                                    linkedParticipantId: linkedParticipant.id,
+                                    participantId: participant.id
+                                });
                                 this.participantRemoteMuteStoreService.updateRemoteMuteStatus(linkedParticipant.id, remoteMutedStatus);
                                 this.participantRemoteMuteStoreService.updateLocalMuteStatus(
                                     linkedParticipant.id,
@@ -97,7 +106,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                                 );
                                 linkedParticipant.updateParticipant(
                                     state[linkedParticipant.id]?.isRemoteMuted,
-                                    participant.hasHandRaised(),
+                                    handRaise ?? participant.hasHandRaised(),
                                     participant.hasSpotlight(),
                                     participant.id,
                                     state[linkedParticipant.id]?.isLocalAudioMuted,
@@ -109,9 +118,10 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                             this.participantRemoteMuteStoreService.updateLocalMuteStatus(participant.id, localAudioMuted, localVideoMuted);
                         }
                     }
+                    const handRaiseStatus = this.videoControlCacheService.getHandRaiseStatus(participant.id);
                     participant.updateParticipant(
                         state[participant.id]?.isRemoteMuted,
-                        participant.hasHandRaised(),
+                        handRaiseStatus ?? participant.hasHandRaised(),
                         participant.hasSpotlight(),
                         participant.id,
                         state[participant.id]?.isLocalAudioMuted,

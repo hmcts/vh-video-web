@@ -18,7 +18,8 @@ export class VideoControlService {
         private videoCallService: VideoCallService,
         private videoControlCacheService: VideoControlCacheService,
         private logger: LoggerService
-    ) {}
+    ) {
+    }
 
     setSpotlightStatus(participantOrVmr: ParticipantModel | VirtualMeetingRoomModel, spotlightStatus: boolean) {
         this.setSpotlightStatusById(participantOrVmr.id, participantOrVmr.pexipId, spotlightStatus);
@@ -149,6 +150,32 @@ export class VideoControlService {
             participantOrVmrId: id
         });
         return this.videoControlCacheService.getRemoteMutedStatus(id);
+    }
+
+    setHandRaiseStatusById(id: string, handRaiseStatus: boolean) {
+        const conferenceId = this.conferenceService.currentConferenceId;
+
+        this.logger.info(
+            `${this.loggerPrefix} Attempting to set hand raise status of participant in conference: ${id} in ${conferenceId}.`,
+            {
+                handRaiseStatus: handRaiseStatus,
+                conferenceId: this.conferenceService.currentConferenceId,
+                participantOrVmrId: id
+            }
+        );
+        if (handRaiseStatus) {
+            this.videoCallService.raiseHand(this.conferenceService.currentConferenceId, id);
+        } else {
+            this.videoCallService.lowerHand(this.conferenceService.currentConferenceId, id);
+        }
+        this.videoControlCacheService.setHandRaiseStatus(id, handRaiseStatus);
+    }
+
+    getHandRaiseById(id: string): boolean {
+        this.logger.info(`${this.loggerPrefix} Attempting to get hand raise status of participant/vmr with ID ${id}.`, {
+            participantOrVmrId: id
+        });
+        return this.videoControlCacheService.getHandRaiseStatus(id);
     }
 
     setLocalVideoMutedById(id: string, localVideoMuted: boolean) {

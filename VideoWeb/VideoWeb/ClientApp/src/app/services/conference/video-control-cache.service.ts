@@ -102,6 +102,39 @@ export class VideoControlCacheService {
         return this.hearingControlStates?.participantStates[participantId]?.isRemoteMuted ?? false;
     }
 
+    setHandRaiseStatus(participantId: string, isHandRaisedValue: boolean, syncChanges: boolean = true) {
+        this.logger.info(`${this.loggerPrefix} Setting Hand raise status.`, {
+            participantId: participantId,
+            oldValue: this.hearingControlStates?.participantStates[participantId]?.isHandRaised ?? null,
+            newValue: isHandRaisedValue
+        });
+
+        if (!this.hearingControlStates?.participantStates) {
+            this.logger.warn(`${this.loggerPrefix} Cannot set hand raise status as hearing control states is not initialised.`);
+            return;
+        }
+
+        if (!this.hearingControlStates.participantStates[participantId]) {
+            this.hearingControlStates.participantStates[participantId] = { isHandRaised: isHandRaisedValue };
+        } else {
+            this.hearingControlStates.participantStates[participantId].isHandRaised = isHandRaisedValue;
+        }
+
+        if (syncChanges) {
+            this.storageService
+                .saveHearingStateForConference(this.conferenceService.currentConferenceId, this.hearingControlStates)
+                .subscribe();
+        }
+    }
+
+    getHandRaiseStatus(participantId: string): boolean {
+        this.logger.info(`${this.loggerPrefix} Getting hand raise status.`, {
+            participantId: participantId,
+            value: this.hearingControlStates?.participantStates[participantId]?.isHandRaised ?? null
+        });
+        return this.hearingControlStates?.participantStates[participantId]?.isHandRaised ?? false;
+    }
+
     setLocalAudioMuted(participantId: string, localAudioMuted: boolean, syncChanges: boolean = true) {
         this.logger.info(`${this.loggerPrefix} Setting local audio muted.`, {
             participantId: participantId,
