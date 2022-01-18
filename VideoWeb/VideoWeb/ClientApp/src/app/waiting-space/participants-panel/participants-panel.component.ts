@@ -65,9 +65,11 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-
+        console.log(`Arif participants panel component ng on init`);
         this.getParticipantsList().then(() => {
             this.participantRemoteMuteStoreService.conferenceParticipantsStatus$.pipe(take(1)).subscribe(state => {
+                console.log(`Arif participants panel component ng on init`, this.participants);
+                console.log(`Arif participants panel component ng on init`, state);
                 this.participants.forEach(participant => {
                     if (state.hasOwnProperty(participant.id)) {
                         this.logger.debug(`${this.loggerPrefix} restoring pexip ID`, {
@@ -198,6 +200,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         if (!participant) {
             return;
         }
+        console.log(`Arif handleParticipantHandRaiseChange`, this.participants);
+        console.log(`Arif handleParticipantHandRaiseChange participant.isLocalCameraOff()`, participant.isLocalCameraOff());
         participant.updateParticipant(
             participant.isMicRemoteMuted(),
             message.handRaised,
@@ -268,13 +272,24 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
         participant.assignPexipId(updatedParticipant.uuid);
         if (participant instanceof LinkedParticipantPanelModel) {
-            participant.updateParticipant(updatedParticipant.isRemoteMuted, null, updatedParticipant.isSpotlighted, participant.id);
+            console.log(`Arif handleParticipantUpdatedInVideoCall if`, this.participants);
+            participant.updateParticipant(
+                updatedParticipant.isRemoteMuted,
+                null,
+                updatedParticipant.isSpotlighted,
+                participant.id,
+                participant.isLocalMicMuted(),
+                participant.isLocalCameraOff()
+            );
         } else {
+            console.log(`Arif handleParticipantUpdatedInVideoCall else`, this.participants);
             participant.updateParticipant(
                 updatedParticipant.isRemoteMuted,
                 updatedParticipant.handRaised,
                 updatedParticipant.isSpotlighted,
-                participant.id
+                participant.id,
+                participant.isLocalMicMuted(),
+                participant.isLocalCameraOff()
             );
         }
 
@@ -629,9 +644,11 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             if (currentParticipant) {
                 if (currentParticipant instanceof LinkedParticipantPanelModel) {
                     currentParticipant.participants.forEach(linkedParticpant => {
+                        console.log(`Arif setParticipants if current part is LinkedParticipantPanelModel`, participant);
                         this.updateParticipant(participant, linkedParticpant);
                     });
                 } else {
+                    console.log(`Arif setParticipants if current part is not LinkedParticipantPanelModel`, participant);
                     this.updateParticipant(participant, currentParticipant);
                 }
             }

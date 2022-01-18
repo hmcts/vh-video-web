@@ -181,7 +181,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                         participantStatusMessage.participantId,
                         participantStatusMessage.mediaStatus.is_local_audio_muted
                     );
-
+                    console.log('Arif jwr init getParticipantMediaStatusMessage sub', participantStatusMessage);
                     this.videoControlCacheService.setLocalVideoMuted(
                         participantStatusMessage.participantId,
                         participantStatusMessage.mediaStatus.is_local_video_muted
@@ -216,7 +216,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                             video: video,
                             participantId: participantId
                         });
-
+                        console.log('Arif jwr', participantId, video);
                         this.participantRemoteMuteStoreService.updateLocalMuteStatus(participantId, audio, video);
                     });
             });

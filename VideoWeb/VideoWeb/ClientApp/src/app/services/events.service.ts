@@ -163,7 +163,7 @@ export class EventsService {
 
         ParticipantMediaStatusMessage: (participantId: string, conferenceId: string, mediaStatus: ParticipantMediaStatus) => {
             const payload = new ParticipantMediaStatusMessage(conferenceId, participantId, mediaStatus);
-            this.logger.debug('[EventsService] - Participant Media Status change received: ', payload);
+            this.logger.debug('Arif [EventsService] - Participant Media Status change received: ', payload);
             this.participantMediaStatusSubject.next(payload);
         },
 

@@ -103,7 +103,7 @@ export class VideoControlCacheService {
     }
 
     setLocalVideoMuted(participantId: string, localVideoMuted: boolean, syncChanges: boolean = false) {
-        this.logger.info(`${this.loggerPrefix} Setting local video muted.`, {
+        this.logger.info(`Arif ${this.loggerPrefix} Setting local video muted.`, {
             participantId: participantId,
             oldValue: this.hearingControlStates?.participantStates[participantId]?.isLocalVideoMuted ?? null,
             newValue: localVideoMuted
@@ -128,7 +128,7 @@ export class VideoControlCacheService {
     }
 
     getLocalVideoMuted(participantId: string): boolean {
-        this.logger.info(`${this.loggerPrefix} Getting local video muted.`, {
+        this.logger.info(`Arif ${this.loggerPrefix} Getting local video muted.`, {
             participantId: participantId,
             value: this.hearingControlStates?.participantStates[participantId]?.isLocalVideoMuted ?? null
         });
