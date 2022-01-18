@@ -480,7 +480,41 @@ describe('PrivateConsultationParticipantsComponent', () => {
         expect(component.trackParticipant(0, { status: ParticipantStatus.Available })).toBe(ParticipantStatus.Available);
     });
 
-    // TODO johGroups tests
+    describe('johGroups', () => {
+        it('should return correct participants mapped to ParticipantListItem', () => {
+            const testPanelMember1Data = { id: 'TestPanelMember1Id', name: 'TestPanelMember1Name' };
+            const testPanelMember1 = new ParticipantResponse(testPanelMember1Data);
+            const expectedPanelMember1: ParticipantListItem = { ...testPanelMember1Data };
+
+            const testPanelMember2Data = { id: 'TestPanelMember2Id', name: 'TestPanelMember2Name' };
+            const testPanelMember2 = new ParticipantResponse(testPanelMember2Data);
+            const expectedPanelMember2: ParticipantListItem = { ...testPanelMember2Data };
+
+            const testPanelMembers = [testPanelMember1, testPanelMember2];
+            const expectedPanelMembers = [expectedPanelMember1, expectedPanelMember2];
+
+            const testWinger1Data = { id: 'TestWinger1Id', name: 'TestWinger1Name' };
+            const testWinger1 = new ParticipantResponse(testWinger1Data);
+            const expectedWinger1: ParticipantListItem = { ...testWinger1Data };
+
+            const testWinger2Data = { id: 'TestWinger2Id', name: 'TestWinger2Name' };
+            const testWinger2 = new ParticipantResponse(testWinger2Data);
+            const expectedWinger2: ParticipantListItem = { ...testWinger2Data };
+
+            const testWingers = [testWinger1, testWinger2];
+            const expectedWingers = [expectedWinger1, expectedWinger2];
+
+            component.panelMembers = testPanelMembers;
+            component.wingers = testWingers;
+
+            const mappedGroups = component.johGroups;
+            const mappedPanelMembers = mappedGroups[0];
+            const mappedWingers = mappedGroups[1];
+
+            expect(mappedPanelMembers).toEqual(expectedPanelMembers);
+            expect(mappedWingers).toEqual(expectedWingers);
+        });
+    });
 
     describe('getWitnessesAndObservers', () => {
         const litigantInPerson = new ParticipantResponse({

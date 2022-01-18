@@ -116,7 +116,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     get johGroups(): ParticipantListItem[][] {
-        const johGroupsUnmapped = [[this.judge], [...this.panelMembers], [...this.wingers], [...this.staffMembers]];
+        const johGroupsUnmapped = [[...this.panelMembers], [...this.wingers]];
         return johGroupsUnmapped.map(array =>
             array.map(c => {
                 return this.mapResponseToListItem(c);

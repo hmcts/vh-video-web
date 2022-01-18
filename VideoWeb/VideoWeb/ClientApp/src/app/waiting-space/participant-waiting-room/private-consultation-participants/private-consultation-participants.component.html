@@ -2,18 +2,23 @@
     <h2 class="govuk-heading-s white">{{ 'private-consultation-participants.participants' | translate }}</h2>
     <div class="participant-grid">
         <ng-container *ngIf="isJohConsultation()">
+            <ng-container *ngIf="!!judge">
+                <ng-container *ngTemplateOutlet="johIcon"></ng-container>
+                <div class="member-group">
+                        <app-participant-item
+                            [participant]="judge"
+                            [conferenceId]="conference.id"
+                            [roomLabel]="roomLabel"
+                            [participantCallStatuses]="participantCallStatuses"
+                            [canInvite]="canInvite"
+                            [status]="getParticipantStatus(judge)"
+                            >
+                        </app-participant-item>                              
+                </div>
+            </ng-container>
             <ng-container *ngFor="let group of johGroups">
                 <ng-container *ngIf="group.length > 0">
-                    <div class="language-icon">
-                        <img  class="small-crest"
-                        appCrestLogoImageSource
-                        [sctsImageSource]="'/assets/images/scot-crest-white.png'"
-                        [sctsAltText]=" ('private-consultation-participants.crest-icon-alt' | translate)"
-                        [hmctsImageSource]="'/assets/images/UkGovCrestWhite.png'"
-                        [hmctsAltText]=" ('private-consultation-participants.crest-icon-alt' | translate)"
-                        alt="" 
-                        />                    
-                    </div>
+                    <ng-container *ngTemplateOutlet="johIcon"></ng-container>
                     <div class="member-group">
                         <ng-container *ngFor="let participant of group; trackBy: trackParticipant">        
                             <app-participant-item
@@ -30,7 +35,21 @@
                     </div>
                 </ng-container>
             </ng-container>
-        </ng-container>
+            <ng-container *ngFor="let staffMember of staffMembers">
+                <ng-container *ngTemplateOutlet="johIcon"></ng-container>
+                <div class="member-group">
+                    <app-participant-item
+                        [participant]="staffMember"
+                        [conferenceId]="conference.id"
+                        [roomLabel]="roomLabel"
+                        [participantCallStatuses]="participantCallStatuses"
+                        [canInvite]="canInvite"
+                        [status]="getParticipantStatus(staffMember)"
+                        >
+                    </app-participant-item>           
+                </div>
+            </ng-container>
+        </ng-container> 
         <ng-container  *ngFor="let participant of getPrivateConsultationParticipants(); trackBy: trackParticipant">
             <div class="member-group">
                 <app-participant-item
@@ -81,3 +100,16 @@
         </ng-container>
     </div>
 </div>
+
+<ng-template #johIcon>
+    <div class="joh-icon">
+        <img class="small-crest"
+        appCrestLogoImageSource
+        [sctsImageSource]="'/assets/images/scot-crest-white.png'"
+        [sctsAltText]=" ('private-consultation-participants.crest-icon-alt' | translate)"
+        [hmctsImageSource]="'/assets/images/UkGovCrestWhite.png'"
+        [hmctsAltText]=" ('private-consultation-participants.crest-icon-alt' | translate)"
+        alt="" 
+        />                    
+    </div>
+</ng-template>
