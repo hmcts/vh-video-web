@@ -53,7 +53,16 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         configSerivce: ConfigService,
         featureFlagService: FeatureFlagService
     ) {
-        super(videoCallService, eventService, deviceTypeService, logger, participantService, translateService, videoControlService, userMediaService);
+        super(
+            videoCallService,
+            eventService,
+            deviceTypeService,
+            logger,
+            participantService,
+            translateService,
+            videoControlService,
+            userMediaService
+        );
         this.canToggleParticipantsPanel = true;
 
         conferenceService.onCurrentConferenceStatusChanged$.pipe(takeUntil(this.destroyedSubject)).subscribe(status => {

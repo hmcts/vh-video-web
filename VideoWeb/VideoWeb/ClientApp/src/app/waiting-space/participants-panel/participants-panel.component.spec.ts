@@ -121,7 +121,7 @@ describe('ParticipantsPanelComponent', () => {
         lowerCaseSpy = jasmine.createSpy('transform').and.callThrough();
 
         videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', [
-            'setSpotlightStatus',
+            'setHandRaiseStatusById',
             'setSpotlightStatusById',
             'setRemoteMuteStatusById'
         ]);
@@ -145,6 +145,8 @@ describe('ParticipantsPanelComponent', () => {
             'getLocalVideoMuted',
             'setLocalAudioMuted',
             'getLocalAudioMuted',
+            'setHandRaiseStatus',
+            'getHandRaiseStatus',
             'setRemoteMutedStatus',
             'getRemoteMutedStatus'
         ]);
@@ -663,9 +665,9 @@ describe('ParticipantsPanelComponent', () => {
 
     it('should mute participant', () => {
         const pat = component.participants[0];
-        pat.updateParticipant(true, false, false);
+        pat.updateParticipant(false, false, false);
         component.toggleMuteParticipant(pat);
-        expect(videocallService.muteParticipant).toHaveBeenCalledWith(pat.pexipId, false, component.conferenceId, pat.id);
+        expect(videoControlServiceSpy.setRemoteMuteStatusById).toHaveBeenCalledWith(pat.id, pat.pexipId, true);
     });
     describe('handleParticipantMediaStatusChange', () => {
         it('should call updateParticipant for a linked participant witha hearing role interpreter', () => {
@@ -750,7 +752,7 @@ describe('ParticipantsPanelComponent', () => {
         const pat = component.participants[0];
         pat.updateParticipant(false, false, false);
         component.toggleMuteParticipant(pat);
-        expect(videocallService.muteParticipant).toHaveBeenCalledWith(pat.pexipId, true, component.conferenceId, pat.id);
+        expect(videoControlServiceSpy.setRemoteMuteStatusById).toHaveBeenCalledWith(pat.id, pat.pexipId, true);
     });
 
     it('should unmute conference when last participant is unmuted after a conference mute', () => {

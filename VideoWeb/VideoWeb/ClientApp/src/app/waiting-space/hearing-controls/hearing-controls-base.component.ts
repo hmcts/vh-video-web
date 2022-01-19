@@ -362,11 +362,11 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     toggleHandRaised() {
         if (this.handRaised) {
             this.videoCallService.lowerHand(this.conferenceId, this.participant.id);
-            this.videoControlService.setHandRaiseStatusById(this.participant.id, this.handRaised);
+            this.videoControlService.setHandRaiseStatusById(this.participant.id, !this.handRaised);
             this.logger.info(`${this.loggerPrefix} Participant lowered own hand`, this.logPayload);
         } else {
             this.videoCallService.raiseHand(this.conferenceId, this.participant.id);
-            this.videoControlService.setHandRaiseStatusById(this.participant.id, this.handRaised);
+            this.videoControlService.setHandRaiseStatusById(this.participant.id, !this.handRaised);
             this.logger.info(`${this.loggerPrefix} Participant raised own hand`, this.logPayload);
         }
         this.handRaised = !this.handRaised;

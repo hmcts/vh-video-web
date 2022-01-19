@@ -106,7 +106,8 @@ export class VideoControlCacheService {
         this.logger.info(`${this.loggerPrefix} Setting Hand raise status.`, {
             participantId: participantId,
             oldValue: this.hearingControlStates?.participantStates[participantId]?.isHandRaised ?? null,
-            newValue: isHandRaisedValue
+            newValue: isHandRaisedValue,
+            states: this.hearingControlStates?.participantStates[participantId]
         });
 
         if (!this.hearingControlStates?.participantStates) {

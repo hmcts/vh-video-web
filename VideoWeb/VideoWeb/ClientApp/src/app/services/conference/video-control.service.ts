@@ -18,8 +18,7 @@ export class VideoControlService {
         private videoCallService: VideoCallService,
         private videoControlCacheService: VideoControlCacheService,
         private logger: LoggerService
-    ) {
-    }
+    ) {}
 
     setSpotlightStatus(participantOrVmr: ParticipantModel | VirtualMeetingRoomModel, spotlightStatus: boolean) {
         this.setSpotlightStatusById(participantOrVmr.id, participantOrVmr.pexipId, spotlightStatus);
