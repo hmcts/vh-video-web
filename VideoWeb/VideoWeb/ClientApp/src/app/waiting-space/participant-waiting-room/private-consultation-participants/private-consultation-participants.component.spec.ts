@@ -367,51 +367,18 @@ describe('PrivateConsultationParticipantsComponent', () => {
         expect(result).toBeFalse();
     });
 
-    it('should get participants to a private consultation room', () => {
-        const participants = new ConferenceTestData().getListOfParticipants();
-        const judge = participants[0];
-        judge.hearing_role = HearingRole.JUDGE;
-        const panelMember = participants[1];
-        panelMember.hearing_role = HearingRole.PANEL_MEMBER;
-        const representative = participants[2];
-        representative.hearing_role = HearingRole.REPRESENTATIVE;
-        const representativeNo2 = participants[3];
-        representativeNo2.hearing_role = HearingRole.REPRESENTATIVE;
-        component.roomLabel = 'privateconsultationroom';
-        component.participantsInConsultation = [judge, panelMember, representative, representativeNo2];
-        expect(component.getPrivateConsultationParticipants().length).toBe(2);
-    });
-
     it('should not get witnesses', () => {
         const participants = new ConferenceTestData().getListOfParticipants();
         const witness = participants[0];
         witness.hearing_role = HearingRole.WITNESS;
         const representative = participants[1];
-        component.participantsInConsultation = [witness, representative];
-        expect(component.getPrivateConsultationParticipants().length).toBe(1);
-    });
-
-    it('should not get observers', () => {
-        const participants = new ConferenceTestData().getListOfParticipants();
-        const observer = participants[0];
-        observer.hearing_role = HearingRole.OBSERVER;
-        const representative = participants[1];
-        component.participantsInConsultation = [observer, representative];
-        expect(component.getPrivateConsultationParticipants().length).toBe(1);
-    });
-
-    it('should not get quick link observers', () => {
-        const participants = new ConferenceTestData().getListOfParticipants();
-        const quicklinkobserver = participants[0];
-        quicklinkobserver.role = Role.QuickLinkObserver;
-        const representative = participants[1];
-        component.participantsInConsultation = [quicklinkobserver, representative];
+        component.nonJudgeParticipants = [witness, representative];
         expect(component.getPrivateConsultationParticipants().length).toBe(1);
     });
 
     it('should sort quick link participants', () => {
         const testData = new ConferenceTestData();
-        component.participantsInConsultation = [testData.quickLinkParticipant2, testData.quickLinkParticipant1];
+        component.nonJudgeParticipants = [testData.quickLinkParticipant2, testData.quickLinkParticipant1];
         const participants = component.getPrivateConsultationParticipants();
 
         expect(participants.length).toBe(2);
@@ -513,8 +480,40 @@ describe('PrivateConsultationParticipantsComponent', () => {
         expect(component.trackParticipant(0, { status: ParticipantStatus.Available })).toBe(ParticipantStatus.Available);
     });
 
-    it('should return joh Roles groups available', () => {
-        expect(component.johRoles.length).toBeGreaterThan(0);
+    describe('johGroups', () => {
+        it('should return correct participants mapped to ParticipantListItem', () => {
+            const testPanelMember1Data = { id: 'TestPanelMember1Id', name: 'TestPanelMember1Name' };
+            const testPanelMember1 = new ParticipantResponse(testPanelMember1Data);
+            const expectedPanelMember1: ParticipantListItem = { ...testPanelMember1Data };
+
+            const testPanelMember2Data = { id: 'TestPanelMember2Id', name: 'TestPanelMember2Name' };
+            const testPanelMember2 = new ParticipantResponse(testPanelMember2Data);
+            const expectedPanelMember2: ParticipantListItem = { ...testPanelMember2Data };
+
+            const testPanelMembers = [testPanelMember1, testPanelMember2];
+            const expectedPanelMembers = [expectedPanelMember1, expectedPanelMember2];
+
+            const testWinger1Data = { id: 'TestWinger1Id', name: 'TestWinger1Name' };
+            const testWinger1 = new ParticipantResponse(testWinger1Data);
+            const expectedWinger1: ParticipantListItem = { ...testWinger1Data };
+
+            const testWinger2Data = { id: 'TestWinger2Id', name: 'TestWinger2Name' };
+            const testWinger2 = new ParticipantResponse(testWinger2Data);
+            const expectedWinger2: ParticipantListItem = { ...testWinger2Data };
+
+            const testWingers = [testWinger1, testWinger2];
+            const expectedWingers = [expectedWinger1, expectedWinger2];
+
+            component.panelMembers = testPanelMembers;
+            component.wingers = testWingers;
+
+            const mappedGroups = component.johGroups;
+            const mappedPanelMembers = mappedGroups[0];
+            const mappedWingers = mappedGroups[1];
+
+            expect(mappedPanelMembers).toEqual(expectedPanelMembers);
+            expect(mappedWingers).toEqual(expectedWingers);
+        });
     });
 
     describe('getWitnessesAndObservers', () => {
@@ -590,10 +589,12 @@ describe('PrivateConsultationParticipantsComponent', () => {
             linked_participants: []
         });
 
-        const testParticipants = [litigantInPerson, regularObserver, quickLinkObserver2, quickLinkObserver1, witness2, witness1];
+        const testParticipants = [litigantInPerson, witness2, witness1];
+        const testObservers = [regularObserver, quickLinkObserver2, quickLinkObserver1];
 
         beforeEach(() => {
-            component.participantsInConsultation = testParticipants;
+            component.nonJudgeParticipants = testParticipants;
+            component.observers = testObservers;
         });
 
         it('should return nothing if is not joh consultation', () => {
@@ -611,7 +612,6 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
             spyOn(component, 'isJohConsultation').and.returnValue(true);
             const result = component.getWitnessesAndObservers();
-
             const witnessesOrdered = [mappedWitness1, mappedWitness2].sort((a, b) => a.display_name.localeCompare(b.display_name));
 
             const observersOrdered = [mappedRegularObserver, mappedQuickLinkObserver1, mappedQuickLinkObserver2].sort((a, b) =>
