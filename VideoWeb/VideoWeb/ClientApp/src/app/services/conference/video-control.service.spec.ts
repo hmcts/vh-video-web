@@ -15,6 +15,7 @@ import { VirtualMeetingRoomModel } from './models/virtual-meeting-room.model';
 import { IHearingControlsState } from './video-control-cache-storage.service.interface';
 import { VideoControlCacheService } from './video-control-cache.service';
 import { VideoControlService } from './video-control.service';
+import { expectFile } from '@angular-devkit/build-angular/src/testing/jasmine-helpers';
 
 describe('VideoControlService', () => {
     let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
@@ -440,6 +441,7 @@ describe('VideoControlService', () => {
             sut.setRemoteMuteStatusById(participantId, pexipId, remoteMuted);
 
             // Assert
+            expect(videoCallServiceSpy.onParticipantUpdated).toHaveBeenCalled();
             expect(videoControlCacheServiceSpy.setRemoteMutedStatus).toHaveBeenCalledOnceWith(participantId, remoteMuted);
         });
 
@@ -453,6 +455,7 @@ describe('VideoControlService', () => {
             sut.setRemoteMuteStatusById(participantId, pexipId, remoteMuted);
 
             // Assert
+            expect(videoCallServiceSpy.onParticipantUpdated).toHaveBeenCalled();
             expect(videoControlCacheServiceSpy.setRemoteMutedStatus).toHaveBeenCalledOnceWith(participantId, remoteMuted);
         });
     });

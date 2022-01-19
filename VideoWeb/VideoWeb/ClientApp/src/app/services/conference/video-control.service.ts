@@ -141,7 +141,55 @@ export class VideoControlService {
             }
         );
         this.videoCallService.muteParticipant(pexipId, remoteMuteStatus, this.conferenceService.currentConferenceId, id);
-        this.videoControlCacheService.setRemoteMutedStatus(id, remoteMuteStatus);
+
+        this.logger.info(`${this.loggerPrefix} Attempted to make call to pexip to update remote mute status. Subscribing for update.`, {
+            spotlightStatus: remoteMuteStatus,
+            conferenceId: conferenceId,
+            participantId: id
+        });
+
+        this.videoCallService
+            .onParticipantUpdated()
+            .pipe(
+                filter(update => update.pexipDisplayName.includes(id)),
+                map(update => {
+                    if (update.isRemoteMuted !== remoteMuteStatus) {
+                        throw new Error('update.isRemoteMuted !== remoteMuteStatus');
+                    }
+                    return update;
+                }),
+                retryWhen(errors =>
+                    errors.pipe(
+                        delay(200),
+                        tap(() => {
+                            this.logger.warn(`${this.loggerPrefix} Retrying call to pexip to update remote mute status.`, {
+                                remoteMuteStatus: remoteMuteStatus,
+                                conferenceId: conferenceId,
+                                participantId: id
+                            });
+
+                            this.videoCallService.muteParticipant(
+                                pexipId,
+                                remoteMuteStatus,
+                                this.conferenceService.currentConferenceId,
+                                id
+                            );
+                        })
+                    )
+                ),
+                take(1)
+            )
+            .subscribe(update => {
+                this.logger.info(`${this.loggerPrefix} Update received. Attempting to update cache. remote`, {
+                    requestedValue: remoteMuteStatus,
+                    updatedValue: update.isSpotlighted,
+                    wasValueChangedPerRequest: remoteMuteStatus === update.isRemoteMuted,
+                    conferenceId: conferenceId,
+                    participantId: id
+                });
+
+                this.videoControlCacheService.setRemoteMutedStatus(id, update.isRemoteMuted);
+            });
     }
 
     getRemoteMutedById(id: string): boolean {

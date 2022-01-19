@@ -31,6 +31,7 @@ import { VideoEndpointPanelModel } from '../models/video-endpoint-panel-model';
 import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 import { VideoCallService } from '../services/video-call.service';
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
+import { IConferenceParticipantsStatus } from '../models/conference-participants-status';
 
 @Component({
     selector: 'app-participants-panel',
@@ -82,42 +83,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                             participant.assignPexipId(state[participant.id].pexipId);
                         }
                     }
-                    if (this.isCountdownCompleted) {
-                        const localAudioMuted = this.videoControlCacheService.getLocalAudioMuted(participant.id);
-                        const localVideoMuted = this.videoControlCacheService.getLocalVideoMuted(participant.id);
-                        const remoteMutedStatus = this.videoControlCacheService.getRemoteMutedStatus(participant.id);
-                        const handRaise = this.videoControlCacheService.getHandRaiseStatus(participant.id);
-
-                        if (participant instanceof LinkedParticipantPanelModel) {
-                            participant.participants.forEach(async linkedParticipant => {
-                                this.logger.info(`${this.loggerPrefix} Updating store with audio and video from cache lp`, {
-                                    audio: localAudioMuted,
-                                    video: localVideoMuted,
-                                    remoteMutedStatus: remoteMutedStatus,
-                                    handRaiseStatus: handRaise,
-                                    linkedParticipantId: linkedParticipant.id,
-                                    participantId: participant.id
-                                });
-                                this.participantRemoteMuteStoreService.updateRemoteMuteStatus(linkedParticipant.id, remoteMutedStatus);
-                                this.participantRemoteMuteStoreService.updateLocalMuteStatus(
-                                    linkedParticipant.id,
-                                    localAudioMuted,
-                                    localVideoMuted
-                                );
-                                linkedParticipant.updateParticipant(
-                                    state[linkedParticipant.id]?.isRemoteMuted,
-                                    handRaise ?? participant.hasHandRaised(),
-                                    participant.hasSpotlight(),
-                                    participant.id,
-                                    state[linkedParticipant.id]?.isLocalAudioMuted,
-                                    state[linkedParticipant.id]?.isLocalVideoMuted
-                                );
-                            });
-                        } else {
-                            this.participantRemoteMuteStoreService.updateRemoteMuteStatus(participant.id, remoteMutedStatus);
-                            this.participantRemoteMuteStoreService.updateLocalMuteStatus(participant.id, localAudioMuted, localVideoMuted);
-                        }
-                    }
+                    this.readVideoControlStatusesFromCache(state, participant);
                     const handRaiseStatus = this.videoControlCacheService.getHandRaiseStatus(participant.id);
                     participant.updateParticipant(
                         state[participant.id]?.isRemoteMuted,
@@ -160,6 +126,41 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.eventhubSubscription$.unsubscribe();
         this.participantsSubscription$.unsubscribe();
         this.resetAllWitnessTransferTimeouts();
+    }
+
+    readVideoControlStatusesFromCache(state: IConferenceParticipantsStatus, participant: PanelModel) {
+        if (this.isCountdownCompleted) {
+            const localAudioMuted = this.videoControlCacheService.getLocalAudioMuted(participant.id);
+            const localVideoMuted = this.videoControlCacheService.getLocalVideoMuted(participant.id);
+            const remoteMutedStatus = this.videoControlCacheService.getRemoteMutedStatus(participant.id);
+            const handRaise = this.videoControlCacheService.getHandRaiseStatus(participant.id);
+
+            if (participant instanceof LinkedParticipantPanelModel) {
+                participant.participants.forEach(async linkedParticipant => {
+                    this.logger.info(`${this.loggerPrefix} Updating store with audio and video from cache lp`, {
+                        audio: localAudioMuted,
+                        video: localVideoMuted,
+                        remoteMutedStatus: remoteMutedStatus,
+                        handRaiseStatus: handRaise,
+                        linkedParticipantId: linkedParticipant.id,
+                        participantId: participant.id
+                    });
+                    this.participantRemoteMuteStoreService.updateRemoteMuteStatus(linkedParticipant.id, remoteMutedStatus);
+                    this.participantRemoteMuteStoreService.updateLocalMuteStatus(linkedParticipant.id, localAudioMuted, localVideoMuted);
+                    linkedParticipant.updateParticipant(
+                        state[linkedParticipant.id]?.isRemoteMuted,
+                        handRaise,
+                        participant.hasSpotlight(),
+                        participant.id,
+                        state[linkedParticipant.id]?.isLocalAudioMuted,
+                        state[linkedParticipant.id]?.isLocalVideoMuted
+                    );
+                });
+            } else {
+                this.participantRemoteMuteStoreService.updateRemoteMuteStatus(participant.id, remoteMutedStatus);
+                this.participantRemoteMuteStoreService.updateLocalMuteStatus(participant.id, localAudioMuted, localVideoMuted);
+            }
+        }
     }
 
     resetWitnessTransferTimeout(participantId: string) {
