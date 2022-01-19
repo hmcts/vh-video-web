@@ -129,7 +129,7 @@ export class VideoControlService {
     }
 
     setLocalVideoMutedById(id: string, localVideoMuted: boolean) {
-        this.logger.info(`Arif ${this.loggerPrefix} Attempting to set local video mute status of participant/vmr with ID ${id}.`, {
+        this.logger.info(`${this.loggerPrefix} Attempting to set local video mute status of participant/vmr with ID ${id}.`, {
             localVideoMuted: localVideoMuted,
             participantOrVmrId: id
         });
@@ -137,7 +137,7 @@ export class VideoControlService {
     }
 
     getLocalVideoMutedById(id: string): boolean {
-        this.logger.info(`Arif ${this.loggerPrefix} Attempting to get local video mute status of participant/vmr with ID ${id}.`, {
+        this.logger.info(`${this.loggerPrefix} Attempting to get local video mute status of participant/vmr with ID ${id}.`, {
             participantOrVmrId: id
         });
         return this.videoControlCacheService.getLocalVideoMuted(id);

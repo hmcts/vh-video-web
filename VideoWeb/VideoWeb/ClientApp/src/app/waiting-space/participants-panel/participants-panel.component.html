@@ -134,7 +134,7 @@
             " colour="blue" (click)="toggleSpotlightParticipant(participant); $event.stopPropagation()">
                         <fa-icon icon="thumbtack" [class]="{ yellow: participant.hasSpotlight() }"></fa-icon>
                     </div>
-                    <div *ngIf="true"
+                    <div *ngIf="isParticipantInHearing(participant) && participant.isLocalCameraOff()"
                         class="icon-button no-click">
                         <fa-icon appTooltip [text]="'participants-panel.camera-off' | translate"
                             icon="video-slash" class="red"></fa-icon>

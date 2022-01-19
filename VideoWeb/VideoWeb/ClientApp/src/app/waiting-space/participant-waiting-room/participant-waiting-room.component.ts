@@ -24,6 +24,7 @@ import { take, takeUntil } from 'rxjs/operators';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
+import { UserMediaService } from 'src/app/services/user-media.service';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -59,7 +60,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         protected consultationInvitiationService: ConsultationInvitationService,
         private unloadDetectorService: UnloadDetectorService,
         protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
-        protected hearingVenueFlagsService: HearingVenueFlagsService
+        protected hearingVenueFlagsService: HearingVenueFlagsService,
+        protected userMediaService: UserMediaService
     ) {
         super(
             route,
@@ -84,6 +86,9 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
 
     ngOnInit() {
         this.init();
+        this.userMediaService.isAudioOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(audioOnly => {
+            this.audioOnly = audioOnly;
+        });
     }
 
     get allowAudioOnlyToggle(): boolean {

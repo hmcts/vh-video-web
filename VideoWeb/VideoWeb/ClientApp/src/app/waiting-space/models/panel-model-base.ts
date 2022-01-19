@@ -136,7 +136,6 @@ export abstract class PanelModel {
         isLocalAudioMuted?: boolean,
         isLocalVideoMuted?: boolean
     ) {
-        console.log(`Arif - updateParticipant ${participantId} ${isLocalVideoMuted}`);
         this.isRemoteMuted = isRemoteMuted;
         this.handRaised = handRaised;
         this.isSpotlighted = spotlighted;
