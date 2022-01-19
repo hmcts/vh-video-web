@@ -51,7 +51,13 @@ describe('VideoControlService', () => {
         conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>('ConferenceService', ['getConferenceById'], ['currentConferenceId']);
         getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
 
-        videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>('VideoCallService', ['spotlightParticipant', 'onParticipantUpdated']);
+        videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>('VideoCallService', [
+            'spotlightParticipant',
+            'onParticipantUpdated',
+            'muteParticipant',
+            'lowerHand',
+            'raiseHand'
+        ]);
 
         videoControlCacheServiceSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', [
             'setSpotlightStatus',
@@ -59,7 +65,11 @@ describe('VideoControlService', () => {
             'setLocalVideoMuted',
             'getLocalVideoMuted',
             'setLocalAudioMuted',
-            'getLocalAudioMuted'
+            'getLocalAudioMuted',
+            'setRemoteMutedStatus',
+            'getRemoteMutedStatus',
+            'setHandRaiseStatus',
+            'getHandRaiseStatus'
         ]);
 
         loggerSpy = jasmine.createSpyObj<LoggerService>('Logger', ['error', 'warn', 'info']);
@@ -430,7 +440,7 @@ describe('VideoControlService', () => {
             sut.setRemoteMuteStatusById(participantId, pexipId, remoteMuted);
 
             // Assert
-            expect(videoControlCacheServiceSpy.setRemoteMutedStatus).toHaveBeenCalledOnceWith(participantId, pexipId, remoteMuted);
+            expect(videoControlCacheServiceSpy.setRemoteMutedStatus).toHaveBeenCalledOnceWith(participantId, remoteMuted);
         });
 
         it('should call setRemoteMuteStatus in the cache service (true)', () => {
@@ -443,7 +453,7 @@ describe('VideoControlService', () => {
             sut.setRemoteMuteStatusById(participantId, pexipId, remoteMuted);
 
             // Assert
-            expect(videoControlCacheServiceSpy.setRemoteMutedStatus).toHaveBeenCalledOnceWith(participantId, pexipId, remoteMuted);
+            expect(videoControlCacheServiceSpy.setRemoteMutedStatus).toHaveBeenCalledOnceWith(participantId, remoteMuted);
         });
     });
 
@@ -495,7 +505,7 @@ describe('VideoControlService', () => {
         it('should call setHandRaised in the cache service (true)', () => {
             // Arrange
             const participantId = 'participant-id';
-            const handRaiseStatus = false;
+            const handRaiseStatus = true;
 
             // Act
             sut.setHandRaiseStatusById(participantId, handRaiseStatus);

@@ -874,10 +874,10 @@ describe('VideoControlCacheService', () => {
             const initialHearingControlsState: IHearingControlsState = { participantStates: {} };
             initialHearingControlsState.participantStates[participantId] = {
                 isLocalAudioMuted: isLocalAudioMuted,
-                isLocalVideoMuted: !isLocalVideoMuted,
+                isLocalVideoMuted: isLocalVideoMuted,
                 isSpotlighted: isSpotlighted,
                 isRemoteMuted: isRemoteMuted,
-                isHandRaised: isHandRaised
+                isHandRaised: !isHandRaised
             };
 
             const expectedHearingControlsState: IHearingControlsState = { participantStates: {} };
@@ -894,7 +894,7 @@ describe('VideoControlCacheService', () => {
             service['hearingControlStates'] = initialHearingControlsState;
 
             // Act
-            service.setHandRaiseStatus(participantId, isLocalAudioMuted, true);
+            service.setHandRaiseStatus(participantId, isHandRaised, true);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
