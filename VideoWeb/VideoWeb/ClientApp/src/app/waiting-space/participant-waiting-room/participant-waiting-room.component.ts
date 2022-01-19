@@ -25,6 +25,7 @@ import { UnloadDetectorService } from 'src/app/services/unload-detector.service'
 import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -84,10 +85,13 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         );
     }
 
-    ngOnInit() {
+    async ngOnInit() {
         this.init();
-        this.userMediaService.isAudioOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(audioOnly => {
+        this.userMediaService.isAudioOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(async audioOnly => {
             this.audioOnly = audioOnly;
+
+            const mediaStatus = new ParticipantMediaStatus(false, audioOnly);
+            await this.eventService.sendMediaStatus(this.conferenceId, this.participant.id, mediaStatus);
         });
     }
 
