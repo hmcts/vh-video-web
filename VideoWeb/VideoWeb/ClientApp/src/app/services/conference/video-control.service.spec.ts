@@ -418,4 +418,122 @@ describe('VideoControlService', () => {
             expect(videoControlCacheServiceSpy.getLocalVideoMuted).toHaveBeenCalledOnceWith(participantId);
         });
     });
+
+    describe('setRemoteMuteStatusById', () => {
+        it('should call setRemoteMuteStatus in the cache service (false)', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const pexipId = 'pexip-id';
+            const remoteMuted = false;
+
+            // Act
+            sut.setRemoteMuteStatusById(participantId, pexipId, remoteMuted);
+
+            // Assert
+            expect(videoControlCacheServiceSpy.setRemoteMutedStatus).toHaveBeenCalledOnceWith(participantId, pexipId, remoteMuted);
+        });
+
+        it('should call setRemoteMuteStatus in the cache service (true)', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const pexipId = 'pexip-id';
+            const remoteMuted = false;
+
+            // Act
+            sut.setRemoteMuteStatusById(participantId, pexipId, remoteMuted);
+
+            // Assert
+            expect(videoControlCacheServiceSpy.setRemoteMutedStatus).toHaveBeenCalledOnceWith(participantId, pexipId, remoteMuted);
+        });
+    });
+
+    describe('getRemoteMuteStatusById', () => {
+        it('should call and return the value from getRemoteMuteStatus in the cache service (false)', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const remoteMuteStatus = false;
+            videoControlCacheServiceSpy.getRemoteMutedStatus.and.returnValue(remoteMuteStatus);
+
+            // Act
+            const result = sut.getRemoteMutedById(participantId);
+
+            // Assert
+            expect(result).toEqual(remoteMuteStatus);
+            expect(videoControlCacheServiceSpy.getRemoteMutedStatus).toHaveBeenCalledOnceWith(participantId);
+        });
+
+        it('should call and return the value from getRemoteMuteStatus in the cache service (true)', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const remoteMuteStatus = true;
+            videoControlCacheServiceSpy.getRemoteMutedStatus.and.returnValue(remoteMuteStatus);
+
+            // Act
+            const result = sut.getRemoteMutedById(participantId);
+
+            // Assert
+            expect(result).toEqual(remoteMuteStatus);
+            expect(videoControlCacheServiceSpy.getRemoteMutedStatus).toHaveBeenCalledOnceWith(participantId);
+        });
+    });
+
+    describe('setHandRaiseById', () => {
+        it('should call setHandRaised in the cache service (false)', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const handRaiseStatus = false;
+
+            // Act
+            sut.setHandRaiseStatusById(participantId, handRaiseStatus);
+
+            // Assert
+            expect(videoCallServiceSpy.raiseHand).not.toHaveBeenCalled();
+            expect(videoCallServiceSpy.lowerHand).toHaveBeenCalled();
+            expect(videoControlCacheServiceSpy.setHandRaiseStatus).toHaveBeenCalledOnceWith(participantId, handRaiseStatus);
+        });
+
+        it('should call setHandRaised in the cache service (true)', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const handRaiseStatus = false;
+
+            // Act
+            sut.setHandRaiseStatusById(participantId, handRaiseStatus);
+
+            // Assert
+            expect(videoCallServiceSpy.raiseHand).toHaveBeenCalled();
+            expect(videoCallServiceSpy.lowerHand).not.toHaveBeenCalled();
+            expect(videoControlCacheServiceSpy.setHandRaiseStatus).toHaveBeenCalledOnceWith(participantId, handRaiseStatus);
+        });
+    });
+
+    describe('getHandRaiseById', () => {
+        it('should call and return the value from getHandRaise in the cache service (false)', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const handRaiseStatus = false;
+            videoControlCacheServiceSpy.getHandRaiseStatus.and.returnValue(handRaiseStatus);
+
+            // Act
+            const result = sut.getHandRaiseById(participantId);
+
+            // Assert
+            expect(result).toEqual(handRaiseStatus);
+            expect(videoControlCacheServiceSpy.getHandRaiseStatus).toHaveBeenCalledOnceWith(participantId);
+        });
+
+        it('should call and return the value from getHandRaise in the cache service (true)', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const handRaiseStatus = true;
+            videoControlCacheServiceSpy.getHandRaiseStatus.and.returnValue(handRaiseStatus);
+
+            // Act
+            const result = sut.getHandRaiseById(participantId);
+
+            // Assert
+            expect(result).toEqual(handRaiseStatus);
+            expect(videoControlCacheServiceSpy.getHandRaiseStatus).toHaveBeenCalledOnceWith(participantId);
+        });
+    });
 });
