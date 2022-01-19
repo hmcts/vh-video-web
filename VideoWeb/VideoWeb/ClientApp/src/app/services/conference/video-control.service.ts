@@ -128,6 +128,9 @@ export class VideoControlService {
         return this.videoControlCacheService.getLocalAudioMuted(id);
     }
 
+    setRemoteMuteStatus(participantOrVmr: ParticipantModel | VirtualMeetingRoomModel, remoteMuteStatus: boolean) {
+        this.setRemoteMuteStatusById(participantOrVmr.id, participantOrVmr.pexipId, remoteMuteStatus);
+    }
     setRemoteMuteStatusById(id: string, pexipId: string, remoteMuteStatus: boolean) {
         const conferenceId = this.conferenceService.currentConferenceId;
 

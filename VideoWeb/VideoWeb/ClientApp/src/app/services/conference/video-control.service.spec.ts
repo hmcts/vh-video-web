@@ -1,4 +1,4 @@
-import { discardPeriodicTasks, fakeAsync, flush, flushMicrotasks, tick } from '@angular/core/testing';
+import { fakeAsync, flush, flushMicrotasks, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { Observable, of, Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
@@ -12,10 +12,8 @@ import { LoggerService } from '../logging/logger.service';
 import { ConferenceService } from './conference.service';
 import { PexipDisplayNameModel } from './models/pexip-display-name.model';
 import { VirtualMeetingRoomModel } from './models/virtual-meeting-room.model';
-import { IHearingControlsState } from './video-control-cache-storage.service.interface';
 import { VideoControlCacheService } from './video-control-cache.service';
 import { VideoControlService } from './video-control.service';
-import { expectFile } from '@angular-devkit/build-angular/src/testing/jasmine-helpers';
 
 describe('VideoControlService', () => {
     let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
@@ -431,32 +429,163 @@ describe('VideoControlService', () => {
     });
 
     describe('setRemoteMuteStatusById', () => {
-        it('should call setRemoteMuteStatus in the cache service (false)', () => {
-            // Arrange
-            const participantId = 'participant-id';
-            const pexipId = 'pexip-id';
-            const remoteMuted = false;
+        // Arrange test cases
+        const participantId = Guid.create().toString();
+        const participantPexipId = 'pexip-id';
+        const vmrId = Guid.create().toString();
+        const vmrPexipId = 'vmr-pexip-id';
+        const participant = new ParticipantModel(
+            participantId,
+            'Participant Name',
+            'DisplayName',
+            `Role;DisplayName;${participantId}`,
+            CaseTypeGroup.JUDGE,
+            Role.Judge,
+            HearingRole.JUDGE,
+            false,
+            null,
+            null,
+            ParticipantStatus.Available,
+            null,
+            participantPexipId
+        );
+        const vmr = new VirtualMeetingRoomModel(
+            vmrId,
+            'DisplayName',
+            false,
+            [participant],
+            vmrPexipId,
+            new PexipDisplayNameModel('ROLE', 'DisplayName', vmrId)
+        );
+        const testCases = [
+            { testId: 'a participant and isRemoteMuted = true', participantOrVmr: participant, isRemoteMuted: true },
+            { testId: 'a participant and isRemoteMuted = false', participantOrVmr: participant, isRemoteMuted: false },
+            { testId: 'a virtual meeting room and isRemoteMuted = true', participantOrVmr: vmr, isRemoteMuted: true },
+            { testId: 'a virtual meeting room and isRemoteMuted = false', participantOrVmr: vmr, isRemoteMuted: false }
+        ];
 
-            // Act
-            sut.setRemoteMuteStatusById(participantId, pexipId, remoteMuted);
+        let onParticipantUpdatedSubject: Subject<ParticipantUpdated>;
+        let onParticipantUpdated$: Observable<ParticipantUpdated>;
 
-            // Assert
-            expect(videoCallServiceSpy.onParticipantUpdated).toHaveBeenCalled();
-            expect(videoControlCacheServiceSpy.setRemoteMutedStatus).toHaveBeenCalledOnceWith(participantId, remoteMuted);
+        beforeEach(() => {
+            // Arrange spies
+            onParticipantUpdatedSubject = new Subject<ParticipantUpdated>();
+            onParticipantUpdated$ = onParticipantUpdatedSubject.asObservable();
+            videoCallServiceSpy.onParticipantUpdated.and.returnValue(onParticipantUpdated$);
         });
 
-        it('should call setRemoteMuteStatus in the cache service (true)', () => {
-            // Arrange
-            const participantId = 'participant-id';
-            const pexipId = 'pexip-id';
-            const remoteMuted = false;
+        testCases.forEach(testCase => {
+            it(`should try to set the participants spotlight status using the video call service; for ${testCase.testId}`, fakeAsync(() => {
+                // Act
+                sut.setRemoteMuteStatus(testCase.participantOrVmr, testCase.isRemoteMuted);
+                flush();
 
-            // Act
-            sut.setRemoteMuteStatusById(participantId, pexipId, remoteMuted);
+                // Assert
+                expect(videoCallServiceSpy.muteParticipant).toHaveBeenCalledOnceWith(
+                    testCase.participantOrVmr.pexipId,
+                    testCase.isRemoteMuted,
+                    conferenceId,
+                    testCase.participantOrVmr.id
+                );
+            }));
 
-            // Assert
-            expect(videoCallServiceSpy.onParticipantUpdated).toHaveBeenCalled();
-            expect(videoControlCacheServiceSpy.setRemoteMutedStatus).toHaveBeenCalledOnceWith(participantId, remoteMuted);
+            it(`should subscribe to pexip participant updates; for ${testCase.testId}`, fakeAsync(() => {
+                // Arrange
+                spyOn(onParticipantUpdated$, 'subscribe').and.callThrough();
+                spyOn(onParticipantUpdated$, 'pipe').and.returnValue(onParticipantUpdated$);
+
+                // Act
+                sut.setRemoteMuteStatus(testCase.participantOrVmr, testCase.isRemoteMuted);
+                flush();
+
+                // Assert
+                expect(videoCallServiceSpy.onParticipantUpdated).toHaveBeenCalled();
+                expect(onParticipantUpdated$.subscribe).toHaveBeenCalled();
+            }));
+
+            it(`should update the cache value when the correct update is recieved; for ${testCase.testId}`, fakeAsync(() => {
+                // Arrange
+                const expectedResult = {
+                    isRemoteMuted: testCase.isRemoteMuted,
+                    isSpotlighted: false,
+                    handRaised: false,
+                    pexipDisplayName: testCase.participantOrVmr.pexipDisplayName.toString(),
+                    uuid: testCase.participantOrVmr.pexipId,
+                    isAudioOnlyCall: false,
+                    isVideoCall: true,
+                    protocol: 'protocol'
+                } as ParticipantUpdated;
+
+                // Act
+                sut.setRemoteMuteStatus(testCase.participantOrVmr, testCase.isRemoteMuted);
+                flush();
+
+                onParticipantUpdatedSubject.next(expectedResult);
+                flush();
+                flushMicrotasks();
+
+                // Assert
+                expect(videoControlCacheServiceSpy.setRemoteMutedStatus).toHaveBeenCalledWith(
+                    testCase.participantOrVmr.id,
+                    testCase.isRemoteMuted
+                );
+            }));
+
+            it(`should NOT update the cache value when the correct update is NOT recieved; for ${testCase.testId}`, fakeAsync(() => {
+                // Arrange
+                const expectedResult = {
+                    isSpotlighted: false,
+                    isRemoteMuted: testCase.isRemoteMuted,
+                    handRaised: false,
+                    pexipDisplayName: 'pexipDisplayName',
+                    uuid: testCase.participantOrVmr.pexipId,
+                    isAudioOnlyCall: false,
+                    isVideoCall: true,
+                    protocol: 'protocol'
+                } as ParticipantUpdated;
+
+                // Act
+                sut.setRemoteMuteStatus(testCase.participantOrVmr, testCase.isRemoteMuted);
+                flush();
+
+                onParticipantUpdatedSubject.next(expectedResult);
+                flush();
+
+                // Assert
+                expect(videoControlCacheServiceSpy.setRemoteMutedStatus).not.toHaveBeenCalled();
+            }));
+
+            it(`should keep trying to set the participants spotlight status using the video call service until the update contains the correct value; for ${testCase.testId}`, fakeAsync(() => {
+                // Arrange
+                const expectedResult = {
+                    isSpotlighted: false,
+                    isRemoteMuted: !testCase.isRemoteMuted,
+                    handRaised: false,
+                    pexipDisplayName: testCase.participantOrVmr.pexipDisplayName.toString(),
+                    uuid: testCase.participantOrVmr.pexipId,
+                    isAudioOnlyCall: false,
+                    isVideoCall: true,
+                    protocol: 'protocol'
+                } as ParticipantUpdated;
+
+                // Act
+                sut.setRemoteMuteStatus(testCase.participantOrVmr, testCase.isRemoteMuted);
+                flush();
+
+                onParticipantUpdatedSubject.next(expectedResult);
+                flush();
+                tick(201);
+                flush();
+
+                // Assert
+                expect(videoCallServiceSpy.muteParticipant).toHaveBeenCalledTimes(2);
+                expect(videoCallServiceSpy.muteParticipant).toHaveBeenCalledWith(
+                    testCase.participantOrVmr.pexipId,
+                    testCase.isRemoteMuted,
+                    conferenceId,
+                    testCase.participantOrVmr.id
+                );
+            }));
         });
     });
 
