@@ -133,12 +133,7 @@ namespace VideoWeb.Controllers
             try
             {
                 _logger.LogDebug("Getting the video control statuses for {conferenceId}", conferenceId);
-                var conference = await GetConference(conferenceId);
-                if (conference.CurrentStatus == ConferenceState.NotStarted)
-                {
-                    return Ok("Conference is not started");
-                }
-                var videoControlStatuses = await _conferenceVideoControlStatusService.GetVideoControlStateForConference(conferenceId);
+                 var videoControlStatuses = await _conferenceVideoControlStatusService.GetVideoControlStateForConference(conferenceId);
 
                 if (videoControlStatuses == null) {
                     _logger.LogWarning("video control statuses didn't have a value returning NotFound. This was for {conferenceId}", conferenceId);
