@@ -29,14 +29,6 @@ export class ParticipantItemComponent {
         return availableStatuses.indexOf(participant.status) >= 0;
     }
 
-    participantNameClass(roomParticipant: any): string {
-        if (this.isParticipantInCurrentRoom(roomParticipant)) {
-            return 'yellow';
-        }
-
-        return this.isParticipantAvailable(roomParticipant) ? 'white' : '';
-    }
-
     isParticipantInCurrentRoom(roomParticipant: any): boolean {
         return roomParticipant.current_room?.label === this.roomLabel;
     }

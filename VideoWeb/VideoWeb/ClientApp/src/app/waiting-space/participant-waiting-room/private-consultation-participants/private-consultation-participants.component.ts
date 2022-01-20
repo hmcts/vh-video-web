@@ -91,11 +91,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     getRowClasses(participant: any): string {
-        if (this.isParticipantInCurrentRoom(participant)) {
-            return 'yellow';
-        }
-
-        return '';
+        return this.isParticipantInCurrentRoom(participant) ? 'yellow' : '';
     }
 
     isJohInCurrentRoom(participant: ParticipantResponse): boolean {

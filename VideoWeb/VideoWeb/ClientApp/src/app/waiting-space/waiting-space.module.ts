@@ -35,6 +35,7 @@ import { ContextMenuHeaderComponent } from './private-consultation-room-controls
 import { ConfirmLeaveHearingPopupComponent } from './confirmation/confirm-leave-hearing-popup.component';
 import { ParticipantRemoteMuteStoreService } from './services/participant-remote-mute-store.service';
 import { PrivateConsultationParticipantStatusComponent } from './participant-waiting-room/private-consultation-participants/private-consultation-participant-status/private-consultation-participant-status.component';
+import { PrivateConsultationParticipantDisplayNameComponent } from './participant-waiting-room/private-consultation-participants/private-consultation-participant-display-name/private-consultation-participant-display-name.component';
 
 @NgModule({
     imports: [SharedModule, WaitingSpaceRoutingModule],
@@ -66,7 +67,8 @@ import { PrivateConsultationParticipantStatusComponent } from './participant-wai
         ParticipantItemComponent,
         SelfViewComponent,
         ContextMenuHeaderComponent,
-        PrivateConsultationParticipantStatusComponent
+        PrivateConsultationParticipantStatusComponent,
+        PrivateConsultationParticipantDisplayNameComponent
     ],
     providers: [
         VideoCallService,

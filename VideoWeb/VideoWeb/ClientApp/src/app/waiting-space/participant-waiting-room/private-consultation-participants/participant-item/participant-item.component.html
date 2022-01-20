@@ -1,4 +1,4 @@
-<div class="language-icon"
+<div class="language-icon" 
     *ngIf="interpreter">
     <fa-icon icon="language"></fa-icon>
 </div>
@@ -7,26 +7,31 @@
     <div class="header-left" [class]="getRowClasses(participant)">
         <app-invite-participant
             *ngIf="!isParticipantInCurrentRoom(participant) && isParticipantAvailable(participant) && canInvite"
-            [participantId]="participant.id"
-            [conferenceId]="conferenceId"
+            [participantId]="participant.id" 
+            [conferenceId]="conferenceId" 
             [roomLabel]="roomLabel">
         </app-invite-participant>
-        <fa-icon *ngIf="isParticipantInCurrentRoom(participant)"
-            class="check"
+        <fa-icon *ngIf="isParticipantInCurrentRoom(participant)" 
+            icon="check" 
             aria-hidden="true"></fa-icon>
-    </div>
-    <div [class]="getRowClasses(participant)">
-        <span class="wrap-anywhere" [ngClass]="participantNameClass(participant)">{{participant.display_name}}</span>
-    </div>
-    <app-private-consultation-participant-status [entity]="participant" [status]="status" [roomLabel]="roomLabel">
+    </div>  
+    <app-private-consultation-participant-display-name 
+        [displayName]="participant?.display_name"
+        [isInCurrentRoom]="isParticipantInCurrentRoom(participant)" 
+        [isAvailable]="isParticipantAvailable(participant)">
+    </app-private-consultation-participant-display-name>
+    <app-private-consultation-participant-status 
+        [entity]="participant" 
+        [status]="status" 
+        [roomLabel]="roomLabel">
     </app-private-consultation-participant-status>
 </div>
-
-<div *ngIf="interpreter"
- class="individual-endpoint-row">
+<div *ngIf="interpreter" 
+class="individual-endpoint-row">
     <div class="header-left" [class]="getRowClasses(interpreter)"> </div>
-    <div [class]="getRowClasses(interpreter)">
-        <span [class]="'wrap-anywhere ' + participantNameClass(interpreter)">{{interpreter.display_name}}</span>
-    </div>
-
+    <app-private-consultation-participant-display-name 
+        [displayName]="interpreter?.display_name"
+        [isInCurrentRoom]="isParticipantInCurrentRoom(interpreter)" 
+        [isAvailable]="isParticipantAvailable(interpreter)">
+    </app-private-consultation-participant-display-name>
 </div>
