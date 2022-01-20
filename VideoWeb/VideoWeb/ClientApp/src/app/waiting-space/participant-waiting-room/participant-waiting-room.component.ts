@@ -85,7 +85,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         );
     }
 
-    async ngOnInit() {
+    ngOnInit() {
         this.init();
         this.userMediaService.isAudioOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(async audioOnly => {
             this.audioOnly = audioOnly;
