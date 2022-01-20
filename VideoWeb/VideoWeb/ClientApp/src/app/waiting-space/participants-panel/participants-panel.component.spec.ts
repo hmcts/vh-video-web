@@ -797,7 +797,7 @@ describe('ParticipantsPanelComponent', () => {
         const p = participants[6];
         p.status = ParticipantStatus.InHearing;
         const model = mapper.mapFromParticipantUserResponse(p);
-        expect(component.getPanelRowTooltipText(model)).toEqual(`${p.display_name}<br/>hearing-role.panel-member`);
+        expect(component.getPanelRowTooltipText(model)).toEqual(`${p.display_name}<br/>case-type-group.panelmember`);
     });
     it('should getPanelRowTooltipAdditionalText return display name for judge', () => {
         const p = participants[2];

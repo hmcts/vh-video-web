@@ -217,18 +217,7 @@ describe('WaitingRoom ParticipantList Base', () => {
 
         expect(consultationService.clearModals).toHaveBeenCalledTimes(0);
     });
-    it('should get list of judge and JOH and participants if user is JOH', () => {
-        component.loggedInUser.role = Role.JudicialOfficeHolder;
-        component.initParticipants();
 
-        expect(component.participantsInConsultation.length).toBe(7);
-    });
-    it('should get list of participants for user participant', () => {
-        component.loggedInUser.role = Role.Individual;
-
-        component.initParticipants();
-        expect(component.participantsInConsultation.length).toBe(7);
-    });
     it('should be allowed to invite in consultation if the participant is in the participants room', () => {
         const indivUser = conference.participants.find(x => x.role === Role.Individual);
         indivUser.current_room = new RoomSummaryResponse({ label: 'ParticipantCourtRoom' });
