@@ -1,7 +1,9 @@
+@import "abstracts";
+
 .white {
   color: rgba(255, 255, 255, 0.9);
 }
 
-.margin-right {
-  margin-right: 5px;
+.display-name {
+  margin-right: rem(5px);
 }
