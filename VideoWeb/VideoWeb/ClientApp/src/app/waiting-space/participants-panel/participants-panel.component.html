@@ -133,11 +133,7 @@
                 : participant.displayName + ('participants-panel.click-to-spotlight' | translate)
             " colour="blue" (click)="toggleSpotlightParticipant(participant); $event.stopPropagation()">
                         <fa-icon icon="thumbtack" [class]="{ yellow: participant.hasSpotlight() }"></fa-icon>
-                    </div>
-                </div>
-
-                 <!-- Column 6 -->
-                <div>                  
+                    </div>               
                     <div *ngIf="isParticipantInHearing(participant) && participant.isLocalCameraOff()"
                         class="icon-button no-click">
                         <fa-icon appTooltip [text]="'participants-panel.camera-off' | translate"
@@ -145,7 +141,7 @@
                     </div>
                 </div>
 
-                <!-- Column 7 -->
+                <!-- Column 6 -->
                 <div>
                     <app-judge-context-menu [participantInput]="participant" *ngIf="!participant.isHost"
                         [hidden]="!isParticipantInHearing(participant) && !participant.isAvailable()"
