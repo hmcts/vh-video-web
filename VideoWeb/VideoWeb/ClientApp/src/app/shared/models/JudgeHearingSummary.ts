@@ -1,3 +1,4 @@
+import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { ConferenceForHostResponse, Role } from '../../services/clients/api-client';
 import { HearingSummary } from './hearing-summary';
@@ -10,20 +11,23 @@ export class JudgeHearingSummary extends HearingSummary {
     }
 
     get nonJudicialParticipantsExcludingObservers(): ParticipantSummary[] {
+        const observers = [...this.observers];
         const p = this.participants.filter(
             x =>
                 (x.role === Role.Individual || x.role === Role.Representative || x.role === Role.QuickLinkParticipant) &&
-                x.hearingRole !== HearingRole.OBSERVER
+                !observers.includes(x)
         );
         return p;
     }
 
     get observers(): ParticipantSummary[] {
-        return this.participants.filter(x => x.hearingRole === HearingRole.OBSERVER || x.role === Role.QuickLinkObserver);
+        return this.participants.filter(
+            x => x.caseGroup === CaseTypeGroup.OBSERVER || x.hearingRole === HearingRole.OBSERVER || x.role === Role.QuickLinkObserver
+        );
     }
 
     get panelMembers(): ParticipantSummary[] {
-        return this.participants.filter(x => x.hearingRole === HearingRole.PANEL_MEMBER && x.role === Role.JudicialOfficeHolder);
+        return this.participants.filter(x => x.isParticipantPanelMember && x.role === Role.JudicialOfficeHolder);
     }
 
     get wingers(): ParticipantSummary[] {

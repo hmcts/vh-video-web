@@ -1,4 +1,5 @@
 import { Role } from '../../services/clients/api-client';
+import { CaseTypeGroup } from './case-type-group';
 import { HearingRole } from './hearing-role-model';
 
 export abstract class PanelModel {
@@ -178,7 +179,11 @@ export abstract class PanelModel {
             return 5;
         } else if (this.caseTypeGroup?.toLowerCase() === 'endpoint') {
             return 6;
-        } else if (this.hearingRole === HearingRole.OBSERVER || this.role === Role.QuickLinkObserver) {
+        } else if (
+            this.caseTypeGroup === CaseTypeGroup.OBSERVER ||
+            this.hearingRole === HearingRole.OBSERVER ||
+            this.role === Role.QuickLinkObserver
+        ) {
             return 7;
         } else {
             return 4;

@@ -750,7 +750,11 @@ describe('HearingControlsBaseComponent', () => {
             HearingRole.WINGER,
             HearingRole.LITIGANT_IN_PERSON,
             HearingRole.STAFF_MEMBER,
-            HearingRole.QUICK_LINK_PARTICIPANT
+            HearingRole.QUICK_LINK_PARTICIPANT,
+            HearingRole.MEDICAL_MEMBER,
+            HearingRole.LEGAL_MEMBER,
+            HearingRole.DISABILITY_MEMBER,
+            HearingRole.FINANCIAL_MEMBER
         ];
         allowedHearingRoles.forEach(hearingRole => {
             it(`returns "true" when device is a desktop device and user has the '${hearingRole}' HearingRole`, () => {

@@ -663,6 +663,9 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     private getHearingRole(participant: PanelModel): string {
+        if (participant.caseTypeGroup?.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase()) {
+            return '';
+        }
         const translatedtext = this.getTranslatedText('for');
         const hearingRoleText = this.translateService.instant('hearing-role.' + participant.hearingRole.toLowerCase().split(' ').join('-'));
         return participant.representee ? `<br/>${hearingRoleText} ${translatedtext} ${participant.representee}` : `<br/>${hearingRoleText}`;
@@ -681,7 +684,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     private showCaseRole(participant: PanelModel) {
         return participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
             participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
-            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase() ||
             participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
             participant.caseTypeGroup.toLowerCase() === 'endpoint'
             ? false
