@@ -14,7 +14,7 @@ import { FeatureFlagService } from '../../services/feature-flag.service';
     templateUrl: './navigator.component.html'
 })
 export class NavigatorComponent implements OnInit {
-    staffMemberNavigation: string = pageUrls.StaffMemberHearingList;
+    staffMemberNavigation: string = pageUrls.StaffMemberHearingSelection;
 
     constructor(
         private router: Router,
@@ -27,7 +27,7 @@ export class NavigatorComponent implements OnInit {
         this.featureFlagService
             .getFeatureFlagByName('StaffMemberFeature')
             .pipe(first())
-            .subscribe(result => (this.staffMemberNavigation = result ? pageUrls.StaffMemberHearingList : pageUrls.Unauthorised));
+            .subscribe(result => (this.staffMemberNavigation = result ? pageUrls.StaffMemberHearingSelection : pageUrls.Unauthorised));
     }
 
     ngOnInit() {

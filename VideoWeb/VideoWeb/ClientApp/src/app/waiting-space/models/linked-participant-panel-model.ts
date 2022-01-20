@@ -46,7 +46,11 @@ export class LinkedParticipantPanelModel extends PanelModel {
     }
 
     get isCallableAndReadyToJoin(): boolean {
-        return this.participants.every(p => p.isCallableAndReadyToJoin);
+        if (this.isWitness) {
+            return this.isAvailable();
+        } else {
+            return this.participants.every(p => p.isCallableAndReadyToJoin);
+        }
     }
 
     get isCallableAndReadyToBeDismissed(): boolean {
@@ -77,7 +81,11 @@ export class LinkedParticipantPanelModel extends PanelModel {
     }
 
     isAvailable(): boolean {
-        return this.participants.some(p => p.isAvailable());
+        if (this.isWitness) {
+            return this.participants.every(p => p.isAvailable());
+        } else {
+            return this.participants.some(p => p.isAvailable());
+        }
     }
 
     isInConsultation(): boolean {
@@ -117,9 +125,29 @@ export class LinkedParticipantPanelModel extends PanelModel {
         }
     }
 
-    updateParticipant(isRemoteMuted: boolean, handRaised: boolean, spotlighted: boolean) {
+    updateParticipant(
+        isRemoteMuted: boolean,
+        handRaised: boolean,
+        spotlighted: boolean,
+        participantId?: string,
+        isLocalAudioMuted?: boolean,
+        isLocalVideoMuted?: boolean
+    ) {
+        if (this.hasParticipant(participantId)) {
+            this.participants
+                .find(p => p.id === participantId)
+                .updateParticipant(isRemoteMuted, handRaised, spotlighted, participantId, isLocalAudioMuted, isLocalVideoMuted);
+        }
+
+        if (!participantId) {
+            this.participants.forEach(p =>
+                p.updateParticipant(isRemoteMuted, handRaised, spotlighted, participantId, isLocalAudioMuted, isLocalVideoMuted)
+            );
+        }
+
         this.isRemoteMuted = isRemoteMuted;
         this.isSpotlighted = spotlighted;
+        this.updateParticipantDeviceStatus(isLocalAudioMuted, isLocalVideoMuted);
         if (handRaised !== null) {
             this.handRaised = handRaised;
         }

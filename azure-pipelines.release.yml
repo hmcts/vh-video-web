@@ -24,6 +24,11 @@ parameters:
     type: boolean
     default: false
 
+  - name: runACTests
+    displayName: Run Smoke Checks
+    type: boolean
+    default: true
+
   - name: prodEnvs
     displayName: Environments Using Prod Subscription
     type: object
@@ -41,13 +46,13 @@ variables:
   - ${{ if ne(variables['Build.Reason'], 'ResourceTrigger') }}:
       - ${{ if containsValue(parameters.prodEnvs, parameters.environment) }}:
           - group: vh-prod
-      - ${{ if not(containsValue(parameters.prodEnvs, parameters.environment)) }}:
-          - group: vh-preview
+      - ? ${{ if not(containsValue(parameters.prodEnvs, parameters.environment)) }}
+        : - group: vh-preview
   - ${{ if eq(variables['Build.Reason'], 'ResourceTrigger') }}:
-      - ${{ if or(startswith(variables['Build.SourceBranch'], 'refs/heads/release/'), startswith(variables['Build.SourceBranch'], 'refs/heads/hotfix/')) }}:
-          - group: vh-prod
-      - ${{ if not(or(startswith(variables['Build.SourceBranch'], 'refs/heads/release/'), startswith(variables['Build.SourceBranch'], 'refs/heads/hotfix/'))) }}:
-          - group: vh-preview
+      - ? ${{ if or(startswith(variables['Build.SourceBranch'], 'refs/heads/release/'), startswith(variables['Build.SourceBranch'], 'refs/heads/hotfix/')) }}
+        : - group: vh-prod
+      - ? ${{ if not(or(startswith(variables['Build.SourceBranch'], 'refs/heads/release/'), startswith(variables['Build.SourceBranch'], 'refs/heads/hotfix/'))) }}
+        : - group: vh-preview
 
 trigger: none
 pr: none
@@ -87,6 +92,7 @@ stages:
         appName: vh-video-web-$(environment)
         resourceGroup: vh-video-web-$(environment)
         testCaseFilter: TestCategory=smoketest
+        runACTests: ${{ parameters.runACTests }}
         dependentApps:
           - name: vh-user-api-$(environment)
             resourceGroup: vh-user-api-$(environment)
@@ -305,6 +311,8 @@ stages:
             value: $(EnableIOSTabletSupport)
           - name: VhServices:EnableVideoFilters
             value: $(EnableVideoFilters)
+          - name: VhServices:EnableDynamicEvidenceSharing
+            value: $(EnableDynamicEvidenceSharing)
 
           # Quick Links Configuration
           - name: QuickLinks:Issuer
@@ -350,6 +358,8 @@ stages:
             value: $(EnableIOSTabletSupport)
           - name: VhServices:EnableVideoFilters
             value: $(EnableVideoFilters)
+          - name: VhServices:EnableDynamicEvidenceSharing
+            value: $(EnableDynamicEvidenceSharing)
 
           # AzureAd
           - name: AzureAd:TenantId

@@ -32,10 +32,12 @@ declare interface PexipClient {
     protocol: string;
     turn_server: any;
 
+    onLog: (message: string, ...args: any[]) => void;
     onSetup: (stream: any, pinStatus: any, conferenceExtension: any) => void;
     onConnect: (stream: MediaStream | URL) => void;
     onError: (reason: any) => void;
     onDisconnect: (reason: any) => void;
+    onParticipantCreate: (participantUpdate: PexipParticipant) => void;
     onParticipantUpdate: (participantUpdate: PexipParticipant) => void;
     onConferenceUpdate: (conferenceUpdate: PexipConference) => void;
     onCallTransfer: (reason: any) => void;

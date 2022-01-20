@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceLite } from 'src/app/services/models/conference-lite';
-import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
-import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { ConferenceLite } from 'src/app/services/models/conference-lite';
+import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
     selector: 'app-introduction',

@@ -21,30 +21,30 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
 {
     public class CheckParticipantCanAccessConferenceAttributeTest
     {
-        protected Mock<ILogger<CheckParticipantCanAccessConferenceAttribute>> _logger;
-        protected Mock<IConferenceCache> _conferenceCache;
-        protected Mock<IVideoApiClient> _videoApiClient;
-        protected CheckParticipantCanAccessConferenceAttribute _sut;
-        protected readonly Guid _participantId = Guid.NewGuid();
-        protected readonly Guid _conferenceId = Guid.NewGuid();
-        protected ActionExecutingContext _actionExecutingContext;
-        protected ActionExecutedContext _actionExecutedContext;
-        protected ClaimsPrincipalBuilder _userBuilder;
-        protected const string USER_NAME = "some-user-name";
+        private Mock<ILogger<CheckParticipantCanAccessConferenceAttribute>> _logger;
+        protected Mock<IConferenceCache> ConferenceCache;
+        private Mock<IVideoApiClient> _videoApiClient;
+        protected CheckParticipantCanAccessConferenceAttribute Sut;
+        protected readonly Guid ParticipantId = Guid.NewGuid();
+        protected readonly Guid ConferenceId = Guid.NewGuid();
+        protected ActionExecutingContext ActionExecutingContext;
+        protected ActionExecutedContext ActionExecutedContext;
+        protected ClaimsPrincipalBuilder UserBuilder;
+        protected const string UserName = "some-user-name";
 
         [SetUp]
         public void SetUp()
         {
             _logger = new Mock<ILogger<CheckParticipantCanAccessConferenceAttribute>>();
-            _conferenceCache = new Mock<IConferenceCache>();
+            ConferenceCache = new Mock<IConferenceCache>();
             _videoApiClient = new Mock<IVideoApiClient>();
-            _sut = new CheckParticipantCanAccessConferenceAttribute(
+            Sut = new CheckParticipantCanAccessConferenceAttribute(
                 _logger.Object,
-                _conferenceCache.Object,
+                ConferenceCache.Object,
                 _videoApiClient.Object
             );
 
-            _userBuilder = new ClaimsPrincipalBuilder();
+            UserBuilder = new ClaimsPrincipalBuilder();
         }
 
         protected void SetupActionExecutingContext(
@@ -64,7 +64,7 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
                 modelState
             );
 
-            _actionExecutingContext = new ActionExecutingContext(
+            ActionExecutingContext = new ActionExecutingContext(
                 actionContext,
                 new List<IFilterMetadata>(),
                 actionArguments ?? new Dictionary<string, object>(),
@@ -73,7 +73,7 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
                 Result = new OkResult()
             };
 
-            _actionExecutedContext =
+            ActionExecutedContext =
                 new ActionExecutedContext(actionContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
         }
 
@@ -85,7 +85,7 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
                 new TestCaseData(AppRoles.CitizenRole),
                 new TestCaseData(AppRoles.JudgeRole),
                 new TestCaseData(AppRoles.JudicialOfficeHolderRole),
-                new TestCaseData(AppRoles.RepresentativeRole)
+                new TestCaseData(AppRoles.RepresentativeRole),
             };
 
             retList.Count.Should().Be(5, "there is an AppRole missing from this test");

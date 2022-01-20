@@ -1,6 +1,7 @@
 import { Logger } from 'src/app/services/logging/logger-base';
 
 export class MockLogger implements Logger {
+    pexRtcInfo(message: string, properties?: any): void {}
     warn(message: string): void {}
     debug(message: string): void {}
     info(message: string): void {}

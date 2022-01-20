@@ -1,19 +1,20 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Swashbuckle.AspNetCore.Annotations;
+using VideoApi.Client;
+using VideoApi.Contract.Enums;
+using VideoApi.Contract.Requests;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
-using VideoApi.Client;
-using VideoApi.Contract.Requests;
-using VideoApi.Contract.Enums;
-using VideoWeb.Helpers;
+using VideoWeb.Contract.Request;
 using VideoWeb.EventHub.Services;
+using VideoWeb.Mappings;
 
 namespace VideoWeb.Controllers
 {
@@ -27,14 +28,18 @@ namespace VideoWeb.Controllers
         private readonly ILogger<ConferenceManagementController> _logger;
         private readonly IConferenceCache _conferenceCache;
         private readonly IHearingLayoutService _hearingLayoutService;
+        private readonly IConferenceVideoControlStatusService _conferenceVideoControlStatusService;
+        private readonly IMapperFactory _mapperFactory;
 
         public ConferenceManagementController(IVideoApiClient videoApiClient,
-            ILogger<ConferenceManagementController> logger, IConferenceCache conferenceCache, IHearingLayoutService hearingLayoutService)
+            ILogger<ConferenceManagementController> logger, IConferenceCache conferenceCache, IHearingLayoutService hearingLayoutService, IConferenceVideoControlStatusService conferenceVideoControlStatusService, IMapperFactory mapperFactory)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
             _conferenceCache = conferenceCache;
             _hearingLayoutService = hearingLayoutService;
+            _conferenceVideoControlStatusService = conferenceVideoControlStatusService;
+            _mapperFactory = mapperFactory;
         }
 
         /// <summary>
@@ -66,7 +71,7 @@ namespace VideoWeb.Controllers
                     .Where(x => x.Username.Equals(User.Identity.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase))
                     .Select(x => x.Id.ToString()).ToList();
 
-                request.MuteGuests = true;
+                request.MuteGuests = false;
 
                 await _videoApiClient.StartOrResumeVideoHearingAsync(conferenceId, request);
                 _logger.LogDebug("Sent request to start / resume conference {Conference}", conferenceId);
@@ -78,6 +83,75 @@ namespace VideoWeb.Controllers
                 return StatusCode(ex.StatusCode, ex.Response);
             }
         }
+                
+        /// <summary>
+        /// Updates the video control statuses for the conference
+        /// </summary>
+        /// <param name="conferenceId">conference id</param>
+        /// <returns>Ok status</returns>
+        /// <returns>Forbidden status</returns>
+        /// <returns>Not Found status</returns>
+        [HttpPut("{conferenceId}/setVideoControlStatuses")]
+        [SwaggerOperation(OperationId = "SetVideoControlStatusesForConference")]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> SetVideoControlStatusesForConference(Guid conferenceId, [FromBody]SetConferenceVideoControlStatusesRequest setVideoControlStatusesRequest)
+        {
+            try
+            {
+                var mapper = _mapperFactory.Get<SetConferenceVideoControlStatusesRequest, ConferenceVideoControlStatuses>();
+                var videoControlStatuses = mapper.Map(setVideoControlStatusesRequest);
+                
+                _logger.LogDebug("Setting the video control statuses for {conferenceId}", conferenceId);
+                await _conferenceVideoControlStatusService.SetVideoControlStateForConference(conferenceId, videoControlStatuses);
+
+                _logger.LogTrace("Set video control statuses ({videoControlStatuses}) for {conferenceId}", videoControlStatuses, conferenceId);
+                return Accepted();
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Could not set video control statuses for {conferenceId} an unkown exception was thrown", conferenceId);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+        }
+        
+        /// <summary>
+        /// Returns the video control statuses for the conference
+        /// </summary>
+        /// <param name="conferenceId">conference id</param>
+        /// <returns>Ok status</returns>
+        /// <returns>Forbidden status</returns>
+        /// <returns>Not Found status</returns>
+        [HttpGet("{conferenceId}/getVideoControlStatuses")]
+        [SwaggerOperation(OperationId = "GetVideoControlStatusesForConference")]
+        [ProducesResponseType(typeof(ConferenceVideoControlStatuses), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        [ProducesResponseType(typeof(ConferenceVideoControlStatuses), (int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetVideoControlStatusesForConference(Guid conferenceId)
+        {
+            try
+            {
+                _logger.LogDebug("Getting the video control statuses for {conferenceId}", conferenceId);
+                var videoControlStatuses = await _conferenceVideoControlStatusService.GetVideoControlStateForConference(conferenceId);
+
+                if (videoControlStatuses == null) {
+                    _logger.LogWarning("video control statuses didn't have a value returning NotFound. This was for {conferenceId}", conferenceId);
+                    return NotFound(new ConferenceVideoControlStatuses()
+                    {
+                        ParticipantIdToVideoControlStatusMap = new Dictionary<string, VideoControlStatus>()
+                    });
+                }
+
+                _logger.LogTrace("Got video control statuses ({videoControlStatuses}) for {conferenceId}", videoControlStatuses, conferenceId);
+                return Ok(videoControlStatuses);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Could not get video control statuses for {conferenceId} an unkown exception was thrown", conferenceId);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+        }
 
         /// <summary>
         /// Returns the active layout for a conference
@@ -86,7 +160,7 @@ namespace VideoWeb.Controllers
         /// <returns>Ok status</returns>
         /// <returns>Forbidden status</returns>
         /// <returns>Not Found status</returns>
-        [HttpPost("{conferenceId}/getlayout")]
+        [HttpGet("{conferenceId}/getlayout")]
         [SwaggerOperation(OperationId = "GetLayoutForHearing")]
         [ProducesResponseType(typeof(HearingLayout), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]

@@ -3,11 +3,14 @@
     <div class="govuk-!-margin-top-4">
       <div class="govuk-grid-column-one-third">
         <img
-          src="/assets/images/govuk-crest.png"
-          height="50"
-          width="50"
+          appCrestLogoImageSource
+          [sctsImageSource]="'/assets/images/scottish-crest-grey.png'"
+          [sctsAltText]=" ('judge-participant-status-list.scottish-crest' | translate)"
+          [hmctsImageSource]="'/assets/images/govuk-crest.png'"
+          [hmctsAltText]=" ('judge-participant-status-list.crest-alt' | translate)"
+          alt="" 
           class="govuk-header__logotype-crest"
-          [attr.alt]="'judge-participant-status-list.crest-alt' | translate"
+          height="50"
         />
       </div>
 
@@ -120,7 +123,7 @@
     <div *ngIf="staffMembers.length > 0">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-          <h2 class="govuk-heading-s">{{'judge-participant-status-list.staff-member' | translate}}</h2>
+          <h2 class="govuk-heading-s">{{'judge-participant-status-list.staff-members' | translate}} ({{ staffMembers.length }})</h2>
       </div>
     </div>
     <div class="vh-border">
@@ -184,7 +187,7 @@
 
                     <p id="p-{{ participant.id }}-name-participant" class="govuk-heading-s govuk-!-margin-bottom-3">
                         <span *ngIf="hasInterpreterLink(participant)" class="vh-interpreter-icon">
-                          <em class="far fa-2x fa-language"></em>
+                          <fa-icon icon="language" size="2x"></fa-icon>
                         </span>
                         {{ participant.name }}
                     </p>

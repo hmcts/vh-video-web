@@ -112,4 +112,34 @@ export class VideoControlService {
             });
         }
     }
+
+    setLocalAudioMutedById(id: string, localAudioMuted: boolean) {
+        this.logger.info(`${this.loggerPrefix} Attempting to set local audio mute status of participant/vmr with ID ${id}.`, {
+            localAudioMuted: localAudioMuted,
+            participantOrVmrId: id
+        });
+        this.videoControlCacheService.setLocalAudioMuted(id, localAudioMuted);
+    }
+
+    getLocalAudioMutedById(id: string): boolean {
+        this.logger.info(`${this.loggerPrefix} Attempting to get local audio mute status of participant/vmr with ID ${id}.`, {
+            participantOrVmrId: id
+        });
+        return this.videoControlCacheService.getLocalAudioMuted(id);
+    }
+
+    setLocalVideoMutedById(id: string, localVideoMuted: boolean) {
+        this.logger.info(`${this.loggerPrefix} Attempting to set local video mute status of participant/vmr with ID ${id}.`, {
+            localVideoMuted: localVideoMuted,
+            participantOrVmrId: id
+        });
+        this.videoControlCacheService.setLocalVideoMuted(id, localVideoMuted);
+    }
+
+    getLocalVideoMutedById(id: string): boolean {
+        this.logger.info(`${this.loggerPrefix} Attempting to get local video mute status of participant/vmr with ID ${id}.`, {
+            participantOrVmrId: id
+        });
+        return this.videoControlCacheService.getLocalVideoMuted(id);
+    }
 }

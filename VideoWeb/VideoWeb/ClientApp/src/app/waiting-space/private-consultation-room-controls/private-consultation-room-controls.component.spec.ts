@@ -1,5 +1,6 @@
 import { Guid } from 'guid-typescript';
 import {
+    ClientSettingsResponse,
     ConferenceResponse,
     ConferenceStatus,
     ParticipantForUserResponse,
@@ -38,6 +39,8 @@ import { CaseTypeGroup } from '../models/case-type-group';
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { fakeAsync, flush } from '@angular/core/testing';
+import { ConfigService } from 'src/app/services/api/config.service';
+import { FeatureFlagService } from 'src/app/services/feature-flag.service';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -80,8 +83,18 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
     let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
     let onCurrentConferenceStatusSubject: Subject<ConferenceStatusChanged>;
+    let configServiceSpy: jasmine.SpyObj<ConfigService>;
+    let clientSettingsResponse: ClientSettingsResponse;
+    let featureFlagServiceSpy: jasmine.SpyObj<FeatureFlagService>;
 
+    beforeAll(() => {
+        featureFlagServiceSpy = jasmine.createSpyObj<FeatureFlagService>('FeatureFlagService', ['getFeatureFlagByName']);
+        featureFlagServiceSpy.getFeatureFlagByName.and.returnValue(of(true));
+    });
     beforeEach(() => {
+        clientSettingsResponse = new ClientSettingsResponse({
+            enable_dynamic_evidence_sharing: false
+        });
         translateService.instant.calls.reset();
 
         participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
@@ -89,6 +102,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             [],
             ['loggedInParticipant$', 'participants']
         );
+        configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings']);
+        configServiceSpy.getClientSettings.and.returnValue(of(clientSettingsResponse));
 
         userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>([], ['isAudioOnly$']);
         isAudioOnlySubject = new Subject<boolean>();
@@ -111,7 +126,9 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             participantServiceSpy,
             translateService,
             userMediaServiceSpy,
-            conferenceServiceSpy
+            conferenceServiceSpy,
+            configServiceSpy,
+            featureFlagServiceSpy
         );
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;
@@ -128,17 +145,32 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     });
 
     describe('canJoinHearingFromConsultation', () => {
-        const testCases: { shouldShow: boolean; newConferenceStatus: ConferenceStatus; participantStatus: ParticipantStatus }[] = [];
-        for (const conferenceStatus in ConferenceStatus) {
-            if (conferenceStatus) {
-                for (const participantStatus in ParticipantStatus) {
-                    if (participantStatus) {
-                        testCases.push({
-                            shouldShow:
-                                conferenceStatus === ConferenceStatus.InSession && participantStatus === ParticipantStatus.InConsultation,
-                            newConferenceStatus: <ConferenceStatus>conferenceStatus,
-                            participantStatus: <ParticipantStatus>participantStatus
-                        });
+        const testCases: {
+            isHost: Boolean;
+            shouldShow: boolean;
+            newConferenceStatus: ConferenceStatus;
+            participantStatus: ParticipantStatus;
+        }[] = [];
+        for (const isHost of [false, true]) {
+            for (const conferenceStatus of [
+                ConferenceStatus.InSession,
+                ConferenceStatus.Paused,
+                ConferenceStatus.NotStarted,
+                ConferenceStatus.Suspended
+            ]) {
+                if (conferenceStatus) {
+                    for (const participantStatus of [ParticipantStatus.InConsultation, ParticipantStatus.InHearing]) {
+                        if (participantStatus) {
+                            testCases.push({
+                                isHost: isHost,
+                                shouldShow:
+                                    conferenceStatus === ConferenceStatus.InSession &&
+                                    participantStatus === ParticipantStatus.InConsultation &&
+                                    isHost,
+                                newConferenceStatus: <ConferenceStatus>conferenceStatus,
+                                participantStatus: <ParticipantStatus>participantStatus
+                            });
+                        }
                     }
                 }
             }
@@ -147,10 +179,13 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         for (const testCase of testCases) {
             it(`should ${testCase.shouldShow ? '' : 'NOT'} show the join hearing button when the new status is ${
                 testCase.newConferenceStatus
-            } and the participant status is ${testCase.participantStatus}`, fakeAsync(() => {
+            } and the participant status is ${testCase.participantStatus} and the participant is ${
+                testCase.isHost ? '' : 'NOT'
+            } a host`, fakeAsync(() => {
                 // Arrange
                 onCurrentConferenceStatusSubject.next({ oldStatus: null, newStatus: testCase.newConferenceStatus });
                 component.participant.status = testCase.participantStatus;
+                spyOnProperty(component, 'isHost').and.returnValue(testCase.isHost);
 
                 // Act
                 const shouldShow = component.canJoinHearingFromConsultation;
@@ -170,6 +205,63 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             // Assert
             expect(videoCallServiceSpy.joinHearingInSession).toHaveBeenCalledWith(component.conferenceId, component.participant.id);
         }));
+    });
+    describe('StaffMemberFeature', () => {
+        it('should show leave button when staff member feature is enabled', async () => {
+            // Act
+            featureFlagServiceSpy.getFeatureFlagByName.and.returnValue(of(true));
+            spyOnProperty(component, 'isHost').and.returnValue(true);
+            component.isPrivateConsultation = false;
+            // Assert
+            expect(component.canShowLeaveButton).toBeTrue();
+            expect(component.isStaffMemberFeatureEnabled).toBeTrue();
+        });
+    });
+
+    it('enableDynamicEvidenceSharing returns false when dynamic evidence sharing is disabled', () => {
+        configServiceSpy.getClientSettings.and.returnValue(
+            of(
+                new ClientSettingsResponse({
+                    enable_dynamic_evidence_sharing: false
+                })
+            )
+        );
+        const _component = new PrivateConsultationRoomControlsComponent(
+            videoCallService,
+            eventsService,
+            deviceTypeService,
+            logger,
+            participantServiceSpy,
+            translateService,
+            userMediaServiceSpy,
+            conferenceServiceSpy,
+            configServiceSpy,
+            featureFlagServiceSpy
+        );
+        expect(_component.enableDynamicEvidenceSharing).toBe(false);
+    });
+
+    it('enableDynamicEvidenceSharing returns true when dynamic evidence sharing is enabled', () => {
+        configServiceSpy.getClientSettings.and.returnValue(
+            of(
+                new ClientSettingsResponse({
+                    enable_dynamic_evidence_sharing: true
+                })
+            )
+        );
+        const _component = new PrivateConsultationRoomControlsComponent(
+            videoCallService,
+            eventsService,
+            deviceTypeService,
+            logger,
+            participantServiceSpy,
+            translateService,
+            userMediaServiceSpy,
+            conferenceServiceSpy,
+            configServiceSpy,
+            featureFlagServiceSpy
+        );
+        expect(_component.enableDynamicEvidenceSharing).toBe(true);
     });
 
     it('should open self-view by default for judge', () => {

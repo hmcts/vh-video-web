@@ -9,5 +9,6 @@ namespace VideoWeb.Contract.Responses
         public string LastName { get; set; }
         public string DisplayName { get; set; }
         public string Username { get; set; }
+        public string Name { get; set; }
     }
 }

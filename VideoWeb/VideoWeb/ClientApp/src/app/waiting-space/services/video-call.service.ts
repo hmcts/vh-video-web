@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
+import { BROWSERS } from 'ngx-device-detector';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { skip, take, takeUntil } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ApiClient, HearingLayout, SharedParticipantRoom, StartHearingRequest } from 'src/app/services/clients/api-client';
 import { KinlyHeartbeatService } from 'src/app/services/conference/kinly-heartbeat.service';
+import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { StreamMixerService } from 'src/app/services/stream-mixer.service';
@@ -43,6 +45,7 @@ export class VideoCallService {
     private onCallTransferSubject = new Subject<any>();
     private onParticipantUpdatedSubject = new Subject<ParticipantUpdated>();
     private onConferenceUpdatedSubject = new Subject<ConferenceUpdated>();
+    private onParticipantCreatedSubject = new Subject<ParticipantUpdated>();
 
     private onConnectedScreenshareSubject = new Subject<ConnectedScreenshare>();
     private onStoppedScreenshareSubject = new Subject<StoppedScreenshare>();
@@ -69,7 +72,8 @@ export class VideoCallService {
         private configService: ConfigService,
         private kinlyHeartbeatService: KinlyHeartbeatService,
         private videoCallEventsService: VideoCallEventsService,
-        private streamMixerService: StreamMixerService
+        private streamMixerService: StreamMixerService,
+        private deviceTypeService: DeviceTypeService
     ) {
         this.preferredLayoutCache = new SessionStorage(this.PREFERRED_LAYOUT_KEY);
 
@@ -83,6 +87,7 @@ export class VideoCallService {
      * the user's preferred camera and microphone (if selected)
      */
     async setupClient(): Promise<void> {
+        this.logger.info(`${this.loggerPrefix} setting up client.`);
         this.hasDisconnected$ = new Subject();
 
         const self = this;
@@ -90,6 +95,11 @@ export class VideoCallService {
         this.initCallTag();
         this.initTurnServer();
         this.pexipAPI.screenshare_fps = 30;
+
+        this.pexipAPI.onLog = (message: string, ...args: any[]) => {
+            const pexipLoggerPrefix = '[PexipApi] - ';
+            this.logger.pexRtcInfo(`${pexipLoggerPrefix} ${message}`, ...args);
+        };
 
         this.userMediaService.initialise();
         this.logger.debug(`${this.loggerPrefix} attempting to setup user media stream`);
@@ -107,6 +117,7 @@ export class VideoCallService {
         this.pexipAPI.onDisconnect = this.handleServerDisconnect.bind(this);
 
         this.pexipAPI.onParticipantUpdate = this.handleParticipantUpdate.bind(this);
+        this.pexipAPI.onParticipantCreate = this.handleParticipantCreated.bind(this);
 
         this.pexipAPI.onConferenceUpdate = function (conferenceUpdate) {
             self.onConferenceUpdatedSubject.next(new ConferenceUpdated(conferenceUpdate.guests_muted));
@@ -145,6 +156,14 @@ export class VideoCallService {
             this.pexipAPI.user_media_stream = currentStream;
             this.renegotiateCall();
         });
+
+        this.setEncoder();
+    }
+
+    private setEncoder() {
+        if (this.deviceTypeService.getBrowserName() === BROWSERS.FIREFOX || this.deviceTypeService.isIOS()) {
+            this.enableH264(false);
+        }
     }
 
     initTurnServer() {
@@ -184,13 +203,19 @@ export class VideoCallService {
         this.onConnectedSubject.next(new ConnectedCall(stream));
     }
 
+    private handleParticipantCreated(participantUpdate: PexipParticipant) {
+        this.logger.debug(`${this.loggerPrefix} handling participant created`);
+
+        this.onParticipantCreatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
+    }
+
     private handleParticipantUpdate(participantUpdate: PexipParticipant) {
         this.videoCallEventsService.handleParticipantUpdated(ParticipantUpdated.fromPexipParticipant(participantUpdate));
         this.onParticipantUpdatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
     }
 
     private handleError(error: string) {
-        this.kinlyHeartbeatService.stopHeartbeat();
+        this.cleanUpConnection();
 
         this.onErrorSubject.next(new CallError(error));
     }
@@ -199,11 +224,8 @@ export class VideoCallService {
     // https://docs.pexip.com/api_client/api_pexrtc.htm#onDisconnect
     private handleServerDisconnect(reason: string) {
         this.logger.debug(`${this.loggerPrefix} handling server disconnection`);
-        this.hasDisconnected$.next();
-        this.hasDisconnected$.complete();
 
-        this.kinlyHeartbeatService.stopHeartbeat();
-
+        this.cleanUpConnection();
         this.onDisconnected.next(new DisconnectedCall(reason));
     }
 
@@ -221,12 +243,18 @@ export class VideoCallService {
             this.logger.info(`${this.loggerPrefix} Disconnecting from pexip node.`);
             this.stopPresentation();
             this.pexipAPI.disconnect();
-            this.hasDisconnected$.next();
-            this.hasDisconnected$.complete();
-            this.kinlyHeartbeatService.stopHeartbeat();
+            this.cleanUpConnection();
         } else {
             throw new Error(`${this.loggerPrefix} Pexip Client has not been initialised.`);
         }
+    }
+
+    private cleanUpConnection() {
+        this.logger.warn(`${this.loggerPrefix} Cleaning up connection.`);
+        this.hasDisconnected$.next();
+        this.hasDisconnected$.complete();
+        this.kinlyHeartbeatService.stopHeartbeat();
+        this.setupClient();
     }
 
     connect(pin: string, extension: string) {
@@ -251,6 +279,10 @@ export class VideoCallService {
 
     onError(): Observable<CallError> {
         return this.onErrorSubject.asObservable();
+    }
+
+    onParticipantCreated(): Observable<ParticipantUpdated> {
+        return this.onParticipantCreatedSubject.asObservable();
     }
 
     onParticipantUpdated(): Observable<ParticipantUpdated> {

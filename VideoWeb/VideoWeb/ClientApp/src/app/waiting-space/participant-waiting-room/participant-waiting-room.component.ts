@@ -22,6 +22,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { take, takeUntil } from 'rxjs/operators';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
+import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
+import { CaseTypeGroup } from '../models/case-type-group';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -55,7 +58,9 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         protected clockService: ClockService,
         protected translateService: TranslateService,
         protected consultationInvitiationService: ConsultationInvitationService,
-        private unloadDetectorService: UnloadDetectorService
+        private unloadDetectorService: UnloadDetectorService,
+        protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
+        protected hearingVenueFlagsService: HearingVenueFlagsService
     ) {
         super(
             route,
@@ -72,7 +77,9 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             notificationToastrService,
             roomClosingToastrService,
             clockService,
-            consultationInvitiationService
+            consultationInvitiationService,
+            participantRemoteMuteStoreService,
+            hearingVenueFlagsService
         );
     }
 
@@ -254,6 +261,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
                 p.id !== this.participant.id &&
                 p.role !== Role.JudicialOfficeHolder &&
                 p.role !== Role.Judge &&
+                p.case_type_group !== CaseTypeGroup.OBSERVER &&
                 p.hearing_role !== HearingRole.OBSERVER &&
                 p.hearing_role !== HearingRole.WITNESS
         );
@@ -268,6 +276,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             conference: this.conference?.id,
             participant: this.participant.id
         });
+        this.hasTriedToLeaveConsultation = false;
         await this.consultationService.createParticipantConsultationRoom(this.conference, this.participant, participants, endpoints);
         this.closeStartPrivateConsultationModal();
         this.privateConsultationAccordianExpanded = false;
@@ -279,6 +288,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             participant: this.participant.id,
             roomLabel: roomLabel
         });
+        this.hasTriedToLeaveConsultation = false;
         await this.consultationService.joinPrivateConsultationRoom(this.conference.id, this.participant.id, roomLabel);
         this.closeJoinPrivateConsultationModal();
         this.privateConsultationAccordianExpanded = false;

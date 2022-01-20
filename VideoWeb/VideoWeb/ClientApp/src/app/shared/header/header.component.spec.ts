@@ -3,7 +3,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { BehaviorSubject } from 'rxjs';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { TranslatePipeMock } from 'src/app/testing/mocks/mock-translation-pipe';
+import { getSpiedPropertyGetter } from '../jasmine-helpers/property-helpers';
 import { pageUrls } from '../page-url.constants';
 import { HeaderComponent } from './header.component';
 import { topMenuItems } from './topMenuItems';
@@ -11,13 +14,33 @@ import { topMenuItems } from './topMenuItems';
 describe('HeaderComponent', () => {
     let component: HeaderComponent;
     let router: jasmine.SpyObj<Router>;
+    let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
+
+    const scottishHearingVenueSubject = new BehaviorSubject(false);
 
     beforeAll(() => {
         router = jasmine.createSpyObj<Router>('Router', ['navigate', 'navigateByUrl']);
     });
 
     beforeEach(() => {
-        component = new HeaderComponent(router);
+        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+            'HearingVenueFlagsService',
+            ['setHearingVenueIsScottish'],
+            ['hearingVenueIsScottish$']
+        );
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'hearingVenueIsScottish$').and.returnValue(
+            scottishHearingVenueSubject.asObservable()
+        );
+        component = new HeaderComponent(router, mockedHearingVenueFlagsService);
+    });
+
+    it('returns true for hearingVenueIsInScotland when hearing venue is in scotland', done => {
+        scottishHearingVenueSubject.next(true);
+        component.ngOnInit();
+        component.hearingVenueIsScottish$.subscribe(scottishVenueFlag => {
+            expect(scottishVenueFlag).toBe(true);
+            done();
+        });
     });
 
     it('header component should have top menu items', () => {
@@ -47,11 +70,23 @@ describe('Header component template file', () => {
     let fixture: ComponentFixture<HeaderComponent>;
     let component: HeaderComponent;
     let debugElement: DebugElement;
+    let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
+
+    const scottishHearingVenueSubject = new BehaviorSubject(false);
 
     beforeEach(async () => {
+        mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+            'HearingVenueFlagsService',
+            ['setHearingVenueIsScottish'],
+            ['hearingVenueIsScottish$']
+        );
+        getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'hearingVenueIsScottish$').and.returnValue(
+            scottishHearingVenueSubject.asObservable()
+        );
         await TestBed.configureTestingModule({
             imports: [RouterTestingModule],
-            declarations: [HeaderComponent, TranslatePipeMock]
+            declarations: [HeaderComponent, TranslatePipeMock],
+            providers: [{ provide: HearingVenueFlagsService, useValue: mockedHearingVenueFlagsService }]
         }).compileComponents();
     });
 
@@ -79,5 +114,21 @@ describe('Header component template file', () => {
         const logoutButton = debugElement.query(By.css('#logout-link'));
 
         expect(logoutButton).toBeNull();
+    });
+
+    it('renders scottish logo when hearing venue is scottish', () => {
+        scottishHearingVenueSubject.next(true);
+
+        fixture.detectChanges();
+
+        expect(fixture.debugElement.query(By.css('#header-logo-scot'))).toBeTruthy();
+    });
+
+    it('renders uk logo when hearing venue is not scottish', () => {
+        scottishHearingVenueSubject.next(false);
+
+        fixture.detectChanges();
+
+        expect(fixture.debugElement.query(By.css('#header-logo-scot'))).toBeFalsy();
     });
 });

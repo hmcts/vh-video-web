@@ -22,6 +22,7 @@
         [outgoingStream]="outgoingStream"
         [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
         [showConsultationControls]="showConsultationControls"
+        [areParticipantsVisible]="areParticipantsVisible"
         (leaveConsultation)="showLeaveConsultationModal()"
         (changeDeviceToggle)="showChooseCameraDialog()"
         (togglePanel)="togglePanel($event)"
@@ -30,7 +31,7 @@
     </div>
   </div>
 
-    <div *ngIf="isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': panelStates['Participants'] }">
+    <div *ngIf="isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': !panelStates['Participants'] }">
         <app-private-consultation-participants
             *ngIf="isPrivateConsultation"
             [conference]="hearing.getConference()"
@@ -42,14 +43,12 @@
 
   <div class="video-wrapper">
     <video
-      #incomingFeed
-      (playing)="updateVideoStreamMuteStatus()"
+      appForcePlayVideo
+      [muted]="shouldMuteHearing()"
       id="incomingFeedPrivate"
-      autoplay
-      [srcObject]="presentationStream && !streamInMain ? presentationStream : stream"
+      [srcObject]="presentationStream && !streamInMain ? presentationStream : callStream"
       height="auto"
       poster="/assets/images/empty_crest.jpg"
-      playsinline
     >
       {{ 'joh-waiting-room.browser-doesnt-support-video' | translate }}
     </video>
@@ -62,12 +61,11 @@
       colour="grey"
     >
       <video
-        [srcObject]="presentationStream && !streamInMain ? stream : presentationStream"
-        autoplay
+        appForcePlayVideo
+        [srcObject]="presentationStream && !streamInMain ? callStream : presentationStream"
         height="auto"
         poster="/assets/images/empty_crest.jpg"
         class="fill-container"
-        playsinline
       >
         {{ 'joh-waiting-room.browser-doesnt-support-video' | translate }}
       </video>

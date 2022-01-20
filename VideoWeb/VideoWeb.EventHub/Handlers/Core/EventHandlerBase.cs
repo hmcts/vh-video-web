@@ -152,6 +152,12 @@ namespace VideoWeb.EventHub.Handlers.Core
                 .ParticipantsUpdatedMessage(SourceConference.Id, participants);
         }
 
+        protected async Task PublishNewConferenceAddedMessage(Guid conferenceId)
+        {
+            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
+                .NewConferenceAddedMessage(conferenceId);
+        }
+
         protected abstract Task PublishStatusAsync(CallbackEvent callbackEvent);
     }
 }

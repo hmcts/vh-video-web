@@ -14,16 +14,16 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
             // arrange
             var actionArguments = new Dictionary<string, object>
             {
-                {"participantId", _participantId}
+                {"participantId", ParticipantId}
             };
-            var user = _userBuilder.WithUsername(USER_NAME).WithRole(appRole).Build();
+            var user = UserBuilder.WithUsername(UserName).WithRole(appRole).Build();
             SetupActionExecutingContext(actionArguments, user);
 
             // act
-            await _sut.OnActionExecutionAsync(_actionExecutingContext, () => Task.FromResult(_actionExecutedContext));
+            await Sut.OnActionExecutionAsync(ActionExecutingContext, () => Task.FromResult(ActionExecutedContext));
 
             // assert
-            _actionExecutingContext.Result.Should().BeOfType<OkResult>();
+            ActionExecutingContext.Result.Should().BeOfType<OkResult>();
         }
     }
 }

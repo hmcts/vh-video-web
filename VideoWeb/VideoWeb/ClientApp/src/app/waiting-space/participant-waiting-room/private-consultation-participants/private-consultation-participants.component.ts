@@ -1,20 +1,13 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import {
-    ConsultationAnswer,
-    LinkType,
-    ParticipantResponse,
-    ParticipantStatus,
-    Role,
-    VideoEndpointResponse
-} from 'src/app/services/clients/api-client';
+import { LinkType, ParticipantResponse, ParticipantStatus, VideoEndpointResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { WRParticipantStatusListDirective } from '../../waiting-room-shared/wr-participant-list-shared.component';
-import { ActivatedRoute } from '@angular/router';
 import { HearingRole } from '../../models/hearing-role-model';
-import { TranslateService } from '@ngx-translate/core';
+import { WRParticipantStatusListDirective } from '../../waiting-room-shared/wr-participant-list-shared.component';
 import { ParticipantListItem } from '../participant-list-item';
 
 @Component({
@@ -91,7 +84,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     canCallEndpoint(endpoint: VideoEndpointResponse): boolean {
         return (
             !this.isParticipantInCurrentRoom(endpoint) &&
-            this.isParticipantAvailable(endpoint) &&
+            this.isEndpointAvailable(endpoint) &&
             !this.endpointInRoom &&
             this.participantEndpoints.some(x => x.id === endpoint.id)
         );
@@ -108,7 +101,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     isJohInCurrentRoom(participant: ParticipantResponse): boolean {
         return (
             this.isParticipantInCurrentRoom(participant) &&
-            (participant.hearing_role === HearingRole.PANEL_MEMBER ||
+            (this.isParticipantPanelMember(participant.hearing_role) ||
                 participant.hearing_role === HearingRole.WINGER ||
                 participant.hearing_role === HearingRole.JUDGE)
         );
@@ -119,86 +112,31 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     getPrivateConsultationParticipants(): ParticipantListItem[] {
-        const regularParticipants = this.participantsInConsultation
-            .filter(
-                c =>
-                    c.hearing_role !== HearingRole.WITNESS &&
-                    c.hearing_role !== HearingRole.OBSERVER &&
-                    c.role !== Role.QuickLinkObserver &&
-                    c.role !== Role.QuickLinkParticipant
-            )
-            .filter(c => c.hearing_role !== HearingRole.INTERPRETER)
-            .filter(
-                c =>
-                    c.hearing_role !== HearingRole.JUDGE &&
-                    c.hearing_role !== HearingRole.PANEL_MEMBER &&
-                    c.hearing_role !== HearingRole.WINGER
-            )
-            .map(c => {
-                const interpreterLink = c.linked_participants.find(x => x.link_type === LinkType.Interpreter);
-                const participant: ParticipantListItem = { ...c };
-                if (c.linked_participants && interpreterLink) {
-                    participant.interpreter = this.participantsInConsultation.find(x => x.id === interpreterLink.linked_id);
-                }
-                return participant;
-            });
-        const quickLinkParticipants = this.participantsInConsultation
-            .filter(p => p.role === Role.QuickLinkParticipant)
-            .sort((a, b) => a.display_name.localeCompare(b.display_name));
-        return [...regularParticipants, ...quickLinkParticipants];
+        return this.sortAndMapToListItem(this.nonJudgeParticipants.filter(x => x.hearing_role !== HearingRole.WITNESS));
     }
 
-    get johRoles(): string[] {
-        return [HearingRole.JUDGE, HearingRole.PANEL_MEMBER, HearingRole.WINGER];
-    }
-
-    getMemberParticipantsByRole(role: any): ParticipantListItem[] {
-        return this.participantsInConsultation.filter(p => p.hearing_role === role);
+    get johGroups(): ParticipantListItem[][] {
+        const johGroupsUnmapped = [[...this.panelMembers], [...this.wingers]];
+        return johGroupsUnmapped.map(array =>
+            array.map(c => {
+                return this.mapResponseToListItem(c);
+            })
+        );
     }
 
     getWitnessesAndObservers(): ParticipantListItem[] {
         if (!this.isJohConsultation()) {
             return [];
         }
-        const witnesses = this.getMemberParticipantsByRole(HearingRole.WITNESS);
-        const observers = this.participantsInConsultation
-            .filter(p => p.hearing_role === HearingRole.OBSERVER || p.role === Role.QuickLinkObserver)
-            .sort((a, b) => a.display_name.localeCompare(b.display_name));
+        const witnesses = this.sortAndMapToListItem(
+            this.nonJudgeParticipants.filter(participant => participant.hearing_role === HearingRole.WITNESS)
+        );
+        const observers = this.sortAndMapToListItem(this.observers);
         return [...witnesses, ...observers];
     }
 
     getParticipantStatus(participant: any): string {
-        if (this.isParticipantInCurrentRoom(participant)) {
-            return '';
-        }
-        if (this.participantCallStatuses[participant.id] === 'Calling') {
-            return this.translateService.instant('private-consultation-participants.calling');
-        }
-        if (this.participantCallStatuses[participant.id] === ConsultationAnswer.Rejected) {
-            return this.translateService.instant('private-consultation-participants.declined');
-        }
-        if (this.participantCallStatuses[participant.id] === ConsultationAnswer.Failed) {
-            return this.translateService.instant('private-consultation-participants.failed');
-        }
-        if (this.participantCallStatuses[participant.id] === ConsultationAnswer.None) {
-            return this.translateService.instant('private-consultation-participants.no-answer');
-        }
-        if (
-            this.participantCallStatuses[participant.id] === ConsultationAnswer.Transferring ||
-            this.participantCallStatuses[participant.id] === ConsultationAnswer.Accepted
-        ) {
-            return this.translateService.instant('private-consultation-participants.transferring');
-        }
-        if (participant.current_room?.label) {
-            return (
-                this.consultationService.consultationNameToString(participant.current_room?.label, true) +
-                (participant.current_room?.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
-            );
-        }
-
-        if (!this.isParticipantAvailable(participant)) {
-            return this.translateService.instant('private-consultation-participants.not-available');
-        }
+        return this.participantCallStatuses[participant.id];
     }
 
     isParticipantAvailable(participant: any): boolean {
@@ -206,41 +144,8 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         return availableStatuses.indexOf(participant.status) >= 0;
     }
 
-    participantNameClass(participant: any): string {
-        if (this.isParticipantInCurrentRoom(participant)) {
-            return 'yellow';
-        }
-
-        return this.isParticipantAvailable(participant) ? 'white' : '';
-    }
-
     isParticipantInCurrentRoom(participant: any): boolean {
         return participant.current_room?.label === this.roomLabel;
-    }
-
-    getParticipantStatusClasses(participant: ParticipantResponse): string {
-        if (this.participantCallStatuses[participant.id] === 'Calling') {
-            return 'yellow';
-        }
-        if (
-            this.participantCallStatuses[participant.id] === ConsultationAnswer.Transferring ||
-            this.participantCallStatuses[participant.id] === ConsultationAnswer.Accepted
-        ) {
-            return 'yellow';
-        }
-        if (this.participantCallStatuses[participant.id] === ConsultationAnswer.Rejected) {
-            return 'red';
-        }
-        if (this.participantCallStatuses[participant.id] === ConsultationAnswer.Failed) {
-            return 'red';
-        }
-        if (this.participantCallStatuses[participant.id] === ConsultationAnswer.None) {
-            return 'red';
-        }
-        if (participant.status === ParticipantStatus.InConsultation && !this.isParticipantInCurrentRoom(participant)) {
-            return 'outline';
-        }
-        return 'white';
     }
 
     setupSubscribers(): void {
@@ -253,5 +158,22 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
 
     trackParticipant(index: number, item: ParticipantListItem) {
         return item.status;
+    }
+
+    private mapResponseToListItem(participantResponse: ParticipantResponse): ParticipantListItem {
+        const participant: ParticipantListItem = { ...participantResponse };
+        const interpreterLink = participantResponse.linked_participants?.find(x => x.link_type === LinkType.Interpreter);
+        if (interpreterLink) {
+            participant.interpreter = this.conference.participants.find(x => x.id === interpreterLink.linked_id);
+        }
+        return participant;
+    }
+
+    private sortAndMapToListItem(participantResponses: Array<ParticipantResponse>): Array<ParticipantListItem> {
+        return participantResponses
+            .sort((a, b) => a.display_name.localeCompare(b.display_name))
+            .map(c => {
+                return this.mapResponseToListItem(c);
+            });
     }
 }

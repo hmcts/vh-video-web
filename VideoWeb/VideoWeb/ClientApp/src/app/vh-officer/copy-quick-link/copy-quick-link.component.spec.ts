@@ -1,7 +1,9 @@
 import { DebugElement } from '@angular/core';
 import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { TranslateService } from '@ngx-translate/core';
+import { MockComponent } from 'ng-mocks';
 import { ClipboardService } from 'ngx-clipboard';
 import { ConferenceResponseVho } from 'src/app/services/clients/api-client';
 import { TranslatePipeMock } from 'src/app/testing/mocks/mock-translation-pipe';
@@ -24,7 +26,7 @@ describe('CopyQuickLinkComponent', () => {
         const translateServiceSpy = jasmine.createSpyObj('TranslateService', ['instant']);
 
         await TestBed.configureTestingModule({
-            declarations: [CopyQuickLinkComponent, TranslatePipeMock],
+            declarations: [CopyQuickLinkComponent, TranslatePipeMock, MockComponent(FaIconComponent)],
             providers: [
                 { provide: ClipboardService, useValue: coursesServiceSpy },
                 { provide: VhoQueryService, useValue: vhoQueryServiceSpy },

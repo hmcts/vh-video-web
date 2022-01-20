@@ -1,4 +1,5 @@
 import { Role } from '../../services/clients/api-client';
+import { CaseTypeGroup } from './case-type-group';
 import { HearingRole } from './hearing-role-model';
 
 export abstract class PanelModel {
@@ -125,18 +126,26 @@ export abstract class PanelModel {
     }
 
     assignPexipId(pexipId: string) {
-        this.pexipId = pexipId;
+        this.pexipId = pexipId ?? this.pexipId;
     }
 
-    updateParticipant(isRemoteMuted: boolean, handRaised: boolean, spotlighted: boolean) {
+    updateParticipant(
+        isRemoteMuted: boolean,
+        handRaised: boolean,
+        spotlighted: boolean,
+        participantId?: string,
+        isLocalAudioMuted?: boolean,
+        isLocalVideoMuted?: boolean
+    ) {
         this.isRemoteMuted = isRemoteMuted;
         this.handRaised = handRaised;
         this.isSpotlighted = spotlighted;
+        this.updateParticipantDeviceStatus(isLocalAudioMuted, isLocalVideoMuted, participantId);
     }
 
     updateParticipantDeviceStatus(isAudioMuted: boolean, isVideoMuted: boolean, participantId?: string) {
-        this.isLocalVideoMuted = isVideoMuted;
-        this.isLocalAudioMuted = isAudioMuted;
+        this.isLocalVideoMuted = isVideoMuted ?? this.isLocalVideoMuted;
+        this.isLocalAudioMuted = isAudioMuted ?? this.isLocalAudioMuted;
     }
 
     isMicRemoteMuted(): boolean {
@@ -170,7 +179,11 @@ export abstract class PanelModel {
             return 5;
         } else if (this.caseTypeGroup?.toLowerCase() === 'endpoint') {
             return 6;
-        } else if (this.hearingRole === HearingRole.OBSERVER || this.role === Role.QuickLinkObserver) {
+        } else if (
+            this.caseTypeGroup === CaseTypeGroup.OBSERVER ||
+            this.hearingRole === HearingRole.OBSERVER ||
+            this.role === Role.QuickLinkObserver
+        ) {
             return 7;
         } else {
             return 4;

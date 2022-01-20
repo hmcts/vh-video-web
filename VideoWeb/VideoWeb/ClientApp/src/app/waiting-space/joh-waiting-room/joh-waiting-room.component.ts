@@ -10,6 +10,7 @@ import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
@@ -17,6 +18,7 @@ import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-map
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
+import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
@@ -48,7 +50,9 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         protected clockService: ClockService,
         protected translateService: TranslateService,
         protected consultationInvitiationService: ConsultationInvitationService,
-        private unloadDetectorService: UnloadDetectorService
+        private unloadDetectorService: UnloadDetectorService,
+        participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
+        protected hearingVenueFlagsService: HearingVenueFlagsService
     ) {
         super(
             route,
@@ -65,7 +69,9 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
             notificationToastrService,
             roomClosingToastrService,
             clockService,
-            consultationInvitiationService
+            consultationInvitiationService,
+            participantRemoteMuteStoreService,
+            hearingVenueFlagsService
         );
     }
 

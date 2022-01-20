@@ -2,6 +2,7 @@ import { builder } from '@testpossessed/ts-data-builder';
 import { Guid } from 'guid-typescript';
 import * as moment from 'moment';
 import {
+    ConferenceForHostResponse,
     ConferenceForVhOfficerResponse,
     ConferenceResponse,
     ConferenceResponseVho,
@@ -22,6 +23,7 @@ import {
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { InstantMessage } from 'src/app/services/models/instant-message';
+import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { AlertFilter, AlertsStatus, HearingsFilter, StatusFilter } from '../../../shared/models/hearings-filter';
 
@@ -68,6 +70,20 @@ export class ConferenceTestData {
         });
     }
 
+    getConferenceForHostResponse(): ConferenceForHostResponse {
+        return new ConferenceForHostResponse({
+            id: '363725D0-E3D6-4D4A-8D0A-E8E57575FBC4',
+            case_name: 'C V I',
+            case_number: '123ABC',
+            case_type: 'Financial Tax Remedy',
+            scheduled_date_time: new Date(),
+            scheduled_duration: 50,
+            status: ConferenceStatus.NotStarted,
+            participants: this.getListOfParticipants(),
+            hearing_venue_is_scottish: true
+        });
+    }
+
     getConferencePast(): ConferenceForVhOfficerResponse {
         const pastDate = new Date(new Date().getTime());
         pastDate.setUTCHours(pastDate.getUTCHours() - 26);
@@ -81,7 +97,7 @@ export class ConferenceTestData {
             status: ConferenceStatus.NotStarted,
             participants: this.getListOfParticipants(),
             telephone_conference_id: '0345855',
-            telephone_conference_number: '+441234567890'
+            telephone_conference_numbers: '+441234567890'
         });
     }
 
@@ -101,7 +117,7 @@ export class ConferenceTestData {
             started_date_time: null,
             closed_date_time: null,
             telephone_conference_id: '0345855',
-            telephone_conference_number: '+441234567890'
+            telephone_conference_numbers: '+441234567890,+440987654321'
         });
     }
 
@@ -421,6 +437,17 @@ export class ConferenceTestData {
             linked_participants: []
         });
 
+        const participant14 = new ParticipantForUserResponse({
+            id: '5555-1111-1234-1234',
+            status: ParticipantStatus.NotSignedIn,
+            display_name: 'Medical Member',
+            role: Role.JudicialOfficeHolder,
+            case_type_group: CaseTypeGroup.PANEL_MEMBER,
+            hearing_role: HearingRole.MEDICAL_MEMBER,
+            tiled_display_name: 'Medical Member;5555-1111-1234-1234',
+            linked_participants: []
+        });
+
         participants.push(participant1);
         participants.push(participant2);
         participants.push(participant3);
@@ -434,6 +461,7 @@ export class ConferenceTestData {
         participants.push(participant11);
         participants.push(participant12);
         participants.push(participant13);
+        participants.push(participant14);
         return participants;
     }
 

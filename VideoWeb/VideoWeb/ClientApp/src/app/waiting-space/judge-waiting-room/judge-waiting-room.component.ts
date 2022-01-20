@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { merge, Subject, Subscription } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
+import { take, takeUntil, tap } from 'rxjs/operators';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -10,6 +10,7 @@ import { ConferenceStatus, ParticipantStatus, Role } from 'src/app/services/clie
 import { ClockService } from 'src/app/services/clock.service';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
+import { PexipDisplayNameModel } from 'src/app/services/conference/models/pexip-display-name.model';
 import { VirtualMeetingRoomModel } from 'src/app/services/conference/models/virtual-meeting-room.model';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { VideoControlCacheService } from 'src/app/services/conference/video-control-cache.service';
@@ -18,6 +19,7 @@ import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
@@ -28,6 +30,7 @@ import { CallError } from '../models/video-call-models';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
+import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
@@ -48,6 +51,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     audioRecordingStreamCheckIntervalSeconds = 10;
     conferenceRecordingInSessionForSeconds = 0;
     expanedPanel = true;
+    hostWantsToJoinHearing = false;
     displayConfirmStartHearingPopup: boolean;
 
     unreadMessageCount = 0;
@@ -85,7 +89,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected videoControlService: VideoControlService,
         protected videoControlCacheService: VideoControlCacheService,
         private unloadDetectorService: UnloadDetectorService,
-        private hearingLayoutService: HearingLayoutService
+        private hearingLayoutService: HearingLayoutService,
+        protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
+        protected hearingVenueFlagsService: HearingVenueFlagsService
     ) {
         super(
             route,
@@ -102,7 +108,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             notificationToastrService,
             roomClosingToastrService,
             clockService,
-            consultationInvitiationService
+            consultationInvitiationService,
+            participantRemoteMuteStoreService,
+            hearingVenueFlagsService
         );
         this.displayConfirmStartHearingPopup = false;
         this.hearingStartingAnnounced = true; // no need to play announcements for a judge
@@ -124,6 +132,69 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
         this.initialiseVideoControlCacheLogic();
 
+        this.videoCallService
+            .onParticipantCreated()
+            .pipe(
+                takeUntil(this.destroyedSubject),
+                tap(createdParticipant => {
+                    this.logger.debug(`${this.loggerPrefixJudge} participant created`, {
+                        pexipId: createdParticipant.uuid,
+                        dispayName: createdParticipant.pexipDisplayName
+                    });
+                })
+            )
+            .subscribe(createdParticipant => {
+                const participantDisplayName = PexipDisplayNameModel.fromString(createdParticipant.pexipDisplayName);
+                this.participantRemoteMuteStoreService.assignPexipId(participantDisplayName?.participantOrVmrId, createdParticipant.uuid);
+                this.logger.debug(`${this.loggerPrefixJudge} stored pexip ID updated`, {
+                    pexipId: createdParticipant.uuid,
+                    participantId: participantDisplayName?.participantOrVmrId
+                });
+            });
+
+        this.videoCallService
+            .onParticipantUpdated()
+            .pipe(
+                takeUntil(this.destroyedSubject),
+                tap(createdParticipant => {
+                    this.logger.debug(`${this.loggerPrefixJudge} participant updated`, {
+                        pexipId: createdParticipant.uuid,
+                        dispayName: createdParticipant.pexipDisplayName
+                    });
+                })
+            )
+            .subscribe(createdParticipant => {
+                const participantDisplayName = PexipDisplayNameModel.fromString(createdParticipant.pexipDisplayName);
+                this.participantRemoteMuteStoreService.assignPexipId(participantDisplayName?.participantOrVmrId, createdParticipant.uuid);
+                this.logger.debug(`${this.loggerPrefixJudge} stored pexip ID updated`, {
+                    pexipId: createdParticipant.uuid,
+                    participantId: participantDisplayName?.participantOrVmrId
+                });
+            });
+
+        this.eventService
+            .getParticipantMediaStatusMessage()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(participantStatusMessage => {
+                if (participantStatusMessage.conferenceId === this.conference.id) {
+                    this.videoControlCacheService.setLocalAudioMuted(
+                        participantStatusMessage.participantId,
+                        participantStatusMessage.mediaStatus.is_local_audio_muted
+                    );
+
+                    this.videoControlCacheService.setLocalVideoMuted(
+                        participantStatusMessage.participantId,
+                        participantStatusMessage.mediaStatus.is_local_video_muted
+                    );
+
+                    this.participantRemoteMuteStoreService.updateLocalMuteStatus(
+                        participantStatusMessage.participantId,
+                        participantStatusMessage.mediaStatus.is_local_audio_muted,
+                        participantStatusMessage.mediaStatus.is_local_video_muted
+                    );
+                }
+            });
+
         try {
             this.logger.debug(`${this.loggerPrefixJudge} Defined default devices in cache`);
             this.connected = false;
@@ -134,6 +205,20 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 if (this.conference.audio_recording_required) {
                     this.initAudioRecordingInterval();
                 }
+
+                this.conference.participants
+                    .map(participant => participant.id)
+                    .forEach(participantId => {
+                        const audio = this.videoControlCacheService.getLocalAudioMuted(participantId);
+                        const video = this.videoControlCacheService.getLocalVideoMuted(participantId);
+                        this.logger.info(`${this.loggerPrefixJudge} Updating store with audio and video`, {
+                            audio: audio,
+                            video: video,
+                            participantId: participantId
+                        });
+
+                        this.participantRemoteMuteStoreService.updateLocalMuteStatus(participantId, audio, video);
+                    });
             });
         } catch (error) {
             this.logger.error(`${this.loggerPrefixJudge} Failed to initialise the judge waiting room`, error);
@@ -193,7 +278,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             });
         }
     }
-
     restoreSpotlightState(): void {
         this.participantService.participants.forEach(participant => {
             this.restoreSpotlightIfParticipantIsNotInAVMR(participant);
@@ -359,6 +443,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
         this.hearingLayoutService.currentLayout$.pipe(take(1)).subscribe(async layout => {
             try {
+                this.hostWantsToJoinHearing = true;
                 await this.videoCallService.startHearing(this.hearing.id, layout);
             } catch (err) {
                 this.logger.error(`${this.loggerPrefixJudge} Failed to ${action} a hearing for conference`, err, {
@@ -397,7 +482,17 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     async joinHearingInSession() {
+        this.hostWantsToJoinHearing = true;
         await this.videoCallService.joinHearingInSession(this.conferenceId, this.participant.id);
+    }
+
+    shouldCurrentUserJoinHearing(): boolean {
+        return this.participant.status === ParticipantStatus.InHearing || this.hostWantsToJoinHearing;
+    }
+
+    resetVideoFlags() {
+        super.resetVideoFlags();
+        this.hostWantsToJoinHearing = false;
     }
 
     initAudioRecordingInterval() {
@@ -475,5 +570,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         } else {
             this.leaveJudicialConsultation();
         }
+    }
+
+    leaveHearing() {
+        this.hostWantsToJoinHearing = false;
     }
 }

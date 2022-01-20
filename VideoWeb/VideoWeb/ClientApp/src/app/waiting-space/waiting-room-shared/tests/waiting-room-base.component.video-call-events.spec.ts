@@ -1,6 +1,8 @@
 import { fakeAsync, flush, tick } from '@angular/core/testing';
-import { Subject } from 'rxjs';
+import { Guid } from 'guid-typescript';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { ConferenceResponse, ConferenceStatus, ParticipantResponse, TokenResponse } from 'src/app/services/clients/api-client';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -13,7 +15,9 @@ import {
     onCallTransferredMock,
     onPresentationConnectedMock,
     onPresentationDisconnectedMock,
-    onPresentationMock
+    onPresentationMock,
+    videoCallServiceSpy,
+    onParticipantUpdatedMock
 } from 'src/app/testing/mocks/mock-video-call.service';
 import {
     CallSetup,
@@ -22,9 +26,11 @@ import {
     DisconnectedCall,
     Presentation,
     ConnectedPresentation,
-    DisconnectedPresentation
+    DisconnectedPresentation,
+    ParticipantUpdated
 } from '../../models/video-call-models';
 import { PrivateConsultationRoomControlsComponent } from '../../private-consultation-room-controls/private-consultation-room-controls.component';
+import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
 import {
     activatedRoute,
     clockService,
@@ -49,6 +55,11 @@ import { WRTestComponent } from './WRTestComponent';
 
 describe('WaitingRoomComponent Video Call', () => {
     let component: WRTestComponent;
+    const mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
+        'HearingVenueFlagsService',
+        ['setHearingVenueIsScottish'],
+        ['hearingVenueIsScottish$']
+    );
     const mockHeartbeat = {
         kill: jasmine.createSpy()
     };
@@ -62,11 +73,13 @@ describe('WaitingRoomComponent Video Call', () => {
     const onPresentationDisconnected = onPresentationDisconnectedMock;
     const onPresentation = onPresentationMock;
 
-    beforeAll(() => {
-        initAllWRDependencies();
-    });
+    let participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
     beforeEach(async () => {
+        participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
+
+        initAllWRDependencies();
+
         component = new WRTestComponent(
             activatedRoute,
             videoWebService,
@@ -82,7 +95,9 @@ describe('WaitingRoomComponent Video Call', () => {
             notificationToastrService,
             roomClosingToastrService,
             clockService,
-            consultationInvitiationService
+            consultationInvitiationService,
+            participantRemoteMuteStoreServiceSpy,
+            mockedHearingVenueFlagsService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
@@ -119,6 +134,37 @@ describe('WaitingRoomComponent Video Call', () => {
         expect(videoCallService.makeCall).toHaveBeenCalled();
     }));
 
+    it('should listen for participant updates event and update the remote mute status service', fakeAsync(() => {
+        // Arrange
+        const participantId = Guid.create().toString();
+        const isMuted = true;
+
+        // Act
+        onParticipantUpdatedMock.next(
+            ParticipantUpdated.fromPexipParticipant({
+                buzz_time: 0,
+                call_tag: null,
+                display_name: `ROLE;NO_HEARBEAT;NAME;${participantId}`,
+                external_node_uuid: '',
+                has_media: true,
+                is_audio_only_call: '',
+                is_external: false,
+                is_muted: isMuted ? 'YES' : 'NO',
+                is_video_call: 'true',
+                local_alias: '',
+                mute_supported: 'true',
+                protocol: '',
+                spotlight: 0,
+                start_time: 0,
+                uuid: ''
+            })
+        );
+        flush();
+
+        // Assert
+        expect(participantRemoteMuteStoreServiceSpy.updateRemoteMuteStatus).toHaveBeenCalledOnceWith(participantId, isMuted);
+    }));
+
     it('should init pexip setup to be called on start', () => {
         expect(videoCallService.setupClient).toHaveBeenCalled();
     });
@@ -131,35 +177,6 @@ describe('WaitingRoomComponent Video Call', () => {
 
         expect(videoCallService.connect).toHaveBeenCalledWith('', null);
         expect(component.outgoingStream).toBeDefined();
-    });
-
-    it('should define incoming stream when video call has connected', () => {
-        const mockedDocElement = document.createElement('div');
-        document.getElementById = jasmine.createSpy('incomingFeed').and.returnValue(mockedDocElement);
-
-        spyOn(component, 'assignStream');
-        const incomingStream = <any>{};
-        const payload = new ConnectedCall(incomingStream);
-
-        onConnectedSubject.next(payload);
-
-        expect(component.stream).toBeDefined();
-        expect(component.errorCount).toBe(0);
-        expect(component.connected).toBeTruthy();
-        expect(component.assignStream).toHaveBeenCalled();
-    });
-
-    it('should not define incoming stream when video call has connected but not stream if given', () => {
-        spyOn(component, 'assignStream');
-        const incomingStream = null;
-        const payload = new ConnectedCall(incomingStream);
-
-        onConnectedSubject.next(payload);
-
-        expect(component.stream).toBeDefined();
-        expect(component.errorCount).toBe(0);
-        expect(component.connected).toBeTruthy();
-        expect(component.assignStream).toHaveBeenCalledTimes(0);
     });
 
     it('should toggle video mute when call connects as a full video but camera is still muted', fakeAsync(() => {
@@ -225,9 +242,9 @@ describe('WaitingRoomComponent Video Call', () => {
 
     it('should dettach current stream on transfer', () => {
         const incomingStream = <any>{};
-        component.stream = incomingStream;
+        component.callStream = incomingStream;
         onTransferSubject.next('new_room');
-        expect(component.stream).toBeNull();
+        expect(component.callStream).toBeNull();
     });
 
     it('should retrieve presentation if started', () => {

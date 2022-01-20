@@ -1,10 +1,21 @@
-import { ComponentFixture, fakeAsync, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, flush, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
+import { LowerCasePipe } from '@angular/common';
+import { DebugElement } from '@angular/core';
+import { By } from '@angular/platform-browser';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Guid } from 'guid-typescript';
+import { MockComponent, MockDirective, MockPipe, ngMocks } from 'ng-mocks';
+import { Subject } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { ParticipantService } from 'src/app/services/conference/participant.service';
+import { VideoControlService } from 'src/app/services/conference/video-control.service';
+import { EventsService } from 'src/app/services/events.service';
+import { Logger } from 'src/app/services/logging/logger-base';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { TooltipDirective } from 'src/app/shared/directives/tooltip.directive';
 import { ParticipantPanelModelMapper } from 'src/app/shared/mappers/participant-panel-model-mapper';
 import {
     CallParticipantIntoHearingEvent,
@@ -16,46 +27,44 @@ import {
 import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-hand-raised-message';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
+import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
+import { HyphenatePipe } from 'src/app/shared/pipes/hyphenate.pipe';
+import { MultilinePipe } from 'src/app/shared/pipes/multiline.pipe';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { VideoCallTestData } from 'src/app/testing/mocks/data/video-call-test-data';
 import {
     endpointStatusSubjectMock,
     eventsServiceSpy,
+    getParticipantsUpdatedSubjectMock,
     hearingTransferSubjectMock,
     participantHandRaisedStatusSubjectMock,
     participantMediaStatusSubjectMock,
     participantStatusSubjectMock,
-    getParticipantsUpdatedSubjectMock
+    participantRemoteMuteStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
-import { onConferenceUpdatedMock, onParticipantUpdatedMock, videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { onConferenceUpdatedMock, onParticipantUpdatedMock, videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
 import { EndpointStatus, ParticipantResponse, ParticipantStatus, Role } from '../../services/clients/api-client';
+import { JudgeContextMenuComponent } from '../judge-context-menu/judge-context-menu.component';
+import { CaseTypeGroup } from '../models/case-type-group';
 import { HearingRole } from '../models/hearing-role-model';
 import { LinkedParticipantPanelModel } from '../models/linked-participant-panel-model';
+import { PanelModel } from '../models/panel-model-base';
 import { ParticipantPanelModel } from '../models/participant-panel-model';
 import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
 import { VideoEndpointPanelModel } from '../models/video-endpoint-panel-model';
-import { ParticipantsPanelComponent } from './participants-panel.component';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
-import { VideoControlService } from 'src/app/services/conference/video-control.service';
-import { ParticipantService } from 'src/app/services/conference/participant.service';
-import { CaseTypeGroup } from '../models/case-type-group';
-import { Subject } from 'rxjs';
-import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
-import { PanelModel } from '../models/panel-model-base';
-import { JudgeContextMenuComponent } from '../judge-context-menu/judge-context-menu.component';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { MockComponent, MockDirective, MockPipe, ngMocks } from 'ng-mocks';
-import { HyphenatePipe } from 'src/app/shared/pipes/hyphenate.pipe';
-import { LowerCasePipe } from '@angular/common';
-import { VideoCallService } from '../services/video-call.service';
-import { EventsService } from 'src/app/services/events.service';
-import { Logger } from 'src/app/services/logging/logger-base';
-import { MultilinePipe } from 'src/app/shared/pipes/multiline.pipe';
-import { DebugElement } from '@angular/core';
-import { By } from '@angular/platform-browser';
-import { TooltipDirective } from 'src/app/shared/directives/tooltip.directive';
 import { ParticipantAlertComponent } from '../participant-alert/participant-alert.component';
+import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
+import {
+    conferenceParticipantsStatusSubject,
+    createParticipantRemoteMuteStoreServiceSpy
+} from '../services/mock-participant-remote-mute-store.service';
+import { IConferenceParticipantsStatus } from '../models/conference-participants-status';
+import { VideoCallService } from '../services/video-call.service';
+import { ParticipantsPanelComponent } from './participants-panel.component';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { RoomNamePipe } from 'src/app/shared/pipes/room-name.pipe';
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
@@ -97,6 +106,7 @@ describe('ParticipantsPanelComponent', () => {
         hyphenateSpy = jasmine.createSpy('transform').and.callThrough();
         translateSpy = jasmine.createSpy('transform').and.callThrough();
         lowerCaseSpy = jasmine.createSpy('transform').and.callThrough();
+
         videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', [
             'setSpotlightStatus',
             'setSpotlightStatusById'
@@ -119,11 +129,13 @@ describe('ParticipantsPanelComponent', () => {
                 ParticipantsPanelComponent,
                 MockComponent(JudgeContextMenuComponent),
                 MockComponent(ParticipantAlertComponent),
+                MockComponent(FaIconComponent),
                 MockDirective(TooltipDirective),
                 MockPipe(TranslatePipe, translateSpy),
                 MockPipe(HyphenatePipe, hyphenateSpy),
                 MockPipe(LowerCasePipe, lowerCaseSpy),
-                MockPipe(MultilinePipe)
+                MockPipe(MultilinePipe),
+                MockPipe(RoomNamePipe)
             ],
             providers: [
                 {
@@ -161,6 +173,10 @@ describe('ParticipantsPanelComponent', () => {
                 {
                     provide: ParticipantPanelModelMapper,
                     useValue: participantPanelModelMapperSpy
+                },
+                {
+                    provide: ParticipantRemoteMuteStoreService,
+                    useValue: createParticipantRemoteMuteStoreServiceSpy()
                 }
             ]
         }).compileComponents();
@@ -228,6 +244,28 @@ describe('ParticipantsPanelComponent', () => {
 
         expect(logger.error).toHaveBeenCalled();
     });
+
+    it('should get the remote mute state from the remote mute status service', fakeAsync(() => {
+        // Arrange
+        const participant = component.participants[0];
+        const participantId = participant.id;
+        const isMuted = true;
+
+        participant.updateParticipant(!isMuted, participant.hasHandRaised(), participant.hasSpotlight());
+
+        const state: IConferenceParticipantsStatus = {};
+        state[participantId] = { isRemoteMuted: isMuted };
+
+        component.ngOnInit();
+        flush();
+
+        // Act
+        conferenceParticipantsStatusSubject.next(state);
+        flush();
+
+        // Assert
+        expect(participant.isMicRemoteMuted()).toEqual(isMuted);
+    }));
 
     it('should process eventhub participant updates', () => {
         component.setupEventhubSubscribers();
@@ -759,7 +797,7 @@ describe('ParticipantsPanelComponent', () => {
         const p = participants[6];
         p.status = ParticipantStatus.InHearing;
         const model = mapper.mapFromParticipantUserResponse(p);
-        expect(component.getPanelRowTooltipText(model)).toEqual(`${p.display_name}<br/>hearing-role.panel-member`);
+        expect(component.getPanelRowTooltipText(model)).toEqual(`${p.display_name}<br/>case-type-group.panelmember`);
     });
     it('should getPanelRowTooltipAdditionalText return display name for judge', () => {
         const p = participants[2];

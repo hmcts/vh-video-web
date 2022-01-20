@@ -1,12 +1,14 @@
 import { Component, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { takeUntil } from 'rxjs/operators';
+import { first, takeUntil } from 'rxjs/operators';
+import { ConfigService } from 'src/app/services/api/config.service';
 import { ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { EventsService } from 'src/app/services/events.service';
+import { FeatureFlagService } from 'src/app/services/feature-flag.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { HearingControlsBaseComponent } from '../hearing-controls/hearing-controls-base.component';
@@ -32,8 +34,11 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
 
     @Input() public canToggleParticipantsPanel: boolean;
     @Input() public isChatVisible: boolean;
-    private conferenceStatus: ConferenceStatusChanged;
+    @Input() public areParticipantsVisible: boolean;
 
+    private conferenceStatus: ConferenceStatusChanged;
+    enableDynamicEvidenceSharing = false;
+    isStaffMemberFeatureEnabled = false;
     constructor(
         protected videoCallService: VideoCallService,
         protected eventService: EventsService,
@@ -42,7 +47,9 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         protected participantService: ParticipantService,
         protected translateService: TranslateService,
         protected userMediaService: UserMediaService,
-        conferenceService: ConferenceService
+        conferenceService: ConferenceService,
+        configSerivce: ConfigService,
+        featureFlagService: FeatureFlagService
     ) {
         super(videoCallService, eventService, deviceTypeService, logger, participantService, translateService, userMediaService);
         this.canToggleParticipantsPanel = true;
@@ -50,15 +57,30 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         conferenceService.onCurrentConferenceStatusChanged$.pipe(takeUntil(this.destroyedSubject)).subscribe(status => {
             this.conferenceStatus = status;
         });
+
+        configSerivce
+            .getClientSettings()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(settings => (this.enableDynamicEvidenceSharing = settings.enable_dynamic_evidence_sharing));
+        featureFlagService
+            .getFeatureFlagByName('StaffMemberFeature')
+            .pipe(first())
+            .subscribe(result => (this.isStaffMemberFeatureEnabled = result));
     }
 
     get canShowCloseHearingPopup(): boolean {
         return !this.isPrivateConsultation && this.isHost && this.displayConfirmPopup;
     }
 
+    get canShowLeaveButton(): boolean {
+        return this.isHost && !this.isPrivateConsultation && this.isStaffMemberFeatureEnabled;
+    }
+
     get canJoinHearingFromConsultation(): boolean {
         return (
-            this.conferenceStatus?.newStatus === ConferenceStatus.InSession && this.participant?.status === ParticipantStatus.InConsultation
+            this.conferenceStatus?.newStatus === ConferenceStatus.InSession &&
+            this.participant?.status === ParticipantStatus.InConsultation &&
+            this.isHost
         );
     }
 

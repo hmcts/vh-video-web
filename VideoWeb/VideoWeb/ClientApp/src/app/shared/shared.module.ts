@@ -49,6 +49,52 @@ import { SecurityConfigSetupService } from '../security/security-config-setup.se
 import { HeaderLogoSvgComponent } from './header-logo-svg/header-logo-svg.component';
 import { VideoFilterComponent } from './video-filter/video-filter.component';
 import { HyphenatePipe } from './pipes/hyphenate.pipe';
+import { ForcePlayVideoDirective } from './force-play-video.directive';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { VhoQueryService } from '../vh-officer/services/vho-query-service.service';
+import { CrestLogoImageSourceDirective } from './directives/crest-logo-image-source.directive';
+import { StaffMemberVenueListComponent } from './venue-list/staff-member-venue-list/staff-member-venue-list.component';
+import { VhOfficerVenueListComponent } from './venue-list/vh-officer-venue-list/vh-officer-venue-list.component';
+import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+    faCheck,
+    faChevronDown,
+    faChevronUp,
+    faCommentAlt as faCommentAltSolid,
+    faEllipsisH,
+    faExclamationCircle,
+    faExclamationTriangle,
+    faFileAlt,
+    faLanguage,
+    faLink,
+    faLock,
+    faMicrophone,
+    faMicrophoneSlash,
+    faPhone,
+    faPhoneAlt,
+    faQuestionCircle,
+    faShareSquare,
+    faSignInAlt,
+    faSignOutAlt,
+    faSlidersH,
+    faThumbtack,
+    faTv,
+    faUser as faUserSolid,
+    faVideo,
+    faVideoSlash
+} from '@fortawesome/free-solid-svg-icons';
+import {
+    faAddressCard,
+    faCommentAlt as faCommentAltRegular,
+    faEye,
+    faEyeSlash,
+    faHandPaper,
+    faPauseCircle,
+    faPlayCircle,
+    faStopCircle,
+    faUser as faUserRegular
+} from '@fortawesome/free-regular-svg-icons';
+import { RoomNamePipe } from './pipes/room-name.pipe';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -76,7 +122,9 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         ToastrModule.forRoot({
             toastComponent: RoomClosingToastComponent
         }),
-        TranslateModule
+        TranslateModule,
+        NgSelectModule,
+        FontAwesomeModule
     ],
     declarations: [
         HeaderComponent,
@@ -109,7 +157,12 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         HyphenatePipe,
         LoadingComponent,
         HeaderLogoSvgComponent,
-        VideoFilterComponent
+        VideoFilterComponent,
+        ForcePlayVideoDirective,
+        CrestLogoImageSourceDirective,
+        StaffMemberVenueListComponent,
+        VhOfficerVenueListComponent,
+        RoomNamePipe
     ],
     providers: [
         { provide: Logger, useClass: LoggerService },
@@ -125,7 +178,8 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         ScreenHelper,
         TestLanguageService,
         DatePipe,
-        ParticipantPanelModelMapper
+        ParticipantPanelModelMapper,
+        VhoQueryService
     ],
     exports: [
         HeaderComponent,
@@ -154,7 +208,52 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         NgxDatePipe,
         HyphenatePipe,
         LoadingComponent,
-        VideoFilterComponent
+        VideoFilterComponent,
+        ForcePlayVideoDirective,
+        CrestLogoImageSourceDirective,
+        StaffMemberVenueListComponent,
+        VhOfficerVenueListComponent,
+        FontAwesomeModule,
+        RoomNamePipe
     ]
 })
-export class SharedModule {}
+export class SharedModule {
+    constructor(library: FaIconLibrary) {
+        library.addIcons(
+            faAddressCard,
+            faCheck,
+            faChevronDown,
+            faChevronUp,
+            faCommentAltRegular,
+            faCommentAltSolid,
+            faEllipsisH,
+            faExclamationCircle,
+            faExclamationTriangle,
+            faEye,
+            faEyeSlash,
+            faFileAlt,
+            faHandPaper,
+            faLanguage,
+            faLink,
+            faLock,
+            faPauseCircle,
+            faPhone,
+            faPhoneAlt,
+            faPlayCircle,
+            faMicrophone,
+            faMicrophoneSlash,
+            faQuestionCircle,
+            faShareSquare,
+            faSignInAlt,
+            faSignOutAlt,
+            faSlidersH,
+            faStopCircle,
+            faThumbtack,
+            faTv,
+            faUserRegular,
+            faUserSolid,
+            faVideo,
+            faVideoSlash
+        );
+    }
+}

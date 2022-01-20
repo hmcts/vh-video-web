@@ -1,3 +1,4 @@
+import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -5,6 +6,8 @@ import {
     AllowedEndpointResponse,
     ConferenceResponse,
     ConsultationAnswer,
+    EndpointResponse,
+    EndpointState,
     EndpointStatus,
     LoggedParticipantResponse,
     ParticipantResponse,
@@ -14,22 +17,21 @@ import {
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation.service';
 import {
-    eventsServiceSpy,
     consultationRequestResponseMessageSubjectMock,
-    requestedConsultationMessageSubjectMock,
-    participantStatusSubjectMock
+    eventsServiceSpy,
+    participantStatusSubjectMock,
+    requestedConsultationMessageSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-security.service';
-import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
-
-import { PrivateConsultationParticipantsComponent } from './private-consultation-participants.component';
-import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
-import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { HearingRole } from '../../models/hearing-role-model';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { HearingRole } from '../../models/hearing-role-model';
+import { ParticipantListItem } from '../participant-list-item';
+import { PrivateConsultationParticipantsComponent } from './private-consultation-participants.component';
 
 describe('PrivateConsultationParticipantsComponent', () => {
     let component: PrivateConsultationParticipantsComponent;
@@ -135,13 +137,6 @@ describe('PrivateConsultationParticipantsComponent', () => {
         const p = conference.participants[0];
         p.current_room.label = 'test-room-two';
         expect(component.getRowClasses(p)).toEqual('');
-    });
-
-    it('should get same room status', () => {
-        component.roomLabel = 'test-room';
-        const p = conference.participants[0];
-        p.current_room.label = 'test-room';
-        expect(component.getParticipantStatus(p)).toEqual('');
     });
 
     it('should return can call participant', () => {
@@ -279,89 +274,40 @@ describe('PrivateConsultationParticipantsComponent', () => {
         expect(component.participantCallStatuses['Participant1']).toBeNull();
     });
 
-    it('should get participant status in current room', () => {
+    it('should get participant status', () => {
         component.roomLabel = 'Room1';
-        const participant = new ParticipantResponse({
-            current_room: {
-                label: 'Room1'
-            } as RoomSummaryResponse
-        });
-
-        const result = component.getParticipantStatus(participant);
-
-        // Assert
-        expect(result).toBe('');
-    });
-
-    it('should get status from participant', () => {
-        component.roomLabel = 'Room1';
-        const statuses = [
-            ['Calling', 'private-consultation-participants.calling'],
-            ['Transferring', 'private-consultation-participants.transferring'],
-            ['Accepted', 'private-consultation-participants.transferring'],
-            ['Rejected', 'private-consultation-participants.declined'],
-            ['Failed', 'private-consultation-participants.failed'],
-            ['None', 'private-consultation-participants.no-answer']
-        ];
-        statuses.forEach(([status, resultText]) => {
+        const allStatuses = Object.values(ParticipantStatus);
+        allStatuses.forEach(status => {
+            const statusString = status.toString();
+            const participantId = 'Participant1';
             const participant = new ParticipantResponse({
-                id: 'Participant1'
+                id: participantId
             });
-            component.participantCallStatuses['Participant1'] = status;
+            component.participantCallStatuses[participantId] = statusString;
 
-            translateService.instant.calls.reset();
             const result = component.getParticipantStatus(participant);
 
             // Assert
-            expect(result).toBe(resultText);
+            expect(result).toBe(statusString);
         });
     });
 
-    it('should get participant status Other Room', () => {
+    it('should get endpoint status', () => {
         component.roomLabel = 'Room1';
-        const participant = new ParticipantResponse({
-            current_room: {
-                label: 'ParticipantConsultationRoom10'
-            } as RoomSummaryResponse,
-            id: 'Participant1'
+        const allStatuses = Object.values(EndpointState);
+        allStatuses.forEach(status => {
+            const statusString = status.toString();
+            const endpointId = 'Endpoint1';
+            const endpoint = new EndpointResponse({
+                id: endpointId
+            });
+            component.participantCallStatuses[endpointId] = statusString;
+
+            const result = component.getParticipantStatus(endpoint);
+
+            // Assert
+            expect(result).toBe(statusString);
         });
-
-        const result = component.getParticipantStatus(participant);
-
-        // Assert
-        expect(result).toBe('ParticipantConsultationRoom10');
-        expect(consultationService.consultationNameToString).toHaveBeenCalledWith('ParticipantConsultationRoom10', true);
-    });
-
-    it('should get participant status Judge Room', () => {
-        component.roomLabel = 'Room1';
-        const participant = new ParticipantResponse({
-            current_room: {
-                label: 'JudgeJOHConsultationRoom10'
-            } as RoomSummaryResponse,
-            id: 'Participant1'
-        });
-
-        const result = component.getParticipantStatus(participant);
-
-        // Assert
-        expect(result).toBe('JudgeJOHConsultationRoom10');
-        expect(consultationService.consultationNameToString).toHaveBeenCalledWith('JudgeJOHConsultationRoom10', true);
-    });
-
-    it('should get participant status disconnected', () => {
-        component.roomLabel = 'Room1';
-        const participant = new ParticipantResponse({
-            id: 'Participant1',
-            status: ParticipantStatus.Disconnected
-        });
-
-        translateService.instant.calls.reset();
-        const expectedText = 'private-consultation-participants.not-available';
-        const result = component.getParticipantStatus(participant);
-
-        // Assert
-        expect(result).toBe(expectedText);
     });
 
     it('should get participant available if available', () => {
@@ -421,119 +367,18 @@ describe('PrivateConsultationParticipantsComponent', () => {
         expect(result).toBeFalse();
     });
 
-    it('should get status class from participant', () => {
-        component.roomLabel = 'Room1';
-        const statuses = [
-            ['Calling', 'yellow'],
-            ['Transferring', 'yellow'],
-            ['Accepted', 'yellow'],
-            ['Rejected', 'red'],
-            ['Failed', 'red'],
-            ['None', 'red']
-        ];
-        statuses.forEach(([status, resultClass]) => {
-            const participant = new ParticipantResponse({
-                id: 'Participant1'
-            });
-            component.participantCallStatuses['Participant1'] = status;
-
-            const result = component.getParticipantStatusClasses(participant);
-
-            // Assert
-            expect(result).toBe(resultClass);
-        });
-    });
-
-    it('should get status class Other Room', () => {
-        component.roomLabel = 'Room1';
-        const participant = new ParticipantResponse({
-            current_room: {
-                label: 'ParticipantConsultationRoom10'
-            } as RoomSummaryResponse,
-            id: 'Participant1',
-            status: ParticipantStatus.InConsultation
-        });
-
-        const result = component.getParticipantStatusClasses(participant);
-
-        // Assert
-        expect(result).toBe('outline');
-    });
-
-    it('should get status same room default', () => {
-        component.roomLabel = 'Room1';
-        const participant = new ParticipantResponse({
-            current_room: {
-                label: 'Room1'
-            } as RoomSummaryResponse,
-            id: 'Participant1',
-            status: ParticipantStatus.InConsultation
-        });
-
-        const result = component.getParticipantStatusClasses(participant);
-
-        // Assert
-        expect(result).toBe('white');
-    });
-
-    it('should get status same not inconsultation', () => {
-        component.roomLabel = 'Room1';
-        const participant = new ParticipantResponse({
-            id: 'Participant1',
-            status: ParticipantStatus.Available
-        });
-
-        const result = component.getParticipantStatusClasses(participant);
-
-        // Assert
-        expect(result).toBe('white');
-    });
-
-    it('should get participants to a private consultation room', () => {
-        const participants = new ConferenceTestData().getListOfParticipants();
-        const judge = participants[0];
-        judge.hearing_role = HearingRole.JUDGE;
-        const panelMember = participants[1];
-        panelMember.hearing_role = HearingRole.PANEL_MEMBER;
-        const representative = participants[2];
-        representative.hearing_role = HearingRole.REPRESENTATIVE;
-        const representativeNo2 = participants[3];
-        representativeNo2.hearing_role = HearingRole.REPRESENTATIVE;
-        component.roomLabel = 'privateconsultationroom';
-        component.participantsInConsultation = [judge, panelMember, representative, representativeNo2];
-        expect(component.getPrivateConsultationParticipants().length).toBe(2);
-    });
-
     it('should not get witnesses', () => {
         const participants = new ConferenceTestData().getListOfParticipants();
         const witness = participants[0];
         witness.hearing_role = HearingRole.WITNESS;
         const representative = participants[1];
-        component.participantsInConsultation = [witness, representative];
-        expect(component.getPrivateConsultationParticipants().length).toBe(1);
-    });
-
-    it('should not get observers', () => {
-        const participants = new ConferenceTestData().getListOfParticipants();
-        const observer = participants[0];
-        observer.hearing_role = HearingRole.OBSERVER;
-        const representative = participants[1];
-        component.participantsInConsultation = [observer, representative];
-        expect(component.getPrivateConsultationParticipants().length).toBe(1);
-    });
-
-    it('should not get quick link observers', () => {
-        const participants = new ConferenceTestData().getListOfParticipants();
-        const quicklinkobserver = participants[0];
-        quicklinkobserver.role = Role.QuickLinkObserver;
-        const representative = participants[1];
-        component.participantsInConsultation = [quicklinkobserver, representative];
+        component.nonJudgeParticipants = [witness, representative];
         expect(component.getPrivateConsultationParticipants().length).toBe(1);
     });
 
     it('should sort quick link participants', () => {
         const testData = new ConferenceTestData();
-        component.participantsInConsultation = [testData.quickLinkParticipant2, testData.quickLinkParticipant1];
+        component.nonJudgeParticipants = [testData.quickLinkParticipant2, testData.quickLinkParticipant1];
         const participants = component.getPrivateConsultationParticipants();
 
         expect(participants.length).toBe(2);
@@ -635,8 +480,40 @@ describe('PrivateConsultationParticipantsComponent', () => {
         expect(component.trackParticipant(0, { status: ParticipantStatus.Available })).toBe(ParticipantStatus.Available);
     });
 
-    it('should return joh Roles groups available', () => {
-        expect(component.johRoles.length).toBeGreaterThan(0);
+    describe('johGroups', () => {
+        it('should return correct participants mapped to ParticipantListItem', () => {
+            const testPanelMember1Data = { id: 'TestPanelMember1Id', name: 'TestPanelMember1Name' };
+            const testPanelMember1 = new ParticipantResponse(testPanelMember1Data);
+            const expectedPanelMember1: ParticipantListItem = { ...testPanelMember1Data };
+
+            const testPanelMember2Data = { id: 'TestPanelMember2Id', name: 'TestPanelMember2Name' };
+            const testPanelMember2 = new ParticipantResponse(testPanelMember2Data);
+            const expectedPanelMember2: ParticipantListItem = { ...testPanelMember2Data };
+
+            const testPanelMembers = [testPanelMember1, testPanelMember2];
+            const expectedPanelMembers = [expectedPanelMember1, expectedPanelMember2];
+
+            const testWinger1Data = { id: 'TestWinger1Id', name: 'TestWinger1Name' };
+            const testWinger1 = new ParticipantResponse(testWinger1Data);
+            const expectedWinger1: ParticipantListItem = { ...testWinger1Data };
+
+            const testWinger2Data = { id: 'TestWinger2Id', name: 'TestWinger2Name' };
+            const testWinger2 = new ParticipantResponse(testWinger2Data);
+            const expectedWinger2: ParticipantListItem = { ...testWinger2Data };
+
+            const testWingers = [testWinger1, testWinger2];
+            const expectedWingers = [expectedWinger1, expectedWinger2];
+
+            component.panelMembers = testPanelMembers;
+            component.wingers = testWingers;
+
+            const mappedGroups = component.johGroups;
+            const mappedPanelMembers = mappedGroups[0];
+            const mappedWingers = mappedGroups[1];
+
+            expect(mappedPanelMembers).toEqual(expectedPanelMembers);
+            expect(mappedWingers).toEqual(expectedWingers);
+        });
     });
 
     describe('getWitnessesAndObservers', () => {
@@ -652,14 +529,26 @@ describe('PrivateConsultationParticipantsComponent', () => {
             linked_participants: []
         });
 
-        const witness = new ParticipantResponse({
-            id: 'witness_id',
+        const witness1 = new ParticipantResponse({
+            id: 'witness1_id',
             status: ParticipantStatus.Available,
-            display_name: 'witness_display_name',
+            display_name: 'witness1_display_name',
             role: Role.Individual,
-            representee: 'witness_representee',
-            case_type_group: 'witness_applicant',
-            tiled_display_name: 'witness_tiledDisplayName',
+            representee: 'witness1_representee',
+            case_type_group: 'witness1_applicant',
+            tiled_display_name: 'witness1_tiledDisplayName',
+            hearing_role: HearingRole.WITNESS,
+            linked_participants: []
+        });
+
+        const witness2 = new ParticipantResponse({
+            id: 'witness2_id',
+            status: ParticipantStatus.Available,
+            display_name: 'witness2_display_name',
+            role: Role.Individual,
+            representee: 'witness2_representee',
+            case_type_group: 'witness2_applicant',
+            tiled_display_name: 'witness2_tiledDisplayName',
             hearing_role: HearingRole.WITNESS,
             linked_participants: []
         });
@@ -700,10 +589,12 @@ describe('PrivateConsultationParticipantsComponent', () => {
             linked_participants: []
         });
 
-        const testParticipants = [litigantInPerson, witness, regularObserver, quickLinkObserver2, quickLinkObserver1];
+        const testParticipants = [litigantInPerson, witness2, witness1];
+        const testObservers = [regularObserver, quickLinkObserver2, quickLinkObserver1];
 
         beforeEach(() => {
-            component.participantsInConsultation = testParticipants;
+            component.nonJudgeParticipants = testParticipants;
+            component.observers = testObservers;
         });
 
         it('should return nothing if is not joh consultation', () => {
@@ -712,18 +603,24 @@ describe('PrivateConsultationParticipantsComponent', () => {
             expect(result).toEqual([]);
         });
 
-        it('should return nothing if is not joh consultation', () => {
+        it('should return list in correct order for joh consultation', () => {
+            const mappedWitness1: ParticipantListItem = { ...witness1 };
+            const mappedWitness2: ParticipantListItem = { ...witness2 };
+            const mappedRegularObserver: ParticipantListItem = { ...regularObserver };
+            const mappedQuickLinkObserver1: ParticipantListItem = { ...quickLinkObserver1 };
+            const mappedQuickLinkObserver2: ParticipantListItem = { ...quickLinkObserver2 };
+
             spyOn(component, 'isJohConsultation').and.returnValue(true);
             const result = component.getWitnessesAndObservers();
+            const witnessesOrdered = [mappedWitness1, mappedWitness2].sort((a, b) => a.display_name.localeCompare(b.display_name));
 
-            expect(result).not.toContain(litigantInPerson);
-            expect(result).toContain(witness);
-            expect(result).toContain(regularObserver);
-            expect(result).toContain(quickLinkObserver1);
-            expect(result).toContain(quickLinkObserver2);
+            const observersOrdered = [mappedRegularObserver, mappedQuickLinkObserver1, mappedQuickLinkObserver2].sort((a, b) =>
+                a.display_name.localeCompare(b.display_name)
+            );
 
-            expect(result.indexOf(witness)).toBeLessThan(result.indexOf(regularObserver));
-            expect(result.indexOf(quickLinkObserver1)).toBeLessThan(result.indexOf(quickLinkObserver2));
+            expect(result.length).toBe(witnessesOrdered.length + observersOrdered.length);
+            expect(result.slice(0, witnessesOrdered.length)).toEqual(witnessesOrdered);
+            expect(result.slice(witnessesOrdered.length)).toEqual(observersOrdered);
         });
     });
 });

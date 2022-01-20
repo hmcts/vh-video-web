@@ -10,7 +10,7 @@ import { DeclarationComponent } from './declaration/declaration.component';
 import { EquipmentCheckComponent } from './equipment-check/equipment-check.component';
 import { HearingRulesComponent } from './hearing-rules/hearing-rules.component';
 import { IntroductionComponent } from './introduction/introduction.component';
-import { JudgeHearingListComponent } from './judge-hearing-list/judge-hearing-list.component';
+import { JudgeHearingListComponent } from './host-hearing-list/judge-hearing-list/judge-hearing-list.component';
 import { MicrophoneCheckComponent } from './microphone-check/microphone-check.component';
 import { ParticipantHearingsComponent } from './participant-hearings/participant-hearings.component';
 import { ParticipantSelfTestComponent } from './participant-self-test/participant-self-test.component';
@@ -22,6 +22,8 @@ import { UnsupportedDeviceComponent } from '../shared/unsupported-device/unsuppo
 import { ParticipantStatusGuard } from '../security/participant-status.guard';
 import { BackLinkDetails } from '../shared/models/back-link-details';
 import { StaffMemberGuard } from '../security/staff-member.guard';
+import { StaffMemberHearingSelectionComponent } from './staff-member-hearing-selection/staff-member-hearing-selection.component';
+import { StaffMemberHearingListComponent } from './host-hearing-list/staff-member-hearing-list/staff-member-hearing-list.component';
 
 export const routes: Routes = [
     {
@@ -32,7 +34,20 @@ export const routes: Routes = [
     },
     {
         path: `${pageUrls.StaffMemberHearingList}`,
-        component: JudgeHearingListComponent,
+        component: StaffMemberHearingListComponent,
+        canActivate: [StaffMemberGuard],
+        data: {
+            title: 'Staff Member hearing list',
+            backLink: new BackLinkDetails(
+                'back-navigation.navigate-back-to-select-venues',
+                pageUrls.StaffMemberHearingSelection,
+                'backlink-margin-left'
+            )
+        }
+    },
+    {
+        path: `${pageUrls.StaffMemberHearingSelection}`,
+        component: StaffMemberHearingSelectionComponent,
         canActivate: [StaffMemberGuard],
         data: { title: 'Staff Member hearing list' }
     },

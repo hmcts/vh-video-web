@@ -22,6 +22,9 @@ import { ParticipantUpdated } from '../models/video-call-models';
 import { VideoCallEventsService } from './video-call-events.service';
 import { VideoCallService } from './video-call.service';
 import { StreamMixerService } from 'src/app/services/stream-mixer.service';
+import { DeviceTypeService } from 'src/app/services/device-type.service';
+import { BROWSERS, OS } from 'ngx-device-detector';
+import { pexipApiMock } from 'src/app/testing/mocks/mock-video-call.service';
 
 const config = new ClientSettingsResponse({
     kinly_turn_server: 'turnserver',
@@ -46,6 +49,7 @@ describe('VideoCallService', () => {
     let kinlyHeartbeatServiceSpy: jasmine.SpyObj<KinlyHeartbeatService>;
     let videoCallEventsServiceSpy: jasmine.SpyObj<VideoCallEventsService>;
     let streamMixerServiceSpy: jasmine.SpyObj<StreamMixerService>;
+    let deviceTypeServiceSpy: jasmine.SpyObj<DeviceTypeService>;
 
     beforeEach(fakeAsync(() => {
         apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
@@ -87,6 +91,8 @@ describe('VideoCallService', () => {
 
         videoCallEventsServiceSpy = jasmine.createSpyObj<VideoCallEventsService>(['handleParticipantUpdated']);
 
+        deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['getBrowserName', 'isIOS']);
+
         pexipSpy = jasmine.createSpyObj<PexipClient>('PexipClient', [
             'connect',
             'makeCall',
@@ -117,7 +123,8 @@ describe('VideoCallService', () => {
             configServiceSpy,
             kinlyHeartbeatServiceSpy,
             videoCallEventsServiceSpy,
-            streamMixerServiceSpy
+            streamMixerServiceSpy,
+            deviceTypeServiceSpy
         );
 
         currentStreamSubject.next(mockCamStream);
@@ -167,10 +174,13 @@ describe('VideoCallService', () => {
     });
 
     it('should disconnect from pexip when call is disconnected', () => {
+        const setupClientSpy = spyOn(service, 'setupClient');
+
         service.pexipAPI = pexipSpy;
         service.disconnectFromCall();
         expect(pexipSpy.disconnect).toHaveBeenCalled();
         expect(kinlyHeartbeatServiceSpy.stopHeartbeat).toHaveBeenCalledTimes(1);
+        expect(setupClientSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should not disconnect from pexip when api has not been initialised', () => {
@@ -407,6 +417,82 @@ describe('VideoCallService', () => {
             expect(service.pexipAPI.turn_server.url).toContain(config.kinly_turn_server);
             expect(service.pexipAPI.turn_server.username).toContain(config.kinly_turn_server_user);
             expect(service.pexipAPI.turn_server.credential).toContain(config.kinly_turn_server_credential);
+        });
+
+        it('should setup the client again when an error occurs', () => {
+            // Arrange
+            const setupClientSpy = spyOn(service, 'setupClient');
+            // Act
+            service.pexipAPI.onError('reason');
+
+            // Assert
+            expect(setupClientSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should setup the client again when a server disconnect occurs', () => {
+            // Arrange
+            const setupClientSpy = spyOn(service, 'setupClient');
+            // Act
+            service.pexipAPI.onDisconnect('reason');
+
+            // Assert
+            expect(setupClientSpy).toHaveBeenCalledTimes(1);
+        });
+
+        describe('set encoder', () => {
+            let enableH264Spy;
+            beforeEach(() => {
+                enableH264Spy = spyOn(service, 'enableH264');
+            });
+
+            for (const browser of [BROWSERS.FIREFOX]) {
+                it(`should disable h264 when the browser is ${browser}`, async () => {
+                    // Arrange
+                    deviceTypeServiceSpy.getBrowserName.and.returnValue(browser);
+
+                    // Act
+                    await service.setupClient();
+
+                    // Assert
+                    expect(enableH264Spy).toHaveBeenCalledOnceWith(false);
+                });
+            }
+
+            const h264SupportedBrowsers = [BROWSERS.CHROME, BROWSERS.MS_EDGE, BROWSERS.MS_EDGE_CHROMIUM, BROWSERS.SAMSUNG];
+            for (const browser of h264SupportedBrowsers) {
+                it(`should NOT disable h264 when the browser is ${browser}`, async () => {
+                    // Arrange
+                    deviceTypeServiceSpy.getBrowserName.and.returnValue(browser);
+
+                    // Act
+                    await service.setupClient();
+
+                    // Assert
+                    expect(enableH264Spy).not.toHaveBeenCalledWith(false);
+                });
+            }
+
+            it(`should disable h264 when the OS isIOS is true`, async () => {
+                // Arrange
+                deviceTypeServiceSpy.isIOS.and.returnValue(true);
+
+                // Act
+                await service.setupClient();
+
+                // Assert
+                expect(enableH264Spy).toHaveBeenCalledOnceWith(false);
+            });
+
+            it(`should NOT disable h264 when the OS isIOS is false`, async () => {
+                // Arrange
+                deviceTypeServiceSpy.isIOS.and.returnValue(false);
+
+                // Act
+                service.setupClient();
+
+                // Assert
+                expect(enableH264Spy).not.toHaveBeenCalled();
+            });
         });
 
         it('should update user_media_stream', fakeAsync(() => {

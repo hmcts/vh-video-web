@@ -31,9 +31,11 @@
               [showConsultationControls]="showConsultationControls"
               [unreadMessageCount]="unreadMessageCount"
               [isChatVisible]="isChatVisible"
+              [areParticipantsVisible]="areParticipantsVisible"
               (leaveConsultation)="leaveConsultation()"
               (togglePanel)="togglePanel($event)"
               (changeDeviceToggle)="showChooseCameraDialog()"
+              (leaveHearing)="leaveHearing()"
             >
             </app-private-consultation-room-controls>
           </div>
@@ -61,14 +63,12 @@
 
         <div class="video-wrapper">
           <video
+            appForcePlayVideo
             id="incomingFeedJudgePrivate"
-            #incomingFeed
-            (playing)="updateVideoStreamMuteStatus()"
-            [srcObject]="presentationStream && !streamInMain ? presentationStream : stream"
-            autoplay
+            [muted]="shouldMuteHearing()"
+            [srcObject]="presentationStream && !streamInMain ? presentationStream : callStream"
             height="auto"
             class="incomingFeedPrivate"
-            playsinline
           >
             {{ 'judge-waiting-room.browser-support-message' | translate }}
           </video>
@@ -81,12 +81,11 @@
             colour="grey"
           >
             <video
-              [srcObject]="presentationStream && !streamInMain ? stream : presentationStream"
-              autoplay
+              appForcePlayVideo
+              [srcObject]="presentationStream && !streamInMain ? callStream : presentationStream"
               height="auto"
               poster="/assets/images/empty_crest.jpg"
               class="fill-container"
-              playsinline
             >
               {{ 'judge-waiting-room.browser-support-message' | translate }}
             </video>

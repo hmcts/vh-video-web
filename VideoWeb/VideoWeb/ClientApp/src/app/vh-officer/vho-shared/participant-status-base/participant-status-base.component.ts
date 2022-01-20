@@ -101,11 +101,11 @@ export abstract class ParticipantStatusDirective {
         if (!this.participants) {
             return;
         }
-
         if (this.conferenceId !== message.conferenceId) {
             const thisJudge = this.participants.find(x => x.username === message.username);
             if (thisJudge) {
-                thisJudge.hostInAnotherHearing = message.status === ParticipantStatus.InHearing;
+                thisJudge.hostInAnotherHearing =
+                    message.status === ParticipantStatus.InHearing || message.status === ParticipantStatus.Available;
                 this.setParticipantStatus(thisJudge.status, thisJudge);
             }
         }

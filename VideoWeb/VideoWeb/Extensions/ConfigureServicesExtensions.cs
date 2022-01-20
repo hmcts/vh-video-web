@@ -37,6 +37,7 @@ using VideoApi.Client;
 using VideoWeb.EventHub.Services;
 using VideoWeb.Swagger;
 using VideoWeb.Helpers.Interfaces;
+using VideoWeb.Services;
 
 namespace VideoWeb.Extensions
 {
@@ -87,7 +88,6 @@ namespace VideoWeb.Extensions
         public static IServiceCollection AddCustomTypes(this IServiceCollection services)
         {
             services.AddScoped<CheckParticipantCanAccessConferenceAttribute>();
-
             services.AddControllers().AddControllersAsServices();
 
             services.AddMemoryCache();
@@ -114,7 +114,10 @@ namespace VideoWeb.Extensions
             services.AddScoped<IConsultationNotifier, ConsultationNotifier>();
             services.AddScoped<IHearingLayoutService, HearingLayoutService>();
             services.AddScoped<IHearingLayoutCache, DistributedHearingLayoutCache>();
-
+            services.AddScoped<IConferenceVideoControlStatusService, ConferenceVideoControlStatusService>();
+            services.AddScoped<IConferenceVideoControlStatusCache, DistributedConferenceVideoControlStatusCache>();
+            services.AddScoped<IParticipantService, ParticipantService>();
+            
             RegisterMappers(services);
 
             var container = services.BuildServiceProvider();
@@ -136,6 +139,7 @@ namespace VideoWeb.Extensions
 
             services.AddScoped<IEventHandlerFactory, EventHandlerFactory>();
             services.AddScoped<IParticipantsUpdatedEventNotifier, ParticipantsUpdatedEventNotifier>();
+            services.AddScoped<INewConferenceAddedEventNotifier, NewConferenceAddedEventNotifier>();
             RegisterEventHandlers(services);
 
             var contractResolver = new DefaultContractResolver
@@ -158,7 +162,12 @@ namespace VideoWeb.Extensions
                     options.PayloadSerializerSettings.Converters.Add(
                         new StringEnumConverter());
                 })
-                .AddHubOptions<EventHub.Hub.EventHub>(options => { options.EnableDetailedErrors = true; });
+                .AddHubOptions<EventHub.Hub.EventHub>(options => 
+                { 
+                    options.EnableDetailedErrors = true;
+                    options.ClientTimeoutInterval = TimeSpan.FromMilliseconds(60000);
+                    options.KeepAliveInterval = TimeSpan.FromMilliseconds(30000);
+                });
 
             services.AddStackExchangeRedisCache(options => { options.Configuration = connectionStrings.RedisCache; });
             return services;

@@ -32,7 +32,7 @@ namespace VideoWeb.Mappings
                 StartedDateTime = conference.StartedDateTime,
                 ClosedDateTime = conference.ClosedDateTime,
                 TelephoneConferenceId = conference.TelephoneConferenceId,
-                TelephoneConferenceNumber = conference.TelephoneConferenceNumber,
+                TelephoneConferenceNumbers = conference.TelephoneConferenceNumbers,
                 CreatedDateTime = conference.CreatedDateTime
             };
             return response;

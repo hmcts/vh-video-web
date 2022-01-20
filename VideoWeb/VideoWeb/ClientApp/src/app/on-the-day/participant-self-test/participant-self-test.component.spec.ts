@@ -1,6 +1,6 @@
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { SelfTestPexipResponse, TestCallScoreResponse, TestScore } from 'src/app/services/clients/api-client';
+import { Role, SelfTestPexipResponse, TestCallScoreResponse, TestScore, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -10,6 +10,7 @@ import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { ParticipantSelfTestComponent } from './participant-self-test.component';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
+import { ProfileService } from 'src/app/services/api/profile.service';
 
 describe('ParticipantSelfTestComponent', () => {
     let component: ParticipantSelfTestComponent;
@@ -18,6 +19,7 @@ describe('ParticipantSelfTestComponent', () => {
     let router: jasmine.SpyObj<Router>;
     const activatedRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
     let videoWebService: jasmine.SpyObj<VideoWebService>;
+    let profileService: jasmine.SpyObj<ProfileService>;
     let errorService: jasmine.SpyObj<ErrorService>;
     const logger: Logger = new MockLogger();
     let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
@@ -26,6 +28,7 @@ describe('ParticipantSelfTestComponent', () => {
     const pexipConfig = new SelfTestPexipResponse({
         pexip_self_test_node: 'selftest.automated.test'
     });
+    const profile = new UserProfileResponse({ role: Role.Individual });
 
     beforeAll(() => {
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
@@ -33,10 +36,12 @@ describe('ParticipantSelfTestComponent', () => {
             'getPexipConfig',
             'raiseSelfTestFailureEvent'
         ]);
+        profileService = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
 
         videoWebService.getConferenceById.and.returnValue(Promise.resolve(conference));
         videoWebService.getPexipConfig.and.returnValue(Promise.resolve(pexipConfig));
         videoWebService.raiseSelfTestFailureEvent.and.returnValue(Promise.resolve());
+        profileService.getUserProfile.and.returnValue(Promise.resolve(profile));
 
         participantStatusUpdateService = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
 
@@ -58,6 +63,7 @@ describe('ParticipantSelfTestComponent', () => {
             router,
             activatedRoute,
             videoWebService,
+            profileService,
             errorService,
             logger,
             participantStatusUpdateService

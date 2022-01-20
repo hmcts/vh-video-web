@@ -63,6 +63,11 @@ namespace VideoWeb.Contract.Responses
         /// The hearing role
         /// </summary>
         public string HearingRole { get; set; }
+        
+        /// <summary>
+        /// The User Name
+        /// </summary>
+        public string UserName { get; set; }
 
         /// <summary>
         /// Current conference room

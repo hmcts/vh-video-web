@@ -13,6 +13,7 @@ import {
     heartbeatModelMapper,
     initAllWRDependencies,
     logger,
+    mockedHearingVenueFlagsService,
     notificationSoundsService,
     notificationToastrService,
     roomClosingToastrService,
@@ -25,12 +26,14 @@ import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.serv
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
+import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
 
 describe('ParticipantWaitingRoomComponent message and clock', () => {
     let component: ParticipantWaitingRoomComponent;
     const translateService = translateServiceSpy;
     let unloadDetectorServiceSpy: jasmine.SpyObj<UnloadDetectorService>;
     let shouldUnloadSubject: Subject<void>;
+    let participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -40,6 +43,8 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
         unloadDetectorServiceSpy = jasmine.createSpyObj<UnloadDetectorService>('UnloadDetectorService', [], ['shouldUnload']);
         shouldUnloadSubject = new Subject<void>();
         getSpiedPropertyGetter(unloadDetectorServiceSpy, 'shouldUnload').and.returnValue(shouldUnloadSubject.asObservable());
+
+        participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
         component = new ParticipantWaitingRoomComponent(
             activatedRoute,
@@ -58,7 +63,9 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
             clockService,
             translateService,
             consultationInvitiationService,
-            unloadDetectorServiceSpy
+            unloadDetectorServiceSpy,
+            participantRemoteMuteStoreServiceSpy,
+            mockedHearingVenueFlagsService
         );
     });
 

@@ -1,11 +1,11 @@
+import { ElementRef } from '@angular/core';
 import { fakeAsync } from '@angular/core/testing';
-import { ActiveToast } from 'ngx-toastr';
 import { Guid } from 'guid-typescript';
+import { ActiveToast } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import {
     ConferenceResponse,
     ConferenceStatus,
-    SharedParticipantRoom,
     LinkedParticipantResponse,
     LinkType,
     LoggedParticipantResponse,
@@ -13,12 +13,14 @@ import {
     ParticipantStatus,
     Role,
     RoomSummaryResponse,
-    TokenResponse
+    SharedParticipantRoom
 } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { RoomClosingToastComponent } from 'src/app/shared/toast/room-closing/room-closing-toast.component';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
+import { HearingRole } from '../../models/hearing-role-model';
 import {
     activatedRoute,
     clockService,
@@ -32,6 +34,7 @@ import {
     heartbeatModelMapper,
     initAllWRDependencies,
     logger,
+    mockedHearingVenueFlagsService,
     notificationSoundsService,
     notificationToastrService,
     roomClosingToastrService,
@@ -40,9 +43,8 @@ import {
     videoWebService
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
-import { HearingRole } from '../../models/hearing-role-model';
-import { ElementRef } from '@angular/core';
-import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
+import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 
 describe('WaitingRoomComponent message and clock', () => {
     let component: WRTestComponent;
@@ -63,7 +65,10 @@ describe('WaitingRoomComponent message and clock', () => {
         });
     });
 
+    let participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
+
     beforeEach(() => {
+        participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
         component = new WRTestComponent(
             activatedRoute,
             videoWebService,
@@ -79,7 +84,9 @@ describe('WaitingRoomComponent message and clock', () => {
             notificationToastrService,
             roomClosingToastrService,
             clockService,
-            consultationInvitiationService
+            consultationInvitiationService,
+            participantRemoteMuteStoreServiceSpy,
+            mockedHearingVenueFlagsService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
@@ -89,6 +96,64 @@ describe('WaitingRoomComponent message and clock', () => {
         component.participant = participant;
         component.connected = true; // assume connected to pexip
         videoWebService.getConferenceById.calls.reset();
+    });
+
+    describe('handleParticipantStatusChange', () => {
+        it('sets isTransferringIn to true when the judge is in hearing', () => {
+            const judge = component.conference.participants.find(x => x.role === Role.Judge);
+            judge.status = ParticipantStatus.InHearing;
+            component.isTransferringIn = true;
+            component.handleParticipantStatusChange({
+                status: ParticipantStatus.InHearing,
+                participantId: judge.id,
+                username: judge.user_name,
+                conferenceId: component.conferenceId
+            } as ParticipantStatusMessage);
+
+            expect(component.isTransferringIn).toBe(true);
+        });
+
+        it('sets isTransferringIn to false when the judge is not in hearing', () => {
+            const judge = component.conference.participants.find(x => x.role === Role.Judge);
+            judge.status = ParticipantStatus.Available;
+            component.isTransferringIn = true;
+            component.handleParticipantStatusChange({
+                status: ParticipantStatus.Available,
+                participantId: judge.id,
+                username: judge.user_name,
+                conferenceId: component.conferenceId
+            } as ParticipantStatusMessage);
+
+            expect(component.isTransferringIn).toBe(false);
+        });
+
+        it('sets isTransferringIn to true when the staff member is in hearing', () => {
+            const staffMember = component.conference.participants.find(x => x.role === Role.StaffMember);
+            staffMember.status = ParticipantStatus.InHearing;
+            component.isTransferringIn = true;
+            component.handleParticipantStatusChange({
+                status: ParticipantStatus.InHearing,
+                participantId: staffMember.id,
+                username: staffMember.user_name,
+                conferenceId: component.conferenceId
+            } as ParticipantStatusMessage);
+
+            expect(component.isTransferringIn).toBe(true);
+        });
+
+        it('sets isTransferringIn to false when the staff member is not in hearing', () => {
+            const staffMember = component.conference.participants.find(x => x.role === Role.StaffMember);
+            staffMember.status = ParticipantStatus.Available;
+            component.isTransferringIn = true;
+            component.handleParticipantStatusChange({
+                status: ParticipantStatus.Available,
+                participantId: staffMember.id,
+                username: staffMember.user_name,
+                conferenceId: component.conferenceId
+            } as ParticipantStatusMessage);
+
+            expect(component.isTransferringIn).toBe(false);
+        });
     });
 
     describe('toggle Panel', () => {
@@ -202,6 +267,40 @@ describe('WaitingRoomComponent message and clock', () => {
         expect(component.participant).toBeDefined();
     }));
 
+    it('getConference sets HearingVenueIsScottish property to true when hearing venue is in scotland', fakeAsync(async () => {
+        // Arrange
+        component.hearing = undefined;
+        component.conference = undefined;
+        component.participant = undefined;
+        component.connected = false;
+        globalConference.hearing_venue_is_scottish = true;
+        videoWebService.getConferenceById.and.resolveTo(globalConference);
+        videoWebService.getAllowedEndpointsForConference.and.resolveTo([]);
+
+        // Act
+        await component.getConference();
+
+        // Assert
+        expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(true);
+    }));
+
+    it('getConference sets HearingVenueIsScottish property to false when hearing venue is not in scotland', fakeAsync(async () => {
+        // Arrange
+        component.hearing = undefined;
+        component.conference = undefined;
+        component.participant = undefined;
+        component.connected = false;
+        globalConference.hearing_venue_is_scottish = false;
+        videoWebService.getConferenceById.and.resolveTo(globalConference);
+        videoWebService.getAllowedEndpointsForConference.and.resolveTo([]);
+
+        // Act
+        await component.getConference();
+
+        // Assert
+        expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(false);
+    }));
+
     it('should handle api error with error service when get conference fails', async () => {
         component.hearing = undefined;
         component.conference = undefined;
@@ -238,6 +337,42 @@ describe('WaitingRoomComponent message and clock', () => {
         expect(component.participant).toBeDefined();
         expect(component.participant).toBe(expectedParticipant);
         expect(originalParticipant.id).toBe(component.participant.id);
+    });
+
+    it('getConferenceClosedTime sets HearingVenueIsScottish property to true when hearing venue is in scotland', async () => {
+        component.hearing.getConference().status = ConferenceStatus.InSession;
+        component.hearing.getConference().closed_date_time = null;
+        const closedConference = new ConferenceResponse(Object.assign({}, globalConference));
+        closedConference.status = ConferenceStatus.Closed;
+        closedConference.closed_date_time = new Date();
+        closedConference.hearing_venue_is_scottish = true;
+        const expectedParticipant = new ParticipantResponse(globalConference.participants[0].toJSON());
+
+        spyOn(component, 'getLoggedParticipant').and.returnValue(expectedParticipant);
+
+        videoWebService.getConferenceById.and.resolveTo(closedConference);
+
+        await component.getConferenceClosedTime(component.conference.id);
+
+        expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(true);
+    });
+
+    it('getConferenceClosedTime sets HearingVenueIsScottish property to false when hearing venue is not in scotland', async () => {
+        component.hearing.getConference().status = ConferenceStatus.InSession;
+        component.hearing.getConference().closed_date_time = null;
+        const closedConference = new ConferenceResponse(Object.assign({}, globalConference));
+        closedConference.status = ConferenceStatus.Closed;
+        closedConference.closed_date_time = new Date();
+        closedConference.hearing_venue_is_scottish = false;
+        const expectedParticipant = new ParticipantResponse(globalConference.participants[0].toJSON());
+
+        spyOn(component, 'getLoggedParticipant').and.returnValue(expectedParticipant);
+
+        videoWebService.getConferenceById.and.resolveTo(closedConference);
+
+        await component.getConferenceClosedTime(component.conference.id);
+
+        expect(mockedHearingVenueFlagsService.setHearingVenueIsScottish).toHaveBeenCalledWith(false);
     });
 
     it('should get the conference for closed time', async () => {
@@ -444,36 +579,6 @@ describe('WaitingRoomComponent message and clock', () => {
         expect(roomClosingToastrService.currentToast).toBeTruthy();
     });
 
-    describe('shouldCurrentUserJoinHearing', () => {
-        it('should return false if user is a host and status is not InHearing', () => {
-            const spy = spyOn(component, 'isHost').and.returnValue(true);
-            component.participant.status = ParticipantStatus.Available;
-
-            const shouldCurrentUserJoinHearing = component.shouldCurrentUserJoinHearing();
-
-            expect(spy).toHaveBeenCalledTimes(1);
-            expect(shouldCurrentUserJoinHearing).toBeFalsy();
-        });
-
-        it('should return true if user is not a host', () => {
-            const spy = spyOn(component, 'isHost').and.returnValue(false);
-
-            const shouldCurrentUserJoinHearing = component.shouldCurrentUserJoinHearing();
-
-            expect(spy).toHaveBeenCalledTimes(1);
-            expect(shouldCurrentUserJoinHearing).toBeTrue();
-        });
-
-        it('should return true if user is a host and current status is InHearing', () => {
-            const spy = spyOn(component, 'isHost').and.returnValue(true);
-            component.participant.status = ParticipantStatus.InHearing;
-            const shouldCurrentUserJoinHearing = component.shouldCurrentUserJoinHearing();
-
-            expect(spy).toHaveBeenCalledTimes(1);
-            expect(shouldCurrentUserJoinHearing).toBeTrue();
-        });
-    });
-
     describe('call', () => {
         beforeAll(() => {
             jasmine.getEnv().allowRespy(true);
@@ -572,31 +677,44 @@ describe('WaitingRoomComponent message and clock', () => {
         });
     });
 
-    it('should mute video stream when hearing is in session and countdown is not complete', () => {
+    it('should mute video stream when participant is not in hearing', () => {
         component.countdownComplete = false;
-        component.hearing.getConference().status = ConferenceStatus.InSession;
-        spyOn(component, 'toggleVideoStreamMute');
+        component.participant.status = ParticipantStatus.Available;
+        spyOnProperty(component.hearing, 'status', 'get').and.returnValue(ConferenceStatus.Suspended);
 
-        component.updateVideoStreamMuteStatus();
-        expect(component.toggleVideoStreamMute).toHaveBeenCalledWith(true);
+        expect(component.shouldMuteHearing()).toBe(true);
     });
 
-    it('should not mute video stream when hearing is in session and countdown is complete', () => {
+    it('should mute video stream when participant is in hearing but the hearing status is not in session', () => {
+        component.countdownComplete = false;
+        component.participant.status = ParticipantStatus.InHearing;
+        spyOnProperty(component.hearing, 'status', 'get').and.returnValue(ConferenceStatus.Suspended);
+
+        expect(component.shouldMuteHearing()).toBe(true);
+    });
+
+    it('should mute video stream when participant is not in hearing', () => {
+        component.countdownComplete = false;
+        component.participant.status = ParticipantStatus.Available;
+        spyOnProperty(component.hearing, 'status', 'get').and.returnValue(ConferenceStatus.Suspended);
+
+        expect(component.shouldMuteHearing()).toBe(true);
+    });
+
+    it('should mute video stream when participant is in hearing and countdown is not complete', () => {
+        component.countdownComplete = false;
+        component.participant.status = ParticipantStatus.InHearing;
+        spyOnProperty(component.hearing, 'status', 'get').and.returnValue(ConferenceStatus.InSession);
+
+        expect(component.shouldMuteHearing()).toBe(true);
+    });
+
+    it('should not mute video stream when participant is in hearing and countdown is complete', () => {
         component.countdownComplete = true;
-        component.hearing.getConference().status = ConferenceStatus.InSession;
-        spyOn(component, 'toggleVideoStreamMute');
+        component.participant.status = ParticipantStatus.InHearing;
+        spyOnProperty(component.hearing, 'status', 'get').and.returnValue(ConferenceStatus.InSession);
 
-        component.updateVideoStreamMuteStatus();
-        expect(component.toggleVideoStreamMute).toHaveBeenCalledWith(false);
-    });
-
-    it('should not mute video stream when hearing is in not in session and countdown is not complete', () => {
-        component.countdownComplete = false;
-        component.hearing.getConference().status = ConferenceStatus.Paused;
-        spyOn(component, 'toggleVideoStreamMute');
-
-        component.updateVideoStreamMuteStatus();
-        expect(component.toggleVideoStreamMute).toHaveBeenCalledWith(false);
+        expect(component.shouldMuteHearing()).toBe(false);
     });
 
     it('should return false if case name has not been truncated', () => {
@@ -704,6 +822,26 @@ describe('WaitingRoomComponent message and clock', () => {
                 // Assert
                 expect(result).toBeTrue();
             });
+        });
+    });
+
+    describe('areParticipantsVisible', () => {
+        it('should return true when panelStates participants is true', () => {
+            component.panelStates = {
+                Participants: true,
+                Chat: false
+            };
+
+            expect(component.areParticipantsVisible).toBeTrue();
+        });
+
+        it('should return false when panelStates participants is false', () => {
+            component.panelStates = {
+                Participants: false,
+                Chat: false
+            };
+
+            expect(component.areParticipantsVisible).toBeFalse();
         });
     });
 });

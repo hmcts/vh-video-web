@@ -22,7 +22,7 @@ describe('CopyIdComponent', () => {
     beforeEach(() => {
         component = new CopyTelephoneIdComponent(clipboardServiceSpy, translateServiceSpy);
         component.telephoneId = hearing.telephoneConferenceId;
-        component.telephoneNumber = hearing.telephoneConferenceNumber;
+        component.telephoneNumbers = hearing.telephoneConferenceNumbers;
         component.ngOnInit();
     });
 
@@ -32,7 +32,9 @@ describe('CopyIdComponent', () => {
 
     it('should copy the telephone conference id to the clipboard', () => {
         component.copyToClipboard();
-        const expectedContent = `${hearing.telephoneConferenceNumber} (ID: ${hearing.telephoneConferenceId})`;
+        const phoneNumbers = hearing.telephoneConferenceNumbers.split(',');
+        const expectedContent = `ENG: ${phoneNumbers[0]} (ID: ${hearing.telephoneConferenceId})
+CY: ${phoneNumbers[1]} (ID: ${hearing.telephoneConferenceId})`;
         expect(clipboardServiceSpy.copyFromContent).toHaveBeenCalledWith(expectedContent);
     });
 

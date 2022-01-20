@@ -21,9 +21,11 @@ import {
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
+import { PexipDisplayNameModel } from 'src/app/services/conference/models/pexip-display-name.model';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
+import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
@@ -33,6 +35,7 @@ import { ParticipantStatusMessage } from 'src/app/services/models/participant-st
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
+import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { Room } from 'src/app/shared/models/room';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -50,6 +53,7 @@ import { PrivateConsultationRoomControlsComponent } from '../private-consultatio
 import { ConsultationInvitation, ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
+import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 
@@ -72,7 +76,7 @@ export abstract class WaitingRoomBaseDirective {
     clockSubscription$: Subscription = new Subscription();
     currentTime: Date;
 
-    stream: MediaStream | URL;
+    callStream: MediaStream | URL;
     connected: boolean;
     outgoingStream: MediaStream | URL;
     presentationStream: MediaStream | URL;
@@ -100,10 +104,10 @@ export abstract class WaitingRoomBaseDirective {
     loggedInUser: LoggedParticipantResponse;
     linkedParticipantRoom: SharedParticipantRoom;
 
-    @ViewChild('incomingFeed', { static: false }) videoStream: ElementRef<HTMLVideoElement>;
     @ViewChild('roomTitleLabel', { static: false }) roomTitleLabel: ElementRef<HTMLDivElement>;
     @ViewChild('hearingControls', { static: false }) hearingControls: PrivateConsultationRoomControlsComponent;
     countdownComplete: boolean;
+    hasTriedToLeaveConsultation: boolean;
 
     protected constructor(
         protected route: ActivatedRoute,
@@ -120,7 +124,9 @@ export abstract class WaitingRoomBaseDirective {
         protected notificationToastrService: NotificationToastrService,
         protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService,
-        protected consultationInvitiationService: ConsultationInvitationService
+        protected consultationInvitiationService: ConsultationInvitationService,
+        protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
+        protected hearingVenueFlagsService: HearingVenueFlagsService
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;
@@ -154,6 +160,10 @@ export abstract class WaitingRoomBaseDirective {
         ).length;
     }
 
+    get areParticipantsVisible() {
+        return this.panelStates['Participants'];
+    }
+
     getLoggedParticipant(): ParticipantResponse {
         return this.conference.participants.find(x => x.id === this.loggedInUser.participant_id);
     }
@@ -176,6 +186,7 @@ export abstract class WaitingRoomBaseDirective {
     async getConference(): Promise<void> {
         try {
             const data = await this.videoWebService.getConferenceById(this.conferenceId);
+            this.hearingVenueFlagsService.setHearingVenueIsScottish(data.hearing_venue_is_scottish);
             this.errorCount = 0;
             this.loadingData = false;
             this.countdownComplete = data.status === ConferenceStatus.InSession;
@@ -202,6 +213,7 @@ export abstract class WaitingRoomBaseDirective {
     async getConferenceClosedTime(conferenceId: string): Promise<void> {
         try {
             this.conference = await this.videoWebService.getConferenceById(conferenceId);
+            this.hearingVenueFlagsService.setHearingVenueIsScottish(this.conference.hearing_venue_is_scottish);
             this.hearing = new Hearing(this.conference);
             this.participant = this.getLoggedParticipant();
 
@@ -286,6 +298,13 @@ export abstract class WaitingRoomBaseDirective {
             this.eventService.getEndpointStatusMessage().subscribe(message => {
                 this.handleEndpointStatusChange(message);
                 this.updateShowVideo();
+            })
+        );
+
+        this.logger.debug(`${this.loggerPrefix} Subscribing to local audio and video mute status...`);
+        this.eventHubSubscription$.add(
+            this.eventService.getParticipantMediaStatusMessage().subscribe(message => {
+                this.handleLocalAudioVideoMuteStatus(message);
             })
         );
 
@@ -579,7 +598,9 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     async handleEventHubDisconnection(reconnectionAttempt: number) {
-        this.disconnect();
+        if (this.participant.role !== Role.Judge || reconnectionAttempt > 1) {
+            this.disconnect();
+        }
 
         const logPayload = {
             conference: this.conferenceId,
@@ -632,6 +653,27 @@ export abstract class WaitingRoomBaseDirective {
 
     async setupPexipEventSubscriptionAndClient() {
         this.logger.debug(`${this.loggerPrefix} Setting up pexip client and event subscriptions`);
+        this.videoCallSubscription$.add(
+            this.videoCallService.onParticipantUpdated().subscribe(participantUpdate => {
+                const pexipDisplayNameModel = PexipDisplayNameModel.fromString(participantUpdate.pexipDisplayName);
+
+                if (pexipDisplayNameModel === null) {
+                    this.logger.warn(
+                        `${this.loggerPrefix} Could NOT parse pexip display (${participantUpdate.pexipDisplayName}) name when handling participant update.`
+                    );
+                    return;
+                }
+
+                this.logger.debug(
+                    `${this.loggerPrefix} Setting up participant remote mute status for ${pexipDisplayNameModel.participantOrVmrId} is '${participantUpdate.isRemoteMuted}''`
+                );
+
+                this.participantRemoteMuteStoreService.updateRemoteMuteStatus(
+                    pexipDisplayNameModel.participantOrVmrId,
+                    participantUpdate.isRemoteMuted
+                );
+            })
+        );
 
         this.videoCallSubscription$.add(this.videoCallService.onCallSetup().subscribe(setup => this.handleCallSetup(setup)));
         this.videoCallSubscription$.add(
@@ -786,18 +828,10 @@ export abstract class WaitingRoomBaseDirective {
         if (this.connected) {
             this.videoCallService.disconnectFromCall();
         }
-        this.stream = null;
+        this.callStream = null;
         this.outgoingStream = null;
         this.connected = false;
         this.showVideo = false;
-    }
-
-    assignStream(videoElement, stream) {
-        if (typeof MediaStream !== 'undefined' && stream instanceof MediaStream) {
-            videoElement.srcObject = stream;
-        } else {
-            videoElement.src = stream;
-        }
     }
 
     handleCallSetup(callSetup: CallSetup) {
@@ -815,13 +849,10 @@ export abstract class WaitingRoomBaseDirective {
         this.errorCount = 0;
         this.connected = true;
         this.logger.debug(`${this.loggerPrefix} Successfully connected to hearing`, { conference: this.conferenceId });
-        this.stream = callConnected.stream;
-        const incomingFeedElement = document.getElementById('incomingFeed') as any;
-        if (this.stream) {
+        this.callStream = callConnected.stream;
+
+        if (this.callStream) {
             this.updateShowVideo();
-            if (incomingFeedElement) {
-                this.assignStream(incomingFeedElement, callConnected.stream);
-            }
         }
         if (this.hearingControls && !this.audioOnly && this.hearingControls.videoMuted) {
             await this.hearingControls.toggleVideoMute();
@@ -853,7 +884,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     handleCallTransfer(): void {
-        this.stream = null;
+        this.callStream = null;
     }
 
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
@@ -867,7 +898,6 @@ export abstract class WaitingRoomBaseDirective {
         this.hearing.getConference().status = message.status;
         this.conference.status = message.status;
         if (message.status === ConferenceStatus.InSession) {
-            this.countdownComplete = false;
             if (this.isHost() && this.participant.status === ParticipantStatus.InConsultation) {
                 this.notificationToastrService.showHearingStarted(this.conference.id, this.participant.id);
             }
@@ -876,37 +906,30 @@ export abstract class WaitingRoomBaseDirective {
         if (message.status === ConferenceStatus.Closed) {
             this.getConferenceClosedTime(this.hearing.id);
         }
+
+        // Countdown only starts when hearing status becomes "In Session". The countdown cannot be considered complete
+        // when the hearing status changes to any other as there is no countdown. So it should always reset to false on
+        // status changes
+        this.countdownComplete = false;
         this.presentationStream = null;
         this.videoCallService.stopScreenShare();
     }
 
     shouldMuteHearing(): boolean {
-        return !this.countdownComplete && this.hearing.isInSession();
-    }
-
-    updateVideoStreamMuteStatus() {
-        if (this.shouldMuteHearing()) {
-            this.toggleVideoStreamMute(true);
-        } else {
-            this.toggleVideoStreamMute(false);
-        }
-    }
-
-    toggleVideoStreamMute(muted: boolean): void {
-        if (this.videoStream) {
-            this.logger.debug(`${this.loggerPrefix} Updating video stream mute status to ${muted}`, {
-                conference: this.conferenceId,
-                participant: this.participant.id
-            });
-            this.videoStream.nativeElement.muted = muted;
-        }
+        return !(
+            (this.countdownComplete &&
+                this.participant.status === ParticipantStatus.InHearing &&
+                this.hearing.status === ConferenceStatus.InSession) ||
+            (this.participant.status === ParticipantStatus.InConsultation && !this.hasTriedToLeaveConsultation)
+        );
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): void {
         if (!this.validateIsForConference(message.conferenceId)) {
             return;
         }
-        const participant = this.hearing.getConference().participants.find(p => p.id === message.participantId);
+        const currentConferenceParticipants = this.hearing.getConference().participants;
+        const participant = currentConferenceParticipants.find(p => p.id === message.participantId);
         const isMe = this.participant.id === participant.id;
         if (isMe) {
             this.participant.status = message.status;
@@ -924,6 +947,20 @@ export abstract class WaitingRoomBaseDirective {
         if (message.status === ParticipantStatus.Disconnected && participant) {
             participant.current_room = null;
         }
+        if (!this.hasAHostInHearing(currentConferenceParticipants)) {
+            this.isTransferringIn = false;
+        }
+    }
+
+    handleLocalAudioVideoMuteStatus(message: ParticipantMediaStatusMessage) {
+        if (!this.validateIsForConference(message.conferenceId)) {
+            return;
+        }
+        this.participantRemoteMuteStoreService.updateLocalMuteStatus(
+            message.participantId,
+            message.mediaStatus.is_local_audio_muted,
+            message.mediaStatus.is_local_video_muted
+        );
     }
 
     handleEndpointStatusChange(message: EndpointStatusMessage) {
@@ -967,7 +1004,6 @@ export abstract class WaitingRoomBaseDirective {
             return;
         }
         this.countdownComplete = true;
-        this.toggleVideoStreamMute(false);
     }
 
     private handleParticipantsUpdatedMessage(participantsUpdatedMessage: ParticipantsUpdatedMessage) {
@@ -1033,6 +1069,7 @@ export abstract class WaitingRoomBaseDirective {
         };
         this.logger.info(`${this.loggerPrefix} Participant is attempting to leave the private consultation`, logPayload);
         try {
+            this.hasTriedToLeaveConsultation = true;
             await this.consultationService.leaveConsultation(this.conference, this.participant);
         } catch (error) {
             this.logger.error(`${this.loggerPrefix} Failed to leave private consultation`, error, logPayload);
@@ -1044,6 +1081,7 @@ export abstract class WaitingRoomBaseDirective {
             conference: this.conference?.id,
             participant: this.participant.id
         });
+        this.hasTriedToLeaveConsultation = false;
         await this.consultationService.joinJudicialConsultationRoom(this.conference, this.participant);
     }
 
@@ -1052,11 +1090,41 @@ export abstract class WaitingRoomBaseDirective {
             conference: this.conference?.id,
             participant: this.participant.id
         });
+        this.hasTriedToLeaveConsultation = true;
         await this.consultationService.leaveConsultation(this.conference, this.participant);
     }
 
+    resetVideoFlags() {
+        this.showVideo = false;
+        this.showConsultationControls = false;
+        this.isPrivateConsultation = false;
+    }
+
+    willShowHearing() {
+        if (this.hearing.isInSession() && this.shouldCurrentUserJoinHearing()) {
+            this.displayDeviceChangeModal = false;
+            this.showVideo = true;
+            this.showConsultationControls = false;
+            this.isPrivateConsultation = false;
+            return true;
+        }
+        return false;
+    }
+
+    willShowConsultation(): boolean {
+        if (this.participant.status === ParticipantStatus.InConsultation) {
+            this.displayDeviceChangeModal = false;
+            this.showVideo = true;
+            this.isPrivateConsultation = true;
+            this.showConsultationControls = !this.isAdminConsultation;
+
+            return true;
+        }
+        return false;
+    }
+
     updateShowVideo(): void {
-        const logPaylod = {
+        const logPayload = {
             conference: this.conferenceId,
             caseName: this.conference.case_name,
             participant: this.participant.id,
@@ -1064,35 +1132,24 @@ export abstract class WaitingRoomBaseDirective {
             reason: ''
         };
         if (!this.connected) {
-            logPaylod.showingVideo = false;
-            logPaylod.reason = 'Not showing video because not connecting to pexip node';
-            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
-            this.showVideo = false;
-            this.showConsultationControls = false;
-            this.isPrivateConsultation = false;
+            logPayload.showingVideo = false;
+            logPayload.reason = 'Not showing video because not connecting to pexip node';
+            this.logger.debug(`${this.loggerPrefix} ${logPayload.reason}`, logPayload);
+            this.resetVideoFlags();
             return;
         }
 
-        if (
-            this.hearing.isInSession() &&
-            !this.isOrHasWitnessLink() &&
-            !this.isQuickLinkParticipant() &&
-            this.shouldCurrentUserJoinHearing()
-        ) {
-            logPaylod.showingVideo = true;
-            logPaylod.reason = 'Showing video because hearing is in session';
-            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
-            this.displayDeviceChangeModal = false;
-            this.showVideo = true;
-            this.showConsultationControls = false;
-            this.isPrivateConsultation = false;
+        if (this.willShowHearing()) {
+            logPayload.showingVideo = true;
+            logPayload.reason = 'Showing video because hearing is in session';
+            this.logger.debug(`${this.loggerPrefix} ${logPayload.reason}`, logPayload);
             return;
         }
 
         if ((this.isOrHasWitnessLink() || this.isQuickLinkParticipant()) && this.participant.status === ParticipantStatus.InHearing) {
-            logPaylod.showingVideo = true;
-            logPaylod.reason = 'Showing video because witness is in hearing';
-            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
+            logPayload.showingVideo = true;
+            logPayload.reason = 'Showing video because witness is in hearing';
+            this.logger.debug(`${this.loggerPrefix} ${logPayload.reason}`, logPayload);
             this.displayDeviceChangeModal = false;
             this.showVideo = true;
             this.showConsultationControls = false;
@@ -1100,32 +1157,30 @@ export abstract class WaitingRoomBaseDirective {
             return;
         }
 
-        if (this.participant.status === ParticipantStatus.InConsultation) {
-            logPaylod.showingVideo = true;
-            logPaylod.reason = 'Showing video because participant is in a consultation';
-            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
-            this.displayDeviceChangeModal = false;
-            this.showVideo = true;
-            this.isPrivateConsultation = true;
-            this.showConsultationControls = !this.isAdminConsultation;
+        if (this.willShowConsultation()) {
+            logPayload.showingVideo = true;
+            logPayload.reason = 'Showing video because participant is in a consultation';
+            this.logger.debug(`${this.loggerPrefix} ${logPayload.reason}`, logPayload);
             return;
         }
 
-        logPaylod.showingVideo = false;
-        logPaylod.reason = 'Not showing video because hearing is not in session and user is not in consultation';
-        this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
-        this.showVideo = false;
+        logPayload.showingVideo = false;
+        logPayload.reason = 'Not showing video because hearing is not in session and user is not in consultation';
+        this.logger.debug(`${this.loggerPrefix} ${logPayload.reason}`, logPayload);
         this.conferenceStartedBy = null;
-        this.showConsultationControls = false;
-        this.isPrivateConsultation = false;
+        this.resetVideoFlags();
     }
 
     shouldCurrentUserJoinHearing(): boolean {
-        return !this.isHost() || this.participant.status === ParticipantStatus.InHearing;
+        return !this.isOrHasWitnessLink() && !this.isQuickLinkParticipant();
     }
 
     isHost(): boolean {
         return this.participant.role === Role.Judge || this.participant.role === Role.StaffMember;
+    }
+
+    hasAHostInHearing(participants: ParticipantResponse[]): boolean {
+        return participants.some(p => (p.role === Role.Judge || p.role === Role.StaffMember) && p.status === ParticipantStatus.InHearing);
     }
 
     showChooseCameraDialog() {

@@ -17,6 +17,7 @@ namespace VideoWeb.Common.Configuration
         public bool EnableAndroidSupport { get; set; }
         public bool EnableIOSMobileSupport { get; set; }
         public bool EnableIOSTabletSupport { get; set; }
+        public bool EnableDynamicEvidenceSharing { get; set; }
         public int BlurRadius { get; set; }
     }
 }

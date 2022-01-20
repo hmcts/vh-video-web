@@ -5,7 +5,7 @@
   </div>
   <header role="banner">    
       <app-header class="govuk-!-display-none-print" [loggedIn]="loggedIn"></app-header>
-      <div class="govuk-width-container">
+      <div class="govuk-width-container" [ngClass] ="(backLinkDetails$ | async)?.className">
         <app-beta-banner *ngIf="loggedIn" [isRepresentativeOrIndividual]="isRepresentativeOrIndividual"></app-beta-banner>
         <app-back-navigation *ngIf="backLinkDetails$ | async as backLinkDetails" [linkText]="backLinkDetails.text" (navigateBack)="navigateBack(backLinkDetails.path)"></app-back-navigation>
       </div>
@@ -20,6 +20,5 @@
       <router-outlet></router-outlet>
     </main>
   </div>
-
   <app-footer class="govuk-!-display-none-print"></app-footer>
 </div>

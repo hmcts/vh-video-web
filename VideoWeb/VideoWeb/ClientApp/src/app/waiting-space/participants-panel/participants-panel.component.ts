@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ParticipantResponse } from 'src/app/services/clients/api-client';
 import { VideoControlService } from 'src/app/services/conference/video-control.service';
@@ -27,6 +28,7 @@ import { PanelModel } from '../models/panel-model-base';
 import { ParticipantPanelModel } from '../models/participant-panel-model';
 import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
 import { VideoEndpointPanelModel } from '../models/video-endpoint-panel-model';
+import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 import { VideoCallService } from '../services/video-call.service';
 
 @Component({
@@ -57,12 +59,33 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private eventService: EventsService,
         private logger: Logger,
         protected translateService: TranslateService,
-        private mapper: ParticipantPanelModelMapper
+        private mapper: ParticipantPanelModelMapper,
+        protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService
     ) {}
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+
         this.getParticipantsList().then(() => {
+            this.participantRemoteMuteStoreService.conferenceParticipantsStatus$.pipe(take(1)).subscribe(state => {
+                this.participants.forEach(participant => {
+                    if (state.hasOwnProperty(participant.id)) {
+                        this.logger.debug(`${this.loggerPrefix} restoring pexip ID`, {
+                            participantId: participant.id,
+                            pexipId: state[participant.id].pexipId
+                        });
+                        participant.assignPexipId(state[participant.id].pexipId);
+                        participant.updateParticipant(
+                            state[participant.id].isRemoteMuted,
+                            participant.hasHandRaised(),
+                            participant.hasSpotlight(),
+                            participant.id,
+                            state[participant.id].isLocalAudioMuted,
+                            state[participant.id].isLocalVideoMuted
+                        );
+                    }
+                });
+            });
             this.setupVideoCallSubscribers();
             this.setupEventhubSubscribers();
         });
@@ -108,6 +131,13 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     setupVideoCallSubscribers() {
         this.logger.debug(`${this.loggerPrefix} Setting up pexip video call subscribers`);
+
+        this.videoCallSubscription$.add(
+            this.videoCallService
+                .onParticipantCreated()
+                .subscribe(createdParticipant => this.handleParticipantUpdatedInVideoCall(createdParticipant))
+        );
+
         this.videoCallSubscription$.add(
             this.videoCallService
                 .onParticipantUpdated()
@@ -168,7 +198,14 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         if (!participant) {
             return;
         }
-        participant.updateParticipant(participant.isMicRemoteMuted(), message.handRaised, participant.hasSpotlight());
+        participant.updateParticipant(
+            participant.isMicRemoteMuted(),
+            message.handRaised,
+            participant.hasSpotlight(),
+            participant.id,
+            participant.isLocalMicMuted(),
+            participant.isLocalCameraOff()
+        );
 
         this.logger.debug(`${this.loggerPrefix} Participant hand raised status has been updated`, {
             conference: this.conferenceId,
@@ -223,17 +260,21 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     handleParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): void {
         const participant = this.participants.find(x => updatedParticipant.pexipDisplayName.includes(x.id));
         if (!participant) {
+            this.logger.warn(`${this.loggerPrefix} could NOT update participant in call`, {
+                displayName: updatedParticipant.pexipDisplayName
+            });
             return;
         }
 
         participant.assignPexipId(updatedParticipant.uuid);
         if (participant instanceof LinkedParticipantPanelModel) {
-            participant.updateParticipant(updatedParticipant.isRemoteMuted, null, updatedParticipant.isSpotlighted);
+            participant.updateParticipant(updatedParticipant.isRemoteMuted, null, updatedParticipant.isSpotlighted, participant.id);
         } else {
             participant.updateParticipant(
                 updatedParticipant.isRemoteMuted,
                 updatedParticipant.handRaised,
-                updatedParticipant.isSpotlighted
+                updatedParticipant.isSpotlighted,
+                participant.id
             );
         }
 
@@ -242,6 +283,9 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                 await this.eventService.publishRemoteMuteStatus(this.conferenceId, p.id, updatedParticipant.isRemoteMuted);
             });
         }
+
+        this.participantRemoteMuteStoreService.updateRemoteMuteStatus(participant.id, participant.isMicRemoteMuted());
+
         this.logger.debug(`${this.loggerPrefix} Participant has been updated in video call`, {
             conference: this.conferenceId,
             participant: participant.id,
@@ -252,7 +296,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             isSpotlighted: participant.hasSpotlight()
         });
     }
-
     handleParticipantStatusChange(message: ParticipantStatusMessage): void {
         const participant = this.participants.find(x => x.hasParticipant(message.participantId));
         if (!participant) {
@@ -554,6 +597,9 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     private getHearingRole(participant: PanelModel): string {
+        if (participant.caseTypeGroup?.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase()) {
+            return '';
+        }
         const translatedtext = this.getTranslatedText('for');
         const hearingRoleText = this.translateService.instant('hearing-role.' + participant.hearingRole.toLowerCase().split(' ').join('-'));
         return participant.representee ? `<br/>${hearingRoleText} ${translatedtext} ${participant.representee}` : `<br/>${hearingRoleText}`;
@@ -572,7 +618,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     private showCaseRole(participant: PanelModel) {
         return participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
             participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
-            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase() ||
             participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
             participant.caseTypeGroup.toLowerCase() === 'endpoint'
             ? false
@@ -584,12 +629,13 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         combined.forEach(participant => {
             const currentParticipant = this.participants.find(r => r.id === participant.id);
             if (currentParticipant) {
-                participant.updateParticipant(
-                    currentParticipant?.isMicRemoteMuted(),
-                    currentParticipant?.hasHandRaised(),
-                    currentParticipant?.hasSpotlight()
-                );
-                participant.assignPexipId(currentParticipant?.pexipId);
+                if (currentParticipant instanceof LinkedParticipantPanelModel) {
+                    currentParticipant.participants.forEach(linkedParticpant => {
+                        this.updateParticipant(participant, linkedParticpant);
+                    });
+                } else {
+                    this.updateParticipant(participant, currentParticipant);
+                }
             }
         });
 
@@ -604,5 +650,17 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             return x.orderInTheList > z.orderInTheList ? 1 : -1;
         });
         this.participants = combined;
+    }
+
+    private updateParticipant(participant: PanelModel, participantToBeUpdated: PanelModel) {
+        participant.updateParticipant(
+            participantToBeUpdated?.isMicRemoteMuted(),
+            participantToBeUpdated?.hasHandRaised(),
+            participantToBeUpdated?.hasSpotlight(),
+            participantToBeUpdated?.id,
+            participantToBeUpdated?.isLocalMicMuted(),
+            participantToBeUpdated?.isLocalCameraOff()
+        );
+        participant.assignPexipId(participantToBeUpdated?.pexipId);
     }
 }

@@ -1,8 +1,8 @@
 <button class="vh-accordion" (click)="toggleDisplayOptions()" tabindex="-1">
   <span class="govuk-link" tabindex="0">
     {{ 'video-filter.title' | translate }}
-    <i class="vh-video-filter-title fas" [ngClass]="showOptions ? 'fa-chevron-up' : 'fa-chevron-down'" id="bg-icon" aria-hidden="true"></i
-  ></span>
+    <fa-icon class="vh-video-filter-title fas" [icon]="showOptions ? 'chevron-up' : 'chevron-down'" id="bg-icon" aria-hidden="true"></fa-icon>
+  </span>
 </button>
 
 <div *ngIf="showOptions" class="v-bg-panel">

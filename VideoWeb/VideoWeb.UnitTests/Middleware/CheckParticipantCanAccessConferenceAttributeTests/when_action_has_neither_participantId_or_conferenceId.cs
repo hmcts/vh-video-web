@@ -13,15 +13,15 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
         public async Task Should_continue_with_other_middleware(string appRole)
         {
             // arrange
-            var user = _userBuilder.WithUsername(USER_NAME).WithRole(appRole).Build();
+            var user = UserBuilder.WithUsername(UserName).WithRole(appRole).Build();
 
             SetupActionExecutingContext(new Dictionary<string, object>(), user);
 
             // act
-            await _sut.OnActionExecutionAsync(_actionExecutingContext, () => Task.FromResult(_actionExecutedContext));
+            await Sut.OnActionExecutionAsync(ActionExecutingContext, () => Task.FromResult(ActionExecutedContext));
 
             // assert
-            _actionExecutingContext.Result.Should().BeOfType<OkResult>();
+            ActionExecutingContext.Result.Should().BeOfType<OkResult>();
         }
     }
 }

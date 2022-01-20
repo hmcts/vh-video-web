@@ -1,10 +1,10 @@
-import { fakeAsync, tick } from '@angular/core/testing';
+import { fakeAsync } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import {
     ConferenceResponse,
-    LoggedParticipantResponse,
     EndpointStatus,
+    LoggedParticipantResponse,
     ParticipantStatus,
     Role
 } from 'src/app/services/clients/api-client';
@@ -12,11 +12,11 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation.service';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { VideoWebService } from '../../services/api/video-web.service';
 import { Logger } from '../../services/logging/logger-base';
-import { JudgeParticipantStatusListComponent } from './judge-participant-status-list.component';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { HearingRole } from '../models/hearing-role-model';
+import { JudgeParticipantStatusListComponent } from './judge-participant-status-list.component';
 
 describe('JudgeParticipantStatusListComponent', () => {
     const testData = new ConferenceTestData();
@@ -246,9 +246,11 @@ describe('JudgeParticipantStatusListComponent', () => {
             expect(component.getEndpointStatusCss(endpoint)).toBe(test.expected);
         });
     });
+
     it('should return false when user is not judge', () => {
         expect(component.isUserJudge).toBeFalsy();
     });
+
     it('should return true when user is judge', fakeAsync(async () => {
         const logged = new LoggedParticipantResponse({
             participant_id: conference.participants.find(x => x.role === Role.Judge).id,

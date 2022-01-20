@@ -29,15 +29,17 @@ namespace VideoWeb.EventHub.Hub
         private readonly IVideoApiClient _videoApiClient;
         private readonly IConferenceCache _conferenceCache;
         private readonly IHeartbeatRequestMapper _heartbeatRequestMapper;
+        private readonly IConferenceVideoControlStatusService _conferenceVideoControlStatusService;
         private readonly HearingServicesConfiguration _servicesConfiguration;
 
         public EventHub(IUserProfileService userProfileService, IVideoApiClient videoApiClient,
-            ILogger<EventHub> logger, IConferenceCache conferenceCache, IHeartbeatRequestMapper heartbeatRequestMapper, IOptions<HearingServicesConfiguration> servicesConfiguration)
+            ILogger<EventHub> logger, IConferenceCache conferenceCache, IHeartbeatRequestMapper heartbeatRequestMapper, IOptions<HearingServicesConfiguration> servicesConfiguration, IConferenceVideoControlStatusService conferenceVideoControlStatusService)
         {
             _userProfileService = userProfileService;
             _logger = logger;
             _conferenceCache = conferenceCache;
             _heartbeatRequestMapper = heartbeatRequestMapper;
+            _conferenceVideoControlStatusService = conferenceVideoControlStatusService;
             _videoApiClient = videoApiClient;
             _servicesConfiguration = servicesConfiguration.Value;
         }
@@ -56,10 +58,18 @@ namespace VideoWeb.EventHub.Hub
 
         private async Task AddUserToConferenceGroups(bool isAdmin)
         {
-            var conferenceIds = await GetConferenceIds(isAdmin);
+           var conferenceIds = await GetConferenceIds(isAdmin);
             var tasks = conferenceIds.Select(c => Groups.AddToGroupAsync(Context.ConnectionId, c.ToString())).ToArray();
 
             await Task.WhenAll(tasks);
+        }
+
+        public async Task AddToGroup(string conferenceId)
+        {
+            if (IsSenderAdmin())
+            {
+                await Groups.AddToGroupAsync(Context.ConnectionId, conferenceId);
+            }
         }
 
         private async Task AddUserToUserGroup(bool isAdmin)
@@ -81,7 +91,7 @@ namespace VideoWeb.EventHub.Hub
             }
             else
             {
-                _logger.LogWarning(exception,
+                _logger.LogError(exception,
                     "There was an error when disconnecting from chat hub server-side: {Username}", userName);
             }
 
@@ -163,7 +173,7 @@ namespace VideoWeb.EventHub.Hub
 
             var isRecipientAdmin = await IsRecipientAdmin(participantTo);
             _logger.LogDebug("{Username} is recipient admin: {IsSenderAdmin}", userName, isSenderAdmin);
-            // only admins and participants in the conference can send or receive a message within a conference channel
+            //only admins and participants in the conference can send or receive a message within a conference channel
             var from = Context.User.Identity.Name.ToLowerInvariant();
             var participantUsername = isSenderAdmin ? participantTo : from;
             var isAllowed =
@@ -400,6 +410,8 @@ namespace VideoWeb.EventHub.Hub
                         conferenceId);
                     throw new ParticipantNotFoundException(conferenceId, Context.User.Identity.Name);
                 }
+
+                await _conferenceVideoControlStatusService.UpdateMediaStatusForParticipantInConference(conferenceId, participant.Id.ToString(), mediaStatus);
 
                 var groupNames = new List<string> { VhOfficersGroupName };
                 groupNames.AddRange(conference.Participants.Where(x => x.IsHost()).Select(h => h.Username.ToLowerInvariant()));

@@ -8,11 +8,16 @@
             </p>
         </div>
         <div class='govuk-grid-column-one-half vh-mb5'>
-            <img src='/assets/images/govuk-crest.png'
+            <img
+                 appCrestLogoImageSource
+                 [sctsImageSource]="'/assets/images/scottish-crest-grey.png'"
+                 [sctsAltText]=" ('individual-participant-status-list.scottish-crest' | translate)"
+                 [hmctsImageSource]="'/assets/images/govuk-crest.png'"
+                 [hmctsAltText]=" ('individual-participant-status-list.crest-icon-alt' | translate)"
                  height='50'
-                 width='50'
                  class='govuk-header__logotype-crest'
-                 [attr.alt]="'individual-participant-status-list.crest-icon-alt' | translate" />
+                 alt=""
+                 />
         </div>
     </div>
     <div class='vh-line govuk-!-margin-bottom-3'></div>
@@ -95,7 +100,7 @@
                        class='govuk-heading-s govuk-!-margin-bottom-0'>
             <span *ngIf='hasInterpreterLink(participant)'
                   class='vh-interpreter-icon'>
-              <em class='far fa-2x fa-language'></em>
+              <fa-icon icon="language" size="2x"></fa-icon>
             </span>
                         {{ participant.name }}
                     </p>
@@ -114,8 +119,20 @@
                     <div *ngIf='!isLoggedInParticipant(participant)'
                          class='govuk-body-s govuk-!-margin-bottom-3'>
                         <label id='p-{{ participant.id }}-status-participant'
-                               class='govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}'
-                               [innerHTML]='getParticipantStatus(participant)'>
+                               class='govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}'>
+                               <ng-container [ngSwitch]="getParticipantStatus(participant)">
+                                    <ng-container *ngSwitchCase="ParticipantStatus.Available">
+                                        {{ "individual-participant-status-list.available" | translate }}
+                                    </ng-container>
+                                    <ng-container *ngSwitchCase="ParticipantStatus.InConsultation">
+                                        <span>{{ 'start-private-consultation.in' | translate}} </span>
+                                        <span>{{ participant.current_room?.label | roomName | lowercase }} </span>
+                                        <fa-icon *ngIf="participant.current_room.locked" icon="lock"></fa-icon>
+                                    </ng-container>
+                                    <ng-container *ngSwitchDefault>
+                                        {{ "individual-participant-status-list.unavailable" | translate }}
+                                    </ng-container>
+                               </ng-container>
                         </label>
                     </div>
                     <div class='vh-line'
