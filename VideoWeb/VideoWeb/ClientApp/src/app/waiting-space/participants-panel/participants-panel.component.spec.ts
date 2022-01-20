@@ -98,6 +98,7 @@ describe('ParticipantsPanelComponent', () => {
     let videoControlServiceSpy: jasmine.SpyObj<VideoControlService>;
     let participantServiceSpy: jasmine.SpyObj<ParticipantService>;
     let participantPanelModelMapperSpy: jasmine.SpyObj<ParticipantPanelModelMapper>;
+    let remoteMuteServiceSpy: jasmine.SpyObj<ParticipantRemoteMuteStoreService>;
 
     let component: ParticipantsPanelComponent;
     let fixture: ComponentFixture<ParticipantsPanelComponent>;
@@ -137,7 +138,6 @@ describe('ParticipantsPanelComponent', () => {
             'mapFromParticipantUserResponseArray'
         ]);
         spyOnProperty(participantServiceSpy, 'onParticipantsUpdated$').and.returnValue(participantsUpdatedSubject.asObservable());
-
         videoControlCacheServiceSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', [
             'setSpotlightStatus',
             'getSpotlightStatus',
@@ -150,6 +150,7 @@ describe('ParticipantsPanelComponent', () => {
             'setRemoteMutedStatus',
             'getRemoteMutedStatus'
         ]);
+        remoteMuteServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
         await TestBed.configureTestingModule({
             declarations: [
@@ -207,7 +208,7 @@ describe('ParticipantsPanelComponent', () => {
                 },
                 {
                     provide: ParticipantRemoteMuteStoreService,
-                    useValue: createParticipantRemoteMuteStoreServiceSpy()
+                    useValue: remoteMuteServiceSpy
                 }
             ]
         }).compileComponents();
@@ -276,6 +277,98 @@ describe('ParticipantsPanelComponent', () => {
         await component.getParticipantsList();
 
         expect(logger.error).toHaveBeenCalled();
+    });
+    describe('readVideoControlStatusesFromCache', () => {
+        const pexipId = 'pexip-id';
+        let participant: PanelModel;
+        let state: IConferenceParticipantsStatus;
+        beforeEach(() => {
+            participant = component.participants[0];
+            state = {
+                [participant.id]: { isLocalAudioMuted: true, isLocalVideoMuted: true, isRemoteMuted: true, pexipId: pexipId }
+            };
+        });
+        it('should NOT call to get the video control statuses from the cache if the countdown timer is not completed', fakeAsync(() => {
+            // Arrange
+            component.isCountdownCompleted = false;
+            // Act
+            component.readVideoControlStatusesFromCache(state, participant);
+            // Assert
+            expect(videoControlCacheServiceSpy.getLocalAudioMuted).not.toHaveBeenCalled();
+            expect(videoControlCacheServiceSpy.getLocalVideoMuted).not.toHaveBeenCalled();
+            expect(videoControlCacheServiceSpy.getRemoteMutedStatus).not.toHaveBeenCalled();
+            expect(videoControlCacheServiceSpy.getHandRaiseStatus).not.toHaveBeenCalled();
+        }));
+        it('should call to get the video control statuses from the cache if the countdown timer is completed', fakeAsync(() => {
+            // Arrange
+            component.isCountdownCompleted = true;
+            // Act
+            component.readVideoControlStatusesFromCache(state, participant);
+            // Assert
+            expect(videoControlCacheServiceSpy.getLocalAudioMuted).toHaveBeenCalled();
+            expect(videoControlCacheServiceSpy.getLocalVideoMuted).toHaveBeenCalled();
+            expect(videoControlCacheServiceSpy.getRemoteMutedStatus).toHaveBeenCalled();
+            expect(videoControlCacheServiceSpy.getHandRaiseStatus).toHaveBeenCalled();
+        }));
+        it('should call to get the video control statuses from the cache if the countdown timer is completed for a LinkedParticipant', fakeAsync(() => {
+            // Arrange
+            const linkedParticipant = component.participants.find(
+                p => p instanceof LinkedParticipantPanelModel
+            ) as LinkedParticipantPanelModel;
+            component.isCountdownCompleted = true;
+            const remoteMuteStatus = true;
+            const localAudioMuted = false;
+            const localVideoMuted = false;
+            spyOn(logger, 'info');
+            videoControlCacheServiceSpy.getRemoteMutedStatus.and.returnValue(remoteMuteStatus);
+            videoControlCacheServiceSpy.getLocalAudioMuted.and.returnValue(localAudioMuted);
+            videoControlCacheServiceSpy.getLocalVideoMuted.and.returnValue(localVideoMuted);
+            // Act
+            component.readVideoControlStatusesFromCache(state, linkedParticipant);
+            // Assert
+            expect(videoControlCacheServiceSpy.getLocalAudioMuted).toHaveBeenCalled();
+            expect(videoControlCacheServiceSpy.getLocalVideoMuted).toHaveBeenCalled();
+            expect(videoControlCacheServiceSpy.getRemoteMutedStatus).toHaveBeenCalled();
+            expect(videoControlCacheServiceSpy.getHandRaiseStatus).toHaveBeenCalled();
+            expect(logger.info).toHaveBeenCalled();
+            expect(remoteMuteServiceSpy.updateRemoteMuteStatus).toHaveBeenCalledWith(
+                linkedParticipant.participants[0].id,
+                remoteMuteStatus
+            );
+            expect(remoteMuteServiceSpy.updateLocalMuteStatus).toHaveBeenCalledWith(
+                linkedParticipant.participants[0].id,
+                localAudioMuted,
+                localVideoMuted
+            );
+            expect(remoteMuteServiceSpy.updateRemoteMuteStatus).not.toHaveBeenCalledWith(linkedParticipant.id, remoteMuteStatus);
+            expect(remoteMuteServiceSpy.updateLocalMuteStatus).not.toHaveBeenCalledWith(
+                linkedParticipant.id,
+                localAudioMuted,
+                localVideoMuted
+            );
+        }));
+
+        it('should call to get the video control statuses from the cache if the countdown timer is completed for a Participant', fakeAsync(() => {
+            // Arrange
+            component.isCountdownCompleted = true;
+            const remoteMuteStatus = true;
+            const localAudioMuted = false;
+            const localVideoMuted = false;
+            spyOn(logger, 'info');
+            videoControlCacheServiceSpy.getRemoteMutedStatus.and.returnValue(remoteMuteStatus);
+            videoControlCacheServiceSpy.getLocalAudioMuted.and.returnValue(localAudioMuted);
+            videoControlCacheServiceSpy.getLocalVideoMuted.and.returnValue(localVideoMuted);
+            // Act
+            component.readVideoControlStatusesFromCache(state, participant);
+            // Assert
+            expect(videoControlCacheServiceSpy.getLocalAudioMuted).toHaveBeenCalled();
+            expect(videoControlCacheServiceSpy.getLocalVideoMuted).toHaveBeenCalled();
+            expect(videoControlCacheServiceSpy.getRemoteMutedStatus).toHaveBeenCalled();
+            expect(videoControlCacheServiceSpy.getHandRaiseStatus).toHaveBeenCalled();
+            expect(logger.info).not.toHaveBeenCalled();
+            expect(remoteMuteServiceSpy.updateRemoteMuteStatus).toHaveBeenCalledWith(participant.id, remoteMuteStatus);
+            expect(remoteMuteServiceSpy.updateLocalMuteStatus).toHaveBeenCalledWith(participant.id, localAudioMuted, localVideoMuted);
+        }));
     });
 
     describe('conferenceParticipantsStatusSubject updated', () => {
