@@ -108,7 +108,9 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     getPrivateConsultationParticipants(): ParticipantListItem[] {
-        return this.sortAndMapToListItem(this.nonJudgeParticipants.filter(x => x.hearing_role !== HearingRole.WITNESS));
+        return this.sortAndMapToListItem(
+            this.nonJudgeParticipants.filter(x => x.hearing_role !== HearingRole.WITNESS && x.hearing_role !== HearingRole.INTERPRETER)
+        );
     }
 
     get johGroups(): ParticipantListItem[][] {
