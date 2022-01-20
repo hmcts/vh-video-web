@@ -15,5 +15,9 @@ export enum HearingRole {
     LITIGANT_IN_PERSON = 'Litigant in person',
     STAFF_MEMBER = 'Staff Member',
     QUICK_LINK_PARTICIPANT = 'Quick link participant',
-    QUICK_LINK_OBSERVER = 'Quick link observer'
+    QUICK_LINK_OBSERVER = 'Quick link observer',
+    FINANCIAL_MEMBER = 'Financial Member',
+    LEGAL_MEMBER = 'Legal Member',
+    MEDICAL_MEMBER = 'Medical Member',
+    DISABILITY_MEMBER = 'Disability Member (DQM)'
 }

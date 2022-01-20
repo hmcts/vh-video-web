@@ -26,6 +26,7 @@ import { ParticipantRemoteMuteStoreService } from '../services/participant-remot
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
+import { CaseTypeGroup } from '../models/case-type-group';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -269,6 +270,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
                 p.id !== this.participant.id &&
                 p.role !== Role.JudicialOfficeHolder &&
                 p.role !== Role.Judge &&
+                p.case_type_group !== CaseTypeGroup.OBSERVER &&
                 p.hearing_role !== HearingRole.OBSERVER &&
                 p.hearing_role !== HearingRole.WITNESS
         );

@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { LinkType, ParticipantResponse, ParticipantStatus, Role, VideoEndpointResponse } from 'src/app/services/clients/api-client';
+import { LinkType, ParticipantResponse, ParticipantStatus, VideoEndpointResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { HearingRole } from '../../models/hearing-role-model';
@@ -101,7 +101,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     isJohInCurrentRoom(participant: ParticipantResponse): boolean {
         return (
             this.isParticipantInCurrentRoom(participant) &&
-            (participant.hearing_role === HearingRole.PANEL_MEMBER ||
+            (this.isParticipantPanelMember(participant.hearing_role) ||
                 participant.hearing_role === HearingRole.WINGER ||
                 participant.hearing_role === HearingRole.JUDGE)
         );
@@ -112,46 +112,28 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     getPrivateConsultationParticipants(): ParticipantListItem[] {
-        const regularParticipants = this.participantsInConsultation
-            .filter(
-                c =>
-                    c.hearing_role !== HearingRole.WITNESS &&
-                    c.hearing_role !== HearingRole.OBSERVER &&
-                    c.role !== Role.QuickLinkObserver &&
-                    c.role !== Role.QuickLinkParticipant
-            )
-            .filter(c => c.hearing_role !== HearingRole.INTERPRETER)
-            .filter(
-                c =>
-                    c.hearing_role !== HearingRole.JUDGE &&
-                    c.hearing_role !== HearingRole.PANEL_MEMBER &&
-                    c.hearing_role !== HearingRole.WINGER
-            )
-            .map(c => {
-                return this.mapResponseToListItem(c);
-            });
-        const quickLinkParticipants = this.sortAndMapToListItem(
-            this.participantsInConsultation.filter(p => p.role === Role.QuickLinkParticipant)
+        return this.sortAndMapToListItem(
+            this.nonJudgeParticipants.filter(x => x.hearing_role !== HearingRole.WITNESS && x.hearing_role !== HearingRole.INTERPRETER)
         );
-        return [...regularParticipants, ...quickLinkParticipants];
     }
 
-    get johRoles(): string[] {
-        return [HearingRole.JUDGE, HearingRole.PANEL_MEMBER, HearingRole.WINGER];
-    }
-
-    getMemberParticipantsByHearingRole(role: any): ParticipantListItem[] {
-        return this.sortAndMapToListItem(this.participantsInConsultation.filter(p => p.hearing_role === role));
+    get johGroups(): ParticipantListItem[][] {
+        const johGroupsUnmapped = [[...this.panelMembers], [...this.wingers]];
+        return johGroupsUnmapped.map(array =>
+            array.map(c => {
+                return this.mapResponseToListItem(c);
+            })
+        );
     }
 
     getWitnessesAndObservers(): ParticipantListItem[] {
         if (!this.isJohConsultation()) {
             return [];
         }
-        const witnesses = this.getMemberParticipantsByHearingRole(HearingRole.WITNESS);
-        const observers = this.sortAndMapToListItem(
-            this.participantsInConsultation.filter(p => p.hearing_role === HearingRole.OBSERVER || p.role === Role.QuickLinkObserver)
+        const witnesses = this.sortAndMapToListItem(
+            this.nonJudgeParticipants.filter(participant => participant.hearing_role === HearingRole.WITNESS)
         );
+        const observers = this.sortAndMapToListItem(this.observers);
         return [...witnesses, ...observers];
     }
 
@@ -184,7 +166,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         const participant: ParticipantListItem = { ...participantResponse };
         const interpreterLink = participantResponse.linked_participants?.find(x => x.link_type === LinkType.Interpreter);
         if (interpreterLink) {
-            participant.interpreter = this.participantsInConsultation.find(x => x.id === interpreterLink.linked_id);
+            participant.interpreter = this.conference.participants.find(x => x.id === interpreterLink.linked_id);
         }
         return participant;
     }
