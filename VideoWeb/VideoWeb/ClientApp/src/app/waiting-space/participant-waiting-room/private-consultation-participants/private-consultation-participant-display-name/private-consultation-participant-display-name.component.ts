@@ -11,9 +11,13 @@ export class PrivateConsultationParticipantDisplayNameComponent {
     @Input() isAvailable: boolean;
     @Input() isInCurrentRoom: boolean;
 
-    constructor() {}
-
     getColor(): string {
-        return this.isInCurrentRoom ? 'yellow' : this.isAvailable ? 'white' : '';
+        if (this.isInCurrentRoom) {
+            return 'yellow';
+        }
+        if (this.isAvailable) {
+            return 'white';
+        }
+        return '';
     }
 }
