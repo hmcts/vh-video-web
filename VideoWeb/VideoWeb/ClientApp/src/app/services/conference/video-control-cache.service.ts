@@ -54,7 +54,9 @@ export class VideoControlCacheService {
             this.hearingControlStates.participantStates[participantId].isSpotlighted = spotlightValue;
         }
 
-        this.savingHearingState(syncChanges);
+        if (syncChanges) {
+            this.savingHearingState();
+        }
     }
 
     getSpotlightStatus(participantId: string): boolean {
@@ -83,7 +85,9 @@ export class VideoControlCacheService {
             this.hearingControlStates.participantStates[participantId].isRemoteMuted = isRemoteMutedValue;
         }
 
-        this.savingHearingState(syncChanges);
+        if (syncChanges) {
+            this.savingHearingState();
+        }
     }
 
     getRemoteMutedStatus(participantId: string): boolean {
@@ -113,7 +117,9 @@ export class VideoControlCacheService {
             this.hearingControlStates.participantStates[participantId].isHandRaised = isHandRaisedValue;
         }
 
-        this.savingHearingState(syncChanges);
+        if (syncChanges) {
+            this.savingHearingState();
+        }
     }
 
     getHandRaiseStatus(participantId: string): boolean {
@@ -175,7 +181,9 @@ export class VideoControlCacheService {
             this.hearingControlStates.participantStates[participantId].isLocalVideoMuted = localVideoMuted;
         }
 
-        this.savingHearingState(syncChanges);
+        if (syncChanges) {
+            this.savingHearingState();
+        }
     }
 
     getLocalVideoMuted(participantId: string): boolean {
@@ -186,11 +194,9 @@ export class VideoControlCacheService {
         return this.hearingControlStates?.participantStates[participantId]?.isLocalVideoMuted ?? false;
     }
 
-    private savingHearingState(syncChanges: boolean) {
-        if (syncChanges) {
-            this.storageService
-                .saveHearingStateForConference(this.conferenceService.currentConferenceId, this.hearingControlStates)
-                .subscribe();
-        }
+    private savingHearingState() {
+        this.storageService
+            .saveHearingStateForConference(this.conferenceService.currentConferenceId, this.hearingControlStates)
+            .subscribe();
     }
 }
