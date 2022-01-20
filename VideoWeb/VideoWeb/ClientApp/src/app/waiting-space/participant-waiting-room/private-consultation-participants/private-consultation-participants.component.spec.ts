@@ -376,6 +376,15 @@ describe('PrivateConsultationParticipantsComponent', () => {
         expect(component.getPrivateConsultationParticipants().length).toBe(1);
     });
 
+    it('should not get interpreter', () => {
+        const participants = new ConferenceTestData().getListOfParticipants();
+        const interpreter = participants[0];
+        interpreter.hearing_role = HearingRole.INTERPRETER;
+        const representative = participants[1];
+        component.nonJudgeParticipants = [interpreter, representative];
+        expect(component.getPrivateConsultationParticipants().length).toBe(1);
+    });
+
     it('should sort quick link participants', () => {
         const testData = new ConferenceTestData();
         component.nonJudgeParticipants = [testData.quickLinkParticipant2, testData.quickLinkParticipant1];
