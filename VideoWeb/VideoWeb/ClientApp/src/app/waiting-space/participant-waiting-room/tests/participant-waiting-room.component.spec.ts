@@ -268,7 +268,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             component.ngOnInit();
 
             userMediaServiceSpy.isAudioOnly$.subscribe(() => {
-                expect(eventsService.sendMediaStatus.calls.count()).toBe(1);
                 expect(eventsService.sendMediaStatus.calls.mostRecent().args[0]).toBe(component.conferenceId);
                 expect(eventsService.sendMediaStatus.calls.mostRecent().args[1]).toBe(component.participant.id);
                 expect(eventsService.sendMediaStatus.calls.mostRecent().args[2].is_local_audio_muted).toBeFalse();
