@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ConferenceGuard } from '../security/conference.guard';
+import { JudgeGuard } from '../security/judge.guard';
 import { ParticipantWaitingRoomGuard } from '../security/participant-waiting-room.guard';
+import { StaffMemberGuard } from '../security/staff-member.guard';
 import { BackLinkDetails } from '../shared/models/back-link-details';
 import { pageUrls } from '../shared/page-url.constants';
 import { JohWaitingRoomComponent } from './joh-waiting-room/joh-waiting-room.component';
@@ -21,20 +23,21 @@ const routes: Routes = [
     {
         path: `${pageUrls.JudgeWaitingRoom}/:conferenceId`,
         component: JudgeWaitingRoomComponent,
-        canActivate: [ConferenceGuard],
+        canActivate: [JudgeGuard, ConferenceGuard],
         resolve: { loggedUser: LoggedUserResolveService },
         data: { title: 'Waiting room', backLink: new BackLinkDetails(returnToVideoHearingListText, pageUrls.JudgeHearingList) }
     },
     {
         path: `${pageUrls.StaffMemberWaitingRoom}/:conferenceId`,
         component: JudgeWaitingRoomComponent,
-        canActivate: [ConferenceGuard],
+        canActivate: [StaffMemberGuard, ConferenceGuard],
         resolve: { loggedUser: LoggedUserResolveService },
         data: { title: 'Waiting room', backLink: new BackLinkDetails(returnToVideoHearingListText, pageUrls.StaffMemberHearingList) }
     },
     {
         path: `${pageUrls.JOHWaitingRoom}/:conferenceId`,
         component: JohWaitingRoomComponent,
+        canActivate: [JudgeGuard, ConferenceGuard],
         resolve: { loggedUser: LoggedUserResolveService },
         data: { title: 'Waiting room', backLink: new BackLinkDetails(returnToVideoHearingListText, pageUrls.JudgeHearingList) }
     }

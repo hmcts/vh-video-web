@@ -29,5 +29,6 @@ namespace VideoWeb.EventHub.Hub
         Task HearingTransfer(Guid conferenceId, Guid participantId, TransferDirection transferDirection);
         Task ParticipantsUpdatedMessage(Guid conferenceId, List<ParticipantResponse> participants);
         Task HearingLayoutChanged(Guid conferenceId, Guid changedById, HearingLayout newLayout, HearingLayout oldLayout);
+        Task NewConferenceAddedMessage(Guid conferenceId);
     }
 }

@@ -137,7 +137,7 @@ describe('EventsService', () => {
     });
 
     describe('handlers', () => {
-        const expectedNumberOfRegisterations = 18;
+        const expectedNumberOfRegisterations = 19;
 
         describe('registerHandlers', () => {
             it('should register the handlers if they are NOT already registered', () => {

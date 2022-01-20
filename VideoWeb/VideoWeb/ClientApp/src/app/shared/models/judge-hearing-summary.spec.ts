@@ -3,7 +3,6 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { HearingSummary } from './hearing-summary';
 import { JudgeHearingSummary } from './JudgeHearingSummary';
-import { ParticipantSummary } from './participant-summary';
 
 describe('JudgeHearingSummary', () => {
     let conference: ConferenceForHostResponse;
@@ -43,8 +42,8 @@ describe('JudgeHearingSummary', () => {
     it('should get panel members', () => {
         const hearing = new JudgeHearingSummary(conference);
         const panelMembers = hearing.panelMembers;
-        expect(panelMembers.filter(x => x.hearingRole !== HearingRole.PANEL_MEMBER).length).toBe(0);
-        expect(panelMembers.length).toBe(1);
+        expect(panelMembers.filter(x => !x.isParticipantPanelMember).length).toBe(0);
+        expect(panelMembers.length).toBe(2);
     });
 
     it('should get wingers', () => {
