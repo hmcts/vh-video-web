@@ -260,9 +260,9 @@
       },
       "VH.AcceptanceTests.Common": {
         "type": "Direct",
-        "requested": "[1.21.63, )",
-        "resolved": "1.21.63",
-        "contentHash": "Y8LjGHaytemUX8i6q7IcJnhCngI0G5tC6MC74ybxrG6tplLY4NjKwkWGrkA0q4g4wTCKX+7xyITN4BrMjj5WsQ==",
+        "requested": "[1.21.64, )",
+        "resolved": "1.21.64",
+        "contentHash": "Nr4an9YakJsaYyHTeqpRS05XHvMqmTN+KkMKbWxtuCpUtH1Q5H8Esq41huD2nQBnyJec/hBakWFb8+5thUtOFA==",
         "dependencies": {
           "Appium.WebDriver": "4.3.1",
           "Azure.Storage.Blobs": "12.8.0",
@@ -291,12 +291,12 @@
           "Selenium.Firefox.WebDriver": "0.27.0",
           "Selenium.Support": "3.141.0",
           "Selenium.WebDriver": "3.141.0",
-          "Selenium.WebDriver.ChromeDriver": "96.0.4664.4500",
+          "Selenium.WebDriver.ChromeDriver": "97.0.4692.7100",
           "Selenium.WebDriver.IEDriver": "3.150.1.2",
           "Selenium.WebDriver.MicrosoftDriver": "17.17134.0",
-          "SpecFlow": "3.6.23",
-          "SpecFlow.NUnit": "3.6.23",
-          "SpecFlow.Tools.MsBuild.Generation": "3.6.23",
+          "SpecFlow": "3.9.40",
+          "SpecFlow.NUnit": "3.9.40",
+          "SpecFlow.Tools.MsBuild.Generation": "3.9.40",
           "System.Collections": "4.3.0",
           "System.Configuration.ConfigurationManager": "5.0.0",
           "TimeZoneConverter": "3.4.0"
@@ -1320,8 +1320,21 @@
       },
       "Selenium.WebDriver.ChromeDriver": {
         "type": "Transitive",
-        "resolved": "96.0.4664.4500",
-        "contentHash": "7bH+2/bX4IqPXxnMsbD820pCb1DFLeESIbjpUL/Zgq5wfKJHTxtknrQ1wnlMJmWtbpoNcj6Zck7OfoIVstl3zQ=="
+        "resolved": "97.0.4692.7100",
+        "contentHash": "/5wf4Rv9vTmab2qWo3enuYLoumOyVb6+rO0f2hbym+MQzDGYb7GpadhWk/jgNtUf6eFvsqL90TyzXrcCfOhCyQ=="
+      },
+      "SpecFlow.Internal.Json": {
+        "type": "Transitive",
+        "resolved": "1.0.8",
+        "contentHash": "lVCC/Rie7N5rFoc7YxPS0nneLfsWSTIMMlkndwxhaD8MxBp3Bsv1HeiVjVwXCjWaQeoqZcvIy52fF5Xit00ZLw=="
+      },
+      "SpecFlow.Tools.MsBuild.Generation": {
+        "type": "Transitive",
+        "resolved": "3.9.40",
+        "contentHash": "DFClKzQH0ijUBiZNpas8sQ66EdGwVSS18UtC1hVIM7PiT0F+xzKs4VX5hsz+ZY/RKyQEfY9HELUAC8AoZicxSg==",
+        "dependencies": {
+          "SpecFlow": "[3.9.40]"
+        }
       },
       "SpecFlow.Internal.Json": {
         "type": "Transitive",
@@ -2465,7 +2478,7 @@
           "Microsoft.IdentityModel.Clients.ActiveDirectory": "5.2.8",
           "StackExchange.Redis": "2.1.28",
           "System.IdentityModel.Tokens.Jwt": "5.6.0",
-          "UserApi.Client": "1.27.0",
+          "UserApi.Client": "1.27.1",
           "VideoApi.Client": "1.28.11"
         }
       },
@@ -2486,7 +2499,7 @@
           "Microsoft.AspNetCore.SignalR": "1.1.0",
           "Microsoft.Extensions.Caching.Abstractions": "3.1.10",
           "System.Text.Json": "4.7.1",
-          "UserApi.Client": "1.27.0",
+          "UserApi.Client": "1.27.1",
           "VideoApi.Client": "1.28.11",
           "VideoWeb.Common": "1.0.0",
           "VideoWeb.Contract": "1.0.0"

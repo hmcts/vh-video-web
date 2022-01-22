@@ -741,12 +741,13 @@
     "rents": "Rents",
     "right-to-buy": "Right to buy",
     "tax": "Tax",
-    "tribunal": "Tribunal"
+    "tribunal": "Tribunal",
+    "upper-tribunal-tax": "Upper Tribunal Tax"
   },
   "case-type-group": {
     "state": "State",
     "observer": "Observer",
-    "panelmember": "PanelMember",
+    "panelmember": "Panel Member",
     "none": "None",
     "judge": "Judge",
     "staffmember": "Staff Member",

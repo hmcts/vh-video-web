@@ -1,5 +1,6 @@
 import { ParticipantForHostResponse, ParticipantForUserResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
+import { HearingRoleHelper } from '../helpers/hearing-role-helper';
 
 export class ParticipantSummary {
     protected participant: ParticipantForUserResponse;
@@ -60,6 +61,10 @@ export class ParticipantSummary {
 
     get hearingRole(): string {
         return this.participant.hearing_role;
+    }
+
+    get isParticipantPanelMember(): boolean {
+        return HearingRoleHelper.isPanelMember(this.participant.hearing_role);
     }
 
     get participantHertBeatHealth(): ParticipantHeartbeat {

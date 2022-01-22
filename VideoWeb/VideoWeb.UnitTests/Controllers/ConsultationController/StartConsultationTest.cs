@@ -24,6 +24,7 @@ using VideoApi.Contract.Requests;
 using VideoWeb.EventHub.Services;
 using VideoWeb.Helpers;
 using VideoWeb.UnitTests.Builders;
+using System.Security.Claims;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
 {
@@ -37,7 +38,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
-            var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
+            var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.JudicialOfficeHolderRole).Build();
 
             _testConference = ConsultationHelper.BuildConferenceForTest();
 
@@ -235,6 +236,58 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                     ConsultationHelper.GetStartJohConsultationRequest(_testConference));
             var typedResult = (StatusCodeResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
+        }
+
+        [TestCase(AppRoles.JudicialOfficeHolderRole, true)]
+        [TestCase(AppRoles.JudgeRole, true)]
+        [TestCase(AppRoles.StaffMember, true)]
+        [TestCase(AppRoles.CitizenRole, false)]
+        [TestCase(AppRoles.VhOfficerRole, false)]
+        [TestCase(AppRoles.VenueManagementRole, false)]
+        [TestCase(AppRoles.RepresentativeRole, false)]
+        [TestCase(AppRoles.CaseAdminRole, false)]
+        [TestCase(AppRoles.QuickLinkParticipant, false)]
+        [TestCase(AppRoles.QuickLinkObserver, false)]
+        public async Task When_a_user_tries_to_start_judge_joh_consultation_Should_return_correct_response_code_based_on_role(string role, bool shouldBeAllowed)
+        {
+            var controller = GetControllerWithContextForRole(role);
+            var request = ConsultationHelper.GetStartJohConsultationRequest(_testConference);
+            
+            var result =
+                await controller.StartConsultationAsync(
+                    ConsultationHelper.GetStartJohConsultationRequest(_testConference));
+            
+            // Assert
+            int timesCalledExpected;
+            if(shouldBeAllowed)
+            {
+                result.Should().BeOfType<AcceptedResult>();
+                timesCalledExpected = 1;
+            }
+            else
+            {
+                result.Should().BeOfType<ForbidResult>();
+                timesCalledExpected = 0;
+            }
+            
+            _mocker.Mock<IVideoApiClient>()
+                .Verify(x => x.StartPrivateConsultationAsync(It.IsAny<StartConsultationRequest>()), Times.Exactly(timesCalledExpected));
+        }
+
+        private ConsultationsController GetControllerWithContextForRole(string role)
+        {
+            var cp = new ClaimsPrincipalBuilder().WithRole(role).Build();
+            var context = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = cp
+                }
+            };
+
+            var controller = _mocker.Create<ConsultationsController>();
+            controller.ControllerContext = context;
+            return controller;
         }
     }
 }

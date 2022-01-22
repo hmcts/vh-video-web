@@ -22,6 +22,7 @@ namespace VideoWeb.EventHub.Enums
         EndpointJoined,
         EndpointDisconnected,
         EndpointTransfer,
-        ParticipantsUpdated
+        ParticipantsUpdated,
+        NewConferenceAdded
     }
 }
