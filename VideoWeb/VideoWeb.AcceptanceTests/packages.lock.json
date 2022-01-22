@@ -1328,19 +1328,6 @@
         "resolved": "1.0.8",
         "contentHash": "lVCC/Rie7N5rFoc7YxPS0nneLfsWSTIMMlkndwxhaD8MxBp3Bsv1HeiVjVwXCjWaQeoqZcvIy52fF5Xit00ZLw=="
       },
-      "SpecFlow.Tools.MsBuild.Generation": {
-        "type": "Transitive",
-        "resolved": "3.9.40",
-        "contentHash": "DFClKzQH0ijUBiZNpas8sQ66EdGwVSS18UtC1hVIM7PiT0F+xzKs4VX5hsz+ZY/RKyQEfY9HELUAC8AoZicxSg==",
-        "dependencies": {
-          "SpecFlow": "[3.9.40]"
-        }
-      },
-      "SpecFlow.Internal.Json": {
-        "type": "Transitive",
-        "resolved": "1.0.8",
-        "contentHash": "lVCC/Rie7N5rFoc7YxPS0nneLfsWSTIMMlkndwxhaD8MxBp3Bsv1HeiVjVwXCjWaQeoqZcvIy52fF5Xit00ZLw=="
-      },
       "StackExchange.Redis": {
         "type": "Transitive",
         "resolved": "2.1.28",
@@ -2486,7 +2473,7 @@
         "type": "Project",
         "dependencies": {
           "BookingsApi.Client": "1.29.1",
-          "UserApi.Client": "1.27.0",
+          "UserApi.Client": "1.27.1",
           "VideoApi.Client": "1.28.11",
           "VideoWeb.Common": "1.0.0"
         }
