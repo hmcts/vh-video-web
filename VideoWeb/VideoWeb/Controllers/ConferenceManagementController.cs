@@ -1,20 +1,17 @@
+using System;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 using VideoApi.Client;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
-using VideoWeb.Contract.Request;
 using VideoWeb.EventHub.Services;
-using VideoWeb.Mappings;
 
 namespace VideoWeb.Controllers
 {
@@ -28,18 +25,14 @@ namespace VideoWeb.Controllers
         private readonly ILogger<ConferenceManagementController> _logger;
         private readonly IConferenceCache _conferenceCache;
         private readonly IHearingLayoutService _hearingLayoutService;
-        private readonly IConferenceVideoControlStatusService _conferenceVideoControlStatusService;
-        private readonly IMapperFactory _mapperFactory;
 
         public ConferenceManagementController(IVideoApiClient videoApiClient,
-            ILogger<ConferenceManagementController> logger, IConferenceCache conferenceCache, IHearingLayoutService hearingLayoutService, IConferenceVideoControlStatusService conferenceVideoControlStatusService, IMapperFactory mapperFactory)
+            ILogger<ConferenceManagementController> logger, IConferenceCache conferenceCache, IHearingLayoutService hearingLayoutService)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
             _conferenceCache = conferenceCache;
             _hearingLayoutService = hearingLayoutService;
-            _conferenceVideoControlStatusService = conferenceVideoControlStatusService;
-            _mapperFactory = mapperFactory;
         }
 
         /// <summary>
