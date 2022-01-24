@@ -1582,7 +1582,7 @@ export class ApiClient {
     /**
      * Updates the video control statuses for the conference
      * @param conferenceId conference id
-     * @param body (optional)
+     * @param body (optional) Request object to set Video Control Staus
      * @return Success
      */
     setVideoControlStatusesForConference(
@@ -1640,15 +1640,6 @@ export class ApiClient {
             return blobToText(responseBlob).pipe(
                 _observableMergeMap(_responseText => {
                     return _observableOf<void>(<any>null);
-                })
-            );
-        } else if (status === 403) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result403: any = null;
-                    let resultData403 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result403 = ProblemDetails.fromJS(resultData403);
-                    return throwException('Forbidden', status, _responseText, _headers, result403);
                 })
             );
         } else if (status === 404) {
@@ -1733,15 +1724,6 @@ export class ApiClient {
                     let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result200 = ConferenceVideoControlStatuses.fromJS(resultData200);
                     return _observableOf(result200);
-                })
-            );
-        } else if (status === 403) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result403: any = null;
-                    let resultData403 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result403 = ProblemDetails.fromJS(resultData403);
-                    return throwException('Forbidden', status, _responseText, _headers, result403);
                 })
             );
         } else if (status === 404) {
