@@ -43,6 +43,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             foreach (var venue in ConverterHelpers.ConvertStringIntoArray(judgeNames))
             {
+                _browsers[_c.CurrentUser].Driver.WaitUntilElementsVisible(VhoVenueAllocationPage.VenuesNames(venue));
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoVenueAllocationPage.VenuesTextBox).SendKeys(venue);
                 _browsers[_c.CurrentUser].ClickCheckbox(VhoVenueAllocationPage.VenueCheckbox(venue), 5);
             }
