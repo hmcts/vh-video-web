@@ -31,14 +31,12 @@ namespace VideoWeb.Extensions
             var eventhubPath = videoHearingServicesConfiguration.EventHubPath;
             var internalEventSecret = Convert.FromBase64String(videoHearingServicesConfiguration.InternalEventSecret);
 
-            serviceCollection.AddSingleton<RsaSecurityKey>(provider => {
-                // It's required to register the RSA key with depedency injection.
-                // If you don't do this, the RSA instance will be prematurely disposed.
-
-                RSA rsa = RSA.Create();
+            serviceCollection.AddSingleton<RsaSecurityKey>(provider =>
+            {
+                var rsa = RSA.Create();
                 rsa.ImportRSAPublicKey(
-                    source: Convert.FromBase64String(quickLinksConfiguration.JwtProviderSecret),
-                    bytesRead: out int _
+                    source: Convert.FromBase64String(quickLinksConfiguration.RsaPublicKey),
+                    bytesRead: out var _
                 );
 
                 return new RsaSecurityKey(rsa);
@@ -134,7 +132,7 @@ namespace VideoWeb.Extensions
                 [AppRoles.JudgeRole] = new[] { AppRoles.JudgeRole },
                 [AppRoles.VhOfficerRole] = new[] { AppRoles.VhOfficerRole },
                 [AppRoles.VenueManagementRole] = new[] { AppRoles.VhOfficerRole, AppRoles.StaffMember },
-                ["Host"] = new[] {AppRoles.JudgeRole, AppRoles.StaffMember },
+                ["Host"] = new[] { AppRoles.JudgeRole, AppRoles.StaffMember },
                 ["Judicial"] = new[] { AppRoles.JudgeRole, AppRoles.JudicialOfficeHolderRole, AppRoles.StaffMember },
                 ["Individual"] = new[] { AppRoles.CitizenRole, AppRoles.RepresentativeRole, AppRoles.QuickLinkParticipant, AppRoles.QuickLinkObserver },
                 [AppRoles.StaffMember] = new[] { AppRoles.StaffMember },
