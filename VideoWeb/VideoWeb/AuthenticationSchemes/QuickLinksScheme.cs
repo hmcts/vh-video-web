@@ -17,14 +17,14 @@ namespace VideoWeb.AuthenticationSchemes
             _idpConfiguration = idpConfiguration;
             _service = service;
         }
-        
+
         public bool BelongsToScheme(JwtSecurityToken jwtSecurityToken) => jwtSecurityToken.Issuer.Contains(_idpConfiguration.Issuer, StringComparison.InvariantCultureIgnoreCase);
 
         public override void SetJwtBearerOptions(JwtBearerOptions options)
         {
             options.TokenValidationParameters = new TokenValidationParameters
             {
-                ValidAudience = "vh-video-web",
+                ValidAudience = _idpConfiguration.ValidAudience,
                 NameClaimType = "preferred_username",
                 ValidateIssuer = true,
                 ValidIssuer = _idpConfiguration.Issuer,
