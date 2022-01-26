@@ -72,6 +72,7 @@ variables:
   - group: vh-video-web
   - group: vh-video-web-nonprod
   - group: vh test users
+  - group: QuickLinks_Common
   - group: Saucelabs
   - ${{ if containsValue(parameters.prodEnvs, parameters.environment) }}:
       - group: vh-prod
@@ -307,8 +308,10 @@ stages:
           # Quick Links Configuration
           - name: QuickLinks:Issuer
             value: $(video_api_url)
-          - name: QuickLinks:JwtProviderSecret
-            value: $(JwtProviderSecret)
+          - name: QuickLinks:RsaPublicKey
+            value: $(RsaPublicKey)
+          - name: QuickLinks:ValidAudience
+            value: $(ValidAudience)
 
         acceptanceTestSettings:
           - name: ConnectionStrings:SignalR
@@ -418,8 +421,10 @@ stages:
           # Quick Links Configuration
           - name: QuickLinks:Issuer
             value: $(video_api_url)
-          - name: QuickLinks:JwtProviderSecret
-            value: $(JwtProviderSecret)
+          - name: QuickLinks:RsaPublicKey
+            value: $(RsaPublicKey)
+          - name: QuickLinks:ValidAudience
+            value: $(ValidAudience)
 
         runMultiDeviceTests: true
         deviceConfiguration: ${{ parameters.deviceConfiguration }}

@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -30,12 +31,25 @@ namespace VideoWeb.Extensions
             var eventhubPath = videoHearingServicesConfiguration.EventHubPath;
             var internalEventSecret = Convert.FromBase64String(videoHearingServicesConfiguration.InternalEventSecret);
 
+            serviceCollection.AddSingleton<RsaSecurityKey>(provider =>
+            {
+                var rsa = RSA.Create();
+                rsa.ImportRSAPublicKey(
+                    source: Convert.FromBase64String(quickLinksConfiguration.RsaPublicKey),
+                    bytesRead: out var _
+                );
+
+                return new RsaSecurityKey(rsa);
+            });
+
+
             var providerSchemes = new List<IProviderSchemes>
             {
                 new VhAadScheme(azureAdConfiguration, eventhubPath),
                 new EJudiciaryScheme(eventhubPath, eJudAdConfiguration),
-                new QuickLinksScheme(quickLinksConfiguration, eventhubPath)
+                new QuickLinksScheme(quickLinksConfiguration, eventhubPath, serviceCollection)
             };
+
 
             var authenticationBuilder = serviceCollection.AddAuthentication(options =>
                 {
@@ -118,7 +132,7 @@ namespace VideoWeb.Extensions
                 [AppRoles.JudgeRole] = new[] { AppRoles.JudgeRole },
                 [AppRoles.VhOfficerRole] = new[] { AppRoles.VhOfficerRole },
                 [AppRoles.VenueManagementRole] = new[] { AppRoles.VhOfficerRole, AppRoles.StaffMember },
-                ["Host"] = new[] {AppRoles.JudgeRole, AppRoles.StaffMember },
+                ["Host"] = new[] { AppRoles.JudgeRole, AppRoles.StaffMember },
                 ["Judicial"] = new[] { AppRoles.JudgeRole, AppRoles.JudicialOfficeHolderRole, AppRoles.StaffMember },
                 ["Individual"] = new[] { AppRoles.CitizenRole, AppRoles.RepresentativeRole, AppRoles.QuickLinkParticipant, AppRoles.QuickLinkObserver },
                 [AppRoles.StaffMember] = new[] { AppRoles.StaffMember },
