@@ -181,7 +181,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                         participantStatusMessage.participantId,
                         participantStatusMessage.mediaStatus.is_local_audio_muted
                     );
-
                     this.videoControlCacheService.setLocalVideoMuted(
                         participantStatusMessage.participantId,
                         participantStatusMessage.mediaStatus.is_local_video_muted
@@ -216,7 +215,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                             video: video,
                             participantId: participantId
                         });
-
                         this.participantRemoteMuteStoreService.updateLocalMuteStatus(participantId, audio, video);
                     });
             });

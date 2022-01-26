@@ -43,6 +43,7 @@ import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.serv
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
+import { UserMediaService } from 'src/app/services/user-media.service';
 
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let component: ParticipantWaitingRoomComponent;
@@ -51,6 +52,8 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let activatedRoute: ActivatedRoute;
     const translateService = translateServiceSpy;
     let unloadDetectorServiceSpy: jasmine.SpyObj<UnloadDetectorService>;
+    let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
+    let isAudioOnlySubject: Subject<boolean>;
     let shouldUnloadSubject: Subject<void>;
     let shouldReloadSubject: Subject<void>;
 
@@ -81,6 +84,10 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             [],
             ['shouldUnload', 'shouldReload']
         );
+        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>('UserMediaService', [], ['isAudioOnly$']);
+        isAudioOnlySubject = new Subject<boolean>();
+        getSpiedPropertyGetter(userMediaServiceSpy, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
+
         shouldUnloadSubject = new Subject<void>();
         shouldReloadSubject = new Subject<void>();
         getSpiedPropertyGetter(unloadDetectorServiceSpy, 'shouldUnload').and.returnValue(shouldUnloadSubject.asObservable());
@@ -117,7 +124,8 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             consultationInvitiationService,
             unloadDetectorServiceSpy,
             participantRemoteMuteStoreServiceSpy,
-            mockedHearingVenueFlagsService
+            mockedHearingVenueFlagsService,
+            userMediaServiceSpy
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
@@ -251,6 +259,23 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
             // Arrange
             expect(result).toBeTrue();
+        });
+    });
+
+    describe('ngOnInit', () => {
+        it('should subscribe to audio only property and send message when it occurs', done => {
+            component.audioOnly = false;
+            component.ngOnInit();
+
+            userMediaServiceSpy.isAudioOnly$.subscribe(() => {
+                expect(eventsService.sendMediaStatus.calls.mostRecent().args[0]).toBe(component.conferenceId);
+                expect(eventsService.sendMediaStatus.calls.mostRecent().args[1]).toBe(component.participant.id);
+                expect(eventsService.sendMediaStatus.calls.mostRecent().args[2].is_local_audio_muted).toBeFalse();
+                expect(eventsService.sendMediaStatus.calls.mostRecent().args[2].is_local_video_muted).toBeTrue();
+                done();
+            });
+
+            isAudioOnlySubject.next(true);
         });
     });
 

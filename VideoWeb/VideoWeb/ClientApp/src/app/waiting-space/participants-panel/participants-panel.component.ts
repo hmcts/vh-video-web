@@ -65,7 +65,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-
         this.getParticipantsList().then(() => {
             this.participantRemoteMuteStoreService.conferenceParticipantsStatus$.pipe(take(1)).subscribe(state => {
                 this.participants.forEach(participant => {
@@ -268,13 +267,22 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
         participant.assignPexipId(updatedParticipant.uuid);
         if (participant instanceof LinkedParticipantPanelModel) {
-            participant.updateParticipant(updatedParticipant.isRemoteMuted, null, updatedParticipant.isSpotlighted, participant.id);
+            participant.updateParticipant(
+                updatedParticipant.isRemoteMuted,
+                null,
+                updatedParticipant.isSpotlighted,
+                participant.id,
+                participant.isLocalMicMuted(),
+                participant.isLocalCameraOff()
+            );
         } else {
             participant.updateParticipant(
                 updatedParticipant.isRemoteMuted,
                 updatedParticipant.handRaised,
                 updatedParticipant.isSpotlighted,
-                participant.id
+                participant.id,
+                participant.isLocalMicMuted(),
+                participant.isLocalCameraOff()
             );
         }
 
