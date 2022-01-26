@@ -21,11 +21,11 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
         {
             _configuration = new QuickLinksConfiguration
             {
-                Issuer = "issuer",
-                JwtProviderSecret = "x4p5Kxsygx3dYAso0JKZljK0PL926mxppc5gGqeV9aRydc++gSNx4UITuZ1G6YJX7KgymQnQiEsaG/XIUKTPPA=="
+                Issuer = "issuer"
             };
             var services = new ServiceCollection();
-            services.AddSingleton<RsaSecurityKey>(provider => {
+            services.AddSingleton<RsaSecurityKey>(provider =>
+            {
                 RSA rsa = RSA.Create();
                 rsa.ImportRSAPublicKey(
                     source: Convert.FromBase64String("MEgCQQCw4Yu3CKpAGsoizccP4Yue2+onGQIB/x1lrvZSbF9T1gL3GXFw3XiAvKmhxYLlCH2BRHwullQ78csLhFOem5s1AgMBAAE="),
