@@ -42,6 +42,7 @@ variables:
   - group: vh-apps-settings-generic
   - group: vh-video-web
   - group: vh test users
+  - group: QuickLinks_Common
   - group: Saucelabs
   - ${{ if ne(variables['Build.Reason'], 'ResourceTrigger') }}:
       - ${{ if containsValue(parameters.prodEnvs, parameters.environment) }}:
@@ -317,8 +318,10 @@ stages:
           # Quick Links Configuration
           - name: QuickLinks:Issuer
             value: $(video_api_url)
-          - name: QuickLinks:JwtProviderSecret
-            value: $(JwtProviderSecret)
+          - name: QuickLinks:RsaPublicKey
+            value: $(RsaPublicKey)
+          - name: QuickLinks:ValidAudience
+            value: $(ValidAudience)
 
         acceptanceTestSettings:
           - name: ConnectionStrings:SignalR
@@ -430,5 +433,7 @@ stages:
           # Quick Links Configuration
           - name: QuickLinks:Issuer
             value: $(video_api_url)
-          - name: QuickLinks:JwtProviderSecret
-            value: $(JwtProviderSecret)
+          - name: QuickLinks:RsaPublicKey
+            value: $(RsaPublicKey)
+          - name: QuickLinks:ValidAudience
+            value: $(ValidAudience)
