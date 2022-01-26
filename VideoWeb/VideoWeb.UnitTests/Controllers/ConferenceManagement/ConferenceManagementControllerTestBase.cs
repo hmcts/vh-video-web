@@ -6,15 +6,11 @@ using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Moq;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
-using VideoApi.Client;
 using VideoApi.Contract.Responses;
-using VideoWeb.Helpers;
-using VideoWeb.EventHub.Services;
 using Autofac.Extras.Moq;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
