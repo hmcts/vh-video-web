@@ -7,8 +7,6 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using VideoApi.Client;
-using VideoApi.Contract.Requests;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Controllers;
@@ -30,14 +28,14 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         }
         
         private AutoMock _mocker;
-        private ConferenceManagementController _sut;
+        private ConferenceStatusController _sut;
         private FakeMapper _fakeMapper;
 
         [SetUp]
         public void SetUp()
         {
             _mocker = AutoMock.GetLoose();
-            _sut = _mocker.Create<ConferenceManagementController>();
+            _sut = _mocker.Create<ConferenceStatusController>();
             _fakeMapper = new FakeMapper();
         }
 
