@@ -185,7 +185,7 @@ export class VideoControlService {
             .subscribe(update => {
                 this.logger.info(`${this.loggerPrefix} Update received. Attempting to update cache. remote`, {
                     requestedValue: remoteMuteStatus,
-                    updatedValue: update.isSpotlighted,
+                    updatedValue: update.isRemoteMuted,
                     wasValueChangedPerRequest: remoteMuteStatus === update.isRemoteMuted,
                     conferenceId: conferenceId,
                     participantId: id

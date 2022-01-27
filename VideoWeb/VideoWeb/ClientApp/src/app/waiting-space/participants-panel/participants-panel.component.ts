@@ -159,6 +159,14 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             } else {
                 this.participantRemoteMuteStoreService.updateRemoteMuteStatus(participant.id, remoteMutedStatus);
                 this.participantRemoteMuteStoreService.updateLocalMuteStatus(participant.id, localAudioMuted, localVideoMuted);
+                participant.updateParticipant(
+                    state[participant.id]?.isRemoteMuted,
+                    handRaise,
+                    participant.hasSpotlight(),
+                    participant.id,
+                    state[participant.id]?.isLocalAudioMuted,
+                    state[participant.id]?.isLocalVideoMuted
+                );
             }
         }
     }
