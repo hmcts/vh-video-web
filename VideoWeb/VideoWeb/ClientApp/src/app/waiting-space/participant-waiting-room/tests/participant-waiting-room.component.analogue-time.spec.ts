@@ -27,11 +27,13 @@ import { UnloadDetectorService } from 'src/app/services/unload-detector.service'
 import { Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
+import { UserMediaService } from 'src/app/services/user-media.service';
 
 describe('ParticipantWaitingRoomComponent message and clock', () => {
     let component: ParticipantWaitingRoomComponent;
     const translateService = translateServiceSpy;
     let unloadDetectorServiceSpy: jasmine.SpyObj<UnloadDetectorService>;
+    let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
     let shouldUnloadSubject: Subject<void>;
     let participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
@@ -41,6 +43,7 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
 
     beforeEach(() => {
         unloadDetectorServiceSpy = jasmine.createSpyObj<UnloadDetectorService>('UnloadDetectorService', [], ['shouldUnload']);
+        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>('UserMediaService', [], ['isAudioOnly$']);
         shouldUnloadSubject = new Subject<void>();
         getSpiedPropertyGetter(unloadDetectorServiceSpy, 'shouldUnload').and.returnValue(shouldUnloadSubject.asObservable());
 
@@ -65,7 +68,8 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
             consultationInvitiationService,
             unloadDetectorServiceSpy,
             participantRemoteMuteStoreServiceSpy,
-            mockedHearingVenueFlagsService
+            mockedHearingVenueFlagsService,
+            userMediaServiceSpy
         );
     });
 
