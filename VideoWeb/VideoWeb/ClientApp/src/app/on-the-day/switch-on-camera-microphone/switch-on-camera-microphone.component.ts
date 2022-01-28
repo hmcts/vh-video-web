@@ -27,7 +27,7 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
     conferenceId: string;
 
     contact = {
-        phone: vhContactDetails.phone
+        phone: vhContactDetails.uk.phoneNumber
     };
 
     constructor(

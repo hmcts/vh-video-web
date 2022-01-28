@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { vhContactDetails } from '../contact-information';
 
 @Component({
     selector: 'app-equipment-problem',
@@ -6,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: []
 })
 export class EquipmentProblemComponent implements OnInit {
-    constructor() {}
+    contactDetails = vhContactDetails;
 
     ngOnInit() {}
 }

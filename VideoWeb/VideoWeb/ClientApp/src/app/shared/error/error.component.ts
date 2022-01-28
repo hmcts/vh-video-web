@@ -7,6 +7,7 @@ import { ErrorService } from 'src/app/services/error.service';
 import { ConnectionStatusService } from 'src/app/services/connection-status.service';
 import { ErrorMessage } from '../models/error-message';
 import { TranslateService } from '@ngx-translate/core';
+import { vhContactDetails } from '../contact-information';
 
 @Component({
     selector: 'app-error',
@@ -25,6 +26,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
     attemptingReconnect: boolean;
     isExtensionOrFirewallIssue = false;
     hasLostInternet = false;
+    contactDetails = vhContactDetails;
 
     constructor(
         private router: Router,

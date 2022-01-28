@@ -9,8 +9,8 @@ export class ContactUsFoldingComponent {
     expanded: boolean;
 
     contact = {
-        phone: vhContactDetails.phone,
-        email: vhContactDetails.adminEmail
+        phone: vhContactDetails.uk.phoneNumber,
+        email: vhContactDetails.uk.email
     };
 
     constructor() {}
