@@ -998,7 +998,17 @@
     "solicitor": "Cyfreithiwr",
     "barrister": "Bargyfreithiwr",
     "quick-link-participant": "Cyfranogwr",
-    "quick-link-observer": "Sylwedydd"
+    "quick-link-observer": "Sylwedydd",
+    "support-worker": "Gweithiwr Cymorth",
+    "family-member": "Aelod o'r Teulu",
+    "friend": "Ffrind",
+    "joint-party": "Parti ar y Cyd",
+    "dwp-presenting-officer": "Swyddog Cyflwyno'r DWP",
+    "appraiser": "Gwerthuswr",
+    "disability-member-(dqm)": "Aelod Anabledd (DQM)",
+    "medical-member": "Aelod Meddygol",
+    "legal-member": "Aelod Cyfreithiol",
+    "financial-member": "Aelod Cyllidol"
   },
   "case-type-group": {
     "respondent": "Atebydd",
@@ -1053,7 +1063,8 @@
     "private-law": "Cyfraith Breifat",
     "divorce": "Ysgariad",
     "adoption": "Mabwysiadu",
-    "upper-tribunal-tax": "Uwch Dribiwnlys (Treth)"
+    "upper-tribunal-tax": "Uwch Dribiwnlys (Treth)",
+    "sscs-tribunal": "Tribiwnlys SSCS"
   },
   "case-role": {
     "state": "Y Wladwriaeth",
