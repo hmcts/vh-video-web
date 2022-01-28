@@ -25,6 +25,7 @@ import { ParticipantService } from './participant.service';
 import { VideoControlCacheService } from './video-control-cache.service';
 import { ParticipantsUpdatedMessage } from '../../shared/models/participants-updated-message';
 import { VideoCallEventsService } from 'src/app/waiting-space/services/video-call-events.service';
+import { ParticipantRemoteMuteStoreService } from '../../waiting-space/services/participant-remote-mute-store.service';
 
 describe('ParticipantService', () => {
     const asParticipantModelsFromUserResponse = (participants: ParticipantForUserResponse[]) =>
@@ -186,12 +187,17 @@ describe('ParticipantService', () => {
         ]);
 
         loggerSpy = jasmine.createSpyObj<LoggerService>('Logger', ['error', 'warn', 'info']);
+        const participantRemoteMuteStoreServiceSpy = jasmine.createSpyObj<ParticipantRemoteMuteStoreService>(
+            ['updateRemoteMuteStatus', 'updateLocalMuteStatus', 'assignPexipId'],
+            ['conferenceParticipantsStatus$']
+        );
 
         sut = new ParticipantService(
             conferenceServiceSpy,
             videoCallEventsServiceSpy,
             eventsServiceSpy,
             videoControlCacheServiceSpy,
+            participantRemoteMuteStoreServiceSpy,
             loggerSpy
         );
     });

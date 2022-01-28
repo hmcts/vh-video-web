@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common.Models;
@@ -21,6 +21,8 @@ namespace VideoWeb.Mappings
             {
                 conferenceVideoControlStatusesMap.Add(key, new VideoControlStatus()
                 {
+                    IsHandRaised = value.IsHandRaised,
+                    IsRemoteMuted  = value.IsRemoteMuted,
                     IsSpotlighted = value.IsSpotlighted,
                     IsLocalAudioMuted = value.IsLocalAudioMuted,
                     IsLocalVideoMuted = value.IsLocalVideoMuted

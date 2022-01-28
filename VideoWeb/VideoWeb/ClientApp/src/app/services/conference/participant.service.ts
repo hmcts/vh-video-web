@@ -4,6 +4,7 @@ import { Observable, ReplaySubject, Subject, Subscription, zip } from 'rxjs';
 import { filter, map, take, tap } from 'rxjs/operators';
 import { IParticipantHearingState, ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
+import { ParticipantRemoteMuteStoreService } from 'src/app/waiting-space/services/participant-remote-mute-store.service';
 import { VideoCallEventsService } from 'src/app/waiting-space/services/video-call-events.service';
 import { ConferenceResponse, ParticipantStatus } from '../clients/api-client';
 import { EventsService } from '../events.service';
@@ -103,6 +104,7 @@ export class ParticipantService {
         private videoCallEventsService: VideoCallEventsService,
         private eventsService: EventsService,
         private videoControlCacheService: VideoControlCacheService,
+        private participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
         private logger: LoggerService
     ) {
         this.initialise();
@@ -186,6 +188,7 @@ export class ParticipantService {
         });
 
         for (const participant of this.participants.filter(x => x.virtualMeetingRoomSummary)) {
+            this.participantRemoteMuteStoreService.assignPexipId(participant.id, participant.pexipId);
             const existingVmr = this.virtualMeetingRooms.find(x => x.id === participant.virtualMeetingRoomSummary?.id);
             if (existingVmr) {
                 if (existingVmr.participants.find(x => x.id === participant.id)) {

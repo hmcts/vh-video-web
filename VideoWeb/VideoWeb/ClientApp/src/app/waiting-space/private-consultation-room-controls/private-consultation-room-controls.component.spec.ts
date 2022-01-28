@@ -41,6 +41,7 @@ import { ConferenceService } from 'src/app/services/conference/conference.servic
 import { fakeAsync, flush } from '@angular/core/testing';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { FeatureFlagService } from 'src/app/services/feature-flag.service';
+import { VideoControlService } from '../../services/conference/video-control.service';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -86,6 +87,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
     let clientSettingsResponse: ClientSettingsResponse;
     let featureFlagServiceSpy: jasmine.SpyObj<FeatureFlagService>;
+    let videoControlServiceSpy: jasmine.SpyObj<VideoControlService>;
 
     beforeAll(() => {
         featureFlagServiceSpy = jasmine.createSpyObj<FeatureFlagService>('FeatureFlagService', ['getFeatureFlagByName']);
@@ -104,6 +106,12 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         );
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings']);
         configServiceSpy.getClientSettings.and.returnValue(of(clientSettingsResponse));
+        videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', [
+            'setSpotlightStatus',
+            'setSpotlightStatusById',
+            'setRemoteMuteStatusById',
+            'setHandRaiseStatusById'
+        ]);
 
         userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>([], ['isAudioOnly$']);
         isAudioOnlySubject = new Subject<boolean>();
@@ -125,6 +133,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             logger,
             participantServiceSpy,
             translateService,
+            videoControlServiceSpy,
             userMediaServiceSpy,
             conferenceServiceSpy,
             configServiceSpy,
@@ -233,6 +242,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             logger,
             participantServiceSpy,
             translateService,
+            videoControlServiceSpy,
             userMediaServiceSpy,
             conferenceServiceSpy,
             configServiceSpy,
@@ -256,6 +266,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             logger,
             participantServiceSpy,
             translateService,
+            videoControlServiceSpy,
             userMediaServiceSpy,
             conferenceServiceSpy,
             configServiceSpy,
