@@ -157,21 +157,24 @@
     <h2 class="govuk-heading-m" *ngIf="isNotStarted()">{{ 'judge-waiting-room.is-everyone-connected' | translate }}</h2>
 
     <p
-      class="govuk-body govuk-!-margin-bottom-3"
-      *ngIf="isNotStarted()"
-      [innerHTML]="'judge-waiting-room.hearing-messages.not-started' | translate: { phone: '0300 303 0655' }"
-    ></p>
+    class="govuk-body govuk-!-margin-bottom-3"
+    *ngIf="isNotStarted()"
+    [innerHTML]="'judge-waiting-room.hearing-messages.not-started' 
+      | translate: { phone: (hearingVenueIsScottish$ | async) ? contactDetails.scotland.phoneNumber : contactDetails.uk.phoneNumber }"
+  ></p>
 
     <p
       class="govuk-body govuk-!-margin-bottom-3"
       *ngIf="hearingPaused()"
-      [innerHTML]="'judge-waiting-room.hearing-messages.paused' | translate: { phone: '0300 303 0655' }"
+      [innerHTML]="'judge-waiting-room.hearing-messages.paused' 
+        | translate: { phone: (hearingVenueIsScottish$ | async) ? contactDetails.scotland.phoneNumber : contactDetails.uk.phoneNumber }"
     ></p>
 
     <p
       class="govuk-body govuk-!-margin-bottom-3"
       *ngIf="hearingSuspended()"
-      [innerHTML]="'judge-waiting-room.hearing-messages.suspended' | translate: { phone: '0300 303 0655' }"
+      [innerHTML]="'judge-waiting-room.hearing-messages.suspended' 
+        | translate: { phone: (hearingVenueIsScottish$ | async) ? contactDetails.scotland.phoneNumber : contactDetails.uk.phoneNumber }"
     ></p>
 
     <p

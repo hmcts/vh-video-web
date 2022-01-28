@@ -289,7 +289,8 @@
 
     <div class="govuk-!-margin-top-9">
       <p class="govuk-body">
-        <strong>{{ 'participant-waiting-room.vh-team' | translate: { phone: '0300 303 0655' } }}</strong>
+        <strong>{{ 'participant-waiting-room.vh-team' 
+          | translate: { phone: (hearingVenueIsScottish$ | async) ? contactDetails.scotland.phoneNumber : contactDetails.uk.phoneNumber } }}</strong>
       </p>
     </div>
   </div>

@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, Subscription } from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
@@ -27,6 +27,7 @@ import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.s
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 import { CaseTypeGroup } from '../models/case-type-group';
+import { vhContactDetails } from 'src/app/shared/contact-information';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -42,6 +43,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
 
     clockSubscription$: Subscription;
     isParticipantsPanelHidden = false;
+    hearingVenueIsScottish$: Observable<boolean>;
+    contactDetails = vhContactDetails;
 
     constructor(
         protected route: ActivatedRoute,
@@ -84,6 +87,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             participantRemoteMuteStoreService,
             hearingVenueFlagsService
         );
+        this.hearingVenueIsScottish$ = this.hearingVenueFlagsService.hearingVenueIsScottish$;
     }
 
     ngOnInit() {
