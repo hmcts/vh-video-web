@@ -698,7 +698,8 @@
     "disability-member-(dqm)": "Disability Member (DQM)",
     "medical-member": "Medical Member",
     "legal-member": "Legal Member",
-    "financial-member": "Financial Member"
+    "financial-member": "Financial Member",
+    "appellant": "Appellant"
   },
   "case-role": {
     "appellant": "Appellant",
