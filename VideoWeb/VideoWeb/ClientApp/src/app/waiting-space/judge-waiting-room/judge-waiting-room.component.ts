@@ -26,7 +26,7 @@ import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-map
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
-import { CallError } from '../models/video-call-models';
+import { CallError, ParticipantUpdated } from '../models/video-call-models';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
@@ -143,34 +143,20 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                     });
                 })
             )
-            .subscribe(createdParticipant => {
-                const participantDisplayName = PexipDisplayNameModel.fromString(createdParticipant.pexipDisplayName);
-                this.participantRemoteMuteStoreService.assignPexipId(participantDisplayName?.participantOrVmrId, createdParticipant.uuid);
-                this.logger.debug(`${this.loggerPrefixJudge} stored pexip ID updated`, {
-                    pexipId: createdParticipant.uuid,
-                    participantId: participantDisplayName?.participantOrVmrId
-                });
-            });
+            .subscribe(createdParticipant => this.assignPexipIdToRemoteStore(createdParticipant));
 
         this.videoCallService
             .onParticipantUpdated()
             .pipe(
                 takeUntil(this.destroyedSubject),
-                tap(createdParticipant => {
+                tap(updatedParticipant => {
                     this.logger.debug(`${this.loggerPrefixJudge} participant updated`, {
-                        pexipId: createdParticipant.uuid,
-                        dispayName: createdParticipant.pexipDisplayName
+                        pexipId: updatedParticipant.uuid,
+                        dispayName: updatedParticipant.pexipDisplayName
                     });
                 })
             )
-            .subscribe(createdParticipant => {
-                const participantDisplayName = PexipDisplayNameModel.fromString(createdParticipant.pexipDisplayName);
-                this.participantRemoteMuteStoreService.assignPexipId(participantDisplayName?.participantOrVmrId, createdParticipant.uuid);
-                this.logger.debug(`${this.loggerPrefixJudge} stored pexip ID updated`, {
-                    pexipId: createdParticipant.uuid,
-                    participantId: participantDisplayName?.participantOrVmrId
-                });
-            });
+            .subscribe(updatedParticipant => this.assignPexipIdToRemoteStore(updatedParticipant));
 
         this.eventService
             .getParticipantMediaStatusMessage()
@@ -181,6 +167,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                         participantStatusMessage.participantId,
                         participantStatusMessage.mediaStatus.is_local_audio_muted
                     );
+
                     this.videoControlCacheService.setLocalVideoMuted(
                         participantStatusMessage.participantId,
                         participantStatusMessage.mediaStatus.is_local_video_muted
@@ -215,6 +202,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                             video: video,
                             participantId: participantId
                         });
+
+                        this.videoControlCacheService.setRemoteMutedStatus(participantId, false);
                         this.participantRemoteMuteStoreService.updateLocalMuteStatus(participantId, audio, video);
                     });
             });
@@ -223,6 +212,17 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
             this.errorService.handlePexipError(new CallError(error.name), conferenceId);
         }
+    }
+
+    assignPexipIdToRemoteStore(participant: ParticipantUpdated): void {
+        const participantDisplayName = PexipDisplayNameModel.fromString(participant.pexipDisplayName);
+        if (participant.uuid && participantDisplayName !== null) {
+            this.participantRemoteMuteStoreService.assignPexipId(participantDisplayName.participantOrVmrId, participant.uuid);
+        }
+        this.logger.debug(`${this.loggerPrefixJudge} stored pexip ID updated`, {
+            pexipId: participant.uuid,
+            participantId: participantDisplayName?.participantOrVmrId
+        });
     }
 
     private onShouldReload(): void {

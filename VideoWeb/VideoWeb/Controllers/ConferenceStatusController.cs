@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -49,6 +50,8 @@ namespace VideoWeb.Controllers
                 var videoControlStatuses = mapper.Map(setVideoControlStatusesRequest);
                 
                 _logger.LogDebug("Setting the video control statuses for {conferenceId}", conferenceId);
+                _logger.LogTrace($"Updating conference videoControlStatuses in cache: {JsonSerializer.Serialize(videoControlStatuses)}");
+
                 await _conferenceVideoControlStatusService.SetVideoControlStateForConference(conferenceId, videoControlStatuses);
 
                 _logger.LogTrace("Set video control statuses ({videoControlStatuses}) for {conferenceId}", videoControlStatuses, conferenceId);
