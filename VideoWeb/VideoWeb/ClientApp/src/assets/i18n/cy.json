@@ -1003,7 +1003,12 @@
     "family-member": "Aelod o'r Teulu",
     "friend": "Ffrind",
     "joint-party": "Parti ar y Cyd",
-    "dwp-presenting-officer": "Swyddog Cyflwyno'r DWP"
+    "dwp-presenting-officer": "Swyddog Cyflwyno'r DWP",
+    "appraiser": "Gwerthuswr",
+    "disability-member-(dqm)": "Aelod Anabledd (DQM)",
+    "medical-member": "Aelod Meddygol",
+    "legal-member": "Aelod Cyfreithiol",
+    "financial-member": "Aelod Cyllidol"
   },
   "case-type-group": {
     "respondent": "Atebydd",

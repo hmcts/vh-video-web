@@ -693,7 +693,12 @@
     "family-member": "Family Member",
     "friend": "Friend",
     "joint-party": "Joint Party",
-    "dwp-presenting-officer": "DWP Presenting Officer"
+    "dwp-presenting-officer": "DWP Presenting Officer",
+    "appraiser": "Appraiser",
+    "disability-member-(dqm)": "Disability Member (DQM)",
+    "medical-member": "Medical Member",
+    "legal-member": "Legal Member",
+    "financial-member": "Financial Member"
   },
   "case-role": {
     "appellant": "Appellant",
