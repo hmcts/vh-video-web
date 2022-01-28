@@ -688,7 +688,12 @@
     "intermediary": "Intermediary",
     "video-access-point": "Video access point",
     "quick-link-participant": "Participant",
-    "quick-link-observer": "Observer"
+    "quick-link-observer": "Observer",
+    "support-worker": "Support Worker",
+    "family-member": "Family Member",
+    "friend": "Friend",
+    "joint-party": "Joint Party",
+    "dwp-presenting-officer": "DWP Presenting Officer"
   },
   "case-role": {
     "appellant": "Appellant",
@@ -742,7 +747,8 @@
     "right-to-buy": "Right to buy",
     "tax": "Tax",
     "tribunal": "Tribunal",
-    "upper-tribunal-tax": "Upper Tribunal Tax"
+    "upper-tribunal-tax": "Upper Tribunal Tax",
+    "sscs-tribunal": "SSCS Tribunal"
   },
   "case-type-group": {
     "state": "State",
