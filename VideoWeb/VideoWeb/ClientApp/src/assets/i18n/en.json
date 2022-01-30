@@ -754,7 +754,8 @@
     "tax": "Tax",
     "tribunal": "Tribunal",
     "upper-tribunal-tax": "Upper Tribunal Tax",
-    "sscs-tribunal": "SSCS Tribunal"
+    "sscs-tribunal": "SSCS Tribunal",
+      "family": "Family"
   },
   "case-type-group": {
     "state": "State",
