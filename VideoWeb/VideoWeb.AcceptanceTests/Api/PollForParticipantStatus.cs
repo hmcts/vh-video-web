@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Api.Helpers;
@@ -62,7 +63,7 @@ namespace VideoWeb.AcceptanceTests.Api
                 }
                 Thread.Sleep(TimeSpan.FromSeconds(1));
             }
-            throw new DataMisalignedException($"Expected participant state to be updated to {_expectedStates} but was {actualState}");
+            throw new DataMisalignedException($"Expected participant state to be updated to be in the list '{string.Join(",", _expectedStates.Select(x => x.ToString()).ToArray())}' but was {actualState}");
         }
     }
 }
