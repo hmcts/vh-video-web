@@ -1066,7 +1066,9 @@
     "adoption": "Mabwysiadu",
     "upper-tribunal-tax": "Uwch Dribiwnlys (Treth)",
     "sscs-tribunal": "Tribiwnlys SSCS",
-    "family": "Teulu"
+    "family": "Teulu",
+    "business-lease-renewal": "Adnewyddu Prydlesi Busnes",
+    "tenant-fees": "Ffioedd Tenantiaid"
   },
   "case-role": {
     "state": "Y Wladwriaeth",
