@@ -203,7 +203,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                             participantId: participantId
                         });
 
-                        this.videoControlCacheService.setRemoteMutedStatus(participantId, false);
                         this.participantRemoteMuteStoreService.updateLocalMuteStatus(participantId, audio, video);
                     });
             });
