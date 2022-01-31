@@ -252,7 +252,7 @@ describe('ParticipantsPanelComponent', () => {
         { status: ConferenceStatus.Paused}
     ];
     conferenceStatusStatuses.forEach(c => {
-        fit(`should reset the remote mute status of the participants in the component store for a ${c.status} hearing`, fakeAsync(() => {
+        it(`should reset the remote mute status of the participants in the component store for a ${c.status} hearing`, fakeAsync(() => {
             const response = new ConferenceResponse({ status: c.status });
             videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(response));
             videoWebServiceSpy.getParticipantsByConferenceId.and.returnValue(Promise.resolve(participants));
