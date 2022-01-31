@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { merge, Observable, Subject, Subscription } from 'rxjs';
+import { merge, Subject, Subscription } from 'rxjs';
 import { take, takeUntil, tap } from 'rxjs/operators';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
@@ -22,7 +22,6 @@ import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
-import { vhContactDetails } from 'src/app/shared/contact-information';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -62,8 +61,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     conferenceStatusChangedSubscription: Subscription;
     participantStatusChangedSubscription: Subscription;
     onConferenceStatusChangedSubscription: Subscription;
-    hearingVenueIsScottish$: Observable<boolean>;
-    contactDetails = vhContactDetails;
 
     get isChatVisible() {
         return this.panelStates['Chat'];
@@ -117,7 +114,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         );
         this.displayConfirmStartHearingPopup = false;
         this.hearingStartingAnnounced = true; // no need to play announcements for a judge
-        this.hearingVenueIsScottish$ = this.hearingVenueFlagsService.hearingVenueIsScottish$;
     }
 
     ngOnInit() {

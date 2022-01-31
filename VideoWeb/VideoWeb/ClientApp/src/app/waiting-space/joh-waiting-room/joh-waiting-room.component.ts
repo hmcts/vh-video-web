@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -14,7 +14,6 @@ import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.s
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
-import { vhContactDetails } from 'src/app/shared/contact-information';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
@@ -33,8 +32,6 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
     private readonly loggerPrefixJOH = '[JOH WR] -';
     private destroyedSubject = new Subject();
     isParticipantsPanelHidden = false;
-    hearingVenueIsScottish$: Observable<boolean>;
-    contactDetails = vhContactDetails;
 
     constructor(
         protected route: ActivatedRoute,
@@ -76,7 +73,6 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
             participantRemoteMuteStoreService,
             hearingVenueFlagsService
         );
-        this.hearingVenueIsScottish$ = this.hearingVenueFlagsService.hearingVenueIsScottish$;
     }
 
     ngOnInit(): void {

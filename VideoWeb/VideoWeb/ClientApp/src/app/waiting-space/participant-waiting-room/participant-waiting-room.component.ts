@@ -27,7 +27,6 @@ import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.s
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 import { CaseTypeGroup } from '../models/case-type-group';
-import { vhContactDetails } from 'src/app/shared/contact-information';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -44,7 +43,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     clockSubscription$: Subscription;
     isParticipantsPanelHidden = false;
     hearingVenueIsScottish$: Observable<boolean>;
-    contactDetails = vhContactDetails;
 
     constructor(
         protected route: ActivatedRoute,
@@ -87,7 +85,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             participantRemoteMuteStoreService,
             hearingVenueFlagsService
         );
-        this.hearingVenueIsScottish$ = this.hearingVenueFlagsService.hearingVenueIsScottish$;
     }
 
     ngOnInit() {
