@@ -1008,7 +1008,8 @@
     "disability-member-(dqm)": "Aelod Anabledd (DQM)",
     "medical-member": "Aelod Meddygol",
     "legal-member": "Aelod Cyfreithiol",
-    "financial-member": "Aelod Cyllidol"
+    "financial-member": "Aelod Cyllidol",
+    "appellant": "Apelydd"
   },
   "case-type-group": {
     "respondent": "Atebydd",
@@ -1064,7 +1065,8 @@
     "divorce": "Ysgariad",
     "adoption": "Mabwysiadu",
     "upper-tribunal-tax": "Uwch Dribiwnlys (Treth)",
-    "sscs-tribunal": "Tribiwnlys SSCS"
+    "sscs-tribunal": "Tribiwnlys SSCS",
+    "family": "Teulu"
   },
   "case-role": {
     "state": "Y Wladwriaeth",
