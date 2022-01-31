@@ -128,6 +128,106 @@ export class VideoControlService {
         return this.videoControlCacheService.getLocalAudioMuted(id);
     }
 
+    setRemoteMuteStatus(participantOrVmr: ParticipantModel | VirtualMeetingRoomModel, remoteMuteStatus: boolean) {
+        this.setRemoteMuteStatusById(participantOrVmr.id, participantOrVmr.pexipId, remoteMuteStatus);
+    }
+    setRemoteMuteStatusById(id: string, pexipId: string, remoteMuteStatus: boolean) {
+        const conferenceId = this.conferenceService.currentConferenceId;
+
+        this.logger.info(
+            `${this.loggerPrefix} Attempting to set remote mute status of participant in conference: ${id} in ${conferenceId}.`,
+            {
+                remoteMuteStatus: remoteMuteStatus,
+                conferenceId: this.conferenceService.currentConferenceId,
+                participantOrVmrId: id,
+                pexipId: pexipId
+            }
+        );
+        this.videoCallService.muteParticipant(pexipId, remoteMuteStatus, this.conferenceService.currentConferenceId, id);
+
+        this.logger.info(`${this.loggerPrefix} Attempted to make call to pexip to update remote mute status. Subscribing for update.`, {
+            spotlightStatus: remoteMuteStatus,
+            conferenceId: conferenceId,
+            participantId: id
+        });
+
+        this.videoCallService
+            .onParticipantUpdated()
+            .pipe(
+                filter(update => update.pexipDisplayName.includes(id)),
+                map(update => {
+                    if (update.isRemoteMuted !== remoteMuteStatus) {
+                        throw new Error('update.isRemoteMuted !== remoteMuteStatus');
+                    }
+                    return update;
+                }),
+                retryWhen(errors =>
+                    errors.pipe(
+                        delay(200),
+                        tap(() => {
+                            this.logger.warn(`${this.loggerPrefix} Retrying call to pexip to update remote mute status.`, {
+                                remoteMuteStatus: remoteMuteStatus,
+                                conferenceId: conferenceId,
+                                participantId: id
+                            });
+
+                            this.videoCallService.muteParticipant(
+                                pexipId,
+                                remoteMuteStatus,
+                                this.conferenceService.currentConferenceId,
+                                id
+                            );
+                        })
+                    )
+                ),
+                take(1)
+            )
+            .subscribe(update => {
+                this.logger.info(`${this.loggerPrefix} Update received. Attempting to update cache. remote`, {
+                    requestedValue: remoteMuteStatus,
+                    updatedValue: update.isRemoteMuted,
+                    wasValueChangedPerRequest: remoteMuteStatus === update.isRemoteMuted,
+                    conferenceId: conferenceId,
+                    participantId: id
+                });
+
+                this.videoControlCacheService.setRemoteMutedStatus(id, update.isRemoteMuted);
+            });
+    }
+
+    getRemoteMutedById(id: string): boolean {
+        this.logger.info(`${this.loggerPrefix} Attempting to get remote mute status of participant/vmr with ID ${id}.`, {
+            participantOrVmrId: id
+        });
+        return this.videoControlCacheService.getRemoteMutedStatus(id);
+    }
+
+    setHandRaiseStatusById(id: string, handRaiseStatus: boolean) {
+        const conferenceId = this.conferenceService.currentConferenceId;
+
+        this.logger.info(
+            `${this.loggerPrefix} Attempting to set hand raise status of participant in conference: ${id} in ${conferenceId}.`,
+            {
+                handRaiseStatus: handRaiseStatus,
+                conferenceId: this.conferenceService.currentConferenceId,
+                participantOrVmrId: id
+            }
+        );
+        if (handRaiseStatus) {
+            this.videoCallService.raiseHand(this.conferenceService.currentConferenceId, id);
+        } else {
+            this.videoCallService.lowerHand(this.conferenceService.currentConferenceId, id);
+        }
+        this.videoControlCacheService.setHandRaiseStatus(id, handRaiseStatus);
+    }
+
+    getHandRaiseById(id: string): boolean {
+        this.logger.info(`${this.loggerPrefix} Attempting to get hand raise status of participant/vmr with ID ${id}.`, {
+            participantOrVmrId: id
+        });
+        return this.videoControlCacheService.getHandRaiseStatus(id);
+    }
+
     setLocalVideoMutedById(id: string, localVideoMuted: boolean) {
         this.logger.info(`${this.loggerPrefix} Attempting to set local video mute status of participant/vmr with ID ${id}.`, {
             localVideoMuted: localVideoMuted,

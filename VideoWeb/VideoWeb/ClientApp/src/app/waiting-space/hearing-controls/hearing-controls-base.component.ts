@@ -17,6 +17,7 @@ import { ParticipantRemoteMuteMessage } from 'src/app/shared/models/participant-
 import { HearingRole } from '../models/hearing-role-model';
 import { ConnectedScreenshare, ParticipantUpdated, StoppedScreenshare } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
+import { VideoControlService } from '../../services/conference/video-control.service';
 
 @Injectable()
 export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy {
@@ -61,6 +62,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         protected logger: Logger,
         protected participantService: ParticipantService,
         protected translateService: TranslateService,
+        protected videoControlService: VideoControlService,
         protected userMediaService: UserMediaService
     ) {
         this.handRaised = false;
@@ -366,6 +368,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             this.logger.info(`${this.loggerPrefix} Participant raised own hand`, this.logPayload);
         }
         this.handRaised = !this.handRaised;
+        this.videoControlService.setHandRaiseStatusById(this.participant.id, this.handRaised);
         this.eventService.publishParticipantHandRaisedStatus(this.conferenceId, this.participant.id, this.handRaised);
     }
 

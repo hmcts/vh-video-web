@@ -18,7 +18,6 @@ export class LinkedParticipantPanelModel extends PanelModel {
         const caseTypeGroup = lip.caseTypeGroup;
         const hearingRole = lip.hearingRole;
         const representee = lip.representee;
-
         const model = new LinkedParticipantPanelModel(roomid, displayName, role, caseTypeGroup, pexipName, hearingRole, representee);
         model.participants = participants;
         return model;

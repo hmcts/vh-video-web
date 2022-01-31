@@ -6,6 +6,8 @@ export interface IHearingControlsState {
 
 export interface IParticipantControlsState {
     isSpotlighted?: boolean;
+    isRemoteMuted?: boolean;
+    isHandRaised?: boolean;
     isLocalAudioMuted?: boolean;
     isLocalVideoMuted?: boolean;
 }

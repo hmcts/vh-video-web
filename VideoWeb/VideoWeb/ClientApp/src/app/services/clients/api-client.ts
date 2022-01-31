@@ -6718,6 +6718,8 @@ export class SetConferenceVideoControlStatusesRequest_VideoControlStatusRequest
 {
     is_spotlighted?: boolean;
     is_local_audio_muted?: boolean;
+    is_remote_muted?: boolean;
+    is_hand_raised?: boolean;
     is_local_video_muted?: boolean;
 
     constructor(data?: ISetConferenceVideoControlStatusesRequest_VideoControlStatusRequest) {
@@ -6732,6 +6734,8 @@ export class SetConferenceVideoControlStatusesRequest_VideoControlStatusRequest
         if (_data) {
             this.is_spotlighted = _data['is_spotlighted'];
             this.is_local_audio_muted = _data['is_local_audio_muted'];
+            this.is_remote_muted = _data['is_remote_muted'];
+            this.is_hand_raised = _data['is_hand_raised'];
             this.is_local_video_muted = _data['is_local_video_muted'];
         }
     }
@@ -6747,6 +6751,8 @@ export class SetConferenceVideoControlStatusesRequest_VideoControlStatusRequest
         data = typeof data === 'object' ? data : {};
         data['is_spotlighted'] = this.is_spotlighted;
         data['is_local_audio_muted'] = this.is_local_audio_muted;
+        data['is_remote_muted'] = this.is_remote_muted;
+        data['is_hand_raised'] = this.is_hand_raised;
         data['is_local_video_muted'] = this.is_local_video_muted;
         return data;
     }
@@ -6755,6 +6761,8 @@ export class SetConferenceVideoControlStatusesRequest_VideoControlStatusRequest
 export interface ISetConferenceVideoControlStatusesRequest_VideoControlStatusRequest {
     is_spotlighted?: boolean;
     is_local_audio_muted?: boolean;
+    is_remote_muted?: boolean;
+    is_hand_raised?: boolean;
     is_local_video_muted?: boolean;
 }
 
@@ -6818,6 +6826,8 @@ export interface ISetConferenceVideoControlStatusesRequest {
 }
 
 export class VideoControlStatus implements IVideoControlStatus {
+    is_remote_muted?: boolean;
+    is_hand_raised?: boolean;
     is_spotlighted?: boolean;
     is_local_audio_muted?: boolean;
     is_local_video_muted?: boolean;
@@ -6832,6 +6842,8 @@ export class VideoControlStatus implements IVideoControlStatus {
 
     init(_data?: any) {
         if (_data) {
+            this.is_remote_muted = _data['is_remote_muted'];
+            this.is_hand_raised = _data['is_hand_raised'];
             this.is_spotlighted = _data['is_spotlighted'];
             this.is_local_audio_muted = _data['is_local_audio_muted'];
             this.is_local_video_muted = _data['is_local_video_muted'];
@@ -6847,6 +6859,8 @@ export class VideoControlStatus implements IVideoControlStatus {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data['is_remote_muted'] = this.is_remote_muted;
+        data['is_hand_raised'] = this.is_hand_raised;
         data['is_spotlighted'] = this.is_spotlighted;
         data['is_local_audio_muted'] = this.is_local_audio_muted;
         data['is_local_video_muted'] = this.is_local_video_muted;
@@ -6855,6 +6869,8 @@ export class VideoControlStatus implements IVideoControlStatus {
 }
 
 export interface IVideoControlStatus {
+    is_remote_muted?: boolean;
+    is_hand_raised?: boolean;
     is_spotlighted?: boolean;
     is_local_audio_muted?: boolean;
     is_local_video_muted?: boolean;

@@ -11,7 +11,7 @@ import { IHearingControlsState } from './video-control-cache-storage.service.int
 export class VideoControlCacheService {
     private loggerPrefix = '[VideoControlCacheService] -';
 
-    private hearingControlStates: IHearingControlsState | null = null;
+    private hearingControlStates: IHearingControlsState | null = { participantStates: {} };
 
     constructor(
         private conferenceService: ConferenceService,
@@ -55,9 +55,7 @@ export class VideoControlCacheService {
         }
 
         if (syncChanges) {
-            this.storageService
-                .saveHearingStateForConference(this.conferenceService.currentConferenceId, this.hearingControlStates)
-                .subscribe();
+            this.savingHearingState();
         }
     }
 
@@ -69,7 +67,70 @@ export class VideoControlCacheService {
         return this.hearingControlStates?.participantStates[participantId]?.isSpotlighted ?? false;
     }
 
-    setLocalAudioMuted(participantId: string, localAudioMuted: boolean, syncChanges: boolean = false) {
+    setRemoteMutedStatus(participantId: string, isRemoteMutedValue: boolean, syncChanges: boolean = true) {
+        this.logger.info(`${this.loggerPrefix} Setting Remote Mute status.`, {
+            participantId: participantId,
+            oldValue: this.hearingControlStates?.participantStates[participantId]?.isRemoteMuted ?? null,
+            newValue: isRemoteMutedValue
+        });
+
+        if (!this.hearingControlStates?.participantStates) {
+            this.logger.warn(`${this.loggerPrefix} Cannot set Remote Mute status as hearing control states is not initialised.`);
+            return;
+        }
+
+        if (!this.hearingControlStates.participantStates[participantId]) {
+            this.hearingControlStates.participantStates[participantId] = { isRemoteMuted: isRemoteMutedValue };
+        } else {
+            this.hearingControlStates.participantStates[participantId].isRemoteMuted = isRemoteMutedValue;
+        }
+
+        if (syncChanges) {
+            this.savingHearingState();
+        }
+    }
+
+    getRemoteMutedStatus(participantId: string): boolean {
+        this.logger.info(`${this.loggerPrefix} Getting Remote Mute status.`, {
+            participantId: participantId,
+            value: this.hearingControlStates?.participantStates[participantId]?.isRemoteMuted ?? null
+        });
+        return this.hearingControlStates?.participantStates[participantId]?.isRemoteMuted ?? false;
+    }
+
+    setHandRaiseStatus(participantId: string, isHandRaisedValue: boolean, syncChanges: boolean = true) {
+        this.logger.info(`${this.loggerPrefix} Setting Hand raise status.`, {
+            participantId: participantId,
+            oldValue: this.hearingControlStates?.participantStates[participantId]?.isHandRaised ?? null,
+            newValue: isHandRaisedValue,
+            states: this.hearingControlStates?.participantStates[participantId]
+        });
+
+        if (!this.hearingControlStates?.participantStates) {
+            this.logger.warn(`${this.loggerPrefix} Cannot set hand raise status as hearing control states is not initialised.`);
+            return;
+        }
+
+        if (!this.hearingControlStates.participantStates[participantId]) {
+            this.hearingControlStates.participantStates[participantId] = { isHandRaised: isHandRaisedValue };
+        } else {
+            this.hearingControlStates.participantStates[participantId].isHandRaised = isHandRaisedValue;
+        }
+
+        if (syncChanges) {
+            this.savingHearingState();
+        }
+    }
+
+    getHandRaiseStatus(participantId: string): boolean {
+        this.logger.info(`${this.loggerPrefix} Getting hand raise status.`, {
+            participantId: participantId,
+            value: this.hearingControlStates?.participantStates[participantId]?.isHandRaised ?? null
+        });
+        return this.hearingControlStates?.participantStates[participantId]?.isHandRaised ?? false;
+    }
+
+    setLocalAudioMuted(participantId: string, localAudioMuted: boolean, syncChanges: boolean = true) {
         this.logger.info(`${this.loggerPrefix} Setting local audio muted.`, {
             participantId: participantId,
             oldValue: this.hearingControlStates?.participantStates[participantId]?.isLocalAudioMuted ?? null,
@@ -102,7 +163,7 @@ export class VideoControlCacheService {
         return this.hearingControlStates?.participantStates[participantId]?.isLocalAudioMuted ?? false;
     }
 
-    setLocalVideoMuted(participantId: string, localVideoMuted: boolean, syncChanges: boolean = false) {
+    setLocalVideoMuted(participantId: string, localVideoMuted: boolean, syncChanges: boolean = true) {
         this.logger.info(`${this.loggerPrefix} Setting local video muted.`, {
             participantId: participantId,
             oldValue: this.hearingControlStates?.participantStates[participantId]?.isLocalVideoMuted ?? null,
@@ -121,9 +182,7 @@ export class VideoControlCacheService {
         }
 
         if (syncChanges) {
-            this.storageService
-                .saveHearingStateForConference(this.conferenceService.currentConferenceId, this.hearingControlStates)
-                .subscribe();
+            this.savingHearingState();
         }
     }
 
@@ -133,5 +192,11 @@ export class VideoControlCacheService {
             value: this.hearingControlStates?.participantStates[participantId]?.isLocalVideoMuted ?? null
         });
         return this.hearingControlStates?.participantStates[participantId]?.isLocalVideoMuted ?? false;
+    }
+
+    private savingHearingState() {
+        this.storageService
+            .saveHearingStateForConference(this.conferenceService.currentConferenceId, this.hearingControlStates)
+            .subscribe();
     }
 }
