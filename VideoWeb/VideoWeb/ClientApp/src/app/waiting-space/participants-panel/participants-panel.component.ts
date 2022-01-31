@@ -71,7 +71,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
 
         this.getParticipantsList().then(() => {
-            this.participants.map(p => p.id)
+            this.participants
+                .map(p => p.id)
                 .forEach(participantId => this.videoControlCacheService.setRemoteMutedStatus(participantId, false));
             this.participantRemoteMuteStoreService.conferenceParticipantsStatus$.pipe(take(1)).subscribe(state => {
                 this.participants.forEach(participant => {
@@ -702,9 +703,9 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     private showCaseRole(participant: PanelModel) {
         return participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
-        participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
-        participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
-        participant.caseTypeGroup.toLowerCase() === 'endpoint'
+            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
+            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
+            participant.caseTypeGroup.toLowerCase() === 'endpoint'
             ? false
             : true;
     }

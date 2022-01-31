@@ -246,10 +246,10 @@ describe('ParticipantsPanelComponent', () => {
     });
 
     const conferenceStatusStatuses = [
-        { status: ConferenceStatus.NotStarted},
-        { status: ConferenceStatus.InSession},
-        { status: ConferenceStatus.Suspended},
-        { status: ConferenceStatus.Paused}
+        { status: ConferenceStatus.NotStarted },
+        { status: ConferenceStatus.InSession },
+        { status: ConferenceStatus.Suspended },
+        { status: ConferenceStatus.Paused }
     ];
     conferenceStatusStatuses.forEach(c => {
         it(`should reset the remote mute status of the participants in the component store for a ${c.status} hearing`, fakeAsync(() => {
@@ -262,7 +262,11 @@ describe('ParticipantsPanelComponent', () => {
 
             component.ngOnInit();
             flushMicrotasks();
-            component.participants.map(p => p.id).forEach(participantId => expect(videoControlCacheServiceSpy.setRemoteMutedStatus).toHaveBeenCalledWith(participantId, false));
+            component.participants
+                .map(p => p.id)
+                .forEach(participantId =>
+                    expect(videoControlCacheServiceSpy.setRemoteMutedStatus).toHaveBeenCalledWith(participantId, false)
+                );
         }));
     });
 
