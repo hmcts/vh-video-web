@@ -9,7 +9,7 @@ describe('ContactUsComponent', () => {
     });
 
     it('should init contact details', () => {
-        expect(component.contact.phone).toBe(vhContactDetails.uk.phoneNumber);
-        expect(component.contact.email).toBe(vhContactDetails.uk.email);
+        expect(component.contact.phone).toBe(vhContactDetails.englandAndWales.phoneNumber);
+        expect(component.contact.email).toBe(vhContactDetails.englandAndWales.email);
     });
 });

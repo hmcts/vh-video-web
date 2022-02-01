@@ -17,7 +17,7 @@ import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 @Directive()
 export abstract class HostHearingListBaseComponentDirective implements OnInit, OnDestroy {
     contact = {
-        phone: vhContactDetails.uk.phoneNumber
+        phone: vhContactDetails.englandAndWales.phoneNumber
     };
 
     conferences: ConferenceForHostResponse[];

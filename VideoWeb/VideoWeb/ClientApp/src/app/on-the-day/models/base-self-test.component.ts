@@ -31,7 +31,7 @@ export abstract class BaseSelfTestComponentDirective implements OnInit {
 
     showEquipmentFaultMessage: boolean;
     contact = {
-        phone: vhContactDetails.uk.phoneNumber
+        phone: vhContactDetails.englandAndWales.phoneNumber
     };
 
     constructor(

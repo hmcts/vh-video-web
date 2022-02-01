@@ -140,7 +140,7 @@ export abstract class WaitingRoomBaseDirective {
         this.errorCount = 0;
 
         this.phoneNumber$ = this.hearingVenueFlagsService.hearingVenueIsScottish$.pipe(
-            map(x => (x ? this.contactDetails.scotland.phoneNumber : this.contactDetails.uk.phoneNumber))
+            map(x => (x ? this.contactDetails.scotland.phoneNumber : this.contactDetails.englandAndWales.phoneNumber))
         );
     }
 

@@ -1,5 +1,5 @@
 export const vhContactDetails = {
-    uk: {
+    englandAndWales: {
         phoneNumber: '0300 303 0655',
         email: 'video-hearings@justice.gov.uk'
     },
