@@ -1,7 +1,8 @@
 import { Directive, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
@@ -32,6 +33,7 @@ import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMes
 import { HearingLayoutChanged } from 'src/app/services/models/hearing-layout-changed';
 import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { vhContactDetails } from 'src/app/shared/contact-information';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
@@ -91,6 +93,7 @@ export abstract class WaitingRoomBaseDirective {
     displayStartPrivateConsultationModal: boolean;
     displayJoinPrivateConsultationModal: boolean;
     conferenceStartedBy: string;
+    phoneNumber$: Observable<string>;
 
     panelTypes = ['Participants', 'Chat'];
     panelStates = {
@@ -103,6 +106,7 @@ export abstract class WaitingRoomBaseDirective {
     private readonly loggerPrefix = '[WR] -';
     loggedInUser: LoggedParticipantResponse;
     linkedParticipantRoom: SharedParticipantRoom;
+    contactDetails = vhContactDetails;
 
     @ViewChild('roomTitleLabel', { static: false }) roomTitleLabel: ElementRef<HTMLDivElement>;
     @ViewChild('hearingControls', { static: false }) hearingControls: PrivateConsultationRoomControlsComponent;
@@ -134,6 +138,10 @@ export abstract class WaitingRoomBaseDirective {
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
         this.errorCount = 0;
+
+        this.phoneNumber$ = this.hearingVenueFlagsService.hearingVenueIsScottish$.pipe(
+            map(x => (x ? this.contactDetails.scotland.phoneNumber : this.contactDetails.englandAndWales.phoneNumber))
+        );
     }
 
     isParticipantInCorrectWaitingRoomState(): boolean {

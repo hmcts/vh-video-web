@@ -60,6 +60,9 @@ describe('WaitingRoomComponent Video Call', () => {
         ['setHearingVenueIsScottish'],
         ['hearingVenueIsScottish$']
     );
+    const hearingVenueIsScottishSubject = new BehaviorSubject(false);
+    getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'hearingVenueIsScottish$').and.returnValue(hearingVenueIsScottishSubject);
+
     const mockHeartbeat = {
         kill: jasmine.createSpy()
     };
