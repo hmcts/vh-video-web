@@ -75,17 +75,20 @@
   },
   "contact-us-folding": {
     "contact-for-help": "Contact us for help",
-    "call-vh-team": "Call the video hearings team on",
-    "quote-case-number": "and quote your case number",
-    "available-time": "(available between 9am and 5pm, Monday to Friday)",
+    "england-and-wales": "England and Wales",
+    "scotland": "Scotland",
+    "call-us": "Call us on",
     "email-us": "Email us at",
-    "quoting-case-number": "quoting your case number"
+    "quoting-case-number": "quoting your case number",
+    "available-time": "Available Monday to Friday, 9am to 5pm (excluding public holidays)"
   },
   "equipment-problem": {
     "problem-with-equipment": "Problems with your equipment?",
-    "not-working-call-us": "something's not working, please call us now.",
-    "call": "Call",
-    "for-vh-team": "for the video hearings team"
+    "not-working-call-us": "Please call the video hearings team using the following numbers:",
+    "hearing-location": "If your hearing is in",
+    "england-or-wales": "England or Wales",
+    "scotland": "Scotland",
+    "phone": "phone"
   },
   "error": {
     "problem-with-service": "Sorry, there is a problem with the service",
