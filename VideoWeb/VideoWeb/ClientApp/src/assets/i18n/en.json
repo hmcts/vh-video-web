@@ -85,10 +85,12 @@
   "equipment-problem": {
     "problem-with-equipment": "Problems with your equipment?",
     "not-working-call-us": "Please call the video hearings team using the following numbers:",
-    "hearing-location": "If your hearing is in",
+    "hearing-location": "If your hearing is",
+    "in-england": "in",
+    "in-scotland": "in",
     "england-or-wales": "England or Wales",
-    "scotland": "Scotland",
-    "phone": "phone"
+    "phone": "phone",
+    "scotland": "Scotland"
   },
   "error": {
     "problem-with-service": "Sorry, there is a problem with the service",

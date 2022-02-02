@@ -193,11 +193,12 @@
   },
   "contact-us-folding": {
     "contact-for-help": "Cysylltu â ni i gael cymorth",
-    "call-vh-team": "Ffoniwch y tîm gwrandawiadau fideo ar",
-    "quote-case-number": "a dyfynnwch rif eich achos",
-    "email-us": "Anfonwch e-bost i",
-    "quoting-case-number": "gan ddyfynnu rhif eich achos",
-    "available-time": "(ar gael rhwng 9am a 5pm, dydd Llun i ddydd Gwener)"
+    "england-and-wales": "Cymru a Lloegr",
+    "scotland": "Yr Alban",
+    "call-us": "Ffoniwch ni ar",
+    "email-us": "Anfonwch neges e-bost i",
+    "quoting-case-number": "gan ddyfynnu eich rhif achos.",
+    "available-time": "Ar gael dydd Llun i ddydd Gwener, 9am - 5pm (ac eithrio gwyliau cyhoeddus)"
   },
   "contact-us": {
     "speak-to-admin": "I gael siarad â gweinyddwr gwrandawiadau:",
@@ -408,9 +409,13 @@
   },
   "equipment-problem": {
     "problem-with-equipment": "Problemau gyda'ch offer?",
-    "not-working-call-us": "dydy rhywbeth ddim yn gweithio, ffoniwch ni nawr.",
-    "call": "Ffoniwch",
-    "for-vh-team": "i siarad â'r tîm gwrandawiadau fideo"
+    "not-working-call-us": "Defnyddiwch y rhifau canlynol i ffonio’r Tîm Gwrandawiadau Fideo:",
+    "hearing-location": "Os yw eich gwrandawiad",
+    "in-england": "yng",
+    "in-scotland": "yn",
+    "england-or-wales": "Nghymru neu yn Lloegr",
+    "phone": "ffoniwch",
+    "scotland": "Yr Alban"
   },
   "hearing-rules": {
     "court-rules": "Rheolau'r llys",

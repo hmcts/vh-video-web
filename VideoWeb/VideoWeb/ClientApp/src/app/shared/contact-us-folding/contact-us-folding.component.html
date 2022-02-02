@@ -10,20 +10,20 @@
         <strong>{{'contact-us-folding.england-and-wales' | translate}}</strong>
       </p>
       <p class="govuk-body govuk-!-margin-bottom-0">
-        {{'contact-us-folding.call-us' | translate}} <strong>0300 303 0655</strong>
+        {{'contact-us-folding.call-us' | translate}} <strong>{{ contact.englandAndWalesPhone }}</strong>
       </p>
       <p class="govuk-body govuk-!-margin-bottom-4">
-        {{'contact-us-folding.email-us' | translate}} <a href="video-hearings@justice.gov.uk">video-hearings@justice.gov.uk</a> {{'contact-us-folding.quoting-case-number' | translate}}
+        {{'contact-us-folding.email-us' | translate}} <a [href]="'mailto:' + contact.englandAndWalesEmail">{{ contact.englandAndWalesEmail }}</a> {{'contact-us-folding.quoting-case-number' | translate}}
       </p>
 
       <p class="govuk-body govuk-!-margin-bottom-0">
         <strong>{{'contact-us-folding.scotland' | translate}}</strong>
       </p>
       <p class="govuk-body govuk-!-margin-bottom-0">
-        {{'contact-us-folding.call-us' | translate}} <strong>0300 790 6234</strong>
+        {{'contact-us-folding.call-us' | translate}} <strong>{{ contact.scotlandPhone }}</strong>
       </p>
       <p class="govuk-body govuk-!-margin-bottom-0">
-        {{'contact-us-folding.email-us' | translate}} <a href="SSCSA-Glasgow@justice.gov.uk">SSCSA-Glasgow@justice.gov.uk</a> {{'contact-us-folding.quoting-case-number' | translate}}
+        {{'contact-us-folding.email-us' | translate}} <a [href]="'mailto:' + contact.scotlandEmail">{{ contact.scotlandEmail }}</a> {{'contact-us-folding.quoting-case-number' | translate}}
       </p>
       <p class="govuk-body govuk-!-margin-top-3 govuk-!-font-size-14 govuk-!-font-weight-bold available-time">{{'contact-us-folding.available-time' | translate}}</p>
     </div>

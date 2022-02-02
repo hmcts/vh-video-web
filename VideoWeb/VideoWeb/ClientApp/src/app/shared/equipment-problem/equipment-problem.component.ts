@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { vhContactDetails } from '../contact-information';
+import { vhContactDetails } from 'src/app/shared/contact-information';
 
 @Component({
     selector: 'app-equipment-problem',
@@ -8,6 +8,11 @@ import { vhContactDetails } from '../contact-information';
 })
 export class EquipmentProblemComponent implements OnInit {
     contactDetails = vhContactDetails;
+
+    contact = {
+        englandAndWalesPhone: vhContactDetails.englandAndWales.phoneNumber,
+        scotlandPhone: vhContactDetails.scotland.phoneNumber
+    };
 
     ngOnInit() {}
 }

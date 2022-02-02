@@ -10,8 +10,10 @@ export class ContactUsFoldingComponent {
     expanded: boolean;
 
     contact = {
-        phone: vhContactDetails.englandAndWales.phoneNumber,
-        email: vhContactDetails.englandAndWales.email
+        englandAndWalesPhone: vhContactDetails.englandAndWales.phoneNumber,
+        englandAndWalesEmail: vhContactDetails.englandAndWales.email,
+        scotlandPhone: vhContactDetails.scotland.phoneNumber,
+        scotlandEmail: vhContactDetails.scotland.email
     };
 
     constructor() {}
