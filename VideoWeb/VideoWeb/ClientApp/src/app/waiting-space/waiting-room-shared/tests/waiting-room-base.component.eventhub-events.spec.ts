@@ -81,6 +81,7 @@ import { Participant } from 'src/app/shared/models/participant';
 import { createTrue } from 'typescript';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { HearingLayoutChanged } from 'src/app/services/models/hearing-layout-changed';
+import { vhContactDetails } from 'src/app/shared/contact-information';
 
 describe('WaitingRoomComponent EventHub Call', () => {
     let fixture: ComponentFixture<WRTestComponent>;
@@ -1708,6 +1709,14 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
                 // Assert
                 expect(notificationToastrService.showHearingLayoutchanged).toHaveBeenCalledWith(testParticipant, false);
+            });
+        });
+
+        describe('contact details object', () => {
+            it('should return phone number', () => {
+                component.phoneNumber$.subscribe(value => {
+                    expect(value).toEqual(vhContactDetails.englandAndWales.phoneNumber);
+                });
             });
         });
     });

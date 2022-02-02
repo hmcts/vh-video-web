@@ -7,8 +7,8 @@ import { vhContactDetails } from '../contact-information';
 })
 export class ContactUsComponent {
     contact = {
-        phone: vhContactDetails.phone,
-        email: vhContactDetails.adminEmail
+        phone: vhContactDetails.englandAndWales.phoneNumber,
+        email: vhContactDetails.englandAndWales.email
     };
     constructor() {}
 }
