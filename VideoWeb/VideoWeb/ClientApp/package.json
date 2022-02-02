@@ -68,6 +68,7 @@
         "ngx-device-detector": "2.0.5",
         "ngx-moment": "^5.0.0",
         "ngx-toastr": "^13.2.1",
+        "ngx-translate-multi-http-loader": "^3.0.0",
         "rxjs": "^6.6.6",
         "snyk": "^1.752.0",
         "tslib": "^2.1.0",

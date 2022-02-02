@@ -16,19 +16,24 @@ import { GlobalErrorHandler } from './shared/providers/global-error-handler';
 import { SharedModule } from './shared/shared.module';
 import { WaitingSpaceModule } from './waiting-space/waiting-space.module';
 import { TranslateModule, TranslateLoader, MissingTranslationHandler } from '@ngx-translate/core';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { DisplayMissingTranslationHandler } from './shared/display-missing-translation-handler';
 import { registerLocaleData } from '@angular/common';
 import localeCy from '@angular/common/locales/cy';
 import { AuthConfigModule } from './auth-config.module';
 import { NavigatorComponent } from './home/navigator/navigator.component';
+import { MultiTranslateHttpLoader } from 'ngx-translate-multi-http-loader';
 
 export function createTranslateLoader() {
     // We cant inject a httpClient because it has a race condition with adal
     // resulting in a null context when trying to load the translatons
     const httpClient = new HttpClient(new HttpXhrBackend({ build: () => new XMLHttpRequest() }));
-    return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
+    return new MultiTranslateHttpLoader(httpClient, [
+        { prefix: './assets/i18n/', suffix: '.json' },
+        { prefix: 'translation/', suffix: '' }
+    ]);
 }
+
+// export function httpLoaderFactory(http: HttpClient) {}
 
 export function getLocale() {
     const language = localStorage.getItem('language') ?? 'en';
