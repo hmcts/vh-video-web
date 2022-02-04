@@ -1,6 +1,6 @@
 import { EventEmitter, Injectable, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Subject, Subscription } from 'rxjs';
+import { Subject, Subscription, timer } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
@@ -18,6 +18,7 @@ import { HearingRole } from '../models/hearing-role-model';
 import { ConnectedScreenshare, ParticipantUpdated, StoppedScreenshare } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
+import { ConferenceService } from 'src/app/services/conference/conference.service';
 
 @Injectable()
 export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy {
@@ -63,7 +64,8 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         protected participantService: ParticipantService,
         protected translateService: TranslateService,
         protected videoControlService: VideoControlService,
-        protected userMediaService: UserMediaService
+        protected userMediaService: UserMediaService,
+        protected conferenceService: ConferenceService
     ) {
         this.handRaised = false;
         this.remoteMuted = false;
@@ -388,15 +390,22 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     leave(confirmation: boolean, participants: ParticipantModel[]) {
         this.displayLeaveHearingPopup = false;
         if (confirmation) {
-            const isAnotherHostInHearing = this.isAnotherHostInHearing(participants);
-
-            if (isAnotherHostInHearing) {
-                this.videoCallService.leaveHearing(this.conferenceId, this.participant.id).then(() => {
-                    this.leaveHearing.emit();
+            this.videoCallService.leaveHearing(this.conferenceId, this.participant.id).then(() => {
+                this.logger.info(`${this.loggerPrefix} Left hearing, emitting event`);
+                this.leaveHearing.emit();
+                this.logger.info(`${this.loggerPrefix} Emitted event`);
+                this.logger.info(`${this.loggerPrefix} Subscribing to timer`);
+                timer(1000).subscribe(() => {
+                    this.conferenceService.getParticipantsForConference(this.conferenceId).subscribe(participantList => {
+                        const isAnotherHostInHearing = this.isAnotherHostInHearing(participantList);
+                        this.logger.info(`${this.loggerPrefix} Finished retrieving participants`);
+                        if (!isAnotherHostInHearing) {
+                            this.logger.info(`${this.loggerPrefix} Hearing has no host. Suspending`);
+                            this.videoCallService.suspendHearing(this.conferenceId);
+                        }
+                    });
                 });
-            } else {
-                this.videoCallService.suspendHearing(this.conferenceId);
-            }
+            });
         }
     }
 
