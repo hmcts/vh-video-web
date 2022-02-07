@@ -9,10 +9,5 @@ import { vhContactDetails } from 'src/app/shared/contact-information';
 export class EquipmentProblemComponent implements OnInit {
     contactDetails = vhContactDetails;
 
-    contact = {
-        englandAndWalesPhone: vhContactDetails.englandAndWales.phoneNumber,
-        scotlandPhone: vhContactDetails.scotland.phoneNumber
-    };
-
     ngOnInit() {}
 }

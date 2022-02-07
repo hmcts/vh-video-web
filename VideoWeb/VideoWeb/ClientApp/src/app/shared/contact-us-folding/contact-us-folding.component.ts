@@ -8,13 +8,7 @@ import { vhContactDetails } from 'src/app/shared/contact-information';
 })
 export class ContactUsFoldingComponent {
     expanded: boolean;
-
-    contact = {
-        englandAndWalesPhone: vhContactDetails.englandAndWales.phoneNumber,
-        englandAndWalesEmail: vhContactDetails.englandAndWales.email,
-        scotlandPhone: vhContactDetails.scotland.phoneNumber,
-        scotlandEmail: vhContactDetails.scotland.email
-    };
+    contactDetails = vhContactDetails;
 
     constructor() {}
 
