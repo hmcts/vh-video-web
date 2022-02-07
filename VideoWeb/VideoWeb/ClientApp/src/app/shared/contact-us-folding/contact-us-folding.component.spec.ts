@@ -9,8 +9,10 @@ describe('ContactUsFoldingComponent', () => {
     });
 
     it('should init contact details', () => {
-        expect(component.contact.phone).toBe(vhContactDetails.englandAndWales.phoneNumber);
-        expect(component.contact.email).toBe(vhContactDetails.englandAndWales.email);
+        expect(component.contactDetails.englandAndWales.phoneNumber).toBe(vhContactDetails.englandAndWales.phoneNumber);
+        expect(component.contactDetails.scotland.phoneNumber).toBe(vhContactDetails.scotland.phoneNumber);
+        expect(component.contactDetails.englandAndWales.email).toBe(vhContactDetails.englandAndWales.email);
+        expect(component.contactDetails.scotland.email).toBe(vhContactDetails.scotland.email);
     });
 
     it('should toggle visbility', () => {
