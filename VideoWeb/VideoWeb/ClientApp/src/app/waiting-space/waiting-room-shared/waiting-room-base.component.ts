@@ -923,7 +923,7 @@ export abstract class WaitingRoomBaseDirective {
         this.videoCallService.stopScreenShare();
     }
 
-    shouldMuteHearing(): boolean {
+    get shouldMuteHearing(): boolean {
         return !(
             (this.countdownComplete &&
                 this.participant.status === ParticipantStatus.InHearing &&

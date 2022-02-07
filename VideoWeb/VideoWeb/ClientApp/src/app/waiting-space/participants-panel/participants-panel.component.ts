@@ -71,6 +71,9 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
 
         this.getParticipantsList().then(() => {
+            this.participants
+                .map(p => p.id)
+                .forEach(participantId => this.videoControlCacheService.setRemoteMutedStatus(participantId, false));
             this.participantRemoteMuteStoreService.conferenceParticipantsStatus$.pipe(take(1)).subscribe(state => {
                 this.participants.forEach(participant => {
                     if (state.hasOwnProperty(participant.id)) {
