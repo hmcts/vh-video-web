@@ -572,4 +572,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     leaveHearing() {
         this.hostWantsToJoinHearing = false;
     }
+
+    shouldMuteHearing(): boolean {
+        return super.shouldMuteHearing() && !this.hostWantsToJoinHearing;
+    }
 }
