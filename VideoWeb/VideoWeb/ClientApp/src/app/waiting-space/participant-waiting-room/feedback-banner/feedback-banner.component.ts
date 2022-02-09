@@ -1,15 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-feedback-banner',
-  templateUrl: './feedback-banner.component.html',
-  styleUrls: ['./feedback-banner.component.css']
+    selector: 'app-feedback-banner',
+    templateUrl: './feedback-banner.component.html',
+    styleUrls: ['./feedback-banner.component.scss']
 })
 export class FeedbackBannerComponent implements OnInit {
+    constructor() {}
 
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+    ngOnInit(): void {}
 }
