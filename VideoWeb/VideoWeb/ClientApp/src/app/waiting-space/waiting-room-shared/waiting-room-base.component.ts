@@ -924,12 +924,19 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     shouldMuteHearing(): boolean {
-        return !(
-            (this.countdownComplete &&
-                this.participant.status === ParticipantStatus.InHearing &&
-                this.hearing.status === ConferenceStatus.InSession) ||
-            (this.participant.status === ParticipantStatus.InConsultation && !this.hasTriedToLeaveConsultation)
+        return !(this.shouldUnmuteForHearing() || this.shouldUnmuteForConsultation());
+    }
+
+    shouldUnmuteForHearing(): boolean {
+        return (
+            this.countdownComplete &&
+            this.participant.status === ParticipantStatus.InHearing &&
+            this.hearing.status === ConferenceStatus.InSession
         );
+    }
+
+    shouldUnmuteForConsultation(): boolean {
+        return this.participant.status === ParticipantStatus.InConsultation && !this.hasTriedToLeaveConsultation;
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): void {

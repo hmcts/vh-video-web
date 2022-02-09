@@ -982,34 +982,34 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     });
 
     describe('shouldMuteHearing', () => {
-        let superShouldMuteHearing: jasmine.SpyObj<any>;
+        let superShouldUnmuteForHearing: jasmine.SpyObj<any>;
 
         beforeEach(() => {
-            superShouldMuteHearing = spyOn(WaitingRoomBaseDirective.prototype, 'shouldMuteHearing');
+            superShouldUnmuteForHearing = spyOn(WaitingRoomBaseDirective.prototype, 'shouldUnmuteForHearing');
         });
 
-        it('should return false when super.shouldMuteHearing is false hostWantsToJoinHearing is true', () => {
-            superShouldMuteHearing.and.returnValue(false);
-            component.hostWantsToJoinHearing = true;
-            expect(component.shouldMuteHearing()).toBe(false);
-        });
-
-        it('should return false when super.shouldMuteHearing is false hostWantsToJoinHearing is false', () => {
-            superShouldMuteHearing.and.returnValue(false);
+        it('should return false when super.shouldUnmuteForHearing is false hostWantsToJoinHearing is false', () => {
+            superShouldUnmuteForHearing.and.returnValue(false);
             component.hostWantsToJoinHearing = false;
-            expect(component.shouldMuteHearing()).toBe(false);
+            expect(component.shouldUnmuteForHearing()).toBe(false);
         });
 
-        it('should return false when super.shouldMuteHearing is true hostWantsToJoinHearing is true', () => {
-            superShouldMuteHearing.and.returnValue(true);
+        it('should return false when super.shouldUnmuteForHearing is false hostWantsToJoinHearing is true', () => {
+            superShouldUnmuteForHearing.and.returnValue(false);
             component.hostWantsToJoinHearing = true;
-            expect(component.shouldMuteHearing()).toBe(false);
+            expect(component.shouldUnmuteForHearing()).toBe(false);
         });
 
-        it('should return true when super.shouldMuteHearing is true hostWantsToJoinHearing is false', () => {
-            superShouldMuteHearing.and.returnValue(true);
+        it('should return false when super.shouldUnmuteForHearing is true hostWantsToJoinHearing is false', () => {
+            superShouldUnmuteForHearing.and.returnValue(true);
             component.hostWantsToJoinHearing = false;
-            expect(component.shouldMuteHearing()).toBe(true);
+            expect(component.shouldUnmuteForHearing()).toBe(false);
+        });
+
+        it('should return true when super.shouldUnmuteForHearing is true hostWantsToJoinHearing is true', () => {
+            superShouldUnmuteForHearing.and.returnValue(true);
+            component.hostWantsToJoinHearing = true;
+            expect(component.shouldUnmuteForHearing()).toBe(true);
         });
     });
 

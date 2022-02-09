@@ -573,7 +573,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.hostWantsToJoinHearing = false;
     }
 
-    shouldMuteHearing(): boolean {
-        return super.shouldMuteHearing() && !this.hostWantsToJoinHearing;
+    shouldUnmuteForHearing(): boolean {
+        return super.shouldUnmuteForHearing() && this.hostWantsToJoinHearing;
     }
 }
