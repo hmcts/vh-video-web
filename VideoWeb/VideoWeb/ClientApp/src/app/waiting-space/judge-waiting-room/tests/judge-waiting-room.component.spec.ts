@@ -981,7 +981,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         });
     });
 
-    describe('shouldMuteHearing', () => {
+    describe('shouldUnmuteForHearing', () => {
         let superShouldUnmuteForHearing: jasmine.SpyObj<any>;
 
         beforeEach(() => {
