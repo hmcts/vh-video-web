@@ -117,6 +117,8 @@
       </h1>
     </div>
 
+    <app-feedback-banner *ngIf="hearing.isClosed()"></app-feedback-banner>
+
     <div class="govuk-grid-row govuk-!-margin-bottom-4" *ngIf="!showVideo">
       <div class="govuk-grid-column-one-third">
         <button
