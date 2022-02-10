@@ -66,11 +66,11 @@ namespace VideoWeb.Controllers
         {
             var username = User.Identity.Name?.ToLower().Trim();
             var conference = await GetConference(conferenceId);
-            var isJudgeOrJoh = conference.Participants.Any(x => (x.Role == Role.Judge || x.Role == Role.JudicialOfficeHolder) &&
+            var isHostOrJoh = conference.Participants.Any(x => (x.IsHost() || x.IsJudicialOfficeHolder()) &&
                             x.Username.Equals(User.Identity.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase));
 
             var usersEndpoints = conference.Endpoints;
-            if(!isJudgeOrJoh)
+            if(!isHostOrJoh)
             {
                 usersEndpoints = usersEndpoints.Where(ep => ep.DefenceAdvocateUsername != null && 
                                                             ep.DefenceAdvocateUsername.Equals(username, StringComparison.CurrentCultureIgnoreCase))
