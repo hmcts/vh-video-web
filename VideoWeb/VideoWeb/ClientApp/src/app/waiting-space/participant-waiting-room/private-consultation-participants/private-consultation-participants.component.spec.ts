@@ -519,7 +519,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
             component.panelMembers = testPanelMembers;
             component.wingers = testWingers;
 
-            component.johGroups();
+            component.setJohGroupResult();
             const mappedGroups = component.johGroupResult;
             const mappedPanelMembers = mappedGroups[0];
             const mappedWingers = mappedGroups[1];
@@ -535,7 +535,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
         beforeEach(() => {
             superSpy = spyOn(WRParticipantStatusListDirective.prototype, 'handleParticipantStatusChange');
-            johGroupSpy = spyOn(component, 'johGroups');
+            johGroupSpy = spyOn(component, 'setJohGroupResult');
         });
 
         it('should handle participant status messages', fakeAsync(() => {
@@ -554,7 +554,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
         beforeEach(() => {
             superSpy = spyOn(WRParticipantStatusListDirective.prototype, 'initParticipants');
-            johGroupSpy = spyOn(component, 'johGroups');
+            johGroupSpy = spyOn(component, 'setJohGroupResult');
         });
 
         it('should initialize participants', () => {
@@ -571,7 +571,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
         beforeEach(() => {
             superSpy = spyOn<any>(WRParticipantStatusListDirective.prototype, 'filterNonJudgeParticipants');
-            johGroupSpy = spyOn(component, 'johGroups');
+            johGroupSpy = spyOn(component, 'setJohGroupResult');
         });
 
         it('should handle room change message', () => {

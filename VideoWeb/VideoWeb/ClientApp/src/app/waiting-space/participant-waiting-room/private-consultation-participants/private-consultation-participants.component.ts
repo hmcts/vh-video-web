@@ -43,7 +43,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
 
     initParticipants() {
         super.initParticipants();
-        this.johGroups();
+        this.setJohGroupResult();
     }
 
     ngOnDestroy() {
@@ -121,7 +121,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         );
     }
 
-    johGroups(): void {
+    setJohGroupResult(): void {
         const johGroupsUnmapped = [[...this.panelMembers], [...this.wingers]];
         this.johGroupResult = johGroupsUnmapped.map(array =>
             array.map(c => {
@@ -132,7 +132,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
 
     async handleParticipantStatusChange(message: ParticipantStatusMessage): Promise<void> {
         await super.handleParticipantStatusChange(message);
-        this.johGroups();
+        this.setJohGroupResult();
     }
 
     getWitnessesAndObservers(): ParticipantListItem[] {
@@ -171,7 +171,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
 
     handleRoomChange(message: RoomTransfer): void {
         this.filterNonJudgeParticipants();
-        this.johGroups();
+        this.setJohGroupResult();
     }
 
     canCallParticipant(participant: ParticipantResponse): boolean {
