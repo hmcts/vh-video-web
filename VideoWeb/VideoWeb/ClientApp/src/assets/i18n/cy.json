@@ -709,9 +709,6 @@
   "independent-self-test": {
     "please-wait-to-be-connected": "Arhoswch i gael eich cysylltu...",
     "check-equipment-again": "Gwirio fy offer eto",
-    "problems-with-your-equipment": "Problemau gyda'ch offer?",
-    "please-call-beforenumber": "Ffoniwch y tîm gwrandawiadau fideo ar ",
-    "please-call-afternumber": " i roi gwybod i ni.",
     "continue": "Parhau",
     "re-play-the-video-message": "Chwarae'r neges fideo eto"
   },
@@ -1167,5 +1164,10 @@
     "hmcts-alt": "Defnyddio cefndir gydag arwydd GLlTEM",
     "scts": "SCTS",
     "scts-alt": "Defnyddio cefndir gydag arwydd SCTS"
+  },
+  "feedback-banner": {
+    "title": "Hoffem gael eich barn",
+    "body": "Cyn i chi fynd, sut oedd eich profiad o'r Gwasanaeth Gwrandawiadau Fideo?",
+    "link-text": "Cwblhewch ein harolwg byr yma"
   }
 }
