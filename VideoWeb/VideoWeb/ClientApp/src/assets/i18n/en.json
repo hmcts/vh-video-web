@@ -701,7 +701,9 @@
     "medical-member": "Medical Member",
     "legal-member": "Legal Member",
     "financial-member": "Financial Member",
-    "appellant": "Appellant"
+    "appellant": "Appellant", 
+    "local-authority":"Local Authority",
+    "government-legal-department(solicitor)":"Government Legal Department(Solicitor)"
   },
   "case-role": {
     "appellant": "Appellant",
@@ -714,7 +716,8 @@
     "observer": "Observer",
     "panel-member": "Panel Member",
     "respondent": "Respondent",
-    "state": "State"
+    "state": "State",
+    "secretary-of-state":"Secretary of State"
   },
   "case-type": {
     "adoption": "Adoption",
@@ -759,7 +762,9 @@
     "sscs-tribunal": "SSCS Tribunal",
     "family": "Family",
     "business-lease-renewal": "Business Lease Renewal",
-    "tenant-fees": "Tenant Fees"
+    "tenant-fees": "Tenant Fees",
+    "upper-tribunal-immigration-&-asylum-chamber":"Upper Tribunal Immigration & Asylum Chamber"
+
   },
   "case-type-group": {
     "state": "State",
