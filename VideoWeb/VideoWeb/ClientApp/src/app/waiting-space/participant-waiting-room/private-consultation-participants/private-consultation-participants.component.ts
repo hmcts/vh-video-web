@@ -6,6 +6,8 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { LinkType, ParticipantResponse, ParticipantStatus, VideoEndpointResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { RoomTransfer } from 'src/app/shared/models/room-transfer';
 import { HearingRole } from '../../models/hearing-role-model';
 import { WRParticipantStatusListDirective } from '../../waiting-room-shared/wr-participant-list-shared.component';
 import { ParticipantListItem } from '../participant-list-item';
@@ -18,6 +20,7 @@ import { ParticipantListItem } from '../participant-list-item';
 export class PrivateConsultationParticipantsComponent extends WRParticipantStatusListDirective implements OnInit, OnDestroy {
     @Input() roomLabel: string;
     participantCallStatuses = {};
+    johGroupResult: ParticipantListItem[][];
 
     constructor(
         protected consultationService: ConsultationService,
@@ -36,6 +39,11 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         this.initParticipants();
         this.setupSubscribers();
         this.setupInviteStatusSubscribers();
+    }
+
+    initParticipants() {
+        super.initParticipants();
+        this.setJohGroupResult();
     }
 
     ngOnDestroy() {
@@ -113,13 +121,18 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         );
     }
 
-    get johGroups(): ParticipantListItem[][] {
+    setJohGroupResult(): void {
         const johGroupsUnmapped = [[...this.panelMembers], [...this.wingers]];
-        return johGroupsUnmapped.map(array =>
+        this.johGroupResult = johGroupsUnmapped.map(array =>
             array.map(c => {
                 return this.mapResponseToListItem(c);
             })
         );
+    }
+
+    async handleParticipantStatusChange(message: ParticipantStatusMessage): Promise<void> {
+        await super.handleParticipantStatusChange(message);
+        this.setJohGroupResult();
     }
 
     getWitnessesAndObservers(): ParticipantListItem[] {
@@ -148,6 +161,17 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
 
     setupSubscribers(): void {
         this.addSharedEventHubSubcribers();
+
+        this.eventHubSubscriptions$.add(
+            this.eventService.getRoomTransfer().subscribe(message => {
+                this.handleRoomChange(message);
+            })
+        );
+    }
+
+    handleRoomChange(message: RoomTransfer): void {
+        this.filterNonJudgeParticipants();
+        this.setJohGroupResult();
     }
 
     canCallParticipant(participant: ParticipantResponse): boolean {
