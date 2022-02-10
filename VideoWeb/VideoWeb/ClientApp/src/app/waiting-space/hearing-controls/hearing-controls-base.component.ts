@@ -15,9 +15,10 @@ import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 import { ParticipantRemoteMuteMessage } from 'src/app/shared/models/participant-remote-mute-message';
 import { HearingRole } from '../models/hearing-role-model';
-import { ConnectedScreenshare, ParticipantUpdated, StoppedScreenshare } from '../models/video-call-models';
+import { ConnectedScreenshare, ParticipantDeleted, ParticipantUpdated, StoppedScreenshare } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
+import { ConferenceService } from 'src/app/services/conference/conference.service';
 
 @Injectable()
 export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy {
@@ -63,7 +64,8 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         protected participantService: ParticipantService,
         protected translateService: TranslateService,
         protected videoControlService: VideoControlService,
-        protected userMediaService: UserMediaService
+        protected userMediaService: UserMediaService,
+        protected conferenceService: ConferenceService
     ) {
         this.handRaised = false;
         this.remoteMuted = false;
@@ -186,6 +188,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     ngOnDestroy(): void {
+        this.logger.info(`${this.loggerPrefix} ngOnDestroy`);
         this.destroyedSubject.next();
         this.destroyedSubject.complete();
 
@@ -240,6 +243,11 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             .onVideoEvidenceStopped()
             .pipe(takeUntil(this.destroyedSubject))
             .subscribe(() => (this.sharingDynamicEvidence = false));
+
+        this.videoCallService
+            .onParticipantDeleted()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(updatedParticipant => this.handleParticipantDeletedInVideoCall(updatedParticipant));
     }
 
     handleScreenShareConnected(connectedScreenShare: ConnectedScreenshare): void {
@@ -253,6 +261,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     handleParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): boolean {
+        this.logger.info(`${this.loggerPrefix} Participant has been updated`, updatedParticipant.pexipDisplayName);
         if (!updatedParticipant.pexipDisplayName.includes(this.participant.id)) {
             return false;
         }
@@ -265,6 +274,26 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             this.logger.info(`${this.loggerPrefix} Participant has been remote muted, muting locally too`, this.logPayload);
             this.toggleMute();
         }
+        return true;
+    }
+
+    handleParticipantDeletedInVideoCall(updatedParticipant: ParticipantDeleted): boolean {
+        this.logger.info(`${this.loggerPrefix} Participant has been deleted`, updatedParticipant.uuid);
+
+        if (updatedParticipant.uuid !== this.participant.id) {
+            return false;
+        }
+
+        this.conferenceService.getParticipantsForConference(this.conferenceId).subscribe(participantList => {
+            const isAnotherHostInHearing = this.isAnotherHostInHearing(participantList);
+            if (!isAnotherHostInHearing) {
+                this.logger.info(`${this.loggerPrefix} Hearing has no host. Suspending`);
+                this.videoCallService.suspendHearing(this.conferenceId);
+            }
+        });
+
+        this.leaveHearing.emit();
+
         return true;
     }
 
@@ -391,9 +420,10 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             const isAnotherHostInHearing = this.isAnotherHostInHearing(participants);
 
             if (isAnotherHostInHearing) {
-                this.videoCallService.leaveHearing(this.conferenceId, this.participant.id).then(() => {
-                    this.leaveHearing.emit();
-                });
+                // this.videoCallService.leaveHearing(this.conferenceId, this.participant.id).then(() => {
+                //     this.leaveHearing.emit();
+                // });
+                this.videoCallService.leaveHearing(this.conferenceId, this.participant.id);
             } else {
                 this.videoCallService.suspendHearing(this.conferenceId);
             }

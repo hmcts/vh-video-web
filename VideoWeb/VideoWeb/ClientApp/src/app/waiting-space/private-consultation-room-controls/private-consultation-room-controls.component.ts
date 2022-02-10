@@ -49,7 +49,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         protected translateService: TranslateService,
         protected videoControlService: VideoControlService,
         protected userMediaService: UserMediaService,
-        conferenceService: ConferenceService,
+        protected conferenceService: ConferenceService,
         configSerivce: ConfigService,
         featureFlagService: FeatureFlagService
     ) {
@@ -61,7 +61,8 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
             participantService,
             translateService,
             videoControlService,
-            userMediaService
+            userMediaService,
+            conferenceService
         );
         this.canToggleParticipantsPanel = true;
 

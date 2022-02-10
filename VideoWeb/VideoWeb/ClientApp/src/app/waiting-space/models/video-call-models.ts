@@ -80,3 +80,14 @@ export class ConnectedScreenshare {
 export class StoppedScreenshare {
     constructor(public reason: string) {}
 }
+
+export class ParticipantDeleted {
+    public uuid: string;
+
+    static fromPexipParticipant(pexipParticipant: PexipParticipant) {
+        return new ParticipantDeleted(pexipParticipant.uuid);
+    }
+    private constructor(uuid: string) {
+        this.uuid = uuid;
+    }
+}

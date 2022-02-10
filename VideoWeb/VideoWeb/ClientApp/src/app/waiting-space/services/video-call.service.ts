@@ -21,6 +21,7 @@ import {
     ConnectedScreenshare,
     DisconnectedCall,
     DisconnectedPresentation,
+    ParticipantDeleted,
     ParticipantUpdated,
     Presentation,
     StoppedScreenshare
@@ -46,6 +47,7 @@ export class VideoCallService {
     private onParticipantUpdatedSubject = new Subject<ParticipantUpdated>();
     private onConferenceUpdatedSubject = new Subject<ConferenceUpdated>();
     private onParticipantCreatedSubject = new Subject<ParticipantUpdated>();
+    private onParticipantDeletedSubject = new Subject<ParticipantDeleted>();
 
     private onConnectedScreenshareSubject = new Subject<ConnectedScreenshare>();
     private onStoppedScreenshareSubject = new Subject<StoppedScreenshare>();
@@ -118,6 +120,7 @@ export class VideoCallService {
 
         this.pexipAPI.onParticipantUpdate = this.handleParticipantUpdate.bind(this);
         this.pexipAPI.onParticipantCreate = this.handleParticipantCreated.bind(this);
+        this.pexipAPI.onParticipantDelete = this.handleParticipantDeleted.bind(this);
 
         this.pexipAPI.onConferenceUpdate = function (conferenceUpdate) {
             self.onConferenceUpdatedSubject.next(new ConferenceUpdated(conferenceUpdate.guests_muted));
@@ -204,7 +207,7 @@ export class VideoCallService {
     }
 
     private handleParticipantCreated(participantUpdate: PexipParticipant) {
-        this.logger.debug(`${this.loggerPrefix} handling participant created`);
+        this.logger.debug(`${this.loggerPrefix} handling participant created`, participantUpdate);
 
         this.onParticipantCreatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
     }
@@ -212,6 +215,11 @@ export class VideoCallService {
     private handleParticipantUpdate(participantUpdate: PexipParticipant) {
         this.videoCallEventsService.handleParticipantUpdated(ParticipantUpdated.fromPexipParticipant(participantUpdate));
         this.onParticipantUpdatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
+    }
+
+    private handleParticipantDeleted(participantUpdate: PexipParticipant) {
+        this.logger.debug(`${this.loggerPrefix} handling participant deleted`, participantUpdate);
+        this.onParticipantDeletedSubject.next(ParticipantDeleted.fromPexipParticipant(participantUpdate));
     }
 
     private handleError(error: string) {
@@ -287,6 +295,11 @@ export class VideoCallService {
 
     onParticipantUpdated(): Observable<ParticipantUpdated> {
         return this.onParticipantUpdatedSubject.asObservable();
+    }
+
+    onParticipantDeleted(): Observable<ParticipantDeleted> {
+        `${this.loggerPrefix} onParticipantDeleted`;
+        return this.onParticipantDeletedSubject.asObservable();
     }
 
     onConferenceUpdated(): Observable<ConferenceUpdated> {

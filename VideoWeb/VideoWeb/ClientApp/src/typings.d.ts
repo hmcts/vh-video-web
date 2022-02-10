@@ -42,6 +42,7 @@ declare interface PexipClient {
     onConferenceUpdate: (conferenceUpdate: PexipConference) => void;
     onCallTransfer: (reason: any) => void;
     renegotiate: (sendUpdate: boolean) => void;
+    onParticipantDelete: (participantUpdate: PexipParticipant) => void;
 
     /**
      * A presentation has started or stopped.
