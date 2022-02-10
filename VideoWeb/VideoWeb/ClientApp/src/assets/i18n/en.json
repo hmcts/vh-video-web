@@ -701,7 +701,15 @@
     "medical-member": "Medical Member",
     "legal-member": "Legal Member",
     "financial-member": "Financial Member",
-    "appellant": "Appellant"
+    "appellant": "Appellant",
+    "care-coordinator": "Care Coordinator",
+    "doctor": "Doctor",
+    "nearest-relative": "Nearest Relative",
+    "nurse": "Nurse",
+    "patient": "Patient",
+    "victim-liaison-officer": "Victim Liaison Officer",
+    "responsible-clinician-(rc)": "Responsible Clinician (RC)",
+    "specialist-lay-member": "Specialist Lay Member"
   },
   "case-role": {
     "appellant": "Appellant",
@@ -759,7 +767,8 @@
     "sscs-tribunal": "SSCS Tribunal",
     "family": "Family",
     "business-lease-renewal": "Business Lease Renewal",
-    "tenant-fees": "Tenant Fees"
+    "tenant-fees": "Tenant Fees",
+    "mental-health": "Mental Health"
   },
   "case-type-group": {
     "state": "State",

@@ -1011,7 +1011,15 @@
     "medical-member": "Aelod Meddygol",
     "legal-member": "Aelod Cyfreithiol",
     "financial-member": "Aelod Cyllidol",
-    "appellant": "Apelydd"
+    "appellant": "Apelydd",
+    "care-coordinator": "Cydlynydd Gofal",
+    "doctor": "Meddyg",
+    "nearest-relative": "Perthynas Agosaf",
+    "nurse": "Nyrs",
+    "patient": "Claf",
+    "victim-liaison-officer": "Swyddog Cyswllt Dioddefwyr",
+    "responsible-clinician-(rc)": "Clinigydd Cyfrifol (RC)",
+    "specialist-lay-member": "Aelod Lleyg Arbenigol"
   },
   "case-type-group": {
     "respondent": "Atebydd",
@@ -1070,7 +1078,8 @@
     "sscs-tribunal": "Tribiwnlys SSCS",
     "family": "Teulu",
     "business-lease-renewal": "Adnewyddu Prydlesi Busnes",
-    "tenant-fees": "Ffioedd Tenantiaid"
+    "tenant-fees": "Ffioedd Tenantiaid",
+    "mental-health": "Iechyd Meddwl"
   },
   "case-role": {
     "state": "Y Wladwriaeth",
