@@ -19,17 +19,20 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
+import { RoomTransfer } from 'src/app/shared/models/room-transfer';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation.service';
 import {
     consultationRequestResponseMessageSubjectMock,
     eventsServiceSpy,
     participantStatusSubjectMock,
-    requestedConsultationMessageSubjectMock
+    requestedConsultationMessageSubjectMock,
+    roomTransferSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-security.service';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { HearingRole } from '../../models/hearing-role-model';
+import { WRParticipantStatusListDirective } from '../../waiting-room-shared/wr-participant-list-shared.component';
 import { ParticipantListItem } from '../participant-list-item';
 import { PrivateConsultationParticipantsComponent } from './private-consultation-participants.component';
 
@@ -516,13 +519,82 @@ describe('PrivateConsultationParticipantsComponent', () => {
             component.panelMembers = testPanelMembers;
             component.wingers = testWingers;
 
-            const mappedGroups = component.johGroups;
+            component.johGroups();
+            const mappedGroups = component.johGroupResult;
             const mappedPanelMembers = mappedGroups[0];
             const mappedWingers = mappedGroups[1];
 
             expect(mappedPanelMembers).toEqual(expectedPanelMembers);
             expect(mappedWingers).toEqual(expectedWingers);
         });
+    });
+
+    describe('johGroups - handleParticipantStatusChange', () => {
+        let superSpy: jasmine.SpyObj<any>;
+        let johGroupSpy: jasmine.SpyObj<any>;
+
+        beforeEach(() => {
+            superSpy = spyOn(WRParticipantStatusListDirective.prototype, 'handleParticipantStatusChange');
+            johGroupSpy = spyOn(component, 'johGroups');
+        });
+
+        it('should handle participant status messages', fakeAsync(() => {
+            const message = {} as ParticipantStatusMessage;
+            component.handleParticipantStatusChange(message);
+            tick();
+            expect(superSpy).toHaveBeenCalledTimes(1);
+            expect(johGroupSpy).toHaveBeenCalledTimes(1);
+            expect(superSpy).toHaveBeenCalledWith(message);
+        }));
+    });
+
+    describe('initParticipants', () => {
+        let superSpy: jasmine.SpyObj<any>;
+        let johGroupSpy: jasmine.SpyObj<any>;
+
+        beforeEach(() => {
+            superSpy = spyOn(WRParticipantStatusListDirective.prototype, 'initParticipants');
+            johGroupSpy = spyOn(component, 'johGroups');
+        });
+
+        it('should initialize participants', () => {
+            component.initParticipants();
+            expect(superSpy).toHaveBeenCalledTimes(1);
+            expect(johGroupSpy).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('handleRoomChange', () => {
+        let superSpy: jasmine.SpyObj<any>;
+        let johGroupSpy: jasmine.SpyObj<any>;
+        const message = {} as RoomTransfer;
+
+        beforeEach(() => {
+            superSpy = spyOn<any>(WRParticipantStatusListDirective.prototype, 'filterNonJudgeParticipants');
+            johGroupSpy = spyOn(component, 'johGroups');
+        });
+
+        it('should handle room change message', fakeAsync(() => {
+            component.handleRoomChange(message);
+            tick();
+            expect(johGroupSpy).toHaveBeenCalledTimes(1);
+            expect(superSpy).toHaveBeenCalledTimes(1);
+        }));
+    });
+
+    describe('room transfer event', () => {
+        let handleRoomChangeSpy: jasmine.SpyObj<any>;
+        const message = {} as RoomTransfer;
+
+        beforeEach(() => {
+            handleRoomChangeSpy = spyOn(component, 'handleRoomChange');
+        });
+
+        it('should handle room change message', fakeAsync(() => {
+            roomTransferSubjectMock.next(message);
+            tick();
+            expect(handleRoomChangeSpy).toHaveBeenCalledTimes(1);
+        }));
     });
 
     describe('getWitnessesAndObservers', () => {
