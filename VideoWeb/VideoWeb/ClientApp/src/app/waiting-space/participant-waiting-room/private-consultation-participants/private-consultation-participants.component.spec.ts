@@ -574,12 +574,11 @@ describe('PrivateConsultationParticipantsComponent', () => {
             johGroupSpy = spyOn(component, 'johGroups');
         });
 
-        it('should handle room change message', fakeAsync(() => {
+        it('should handle room change message', () => {
             component.handleRoomChange(message);
-            tick();
             expect(johGroupSpy).toHaveBeenCalledTimes(1);
             expect(superSpy).toHaveBeenCalledTimes(1);
-        }));
+        });
     });
 
     describe('room transfer event', () => {

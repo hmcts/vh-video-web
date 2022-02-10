@@ -169,7 +169,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         );
     }
 
-    async handleRoomChange(message: RoomTransfer): Promise<void> {
+    handleRoomChange(message: RoomTransfer): void {
         this.filterNonJudgeParticipants();
         this.johGroups();
     }
