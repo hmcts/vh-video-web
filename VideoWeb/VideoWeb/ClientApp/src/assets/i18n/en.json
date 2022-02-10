@@ -1164,7 +1164,7 @@
     "scts-alt": "Apply the background with the SCTS crest"
   },
   "feedback-banner": {
-    "header": "We'd like your opinion",
+    "title": "We'd like your opinion",
     "body": "Before you go, how was your experience of the Video Hearings Service?",
     "link-text": "Complete our short survey here"
   }
