@@ -703,7 +703,16 @@
     "financial-member": "Financial Member",
     "appellant": "Appellant", 
     "local-authority":"Local Authority",
-    "government-legal-department(solicitor)":"Government Legal Department(Solicitor)"
+    "government-legal-department(solicitor)":"Government Legal Department(Solicitor)",
+    "appellant": "Appellant",
+    "care-coordinator": "Care Coordinator",
+    "doctor": "Doctor",
+    "nearest-relative": "Nearest Relative",
+    "nurse": "Nurse",
+    "patient": "Patient",
+    "victim-liaison-officer": "Victim Liaison Officer",
+    "responsible-clinician-(rc)": "Responsible Clinician (RC)",
+    "specialist-lay-member": "Specialist Lay Member"
   },
   "case-role": {
     "appellant": "Appellant",
@@ -763,8 +772,8 @@
     "family": "Family",
     "business-lease-renewal": "Business Lease Renewal",
     "tenant-fees": "Tenant Fees",
-    "upper-tribunal-immigration-&-asylum-chamber":"Upper Tribunal Immigration & Asylum Chamber"
-
+    "upper-tribunal-immigration-&-asylum-chamber":"Upper Tribunal Immigration & Asylum Chamber",
+    "mental-health": "Mental Health"
   },
   "case-type-group": {
     "state": "State",
