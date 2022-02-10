@@ -217,9 +217,6 @@
   },
   "independent-self-test": {
     "please-wait-to-be-connected": "Please wait to be connected...",
-    "problems-with-your-equipment": "Problems with your equipment?",
-    "please-call-beforenumber": "Please call the video hearings team on ",
-    "please-call-afternumber": " to let us know.",
     "continue": "Continue",
     "re-play-the-video-message": "Re-play the video message",
     "check-equipment-again": "Check equipment again"
@@ -1165,5 +1162,10 @@
     "hmcts-alt": "Apply the background with the HMCTS crest",
     "scts": "SCTS",
     "scts-alt": "Apply the background with the SCTS crest"
+  },
+  "feedback-banner": {
+    "title": "We'd like your opinion",
+    "body": "Before you go, how was your experience of the Video Hearings Service?",
+    "link-text": "Complete our short survey here"
   }
 }
