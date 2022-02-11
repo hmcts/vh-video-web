@@ -379,6 +379,20 @@ describe('PrivateConsultationParticipantsComponent', () => {
         expect(component.getPrivateConsultationParticipants().length).toBe(1);
     });
 
+    it('should sort quick link participants', () => {
+        const testData = new ConferenceTestData();
+        component.conference.participants = [testData.quickLinkParticipant2, testData.quickLinkParticipant1];
+        component.initParticipants();
+        const participants = component.getPrivateConsultationParticipants();
+
+        expect(participants.length).toBe(2);
+        expect(participants.find(x => x.display_name === testData.quickLinkParticipant1.display_name)).toBeTruthy();
+        expect(participants.find(x => x.display_name === testData.quickLinkParticipant2.display_name)).toBeTruthy();
+        expect(participants.findIndex(x => x.display_name === testData.quickLinkParticipant1.display_name)).toBeLessThan(
+            participants.findIndex(x => x.display_name === testData.quickLinkParticipant2.display_name)
+        );
+    });
+
     it('should return can call endpoint', () => {
         // Not in current room
         component.roomLabel = 'test-room';
