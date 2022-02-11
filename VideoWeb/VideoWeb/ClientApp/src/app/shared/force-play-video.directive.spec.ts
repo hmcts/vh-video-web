@@ -17,7 +17,7 @@ describe('ForcePlayVideoDirective', () => {
 
     beforeEach(() => {
         elementRefSpy = jasmine.createSpyObj<ElementRef>([], ['nativeElement']);
-        nativeElementSpy = jasmine.createSpyObj<HTMLVideoElement>(['play'], ['oncanplay']);
+        nativeElementSpy = jasmine.createSpyObj<HTMLVideoElement>(['play', 'pause'], ['oncanplay']);
 
         getSpiedPropertyGetter(elementRefSpy, 'nativeElement').and.returnValue(nativeElementSpy);
         getSpiedPropertySetter(nativeElementSpy, 'oncanplay').and.callFake((callback: (event: any) => void) => {
@@ -79,6 +79,18 @@ describe('ForcePlayVideoDirective', () => {
 
             // Assert
             expect(nativeElementSpy.play).toHaveBeenCalledTimes(1);
+        });
+
+        it('should not try to play after destroyed', () => {
+            // Arrange
+            directive.ngOnInit();
+            directive.ngOnDestroy();
+
+            // Act
+            onCanPlayCallback(null);
+
+            // Assert
+            expect(nativeElementSpy.play).not.toHaveBeenCalled();
         });
     });
 
@@ -163,7 +175,7 @@ describe('ForcePlayVideoDirective', () => {
     });
 
     describe('ngOnDestroy', () => {
-        it('should unsubscribe from the event listeners', () => {
+        it('should unsubscribe from the event listeners and pause video', () => {
             // Arrange
             let touchStartCallback: (event: any) => void;
             let unsubscribedFromMouseDown = false;
@@ -198,6 +210,7 @@ describe('ForcePlayVideoDirective', () => {
             // Assert
             expect(unsubscribedFromMouseDown).toBeTrue();
             expect(unsubscribedFromTouchStart).toBeTrue();
+            expect(nativeElementSpy.pause).toHaveBeenCalledTimes(1);
         });
     });
 });

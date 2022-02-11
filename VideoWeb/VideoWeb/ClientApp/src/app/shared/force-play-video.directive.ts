@@ -10,6 +10,8 @@ export class ForcePlayVideoDirective implements OnInit, OnDestroy {
     private unsubscribeFromMouseDownCallback: () => void | null = null;
     private unsubscribeFromTouchStartCallback: () => void | null = null;
 
+    private destroyed = false;
+
     public get videoElement(): HTMLVideoElement {
         return this.elementRef.nativeElement as HTMLVideoElement;
     }
@@ -36,8 +38,12 @@ export class ForcePlayVideoDirective implements OnInit, OnDestroy {
         this.unsubscribeFromTouchStartCallback = this.renderer.listen('window', 'touchstart', this.onMouseDownOrTouchStart.bind(this));
 
         this.videoElement.oncanplay = event => {
-            this.logger.info(`${this.loggerPrefix} - videoElement.oncanplay - playing video`);
-            this.videoElement.play();
+            this.logger.info(`${this.loggerPrefix} - videoElement.oncanplay - event triggered`);
+
+            if (!this.destroyed) {
+                this.logger.info(`${this.loggerPrefix} - videoElement.oncanplay - playing video`);
+                this.videoElement.play();
+            }
         };
     }
 
@@ -67,5 +73,7 @@ export class ForcePlayVideoDirective implements OnInit, OnDestroy {
             this.unsubscribeFromTouchStartCallback();
             this.unsubscribeFromTouchStartCallback = null;
         }
+        this.videoElement.pause();
+        this.destroyed = true;
     }
 }

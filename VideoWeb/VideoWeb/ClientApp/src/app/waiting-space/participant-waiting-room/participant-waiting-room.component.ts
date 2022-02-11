@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, Subscription } from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
@@ -42,6 +42,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
 
     clockSubscription$: Subscription;
     isParticipantsPanelHidden = false;
+    hearingVenueIsScottish$: Observable<boolean>;
 
     constructor(
         protected route: ActivatedRoute,

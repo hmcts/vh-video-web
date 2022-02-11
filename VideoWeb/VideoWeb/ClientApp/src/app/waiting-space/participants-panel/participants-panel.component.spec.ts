@@ -245,6 +245,31 @@ describe('ParticipantsPanelComponent', () => {
         component.ngOnDestroy();
     });
 
+    const conferenceStatusStatuses = [
+        { status: ConferenceStatus.NotStarted },
+        { status: ConferenceStatus.InSession },
+        { status: ConferenceStatus.Suspended },
+        { status: ConferenceStatus.Paused }
+    ];
+    conferenceStatusStatuses.forEach(c => {
+        it(`should reset the remote mute status of the participants in the component store for a ${c.status} hearing`, fakeAsync(() => {
+            const response = new ConferenceResponse({ status: c.status });
+            videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(response));
+            videoWebServiceSpy.getParticipantsByConferenceId.and.returnValue(Promise.resolve(participants));
+            videoWebServiceSpy.getEndpointsForConference.and.returnValue(Promise.resolve(endpoints));
+            const mappedParticipants = mapper.mapFromParticipantUserResponseArray(participants);
+            participantPanelModelMapperSpy.mapFromParticipantUserResponseArray.and.returnValue(mappedParticipants);
+
+            component.ngOnInit();
+            flushMicrotasks();
+            component.participants
+                .map(p => p.id)
+                .forEach(participantId =>
+                    expect(videoControlCacheServiceSpy.setRemoteMutedStatus).toHaveBeenCalledWith(participantId, false)
+                );
+        }));
+    });
+
     it('should get participant sorted list, the judge is first, then panel members and finally observers are the last one', fakeAsync(() => {
         const response = new ConferenceResponse({ status: ConferenceStatus.NotStarted });
         videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(response));

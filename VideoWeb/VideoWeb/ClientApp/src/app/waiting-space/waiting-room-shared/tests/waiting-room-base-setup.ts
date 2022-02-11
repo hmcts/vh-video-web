@@ -1,5 +1,5 @@
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import { of } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { LoggedParticipantResponse, Role, TokenResponse } from 'src/app/services/clients/api-client';
@@ -21,6 +21,7 @@ import { RoomClosingToastrService } from 'src/app/waiting-space/services/room-cl
 import { ToastrService } from 'ngx-toastr';
 import { ConsultationInvitationService } from '../../services/consultation-invitation.service';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 const conferenceTestData = new ConferenceTestData();
 
 export let component: WRTestComponent;
@@ -69,6 +70,9 @@ export function initAllWRDependencies() {
         ['setHearingVenueIsScottish'],
         ['hearingVenueIsScottish$']
     );
+    const hearingVenueIsScottishSubject = new BehaviorSubject(false);
+    getSpiedPropertyGetter(mockedHearingVenueFlagsService, 'hearingVenueIsScottish$').and.returnValue(hearingVenueIsScottishSubject);
+
     videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
         'getConferenceById',
         'getObfuscatedName',

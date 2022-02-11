@@ -7,20 +7,25 @@
     </summary>
     <div class="govuk-details__text" *ngIf="expanded">
       <p class="govuk-body govuk-!-margin-bottom-0">
-        {{'contact-us-folding.call-vh-team' | translate}} <strong>0300 303 0655</strong> {{'contact-us-folding.quote-case-number' | translate}}
+        <strong>{{'contact-us-folding.england-and-wales' | translate}}</strong>
       </p>
-      <span id="contact-us-telephone-times-hint" class="govuk-hint">
-        {{'contact-us-folding.available-time' | translate}}
-      </span>
+      <p class="govuk-body govuk-!-margin-bottom-0">
+        {{'contact-us-folding.call-us' | translate}} <strong>{{ contactDetails.englandAndWales.phoneNumber }}</strong>
+      </p>
+      <p class="govuk-body govuk-!-margin-bottom-4">
+        {{'contact-us-folding.email-us' | translate}} <a [href]="'mailto:' + contactDetails.englandAndWales.email">{{ contactDetails.englandAndWales.email }}</a> {{'contact-us-folding.quoting-case-number' | translate}}
+      </p>
 
       <p class="govuk-body govuk-!-margin-bottom-0">
-        <span>{{'contact-us-folding.email-us' | translate}} </span>
-        <a class="govuk-link" target="_blank" href="mailto:{{contact.email}}" data-hsupport="email">{{ contact.email }}</a>
-        <span> {{'contact-us-folding.quoting-case-number' | translate}}</span>
+        <strong>{{'contact-us-folding.scotland' | translate}}</strong>
       </p>
-      <span id="contact-us-email-times-hint" class="govuk-hint">
-        {{'contact-us-folding.available-time' | translate}} 
-      </span>
+      <p class="govuk-body govuk-!-margin-bottom-0">
+        {{'contact-us-folding.call-us' | translate}} <strong>{{ contactDetails.scotland.phoneNumber }}</strong>
+      </p>
+      <p class="govuk-body govuk-!-margin-bottom-0">
+        {{'contact-us-folding.email-us' | translate}} <a [href]="'mailto:' + contactDetails.scotland.email">{{ contactDetails.scotland.email }}</a> {{'contact-us-folding.quoting-case-number' | translate}}
+      </p>
+      <p class="govuk-body govuk-!-margin-top-3 govuk-!-font-size-14 govuk-!-font-weight-bold available-time">{{'contact-us-folding.available-time' | translate}}</p>
     </div>
   </details>
 </div>
