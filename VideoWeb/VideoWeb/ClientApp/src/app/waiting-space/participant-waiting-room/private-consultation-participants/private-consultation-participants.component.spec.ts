@@ -679,7 +679,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
         it('should return nothing if is not joh consultation', () => {
             spyOn(component, 'isJohConsultation').and.returnValue(false);
-            const result = component.getWitnessesAndObservers();
+            const result = component.getObservers();
             expect(result).toEqual([]);
         });
 
@@ -691,7 +691,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
             const mappedQuickLinkObserver2: ParticipantListItem = { ...quickLinkObserver2 };
 
             spyOn(component, 'isJohConsultation').and.returnValue(true);
-            const result = component.getWitnessesAndObservers();
+            const result = component.getObservers();
             const witnessesOrdered = [mappedWitness1, mappedWitness2].sort((a, b) => a.display_name.localeCompare(b.display_name));
 
             const observersOrdered = [mappedRegularObserver, mappedQuickLinkObserver1, mappedQuickLinkObserver2].sort((a, b) =>

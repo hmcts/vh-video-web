@@ -116,9 +116,10 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     getPrivateConsultationParticipants(): ParticipantListItem[] {
-        return this.sortAndMapToListItem(
-            this.nonJudgeParticipants.filter(x => x.hearing_role !== HearingRole.WITNESS && x.hearing_role !== HearingRole.INTERPRETER)
-        );
+        const participants = this.nonJudgeParticipants.filter(x => x.hearing_role !== HearingRole.INTERPRETER);
+        return participants.map(c => {
+            return this.mapResponseToListItem(c);
+        });
     }
 
     setJohGroupResult(): void {
@@ -135,15 +136,12 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         this.setJohGroupResult();
     }
 
-    getWitnessesAndObservers(): ParticipantListItem[] {
+    getObservers(): ParticipantListItem[] {
         if (!this.isJohConsultation()) {
             return [];
         }
-        const witnesses = this.sortAndMapToListItem(
-            this.nonJudgeParticipants.filter(participant => participant.hearing_role === HearingRole.WITNESS)
-        );
         const observers = this.sortAndMapToListItem(this.observers);
-        return [...witnesses, ...observers];
+        return [...observers];
     }
 
     getParticipantStatus(participant: any): string {
