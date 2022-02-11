@@ -71,6 +71,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the incoming and self video should be playing video")]
         public void ThenTheIncomingVideoShouldBePlaying()
         {
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(PracticeVideoHearingPage.IncomingVideo);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(PracticeVideoHearingPage.SelfVideo);
             new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser]).Feed(PracticeVideoHearingPage.IncomingVideo);
             new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser]).Feed(PracticeVideoHearingPage.SelfVideo);
         }

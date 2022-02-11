@@ -25,6 +25,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the user clicks the (.*) button")]
         public void WhenTheUserClicksTheButton(string label)
         {
+            if (label.Equals("Check equipment again", System.StringComparison.OrdinalIgnoreCase))
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(CommonLocators.ElementContainingText("Please wait to be connected")).Displayed.Should().BeTrue();
+
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(CommonLocators.ButtonWithInnerText(label)).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser].Click(CommonLocators.ButtonWithInnerText(label));
         }

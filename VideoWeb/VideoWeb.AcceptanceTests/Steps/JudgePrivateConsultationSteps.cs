@@ -86,7 +86,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.HearingTitle).Displayed.Should().BeTrue();
             WaitForUserStatusToBe(ParticipantState.Available);
-            _browsers[_c.CurrentUser].ClickToProgress(JudgeWaitingRoomPage.EnterPrivateConsultationButton, PrivateConsultationRoomPage.LeavePrivateConsultationButton, 10);
+            _browsers[_c.CurrentUser].ClickToProgress(JudgeWaitingRoomPage.EnterPrivateConsultationButton, PrivateConsultationRoomPage.LeavePrivateConsultationButton);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(PrivateConsultationRoomPage.LeavePrivateConsultationButton, 60).Displayed.Should().BeTrue();
             WaitForUserStatusToBe(ParticipantState.InConsultation);
         }
