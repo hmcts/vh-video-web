@@ -455,11 +455,11 @@ describe('PrivateConsultationParticipantsComponent', () => {
         expect(component.canCallEndpoint(endpoint)).toBeFalse();
     });
 
-    it('should return can not call endpoint - room already has endpoint', () => {
-        // Not in current room
-        component.roomLabel = 'test-room';
+    it('should return can not call endpoint - when endpoint is already in the room', () => {
+        // In current room
+        const roomLabel = 'test-room';
         const endpoint = conference.endpoints[0];
-        endpoint.current_room.label = 'not-test-room';
+        component.roomLabel = endpoint.current_room.label = roomLabel;
 
         // Available
         endpoint.status = EndpointStatus.Connected;
