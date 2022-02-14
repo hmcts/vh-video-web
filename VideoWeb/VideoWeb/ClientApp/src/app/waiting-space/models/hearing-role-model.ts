@@ -19,5 +19,6 @@ export enum HearingRole {
     FINANCIAL_MEMBER = 'Financial Member',
     LEGAL_MEMBER = 'Legal Member',
     MEDICAL_MEMBER = 'Medical Member',
-    DISABILITY_MEMBER = 'Disability Member (DQM)'
+    DISABILITY_MEMBER = 'Disability Member (DQM)',
+    SPECIALIST_LAY_MEMBER = 'Specialist Lay Member'
 }
