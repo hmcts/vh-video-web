@@ -370,15 +370,6 @@ describe('PrivateConsultationParticipantsComponent', () => {
         expect(result).toBeFalse();
     });
 
-    it('should not get witnesses', () => {
-        const participants = new ConferenceTestData().getListOfParticipants();
-        const witness = participants[0];
-        witness.hearing_role = HearingRole.WITNESS;
-        const representative = participants[1];
-        component.nonJudgeParticipants = [witness, representative];
-        expect(component.getPrivateConsultationParticipants().length).toBe(1);
-    });
-
     it('should not get interpreter', () => {
         const participants = new ConferenceTestData().getListOfParticipants();
         const interpreter = participants[0];
@@ -390,7 +381,8 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
     it('should sort quick link participants', () => {
         const testData = new ConferenceTestData();
-        component.nonJudgeParticipants = [testData.quickLinkParticipant2, testData.quickLinkParticipant1];
+        component.conference.participants = [testData.quickLinkParticipant2, testData.quickLinkParticipant1];
+        component.initParticipants();
         const participants = component.getPrivateConsultationParticipants();
 
         expect(participants.length).toBe(2);
@@ -596,7 +588,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
         }));
     });
 
-    describe('getWitnessesAndObservers', () => {
+    describe('getObservers', () => {
         const litigantInPerson = new ParticipantResponse({
             id: 'litigantInPerson_id',
             status: ParticipantStatus.Available,
@@ -679,28 +671,23 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
         it('should return nothing if is not joh consultation', () => {
             spyOn(component, 'isJohConsultation').and.returnValue(false);
-            const result = component.getWitnessesAndObservers();
+            const result = component.getObservers();
             expect(result).toEqual([]);
         });
 
         it('should return list in correct order for joh consultation', () => {
-            const mappedWitness1: ParticipantListItem = { ...witness1 };
-            const mappedWitness2: ParticipantListItem = { ...witness2 };
             const mappedRegularObserver: ParticipantListItem = { ...regularObserver };
             const mappedQuickLinkObserver1: ParticipantListItem = { ...quickLinkObserver1 };
             const mappedQuickLinkObserver2: ParticipantListItem = { ...quickLinkObserver2 };
 
             spyOn(component, 'isJohConsultation').and.returnValue(true);
-            const result = component.getWitnessesAndObservers();
-            const witnessesOrdered = [mappedWitness1, mappedWitness2].sort((a, b) => a.display_name.localeCompare(b.display_name));
+            const result = component.getObservers();
 
             const observersOrdered = [mappedRegularObserver, mappedQuickLinkObserver1, mappedQuickLinkObserver2].sort((a, b) =>
                 a.display_name.localeCompare(b.display_name)
             );
 
-            expect(result.length).toBe(witnessesOrdered.length + observersOrdered.length);
-            expect(result.slice(0, witnessesOrdered.length)).toEqual(witnessesOrdered);
-            expect(result.slice(witnessesOrdered.length)).toEqual(observersOrdered);
+            expect(result.length).toBe(observersOrdered.length);
         });
     });
 });

@@ -89,7 +89,7 @@
             </div>
         </ng-container>
         <ng-container *ngIf="isJohConsultation()">
-            <ng-container *ngFor="let participant of getWitnessesAndObservers(); trackBy: trackParticipant">
+            <ng-container *ngFor="let participant of getObservers(); trackBy: trackParticipant">
                 <div class="member-group">
                     <app-participant-item 
                                     [participant]="participant" 
