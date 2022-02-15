@@ -1035,7 +1035,9 @@
     "claimant": "Hawlydd",
     "applicant": "Ceisydd",
     "appellant": "Apelydd",
-    "state": "Y Wladwriaeth"
+    "state": "Y Wladwriaeth", 
+    "homeoffice":"Y Swyddfa Gartref", 
+    "secretary-of-state":"Ysgrifennydd Gwladol"
   },
   "case-type": {
     "placement": "Lleoliad",
