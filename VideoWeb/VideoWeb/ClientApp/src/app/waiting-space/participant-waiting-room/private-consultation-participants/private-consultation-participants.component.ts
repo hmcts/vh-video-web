@@ -85,15 +85,10 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         );
     }
 
-    get endpointInRoom(): boolean {
-        return this.conference.endpoints.some(x => this.isParticipantInCurrentRoom(x));
-    }
-
     canCallEndpoint(endpoint: VideoEndpointResponse): boolean {
         return (
             !this.isParticipantInCurrentRoom(endpoint) &&
             this.isEndpointAvailable(endpoint) &&
-            !this.endpointInRoom &&
             this.participantEndpoints.some(x => x.id === endpoint.id)
         );
     }
