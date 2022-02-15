@@ -787,7 +787,9 @@
     "defendant": "Defendant",
     "respondent": "Respondent",
     "appellant": "Appellant",
-    "claimant": "Claimant"
+    "claimant": "Claimant", 
+    "homeoffice":"Home Office", 
+    "secretary-of-state":"Secretary of State"
   },
   "user-role": {
     "case-admin": "Case admin",
