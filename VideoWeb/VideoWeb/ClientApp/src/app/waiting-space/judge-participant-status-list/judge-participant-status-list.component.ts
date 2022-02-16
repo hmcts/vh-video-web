@@ -104,6 +104,10 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         this.newJudgeDisplayName = this.judge.display_name;
     }
 
+    canChangeStaffMemberName(id: string) {
+        return this.isStaffMember && this.loggedInUser.participant_id === id;
+    }
+
     changeStaffMemberNameShow(id: string) {
         this.showChangeStaffMemberDisplayName = true;
         this.newStaffMemberDisplayName = this.staffMembers.find(p => p.id === id).display_name;
