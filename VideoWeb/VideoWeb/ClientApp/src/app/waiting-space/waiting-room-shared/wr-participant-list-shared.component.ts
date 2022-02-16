@@ -118,16 +118,18 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     }
 
     protected filterNonJudgeParticipants(): void {
-        let nonJudgeParts = this.conference.participants.filter(
-            x =>
-                x.role !== Role.Judge &&
-                x.role !== Role.JudicialOfficeHolder &&
-                x.case_type_group !== CaseTypeGroup.OBSERVER &&
-                x.hearing_role !== HearingRole.OBSERVER &&
-                x.role !== Role.QuickLinkObserver &&
-                x.role !== Role.QuickLinkParticipant &&
-                x.hearing_role !== HearingRole.STAFF_MEMBER
-        );
+        let nonJudgeParts = this.conference.participants
+            .filter(
+                x =>
+                    x.role !== Role.Judge &&
+                    x.role !== Role.JudicialOfficeHolder &&
+                    x.case_type_group !== CaseTypeGroup.OBSERVER &&
+                    x.hearing_role !== HearingRole.OBSERVER &&
+                    x.role !== Role.QuickLinkObserver &&
+                    x.role !== Role.QuickLinkParticipant &&
+                    x.hearing_role !== HearingRole.STAFF_MEMBER
+            )
+            .sort((a, b) => a.case_type_group.localeCompare(b.case_type_group) || a.name.localeCompare(b.name));
 
         nonJudgeParts = [
             ...nonJudgeParts,
@@ -136,18 +138,7 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
                 .sort((a, b) => a.display_name.localeCompare(b.display_name))
         ];
 
-        const interpreterList = nonJudgeParts.filter(
-            x =>
-                x.role === Role.Individual &&
-                x.hearing_role === HearingRole.INTERPRETER &&
-                Array.isArray(x.linked_participants) &&
-                x.linked_participants.length > 0
-        );
-        if (!interpreterList) {
-            this.nonJudgeParticipants = nonJudgeParts;
-        } else {
-            this.nonJudgeParticipants = this.orderForInterpreter(nonJudgeParts, interpreterList);
-        }
+        this.nonJudgeParticipants = nonJudgeParts;
     }
 
     hasInterpreterLink(participant: ParticipantResponse) {
@@ -176,23 +167,6 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     getInterpreteeName(interpreterId: string) {
         const interpreter = this.nonJudgeParticipants.find(x => x.id === interpreterId);
         return this.nonJudgeParticipants.find(x => x.id === interpreter.linked_participants[0].linked_id).name;
-    }
-
-    private orderForInterpreter(
-        nonJudgeParticipants: ParticipantResponse[],
-        interpreterList: ParticipantResponse[]
-    ): ParticipantResponse[] {
-        const sortedParticipants = [];
-        const linkedParticipantIds = [];
-        interpreterList.forEach(interpreter => {
-            const linkDetails = interpreter.linked_participants[0];
-            const interpretee = nonJudgeParticipants.find(x => x.id === linkDetails.linked_id);
-            sortedParticipants.push(interpretee);
-            linkedParticipantIds.push(interpretee.id);
-            sortedParticipants.push(interpreter);
-            linkedParticipantIds.push(interpreter.id);
-        });
-        return [...nonJudgeParticipants.filter(p => !linkedParticipantIds.includes(p.id)), ...sortedParticipants];
     }
 
     protected filterObservers(): void {

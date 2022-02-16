@@ -24,7 +24,6 @@ import { WRParticipantStatusListDirective } from './wr-participant-list-shared.c
 import { HearingRole } from '../models/hearing-role-model';
 import { TranslateService } from '@ngx-translate/core';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
-import { Participant } from 'src/app/shared/models/participant';
 
 class WrParticipantStatusListTest extends WRParticipantStatusListDirective implements OnInit, OnDestroy {
     constructor(
@@ -430,6 +429,30 @@ describe('WaitingRoom ParticipantList Base', () => {
             const hearingRoleText = component.getHearingRole(participant);
 
             expect(hearingRoleText).toEqual('hearing-role.quick-link-observer');
+        });
+    });
+
+    describe('initParticipants', () => {
+        it('should filter and sort non-judge participants correctly', () => {
+            conference.participants = new ConferenceTestData().getFullListOfParticipants();
+            component.initParticipants();
+            const nonJudgeParticipants = component.nonJudgeParticipants;
+
+            const applicant1Index = nonJudgeParticipants.findIndex(x => x.name === 'Mr A Smith');
+            const applicant2Index = nonJudgeParticipants.findIndex(x => x.name === 'Mr B Smith');
+            const applicant3Index = nonJudgeParticipants.findIndex(x => x.name === 'Mr G Smith');
+            const respondent1Index = nonJudgeParticipants.findIndex(x => x.name === 'Mr E Smith');
+            const respondent2Index = nonJudgeParticipants.findIndex(x => x.name === 'Mr F Smith');
+            const quickLinkParticipant1Index = nonJudgeParticipants.findIndex(x => x.name === 'Mr C Smith');
+            const quickLinkParticipant2Index = nonJudgeParticipants.findIndex(x => x.name === 'Mr D Smith');
+
+            expect(applicant1Index).toEqual(0);
+            expect(applicant2Index).toEqual(1);
+            expect(applicant3Index).toEqual(2);
+            expect(respondent1Index).toEqual(3);
+            expect(respondent2Index).toEqual(4);
+            expect(quickLinkParticipant1Index).toEqual(5);
+            expect(quickLinkParticipant2Index).toEqual(6);
         });
     });
 });
