@@ -32,6 +32,7 @@ import { ParticipantRemoteMuteStoreService } from '../services/participant-remot
 import { VideoCallService } from '../services/video-call.service';
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 import { IConferenceParticipantsStatus } from '../models/conference-participants-status';
+import { IndividualPanelModel } from '../models/individual-panel-model';
 
 @Component({
     selector: 'app-participants-panel',
@@ -172,6 +173,21 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                 );
             }
         }
+    }
+
+    updateLocalAudioMutedForWitnessInterpreterVmr(
+        linkedParticipant: IndividualPanelModel,
+        participantId: string,
+        localAudioMuted: boolean
+    ) {
+        this.logger.info(`${this.loggerPrefix} Setting store audio muted to true`, {
+            linkedParticipantId: linkedParticipant.id,
+            participantId: participantId,
+            localAudioMuted: localAudioMuted
+        });
+
+        this.participantRemoteMuteStoreService.updateLocalMuteStatus(linkedParticipant.id, localAudioMuted, null);
+        linkedParticipant.updateParticipant(false, false, false, participantId, localAudioMuted, false);
     }
 
     resetWitnessTransferTimeout(participantId: string) {
@@ -557,8 +573,9 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     private async sendTransferDirection(participant: PanelModel, direction: TransferDirection) {
         if (participant instanceof LinkedParticipantPanelModel) {
-            participant.participants.forEach(async p => {
-                await this.eventService.sendTransferRequest(this.conferenceId, p.id, direction);
+            participant.participants.forEach(async linkedParticipant => {
+                this.updateLocalAudioMutedForWitnessInterpreterVmr(linkedParticipant, participant.id, true);
+                await this.eventService.sendTransferRequest(this.conferenceId, linkedParticipant.id, direction);
             });
         } else {
             await this.eventService.sendTransferRequest(this.conferenceId, participant.id, direction);

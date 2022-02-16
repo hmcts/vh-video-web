@@ -622,6 +622,18 @@ describe('ParticipantsPanelComponent', () => {
             tick(10000);
             expect(videoCallServiceSpy.callParticipantIntoHearing).toHaveBeenCalledWith(component.conferenceId, pat.witnessParticipant.id);
         }));
+
+        it('should update local mute status to true prior to calling participant into a hearing', fakeAsync(async () => {
+            const pat = component.participants.find(
+                p => p instanceof LinkedParticipantPanelModel && p.isWitness
+            ) as LinkedParticipantPanelModel;
+            const isLocalVideoMuted = true;
+            pat.participants.forEach(linkedParticipant => {
+                component.updateLocalAudioMutedForWitnessInterpreterVmr(linkedParticipant, pat.id, isLocalVideoMuted);
+                pat.updateParticipant(false, false, false, pat.id, isLocalVideoMuted, false);
+                expect(remoteMuteServiceSpy.updateLocalMuteStatus).toHaveBeenCalledWith(linkedParticipant.id, isLocalVideoMuted, null);
+            });
+        }));
     });
 
     describe('dismiss', () => {
