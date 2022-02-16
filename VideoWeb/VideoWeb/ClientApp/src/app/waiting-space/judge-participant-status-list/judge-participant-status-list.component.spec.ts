@@ -110,7 +110,8 @@ describe('JudgeParticipantStatusListComponent', () => {
     });
 
     it('should show input template for change staff member display name', () => {
-        component.loggedInUser = editedStaffMember;
+        component.isStaffMember = true;
+        component.loggedInUser.participant_id = editedStaffMember.id;
         component.changeStaffMemberNameShow(editedStaffMember.id);
 
         expect(component.showChangeStaffMemberDisplayName).toBe(true);
