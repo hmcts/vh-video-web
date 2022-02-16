@@ -148,7 +148,8 @@ describe('ParticipantsPanelComponent', () => {
             'setHandRaiseStatus',
             'getHandRaiseStatus',
             'setRemoteMutedStatus',
-            'getRemoteMutedStatus'
+            'getRemoteMutedStatus',
+            'initHearingControlState'
         ]);
         remoteMuteServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
