@@ -120,11 +120,6 @@ export abstract class PanelModel {
         this._transferringIn = isTransferringIn;
     }
 
-    dimissed() {
-        this.handRaised = false;
-        this.isSpotlighted = false;
-    }
-
     assignPexipId(pexipId: string) {
         this.pexipId = pexipId ?? this.pexipId;
     }
