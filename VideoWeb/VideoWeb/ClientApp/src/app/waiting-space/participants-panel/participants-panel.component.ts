@@ -70,7 +70,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-
+        this.videoControlCacheService.initHearingControlState();
         this.getParticipantsList().then(() => {
             this.participants
                 .map(p => p.id)
@@ -614,7 +614,12 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             participant: participant.id
         });
 
-        participant.dimissed();
+        if (participant.hasHandRaised()) {
+            this.lowerParticipantHand(participant);
+        }
+        if (participant.hasSpotlight()) {
+            this.toggleSpotlightParticipant(participant);
+        }
 
         try {
             let participantId = participant.id;

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { vhContactDetails } from '../contact-information';
+import { vhContactDetails } from 'src/app/shared/contact-information';
 
 @Component({
     selector: 'app-equipment-problem',

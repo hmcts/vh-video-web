@@ -683,7 +683,7 @@ describe('WaitingRoomComponent message and clock', () => {
         component.participant.status = ParticipantStatus.Available;
         spyOnProperty(component.hearing, 'status', 'get').and.returnValue(ConferenceStatus.Suspended);
 
-        expect(component.shouldMuteHearing).toBe(true);
+        expect(component.shouldMuteHearing()).toBe(true);
     });
 
     it('should mute video stream when participant is in hearing but the hearing status is not in session', () => {
@@ -691,7 +691,7 @@ describe('WaitingRoomComponent message and clock', () => {
         component.participant.status = ParticipantStatus.InHearing;
         spyOnProperty(component.hearing, 'status', 'get').and.returnValue(ConferenceStatus.Suspended);
 
-        expect(component.shouldMuteHearing).toBe(true);
+        expect(component.shouldMuteHearing()).toBe(true);
     });
 
     it('should mute video stream when participant is not in hearing', () => {
@@ -699,7 +699,7 @@ describe('WaitingRoomComponent message and clock', () => {
         component.participant.status = ParticipantStatus.Available;
         spyOnProperty(component.hearing, 'status', 'get').and.returnValue(ConferenceStatus.Suspended);
 
-        expect(component.shouldMuteHearing).toBe(true);
+        expect(component.shouldMuteHearing()).toBe(true);
     });
 
     it('should mute video stream when participant is in hearing and countdown is not complete', () => {
@@ -707,7 +707,7 @@ describe('WaitingRoomComponent message and clock', () => {
         component.participant.status = ParticipantStatus.InHearing;
         spyOnProperty(component.hearing, 'status', 'get').and.returnValue(ConferenceStatus.InSession);
 
-        expect(component.shouldMuteHearing).toBe(true);
+        expect(component.shouldMuteHearing()).toBe(true);
     });
 
     it('should not mute video stream when participant is in hearing and countdown is complete', () => {
@@ -715,7 +715,7 @@ describe('WaitingRoomComponent message and clock', () => {
         component.participant.status = ParticipantStatus.InHearing;
         spyOnProperty(component.hearing, 'status', 'get').and.returnValue(ConferenceStatus.InSession);
 
-        expect(component.shouldMuteHearing).toBe(false);
+        expect(component.shouldMuteHearing()).toBe(false);
     });
 
     it('should return false if case name has not been truncated', () => {

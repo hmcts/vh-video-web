@@ -6,6 +6,8 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { LinkType, ParticipantResponse, ParticipantStatus, VideoEndpointResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { RoomTransfer } from 'src/app/shared/models/room-transfer';
 import { HearingRole } from '../../models/hearing-role-model';
 import { WRParticipantStatusListDirective } from '../../waiting-room-shared/wr-participant-list-shared.component';
 import { ParticipantListItem } from '../participant-list-item';
@@ -18,6 +20,7 @@ import { ParticipantListItem } from '../participant-list-item';
 export class PrivateConsultationParticipantsComponent extends WRParticipantStatusListDirective implements OnInit, OnDestroy {
     @Input() roomLabel: string;
     participantCallStatuses = {};
+    johGroupResult: ParticipantListItem[][];
 
     constructor(
         protected consultationService: ConsultationService,
@@ -36,6 +39,11 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         this.initParticipants();
         this.setupSubscribers();
         this.setupInviteStatusSubscribers();
+    }
+
+    initParticipants() {
+        super.initParticipants();
+        this.setJohGroupResult();
     }
 
     ngOnDestroy() {
@@ -77,15 +85,10 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         );
     }
 
-    get endpointInRoom(): boolean {
-        return this.conference.endpoints.some(x => this.isParticipantInCurrentRoom(x));
-    }
-
     canCallEndpoint(endpoint: VideoEndpointResponse): boolean {
         return (
             !this.isParticipantInCurrentRoom(endpoint) &&
             this.isEndpointAvailable(endpoint) &&
-            !this.endpointInRoom &&
             this.participantEndpoints.some(x => x.id === endpoint.id)
         );
     }
@@ -108,29 +111,32 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     getPrivateConsultationParticipants(): ParticipantListItem[] {
-        return this.sortAndMapToListItem(
-            this.nonJudgeParticipants.filter(x => x.hearing_role !== HearingRole.WITNESS && x.hearing_role !== HearingRole.INTERPRETER)
-        );
+        const participants = this.nonJudgeParticipants.filter(x => x.hearing_role !== HearingRole.INTERPRETER);
+        return participants.map(c => {
+            return this.mapResponseToListItem(c);
+        });
     }
 
-    get johGroups(): ParticipantListItem[][] {
+    setJohGroupResult(): void {
         const johGroupsUnmapped = [[...this.panelMembers], [...this.wingers]];
-        return johGroupsUnmapped.map(array =>
+        this.johGroupResult = johGroupsUnmapped.map(array =>
             array.map(c => {
                 return this.mapResponseToListItem(c);
             })
         );
     }
 
-    getWitnessesAndObservers(): ParticipantListItem[] {
+    async handleParticipantStatusChange(message: ParticipantStatusMessage): Promise<void> {
+        await super.handleParticipantStatusChange(message);
+        this.setJohGroupResult();
+    }
+
+    getObservers(): ParticipantListItem[] {
         if (!this.isJohConsultation()) {
             return [];
         }
-        const witnesses = this.sortAndMapToListItem(
-            this.nonJudgeParticipants.filter(participant => participant.hearing_role === HearingRole.WITNESS)
-        );
         const observers = this.sortAndMapToListItem(this.observers);
-        return [...witnesses, ...observers];
+        return [...observers];
     }
 
     getParticipantStatus(participant: any): string {
@@ -148,6 +154,17 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
 
     setupSubscribers(): void {
         this.addSharedEventHubSubcribers();
+
+        this.eventHubSubscriptions$.add(
+            this.eventService.getRoomTransfer().subscribe(message => {
+                this.handleRoomChange(message);
+            })
+        );
+    }
+
+    handleRoomChange(message: RoomTransfer): void {
+        this.filterNonJudgeParticipants();
+        this.setJohGroupResult();
     }
 
     canCallParticipant(participant: ParticipantResponse): boolean {

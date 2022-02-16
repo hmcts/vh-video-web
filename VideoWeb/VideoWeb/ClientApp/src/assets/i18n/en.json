@@ -75,17 +75,22 @@
   },
   "contact-us-folding": {
     "contact-for-help": "Contact us for help",
-    "call-vh-team": "Call the video hearings team on",
-    "quote-case-number": "and quote your case number",
-    "available-time": "(available between 9am and 5pm, Monday to Friday)",
+    "england-and-wales": "England and Wales",
+    "scotland": "Scotland",
+    "call-us": "Call us on",
     "email-us": "Email us at",
-    "quoting-case-number": "quoting your case number"
+    "quoting-case-number": "quoting your case number",
+    "available-time": "Available Monday to Friday, 9am to 5pm (excluding public holidays)"
   },
   "equipment-problem": {
     "problem-with-equipment": "Problems with your equipment?",
-    "not-working-call-us": "something's not working, please call us now.",
-    "call": "Call",
-    "for-vh-team": "for the video hearings team"
+    "not-working-call-us": "Please call the video hearings team using the following numbers:",
+    "hearing-location": "If your hearing is",
+    "in-england-or-wales": "in",
+    "in-scotland": "in",
+    "england-or-wales": "England or Wales",
+    "phone": "phone",
+    "scotland": "Scotland"
   },
   "error": {
     "problem-with-service": "Sorry, there is a problem with the service",
@@ -212,9 +217,6 @@
   },
   "independent-self-test": {
     "please-wait-to-be-connected": "Please wait to be connected...",
-    "problems-with-your-equipment": "Problems with your equipment?",
-    "please-call-beforenumber": "Please call the video hearings team on ",
-    "please-call-afternumber": " to let us know.",
     "continue": "Continue",
     "re-play-the-video-message": "Re-play the video message",
     "check-equipment-again": "Check equipment again"
@@ -699,7 +701,18 @@
     "medical-member": "Medical Member",
     "legal-member": "Legal Member",
     "financial-member": "Financial Member",
-    "appellant": "Appellant"
+    "appellant": "Appellant", 
+    "local-authority":"Local Authority",
+    "government-legal-department(solicitor)":"Government Legal Department(Solicitor)",
+    "appellant": "Appellant",
+    "care-coordinator": "Care Coordinator",
+    "doctor": "Doctor",
+    "nearest-relative": "Nearest Relative",
+    "nurse": "Nurse",
+    "patient": "Patient",
+    "victim-liaison-officer": "Victim Liaison Officer",
+    "responsible-clinician-(rc)": "Responsible Clinician (RC)",
+    "specialist-lay-member": "Specialist Lay Member"
   },
   "case-role": {
     "appellant": "Appellant",
@@ -712,7 +725,8 @@
     "observer": "Observer",
     "panel-member": "Panel Member",
     "respondent": "Respondent",
-    "state": "State"
+    "state": "State",
+    "secretary-of-state":"Secretary of State"
   },
   "case-type": {
     "adoption": "Adoption",
@@ -757,7 +771,9 @@
     "sscs-tribunal": "SSCS Tribunal",
     "family": "Family",
     "business-lease-renewal": "Business Lease Renewal",
-    "tenant-fees": "Tenant Fees"
+    "tenant-fees": "Tenant Fees",
+    "upper-tribunal-immigration-&-asylum-chamber":"Upper Tribunal Immigration & Asylum Chamber",
+    "mental-health": "Mental Health"
   },
   "case-type-group": {
     "state": "State",
@@ -771,7 +787,9 @@
     "defendant": "Defendant",
     "respondent": "Respondent",
     "appellant": "Appellant",
-    "claimant": "Claimant"
+    "claimant": "Claimant", 
+    "homeoffice":"Home Office", 
+    "secretaryofstate":"Secretary of State"
   },
   "user-role": {
     "case-admin": "Case admin",
@@ -1160,5 +1178,10 @@
     "hmcts-alt": "Apply the background with the HMCTS crest",
     "scts": "SCTS",
     "scts-alt": "Apply the background with the SCTS crest"
+  },
+  "feedback-banner": {
+    "title": "We'd like your opinion",
+    "body": "Before you go, how was your experience of the Video Hearings Service?",
+    "link-text": "Complete our short survey here"
   }
 }
