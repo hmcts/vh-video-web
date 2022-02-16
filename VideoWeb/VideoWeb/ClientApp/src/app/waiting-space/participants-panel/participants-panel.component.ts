@@ -69,7 +69,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-
+        this.videoControlCacheService.initHearingControlState();
         this.getParticipantsList().then(() => {
             this.participants
                 .map(p => p.id)
