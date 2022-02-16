@@ -597,7 +597,12 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             participant: participant.id
         });
 
-        participant.dimissed();
+        if (participant.hasHandRaised()) {
+            this.lowerParticipantHand(participant);
+        }
+        if (participant.hasSpotlight()) {
+            this.toggleSpotlightParticipant(participant);
+        }
 
         try {
             let participantId = participant.id;
