@@ -663,6 +663,51 @@ describe('ParticipantsPanelComponent', () => {
             await component.dismissParticipantFromHearing(pat);
             expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledTimes(0);
         });
+
+        it('should lower hand when hand raised for a participant when dismissed from a hearing', async () => {
+            videocallService.dismissParticipantFromHearing.calls.reset();
+            const pat = component.participants.find(p => p.isWitness);
+            const hasHandRaised = true;
+            pat.updateParticipant(pat.isMicRemoteMuted(), hasHandRaised, pat.hasSpotlight(), pat.id, pat.isLocalMicMuted());
+            spyOnProperty(pat, 'isCallableAndReadyToBeDismissed').and.returnValue(true);
+            await component.dismissParticipantFromHearing(pat);
+            expect(videocallService.lowerHandById).toHaveBeenCalledWith(pat.pexipId, component.conferenceId, pat.id);
+            expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledWith(component.conferenceId, pat.id);
+        });
+
+        it('should not lower hand when hand not raised for a participant when dismissed from a hearing', async () => {
+            videocallService.dismissParticipantFromHearing.calls.reset();
+            videocallService.lowerHandById.calls.reset();
+            const pat = component.participants.find(p => p.isWitness);
+            const hasHandRaised = false;
+            pat.updateParticipant(pat.isMicRemoteMuted(), hasHandRaised, pat.hasSpotlight(), pat.id, pat.isLocalMicMuted());
+            spyOnProperty(pat, 'isCallableAndReadyToBeDismissed').and.returnValue(true);
+            await component.dismissParticipantFromHearing(pat);
+            expect(videocallService.lowerHandById).toHaveBeenCalledTimes(0);
+            expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledWith(component.conferenceId, pat.id);
+        });
+
+        it('should remove from spotlight when in spotlight for a participant when dismissed from a hearing', async () => {
+            videocallService.dismissParticipantFromHearing.calls.reset();
+            const pat = component.participants.find(p => p.isWitness);
+            const hasSpotlight = true;
+            pat.updateParticipant(pat.isMicRemoteMuted(), pat.hasHandRaised(), hasSpotlight, pat.id, pat.isLocalMicMuted());
+            spyOnProperty(pat, 'isCallableAndReadyToBeDismissed').and.returnValue(true);
+            await component.dismissParticipantFromHearing(pat);
+            expect(videoControlServiceSpy.setSpotlightStatusById).toHaveBeenCalledWith(pat.id, pat.pexipId, !hasSpotlight);
+            expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledWith(component.conferenceId, pat.id);
+        });
+
+        it('should not remove from spotlight when not in spotlight for a participant when dismissed from a hearing', async () => {
+            videocallService.dismissParticipantFromHearing.calls.reset();
+            const pat = component.participants.find(p => p.isWitness);
+            const hasSpotlight = false;
+            pat.updateParticipant(pat.isMicRemoteMuted(), pat.hasHandRaised(), hasSpotlight, pat.id, pat.isLocalMicMuted());
+            spyOnProperty(pat, 'isCallableAndReadyToBeDismissed').and.returnValue(true);
+            await component.dismissParticipantFromHearing(pat);
+            expect(videoControlServiceSpy.setSpotlightStatusById).toHaveBeenCalledTimes(0);
+            expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledWith(component.conferenceId, pat.id);
+        });
     });
 
     it('should update conference mute all true', () => {
