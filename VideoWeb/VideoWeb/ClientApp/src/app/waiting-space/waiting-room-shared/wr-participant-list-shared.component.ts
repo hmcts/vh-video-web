@@ -138,7 +138,18 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
                 .sort((a, b) => a.display_name.localeCompare(b.display_name))
         ];
 
-        this.nonJudgeParticipants = nonJudgeParts;
+        const interpreterList = nonJudgeParts.filter(
+            x =>
+                x.role === Role.Individual &&
+                x.hearing_role === HearingRole.INTERPRETER &&
+                Array.isArray(x.linked_participants) &&
+                x.linked_participants.length > 0
+        );
+        if (!interpreterList) {
+            this.nonJudgeParticipants = nonJudgeParts;
+        } else {
+            this.nonJudgeParticipants = this.orderForInterpreter(nonJudgeParts, interpreterList);
+        }
     }
 
     hasInterpreterLink(participant: ParticipantResponse) {
@@ -167,6 +178,29 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     getInterpreteeName(interpreterId: string) {
         const interpreter = this.nonJudgeParticipants.find(x => x.id === interpreterId);
         return this.nonJudgeParticipants.find(x => x.id === interpreter.linked_participants[0].linked_id).name;
+    }
+
+    private orderForInterpreter(
+        nonJudgeParticipants: ParticipantResponse[],
+        interpreterList: ParticipantResponse[]
+    ): ParticipantResponse[] {
+        const sortedNonJudgeParticipants = [...nonJudgeParticipants];
+
+        interpreterList.forEach(interpreter => {
+            const linkDetails = interpreter.linked_participants[0];
+            const interpretee = nonJudgeParticipants.find(x => x.id === linkDetails.linked_id);
+
+            const interpeterIndex = sortedNonJudgeParticipants.findIndex(x => x.id === interpreter.id);
+            const interpreteeIndex = sortedNonJudgeParticipants.findIndex(x => x.id === interpretee.id);
+
+            if (interpeterIndex < interpreteeIndex) {
+                const interpreterToMove = sortedNonJudgeParticipants[interpeterIndex];
+                sortedNonJudgeParticipants.splice(interpeterIndex, 1);
+                sortedNonJudgeParticipants.splice(interpreteeIndex, 0, interpreterToMove);
+            }
+        });
+
+        return sortedNonJudgeParticipants;
     }
 
     protected filterObservers(): void {

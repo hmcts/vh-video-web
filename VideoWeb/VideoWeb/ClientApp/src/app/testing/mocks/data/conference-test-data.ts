@@ -958,6 +958,14 @@ export class ConferenceTestData {
             user_name: 'respondent.witness1@hearings.reform.hmcts.net'
         });
 
+        const participant8LinkedParticipants: LinkedParticipantResponse[] = [];
+        participant8LinkedParticipants.push(
+            new LinkedParticipantResponse({
+                link_type: LinkType.Interpreter,
+                linked_id: 'dcf3b4c4-3e92-4937-b2b0-6e9d486efcd3'
+            })
+        );
+
         const participant8 = new ParticipantResponse({
             case_type_group: 'Respondent',
             current_room: undefined,
@@ -967,13 +975,39 @@ export class ConferenceTestData {
             id: 'db6eb25b-1d70-46ad-8b83-355922f8e976',
             interpreter_room: undefined,
             last_name: 'Smith',
-            linked_participants: [],
+            linked_participants: participant8LinkedParticipants,
             name: 'Mr F Smith',
             representee: '',
             role: Role.Individual,
             status: ParticipantStatus.NotSignedIn,
             tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;E;db6eb25b-1d70-46ad-8b83-355922f8e976',
             user_name: 'respondent.litigant@hearings.reform.hmcts.net'
+        });
+
+        const participant9LinkedParticipants: LinkedParticipantResponse[] = [];
+        participant9LinkedParticipants.push(
+            new LinkedParticipantResponse({
+                link_type: LinkType.Interpreter,
+                linked_id: 'db6eb25b-1d70-46ad-8b83-355922f8e976'
+            })
+        );
+
+        const participant9 = new ParticipantResponse({
+            case_type_group: 'Respondent',
+            current_room: undefined,
+            display_name: 'H',
+            first_name: 'H',
+            hearing_role: 'Interpreter',
+            id: 'dcf3b4c4-3e92-4937-b2b0-6e9d486efcd3',
+            interpreter_room: undefined,
+            last_name: 'Smith',
+            linked_participants: participant9LinkedParticipants,
+            name: 'Mr H Smith',
+            representee: '',
+            role: Role.Individual,
+            status: ParticipantStatus.NotSignedIn,
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;A;dcf3b4c4-3e92-4937-b2b0-6e9d486efcd3',
+            user_name: 'respondent.interpreter@hearings.reform.hmcts.net'
         });
 
         participants.push(participant1);
@@ -984,6 +1018,7 @@ export class ConferenceTestData {
         participants.push(participant6);
         participants.push(participant7);
         participants.push(participant8);
+        participants.push(participant9);
         return participants;
     }
 }

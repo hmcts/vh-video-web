@@ -438,11 +438,12 @@ describe('WaitingRoom ParticipantList Base', () => {
             component.initParticipants();
             const nonJudgeParticipants = component.nonJudgeParticipants;
 
-            const applicant1Index = nonJudgeParticipants.findIndex(x => x.name === 'Mr A Smith');
-            const applicant2Index = nonJudgeParticipants.findIndex(x => x.name === 'Mr B Smith');
+            const applicant1Index = nonJudgeParticipants.findIndex(x => x.name === 'Mr B Smith');
+            const applicant2Index = nonJudgeParticipants.findIndex(x => x.name === 'Mr A Smith');
             const applicant3Index = nonJudgeParticipants.findIndex(x => x.name === 'Mr G Smith');
             const respondent1Index = nonJudgeParticipants.findIndex(x => x.name === 'Mr E Smith');
             const respondent2Index = nonJudgeParticipants.findIndex(x => x.name === 'Mr F Smith');
+            const respondent3Index = nonJudgeParticipants.findIndex(x => x.name === 'Mr H Smith');
             const quickLinkParticipant1Index = nonJudgeParticipants.findIndex(x => x.name === 'Mr C Smith');
             const quickLinkParticipant2Index = nonJudgeParticipants.findIndex(x => x.name === 'Mr D Smith');
 
@@ -451,8 +452,9 @@ describe('WaitingRoom ParticipantList Base', () => {
             expect(applicant3Index).toEqual(2);
             expect(respondent1Index).toEqual(3);
             expect(respondent2Index).toEqual(4);
-            expect(quickLinkParticipant1Index).toEqual(5);
-            expect(quickLinkParticipant2Index).toEqual(6);
+            expect(respondent3Index).toEqual(5);
+            expect(quickLinkParticipant1Index).toEqual(6);
+            expect(quickLinkParticipant2Index).toEqual(7);
         });
     });
 });
