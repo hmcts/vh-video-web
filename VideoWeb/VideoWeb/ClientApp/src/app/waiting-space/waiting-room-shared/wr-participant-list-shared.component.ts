@@ -157,12 +157,12 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     getHearingRole(participant: ParticipantResponse) {
         const translatedHearingRole = this.translateService.instant('hearing-role.' + this.stringToTranslateId(participant.hearing_role));
         const translatedFor = this.translateService.instant('wr-participant-list-shared.for');
-        const translatedRepresentative = this.translateService.instant('wr-participant-list-shared.representative');
         if (participant.hearing_role === HearingRole.INTERPRETER) {
             const interpreteeName = this.getInterpreteeName(participant.id);
             return `${translatedHearingRole} ${translatedFor} <br><strong>${interpreteeName}</strong>`;
         }
         if (participant.representee) {
+            const translatedRepresentative = this.translateService.instant('wr-participant-list-shared.representative');
             const hearingRoleText = this.isCaseTypeNone(participant) ? translatedHearingRole : translatedRepresentative;
             return `${hearingRoleText} ${translatedFor} <br><strong>${participant.representee}</strong>`;
         }
