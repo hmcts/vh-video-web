@@ -5,8 +5,10 @@ import {
     ConferenceResponse,
     EndpointStatus,
     LoggedParticipantResponse,
+    ParticipantResponseVho,
     ParticipantStatus,
-    Role
+    Role,
+    RoomSummaryResponse
 } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation.service';
@@ -108,10 +110,34 @@ describe('JudgeParticipantStatusListComponent', () => {
     });
 
     it('should show input template for change staff member display name', () => {
+        component.isStaffMember = true;
+        component.loggedInUser.participant_id = editedStaffMember.id;
         component.changeStaffMemberNameShow(editedStaffMember.id);
-        expect(component.showChangeStaffMemberDisplayName).toBe(true);
 
+        expect(component.showChangeStaffMemberDisplayName).toBe(true);
+        expect(component.canChangeStaffMemberName(editedStaffMember.id)).toBe(true);
         expect(component.newStaffMemberDisplayName).toBe(component.staffMembers.find(p => p.id === editedStaffMember.id).display_name);
+    });
+
+    it('should not show input template for changing staff member display name if for a different staff member', () => {
+        const participant5 = new ParticipantResponseVho({
+            id: 'FRGT1318-4965-49AF-A887-DED64554429T',
+            name: 'Staff Member name 2',
+            status: ParticipantStatus.Available,
+            role: Role.StaffMember,
+            display_name: 'Staff Member display name 2',
+            case_type_group: 'Staff Member',
+            tiled_display_name: 'Staff Member 2;Staff Member 2;9F681318-4965-49AF-A887-DED64554429T',
+            hearing_role: HearingRole.STAFF_MEMBER,
+            current_room: new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' }),
+            linked_participants: []
+        });
+        component.conference.participants.push(participant5);
+        component.loggedInUser = conference.participants.find(
+            p => p.hearing_role === HearingRole.STAFF_MEMBER && p.id !== editedStaffMember.id
+        );
+
+        expect(component.canChangeStaffMemberName(editedStaffMember.id)).toBe(false);
     });
 
     it('should hide input template for change judge display name', () => {
