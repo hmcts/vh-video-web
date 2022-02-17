@@ -129,7 +129,15 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
                     x.role !== Role.QuickLinkParticipant &&
                     x.hearing_role !== HearingRole.STAFF_MEMBER
             )
-            .sort((a, b) => a.case_type_group.localeCompare(b.case_type_group) || a.name.localeCompare(b.name));
+            .sort((a, b) => {
+                if (a.case_type_group.localeCompare(b.case_type_group)) {
+                    return 1;
+                }
+                if ((a.name || a.display_name).localeCompare(b.name || b.display_name)) {
+                    return 1;
+                }
+                return 0;
+            });
 
         nonJudgeParts = [
             ...nonJudgeParts,
@@ -190,13 +198,14 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
             const linkDetails = interpreter.linked_participants[0];
             const interpretee = nonJudgeParticipants.find(x => x.id === linkDetails.linked_id);
 
-            const interpeterIndex = sortedNonJudgeParticipants.findIndex(x => x.id === interpreter.id);
+            const interpreterIndex = sortedNonJudgeParticipants.findIndex(x => x.id === interpreter.id);
             const interpreteeIndex = sortedNonJudgeParticipants.findIndex(x => x.id === interpretee.id);
 
-            if (interpeterIndex < interpreteeIndex) {
-                const interpreterToMove = sortedNonJudgeParticipants[interpeterIndex];
-                sortedNonJudgeParticipants.splice(interpeterIndex, 1);
-                sortedNonJudgeParticipants.splice(interpreteeIndex, 0, interpreterToMove);
+            if (interpreterIndex != interpreteeIndex + 1) {
+                const interpreterToMove = sortedNonJudgeParticipants[interpreterIndex];
+
+                sortedNonJudgeParticipants.splice(interpreteeIndex + 1, 0, interpreterToMove);
+                sortedNonJudgeParticipants.splice(interpreterIndex, 1);
             }
         });
 
