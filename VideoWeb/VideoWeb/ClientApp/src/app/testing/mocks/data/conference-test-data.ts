@@ -1013,9 +1013,9 @@ export class ConferenceTestData {
         participants.push(participant1);
         participants.push(participant2);
         participants.push(participant3);
-        participants.push(participant4);
         participants.push(participant5);
         participants.push(participant6);
+        participants.push(participant4);
         participants.push(participant7);
         participants.push(participant8);
         participants.push(participant9);

@@ -129,15 +129,10 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
                     x.role !== Role.QuickLinkParticipant &&
                     x.hearing_role !== HearingRole.STAFF_MEMBER
             )
-            .sort((a, b) => {
-                if (a.case_type_group.localeCompare(b.case_type_group)) {
-                    return 1;
-                }
-                if ((a.name || a.display_name).localeCompare(b.name || b.display_name)) {
-                    return 1;
-                }
-                return 0;
-            });
+            .sort(
+                (a, b) =>
+                    a.case_type_group.localeCompare(b.case_type_group) || (a.name || a.display_name).localeCompare(b.name || b.display_name)
+            );
 
         nonJudgeParts = [
             ...nonJudgeParts,
