@@ -484,6 +484,98 @@ describe('PrivateConsultationParticipantsComponent', () => {
         expect(component.trackParticipant(0, { status: ParticipantStatus.Available })).toBe(ParticipantStatus.Available);
     });
 
+    it('should filter and sort non-judge participants correctly', () => {
+        conference.participants = new ConferenceTestData().getFullListOfNonJudgeParticipants();
+        component.initParticipants();
+        const nonJudgeParticipants = component.nonJudgeParticipants;
+
+        const applicant1Index = nonJudgeParticipants.findIndex(x => x.name === 'Mr B Smith');
+        const applicant2Index = nonJudgeParticipants.findIndex(x => x.name === 'Mr A Smith');
+        const applicant3Index = nonJudgeParticipants.findIndex(x => x.name === 'Mr G Smith');
+        const respondent1Index = nonJudgeParticipants.findIndex(x => x.name === 'Mr E Smith');
+        const respondent2Index = nonJudgeParticipants.findIndex(x => x.name === 'Mr F Smith');
+        const respondent3Index = nonJudgeParticipants.findIndex(x => x.name === 'Mr H Smith');
+        const quickLinkParticipant1Index = nonJudgeParticipants.findIndex(x => x.name === 'Mr C Smith');
+        const quickLinkParticipant2Index = nonJudgeParticipants.findIndex(x => x.name === 'Mr D Smith');
+
+        expect(applicant1Index).toEqual(0);
+        expect(applicant2Index).toEqual(1);
+        expect(applicant3Index).toEqual(2);
+        expect(respondent1Index).toEqual(3);
+        expect(respondent2Index).toEqual(4);
+        expect(respondent3Index).toEqual(5);
+        expect(quickLinkParticipant1Index).toEqual(6);
+        expect(quickLinkParticipant2Index).toEqual(7);
+    });
+
+    it('should filter and sort panel members correctly', () => {
+        conference.participants = new ConferenceTestData().getFullListOfPanelMembers();
+        component.initParticipants();
+        const panelMembers = component.panelMembers;
+
+        const panelMember1Index = panelMembers.findIndex(x => x.name === 'Mr Panel Member A');
+        const panelMember2Index = panelMembers.findIndex(x => x.name === 'Mr Panel Member B');
+
+        expect(panelMember1Index).toEqual(0);
+        expect(panelMember2Index).toEqual(1);
+    });
+
+    // it('should filter and sort observers correctly', () => {
+    //     conference.participants = new ConferenceTestData().getFullListOfObservers();
+    //     component.initParticipants();
+    //     const observers = component.getObservers();
+
+    //     const observer1Index = observers.findIndex(x => x.name === 'Mr Observer A');
+    //     const observer2Index = observers.findIndex(x => x.name === 'Mr Observer B');
+    //     const qlObserver1Index = observers.findIndex(x => x.name === 'A QL Observer');
+    //     const qlObserver2Index = observers.findIndex(x => x.name === 'QL Observer A');
+
+    //     expect(observer1Index).toEqual(0);
+    //     expect(observer2Index).toEqual(1);
+    //     expect(qlObserver1Index).toEqual(2);
+    //     expect(qlObserver2Index).toEqual(3);
+    // });
+
+    it('should filter and sort endpoints correctly', () => {
+        conference.endpoints = new ConferenceTestData().getFullListOfEndpoints();
+        component.initParticipants();
+        const endpoints = component.endpoints;
+
+        const endpoint1Index = endpoints.findIndex(x => x.display_name === 'Endpoint A');
+        const endpoint2Index = endpoints.findIndex(x => x.display_name === 'Endpoint B');
+
+        expect(endpoint1Index).toEqual(0);
+        expect(endpoint2Index).toEqual(1);
+    });
+
+    it('should filter and sort staff members correctly', () => {
+        conference.participants = new ConferenceTestData().getFullListOfStaffMembers();
+        component.initParticipants();
+        const staffMembers = component.staffMembers;
+
+        const staffMember1Index = staffMembers.findIndex(x => x.name === 'A StaffMember');
+        const staffMember2Index = staffMembers.findIndex(x => x.name === 'B StaffMember');
+        const staffMember3Index = staffMembers.findIndex(x => x.name === 'C StaffMember');
+
+        expect(staffMember1Index).toEqual(0);
+        expect(staffMember2Index).toEqual(1);
+        expect(staffMember3Index).toEqual(2);
+    });
+
+    it('should filter and sort wingers correctly', () => {
+        conference.participants = new ConferenceTestData().getFullListOfWingers();
+        component.initParticipants();
+        const wingers = component.wingers;
+
+        const winger1Index = wingers.findIndex(x => x.name === 'Mr A Winger');
+        const winger2Index = wingers.findIndex(x => x.name === 'Mr B Winger');
+        const winger3Index = wingers.findIndex(x => x.name === 'Mr C Winger');
+
+        expect(winger1Index).toEqual(0);
+        expect(winger2Index).toEqual(1);
+        expect(winger3Index).toEqual(2);
+    });
+
     describe('johGroups', () => {
         it('should return correct participants mapped to ParticipantListItem', () => {
             const testPanelMember1Data = { id: 'TestPanelMember1Id', name: 'TestPanelMember1Name' };
@@ -665,8 +757,8 @@ describe('PrivateConsultationParticipantsComponent', () => {
         const testObservers = [regularObserver, quickLinkObserver2, quickLinkObserver1];
 
         beforeEach(() => {
-            component.nonJudgeParticipants = testParticipants;
-            component.observers = testObservers;
+            conference.participants = testParticipants.concat(testObservers);
+            component.initParticipants();
         });
 
         it('should return nothing if is not joh consultation', () => {
@@ -676,18 +768,18 @@ describe('PrivateConsultationParticipantsComponent', () => {
         });
 
         it('should return list in correct order for joh consultation', () => {
-            const mappedRegularObserver: ParticipantListItem = { ...regularObserver };
-            const mappedQuickLinkObserver1: ParticipantListItem = { ...quickLinkObserver1 };
-            const mappedQuickLinkObserver2: ParticipantListItem = { ...quickLinkObserver2 };
-
             spyOn(component, 'isJohConsultation').and.returnValue(true);
             const result = component.getObservers();
 
-            const observersOrdered = [mappedRegularObserver, mappedQuickLinkObserver1, mappedQuickLinkObserver2].sort((a, b) =>
-                a.display_name.localeCompare(b.display_name)
-            );
+            const observer1Index = result.findIndex(x => x.display_name === 'regularObserver_display_name');
+            const qlObserver1Index = result.findIndex(x => x.display_name === 'quickLinkObserver1_display_name');
+            const qlObserver2Index = result.findIndex(x => x.display_name === 'quickLinkObserver2_display_name');
 
-            expect(result.length).toBe(observersOrdered.length);
+            expect(observer1Index).toEqual(0);
+            expect(qlObserver1Index).toEqual(1);
+            expect(qlObserver2Index).toEqual(2);
+
+            expect(result.length).toBe(testObservers.length);
         });
     });
 });

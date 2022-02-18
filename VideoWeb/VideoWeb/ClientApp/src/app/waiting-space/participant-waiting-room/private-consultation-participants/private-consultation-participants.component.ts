@@ -185,10 +185,8 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     private sortAndMapToListItem(participantResponses: Array<ParticipantResponse>): Array<ParticipantListItem> {
-        return participantResponses
-            .sort((a, b) => a.display_name.localeCompare(b.display_name))
-            .map(c => {
-                return this.mapResponseToListItem(c);
-            });
+        return participantResponses.map(c => {
+            return this.mapResponseToListItem(c);
+        });
     }
 }
