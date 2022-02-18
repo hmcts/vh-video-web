@@ -434,7 +434,7 @@ describe('WaitingRoom ParticipantList Base', () => {
 
     describe('initParticipants', () => {
         it('should filter and sort non-judge participants correctly', () => {
-            conference.participants = new ConferenceTestData().getFullListOfParticipants();
+            conference.participants = new ConferenceTestData().getFullListOfNonJudgeParticipants();
             component.initParticipants();
             const nonJudgeParticipants = component.nonJudgeParticipants;
 
@@ -455,6 +455,74 @@ describe('WaitingRoom ParticipantList Base', () => {
             expect(respondent3Index).toEqual(5);
             expect(quickLinkParticipant1Index).toEqual(6);
             expect(quickLinkParticipant2Index).toEqual(7);
+        });
+
+        it('should filter and sort panel members correctly', () => {
+            conference.participants = new ConferenceTestData().getFullListOfPanelMembers();
+            component.initParticipants();
+            const panelMembers = component.panelMembers;
+
+            const panelMember1Index = panelMembers.findIndex(x => x.name === 'Mr Panel Member A');
+            const panelMember2Index = panelMembers.findIndex(x => x.name === 'Mr Panel Member B');
+
+            expect(panelMember1Index).toEqual(0);
+            expect(panelMember2Index).toEqual(1);
+        });
+
+        it('should filter and sort observers correctly', () => {
+            conference.participants = new ConferenceTestData().getFullListOfObservers();
+            component.initParticipants();
+            const observers = component.observers;
+
+            const observer1Index = observers.findIndex(x => x.name === 'Mr Observer A');
+            const observer2Index = observers.findIndex(x => x.name === 'Mr Observer B');
+            const qlObserver1Index = observers.findIndex(x => x.name === 'A QL Observer');
+            const qlObserver2Index = observers.findIndex(x => x.name === 'QL Observer A');
+
+            expect(observer1Index).toEqual(0);
+            expect(observer2Index).toEqual(1);
+            expect(qlObserver1Index).toEqual(2);
+            expect(qlObserver2Index).toEqual(3);
+        });
+
+        it('should filter and sort endpoints correctly', () => {
+            conference.endpoints = new ConferenceTestData().getFullListOfEndpoints();
+            component.initParticipants();
+            const endpoints = component.endpoints;
+
+            const endpoint1Index = endpoints.findIndex(x => x.display_name === 'Endpoint A');
+            const endpoint2Index = endpoints.findIndex(x => x.display_name === 'Endpoint B');
+
+            expect(endpoint1Index).toEqual(0);
+            expect(endpoint2Index).toEqual(1);
+        });
+
+        it('should filter and sort staff members correctly', () => {
+            conference.participants = new ConferenceTestData().getFullListOfStaffMembers();
+            component.initParticipants();
+            const staffMembers = component.staffMembers;
+
+            const staffMember1Index = staffMembers.findIndex(x => x.name === 'A StaffMember');
+            const staffMember2Index = staffMembers.findIndex(x => x.name === 'B StaffMember');
+            const staffMember3Index = staffMembers.findIndex(x => x.name === 'C StaffMember');
+
+            expect(staffMember1Index).toEqual(0);
+            expect(staffMember2Index).toEqual(1);
+            expect(staffMember3Index).toEqual(2);
+        });
+
+        it('should filter and sort wingers correctly', () => {
+            conference.participants = new ConferenceTestData().getFullListOfWingers();
+            component.initParticipants();
+            const wingers = component.wingers;
+
+            const winger1Index = wingers.findIndex(x => x.name === 'Mr A Winger');
+            const winger2Index = wingers.findIndex(x => x.name === 'Mr B Winger');
+            const winger3Index = wingers.findIndex(x => x.name === 'Mr C Winger');
+
+            expect(winger1Index).toEqual(0);
+            expect(winger2Index).toEqual(1);
+            expect(winger3Index).toEqual(2);
         });
     });
 });

@@ -63,7 +63,7 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
         this.filterPanelMembers();
         this.filterObservers();
         this.filterWingers();
-        this.endpoints = this.conference.endpoints;
+        this.sortEndpoints();
     }
 
     get participantCount(): number {
@@ -213,22 +213,34 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     }
 
     protected filterObservers(): void {
-        this.observers = this.conference.participants
+        let observers = this.conference.participants
             .filter(
                 x =>
                     x.case_type_group === CaseTypeGroup.OBSERVER ||
-                    x.hearing_role === HearingRole.OBSERVER ||
-                    x.role === Role.QuickLinkObserver
+                    (x.hearing_role === HearingRole.OBSERVER && x.role !== Role.QuickLinkObserver)
             )
             .sort((a, b) => a.display_name.localeCompare(b.display_name));
+
+        observers = [
+            ...observers,
+            ...this.conference.participants
+                .filter(x => x.role === Role.QuickLinkObserver)
+                .sort((a, b) => a.display_name.localeCompare(b.display_name))
+        ];
+
+        this.observers = observers;
     }
 
     private filterWingers(): void {
-        this.wingers = this.conference.participants.filter(x => x.hearing_role === HearingRole.WINGER);
+        this.wingers = this.conference.participants
+            .filter(x => x.hearing_role === HearingRole.WINGER)
+            .sort((a, b) => a.name.localeCompare(b.name));
     }
 
     protected filterPanelMembers(): void {
-        this.panelMembers = this.conference.participants.filter(x => this.isParticipantPanelMember(x.hearing_role));
+        this.panelMembers = this.conference.participants
+            .filter(x => this.isParticipantPanelMember(x.hearing_role))
+            .sort((a, b) => a.display_name.localeCompare(b.display_name));
     }
     protected isParticipantPanelMember(hearingRole: string): boolean {
         return HearingRoleHelper.isPanelMember(hearingRole);
@@ -239,7 +251,13 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     }
 
     protected filterStaffMember(): void {
-        this.staffMembers = this.conference.participants.filter(x => x.role === Role.StaffMember);
+        this.staffMembers = this.conference.participants
+            .filter(x => x.role === Role.StaffMember)
+            .sort((a, b) => a.display_name.localeCompare(b.display_name));
+    }
+
+    private sortEndpoints(): void {
+        this.endpoints = this.conference.endpoints.sort((a, b) => a.display_name.localeCompare(b.display_name));
     }
 
     get canInvite(): boolean {

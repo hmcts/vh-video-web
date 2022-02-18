@@ -816,7 +816,7 @@ export class ConferenceTestData {
         return endpoints;
     }
 
-    getFullListOfParticipants(): ParticipantResponse[] {
+    getFullListOfNonJudgeParticipants(): ParticipantResponse[] {
         const participants: ParticipantResponse[] = [];
         const participant1 = new ParticipantResponse({
             case_type_group: null,
@@ -855,19 +855,19 @@ export class ConferenceTestData {
         const participant3 = new ParticipantResponse({
             case_type_group: null,
             current_room: undefined,
-            display_name: 'Oliver Scott StaffMember',
-            first_name: 'Oliver',
+            display_name: 'A StaffMember',
+            first_name: 'A',
             hearing_role: 'Staff Member',
             id: '68f35208-e991-48c5-a61e-9c8b542a3bb0',
             interpreter_room: undefined,
             last_name: 'StaffMember',
             linked_participants: [],
-            name: 'Oliver Scott StaffMember',
+            name: 'A StaffMember',
             representee: null,
             role: Role.StaffMember,
             status: ParticipantStatus.Disconnected,
-            tiled_display_name: 'CLERK;HEARTBEAT;Oliver Scott StaffMember;68f35208-e991-48c5-a61e-9c8b542a3bb0',
-            user_name: 'oliver.scott.staffmember@hearings.reform.hmcts.net'
+            tiled_display_name: 'CLERK;HEARTBEAT;A StaffMember;68f35208-e991-48c5-a61e-9c8b542a3bb0',
+            user_name: 'a.staffmember@hearings.reform.hmcts.net'
         });
 
         const participant4LinkedParticipants: LinkedParticipantResponse[] = [];
@@ -1020,5 +1020,271 @@ export class ConferenceTestData {
         participants.push(participant8);
         participants.push(participant9);
         return participants;
+    }
+
+    getFullListOfPanelMembers(): ParticipantResponse[] {
+        const participants: ParticipantResponse[] = [];
+        const participant1 = new ParticipantResponse({
+            case_type_group: 'PanelMember',
+            current_room: undefined,
+            display_name: 'Mr Panel Member B',
+            first_name: 'Panel',
+            hearing_role: 'Panel Member',
+            id: 'c505165b-da2a-4a53-a17e-d8f6b0c82e26',
+            interpreter_room: undefined,
+            last_name: 'Member B',
+            linked_participants: [],
+            name: 'Mr Panel Member B',
+            representee: '',
+            role: Role.JudicialOfficeHolder,
+            status: ParticipantStatus.NotSignedIn,
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;Mr Panel Member B;c505165b-da2a-4a53-a17e-d8f6b0c82e26',
+            user_name: 'panel.memberb1@hearings.reform.hmcts.net'
+        });
+        const participant2 = new ParticipantResponse({
+            case_type_group: 'PanelMember',
+            current_room: undefined,
+            display_name: 'Mr Panel Member A',
+            first_name: 'Panel',
+            hearing_role: 'Panel Member',
+            id: 'b3de9868-3275-4e2c-9e28-fcf4d9b7898d',
+            interpreter_room: undefined,
+            last_name: 'Member A',
+            linked_participants: [],
+            name: 'Mr Panel Member A',
+            representee: '',
+            role: Role.JudicialOfficeHolder,
+            status: ParticipantStatus.NotSignedIn,
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;Mr Panel Member A;b3de9868-3275-4e2c-9e28-fcf4d9b7898d',
+            user_name: 'panel.membera1@hearings.reform.hmcts.net'
+        });
+
+        participants.push(participant1);
+        participants.push(participant2);
+        return participants;
+    }
+
+    getFullListOfObservers(): ParticipantResponse[] {
+        const observers: ParticipantResponse[] = [];
+        const qlObserver1 = new ParticipantResponse({
+            case_type_group: null,
+            current_room: undefined,
+            display_name: 'QL Observer A',
+            first_name: null,
+            hearing_role: 'Quick link observer',
+            id: 'f565e05c-01b2-4b3a-b2d8-1d79b5d4124c',
+            interpreter_room: undefined,
+            last_name: null,
+            linked_participants: [],
+            name: 'QL Observer A',
+            representee: null,
+            role: Role.QuickLinkObserver,
+            status: ParticipantStatus.NotSignedIn,
+            tiled_display_name: 'WITNESS;NO_HEARTBEAT;QL Observer A;f565e05c-01b2-4b3a-b2d8-1d79b5d4124c',
+            user_name: 'f565e05c-01b2-4b3a-b2d8-1d79b5d4124c@quick-link-participant.com'
+        });
+        const observer1 = new ParticipantResponse({
+            case_type_group: 'Observer',
+            current_room: undefined,
+            display_name: 'Mr Observer B',
+            first_name: 'Observer',
+            hearing_role: 'Observer',
+            id: '3b0ae293-1979-4d07-8a3a-b95286e5f8c0',
+            interpreter_room: undefined,
+            last_name: 'B',
+            linked_participants: [],
+            name: 'Mr Observer B',
+            representee: '',
+            role: Role.Individual,
+            status: ParticipantStatus.NotSignedIn,
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;Mr Observer B;3b0ae293-1979-4d07-8a3a-b95286e5f8c0',
+            user_name: 'observer.b1@hearings.reform.hmcts.net'
+        });
+        const observer2 = new ParticipantResponse({
+            case_type_group: 'Observer',
+            current_room: undefined,
+            display_name: 'Mr Observer A',
+            first_name: 'Observer',
+            hearing_role: 'Observer',
+            id: '68ca1dbf-5da9-4382-bf60-8a07124be329',
+            interpreter_room: undefined,
+            last_name: 'A',
+            linked_participants: [],
+            name: 'Mr Observer A',
+            representee: '',
+            role: Role.Individual,
+            status: ParticipantStatus.NotSignedIn,
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;Mr Observer A;68ca1dbf-5da9-4382-bf60-8a07124be329',
+            user_name: 'observer.a@hearings.reform.hmcts.net'
+        });
+        const qlObserver2 = new ParticipantResponse({
+            case_type_group: null,
+            current_room: undefined,
+            display_name: 'A QL Observer',
+            first_name: null,
+            hearing_role: 'Quick link observer',
+            id: '5f9e380b-1412-4f70-9ea4-447a5f3ae184',
+            interpreter_room: undefined,
+            last_name: null,
+            linked_participants: [],
+            name: 'A QL Observer',
+            representee: null,
+            role: Role.QuickLinkObserver,
+            status: ParticipantStatus.Joining,
+            tiled_display_name: 'WITNESS;NO_HEARTBEAT;A QL Observer;5f9e380b-1412-4f70-9ea4-447a5f3ae184',
+            user_name: '5f9e380b-1412-4f70-9ea4-447a5f3ae184@quick-link-participant.com'
+        });
+
+        observers.push(qlObserver1);
+        observers.push(observer1);
+        observers.push(observer2);
+        observers.push(qlObserver2);
+        return observers;
+    }
+
+    getFullListOfEndpoints(): VideoEndpointResponse[] {
+        const endpoints: VideoEndpointResponse[] = [];
+        const endpoint1 = new VideoEndpointResponse({
+            current_room: undefined,
+            defence_advocate_username: null,
+            display_name: 'Endpoint B',
+            id: '73a94f6c-e17d-4ce9-bb25-35d7d7192d1a',
+            is_current_user: false,
+            pexip_display_name: 'PSTN;Endpoint B;73a94f6c-e17d-4ce9-bb25-35d7d7192d1a',
+            status: EndpointStatus.NotYetJoined
+        });
+        const endpoint2 = new VideoEndpointResponse({
+            current_room: undefined,
+            defence_advocate_username: null,
+            display_name: 'Endpoint A',
+            id: '9d7b9cde-3a48-4acb-9977-34e27667604d',
+            is_current_user: false,
+            pexip_display_name: 'PSTN;Endpoint A;9d7b9cde-3a48-4acb-9977-34e27667604d',
+            status: EndpointStatus.NotYetJoined
+        });
+
+        endpoints.push(endpoint1);
+        endpoints.push(endpoint2);
+        return endpoints;
+    }
+
+    getFullListOfStaffMembers(): ParticipantResponse[] {
+        const staffMembers: ParticipantResponse[] = [];
+        const staffMember1 = new ParticipantResponse({
+            case_type_group: null,
+            current_room: undefined,
+            display_name: 'C StaffMember',
+            first_name: 'C',
+            hearing_role: 'Staff Member',
+            id: 'ef04ef31-34a5-44ce-80b0-0c7fc2b85195',
+            interpreter_room: undefined,
+            last_name: 'StaffMember',
+            linked_participants: [],
+            name: 'C StaffMember',
+            representee: null,
+            role: Role.StaffMember,
+            status: ParticipantStatus.Disconnected,
+            tiled_display_name: 'CLERK;HEARTBEAT;C StaffMember;ef04ef31-34a5-44ce-80b0-0c7fc2b85195',
+            user_name: 'c.staffmember@hearings.reform.hmcts.net'
+        });
+        const staffMember2 = new ParticipantResponse({
+            case_type_group: null,
+            current_room: undefined,
+            display_name: 'B StaffMember',
+            first_name: 'B',
+            hearing_role: 'Staff Member',
+            id: '58a8d187-7041-4a3a-b455-4d3a8570e617',
+            interpreter_room: undefined,
+            last_name: 'StaffMember',
+            linked_participants: [],
+            name: 'B StaffMember',
+            representee: null,
+            role: Role.StaffMember,
+            status: ParticipantStatus.Disconnected,
+            tiled_display_name: 'CLERK;HEARTBEAT;B StaffMember;58a8d187-7041-4a3a-b455-4d3a8570e617',
+            user_name: 'b.staffmember@hearings.reform.hmcts.net'
+        });
+        const staffMember3 = new ParticipantResponse({
+            case_type_group: null,
+            current_room: undefined,
+            display_name: 'A StaffMember',
+            first_name: 'A',
+            hearing_role: 'Staff Member',
+            id: '976cce84-218e-4bb4-9c30-f469a389a9cd',
+            interpreter_room: undefined,
+            last_name: 'StaffMember',
+            linked_participants: [],
+            name: 'A StaffMember',
+            representee: null,
+            role: Role.StaffMember,
+            status: ParticipantStatus.Disconnected,
+            tiled_display_name: 'CLERK;HEARTBEAT;A StaffMember;976cce84-218e-4bb4-9c30-f469a389a9cd',
+            user_name: 'a.staffmember@hearings.reform.hmcts.net'
+        });
+
+        staffMembers.push(staffMember1);
+        staffMembers.push(staffMember2);
+        staffMembers.push(staffMember3);
+        return staffMembers;
+    }
+
+    getFullListOfWingers(): ParticipantResponse[] {
+        const wingers: ParticipantResponse[] = [];
+        const winger1 = new ParticipantResponse({
+            case_type_group: 'None',
+            current_room: undefined,
+            display_name: 'B Winger',
+            first_name: 'B',
+            hearing_role: 'Winger',
+            id: '08584914-f944-4829-8ac7-6ed6c0870efb',
+            interpreter_room: undefined,
+            last_name: 'Winger',
+            linked_participants: [],
+            name: 'Mr B Winger',
+            representee: '',
+            role: Role.JudicialOfficeHolder,
+            status: ParticipantStatus.NotSignedIn,
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;B Winger;08584914-f944-4829-8ac7-6ed6c0870efb',
+            user_name: 'b.winger@hearings.reform.hmcts.net'
+        });
+        const winger2 = new ParticipantResponse({
+            case_type_group: 'None',
+            current_room: undefined,
+            display_name: 'A Winger',
+            first_name: 'A',
+            hearing_role: 'Winger',
+            id: '42c7abd6-b778-4f20-94e1-8517bf30d7f2',
+            interpreter_room: undefined,
+            last_name: 'Winger',
+            linked_participants: [],
+            name: 'Mr A Winger',
+            representee: '',
+            role: Role.JudicialOfficeHolder,
+            status: ParticipantStatus.NotSignedIn,
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;A Winger;42c7abd6-b778-4f20-94e1-8517bf30d7f2',
+            user_name: 'a.winger1@hearings.reform.hmcts.net'
+        });
+        const winger3 = new ParticipantResponse({
+            case_type_group: 'None',
+            current_room: undefined,
+            display_name: 'C Winger',
+            first_name: 'C',
+            hearing_role: 'Winger',
+            id: '6fa27d52-c94a-4d94-9dd4-f3a52f6e5f38',
+            interpreter_room: undefined,
+            last_name: 'Winger',
+            linked_participants: [],
+            name: 'Mr C Winger',
+            representee: '',
+            role: Role.JudicialOfficeHolder,
+            status: ParticipantStatus.NotSignedIn,
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;C Winger;6fa27d52-c94a-4d94-9dd4-f3a52f6e5f38',
+            user_name: 'c.winger@hearings.reform.hmcts.net'
+        });
+
+        wingers.push(winger1);
+        wingers.push(winger2);
+        wingers.push(winger3);
+        return wingers;
     }
 }
