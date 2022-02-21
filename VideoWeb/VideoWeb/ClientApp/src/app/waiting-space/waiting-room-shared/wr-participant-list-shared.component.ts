@@ -196,7 +196,7 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
             const interpreterIndex = sortedNonJudgeParticipants.findIndex(x => x.id === interpreter.id);
             const interpreteeIndex = sortedNonJudgeParticipants.findIndex(x => x.id === interpretee.id);
 
-            if (interpreterIndex != interpreteeIndex + 1) {
+            if (interpreterIndex !== interpreteeIndex + 1) {
                 const interpreterToMove = sortedNonJudgeParticipants[interpreterIndex];
 
                 sortedNonJudgeParticipants.splice(interpreteeIndex + 1, 0, interpreterToMove);

@@ -1573,16 +1573,16 @@ describe('ParticipantsPanelComponent', () => {
             const nonJudgeParticipants = new ConferenceTestData().getFullListOfNonJudgeParticipants();
             const panelMembers = new ConferenceTestData().getFullListOfPanelMembers();
             const observers = new ConferenceTestData().getFullListOfObservers();
-            const endpoints = new ConferenceTestData().getFullListOfEndpoints();
+            const fullListOfEndpoints = new ConferenceTestData().getFullListOfEndpoints();
 
-            const participants = [...staffMembers, ...nonJudgeParticipants, ...panelMembers, ...observers];
-            participants.push(judge);
-            const mappedParticipants = participants.map(p => new ParticipantForUserResponse(p));
+            const fullListOfParticipants = [...staffMembers, ...nonJudgeParticipants, ...panelMembers, ...observers];
+            fullListOfParticipants.push(judge);
+            const mappedParticipants = fullListOfParticipants.map(p => new ParticipantForUserResponse(p));
 
             videoWebServiceSpy.getParticipantsByConferenceId.and.returnValue(Promise.resolve(mappedParticipants));
-            videoWebServiceSpy.getEndpointsForConference.and.returnValue(Promise.resolve(endpoints));
+            videoWebServiceSpy.getEndpointsForConference.and.returnValue(Promise.resolve(fullListOfEndpoints));
 
-            const mappedPanelParticipants = mapper.mapFromParticipantUserResponseArray(participants);
+            const mappedPanelParticipants = mapper.mapFromParticipantUserResponseArray(fullListOfParticipants);
             participantPanelModelMapperSpy.mapFromParticipantUserResponseArray.and.returnValue(mappedPanelParticipants);
 
             await component.getParticipantsList();

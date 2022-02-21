@@ -86,7 +86,7 @@ describe('ParticipantPanelModelMapper', () => {
 
     it('should order johs by hearing role then display name', () => {
         // arrange
-        let participants: ParticipantForUserResponse[] = [];
+        const participants: ParticipantForUserResponse[] = [];
 
         participants.push(
             new ParticipantForUserResponse({
