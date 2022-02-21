@@ -252,7 +252,7 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     }
 
     private sortEndpoints(): void {
-        this.endpoints = this.conference.endpoints.sort((a, b) => a.display_name.localeCompare(b.display_name));
+        this.endpoints = [...this.conference.endpoints].sort((a, b) => a.display_name.localeCompare(b.display_name));
     }
 
     get canInvite(): boolean {
