@@ -1607,10 +1607,10 @@ describe('ParticipantsPanelComponent', () => {
             expect(staffMember3Index).toEqual(4);
 
             // Non-judge participants
-            const applicant1Index = participantList.findIndex(x => x.displayName === 'Mr B Smith, Mr A Smith'); // Litigant in person + Interpreter
-            const applicant2Index = participantList.findIndex(x => x.displayName === 'Mr G Smith');
-            const respondent1Index = participantList.findIndex(x => x.displayName === 'Mr E Smith');
-            const respondent2Index = participantList.findIndex(x => x.displayName === 'Mr F Smith, Mr H Smith');
+            const applicant1Index = participantList.findIndex(x => x.displayName === 'B, A'); // Litigant in person + Interpreter
+            const applicant2Index = participantList.findIndex(x => x.displayName === 'G');
+            const respondent1Index = participantList.findIndex(x => x.displayName === 'E');
+            const respondent2Index = participantList.findIndex(x => x.displayName === 'F, H');
             const quickLinkParticipant1Index = participantList.findIndex(x => x.displayName === 'Mr C Smith');
             const quickLinkParticipant2Index = participantList.findIndex(x => x.displayName === 'Mr D Smith');
             expect(applicant1Index).toEqual(5);
@@ -1621,20 +1621,20 @@ describe('ParticipantsPanelComponent', () => {
             expect(quickLinkParticipant2Index).toEqual(10);
 
             // Endpoints
-            const endpoint1Index = endpointList.findIndex(x => x.displayName === 'Endpoint A');
-            const endpoint2Index = endpointList.findIndex(x => x.displayName === 'Endpoint B');
-            expect(endpoint1Index).toEqual(0);
-            expect(endpoint2Index).toEqual(1);
+            const endpoint1Index = participantList.findIndex(x => x.displayName === 'Endpoint A');
+            const endpoint2Index = participantList.findIndex(x => x.displayName === 'Endpoint B');
+            expect(endpoint1Index).toEqual(11);
+            expect(endpoint2Index).toEqual(12);
 
             // Observers
             const observer1Index = participantList.findIndex(x => x.displayName === 'Mr Observer A');
             const observer2Index = participantList.findIndex(x => x.displayName === 'Mr Observer B');
             const qlObserver1Index = participantList.findIndex(x => x.displayName === 'A QL Observer');
             const qlObserver2Index = participantList.findIndex(x => x.displayName === 'QL Observer A');
-            expect(observer1Index).toEqual(11);
-            expect(observer2Index).toEqual(12);
-            expect(qlObserver1Index).toEqual(13);
-            expect(qlObserver2Index).toEqual(14);
+            expect(observer1Index).toEqual(13);
+            expect(observer2Index).toEqual(14);
+            expect(qlObserver1Index).toEqual(15);
+            expect(qlObserver2Index).toEqual(16);
         });
     });
 });

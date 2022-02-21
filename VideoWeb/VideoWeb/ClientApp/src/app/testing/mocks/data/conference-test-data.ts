@@ -852,23 +852,6 @@ export class ConferenceTestData {
             tiled_display_name: 'WITNESS;NO_HEARTBEAT;D;0880354e-52b9-4804-8e45-969c11796a26',
             user_name: '0880354e-52b9-4804-8e45-969c11796a26@quick-link-participant.com'
         });
-        const participant3 = new ParticipantResponse({
-            case_type_group: null,
-            current_room: undefined,
-            display_name: 'A StaffMember',
-            first_name: 'A',
-            hearing_role: 'Staff Member',
-            id: '68f35208-e991-48c5-a61e-9c8b542a3bb0',
-            interpreter_room: undefined,
-            last_name: 'StaffMember',
-            linked_participants: [],
-            name: 'A StaffMember',
-            representee: null,
-            role: Role.StaffMember,
-            status: ParticipantStatus.Disconnected,
-            tiled_display_name: 'CLERK;HEARTBEAT;A StaffMember;68f35208-e991-48c5-a61e-9c8b542a3bb0',
-            user_name: 'a.staffmember@hearings.reform.hmcts.net'
-        });
 
         const participant4LinkedParticipants: LinkedParticipantResponse[] = [];
         participant4LinkedParticipants.push(
@@ -931,7 +914,7 @@ export class ConferenceTestData {
             id: 'adf3b4c4-3e92-4937-b2b0-6e9d486efcd2',
             interpreter_room: undefined,
             last_name: 'Smith',
-            linked_participants: participant5LinkedParticipants,
+            linked_participants: [],
             name: 'Mr G Smith',
             representee: '',
             role: Role.Individual,
@@ -1012,7 +995,6 @@ export class ConferenceTestData {
 
         participants.push(participant1);
         participants.push(participant2);
-        participants.push(participant3);
         participants.push(participant5);
         participants.push(participant6);
         participants.push(participant4);
