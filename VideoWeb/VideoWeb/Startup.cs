@@ -85,7 +85,6 @@ namespace VideoWeb
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                IdentityModelEventSource.ShowPII = true;
             }
             else
             {
@@ -103,10 +102,10 @@ namespace VideoWeb
             {
                 app.UseSpaStaticFiles();
             }
-
+            IdentityModelEventSource.ShowPII = true;
             app.UseRouting();
-            app.UseAuthorization();
             app.UseAuthentication();
+            app.UseAuthorization();
             app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseEndpoints(endpoints =>
