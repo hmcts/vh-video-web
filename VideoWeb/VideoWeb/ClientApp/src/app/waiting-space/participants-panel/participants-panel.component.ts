@@ -134,13 +134,14 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     readVideoControlStatusesFromCache(state: IConferenceParticipantsStatus, participant: PanelModel) {
         if (this.isCountdownCompleted) {
-            const localAudioMuted = this.videoControlCacheService.getLocalAudioMuted(participant.id);
             const localVideoMuted = this.videoControlCacheService.getLocalVideoMuted(participant.id);
             const remoteMutedStatus = this.videoControlCacheService.getRemoteMutedStatus(participant.id);
             const handRaise = this.videoControlCacheService.getHandRaiseStatus(participant.id);
+            let localAudioMuted: boolean;
 
             if (participant instanceof LinkedParticipantPanelModel) {
                 participant.participants.forEach(async linkedParticipant => {
+                    localAudioMuted = this.videoControlCacheService.getLocalAudioMuted(linkedParticipant.id);
                     this.logger.info(`${this.loggerPrefix} Updating store with audio and video from cache lp`, {
                         audio: localAudioMuted,
                         video: localVideoMuted,
@@ -161,6 +162,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                     );
                 });
             } else {
+                localAudioMuted = this.videoControlCacheService.getLocalAudioMuted(participant.id);
                 this.participantRemoteMuteStoreService.updateRemoteMuteStatus(participant.id, remoteMutedStatus);
                 this.participantRemoteMuteStoreService.updateLocalMuteStatus(participant.id, localAudioMuted, localVideoMuted);
                 participant.updateParticipant(

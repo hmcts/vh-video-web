@@ -353,7 +353,7 @@ describe('ParticipantsPanelComponent', () => {
             // Act
             component.readVideoControlStatusesFromCache(state, linkedParticipant);
             // Assert
-            expect(videoControlCacheServiceSpy.getLocalAudioMuted).toHaveBeenCalled();
+            expect(videoControlCacheServiceSpy.getLocalAudioMuted).toHaveBeenCalledWith(linkedParticipant.participants[0].id);
             expect(videoControlCacheServiceSpy.getLocalVideoMuted).toHaveBeenCalled();
             expect(videoControlCacheServiceSpy.getRemoteMutedStatus).toHaveBeenCalled();
             expect(videoControlCacheServiceSpy.getHandRaiseStatus).toHaveBeenCalled();
@@ -388,7 +388,7 @@ describe('ParticipantsPanelComponent', () => {
             // Act
             component.readVideoControlStatusesFromCache(state, participant);
             // Assert
-            expect(videoControlCacheServiceSpy.getLocalAudioMuted).toHaveBeenCalled();
+            expect(videoControlCacheServiceSpy.getLocalAudioMuted).toHaveBeenCalledWith(participant.id);
             expect(videoControlCacheServiceSpy.getLocalVideoMuted).toHaveBeenCalled();
             expect(videoControlCacheServiceSpy.getRemoteMutedStatus).toHaveBeenCalled();
             expect(videoControlCacheServiceSpy.getHandRaiseStatus).toHaveBeenCalled();
