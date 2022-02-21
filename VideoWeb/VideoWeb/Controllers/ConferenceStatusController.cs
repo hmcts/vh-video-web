@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -74,7 +73,7 @@ namespace VideoWeb.Controllers
         [HttpGet("{conferenceId}/getVideoControlStatuses")]
         [SwaggerOperation(OperationId = "GetVideoControlStatusesForConference")]
         [ProducesResponseType(typeof(ConferenceVideoControlStatuses), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(ConferenceVideoControlStatuses), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ConferenceVideoControlStatuses), (int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> GetVideoControlStatusesForConference(Guid conferenceId)
         {
             try
@@ -82,12 +81,11 @@ namespace VideoWeb.Controllers
                 _logger.LogDebug("Getting the video control statuses for {conferenceId}", conferenceId);
                 var videoControlStatuses = await _conferenceVideoControlStatusService.GetVideoControlStateForConference(conferenceId);
 
-                if (videoControlStatuses == null) {
-                    _logger.LogWarning("video control statuses didn't have a value returning NotFound. This was for {conferenceId}", conferenceId);
-                    return NotFound(new ConferenceVideoControlStatuses()
-                    {
-                        ParticipantIdToVideoControlStatusMap = new Dictionary<string, VideoControlStatus>()
-                    });
+                if (videoControlStatuses == null) 
+                {
+                    _logger.LogWarning("video control statuses with id: {conferenceId} not found", conferenceId);
+
+                    return NoContent();
                 }
 
                 _logger.LogTrace("Got video control statuses ({videoControlStatuses}) for {conferenceId}", videoControlStatuses, conferenceId);
