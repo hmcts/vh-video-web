@@ -28,10 +28,10 @@ export class CrestLogoImageSourceDirective implements OnInit, OnChanges, OnDestr
             .subscribe(([hearingVenueIsInScotland]) => {
                 if (hearingVenueIsInScotland) {
                     this.renderer2.setAttribute(this.element.nativeElement, 'src', this.sctsImageSource);
-                    this.renderer2.setAttribute(this.element.nativeElement, 'alt', this.sctsAltText);
+                    this.renderer2.setAttribute(this.element.nativeElement, 'alt', this.sctsAltText ?? '');
                 } else {
                     this.renderer2.setAttribute(this.element.nativeElement, 'src', this.hmctsImageSource);
-                    this.renderer2.setAttribute(this.element.nativeElement, 'alt', this.hmctsAltText);
+                    this.renderer2.setAttribute(this.element.nativeElement, 'alt', this.hmctsAltText ?? '');
                 }
             });
     }
