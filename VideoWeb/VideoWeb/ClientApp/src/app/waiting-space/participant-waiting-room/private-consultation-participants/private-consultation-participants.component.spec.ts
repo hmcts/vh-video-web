@@ -665,8 +665,8 @@ describe('PrivateConsultationParticipantsComponent', () => {
         const testObservers = [regularObserver, quickLinkObserver2, quickLinkObserver1];
 
         beforeEach(() => {
-            component.nonJudgeParticipants = testParticipants;
-            component.observers = testObservers;
+            conference.participants = testParticipants.concat(testObservers);
+            component.initParticipants();
         });
 
         it('should return nothing if is not joh consultation', () => {
@@ -676,18 +676,49 @@ describe('PrivateConsultationParticipantsComponent', () => {
         });
 
         it('should return list in correct order for joh consultation', () => {
-            const mappedRegularObserver: ParticipantListItem = { ...regularObserver };
-            const mappedQuickLinkObserver1: ParticipantListItem = { ...quickLinkObserver1 };
-            const mappedQuickLinkObserver2: ParticipantListItem = { ...quickLinkObserver2 };
-
             spyOn(component, 'isJohConsultation').and.returnValue(true);
             const result = component.getObservers();
 
-            const observersOrdered = [mappedRegularObserver, mappedQuickLinkObserver1, mappedQuickLinkObserver2].sort((a, b) =>
-                a.display_name.localeCompare(b.display_name)
-            );
+            const observer1Index = result.findIndex(x => x.display_name === 'regularObserver_display_name');
+            const qlObserver1Index = result.findIndex(x => x.display_name === 'quickLinkObserver1_display_name');
+            const qlObserver2Index = result.findIndex(x => x.display_name === 'quickLinkObserver2_display_name');
 
-            expect(result.length).toBe(observersOrdered.length);
+            expect(observer1Index).toEqual(0);
+            expect(qlObserver1Index).toEqual(1);
+            expect(qlObserver2Index).toEqual(2);
+
+            expect(result.length).toBe(testObservers.length);
+        });
+    });
+
+    describe('getPrivateConsultationParticipants', () => {
+        beforeEach(() => {
+            conference.participants = new ConferenceTestData().getFullListOfNonJudgeParticipants();
+            component.initParticipants();
+        });
+
+        it('should return list in correct order', () => {
+            const privateConsultationParticipants = component.getPrivateConsultationParticipants();
+
+            const applicant1Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr B Smith');
+            const applicant2Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr A Smith');
+            const applicant3Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr G Smith');
+            const respondent1Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr E Smith');
+            const respondent2Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr F Smith');
+            const respondent3Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr H Smith');
+            const quickLinkParticipant1Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr C Smith');
+            const quickLinkParticipant2Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr D Smith');
+
+            // Interpreters are filtered out
+            expect(applicant2Index).toEqual(-1);
+            expect(respondent3Index).toEqual(-1);
+
+            expect(applicant1Index).toEqual(0);
+            expect(applicant3Index).toEqual(1);
+            expect(respondent1Index).toEqual(2);
+            expect(respondent2Index).toEqual(3);
+            expect(quickLinkParticipant1Index).toEqual(4);
+            expect(quickLinkParticipant2Index).toEqual(5);
         });
     });
 });

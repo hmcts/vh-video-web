@@ -74,7 +74,10 @@ export class ParticipantPanelModelMapper {
     }
 
     private mapJohs(pats: ParticipantForUserResponse[]): ParticipantPanelModel[] {
-        const johs = pats.filter(x => x.role === Role.JudicialOfficeHolder);
+        const johs = pats
+            .filter(x => x.role === Role.JudicialOfficeHolder)
+            .sort((a, b) => a.hearing_role.localeCompare(b.hearing_role) || a.display_name.localeCompare(b.display_name));
+
         return johs.map(j => this.mapFromParticipantUserResponse(j));
     }
 
