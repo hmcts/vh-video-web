@@ -22,6 +22,7 @@ namespace VideoWeb.AuthenticationSchemes
             options.Audience = _idpConfiguration.ClientId;
             options.TokenValidationParameters.NameClaimType = "preferred_username";
             options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
+            options.TokenValidationParameters.ValidateLifetime = true;
         }
     }
 }
