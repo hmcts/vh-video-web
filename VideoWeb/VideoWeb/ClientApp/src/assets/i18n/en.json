@@ -672,7 +672,7 @@
     "staff-member": "Staff Member",
     "litigant-in-person": "Litigant in person",
     "litigation-friend": "Litigation friend",
-    "macKenzie-friend": "MacKenzie friend",
+    "mackenzie-friend": "MacKenzie friend",
     "observer": "Observer",
     "panel-member": "Panel Member",
     "presenting-officer": "Presenting Officer",
@@ -789,7 +789,7 @@
     "appellant": "Appellant",
     "claimant": "Claimant", 
     "homeoffice":"Home Office", 
-    "secretary-of-state":"Secretary of State"
+    "secretaryofstate":"Secretary of State"
   },
   "user-role": {
     "case-admin": "Case admin",

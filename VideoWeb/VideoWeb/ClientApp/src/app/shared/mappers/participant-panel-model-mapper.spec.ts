@@ -1,8 +1,9 @@
-import { Role } from 'src/app/services/clients/api-client';
+import { ParticipantForUserResponse, Role } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { LinkedParticipantPanelModel } from 'src/app/waiting-space/models/linked-participant-panel-model';
 import { ParticipantPanelModelMapper } from './participant-panel-model-mapper';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
+import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
 
 describe('ParticipantPanelModelMapper', () => {
     let mapper: ParticipantPanelModelMapper;
@@ -81,5 +82,58 @@ describe('ParticipantPanelModelMapper', () => {
         });
 
         expect(linked.length).toBe(2); // two linked
+    });
+
+    it('should order johs by hearing role then display name', () => {
+        // arrange
+        const participants: ParticipantForUserResponse[] = [];
+
+        participants.push(
+            new ParticipantForUserResponse({
+                case_type_group: CaseTypeGroup.PANEL_MEMBER,
+                display_name: 'D',
+                hearing_role: HearingRole.PANEL_MEMBER,
+                role: Role.JudicialOfficeHolder
+            })
+        );
+
+        participants.push(
+            new ParticipantForUserResponse({
+                case_type_group: CaseTypeGroup.PANEL_MEMBER,
+                display_name: 'A',
+                hearing_role: HearingRole.PANEL_MEMBER,
+                role: Role.JudicialOfficeHolder
+            })
+        );
+
+        participants.push(
+            new ParticipantForUserResponse({
+                case_type_group: CaseTypeGroup.NONE,
+                display_name: 'C',
+                hearing_role: HearingRole.WINGER,
+                role: Role.JudicialOfficeHolder
+            })
+        );
+
+        participants.push(
+            new ParticipantForUserResponse({
+                case_type_group: CaseTypeGroup.PANEL_MEMBER,
+                display_name: 'B',
+                hearing_role: HearingRole.PANEL_MEMBER,
+                role: Role.JudicialOfficeHolder
+            })
+        );
+
+        // act
+        const result = mapper.mapFromParticipantUserResponseArray(participants);
+
+        // assert
+        const linked = result.filter(p => p instanceof LinkedParticipantPanelModel)[0] as LinkedParticipantPanelModel;
+
+        expect(linked.participants[0].displayName).toBe('A');
+        expect(linked.participants[1].displayName).toBe('B');
+        expect(linked.participants[2].displayName).toBe('D');
+        expect(linked.participants[3].displayName).toBe('C');
+        expect(linked.displayName).toBe('A, B, D, C');
     });
 });

@@ -174,12 +174,10 @@ export abstract class PanelModel {
             return 5;
         } else if (this.caseTypeGroup?.toLowerCase() === 'endpoint') {
             return 6;
-        } else if (
-            this.caseTypeGroup === CaseTypeGroup.OBSERVER ||
-            this.hearingRole === HearingRole.OBSERVER ||
-            this.role === Role.QuickLinkObserver
-        ) {
+        } else if (this.caseTypeGroup === CaseTypeGroup.OBSERVER || this.hearingRole === HearingRole.OBSERVER) {
             return 7;
+        } else if (this.role === Role.QuickLinkObserver) {
+            return 8;
         } else {
             return 4;
         }

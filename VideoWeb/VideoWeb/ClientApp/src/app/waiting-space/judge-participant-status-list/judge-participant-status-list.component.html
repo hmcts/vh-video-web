@@ -131,9 +131,9 @@
         <div id="p-row-{{ participant.id }}-staff-member" class="govuk-grid-column-full govuk-!-margin-top-2">
           <p id="p-{{ participant.id }}-name-staff-member" class="govuk-heading-s govuk-!-margin-bottom-3">
             {{ participant.display_name }}
-              <span *ngIf="isStaffMember"><a href="javascript:void(0);" (click)="changeStaffMemberNameShow(participant.id)" class="govuk-body govuk-link vh-ml10">{{'judge-participant-status-list.edit' | translate}}</a></span>
+              <span *ngIf="canChangeStaffMemberName(participant.id)"><a href="javascript:void(0);" (click)="changeStaffMemberNameShow(participant.id)" class="govuk-body govuk-link vh-ml10">{{'judge-participant-status-list.edit' | translate}}</a></span>
           </p>
-            <div *ngIf="showChangeStaffMemberDisplayName">
+            <div *ngIf="canChangeStaffMemberName(participant.id) && showChangeStaffMemberDisplayName">
                 <div class="govuk-form-group vh-mt10">
                     <input
                         type="text"
