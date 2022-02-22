@@ -63,7 +63,7 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
         this.filterPanelMembers();
         this.filterObservers();
         this.filterWingers();
-        this.endpoints = this.conference.endpoints;
+        this.sortEndpoints();
     }
 
     get participantCount(): number {
@@ -118,16 +118,21 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     }
 
     protected filterNonJudgeParticipants(): void {
-        let nonJudgeParts = this.conference.participants.filter(
-            x =>
-                x.role !== Role.Judge &&
-                x.role !== Role.JudicialOfficeHolder &&
-                x.case_type_group !== CaseTypeGroup.OBSERVER &&
-                x.hearing_role !== HearingRole.OBSERVER &&
-                x.role !== Role.QuickLinkObserver &&
-                x.role !== Role.QuickLinkParticipant &&
-                x.hearing_role !== HearingRole.STAFF_MEMBER
-        );
+        let nonJudgeParts = this.conference.participants
+            .filter(
+                x =>
+                    x.role !== Role.Judge &&
+                    x.role !== Role.JudicialOfficeHolder &&
+                    x.case_type_group !== CaseTypeGroup.OBSERVER &&
+                    x.hearing_role !== HearingRole.OBSERVER &&
+                    x.role !== Role.QuickLinkObserver &&
+                    x.role !== Role.QuickLinkParticipant &&
+                    x.hearing_role !== HearingRole.STAFF_MEMBER
+            )
+            .sort(
+                (a, b) =>
+                    a.case_type_group.localeCompare(b.case_type_group) || (a.name || a.display_name).localeCompare(b.name || b.display_name)
+            );
 
         nonJudgeParts = [
             ...nonJudgeParts,
@@ -182,36 +187,55 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
         nonJudgeParticipants: ParticipantResponse[],
         interpreterList: ParticipantResponse[]
     ): ParticipantResponse[] {
-        const sortedParticipants = [];
-        const linkedParticipantIds = [];
+        const sortedNonJudgeParticipants = [...nonJudgeParticipants];
+
         interpreterList.forEach(interpreter => {
             const linkDetails = interpreter.linked_participants[0];
             const interpretee = nonJudgeParticipants.find(x => x.id === linkDetails.linked_id);
-            sortedParticipants.push(interpretee);
-            linkedParticipantIds.push(interpretee.id);
-            sortedParticipants.push(interpreter);
-            linkedParticipantIds.push(interpreter.id);
+
+            const interpreterIndex = sortedNonJudgeParticipants.findIndex(x => x.id === interpreter.id);
+            const interpreteeIndex = sortedNonJudgeParticipants.findIndex(x => x.id === interpretee.id);
+
+            if (interpreterIndex !== interpreteeIndex + 1) {
+                const interpreterToMove = sortedNonJudgeParticipants[interpreterIndex];
+
+                sortedNonJudgeParticipants.splice(interpreteeIndex + 1, 0, interpreterToMove);
+                sortedNonJudgeParticipants.splice(interpreterIndex, 1);
+            }
         });
-        return [...nonJudgeParticipants.filter(p => !linkedParticipantIds.includes(p.id)), ...sortedParticipants];
+
+        return sortedNonJudgeParticipants;
     }
 
     protected filterObservers(): void {
-        this.observers = this.conference.participants
+        let observers = this.conference.participants
             .filter(
                 x =>
                     x.case_type_group === CaseTypeGroup.OBSERVER ||
-                    x.hearing_role === HearingRole.OBSERVER ||
-                    x.role === Role.QuickLinkObserver
+                    (x.hearing_role === HearingRole.OBSERVER && x.role !== Role.QuickLinkObserver)
             )
             .sort((a, b) => a.display_name.localeCompare(b.display_name));
+
+        observers = [
+            ...observers,
+            ...this.conference.participants
+                .filter(x => x.role === Role.QuickLinkObserver)
+                .sort((a, b) => a.display_name.localeCompare(b.display_name))
+        ];
+
+        this.observers = observers;
     }
 
     private filterWingers(): void {
-        this.wingers = this.conference.participants.filter(x => x.hearing_role === HearingRole.WINGER);
+        this.wingers = this.conference.participants
+            .filter(x => x.hearing_role === HearingRole.WINGER)
+            .sort((a, b) => a.name.localeCompare(b.name));
     }
 
     protected filterPanelMembers(): void {
-        this.panelMembers = this.conference.participants.filter(x => this.isParticipantPanelMember(x.hearing_role));
+        this.panelMembers = this.conference.participants
+            .filter(x => this.isParticipantPanelMember(x.hearing_role))
+            .sort((a, b) => a.display_name.localeCompare(b.display_name));
     }
     protected isParticipantPanelMember(hearingRole: string): boolean {
         return HearingRoleHelper.isPanelMember(hearingRole);
@@ -222,7 +246,13 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     }
 
     protected filterStaffMember(): void {
-        this.staffMembers = this.conference.participants.filter(x => x.role === Role.StaffMember);
+        this.staffMembers = this.conference.participants
+            .filter(x => x.role === Role.StaffMember)
+            .sort((a, b) => a.display_name.localeCompare(b.display_name));
+    }
+
+    private sortEndpoints(): void {
+        this.endpoints = [...this.conference.endpoints].sort((a, b) => a.display_name.localeCompare(b.display_name));
     }
 
     get canInvite(): boolean {

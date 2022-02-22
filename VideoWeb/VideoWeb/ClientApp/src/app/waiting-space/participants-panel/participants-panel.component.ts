@@ -742,8 +742,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     private getOrderedParticipants(combined: PanelModel[]) {
         combined.sort((x, z) => {
             if (x.orderInTheList === z.orderInTheList) {
-                // 3 here means regular participants and should be grouped by caseTypeGroup
-                if (x.orderInTheList !== 3 || x.caseTypeGroup === z.caseTypeGroup) {
+                // 4 here means regular participants and should be grouped by caseTypeGroup
+                if (x.orderInTheList !== 4 || x.caseTypeGroup === z.caseTypeGroup) {
                     return x.displayName.localeCompare(z.displayName);
                 }
                 return x.caseTypeGroup.localeCompare(z.caseTypeGroup);

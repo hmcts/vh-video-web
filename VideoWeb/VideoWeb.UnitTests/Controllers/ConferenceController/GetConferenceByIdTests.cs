@@ -48,7 +48,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDetailsResponse, ConferenceResponse>()).Returns(_mocker.Create<ConferenceResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ClaimsPrincipal, UserProfileResponse>())
                 .Returns(_mocker.Create<ClaimsPrincipalToUserProfileResponseMapper>());
-            
+
             var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.CitizenRole).Build();
             var context = new ControllerContext
             {
@@ -164,6 +164,20 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var result = await _controller.GetConferenceByIdAsync(Guid.NewGuid());
             var typedResult = result.Value;
             typedResult.Should().BeNull();
+        }
+
+        [Test]
+        public async Task Should_return_NoContent_status_code_when_conference_details_is_not_returned_by_id()
+        {
+            var conferenceId = Guid.NewGuid();
+
+            _mocker.Mock<IVideoApiClient>()
+                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(() => default);
+
+            var response = (await _controller.GetConferenceByIdAsync(conferenceId)).Result as NoContentResult;
+
+            Assert.AreEqual(response.StatusCode, (int)HttpStatusCode.NoContent);
         }
 
         private static ConferenceDetailsResponse CreateValidConferenceResponse(string username = "john@hmcts.net")

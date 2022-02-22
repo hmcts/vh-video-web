@@ -49,6 +49,7 @@ import {
     ConferenceResponse,
     ConferenceStatus,
     EndpointStatus,
+    ParticipantForUserResponse,
     ParticipantResponse,
     ParticipantStatus,
     Role
@@ -1546,6 +1547,94 @@ describe('ParticipantsPanelComponent', () => {
                     });
                 });
             });
+        });
+    });
+
+    describe('getParticipantsList', () => {
+        it('should list participants and endpoints in correct order', async () => {
+            const judge = new ParticipantResponse({
+                case_type_group: 'Judge',
+                current_room: undefined,
+                display_name: 'Manual Judge_26',
+                first_name: 'Manual',
+                hearing_role: 'Judge',
+                id: '85dfea9b-d8ec-477e-825f-7e4e3611db99',
+                interpreter_room: undefined,
+                last_name: 'Judge_26',
+                linked_participants: [],
+                name: null,
+                representee: null,
+                role: Role.Judge,
+                status: ParticipantStatus.NotSignedIn,
+                tiled_display_name: 'JUDGE;HEARTBEAT;Manual Judge_26;85dfea9b-d8ec-477e-825f-7e4e3611db99',
+                user_name: null
+            });
+            const staffMembers = new ConferenceTestData().getFullListOfStaffMembers();
+            const nonJudgeParticipants = new ConferenceTestData().getFullListOfNonJudgeParticipants();
+            const panelMembers = new ConferenceTestData().getFullListOfPanelMembers();
+            const observers = new ConferenceTestData().getFullListOfObservers();
+            const fullListOfEndpoints = new ConferenceTestData().getFullListOfEndpoints();
+
+            const fullListOfParticipants = [...staffMembers, ...nonJudgeParticipants, ...panelMembers, ...observers];
+            fullListOfParticipants.push(judge);
+            const mappedParticipants = fullListOfParticipants.map(p => new ParticipantForUserResponse(p));
+
+            videoWebServiceSpy.getParticipantsByConferenceId.and.returnValue(Promise.resolve(mappedParticipants));
+            videoWebServiceSpy.getEndpointsForConference.and.returnValue(Promise.resolve(fullListOfEndpoints));
+
+            const mappedPanelParticipants = mapper.mapFromParticipantUserResponseArray(fullListOfParticipants);
+            participantPanelModelMapperSpy.mapFromParticipantUserResponseArray.and.returnValue(mappedPanelParticipants);
+
+            await component.getParticipantsList();
+
+            const participantList = component.participants;
+            const endpointList = component.endpointParticipants;
+
+            // Judge
+            const judgeIndex = participantList.findIndex(x => x.displayName === 'Manual Judge_26');
+            expect(judgeIndex).toEqual(0);
+
+            // Panel members
+            const panelMembersIndex = participantList.findIndex(x => x.displayName === 'Mr Panel Member A, Mr Panel Member B');
+            expect(panelMembersIndex).toEqual(1);
+
+            // Staff members
+            const staffMember1Index = participantList.findIndex(x => x.displayName === 'A StaffMember');
+            const staffMember2Index = participantList.findIndex(x => x.displayName === 'B StaffMember');
+            const staffMember3Index = participantList.findIndex(x => x.displayName === 'C StaffMember');
+            expect(staffMember1Index).toEqual(2);
+            expect(staffMember2Index).toEqual(3);
+            expect(staffMember3Index).toEqual(4);
+
+            // Non-judge participants
+            const applicant1Index = participantList.findIndex(x => x.displayName === 'B, A'); // Litigant in person + Interpreter
+            const applicant2Index = participantList.findIndex(x => x.displayName === 'G');
+            const respondent1Index = participantList.findIndex(x => x.displayName === 'E');
+            const respondent2Index = participantList.findIndex(x => x.displayName === 'F, H');
+            const quickLinkParticipant1Index = participantList.findIndex(x => x.displayName === 'Mr C Smith');
+            const quickLinkParticipant2Index = participantList.findIndex(x => x.displayName === 'Mr D Smith');
+            expect(applicant1Index).toEqual(5);
+            expect(applicant2Index).toEqual(6);
+            expect(respondent1Index).toEqual(7);
+            expect(respondent2Index).toEqual(8);
+            expect(quickLinkParticipant1Index).toEqual(9);
+            expect(quickLinkParticipant2Index).toEqual(10);
+
+            // Endpoints
+            const endpoint1Index = participantList.findIndex(x => x.displayName === 'Endpoint A');
+            const endpoint2Index = participantList.findIndex(x => x.displayName === 'Endpoint B');
+            expect(endpoint1Index).toEqual(11);
+            expect(endpoint2Index).toEqual(12);
+
+            // Observers
+            const observer1Index = participantList.findIndex(x => x.displayName === 'Mr Observer A');
+            const observer2Index = participantList.findIndex(x => x.displayName === 'Mr Observer B');
+            const qlObserver1Index = participantList.findIndex(x => x.displayName === 'A QL Observer');
+            const qlObserver2Index = participantList.findIndex(x => x.displayName === 'QL Observer A');
+            expect(observer1Index).toEqual(13);
+            expect(observer2Index).toEqual(14);
+            expect(qlObserver1Index).toEqual(15);
+            expect(qlObserver2Index).toEqual(16);
         });
     });
 });
