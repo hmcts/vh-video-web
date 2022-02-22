@@ -1461,13 +1461,10 @@ export class ApiClient {
                     return throwException('Bad Request', status, _responseText, _headers, result400);
                 })
             );
-        } else if (status === 404) {
+        } else if (status === 204) {
             return blobToText(responseBlob).pipe(
                 _observableMergeMap(_responseText => {
-                    let result404: any = null;
-                    let resultData404 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result404 = ProblemDetails.fromJS(resultData404);
-                    return throwException('Not Found', status, _responseText, _headers, result404);
+                    return throwException('Success', status, _responseText, _headers);
                 })
             );
         } else if (status === 401) {
@@ -1554,13 +1551,10 @@ export class ApiClient {
                     return throwException('Bad Request', status, _responseText, _headers, result400);
                 })
             );
-        } else if (status === 404) {
+        } else if (status === 204) {
             return blobToText(responseBlob).pipe(
                 _observableMergeMap(_responseText => {
-                    let result404: any = null;
-                    let resultData404 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result404 = ProblemDetails.fromJS(resultData404);
-                    return throwException('Not Found', status, _responseText, _headers, result404);
+                    return throwException('Success', status, _responseText, _headers);
                 })
             );
         } else if (status === 401) {
@@ -1726,13 +1720,13 @@ export class ApiClient {
                     return _observableOf(result200);
                 })
             );
-        } else if (status === 404) {
+        } else if (status === 204) {
             return blobToText(responseBlob).pipe(
                 _observableMergeMap(_responseText => {
-                    let result404: any = null;
-                    let resultData404 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result404 = ConferenceVideoControlStatuses.fromJS(resultData404);
-                    return throwException('Not Found', status, _responseText, _headers, result404);
+                    let result204: any = null;
+                    let resultData204 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result204 = ConferenceVideoControlStatuses.fromJS(resultData204);
+                    return _observableOf(result204);
                 })
             );
         } else if (status === 401) {
