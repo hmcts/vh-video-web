@@ -1012,8 +1012,9 @@
     "legal-member": "Aelod Cyfreithiol",
     "financial-member": "Aelod Cyllidol",
     "appellant": "Apelydd",
-    "local-authority":"Awdurdod Lleol",
-    "government-legal-department(solicitor)":"Adran Gyfreithiol y Llywodraeth (Cyfreithiwr)",
+    "local-authority": "Awdurdod Lleol",
+    "government-legal-department(solicitor)": "Adran Gyfreithiol y Llywodraeth (Cyfreithiwr)",
+    "traffic-commissioners-officer": "Swyddog y Comisiynydd Traffig",
     "care-coordinator": "Cydlynydd Gofal",
     "doctor": "Meddyg",
     "nearest-relative": "Perthynas Agosaf",
@@ -1035,9 +1036,10 @@
     "claimant": "Hawlydd",
     "applicant": "Ceisydd",
     "appellant": "Apelydd",
-    "state": "Y Wladwriaeth", 
-    "homeoffice":"Y Swyddfa Gartref", 
-    "secretaryofstate":"Ysgrifennydd Gwladol"
+    "state": "Y Wladwriaeth",
+    "homeoffice": "Y Swyddfa Gartref",
+    "secretaryofstate": "Ysgrifennydd Gwladol",
+    "trafficcommissioner": "Y Comisiynydd Traffig"
   },
   "case-type": {
     "placement": "Lleoliad",
@@ -1083,7 +1085,8 @@
     "family": "Teulu",
     "business-lease-renewal": "Adnewyddu Prydlesi Busnes",
     "tenant-fees": "Ffioedd Tenantiaid",
-    "upper-tribunal-immigration-&-asylum-chamber":"Tribiwnlys Mewnfudo a Lloches Haen Uchaf",
+    "upper-tribunal-immigration-&-asylum-chamber": "Tribiwnlys Mewnfudo a Lloches Haen Uchaf",
+    "upper-tribunal-administrative-appeals-chamber": "Siambr Apeliadau Gweinyddol yr Uwch Dribiwnlys",
     "mental-health": "Iechyd Meddwl"
   },
   "case-role": {
@@ -1097,8 +1100,9 @@
     "defendant": "Diffynnydd",
     "claimant": "Hawlydd",
     "applicant": "Ceisydd",
-    "appellant": "Apelydd", 
-    "secretary-of-state":"Ysgrifennydd Gwladol"
+    "appellant": "Apelydd",
+    "secretary-of-state": "Ysgrifennydd Gwladol",
+    "traffic-commissioner": "Y Comisiynydd Traffig"
   },
   "venue-list": {
     "title": "Dewis eich gwrandawiadau",
