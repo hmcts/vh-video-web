@@ -4,6 +4,7 @@ import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { vhContactDetails } from 'src/app/shared/contact-information';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { BaseSelfTestComponentDirective } from '../models/base-self-test.component';
 
@@ -12,6 +13,8 @@ import { BaseSelfTestComponentDirective } from '../models/base-self-test.compone
     templateUrl: './independent-self-test.component.html'
 })
 export class IndependentSelfTestComponent extends BaseSelfTestComponentDirective {
+    contactDetails = vhContactDetails;
+
     constructor(
         private router: Router,
         protected route: ActivatedRoute,

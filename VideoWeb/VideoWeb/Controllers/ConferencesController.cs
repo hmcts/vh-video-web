@@ -177,7 +177,7 @@ namespace VideoWeb.Controllers
         [HttpGet("{conferenceId}/vhofficer")]
         [ProducesResponseType(typeof(ConferenceResponseVho), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType((int) HttpStatusCode.NoContent)]
         [SwaggerOperation(OperationId = "GetConferenceByIdVHO")]
         [Authorize(AppRoles.VhOfficerRole)]
         public async Task<ActionResult<ConferenceResponseVho>> GetConferenceByIdVHOAsync(Guid conferenceId)
@@ -194,6 +194,13 @@ namespace VideoWeb.Controllers
             try
             {
                 conference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
+
+                if(conference == null)
+                {
+                    _logger.LogWarning("Conference details with id: {conferenceId} not found", conferenceId);
+
+                    return NoContent();
+                }
             }
             catch (VideoApiException e)
             {
@@ -246,7 +253,7 @@ namespace VideoWeb.Controllers
         [HttpGet("{conferenceId}")]
         [ProducesResponseType(typeof(ConferenceResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [SwaggerOperation(OperationId = "GetConferenceById")]
         public async Task<ActionResult<ConferenceResponse>> GetConferenceByIdAsync(Guid conferenceId)
         {
@@ -268,6 +275,13 @@ namespace VideoWeb.Controllers
             try
             {
                 conference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
+
+                if (conference == null)
+                {
+                    _logger.LogWarning("Conference details with id: {conferenceId} not found", conferenceId);
+
+                    return NoContent();
+                }
             }
             catch (VideoApiException e)
             {

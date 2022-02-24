@@ -16,7 +16,7 @@
                         </app-participant-item>                              
                 </div>
             </ng-container>
-            <ng-container *ngFor="let group of johGroups">
+            <ng-container *ngFor="let group of johGroupResult">
                 <ng-container *ngIf="group.length > 0">
                     <ng-container *ngTemplateOutlet="johIcon"></ng-container>
                     <div class="member-group">
@@ -89,7 +89,7 @@
             </div>
         </ng-container>
         <ng-container *ngIf="isJohConsultation()">
-            <ng-container *ngFor="let participant of getWitnessesAndObservers(); trackBy: trackParticipant">
+            <ng-container *ngFor="let participant of getObservers(); trackBy: trackParticipant">
                 <div class="member-group">
                     <app-participant-item 
                                     [participant]="participant" 
@@ -112,9 +112,9 @@
         <img class="small-crest"
         appCrestLogoImageSource
         [sctsImageSource]="'/assets/images/scot-crest-white.png'"
-        [sctsAltText]=" ('private-consultation-participants.crest-icon-alt' | translate)"
+        [sctsAltText]=""
         [hmctsImageSource]="'/assets/images/UkGovCrestWhite.png'"
-        [hmctsAltText]=" ('private-consultation-participants.crest-icon-alt' | translate)"
+        [hmctsAltText]=""
         alt="" 
         />                    
     </div>

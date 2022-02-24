@@ -13,6 +13,7 @@ import {
     ParticipantContactDetailsResponseVho,
     ParticipantForUserResponse,
     ParticipantHeartbeatResponse,
+    ParticipantResponse,
     ParticipantResponseVho,
     ParticipantStatus,
     Role,
@@ -813,5 +814,459 @@ export class ConferenceTestData {
         endpoints.push(point1);
         endpoints.push(point2);
         return endpoints;
+    }
+
+    getFullListOfNonJudgeParticipants(): ParticipantResponse[] {
+        const participants: ParticipantResponse[] = [];
+        const participant1 = new ParticipantResponse({
+            case_type_group: null,
+            current_room: undefined,
+            display_name: 'Mr C Smith',
+            first_name: null,
+            hearing_role: 'Quick link participant',
+            id: '72af1eac-9c38-4b7e-9c20-6ed00f36bd71',
+            interpreter_room: undefined,
+            last_name: null,
+            linked_participants: [],
+            name: 'Mr C Smith',
+            representee: null,
+            role: Role.QuickLinkParticipant,
+            status: ParticipantStatus.NotSignedIn,
+            tiled_display_name: 'WITNESS;NO_HEARTBEAT;C;72af1eac-9c38-4b7e-9c20-6ed00f36bd71',
+            user_name: '72af1eac-9c38-4b7e-9c20-6ed00f36bd71@quick-link-participant.com'
+        });
+        const participant2 = new ParticipantResponse({
+            case_type_group: null,
+            current_room: undefined,
+            display_name: 'Mr D Smith',
+            first_name: null,
+            hearing_role: 'Quick link participant',
+            id: '0880354e-52b9-4804-8e45-969c11796a26',
+            interpreter_room: undefined,
+            last_name: null,
+            linked_participants: [],
+            name: 'Mr D Smith',
+            representee: null,
+            role: Role.QuickLinkParticipant,
+            status: ParticipantStatus.NotSignedIn,
+            tiled_display_name: 'WITNESS;NO_HEARTBEAT;D;0880354e-52b9-4804-8e45-969c11796a26',
+            user_name: '0880354e-52b9-4804-8e45-969c11796a26@quick-link-participant.com'
+        });
+
+        const participant4LinkedParticipants: LinkedParticipantResponse[] = [];
+        participant4LinkedParticipants.push(
+            new LinkedParticipantResponse({
+                link_type: LinkType.Interpreter,
+                linked_id: 'acf3b4c4-3e92-4937-b2b0-6e9d486efcd2'
+            })
+        );
+
+        const participant4 = new ParticipantResponse({
+            case_type_group: 'Applicant',
+            current_room: undefined,
+            display_name: 'B',
+            first_name: 'B',
+            hearing_role: 'Litigant in person',
+            id: 'c2118eec-9e62-40bc-af60-0c5898ddec29',
+            interpreter_room: undefined,
+            last_name: 'Smith',
+            linked_participants: participant4LinkedParticipants,
+            name: 'Mr B Smith',
+            representee: '',
+            role: Role.Individual,
+            status: ParticipantStatus.NotSignedIn,
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;B;c2118eec-9e62-40bc-af60-0c5898ddec29',
+            user_name: 'applicant.litigant@hearings.reform.hmcts.net'
+        });
+
+        const participant5LinkedParticipants: LinkedParticipantResponse[] = [];
+        participant5LinkedParticipants.push(
+            new LinkedParticipantResponse({
+                link_type: LinkType.Interpreter,
+                linked_id: 'c2118eec-9e62-40bc-af60-0c5898ddec29'
+            })
+        );
+
+        const participant5 = new ParticipantResponse({
+            case_type_group: 'Applicant',
+            current_room: undefined,
+            display_name: 'A',
+            first_name: 'A',
+            hearing_role: 'Interpreter',
+            id: 'acf3b4c4-3e92-4937-b2b0-6e9d486efcd2',
+            interpreter_room: undefined,
+            last_name: 'Smith',
+            linked_participants: participant5LinkedParticipants,
+            name: 'Mr A Smith',
+            representee: '',
+            role: Role.Individual,
+            status: ParticipantStatus.NotSignedIn,
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;A;acf3b4c4-3e92-4937-b2b0-6e9d486efcd2',
+            user_name: 'applicant.interpreter@hearings.reform.hmcts.net'
+        });
+
+        const participant6 = new ParticipantResponse({
+            case_type_group: 'Applicant',
+            current_room: undefined,
+            display_name: 'G',
+            first_name: 'G',
+            hearing_role: 'Witness',
+            id: 'adf3b4c4-3e92-4937-b2b0-6e9d486efcd2',
+            interpreter_room: undefined,
+            last_name: 'Smith',
+            linked_participants: [],
+            name: 'Mr G Smith',
+            representee: '',
+            role: Role.Individual,
+            status: ParticipantStatus.NotSignedIn,
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;A;adf3b4c4-3e92-4937-b2b0-6e9d486efcd2',
+            user_name: 'applicant.witness@hearings.reform.hmcts.net'
+        });
+
+        const participant7 = new ParticipantResponse({
+            case_type_group: 'Respondent',
+            current_room: undefined,
+            display_name: 'E',
+            first_name: 'E',
+            hearing_role: 'Witness',
+            id: '0136aee3-5330-4731-8be2-a05e10234d87',
+            interpreter_room: undefined,
+            last_name: 'Witness',
+            linked_participants: [],
+            name: 'Mr E Smith',
+            representee: '',
+            role: Role.Individual,
+            status: ParticipantStatus.NotSignedIn,
+            tiled_display_name: 'WITNESS;NO_HEARTBEAT;F;0136aee3-5330-4731-8be2-a05e10234d87',
+            user_name: 'respondent.witness1@hearings.reform.hmcts.net'
+        });
+
+        const participant8LinkedParticipants: LinkedParticipantResponse[] = [];
+        participant8LinkedParticipants.push(
+            new LinkedParticipantResponse({
+                link_type: LinkType.Interpreter,
+                linked_id: 'dcf3b4c4-3e92-4937-b2b0-6e9d486efcd3'
+            })
+        );
+
+        const participant8 = new ParticipantResponse({
+            case_type_group: 'Respondent',
+            current_room: undefined,
+            display_name: 'F',
+            first_name: 'F',
+            hearing_role: 'Litigant in person',
+            id: 'db6eb25b-1d70-46ad-8b83-355922f8e976',
+            interpreter_room: undefined,
+            last_name: 'Smith',
+            linked_participants: participant8LinkedParticipants,
+            name: 'Mr F Smith',
+            representee: '',
+            role: Role.Individual,
+            status: ParticipantStatus.NotSignedIn,
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;E;db6eb25b-1d70-46ad-8b83-355922f8e976',
+            user_name: 'respondent.litigant@hearings.reform.hmcts.net'
+        });
+
+        const participant9LinkedParticipants: LinkedParticipantResponse[] = [];
+        participant9LinkedParticipants.push(
+            new LinkedParticipantResponse({
+                link_type: LinkType.Interpreter,
+                linked_id: 'db6eb25b-1d70-46ad-8b83-355922f8e976'
+            })
+        );
+
+        const participant9 = new ParticipantResponse({
+            case_type_group: 'Respondent',
+            current_room: undefined,
+            display_name: 'H',
+            first_name: 'H',
+            hearing_role: 'Interpreter',
+            id: 'dcf3b4c4-3e92-4937-b2b0-6e9d486efcd3',
+            interpreter_room: undefined,
+            last_name: 'Smith',
+            linked_participants: participant9LinkedParticipants,
+            name: 'Mr H Smith',
+            representee: '',
+            role: Role.Individual,
+            status: ParticipantStatus.NotSignedIn,
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;A;dcf3b4c4-3e92-4937-b2b0-6e9d486efcd3',
+            user_name: 'respondent.interpreter@hearings.reform.hmcts.net'
+        });
+
+        participants.push(participant1);
+        participants.push(participant2);
+        participants.push(participant5);
+        participants.push(participant6);
+        participants.push(participant4);
+        participants.push(participant7);
+        participants.push(participant8);
+        participants.push(participant9);
+        return participants;
+    }
+
+    getFullListOfPanelMembers(): ParticipantResponse[] {
+        const participants: ParticipantResponse[] = [];
+        const participant1 = new ParticipantResponse({
+            case_type_group: 'PanelMember',
+            current_room: undefined,
+            display_name: 'Mr Panel Member B',
+            first_name: 'Panel',
+            hearing_role: 'Panel Member',
+            id: 'c505165b-da2a-4a53-a17e-d8f6b0c82e26',
+            interpreter_room: undefined,
+            last_name: 'Member B',
+            linked_participants: [],
+            name: 'Mr Panel Member B',
+            representee: '',
+            role: Role.JudicialOfficeHolder,
+            status: ParticipantStatus.NotSignedIn,
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;Mr Panel Member B;c505165b-da2a-4a53-a17e-d8f6b0c82e26',
+            user_name: 'panel.memberb1@hearings.reform.hmcts.net'
+        });
+        const participant2 = new ParticipantResponse({
+            case_type_group: 'PanelMember',
+            current_room: undefined,
+            display_name: 'Mr Panel Member A',
+            first_name: 'Panel',
+            hearing_role: 'Panel Member',
+            id: 'b3de9868-3275-4e2c-9e28-fcf4d9b7898d',
+            interpreter_room: undefined,
+            last_name: 'Member A',
+            linked_participants: [],
+            name: 'Mr Panel Member A',
+            representee: '',
+            role: Role.JudicialOfficeHolder,
+            status: ParticipantStatus.NotSignedIn,
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;Mr Panel Member A;b3de9868-3275-4e2c-9e28-fcf4d9b7898d',
+            user_name: 'panel.membera1@hearings.reform.hmcts.net'
+        });
+
+        participants.push(participant1);
+        participants.push(participant2);
+        return participants;
+    }
+
+    getFullListOfObservers(): ParticipantResponse[] {
+        const observers: ParticipantResponse[] = [];
+        const qlObserver1 = new ParticipantResponse({
+            case_type_group: null,
+            current_room: undefined,
+            display_name: 'QL Observer A',
+            first_name: null,
+            hearing_role: 'Quick link observer',
+            id: 'f565e05c-01b2-4b3a-b2d8-1d79b5d4124c',
+            interpreter_room: undefined,
+            last_name: null,
+            linked_participants: [],
+            name: 'QL Observer A',
+            representee: null,
+            role: Role.QuickLinkObserver,
+            status: ParticipantStatus.NotSignedIn,
+            tiled_display_name: 'WITNESS;NO_HEARTBEAT;QL Observer A;f565e05c-01b2-4b3a-b2d8-1d79b5d4124c',
+            user_name: 'f565e05c-01b2-4b3a-b2d8-1d79b5d4124c@quick-link-participant.com'
+        });
+        const observer1 = new ParticipantResponse({
+            case_type_group: 'Observer',
+            current_room: undefined,
+            display_name: 'Mr Observer B',
+            first_name: 'Observer',
+            hearing_role: 'Observer',
+            id: '3b0ae293-1979-4d07-8a3a-b95286e5f8c0',
+            interpreter_room: undefined,
+            last_name: 'B',
+            linked_participants: [],
+            name: 'Mr Observer B',
+            representee: '',
+            role: Role.Individual,
+            status: ParticipantStatus.NotSignedIn,
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;Mr Observer B;3b0ae293-1979-4d07-8a3a-b95286e5f8c0',
+            user_name: 'observer.b1@hearings.reform.hmcts.net'
+        });
+        const observer2 = new ParticipantResponse({
+            case_type_group: 'Observer',
+            current_room: undefined,
+            display_name: 'Mr Observer A',
+            first_name: 'Observer',
+            hearing_role: 'Observer',
+            id: '68ca1dbf-5da9-4382-bf60-8a07124be329',
+            interpreter_room: undefined,
+            last_name: 'A',
+            linked_participants: [],
+            name: 'Mr Observer A',
+            representee: '',
+            role: Role.Individual,
+            status: ParticipantStatus.NotSignedIn,
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;Mr Observer A;68ca1dbf-5da9-4382-bf60-8a07124be329',
+            user_name: 'observer.a@hearings.reform.hmcts.net'
+        });
+        const qlObserver2 = new ParticipantResponse({
+            case_type_group: null,
+            current_room: undefined,
+            display_name: 'A QL Observer',
+            first_name: null,
+            hearing_role: 'Quick link observer',
+            id: '5f9e380b-1412-4f70-9ea4-447a5f3ae184',
+            interpreter_room: undefined,
+            last_name: null,
+            linked_participants: [],
+            name: 'A QL Observer',
+            representee: null,
+            role: Role.QuickLinkObserver,
+            status: ParticipantStatus.Joining,
+            tiled_display_name: 'WITNESS;NO_HEARTBEAT;A QL Observer;5f9e380b-1412-4f70-9ea4-447a5f3ae184',
+            user_name: '5f9e380b-1412-4f70-9ea4-447a5f3ae184@quick-link-participant.com'
+        });
+
+        observers.push(qlObserver1);
+        observers.push(observer1);
+        observers.push(observer2);
+        observers.push(qlObserver2);
+        return observers;
+    }
+
+    getFullListOfEndpoints(): VideoEndpointResponse[] {
+        const endpoints: VideoEndpointResponse[] = [];
+        const endpoint1 = new VideoEndpointResponse({
+            current_room: undefined,
+            defence_advocate_username: null,
+            display_name: 'Endpoint B',
+            id: '73a94f6c-e17d-4ce9-bb25-35d7d7192d1a',
+            is_current_user: false,
+            pexip_display_name: 'PSTN;Endpoint B;73a94f6c-e17d-4ce9-bb25-35d7d7192d1a',
+            status: EndpointStatus.NotYetJoined
+        });
+        const endpoint2 = new VideoEndpointResponse({
+            current_room: undefined,
+            defence_advocate_username: null,
+            display_name: 'Endpoint A',
+            id: '9d7b9cde-3a48-4acb-9977-34e27667604d',
+            is_current_user: false,
+            pexip_display_name: 'PSTN;Endpoint A;9d7b9cde-3a48-4acb-9977-34e27667604d',
+            status: EndpointStatus.NotYetJoined
+        });
+
+        endpoints.push(endpoint1);
+        endpoints.push(endpoint2);
+        return endpoints;
+    }
+
+    getFullListOfStaffMembers(): ParticipantResponse[] {
+        const staffMembers: ParticipantResponse[] = [];
+        const staffMember1 = new ParticipantResponse({
+            case_type_group: null,
+            current_room: undefined,
+            display_name: 'C StaffMember',
+            first_name: 'C',
+            hearing_role: 'Staff Member',
+            id: 'ef04ef31-34a5-44ce-80b0-0c7fc2b85195',
+            interpreter_room: undefined,
+            last_name: 'StaffMember',
+            linked_participants: [],
+            name: 'C StaffMember',
+            representee: null,
+            role: Role.StaffMember,
+            status: ParticipantStatus.Disconnected,
+            tiled_display_name: 'CLERK;HEARTBEAT;C StaffMember;ef04ef31-34a5-44ce-80b0-0c7fc2b85195',
+            user_name: 'c.staffmember@hearings.reform.hmcts.net'
+        });
+        const staffMember2 = new ParticipantResponse({
+            case_type_group: null,
+            current_room: undefined,
+            display_name: 'B StaffMember',
+            first_name: 'B',
+            hearing_role: 'Staff Member',
+            id: '58a8d187-7041-4a3a-b455-4d3a8570e617',
+            interpreter_room: undefined,
+            last_name: 'StaffMember',
+            linked_participants: [],
+            name: 'B StaffMember',
+            representee: null,
+            role: Role.StaffMember,
+            status: ParticipantStatus.Disconnected,
+            tiled_display_name: 'CLERK;HEARTBEAT;B StaffMember;58a8d187-7041-4a3a-b455-4d3a8570e617',
+            user_name: 'b.staffmember@hearings.reform.hmcts.net'
+        });
+        const staffMember3 = new ParticipantResponse({
+            case_type_group: null,
+            current_room: undefined,
+            display_name: 'A StaffMember',
+            first_name: 'A',
+            hearing_role: 'Staff Member',
+            id: '976cce84-218e-4bb4-9c30-f469a389a9cd',
+            interpreter_room: undefined,
+            last_name: 'StaffMember',
+            linked_participants: [],
+            name: 'A StaffMember',
+            representee: null,
+            role: Role.StaffMember,
+            status: ParticipantStatus.Disconnected,
+            tiled_display_name: 'CLERK;HEARTBEAT;A StaffMember;976cce84-218e-4bb4-9c30-f469a389a9cd',
+            user_name: 'a.staffmember@hearings.reform.hmcts.net'
+        });
+
+        staffMembers.push(staffMember1);
+        staffMembers.push(staffMember2);
+        staffMembers.push(staffMember3);
+        return staffMembers;
+    }
+
+    getFullListOfWingers(): ParticipantResponse[] {
+        const wingers: ParticipantResponse[] = [];
+        const winger1 = new ParticipantResponse({
+            case_type_group: 'None',
+            current_room: undefined,
+            display_name: 'B Winger',
+            first_name: 'B',
+            hearing_role: 'Winger',
+            id: '08584914-f944-4829-8ac7-6ed6c0870efb',
+            interpreter_room: undefined,
+            last_name: 'Winger',
+            linked_participants: [],
+            name: 'Mr B Winger',
+            representee: '',
+            role: Role.JudicialOfficeHolder,
+            status: ParticipantStatus.NotSignedIn,
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;B Winger;08584914-f944-4829-8ac7-6ed6c0870efb',
+            user_name: 'b.winger@hearings.reform.hmcts.net'
+        });
+        const winger2 = new ParticipantResponse({
+            case_type_group: 'None',
+            current_room: undefined,
+            display_name: 'A Winger',
+            first_name: 'A',
+            hearing_role: 'Winger',
+            id: '42c7abd6-b778-4f20-94e1-8517bf30d7f2',
+            interpreter_room: undefined,
+            last_name: 'Winger',
+            linked_participants: [],
+            name: 'Mr A Winger',
+            representee: '',
+            role: Role.JudicialOfficeHolder,
+            status: ParticipantStatus.NotSignedIn,
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;A Winger;42c7abd6-b778-4f20-94e1-8517bf30d7f2',
+            user_name: 'a.winger1@hearings.reform.hmcts.net'
+        });
+        const winger3 = new ParticipantResponse({
+            case_type_group: 'None',
+            current_room: undefined,
+            display_name: 'C Winger',
+            first_name: 'C',
+            hearing_role: 'Winger',
+            id: '6fa27d52-c94a-4d94-9dd4-f3a52f6e5f38',
+            interpreter_room: undefined,
+            last_name: 'Winger',
+            linked_participants: [],
+            name: 'Mr C Winger',
+            representee: '',
+            role: Role.JudicialOfficeHolder,
+            status: ParticipantStatus.NotSignedIn,
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;C Winger;6fa27d52-c94a-4d94-9dd4-f3a52f6e5f38',
+            user_name: 'c.winger@hearings.reform.hmcts.net'
+        });
+
+        wingers.push(winger1);
+        wingers.push(winger2);
+        wingers.push(winger3);
+        return wingers;
     }
 }

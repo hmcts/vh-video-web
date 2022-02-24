@@ -17,6 +17,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         private AutoMock _mocker;
         private ConferenceStatusController _sut;
 
+        private Guid _conferenceId = Guid.NewGuid();
+
         [SetUp]
         public void SetUp()
         {
@@ -28,45 +30,41 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         public async Task should_return_the_statuses_for_the_conference()
         {
             // Arrange
-            var conferenceId = Guid.NewGuid();
             var conferenceVideoControlStatuses = new ConferenceVideoControlStatuses();
                 
-            _mocker.Mock<IConferenceVideoControlStatusService>().Setup(x => x.GetVideoControlStateForConference(It.Is<Guid>(y => y == conferenceId))).ReturnsAsync(conferenceVideoControlStatuses);
+            _mocker.Mock<IConferenceVideoControlStatusService>().Setup(x => x.GetVideoControlStateForConference(It.Is<Guid>(y => y == _conferenceId))).ReturnsAsync(conferenceVideoControlStatuses);
 
             // Act
-            var response = await _sut.GetVideoControlStatusesForConference(conferenceId);
+            var response = await _sut.GetVideoControlStatusesForConference(_conferenceId);
 
             // Assert
             response.Should().BeAssignableTo<OkObjectResult>().Which.Value.Should().Be(conferenceVideoControlStatuses);
         }
 
         [Test]
-        public async Task should_return_a_404_if_the_statues_returned_is_null()
+        public async Task should_return_NoContent_status_code_if_video_control_statuses_is_null()
         {
-            // Arrange
-            var conferenceId = Guid.NewGuid();
 
-            _mocker.Mock<IConferenceVideoControlStatusService>().Setup(x => x.GetVideoControlStateForConference(It.Is<Guid>(y => y == conferenceId))).ReturnsAsync((ConferenceVideoControlStatuses?)null);
+            _mocker.Mock<IConferenceVideoControlStatusService>()
+                .Setup(x => x.GetVideoControlStateForConference(It.IsAny<Guid>()))
+                .ReturnsAsync(() => default);
 
-            // Act
-            var response = await _sut.GetVideoControlStatusesForConference(conferenceId);
-            
-            // Assert
-            response.Should().BeAssignableTo<NotFoundObjectResult>();
+            var response = await _sut.GetVideoControlStatusesForConference(_conferenceId) as NoContentResult;
+
+            Assert.AreEqual(response.StatusCode, (int)HttpStatusCode.NoContent);
         }
 
         [Test]
         public async Task GetVideoControlStatusesForConference_when_GetVideoControlStateForConference_throw_Exception()
         {
             // Arrange
-            var conferenceId = Guid.NewGuid();
 
             _mocker.Mock<IConferenceVideoControlStatusService>()
-                .Setup(x => x.GetVideoControlStateForConference(It.Is<Guid>(y => y == conferenceId)))
+                .Setup(x => x.GetVideoControlStateForConference(It.Is<Guid>(y => y == _conferenceId)))
                 .Throws<Exception>();
 
             // Act
-            var result = await _sut.GetVideoControlStatusesForConference(conferenceId) as StatusCodeResult;
+            var result = await _sut.GetVideoControlStatusesForConference(_conferenceId) as StatusCodeResult;
 
             // Assert
             result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);

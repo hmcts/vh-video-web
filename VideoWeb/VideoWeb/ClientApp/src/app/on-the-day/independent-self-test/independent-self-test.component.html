@@ -15,13 +15,17 @@
 </div>
 
 <div *ngIf="showEquipmentFaultMessage" class="govuk-!-margin-top-6">
-  <h1 class="govuk-heading-xl">{{ 'independent-self-test.problems-with-your-equipment' | translate }}</h1>
-  <p class="govuk-body govuk-!-margin-top-7">
-    {{ 'independent-self-test.please-call-beforenumber' | translate }}<span class="govuk-!-font-weight-bold">{{ contact.phone }}</span>{{ 'independent-self-test.please-call-afternumber' | translate }}
-  </p>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-xl">{{'equipment-problem.problem-with-equipment' | translate}}</h1>
+      <p class="govuk-body govuk-!-margin-bottom-4">{{'equipment-problem.not-working-call-us' | translate}}</p>
+      <p class="govuk-body govuk-!-margin-bottom-4">{{'equipment-problem.hearing-location' | translate}} {{'equipment-problem.in-england-or-wales' | translate}} <strong>{{'equipment-problem.england-or-wales' | translate}}</strong> {{'equipment-problem.phone' | translate}} {{ contactDetails.englandAndWales.phoneNumber }}</p>
+      <p class="govuk-body govuk-!-margin-bottom-2">{{'equipment-problem.hearing-location' | translate}} {{'equipment-problem.in-scotland' | translate}} <strong>{{'equipment-problem.scotland' | translate}}</strong> {{'equipment-problem.phone' | translate}} {{ contactDetails.scotland.phoneNumber }}</p>
+    </div>
+  </div>
 </div>
 
-<div>
+<div class="govuk-!-margin-top-4">
   <button
     *ngIf="showEquipmentFaultMessage"
     id="continue-btn"

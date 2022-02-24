@@ -30,7 +30,11 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.Id = Guid.NewGuid()).Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
-                        .With(x => x.Id = Guid.NewGuid()).Build()
+                        .With(x => x.Id = Guid.NewGuid()).Build(),
+                    Builder<Participant>.CreateNew()
+                        .With(x => x.Role = Role.StaffMember).With(x => x.Id = Guid.NewGuid())
+                        .With(x => x.Username = "staffMember@hmcts.net")
+                        .Build()
                 },
                 Endpoints = new List<Endpoint>
                 {

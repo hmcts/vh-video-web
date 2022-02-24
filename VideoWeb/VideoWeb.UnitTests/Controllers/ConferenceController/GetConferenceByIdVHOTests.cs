@@ -101,6 +101,20 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             typedResult.Should().BeNull();
         }
 
+        [Test]
+        public async Task Should_return_NoContent_status_code_when_conference_object_is_not_returned_by_VHO_id()
+        {
+            var conferenceId = Guid.NewGuid();
+
+            _mocker.Mock<IVideoApiClient>()
+                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(() => default);
+
+            var response = (await _sut.GetConferenceByIdVHOAsync(conferenceId)).Result as NoContentResult;
+
+            Assert.AreEqual(response.StatusCode, (int)HttpStatusCode.NoContent);
+        }
+
         private ConferenceDetailsResponse CreateValidConferenceResponse(string username = "john@hmcts.net")
         {
             var judge = new ParticipantDetailsResponseBuilder(UserRole.Judge, "Judge").Build();

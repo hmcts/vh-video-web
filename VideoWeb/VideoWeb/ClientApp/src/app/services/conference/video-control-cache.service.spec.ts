@@ -82,6 +82,24 @@ describe('VideoControlCacheService', () => {
         }));
     });
 
+    describe('initHearingControlState', () => {
+        it('should load the hearing state for the current conference', fakeAsync(() => {
+            // Arrange
+            const conferenceId = 'conference-id';
+            const conference = { id: conferenceId } as ConferenceResponse;
+
+            const hearingControlsState: IHearingControlsState = { participantStates: {} };
+            // Act
+            currentConferenceSubject.next(conference);
+            flush();
+            service.initHearingControlState();
+
+            // Assert
+            expect(videoControlCacheStorageServiceSpy.loadHearingStateForConference).toHaveBeenCalledOnceWith(conferenceId);
+            expect(service['hearingControlStates']).toEqual(hearingControlsState);
+        }));
+    });
+
     describe('setSpotlightStatus', () => {
         it('should add new value in the hearingControlStates and should update the cache', () => {
             // Arrange

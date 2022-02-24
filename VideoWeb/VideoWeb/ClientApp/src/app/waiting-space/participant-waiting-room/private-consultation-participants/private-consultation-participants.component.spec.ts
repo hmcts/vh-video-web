@@ -19,17 +19,20 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
+import { RoomTransfer } from 'src/app/shared/models/room-transfer';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation.service';
 import {
     consultationRequestResponseMessageSubjectMock,
     eventsServiceSpy,
     participantStatusSubjectMock,
-    requestedConsultationMessageSubjectMock
+    requestedConsultationMessageSubjectMock,
+    roomTransferSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-security.service';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { HearingRole } from '../../models/hearing-role-model';
+import { WRParticipantStatusListDirective } from '../../waiting-room-shared/wr-participant-list-shared.component';
 import { ParticipantListItem } from '../participant-list-item';
 import { PrivateConsultationParticipantsComponent } from './private-consultation-participants.component';
 
@@ -367,15 +370,6 @@ describe('PrivateConsultationParticipantsComponent', () => {
         expect(result).toBeFalse();
     });
 
-    it('should not get witnesses', () => {
-        const participants = new ConferenceTestData().getListOfParticipants();
-        const witness = participants[0];
-        witness.hearing_role = HearingRole.WITNESS;
-        const representative = participants[1];
-        component.nonJudgeParticipants = [witness, representative];
-        expect(component.getPrivateConsultationParticipants().length).toBe(1);
-    });
-
     it('should not get interpreter', () => {
         const participants = new ConferenceTestData().getListOfParticipants();
         const interpreter = participants[0];
@@ -387,7 +381,8 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
     it('should sort quick link participants', () => {
         const testData = new ConferenceTestData();
-        component.nonJudgeParticipants = [testData.quickLinkParticipant2, testData.quickLinkParticipant1];
+        component.conference.participants = [testData.quickLinkParticipant2, testData.quickLinkParticipant1];
+        component.initParticipants();
         const participants = component.getPrivateConsultationParticipants();
 
         expect(participants.length).toBe(2);
@@ -452,11 +447,11 @@ describe('PrivateConsultationParticipantsComponent', () => {
         expect(component.canCallEndpoint(endpoint)).toBeFalse();
     });
 
-    it('should return can not call endpoint - room already has endpoint', () => {
-        // Not in current room
-        component.roomLabel = 'test-room';
+    it('should return can not call endpoint - when endpoint is already in the room', () => {
+        // In current room
+        const roomLabel = 'test-room';
         const endpoint = conference.endpoints[0];
-        endpoint.current_room.label = 'not-test-room';
+        component.roomLabel = endpoint.current_room.label = roomLabel;
 
         // Available
         endpoint.status = EndpointStatus.Connected;
@@ -516,7 +511,8 @@ describe('PrivateConsultationParticipantsComponent', () => {
             component.panelMembers = testPanelMembers;
             component.wingers = testWingers;
 
-            const mappedGroups = component.johGroups;
+            component.setJohGroupResult();
+            const mappedGroups = component.johGroupResult;
             const mappedPanelMembers = mappedGroups[0];
             const mappedWingers = mappedGroups[1];
 
@@ -525,7 +521,74 @@ describe('PrivateConsultationParticipantsComponent', () => {
         });
     });
 
-    describe('getWitnessesAndObservers', () => {
+    describe('johGroups - handleParticipantStatusChange', () => {
+        let superSpy: jasmine.SpyObj<any>;
+        let johGroupSpy: jasmine.SpyObj<any>;
+
+        beforeEach(() => {
+            superSpy = spyOn(WRParticipantStatusListDirective.prototype, 'handleParticipantStatusChange');
+            johGroupSpy = spyOn(component, 'setJohGroupResult');
+        });
+
+        it('should handle participant status messages', fakeAsync(() => {
+            const message = {} as ParticipantStatusMessage;
+            component.handleParticipantStatusChange(message);
+            tick();
+            expect(superSpy).toHaveBeenCalledTimes(1);
+            expect(johGroupSpy).toHaveBeenCalledTimes(1);
+            expect(superSpy).toHaveBeenCalledWith(message);
+        }));
+    });
+
+    describe('initParticipants', () => {
+        let superSpy: jasmine.SpyObj<any>;
+        let johGroupSpy: jasmine.SpyObj<any>;
+
+        beforeEach(() => {
+            superSpy = spyOn(WRParticipantStatusListDirective.prototype, 'initParticipants');
+            johGroupSpy = spyOn(component, 'setJohGroupResult');
+        });
+
+        it('should initialize participants', () => {
+            component.initParticipants();
+            expect(superSpy).toHaveBeenCalledTimes(1);
+            expect(johGroupSpy).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('handleRoomChange', () => {
+        let superSpy: jasmine.SpyObj<any>;
+        let johGroupSpy: jasmine.SpyObj<any>;
+        const message = {} as RoomTransfer;
+
+        beforeEach(() => {
+            superSpy = spyOn<any>(WRParticipantStatusListDirective.prototype, 'filterNonJudgeParticipants');
+            johGroupSpy = spyOn(component, 'setJohGroupResult');
+        });
+
+        it('should handle room change message', () => {
+            component.handleRoomChange(message);
+            expect(johGroupSpy).toHaveBeenCalledTimes(1);
+            expect(superSpy).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('room transfer event', () => {
+        let handleRoomChangeSpy: jasmine.SpyObj<any>;
+        const message = {} as RoomTransfer;
+
+        beforeEach(() => {
+            handleRoomChangeSpy = spyOn(component, 'handleRoomChange');
+        });
+
+        it('should handle room change message', fakeAsync(() => {
+            roomTransferSubjectMock.next(message);
+            tick();
+            expect(handleRoomChangeSpy).toHaveBeenCalledTimes(1);
+        }));
+    });
+
+    describe('getObservers', () => {
         const litigantInPerson = new ParticipantResponse({
             id: 'litigantInPerson_id',
             status: ParticipantStatus.Available,
@@ -602,34 +665,60 @@ describe('PrivateConsultationParticipantsComponent', () => {
         const testObservers = [regularObserver, quickLinkObserver2, quickLinkObserver1];
 
         beforeEach(() => {
-            component.nonJudgeParticipants = testParticipants;
-            component.observers = testObservers;
+            conference.participants = testParticipants.concat(testObservers);
+            component.initParticipants();
         });
 
         it('should return nothing if is not joh consultation', () => {
             spyOn(component, 'isJohConsultation').and.returnValue(false);
-            const result = component.getWitnessesAndObservers();
+            const result = component.getObservers();
             expect(result).toEqual([]);
         });
 
         it('should return list in correct order for joh consultation', () => {
-            const mappedWitness1: ParticipantListItem = { ...witness1 };
-            const mappedWitness2: ParticipantListItem = { ...witness2 };
-            const mappedRegularObserver: ParticipantListItem = { ...regularObserver };
-            const mappedQuickLinkObserver1: ParticipantListItem = { ...quickLinkObserver1 };
-            const mappedQuickLinkObserver2: ParticipantListItem = { ...quickLinkObserver2 };
-
             spyOn(component, 'isJohConsultation').and.returnValue(true);
-            const result = component.getWitnessesAndObservers();
-            const witnessesOrdered = [mappedWitness1, mappedWitness2].sort((a, b) => a.display_name.localeCompare(b.display_name));
+            const result = component.getObservers();
 
-            const observersOrdered = [mappedRegularObserver, mappedQuickLinkObserver1, mappedQuickLinkObserver2].sort((a, b) =>
-                a.display_name.localeCompare(b.display_name)
-            );
+            const observer1Index = result.findIndex(x => x.display_name === 'regularObserver_display_name');
+            const qlObserver1Index = result.findIndex(x => x.display_name === 'quickLinkObserver1_display_name');
+            const qlObserver2Index = result.findIndex(x => x.display_name === 'quickLinkObserver2_display_name');
 
-            expect(result.length).toBe(witnessesOrdered.length + observersOrdered.length);
-            expect(result.slice(0, witnessesOrdered.length)).toEqual(witnessesOrdered);
-            expect(result.slice(witnessesOrdered.length)).toEqual(observersOrdered);
+            expect(observer1Index).toEqual(0);
+            expect(qlObserver1Index).toEqual(1);
+            expect(qlObserver2Index).toEqual(2);
+
+            expect(result.length).toBe(testObservers.length);
+        });
+    });
+
+    describe('getPrivateConsultationParticipants', () => {
+        beforeEach(() => {
+            conference.participants = new ConferenceTestData().getFullListOfNonJudgeParticipants();
+            component.initParticipants();
+        });
+
+        it('should return list in correct order', () => {
+            const privateConsultationParticipants = component.getPrivateConsultationParticipants();
+
+            const applicant1Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr B Smith');
+            const applicant2Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr A Smith');
+            const applicant3Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr G Smith');
+            const respondent1Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr E Smith');
+            const respondent2Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr F Smith');
+            const respondent3Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr H Smith');
+            const quickLinkParticipant1Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr C Smith');
+            const quickLinkParticipant2Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr D Smith');
+
+            // Interpreters are filtered out
+            expect(applicant2Index).toEqual(-1);
+            expect(respondent3Index).toEqual(-1);
+
+            expect(applicant1Index).toEqual(0);
+            expect(applicant3Index).toEqual(1);
+            expect(respondent1Index).toEqual(2);
+            expect(respondent2Index).toEqual(3);
+            expect(quickLinkParticipant1Index).toEqual(4);
+            expect(quickLinkParticipant2Index).toEqual(5);
         });
     });
 });

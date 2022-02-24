@@ -32,6 +32,7 @@ import { ParticipantRemoteMuteStoreService } from '../services/participant-remot
 import { VideoCallService } from '../services/video-call.service';
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 import { IConferenceParticipantsStatus } from '../models/conference-participants-status';
+import { IndividualPanelModel } from '../models/individual-panel-model';
 
 @Component({
     selector: 'app-participants-panel',
@@ -69,8 +70,11 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-
+        this.videoControlCacheService.initHearingControlState();
         this.getParticipantsList().then(() => {
+            this.participants
+                .map(p => p.id)
+                .forEach(participantId => this.videoControlCacheService.setRemoteMutedStatus(participantId, false));
             this.participantRemoteMuteStoreService.conferenceParticipantsStatus$.pipe(take(1)).subscribe(state => {
                 this.participants.forEach(participant => {
                     if (state.hasOwnProperty(participant.id)) {
@@ -130,13 +134,14 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     readVideoControlStatusesFromCache(state: IConferenceParticipantsStatus, participant: PanelModel) {
         if (this.isCountdownCompleted) {
-            const localAudioMuted = this.videoControlCacheService.getLocalAudioMuted(participant.id);
             const localVideoMuted = this.videoControlCacheService.getLocalVideoMuted(participant.id);
             const remoteMutedStatus = this.videoControlCacheService.getRemoteMutedStatus(participant.id);
             const handRaise = this.videoControlCacheService.getHandRaiseStatus(participant.id);
+            let localAudioMuted: boolean;
 
             if (participant instanceof LinkedParticipantPanelModel) {
                 participant.participants.forEach(async linkedParticipant => {
+                    localAudioMuted = this.videoControlCacheService.getLocalAudioMuted(linkedParticipant.id);
                     this.logger.info(`${this.loggerPrefix} Updating store with audio and video from cache lp`, {
                         audio: localAudioMuted,
                         video: localVideoMuted,
@@ -157,6 +162,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                     );
                 });
             } else {
+                localAudioMuted = this.videoControlCacheService.getLocalAudioMuted(participant.id);
                 this.participantRemoteMuteStoreService.updateRemoteMuteStatus(participant.id, remoteMutedStatus);
                 this.participantRemoteMuteStoreService.updateLocalMuteStatus(participant.id, localAudioMuted, localVideoMuted);
                 participant.updateParticipant(
@@ -169,6 +175,21 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                 );
             }
         }
+    }
+
+    updateLocalAudioMutedForWitnessInterpreterVmr(
+        linkedParticipant: IndividualPanelModel,
+        participantId: string,
+        localAudioMuted: boolean
+    ) {
+        this.logger.info(`${this.loggerPrefix} Setting store audio muted to true`, {
+            linkedParticipantId: linkedParticipant.id,
+            participantId: participantId,
+            localAudioMuted: localAudioMuted
+        });
+
+        this.participantRemoteMuteStoreService.updateLocalMuteStatus(linkedParticipant.id, localAudioMuted, null);
+        linkedParticipant.updateParticipant(false, false, false, participantId, localAudioMuted, false);
     }
 
     resetWitnessTransferTimeout(participantId: string) {
@@ -554,8 +575,9 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     private async sendTransferDirection(participant: PanelModel, direction: TransferDirection) {
         if (participant instanceof LinkedParticipantPanelModel) {
-            participant.participants.forEach(async p => {
-                await this.eventService.sendTransferRequest(this.conferenceId, p.id, direction);
+            participant.participants.forEach(async linkedParticipant => {
+                this.updateLocalAudioMutedForWitnessInterpreterVmr(linkedParticipant, participant.id, true);
+                await this.eventService.sendTransferRequest(this.conferenceId, linkedParticipant.id, direction);
             });
         } else {
             await this.eventService.sendTransferRequest(this.conferenceId, participant.id, direction);
@@ -594,7 +616,12 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             participant: participant.id
         });
 
-        participant.dimissed();
+        if (participant.hasHandRaised()) {
+            this.lowerParticipantHand(participant);
+        }
+        if (participant.hasSpotlight()) {
+            this.toggleSpotlightParticipant(participant);
+        }
 
         try {
             let participantId = participant.id;
@@ -715,8 +742,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     private getOrderedParticipants(combined: PanelModel[]) {
         combined.sort((x, z) => {
             if (x.orderInTheList === z.orderInTheList) {
-                // 3 here means regular participants and should be grouped by caseTypeGroup
-                if (x.orderInTheList !== 3 || x.caseTypeGroup === z.caseTypeGroup) {
+                // 4 here means regular participants and should be grouped by caseTypeGroup
+                if (x.orderInTheList !== 4 || x.caseTypeGroup === z.caseTypeGroup) {
                     return x.displayName.localeCompare(z.displayName);
                 }
                 return x.caseTypeGroup.localeCompare(z.caseTypeGroup);

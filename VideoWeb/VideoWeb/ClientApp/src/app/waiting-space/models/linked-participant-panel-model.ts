@@ -151,8 +151,4 @@ export class LinkedParticipantPanelModel extends PanelModel {
             this.handRaised = handRaised;
         }
     }
-
-    dimissed() {
-        this.participants.forEach(p => p.dimissed());
-    }
 }
