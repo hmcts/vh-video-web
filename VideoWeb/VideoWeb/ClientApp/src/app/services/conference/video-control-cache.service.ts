@@ -10,8 +10,8 @@ import { IHearingControlsState } from './video-control-cache-storage.service.int
 })
 export class VideoControlCacheService {
     private loggerPrefix = '[VideoControlCacheService] -';
-
     private hearingControlStates: IHearingControlsState | null = { participantStates: {} };
+    private conferenceId: string;
 
     initHearingControlState() {
         this.conferenceService.currentConference$.subscribe(conference => {
@@ -19,13 +19,13 @@ export class VideoControlCacheService {
                 this.logger.warn(`${this.loggerPrefix} No conference loaded. Skipping loading of hearing state for conference`);
                 return;
             }
-
+            this.conferenceId = conference.id;
             this.storageService
-                .loadHearingStateForConference(conference.id)
+                .loadHearingStateForConference(this.conferenceId)
                 .pipe(take(1))
                 .subscribe(state => {
                     this.hearingControlStates = state;
-                    this.logger.info(`${this.loggerPrefix} initialised state for ${conference.id}.`, {
+                    this.logger.info(`${this.loggerPrefix} initialised state for ${this.conferenceId}.`, {
                         hearingControlStates: this.hearingControlStates
                     });
                 });
@@ -102,7 +102,7 @@ export class VideoControlCacheService {
         return this.hearingControlStates?.participantStates[participantId]?.isRemoteMuted ?? false;
     }
 
-    setHandRaiseStatus(participantId: string, isHandRaisedValue: boolean, syncChanges: boolean = true) {
+    async setHandRaiseStatus(participantId: string, isHandRaisedValue: boolean, syncChanges: boolean = true) {
         this.logger.info(`${this.loggerPrefix} Setting Hand raise status.`, {
             participantId: participantId,
             oldValue: this.hearingControlStates?.participantStates[participantId]?.isHandRaised ?? null,
@@ -114,16 +114,38 @@ export class VideoControlCacheService {
             this.logger.warn(`${this.loggerPrefix} Cannot set hand raise status as hearing control states is not initialised.`);
             return;
         }
-
-        if (!this.hearingControlStates.participantStates[participantId]) {
-            this.hearingControlStates.participantStates[participantId] = { isHandRaised: isHandRaisedValue };
-        } else {
-            this.hearingControlStates.participantStates[participantId].isHandRaised = isHandRaisedValue;
-        }
-
-        if (syncChanges) {
-            this.savingHearingState();
-        }
+        const self = this;
+        this.storageService
+            .loadHearingStateForConference(this.conferenceId)
+            .pipe(take(1))
+            .toPromise()
+            .then(state => {
+                self.hearingControlStates = state;
+                self.logger.info(`${this.loggerPrefix} re-initialised state for ${this.conferenceId}.`, {
+                    hearingControlStates: this.hearingControlStates
+                });
+                raiseHandInCache();
+            })
+            .catch(() => {
+                self.logger.info(
+                    `${this.loggerPrefix} failed to re-initialised state for ${this.conferenceId}.
+                Control States may be out of sync`,
+                    {
+                        hearingControlStates: this.hearingControlStates
+                    }
+                );
+                raiseHandInCache();
+            });
+        const raiseHandInCache = () => {
+            if (!self.hearingControlStates.participantStates[participantId]) {
+                self.hearingControlStates.participantStates[participantId] = { isHandRaised: isHandRaisedValue };
+            } else {
+                self.hearingControlStates.participantStates[participantId].isHandRaised = isHandRaisedValue;
+            }
+            if (syncChanges) {
+                self.savingHearingState();
+            }
+        };
     }
 
     getHandRaiseStatus(participantId: string): boolean {
