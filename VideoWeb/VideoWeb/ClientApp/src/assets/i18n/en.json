@@ -775,7 +775,8 @@
     "tenant-fees": "Tenant Fees",
     "upper-tribunal-immigration-&-asylum-chamber": "Upper Tribunal Immigration & Asylum Chamber",
     "upper-tribunal-administrative-appeals-chamber": "Upper Tribunal Administrative Appeals Chamber",
-    "mental-health": "Mental Health"
+    "mental-health": "Mental Health",
+    "asylum-support": "Asylum Support"
   },
   "case-type-group": {
     "state": "State",
