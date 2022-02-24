@@ -100,7 +100,7 @@ export class AppInsightsLoggerService implements LogAdapter {
 
         this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Error }, properties);
         this.appInsights.trackException({
-            error: err,
+            exception: err,
             properties: properties
         });
     }

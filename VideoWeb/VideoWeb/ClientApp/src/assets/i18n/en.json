@@ -701,10 +701,10 @@
     "medical-member": "Medical Member",
     "legal-member": "Legal Member",
     "financial-member": "Financial Member",
-    "appellant": "Appellant", 
-    "local-authority":"Local Authority",
-    "government-legal-department(solicitor)":"Government Legal Department(Solicitor)",
     "appellant": "Appellant",
+    "local-authority": "Local Authority",
+    "government-legal-department(solicitor)": "Government Legal Department(Solicitor)",
+    "traffic-commissioners-officer": "Traffic Commissioners Officer",
     "care-coordinator": "Care Coordinator",
     "doctor": "Doctor",
     "nearest-relative": "Nearest Relative",
@@ -726,7 +726,8 @@
     "panel-member": "Panel Member",
     "respondent": "Respondent",
     "state": "State",
-    "secretary-of-state":"Secretary of State"
+    "secretary-of-state": "Secretary of State",
+    "traffic-commissioner": "Traffic Commissioner"
   },
   "case-type": {
     "adoption": "Adoption",
@@ -772,7 +773,8 @@
     "family": "Family",
     "business-lease-renewal": "Business Lease Renewal",
     "tenant-fees": "Tenant Fees",
-    "upper-tribunal-immigration-&-asylum-chamber":"Upper Tribunal Immigration & Asylum Chamber",
+    "upper-tribunal-immigration-&-asylum-chamber": "Upper Tribunal Immigration & Asylum Chamber",
+    "upper-tribunal-administrative-appeals-chamber": "Upper Tribunal Administrative Appeals Chamber",
     "mental-health": "Mental Health"
   },
   "case-type-group": {
@@ -787,9 +789,10 @@
     "defendant": "Defendant",
     "respondent": "Respondent",
     "appellant": "Appellant",
-    "claimant": "Claimant", 
-    "homeoffice":"Home Office", 
-    "secretaryofstate":"Secretary of State"
+    "claimant": "Claimant",
+    "homeoffice": "Home Office",
+    "secretaryofstate": "Secretary of State",
+    "trafficcommissioner": "Traffic Commissioner"
   },
   "user-role": {
     "case-admin": "Case admin",
