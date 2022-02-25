@@ -5,7 +5,7 @@ import { ConferenceResponse } from '../clients/api-client';
 import { LoggerService } from '../logging/logger.service';
 import { ConferenceService } from './conference.service';
 import { DistributedVideoControlCacheService } from './distributed-video-control-cache.service';
-import { IHearingControlsState, IParticipantControlsState } from './video-control-cache-storage.service.interface';
+import { IHearingControlsState } from './video-control-cache-storage.service.interface';
 import { VideoControlCacheService } from './video-control-cache.service';
 
 describe('VideoControlCacheService', () => {
