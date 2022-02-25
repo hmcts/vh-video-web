@@ -124,7 +124,7 @@ export class VideoControlCacheService {
                 self.logger.info(`${this.loggerPrefix} re-initialised state for ${this.conferenceId}.`, {
                     hearingControlStates: this.hearingControlStates
                 });
-                raiseHandInCache();
+                setHandRaiseStatusInCache();
             })
             .catch(() => {
                 self.logger.info(
@@ -134,9 +134,9 @@ export class VideoControlCacheService {
                         hearingControlStates: this.hearingControlStates
                     }
                 );
-                raiseHandInCache();
+                setHandRaiseStatusInCache();
             });
-        const raiseHandInCache = () => {
+        const setHandRaiseStatusInCache = () => {
             if (!self.hearingControlStates.participantStates[participantId]) {
                 self.hearingControlStates.participantStates[participantId] = { isHandRaised: isHandRaisedValue };
             } else {

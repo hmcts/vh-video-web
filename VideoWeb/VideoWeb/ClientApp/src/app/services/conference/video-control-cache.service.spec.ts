@@ -804,6 +804,7 @@ describe('VideoControlCacheService', () => {
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
+            expect(videoControlCacheStorageServiceSpy.loadHearingStateForConference).toHaveBeenCalled();
             expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).toHaveBeenCalledOnceWith(
                 conferenceId,
                 expectedHearingControlsState
@@ -830,6 +831,7 @@ describe('VideoControlCacheService', () => {
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
+            expect(videoControlCacheStorageServiceSpy.loadHearingStateForConference).toHaveBeenCalled();
             expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).not.toHaveBeenCalled();
         });
 
@@ -854,6 +856,7 @@ describe('VideoControlCacheService', () => {
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
+            expect(videoControlCacheStorageServiceSpy.loadHearingStateForConference).toHaveBeenCalled();
             expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).toHaveBeenCalledOnceWith(
                 conferenceId,
                 expectedHearingControlsState
@@ -881,6 +884,7 @@ describe('VideoControlCacheService', () => {
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
+            expect(videoControlCacheStorageServiceSpy.loadHearingStateForConference).toHaveBeenCalled();
             expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).not.toHaveBeenCalled();
         });
 
@@ -924,6 +928,7 @@ describe('VideoControlCacheService', () => {
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
+            expect(videoControlCacheStorageServiceSpy.loadHearingStateForConference).toHaveBeenCalled();
             expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).toHaveBeenCalledOnceWith(
                 conferenceId,
                 expectedHearingControlsState
@@ -945,6 +950,7 @@ describe('VideoControlCacheService', () => {
 
             // Assert
             expect(service['hearingControlStates']).toEqual(null);
+            expect(videoControlCacheStorageServiceSpy.loadHearingStateForConference).not.toHaveBeenCalled();
             expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).not.toHaveBeenCalled();
         });
     });
