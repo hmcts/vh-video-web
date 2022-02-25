@@ -712,7 +712,14 @@
     "patient": "Patient",
     "victim-liaison-officer": "Victim Liaison Officer",
     "responsible-clinician-(rc)": "Responsible Clinician (RC)",
-    "specialist-lay-member": "Specialist Lay Member"
+    "specialist-lay-member": "Specialist Lay Member",
+    "advocate": "Advocate",
+    "certification-officer": "Certification Officer",
+    "counsel": "Counsel",
+    "employer": "Employer",
+    "interventer": "Interventer",
+    "trade-union": "Trade Union",
+    "pro-bono-representative": "Pro-Bono Representative"
   },
   "case-role": {
     "appellant": "Appellant",
@@ -727,7 +734,8 @@
     "respondent": "Respondent",
     "state": "State",
     "secretary-of-state": "Secretary of State",
-    "traffic-commissioner": "Traffic Commissioner"
+    "traffic-commissioner": "Traffic Commissioner",
+    "elaas": "ELAAS"
   },
   "case-type": {
     "adoption": "Adoption",
@@ -776,7 +784,8 @@
     "upper-tribunal-immigration-&-asylum-chamber": "Upper Tribunal Immigration & Asylum Chamber",
     "upper-tribunal-administrative-appeals-chamber": "Upper Tribunal Administrative Appeals Chamber",
     "mental-health": "Mental Health",
-    "asylum-support": "Asylum Support"
+    "asylum-support": "Asylum Support",
+    "employment-appeal-tribunal": "Employment Appeal Tribunal"
   },
   "case-type-group": {
     "state": "State",
@@ -793,7 +802,8 @@
     "claimant": "Claimant",
     "homeoffice": "Home Office",
     "secretaryofstate": "Secretary of State",
-    "trafficcommissioner": "Traffic Commissioner"
+    "trafficcommissioner": "Traffic Commissioner",
+    "elaas": "ELAAS"
   },
   "user-role": {
     "case-admin": "Case admin",
