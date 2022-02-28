@@ -1022,7 +1022,14 @@
     "patient": "Claf",
     "victim-liaison-officer": "Swyddog Cyswllt Dioddefwyr",
     "responsible-clinician-(rc)": "Clinigydd Cyfrifol (RC)",
-    "specialist-lay-member": "Aelod Lleyg Arbenigol"
+    "specialist-lay-member": "Aelod Lleyg Arbenigol",
+    "advocate": "Adfocad",
+    "certification-officer": "Swyddog Ardystio",
+    "counsel": "Cwnsler",
+    "employer": "Cyflogwr",
+    "interventer": "Cyfryngwr",
+    "trade-union": "Undeb Llafur",
+    "pro-bono-representative": "Cynrychiolydd Pro Bono"
   },
   "case-type-group": {
     "respondent": "Atebydd",
@@ -1039,7 +1046,8 @@
     "state": "Y Wladwriaeth",
     "homeoffice": "Y Swyddfa Gartref",
     "secretaryofstate": "Ysgrifennydd Gwladol",
-    "trafficcommissioner": "Y Comisiynydd Traffig"
+    "trafficcommissioner": "Y Comisiynydd Traffig",
+    "elaas": "Cynllun Cynghori ar Apeliadau Cyfraith Cyflogaeth"
   },
   "case-type": {
     "placement": "Lleoliad",
@@ -1087,7 +1095,9 @@
     "tenant-fees": "Ffioedd Tenantiaid",
     "upper-tribunal-immigration-&-asylum-chamber": "Tribiwnlys Mewnfudo a Lloches Haen Uchaf",
     "upper-tribunal-administrative-appeals-chamber": "Siambr Apeliadau Gweinyddol yr Uwch Dribiwnlys",
-    "mental-health": "Iechyd Meddwl"
+    "mental-health": "Iechyd Meddwl",
+    "asylum-support": "Y Tribiwnlys Cymorth Lloches",
+    "employment-appeal-tribunal": "Y Tribiwnlys Apeliadau Cyflogaeth"
   },
   "case-role": {
     "state": "Y Wladwriaeth",
@@ -1102,7 +1112,8 @@
     "applicant": "Ceisydd",
     "appellant": "Apelydd",
     "secretary-of-state": "Ysgrifennydd Gwladol",
-    "traffic-commissioner": "Y Comisiynydd Traffig"
+    "traffic-commissioner": "Y Comisiynydd Traffig",
+    "elaas": "Cynllun Cynghori ar Apeliadau Cyfraith Cyflogaeth"
   },
   "venue-list": {
     "title": "Dewis eich gwrandawiadau",

@@ -779,14 +779,19 @@ describe('VideoControlCacheService', () => {
     });
 
     describe('setHandRaiseStatus', () => {
-        it('should add new value in the hearingControlStates and should update the cache sync changes true', () => {
+        beforeEach(() => {
+            const dummyState: IHearingControlsState = { participantStates: {} };
+            videoControlCacheStorageServiceSpy.loadHearingStateForConference.and.returnValue(of(dummyState));
+            service = new VideoControlCacheService(conferenceServiceSpy, videoControlCacheStorageServiceSpy, loggerServiceSpy);
+        });
+
+        it('should add new value in the hearingControlStates and should update the cache sync changes true', async () => {
             // Arrange
             const conferenceId = 'conference-id';
             const participantId = 'participant-id';
             const handRaiseStatus = true;
 
             const initialHearingControlsState: IHearingControlsState = { participantStates: {} };
-
             const expectedHearingControlsState: IHearingControlsState = { participantStates: {} };
             expectedHearingControlsState.participantStates[participantId] = { isHandRaised: handRaiseStatus };
 
@@ -795,17 +800,18 @@ describe('VideoControlCacheService', () => {
             service['hearingControlStates'] = initialHearingControlsState;
 
             // Act
-            service.setHandRaiseStatus(participantId, handRaiseStatus, true);
+            await service.setHandRaiseStatus(participantId, handRaiseStatus, true);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
+            expect(videoControlCacheStorageServiceSpy.loadHearingStateForConference).toHaveBeenCalled();
             expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).toHaveBeenCalledOnceWith(
                 conferenceId,
                 expectedHearingControlsState
             );
         });
 
-        it('should add new value in the hearingControlStates and should update the cache sync changes false', () => {
+        it('should add new value in the hearingControlStates and should update the cache sync changes false', async () => {
             // Arrange
             const conferenceId = 'conference-id';
             const participantId = 'participant-id';
@@ -821,14 +827,15 @@ describe('VideoControlCacheService', () => {
             service['hearingControlStates'] = initialHearingControlsState;
 
             // Act
-            service.setHandRaiseStatus(participantId, handRaiseStatus, false);
+            await service.setHandRaiseStatus(participantId, handRaiseStatus, false);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
+            expect(videoControlCacheStorageServiceSpy.loadHearingStateForConference).toHaveBeenCalled();
             expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).not.toHaveBeenCalled();
         });
 
-        it('should update the value in the hearingControlStates and should update the cache syncChanges true', () => {
+        it('should update the value in the hearingControlStates and should update the cache syncChanges true', async () => {
             // Arrange
             const conferenceId = 'conference-id';
             const participantId = 'participant-id';
@@ -845,17 +852,18 @@ describe('VideoControlCacheService', () => {
             service['hearingControlStates'] = initialHearingControlsState;
 
             // Act
-            service.setHandRaiseStatus(participantId, handRaiseStatus, true);
+            await service.setHandRaiseStatus(participantId, handRaiseStatus, true);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
+            expect(videoControlCacheStorageServiceSpy.loadHearingStateForConference).toHaveBeenCalled();
             expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).toHaveBeenCalledOnceWith(
                 conferenceId,
                 expectedHearingControlsState
             );
         });
 
-        it('should update the value in the hearingControlStates and should update the cache syncChanges false', () => {
+        it('should update the value in the hearingControlStates and should update the cache syncChanges false', async () => {
             // Arrange
             const conferenceId = 'conference-id';
             const participantId = 'participant-id';
@@ -872,14 +880,15 @@ describe('VideoControlCacheService', () => {
             service['hearingControlStates'] = initialHearingControlsState;
 
             // Act
-            service.setHandRaiseStatus(participantId, handRaiseStatus, false);
+            await service.setHandRaiseStatus(participantId, handRaiseStatus, false);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
+            expect(videoControlCacheStorageServiceSpy.loadHearingStateForConference).toHaveBeenCalled();
             expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).not.toHaveBeenCalled();
         });
 
-        it('should update the value in the hearingControlStates and should update the cache and should retain existing propertie values', () => {
+        it('should update the value in the hearingControlStates and should update the cache and should retain existing properties values', async () => {
             // Arrange
             const conferenceId = 'conference-id';
             const participantId = 'participant-id';
@@ -898,6 +907,9 @@ describe('VideoControlCacheService', () => {
                 isHandRaised: !isHandRaised
             };
 
+            videoControlCacheStorageServiceSpy.loadHearingStateForConference.and.returnValue(of(initialHearingControlsState));
+            service = new VideoControlCacheService(conferenceServiceSpy, videoControlCacheStorageServiceSpy, loggerServiceSpy);
+
             const expectedHearingControlsState: IHearingControlsState = { participantStates: {} };
             expectedHearingControlsState.participantStates[participantId] = {
                 isLocalAudioMuted: isLocalAudioMuted,
@@ -912,17 +924,18 @@ describe('VideoControlCacheService', () => {
             service['hearingControlStates'] = initialHearingControlsState;
 
             // Act
-            service.setHandRaiseStatus(participantId, isHandRaised, true);
+            await service.setHandRaiseStatus(participantId, isHandRaised, true);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
+            expect(videoControlCacheStorageServiceSpy.loadHearingStateForConference).toHaveBeenCalled();
             expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).toHaveBeenCalledOnceWith(
                 conferenceId,
                 expectedHearingControlsState
             );
         });
 
-        it('should do nothing if the hearing control state is not initialised', () => {
+        it('should do nothing if the hearing control state is not initialised', async () => {
             // Arrange
             const conferenceId = 'conference-id';
             const participantId = 'participant-id';
@@ -933,10 +946,11 @@ describe('VideoControlCacheService', () => {
             service['hearingControlStates'] = null;
 
             // Act
-            service.setHandRaiseStatus(participantId, handRaiseStatus);
+            await service.setHandRaiseStatus(participantId, handRaiseStatus);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(null);
+            expect(videoControlCacheStorageServiceSpy.loadHearingStateForConference).not.toHaveBeenCalled();
             expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).not.toHaveBeenCalled();
         });
     });
