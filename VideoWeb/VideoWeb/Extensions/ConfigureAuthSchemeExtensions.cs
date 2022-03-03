@@ -14,41 +14,51 @@ using VideoWeb.AuthenticationSchemes;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Models;
 using VideoWeb.Common.Security.HashGen;
+using BookingsApi.Client;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace VideoWeb.Extensions
 {
     public static class ConfigureAuthSchemeExtensions
-    {
+    {        
         public static void RegisterAuthSchemes(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
+            //var eJudFeatureFlag = configuration.GetValue<bool>("FeatureFlags:EJudFeature"); 
+            var eJudFeatureFlag = serviceCollection.BuildServiceProvider().GetRequiredService<IBookingsApiClient>().GetFeatureFlagAsync("EJudFeature").Result;
+            EJudAdConfiguration eJudAdConfiguration;
+
             var kinlyConfiguration = configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
             var azureAdConfiguration = configuration.GetSection("AzureAd").Get<AzureAdConfiguration>();
-            var quickLinksConfiguration = configuration.GetSection("QuickLinks").Get<QuickLinksConfiguration>();
-            var eJudAdConfiguration = configuration.GetSection("EJudAd").Get<EJudAdConfiguration>();
-            var kinlyCallbackSecret = Convert.FromBase64String(kinlyConfiguration.CallbackSecret);
+            //var quickLinksConfiguration = configuration.GetSection("QuickLinks").Get<QuickLinksConfiguration>();
 
             var videoHearingServicesConfiguration = configuration.GetSection("VhServices").Get<HearingServicesConfiguration>();
             var eventhubPath = videoHearingServicesConfiguration.EventHubPath;
             var internalEventSecret = Convert.FromBase64String(videoHearingServicesConfiguration.InternalEventSecret);
 
-            serviceCollection.AddSingleton<RsaSecurityKey>(provider =>
+            var kinlyCallbackSecret = Convert.FromBase64String(kinlyConfiguration.CallbackSecret);
+            var providerSchemes = new List<IProviderSchemes>();
+            if (eJudFeatureFlag)
             {
-                var rsa = RSA.Create();
-                rsa.ImportRSAPublicKey(
-                    source: Convert.FromBase64String(quickLinksConfiguration.RsaPublicKey),
-                    bytesRead: out var _
-                );
+               eJudAdConfiguration = configuration.GetSection("EJudAd").Get<EJudAdConfiguration>();
+               providerSchemes.Add(new EJudiciaryScheme(eventhubPath, eJudAdConfiguration));
+            }
 
-                return new RsaSecurityKey(rsa);
-            });
+            //serviceCollection.AddSingleton<RsaSecurityKey>(provider =>
+            //{
+            //    var rsa = RSA.Create();
+            //    rsa.ImportRSAPublicKey(
+            //        source: Convert.FromBase64String(quickLinksConfiguration.RsaPublicKey),
+            //        bytesRead: out var _
+            //    );
 
+            //    return new RsaSecurityKey(rsa);
+            //});
+            
+            
+            providerSchemes.Add(new VhAadScheme(azureAdConfiguration, eventhubPath));
+            //providerSchemes.Add(new QuickLinksScheme(quickLinksConfiguration, eventhubPath, serviceCollection));
 
-            var providerSchemes = new List<IProviderSchemes>
-            {
-                new VhAadScheme(azureAdConfiguration, eventhubPath),
-                new EJudiciaryScheme(eventhubPath, eJudAdConfiguration),
-                new QuickLinksScheme(quickLinksConfiguration, eventhubPath, serviceCollection)
-            };
+            
 
 
             var authenticationBuilder = serviceCollection.AddAuthentication(options =>
@@ -94,8 +104,8 @@ namespace VideoWeb.Extensions
 
             foreach (var scheme in providerSchemes)
             {
-                authenticationBuilder = scheme.AddSchemes(authenticationBuilder);
-            }
+                    authenticationBuilder = scheme.AddSchemes(authenticationBuilder);
+                }
 
             serviceCollection.AddMemoryCache();
             serviceCollection.AddAuthPolicies(providerSchemes);
@@ -168,6 +178,17 @@ namespace VideoWeb.Extensions
 
                 options.AddPolicy(policy.Key, policyBuilder.Build());
             }
+        }
+
+        private static void AddProviderSchemes(this string providerScheme, IList<IProviderSchemes> providerSchemes, string eventHubPath, EJudAdConfiguration eJudAdConfiguration)
+        {
+            //if (eJudFeatureFlag)
+            //{
+            //    eJudAdConfiguration = configuration.GetSection("EJudAd").Get<EJudAdConfiguration>();
+            providerSchemes.Add(new EJudiciaryScheme(eventHubPath, eJudAdConfiguration));
+            //}
+            //providerSchemes.Add(new VhAadScheme(azureAdConfiguration, eventhubPath));
+
         }
     }
 }
