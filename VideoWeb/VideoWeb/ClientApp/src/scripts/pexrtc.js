@@ -237,6 +237,8 @@ function PexRTCCall() {
     self.ice_credentials = {};
     self.mid_list = [];
     self.outstanding_requests = {};
+    self.turn_config = null;
+    self.previous_fecc_supported = null;
 
     self.onError = null;
     self.onSetup = null;
@@ -361,12 +363,119 @@ PexRTCCall.prototype.cleanupLocalCandidates = function (sdplines) {
     return newlines;
 };
 
+PexRTCCall.prototype.chooseVideoPTs = function (sdplines) {
+    // Return an ordered list of PTs to include
+    var self = this;
+
+    var state = 'notinvideo';
+    var videolines = [];
+    for (var i = 0; i < sdplines.length; i++) {
+        if (state === 'notinvideo') {
+            if (sdplines[i].lastIndexOf('m=video', 0) === 0) {
+                state = 'invideo';
+            }
+        } else if (state === 'invideo') {
+            videolines.push(sdplines[i]);
+        }
+    }
+
+    var rtpmap = {};
+    for (var i = 0; i < videolines.length; i++) {
+        if (videolines[i].lastIndexOf('a=rtpmap:', 0) === 0) {
+            var fields = videolines[i].split(' ');
+            var pt = fields[0].substr(fields[0].indexOf(':') + 1);
+            var codec = fields[1].substr(0, fields[1].indexOf('/'));
+            rtpmap[pt] = { name: codec };
+        }
+    }
+
+    for (var i = 0; i < videolines.length; i++) {
+        if (videolines[i].lastIndexOf('a=fmtp:', 0) === 0) {
+            var fields = videolines[i].split(' ');
+            var pt = fields[0].substr(fields[0].indexOf(':') + 1);
+            var params = fields[1].split(';');
+            for (var j = 0; j < params.length; j++) {
+                var pair = params[j].split('=');
+                if (pair[0] == 'apt') {
+                    rtpmap[pt].apt = pair[1];
+                } else if (pair[0] == 'packetization-mode') {
+                    rtpmap[pt].mode = pair[1];
+                } else if (pair[0] == 'profile-level-id') {
+                    var idc = pair[1].substr(0, 2);
+                    var iop = pair[1].substr(2, 2);
+                    rtpmap[pt].idc = idc;
+                    if (parseInt('0x' + iop) & 0x40) {
+                        rtpmap[pt].iop = 'CB';
+                    } else {
+                        rtpmap[pt].iop = 'B';
+                    }
+                }
+            }
+        }
+    }
+
+    var PTs = [];
+
+    if (
+        !(
+            !self.h264_enabled ||
+            (self.is_screenshare && ((self.chrome_ver > 0 && self.chrome_ver < 78) || (self.firefox_ver > 0 && self.firefox_ver < 78)))
+        )
+    ) {
+        var done = false;
+        Object.keys(rtpmap).forEach(function (key) {
+            // Step 1. Add all H264 B/CB keys unless we find CB_1 in which case, just have that
+            if (rtpmap[key].name == 'H264') {
+                if (rtpmap[key].idc == '42') {
+                    if (rtpmap[key].iop == 'CB' && rtpmap[key].mode == '1') {
+                        PTs = [key];
+                        done = true;
+                    } else if (!done) {
+                        PTs.push(key);
+                    }
+                }
+            }
+        });
+    }
+
+    if (
+        !(
+            !self.vp9_enabled ||
+            (self.is_screenshare && ((self.chrome_ver > 0 && self.chrome_ver < 78) || (self.firefox_ver > 0 && self.firefox_ver < 78)))
+        )
+    ) {
+        Object.keys(rtpmap).forEach(function (key) {
+            // Step 2. Add VP9 if enabled
+            if (rtpmap[key].name == 'VP9') {
+                PTs.push(key);
+            }
+        });
+    }
+
+    Object.keys(rtpmap).forEach(function (key) {
+        // Step 3. Add other standard codecs
+        if (rtpmap[key].name == 'VP8' || rtpmap[key].name == 'red' || rtpmap[key].name == 'ulpfec') {
+            PTs.push(key);
+        }
+    });
+
+    Object.keys(rtpmap).forEach(function (key) {
+        // Step 4. Add RTX for other codecs
+        if (rtpmap[key].name == 'rtx' && PTs.includes(rtpmap[key].apt)) {
+            PTs.push(key);
+        }
+    });
+
+    return PTs;
+};
+
 PexRTCCall.prototype.sdpAddPLI = function (origlines) {
     var self = this;
     var state = 'notinvideo';
     var newlines = [];
 
     var sdplines = self.cleanupLocalCandidates(origlines);
+    var videoPTs = self.chooseVideoPTs(origlines);
 
     for (var i = 0; i < sdplines.length; i++) {
         var sdpline = sdplines[i];
@@ -419,29 +528,15 @@ PexRTCCall.prototype.sdpAddPLI = function (origlines) {
             }
 
             if (
-                (!self.h264_enabled || self.is_screenshare) &&
-                sdplines[i].lastIndexOf('a=rtpmap:', 0) === 0 &&
-                sdplines[i].lastIndexOf('H264') > 0
+                sdplines[i].lastIndexOf('a=rtpmap:', 0) === 0 ||
+                sdplines[i].lastIndexOf('a=fmtp:', 0) === 0 ||
+                sdplines[i].lastIndexOf('a=rtcp-fb:', 0) === 0
             ) {
                 var fields = sdplines[i].split(' ');
                 var pt = fields[0].substr(fields[0].indexOf(':') + 1);
-                while (sdplines[i + 1].lastIndexOf('a=fmtp:' + pt, 0) === 0 || sdplines[i + 1].lastIndexOf('a=rtcp-fb:' + pt, 0) === 0) {
-                    i++;
+                if (!videoPTs.includes(pt)) {
+                    continue;
                 }
-                continue;
-            }
-
-            if (
-                (!self.vp9_enabled || self.is_screenshare) &&
-                sdplines[i].lastIndexOf('a=rtpmap:', 0) === 0 &&
-                sdplines[i].lastIndexOf('VP9') > 0
-            ) {
-                var fields = sdplines[i].split(' ');
-                var pt = fields[0].substr(fields[0].indexOf(':') + 1);
-                while (sdplines[i + 1].lastIndexOf('a=fmtp:' + pt, 0) === 0 || sdplines[i + 1].lastIndexOf('a=rtcp-fb:' + pt, 0) === 0) {
-                    i++;
-                }
-                continue;
             }
 
             newlines.push(sdpline);
@@ -496,30 +591,33 @@ PexRTCCall.prototype.sdpAddPLI = function (origlines) {
     return newlines;
 };
 
-PexRTCCall.prototype.sdpChangeBW = function (sdplines) {
+PexRTCCall.prototype.sdpMutateAnswer = function (sdplines) {
     var self = this;
     var state = 'notinvideo';
     var newlines = [];
 
+    var videoPTs = self.chooseVideoPTs(sdplines);
+
     for (var i = 0; i < sdplines.length; i++) {
-        newlines.push(sdplines[i]);
         if (sdplines[i].lastIndexOf('m=video', 0) === 0) {
             state = 'invideo';
+            var fields = sdplines[i].split(' ');
+            var line = fields.slice(0, 3).join(' ');
+            line += ' ' + videoPTs.join(' ');
+            newlines.push(line);
+            continue;
         } else if (state === 'invideo') {
-            if (sdplines[i].lastIndexOf('c=', 0) === 0) {
-                if (sdplines[i + 1].lastIndexOf('b=AS:', 0) === 0) {
-                    var oldbw = sdplines[i + 1];
-                    oldbw = oldbw.substr(oldbw.indexOf(':') + 1);
-                    if (parseInt(oldbw) < self.bandwidth_out) {
-                        self.bandwidth_out = oldbw;
-                    }
-                    i++;
-                }
-                if (sdplines[i + 1].lastIndexOf('b=TIAS:', 0) === 0) {
-                    i++;
+            if (sdplines[i].lastIndexOf('b=AS:', 0) === 0) {
+                var oldbw = sdplines[i];
+                oldbw = oldbw.substr(oldbw.indexOf(':') + 1);
+                if (parseInt(oldbw) < self.bandwidth_out) {
+                    self.bandwidth_out = oldbw;
                 }
                 newlines.push('b=AS:' + self.bandwidth_out);
                 newlines.push('b=TIAS:' + self.bandwidth_out * 1000);
+                continue;
+            } else if (sdplines[i].lastIndexOf('b=TIAS:', 0) === 0) {
+                continue;
             } else if (sdplines[i].lastIndexOf('m=', 0) === 0 || sdplines[i] === '') {
                 if (sdplines[i].lastIndexOf('m=video', 0) !== 0) {
                     state = 'notinvideo';
@@ -529,6 +627,7 @@ PexRTCCall.prototype.sdpChangeBW = function (sdplines) {
         if (navigator.userAgent.indexOf('Chrome') != -1 && sdplines[i].lastIndexOf('a=sendonly', 0) === 0) {
             newlines.push('a=sendrecv');
         }
+        newlines.push(sdplines[i]);
     }
 
     return newlines;
@@ -623,6 +722,14 @@ PexRTCCall.prototype.makeCall = function (parent, call_type) {
         self.video_source = self.parent.video_source;
         self.recv_audio = self.parent.recv_audio;
         self.recv_video = self.parent.recv_video;
+    }
+
+    if (
+        !self.h264_enabled &&
+        (self.is_screenshare || self.call_type == 'presentation') &&
+        (self.chrome_ver > 77 || self.firefox_ver > 77)
+    ) {
+        self.h264_enabled = true;
     }
 
     if (
@@ -914,6 +1021,19 @@ PexRTCCall.prototype.getMedia = function (sourceId) {
                 audioConstraints['googHighpassFilter'] = true;
                 audioConstraints['googAudioMirroring'] = false;
             }
+        } else if (self.chrome_ver > 67) {
+            if (audioConstraints === true) {
+                audioConstraints = { deviceId: 'default' };
+            }
+            if (audioConstraints) {
+                audioConstraints['autoGainControl'] = self.parent.autoGainControl;
+                audioConstraints['echoCancellation'] = self.parent.echoCancellation;
+                audioConstraints['noiseSuppression'] = self.parent.noiseSuppression;
+                if (self.parent.sampleRate) {
+                    audioConstraints['sampleRate'] = self.parent.sampleRate;
+                    audioConstraints['sampleSize'] = 16;
+                }
+            }
         }
 
         var constraints = { audio: audioConstraints };
@@ -1139,7 +1259,8 @@ PexRTCCall.prototype.connect = function () {
     }
 
     if (self.localStream) {
-        if (self.state == 'UPDATING' && (self.firefox_ver > 58 || self.chrome_ver > 71 || self.safari_ver >= 12.1)) {
+        var senders = self.pc.getSenders();
+        if (self.state == 'UPDATING' && senders.length > 0 && (self.firefox_ver > 58 || self.chrome_ver > 71 || self.safari_ver >= 12.1)) {
             if (self.mutedAudio) {
                 var tracks = self.localStream.getAudioTracks();
                 for (var i = 0; i < tracks.length; i++) {
@@ -1152,7 +1273,6 @@ PexRTCCall.prototype.connect = function () {
                     tracks[i].enabled = false;
                 }
             }
-            var senders = self.pc.getSenders();
             if (self.safari_ver >= 12.1) {
                 var gotVideo = false;
                 for (var i = 0; i < senders.length; i++) {
@@ -1177,6 +1297,7 @@ PexRTCCall.prototype.connect = function () {
                     }
                 }
             }
+            self.updateFECCSupport();
             return self.ackReceived();
         } else if (self.pc.addStream) {
             self.pc.addStream(self.localStream);
@@ -1258,6 +1379,7 @@ PexRTCCall.prototype.pcCreateOffer = function (options) {
             .createOffer(constraints)
             .then(function (sdp) {
                 if (self.parent.use_trickle_ice) {
+                    self.parent.onLog('Local offer generated', sdp);
                     self.sendOffer(sdp);
                 } else {
                     self.pcOfferCreated(sdp);
@@ -1273,6 +1395,7 @@ PexRTCCall.prototype.pcCreateOffer = function (options) {
         self.pc.createOffer(
             function (sdp) {
                 if (self.parent.use_trickle_ice) {
+                    self.parent.onLog('Local offer generated', sdp);
                     self.sendOffer(sdp);
                 } else {
                     self.pcOfferCreated(sdp);
@@ -1292,8 +1415,8 @@ PexRTCCall.prototype.pcCreateOffer = function (options) {
 PexRTCCall.prototype.pcIceCandidate = function (evt) {
     var self = this;
 
-    // Do not gather candidates again if using classic renegotiation
-    if (self.state == 'UPDATING' && !self.parent.use_trickle_ice) {
+    // Do not gather candidates again if using classic renegotiation, or if turn config is provided so we wait for an iceRestart
+    if ((self.state == 'UPDATING' && !self.parent.use_trickle_ice) || (self.turn_config && self.parent.use_trickle_ice)) {
         return;
     }
 
@@ -1346,7 +1469,7 @@ PexRTCCall.prototype.pcIceConnectionStateChanged = function (evt) {
             self.parent.onLog('ICE Failed mid-call; triggering ICE restart.');
             self.doIceRestart();
         }
-    } else if (self.pc.iceConnectionState == 'disconnected') {
+    } else if (self.pc.iceConnectionState == 'disconnected' && self.state == 'CONNECTED') {
         if (self.previousIceConnectionState == 'disconnected') {
             self.parent.onLog('ICE Disconnected mid-call; triggering ICE restart.');
             if (self.chrome_ver > 0) {
@@ -1477,7 +1600,8 @@ PexRTCCall.prototype.sendOffer = function (sdp) {
         self.pcOfferCreated(sdp);
     }
 
-    var mutatedOffer = { call_type: 'WEBRTC', sdp: self.mutateOffer(sdp).sdp };
+    var mutatedOffer = { call_type: 'WEBRTC', sdp: self.mutateOffer(sdp).sdp, fecc_supported: self.parent.fecc_supported };
+    self.previous_fecc_supported = self.parent.fecc_supported;
     if (self.is_screenshare) {
         mutatedOffer.present = 'send';
     } else if (self.call_type == 'presentation') {
@@ -1499,6 +1623,15 @@ PexRTCCall.prototype.sendOffer = function (sdp) {
         0,
         60000
     );
+};
+
+PexRTCCall.prototype.updateFECCSupport = function () {
+    var self = this;
+
+    if (self.previous_fecc_supported != self.parent.fecc_supported) {
+        self.previous_fecc_supported = self.parent.fecc_supported;
+        self.sendRequest('calls/' + self.call_uuid + '/update', { fecc_supported: self.parent.fecc_supported });
+    }
 };
 
 PexRTCCall.prototype.remoteDescriptionActive = function () {
@@ -1532,7 +1665,23 @@ PexRTCCall.prototype.ackReceived = function () {
             self.onConnect(url.createObjectURL(self.stream), self.call_uuid);
         }
     }
-    self.state = 'CONNECTED';
+    if (self.turn_config) {
+        self.state = 'UPDATING';
+        for (var i = 0; i < self.turn_config.length; i++) {
+            self.parent.pcConfig.iceServers.push(self.turn_config[i]);
+        }
+        self.turn_config = null;
+        if (self.firefox_ver > 0 || self.safari_ver > 0) {
+            self.pc.close();
+            self.pc = new PeerConnection(self.parent.pcConfig);
+            self.connect();
+        } else {
+            self.pc.setConfiguration({ iceServers: self.parent.pcConfig.iceServers });
+            self.pcCreateOffer({ iceRestart: true });
+        }
+    } else {
+        self.state = 'CONNECTED';
+    }
 };
 
 PexRTCCall.prototype.processAnswer = function (e) {
@@ -1553,6 +1702,10 @@ PexRTCCall.prototype.processAnswer = function (e) {
         self.call_uuid = msg.result.call_uuid;
     }
 
+    if (msg.result.turn && self.edge_ver == 0 && (self.safari_ver == 0 || self.safari_ver >= 14)) {
+        self.turn_config = msg.result.turn;
+    }
+
     if (self.state != 'DISCONNECTING') {
         var lines;
         if (msg.result.sdp) {
@@ -1560,7 +1713,7 @@ PexRTCCall.prototype.processAnswer = function (e) {
         } else {
             lines = msg.result.split('\r\n');
         }
-        lines = self.sdpChangeBW(lines);
+        lines = self.sdpMutateAnswer(lines);
 
         var sdp = lines.join('\r\n');
         self.parent.onLog('Mutated answer', sdp);
@@ -1649,6 +1802,8 @@ PexRTCCall.prototype.remoteDisconnect = function (msg) {
 PexRTCCall.prototype.muteAudio = function (setting) {
     //mutedAudio is a toggle, opposite to enabled value, so toggle at end
     var self = this;
+
+    self.parent.onLog('muteAudio from', self.mutedAudio, 'to', setting);
 
     if (setting === self.mutedAudio) {
         return self.mutedAudio;
@@ -1741,6 +1896,8 @@ PexRTCCall.prototype.update = function (call_type) {
 
 PexRTCCall.prototype.muteVideo = function (setting) {
     var self = this;
+
+    self.parent.onLog('muteVideo from', self.mutedVideo, 'to', setting);
 
     if (setting === self.mutedVideo) {
         return self.mutedVideo;
@@ -2431,6 +2588,9 @@ function PexRTC() {
     self.turn_server = null;
     self.pin = null;
     self.pin_status = 'none';
+    self.chosen_idp = null;
+    self.idp_choices = null;
+    self.sso_token = null;
     self.call_type = '';
     self.mutedAudio = false;
     self.mutedVideo = false;
@@ -2479,6 +2639,10 @@ function PexRTC() {
     self.return_media_stream = false;
     self.ice_timeout = 10;
     self.use_trickle_ice = true;
+    self.fecc_supported = false;
+    self.autoGainControl = true;
+    self.echoCancellation = true;
+    self.noiseSuppression = true;
 
     self.screenshare = null;
     self.presentation = null;
@@ -2501,6 +2665,7 @@ function PexRTC() {
     self.onCallTransfer = null;
     self.onCallDisconnect = null;
     self.onIceFailure = null;
+    self.onAuth = null;
 
     self.onParticipantCreate = null;
     self.onParticipantUpdate = null;
@@ -2544,7 +2709,20 @@ function PexRTC() {
         self.edge_ver = 0;
     }
 
-    if (self.chrome_ver == 0 && self.edge_ver == 0 && navigator.userAgent.indexOf('Safari') != -1) {
+    if (
+        navigator.userAgent.indexOf('CriOS') != -1 ||
+        navigator.userAgent.indexOf('GSA') != -1 ||
+        navigator.userAgent.indexOf('EdgiOS') != -1 ||
+        navigator.userAgent.indexOf('FxiOS') != -1
+    ) {
+        var ver_fields = window.navigator.appVersion.match(/ OS (\d\d)\_(\d)/);
+        var ios_ver = parseFloat(ver_fields[1] + '.' + ver_fields[2]);
+        if (ios_ver >= 14.1) {
+            self.safari_ver = ios_ver;
+        } else {
+            self.safari_ver = 0;
+        }
+    } else if (self.chrome_ver == 0 && self.edge_ver == 0 && navigator.userAgent.indexOf('Safari') != -1) {
         var ver_fields = window.navigator.appVersion.match(/Version\/(\d+\.\d+)(\.(\d+))?/);
         if (ver_fields) {
             self.safari_ver = parseFloat(ver_fields[1]);
@@ -2558,18 +2736,7 @@ function PexRTC() {
         self.safari_ver = 0;
     }
 
-    if (
-        (self.safari_ver == 0 && (self.chrome_ver >= 56 || navigator.userAgent.indexOf('OS X') != -1)) ||
-        (self.safari_ver > 14 && !self.is_mobile) ||
-        self.safari_ver == 15.1
-    ) {
-        // Disable H.264 to work around various issues:
-        //   - H.264 hw accelerated decoding fails for some versions
-        //     and some hardware, both on OS X and Windows.
-        //   - Chrome OS X possibly does not trigger
-        //     googCpuLimitedResolution when struggling to encode full
-        //     resolution H.264, and thus we're not able to fall back
-        //     to VP8 when needed.
+    if (self.safari_ver == 14.1 || self.safari_ver == 15.1) {
         self.h264_enabled = false;
     }
 
@@ -2594,7 +2761,11 @@ function PexRTC() {
         ERROR_CONNECTING_PRESENTATION: 'Presentation stream unavailable',
         ERROR_CONNECTING_SCREENSHARE: 'Screenshare error',
         ERROR_CONNECTING_EXTENSION: 'Conference extension not found',
-        ERROR_CONNECTING: 'Error connecting to conference'
+        ERROR_CONNECTING: 'Error connecting to conference',
+        ERROR_SSO_AUTHENTICATION: 'SSO Authentication Failed',
+        ERROR_SSO_NO_IDENTITY_PROVIDERS: 'SSO enabled but no Identity Providers configured',
+        ERROR_SSO_POPUP_FAILED: 'Unable to open window for SSO authentication. This may have been prevented by a pop-up blocker.',
+        ERROR_SSO_AUTHENTICATION_MAINTENANCE: 'SSO Authentication Failed. The system is in Maintenance mode.'
     };
 }
 
@@ -2620,7 +2791,7 @@ PexRTC.prototype.makeCall = function (node, conf, name, bw, call_type, flash) {
                 self.flash = flash;
                 self.addCall(null, flash);
             } else {
-                self.onSetup(null, self.pin_status, self.conference_extension);
+                self.onSetup(null, self.pin_status, self.conference_extension, self.idp_choices);
             }
         }
     });
@@ -2713,9 +2884,20 @@ PexRTC.prototype.sendRequest = function (request, params, cb, req_method, retrie
 
 PexRTC.prototype.requestToken = function (cb) {
     var self = this;
+    var chosen_idp = self.chosen_idp;
+    var sso_token = self.sso_token;
 
     if (!self.token) {
-        var params = { display_name: self.display_name };
+        if (chosen_idp == '' || chosen_idp == 'undefined' || chosen_idp === null) {
+            chosen_idp = 'none';
+        }
+
+        if (sso_token == '' || sso_token == 'undefined' || sso_token === null) {
+            sso_token = 'none';
+        }
+
+        var params = { display_name: self.display_name, chosen_idp: chosen_idp, sso_token: sso_token };
+
         if (self.registration_token) {
             params.registration_token = self.registration_token;
         }
@@ -2801,7 +2983,7 @@ PexRTC.prototype.tokenRequested = function (e, cb) {
             }
 
             for (var i = 0; i < turn_servers.length; i++) {
-                if (self.safari_ver >= 11) {
+                if (self.safari_ver >= 11 && self.safari_ver < 14) {
                     var is_tcp = false;
                     if (turn_servers[i].hasOwnProperty('url') && turn_servers[i].url.indexOf('transport=tcp') != -1) {
                         is_tcp = true;
@@ -2829,7 +3011,7 @@ PexRTC.prototype.tokenRequested = function (e, cb) {
                 }
             }
         }
-        if ('turn' in msg.result && self.edge_ver == 0 && self.safari_ver == 0) {
+        if ('turn' in msg.result && self.edge_ver == 0 && (self.safari_ver == 0 || self.safari_ver >= 14)) {
             for (var i = 0; i < msg.result.turn.length; i++) {
                 self.pcConfig.iceServers.push(msg.result.turn[i]);
             }
@@ -2857,6 +3039,76 @@ PexRTC.prototype.tokenRequested = function (e, cb) {
             } else {
                 self.pin_status = 'required';
             }
+        } else if ('idp' in msg.result) {
+            // Store the list of Identity Providers we've just been sent
+            self.idp_choices = msg.result.idp;
+            if (self.idp_choices.length == 0) {
+                return self.onError(self.trans.ERROR_SSO_NO_IDENTITY_PROVIDERS);
+            }
+        } else if ('redirect_url' in msg.result) {
+            self.redirect_url = msg.result.redirect_url;
+            self.chosen_idp = msg.result.idp_uuid;
+
+            // API consumer provides custom login
+            if (self.onAuth) {
+                return self.onAuth(self.redirect_url, self.chosen_idp);
+            }
+
+            // Open a login pop-up for the chosen IdP
+            auth_popup = window.open(msg.result.redirect_url, '', 'width=800,height=900');
+
+            if (auth_popup === null) {
+                return self.onError(self.trans.ERROR_SSO_POPUP_FAILED);
+            }
+
+            // Track if we've received an event from the pop-up
+            var auth_popup_event_received = false;
+
+            // Define the message event handler
+            var mesage_listener = function (event) {
+                if (event.source === auth_popup) {
+                    window.removeEventListener('message', mesage_listener);
+
+                    auth_popup.close();
+
+                    if (!auth_popup_event_received) {
+                        auth_popup_event_received = true;
+                        if (event && event.data) {
+                            if (event.data.result && event.data.result === 'success') {
+                                self.sso_token = event.data.token;
+                                self.requestToken(cb);
+                            } else {
+                                if (event.data.code && event.data.code === 503) {
+                                    return self.onError(self.trans.ERROR_SSO_AUTHENTICATION_MAINTENANCE);
+                                } else {
+                                    return self.onError(self.trans.ERROR_SSO_AUTHENTICATION);
+                                }
+                            }
+                        } else {
+                            return self.onError(self.trans.ERROR_SSO_AUTHENTICATION);
+                        }
+                    }
+                }
+            };
+
+            // Register handler for the expected message event from the pop-up
+            window.addEventListener('message', mesage_listener, false);
+
+            // Monitor the pop-up in case it is closed before it's done
+            const isWeb = self.firefox_ver > 0 || self.chrome_ver > 0 || self.edge_ver > 0 || self.safari_ver > 0;
+            if (isWeb) {
+                var auth_popup_tick = setInterval(function () {
+                    if (auth_popup.closed) {
+                        clearInterval(auth_popup_tick);
+                        if (!auth_popup_event_received) {
+                            window.removeEventListener('message', mesage_listener);
+                            return self.onError(self.trans.ERROR_SSO_AUTHENTICATION);
+                        }
+                    }
+                }, 500);
+            }
+
+            return;
         }
         if ('conference_extension' in msg.result) {
             self.conference_extension = msg.result.conference_extension_type;
@@ -2867,23 +3119,27 @@ PexRTC.prototype.tokenRequested = function (e, cb) {
         return self.handleError(msg.result || msg.reason);
     }
 
-    if (!self.token_refresh && self.token) {
-        var expires = msg.result.expires || 120;
-        self.token_refresh = setInterval(self.refreshToken.bind(this), (expires * 1000) / 3);
+    if (self.token) {
+        if (self.state == 'DISCONNECTING') {
+            self.disconnect();
+        } else if (!self.token_refresh) {
+            var expires = msg.result.expires || 120;
+            self.token_refresh = setInterval(self.refreshToken.bind(this), (expires * 1000) / 3);
 
-        self.sendRequest(
-            'conference_status',
-            null,
-            function (e) {
-                self.onLog('conference_status');
-                if (e.target.status == 200 && self.onConferenceUpdate) {
-                    var msg = JSON.parse(e.target.responseText);
-                    self.onLog(msg);
-                    self.onConferenceUpdate(msg.result);
-                }
-            },
-            'GET'
-        );
+            self.sendRequest(
+                'conference_status',
+                null,
+                function (e) {
+                    self.onLog('conference_status');
+                    if (e.target.status == 200 && self.onConferenceUpdate) {
+                        var msg = JSON.parse(e.target.responseText);
+                        self.onLog(msg);
+                        self.onConferenceUpdate(msg.result);
+                    }
+                },
+                'GET'
+            );
+        }
     }
 
     if (cb) {
@@ -3161,6 +3417,17 @@ PexRTC.prototype.createEventSource = function () {
             false
         );
         self.event_source.addEventListener(
+            'fecc',
+            function (e) {
+                var msg = JSON.parse(e.data);
+                self.onLog('fecc', msg);
+                if (self.onFECC && self.fecc_supported) {
+                    self.onFECC(msg);
+                }
+            },
+            false
+        );
+        self.event_source.addEventListener(
             'refresh_token',
             function (e) {
                 self.onLog('refresh_token');
@@ -3229,7 +3496,7 @@ PexRTC.prototype.dialOut = function (destination, protocol, role, cb, user_param
     }
 
     var command = 'dial';
-    var params = { destination: destination, protocol: protocol ? protocol : 'sip' };
+    var params = { destination: destination, protocol: protocol ? protocol : 'auto' };
     var streaming = false;
 
     if (typeof user_params == 'string') {
@@ -3270,6 +3537,14 @@ PexRTC.prototype.dialOut = function (destination, protocol, role, cb, user_param
 
         if ('source' in user_params) {
             params.source = user_params.source;
+        }
+
+        if ('source_display_name' in user_params) {
+            params.source_display_name = user_params.source_display_name;
+        }
+
+        if ('custom_sip_headers' in user_params) {
+            params.custom_sip_headers = user_params.custom_sip_headers;
         }
     }
 
@@ -3455,18 +3730,33 @@ PexRTC.prototype.clearAllBuzz = function () {
     self.sendRequest(command);
 };
 
-PexRTC.prototype.videoMuted = function () {
+PexRTC.prototype.videoMuted = function (uuid) {
     var self = this;
 
-    var command = 'participants/' + self.uuid + '/video_muted';
+    var command = 'participants/' + (uuid ? uuid : self.uuid) + '/video_muted';
     self.sendRequest(command);
 };
 
-PexRTC.prototype.videoUnmuted = function () {
+PexRTC.prototype.videoUnmuted = function (uuid) {
     var self = this;
 
-    var command = 'participants/' + self.uuid + '/video_unmuted';
+    var command = 'participants/' + (uuid ? uuid : self.uuid) + '/video_unmuted';
     self.sendRequest(command);
+};
+
+PexRTC.prototype.notifyNotAFK = function () {
+    var self = this;
+
+    var command = 'participants/' + self.uuid + '/notify_not_afk';
+    self.sendRequest(command);
+};
+
+PexRTC.prototype.setPresentationInMix = function (state, uuid) {
+    var self = this;
+
+    var params = { state: state };
+    var command = 'participants/' + (uuid ? uuid : self.uuid) + '/pres_in_mix';
+    self.sendRequest(command, params);
 };
 
 PexRTC.prototype.handleError = function (err) {
@@ -3496,7 +3786,7 @@ PexRTC.prototype.handleError = function (err) {
     }
 };
 
-PexRTC.prototype.connect = function (pin, extension) {
+PexRTC.prototype.connect = function (pin, extension, idp_uuid, sso_token) {
     var self = this;
 
     var doConnect = function () {
@@ -3509,9 +3799,31 @@ PexRTC.prototype.connect = function (pin, extension) {
         }
     };
 
+    var doNext = function () {
+        if (self.idp_choices === null && self.chosen_idp === null) {
+            // No indication of a SSO flow so connect
+            doConnect();
+        } else {
+            // Indication of a SSO flow so continue
+            self.onSetup(null, self.pin_status, null, self.idp_choices);
+        }
+    };
+
     if (self.pin_status != 'none') {
         self.pin_status = 'none';
         self.pin = pin || 'none';
+        self.requestToken(function () {
+            self.createEventSource();
+            doNext();
+        });
+    } else if (idp_uuid) {
+        self.chosen_idp = idp_uuid || null;
+        self.requestToken(function () {
+            self.createEventSource();
+            doNext();
+        });
+    } else if (sso_token) {
+        self.sso_token = sso_token || null;
         self.requestToken(function () {
             self.createEventSource();
             doConnect();
@@ -3520,7 +3832,7 @@ PexRTC.prototype.connect = function (pin, extension) {
         self.conference_extension = extension;
         self.requestToken(function () {
             self.createEventSource();
-            self.onSetup(null, self.pin_status);
+            self.onSetup(null, self.pin_status, null, self.idp_choices);
         });
     } else {
         doConnect();
@@ -3612,7 +3924,7 @@ PexRTC.prototype.addCall = function (call_type, flash) {
     } else if (!self.call) {
         self.call = obj;
         self.call.onSetup = function (stream) {
-            self.onSetup(stream, self.pin_status, self.conference_extension);
+            self.onSetup(stream, self.pin_status, self.conference_extension, self.idp_choices);
         };
         self.call.onConnect = function (stream) {
             if (self.mutedAudio) {
@@ -3622,6 +3934,8 @@ PexRTC.prototype.addCall = function (call_type, flash) {
                 self.videoMuted();
             } else if (self.mutedVideo) {
                 self.muteVideo(self.mutedVideo);
+            } else {
+                self.videoUnmuted();
             }
             self.onConnect(stream);
         };
@@ -3777,7 +4091,7 @@ PexRTC.prototype.present = function (call_type) {
 PexRTC.prototype.muteAudio = function (setting) {
     var self = this;
 
-    if (self.call && self.call.state == 'CONNECTED') {
+    if (self.call && (self.call.state == 'CONNECTED' || self.call.state == 'UPDATING')) {
         self.mutedAudio = self.call.muteAudio(setting);
     } else if (setting !== undefined) {
         self.mutedAudio = setting;
@@ -4054,7 +4368,6 @@ PexRTC.prototype.disconnect = function (reason, referral) {
         self.event_source.close();
         self.event_source = null;
     }
-
     if (self.token) {
         var params = {};
         if (self.error) {
@@ -4185,6 +4498,14 @@ PexRTCStreamStatistics.prototype.updatePacketLossStats = function (currentPacket
     }
 };
 
+PexRTCStreamStatistics.prototype.resetPacketLossStats = function () {
+    var self = this;
+
+    self.recentTotal = 0;
+    self.recentLost = 0;
+    self.samples = [];
+};
+
 PexRTCStreamStatistics.prototype.updateRxStats = function (result) {
     var self = this;
     self.info['packets-received'] = result.stat('packetsReceived');
@@ -4210,6 +4531,8 @@ PexRTCStreamStatistics.prototype.updateRxStats = function (result) {
         if (result.stat('googCodecName')) self.info['codec'] = result.stat('googCodecName');
 
         if (result.stat('googDecodeMs')) self.info['decode-delay'] = result.stat('googDecodeMs') + 'ms';
+    } else {
+        self.resetPacketLossStats();
     }
 
     self.lastTimestamp = result.timestamp;
@@ -4245,6 +4568,8 @@ PexRTCStreamStatistics.prototype.updateTxStats = function (result) {
         if (result.stat('googCodecName')) {
             self.info['codec'] = result.stat('googCodecName');
         }
+    } else {
+        self.resetPacketLossStats();
     }
 
     self.lastTimestamp = result.timestamp;
@@ -4272,16 +4597,20 @@ PexRTCStreamStatistics.prototype.updateRxStatsFF = function (result) {
     var packetsReceived = parseInt(self.info['packets-received']) | 0;
     var packetsLost = parseInt(self.info['packets-lost']) | 0;
 
-    self.updatePacketLossStats(packetsReceived, packetsLost);
+    if (packetsReceived >= self.lastPackets) {
+        self.updatePacketLossStats(packetsReceived, packetsLost);
 
-    if (self.lastTimestamp > 0) {
-        var tsDiff = result.timestamp - self.lastTimestamp;
-        if (tsDiff > 500000) {
-            // Safari is in milliseconds
-            tsDiff = tsDiff / 1000;
+        if (self.lastTimestamp > 0) {
+            var tsDiff = result.timestamp - self.lastTimestamp;
+            if (tsDiff > 500000) {
+                // Safari is in milliseconds
+                tsDiff = tsDiff / 1000;
+            }
+            var kbps = Math.round(((result.bytesReceived - self.lastBytes) * 8) / tsDiff);
+            self.info['bitrate'] = kbps + 'kbps';
         }
-        var kbps = Math.round(((result.bytesReceived - self.lastBytes) * 8) / tsDiff);
-        self.info['bitrate'] = kbps + 'kbps';
+    } else {
+        self.resetPacketLossStats();
     }
 
     self.lastTimestamp = result.timestamp;
@@ -4330,7 +4659,13 @@ PexRTCStreamStatistics.prototype.updateRtcpTxStatsFF = function (result) {
 
     var packetsSent = parseInt(self.info['packets-sent']) | 0;
     var packetsLost = parseInt(self.info['packets-lost']) | 0;
-    self.updatePacketLossStats(packetsSent, packetsLost);
+
+    if (packetsSent >= self.lastPackets) {
+        self.updatePacketLossStats(packetsSent, packetsLost);
+    } else {
+        self.resetPacketLossStats();
+    }
+
     self.lastPackets = packetsSent;
     self.lastLost = packetsLost;
 };
