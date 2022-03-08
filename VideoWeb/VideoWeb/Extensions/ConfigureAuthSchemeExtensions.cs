@@ -15,9 +15,7 @@ using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Models;
 using VideoWeb.Common.Security.HashGen;
 using BookingsApi.Client;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Net.Http.Headers;
-using Microsoft.AspNetCore.Authentication;
 
 namespace VideoWeb.Extensions
 {
@@ -131,7 +129,6 @@ namespace VideoWeb.Extensions
 
             serviceCollection.AddMemoryCache();
             serviceCollection.AddAuthPolicies(providerSchemes);
-
         }
         public static string GetProviderFromRequest(HttpRequest httpRequest, string ejudClientId)
         {
