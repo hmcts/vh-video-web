@@ -18,7 +18,7 @@ import { HearingRole } from '../models/hearing-role-model';
 import { ConnectedScreenshare, ParticipantUpdated, StoppedScreenshare } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
-import {VideoControlCacheService} from '../../services/conference/video-control-cache.service';
+import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 
 @Injectable()
 export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy {

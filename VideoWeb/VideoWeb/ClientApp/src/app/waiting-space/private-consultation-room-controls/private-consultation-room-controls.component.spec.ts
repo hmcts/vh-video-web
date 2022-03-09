@@ -42,7 +42,7 @@ import { fakeAsync, flush } from '@angular/core/testing';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { FeatureFlagService } from 'src/app/services/feature-flag.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
-import {VideoControlCacheService} from '../../services/conference/video-control-cache.service';
+import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
     const participantOneId = Guid.create().toString();

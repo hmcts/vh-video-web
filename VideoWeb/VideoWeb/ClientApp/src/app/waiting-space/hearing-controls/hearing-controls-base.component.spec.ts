@@ -45,7 +45,7 @@ import { ConferenceStatusChanged } from 'src/app/services/conference/models/conf
 import { ConfigService } from 'src/app/services/api/config.service';
 import { FeatureFlagService } from 'src/app/services/feature-flag.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
-import {VideoControlCacheService} from '../../services/conference/video-control-cache.service';
+import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 
 describe('HearingControlsBaseComponent', () => {
     const participantOneId = Guid.create().toString();

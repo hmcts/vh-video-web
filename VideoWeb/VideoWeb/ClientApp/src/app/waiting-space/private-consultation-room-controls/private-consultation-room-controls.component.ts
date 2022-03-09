@@ -14,7 +14,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { HearingControlsBaseComponent } from '../hearing-controls/hearing-controls-base.component';
 import { VideoCallService } from '../services/video-call.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
-import {VideoControlCacheService} from '../../services/conference/video-control-cache.service';
+import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 
 @Component({
     selector: 'app-private-consultation-room-controls',

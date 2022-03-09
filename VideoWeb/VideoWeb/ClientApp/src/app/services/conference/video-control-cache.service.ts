@@ -61,7 +61,6 @@ export class VideoControlCacheService {
     }
 
     async setSpotlightStatus(participantId: string, spotlightValue: boolean, syncChanges: boolean = true) {
-
         this.logger.info(`${this.loggerPrefix} Setting spotlight status.`, {
             participantId: participantId,
             oldValue: this.hearingControlStates?.participantStates[participantId]?.isSpotlighted ?? null,
@@ -75,7 +74,7 @@ export class VideoControlCacheService {
         const self = this;
         const setSpotlightStatusInCache = () => {
             if (!self.hearingControlStates.participantStates[participantId]) {
-                self.hearingControlStates.participantStates[participantId] = {isSpotlighted: spotlightValue};
+                self.hearingControlStates.participantStates[participantId] = { isSpotlighted: spotlightValue };
             } else {
                 self.hearingControlStates.participantStates[participantId].isSpotlighted = spotlightValue;
             }
@@ -127,7 +126,6 @@ export class VideoControlCacheService {
         });
         return this.hearingControlStates?.participantStates[participantId]?.isRemoteMuted ?? false;
     }
-
 
     clearHandRaiseStatusForAll(conferenceId: string, syncChanges: boolean = true) {
         if (!this.hearingControlStates?.participantStates) {
