@@ -18,6 +18,7 @@ import { HearingRole } from '../models/hearing-role-model';
 import { ConnectedScreenshare, ParticipantUpdated, StoppedScreenshare } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
+import {VideoControlCacheService} from '../../services/conference/video-control-cache.service';
 
 @Injectable()
 export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy {
@@ -63,7 +64,8 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         protected participantService: ParticipantService,
         protected translateService: TranslateService,
         protected videoControlService: VideoControlService,
-        protected userMediaService: UserMediaService
+        protected userMediaService: UserMediaService,
+        protected videoControlCacheService: VideoControlCacheService
     ) {
         this.handRaised = false;
         this.remoteMuted = false;
@@ -136,7 +138,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     onLoggedInParticipantChanged(participant: ParticipantModel): void {
         this.isSpotlighted = participant.isSpotlighted;
-
         this.participantSpotlightUpdateSubscription?.unsubscribe();
         this.participantSpotlightUpdateSubscription = this.participantService.onParticipantSpotlightStatusChanged$
             .pipe(filter(updatedParticipant => updatedParticipant.id === participant.id))
@@ -374,6 +375,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     pause() {
         this.logger.debug(`${this.loggerPrefix} Attempting to pause hearing`, this.logPayload);
+        this.videoControlCacheService.clearHandRaiseStatusForAll(this.conferenceId);
         this.videoCallService.pauseHearing(this.conferenceId);
     }
 
@@ -395,6 +397,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
                     this.leaveHearing.emit();
                 });
             } else {
+                this.videoControlCacheService.clearHandRaiseStatusForAll(this.conferenceId);
                 this.videoCallService.suspendHearing(this.conferenceId);
             }
         }

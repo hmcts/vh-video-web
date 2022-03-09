@@ -13,7 +13,11 @@ export class VideoControlCacheService {
     private hearingControlStates: IHearingControlsState | null = { participantStates: {} };
     private conferenceId: string;
 
-    initHearingControlState() {
+    constructor(
+        private conferenceService: ConferenceService,
+        private storageService: DistributedVideoControlCacheService,
+        private logger: LoggerService
+    ) {
         this.conferenceService.currentConference$.subscribe(conference => {
             if (!conference) {
                 this.logger.warn(`${this.loggerPrefix} No conference loaded. Skipping loading of hearing state for conference`);
@@ -32,15 +36,32 @@ export class VideoControlCacheService {
         });
     }
 
-    constructor(
-        private conferenceService: ConferenceService,
-        private storageService: DistributedVideoControlCacheService,
-        private logger: LoggerService
-    ) {
-        this.initHearingControlState();
+    private reinitialiseHearingStatesBeforeUpdate(callback: Function) {
+        const self = this;
+        this.storageService
+            .loadHearingStateForConference(self.conferenceId)
+            .pipe(take(1))
+            .toPromise()
+            .then(state => {
+                self.hearingControlStates = state;
+                self.logger.info(`${self.loggerPrefix} re-initialised state for ${self.conferenceId}.`, {
+                    hearingControlStates: self.hearingControlStates
+                });
+                callback();
+            })
+            .catch(() => {
+                self.logger.info(
+                    `${self.loggerPrefix} failed to re-initialised state for ${self.conferenceId}. Control States may be out of sync`,
+                    {
+                        hearingControlStates: self.hearingControlStates
+                    }
+                );
+                callback();
+            });
     }
 
-    setSpotlightStatus(participantId: string, spotlightValue: boolean, syncChanges: boolean = true) {
+    async setSpotlightStatus(participantId: string, spotlightValue: boolean, syncChanges: boolean = true) {
+
         this.logger.info(`${this.loggerPrefix} Setting spotlight status.`, {
             participantId: participantId,
             oldValue: this.hearingControlStates?.participantStates[participantId]?.isSpotlighted ?? null,
@@ -51,16 +72,18 @@ export class VideoControlCacheService {
             this.logger.warn(`${this.loggerPrefix} Cannot set spotlight status as hearing control states is not initialised.`);
             return;
         }
-
-        if (!this.hearingControlStates.participantStates[participantId]) {
-            this.hearingControlStates.participantStates[participantId] = { isSpotlighted: spotlightValue };
-        } else {
-            this.hearingControlStates.participantStates[participantId].isSpotlighted = spotlightValue;
-        }
-
-        if (syncChanges) {
-            this.savingHearingState();
-        }
+        const self = this;
+        const setSpotlightStatusInCache = () => {
+            if (!self.hearingControlStates.participantStates[participantId]) {
+                self.hearingControlStates.participantStates[participantId] = {isSpotlighted: spotlightValue};
+            } else {
+                self.hearingControlStates.participantStates[participantId].isSpotlighted = spotlightValue;
+            }
+            if (syncChanges) {
+                self.savingHearingState();
+            }
+        };
+        this.reinitialiseHearingStatesBeforeUpdate(setSpotlightStatusInCache);
     }
 
     getSpotlightStatus(participantId: string): boolean {
@@ -71,7 +94,7 @@ export class VideoControlCacheService {
         return this.hearingControlStates?.participantStates[participantId]?.isSpotlighted ?? false;
     }
 
-    setRemoteMutedStatus(participantId: string, isRemoteMutedValue: boolean, syncChanges: boolean = true) {
+    async setRemoteMutedStatus(participantId: string, isRemoteMutedValue: boolean, syncChanges: boolean = true) {
         this.logger.info(`${this.loggerPrefix} Setting Remote Mute status.`, {
             participantId: participantId,
             oldValue: this.hearingControlStates?.participantStates[participantId]?.isRemoteMuted ?? null,
@@ -83,15 +106,18 @@ export class VideoControlCacheService {
             return;
         }
 
-        if (!this.hearingControlStates.participantStates[participantId]) {
-            this.hearingControlStates.participantStates[participantId] = { isRemoteMuted: isRemoteMutedValue };
-        } else {
-            this.hearingControlStates.participantStates[participantId].isRemoteMuted = isRemoteMutedValue;
-        }
-
-        if (syncChanges) {
-            this.savingHearingState();
-        }
+        const self = this;
+        const setRemoteMutedStatusInCache = () => {
+            if (!self.hearingControlStates.participantStates[participantId]) {
+                self.hearingControlStates.participantStates[participantId] = { isRemoteMuted: isRemoteMutedValue };
+            } else {
+                self.hearingControlStates.participantStates[participantId].isRemoteMuted = isRemoteMutedValue;
+            }
+            if (syncChanges) {
+                self.savingHearingState();
+            }
+        };
+        this.reinitialiseHearingStatesBeforeUpdate(setRemoteMutedStatusInCache);
     }
 
     getRemoteMutedStatus(participantId: string): boolean {
@@ -100,6 +126,20 @@ export class VideoControlCacheService {
             value: this.hearingControlStates?.participantStates[participantId]?.isRemoteMuted ?? null
         });
         return this.hearingControlStates?.participantStates[participantId]?.isRemoteMuted ?? false;
+    }
+
+
+    clearHandRaiseStatusForAll(conferenceId: string, syncChanges: boolean = true) {
+        if (!this.hearingControlStates?.participantStates) {
+            this.logger.warn(`${this.loggerPrefix} Cannot clear hand raise status as hearing control states is not initialised.`);
+            return;
+        }
+        for (const participant of Object.keys(this.hearingControlStates.participantStates)) {
+            this.hearingControlStates.participantStates[participant].isHandRaised = false;
+        }
+        if (syncChanges) {
+            this.savingHearingState();
+        }
     }
 
     async setHandRaiseStatus(participantId: string, isHandRaisedValue: boolean, syncChanges: boolean = true) {
@@ -115,27 +155,6 @@ export class VideoControlCacheService {
             return;
         }
         const self = this;
-        this.storageService
-            .loadHearingStateForConference(this.conferenceId)
-            .pipe(take(1))
-            .toPromise()
-            .then(state => {
-                self.hearingControlStates = state;
-                self.logger.info(`${this.loggerPrefix} re-initialised state for ${this.conferenceId}.`, {
-                    hearingControlStates: this.hearingControlStates
-                });
-                setHandRaiseStatusInCache();
-            })
-            .catch(() => {
-                self.logger.info(
-                    `${this.loggerPrefix} failed to re-initialised state for ${this.conferenceId}.
-                Control States may be out of sync`,
-                    {
-                        hearingControlStates: this.hearingControlStates
-                    }
-                );
-                setHandRaiseStatusInCache();
-            });
         const setHandRaiseStatusInCache = () => {
             if (!self.hearingControlStates.participantStates[participantId]) {
                 self.hearingControlStates.participantStates[participantId] = { isHandRaised: isHandRaisedValue };
@@ -146,6 +165,7 @@ export class VideoControlCacheService {
                 self.savingHearingState();
             }
         };
+        this.reinitialiseHearingStatesBeforeUpdate(setHandRaiseStatusInCache);
     }
 
     getHandRaiseStatus(participantId: string): boolean {
@@ -156,7 +176,7 @@ export class VideoControlCacheService {
         return this.hearingControlStates?.participantStates[participantId]?.isHandRaised ?? false;
     }
 
-    setLocalAudioMuted(participantId: string, localAudioMuted: boolean, syncChanges: boolean = true) {
+    async setLocalAudioMuted(participantId: string, localAudioMuted: boolean, syncChanges: boolean = true) {
         this.logger.info(`${this.loggerPrefix} Setting local audio muted.`, {
             participantId: participantId,
             oldValue: this.hearingControlStates?.participantStates[participantId]?.isLocalAudioMuted ?? null,
@@ -168,17 +188,18 @@ export class VideoControlCacheService {
             return;
         }
 
-        if (!this.hearingControlStates.participantStates[participantId]) {
-            this.hearingControlStates.participantStates[participantId] = { isLocalAudioMuted: localAudioMuted };
-        } else {
-            this.hearingControlStates.participantStates[participantId].isLocalAudioMuted = localAudioMuted;
-        }
-
-        if (syncChanges) {
-            this.storageService
-                .saveHearingStateForConference(this.conferenceService.currentConferenceId, this.hearingControlStates)
-                .subscribe();
-        }
+        const self = this;
+        const setLocalAudioMutedInCache = () => {
+            if (!self.hearingControlStates.participantStates[participantId]) {
+                self.hearingControlStates.participantStates[participantId] = { isLocalAudioMuted: localAudioMuted };
+            } else {
+                self.hearingControlStates.participantStates[participantId].isLocalAudioMuted = localAudioMuted;
+            }
+            if (syncChanges) {
+                self.savingHearingState();
+            }
+        };
+        this.reinitialiseHearingStatesBeforeUpdate(setLocalAudioMutedInCache);
     }
 
     getLocalAudioMuted(participantId: string): boolean {
@@ -200,16 +221,18 @@ export class VideoControlCacheService {
             this.logger.warn(`${this.loggerPrefix} Cannot local video muted as hearing control states is not initialised.`);
             return;
         }
-
-        if (!this.hearingControlStates.participantStates[participantId]) {
-            this.hearingControlStates.participantStates[participantId] = { isLocalVideoMuted: localVideoMuted };
-        } else {
-            this.hearingControlStates.participantStates[participantId].isLocalVideoMuted = localVideoMuted;
-        }
-
-        if (syncChanges) {
-            this.savingHearingState();
-        }
+        const self = this;
+        const setLocalVideoMutedInCache = () => {
+            if (!self.hearingControlStates.participantStates[participantId]) {
+                self.hearingControlStates.participantStates[participantId] = { isLocalVideoMuted: localVideoMuted };
+            } else {
+                self.hearingControlStates.participantStates[participantId].isLocalVideoMuted = localVideoMuted;
+            }
+            if (syncChanges) {
+                self.savingHearingState();
+            }
+        };
+        this.reinitialiseHearingStatesBeforeUpdate(setLocalVideoMutedInCache);
     }
 
     getLocalVideoMuted(participantId: string): boolean {

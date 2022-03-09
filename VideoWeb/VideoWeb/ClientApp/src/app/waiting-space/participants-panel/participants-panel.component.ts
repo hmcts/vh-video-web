@@ -70,7 +70,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-        this.videoControlCacheService.initHearingControlState();
         this.getParticipantsList().then(() => {
             this.participants
                 .map(p => p.id)
@@ -531,6 +530,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to lower all hands in conference`, {
             conference: this.conferenceId
         });
+        this.videoControlCacheService.clearHandRaiseStatusForAll(this.conferenceId);
         this.videoCallService.lowerAllHands(this.conferenceId);
         this.participants
             .filter(x => x instanceof LinkedParticipantPanelModel)
@@ -546,6 +546,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             participant: p.id,
             pexipParticipant: p.pexipId
         });
+        this.videoControlCacheService.setHandRaiseStatus(p.id, false);
         this.videoCallService.lowerHandById(p.pexipId, this.conferenceId, p.id);
         if (p instanceof LinkedParticipantPanelModel) {
             this.lowerLinkedParticipantHand(p);
@@ -554,6 +555,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     lowerLinkedParticipantHand(linkedParticipant: LinkedParticipantPanelModel) {
         linkedParticipant.participants.forEach(async p => {
+            await this.videoControlCacheService.setHandRaiseStatus(p.id, false);
             await this.eventService.publishParticipantHandRaisedStatus(this.conferenceId, p.id, false);
         });
     }
@@ -617,6 +619,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         });
 
         if (participant.hasHandRaised()) {
+            this.videoControlCacheService.setHandRaiseStatus(participant.id, false);
             this.lowerParticipantHand(participant);
         }
         if (participant.hasSpotlight()) {
