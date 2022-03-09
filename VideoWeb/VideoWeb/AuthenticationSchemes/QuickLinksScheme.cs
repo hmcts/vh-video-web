@@ -1,5 +1,6 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -31,8 +32,14 @@ namespace VideoWeb.AuthenticationSchemes
                 ClockSkew = TimeSpan.Zero,
                 IssuerSigningKey = _service.BuildServiceProvider().GetRequiredService<RsaSecurityKey>()
             };
+            options.Events = new JwtBearerEvents { OnTokenValidated = OnTokenValidated };
         }
 
         public override AuthProvider Provider => AuthProvider.QuickLinks;
+
+        public Task OnTokenValidated(TokenValidatedContext context)
+        {
+            return Task.CompletedTask;
+        }
     }
 }

@@ -1,3 +1,7 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using VideoWeb.Common.Configuration;
 
 namespace VideoWeb.AuthenticationSchemes
@@ -9,5 +13,16 @@ namespace VideoWeb.AuthenticationSchemes
         }
 
         public override AuthProvider Provider => AuthProvider.VHAAD;
+
+        public override void SetJwtBearerOptions(JwtBearerOptions options)
+        {
+            base.SetJwtBearerOptions(options);
+            options.Events = new JwtBearerEvents { OnTokenValidated = OnTokenValidated };
+        }
+
+        public Task OnTokenValidated(TokenValidatedContext context)
+        {
+            return Task.CompletedTask;
+        }
     }
 }

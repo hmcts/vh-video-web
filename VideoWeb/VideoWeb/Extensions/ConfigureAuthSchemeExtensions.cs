@@ -139,7 +139,7 @@ namespace VideoWeb.Extensions
                 var token = authorization.Substring("Bearer ".Length).Trim();
                 var jwtHandler = new JwtSecurityTokenHandler();
 
-                if (jwtHandler.ReadJwtToken(token).Claims.First(claim => claim.Type == "role")?.Value == "QuickLinks") return "QuickLinks";
+                //if (jwtHandler.ReadJwtToken(token).Claims.First(claim => claim.Type == "role")?.Value == "QuickLinks") return "QuickLinks";
                 return (jwtHandler.CanReadToken(token) && jwtHandler.ReadJwtToken(token).Claims.First(claim => claim.Type == "aud").Value == ejudClientId)
                     ? "EJudiciary" : "VHAAD";
             }
