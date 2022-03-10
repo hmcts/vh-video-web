@@ -1029,7 +1029,8 @@
     "employer": "Cyflogwr",
     "interventor": "Cyfryngwr",
     "trade-union": "Undeb Llafur",
-    "pro-bono-representative": "Cynrychiolydd Pro Bono"
+    "pro-bono-representative": "Cynrychiolydd Pro Bono",
+    "royal-british-legion": "Y Lleng Brydeinig Frenhinol"
   },
   "case-type-group": {
     "respondent": "Atebydd",
@@ -1047,7 +1048,9 @@
     "homeoffice": "Y Swyddfa Gartref",
     "secretaryofstate": "Ysgrifennydd Gwladol",
     "trafficcommissioner": "Y Comisiynydd Traffig",
-    "elaas": "Cynllun Cynghori ar Apeliadau Cyfraith Cyflogaeth"
+    "elaas": "Cynllun Cynghori ar Apeliadau Cyfraith Cyflogaeth",
+    "inabsence": "Mewn absenoldeb",
+    "vetsuk": "Vets UK"
   },
   "case-type": {
     "placement": "Lleoliad",
@@ -1097,7 +1100,8 @@
     "upper-tribunal-administrative-appeals-chamber": "Siambr Apeliadau Gweinyddol yr Uwch Dribiwnlys",
     "mental-health": "Iechyd Meddwl",
     "asylum-support": "Y Tribiwnlys Cymorth Lloches",
-    "employment-appeal-tribunal": "Y Tribiwnlys Apeliadau Cyflogaeth"
+    "employment-appeal-tribunal": "Y Tribiwnlys Apeliadau Cyflogaeth",
+    "war-pensions-appeals": "Apeliadau Pensiynau Rhyfel"
   },
   "case-role": {
     "state": "Y Wladwriaeth",
