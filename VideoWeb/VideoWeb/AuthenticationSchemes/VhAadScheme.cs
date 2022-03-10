@@ -13,16 +13,5 @@ namespace VideoWeb.AuthenticationSchemes
         }
 
         public override AuthProvider Provider => AuthProvider.VHAAD;
-
-        public override void SetJwtBearerOptions(JwtBearerOptions options)
-        {
-            base.SetJwtBearerOptions(options);
-            options.Events = new JwtBearerEvents { OnTokenValidated = OnTokenValidated };
-        }
-
-        public Task OnTokenValidated(TokenValidatedContext context)
-        {
-            return Task.CompletedTask;
-        }
     }
 }

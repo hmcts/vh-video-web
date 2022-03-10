@@ -60,90 +60,119 @@ namespace VideoWeb.Extensions
                 return new RsaSecurityKey(rsa);
             });
 
-           // var authenticationBuilder =
-                serviceCollection.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddPolicyScheme(JwtBearerDefaults.AuthenticationScheme, "Handler", options =>
-            {
-                options.ForwardDefaultSelector = context =>
+            // var authenticationBuilder =
+            serviceCollection.AddAuthentication(
+                        options =>
                 {
-                    if (context.Request.Path.StartsWithSegments("/callback"))
-                    {
-                        return "Callback";
-                    }
-                    else if (context.Request.Path.StartsWithSegments("/internalevent"))
-                    {
-                        return "InternalEvent";
-                    }
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                 .AddJwtBearer("Callback", options =>
+                   {
+                       options.TokenValidationParameters = new TokenValidationParameters
+                       {
+                           ValidateIssuer = false,
+                           ValidateAudience = false,
+                           IssuerSigningKey = new SymmetricSecurityKey(kinlyCallbackSecret)
+                       };
+                   })
+                 .AddJwtBearer("InternalEvent", options =>
+                 {
+                     options.TokenValidationParameters = new TokenValidationParameters
+                     {
+                         ValidateIssuer = false,
+                         ValidateAudience = false,
+                         IssuerSigningKey = new SymmetricSecurityKey(internalEventSecret)
+                     };
+                 })
+                 .AddJwtBearer("VHAAD", options => aadScheme.SetJwtBearerOptions(options))
+                .AddJwtBearer("EJudiciary", options => ejudScheme.SetJwtBearerOptions(options))
+               
+               
+                .AddJwtBearer("QuickLinks", options => quickLinksScheme.SetJwtBearerOptions(options))
 
-                    var isEventHubRequest = context.Request.Path.StartsWithSegments("/eventhub");
-                    var provider = GetProviderFromRequest(context.Request, eJudAdConfiguration.ClientId);
 
-                    //if (provider == AuthProvider.VHAAD)
-                    if (provider == "VHAAD")
-                    {
-                        providerScheme = aadScheme;
-                        return providerScheme.GetScheme(isEventHubRequest);
-                    }
-                    //if (provider == AuthProvider.EJudiciary)
-                    if (provider == "EJudiciary")
-                    {
-                        providerScheme = ejudScheme;
-                        return providerScheme.GetScheme(isEventHubRequest);
-                    }
-                    //if (provider == AuthProvider.QuickLinks)
-                    if (provider == "QuickLinks")
-                    {
-                        providerScheme = quickLinksScheme;
-                        return providerScheme.GetScheme(isEventHubRequest);
-                    }
-                    //providerScheme = aadScheme;
+        //.AddPolicyScheme("AAD_OR_Ejud_OR_QL", "Handler", options =>
+        .AddPolicyScheme(JwtBearerDefaults.AuthenticationScheme, "Handler", options =>
+        
+        {
+            options.ForwardDefaultSelector = context =>
+            {
+                if (context.Request.Path.StartsWithSegments("/callback"))
+                {
                     return "Callback";
+                }
+                else if (context.Request.Path.StartsWithSegments("/internalevent"))
+                {
+                    return "InternalEvent";
+                }
+                var provider = GetProviderFromRequest(context.Request);
+                return provider;
+
+            //        if (provider == "VHAAD")
+            //    {
+
+                //        return "VHAAD";
+                //    }
+                //        if (provider == "EJudiciary")
+                //    {
+
+                //        return "EJudiciary";
+                //    }
+                //        if (provider == "QuickLinks")
+                //    {
+                //        return "QuickLinks";
+                //    }
+                //        return "VHAAD";
                 };
-            })
-                .AddJwtBearer("Callback", options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        IssuerSigningKey = new SymmetricSecurityKey(kinlyCallbackSecret)
-                    };
-                })
-                .AddJwtBearer("InternalEvent", options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        IssuerSigningKey = new SymmetricSecurityKey(internalEventSecret)
-                    };
-                })
-             .AddJwtBearer("VHAAD", options => aadScheme.SetJwtBearerOptions(options))
-            .AddJwtBearer("EJudiciary", options => ejudScheme.SetJwtBearerOptions(options))
-            .AddJwtBearer("QuickLinks", options => quickLinksScheme.SetJwtBearerOptions(options));
-          
-  
+            });
 
             serviceCollection.AddMemoryCache();
             serviceCollection.AddAuthPolicies(providerSchemes);
         }
-        public static string GetProviderFromRequest(HttpRequest httpRequest, string ejudClientId)
+        public static string GetProviderFromRequest(HttpRequest httpRequest)
         {
-            string authorization = httpRequest.Headers[HeaderNames.Authorization];
-            var defaultScheme = "CallBack";
-            if (!string.IsNullOrEmpty(authorization) && authorization.StartsWith("Bearer "))
-            {
-                var token = authorization.Substring("Bearer ".Length).Trim();
-                var jwtHandler = new JwtSecurityTokenHandler();
+            //string authorization = httpRequest.Headers[HeaderNames.Authorization];
+            //var defaultScheme = "VHAAD";
+            //if (!string.IsNullOrEmpty(authorization) && authorization.StartsWith("Bearer "))
+            //{
+            //    var token = authorization.Substring("Bearer ".Length).Trim();
+            //    var jwtHandler = new JwtSecurityTokenHandler();
 
-                //if (jwtHandler.ReadJwtToken(token).Claims.First(claim => claim.Type == "role")?.Value == "QuickLinks") return "QuickLinks";
-                return (jwtHandler.CanReadToken(token) && jwtHandler.ReadJwtToken(token).Claims.First(claim => claim.Type == "aud").Value == ejudClientId)
-                    ? "EJudiciary" : "VHAAD";
+            //    //if (jwtHandler.ReadJwtToken(token).Claims.First(claim => claim.Type == "role")?.Value == "QuickLinks") return "QuickLinks";
+            //    return (jwtHandler.CanReadToken(token) && jwtHandler.ReadJwtToken(token).Claims.First(claim => claim.Type == "aud").Value == ejudClientId)
+            //        ? "EJudiciary" : "VHAAD";
+            //}
+            //return defaultScheme;
+
+            var token = string.Empty;
+
+            if (httpRequest.Headers.TryGetValue("Authorization", out var value))
+            {
+                string authorization = value;
+                if (authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                {
+                    token = authorization.Substring("Bearer ".Length).Trim();
+                }
             }
-            return defaultScheme;
+
+            var jwtHandler = new JwtSecurityTokenHandler();
+
+            if (jwtHandler.CanReadToken(token))
+            {
+                var jwtToken = jwtHandler.ReadJwtToken(token);
+
+                if (jwtToken.Issuer == "https://login.microsoftonline.com/fb6e0e22-0da3-4c35-972a-9d61eb256508/v2.0")
+                {
+                    return "VHAAD";
+                }
+                if (jwtToken.Issuer == "https://login.microsoftonline.com/0b90379d-18de-426a-ae94-7f62441231e0/v2.0")
+                {
+                    return "EJudiciary";
+                }
+            }
+
+            return "QuickLinks";
         }
 
         private static void AddAuthPolicies(this IServiceCollection serviceCollection, IList<AuthProvider> authProviders)
@@ -181,23 +210,24 @@ namespace VideoWeb.Extensions
             foreach (var authProvider in authProviders)
             {
                 options.AddPolicy(authProvider.ToString(), new AuthorizationPolicyBuilder()
+                .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
                .RequireAuthenticatedUser()
                .RequireRole(allRoles)
-               .AddAuthenticationSchemes(authProvider.ToString())
                .Build());
             }
 
             foreach (var policy in rolePolicies)
             {
                 var policyBuilder = new AuthorizationPolicyBuilder()
+                 .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
                 .RequireAuthenticatedUser()
                 .RequireRole(policy.Value);
 
                 // TODO: These didnt use to include the EventHubSchemes but should they have?
-                foreach (var authProvider in authProviders)
-                {
-                    policyBuilder = policyBuilder.AddAuthenticationSchemes(authProvider.ToString());
-                }
+                //foreach (var authProvider in authProviders)
+                //{
+                //    policyBuilder = policyBuilder.AddAuthenticationSchemes(authProvider.ToString());
+                //}
 
                 options.AddPolicy(policy.Key, policyBuilder.Build());
             }
