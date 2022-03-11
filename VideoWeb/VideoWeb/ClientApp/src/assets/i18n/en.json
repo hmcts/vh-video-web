@@ -724,7 +724,8 @@
     "police-officer" : "Police Officer",
     "appellant-advocate" : "Appellant Advocate",
     "lay-member" : "Lay Member",
-    "cica-presenting-officer" : "CICA Presenting Officer"
+    "cica-presenting-officer" : "CICA Presenting Officer",
+    "royal-british-legion": "Royal British Legion"
   },
   "case-role": {
     "appellant": "Appellant",
@@ -792,7 +793,8 @@
     "mental-health": "Mental Health",
     "asylum-support": "Asylum Support",
     "employment-appeal-tribunal": "Employment Appeal Tribunal",
-    "criminal-injuries-compensation":"Criminal Injuries Compensation"
+    "criminal-injuries-compensation":"Criminal Injuries Compensation",
+    "war-pensions-appeals": "War Pensions Appeals"
   },
   "case-type-group": {
     "state": "State",
@@ -811,7 +813,9 @@
     "secretaryofstate": "Secretary of State",
     "trafficcommissioner": "Traffic Commissioner",
     "elaas": "ELAAS",
-    "presentingofficer":"Presenting Officer"
+    "presentingofficer":"Presenting Officer",
+    "inabsence": "In absence",
+    "vetsuk": "Vets UK",
   },
   "user-role": {
     "case-admin": "Case admin",

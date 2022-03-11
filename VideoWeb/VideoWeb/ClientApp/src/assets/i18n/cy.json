@@ -1034,7 +1034,8 @@
     "police-officer" : "Swyddog yr Heddlu",
     "appellant-advocate" : "Eiriolwr yr Apelydd",
     "lay-member" : "Aelod Lleyg",
-    "cica-presenting-officer" : "Swyddog Cyflwyno CICA"
+    "cica-presenting-officer" : "Swyddog Cyflwyno CICA",
+    "royal-british-legion": "Y Lleng Brydeinig Frenhinol"
   },
   "case-type-group": {
     "respondent": "Atebydd",
@@ -1053,7 +1054,9 @@
     "secretaryofstate": "Ysgrifennydd Gwladol",
     "trafficcommissioner": "Y Comisiynydd Traffig",
     "elaas": "Cynllun Cynghori ar Apeliadau Cyfraith Cyflogaeth",
-    "presentingofficer":"Swyddog Cyflwyno"
+    "presentingofficer":"Swyddog Cyflwyno",
+    "inabsence": "Mewn absenoldeb",
+    "vetsuk": "Vets UK"
   },
   "case-type": {
     "placement": "Lleoliad",
@@ -1104,7 +1107,8 @@
     "mental-health": "Iechyd Meddwl",
     "asylum-support": "Y Tribiwnlys Cymorth Lloches",
     "employment-appeal-tribunal": "Y Tribiwnlys Apeliadau Cyflogaeth",
-    "criminal-injuries-compensation":"Iawndal am Anafiadau Troseddol"
+    "criminal-injuries-compensation":"Iawndal am Anafiadau Troseddol",
+    "war-pensions-appeals": "Apeliadau Pensiynau Rhyfel"
   },
   "case-role": {
     "state": "Y Wladwriaeth",
