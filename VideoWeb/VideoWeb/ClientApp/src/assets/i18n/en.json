@@ -719,7 +719,12 @@
     "employer": "Employer",
     "interventor": "Interventor",
     "trade-union": "Trade Union",
-    "pro-bono-representative": "Pro-Bono Representative"
+    "pro-bono-representative": "Pro-Bono Representative",
+    "legal-representative" : "Legal Representative",
+    "police-officer" : "Police Officer",
+    "appellant-advocate" : "Appellant Advocate",
+    "lay-member" : "Lay Member",
+    "cica-presenting-officer" : "CICA Presenting Officer"
   },
   "case-role": {
     "appellant": "Appellant",
@@ -735,7 +740,8 @@
     "state": "State",
     "secretaryofstate": "Secretary of State",
     "trafficcommissioner": "Traffic Commissioner",
-    "elaas": "ELAAS"
+    "elaas": "ELAAS",
+    "presentingofficer":"Presenting Officer"
   },
   "case-type": {
     "adoption": "Adoption",
@@ -785,7 +791,8 @@
     "upper-tribunal-administrative-appeals-chamber": "Upper Tribunal Administrative Appeals Chamber",
     "mental-health": "Mental Health",
     "asylum-support": "Asylum Support",
-    "employment-appeal-tribunal": "Employment Appeal Tribunal"
+    "employment-appeal-tribunal": "Employment Appeal Tribunal",
+    "criminal-injuries-compensation":"Criminal Injuries Compensation"
   },
   "case-type-group": {
     "state": "State",
@@ -803,7 +810,8 @@
     "homeoffice": "Home Office",
     "secretaryofstate": "Secretary of State",
     "trafficcommissioner": "Traffic Commissioner",
-    "elaas": "ELAAS"
+    "elaas": "ELAAS",
+    "presentingofficer":"Presenting Officer"
   },
   "user-role": {
     "case-admin": "Case admin",
