@@ -148,24 +148,18 @@ namespace VideoWeb.Extensions
             foreach (var scheme in schemes.SelectMany(s => s.GetProviderSchemes()))
             {
                 options.AddPolicy(scheme, new AuthorizationPolicyBuilder()
+               .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
                .RequireAuthenticatedUser()
-               .RequireRole(allRoles)
-               .AddAuthenticationSchemes(scheme)
+               .RequireRole(allRoles)               
                .Build());
             }
 
             foreach (var policy in rolePolicies)
             {
                 var policyBuilder = new AuthorizationPolicyBuilder()
+                .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
                 .RequireAuthenticatedUser()
                 .RequireRole(policy.Value);
-
-                // TODO: These didnt use to include the EventHubSchemes but should they have?
-                foreach (var schemeName in schemes.Select(s => s.SchemeName))
-                {
-                    policyBuilder = policyBuilder.AddAuthenticationSchemes(schemeName);
-                }
-
                 options.AddPolicy(policy.Key, policyBuilder.Build());
             }
         }
