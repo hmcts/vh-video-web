@@ -13,11 +13,7 @@ export class VideoControlCacheService {
     private hearingControlStates: IHearingControlsState | null = { participantStates: {} };
     private conferenceId: string;
 
-    constructor(
-        private conferenceService: ConferenceService,
-        private storageService: DistributedVideoControlCacheService,
-        private logger: LoggerService
-    ) {
+    initHearingState(){
         this.conferenceService.currentConference$.subscribe(conference => {
             if (!conference) {
                 this.logger.warn(`${this.loggerPrefix} No conference loaded. Skipping loading of hearing state for conference`);
@@ -34,6 +30,14 @@ export class VideoControlCacheService {
                     });
                 });
         });
+    }
+
+    constructor(
+        private conferenceService: ConferenceService,
+        private storageService: DistributedVideoControlCacheService,
+        private logger: LoggerService
+    ) {
+        this.initHearingState();
     }
 
     private reinitialiseHearingStatesBeforeUpdate(callback: Function) {

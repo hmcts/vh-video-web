@@ -70,6 +70,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+        this.videoControlCacheService.initHearingState();
         this.getParticipantsList().then(() => {
             this.participants
                 .map(p => p.id)
@@ -530,13 +531,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to lower all hands in conference`, {
             conference: this.conferenceId
         });
-        this.videoControlCacheService.clearHandRaiseStatusForAll(this.conferenceId);
         this.videoCallService.lowerAllHands(this.conferenceId);
-        this.participants
-            .filter(x => x instanceof LinkedParticipantPanelModel)
-            .forEach(async lp => {
-                this.lowerLinkedParticipantHand(lp as LinkedParticipantPanelModel);
-            });
+        this.videoControlCacheService.clearHandRaiseStatusForAll(this.conferenceId);
     }
 
     lowerParticipantHand(participant: PanelModel) {
@@ -546,11 +542,13 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             participant: p.id,
             pexipParticipant: p.pexipId
         });
-        this.videoControlCacheService.setHandRaiseStatus(p.id, false);
         this.videoCallService.lowerHandById(p.pexipId, this.conferenceId, p.id);
-        if (p instanceof LinkedParticipantPanelModel) {
-            this.lowerLinkedParticipantHand(p);
-        }
+        this.videoControlCacheService.setHandRaiseStatus(p.id, false)
+            .then(() => {
+                if (p instanceof LinkedParticipantPanelModel) {
+                    this.lowerLinkedParticipantHand(p);
+                }
+            });
     }
 
     lowerLinkedParticipantHand(linkedParticipant: LinkedParticipantPanelModel) {
