@@ -1030,6 +1030,11 @@
     "interventor": "Cyfryngwr",
     "trade-union": "Undeb Llafur",
     "pro-bono-representative": "Cynrychiolydd Pro Bono",
+    "legal-representative" : "Cynrychiolydd Cyfreithiol",
+    "police-officer" : "Swyddog yr Heddlu",
+    "appellant-advocate" : "Eiriolwr yr Apelydd",
+    "lay-member" : "Aelod Lleyg",
+    "cica-presenting-officer" : "Swyddog Cyflwyno CICA",
     "royal-british-legion": "Y Lleng Brydeinig Frenhinol"
   },
   "case-type-group": {
@@ -1049,6 +1054,7 @@
     "secretaryofstate": "Ysgrifennydd Gwladol",
     "trafficcommissioner": "Y Comisiynydd Traffig",
     "elaas": "Cynllun Cynghori ar Apeliadau Cyfraith Cyflogaeth",
+    "presentingofficer":"Swyddog Cyflwyno",
     "inabsence": "Mewn absenoldeb",
     "vetsuk": "Vets UK"
   },
@@ -1101,6 +1107,7 @@
     "mental-health": "Iechyd Meddwl",
     "asylum-support": "Y Tribiwnlys Cymorth Lloches",
     "employment-appeal-tribunal": "Y Tribiwnlys Apeliadau Cyflogaeth",
+    "criminal-injuries-compensation":"Iawndal am Anafiadau Troseddol",
     "war-pensions-appeals": "Apeliadau Pensiynau Rhyfel"
   },
   "case-role": {
@@ -1117,7 +1124,8 @@
     "appellant": "Apelydd",
     "secretaryofstate": "Ysgrifennydd Gwladol",
     "trafficcommissioner": "Y Comisiynydd Traffig",
-    "elaas": "Cynllun Cynghori ar Apeliadau Cyfraith Cyflogaeth"
+    "elaas": "Cynllun Cynghori ar Apeliadau Cyfraith Cyflogaeth",
+    "presentingofficer":"Swyddog Cyflwyno"
   },
   "venue-list": {
     "title": "Dewis eich gwrandawiadau",
