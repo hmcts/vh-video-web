@@ -363,7 +363,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     toggleHandRaised() {
         const toggleCacheValue = (handRaisedUpdateValue: boolean) => {
             this.videoControlCacheService.setHandRaiseStatus(this.participant.id, handRaisedUpdateValue);
-
         };
         if (this.handRaised) {
             toggleCacheValue(false);

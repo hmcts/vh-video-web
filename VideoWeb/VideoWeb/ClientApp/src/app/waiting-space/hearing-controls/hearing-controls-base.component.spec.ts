@@ -117,7 +117,10 @@ describe('HearingControlsBaseComponent', () => {
             'setHandRaiseStatusById'
         ]);
 
-        videoControlCacheSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlService', ['clearHandRaiseStatusForAll', 'setHandRaiseStatus']);
+        videoControlCacheSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlService', [
+            'clearHandRaiseStatusForAll',
+            'setHandRaiseStatus'
+        ]);
 
         const loggedInParticipantSubject = new BehaviorSubject<ParticipantModel>(
             ParticipantModel.fromParticipantForUserResponse(participantOne)
