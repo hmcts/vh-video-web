@@ -8,6 +8,8 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
 import { SecurityServiceProvider } from '../authentication/security-provider.service';
 import { ISecurityService } from '../authentication/security-service.interface';
+import { IdpProviders } from '../idp-providers';
+import { SecurityConfigSetupService } from '../security-config-setup.service';
 
 @Component({
     selector: 'app-logout',
@@ -21,7 +23,8 @@ export class LogoutComponent implements OnInit {
     constructor(
         securityServiceProviderService: SecurityServiceProvider,
         private profileService: ProfileService,
-        private featureFlagService: FeatureFlagService
+        private featureFlagService: FeatureFlagService,
+        private securityConfigSetupService: SecurityConfigSetupService
     ) {
         securityServiceProviderService.currentSecurityService$.subscribe(securityService => (this.securityService = securityService));
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
@@ -39,6 +42,7 @@ export class LogoutComponent implements OnInit {
                 this.securityService.logoffAndRevokeTokens();
             }
         });
+        this.securityConfigSetupService.setIdp(IdpProviders.vhaad);
     }
 
     get loggedIn(): Observable<boolean> {
