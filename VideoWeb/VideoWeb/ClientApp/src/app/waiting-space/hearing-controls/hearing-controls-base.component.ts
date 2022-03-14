@@ -363,18 +363,18 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     toggleHandRaised() {
         const toggleCacheValue = (handRaisedUpdateValue: boolean) => {
             this.videoControlCacheService.setHandRaiseStatus(this.participant.id, handRaisedUpdateValue)
-                .then(()=>{
-                    if(this.participant.interpreter_room){
+                .then(() => {
+                    if (this.participant.interpreter_room) {
                         this.videoControlCacheService.setHandRaiseStatus(this.participant.interpreter_room.id, handRaisedUpdateValue);
                     }
                 });
-        }
+        };
         if (this.handRaised) {
-            toggleCacheValue(false)
+            toggleCacheValue(false);
             this.videoCallService.lowerHand(this.conferenceId, this.participant.id);
             this.logger.info(`${this.loggerPrefix} Participant lowered own hand`, this.logPayload);
         } else {
-            toggleCacheValue(true)
+            toggleCacheValue(true);
             this.videoCallService.raiseHand(this.conferenceId, this.participant.id);
             this.logger.info(`${this.loggerPrefix} Participant raised own hand`, this.logPayload);
         }

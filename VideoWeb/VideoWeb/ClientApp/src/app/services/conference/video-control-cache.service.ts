@@ -13,7 +13,7 @@ export class VideoControlCacheService {
     private hearingControlStates: IHearingControlsState | null = { participantStates: {} };
     private conferenceId: string;
 
-    initHearingState(){
+    initHearingState() {
         this.conferenceService.currentConference$.subscribe(conference => {
             if (!conference) {
                 this.logger.warn(`${this.loggerPrefix} No conference loaded. Skipping loading of hearing state for conference`);
