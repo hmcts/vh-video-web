@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AuthOptions, PublicConfiguration } from 'angular-auth-oidc-client';
-import { ReplaySubject, Observable, EMPTY, BehaviorSubject } from 'rxjs';
+import { ReplaySubject, Observable, EMPTY, BehaviorSubject, Subscription } from 'rxjs';
 import { map, take, tap } from 'rxjs/operators';
 import { ApiClient } from 'src/app/services/clients/api-client';
 import { SessionStorage } from 'src/app/services/session-storage';
@@ -32,6 +32,7 @@ export class QuickLinkSecurityService implements ISecurityService {
     private tokenSessionStorage: SessionStorage<string>;
     private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
     private userDataSubject = new ReplaySubject<any>(1);
+    private checkAuthSubscription = new Subscription();
 
     decodedTokenBody: QuickLinkJwtBody;
 
@@ -46,7 +47,7 @@ export class QuickLinkSecurityService implements ISecurityService {
 
     authorize(authOptions?: AuthOptions, token?: string): void {
         this.setToken(token);
-        this.checkAuth().pipe(take(1)).subscribe();
+        this.checkAuthSubscription = this.checkAuth().pipe(take(1)).subscribe();
     }
 
     private clearToken() {
@@ -59,6 +60,7 @@ export class QuickLinkSecurityService implements ISecurityService {
             this.decodedTokenBody = null;
             this.tokenSessionStorage.clear();
             this.isAuthenticatedSubject.next(false);
+            this.checkAuthSubscription.unsubscribe();
         } else {
             this.token = token;
             this.decodedTokenBody = this.decodeTokenBody(this.token);
