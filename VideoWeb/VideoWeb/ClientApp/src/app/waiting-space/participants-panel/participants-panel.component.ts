@@ -543,17 +543,16 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             pexipParticipant: p.pexipId
         });
         this.videoCallService.lowerHandById(p.pexipId, this.conferenceId, p.id);
-        this.videoControlCacheService.setHandRaiseStatus(p.id, false).then(() => {
-            if (p instanceof LinkedParticipantPanelModel) {
-                this.lowerLinkedParticipantHand(p);
-            }
-        });
+        this.videoControlCacheService.setHandRaiseStatus(p.id, false);
+        if (p instanceof LinkedParticipantPanelModel) {
+            this.lowerLinkedParticipantHand(p);
+        }
     }
 
     lowerLinkedParticipantHand(linkedParticipant: LinkedParticipantPanelModel) {
         linkedParticipant.participants.forEach(async p => {
-            await this.videoControlCacheService.setHandRaiseStatus(p.id, false);
             await this.eventService.publishParticipantHandRaisedStatus(this.conferenceId, p.id, false);
+            this.videoControlCacheService.setHandRaiseStatus(p.id, false);
         });
     }
 

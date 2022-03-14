@@ -116,7 +116,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         ]);
         videoControlCacheSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', [
             'setSpotlightStatus',
-            'clearHandRaiseStatusForAll'
+            'clearHandRaiseStatusForAll',
+            'setHandRaiseStatus'
         ]);
         userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>([], ['isAudioOnly$']);
         isAudioOnlySubject = new Subject<boolean>();
