@@ -1125,7 +1125,9 @@
     "secretaryofstate": "Ysgrifennydd Gwladol",
     "trafficcommissioner": "Y Comisiynydd Traffig",
     "elaas": "Cynllun Cynghori ar Apeliadau Cyfraith Cyflogaeth",
-    "presentingofficer":"Swyddog Cyflwyno"
+    "presentingofficer":"Swyddog Cyflwyno",
+    "inabsence": "Mewn absenoldeb",
+    "vetsuk": "Vets UK"
   },
   "venue-list": {
     "title": "Dewis eich gwrandawiadau",
