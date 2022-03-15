@@ -742,7 +742,9 @@
     "secretaryofstate": "Secretary of State",
     "trafficcommissioner": "Traffic Commissioner",
     "elaas": "ELAAS",
-    "presentingofficer":"Presenting Officer"
+    "presentingofficer":"Presenting Officer",
+    "inabsence": "In absence",
+    "vetsuk": "Vets UK"
   },
   "case-type": {
     "adoption": "Adoption",
