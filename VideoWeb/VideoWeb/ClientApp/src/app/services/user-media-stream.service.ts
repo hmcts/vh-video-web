@@ -129,7 +129,7 @@ export class UserMediaStreamService {
                 this.currentStream.removeTrack(track);
                 this.logger.debug(`${this.loggerPrefix} video track removed from current stream. Track not stopped`, {
                     track: track
-            });
+                });
             });
 
             this.logger.debug(`${this.loggerPrefix} audio only image service called.`);
