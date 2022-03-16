@@ -755,7 +755,7 @@ describe('HearingControlsBaseComponent', () => {
             HearingRole.LEGAL_MEMBER,
             HearingRole.DISABILITY_MEMBER,
             HearingRole.FINANCIAL_MEMBER,
-            HearingRole.SPECIALIST_LAY_MEMBER, 
+            HearingRole.SPECIALIST_LAY_MEMBER,
             HearingRole.LAY_MEMBER
         ];
         allowedHearingRoles.forEach(hearingRole => {

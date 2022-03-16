@@ -475,7 +475,7 @@ export class ConferenceTestData {
         participants.push(participant13);
         participants.push(participant14);
         participants.push(participant15);
-        
+
         return participants;
     }
 
