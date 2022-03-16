@@ -155,6 +155,7 @@ export class VideoCallService {
         this.userMediaStreamService.currentStream$.pipe(skip(1)).subscribe(currentStream => {
             this.pexipAPI.user_media_stream = currentStream;
             this.renegotiateCall();
+            self.logger.info(`${self.loggerPrefix} calling renegotiateCall`);
         });
 
         this.setEncoder();
@@ -488,6 +489,7 @@ export class VideoCallService {
             this.pexipAPI.user_media_stream = currentStream;
             this.renegotiateCall();
             this.onVideoEvidenceStoppedSubject.next();
+            this.logger.info(`${this.loggerPrefix} calling renegotiateCall`);
         });
     }
 

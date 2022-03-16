@@ -8,7 +8,8 @@ describe('HearingRoleHelper', () => {
         HearingRole.FINANCIAL_MEMBER,
         HearingRole.LEGAL_MEMBER,
         HearingRole.DISABILITY_MEMBER,
-        HearingRole.SPECIALIST_LAY_MEMBER
+        HearingRole.SPECIALIST_LAY_MEMBER, 
+        HearingRole.LAY_MEMBER
     ];
     const allHearingRoles = Object.keys(HearingRole).map(role => HearingRole[role]);
 
