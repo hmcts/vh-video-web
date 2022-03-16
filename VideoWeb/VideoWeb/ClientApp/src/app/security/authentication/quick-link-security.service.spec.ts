@@ -4,11 +4,17 @@ import { ApiClient } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { JwtHelperService } from '../jwt-helper.service';
 import { QuickLinkJwtBody, QuickLinkSecurityService } from './quick-link-security.service';
+import { SecurityConfigSetupService } from '../security-config-setup.service';
+import { Router } from '@angular/router';
+import { IdpProviders } from '../idp-providers';
+import { pageUrls } from '../../shared/page-url.constants';
 
 describe('QuickLinkSecurityService', () => {
     let service: QuickLinkSecurityService;
     let apiClientSpy: jasmine.SpyObj<ApiClient>;
     let jwtHelperSpy: jasmine.SpyObj<JwtHelperService>;
+    let securityConfigSetupService: jasmine.SpyObj<SecurityConfigSetupService>;
+    let router: jasmine.SpyObj<Router>;
 
     const jwt = 'jwt';
     const decodedJwt = {
@@ -26,9 +32,11 @@ describe('QuickLinkSecurityService', () => {
     beforeEach(() => {
         apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', ['isQuickLinkParticipantAuthorised']);
         jwtHelperSpy = jasmine.createSpyObj<JwtHelperService>('JwtHelperService', ['decodeToken', 'isTokenExpired']);
+        securityConfigSetupService = jasmine.createSpyObj<SecurityConfigSetupService>('SecurityConfigSetupService', ['setIdp']);
+        router = jasmine.createSpyObj<Router>('Router', ['navigate']);
         jwtHelperSpy.decodeToken.and.returnValue(decodedJwt);
 
-        service = new QuickLinkSecurityService(apiClientSpy, jwtHelperSpy);
+        service = new QuickLinkSecurityService(apiClientSpy, jwtHelperSpy, securityConfigSetupService, router);
     });
 
     it('should be created', () => {
@@ -76,7 +84,6 @@ describe('QuickLinkSecurityService', () => {
             // Arrange
             const isQuickLinkParticipantAuthorisedSubject = new Subject<void>();
             apiClientSpy.isQuickLinkParticipantAuthorised.and.returnValue(isQuickLinkParticipantAuthorisedSubject.asObservable());
-
             // Act
             service.authorize(null, jwt);
 
@@ -123,7 +130,31 @@ describe('QuickLinkSecurityService', () => {
 
             // Assert
             expect(apiClientSpy.isQuickLinkParticipantAuthorised).toHaveBeenCalledTimes(1);
+            expect(securityConfigSetupService.setIdp).toHaveBeenCalledTimes(1);
+            expect(securityConfigSetupService.setIdp).toHaveBeenCalledWith(IdpProviders.vhaad);
             expect(isAuthenticated).toBeFalse();
+        }));
+
+        it('resets Idp and navigates to logout', fakeAsync(() => {
+            // Arrange
+            const isQuickLinkParticipantAuthorisedSubject = new Subject<void>();
+            apiClientSpy.isQuickLinkParticipantAuthorised.and.returnValue(isQuickLinkParticipantAuthorisedSubject.asObservable());
+            jwtHelperSpy.isTokenExpired.and.returnValue(false);
+
+            // Act
+            let isAuthenticated = true;
+            service.isAuthenticated$.subscribe(authenticated => {
+                isAuthenticated = authenticated;
+            });
+
+            service.authorize(null, jwt);
+            isQuickLinkParticipantAuthorisedSubject.error('error');
+            flush();
+
+            // Assert
+            expect(securityConfigSetupService.setIdp).toHaveBeenCalledTimes(1);
+            expect(securityConfigSetupService.setIdp).toHaveBeenCalledWith(IdpProviders.vhaad);
+            expect(router.navigate).toHaveBeenCalledWith([`/${pageUrls.Logout}`]);
         }));
 
         it('should emit userData when checkAuth returns true', fakeAsync(() => {
