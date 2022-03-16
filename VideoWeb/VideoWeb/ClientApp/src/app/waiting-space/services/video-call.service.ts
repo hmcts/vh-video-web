@@ -169,7 +169,7 @@ export class VideoCallService {
     initTurnServer() {
         const config = this.configService.getConfig();
         const turnServerObj = {
-            url: `turn:${config.kinly_turn_server}`,
+            urls: `turn:${config.kinly_turn_server}`,
             username: config.kinly_turn_server_user,
             credential: config.kinly_turn_server_credential
         };

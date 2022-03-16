@@ -414,7 +414,7 @@ describe('VideoCallService', () => {
             expect(service.onVideoEvidenceShared()).toBeDefined();
             expect(service.onVideoEvidenceStopped()).toBeDefined();
             expect(service.pexipAPI.turn_server).toBeDefined();
-            expect(service.pexipAPI.turn_server.url).toContain(config.kinly_turn_server);
+            expect(service.pexipAPI.turn_server.urls).toContain(config.kinly_turn_server);
             expect(service.pexipAPI.turn_server.username).toContain(config.kinly_turn_server_user);
             expect(service.pexipAPI.turn_server.credential).toContain(config.kinly_turn_server_credential);
         });
