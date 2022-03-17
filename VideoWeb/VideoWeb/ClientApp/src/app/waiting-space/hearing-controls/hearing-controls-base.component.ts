@@ -241,6 +241,10 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             .onVideoEvidenceStopped()
             .pipe(takeUntil(this.destroyedSubject))
             .subscribe(() => (this.sharingDynamicEvidence = false));
+
+        this.videoCallService
+            .onParticipantCreated()
+            .subscribe(() => this.newParticipantEnteredHandshake())
     }
 
     handleScreenShareConnected(connectedScreenShare: ConnectedScreenshare): void {
@@ -462,5 +466,10 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         }
 
         return false;
+    }
+
+    private newParticipantEnteredHandshake() {
+        //resend buzz current position for late joiner just incase cache is out of sync
+        this.videoControlService.setHandRaiseStatusById(this.participant?.id, this.handRaised);
     }
 }
