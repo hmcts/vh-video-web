@@ -1,12 +1,16 @@
 import { Injectable } from '@angular/core';
 import { AuthOptions, PublicConfiguration } from 'angular-auth-oidc-client';
-import { ReplaySubject, Observable, EMPTY, BehaviorSubject } from 'rxjs';
+import { ReplaySubject, Observable, EMPTY, BehaviorSubject, Subscription } from 'rxjs';
 import { map, take, tap } from 'rxjs/operators';
 import { ApiClient } from 'src/app/services/clients/api-client';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { JWTBody } from '../idp-selection/models/jwt-body.model';
 import { JwtHelperService } from '../jwt-helper.service';
 import { ISecurityService } from './security-service.interface';
+import { SecurityConfigSetupService } from '../security-config-setup.service';
+import { Router } from '@angular/router';
+import { pageUrls } from '../../shared/page-url.constants';
+import { IdpProviders } from '../idp-providers';
 
 export class QuickLinkJwtBody extends JWTBody {
     // tslint:disable-next-line: variable-name
@@ -32,10 +36,16 @@ export class QuickLinkSecurityService implements ISecurityService {
     private tokenSessionStorage: SessionStorage<string>;
     private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
     private userDataSubject = new ReplaySubject<any>(1);
+    private checkAuthSubscription = new Subscription();
 
     decodedTokenBody: QuickLinkJwtBody;
 
-    constructor(private apiClient: ApiClient, private jwtHelper: JwtHelperService) {
+    constructor(
+        private apiClient: ApiClient,
+        private jwtHelper: JwtHelperService,
+        private securityConfigSetupService: SecurityConfigSetupService,
+        private router: Router
+    ) {
         this.tokenSessionStorage = new SessionStorage<string>(this.tokenSessionStorageKey);
         this.token = this.tokenSessionStorage.get();
         if (this.isTokenValid(this.token)) {
@@ -46,11 +56,14 @@ export class QuickLinkSecurityService implements ISecurityService {
 
     authorize(authOptions?: AuthOptions, token?: string): void {
         this.setToken(token);
-        this.checkAuth().pipe(take(1)).subscribe();
+        this.checkAuthSubscription.add(this.checkAuth().pipe(take(1)).subscribe());
     }
 
     private clearToken() {
         this.setToken(null);
+        this.checkAuthSubscription.unsubscribe();
+        this.securityConfigSetupService.setIdp(IdpProviders.vhaad);
+        this.router.navigate([`/${pageUrls.Logout}`]);
     }
 
     private setToken(token: string | null) {
