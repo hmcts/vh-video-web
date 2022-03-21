@@ -89,7 +89,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                         state[participant.id]?.isLocalVideoMuted
                     );
                 });
-            })
+            });
             this.setupVideoCallSubscribers();
             this.setupEventhubSubscribers();
         });
@@ -471,15 +471,15 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         }
     }
 
-     lowerAllHands() {
+    lowerAllHands() {
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to lower all hands in conference`, {
             conference: this.conferenceId
         });
-        //ClearAllBuzz Pexip command currently does not signal VMR participant ParticipantUpdated event handlers.
-        //this.videoCallService.lowerAllHands(this.conferenceId);
-        this.participants.forEach(async participant =>{
-            await this.lowerParticipantHand(participant)
-        })
+        // ClearAllBuzz Pexip command currently does not signal VMR participant ParticipantUpdated event handlers.
+        // this.videoCallService.lowerAllHands(this.conferenceId);
+        this.participants.forEach(async participant => {
+            await this.lowerParticipantHand(participant);
+        });
     }
 
     async lowerParticipantHand(participant: PanelModel) {

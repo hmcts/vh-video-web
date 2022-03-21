@@ -114,9 +114,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             'setRemoteMuteStatusById',
             'setHandRaiseStatusById'
         ]);
-        videoControlCacheSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', [
-            'setSpotlightStatus'
-        ]);
+        videoControlCacheSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', ['setSpotlightStatus']);
         userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>([], ['isAudioOnly$']);
         isAudioOnlySubject = new Subject<boolean>();
         getSpiedPropertyGetter(userMediaServiceSpy, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
@@ -301,7 +299,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         videoCallService.raiseHand.calls.reset();
         component.handRaised = false;
         component.toggleHandRaised();
-        //expect(videoCallService.raiseHand).toHaveBeenCalledTimes(1);
+        // expect(videoCallService.raiseHand).toHaveBeenCalledTimes(1);
         const expectedText = 'hearing-controls.lower-my-hand';
         expect(component.handToggleText).toBe(expectedText);
     });
@@ -310,7 +308,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         videoCallService.lowerHand.calls.reset();
         component.handRaised = true;
         component.toggleHandRaised();
-        //expect(videoCallService.lowerHand).toHaveBeenCalledTimes(1);
+        // expect(videoCallService.lowerHand).toHaveBeenCalledTimes(1);
         const expectedText = 'hearing-controls.raise-my-hand';
         expect(component.handToggleText).toBe(expectedText);
     });

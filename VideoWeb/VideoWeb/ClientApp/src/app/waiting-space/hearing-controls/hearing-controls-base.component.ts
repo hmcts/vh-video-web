@@ -268,21 +268,20 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     private async newParticipantEnteredHandshake(newParticipantEntered) {
-
         this.logger.info(`${this.loggerPrefix} Waiting 3 seconds before sending handshake`);
-        if(this.participant.hearing_role != HearingRole.JUDGE && this.participant.hearing_role != HearingRole.STAFF_MEMBER){
-            await setTimeout(()=>{
+        if (this.participant.hearing_role !== HearingRole.JUDGE && this.participant.hearing_role !== HearingRole.STAFF_MEMBER) {
+            await setTimeout(() => {
                 this.logger.info(`${this.loggerPrefix} Sending handshake for entry of: ${newParticipantEntered}`);
-                this.publishMediaDeviceStatus().then(()=>{
-                    this.eventService.publishParticipantHandRaisedStatus(this.conferenceId, this.participant.id, this.handRaised)
+                this.publishMediaDeviceStatus().then(() => {
+                    this.eventService.publishParticipantHandRaisedStatus(this.conferenceId, this.participant.id, this.handRaised);
                 });
-            }, 3000) //3Seconds: Give 2nd host time initialise participants, before receiving status updates
+            }, 3000); // 3Seconds: Give 2nd host time initialise participants, before receiving status updates
         }
     }
 
     async handleParticipantStatusChange(message: ParticipantStatusMessage) {
         if (message.participantId !== this.participant.id) {
-            if(message.status === ParticipantStatus.InHearing) {
+            if (message.status === ParticipantStatus.InHearing) {
                 await this.newParticipantEnteredHandshake(message.username);
             }
             return;

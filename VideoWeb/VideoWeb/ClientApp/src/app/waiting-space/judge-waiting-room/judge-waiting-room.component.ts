@@ -166,7 +166,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                     this.participantRemoteMuteStoreService.updateLocalMuteStatus(
                         participantStatusMessage.participantId,
                         participantStatusMessage.mediaStatus.is_local_audio_muted,
-                        participantStatusMessage.mediaStatus.is_local_video_muted,
+                        participantStatusMessage.mediaStatus.is_local_video_muted
                     );
                 }
             });

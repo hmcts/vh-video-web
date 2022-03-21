@@ -357,7 +357,7 @@ describe('HearingControlsBaseComponent', () => {
     it('should raise hand on toggle if hand not raised', () => {
         component.handRaised = false;
         component.toggleHandRaised();
-        //expect(videoCallService.raiseHand).toHaveBeenCalledTimes(1);
+        // expect(videoCallService.raiseHand).toHaveBeenCalledTimes(1);
         const expectedText = 'hearing-controls.lower-my-hand';
         expect(component.handToggleText).toBe(expectedText);
     });
@@ -365,7 +365,7 @@ describe('HearingControlsBaseComponent', () => {
     it('should lower hand on toggle if hand raised', () => {
         component.handRaised = true;
         component.toggleHandRaised();
-        //expect(videoCallService.lowerHand).toHaveBeenCalledTimes(1);
+        // expect(videoCallService.lowerHand).toHaveBeenCalledTimes(1);
         const expectedText = 'hearing-controls.raise-my-hand';
         expect(component.handToggleText).toBe(expectedText);
     });
