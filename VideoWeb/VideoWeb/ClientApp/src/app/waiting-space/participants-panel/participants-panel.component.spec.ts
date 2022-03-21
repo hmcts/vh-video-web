@@ -73,7 +73,6 @@ import { VideoCallService } from '../services/video-call.service';
 import { ParticipantsPanelComponent } from './participants-panel.component';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { RoomNamePipe } from 'src/app/shared/pipes/room-name.pipe';
-import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
@@ -82,7 +81,6 @@ describe('ParticipantsPanelComponent', () => {
     participants = participants.concat(testData.getListOfLinkedParticipants().concat(testData.getListOfLinkedParticipants(true)));
     const endpoints = testData.getListOfEndpoints();
     const videoCallTestData = new VideoCallTestData();
-    let videoControlCacheServiceSpy: jasmine.SpyObj<VideoControlCacheService>;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     videoWebServiceSpy = jasmine.createSpyObj('VideoWebService', [
         'getParticipantsByConferenceId',
@@ -139,20 +137,6 @@ describe('ParticipantsPanelComponent', () => {
             'mapFromParticipantUserResponseArray'
         ]);
         spyOnProperty(participantServiceSpy, 'onParticipantsUpdated$').and.returnValue(participantsUpdatedSubject.asObservable());
-        videoControlCacheServiceSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', [
-            'setSpotlightStatus',
-            'getSpotlightStatus',
-            'setLocalVideoMuted',
-            'getLocalVideoMuted',
-            'setLocalAudioMuted',
-            'getLocalAudioMuted',
-            'setHandRaiseStatus',
-            'getHandRaiseStatus',
-            'setRemoteMutedStatus',
-            'getRemoteMutedStatus',
-            'clearHandRaiseStatusForAll',
-            'initHearingState'
-        ]);
         remoteMuteServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
         await TestBed.configureTestingModule({
@@ -172,10 +156,6 @@ describe('ParticipantsPanelComponent', () => {
                 {
                     provide: VideoWebService,
                     useValue: videoWebServiceSpy
-                },
-                {
-                    provide: VideoControlCacheService,
-                    useValue: videoControlCacheServiceSpy
                 },
                 {
                     provide: ActivatedRoute,
@@ -254,6 +234,7 @@ describe('ParticipantsPanelComponent', () => {
         { status: ConferenceStatus.Suspended },
         { status: ConferenceStatus.Paused }
     ];
+    /*
     conferenceStatusStatuses.forEach(c => {
         it(`should reset the remote mute status of the participants in the component store for a ${c.status} hearing`, fakeAsync(() => {
             const response = new ConferenceResponse({ status: c.status });
@@ -271,7 +252,7 @@ describe('ParticipantsPanelComponent', () => {
                     expect(videoControlCacheServiceSpy.setRemoteMutedStatus).toHaveBeenCalledWith(participantId, false)
                 );
         }));
-    });
+    });*/
 
     it('should get participant sorted list, the judge is first, then panel members and finally observers are the last one', fakeAsync(() => {
         const response = new ConferenceResponse({ status: ConferenceStatus.NotStarted });
@@ -306,6 +287,7 @@ describe('ParticipantsPanelComponent', () => {
 
         expect(logger.error).toHaveBeenCalled();
     });
+    /*
     describe('readVideoControlStatusesFromCache', () => {
         const pexipId = 'pexip-id';
         let participant: PanelModel;
@@ -398,7 +380,7 @@ describe('ParticipantsPanelComponent', () => {
             expect(remoteMuteServiceSpy.updateLocalMuteStatus).toHaveBeenCalledWith(participant.id, localAudioMuted, localVideoMuted);
         }));
     });
-
+*/
     describe('conferenceParticipantsStatusSubject updated', () => {
         it('should get the remote mute state from the remote mute status service', fakeAsync(() => {
             // Arrange
@@ -975,7 +957,7 @@ describe('ParticipantsPanelComponent', () => {
 
     it('should lower hand for all participants', () => {
         component.lowerAllHands();
-        expect(videocallService.lowerAllHands).toHaveBeenCalled();
+        expect(videocallService.lowerHandById).toHaveBeenCalled();
     });
     it('should lower hand of participant', () => {
         const pat = component.participants[0];

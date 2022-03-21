@@ -475,7 +475,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to lower all hands in conference`, {
             conference: this.conferenceId
         });
-        //ClearAllBuzz Pexip command currently does not seem to ping VMR participant handlers.
+        //ClearAllBuzz Pexip command currently does not signal VMR participant ParticipantUpdated event handlers.
         //this.videoCallService.lowerAllHands(this.conferenceId);
         this.participants.forEach(async participant =>{
             await this.lowerParticipantHand(participant)
