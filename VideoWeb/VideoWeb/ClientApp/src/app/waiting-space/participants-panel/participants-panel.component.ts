@@ -30,8 +30,6 @@ import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-mode
 import { VideoEndpointPanelModel } from '../models/video-endpoint-panel-model';
 import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 import { VideoCallService } from '../services/video-call.service';
-import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
-import { IConferenceParticipantsStatus } from '../models/conference-participants-status';
 import { IndividualPanelModel } from '../models/individual-panel-model';
 
 @Component({
@@ -57,7 +55,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     constructor(
         private videoWebService: VideoWebService,
-        private videoControlCacheService: VideoControlCacheService,
         private route: ActivatedRoute,
         private videoCallService: VideoCallService,
         private videoControlService: VideoControlService,
@@ -70,11 +67,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-        this.videoControlCacheService.initHearingState();
         this.getParticipantsList().then(() => {
-            this.participants
-                .map(p => p.id)
-                .forEach(participantId => this.videoControlCacheService.setRemoteMutedStatus(participantId, false));
             this.participantRemoteMuteStoreService.conferenceParticipantsStatus$.pipe(take(1)).subscribe(state => {
                 this.participants.forEach(participant => {
                     if (state.hasOwnProperty(participant.id)) {
@@ -87,19 +80,16 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                             participant.assignPexipId(state[participant.id].pexipId);
                         }
                     }
-                    this.readVideoControlStatusesFromCache(state, participant);
-                    const handRaiseStatus = this.videoControlCacheService.getHandRaiseStatus(participant.id);
                     participant.updateParticipant(
                         state[participant.id]?.isRemoteMuted,
-                        handRaiseStatus ?? participant.hasHandRaised(),
+                        false,
                         participant.hasSpotlight(),
                         participant.id,
                         state[participant.id]?.isLocalAudioMuted,
                         state[participant.id]?.isLocalVideoMuted
                     );
                 });
-            });
-
+            })
             this.setupVideoCallSubscribers();
             this.setupEventhubSubscribers();
         });
@@ -130,51 +120,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.eventhubSubscription$.unsubscribe();
         this.participantsSubscription$.unsubscribe();
         this.resetAllWitnessTransferTimeouts();
-    }
-
-    readVideoControlStatusesFromCache(state: IConferenceParticipantsStatus, participant: PanelModel) {
-        if (this.isCountdownCompleted) {
-            const localVideoMuted = this.videoControlCacheService.getLocalVideoMuted(participant.id);
-            const remoteMutedStatus = this.videoControlCacheService.getRemoteMutedStatus(participant.id);
-            const handRaise = this.videoControlCacheService.getHandRaiseStatus(participant.id);
-            let localAudioMuted: boolean;
-
-            if (participant instanceof LinkedParticipantPanelModel) {
-                participant.participants.forEach(async linkedParticipant => {
-                    localAudioMuted = this.videoControlCacheService.getLocalAudioMuted(linkedParticipant.id);
-                    this.logger.info(`${this.loggerPrefix} Updating store with audio and video from cache lp`, {
-                        audio: localAudioMuted,
-                        video: localVideoMuted,
-                        remoteMutedStatus: remoteMutedStatus,
-                        handRaiseStatus: handRaise,
-                        linkedParticipantId: linkedParticipant.id,
-                        participantId: participant.id
-                    });
-                    this.participantRemoteMuteStoreService.updateRemoteMuteStatus(linkedParticipant.id, remoteMutedStatus);
-                    this.participantRemoteMuteStoreService.updateLocalMuteStatus(linkedParticipant.id, localAudioMuted, localVideoMuted);
-                    linkedParticipant.updateParticipant(
-                        state[linkedParticipant.id]?.isRemoteMuted,
-                        handRaise,
-                        participant.hasSpotlight(),
-                        participant.id,
-                        state[linkedParticipant.id]?.isLocalAudioMuted,
-                        state[linkedParticipant.id]?.isLocalVideoMuted
-                    );
-                });
-            } else {
-                localAudioMuted = this.videoControlCacheService.getLocalAudioMuted(participant.id);
-                this.participantRemoteMuteStoreService.updateRemoteMuteStatus(participant.id, remoteMutedStatus);
-                this.participantRemoteMuteStoreService.updateLocalMuteStatus(participant.id, localAudioMuted, localVideoMuted);
-                participant.updateParticipant(
-                    state[participant.id]?.isRemoteMuted,
-                    handRaise,
-                    participant.hasSpotlight(),
-                    participant.id,
-                    state[participant.id]?.isLocalAudioMuted,
-                    state[participant.id]?.isLocalVideoMuted
-                );
-            }
-        }
     }
 
     updateLocalAudioMutedForWitnessInterpreterVmr(
@@ -315,7 +260,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             message.mediaStatus.is_local_video_muted,
             message.participantId
         );
-        this.videoControlCacheService.setLocalAudioMuted(message.participantId, message.mediaStatus.is_local_audio_muted);
         this.logger.debug(`${this.loggerPrefix} Participant device status has been updated`, {
             conference: this.conferenceId,
             participant: participant.id,
@@ -527,15 +471,18 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         }
     }
 
-    lowerAllHands() {
+     lowerAllHands() {
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to lower all hands in conference`, {
             conference: this.conferenceId
         });
-        this.videoCallService.lowerAllHands(this.conferenceId);
-        this.videoControlCacheService.clearHandRaiseStatusForAll(this.conferenceId);
+        //ClearAllBuzz Pexip command currently does not seem to ping VMR participant handlers.
+        //this.videoCallService.lowerAllHands(this.conferenceId);
+        this.participants.forEach(async participant =>{
+            await this.lowerParticipantHand(participant)
+        })
     }
 
-    lowerParticipantHand(participant: PanelModel) {
+    async lowerParticipantHand(participant: PanelModel) {
         const p = this.participants.find(x => x.id === participant.id);
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to lower hand for participant`, {
             conference: this.conferenceId,
@@ -543,16 +490,14 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             pexipParticipant: p.pexipId
         });
         this.videoCallService.lowerHandById(p.pexipId, this.conferenceId, p.id);
-        this.videoControlCacheService.setHandRaiseStatus(p.id, false);
         if (p instanceof LinkedParticipantPanelModel) {
-            this.lowerLinkedParticipantHand(p);
+            await this.lowerLinkedParticipantHand(p);
         }
     }
 
     lowerLinkedParticipantHand(linkedParticipant: LinkedParticipantPanelModel) {
         linkedParticipant.participants.forEach(async p => {
             await this.eventService.publishParticipantHandRaisedStatus(this.conferenceId, p.id, false);
-            this.videoControlCacheService.setHandRaiseStatus(p.id, false);
         });
     }
 
@@ -615,7 +560,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         });
 
         if (participant.hasHandRaised()) {
-            this.videoControlCacheService.setHandRaiseStatus(participant.id, false);
             this.lowerParticipantHand(participant);
         }
         if (participant.hasSpotlight()) {

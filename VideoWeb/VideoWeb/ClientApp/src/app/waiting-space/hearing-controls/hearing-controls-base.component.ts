@@ -18,7 +18,6 @@ import { HearingRole } from '../models/hearing-role-model';
 import { ConnectedScreenshare, ParticipantUpdated, StoppedScreenshare } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
-import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 
 @Injectable()
 export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy {
@@ -64,8 +63,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         protected participantService: ParticipantService,
         protected translateService: TranslateService,
         protected videoControlService: VideoControlService,
-        protected userMediaService: UserMediaService,
-        protected videoControlCacheService: VideoControlCacheService
+        protected userMediaService: UserMediaService
     ) {
         this.handRaised = false;
         this.remoteMuted = false;
@@ -241,8 +239,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             .onVideoEvidenceStopped()
             .pipe(takeUntil(this.destroyedSubject))
             .subscribe(() => (this.sharingDynamicEvidence = false));
-
-        this.videoCallService.onParticipantCreated().subscribe(() => this.newParticipantEnteredHandshake());
     }
 
     handleScreenShareConnected(connectedScreenShare: ConnectedScreenshare): void {
@@ -271,14 +267,30 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         return true;
     }
 
-    handleParticipantStatusChange(message: ParticipantStatusMessage): void {
+    private async newParticipantEnteredHandshake(newParticipantEntered) {
+
+        this.logger.info(`${this.loggerPrefix} Waiting 3 seconds before sending handshake`);
+        if(this.participant.hearing_role != HearingRole.JUDGE && this.participant.hearing_role != HearingRole.STAFF_MEMBER){
+            await setTimeout(()=>{
+                this.logger.info(`${this.loggerPrefix} Sending handshake for entry of: ${newParticipantEntered}`);
+                this.publishMediaDeviceStatus().then(()=>{
+                    this.eventService.publishParticipantHandRaisedStatus(this.conferenceId, this.participant.id, this.handRaised)
+                });
+            }, 3000) //3Seconds: Give 2nd host time initialise participants, before receiving status updates
+        }
+    }
+
+    async handleParticipantStatusChange(message: ParticipantStatusMessage) {
         if (message.participantId !== this.participant.id) {
+            if(message.status === ParticipantStatus.InHearing) {
+                await this.newParticipantEnteredHandshake(message.username);
+            }
             return;
         }
 
         if (message.status === ParticipantStatus.InConsultation) {
             this.logger.debug(`${this.loggerPrefix} Participant moved to consultation room, unmuting participant`, this.logPayload);
-            this.resetMute();
+            await this.resetMute();
         }
 
         this.participant.status = message.status;
@@ -363,16 +375,9 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     toggleHandRaised() {
-        const toggleCacheValue = (handRaisedUpdateValue: boolean) => {
-            this.videoControlCacheService.setHandRaiseStatus(this.participant.id, handRaisedUpdateValue);
-        };
         if (this.handRaised) {
-            toggleCacheValue(false);
-            this.videoCallService.lowerHand(this.conferenceId, this.participant.id);
             this.logger.info(`${this.loggerPrefix} Participant lowered own hand`, this.logPayload);
         } else {
-            toggleCacheValue(true);
-            this.videoCallService.raiseHand(this.conferenceId, this.participant.id);
             this.logger.info(`${this.loggerPrefix} Participant raised own hand`, this.logPayload);
         }
         this.handRaised = !this.handRaised;
@@ -382,7 +387,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     pause() {
         this.logger.debug(`${this.loggerPrefix} Attempting to pause hearing`, this.logPayload);
-        this.videoControlCacheService.clearHandRaiseStatusForAll(this.conferenceId);
         this.videoCallService.pauseHearing(this.conferenceId);
     }
 
@@ -404,7 +408,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
                     this.leaveHearing.emit();
                 });
             } else {
-                this.videoControlCacheService.clearHandRaiseStatusForAll(this.conferenceId);
                 this.videoCallService.suspendHearing(this.conferenceId);
             }
         }
@@ -464,10 +467,5 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         }
 
         return false;
-    }
-
-    private newParticipantEnteredHandshake() {
-        // resend buzz current position for late joiner just incase cache is out of sync
-        this.videoControlService.setHandRaiseStatusById(this.participant?.id, this.handRaised);
     }
 }

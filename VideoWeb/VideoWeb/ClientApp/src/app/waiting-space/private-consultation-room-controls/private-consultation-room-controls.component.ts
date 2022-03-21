@@ -14,7 +14,6 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { HearingControlsBaseComponent } from '../hearing-controls/hearing-controls-base.component';
 import { VideoCallService } from '../services/video-call.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
-import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 
 @Component({
     selector: 'app-private-consultation-room-controls',
@@ -52,8 +51,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         protected userMediaService: UserMediaService,
         conferenceService: ConferenceService,
         configSerivce: ConfigService,
-        featureFlagService: FeatureFlagService,
-        protected videoControlCacheService: VideoControlCacheService
+        featureFlagService: FeatureFlagService
     ) {
         super(
             videoCallService,
@@ -63,8 +61,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
             participantService,
             translateService,
             videoControlService,
-            userMediaService,
-            videoControlCacheService
+            userMediaService
         );
         this.canToggleParticipantsPanel = true;
 
