@@ -158,13 +158,6 @@ export class VideoCallService {
             self.logger.info(`${self.loggerPrefix} calling renegotiateCall`);
         });
 
-        this.setEncoder();
-    }
-
-    private setEncoder() {
-        if (this.deviceTypeService.getBrowserName() === BROWSERS.FIREFOX || this.deviceTypeService.isIOS()) {
-            this.enableH264(false);
-        }
     }
 
     initTurnServer() {
