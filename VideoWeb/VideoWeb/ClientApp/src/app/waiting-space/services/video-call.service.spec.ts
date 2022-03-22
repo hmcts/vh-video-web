@@ -439,62 +439,6 @@ describe('VideoCallService', () => {
             expect(setupClientSpy).toHaveBeenCalledTimes(1);
         });
 
-        describe('set encoder', () => {
-            let enableH264Spy;
-            beforeEach(() => {
-                enableH264Spy = spyOn(service, 'enableH264');
-            });
-
-            for (const browser of [BROWSERS.FIREFOX]) {
-                it(`should disable h264 when the browser is ${browser}`, async () => {
-                    // Arrange
-                    deviceTypeServiceSpy.getBrowserName.and.returnValue(browser);
-
-                    // Act
-                    await service.setupClient();
-
-                    // Assert
-                    expect(enableH264Spy).toHaveBeenCalledOnceWith(false);
-                });
-            }
-
-            const h264SupportedBrowsers = [BROWSERS.CHROME, BROWSERS.MS_EDGE, BROWSERS.MS_EDGE_CHROMIUM, BROWSERS.SAMSUNG];
-            for (const browser of h264SupportedBrowsers) {
-                it(`should NOT disable h264 when the browser is ${browser}`, async () => {
-                    // Arrange
-                    deviceTypeServiceSpy.getBrowserName.and.returnValue(browser);
-
-                    // Act
-                    await service.setupClient();
-
-                    // Assert
-                    expect(enableH264Spy).not.toHaveBeenCalledWith(false);
-                });
-            }
-
-            it(`should disable h264 when the OS isIOS is true`, async () => {
-                // Arrange
-                deviceTypeServiceSpy.isIOS.and.returnValue(true);
-
-                // Act
-                await service.setupClient();
-
-                // Assert
-                expect(enableH264Spy).toHaveBeenCalledOnceWith(false);
-            });
-
-            it(`should NOT disable h264 when the OS isIOS is false`, async () => {
-                // Arrange
-                deviceTypeServiceSpy.isIOS.and.returnValue(false);
-
-                // Act
-                service.setupClient();
-
-                // Assert
-                expect(enableH264Spy).not.toHaveBeenCalled();
-            });
-        });
-
         it('should update user_media_stream', fakeAsync(() => {
             service.pexipAPI.user_media_stream = mockMicStream;
             service.setupClient();
