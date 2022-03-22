@@ -118,21 +118,14 @@ export class UserMediaStreamService {
 
         this.isAudioOnly = audioOnly;
         if (this.isAudioOnly) {
-            this.logger.debug(`${this.loggerPrefix} audio only is true.`);
             this.logger.debug(`${this.loggerPrefix} removing active camera tracks.`, {
                 audioOnly: this.isAudioOnly,
                 activeCamera: this.activeCameraStream,
                 currentStream: this.currentStream
             });
 
-            this.activeCameraStream?.getVideoTracks().forEach(track => {
-                this.currentStream.removeTrack(track);
-                this.logger.debug(`${this.loggerPrefix} video track removed from current stream. Track not stopped`, {
-                    track: track
-                });
-            });
+            this.activeCameraStream?.getVideoTracks().forEach(track => this.currentStream.removeTrack(track));
 
-            this.logger.debug(`${this.loggerPrefix} audio only image service called.`);
             this.audioOnlyImageService
                 .getAudioOnlyImageStream()
                 .pipe(take(1))
@@ -152,7 +145,6 @@ export class UserMediaStreamService {
                     this.streamModifiedSubject.next();
                 });
         } else {
-            this.logger.debug(`${this.loggerPrefix} audio only is false.`);
             this.logger.debug(`${this.loggerPrefix} removing audio only image tracks.`, {
                 audioOnly: this.isAudioOnly,
                 activeCamera: this.activeCameraStream,
@@ -162,9 +154,6 @@ export class UserMediaStreamService {
             this.audioOnlyImageStream.getTracks().forEach(track => {
                 this.currentStream.removeTrack(track);
                 track.stop();
-                this.logger.debug(`${this.loggerPrefix} audio only image track removed from current stream and then stopped.`, {
-                    track: track
-                });
             });
             this.audioOnlyImageStream = null;
 
@@ -221,7 +210,7 @@ export class UserMediaStreamService {
                 this.activeCameraStream?.getVideoTracks().forEach(track => {
                     this.currentStream?.removeTrack(track);
 
-                    this.logger.debug(`${this.loggerPrefix} cam changed. Removed track. Track not stopped`, {
+                    this.logger.debug(`${this.loggerPrefix} cam changed. Removed and stopped track`, {
                         track: track
                     });
                 });
