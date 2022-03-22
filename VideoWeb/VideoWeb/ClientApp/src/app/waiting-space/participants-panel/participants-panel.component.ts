@@ -38,6 +38,17 @@ import { IndividualPanelModel } from '../models/individual-panel-model';
     styleUrls: ['./participants-panel.component.scss']
 })
 export class ParticipantsPanelComponent implements OnInit, OnDestroy {
+    constructor(
+        private videoWebService: VideoWebService,
+        private route: ActivatedRoute,
+        private videoCallService: VideoCallService,
+        private videoControlService: VideoControlService,
+        private eventService: EventsService,
+        private logger: Logger,
+        private translateService: TranslateService,
+        private mapper: ParticipantPanelModelMapper,
+        private participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService
+    ) {}
     private readonly loggerPrefix = '[ParticipantsPanel] -';
     participants: PanelModel[] = [];
     nonEndpointParticipants: PanelModel[] = [];
@@ -53,17 +64,26 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     transferTimeout: { [id: string]: NodeJS.Timeout } = {};
     @Input() isCountdownCompleted: boolean;
 
-    constructor(
-        private videoWebService: VideoWebService,
-        private route: ActivatedRoute,
-        private videoCallService: VideoCallService,
-        private videoControlService: VideoControlService,
-        private eventService: EventsService,
-        private logger: Logger,
-        private translateService: TranslateService,
-        private mapper: ParticipantPanelModelMapper,
-        private participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService
-    ) {}
+    private static showCaseRole(participant: PanelModel) {
+        return !(
+            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
+            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
+            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
+            participant.caseTypeGroup.toLowerCase() === 'endpoint'
+        );
+    }
+
+    private static updateParticipant(participant: PanelModel, participantToBeUpdated: PanelModel) {
+        participant.updateParticipant(
+            participantToBeUpdated?.isMicRemoteMuted(),
+            participantToBeUpdated?.hasHandRaised(),
+            participantToBeUpdated?.hasSpotlight(),
+            participantToBeUpdated?.id,
+            participantToBeUpdated?.isLocalMicMuted(),
+            participantToBeUpdated?.isLocalCameraOff()
+        );
+        participant.assignPexipId(participantToBeUpdated?.pexipId);
+    }
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
@@ -475,10 +495,12 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to lower all hands in conference`, {
             conference: this.conferenceId
         });
-        // ClearAllBuzz Pexip command currently does not signal VMR participant ParticipantUpdated event handlers.
-        // this.videoCallService.lowerAllHands(this.conferenceId);
-        this.participants.forEach(async participant => {
-            await this.lowerParticipantHand(participant);
+        this.videoCallService.lowerAllHands(this.conferenceId);
+        // ClearAllBuzz Pexip command currently does not signal VMR/Linked participant's ParticipantUpdated event handlers - calling them separately
+        this.participants.forEach(participant => {
+            if (participant instanceof LinkedParticipantPanelModel) {
+                this.lowerLinkedParticipantHand(participant);
+            }
         });
     }
 
@@ -665,16 +687,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         const translatedCaseTypeGroup = this.translateService.instant(
             'case-type-group.' + participant.caseTypeGroup.toLowerCase().split(' ').join('-')
         );
-        return this.showCaseRole(participant) ? `<br/>${translatedCaseTypeGroup}` : '';
-    }
-
-    private showCaseRole(participant: PanelModel) {
-        return participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
-            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
-            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
-            participant.caseTypeGroup.toLowerCase() === 'endpoint'
-            ? false
-            : true;
+        return ParticipantsPanelComponent.showCaseRole(participant) ? `<br/>${translatedCaseTypeGroup}` : '';
     }
 
     private updateParticipants() {
@@ -703,10 +716,10 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             if (currentParticipant) {
                 if (currentParticipant instanceof LinkedParticipantPanelModel) {
                     currentParticipant.participants.forEach(linkedParticpant => {
-                        this.updateParticipant(item, linkedParticpant);
+                        ParticipantsPanelComponent.updateParticipant(item, linkedParticpant);
                     });
                 } else {
-                    this.updateParticipant(item, currentParticipant);
+                    ParticipantsPanelComponent.updateParticipant(item, currentParticipant);
                 }
             } else {
                 this.logger.warn(`${this.loggerPrefix} current participant is not in the list`, {
@@ -717,17 +730,5 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         });
 
         this.getOrderedParticipants(combined);
-    }
-
-    private updateParticipant(participant: PanelModel, participantToBeUpdated: PanelModel) {
-        participant.updateParticipant(
-            participantToBeUpdated?.isMicRemoteMuted(),
-            participantToBeUpdated?.hasHandRaised(),
-            participantToBeUpdated?.hasSpotlight(),
-            participantToBeUpdated?.id,
-            participantToBeUpdated?.isLocalMicMuted(),
-            participantToBeUpdated?.isLocalCameraOff()
-        );
-        participant.assignPexipId(participantToBeUpdated?.pexipId);
     }
 }

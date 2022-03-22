@@ -267,29 +267,28 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         return true;
     }
 
-    private async newParticipantEnteredHandshake(newParticipantEntered) {
+    private newParticipantEnteredHandshake(newParticipantEntered) {
         this.logger.info(`${this.loggerPrefix} Waiting 3 seconds before sending handshake`);
         if (this.participant.hearing_role !== HearingRole.JUDGE && this.participant.hearing_role !== HearingRole.STAFF_MEMBER) {
-            await setTimeout(() => {
+            setTimeout(() => {
                 this.logger.info(`${this.loggerPrefix} Sending handshake for entry of: ${newParticipantEntered}`);
-                this.publishMediaDeviceStatus().then(() => {
-                    this.eventService.publishParticipantHandRaisedStatus(this.conferenceId, this.participant.id, this.handRaised);
-                });
+                this.publishMediaDeviceStatus();
+                this.eventService.publishParticipantHandRaisedStatus(this.conferenceId, this.participant.id, this.handRaised);
             }, 3000); // 3Seconds: Give 2nd host time initialise participants, before receiving status updates
         }
     }
 
-    async handleParticipantStatusChange(message: ParticipantStatusMessage) {
+    handleParticipantStatusChange(message: ParticipantStatusMessage) {
         if (message.participantId !== this.participant.id) {
             if (message.status === ParticipantStatus.InHearing) {
-                await this.newParticipantEnteredHandshake(message.username);
+                this.newParticipantEnteredHandshake(message.username);
             }
             return;
         }
 
         if (message.status === ParticipantStatus.InConsultation) {
             this.logger.debug(`${this.loggerPrefix} Participant moved to consultation room, unmuting participant`, this.logPayload);
-            await this.resetMute();
+            this.resetMute();
         }
 
         this.participant.status = message.status;
@@ -375,8 +374,10 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     toggleHandRaised() {
         if (this.handRaised) {
+            this.videoCallService.lowerHand(this.conferenceId, this.participant.id);
             this.logger.info(`${this.loggerPrefix} Participant lowered own hand`, this.logPayload);
         } else {
+            this.videoCallService.raiseHand(this.conferenceId, this.participant.id);
             this.logger.info(`${this.loggerPrefix} Participant raised own hand`, this.logPayload);
         }
         this.handRaised = !this.handRaised;

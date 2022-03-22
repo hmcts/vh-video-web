@@ -1,4 +1,4 @@
-import { fakeAsync, flush } from '@angular/core/testing';
+import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
 import {
@@ -117,10 +117,7 @@ describe('HearingControlsBaseComponent', () => {
             'setHandRaiseStatusById'
         ]);
 
-        videoControlCacheSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlService', [
-            'clearHandRaiseStatusForAll',
-            'setHandRaiseStatus'
-        ]);
+        videoControlCacheSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', ['setHandRaiseStatus']);
 
         const loggedInParticipantSubject = new BehaviorSubject<ParticipantModel>(
             ParticipantModel.fromParticipantForUserResponse(participantOne)
@@ -152,7 +149,8 @@ describe('HearingControlsBaseComponent', () => {
             userMediaServiceSpy,
             conferenceServiceSpy,
             configServiceSpy,
-            featureFlagServiceSpy
+            featureFlagServiceSpy,
+            videoControlCacheSpy
         );
         conference = new ConferenceTestData().getConferenceNow();
         component.participant = globalParticipant;
@@ -357,7 +355,7 @@ describe('HearingControlsBaseComponent', () => {
     it('should raise hand on toggle if hand not raised', () => {
         component.handRaised = false;
         component.toggleHandRaised();
-        // expect(videoCallService.raiseHand).toHaveBeenCalledTimes(1);
+        expect(videoCallService.raiseHand).toHaveBeenCalledTimes(1);
         const expectedText = 'hearing-controls.lower-my-hand';
         expect(component.handToggleText).toBe(expectedText);
     });
@@ -365,7 +363,7 @@ describe('HearingControlsBaseComponent', () => {
     it('should lower hand on toggle if hand raised', () => {
         component.handRaised = true;
         component.toggleHandRaised();
-        // expect(videoCallService.lowerHand).toHaveBeenCalledTimes(1);
+        expect(videoCallService.lowerHand).toHaveBeenCalledTimes(1);
         const expectedText = 'hearing-controls.raise-my-hand';
         expect(component.handToggleText).toBe(expectedText);
     });
@@ -946,4 +944,21 @@ describe('HearingControlsBaseComponent', () => {
             expect(isAnotherHostInHearing).toBeFalse();
         });
     });
+
+    it('should send handshake update, when new participant joins', fakeAsync(() => {
+        // Arrange
+        const participantStatusMessage = new ParticipantStatusMessage(
+            'participantId',
+            'userName',
+            'participantId',
+            ParticipantStatus.InHearing
+        );
+        spyOn(component, 'publishMediaDeviceStatus');
+        // act
+        component.handleParticipantStatusChange(participantStatusMessage);
+        tick(3000);
+        // expect
+        expect(component.publishMediaDeviceStatus).toHaveBeenCalled();
+        expect(eventsService.publishParticipantHandRaisedStatus).toHaveBeenCalled();
+    }));
 });
