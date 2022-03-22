@@ -10,21 +10,18 @@ import {
     StartHearingRequest
 } from 'src/app/services/clients/api-client';
 import { KinlyHeartbeatService } from 'src/app/services/conference/kinly-heartbeat.service';
+import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { SessionStorage } from 'src/app/services/session-storage';
+import { StreamMixerService } from 'src/app/services/stream-mixer.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { mockCamStream, mockMicStream } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { ParticipantUpdated } from '../models/video-call-models';
+import { mockCamStream, mockMicStream } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { VideoCallEventsService } from './video-call-events.service';
 import { VideoCallService } from './video-call.service';
-import { StreamMixerService } from 'src/app/services/stream-mixer.service';
-import { DeviceTypeService } from 'src/app/services/device-type.service';
-import { BROWSERS, OS } from 'ngx-device-detector';
-import { pexipApiMock } from 'src/app/testing/mocks/mock-video-call.service';
 
 const config = new ClientSettingsResponse({
     kinly_turn_server: 'turnserver',

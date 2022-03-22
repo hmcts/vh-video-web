@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
-import { BROWSERS } from 'ngx-device-detector';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { skip, take, takeUntil } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
@@ -157,7 +156,6 @@ export class VideoCallService {
             this.renegotiateCall();
             self.logger.info(`${self.loggerPrefix} calling renegotiateCall`);
         });
-
     }
 
     initTurnServer() {
