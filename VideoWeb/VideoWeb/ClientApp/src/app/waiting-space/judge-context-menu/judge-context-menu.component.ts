@@ -99,14 +99,23 @@ export class JudgeContextMenuComponent implements OnInit {
     }
 
     showCaseTypeGroup(): boolean {
-        return !this.participant.caseTypeGroup ||
+        const result =
+            !this.participant.caseTypeGroup ||
             this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
             this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
-            this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase() ||
             this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
             this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.ENDPOINT.toLowerCase()
-            ? false
-            : true;
+                ? false
+                : true;
+
+        return result;
+    }
+
+    showHearingRole(): boolean {
+        return !(
+            this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
+            this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase()
+        );
     }
 
     getMutedStatusText(): string {

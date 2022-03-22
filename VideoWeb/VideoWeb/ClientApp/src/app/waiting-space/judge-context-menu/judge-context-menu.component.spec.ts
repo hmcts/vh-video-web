@@ -1,6 +1,6 @@
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { ParticipantStatus, Role } from '../../services/clients/api-client';
+import { ParticipantForUserResponse, ParticipantStatus, Role, RoomSummaryResponse } from '../../services/clients/api-client';
 import { ParticipantPanelModel } from '../models/participant-panel-model';
 import { JudgeContextMenuComponent } from './judge-context-menu.component';
 import {
@@ -23,6 +23,7 @@ import { HyphenatePipe } from 'src/app/shared/pipes/hyphenate.pipe';
 import { LowerCasePipe } from '@angular/common';
 import { By } from '@angular/platform-browser';
 import { finalize } from 'rxjs/operators';
+import { PanelModel } from '../models/panel-model-base';
 export class MockElementRef extends ElementRef {
     constructor() {
         super(null);
@@ -107,13 +108,7 @@ describe('JudgeContextMenuComponent', () => {
     });
 
     describe('showCaseRole', () => {
-        const dontShowForCaseTypeGroup = [
-            CaseTypeGroup.NONE,
-            CaseTypeGroup.JUDGE,
-            CaseTypeGroup.PANEL_MEMBER,
-            CaseTypeGroup.OBSERVER,
-            CaseTypeGroup.ENDPOINT
-        ];
+        const dontShowForCaseTypeGroup = [CaseTypeGroup.NONE, CaseTypeGroup.JUDGE, CaseTypeGroup.OBSERVER, CaseTypeGroup.ENDPOINT];
         const caseTypeGroups = Object.keys(CaseTypeGroup);
 
         it(`should return false when case type group is null`, () => {
@@ -470,20 +465,33 @@ describe('JudgeContextMenuComponent', () => {
                             hearingRoleFullElementId = fakeGetElementId('hearing-role-full');
                         });
                         it('should not show for judge', () => {
-                            spyOnProperty(component, 'isJudge').and.returnValue(true);
+                            component.participant.caseTypeGroup = CaseTypeGroup.JUDGE;
+                            fixture.detectChanges();
+                            hearingRoleFullElement = fixture.debugElement.query(By.css(`#${hearingRoleFullElementId}`));
+                            expect(hearingRoleFullElement).toBeFalsy();
+                        });
+                        it('should not show for panel member', () => {
+                            component.participant.caseTypeGroup = CaseTypeGroup.PANEL_MEMBER;
                             fixture.detectChanges();
                             hearingRoleFullElement = fixture.debugElement.query(By.css(`#${hearingRoleFullElementId}`));
                             expect(hearingRoleFullElement).toBeFalsy();
                         });
 
-                        describe('when not judge', () => {
+                        describe('when not judge or panel member', () => {
                             beforeEach(() => {
-                                spyOnProperty(component, 'isJudge').and.returnValue(false);
+                                component.participant.caseTypeGroup = CaseTypeGroup.NONE;
                                 fixture.detectChanges();
                                 hearingRoleFullElement = fixture.debugElement.query(By.css(`#${hearingRoleFullElementId}`));
                             });
-                            it('should show for non-judge', () => {
-                                expect(hearingRoleFullElement).toBeTruthy();
+                            it('should show for non-judge or non-panel member', () => {
+                                const nonJudgePanelMemberCaseTypeGroups = Object.values(CaseTypeGroup).filter(
+                                    group => group !== CaseTypeGroup.JUDGE && group !== CaseTypeGroup.PANEL_MEMBER
+                                );
+                                nonJudgePanelMemberCaseTypeGroups.forEach(group => {
+                                    component.participant.caseTypeGroup = group;
+                                    fixture.detectChanges();
+                                    expect(hearingRoleFullElement).toBeTruthy();
+                                });
                             });
 
                             it('should have correct hearing role', () => {
