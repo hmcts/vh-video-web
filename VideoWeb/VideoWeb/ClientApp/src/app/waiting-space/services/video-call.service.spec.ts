@@ -10,7 +10,6 @@ import {
     StartHearingRequest
 } from 'src/app/services/clients/api-client';
 import { KinlyHeartbeatService } from 'src/app/services/conference/kinly-heartbeat.service';
-import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { StreamMixerService } from 'src/app/services/stream-mixer.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
@@ -46,7 +45,6 @@ describe('VideoCallService', () => {
     let kinlyHeartbeatServiceSpy: jasmine.SpyObj<KinlyHeartbeatService>;
     let videoCallEventsServiceSpy: jasmine.SpyObj<VideoCallEventsService>;
     let streamMixerServiceSpy: jasmine.SpyObj<StreamMixerService>;
-    let deviceTypeServiceSpy: jasmine.SpyObj<DeviceTypeService>;
 
     beforeEach(fakeAsync(() => {
         apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
@@ -88,8 +86,6 @@ describe('VideoCallService', () => {
 
         videoCallEventsServiceSpy = jasmine.createSpyObj<VideoCallEventsService>(['handleParticipantUpdated']);
 
-        deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['getBrowserName', 'isIOS']);
-
         pexipSpy = jasmine.createSpyObj<PexipClient>('PexipClient', [
             'connect',
             'makeCall',
@@ -120,8 +116,7 @@ describe('VideoCallService', () => {
             configServiceSpy,
             kinlyHeartbeatServiceSpy,
             videoCallEventsServiceSpy,
-            streamMixerServiceSpy,
-            deviceTypeServiceSpy
+            streamMixerServiceSpy
         );
 
         currentStreamSubject.next(mockCamStream);
