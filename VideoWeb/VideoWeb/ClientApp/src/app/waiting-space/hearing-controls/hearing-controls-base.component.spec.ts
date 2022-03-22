@@ -45,7 +45,6 @@ import { ConferenceStatusChanged } from 'src/app/services/conference/models/conf
 import { ConfigService } from 'src/app/services/api/config.service';
 import { FeatureFlagService } from 'src/app/services/feature-flag.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
-import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 
 describe('HearingControlsBaseComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -96,7 +95,6 @@ describe('HearingControlsBaseComponent', () => {
     let clientSettingsResponse: ClientSettingsResponse;
     let featureFlagServiceSpy: jasmine.SpyObj<FeatureFlagService>;
     let videoControlServiceSpy: jasmine.SpyObj<VideoControlService>;
-    let videoControlCacheSpy: jasmine.SpyObj<VideoControlCacheService>;
 
     beforeEach(() => {
         clientSettingsResponse = new ClientSettingsResponse({
@@ -115,11 +113,6 @@ describe('HearingControlsBaseComponent', () => {
             'setSpotlightStatusById',
             'setRemoteMuteStatusById',
             'setHandRaiseStatusById'
-        ]);
-
-        videoControlCacheSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlService', [
-            'clearHandRaiseStatusForAll',
-            'setHandRaiseStatus'
         ]);
 
         const loggedInParticipantSubject = new BehaviorSubject<ParticipantModel>(
@@ -152,8 +145,7 @@ describe('HearingControlsBaseComponent', () => {
             userMediaServiceSpy,
             conferenceServiceSpy,
             configServiceSpy,
-            featureFlagServiceSpy,
-            videoControlCacheSpy
+            featureFlagServiceSpy
         );
         conference = new ConferenceTestData().getConferenceNow();
         component.participant = globalParticipant;

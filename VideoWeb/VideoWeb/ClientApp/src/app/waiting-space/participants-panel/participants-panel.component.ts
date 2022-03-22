@@ -70,7 +70,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-        this.videoControlCacheService.initHearingState();
+        this.videoControlCacheService.initHearingControlState();
         this.getParticipantsList().then(() => {
             this.participants
                 .map(p => p.id)
@@ -532,7 +532,11 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             conference: this.conferenceId
         });
         this.videoCallService.lowerAllHands(this.conferenceId);
-        this.videoControlCacheService.clearHandRaiseStatusForAll(this.conferenceId);
+        this.participants
+            .filter(x => x instanceof LinkedParticipantPanelModel)
+            .forEach(async lp => {
+                this.lowerLinkedParticipantHand(lp as LinkedParticipantPanelModel);
+            });
     }
 
     lowerParticipantHand(participant: PanelModel) {
@@ -543,7 +547,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             pexipParticipant: p.pexipId
         });
         this.videoCallService.lowerHandById(p.pexipId, this.conferenceId, p.id);
-        this.videoControlCacheService.setHandRaiseStatus(p.id, false);
         if (p instanceof LinkedParticipantPanelModel) {
             this.lowerLinkedParticipantHand(p);
         }
@@ -552,7 +555,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     lowerLinkedParticipantHand(linkedParticipant: LinkedParticipantPanelModel) {
         linkedParticipant.participants.forEach(async p => {
             await this.eventService.publishParticipantHandRaisedStatus(this.conferenceId, p.id, false);
-            this.videoControlCacheService.setHandRaiseStatus(p.id, false);
         });
     }
 
@@ -615,7 +617,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         });
 
         if (participant.hasHandRaised()) {
-            this.videoControlCacheService.setHandRaiseStatus(participant.id, false);
             this.lowerParticipantHand(participant);
         }
         if (participant.hasSpotlight()) {

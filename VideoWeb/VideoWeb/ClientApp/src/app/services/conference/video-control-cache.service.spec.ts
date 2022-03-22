@@ -82,13 +82,26 @@ describe('VideoControlCacheService', () => {
         }));
     });
 
+    describe('initHearingControlState', () => {
+        it('should load the hearing state for the current conference', fakeAsync(() => {
+            // Arrange
+            const conferenceId = 'conference-id';
+            const conference = { id: conferenceId } as ConferenceResponse;
+
+            const hearingControlsState: IHearingControlsState = { participantStates: {} };
+            // Act
+            currentConferenceSubject.next(conference);
+            flush();
+            service.initHearingControlState();
+
+            // Assert
+            expect(videoControlCacheStorageServiceSpy.loadHearingStateForConference).toHaveBeenCalledOnceWith(conferenceId);
+            expect(service['hearingControlStates']).toEqual(hearingControlsState);
+        }));
+    });
+
     describe('setSpotlightStatus', () => {
-        beforeEach(() => {
-            const dummyState: IHearingControlsState = { participantStates: {} };
-            videoControlCacheStorageServiceSpy.loadHearingStateForConference.and.returnValue(of(dummyState));
-            service = new VideoControlCacheService(conferenceServiceSpy, videoControlCacheStorageServiceSpy, loggerServiceSpy);
-        });
-        it('should add new value in the hearingControlStates and should update the cache', async () => {
+        it('should add new value in the hearingControlStates and should update the cache', () => {
             // Arrange
             const conferenceId = 'conference-id';
             const participantId = 'participant-id';
@@ -104,7 +117,7 @@ describe('VideoControlCacheService', () => {
             service['hearingControlStates'] = initialHearingControlsState;
 
             // Act
-            await service.setSpotlightStatus(participantId, spotlight);
+            service.setSpotlightStatus(participantId, spotlight);
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
             expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).toHaveBeenCalledOnceWith(
@@ -113,7 +126,7 @@ describe('VideoControlCacheService', () => {
             );
         });
 
-        it('should update the value in the hearingControlStates and should update the cache', async () => {
+        it('should update the value in the hearingControlStates and should update the cache', () => {
             // Arrange
             const conferenceId = 'conference-id';
             const participantId = 'participant-id';
@@ -130,7 +143,7 @@ describe('VideoControlCacheService', () => {
             service['hearingControlStates'] = initialHearingControlsState;
 
             // Act
-            await service.setSpotlightStatus(participantId, spotlight);
+            service.setSpotlightStatus(participantId, spotlight);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
@@ -140,7 +153,7 @@ describe('VideoControlCacheService', () => {
             );
         });
 
-        it('should update the value in the hearingControlStates and should update the cache and should retain existing property values', async () => {
+        it('should update the value in the hearingControlStates and should update the cache and should retain existing property values', () => {
             // Arrange
             const conferenceId = 'conference-id';
             const participantId = 'participant-id';
@@ -157,9 +170,6 @@ describe('VideoControlCacheService', () => {
                 isRemoteMuted: isRemoteMuted
             };
 
-            videoControlCacheStorageServiceSpy.loadHearingStateForConference.and.returnValue(of(initialHearingControlsState));
-            service = new VideoControlCacheService(conferenceServiceSpy, videoControlCacheStorageServiceSpy, loggerServiceSpy);
-
             const expectedHearingControlsState: IHearingControlsState = { participantStates: {} };
             expectedHearingControlsState.participantStates[participantId] = {
                 isLocalAudioMuted: isLocalAudioMuted,
@@ -170,8 +180,10 @@ describe('VideoControlCacheService', () => {
 
             getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
 
+            service['hearingControlStates'] = initialHearingControlsState;
+
             // Act
-            await service.setSpotlightStatus(participantId, isSpotlighted);
+            service.setSpotlightStatus(participantId, isSpotlighted);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
@@ -181,7 +193,7 @@ describe('VideoControlCacheService', () => {
             );
         });
 
-        it('should do nothing if the hearing control state is not initialised', async () => {
+        it('should do nothing if the hearing control state is not initialised', () => {
             // Arrange
             const conferenceId = 'conference-id';
             const participantId = 'participant-id';
@@ -192,7 +204,7 @@ describe('VideoControlCacheService', () => {
             service['hearingControlStates'] = null;
 
             // Act
-            await service.setSpotlightStatus(participantId, spotlight);
+            service.setSpotlightStatus(participantId, spotlight);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(null);
@@ -260,13 +272,7 @@ describe('VideoControlCacheService', () => {
     });
 
     describe('setRemoteMuteStatus', () => {
-        beforeEach(() => {
-            const dummyState: IHearingControlsState = { participantStates: {} };
-            videoControlCacheStorageServiceSpy.loadHearingStateForConference.and.returnValue(of(dummyState));
-            service = new VideoControlCacheService(conferenceServiceSpy, videoControlCacheStorageServiceSpy, loggerServiceSpy);
-        });
-
-        it('should add new value in the hearingControlStates and should update the cache', async () => {
+        it('should add new value in the hearingControlStates and should update the cache', () => {
             // Arrange
             const conferenceId = 'conference-id';
             const participantId = 'participant-id';
@@ -282,7 +288,7 @@ describe('VideoControlCacheService', () => {
             service['hearingControlStates'] = initialHearingControlsState;
 
             // Act
-            await service.setRemoteMutedStatus(participantId, remoteMuted);
+            service.setRemoteMutedStatus(participantId, remoteMuted);
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
             expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).toHaveBeenCalledOnceWith(
@@ -291,7 +297,7 @@ describe('VideoControlCacheService', () => {
             );
         });
 
-        it('should update the value in the hearingControlStates and should update the cache', async () => {
+        it('should update the value in the hearingControlStates and should update the cache', () => {
             // Arrange
             const conferenceId = 'conference-id';
             const participantId = 'participant-id';
@@ -308,7 +314,7 @@ describe('VideoControlCacheService', () => {
             service['hearingControlStates'] = initialHearingControlsState;
 
             // Act
-            await service.setRemoteMutedStatus(participantId, remoteMuted);
+            service.setRemoteMutedStatus(participantId, remoteMuted);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
@@ -318,7 +324,7 @@ describe('VideoControlCacheService', () => {
             );
         });
 
-        it('should update the value in the hearingControlStates and should update the cache and should retain existing property values', async () => {
+        it('should update the value in the hearingControlStates and should update the cache and should retain existing property values', () => {
             // Arrange
             const conferenceId = 'conference-id';
             const participantId = 'participant-id';
@@ -333,9 +339,6 @@ describe('VideoControlCacheService', () => {
                 isRemoteMuted: !isRemoteMuted
             };
 
-            videoControlCacheStorageServiceSpy.loadHearingStateForConference.and.returnValue(of(initialHearingControlsState));
-            service = new VideoControlCacheService(conferenceServiceSpy, videoControlCacheStorageServiceSpy, loggerServiceSpy);
-
             const expectedHearingControlsState: IHearingControlsState = { participantStates: {} };
             expectedHearingControlsState.participantStates[participantId] = {
                 isLocalAudioMuted: isLocalAudioMuted,
@@ -345,8 +348,10 @@ describe('VideoControlCacheService', () => {
 
             getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
 
+            service['hearingControlStates'] = initialHearingControlsState;
+
             // Act
-            await service.setRemoteMutedStatus(participantId, isRemoteMuted);
+            service.setRemoteMutedStatus(participantId, isRemoteMuted);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
@@ -356,7 +361,7 @@ describe('VideoControlCacheService', () => {
             );
         });
 
-        it('should do nothing if the hearing control state is not initialised', async () => {
+        it('should do nothing if the hearing control state is not initialised', () => {
             // Arrange
             const conferenceId = 'conference-id';
             const participantId = 'participant-id';
@@ -367,7 +372,7 @@ describe('VideoControlCacheService', () => {
             service['hearingControlStates'] = null;
 
             // Act
-            await service.setRemoteMutedStatus(participantId, remoteMuted);
+            service.setRemoteMutedStatus(participantId, remoteMuted);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(null);
@@ -434,12 +439,7 @@ describe('VideoControlCacheService', () => {
     });
 
     describe('setLocalAudioMuted', () => {
-        beforeEach(() => {
-            const dummyState: IHearingControlsState = { participantStates: {} };
-            videoControlCacheStorageServiceSpy.loadHearingStateForConference.and.returnValue(of(dummyState));
-            service = new VideoControlCacheService(conferenceServiceSpy, videoControlCacheStorageServiceSpy, loggerServiceSpy);
-        });
-        it('should add new value in the hearingControlStates and should update the cache', async () => {
+        it('should add new value in the hearingControlStates and should update the cache', () => {
             // Arrange
             const conferenceId = 'conference-id';
             const participantId = 'participant-id';
@@ -455,7 +455,7 @@ describe('VideoControlCacheService', () => {
             service['hearingControlStates'] = initialHearingControlsState;
 
             // Act
-            await service.setLocalAudioMuted(participantId, isLocalAudioMuted, true);
+            service.setLocalAudioMuted(participantId, isLocalAudioMuted, true);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
@@ -465,7 +465,7 @@ describe('VideoControlCacheService', () => {
             );
         });
 
-        it('should update the value in the hearingControlStates and should update the cache', async () => {
+        it('should update the value in the hearingControlStates and should update the cache', () => {
             // Arrange
             const conferenceId = 'conference-id';
             const participantId = 'participant-id';
@@ -482,7 +482,7 @@ describe('VideoControlCacheService', () => {
             service['hearingControlStates'] = initialHearingControlsState;
 
             // Act
-            await service.setLocalAudioMuted(participantId, isLocalAudioMuted, true);
+            service.setLocalAudioMuted(participantId, isLocalAudioMuted, true);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
@@ -492,7 +492,7 @@ describe('VideoControlCacheService', () => {
             );
         });
 
-        it('should update the value in the hearingControlStates and should update the cache and should retain existing propertie values', async () => {
+        it('should update the value in the hearingControlStates and should update the cache and should retain existing propertie values', () => {
             // Arrange
             const conferenceId = 'conference-id';
             const participantId = 'participant-id';
@@ -507,9 +507,6 @@ describe('VideoControlCacheService', () => {
                 isSpotlighted: isSpotlighted
             };
 
-            videoControlCacheStorageServiceSpy.loadHearingStateForConference.and.returnValue(of(initialHearingControlsState));
-            service = new VideoControlCacheService(conferenceServiceSpy, videoControlCacheStorageServiceSpy, loggerServiceSpy);
-
             const expectedHearingControlsState: IHearingControlsState = { participantStates: {} };
             expectedHearingControlsState.participantStates[participantId] = {
                 isLocalAudioMuted: isLocalAudioMuted,
@@ -519,8 +516,10 @@ describe('VideoControlCacheService', () => {
 
             getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
 
+            service['hearingControlStates'] = initialHearingControlsState;
+
             // Act
-            await service.setLocalAudioMuted(participantId, isLocalAudioMuted, true);
+            service.setLocalAudioMuted(participantId, isLocalAudioMuted, true);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
@@ -530,7 +529,7 @@ describe('VideoControlCacheService', () => {
             );
         });
 
-        it('should do nothing if the hearing control state is not initialised', async () => {
+        it('should do nothing if the hearing control state is not initialised', () => {
             // Arrange
             const conferenceId = 'conference-id';
             const participantId = 'participant-id';
@@ -541,7 +540,7 @@ describe('VideoControlCacheService', () => {
             service['hearingControlStates'] = null;
 
             // Act
-            await service.setLocalAudioMuted(participantId, isLocalVideoMuted);
+            service.setLocalAudioMuted(participantId, isLocalVideoMuted);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(null);
@@ -608,13 +607,7 @@ describe('VideoControlCacheService', () => {
     });
 
     describe('setLocalVideoMuted', () => {
-        beforeEach(() => {
-            const dummyState: IHearingControlsState = { participantStates: {} };
-            videoControlCacheStorageServiceSpy.loadHearingStateForConference.and.returnValue(of(dummyState));
-            service = new VideoControlCacheService(conferenceServiceSpy, videoControlCacheStorageServiceSpy, loggerServiceSpy);
-        });
-
-        it('should add new value in the hearingControlStates and should update the cache', async () => {
+        it('should add new value in the hearingControlStates and should update the cache', () => {
             // Arrange
             const conferenceId = 'conference-id';
             const participantId = 'participant-id';
@@ -630,7 +623,7 @@ describe('VideoControlCacheService', () => {
             service['hearingControlStates'] = initialHearingControlsState;
 
             // Act
-            await service.setLocalVideoMuted(participantId, isLocalVideoMuted, true);
+            service.setLocalVideoMuted(participantId, isLocalVideoMuted, true);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
@@ -640,7 +633,7 @@ describe('VideoControlCacheService', () => {
             );
         });
 
-        it('should update the value in the hearingControlStates and should update the cache', async () => {
+        it('should update the value in the hearingControlStates and should update the cache', () => {
             // Arrange
             const conferenceId = 'conference-id';
             const participantId = 'participant-id';
@@ -657,7 +650,7 @@ describe('VideoControlCacheService', () => {
             service['hearingControlStates'] = initialHearingControlsState;
 
             // Act
-            await service.setLocalVideoMuted(participantId, isLocalVideoMuted, true);
+            service.setLocalVideoMuted(participantId, isLocalVideoMuted, true);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
@@ -667,7 +660,7 @@ describe('VideoControlCacheService', () => {
             );
         });
 
-        it('should update the value in the hearingControlStates and should update the cache and should retain existing propertie values', async () => {
+        it('should update the value in the hearingControlStates and should update the cache and should retain existing propertie values', () => {
             // Arrange
             const conferenceId = 'conference-id';
             const participantId = 'participant-id';
@@ -684,9 +677,6 @@ describe('VideoControlCacheService', () => {
                 isRemoteMuted: isRemoteMuted
             };
 
-            videoControlCacheStorageServiceSpy.loadHearingStateForConference.and.returnValue(of(initialHearingControlsState));
-            service = new VideoControlCacheService(conferenceServiceSpy, videoControlCacheStorageServiceSpy, loggerServiceSpy);
-
             const expectedHearingControlsState: IHearingControlsState = { participantStates: {} };
             expectedHearingControlsState.participantStates[participantId] = {
                 isLocalAudioMuted: isLocalAudioMuted,
@@ -697,8 +687,10 @@ describe('VideoControlCacheService', () => {
 
             getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
 
+            service['hearingControlStates'] = initialHearingControlsState;
+
             // Act
-            await service.setLocalVideoMuted(participantId, isLocalAudioMuted, true);
+            service.setLocalVideoMuted(participantId, isLocalAudioMuted, true);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
@@ -708,7 +700,7 @@ describe('VideoControlCacheService', () => {
             );
         });
 
-        it('should do nothing if the hearing control state is not initialised', async () => {
+        it('should do nothing if the hearing control state is not initialised', () => {
             // Arrange
             const conferenceId = 'conference-id';
             const participantId = 'participant-id';
@@ -719,7 +711,7 @@ describe('VideoControlCacheService', () => {
             service['hearingControlStates'] = null;
 
             // Act
-            await service.setLocalVideoMuted(participantId, isLocalVideoMuted);
+            service.setLocalVideoMuted(participantId, isLocalVideoMuted);
 
             // Assert
             expect(service['hearingControlStates']).toEqual(null);
@@ -785,36 +777,7 @@ describe('VideoControlCacheService', () => {
             expect(result).toBeFalse();
         });
     });
-    describe('clearHandRaiseStatusForAll', () => {
-        it('should update hearingControlStates for all participants to false and should update the cache sync changes true', () => {
-            // Arrange
-            const conferenceId = 'conference-id';
-            const handRaiseStatus = true;
-            const noOfParticipants = 10;
-            const initialHearingControlsState: IHearingControlsState = { participantStates: {} };
-            const expectedHearingControlsState: IHearingControlsState = { participantStates: {} };
-            for (let i = 0; i < noOfParticipants; i++) {
-                initialHearingControlsState.participantStates[i] = { isHandRaised: handRaiseStatus };
-            }
-            for (let i = 0; i < noOfParticipants; i++) {
-                expectedHearingControlsState.participantStates[i] = { isHandRaised: !handRaiseStatus };
-            }
 
-            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
-
-            service['hearingControlStates'] = initialHearingControlsState;
-
-            // Act
-            service.clearHandRaiseStatusForAll(conferenceId);
-
-            // Assert
-            expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
-            expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).toHaveBeenCalledOnceWith(
-                conferenceId,
-                expectedHearingControlsState
-            );
-        });
-    });
     describe('setHandRaiseStatus', () => {
         beforeEach(() => {
             const dummyState: IHearingControlsState = { participantStates: {} };
