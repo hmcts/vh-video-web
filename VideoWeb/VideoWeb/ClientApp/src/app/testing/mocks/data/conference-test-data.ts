@@ -449,17 +449,6 @@ export class ConferenceTestData {
             linked_participants: []
         });
 
-        const participant15 = new ParticipantForUserResponse({
-            id: '5555-1111-1234-1239',
-            status: ParticipantStatus.NotSignedIn,
-            display_name: 'Lay Member',
-            role: Role.JudicialOfficeHolder,
-            case_type_group: CaseTypeGroup.PANEL_MEMBER,
-            hearing_role: HearingRole.LAY_MEMBER,
-            tiled_display_name: 'Lay Member;5555-1111-1234-1239',
-            linked_participants: []
-        });
-
         participants.push(participant1);
         participants.push(participant2);
         participants.push(participant3);
@@ -474,8 +463,6 @@ export class ConferenceTestData {
         participants.push(participant12);
         participants.push(participant13);
         participants.push(participant14);
-        participants.push(participant15);
-
         return participants;
     }
 

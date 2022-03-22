@@ -43,7 +43,7 @@ describe('JudgeHearingSummary', () => {
         const hearing = new JudgeHearingSummary(conference);
         const panelMembers = hearing.panelMembers;
         expect(panelMembers.filter(x => !x.isParticipantPanelMember).length).toBe(0);
-        expect(panelMembers.length).toBe(3);
+        expect(panelMembers.length).toBe(2);
     });
 
     it('should get wingers', () => {
