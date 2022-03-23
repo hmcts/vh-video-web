@@ -15,7 +15,6 @@ import { HearingControlsBaseComponent } from '../hearing-controls/hearing-contro
 import { VideoCallService } from '../services/video-call.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
-
 @Component({
     selector: 'app-private-consultation-room-controls',
     templateUrl: './private-consultation-room-controls.component.html',
@@ -63,8 +62,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
             participantService,
             translateService,
             videoControlService,
-            userMediaService,
-            videoControlCacheService
+            userMediaService
         );
         this.canToggleParticipantsPanel = true;
 
