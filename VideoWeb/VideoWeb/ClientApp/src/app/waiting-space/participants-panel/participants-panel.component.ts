@@ -504,7 +504,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         });
     }
 
-    async lowerParticipantHand(participant: PanelModel) {
+    lowerParticipantHand(participant: PanelModel) {
         const p = this.participants.find(x => x.id === participant.id);
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to lower hand for participant`, {
             conference: this.conferenceId,
@@ -513,7 +513,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         });
         this.videoCallService.lowerHandById(p.pexipId, this.conferenceId, p.id);
         if (p instanceof LinkedParticipantPanelModel) {
-            await this.lowerLinkedParticipantHand(p);
+            this.lowerLinkedParticipantHand(p);
         }
     }
 
