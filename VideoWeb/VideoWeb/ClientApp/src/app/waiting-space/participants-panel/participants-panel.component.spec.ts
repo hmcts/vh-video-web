@@ -73,7 +73,6 @@ import { VideoCallService } from '../services/video-call.service';
 import { ParticipantsPanelComponent } from './participants-panel.component';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { RoomNamePipe } from 'src/app/shared/pipes/room-name.pipe';
-import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
@@ -82,7 +81,6 @@ describe('ParticipantsPanelComponent', () => {
     participants = participants.concat(testData.getListOfLinkedParticipants().concat(testData.getListOfLinkedParticipants(true)));
     const endpoints = testData.getListOfEndpoints();
     const videoCallTestData = new VideoCallTestData();
-    let videoControlCacheServiceSpy: jasmine.SpyObj<VideoControlCacheService>;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     videoWebServiceSpy = jasmine.createSpyObj('VideoWebService', [
         'getParticipantsByConferenceId',
@@ -139,20 +137,6 @@ describe('ParticipantsPanelComponent', () => {
             'mapFromParticipantUserResponseArray'
         ]);
         spyOnProperty(participantServiceSpy, 'onParticipantsUpdated$').and.returnValue(participantsUpdatedSubject.asObservable());
-        videoControlCacheServiceSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', [
-            'setSpotlightStatus',
-            'getSpotlightStatus',
-            'setLocalVideoMuted',
-            'getLocalVideoMuted',
-            'setLocalAudioMuted',
-            'getLocalAudioMuted',
-            'setHandRaiseStatus',
-            'getHandRaiseStatus',
-            'setRemoteMutedStatus',
-            'getRemoteMutedStatus',
-            'clearHandRaiseStatusForAll',
-            'initHearingState'
-        ]);
         remoteMuteServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
         await TestBed.configureTestingModule({
@@ -172,10 +156,6 @@ describe('ParticipantsPanelComponent', () => {
                 {
                     provide: VideoWebService,
                     useValue: videoWebServiceSpy
-                },
-                {
-                    provide: VideoControlCacheService,
-                    useValue: videoControlCacheServiceSpy
                 },
                 {
                     provide: ActivatedRoute,
@@ -248,31 +228,6 @@ describe('ParticipantsPanelComponent', () => {
         component.ngOnDestroy();
     });
 
-    const conferenceStatusStatuses = [
-        { status: ConferenceStatus.NotStarted },
-        { status: ConferenceStatus.InSession },
-        { status: ConferenceStatus.Suspended },
-        { status: ConferenceStatus.Paused }
-    ];
-    conferenceStatusStatuses.forEach(c => {
-        it(`should reset the remote mute status of the participants in the component store for a ${c.status} hearing`, fakeAsync(() => {
-            const response = new ConferenceResponse({ status: c.status });
-            videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(response));
-            videoWebServiceSpy.getParticipantsByConferenceId.and.returnValue(Promise.resolve(participants));
-            videoWebServiceSpy.getEndpointsForConference.and.returnValue(Promise.resolve(endpoints));
-            const mappedParticipants = mapper.mapFromParticipantUserResponseArray(participants);
-            participantPanelModelMapperSpy.mapFromParticipantUserResponseArray.and.returnValue(mappedParticipants);
-
-            component.ngOnInit();
-            flushMicrotasks();
-            component.participants
-                .map(p => p.id)
-                .forEach(participantId =>
-                    expect(videoControlCacheServiceSpy.setRemoteMutedStatus).toHaveBeenCalledWith(participantId, false)
-                );
-        }));
-    });
-
     it('should get participant sorted list, the judge is first, then panel members and finally observers are the last one', fakeAsync(() => {
         const response = new ConferenceResponse({ status: ConferenceStatus.NotStarted });
         videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(response));
@@ -305,98 +260,6 @@ describe('ParticipantsPanelComponent', () => {
         await component.getParticipantsList();
 
         expect(logger.error).toHaveBeenCalled();
-    });
-    describe('readVideoControlStatusesFromCache', () => {
-        const pexipId = 'pexip-id';
-        let participant: PanelModel;
-        let state: IConferenceParticipantsStatus;
-        beforeEach(() => {
-            participant = component.participants[0];
-            state = {
-                [participant.id]: { isLocalAudioMuted: true, isLocalVideoMuted: true, isRemoteMuted: true, pexipId: pexipId }
-            };
-        });
-        it('should NOT call to get the video control statuses from the cache if the countdown timer is not completed', fakeAsync(() => {
-            // Arrange
-            component.isCountdownCompleted = false;
-            // Act
-            component.readVideoControlStatusesFromCache(state, participant);
-            // Assert
-            expect(videoControlCacheServiceSpy.getLocalAudioMuted).not.toHaveBeenCalled();
-            expect(videoControlCacheServiceSpy.getLocalVideoMuted).not.toHaveBeenCalled();
-            expect(videoControlCacheServiceSpy.getRemoteMutedStatus).not.toHaveBeenCalled();
-            expect(videoControlCacheServiceSpy.getHandRaiseStatus).not.toHaveBeenCalled();
-        }));
-        it('should call to get the video control statuses from the cache if the countdown timer is completed', fakeAsync(() => {
-            // Arrange
-            component.isCountdownCompleted = true;
-            // Act
-            component.readVideoControlStatusesFromCache(state, participant);
-            // Assert
-            expect(videoControlCacheServiceSpy.getLocalAudioMuted).toHaveBeenCalled();
-            expect(videoControlCacheServiceSpy.getLocalVideoMuted).toHaveBeenCalled();
-            expect(videoControlCacheServiceSpy.getRemoteMutedStatus).toHaveBeenCalled();
-            expect(videoControlCacheServiceSpy.getHandRaiseStatus).toHaveBeenCalled();
-        }));
-        it('should call to get the video control statuses from the cache if the countdown timer is completed for a LinkedParticipant', fakeAsync(() => {
-            // Arrange
-            const linkedParticipant = component.participants.find(
-                p => p instanceof LinkedParticipantPanelModel
-            ) as LinkedParticipantPanelModel;
-            component.isCountdownCompleted = true;
-            const remoteMuteStatus = true;
-            const localAudioMuted = false;
-            const localVideoMuted = false;
-            spyOn(logger, 'info');
-            videoControlCacheServiceSpy.getRemoteMutedStatus.and.returnValue(remoteMuteStatus);
-            videoControlCacheServiceSpy.getLocalAudioMuted.and.returnValue(localAudioMuted);
-            videoControlCacheServiceSpy.getLocalVideoMuted.and.returnValue(localVideoMuted);
-            // Act
-            component.readVideoControlStatusesFromCache(state, linkedParticipant);
-            // Assert
-            expect(videoControlCacheServiceSpy.getLocalAudioMuted).toHaveBeenCalledWith(linkedParticipant.participants[0].id);
-            expect(videoControlCacheServiceSpy.getLocalVideoMuted).toHaveBeenCalled();
-            expect(videoControlCacheServiceSpy.getRemoteMutedStatus).toHaveBeenCalled();
-            expect(videoControlCacheServiceSpy.getHandRaiseStatus).toHaveBeenCalled();
-            expect(logger.info).toHaveBeenCalled();
-            expect(remoteMuteServiceSpy.updateRemoteMuteStatus).toHaveBeenCalledWith(
-                linkedParticipant.participants[0].id,
-                remoteMuteStatus
-            );
-            expect(remoteMuteServiceSpy.updateLocalMuteStatus).toHaveBeenCalledWith(
-                linkedParticipant.participants[0].id,
-                localAudioMuted,
-                localVideoMuted
-            );
-            expect(remoteMuteServiceSpy.updateRemoteMuteStatus).not.toHaveBeenCalledWith(linkedParticipant.id, remoteMuteStatus);
-            expect(remoteMuteServiceSpy.updateLocalMuteStatus).not.toHaveBeenCalledWith(
-                linkedParticipant.id,
-                localAudioMuted,
-                localVideoMuted
-            );
-        }));
-
-        it('should call to get the video control statuses from the cache if the countdown timer is completed for a Participant', fakeAsync(() => {
-            // Arrange
-            component.isCountdownCompleted = true;
-            const remoteMuteStatus = true;
-            const localAudioMuted = false;
-            const localVideoMuted = false;
-            spyOn(logger, 'info');
-            videoControlCacheServiceSpy.getRemoteMutedStatus.and.returnValue(remoteMuteStatus);
-            videoControlCacheServiceSpy.getLocalAudioMuted.and.returnValue(localAudioMuted);
-            videoControlCacheServiceSpy.getLocalVideoMuted.and.returnValue(localVideoMuted);
-            // Act
-            component.readVideoControlStatusesFromCache(state, participant);
-            // Assert
-            expect(videoControlCacheServiceSpy.getLocalAudioMuted).toHaveBeenCalledWith(participant.id);
-            expect(videoControlCacheServiceSpy.getLocalVideoMuted).toHaveBeenCalled();
-            expect(videoControlCacheServiceSpy.getRemoteMutedStatus).toHaveBeenCalled();
-            expect(videoControlCacheServiceSpy.getHandRaiseStatus).toHaveBeenCalled();
-            expect(logger.info).not.toHaveBeenCalled();
-            expect(remoteMuteServiceSpy.updateRemoteMuteStatus).toHaveBeenCalledWith(participant.id, remoteMuteStatus);
-            expect(remoteMuteServiceSpy.updateLocalMuteStatus).toHaveBeenCalledWith(participant.id, localAudioMuted, localVideoMuted);
-        }));
     });
 
     describe('conferenceParticipantsStatusSubject updated', () => {
