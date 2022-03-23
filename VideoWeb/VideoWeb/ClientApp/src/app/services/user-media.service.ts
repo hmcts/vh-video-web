@@ -5,6 +5,7 @@ import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Logger } from './logging/logger-base';
 import { catchError, filter, map, mergeMap, retry, take } from 'rxjs/operators';
 import { LocalStorageService } from './conference/local-storage.service';
+import { ErrorService } from './error.service';
 
 @Injectable({
     providedIn: 'root'
@@ -62,7 +63,7 @@ export class UserMediaService {
         return this.isAudioOnlySubject.asObservable();
     }
 
-    constructor(private logger: Logger, private localStorageService: LocalStorageService) {}
+    constructor(private errorService: ErrorService, private logger: Logger, private localStorageService: LocalStorageService) {}
 
     private initialised = false;
     initialise() {
@@ -174,8 +175,18 @@ export class UserMediaService {
 
         return this.hasValidCameraAndMicAvailable().pipe(
             take(1),
-            filter(Boolean),
-            mergeMap(() => this.getCameraAndMicrophoneDevices())
+            mergeMap(hasValidCameraAndMicAvailable => {
+                if (hasValidCameraAndMicAvailable) {
+                    return this.getCameraAndMicrophoneDevices();
+                } else {
+                    this.errorService.goToServiceError(
+                        'error-camera-microphone.problem-with-camera-mic',
+                        'error-camera-microphone.camera-mic-in-use',
+                        false
+                    );
+                    return of(new Array<UserMediaDevice>());
+                }
+            })
         );
     }
 

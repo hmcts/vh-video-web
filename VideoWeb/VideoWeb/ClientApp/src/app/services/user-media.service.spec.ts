@@ -6,17 +6,20 @@ import { of, Subject } from 'rxjs';
 import { fakeAsync, flush } from '@angular/core/testing';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Guid } from 'guid-typescript';
+import { ErrorService } from './error.service';
 
 describe('UserMediaService', () => {
     const testData = new MediaDeviceTestData();
     let userMediaService: UserMediaService;
+    let errorServiceSpy: jasmine.SpyObj<ErrorService>;
     let localStorageServiceSpy: jasmine.SpyObj<LocalStorageService>;
     let getCameraAndMicrophoneDevicesSubject: Subject<UserMediaDevice[]>;
 
     beforeEach(() => {
         localStorageServiceSpy = jasmine.createSpyObj<LocalStorageService>('LocalStorageService', ['load', 'save']);
+        errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError']);
         getCameraAndMicrophoneDevicesSubject = new Subject<UserMediaDevice[]>();
-        userMediaService = new UserMediaService(new MockLogger(), localStorageServiceSpy);
+        userMediaService = new UserMediaService(errorServiceSpy, new MockLogger(), localStorageServiceSpy);
     });
 
     it('should return true when multiple inputs are detected', fakeAsync(() => {
@@ -182,7 +185,7 @@ describe('UserMediaService', () => {
                 getCameraAndMicrophoneDevicesSubject.asObservable()
             );
             spyOn(UserMediaService.prototype, 'hasValidCameraAndMicAvailable').and.returnValue(of(true));
-            userMediaService = new UserMediaService(new MockLogger(), localStorageServiceSpy);
+            userMediaService = new UserMediaService(errorServiceSpy, new MockLogger(), localStorageServiceSpy);
             userMediaService.initialise();
         });
 
