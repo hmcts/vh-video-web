@@ -60,9 +60,9 @@ describe('ParticipantStatusComponent', () => {
 
     describe('sort participants', () => {
         it('should sort participants in correct order', async () => {
-            const participants: ParticipantContactDetails[] = [];
+            const participantsToSort: ParticipantContactDetails[] = [];
 
-            participants.push(
+            participantsToSort.push(
                 new ParticipantContactDetails(
                     new ParticipantContactDetailsResponseVho({
                         case_type_group: CaseTypeGroup.JUDGE,
@@ -74,7 +74,7 @@ describe('ParticipantStatusComponent', () => {
                 )
             );
 
-            participants.push(
+            participantsToSort.push(
                 new ParticipantContactDetails(
                     new ParticipantContactDetailsResponseVho({
                         case_type_group: CaseTypeGroup.STAFF_MEMBER,
@@ -86,7 +86,7 @@ describe('ParticipantStatusComponent', () => {
                 )
             );
 
-            participants.push(
+            participantsToSort.push(
                 new ParticipantContactDetails(
                     new ParticipantContactDetailsResponseVho({
                         case_type_group: 'Appellant',
@@ -98,7 +98,7 @@ describe('ParticipantStatusComponent', () => {
                 )
             );
 
-            participants.push(
+            participantsToSort.push(
                 new ParticipantContactDetails(
                     new ParticipantContactDetailsResponseVho({
                         case_type_group: 'Appellant',
@@ -110,7 +110,7 @@ describe('ParticipantStatusComponent', () => {
                 )
             );
 
-            participants.push(
+            participantsToSort.push(
                 new ParticipantContactDetails(
                     new ParticipantContactDetailsResponseVho({
                         case_type_group: CaseTypeGroup.PANEL_MEMBER,
@@ -122,7 +122,7 @@ describe('ParticipantStatusComponent', () => {
                 )
             );
 
-            participants.push(
+            participantsToSort.push(
                 new ParticipantContactDetails(
                     new ParticipantContactDetailsResponseVho({
                         case_type_group: CaseTypeGroup.PANEL_MEMBER,
@@ -142,7 +142,7 @@ describe('ParticipantStatusComponent', () => {
                 })
             );
 
-            participants.push(
+            participantsToSort.push(
                 new ParticipantContactDetails(
                     new ParticipantContactDetailsResponseVho({
                         case_type_group: 'Appellant',
@@ -163,7 +163,7 @@ describe('ParticipantStatusComponent', () => {
                 })
             );
 
-            participants.push(
+            participantsToSort.push(
                 new ParticipantContactDetails(
                     new ParticipantContactDetailsResponseVho({
                         case_type_group: 'Appellant',
@@ -176,7 +176,7 @@ describe('ParticipantStatusComponent', () => {
                 )
             );
 
-            participants.push(
+            participantsToSort.push(
                 new ParticipantContactDetails(
                     new ParticipantContactDetailsResponseVho({
                         case_type_group: CaseTypeGroup.OBSERVER,
@@ -188,7 +188,7 @@ describe('ParticipantStatusComponent', () => {
                 )
             );
 
-            component.participants = participants;
+            component.participants = participantsToSort;
 
             const participantList = component.sortParticipants();
 
