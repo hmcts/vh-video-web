@@ -99,16 +99,13 @@ export class JudgeContextMenuComponent implements OnInit {
     }
 
     showCaseTypeGroup(): boolean {
-        const result =
-            !this.participant.caseTypeGroup ||
+        return !this.participant.caseTypeGroup ||
             this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
             this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
             this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
             this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.ENDPOINT.toLowerCase()
-                ? false
-                : true;
-
-        return result;
+            ? false
+            : true;
     }
 
     showHearingRole(): boolean {
