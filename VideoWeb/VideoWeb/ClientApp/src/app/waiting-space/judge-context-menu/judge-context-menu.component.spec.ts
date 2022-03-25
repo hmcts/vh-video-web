@@ -136,14 +136,14 @@ describe('JudgeContextMenuComponent', () => {
     });
 
     describe('showHearingRole', () => {
-        const dontShowForHearingRole = HearingRoleHelper.panelMemberRoles;
-        const hearingRoles = Object.keys(CaseTypeGroup);
+        const dontShowForHearingRole = [HearingRole.JUDGE, ...HearingRoleHelper.panelMemberRoles];
+        const hearingRoles = Object.keys(HearingRole);
 
         hearingRoles.forEach(hearingRoleString => {
-            const testHearingRole = CaseTypeGroup[hearingRoleString];
+            const testHearingRole = HearingRole[hearingRoleString];
             const showFor = !dontShowForHearingRole.includes(testHearingRole);
             it(`should return ${showFor} when hearing role is ${hearingRoleString}`, () => {
-                component.participant.caseTypeGroup = testHearingRole;
+                component.participant.hearingRole = testHearingRole;
                 expect(component.showHearingRole()).toBe(showFor);
             });
         });
