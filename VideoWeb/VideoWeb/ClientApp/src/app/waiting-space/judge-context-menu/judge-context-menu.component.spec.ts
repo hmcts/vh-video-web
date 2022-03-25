@@ -24,6 +24,7 @@ import { LowerCasePipe } from '@angular/common';
 import { By } from '@angular/platform-browser';
 import { finalize } from 'rxjs/operators';
 import { PanelModel } from '../models/panel-model-base';
+import { HearingRoleHelper } from 'src/app/shared/helpers/hearing-role-helper';
 export class MockElementRef extends ElementRef {
     constructor() {
         super(null);
@@ -130,6 +131,27 @@ describe('JudgeContextMenuComponent', () => {
             component.participant.caseTypeGroup = caseTypeGroup;
             expect(caseTypeGroups).not.toContain(caseTypeGroup);
             expect(component.showCaseTypeGroup()).toBe(true);
+        });
+    });
+
+    describe('showHearingRole', () => {
+        const dontShowForHearingRole = HearingRoleHelper.panelMemberRoles;
+        const hearingRoles = Object.keys(CaseTypeGroup);
+
+        hearingRoles.forEach(hearingRoleString => {
+            const testHearingRole = CaseTypeGroup[hearingRoleString];
+            const showFor = !dontShowForHearingRole.includes(testHearingRole);
+            it(`should return ${showFor} when hearing role is ${hearingRoleString}`, () => {
+                component.participant.caseTypeGroup = testHearingRole;
+                expect(component.showHearingRole()).toBe(showFor);
+            });
+        });
+
+        it(`should return true when hearing role is any other value`, () => {
+            const hearingRole = 'AnyOtherValue';
+            component.participant.hearingRole = hearingRole;
+            expect(hearingRoles).not.toContain(hearingRole);
+            expect(component.showHearingRole()).toBe(true);
         });
     });
 
@@ -465,16 +487,19 @@ describe('JudgeContextMenuComponent', () => {
                             hearingRoleFullElementId = fakeGetElementId('hearing-role-full');
                         });
                         it('should not show for judge', () => {
-                            component.participant.caseTypeGroup = CaseTypeGroup.JUDGE;
+                            component.participant.hearingRole = HearingRole.JUDGE;
                             fixture.detectChanges();
                             hearingRoleFullElement = fixture.debugElement.query(By.css(`#${hearingRoleFullElementId}`));
                             expect(hearingRoleFullElement).toBeFalsy();
                         });
-                        it('should not show for panel member', () => {
-                            component.participant.caseTypeGroup = CaseTypeGroup.PANEL_MEMBER;
-                            fixture.detectChanges();
-                            hearingRoleFullElement = fixture.debugElement.query(By.css(`#${hearingRoleFullElementId}`));
-                            expect(hearingRoleFullElement).toBeFalsy();
+                        const panelMemberHearingRoles = HearingRoleHelper.panelMemberRoles;
+                        panelMemberHearingRoles.forEach(hearingRole => {
+                            it(`should not show for panel member - ${hearingRole}`, () => {
+                                component.participant.hearingRole = hearingRole;
+                                fixture.detectChanges();
+                                hearingRoleFullElement = fixture.debugElement.query(By.css(`#${hearingRoleFullElementId}`));
+                                expect(hearingRoleFullElement).toBeFalsy();
+                            });
                         });
 
                         describe('when not judge or panel member', () => {
