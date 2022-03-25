@@ -4,7 +4,7 @@
     <span [id]="idPrefix + '-display-name'">
       <strong>{{ participant.displayName }}</strong>
     </span>
-    <span *ngIf="!isJudge" [id]="idPrefix + '-hearing-role-full'">
+    <span *ngIf="showHearingRole()" [id]="idPrefix + '-hearing-role-full'">
         <span [id]="idPrefix + '-hearing-role'">
           {{ 'hearing-role.' + (participant.hearingRole | hyphenate) | translate}}
         </span>
