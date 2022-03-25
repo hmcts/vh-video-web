@@ -25,6 +25,7 @@ import { By } from '@angular/platform-browser';
 import { finalize } from 'rxjs/operators';
 import { PanelModel } from '../models/panel-model-base';
 import { HearingRoleHelper } from 'src/app/shared/helpers/hearing-role-helper';
+
 export class MockElementRef extends ElementRef {
     constructor() {
         super(null);
