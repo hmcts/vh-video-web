@@ -175,18 +175,8 @@ export class UserMediaService {
 
         return this.hasValidCameraAndMicAvailable().pipe(
             take(1),
-            mergeMap(hasValidCameraAndMicAvailable => {
-                if (hasValidCameraAndMicAvailable) {
-                    return this.getCameraAndMicrophoneDevices();
-                } else {
-                    this.errorService.goToServiceError(
-                        'error-camera-microphone.problem-with-camera-mic',
-                        'error-camera-microphone.camera-mic-in-use',
-                        false
-                    );
-                    return of(new Array<UserMediaDevice>());
-                }
-            })
+            filter(Boolean),
+            mergeMap(() => this.getCameraAndMicrophoneDevices())
         );
     }
 
@@ -210,7 +200,21 @@ export class UserMediaService {
             take(1),
             map(stream => !!stream && stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0),
             catchError(error => {
+                console.log(error);
                 this.logger.error(`${this.loggerPrefix} couldn't get a valid camera and microphone`, error);
+                if (error.message.includes('Permission denied') || error.message.includes('Permission dismissed')) {
+                    this.errorService.goToServiceError(
+                        'switch-on-camera-microphone.your-camera-and-microphone-are-blocked',
+                        'switch-on-camera-microphone.please-unblock-camera-and-mic-or-call-us-if-any-problems',
+                        false
+                    );
+                } else {
+                    this.errorService.goToServiceError(
+                        'error-camera-microphone.problem-with-camera-mic',
+                        'error-camera-microphone.camera-mic-in-use',
+                        false
+                    );
+                }
                 return of(false);
             })
         );
