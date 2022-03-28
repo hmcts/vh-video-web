@@ -9,6 +9,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusReader } from 'src/app/shared/models/participant-status-reader';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { HearingRoleHelper } from 'src/app/shared/helpers/hearing-role-helper';
 
 @Directive()
 export abstract class ParticipantStatusDirective {
@@ -137,10 +138,11 @@ export abstract class ParticipantStatusDirective {
         }
     }
 
-    private sortParticipants() {
+    sortParticipants() {
         const judges = this.participants.filter(participant => participant.hearingRole === HearingRole.JUDGE);
+
         const panelMembersAndWingers = this.participants.filter(participant =>
-            [HearingRole.PANEL_MEMBER.toString(), HearingRole.WINGER.toString()].includes(participant.hearingRole)
+            [...HearingRoleHelper.panelMemberRoles, HearingRole.WINGER.toString()].includes(participant.hearingRole)
         );
         const observers = this.participants.filter(participant => participant.hearingRole === HearingRole.OBSERVER);
         const interpretersAndInterpretees = this.participants.filter(participant => participant.isInterpreterOrInterpretee);
