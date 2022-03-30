@@ -11,6 +11,7 @@ import {
 import { HearingRole } from '../models/hearing-role-model';
 import { CaseTypeGroup } from '../models/case-type-group';
 import { TranslateService } from '@ngx-translate/core';
+import { HearingRoleHelper } from 'src/app/shared/helpers/hearing-role-helper';
 
 @Component({
     selector: 'app-judge-context-menu',
@@ -98,6 +99,10 @@ export class JudgeContextMenuComponent implements OnInit {
         return this.participant.hearingRole === HearingRole.WITNESS;
     }
 
+    get isPanelMember(): boolean {
+        return HearingRoleHelper.isPanelMember(this.participant.hearingRole);
+    }
+
     showCaseTypeGroup(): boolean {
         return !this.participant.caseTypeGroup ||
             this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
@@ -109,10 +114,7 @@ export class JudgeContextMenuComponent implements OnInit {
     }
 
     showHearingRole(): boolean {
-        return !(
-            this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
-            this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase()
-        );
+        return !(this.isJudge || this.isPanelMember);
     }
 
     getMutedStatusText(): string {
