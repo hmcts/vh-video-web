@@ -720,12 +720,13 @@
     "interventor": "Interventor",
     "trade-union": "Trade Union",
     "pro-bono-representative": "Pro-Bono Representative",
-    "legal-representative" : "Legal Representative",
-    "police-officer" : "Police Officer",
-    "appellant-advocate" : "Appellant Advocate",
-    "lay-member" : "Lay Member",
-    "cica-presenting-officer" : "CICA Presenting Officer",
-    "royal-british-legion": "Royal British Legion"
+    "legal-representative": "Legal Representative",
+    "police-officer": "Police Officer",
+    "appellant-advocate": "Appellant Advocate",
+    "lay-member": "Lay Member",
+    "cica-presenting-officer": "CICA Presenting Officer",
+    "royal-british-legion": "Royal British Legion",
+    "expert-witness": "Expert Witness"
   },
   "case-role": {
     "appellant": "Appellant",
@@ -742,10 +743,16 @@
     "secretaryofstate": "Secretary of State",
     "trafficcommissioner": "Traffic Commissioner",
     "elaas": "ELAAS",
-    "presentingofficer":"Presenting Officer",
+    "presentingofficer": "Presenting Officer",
     "inabsence": "In absence",
     "vetsuk": "Vets UK",
-    "panelmember": "Panel Member"
+    "panelmember": "Panel Member",
+    "acquiring-authority": "Acquiring Authority",
+    "compensating-authority": "Compensating Authority",
+    "objector": "Objector",
+    "operator": "Operator",
+    "site-providers": "Site Providers",
+    "respondent-authority": "Respondent Authority"
   },
   "case-type": {
     "adoption": "Adoption",
@@ -796,8 +803,9 @@
     "mental-health": "Mental Health",
     "asylum-support": "Asylum Support",
     "employment-appeal-tribunal": "Employment Appeal Tribunal",
-    "criminal-injuries-compensation":"Criminal Injuries Compensation",
-    "war-pensions-appeals": "War Pensions Appeals"
+    "criminal-injuries-compensation": "Criminal Injuries Compensation",
+    "war-pensions-appeals": "War Pensions Appeals",
+    "upper-tribunal-lands-chamber": "Upper Tribunal Lands Chamber"
   },
   "case-type-group": {
     "state": "State",
@@ -816,7 +824,7 @@
     "secretaryofstate": "Secretary of State",
     "trafficcommissioner": "Traffic Commissioner",
     "elaas": "ELAAS",
-    "presentingofficer":"Presenting Officer",
+    "presentingofficer": "Presenting Officer",
     "inabsence": "In absence",
     "vetsuk": "Vets UK"
   },
