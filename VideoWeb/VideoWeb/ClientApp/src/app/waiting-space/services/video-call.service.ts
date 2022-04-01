@@ -127,7 +127,7 @@ export class VideoCallService {
             self.onCallTransferSubject.next(alias);
         };
 
-        this.pexipAPI.onPresentation = function (setting, presenter, uuid) {
+        this.pexipAPI.onPresentation = function (setting, _presenter, _uuid) {
             self.logger.info(`${self.loggerPrefix} Presentation status changed: ${setting}`);
             self.onPresentationSubject.next(new Presentation(setting));
         };
