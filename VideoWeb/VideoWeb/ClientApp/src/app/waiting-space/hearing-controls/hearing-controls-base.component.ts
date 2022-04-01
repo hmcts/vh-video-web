@@ -136,7 +136,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     onLoggedInParticipantChanged(participant: ParticipantModel): void {
         this.isSpotlighted = participant.isSpotlighted;
-
         this.participantSpotlightUpdateSubscription?.unsubscribe();
         this.participantSpotlightUpdateSubscription = this.participantService.onParticipantSpotlightStatusChanged$
             .pipe(filter(updatedParticipant => updatedParticipant.id === participant.id))
@@ -268,8 +267,22 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         return true;
     }
 
-    handleParticipantStatusChange(message: ParticipantStatusMessage): void {
+    private newParticipantEnteredHandshake(newParticipantEntered) {
+        this.logger.info(`${this.loggerPrefix} Waiting 3 seconds before sending handshake`);
+        if (this.participant.hearing_role !== HearingRole.JUDGE && this.participant.hearing_role !== HearingRole.STAFF_MEMBER) {
+            setTimeout(() => {
+                this.logger.info(`${this.loggerPrefix} Sending handshake for entry of: ${newParticipantEntered}`);
+                this.publishMediaDeviceStatus();
+                this.eventService.publishParticipantHandRaisedStatus(this.conferenceId, this.participant.id, this.handRaised);
+            }, 3000); // 3Seconds: Give 2nd host time initialise participants, before receiving status updates
+        }
+    }
+
+    handleParticipantStatusChange(message: ParticipantStatusMessage) {
         if (message.participantId !== this.participant.id) {
+            if (message.status === ParticipantStatus.InHearing) {
+                this.newParticipantEnteredHandshake(message.username);
+            }
             return;
         }
 

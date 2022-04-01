@@ -113,7 +113,7 @@
                     <p *ngIf='!isCaseTypeNone(participant)'
                        id='p-{{ participant.id }}-case-type-group-participant'
                        class='govuk-body-s govuk-!-margin-bottom-1'>
-                        {{ participant.case_type_group }}
+                       {{ ('case-type-group.' + participant.case_type_group.toLowerCase()) | translate }}
                     </p>
 
                     <div *ngIf='!isLoggedInParticipant(participant)'

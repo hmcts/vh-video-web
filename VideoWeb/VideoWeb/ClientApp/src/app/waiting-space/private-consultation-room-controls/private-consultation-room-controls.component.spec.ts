@@ -42,6 +42,7 @@ import { fakeAsync, flush } from '@angular/core/testing';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { FeatureFlagService } from 'src/app/services/feature-flag.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
+import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -88,6 +89,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     let clientSettingsResponse: ClientSettingsResponse;
     let featureFlagServiceSpy: jasmine.SpyObj<FeatureFlagService>;
     let videoControlServiceSpy: jasmine.SpyObj<VideoControlService>;
+    let videoControlCacheSpy: jasmine.SpyObj<VideoControlCacheService>;
 
     beforeAll(() => {
         featureFlagServiceSpy = jasmine.createSpyObj<FeatureFlagService>('FeatureFlagService', ['getFeatureFlagByName']);
@@ -112,7 +114,11 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             'setRemoteMuteStatusById',
             'setHandRaiseStatusById'
         ]);
-
+        videoControlCacheSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', [
+            'setSpotlightStatus',
+            'clearHandRaiseStatusForAll',
+            'setHandRaiseStatus'
+        ]);
         userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>([], ['isAudioOnly$']);
         isAudioOnlySubject = new Subject<boolean>();
         getSpiedPropertyGetter(userMediaServiceSpy, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
@@ -137,7 +143,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             userMediaServiceSpy,
             conferenceServiceSpy,
             configServiceSpy,
-            featureFlagServiceSpy
+            featureFlagServiceSpy,
+            videoControlCacheSpy
         );
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;
@@ -246,7 +253,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             userMediaServiceSpy,
             conferenceServiceSpy,
             configServiceSpy,
-            featureFlagServiceSpy
+            featureFlagServiceSpy,
+            videoControlCacheSpy
         );
         expect(_component.enableDynamicEvidenceSharing).toBe(false);
     });
@@ -270,7 +278,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             userMediaServiceSpy,
             conferenceServiceSpy,
             configServiceSpy,
-            featureFlagServiceSpy
+            featureFlagServiceSpy,
+            videoControlCacheSpy
         );
         expect(_component.enableDynamicEvidenceSharing).toBe(true);
     });

@@ -1,4 +1,4 @@
-import { fakeAsync, flush } from '@angular/core/testing';
+import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
 import {
@@ -45,6 +45,7 @@ import { ConferenceStatusChanged } from 'src/app/services/conference/models/conf
 import { ConfigService } from 'src/app/services/api/config.service';
 import { FeatureFlagService } from 'src/app/services/feature-flag.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
+import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 
 describe('HearingControlsBaseComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -95,6 +96,7 @@ describe('HearingControlsBaseComponent', () => {
     let clientSettingsResponse: ClientSettingsResponse;
     let featureFlagServiceSpy: jasmine.SpyObj<FeatureFlagService>;
     let videoControlServiceSpy: jasmine.SpyObj<VideoControlService>;
+    let videoControlCacheSpy: jasmine.SpyObj<VideoControlCacheService>;
 
     beforeEach(() => {
         clientSettingsResponse = new ClientSettingsResponse({
@@ -114,6 +116,8 @@ describe('HearingControlsBaseComponent', () => {
             'setRemoteMuteStatusById',
             'setHandRaiseStatusById'
         ]);
+
+        videoControlCacheSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', ['setHandRaiseStatus']);
 
         const loggedInParticipantSubject = new BehaviorSubject<ParticipantModel>(
             ParticipantModel.fromParticipantForUserResponse(participantOne)
@@ -145,7 +149,8 @@ describe('HearingControlsBaseComponent', () => {
             userMediaServiceSpy,
             conferenceServiceSpy,
             configServiceSpy,
-            featureFlagServiceSpy
+            featureFlagServiceSpy,
+            videoControlCacheSpy
         );
         conference = new ConferenceTestData().getConferenceNow();
         component.participant = globalParticipant;
@@ -755,7 +760,8 @@ describe('HearingControlsBaseComponent', () => {
             HearingRole.LEGAL_MEMBER,
             HearingRole.DISABILITY_MEMBER,
             HearingRole.FINANCIAL_MEMBER,
-            HearingRole.SPECIALIST_LAY_MEMBER
+            HearingRole.SPECIALIST_LAY_MEMBER,
+            HearingRole.LAY_MEMBER
         ];
         allowedHearingRoles.forEach(hearingRole => {
             it(`returns "true" when device is a desktop device and user has the '${hearingRole}' HearingRole`, () => {
@@ -938,4 +944,21 @@ describe('HearingControlsBaseComponent', () => {
             expect(isAnotherHostInHearing).toBeFalse();
         });
     });
+
+    it('should send handshake update, when new participant joins', fakeAsync(() => {
+        // Arrange
+        const participantStatusMessage = new ParticipantStatusMessage(
+            'participantId',
+            'userName',
+            'participantId',
+            ParticipantStatus.InHearing
+        );
+        spyOn(component, 'publishMediaDeviceStatus');
+        // act
+        component.handleParticipantStatusChange(participantStatusMessage);
+        tick(3000);
+        // expect
+        expect(component.publishMediaDeviceStatus).toHaveBeenCalled();
+        expect(eventsService.publishParticipantHandRaisedStatus).toHaveBeenCalled();
+    }));
 });

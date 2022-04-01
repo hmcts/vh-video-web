@@ -29,7 +29,7 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "GetAudioStreamInfo")]
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Authorize(AppRoles.JudgeRole)]
+        [Authorize("Host")]
         public async Task<IActionResult> GetAudioStreamInfoAsync(Guid hearingId)
         {
             try
