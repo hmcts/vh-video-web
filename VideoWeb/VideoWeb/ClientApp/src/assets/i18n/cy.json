@@ -1057,7 +1057,13 @@
     "elaas": "Cynllun Cynghori ar Apeliadau Cyfraith Cyflogaeth",
     "presentingofficer": "Swyddog Cyflwyno",
     "inabsence": "Mewn absenoldeb",
-    "vetsuk": "Vets UK"
+    "vetsuk": "Vets UK",
+    "acquiringauthority": "Awdurdod Caffael",
+    "compensatingauthority": "Awdurdod Digolledu",
+    "objector": "Gwrthwynebydd",
+    "operator": "Gweithredwr",
+    "siteproviders": "Darparwyr Safle",
+    "respondentauthority": "Awdurdod sy'n Atebydd"
   },
   "case-type": {
     "placement": "Lleoliad",
@@ -1131,12 +1137,12 @@
     "inabsence": "Mewn absenoldeb",
     "vetsuk": "Vets UK",
     "panelmember": "Aelod o'r Panel",
-    "acquiring-authority": "Awdurdod Caffael",
-    "compensating-authority": "Awdurdod Digolledu",
+    "acquiringauthority": "Awdurdod Caffael",
+    "compensatingauthority": "Awdurdod Digolledu",
     "objector": "Gwrthwynebydd",
     "operator": "Gweithredwr",
-    "site-providers": "Darparwyr Safle",
-    "respondent-authority": "Awdurdod sy'n Atebydd"
+    "siteproviders": "Darparwyr Safle",
+    "respondentauthority": "Awdurdod sy'n Atebydd"
   },
   "venue-list": {
     "title": "Dewis eich gwrandawiadau",
