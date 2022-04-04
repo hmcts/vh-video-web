@@ -200,7 +200,6 @@ export class UserMediaService {
             take(1),
             map(stream => !!stream && stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0),
             catchError(error => {
-                console.log(error);
                 this.logger.error(`${this.loggerPrefix} couldn't get a valid camera and microphone`, error);
                 if (error.message.includes('Permission denied') || error.message.includes('Permission dismissed')) {
                     this.errorService.goToServiceError(
