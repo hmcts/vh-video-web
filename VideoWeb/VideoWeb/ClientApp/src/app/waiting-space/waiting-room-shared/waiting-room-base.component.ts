@@ -542,6 +542,7 @@ export abstract class WaitingRoomBaseDirective {
         roomLabel: string
     ) {
         if (answer === ConsultationAnswer.Accepted && requestedFor === responseInitiatorId) {
+            this.hasTriedToLeaveConsultation = false;
             await this.onConsultationAccepted(roomLabel);
         } else if (answer === ConsultationAnswer.Transferring) {
             this.onTransferingToConsultation(roomLabel);

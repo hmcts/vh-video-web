@@ -127,7 +127,7 @@ export class VideoCallService {
             self.onCallTransferSubject.next(alias);
         };
 
-        this.pexipAPI.onPresentation = function (setting, presenter, uuid) {
+        this.pexipAPI.onPresentation = function (setting, _presenter, _uuid) {
             self.logger.info(`${self.loggerPrefix} Presentation status changed: ${setting}`);
             self.onPresentationSubject.next(new Presentation(setting));
         };
@@ -170,7 +170,7 @@ export class VideoCallService {
     initTurnServer() {
         const config = this.configService.getConfig();
         const turnServerObj = {
-            url: `turn:${config.kinly_turn_server}`,
+            urls: `turn:${config.kinly_turn_server}`,
             username: config.kinly_turn_server_user,
             credential: config.kinly_turn_server_credential
         };
