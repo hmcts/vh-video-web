@@ -747,12 +747,12 @@
     "inabsence": "In absence",
     "vetsuk": "Vets UK",
     "panelmember": "Panel Member",
-    "acquiring-authority": "Acquiring Authority",
-    "compensating-authority": "Compensating Authority",
+    "acquiringauthority": "Acquiring Authority",
+    "compensatingauthority": "Compensating Authority",
     "objector": "Objector",
     "operator": "Operator",
-    "site-providers": "Site Providers",
-    "respondent-authority": "Respondent Authority"
+    "siteproviders": "Site Providers",
+    "respondentauthority": "Respondent Authority"
   },
   "case-type": {
     "adoption": "Adoption",
@@ -826,7 +826,13 @@
     "elaas": "ELAAS",
     "presentingofficer": "Presenting Officer",
     "inabsence": "In absence",
-    "vetsuk": "Vets UK"
+    "vetsuk": "Vets UK",
+    "acquiringauthority": "Acquiring Authority",
+    "compensatingauthority": "Compensating Authority",
+    "objector": "Objector",
+    "operator": "Operator",
+    "siteproviders": "Site Providers",
+    "respondentauthority": "Respondent Authority"
   },
   "user-role": {
     "case-admin": "Case admin",
