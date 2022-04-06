@@ -2,21 +2,74 @@ import { MediaDeviceTestData } from '../testing/mocks/data/media-device-test-dat
 import { MockLogger } from '../testing/mocks/mock-logger';
 import { UserMediaService } from './user-media.service';
 import { LocalStorageService } from './conference/local-storage.service';
-import { of, Subject } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { fakeAsync, flush } from '@angular/core/testing';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Guid } from 'guid-typescript';
+import { ErrorService } from './error.service';
 
 describe('UserMediaService', () => {
     const testData = new MediaDeviceTestData();
     let userMediaService: UserMediaService;
+    let errorServiceSpy: jasmine.SpyObj<ErrorService>;
     let localStorageServiceSpy: jasmine.SpyObj<LocalStorageService>;
     let getCameraAndMicrophoneDevicesSubject: Subject<UserMediaDevice[]>;
 
     beforeEach(() => {
         localStorageServiceSpy = jasmine.createSpyObj<LocalStorageService>('LocalStorageService', ['load', 'save']);
+        errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError']);
         getCameraAndMicrophoneDevicesSubject = new Subject<UserMediaDevice[]>();
-        userMediaService = new UserMediaService(new MockLogger(), localStorageServiceSpy);
+        userMediaService = new UserMediaService(errorServiceSpy, new MockLogger(), localStorageServiceSpy);
+    });
+
+    describe('device access', () => {
+        it('navigates to device blocked page when device access has been blocked', done => {
+            const mediaSpy = spyOn<any>(navigator.mediaDevices, 'getUserMedia').and.returnValue(
+                throwError(new DOMException('Permission denied'))
+            );
+            userMediaService.hasValidCameraAndMicAvailable().subscribe(result => {
+                expect(result).toBeFalse();
+                expect(mediaSpy).toHaveBeenCalledTimes(1);
+                expect(errorServiceSpy['goToServiceError']).toHaveBeenCalledWith(
+                    'switch-on-camera-microphone.your-camera-and-microphone-are-blocked',
+                    'switch-on-camera-microphone.please-unblock-camera-and-mic-or-call-us-if-any-problems',
+                    false
+                );
+                done();
+            });
+        });
+
+        it('navigates to device blocked page when device access request has been dismissed', done => {
+            const mediaSpy = spyOn<any>(navigator.mediaDevices, 'getUserMedia').and.returnValue(
+                throwError(new DOMException('Permission dismissed'))
+            );
+            userMediaService.hasValidCameraAndMicAvailable().subscribe(result => {
+                expect(result).toBeFalse();
+                expect(mediaSpy).toHaveBeenCalledTimes(1);
+                expect(errorServiceSpy['goToServiceError']).toHaveBeenCalledWith(
+                    'switch-on-camera-microphone.your-camera-and-microphone-are-blocked',
+                    'switch-on-camera-microphone.please-unblock-camera-and-mic-or-call-us-if-any-problems',
+                    false
+                );
+                done();
+            });
+        });
+
+        it('navigates to device in use page when device is in use', done => {
+            const mediaSpy = spyOn<any>(navigator.mediaDevices, 'getUserMedia').and.returnValue(
+                throwError(new DOMException('Device in use'))
+            );
+            userMediaService.hasValidCameraAndMicAvailable().subscribe(result => {
+                expect(result).toBeFalse();
+                expect(mediaSpy).toHaveBeenCalledTimes(1);
+                expect(errorServiceSpy['goToServiceError']).toHaveBeenCalledWith(
+                    'error-camera-microphone.problem-with-camera-mic',
+                    'error-camera-microphone.camera-mic-in-use',
+                    false
+                );
+                done();
+            });
+        });
     });
 
     it('should return true when multiple inputs are detected', fakeAsync(() => {
@@ -182,7 +235,7 @@ describe('UserMediaService', () => {
                 getCameraAndMicrophoneDevicesSubject.asObservable()
             );
             spyOn(UserMediaService.prototype, 'hasValidCameraAndMicAvailable').and.returnValue(of(true));
-            userMediaService = new UserMediaService(new MockLogger(), localStorageServiceSpy);
+            userMediaService = new UserMediaService(errorServiceSpy, new MockLogger(), localStorageServiceSpy);
             userMediaService.initialise();
         });
 

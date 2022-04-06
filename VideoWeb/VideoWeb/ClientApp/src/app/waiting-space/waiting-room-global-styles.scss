@@ -171,23 +171,15 @@
   top: 4.094375rem;
   right: 0;
   z-index: 998;
-  overflow: overlay;
+  overflow: auto;
   background-color: #333;
   box-shadow: 0px 5px 10px 0px rgb(0 0 0 / 70%);
   box-shadow: 0px 20px 30px 0px rgb(0 0 0 / 30%);
   @include responds-to(small) {
-    width: rem(333px);
+    width: rem(340px);
     top: 0px;
     position: relative;
   }
-}
-
-.chat-wrapper {
-  width: 333px;
-  padding: 12px;
-  float: right;
-  max-height: 675px;
-  overflow: overlay;
 }
 
 .room-title {

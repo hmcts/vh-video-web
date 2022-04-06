@@ -1,4 +1,4 @@
-import { fakeAsync, flush } from '@angular/core/testing';
+import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
 import {
@@ -117,10 +117,7 @@ describe('HearingControlsBaseComponent', () => {
             'setHandRaiseStatusById'
         ]);
 
-        videoControlCacheSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlService', [
-            'clearHandRaiseStatusForAll',
-            'setHandRaiseStatus'
-        ]);
+        videoControlCacheSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', ['setHandRaiseStatus']);
 
         const loggedInParticipantSubject = new BehaviorSubject<ParticipantModel>(
             ParticipantModel.fromParticipantForUserResponse(participantOne)
@@ -947,4 +944,21 @@ describe('HearingControlsBaseComponent', () => {
             expect(isAnotherHostInHearing).toBeFalse();
         });
     });
+
+    it('should send handshake update, when new participant joins', fakeAsync(() => {
+        // Arrange
+        const participantStatusMessage = new ParticipantStatusMessage(
+            'participantId',
+            'userName',
+            'participantId',
+            ParticipantStatus.InHearing
+        );
+        spyOn(component, 'publishMediaDeviceStatus');
+        // act
+        component.handleParticipantStatusChange(participantStatusMessage);
+        tick(3000);
+        // expect
+        expect(component.publishMediaDeviceStatus).toHaveBeenCalled();
+        expect(eventsService.publishParticipantHandRaisedStatus).toHaveBeenCalled();
+    }));
 });
