@@ -1127,7 +1127,7 @@ describe('ParticipantsPanelComponent', () => {
         expect(component.nonEndpointParticipants).toEqual(mappedParticipants);
     });
 
-    it('should process eventhub participant updates for panel members', () => {
+    it('should process eventhub participant updates for panel members added to a hearing when a PM is already present', () => {
         const panelMember1DisplayName = 'Added Panel Member 1';
         const panelMember2DisplayName = 'Added Panel Member 2';
 
@@ -1155,11 +1155,13 @@ describe('ParticipantsPanelComponent', () => {
 
         component.setupEventhubSubscribers();
 
-        const message = new ParticipantsUpdatedMessage(conferenceId, participants);
+        let message = new ParticipantsUpdatedMessage(conferenceId, participants);
         getParticipantsUpdatedSubjectMock.next(message);
 
         participants.push(panelMember2);
         mappedParticipants = mapper.mapFromParticipantUserResponseArray(participants);
+        participantPanelModelMapperSpy.mapFromParticipantUserResponseArray.and.returnValue(mappedParticipants);
+        message = new ParticipantsUpdatedMessage(conferenceId, participants);
         getParticipantsUpdatedSubjectMock.next(message);
 
         const linkedParticipantPanelModel = component.nonEndpointParticipants.filter(x => x.role === Role.JudicialOfficeHolder);
