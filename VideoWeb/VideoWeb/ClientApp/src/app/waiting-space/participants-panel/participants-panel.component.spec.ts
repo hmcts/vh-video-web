@@ -1127,6 +1127,47 @@ describe('ParticipantsPanelComponent', () => {
         expect(component.nonEndpointParticipants).toEqual(mappedParticipants);
     });
 
+    it('should process eventhub participant updates for panel members', () => {
+        const panelMember1DisplayName = 'Added Panel Member 1';
+        const panelMember2DisplayName = 'Added Panel Member 2';
+
+        const panelMember1 = new ParticipantForUserResponse({
+            display_name: panelMember1DisplayName,
+            first_name: 'Panel',
+            role: Role.JudicialOfficeHolder,
+            hearing_role: 'Panel Member',
+            user_name: 'panel.member@hmcts.net'
+        });
+
+        const panelMember2 = new ParticipantForUserResponse({
+            display_name: panelMember2DisplayName,
+            first_name: 'Panel',
+            role: Role.JudicialOfficeHolder,
+            hearing_role: 'Panel Member',
+            user_name: 'panel.member.2@hmcts.net'
+        });
+
+        participants.push(panelMember1);
+
+        component.nonEndpointParticipants = [];
+        let mappedParticipants = mapper.mapFromParticipantUserResponseArray(participants);
+        participantPanelModelMapperSpy.mapFromParticipantUserResponseArray.and.returnValue(mappedParticipants);
+
+        component.setupEventhubSubscribers();
+
+        const message = new ParticipantsUpdatedMessage(conferenceId, participants);
+        getParticipantsUpdatedSubjectMock.next(message);
+
+        participants.push(panelMember2);
+        mappedParticipants = mapper.mapFromParticipantUserResponseArray(participants);
+        getParticipantsUpdatedSubjectMock.next(message);
+
+        const linkedParticipantPanelModel = component.nonEndpointParticipants.filter(x => x.role === Role.JudicialOfficeHolder);
+
+        expect(linkedParticipantPanelModel[0].displayName).toContain(panelMember1DisplayName);
+        expect(linkedParticipantPanelModel[0].displayName).toContain(panelMember2DisplayName);
+    });
+
     describe('isWitness', () => {
         let participant: PanelModel;
         beforeEach(() => {
