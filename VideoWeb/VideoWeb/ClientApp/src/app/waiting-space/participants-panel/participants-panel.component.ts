@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ParticipantResponse } from 'src/app/services/clients/api-client';
+import { ParticipantResponse, Role } from 'src/app/services/clients/api-client';
 import { VideoControlService } from 'src/app/services/conference/video-control.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -230,6 +230,20 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                         ({ id: newId }) => !this.nonEndpointParticipants.some(({ id: oldId }) => newId === oldId)
                     );
                     newlyAddedParticipants.forEach(np => this.nonEndpointParticipants.push(np));
+
+                    const nonEndpointParticipantsLinkedParticipantPanelIndex = this.nonEndpointParticipants.findIndex(
+                        x => x.role === Role.JudicialOfficeHolder
+                    );
+                    const mappedListLinkedParticipantPanelIndex = mappedList.findIndex(x => x.role === Role.JudicialOfficeHolder);
+
+                    if (nonEndpointParticipantsLinkedParticipantPanelIndex > -1 && mappedListLinkedParticipantPanelIndex > -1) {
+                        this.nonEndpointParticipants.splice(
+                            nonEndpointParticipantsLinkedParticipantPanelIndex,
+                            1,
+                            mappedList[mappedListLinkedParticipantPanelIndex]
+                        );
+                    }
+
                     this.updateParticipants();
                 }
             })
