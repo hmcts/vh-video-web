@@ -18,6 +18,7 @@ import { HearingRole } from '../models/hearing-role-model';
 import { ConnectedScreenshare, ParticipantUpdated, StoppedScreenshare } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
+import { CaseTypeGroup } from '../models/case-type-group';
 
 @Injectable()
 export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy {
@@ -73,8 +74,13 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.showEvidenceContextMenu = false;
     }
 
+    get isObserverAppraiser(): boolean {
+        return this.participant?.case_type_group === CaseTypeGroup.OBSERVER && this.participant?.hearing_role === HearingRole.APPRAISER;
+    }
+
     get canShowScreenShareButton(): boolean {
         const isAllowedRole =
+            !this.isObserverAppraiser &&
             this.participant?.hearing_role !== HearingRole.WITNESS &&
             this.participant?.hearing_role !== HearingRole.OBSERVER &&
             this.participant?.role !== Role.QuickLinkObserver;

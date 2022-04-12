@@ -237,6 +237,10 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         return this.participant?.hearing_role === HearingRole.OBSERVER;
     }
 
+    get isObserverAppraiser(): boolean {
+        return this.participant?.case_type_group === CaseTypeGroup.OBSERVER && this.participant?.hearing_role === HearingRole.APPRAISER;
+    }
+
     get isQuickLinkObserver(): boolean {
         return this.participant?.role === Role.QuickLinkObserver;
     }
@@ -278,7 +282,13 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     }
 
     get canStartJoinConsultation() {
-        return !this.isOrHasWitnessLink() && !this.isObserver && !this.isQuickLinkObserver && !this.participant.linked_participants.length;
+        return (
+            !this.isOrHasWitnessLink() &&
+            !this.isObserver &&
+            !this.isObserverAppraiser &&
+            !this.isQuickLinkObserver &&
+            !this.participant.linked_participants.length
+        );
     }
 
     async startPrivateConsultation(participants: string[], endpoints: string[]) {
