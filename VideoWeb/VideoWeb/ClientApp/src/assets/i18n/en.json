@@ -752,7 +752,8 @@
     "objector": "Objector",
     "operator": "Operator",
     "siteproviders": "Site Providers",
-    "respondentauthority": "Respondent Authority"
+    "respondentauthority": "Respondent Authority",
+    "local-authority": "Local Authority"
   },
   "case-type": {
     "adoption": "Adoption",
@@ -803,9 +804,10 @@
     "mental-health": "Mental Health",
     "asylum-support": "Asylum Support",
     "employment-appeal-tribunal": "Employment Appeal Tribunal",
-    "criminal-injuries-compensation": "Criminal Injuries Compensation",
+    "upper-tribunal-lands-chamber": "Upper Tribunal Lands Chamber",
+    "criminal-injuries-compensation":"Criminal Injuries Compensation",
     "war-pensions-appeals": "War Pensions Appeals",
-    "upper-tribunal-lands-chamber": "Upper Tribunal Lands Chamber"
+    "special-educational-needs-and-disability": "Special Educational Needs and Disability"
   },
   "case-type-group": {
     "state": "State",
