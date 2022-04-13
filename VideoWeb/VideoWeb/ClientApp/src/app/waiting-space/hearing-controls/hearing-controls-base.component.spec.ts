@@ -793,10 +793,9 @@ describe('HearingControlsBaseComponent', () => {
             });
         });
 
-        it(`returns "false" is user is an Observer and has the 'Appraiser' HearingRole`, () => {
+        it(`returns "false" if user has Observer Case Type Group`, () => {
             deviceTypeService.isDesktop.and.returnValue(true);
             component.participant.case_type_group = CaseTypeGroup.OBSERVER;
-            component.participant.hearing_role = HearingRole.APPRAISER;
             component.ngOnInit();
             expect(component.canShowScreenShareButton).toBeFalsy();
         });

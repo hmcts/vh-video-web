@@ -237,10 +237,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         return this.participant?.hearing_role === HearingRole.OBSERVER;
     }
 
-    get isObserverAppraiser(): boolean {
-        return this.participant?.case_type_group === CaseTypeGroup.OBSERVER && this.participant?.hearing_role === HearingRole.APPRAISER;
-    }
-
     get isQuickLinkObserver(): boolean {
         return this.participant?.role === Role.QuickLinkObserver;
     }
@@ -285,7 +281,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         return (
             !this.isOrHasWitnessLink() &&
             !this.isObserver &&
-            !this.isObserverAppraiser &&
+            this.participant?.case_type_group !== CaseTypeGroup.OBSERVER &&
             !this.isQuickLinkObserver &&
             !this.participant.linked_participants.length
         );

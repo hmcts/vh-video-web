@@ -74,13 +74,9 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.showEvidenceContextMenu = false;
     }
 
-    get isObserverAppraiser(): boolean {
-        return this.participant?.case_type_group === CaseTypeGroup.OBSERVER && this.participant?.hearing_role === HearingRole.APPRAISER;
-    }
-
     get canShowScreenShareButton(): boolean {
         const isAllowedRole =
-            !this.isObserverAppraiser &&
+            this.participant?.case_type_group !== CaseTypeGroup.OBSERVER &&
             this.participant?.hearing_role !== HearingRole.WITNESS &&
             this.participant?.hearing_role !== HearingRole.OBSERVER &&
             this.participant?.role !== Role.QuickLinkObserver;
