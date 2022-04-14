@@ -642,7 +642,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     });
 
     describe('canStartJoinConsultation', () => {
-        it('returns false if the participant is an Observer-Appraiser', () => {
+        it('returns false if the participant has Observer Case Type Group', () => {
             component.participant = new ParticipantResponse({
                 case_type_group: CaseTypeGroup.OBSERVER,
                 hearing_role: HearingRole.APPRAISER,
