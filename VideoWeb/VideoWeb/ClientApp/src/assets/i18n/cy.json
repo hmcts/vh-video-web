@@ -1063,7 +1063,8 @@
     "objector": "Gwrthwynebydd",
     "operator": "Gweithredwr",
     "siteproviders": "Darparwyr Safle",
-    "respondentauthority": "Awdurdod sy'n Atebydd"
+    "respondentauthority": "Awdurdod sy'n Atebydd",
+    "local-authority": "Awdurdod Lleol"
   },
   "case-type": {
     "placement": "Lleoliad",
@@ -1116,7 +1117,8 @@
     "employment-appeal-tribunal": "Y Tribiwnlys Apeliadau Cyflogaeth",
     "criminal-injuries-compensation": "Iawndal am Anafiadau Troseddol",
     "war-pensions-appeals": "Apeliadau Pensiynau Rhyfel",
-    "upper-tribunal-lands-chamber": "Siambr Tiroedd yr Uwch Dribiwnlys"
+    "upper-tribunal-lands-chamber": "Siambr Tiroedd yr Uwch Dribiwnlys",
+    "special-educational-needs-and-disability": "Anghenion Addysgol Arbennig ac Anabledd"
   },
   "case-role": {
     "state": "Y Wladwriaeth",
