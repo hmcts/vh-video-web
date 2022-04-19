@@ -44,6 +44,7 @@ import { UnloadDetectorService } from 'src/app/services/unload-detector.service'
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { CaseTypeGroup } from '../../models/case-type-group';
 
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let component: ParticipantWaitingRoomComponent;
@@ -638,5 +639,17 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             flush();
             expect(component['onShouldReload']).toHaveBeenCalled();
         }));
+    });
+
+    describe('canStartJoinConsultation', () => {
+        it('returns false if the participant has Observer Case Type Group', () => {
+            component.participant = new ParticipantResponse({
+                case_type_group: CaseTypeGroup.OBSERVER,
+                hearing_role: HearingRole.APPRAISER,
+                linked_participants: []
+            });
+
+            expect(component.canStartJoinConsultation).toBeFalse();
+        });
     });
 });

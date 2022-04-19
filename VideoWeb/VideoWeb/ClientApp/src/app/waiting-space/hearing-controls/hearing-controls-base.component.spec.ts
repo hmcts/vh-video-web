@@ -743,6 +743,7 @@ describe('HearingControlsBaseComponent', () => {
 
         const allowedHearingRoles = [
             HearingRole.APPELLANT,
+            HearingRole.APPRAISER,
             HearingRole.DEFENCE_ADVOCATE,
             HearingRole.EXPERT,
             HearingRole.INTERPRETER,
@@ -790,6 +791,13 @@ describe('HearingControlsBaseComponent', () => {
                 component.ngOnInit();
                 expect(component.canShowScreenShareButton).toBeFalsy();
             });
+        });
+
+        it(`returns "false" if user has Observer Case Type Group`, () => {
+            deviceTypeService.isDesktop.and.returnValue(true);
+            component.participant.case_type_group = CaseTypeGroup.OBSERVER;
+            component.ngOnInit();
+            expect(component.canShowScreenShareButton).toBeFalsy();
         });
     });
 

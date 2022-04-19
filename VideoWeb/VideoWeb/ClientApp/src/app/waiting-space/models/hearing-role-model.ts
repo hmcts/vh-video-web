@@ -1,4 +1,5 @@
 export enum HearingRole {
+    APPRAISER = 'Appraiser',
     APPELLANT = 'Appellant',
     DEFENCE_ADVOCATE = 'Defence Advocate',
     EXPERT = 'Expert',
