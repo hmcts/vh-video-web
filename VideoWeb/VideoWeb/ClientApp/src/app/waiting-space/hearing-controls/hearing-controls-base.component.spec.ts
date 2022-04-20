@@ -773,7 +773,7 @@ describe('HearingControlsBaseComponent', () => {
             });
         });
 
-        const nonAllowedHearingRoles = [HearingRole.WITNESS, HearingRole.OBSERVER];
+        const nonAllowedHearingRoles = [HearingRole.OBSERVER];
         nonAllowedHearingRoles.forEach(hearingRole => {
             it(`returns "false" when device is a desktop device and user has the '${hearingRole}' HearingRole`, () => {
                 deviceTypeService.isDesktop.and.returnValue(true);
