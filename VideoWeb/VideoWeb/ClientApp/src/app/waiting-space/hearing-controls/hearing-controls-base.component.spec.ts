@@ -762,7 +762,8 @@ describe('HearingControlsBaseComponent', () => {
             HearingRole.DISABILITY_MEMBER,
             HearingRole.FINANCIAL_MEMBER,
             HearingRole.SPECIALIST_LAY_MEMBER,
-            HearingRole.LAY_MEMBER
+            HearingRole.LAY_MEMBER,
+            HearingRole.WITNESS
         ];
         allowedHearingRoles.forEach(hearingRole => {
             it(`returns "true" when device is a desktop device and user has the '${hearingRole}' HearingRole`, () => {
