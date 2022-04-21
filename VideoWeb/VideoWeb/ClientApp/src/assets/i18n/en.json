@@ -753,7 +753,7 @@
     "operator": "Operator",
     "siteproviders": "Site Providers",
     "respondentauthority": "Respondent Authority",
-    "local-authority": "Local Authority"
+    "localauthority": "Local Authority"
   },
   "case-type": {
     "adoption": "Adoption",
