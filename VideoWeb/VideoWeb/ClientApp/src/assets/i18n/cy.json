@@ -1064,7 +1064,7 @@
     "operator": "Gweithredwr",
     "siteproviders": "Darparwyr Safle",
     "respondentauthority": "Awdurdod sy'n Atebydd",
-    "local-authority": "Awdurdod Lleol"
+    "localauthority": "Awdurdod Lleol"
   },
   "case-type": {
     "placement": "Lleoliad",
@@ -1144,7 +1144,8 @@
     "objector": "Gwrthwynebydd",
     "operator": "Gweithredwr",
     "siteproviders": "Darparwyr Safle",
-    "respondentauthority": "Awdurdod sy'n Atebydd"
+    "respondentauthority": "Awdurdod sy'n Atebydd",
+    "localauthority": "Awdurdod Lleol"
   },
   "venue-list": {
     "title": "Dewis eich gwrandawiadau",

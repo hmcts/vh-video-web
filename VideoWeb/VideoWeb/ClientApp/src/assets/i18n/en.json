@@ -753,7 +753,7 @@
     "operator": "Operator",
     "siteproviders": "Site Providers",
     "respondentauthority": "Respondent Authority",
-    "local-authority": "Local Authority"
+    "localauthority": "Local Authority"
   },
   "case-type": {
     "adoption": "Adoption",
@@ -834,7 +834,8 @@
     "objector": "Objector",
     "operator": "Operator",
     "siteproviders": "Site Providers",
-    "respondentauthority": "Respondent Authority"
+    "respondentauthority": "Respondent Authority",
+    "localauthority": "Local Authority"
   },
   "user-role": {
     "case-admin": "Case admin",
