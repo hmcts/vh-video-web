@@ -100,6 +100,10 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                             participant.assignPexipId(state[participant.id].pexipId);
                         }
                     }
+
+                    this.logger.debug(`${this.loggerPrefix} refreshing participants, current participant`, participant);
+                    this.logger.debug(`${this.loggerPrefix} refreshing participants, state participant`, participant);
+
                     participant.updateParticipant(
                         state[participant.id]?.isRemoteMuted,
                         false,
@@ -706,6 +710,20 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     private updateParticipants() {
         const combined = [...this.nonEndpointParticipants, ...this.endpointParticipants];
+
+        combined.forEach(c => {
+            const participant = this.participants.find(p => p.id === c.id);
+
+            c.updateParticipant(
+                participant.isMicRemoteMuted(),
+                participant.hasHandRaised(),
+                participant.hasSpotlight(),
+                participant.id,
+                participant.isLocalMicMuted(),
+                participant.isLocalCameraOff()
+            );
+        });
+
         this.getOrderedParticipants(combined);
     }
 
