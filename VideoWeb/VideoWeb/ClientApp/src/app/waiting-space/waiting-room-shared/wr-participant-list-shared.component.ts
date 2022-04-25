@@ -199,8 +199,9 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
             if (interpreterIndex !== interpreteeIndex + 1) {
                 const interpreterToMove = sortedNonJudgeParticipants[interpreterIndex];
 
-                sortedNonJudgeParticipants.splice(interpreteeIndex + 1, 0, interpreterToMove);
                 sortedNonJudgeParticipants.splice(interpreterIndex, 1);
+                const interpreteeIndex = sortedNonJudgeParticipants.findIndex(x => x.id === interpretee.id); //get interpretee index again as it would have shifted
+                sortedNonJudgeParticipants.splice(interpreteeIndex + 1, 0, interpreterToMove);
             }
         });
 
