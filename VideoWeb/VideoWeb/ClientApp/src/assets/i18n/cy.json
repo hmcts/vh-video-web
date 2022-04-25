@@ -450,7 +450,7 @@
     "is-suspended": "Mae eich gwrandawiad fideo wedi'i ohirio ",
     "is-paused": "Mae eich gwrandawiad fideo wedi'i atal dros dro",
     "is-in-session": "Mae eich gwrandawiad fideo wedi dechrau",
-    "is-closed": "Mae eich gwrandawiad fideo wedi'i gloi ",
+    "is-closed": "Mae’r gwrandawiad wedi cau ",
     "choose-camera-and-microphone-aria-label": "Blwch deialog dewis camera a microffon ",
     "choose-camera-and-microphone": "Dewis camera a microffon",
     "details-of-the-hearing": "Manylion y gwrandawiad",
@@ -671,7 +671,7 @@
     "hearing-suspended": "Gwrandawiad wedi'i ohirio",
     "hearing-is-in-session": "Mae'r gwrandawiad wedi dechrau",
     "judge-participant-status-list-label": "rhestr o'r cyfranogwyr yn y gwrandawiad",
-    "hearing-is-closed": "Mae'r gwrandawiad wedi'i gloi",
+    "hearing-is-closed": "Mae’r gwrandawiad wedi cau",
     "browser-support-message": "Ni allwch ddefnyddio'r porwr hwn i wneud galwadau fideo",
     "warning": "Rhybudd"
   },
