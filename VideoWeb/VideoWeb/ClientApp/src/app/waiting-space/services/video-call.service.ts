@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
-import { BROWSERS } from 'ngx-device-detector';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { skip, take, takeUntil } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ApiClient, HearingLayout, SharedParticipantRoom, StartHearingRequest } from 'src/app/services/clients/api-client';
 import { KinlyHeartbeatService } from 'src/app/services/conference/kinly-heartbeat.service';
-import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { StreamMixerService } from 'src/app/services/stream-mixer.service';
@@ -72,8 +70,7 @@ export class VideoCallService {
         private configService: ConfigService,
         private kinlyHeartbeatService: KinlyHeartbeatService,
         private videoCallEventsService: VideoCallEventsService,
-        private streamMixerService: StreamMixerService,
-        private deviceTypeService: DeviceTypeService
+        private streamMixerService: StreamMixerService
     ) {
         this.preferredLayoutCache = new SessionStorage(this.PREFERRED_LAYOUT_KEY);
 
@@ -157,14 +154,6 @@ export class VideoCallService {
             this.renegotiateCall();
             self.logger.info(`${self.loggerPrefix} calling renegotiateCall`);
         });
-
-        this.setEncoder();
-    }
-
-    private setEncoder() {
-        if (this.deviceTypeService.getBrowserName() === BROWSERS.FIREFOX || this.deviceTypeService.isIOS()) {
-            this.enableH264(false);
-        }
     }
 
     initTurnServer() {
