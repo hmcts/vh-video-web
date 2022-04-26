@@ -10,7 +10,10 @@ import {
     ParticipantStatus,
     VideoEndpointResponse,
     Role,
-    RoomSummaryResponse
+    RoomSummaryResponse,
+    ParticipantForUserResponse,
+    LinkType,
+    LinkedParticipantResponse
 } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -350,6 +353,89 @@ describe('WaitingRoom ParticipantList Base', () => {
                 x => x.hearing_role === HearingRole.INTERPRETER && x.display_name === 'Interpreter'
             );
             expect(interpreterIndex).toEqual(interpreteeIndex + 1);
+        });
+
+        it('participant list should not duplicate interpreter', () => {
+            // setup
+            component.conference.participants = [
+                new ParticipantForUserResponse({
+                    id: '670d3f03-c406-485b-8d71-ea5e785bbf86',
+                    name: 'Mrs Manual Individual 216',
+                    status: ParticipantStatus.NotSignedIn,
+                    display_name: 'A',
+                    role: Role.Individual,
+                    case_type_group: 'Applicant',
+                    tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;A;670d3f03-c406-485b-8d71-ea5e785bbf86',
+                    hearing_role: HearingRole.LITIGANT_IN_PERSON,
+                    first_name: 'Manual',
+                    last_name: 'Individual 216',
+                    user_name: 'manual.individual_216@hearings.reform.hmcts.net',
+                    linked_participants: [
+                        new LinkedParticipantResponse({
+                            linked_id: '02778ddf-b472-4e5d-807e-da8248d1b91f',
+                            link_type: LinkType.Interpreter
+                        })
+                    ]
+                }),
+                new ParticipantForUserResponse({
+                    id: '02778ddf-b472-4e5d-807e-da8248d1b91f',
+                    name: 'Mrs Manual Interpreter 14',
+                    status: ParticipantStatus.NotSignedIn,
+                    display_name: 'B',
+                    role: Role.Individual,
+                    case_type_group: 'Applicant',
+                    tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;B;02778ddf-b472-4e5d-807e-da8248d1b91f',
+                    hearing_role: HearingRole.INTERPRETER,
+                    first_name: 'Manual',
+                    last_name: 'Interpreter 14',
+                    user_name: 'manual.interpreter_14@hearings.reform.hmcts.net',
+                    linked_participants: [
+                        new LinkedParticipantResponse({
+                            linked_id: '670d3f03-c406-485b-8d71-ea5e785bbf86',
+                            link_type: LinkType.Interpreter
+                        })
+                    ]
+                }),
+                new ParticipantForUserResponse({
+                    name: 'Mrs Manual Individual 27',
+                    id: '55dcfc46-bc9f-4d9e-86c8-6067c9d8cda6',
+                    status: ParticipantStatus.NotSignedIn,
+                    display_name: 'C',
+                    role: Role.Individual,
+                    case_type_group: 'Applicant',
+                    tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;C;55dcfc46-bc9f-4d9e-86c8-6067c9d8cda6',
+                    hearing_role: HearingRole.APPELLANT,
+                    first_name: 'Manual',
+                    last_name: 'Individual 27',
+                    user_name: 'manual.individual_27@hearings.reform.hmcts.net',
+                    linked_participants: []
+                }),
+                new ParticipantForUserResponse({
+                    id: 'judge1',
+                    status: ParticipantStatus.Disconnected,
+                    display_name: 'judge',
+                    role: Role.Judge,
+                    case_type_group: 'Judge',
+                    tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;A;670d3f03-c406-485b-8d71-ea5e785bbf86',
+                    hearing_role: HearingRole.JUDGE,
+                    linked_participants: []
+                })
+            ];
+            component.initParticipants();
+            const interpreteeIndex = component.nonJudgeParticipants.findIndex(x => x.display_name === 'A');
+            const interpreterIndex = component.nonJudgeParticipants.findIndex(x => x.display_name === 'B');
+            expect(interpreterIndex).toEqual(interpreteeIndex + 1);
+
+            const hasDuplicates = arr => {
+                const set = new Set();
+                return arr.some(el => {
+                    if (set.has(el)) {
+                        return true;
+                    }
+                    set.add(el);
+                });
+            };
+            expect(hasDuplicates(component.nonJudgeParticipants) === false);
         });
 
         it('participant list should always have interpretee before each interpreter when multiple interpreters exist', () => {
