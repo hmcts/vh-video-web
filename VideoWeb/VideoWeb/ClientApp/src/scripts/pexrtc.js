@@ -4,6 +4,7 @@ var SessionDescription = window.mozRTCSessionDescription || window.RTCSessionDes
 var PeerConnection = window.mozRTCPeerConnection || window.webkitRTCPeerConnection || window.RTCPeerConnection;
 
 /*
+### pexrtc.js ver. 27.3 ###
 License for Base64.js,
 retrieved from https://code.google.com/p/javascriptbase64
 

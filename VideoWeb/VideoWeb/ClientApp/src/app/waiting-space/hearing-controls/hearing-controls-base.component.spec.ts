@@ -743,6 +743,7 @@ describe('HearingControlsBaseComponent', () => {
 
         const allowedHearingRoles = [
             HearingRole.APPELLANT,
+            HearingRole.APPRAISER,
             HearingRole.DEFENCE_ADVOCATE,
             HearingRole.EXPERT,
             HearingRole.INTERPRETER,
@@ -761,7 +762,8 @@ describe('HearingControlsBaseComponent', () => {
             HearingRole.DISABILITY_MEMBER,
             HearingRole.FINANCIAL_MEMBER,
             HearingRole.SPECIALIST_LAY_MEMBER,
-            HearingRole.LAY_MEMBER
+            HearingRole.LAY_MEMBER,
+            HearingRole.WITNESS
         ];
         allowedHearingRoles.forEach(hearingRole => {
             it(`returns "true" when device is a desktop device and user has the '${hearingRole}' HearingRole`, () => {
@@ -772,7 +774,7 @@ describe('HearingControlsBaseComponent', () => {
             });
         });
 
-        const nonAllowedHearingRoles = [HearingRole.WITNESS, HearingRole.OBSERVER];
+        const nonAllowedHearingRoles = [HearingRole.OBSERVER];
         nonAllowedHearingRoles.forEach(hearingRole => {
             it(`returns "false" when device is a desktop device and user has the '${hearingRole}' HearingRole`, () => {
                 deviceTypeService.isDesktop.and.returnValue(true);
@@ -790,6 +792,13 @@ describe('HearingControlsBaseComponent', () => {
                 component.ngOnInit();
                 expect(component.canShowScreenShareButton).toBeFalsy();
             });
+        });
+
+        it(`returns "false" if user has Observer Case Type Group`, () => {
+            deviceTypeService.isDesktop.and.returnValue(true);
+            component.participant.case_type_group = CaseTypeGroup.OBSERVER;
+            component.ngOnInit();
+            expect(component.canShowScreenShareButton).toBeFalsy();
         });
     });
 
