@@ -11,20 +11,16 @@ import {
 } from 'src/app/services/clients/api-client';
 import { KinlyHeartbeatService } from 'src/app/services/conference/kinly-heartbeat.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { SessionStorage } from 'src/app/services/session-storage';
+import { StreamMixerService } from 'src/app/services/stream-mixer.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { mockCamStream, mockMicStream } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { ParticipantUpdated } from '../models/video-call-models';
+import { mockCamStream, mockMicStream } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { VideoCallEventsService } from './video-call-events.service';
 import { VideoCallService } from './video-call.service';
-import { StreamMixerService } from 'src/app/services/stream-mixer.service';
-import { DeviceTypeService } from 'src/app/services/device-type.service';
-import { BROWSERS, OS } from 'ngx-device-detector';
-import { pexipApiMock } from 'src/app/testing/mocks/mock-video-call.service';
 
 const config = new ClientSettingsResponse({
     kinly_turn_server: 'turnserver',
@@ -49,7 +45,6 @@ describe('VideoCallService', () => {
     let kinlyHeartbeatServiceSpy: jasmine.SpyObj<KinlyHeartbeatService>;
     let videoCallEventsServiceSpy: jasmine.SpyObj<VideoCallEventsService>;
     let streamMixerServiceSpy: jasmine.SpyObj<StreamMixerService>;
-    let deviceTypeServiceSpy: jasmine.SpyObj<DeviceTypeService>;
 
     beforeEach(fakeAsync(() => {
         apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
@@ -91,8 +86,6 @@ describe('VideoCallService', () => {
 
         videoCallEventsServiceSpy = jasmine.createSpyObj<VideoCallEventsService>(['handleParticipantUpdated']);
 
-        deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['getBrowserName', 'isIOS']);
-
         pexipSpy = jasmine.createSpyObj<PexipClient>('PexipClient', [
             'connect',
             'makeCall',
@@ -123,8 +116,7 @@ describe('VideoCallService', () => {
             configServiceSpy,
             kinlyHeartbeatServiceSpy,
             videoCallEventsServiceSpy,
-            streamMixerServiceSpy,
-            deviceTypeServiceSpy
+            streamMixerServiceSpy
         );
 
         currentStreamSubject.next(mockCamStream);
@@ -437,62 +429,6 @@ describe('VideoCallService', () => {
 
             // Assert
             expect(setupClientSpy).toHaveBeenCalledTimes(1);
-        });
-
-        describe('set encoder', () => {
-            let enableH264Spy;
-            beforeEach(() => {
-                enableH264Spy = spyOn(service, 'enableH264');
-            });
-
-            for (const browser of [BROWSERS.FIREFOX]) {
-                it(`should disable h264 when the browser is ${browser}`, async () => {
-                    // Arrange
-                    deviceTypeServiceSpy.getBrowserName.and.returnValue(browser);
-
-                    // Act
-                    await service.setupClient();
-
-                    // Assert
-                    expect(enableH264Spy).toHaveBeenCalledOnceWith(false);
-                });
-            }
-
-            const h264SupportedBrowsers = [BROWSERS.CHROME, BROWSERS.MS_EDGE, BROWSERS.MS_EDGE_CHROMIUM, BROWSERS.SAMSUNG];
-            for (const browser of h264SupportedBrowsers) {
-                it(`should NOT disable h264 when the browser is ${browser}`, async () => {
-                    // Arrange
-                    deviceTypeServiceSpy.getBrowserName.and.returnValue(browser);
-
-                    // Act
-                    await service.setupClient();
-
-                    // Assert
-                    expect(enableH264Spy).not.toHaveBeenCalledWith(false);
-                });
-            }
-
-            it(`should disable h264 when the OS isIOS is true`, async () => {
-                // Arrange
-                deviceTypeServiceSpy.isIOS.and.returnValue(true);
-
-                // Act
-                await service.setupClient();
-
-                // Assert
-                expect(enableH264Spy).toHaveBeenCalledOnceWith(false);
-            });
-
-            it(`should NOT disable h264 when the OS isIOS is false`, async () => {
-                // Arrange
-                deviceTypeServiceSpy.isIOS.and.returnValue(false);
-
-                // Act
-                service.setupClient();
-
-                // Assert
-                expect(enableH264Spy).not.toHaveBeenCalled();
-            });
         });
 
         it('should update user_media_stream', fakeAsync(() => {
