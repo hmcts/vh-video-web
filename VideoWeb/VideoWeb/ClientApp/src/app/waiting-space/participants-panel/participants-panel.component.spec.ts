@@ -1177,7 +1177,7 @@ describe('ParticipantsPanelComponent', () => {
         a new participant has been added and the participants list refreshed
         */
 
-        const participants: ParticipantForUserResponse[] = [];
+        const participantsForHearing: ParticipantForUserResponse[] = [];
 
         const participant1 = new ParticipantForUserResponse({
             id: '1111-1111-1111-1111',
@@ -1216,11 +1216,11 @@ describe('ParticipantsPanelComponent', () => {
             linked_participants: []
         });
 
-        participants.push(participant1);
-        participants.push(participant2);
-        participants.push(participant3);
+        participantsForHearing.push(participant1);
+        participantsForHearing.push(participant2);
+        participantsForHearing.push(participant3);
 
-        const panelModelParticipants = new ParticipantPanelModelMapper().mapFromParticipantUserResponseArray(participants);
+        const panelModelParticipants = new ParticipantPanelModelMapper().mapFromParticipantUserResponseArray(participantsForHearing);
 
         component.participants = panelModelParticipants;
         component.nonEndpointParticipants = panelModelParticipants;
@@ -1268,14 +1268,14 @@ describe('ParticipantsPanelComponent', () => {
             linked_participants: []
         });
 
-        participants.push(newParticipant);
+        participantsForHearing.push(newParticipant);
 
-        let mappedParticipants = mapper.mapFromParticipantUserResponseArray(participants);
+        const mappedParticipants = mapper.mapFromParticipantUserResponseArray(participantsForHearing);
         participantPanelModelMapperSpy.mapFromParticipantUserResponseArray.and.returnValue(mappedParticipants);
 
         component.setupEventhubSubscribers();
 
-        let message = new ParticipantsUpdatedMessage(conferenceId, participants);
+        const message = new ParticipantsUpdatedMessage(conferenceId, participantsForHearing);
         getParticipantsUpdatedSubjectMock.next(message);
 
         const updatedParticipant2 = component.participants.find(p => p.id === participant2.interpreter_room.id);
