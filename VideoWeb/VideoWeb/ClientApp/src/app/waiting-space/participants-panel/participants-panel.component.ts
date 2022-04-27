@@ -101,9 +101,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                         }
                     }
 
-                    this.logger.debug(`${this.loggerPrefix} refreshing participants, current participant`, participant);
-                    this.logger.debug(`${this.loggerPrefix} refreshing participants, state participant`, participant);
-
                     participant.updateParticipant(
                         state[participant.id]?.isRemoteMuted,
                         false,
