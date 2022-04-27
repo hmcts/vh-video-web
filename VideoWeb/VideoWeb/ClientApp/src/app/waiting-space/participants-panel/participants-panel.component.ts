@@ -100,7 +100,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                             participant.assignPexipId(state[participant.id].pexipId);
                         }
                     }
-
                     participant.updateParticipant(
                         state[participant.id]?.isRemoteMuted,
                         false,
