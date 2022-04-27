@@ -1172,6 +1172,11 @@ describe('ParticipantsPanelComponent', () => {
     });
 
     it('should persist states for participant after new participant is added', () => {
+        /*
+        If the states have changed for an existing participant (muted, raised, spotlighted) these should persist after
+        a new participant has been added and the participants list refreshed
+        */
+
         const participants: ParticipantForUserResponse[] = [];
 
         const participant1 = new ParticipantForUserResponse({
