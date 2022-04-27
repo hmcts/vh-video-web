@@ -52,7 +52,8 @@ import {
     ParticipantForUserResponse,
     ParticipantResponse,
     ParticipantStatus,
-    Role
+    Role,
+    RoomSummaryResponse
 } from '../../services/clients/api-client';
 import { JudgeContextMenuComponent } from '../judge-context-menu/judge-context-menu.component';
 import { CaseTypeGroup } from '../models/case-type-group';
@@ -1168,6 +1169,125 @@ describe('ParticipantsPanelComponent', () => {
 
         expect(linkedParticipantPanelModel[0].displayName).toContain(panelMember1DisplayName);
         expect(linkedParticipantPanelModel[0].displayName).toContain(panelMember2DisplayName);
+    });
+
+    it('should persist states for participant after new participant is added', () => {
+        const participants: ParticipantForUserResponse[] = [];
+
+        const participant1 = new ParticipantForUserResponse({
+            id: '1111-1111-1111-1111',
+            status: ParticipantStatus.InHearing,
+            display_name: 'Manual Judge 26',
+            role: Role.Judge,
+            representee: null,
+            case_type_group: 'judge',
+            tiled_display_name: 'JUDGE; HEARTBEAT',
+            hearing_role: HearingRole.JUDGE,
+            linked_participants: []
+        });
+
+        const participant2 = new ParticipantForUserResponse({
+            id: '2222-2222-2222-2222',
+            status: ParticipantStatus.InHearing,
+            display_name: 'Manual PanelMember 31',
+            interpreter_room: new RoomSummaryResponse({ id: '11466', label: 'Panel Member1', locked: false }),
+            role: Role.JudicialOfficeHolder,
+            representee: null,
+            case_type_group: 'PanelMember',
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;Manual PanelMember 31;d48f753a-b061-4514-ac44-a297a50315bb',
+            hearing_role: HearingRole.PANEL_MEMBER,
+            linked_participants: []
+        });
+
+        const participant3 = new ParticipantForUserResponse({
+            id: '3333-3333-3333-3333',
+            status: ParticipantStatus.InHearing,
+            display_name: 'Manual Individual 25',
+            role: Role.Individual,
+            representee: null,
+            case_type_group: 'Applicant',
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;Manual Individual 25;92a3d792-dfad-474f-b587-b83766506ec6',
+            hearing_role: HearingRole.LITIGANT_IN_PERSON,
+            linked_participants: []
+        });
+
+        participants.push(participant1);
+        participants.push(participant2);
+        participants.push(participant3);
+
+        const panelModelParticipants = new ParticipantPanelModelMapper().mapFromParticipantUserResponseArray(participants);
+
+        component.participants = panelModelParticipants;
+        component.nonEndpointParticipants = panelModelParticipants;
+
+        const participantsToUpdateState: PanelModel[] = [];
+
+        participantsToUpdateState.push(component.participants.find(p => p.id === participant2.interpreter_room.id));
+        participantsToUpdateState.push(component.nonEndpointParticipants.find(p => p.id === participant2.interpreter_room.id));
+        participantsToUpdateState.push(component.participants.find(p => p.id === participant3.id));
+        participantsToUpdateState.push(component.nonEndpointParticipants.find(p => p.id === participant3.id));
+
+        participantsToUpdateState.forEach(participant => {
+            const newStates = {
+                isRemoteMuted: true,
+                handRaised: true,
+                spotlighted: true,
+                isLocalMicMuted: true,
+                isLocalCameraOff: true
+            };
+
+            let participantId = participant.id;
+            if (participant instanceof LinkedParticipantPanelModel) {
+                participantId = participant.participants[0].id;
+            }
+
+            participant.updateParticipant(
+                newStates.isRemoteMuted,
+                newStates.handRaised,
+                newStates.spotlighted,
+                participantId,
+                newStates.isLocalMicMuted,
+                newStates.isLocalCameraOff
+            );
+        });
+
+        const newParticipant = new ParticipantForUserResponse({
+            id: '4444-4444-4444-4444',
+            status: ParticipantStatus.NotSignedIn,
+            display_name: 'QL Test 1',
+            role: Role.QuickLinkParticipant,
+            representee: null,
+            case_type_group: null,
+            tiled_display_name: 'JUDGE; HEARTBEAT',
+            hearing_role: 'WITNESS;NO_HEARTBEAT;QL Test 1;ecdbb7ee-ba03-4a78-8225-fdfce2cb14d6',
+            linked_participants: []
+        });
+
+        participants.push(newParticipant);
+
+        let mappedParticipants = mapper.mapFromParticipantUserResponseArray(participants);
+        participantPanelModelMapperSpy.mapFromParticipantUserResponseArray.and.returnValue(mappedParticipants);
+
+        component.setupEventhubSubscribers();
+
+        let message = new ParticipantsUpdatedMessage(conferenceId, participants);
+        getParticipantsUpdatedSubjectMock.next(message);
+
+        const updatedParticipant2 = component.participants.find(p => p.id === participant2.interpreter_room.id);
+
+        expect(updatedParticipant2.isMicRemoteMuted()).toBe(true);
+        expect(updatedParticipant2.hasHandRaised()).toBe(true);
+        expect(updatedParticipant2.hasSpotlight()).toBe(true);
+        expect(updatedParticipant2.isLocalMicMuted()).toBe(true);
+        expect(updatedParticipant2.isLocalCameraOff()).toBe(true);
+
+        const updatedParticipant3 = component.participants.find(p => p.id === participant3.id);
+
+        expect(updatedParticipant3.isMicRemoteMuted()).toBe(true);
+        expect(updatedParticipant3.hasHandRaised()).toBe(true);
+        expect(updatedParticipant3.hasSpotlight()).toBe(true);
+        expect(updatedParticipant3.isLocalMicMuted()).toBe(true);
+        expect(updatedParticipant3.isLocalCameraOff()).toBe(true);
     });
 
     describe('isWitness', () => {

@@ -241,10 +241,29 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                     const mappedListLinkedParticipantPanelIndex = mappedList.findIndex(x => x.role === Role.JudicialOfficeHolder);
 
                     if (nonEndpointParticipantsLinkedParticipantPanelIndex > -1 && mappedListLinkedParticipantPanelIndex > -1) {
+                        let joh = this.nonEndpointParticipants[
+                            nonEndpointParticipantsLinkedParticipantPanelIndex
+                        ] as LinkedParticipantPanelModel;
+
+                        const isRemoteMuted = joh.isMicRemoteMuted();
+                        const handRaised = joh.hasHandRaised();
+                        const spotlighted = joh.hasSpotlight();
+                        const isLocalMicMuted = joh.isLocalMicMuted();
+                        const isLocalCameraOff = joh.isLocalCameraOff();
+
                         this.nonEndpointParticipants.splice(
                             nonEndpointParticipantsLinkedParticipantPanelIndex,
                             1,
                             mappedList[mappedListLinkedParticipantPanelIndex]
+                        );
+
+                        // Re-apply the state properties
+                        joh = this.nonEndpointParticipants[
+                            nonEndpointParticipantsLinkedParticipantPanelIndex
+                        ] as LinkedParticipantPanelModel;
+
+                        joh.participants.forEach(p =>
+                            joh.updateParticipant(isRemoteMuted, handRaised, spotlighted, p.id, isLocalMicMuted, isLocalCameraOff)
                         );
                     }
 
@@ -710,20 +729,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     private updateParticipants() {
         const combined = [...this.nonEndpointParticipants, ...this.endpointParticipants];
-
-        combined.forEach(c => {
-            const participant = this.participants.find(p => p.id === c.id);
-
-            c.updateParticipant(
-                participant.isMicRemoteMuted(),
-                participant.hasHandRaised(),
-                participant.hasSpotlight(),
-                participant.id,
-                participant.isLocalMicMuted(),
-                participant.isLocalCameraOff()
-            );
-        });
-
         this.getOrderedParticipants(combined);
     }
 
