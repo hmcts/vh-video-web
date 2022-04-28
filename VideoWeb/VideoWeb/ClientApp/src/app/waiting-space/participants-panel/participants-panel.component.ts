@@ -237,15 +237,9 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                     const mappedListLinkedParticipantPanelIndex = mappedList.findIndex(x => x.role === Role.JudicialOfficeHolder);
 
                     if (nonEndpointParticipantsLinkedParticipantPanelIndex > -1 && mappedListLinkedParticipantPanelIndex > -1) {
-                        let joh = this.nonEndpointParticipants[
+                        const linkedParticipant = this.nonEndpointParticipants[
                             nonEndpointParticipantsLinkedParticipantPanelIndex
                         ] as LinkedParticipantPanelModel;
-
-                        const isRemoteMuted = joh.isMicRemoteMuted();
-                        const handRaised = joh.hasHandRaised();
-                        const spotlighted = joh.hasSpotlight();
-                        const isLocalMicMuted = joh.isLocalMicMuted();
-                        const isLocalCameraOff = joh.isLocalCameraOff();
 
                         this.nonEndpointParticipants.splice(
                             nonEndpointParticipantsLinkedParticipantPanelIndex,
@@ -254,13 +248,25 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                         );
 
                         // Re-apply the state properties
-                        joh = this.nonEndpointParticipants[
+                        const linkedParticipantToUpdate = this.nonEndpointParticipants[
                             nonEndpointParticipantsLinkedParticipantPanelIndex
                         ] as LinkedParticipantPanelModel;
 
-                        joh.participants.forEach(p =>
-                            joh.updateParticipant(isRemoteMuted, handRaised, spotlighted, p.id, isLocalMicMuted, isLocalCameraOff)
-                        );
+                        linkedParticipantToUpdate.participants.forEach(p => {
+                            const linkedParticipantParticipant = linkedParticipant.participants.find(lp => lp.id === p.id);
+                            if (!linkedParticipantParticipant) {
+                                return;
+                            }
+
+                            linkedParticipantToUpdate.updateParticipant(
+                                linkedParticipant.isMicRemoteMuted(),
+                                linkedParticipant.hasHandRaised(),
+                                linkedParticipant.hasSpotlight(),
+                                linkedParticipantParticipant.id,
+                                linkedParticipantParticipant.isLocalMicMuted(),
+                                linkedParticipantParticipant.isLocalCameraOff()
+                            );
+                        });
                     }
 
                     this.updateParticipants();
