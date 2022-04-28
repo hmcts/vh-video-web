@@ -4,15 +4,18 @@
 
     <div class="button-row">
         <div class="small-button" data-prevent-double-click="true" (click)="muteAndLockAll()" appTooltip
-            [text]="'participants-panel.mute-tooltip' | translate" colour="grey">
+            [text]="'participants-panel.mute-tooltip' | translate" colour="grey" 
+            tabindex="0" (keyup.enter)="muteAndLockAll()">
             {{ 'participants-panel.mute-lock' | translate }}
         </div>
         <div class="small-button" data-prevent-double-click="true" (click)="unlockAll()" appTooltip
-            [text]="'participants-panel.unmute-tooltip' | translate" colour="grey">
+            [text]="'participants-panel.unmute-tooltip' | translate" colour="grey" 
+            tabindex="0" (keyup.enter)="unlockAll()">
             {{ 'participants-panel.unmute-lock' | translate }}
         </div>
         <div class="small-button" (click)="lowerAllHands()" appTooltip
-            [text]="'participants-panel.lower-hands-tooltip' | translate" colour="grey">
+            [text]="'participants-panel.lower-hands-tooltip' | translate" colour="grey" 
+            tabindex="0" (keyup.enter)="lowerAllHands()">
             {{ 'participants-panel.lower-hands' | translate }}
         </div>
     </div>
@@ -86,7 +89,8 @@
                     (participant.isLocalMicMuted() ? 'participants-panel.participant-muted' : 'participants-panel.mute-participant')
                     | translate
                 " colour="grey" icon="microphone" class="icon-button" [class]="{ red: participant.isLocalMicMuted() }"
-                                (click)="toggleMuteParticipant(participant); $event.stopPropagation()">
+                                (click)="toggleMuteParticipant(participant); $event.stopPropagation()" 
+                                tabindex="0" (keyup.enter)="toggleMuteParticipant(participant)">
                             </fa-icon>
                         </ng-container>
                     </div>
@@ -100,7 +104,8 @@
                         ('participants-panel.admit-participant' | translate : {role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase})
                     )
                 " colour="green" class="icon-button" icon="sign-in-alt"
-                                (click)="callParticipantIntoHearing(participant); $event.stopPropagation()">
+                                (click)="callParticipantIntoHearing(participant); $event.stopPropagation()" 
+                                tabindex="0" (keyup.enter)="callParticipantIntoHearing(participant)">
                             </fa-icon>
                             <div [id]="idPrefix + '-' + participant.id + '-transferring-in-text'"
                                 *ngIf="participant.transferringIn" class="yellow">{{ 'participants-panel.joining1' |
@@ -120,7 +125,8 @@
                     <div *ngIf="!participant.isJudge && participant.hasHandRaised()" class="icon-button" appTooltip
                         [text]="'participants-panel.lower-hand' | translate" colour="grey"
                         (click)="lowerParticipantHand(participant); $event.stopPropagation()">
-                        <fa-icon [icon]="['far', 'hand-paper']" class="yellow"></fa-icon>
+                        <fa-icon [icon]="['far', 'hand-paper']" class="yellow" 
+                        tabindex="0" (keyup.enter)="lowerParticipantHand(participant)"></fa-icon>
                     </div>
                 </div>
 
@@ -132,7 +138,8 @@
                 ? participant.displayName + ('participants-panel.remove-spotlight' | translate)
                 : participant.displayName + ('participants-panel.click-to-spotlight' | translate)
             " colour="blue" (click)="toggleSpotlightParticipant(participant); $event.stopPropagation()">
-                        <fa-icon icon="thumbtack" [class]="{ yellow: participant.hasSpotlight() }"></fa-icon>
+                        <fa-icon icon="thumbtack" [class]="{ yellow: participant.hasSpotlight() }" 
+                        tabindex="0" (keyup.enter)="toggleSpotlightParticipant(participant)"></fa-icon>
                     </div>               
                     <div *ngIf="isParticipantInHearing(participant) && participant.isLocalCameraOff()"
                         class="icon-button no-click">
