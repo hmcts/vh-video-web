@@ -267,6 +267,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                                 linkedParticipantParticipant.isLocalCameraOff()
                             );
                         });
+
+                        linkedParticipantToUpdate.assignPexipId(linkedParticipant.pexipId);
                     }
 
                     this.updateParticipants();

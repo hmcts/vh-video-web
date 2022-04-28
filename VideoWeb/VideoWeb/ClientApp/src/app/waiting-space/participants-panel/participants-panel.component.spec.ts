@@ -1233,6 +1233,9 @@ describe('ParticipantsPanelComponent', () => {
                 isLocalCameraOff: false
             };
 
+            const pexipId = Guid.create().toString();
+            p.assignPexipId(pexipId);
+
             p.updateParticipant(
                 initialStates.isRemoteMuted,
                 initialStates.handRaised,
@@ -1293,8 +1296,12 @@ describe('ParticipantsPanelComponent', () => {
 
         component.setupEventhubSubscribers();
 
+        const participantsBeforeUpdate = [...component.nonEndpointParticipants];
+
         const message = new ParticipantsUpdatedMessage(conferenceId, participantsForHearing);
         getParticipantsUpdatedSubjectMock.next(message);
+
+        const panelModelLinkedParticipant = participantsBeforeUpdate.find(p => p.id === participant2.interpreter_room.id);
 
         const updatedParticipant2 = component.participants.find(p => p.id === participant2.interpreter_room.id);
 
@@ -1303,6 +1310,7 @@ describe('ParticipantsPanelComponent', () => {
         expect(updatedParticipant2.hasSpotlight()).toBe(true);
         expect(updatedParticipant2.isLocalMicMuted()).toBe(true);
         expect(updatedParticipant2.isLocalCameraOff()).toBe(true);
+        expect(updatedParticipant2.pexipId).toEqual(panelModelLinkedParticipant.pexipId);
 
         const updatedParticipant3 = component.participants.find(p => p.id === participant3.id);
 
@@ -1380,6 +1388,9 @@ describe('ParticipantsPanelComponent', () => {
                 isLocalCameraOff: false
             };
 
+            const pexipId = Guid.create().toString();
+            p.assignPexipId(pexipId);
+
             p.updateParticipant(
                 initialStates.isRemoteMuted,
                 initialStates.handRaised,
@@ -1432,6 +1443,8 @@ describe('ParticipantsPanelComponent', () => {
 
         component.setupEventhubSubscribers();
 
+        const participantsBeforeUpdate = [...component.nonEndpointParticipants];
+
         const message = new ParticipantsUpdatedMessage(conferenceId, participantsForHearing);
         getParticipantsUpdatedSubjectMock.next(message);
 
@@ -1439,9 +1452,12 @@ describe('ParticipantsPanelComponent', () => {
             p => p.id === linkedParticipantInterpreterRoom.id
         ) as LinkedParticipantPanelModel;
 
+        const panelModelLinkedParticipant = participantsBeforeUpdate.find(p => p.id === linkedParticipantInterpreterRoom.id);
+
         expect(linkedParticipant.isMicRemoteMuted()).toBe(false);
         expect(linkedParticipant.hasHandRaised()).toBe(false);
         expect(linkedParticipant.hasSpotlight()).toBe(false);
+        expect(linkedParticipant.pexipId).toEqual(panelModelLinkedParticipant.pexipId);
 
         const updatedPanelMember1 = linkedParticipant.participants.find(p => p.id === panelMember1.id);
 
