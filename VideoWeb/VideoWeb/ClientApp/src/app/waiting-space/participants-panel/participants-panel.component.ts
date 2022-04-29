@@ -237,38 +237,9 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                     const mappedListLinkedParticipantPanelIndex = mappedList.findIndex(x => x.role === Role.JudicialOfficeHolder);
 
                     if (nonEndpointParticipantsLinkedParticipantPanelIndex > -1 && mappedListLinkedParticipantPanelIndex > -1) {
-                        const linkedParticipant = this.nonEndpointParticipants[
-                            nonEndpointParticipantsLinkedParticipantPanelIndex
-                        ] as LinkedParticipantPanelModel;
-
-                        this.nonEndpointParticipants.splice(
-                            nonEndpointParticipantsLinkedParticipantPanelIndex,
-                            1,
-                            mappedList[mappedListLinkedParticipantPanelIndex]
-                        );
-
-                        // Re-apply the state properties
-                        const linkedParticipantToUpdate = this.nonEndpointParticipants[
-                            nonEndpointParticipantsLinkedParticipantPanelIndex
-                        ] as LinkedParticipantPanelModel;
-
-                        linkedParticipantToUpdate.participants.forEach(p => {
-                            const linkedParticipantParticipant = linkedParticipant.participants.find(lp => lp.id === p.id);
-                            if (!linkedParticipantParticipant) {
-                                return;
-                            }
-
-                            linkedParticipantToUpdate.updateParticipant(
-                                linkedParticipant.isMicRemoteMuted(),
-                                linkedParticipant.hasHandRaised(),
-                                linkedParticipant.hasSpotlight(),
-                                linkedParticipantParticipant.id,
-                                linkedParticipantParticipant.isLocalMicMuted(),
-                                linkedParticipantParticipant.isLocalCameraOff()
-                            );
-                        });
-
-                        linkedParticipantToUpdate.assignPexipId(linkedParticipant.pexipId);
+                        const index = nonEndpointParticipantsLinkedParticipantPanelIndex;
+                        const newParticipant = mappedList[mappedListLinkedParticipantPanelIndex];
+                        this.replaceNonEndpointLinkedParticipant(index, newParticipant);
                     }
 
                     this.updateParticipants();
@@ -771,5 +742,30 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         });
 
         this.getOrderedParticipants(combined);
+    }
+
+    private replaceNonEndpointLinkedParticipant(nonEndpointParticipantsIndex: number, newParticipant: PanelModel) {
+        const linkedParticipant = this.nonEndpointParticipants[nonEndpointParticipantsIndex] as LinkedParticipantPanelModel;
+
+        this.nonEndpointParticipants.splice(nonEndpointParticipantsIndex, 1, newParticipant);
+
+        // Re-apply the state properties
+        const linkedParticipantToUpdate = this.nonEndpointParticipants[nonEndpointParticipantsIndex] as LinkedParticipantPanelModel;
+        linkedParticipantToUpdate.participants.forEach(p => {
+            const linkedParticipantParticipant = linkedParticipant.participants.find(lp => lp.id === p.id);
+            if (!linkedParticipantParticipant) {
+                return;
+            }
+
+            linkedParticipantToUpdate.updateParticipant(
+                linkedParticipant.isMicRemoteMuted(),
+                linkedParticipant.hasHandRaised(),
+                linkedParticipant.hasSpotlight(),
+                linkedParticipantParticipant.id,
+                linkedParticipantParticipant.isLocalMicMuted(),
+                linkedParticipantParticipant.isLocalCameraOff()
+            );
+        });
+        linkedParticipantToUpdate.assignPexipId(linkedParticipant.pexipId);
     }
 }
