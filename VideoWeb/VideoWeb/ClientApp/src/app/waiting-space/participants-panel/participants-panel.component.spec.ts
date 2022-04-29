@@ -52,7 +52,8 @@ import {
     ParticipantForUserResponse,
     ParticipantResponse,
     ParticipantStatus,
-    Role
+    Role,
+    RoomSummaryResponse
 } from '../../services/clients/api-client';
 import { JudgeContextMenuComponent } from '../judge-context-menu/judge-context-menu.component';
 import { CaseTypeGroup } from '../models/case-type-group';
@@ -1168,6 +1169,319 @@ describe('ParticipantsPanelComponent', () => {
 
         expect(linkedParticipantPanelModel[0].displayName).toContain(panelMember1DisplayName);
         expect(linkedParticipantPanelModel[0].displayName).toContain(panelMember2DisplayName);
+    });
+
+    it('should persist states for participant after new participant is added', () => {
+        /*
+        If the states have changed for an existing participant (muted, raised, spotlighted) these should persist after
+        a new participant has been added and the participants list refreshed
+        */
+
+        const participantsForHearing: ParticipantForUserResponse[] = [];
+
+        const participant1 = new ParticipantForUserResponse({
+            id: '1111-1111-1111-1111',
+            status: ParticipantStatus.InHearing,
+            display_name: 'Manual Judge 26',
+            role: Role.Judge,
+            representee: null,
+            case_type_group: 'judge',
+            tiled_display_name: 'JUDGE; HEARTBEAT',
+            hearing_role: HearingRole.JUDGE,
+            linked_participants: []
+        });
+
+        const participant2 = new ParticipantForUserResponse({
+            id: '2222-2222-2222-2222',
+            status: ParticipantStatus.InHearing,
+            display_name: 'Manual PanelMember 31',
+            interpreter_room: new RoomSummaryResponse({ id: '11466', label: 'Panel Member1', locked: false }),
+            role: Role.JudicialOfficeHolder,
+            representee: null,
+            case_type_group: 'PanelMember',
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;Manual PanelMember 31;d48f753a-b061-4514-ac44-a297a50315bb',
+            hearing_role: HearingRole.PANEL_MEMBER,
+            linked_participants: []
+        });
+
+        const participant3 = new ParticipantForUserResponse({
+            id: '3333-3333-3333-3333',
+            status: ParticipantStatus.InHearing,
+            display_name: 'Manual Individual 25',
+            role: Role.Individual,
+            representee: null,
+            case_type_group: 'Applicant',
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;Manual Individual 25;92a3d792-dfad-474f-b587-b83766506ec6',
+            hearing_role: HearingRole.LITIGANT_IN_PERSON,
+            linked_participants: []
+        });
+
+        participantsForHearing.push(participant1);
+        participantsForHearing.push(participant2);
+        participantsForHearing.push(participant3);
+
+        const panelModelParticipants = new ParticipantPanelModelMapper().mapFromParticipantUserResponseArray(participantsForHearing);
+        component.nonEndpointParticipants = panelModelParticipants;
+
+        // Set initial states
+        component.nonEndpointParticipants.forEach(p => {
+            const initialStates = {
+                isRemoteMuted: false,
+                handRaised: false,
+                spotlighted: false,
+                isLocalMicMuted: false,
+                isLocalCameraOff: false
+            };
+
+            const pexipId = Guid.create().toString();
+            p.assignPexipId(pexipId);
+
+            p.updateParticipant(
+                initialStates.isRemoteMuted,
+                initialStates.handRaised,
+                initialStates.spotlighted,
+                null,
+                initialStates.isLocalMicMuted,
+                initialStates.isLocalCameraOff
+            );
+        });
+
+        const participantsToUpdateState: PanelModel[] = [];
+        participantsToUpdateState.push(component.nonEndpointParticipants.find(p => p.id === participant2.interpreter_room.id));
+        participantsToUpdateState.push(component.nonEndpointParticipants.find(p => p.id === participant3.id));
+
+        // Update the states
+        participantsToUpdateState.forEach(participant => {
+            const newStates = {
+                isRemoteMuted: true,
+                handRaised: true,
+                spotlighted: true,
+                isLocalMicMuted: true,
+                isLocalCameraOff: true
+            };
+
+            let participantId = participant.id;
+            if (participant instanceof LinkedParticipantPanelModel) {
+                participantId = participant.participants[0].id;
+            }
+
+            participant.updateParticipant(
+                newStates.isRemoteMuted,
+                newStates.handRaised,
+                newStates.spotlighted,
+                participantId,
+                newStates.isLocalMicMuted,
+                newStates.isLocalCameraOff
+            );
+        });
+
+        component.participants = [...component.nonEndpointParticipants];
+
+        const newParticipant = new ParticipantForUserResponse({
+            id: '4444-4444-4444-4444',
+            status: ParticipantStatus.NotSignedIn,
+            display_name: 'QL Test 1',
+            role: Role.QuickLinkParticipant,
+            representee: null,
+            case_type_group: null,
+            tiled_display_name: 'JUDGE; HEARTBEAT',
+            hearing_role: 'WITNESS;NO_HEARTBEAT;QL Test 1;ecdbb7ee-ba03-4a78-8225-fdfce2cb14d6',
+            linked_participants: []
+        });
+
+        participantsForHearing.push(newParticipant);
+
+        const mappedParticipants = mapper.mapFromParticipantUserResponseArray(participantsForHearing);
+        participantPanelModelMapperSpy.mapFromParticipantUserResponseArray.and.returnValue(mappedParticipants);
+
+        component.setupEventhubSubscribers();
+
+        const participantsBeforeUpdate = [...component.nonEndpointParticipants];
+
+        const message = new ParticipantsUpdatedMessage(conferenceId, participantsForHearing);
+        getParticipantsUpdatedSubjectMock.next(message);
+
+        const panelModelLinkedParticipant = participantsBeforeUpdate.find(p => p.id === participant2.interpreter_room.id);
+
+        const updatedParticipant2 = component.participants.find(p => p.id === participant2.interpreter_room.id);
+
+        expect(updatedParticipant2.isMicRemoteMuted()).toBe(true);
+        expect(updatedParticipant2.hasHandRaised()).toBe(true);
+        expect(updatedParticipant2.hasSpotlight()).toBe(true);
+        expect(updatedParticipant2.isLocalMicMuted()).toBe(true);
+        expect(updatedParticipant2.isLocalCameraOff()).toBe(true);
+        expect(updatedParticipant2.pexipId).toEqual(panelModelLinkedParticipant.pexipId);
+
+        const updatedParticipant3 = component.participants.find(p => p.id === participant3.id);
+
+        expect(updatedParticipant3.isMicRemoteMuted()).toBe(true);
+        expect(updatedParticipant3.hasHandRaised()).toBe(true);
+        expect(updatedParticipant3.hasSpotlight()).toBe(true);
+        expect(updatedParticipant3.isLocalMicMuted()).toBe(true);
+        expect(updatedParticipant3.isLocalCameraOff()).toBe(true);
+    });
+
+    it('should persist states for multiple panel members after new participant is added', () => {
+        /*
+        If the states have changed for an existing participant (muted, raised, spotlighted) these should persist after
+        a new participant has been added and the participants list refreshed.
+
+        In this scenario, there are 2 panel members. Panel Member 1 turns off their audio and video, Panel Member 2 does not
+        */
+
+        const participantsForHearing: ParticipantForUserResponse[] = [];
+
+        const judge = new ParticipantForUserResponse({
+            id: '1111-1111-1111-1111',
+            status: ParticipantStatus.InHearing,
+            display_name: 'Manual Judge 26',
+            role: Role.Judge,
+            representee: null,
+            case_type_group: 'judge',
+            tiled_display_name: 'JUDGE; HEARTBEAT',
+            hearing_role: HearingRole.JUDGE,
+            linked_participants: []
+        });
+
+        const linkedParticipantInterpreterRoom = new RoomSummaryResponse({ id: '11466', label: 'Panel Member1', locked: false });
+
+        const panelMember1 = new ParticipantForUserResponse({
+            id: '2222-2222-2222-2222',
+            status: ParticipantStatus.InHearing,
+            display_name: 'Manual PanelMember 31',
+            interpreter_room: linkedParticipantInterpreterRoom,
+            role: Role.JudicialOfficeHolder,
+            representee: null,
+            case_type_group: 'PanelMember',
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;Manual PanelMember 31;d48f753a-b061-4514-ac44-a297a50315bb',
+            hearing_role: HearingRole.PANEL_MEMBER,
+            linked_participants: []
+        });
+
+        const panelMember2 = new ParticipantForUserResponse({
+            id: '3333-3333-3333-3333',
+            status: ParticipantStatus.InHearing,
+            display_name: 'Manual PanelMember 32',
+            interpreter_room: linkedParticipantInterpreterRoom,
+            role: Role.JudicialOfficeHolder,
+            representee: null,
+            case_type_group: 'PanelMember',
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;Manual PanelMember 31;d48f753a-b061-4514-ac44-a297a50315bb',
+            hearing_role: HearingRole.PANEL_MEMBER,
+            linked_participants: []
+        });
+
+        participantsForHearing.push(judge);
+        participantsForHearing.push(panelMember1);
+        participantsForHearing.push(panelMember2);
+
+        const panelModelParticipants = new ParticipantPanelModelMapper().mapFromParticipantUserResponseArray(participantsForHearing);
+        component.nonEndpointParticipants = panelModelParticipants;
+
+        // Set initial states
+        component.nonEndpointParticipants.forEach(p => {
+            const initialStates = {
+                isRemoteMuted: false,
+                handRaised: false,
+                spotlighted: false,
+                isLocalMicMuted: false,
+                isLocalCameraOff: false
+            };
+
+            const pexipId = Guid.create().toString();
+            p.assignPexipId(pexipId);
+
+            p.updateParticipant(
+                initialStates.isRemoteMuted,
+                initialStates.handRaised,
+                initialStates.spotlighted,
+                null,
+                initialStates.isLocalMicMuted,
+                initialStates.isLocalCameraOff
+            );
+        });
+
+        const participantsToUpdateState: PanelModel[] = [];
+        participantsToUpdateState.push(component.nonEndpointParticipants.find(p => p.id === linkedParticipantInterpreterRoom.id));
+
+        // Update the states - panel member 1 turns off their audio and video
+        participantsToUpdateState.forEach(participant => {
+            const newStates = {
+                isLocalMicMuted: true,
+                isLocalCameraOff: true
+            };
+
+            participant.updateParticipant(
+                participant.isMicRemoteMuted(),
+                participant.hasHandRaised(),
+                participant.hasSpotlight(),
+                panelMember1.id,
+                newStates.isLocalMicMuted,
+                newStates.isLocalCameraOff
+            );
+        });
+
+        component.participants = [...component.nonEndpointParticipants];
+
+        const newParticipant = new ParticipantForUserResponse({
+            id: '4444-4444-4444-4444',
+            status: ParticipantStatus.InHearing,
+            display_name: 'Manual PanelMember 33',
+            interpreter_room: linkedParticipantInterpreterRoom,
+            role: Role.JudicialOfficeHolder,
+            representee: null,
+            case_type_group: 'PanelMember',
+            tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;Manual PanelMember 31;d48f753a-b061-4514-ac44-a297a50315bb',
+            hearing_role: HearingRole.PANEL_MEMBER,
+            linked_participants: []
+        });
+
+        participantsForHearing.push(newParticipant);
+
+        const mappedParticipants = mapper.mapFromParticipantUserResponseArray(participantsForHearing);
+        participantPanelModelMapperSpy.mapFromParticipantUserResponseArray.and.returnValue(mappedParticipants);
+
+        component.setupEventhubSubscribers();
+
+        const participantsBeforeUpdate = [...component.nonEndpointParticipants];
+
+        const message = new ParticipantsUpdatedMessage(conferenceId, participantsForHearing);
+        getParticipantsUpdatedSubjectMock.next(message);
+
+        const linkedParticipant = component.participants.find(
+            p => p.id === linkedParticipantInterpreterRoom.id
+        ) as LinkedParticipantPanelModel;
+
+        const panelModelLinkedParticipant = participantsBeforeUpdate.find(p => p.id === linkedParticipantInterpreterRoom.id);
+
+        expect(linkedParticipant.isMicRemoteMuted()).toBe(false);
+        expect(linkedParticipant.hasHandRaised()).toBe(false);
+        expect(linkedParticipant.hasSpotlight()).toBe(false);
+        expect(linkedParticipant.pexipId).toEqual(panelModelLinkedParticipant.pexipId);
+
+        const updatedPanelMember1 = linkedParticipant.participants.find(p => p.id === panelMember1.id);
+
+        expect(updatedPanelMember1.isMicRemoteMuted()).toBe(false);
+        expect(updatedPanelMember1.hasHandRaised()).toBe(false);
+        expect(updatedPanelMember1.hasSpotlight()).toBe(false);
+        expect(updatedPanelMember1.isLocalMicMuted()).toBe(true);
+        expect(updatedPanelMember1.isLocalCameraOff()).toBe(true);
+
+        const updatedPanelMember2 = linkedParticipant.participants.find(p => p.id === panelMember2.id);
+
+        expect(updatedPanelMember2.isMicRemoteMuted()).toBe(false);
+        expect(updatedPanelMember2.hasHandRaised()).toBe(false);
+        expect(updatedPanelMember2.hasSpotlight()).toBe(false);
+        expect(updatedPanelMember2.isLocalMicMuted()).toBe(false);
+        expect(updatedPanelMember2.isLocalCameraOff()).toBe(false);
+
+        const updatedPanelMember3 = linkedParticipant.participants.find(p => p.id === newParticipant.id);
+
+        expect(updatedPanelMember3.isMicRemoteMuted()).toBe(undefined);
+        expect(updatedPanelMember3.hasHandRaised()).toBe(undefined);
+        expect(updatedPanelMember3.hasSpotlight()).toBe(undefined);
+        expect(updatedPanelMember3.isLocalMicMuted()).toBe(undefined);
+        expect(updatedPanelMember3.isLocalCameraOff()).toBe(undefined);
     });
 
     describe('isWitness', () => {
