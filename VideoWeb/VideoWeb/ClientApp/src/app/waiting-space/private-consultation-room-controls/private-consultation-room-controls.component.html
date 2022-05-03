@@ -220,7 +220,7 @@
                         disableChildTooltip
                         appTooltip
                         [text]="'private-consultation-room-controls.share-video-evidence' | translate" colour="grey">
-                        <span class="action"><fa-icon [icon]="['far', 'play-circle']" aria-hidden="true"></fa-icon>
+                        <span class="action"><fa-icon [icon]="['far', 'play-circle']" aria-hidden="true" tabindex="0" (keyup.enter)="startScreenShareWithMicrophone()"></fa-icon>
                             <span style="margin-left:4px;">{{ 'private-consultation-room-controls.share-video-evidence' | translate }}</span>
                         </span>
                     </div>
@@ -234,7 +234,7 @@
                     <div id="shareDropdown-startDocumentSharing" (click)="startScreenShare()"
                         appTooltip
                         [text]="'private-consultation-room-controls.share-document-evidence' | translate" colour="grey">
-                        <span class="action"><fa-icon icon='file-alt' tabindex="0" (keyup.enter)="startScreenShare()" ></fa-icon>
+                        <span class="action"><fa-icon icon='file-alt' tabindex="0" (keyup.enter)="startScreenShare()"></fa-icon>
                             <span style="margin-left:4px;">{{ 'private-consultation-room-controls.share-document-evidence' | translate }}</span>
                         </span>
                     </div>
