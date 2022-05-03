@@ -1,4 +1,6 @@
-<img src="assets/images/elipses.png" class="panel-icon" (click)="toggleDropdown()" [attr.alt]="'judge-context-menu.context-menu-icon' | translate" />
+<img src="assets/images/elipses.png" class="panel-icon" (click)="toggleDropdown()" 
+  [attr.alt]="'judge-context-menu.context-menu-icon' | translate"
+  tabindex="0" (keyup.enter)="toggleDropdown()" />
 <div [hidden]="!isDroppedDown" class="dropdown-content" [id]="idPrefix + '-dropdown'">
   <p class="govuk-body-s dropdown-header">
     <span [id]="idPrefix + '-display-name'">
@@ -22,17 +24,27 @@
     </span>
   </p>
   <hr />
-  <a *ngIf="participant.isInHearing()" (click)="toggleMuteParticipant()" [id]="idPrefix + '-toggle-mute'">{{ getMutedStatusText() }}</a>
-  <a *ngIf="canCallParticipantIntoHearing()" (click)="callParticipantIntoHearing()" [id]="idPrefix + '-call'">
+  <a *ngIf="participant.isInHearing()" (click)="toggleMuteParticipant()" 
+    (keyup.enter)="toggleMuteParticipant()" tabindex="0"
+    [id]="idPrefix + '-toggle-mute'">{{ getMutedStatusText() }}</a>
+  <a *ngIf="canCallParticipantIntoHearing()" 
+    (keyup.enter)="callParticipantIntoHearing()" tabindex="0"
+    (click)="callParticipantIntoHearing()" [id]="idPrefix + '-call'">
     <ng-container
       *ngIf="isWitness; then isWitnessCallContent; else isNotWitnessCallContent">
     </ng-container>
   </a>
-  <a *ngIf="canDismissParticipantFromHearing()" (click)="dismissParticipantFromHearing()" [id]="idPrefix + '-dismiss'">
+  <a *ngIf="canDismissParticipantFromHearing()" 
+    (keyup.enter)="dismissParticipantFromHearing()" tabindex="0"
+    (click)="dismissParticipantFromHearing()" [id]="idPrefix + '-dismiss'">
     {{'judge-context-menu.dismiss-participant' | translate: { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase} }}
   </a>
-  <a *ngIf="!participant.isJudge && participant.hasHandRaised() && participant.isInHearing()" (click)="lowerParticipantHand()" [id]="idPrefix + '-lower-hand'">{{'judge-context-menu.lower-hand' | translate}}</a>
-  <a *ngIf="participant.isInHearing() && !participant.isLocalCameraOff()" (click)="toggleSpotlightParticipant()" [id]="idPrefix + '-toggle-spotlight'">{{ getPinStatusText() }}</a>
+  <a *ngIf="!participant.isJudge && participant.hasHandRaised() && participant.isInHearing()" 
+    (keyup.enter)="lowerParticipantHand()" tabindex="0"
+    (click)="lowerParticipantHand()" [id]="idPrefix + '-lower-hand'">{{'judge-context-menu.lower-hand' | translate}}</a>
+  <a *ngIf="participant.isInHearing() && !participant.isLocalCameraOff()" 
+    (keyup.enter)="toggleSpotlightParticipant()" tabindex="0"
+    (click)="toggleSpotlightParticipant()" [id]="idPrefix + '-toggle-spotlight'">{{ getPinStatusText() }}</a>
 </div>
 
 <ng-template #isWitnessCallContent>

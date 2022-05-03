@@ -84,13 +84,14 @@
                                 class="panel-icon" [attr.alt]="
                     (participant.isMicRemoteMuted() ? 'participants-panel.microphone-muted-icon' : 'participants-panel.microphone-on-icon')
                     | translate
-                " (click)="toggleMuteParticipant(participant); $event.stopPropagation()" />
+                " (click)="toggleMuteParticipant(participant); $event.stopPropagation()" tabindex="0" 
+                  (keyup.enter)="toggleMuteParticipant(participant); $event.stopPropagation()" />
                             <fa-icon *ngIf="!participant.isMicRemoteMuted()" appTooltip [text]="
                     (participant.isLocalMicMuted() ? 'participants-panel.participant-muted' : 'participants-panel.mute-participant')
                     | translate
                 " colour="grey" icon="microphone" class="icon-button" [class]="{ red: participant.isLocalMicMuted() }"
                                 (click)="toggleMuteParticipant(participant); $event.stopPropagation()" 
-                                tabindex="0" (keyup.enter)="toggleMuteParticipant(participant)">
+                                tabindex="0" (keyup.enter)="toggleMuteParticipant(participant); $event.stopPropagation()">
                             </fa-icon>
                         </ng-container>
                     </div>
