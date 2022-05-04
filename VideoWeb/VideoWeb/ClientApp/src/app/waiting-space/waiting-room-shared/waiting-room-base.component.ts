@@ -930,7 +930,6 @@ export abstract class WaitingRoomBaseDirective {
 
     shouldUnmuteForHearing(): boolean {
         return (
-
             this.participant.status === ParticipantStatus.InHearing &&
             this.hearing.status === ConferenceStatus.InSession
         );
