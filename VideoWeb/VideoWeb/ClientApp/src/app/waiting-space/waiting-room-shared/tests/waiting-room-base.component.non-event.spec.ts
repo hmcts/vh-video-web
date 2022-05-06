@@ -707,7 +707,7 @@ describe('WaitingRoomComponent message and clock', () => {
         component.participant.status = ParticipantStatus.InHearing;
         spyOnProperty(component.hearing, 'status', 'get').and.returnValue(ConferenceStatus.InSession);
 
-        expect(component.shouldMuteHearing()).toBe(true);
+        expect(component.shouldMuteHearing()).toBe(false);
     });
 
     it('should not mute video stream when participant is in hearing and countdown is complete', () => {
