@@ -36,6 +36,7 @@ namespace VideoWeb.Mappings
                 Role = participant.Role,
                 Status = participant.ParticipantStatus,
                 LinkedParticipants = participant.LinkedParticipants.Select(x => linkedParticipantMapper.Map(x)).ToList(),
+                UserName = participant.Username
             };
 
             response.TiledDisplayName = ParticipantTilePositionHelper.GetTiledDisplayName(response);
