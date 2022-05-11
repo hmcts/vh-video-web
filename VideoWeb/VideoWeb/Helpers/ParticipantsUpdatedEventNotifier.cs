@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -25,8 +26,8 @@ namespace VideoWeb.Helpers
             _mapperFactory = mapperFactory;
             _logger = logger;
         }
-
-        public Task PushParticipantsUpdatedEvent(Conference conference)
+        
+        public Task PushParticipantsUpdatedEvent(Conference conference, IList<Participant> participantsToNotify)
         {
             var participantsToResponseMapper = _mapperFactory.Get<Participant, Conference, ParticipantResponse>();
             CallbackEvent callbackEvent = new CallbackEvent()
@@ -34,7 +35,7 @@ namespace VideoWeb.Helpers
                 ConferenceId = conference.Id,
                 EventType = EventType.ParticipantsUpdated,
                 TimeStampUtc = DateTime.UtcNow,
-                Participants = conference.Participants.Select(participant => participantsToResponseMapper.Map(participant, conference)).ToList()
+                Participants = (participantsToNotify ?? conference.Participants).Select(participant => participantsToResponseMapper.Map(participant, conference)).ToList()
             };
 
             _logger.LogTrace($"Publishing event to UI: {JsonSerializer.Serialize(callbackEvent)}");

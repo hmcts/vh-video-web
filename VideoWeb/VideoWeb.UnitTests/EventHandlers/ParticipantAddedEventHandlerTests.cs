@@ -10,6 +10,7 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Models;
+using VideoWeb.Mappings;
 
 namespace VideoWeb.UnitTests.EventHandlers
 {
@@ -26,11 +27,12 @@ namespace VideoWeb.UnitTests.EventHandlers
             var conference = TestConference;
 
             var participantCount = conference.Participants.Count;
-            var participants = new List<ParticipantResponse>() {
-                new ParticipantResponse(),
-                new ParticipantResponse(),
-                new ParticipantResponse()
-            };
+            var participants = conference.Participants
+                .Select(p => new ParticipantResponse
+                {
+                    UserName = p.Username
+                })
+                .ToList();
 
             var callbackEvent = new CallbackEvent
             {

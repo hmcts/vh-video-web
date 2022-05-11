@@ -140,11 +140,11 @@ namespace VideoWeb.EventHub.Handlers.Core
 
         protected async Task PublishParticipantsUpdatedMessage(List<ParticipantResponse> participants)
         {
-            foreach (var participant in SourceConference.Participants)
+            foreach (var participant in participants)
             {
-                await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
+                await HubContext.Clients.Group(participant.UserName.ToLowerInvariant())
                     .ParticipantsUpdatedMessage(SourceConference.Id, participants);
-                Logger.LogTrace("{UserName} | Role: {Role}", participant.Username,
+                Logger.LogTrace("{UserName} | Role: {Role}", participant.UserName,
                     participant.Role);
             }
 

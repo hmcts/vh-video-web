@@ -92,6 +92,8 @@ namespace VideoWeb.Controllers
                     conference.AddParticipant(mappedParticipant);
                 });
 
+                var removedParticipants = conference.Participants.Where(p => request.RemovedParticipants.Contains(p.Id)).ToList();
+                
                 request.RemovedParticipants.ToList().ForEach(referenceId =>
                 {
                     _logger.LogTrace($"Removing participant from conference. ReferenceID: {referenceId}");
@@ -109,7 +111,13 @@ namespace VideoWeb.Controllers
                 _logger.LogTrace($"Updating conference in cache: {JsonSerializer.Serialize(conference)}");
                 await _conferenceCache.UpdateConferenceAsync(conference);
 
-                await _participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference);
+                var participantsToNotify = conference.Participants.Union(removedParticipants).ToList();
+                if (!participantsToNotify.Any())
+                {
+                    participantsToNotify = null;
+                }
+                
+                await _participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference, participantsToNotify);
                 _logger.LogDebug($"ParticipantsUpdated finished. ConferenceId: {conferenceId}");
                 return NoContent();
             }
