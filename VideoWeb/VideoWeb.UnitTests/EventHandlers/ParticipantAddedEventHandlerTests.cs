@@ -40,6 +40,7 @@ namespace VideoWeb.UnitTests.EventHandlers
                 EventId = Guid.NewGuid().ToString(),
                 ConferenceId = conference.Id,
                 Participants = participants,
+                ParticipantsToNotify = participants,
                 TimeStampUtc = DateTime.UtcNow
             };
 

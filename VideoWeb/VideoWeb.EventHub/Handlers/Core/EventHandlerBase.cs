@@ -138,18 +138,18 @@ namespace VideoWeb.EventHub.Handlers.Core
             Logger.LogTrace("RoomTransfer sent to group: {Group}", Hub.EventHub.VhOfficersGroupName);
         }
 
-        protected async Task PublishParticipantsUpdatedMessage(List<ParticipantResponse> participants)
+        protected async Task PublishParticipantsUpdatedMessage(List<ParticipantResponse> updatedParticipants, List<ParticipantResponse> participantsToNotify)
         {
-            foreach (var participant in participants)
+            foreach (var participant in participantsToNotify)
             {
                 await HubContext.Clients.Group(participant.UserName.ToLowerInvariant())
-                    .ParticipantsUpdatedMessage(SourceConference.Id, participants);
+                    .ParticipantsUpdatedMessage(SourceConference.Id, updatedParticipants);
                 Logger.LogTrace("{UserName} | Role: {Role}", participant.UserName,
                     participant.Role);
             }
 
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
-                .ParticipantsUpdatedMessage(SourceConference.Id, participants);
+                .ParticipantsUpdatedMessage(SourceConference.Id, updatedParticipants);
         }
 
         protected async Task PublishNewConferenceAddedMessage(Guid conferenceId)
