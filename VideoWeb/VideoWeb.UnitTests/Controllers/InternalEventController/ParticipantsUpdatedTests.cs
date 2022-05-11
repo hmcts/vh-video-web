@@ -94,7 +94,7 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventControllerTests
             // Assert
             result.Should().BeOfType<NoContentResult>();
 
-            _mocker.Mock<IParticipantsUpdatedEventNotifier>().Verify(x => x.PushParticipantsUpdatedEvent(mockConference.Object, null), Times.Once);
+            _mocker.Mock<IParticipantsUpdatedEventNotifier>().Verify(x => x.PushParticipantsUpdatedEvent(mockConference.Object, mockConference.Object.Participants), Times.Once);
         }
     }
 }

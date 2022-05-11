@@ -139,7 +139,7 @@ namespace VideoWeb.Controllers
             _logger.LogTrace($"Updating conference in cache: {JsonSerializer.Serialize(conference)}");
             await _conferenceCache.UpdateConferenceAsync(conference);
 
-            await _participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference, null);
+            await _participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference, conference.Participants);
         }
     }
 }

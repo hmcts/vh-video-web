@@ -112,11 +112,7 @@ namespace VideoWeb.Controllers
                 await _conferenceCache.UpdateConferenceAsync(conference);
 
                 var participantsToNotify = conference.Participants.Union(removedParticipants).ToList();
-                if (!participantsToNotify.Any())
-                {
-                    participantsToNotify = null;
-                }
-                
+
                 await _participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference, participantsToNotify);
                 _logger.LogDebug($"ParticipantsUpdated finished. ConferenceId: {conferenceId}");
                 return NoContent();
