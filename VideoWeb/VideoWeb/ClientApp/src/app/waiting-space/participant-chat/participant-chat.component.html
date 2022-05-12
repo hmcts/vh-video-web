@@ -1,6 +1,6 @@
 <div class="judge-chat-window" [ngClass]="alwaysOn ? 'chat-window-always-on govuk-!-margin-left-1' : 'govuk-!-margin-right-3'">
-  <div class="chat-header" (click)="toggleChatDisplay()">
-    <span class="govuk-heading-s govuk-!-padding-3 chat-header-text"
+  <div class="chat-header" (click)="toggleChatDisplay()" tabindex="0" (keyup.enter)="toggleChatDisplay()" [attr.aria-expanded]="showChat" role="button">
+    <label for="open_chat_window " class="govuk-heading-s govuk-!-padding-3 chat-header-text"
       >{{'participant-chat.message-vho' | translate}}
       <span
         *ngIf="!showChat && unreadMessageCount"
@@ -17,7 +17,7 @@
           [attr.alt]="'participant-chat.close' | translate"
         />
       </span>
-    </span>
+    </label>
   </div>
   <div [hidden]="!showChat">
     <div #content id="chat-list" class="govuk-!-padding-2 govuk-!-padding-left-4 chat-window" (scroll)="onScroll()">
