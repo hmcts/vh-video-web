@@ -772,7 +772,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     private removeParticipantsNotInConference(conferenceParticipants: PanelModel[]) {
         this.nonEndpointParticipants.forEach((participant, index) => {
-            const participantInConference = conferenceParticipants.find(p => p.id == participant.id);
+            const participantInConference = conferenceParticipants.find(p => p.id === participant.id);
             if (!participantInConference) {
                 this.nonEndpointParticipants.splice(index, 1);
             }
