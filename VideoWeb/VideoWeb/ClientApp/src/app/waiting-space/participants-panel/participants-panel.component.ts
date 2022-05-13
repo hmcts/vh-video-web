@@ -242,6 +242,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                         this.replaceNonEndpointLinkedParticipant(index, newParticipant);
                     }
 
+                    this.removeParticipantsNotInConference(mappedList);
                     this.updateParticipants();
                 }
             })
@@ -767,5 +768,14 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             );
         });
         linkedParticipantToUpdate.assignPexipId(linkedParticipant.pexipId);
+    }
+
+    private removeParticipantsNotInConference(conferenceParticipants: PanelModel[]) {
+        this.nonEndpointParticipants.forEach((participant, index) => {
+            const participantInConference = conferenceParticipants.find(p => p.id == participant.id);
+            if (!participantInConference) {
+                this.nonEndpointParticipants.splice(index, 1);
+            }
+        });
     }
 }
