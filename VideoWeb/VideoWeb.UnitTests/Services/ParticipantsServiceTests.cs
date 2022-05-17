@@ -109,7 +109,7 @@ namespace VideoWeb.UnitTests.Services
             _mocker.Mock<IConferenceCache>()
                 .Verify(x => x.UpdateConferenceAsync(It.Is<Conference>(y => y == conference)), Times.Once());
             _mocker.Mock<IParticipantsUpdatedEventNotifier>()
-                .Verify(x => x.PushParticipantsUpdatedEvent(It.Is<Conference>(y => y == conference)), Times.Once());
+                .Verify(x => x.PushParticipantsUpdatedEvent(It.Is<Conference>(y => y == conference), conference.Participants), Times.Once());
         }
 
         [Test]
@@ -136,7 +136,7 @@ namespace VideoWeb.UnitTests.Services
             _mocker.Mock<IConferenceCache>()
                 .Verify(x => x.UpdateConferenceAsync(It.Is<Conference>(y => y == conference)), Times.Once());
             _mocker.Mock<IParticipantsUpdatedEventNotifier>()
-                .Verify(x => x.PushParticipantsUpdatedEvent(It.Is<Conference>(y => y == conference)), Times.Once());
+                .Verify(x => x.PushParticipantsUpdatedEvent(It.Is<Conference>(y => y == conference), conference.Participants), Times.Once());
         }
 
         [Test]

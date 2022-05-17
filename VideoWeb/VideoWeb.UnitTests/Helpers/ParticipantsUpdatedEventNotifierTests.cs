@@ -71,10 +71,65 @@ namespace VideoWeb.UnitTests.Helpers
                 .Returns(_mocker.Mock<IEventHandler>().Object);
 
             // Act
-            await _notifier.PushParticipantsUpdatedEvent(_conference);
+            await _notifier.PushParticipantsUpdatedEvent(_conference, _conference.Participants);
             
 
             _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == EventType.ParticipantsUpdated && c.ConferenceId == _conference.Id && ParticipantResponseListsMatch(c.Participants, responseList))), Times.Once);
+        }
+        
+        [Test]
+        public async Task Should_send_event_when_participants_to_notify_specified()
+        {
+            // Arrange
+            var participant1ToNotify = new Participant();
+            participant1ToNotify.Id = _participant1.Id;
+            
+            var participant2ToNotify = new Participant();
+            participant2ToNotify.Id = _participant2.Id;
+
+            var participant3 = new Participant();
+            participant3.Id = Guid.NewGuid();
+            
+            _conference.Participants.Add(participant3);
+            
+            var participant3ToNotify = new Participant();
+            participant3ToNotify.Id = participant3.Id;
+
+            var participantsToNotify = new List<Participant> { participant1ToNotify, participant2ToNotify, participant3ToNotify };
+
+            var participant1Mapped = new ParticipantResponse();
+            participant1Mapped.Id = _participant1.Id;
+
+            var participant2Mapped = new ParticipantResponse();
+            participant2Mapped.Id = _participant2.Id;
+            
+            var participant1ToNotifyMapped = new ParticipantResponse();
+            participant1ToNotifyMapped.Id = participant1ToNotify.Id;
+            
+            var participant2ToNotifyMapped = new ParticipantResponse();
+            participant2ToNotifyMapped.Id = participant2ToNotify.Id;
+            
+            var participant3ToNotifyMapped = new ParticipantResponse();
+            participant3ToNotifyMapped.Id = participant3ToNotify.Id;
+            
+            var participantsToNotifyMapped = new List<ParticipantResponse> { participant1ToNotifyMapped, participant2ToNotifyMapped, participant3ToNotifyMapped };
+
+            _mocker.Mock<IMapTo<Participant, Conference, ParticipantResponse>>().Setup(x => x.Map(_participant1, _conference)).Returns(participant1Mapped);
+            _mocker.Mock<IMapTo<Participant, Conference, ParticipantResponse>>().Setup(x => x.Map(_participant2, _conference)).Returns(participant2Mapped);
+            _mocker.Mock<IMapTo<Participant, Conference, ParticipantResponse>>().Setup(x => x.Map(participant1ToNotify, _conference)).Returns(participant1ToNotifyMapped);
+            _mocker.Mock<IMapTo<Participant, Conference, ParticipantResponse>>().Setup(x => x.Map(participant2ToNotify, _conference)).Returns(participant2ToNotifyMapped);
+            _mocker.Mock<IMapTo<Participant, Conference, ParticipantResponse>>().Setup(x => x.Map(participant3ToNotify, _conference)).Returns(participant3ToNotifyMapped);
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Participant, Conference, ParticipantResponse>()).Returns(_mocker.Mock<IMapTo<Participant, Conference, ParticipantResponse>>().Object);
+
+            _mocker.Mock<IEventHandlerFactory>()
+                .Setup(x => x.Get(It.Is<EventType>(eventType => eventType == EventType.ParticipantsUpdated)))
+                .Returns(_mocker.Mock<IEventHandler>().Object);
+
+            // Act
+            await _notifier.PushParticipantsUpdatedEvent(_conference, participantsToNotify);
+            
+
+            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == EventType.ParticipantsUpdated && c.ConferenceId == _conference.Id && ParticipantResponseListsMatch(c.Participants, participantsToNotifyMapped))), Times.Once);
         }
 
         private bool ParticipantResponseListsMatch(List<ParticipantResponse> list1, List<ParticipantResponse> list2)

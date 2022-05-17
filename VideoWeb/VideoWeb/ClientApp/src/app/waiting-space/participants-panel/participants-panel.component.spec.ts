@@ -1171,6 +1171,46 @@ describe('ParticipantsPanelComponent', () => {
         expect(linkedParticipantPanelModel[0].displayName).toContain(panelMember2DisplayName);
     });
 
+    it('should remove participants not in conference after participants updated message received', () => {
+        const participant1 = new ParticipantForUserResponse({
+            display_name: 'Judge 1',
+            id: '1111-1111-1111-1111',
+            first_name: 'Judge 1',
+            role: Role.Judge,
+            hearing_role: HearingRole.JUDGE,
+            user_name: 'judge1@hmcts.net'
+        });
+
+        const participant2 = new ParticipantForUserResponse({
+            display_name: 'Judge 2',
+            id: '2222-2222-2222-2222',
+            first_name: 'Judge 2',
+            role: Role.Judge,
+            hearing_role: HearingRole.JUDGE,
+            user_name: 'judge2@hmcts.net'
+        });
+
+        const initialParticipants: PanelModel[] = [];
+        initialParticipants.push(mapper.mapFromParticipantUserResponse(participant1));
+
+        const updatedParticipants: ParticipantForUserResponse[] = [];
+        updatedParticipants.push(participant2);
+
+        const mappedUpdatedParticipants = mapper.mapFromParticipantUserResponseArray(updatedParticipants);
+
+        component.nonEndpointParticipants = initialParticipants;
+
+        participantPanelModelMapperSpy.mapFromParticipantUserResponseArray.and.returnValue(mappedUpdatedParticipants);
+
+        component.setupEventhubSubscribers();
+
+        const message = new ParticipantsUpdatedMessage(conferenceId, updatedParticipants);
+
+        getParticipantsUpdatedSubjectMock.next(message);
+
+        expect(component.nonEndpointParticipants).toEqual(mappedUpdatedParticipants);
+    });
+
     it('should persist states for participant after new participant is added', () => {
         /*
         If the states have changed for an existing participant (muted, raised, spotlighted) these should persist after

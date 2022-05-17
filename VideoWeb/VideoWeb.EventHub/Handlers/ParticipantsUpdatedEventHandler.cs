@@ -22,7 +22,7 @@ namespace VideoWeb.EventHub.Handlers
          
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            return PublishParticipantsUpdatedMessage(callbackEvent.Participants);
+            return PublishParticipantsUpdatedMessage(callbackEvent.Participants, callbackEvent.ParticipantsToNotify);
         }
     }
 }

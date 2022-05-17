@@ -1025,6 +1025,11 @@ export abstract class WaitingRoomBaseDirective {
             return;
         }
 
+        const currentParticipantInConference = participantsUpdatedMessage.participants.find(p => p.id === this.participant.id);
+        if (!currentParticipantInConference) {
+            return this.router.navigate([pageUrls.Home]);
+        }
+
         const newParticipants = participantsUpdatedMessage.participants.filter(x => !this.conference.participants.find(y => y.id === x.id));
 
         newParticipants.forEach(participant => {

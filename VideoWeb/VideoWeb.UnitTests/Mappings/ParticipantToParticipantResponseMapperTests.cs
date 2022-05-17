@@ -109,6 +109,7 @@ namespace VideoWeb.UnitTests.Mappings
             mapped.Representee.Should().Be(testParticipant.Representee);
             mapped.Role.Should().Be(testParticipant.Role);
             mapped.Id.Should().Be(testParticipant.Id);
+            mapped.UserName.Should().Be(testParticipant.Username);
             mapped.LinkedParticipants.Should().BeEquivalentTo(new List<LinkedParticipantResponse>() { linkedParticipantResponse1, linkedParticipantResponse2 });
 
             mapped.InterpreterRoom.Should().Be(roomSummaryResponse);

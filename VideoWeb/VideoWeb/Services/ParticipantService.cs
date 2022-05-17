@@ -80,7 +80,7 @@ namespace VideoWeb.Services
 
             _logger.LogTrace($"Updating conference in cache: {JsonSerializer.Serialize(conference)}");
             await _conferenceCache.UpdateConferenceAsync(conference);
-            await _participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference);
+            await _participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference, conference.Participants);
         }
     }
 }

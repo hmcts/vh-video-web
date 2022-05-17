@@ -1476,7 +1476,11 @@ describe('WaitingRoomComponent EventHub Call', () => {
         });
 
         describe('when is correct conference', () => {
-            const testParticipantMessage = new ParticipantsUpdatedMessage(testConferenceId, [testParticipant]);
+            let testParticipantMessage: ParticipantsUpdatedMessage;
+            beforeEach(() => {
+                testParticipantMessage = new ParticipantsUpdatedMessage(testConferenceId, [testParticipant, component.participant]);
+            });
+
             afterEach(() => {
                 expect(component.getLoggedParticipant).toHaveBeenCalledTimes(1);
             });
