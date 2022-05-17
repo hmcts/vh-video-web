@@ -207,6 +207,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.cleanUp();
     }
 
+    isStaffMember(): boolean {
+        return this.loggedInUser.role === Role.StaffMember;
+    }
+
     private initConferenceStatusLogic() {
         this.hearingCountdownFinishedSubscription = this.eventService.getHearingCountdownCompleteMessage().subscribe(() => {
             this.conferenceStatusChangedSubscription?.unsubscribe();
