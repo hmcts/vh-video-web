@@ -208,7 +208,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     isStaffMember(): boolean {
-        return this.loggedInUser.role === Role.StaffMember
+        return this.loggedInUser.role === Role.StaffMember;
     }
 
     private initConferenceStatusLogic() {
