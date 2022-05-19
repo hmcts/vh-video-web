@@ -723,14 +723,44 @@ describe('PrivateConsultationParticipantsComponent', () => {
     });
 
     describe('participantHasInviteRestrictions', () => {
-        beforeEach(() => {
-            conference.participants = new ConferenceTestData().getFullListOfNonJudgeParticipants();
-            component.initParticipants();
+        it('should return true if user is not judical, and participant is in not allowed to be invited', () => {
+            // arrange
+            component.loggedInUser = {
+                role: Role.Individual
+            } as LoggedParticipantResponse;
+            const participant = {
+                hearing_role: HearingRole.WITNESS
+            } as ParticipantListItem;
+            // act
+            const result = component.participantHasInviteRestrictions(participant);
+            // assert
+            expect(result).toBeTrue();
         });
 
-        it('should return true if user is not a joh, and participant is in not allowed to be invited', () => {
-            const privateConsultationParticipants = component.getPrivateConsultationParticipants();
+        it('should return false if user is not judical, and participant is allowed to be invited', () => {
+            // arrange
+            component.loggedInUser = {
+                role: Role.Individual
+            } as LoggedParticipantResponse;
+            const participant = {
+                hearing_role: HearingRole.APPELLANT
+            } as ParticipantListItem;
+            // act
+            const result = component.participantHasInviteRestrictions(participant);
+            // assert
+            expect(result).toBeFalse();
+        });
 
+        it('should return false if user is judical', () => {
+            // arrange
+            // default for this test suit is judge
+            const participant = {
+                hearing_role: HearingRole.STAFF_MEMBER
+            } as ParticipantListItem;
+            // act
+            const result = component.participantHasInviteRestrictions(participant);
+            // assert
+            expect(result).toBeFalse();
         });
     });
 });

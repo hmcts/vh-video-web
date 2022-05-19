@@ -1,22 +1,16 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
-import {TranslateService} from '@ngx-translate/core';
-import {ConsultationService} from 'src/app/services/api/consultation.service';
-import {VideoWebService} from 'src/app/services/api/video-web.service';
-import {
-    LinkType,
-    ParticipantResponse,
-    ParticipantStatus,
-    Role,
-    VideoEndpointResponse
-} from 'src/app/services/clients/api-client';
-import {EventsService} from 'src/app/services/events.service';
-import {Logger} from 'src/app/services/logging/logger-base';
-import {ParticipantStatusMessage} from 'src/app/services/models/participant-status-message';
-import {RoomTransfer} from 'src/app/shared/models/room-transfer';
-import {HearingRole} from '../../models/hearing-role-model';
-import {WRParticipantStatusListDirective} from '../../waiting-room-shared/wr-participant-list-shared.component';
-import {ParticipantListItem} from '../participant-list-item';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
+import { ConsultationService } from 'src/app/services/api/consultation.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { LinkType, ParticipantResponse, ParticipantStatus, Role, VideoEndpointResponse } from 'src/app/services/clients/api-client';
+import { EventsService } from 'src/app/services/events.service';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { RoomTransfer } from 'src/app/shared/models/room-transfer';
+import { HearingRole } from '../../models/hearing-role-model';
+import { WRParticipantStatusListDirective } from '../../waiting-room-shared/wr-participant-list-shared.component';
+import { ParticipantListItem } from '../participant-list-item';
 
 @Component({
     selector: 'app-private-consultation-participants',
@@ -197,8 +191,11 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     participantHasInviteRestrictions(participant: ParticipantListItem): boolean {
-        const userIsJudicial = (this.loggedInUser.role == Role.Judge || this.loggedInUser.role == Role.StaffMember ||  this.loggedInUser.role == Role.JudicialOfficeHolder);
-        if(!userIsJudicial)
+        const userIsJudicial =
+            this.loggedInUser.role === Role.Judge ||
+            this.loggedInUser.role === Role.StaffMember ||
+            this.loggedInUser.role === Role.JudicialOfficeHolder;
+        if (!userIsJudicial) {
             switch (participant.hearing_role) {
                 case HearingRole.INTERPRETER:
                 case HearingRole.WINGER:
@@ -207,9 +204,11 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
                 case HearingRole.JUDGE:
                 case HearingRole.STAFF_MEMBER:
                 case HearingRole.PANEL_MEMBER:
-                    return true
-                default: return false
+                    return true;
+                default:
+                    return false;
             }
+        }
         return false;
     }
 }
