@@ -721,4 +721,16 @@ describe('PrivateConsultationParticipantsComponent', () => {
             expect(quickLinkParticipant2Index).toEqual(5);
         });
     });
+
+    describe('participantHasInviteRestrictions', () => {
+        beforeEach(() => {
+            conference.participants = new ConferenceTestData().getFullListOfNonJudgeParticipants();
+            component.initParticipants();
+        });
+
+        it('should return true if user is not a joh, and participant is in not allowed to be invited', () => {
+            const privateConsultationParticipants = component.getPrivateConsultationParticipants();
+
+        });
+    });
 });
