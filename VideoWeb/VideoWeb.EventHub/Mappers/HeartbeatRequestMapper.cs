@@ -22,7 +22,26 @@ namespace VideoWeb.EventHub.Mappers
                 BrowserName = heartbeat.BrowserName,
                 BrowserVersion = heartbeat.BrowserVersion,
                 OperatingSystem = heartbeat.OperatingSystem,
-                OperatingSystemVersion = heartbeat.OperatingSystemVersion
+                OperatingSystemVersion = heartbeat.OperatingSystemVersion,
+                OutgoingAudioPacketsLost = heartbeat.OutgoingAudioPacketsLost,
+                OutgoingAudioBitrate = heartbeat.OutgoingAudioBitrate,
+                OutgoingAudioCodec = heartbeat.OutgoingAudioCodec,
+                OutgoingAudioPacketSent = heartbeat.OutgoingAudioPacketSent,
+                OutgoingVideoPacketSent = heartbeat.OutgoingVideoPacketSent,
+                OutgoingVideoPacketsLost = heartbeat.OutgoingVideoPacketsLost,
+                OutgoingVideoFramerate = heartbeat.OutgoingVideoFramerate,
+                OutgoingVideoBitrate = heartbeat.OutgoingVideoBitrate,
+                OutgoingVideoCodec = heartbeat.OutgoingVideoCodec,
+                OutgoingVideoResolution = heartbeat.OutgoingVideoResolution,
+                IncomingAudioBitrate = heartbeat.IncomingAudioBitrate,
+                IncomingAudioCodec = heartbeat.IncomingAudioCodec,
+                IncomingAudioPacketReceived = heartbeat.IncomingAudioPacketReceived,
+                IncomingAudioPacketsLost = heartbeat.IncomingAudioPacketsLost,
+                IncomingVideoBitrate = heartbeat.IncomingVideoBitrate,
+                IncomingVideoCodec = heartbeat.IncomingVideoCodec,
+                IncomingVideoResolution = heartbeat.IncomingVideoResolution,
+                IncomingVideoPacketReceived = heartbeat.IncomingVideoPacketReceived,
+                IncomingVideoPacketsLost = heartbeat.IncomingVideoPacketsLost
             };
         }
 
