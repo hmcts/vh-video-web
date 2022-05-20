@@ -721,4 +721,46 @@ describe('PrivateConsultationParticipantsComponent', () => {
             expect(quickLinkParticipant2Index).toEqual(5);
         });
     });
+
+    describe('participantHasInviteRestrictions', () => {
+        it('should return true if user is not judical, and participant is in not allowed to be invited', () => {
+            // arrange
+            component.loggedInUser = {
+                role: Role.Individual
+            } as LoggedParticipantResponse;
+            const participant = {
+                hearing_role: HearingRole.WITNESS
+            } as ParticipantListItem;
+            // act
+            const result = component.participantHasInviteRestrictions(participant);
+            // assert
+            expect(result).toBeTrue();
+        });
+
+        it('should return false if user is not judical, and participant is allowed to be invited', () => {
+            // arrange
+            component.loggedInUser = {
+                role: Role.Individual
+            } as LoggedParticipantResponse;
+            const participant = {
+                hearing_role: HearingRole.APPELLANT
+            } as ParticipantListItem;
+            // act
+            const result = component.participantHasInviteRestrictions(participant);
+            // assert
+            expect(result).toBeFalse();
+        });
+
+        it('should return false if user is judical', () => {
+            // arrange
+            // default for this test suit is judge
+            const participant = {
+                hearing_role: HearingRole.STAFF_MEMBER
+            } as ParticipantListItem;
+            // act
+            const result = component.participantHasInviteRestrictions(participant);
+            // assert
+            expect(result).toBeFalse();
+        });
+    });
 });
