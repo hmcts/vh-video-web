@@ -197,7 +197,6 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
             this.loggedInUser.role === Role.JudicialOfficeHolder;
         if (!userIsJudicial) {
             switch (participant.hearing_role) {
-                case HearingRole.INTERPRETER:
                 case HearingRole.WINGER:
                 case HearingRole.WITNESS:
                 case HearingRole.OBSERVER:
