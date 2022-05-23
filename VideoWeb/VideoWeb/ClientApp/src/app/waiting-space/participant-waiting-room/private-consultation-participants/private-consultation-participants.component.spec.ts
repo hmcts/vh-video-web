@@ -124,8 +124,8 @@ describe('PrivateConsultationParticipantsComponent', () => {
     });
 
     it('should get private consultation', () => {
-        component.roomLabel = 'test-room';
-        expect(component.isJohConsultation()).toEqual(false);
+        component.roomLabel = 'participantconsultationroom134';
+        expect(component.isPrivateConsultation()).toEqual(true);
     });
 
     it('should get yellow row classes', () => {
@@ -376,6 +376,15 @@ describe('PrivateConsultationParticipantsComponent', () => {
         interpreter.hearing_role = HearingRole.INTERPRETER;
         const representative = participants[1];
         component.nonJudgeParticipants = [interpreter, representative];
+        expect(component.getPrivateConsultationParticipants().length).toBe(1);
+    });
+
+    it('should not get witness', () => {
+        const participants = new ConferenceTestData().getListOfParticipants();
+        const witness = participants[0];
+        witness.hearing_role = HearingRole.WITNESS;
+        const representative = participants[1];
+        component.nonJudgeParticipants = [witness, representative];
         expect(component.getPrivateConsultationParticipants().length).toBe(1);
     });
 
