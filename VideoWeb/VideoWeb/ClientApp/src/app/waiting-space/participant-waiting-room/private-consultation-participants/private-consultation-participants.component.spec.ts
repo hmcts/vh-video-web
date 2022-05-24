@@ -710,24 +710,25 @@ describe('PrivateConsultationParticipantsComponent', () => {
             const privateConsultationParticipants = component.getPrivateConsultationParticipants();
 
             const applicant1Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr B Smith');
-            const applicant2Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr A Smith');
-            const applicant3Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr G Smith');
-            const respondent1Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr E Smith');
+            const applicant2Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr A Smith'); //interpreter
+            const applicant3Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr G Smith'); //witness
+            const respondent1Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr E Smith'); //witness
             const respondent2Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr F Smith');
-            const respondent3Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr H Smith');
+            const respondent3Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr H Smith'); //interpreter
             const quickLinkParticipant1Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr C Smith');
             const quickLinkParticipant2Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr D Smith');
 
-            // Interpreters are filtered out
+            // Interpreters and Witnesses are filtered out
             expect(applicant2Index).toEqual(-1);
             expect(respondent3Index).toEqual(-1);
+            expect(applicant3Index).toEqual(-1);
+            expect(respondent1Index).toEqual(-1);
 
+            //correct ordering
             expect(applicant1Index).toEqual(0);
-            expect(applicant3Index).toEqual(1);
-            expect(respondent1Index).toEqual(2);
-            expect(respondent2Index).toEqual(3);
-            expect(quickLinkParticipant1Index).toEqual(4);
-            expect(quickLinkParticipant2Index).toEqual(5);
+            expect(respondent2Index).toEqual(1);
+            expect(quickLinkParticipant1Index).toEqual(2);
+            expect(quickLinkParticipant2Index).toEqual(3);
         });
     });
 
