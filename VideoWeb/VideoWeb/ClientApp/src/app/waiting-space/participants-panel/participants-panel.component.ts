@@ -194,12 +194,14 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.logger.debug(`${this.loggerPrefix} Setting up EventHub subscribers`);
         this.eventhubSubscription$.add(
             this.eventService.getParticipantStatusMessage().subscribe(message => {
+                this.logger.warn(`${this.loggerPrefix} getParticipantStatusMessage: ${message.status}`);
                 this.handleParticipantStatusChange(message);
             })
         );
 
         this.eventhubSubscription$.add(
             this.eventService.getEndpointStatusMessage().subscribe(message => {
+                this.logger.warn(`${this.loggerPrefix} getEndpointStatusMessage: ${message.status}`);
                 this.handleEndpointStatusChange(message);
             })
         );

@@ -376,23 +376,24 @@ describe('PrivateConsultationParticipantsComponent', () => {
         interpreter.hearing_role = HearingRole.INTERPRETER;
         const representative = participants[1];
         component.nonJudgeParticipants = [interpreter, representative];
-        expect(component.getPrivateConsultationParticipants().length).toBe(1);
+        expect(component.getConsultationParticipants().length).toBe(1);
     });
 
     it('should not get witness', () => {
+        component.roomLabel = 'participantconsultationroom134';
         const participants = new ConferenceTestData().getListOfParticipants();
         const witness = participants[0];
         witness.hearing_role = HearingRole.WITNESS;
         const representative = participants[1];
         component.nonJudgeParticipants = [witness, representative];
-        expect(component.getPrivateConsultationParticipants().length).toBe(1);
+        expect(component.getConsultationParticipants().length).toBe(1);
     });
 
     it('should sort quick link participants', () => {
         const testData = new ConferenceTestData();
         component.conference.participants = [testData.quickLinkParticipant2, testData.quickLinkParticipant1];
         component.initParticipants();
-        const participants = component.getPrivateConsultationParticipants();
+        const participants = component.getConsultationParticipants();
 
         expect(participants.length).toBe(2);
         expect(participants.find(x => x.display_name === testData.quickLinkParticipant1.display_name)).toBeTruthy();
@@ -707,7 +708,9 @@ describe('PrivateConsultationParticipantsComponent', () => {
         });
 
         it('should return list in correct order', () => {
-            const privateConsultationParticipants = component.getPrivateConsultationParticipants();
+
+            component.roomLabel = 'participantconsultationroom124';
+            const privateConsultationParticipants = component.getConsultationParticipants();
 
             const applicant1Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr B Smith');
             const applicant2Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr A Smith'); // interpreter

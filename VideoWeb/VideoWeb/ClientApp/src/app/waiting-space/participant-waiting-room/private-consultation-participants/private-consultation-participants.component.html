@@ -49,7 +49,7 @@
                 </app-participant-item>
             </div>
         </ng-container>
-        <ng-container  *ngFor="let participant of getPrivateConsultationParticipants(); trackBy: trackParticipant">
+        <ng-container  *ngFor="let participant of getConsultationParticipants(); trackBy: trackParticipant">
             <div class="member-group">
                 <app-participant-item
                                 [participant]="participant"
