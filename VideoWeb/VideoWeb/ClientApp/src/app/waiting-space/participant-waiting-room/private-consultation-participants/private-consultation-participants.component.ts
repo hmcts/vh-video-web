@@ -114,10 +114,12 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         return this.roomLabel?.toLowerCase().includes('participantconsultationroom');
     }
 
-    getPrivateConsultationParticipants(): ParticipantListItem[] {
-        const participants = this.nonJudgeParticipants.filter(
-            x => x.hearing_role !== HearingRole.INTERPRETER && x.hearing_role !== HearingRole.WITNESS
-        );
+    getConsultationParticipants(): ParticipantListItem[] {
+        let participants = this.nonJudgeParticipants.filter(x => x.hearing_role !== HearingRole.INTERPRETER);
+        if (this.isPrivateConsultation()) {
+            participants = participants.filter(x => x.hearing_role !== HearingRole.WITNESS);
+        }
+
         return participants.map(c => {
             return this.mapResponseToListItem(c);
         });
