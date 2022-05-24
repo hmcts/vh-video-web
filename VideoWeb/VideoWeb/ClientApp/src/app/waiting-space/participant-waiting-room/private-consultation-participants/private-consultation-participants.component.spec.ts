@@ -389,6 +389,15 @@ describe('PrivateConsultationParticipantsComponent', () => {
         expect(component.getConsultationParticipants().length).toBe(1);
     });
 
+    it('should not get witness', () => {
+        const participants = new ConferenceTestData().getListOfParticipants();
+        const witness = participants[0];
+        witness.hearing_role = HearingRole.WITNESS;
+        const representative = participants[1];
+        component.nonJudgeParticipants = [witness, representative];
+        expect(component.getPrivateConsultationParticipants().length).toBe(1);
+    });
+
     it('should sort quick link participants', () => {
         const testData = new ConferenceTestData();
         component.conference.participants = [testData.quickLinkParticipant2, testData.quickLinkParticipant1];
