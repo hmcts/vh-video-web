@@ -502,14 +502,16 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         component.openJoinConsultationModal();
         expect(component.displayJoinPrivateConsultationModal).toBeTruthy();
     });
-    it('should return non judge and joh participants from getPrivateConsultationParticipants', () => {
+    it('should return non judge, staff member and joh participants from getPrivateConsultationParticipants', () => {
         const joh = new ParticipantResponse();
         joh.role = Role.JudicialOfficeHolder;
         const judge = new ParticipantResponse();
         judge.role = Role.Judge;
+        const staff = new ParticipantResponse();
+        staff.role = Role.StaffMember;
         const representative = new ParticipantResponse();
         representative.hearing_role = HearingRole.REPRESENTATIVE;
-        component.conference.participants = [judge, judge, representative, representative, representative, joh, joh, joh];
+        component.conference.participants = [judge, judge, representative, representative, representative, joh, joh, joh, staff];
         expect(component.getPrivateConsultationParticipants().length).toBe(3);
     });
     it('should return non observer and witness participants from getPrivateConsultationParticipants', () => {

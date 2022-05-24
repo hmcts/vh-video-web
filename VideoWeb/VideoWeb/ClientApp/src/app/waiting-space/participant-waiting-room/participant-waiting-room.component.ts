@@ -271,6 +271,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
                 p.id !== this.participant.id &&
                 p.role !== Role.JudicialOfficeHolder &&
                 p.role !== Role.Judge &&
+                p.role !== Role.StaffMember &&
                 p.case_type_group !== CaseTypeGroup.OBSERVER &&
                 p.hearing_role !== HearingRole.OBSERVER &&
                 p.hearing_role !== HearingRole.WITNESS
