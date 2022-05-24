@@ -7,7 +7,7 @@
                     <app-context-menu-header [isPrivateConsultation]='isPrivateConsultation'></app-context-menu-header>
                 <div class='icon-button-dark' id='toggle-chat-panel' *ngIf='isHost && !isPrivateConsultation'
                     colour='grey' (click)="togglePanelStatus('Chat')">
-                    <fa-icon [icon]="[isChatVisible ? 'fas' : 'far', 'comment-alt']" 
+                    <fa-icon [icon]="[isChatVisible ? 'fas' : 'far', 'comment-alt']"
                         tabindex="0" (keyup.enter)="togglePanelStatus('Chat')">
                     </fa-icon>
                     <span class='context-item'>
@@ -80,7 +80,7 @@
 
                 <div class='icon-button-dark' id='toggle-audio-mute-locked-img' *ngIf='remoteMuted && !isHost'
                     colour='grey'>
-                    <span class="red"> 
+                    <span class="red">
                         <fa-icon icon='microphone-slash'></fa-icon>
                         <span class='context-item'>
                             {{(audioMuted
@@ -129,10 +129,10 @@
                 </div>
 
                 <div *ngIf='isPrivateConsultation && showConsultationControls && !isJOHConsultation && !isJOHRoom'
-                    id='lockButton' class='icon-button-dark' [class]="roomLocked ? 'greygreen' : 'greyred'"
-                    data-module='govuk-button' (click)='lockPrivateConsultation(!roomLocked)'>
+                     id='lockButton' class='icon-button-dark' [class]="roomLocked ? 'greygreen' : 'greyred'"
+                     data-module='govuk-button' (click)='lockPrivateConsultation(!roomLocked)'>
                     <span>
-                        <fa-icon class='lock'></fa-icon>
+                        <fa-icon class='lock' tabindex="0" (keyup.enter)="lockPrivateConsultation(!roomLocked)"></fa-icon>
                         <span class='context-item'>{{'private-consultation-room-controls.lock-the-room-toggle-' + roomLocked | translate}}</span>
                     </span>
                 </div>
@@ -158,7 +158,7 @@
         <div class='icon-button' id='toggle-participants-panel' appTooltip *ngIf="canToggleParticipantsPanel"
             [text]="'private-consultation-room-controls.participants-panel' | translate" colour='grey'
             (click)="togglePanelStatus('Participants')">
-            <fa-icon [icon]="[areParticipantsVisible ? 'fas' : 'far', 'user']" 
+            <fa-icon [icon]="[areParticipantsVisible ? 'fas' : 'far', 'user']"
                 tabindex="0" (keyup.enter)="togglePanelStatus('Participants')"></fa-icon>
         </div>
         <div class='show-for-medium-only'>
@@ -293,7 +293,7 @@
             ? 'private-consultation-room-controls.hand-raise-toggle-true'
             : 'private-consultation-room-controls.hand-raise-toggle-false') | translate" colour="grey"
                 (click)="toggleHandRaised()">
-                <fa-icon [icon]="['far', 'hand-paper']" [class]="{ yellow: handRaised }" 
+                <fa-icon [icon]="['far', 'hand-paper']" [class]="{ yellow: handRaised }"
                     tabindex="0" (keyup.enter)="toggleHandRaised()"></fa-icon>
             </div>
 
@@ -303,7 +303,7 @@
                 <div id='leave-hearing-desktop' class="icon-button" appTooltip colour='grey'
                     [text]="'private-consultation-room-controls.leave-hearing' | translate"
                     (click)="displayLeaveHearingPopup = !displayLeaveHearingPopup">
-                    <fa-icon icon="sign-out-alt" flip="horizontal" class='leave-hearing-button' 
+                    <fa-icon icon="sign-out-alt" flip="horizontal" class='leave-hearing-button'
                         tabindex="0" (keyup.enter)="displayLeaveHearingPopup = !displayLeaveHearingPopup"></fa-icon>
                 </div>
 
@@ -311,14 +311,12 @@
             </ng-container>
 
             <button *ngIf="!isPrivateConsultation && isHost" id="pause-hearing-desktop" class="small-button blue"
-                data-module="govuk-button" (click)="pause()" type="button" [hidden]="!canCloseOrPauseHearing()" 
-                tabindex="0" (keyup.enter)="pause()">
+                data-module="govuk-button" (click)="pause()" type="button" [hidden]="!canCloseOrPauseHearing()">
                 {{ 'private-consultation-room-controls.pause' | translate }}
             </button>
 
             <button *ngIf="!isPrivateConsultation && isHost" id="end-hearing-desktop" class="small-button red"
-                data-module="govuk-button" (click)="displayConfirmationDialog()" type="button" 
-                tabindex="0" (keyup.enter)="displayConfirmationDialog()"
+                data-module="govuk-button" (click)="displayConfirmationDialog()" type="button"
                 [hidden]="!canCloseOrPauseHearing()">
                 {{ 'private-consultation-room-controls.close' | translate }}
             </button>
@@ -327,21 +325,20 @@
 
             <button *ngIf="isPrivateConsultation && showConsultationControls && !isJOHConsultation && !isJOHRoom"
                 id="lockButton-desktop" class="small-button" [class]="roomLocked ? 'greygreen' : 'greyred'"
-                data-module="govuk-button" (click)="lockPrivateConsultation(!roomLocked)" type="button" 
-                tabindex="0" (keyup.enter)="lockPrivateConsultation(!roomLocked)">
+                data-module="govuk-button" (click)="lockPrivateConsultation(!roomLocked)" type="button"
+                tabindex="0">
                 {{ 'private-consultation-room-controls.lock-the-room-toggle-' + roomLocked | translate }}
             </button>
 
             <button *ngIf='showConsultationControls && canJoinHearingFromConsultation' type="button" id='join-hearing-from-consultation-button-desktop'
-                class='small-button green' data-module='govuk-button' (click)='joinHearingFromConsultation()' 
-                tabindex="0" (keyup.enter)="joinHearingFromConsultation()">
+                class='small-button green' data-module='govuk-button' (click)='joinHearingFromConsultation()'>
                 {{
                 'private-consultation-room-controls.join-hearing-from-consultation' | translate }}
                 </button>
 
             <button *ngIf="showConsultationControls" id="leaveButton-desktop" class="small-button red"
                 data-module="govuk-button" (click)="leavePrivateConsultation()" type="button"
-                [hidden]="!canLeaveConsultation()" tabindex="0" (keyup.enter)="leavePrivateConsultation()">
+                [hidden]="!canLeaveConsultation()">
                 {{ 'private-consultation-room-controls.leave' | translate }}
             </button>
         </div>
