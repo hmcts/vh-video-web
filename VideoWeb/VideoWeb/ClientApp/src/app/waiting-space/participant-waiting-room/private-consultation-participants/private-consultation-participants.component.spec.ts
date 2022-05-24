@@ -710,11 +710,11 @@ describe('PrivateConsultationParticipantsComponent', () => {
             const privateConsultationParticipants = component.getPrivateConsultationParticipants();
 
             const applicant1Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr B Smith');
-            const applicant2Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr A Smith'); //interpreter
-            const applicant3Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr G Smith'); //witness
-            const respondent1Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr E Smith'); //witness
+            const applicant2Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr A Smith'); // interpreter
+            const applicant3Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr G Smith'); // witness
+            const respondent1Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr E Smith'); // witness
             const respondent2Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr F Smith');
-            const respondent3Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr H Smith'); //interpreter
+            const respondent3Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr H Smith'); // interpreter
             const quickLinkParticipant1Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr C Smith');
             const quickLinkParticipant2Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr D Smith');
 
@@ -724,7 +724,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
             expect(applicant3Index).toEqual(-1);
             expect(respondent1Index).toEqual(-1);
 
-            //correct ordering
+            // correct ordering
             expect(applicant1Index).toEqual(0);
             expect(respondent2Index).toEqual(1);
             expect(quickLinkParticipant1Index).toEqual(2);
