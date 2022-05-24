@@ -395,7 +395,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
         witness.hearing_role = HearingRole.WITNESS;
         const representative = participants[1];
         component.nonJudgeParticipants = [witness, representative];
-        expect(component.getPrivateConsultationParticipants().length).toBe(1);
+        expect(component.getConsultationParticipants().length).toBe(1);
     });
 
     it('should sort quick link participants', () => {
@@ -717,7 +717,6 @@ describe('PrivateConsultationParticipantsComponent', () => {
         });
 
         it('should return list in correct order', () => {
-
             component.roomLabel = 'participantconsultationroom124';
             const privateConsultationParticipants = component.getConsultationParticipants();
 
