@@ -21,6 +21,29 @@ export class HeartbeatModelMapper {
         model.incomingVideoPercentageLost = this.removePercent(heartbeat.media_statistics.incoming.video['percentage-lost']);
         model.incomingVideoPercentageLostRecent = this.removePercent(heartbeat.media_statistics.incoming.video['percentage-lost-recent']);
 
+        model.outgoingAudioPacketsLost = heartbeat.media_statistics.outgoing.audio['packets-lost'];
+        model.outgoingAudioPacketSent = heartbeat.media_statistics.outgoing.audio['packets-sent'];
+        model.outgoingAudioBitrate = heartbeat.media_statistics.outgoing.audio['bitrate'];
+        model.outgoingAudioCodec = heartbeat.media_statistics.outgoing.audio['codec'];
+
+        model.outgoingVideoPacketsLost = heartbeat.media_statistics.outgoing.video['packets-lost'];
+        model.outgoingVideoPacketSent = heartbeat.media_statistics.outgoing.video['packets-sent'];
+        model.outgoingVideoFramerate = heartbeat.media_statistics.outgoing.video['framerate'];
+        model.outgoingVideoBitrate = heartbeat.media_statistics.outgoing.video['bitrate'];
+        model.outgoingVideoCodec = heartbeat.media_statistics.outgoing.video['codec'];
+        model.outgoingVideoResolution = heartbeat.media_statistics.outgoing.video['resolution'];
+
+        model.incomingAudioPacketsLost = heartbeat.media_statistics.incoming.audio['packets-lost'];
+        model.incomingAudioPacketReceived = heartbeat.media_statistics.incoming.audio['packets-received'];
+        model.incomingAudioBitrate = heartbeat.media_statistics.incoming.audio['bitrate'];
+        model.incomingAudioCodec = heartbeat.media_statistics.incoming.audio['codec'];
+
+        model.incomingVideoPacketsLost = heartbeat.media_statistics.incoming.video['packets-lost'];
+        model.incomingVideoPacketReceived = heartbeat.media_statistics.incoming.video['packets-received'];
+        model.incomingVideoBitrate = heartbeat.media_statistics.incoming.video['bitrate'];
+        model.incomingVideoCodec = heartbeat.media_statistics.incoming.video['codec'];
+        model.incomingVideoResolution = heartbeat.media_statistics.incoming.video['resolution'];
+
         model.browserName = browserName;
         model.browserVersion = browserVersion;
 
