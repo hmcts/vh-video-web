@@ -124,8 +124,8 @@ describe('PrivateConsultationParticipantsComponent', () => {
     });
 
     it('should get private consultation', () => {
-        component.roomLabel = 'test-room';
-        expect(component.isJohConsultation()).toEqual(false);
+        component.roomLabel = 'participantconsultationroom134';
+        expect(component.isPrivateConsultation()).toEqual(true);
     });
 
     it('should get yellow row classes', () => {
@@ -376,14 +376,24 @@ describe('PrivateConsultationParticipantsComponent', () => {
         interpreter.hearing_role = HearingRole.INTERPRETER;
         const representative = participants[1];
         component.nonJudgeParticipants = [interpreter, representative];
-        expect(component.getPrivateConsultationParticipants().length).toBe(1);
+        expect(component.getConsultationParticipants().length).toBe(1);
+    });
+
+    it('should not get witness', () => {
+        component.roomLabel = 'participantconsultationroom134';
+        const participants = new ConferenceTestData().getListOfParticipants();
+        const witness = participants[0];
+        witness.hearing_role = HearingRole.WITNESS;
+        const representative = participants[1];
+        component.nonJudgeParticipants = [witness, representative];
+        expect(component.getConsultationParticipants().length).toBe(1);
     });
 
     it('should sort quick link participants', () => {
         const testData = new ConferenceTestData();
         component.conference.participants = [testData.quickLinkParticipant2, testData.quickLinkParticipant1];
         component.initParticipants();
-        const participants = component.getPrivateConsultationParticipants();
+        const participants = component.getConsultationParticipants();
 
         expect(participants.length).toBe(2);
         expect(participants.find(x => x.display_name === testData.quickLinkParticipant1.display_name)).toBeTruthy();
@@ -698,27 +708,71 @@ describe('PrivateConsultationParticipantsComponent', () => {
         });
 
         it('should return list in correct order', () => {
-            const privateConsultationParticipants = component.getPrivateConsultationParticipants();
+            component.roomLabel = 'participantconsultationroom124';
+            const privateConsultationParticipants = component.getConsultationParticipants();
 
             const applicant1Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr B Smith');
-            const applicant2Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr A Smith');
-            const applicant3Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr G Smith');
-            const respondent1Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr E Smith');
+            const applicant2Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr A Smith'); // interpreter
+            const applicant3Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr G Smith'); // witness
+            const respondent1Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr E Smith'); // witness
             const respondent2Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr F Smith');
-            const respondent3Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr H Smith');
+            const respondent3Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr H Smith'); // interpreter
             const quickLinkParticipant1Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr C Smith');
             const quickLinkParticipant2Index = privateConsultationParticipants.findIndex(x => x.name === 'Mr D Smith');
 
-            // Interpreters are filtered out
+            // Interpreters and Witnesses are filtered out
             expect(applicant2Index).toEqual(-1);
             expect(respondent3Index).toEqual(-1);
+            expect(applicant3Index).toEqual(-1);
+            expect(respondent1Index).toEqual(-1);
 
+            // correct ordering
             expect(applicant1Index).toEqual(0);
-            expect(applicant3Index).toEqual(1);
-            expect(respondent1Index).toEqual(2);
-            expect(respondent2Index).toEqual(3);
-            expect(quickLinkParticipant1Index).toEqual(4);
-            expect(quickLinkParticipant2Index).toEqual(5);
+            expect(respondent2Index).toEqual(1);
+            expect(quickLinkParticipant1Index).toEqual(2);
+            expect(quickLinkParticipant2Index).toEqual(3);
+        });
+    });
+
+    describe('participantHasInviteRestrictions', () => {
+        it('should return true if user is not judical, and participant is in not allowed to be invited', () => {
+            // arrange
+            component.loggedInUser = {
+                role: Role.Individual
+            } as LoggedParticipantResponse;
+            const participant = {
+                hearing_role: HearingRole.WITNESS
+            } as ParticipantListItem;
+            // act
+            const result = component.participantHasInviteRestrictions(participant);
+            // assert
+            expect(result).toBeTrue();
+        });
+
+        it('should return false if user is not judical, and participant is allowed to be invited', () => {
+            // arrange
+            component.loggedInUser = {
+                role: Role.Individual
+            } as LoggedParticipantResponse;
+            const participant = {
+                hearing_role: HearingRole.APPELLANT
+            } as ParticipantListItem;
+            // act
+            const result = component.participantHasInviteRestrictions(participant);
+            // assert
+            expect(result).toBeFalse();
+        });
+
+        it('should return false if user is judical', () => {
+            // arrange
+            // default for this test suit is judge
+            const participant = {
+                hearing_role: HearingRole.STAFF_MEMBER
+            } as ParticipantListItem;
+            // act
+            const result = component.participantHasInviteRestrictions(participant);
+            // assert
+            expect(result).toBeFalse();
         });
     });
 });

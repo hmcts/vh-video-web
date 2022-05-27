@@ -13,14 +13,14 @@
                             [canInvite]="canInvite"
                             [status]="getParticipantStatus(judge)"
                             >
-                        </app-participant-item>                              
+                        </app-participant-item>
                 </div>
             </ng-container>
             <ng-container *ngFor="let group of johGroupResult">
                 <ng-container *ngIf="group.length > 0">
                     <ng-container *ngTemplateOutlet="johIcon"></ng-container>
                     <div class="member-group">
-                        <ng-container *ngFor="let participant of group; trackBy: trackParticipant">        
+                        <ng-container *ngFor="let participant of group; trackBy: trackParticipant">
                             <app-participant-item
                                 [participant]="participant"
                                 [interpreter]="participant?.interpreter"
@@ -30,34 +30,34 @@
                                 [canInvite]="canInvite"
                                 [status]="getParticipantStatus(participant)"
                                 >
-                            </app-participant-item>                              
+                            </app-participant-item>
                         </ng-container>
                     </div>
                 </ng-container>
             </ng-container>
-        </ng-container> 
+        </ng-container>
         <ng-container *ngFor="let staffMember of staffMembers">
-            <div class="member-group">
+            <div class="member-group" *ngIf="!isPrivateConsultation()">
                 <app-participant-item
                     [participant]="staffMember"
                     [conferenceId]="conference.id"
                     [roomLabel]="roomLabel"
                     [participantCallStatuses]="participantCallStatuses"
-                    [canInvite]="canInvite"
+                    [canInvite]="canInvite && !participantHasInviteRestrictions(staffMember)"
                     [status]="getParticipantStatus(staffMember)"
                     >
-                </app-participant-item>           
+                </app-participant-item>
             </div>
         </ng-container>
-        <ng-container  *ngFor="let participant of getPrivateConsultationParticipants(); trackBy: trackParticipant">
+        <ng-container  *ngFor="let participant of getConsultationParticipants(); trackBy: trackParticipant">
             <div class="member-group">
                 <app-participant-item
                                 [participant]="participant"
                                 [interpreter]="participant?.interpreter"
-                                [conferenceId]="conference.id" 
+                                [conferenceId]="conference.id"
                                 [roomLabel]="roomLabel"
-                                [participantCallStatuses]="participantCallStatuses" 
-                                [canInvite]="canInvite"
+                                [participantCallStatuses]="participantCallStatuses"
+                                [canInvite]="canInvite && !participantHasInviteRestrictions(participant)"
                                 [status]="getParticipantStatus(participant)"
                                 >
                 </app-participant-item>
@@ -68,17 +68,17 @@
         <ng-container *ngFor="let endpoint of endpoints">
             <div class="endpoint-row">
                 <div class="header-left" [class]="getRowClasses(endpoint)">
-                    <app-invite-participant *ngIf="canCallEndpoint(endpoint)" 
+                    <app-invite-participant *ngIf="canCallEndpoint(endpoint)"
                         [endpointId]="endpoint.id"
-                        [conferenceId]="conference.id" 
+                        [conferenceId]="conference.id"
                         [roomLabel]="roomLabel">
                     </app-invite-participant>
-                    <fa-icon *ngIf="isParticipantInCurrentRoom(endpoint)" 
-                        icon="check" 
+                    <fa-icon *ngIf="isParticipantInCurrentRoom(endpoint)"
+                        icon="check"
                         aria-hidden="true"></fa-icon>
                 </div>
 
-                <app-private-consultation-participant-display-name 
+                <app-private-consultation-participant-display-name
                     [displayName]="endpoint?.display_name"
                     [isInCurrentRoom]="isParticipantInCurrentRoom(endpoint)"
                     [isAvailable]="isParticipantAvailable(endpoint)">
@@ -91,12 +91,12 @@
         <ng-container *ngIf="isJohConsultation()">
             <ng-container *ngFor="let participant of getObservers(); trackBy: trackParticipant">
                 <div class="member-group">
-                    <app-participant-item 
-                                    [participant]="participant" 
+                    <app-participant-item
+                                    [participant]="participant"
                                     [interpreter]="participant?.interpreter"
-                                    [conferenceId]="conference.id" 
+                                    [conferenceId]="conference.id"
                                     [roomLabel]="roomLabel"
-                                    [participantCallStatuses]="participantCallStatuses" 
+                                    [participantCallStatuses]="participantCallStatuses"
                                     [canInvite]="canInvite"
                                     [status]="getParticipantStatus(participant)"
                                     >
@@ -115,7 +115,7 @@
         [sctsAltText]=""
         [hmctsImageSource]="'/assets/images/UkGovCrestWhite.png'"
         [hmctsAltText]=""
-        alt="" 
-        />                    
+        alt=""
+        />
     </div>
 </ng-template>
