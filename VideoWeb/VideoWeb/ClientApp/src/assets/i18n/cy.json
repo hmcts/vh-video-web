@@ -917,18 +917,16 @@
   },
   "idp-selection": {
     "title": "Dewiswch math o gyfrif i fewngofnodi",
-    "description": "Bydd angen i chi ddewis yr opsiwn cywir a bod â chyfeiriad e-bost a chyfrinair dilys i fewngofnodi",
+    "description": "Mae’n rhaid i chi fewngofnodi gyda’r math cywir o gyfrif defnyddiwr. Gwiriwch yr enw defnyddiwr a anfonwyd atoch a dewiswch un o’r opsiynau canlynol:",
     "ejud": {
-      "title": "Daliwr Swydd Farnwrol",
-      "description": "Os ydych yn farnwr neu'n aelod o'r panel, dewiswch yr opsiwn hwn (bydd eich cyfeiriad e-bost yn gorffen gydag @ejudiciary.net)."
+      "description": "Mae fy enw defnyddiwr yn gorffen gyda @ejudiciary.net"
     },
     "vhaad": {
-      "title": "Cyfranogwr yn y Gwrandawiad",
-      "description": "Os ydych yn ymuno â gwrandawiad fideo mewn unrhyw gapasiti arall, dewiswch yr opsiwn hwn. "
+      "description": "Mae fy enw defnyddiwr yn gorffen gyda @hearings.reform.hmcts.net"
     },
-    "next": "Nesaf",
-    "error-title": "Mae yna broblem:",
-    "select-a-provider": "Dewiswch math o gyfrif i barhau. "
+    "continue": "Parhau",
+    "warning": "Fe gewch neges gwall os byddwch yn mewngofnodi gyda’r math anghywir o gyfrif. Gwiriwch eich manylion yn ofalus cyn dewis un.",
+    "select-a-provider": "Dewiswch math o gyfrif"
   },
   "login": {
     "redirect": "Arhoswch tra byddwn yn eich ailgyfeirio"

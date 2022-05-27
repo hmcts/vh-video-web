@@ -30,7 +30,7 @@ export class IdpSelectionComponent {
     }
 
     getProviders(): string[] {
-        return Object.keys(this.identityProviders);
+        return Object.keys(this.identityProviders).reverse();
     }
 
     selectProvider(provider: IdpProviders) {
