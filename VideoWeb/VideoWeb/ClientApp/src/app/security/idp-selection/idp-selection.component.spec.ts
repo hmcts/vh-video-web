@@ -51,8 +51,8 @@ describe('IdpSelectionComponent', () => {
     it('should getProviders should return providers', () => {
         const providers = component.getProviders();
         expect(providers.length).toBe(2);
-        expect(providers[0]).toBe('ejud');
-        expect(providers[1]).toBe('vhaad');
+        expect(providers[0]).toBe('vhaad');
+        expect(providers[1]).toBe('ejud');
     });
 
     it('should set selected provider', () => {

@@ -805,7 +805,7 @@
     "asylum-support": "Asylum Support",
     "employment-appeal-tribunal": "Employment Appeal Tribunal",
     "upper-tribunal-lands-chamber": "Upper Tribunal Lands Chamber",
-    "criminal-injuries-compensation":"Criminal Injuries Compensation",
+    "criminal-injuries-compensation": "Criminal Injuries Compensation",
     "war-pensions-appeals": "War Pensions Appeals",
     "special-educational-needs-and-disability": "Special Educational Needs and Disability"
   },
@@ -1171,18 +1171,16 @@
   },
   "idp-selection": {
     "title": "Select your account type to sign in",
-    "description": "You'll need to select the correct option and have a valid email address and password to sign in.",
+    "description": "You must sign in with the right kind of user account. Check the user name you were sent and select from the following options:",
     "ejud": {
-      "title": "Judicial Office Holder",
-      "description": "If you are a judge or panel member, select this option (your email will end with @ejudiciary.net)."
+      "description": "My user name ends with @ejudiciary.net"
     },
     "vhaad": {
-      "title": "Hearing Participant",
-      "description": "If you are participating in a video hearing in any other capacity, select this option."
+      "description": "My user name ends with @hearings.reform.hmcts.net"
     },
-    "next": "Next",
-    "error-title": "There is a problem:",
-    "select-a-provider": "Select an account type to continue."
+    "continue": "Continue",
+    "warning": "You will get an error message if you sign in with the wrong account type. Please check carefully before selecting.",
+    "select-a-provider": "Please select an account type"
   },
   "quick-participant-landing-page": {
     "page-title": "Enter your details to join your hearing",
