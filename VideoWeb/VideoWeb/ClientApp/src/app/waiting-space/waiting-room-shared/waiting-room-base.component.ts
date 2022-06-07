@@ -58,6 +58,7 @@ import { NotificationToastrService } from '../services/notification-toastr.servi
 import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
+import {Title} from "@angular/platform-browser";
 
 @Directive()
 export abstract class WaitingRoomBaseDirective {
@@ -130,7 +131,8 @@ export abstract class WaitingRoomBaseDirective {
         protected clockService: ClockService,
         protected consultationInvitiationService: ConsultationInvitationService,
         protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
-        protected hearingVenueFlagsService: HearingVenueFlagsService
+        protected hearingVenueFlagsService: HearingVenueFlagsService,
+        protected titleService: Title
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;
@@ -452,6 +454,8 @@ export abstract class WaitingRoomBaseDirective {
                         currentParticipantState: participant
                     }
                 );
+
+                this.setTitle(roomTransfer.to_room);
             })
         );
 
@@ -495,6 +499,24 @@ export abstract class WaitingRoomBaseDirective {
                 this.handleHearingLayoutUpdatedMessage(hearingLayout);
             })
         );
+    }
+
+    private setTitle(room: string): void {
+        let title: string = '';
+        if (room.includes('ConsultationRoom')) {
+            title = 'Video Hearings - Consultation Room';
+        } else if (room.includes('JudgeConsultationRoom')) {
+            title = 'Video Hearings - Judge Consultation Room';
+        } else if (room.includes('JudgeJOHConsultationRoom')) {
+            title = 'Video Hearings - Judge JOH Consultation Room';
+        } else if (room.includes('ParticipantConsultationRoom')) {
+            title = 'Video Hearings - Participant Consultation Room';
+        } else if (room.includes('HearingRoom')) {
+            title = 'Video Hearings - Hearing Room';
+        } else {
+            title = 'Video Hearings - Waiting room';
+        }
+        this.titleService.setTitle(title);
     }
 
     resolveParticipant(participantId: any): Participant {

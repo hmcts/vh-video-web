@@ -22,6 +22,7 @@ import { ParticipantRemoteMuteStoreService } from '../services/participant-remot
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
+import {Title} from "@angular/platform-browser";
 
 @Component({
     selector: 'app-joh-waiting-room',
@@ -32,6 +33,7 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
     private readonly loggerPrefixJOH = '[JOH WR] -';
     private destroyedSubject = new Subject();
     isParticipantsPanelHidden = false;
+    private title = 'JOH waiting room';
 
     constructor(
         protected route: ActivatedRoute,
@@ -52,7 +54,8 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         protected consultationInvitiationService: ConsultationInvitationService,
         private unloadDetectorService: UnloadDetectorService,
         participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
-        protected hearingVenueFlagsService: HearingVenueFlagsService
+        protected hearingVenueFlagsService: HearingVenueFlagsService,
+        protected titleService:Title
     ) {
         super(
             route,
@@ -71,11 +74,13 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
             clockService,
             consultationInvitiationService,
             participantRemoteMuteStoreService,
-            hearingVenueFlagsService
+            hearingVenueFlagsService,
+            titleService
         );
     }
 
     ngOnInit(): void {
+        this.titleService.setTitle(this.title);
         this.init();
     }
 

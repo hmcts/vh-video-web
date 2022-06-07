@@ -34,6 +34,7 @@ import { ParticipantRemoteMuteStoreService } from '../services/participant-remot
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
+import {Title} from "@angular/platform-browser";
 
 @Component({
     selector: 'app-judge-waiting-room',
@@ -91,7 +92,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         private unloadDetectorService: UnloadDetectorService,
         private hearingLayoutService: HearingLayoutService,
         protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
-        protected hearingVenueFlagsService: HearingVenueFlagsService
+        protected hearingVenueFlagsService: HearingVenueFlagsService,
+        protected titleService: Title
     ) {
         super(
             route,
@@ -110,7 +112,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             clockService,
             consultationInvitiationService,
             participantRemoteMuteStoreService,
-            hearingVenueFlagsService
+            hearingVenueFlagsService,
+            titleService
         );
         this.displayConfirmStartHearingPopup = false;
         this.hearingStartingAnnounced = true; // no need to play announcements for a judge

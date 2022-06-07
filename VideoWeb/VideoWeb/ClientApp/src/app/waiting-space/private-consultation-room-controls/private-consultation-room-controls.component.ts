@@ -40,6 +40,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     private conferenceStatus: ConferenceStatusChanged;
     enableDynamicEvidenceSharing = false;
     isStaffMemberFeatureEnabled = false;
+
     constructor(
         protected videoCallService: VideoCallService,
         protected eventService: EventsService,
