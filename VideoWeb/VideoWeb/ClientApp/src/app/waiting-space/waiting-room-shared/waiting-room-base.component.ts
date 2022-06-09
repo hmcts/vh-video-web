@@ -58,8 +58,8 @@ import { NotificationToastrService } from '../services/notification-toastr.servi
 import { ParticipantRemoteMuteStoreService } from '../services/participant-remote-mute-store.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
-import {Title} from "@angular/platform-browser";
-import {RoomTransfer} from "../../shared/models/room-transfer";
+import {Title} from '@angular/platform-browser';
+import {RoomTransfer} from '../../shared/models/room-transfer';
 
 @Directive()
 export abstract class WaitingRoomBaseDirective {
@@ -506,7 +506,7 @@ export abstract class WaitingRoomBaseDirective {
         const room: string = roomTransfer.to_room;
         const transferId = roomTransfer.participant_id;
         if (this.participant.id === transferId) {
-            let title: string = '';
+            let title;
             if (room.includes('JudgeConsultationRoom')) {
                 title = 'Video Hearings - JOH Consultation Room';
             } else if (room.includes('JudgeJOHConsultationRoom')) {

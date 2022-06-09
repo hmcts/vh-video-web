@@ -34,7 +34,7 @@ import { ParticipantRemoteMuteStoreService } from '../services/participant-remot
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
-import {Title} from "@angular/platform-browser";
+import {Title} from '@angular/platform-browser';
 
 @Component({
     selector: 'app-judge-waiting-room',

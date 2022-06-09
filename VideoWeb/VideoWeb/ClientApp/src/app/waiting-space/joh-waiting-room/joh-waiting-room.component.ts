@@ -22,7 +22,7 @@ import { ParticipantRemoteMuteStoreService } from '../services/participant-remot
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
-import {Title} from "@angular/platform-browser";
+import {Title} from '@angular/platform-browser';
 
 @Component({
     selector: 'app-joh-waiting-room',
@@ -55,7 +55,7 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         private unloadDetectorService: UnloadDetectorService,
         participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
         protected hearingVenueFlagsService: HearingVenueFlagsService,
-        protected titleService:Title
+        protected titleService: Title
     ) {
         super(
             route,
