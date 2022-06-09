@@ -27,7 +27,7 @@ import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.s
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 import { CaseTypeGroup } from '../models/case-type-group';
-import {Title} from '@angular/platform-browser';
+import { Title } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-participant-waiting-room',

@@ -16,7 +16,7 @@ import { ConsultationInvitationService } from '../../services/consultation-invit
 import { Component } from '@angular/core';
 import { ParticipantRemoteMuteStoreService } from '../../services/participant-remote-mute-store.service';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
-import {Title} from '@angular/platform-browser';
+import { Title } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-test-waiting-room',
@@ -42,7 +42,6 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
         protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
         protected hearingVenueFlagsService: HearingVenueFlagsService,
         protected titleService: Title
-
     ) {
         super(
             route,
