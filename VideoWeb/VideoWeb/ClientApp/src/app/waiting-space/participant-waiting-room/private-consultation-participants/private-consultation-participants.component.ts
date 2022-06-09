@@ -11,7 +11,6 @@ import { RoomTransfer } from 'src/app/shared/models/room-transfer';
 import { HearingRole } from '../../models/hearing-role-model';
 import { WRParticipantStatusListDirective } from '../../waiting-room-shared/wr-participant-list-shared.component';
 import { ParticipantListItem } from '../participant-list-item';
-import {Title} from "@angular/platform-browser";
 
 @Component({
     selector: 'app-private-consultation-participants',
@@ -22,7 +21,6 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     @Input() roomLabel: string;
     participantCallStatuses = {};
     johGroupResult: ParticipantListItem[][];
-    private title = 'Private consultation room';
 
     constructor(
         protected consultationService: ConsultationService,
@@ -30,15 +28,13 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         protected logger: Logger,
         protected videoWebService: VideoWebService,
         protected route: ActivatedRoute,
-        protected translateService: TranslateService,
-        private titleService:Title
+        protected translateService: TranslateService
     ) {
         super(consultationService, eventService, videoWebService, logger, translateService);
         this.loggerPrefix = '[PrivateConsultationParticipantsComponent] - ';
     }
 
     ngOnInit(): void {
-        this.titleService.setTitle(this.title);
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
         this.initParticipants();
         this.setupSubscribers();
