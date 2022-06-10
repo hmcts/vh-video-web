@@ -517,7 +517,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
         roomTransferSubjectMock.next(payload);
         flushMicrotasks();
 
-        expect(globalParticipant.current_room?.label).toEqual('JudgeConsultationRoom1');
         expect(titleService.setTitle).toHaveBeenCalled();
         expect(titleService.setTitle).toHaveBeenCalledWith('Video Hearings - JOH Consultation Room');
     }));
@@ -527,9 +526,35 @@ describe('WaitingRoomComponent EventHub Call', () => {
         roomTransferSubjectMock.next(payload);
         flushMicrotasks();
 
-        expect(globalParticipant.current_room?.label).toEqual('JudgeJOHConsultationRoom1');
         expect(titleService.setTitle).toHaveBeenCalled();
         expect(titleService.setTitle).toHaveBeenCalledWith('Video Hearings - JOH Consultation Room');
+    }));
+
+    it('should set page title for ConsultationRoom room transfer', fakeAsync(() => {
+        const payload = new RoomTransfer(globalParticipant.id, 'ConsultationRoom1', 'ConsultationRoom_from');
+        roomTransferSubjectMock.next(payload);
+        flushMicrotasks();
+
+        expect(titleService.setTitle).toHaveBeenCalled();
+        expect(titleService.setTitle).toHaveBeenCalledWith('Video Hearings - Private Consultation Room');
+    }));
+
+    it('should set page title for HearingRoom room transfer', fakeAsync(() => {
+        const payload = new RoomTransfer(globalParticipant.id, 'HearingRoom1', 'ConsultationRoom_from');
+        roomTransferSubjectMock.next(payload);
+        flushMicrotasks();
+
+        expect(titleService.setTitle).toHaveBeenCalled();
+        expect(titleService.setTitle).toHaveBeenCalledWith('Video Hearings - Hearing Room');
+    }));
+
+    it('should set page title for Waiting room transfer', fakeAsync(() => {
+        const payload = new RoomTransfer(globalParticipant.id, 'AnyRoom1', 'ConsultationRoom_from');
+        roomTransferSubjectMock.next(payload);
+        flushMicrotasks();
+
+        expect(titleService.setTitle).toHaveBeenCalled();
+        expect(titleService.setTitle).toHaveBeenCalledWith('Video Hearings - Waiting Room');
     }));
 
     describe('createOrUpdateWaitingOnLinkedParticipantsNotification', () => {

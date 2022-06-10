@@ -505,7 +505,7 @@ export abstract class WaitingRoomBaseDirective {
     private setTitle(roomTransfer: RoomTransfer): void {
         const room: string = roomTransfer.to_room;
         if (this.participant.id === roomTransfer.participant_id) {
-            let title = 'Video Hearings - Waiting room';
+            let title = 'Video Hearings - Waiting Room';
             if (room.includes('JudgeConsultationRoom') || room.includes('JudgeJOHConsultationRoom')) {
                 title = 'Video Hearings - JOH Consultation Room';
             } else if (room.includes('ConsultationRoom')) {
