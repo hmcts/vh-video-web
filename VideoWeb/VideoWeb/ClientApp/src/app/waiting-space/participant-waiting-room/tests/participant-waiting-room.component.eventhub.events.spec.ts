@@ -22,7 +22,8 @@ import {
     notificationSoundsService,
     notificationToastrService,
     roomClosingToastrService,
-    router, titleService,
+    router,
+    titleService,
     videoCallService,
     videoWebService
 } from '../../waiting-room-shared/tests/waiting-room-base-setup';

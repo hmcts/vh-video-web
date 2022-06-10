@@ -12,7 +12,8 @@ import {
     deviceTypeService,
     errorService,
     eventsService,
-    globalConference, globalJudge,
+    globalConference,
+    globalJudge,
     globalParticipant,
     heartbeatModelMapper,
     initAllWRDependencies,
@@ -21,7 +22,8 @@ import {
     notificationSoundsService,
     notificationToastrService,
     roomClosingToastrService,
-    router, titleService,
+    router,
+    titleService,
     videoCallService,
     videoWebService
 } from '../waiting-room-shared/tests/waiting-room-base-setup';
@@ -120,5 +122,4 @@ describe('JohWaitingRoomComponent eventhub events', () => {
 
         expect(notificationSoundsService.playHearingAlertSound).toHaveBeenCalledTimes(0);
     }));
-
 });

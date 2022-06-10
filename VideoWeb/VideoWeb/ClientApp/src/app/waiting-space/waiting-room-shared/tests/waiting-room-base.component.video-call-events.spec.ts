@@ -47,7 +47,8 @@ import {
     notificationSoundsService,
     notificationToastrService,
     roomClosingToastrService,
-    router, titleService,
+    router,
+    titleService,
     videoCallService,
     videoWebService
 } from './waiting-room-base-setup';

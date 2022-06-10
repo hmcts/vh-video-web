@@ -56,7 +56,9 @@ import {
     roomClosingToastrService,
     router,
     videoWebService,
-    videoCallService, globalJudge, titleService
+    videoCallService,
+    globalJudge,
+    titleService
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
 import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
