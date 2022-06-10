@@ -504,19 +504,14 @@ export abstract class WaitingRoomBaseDirective {
 
     private setTitle(roomTransfer: RoomTransfer): void {
         const room: string = roomTransfer.to_room;
-        const transferId = roomTransfer.participant_id;
-        if (this.participant.id === transferId) {
-            let title;
-            if (room.includes('JudgeConsultationRoom')) {
-                title = 'Video Hearings - JOH Consultation Room';
-            } else if (room.includes('JudgeJOHConsultationRoom')) {
+        if (this.participant.id === roomTransfer.participant_id) {
+            let title = 'Video Hearings - Waiting room';
+            if (room.includes('JudgeConsultationRoom') || room.includes('JudgeJOHConsultationRoom')) {
                 title = 'Video Hearings - JOH Consultation Room';
             } else if (room.includes('ConsultationRoom')) {
                 title = 'Video Hearings - Private Consultation Room';
             } else if (room.includes('HearingRoom')) {
                 title = 'Video Hearings - Hearing Room';
-            } else {
-                title = 'Video Hearings - Waiting room';
             }
             this.titleService.setTitle(title);
         }
