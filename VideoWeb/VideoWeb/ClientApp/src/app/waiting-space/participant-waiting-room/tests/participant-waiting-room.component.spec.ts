@@ -34,7 +34,7 @@ import {
     notificationSoundsService,
     notificationToastrService,
     roomClosingToastrService,
-    router,
+    router, titleService,
     videoCallService,
     videoWebService
 } from '../../waiting-room-shared/tests/waiting-room-base-setup';
@@ -126,7 +126,8 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             unloadDetectorServiceSpy,
             participantRemoteMuteStoreServiceSpy,
             mockedHearingVenueFlagsService,
-            userMediaServiceSpy
+            userMediaServiceSpy,
+            titleService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));

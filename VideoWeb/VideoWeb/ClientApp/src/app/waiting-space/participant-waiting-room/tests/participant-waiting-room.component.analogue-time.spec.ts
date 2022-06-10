@@ -17,7 +17,7 @@ import {
     notificationSoundsService,
     notificationToastrService,
     roomClosingToastrService,
-    router,
+    router, titleService,
     videoCallService,
     videoWebService
 } from '../../waiting-room-shared/tests/waiting-room-base-setup';
@@ -69,7 +69,8 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
             unloadDetectorServiceSpy,
             participantRemoteMuteStoreServiceSpy,
             mockedHearingVenueFlagsService,
-            userMediaServiceSpy
+            userMediaServiceSpy,
+            titleService
         );
     });
 

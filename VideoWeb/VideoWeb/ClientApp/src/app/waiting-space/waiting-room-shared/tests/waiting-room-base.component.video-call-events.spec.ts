@@ -47,7 +47,7 @@ import {
     notificationSoundsService,
     notificationToastrService,
     roomClosingToastrService,
-    router,
+    router, titleService,
     videoCallService,
     videoWebService
 } from './waiting-room-base-setup';
@@ -100,7 +100,8 @@ describe('WaitingRoomComponent Video Call', () => {
             clockService,
             consultationInvitiationService,
             participantRemoteMuteStoreServiceSpy,
-            mockedHearingVenueFlagsService
+            mockedHearingVenueFlagsService,
+            titleService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));

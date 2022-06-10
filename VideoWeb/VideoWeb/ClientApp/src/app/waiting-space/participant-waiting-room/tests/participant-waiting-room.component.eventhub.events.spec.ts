@@ -22,7 +22,7 @@ import {
     notificationSoundsService,
     notificationToastrService,
     roomClosingToastrService,
-    router,
+    router, titleService,
     videoCallService,
     videoWebService
 } from '../../waiting-room-shared/tests/waiting-room-base-setup';
@@ -76,7 +76,8 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
             unloadDetectorServiceSpy,
             participantRemoteMuteStoreServiceSpy,
             mockedHearingVenueFlagsService,
-            userMediaServiceSpy
+            userMediaServiceSpy,
+            titleService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));

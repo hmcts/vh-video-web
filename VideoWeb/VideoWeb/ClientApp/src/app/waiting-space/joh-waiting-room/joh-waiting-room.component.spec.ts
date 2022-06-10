@@ -16,7 +16,7 @@ import {
     deviceTypeService,
     errorService,
     eventsService,
-    globalConference,
+    globalConference, globalJudge,
     globalParticipant,
     heartbeatModelMapper,
     initAllWRDependencies,
@@ -25,7 +25,7 @@ import {
     notificationSoundsService,
     notificationToastrService,
     roomClosingToastrService,
-    router,
+    router, titleService,
     videoCallService,
     videoWebService
 } from '../waiting-room-shared/tests/waiting-room-base-setup';
@@ -36,6 +36,8 @@ import { Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { createParticipantRemoteMuteStoreServiceSpy } from '../services/mock-participant-remote-mute-store.service';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
+import { RoomTransfer } from '../../shared/models/room-transfer';
+import { roomTransferSubjectMock } from '../../testing/mocks/mock-events-service';
 
 describe('JohWaitingRoomComponent', () => {
     let component: JohWaitingRoomComponent;
@@ -89,7 +91,8 @@ describe('JohWaitingRoomComponent', () => {
             consultationInvitiationService,
             unloadDetectorServiceSpy,
             participantRemoteMuteStoreServiceSpy,
-            mockedHearingVenueFlagsService
+            mockedHearingVenueFlagsService,
+            titleService
         );
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));
@@ -273,4 +276,5 @@ describe('JohWaitingRoomComponent', () => {
             expect(component.getCurrentTimeClass()).toBe(test.expected);
         });
     });
+
 });

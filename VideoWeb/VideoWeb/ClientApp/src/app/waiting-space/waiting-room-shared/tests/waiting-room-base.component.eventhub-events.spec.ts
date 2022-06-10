@@ -56,7 +56,7 @@ import {
     roomClosingToastrService,
     router,
     videoWebService,
-    videoCallService
+    videoCallService, globalJudge, titleService
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
 import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
@@ -82,6 +82,7 @@ import { createTrue } from 'typescript';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { HearingLayoutChanged } from 'src/app/services/models/hearing-layout-changed';
 import { vhContactDetails } from 'src/app/shared/contact-information';
+import { Title } from '@angular/platform-browser';
 
 describe('WaitingRoomComponent EventHub Call', () => {
     let fixture: ComponentFixture<WRTestComponent>;
@@ -131,7 +132,8 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 { provide: NotificationToastrService, useValue: notificationToastrService },
                 { provide: RoomClosingToastrService, useValue: roomClosingToastrService },
                 { provide: ClockService, useValue: clockService },
-                { provide: ConsultationInvitationService, useValue: consultationInvitiationService }
+                { provide: ConsultationInvitationService, useValue: consultationInvitiationService },
+                { provide: Title, useValue: titleService }
             ]
         });
         fixture = TestBed.createComponent(WRTestComponent);
@@ -508,6 +510,26 @@ describe('WaitingRoomComponent EventHub Call', () => {
         flushMicrotasks();
 
         expect(globalParticipant.current_room).toBeNull();
+    }));
+
+    it('should set page title for JudgeConsultationRoom room transfer', fakeAsync(() => {
+        const payload = new RoomTransfer(globalParticipant.id, 'JudgeConsultationRoom1', 'ConsultationRoom_from');
+        roomTransferSubjectMock.next(payload);
+        flushMicrotasks();
+
+        expect(globalParticipant.current_room?.label).toEqual('JudgeConsultationRoom1');
+        expect(titleService.setTitle).toHaveBeenCalled();
+        expect(titleService.setTitle).toHaveBeenCalledWith('Video Hearings - JOH Consultation Room');
+    }));
+
+    it('should set page title for JudgeJOHConsultationRoom room transfer', fakeAsync(() => {
+        const payload = new RoomTransfer(globalParticipant.id, 'JudgeJOHConsultationRoom1', 'ConsultationRoom_from');
+        roomTransferSubjectMock.next(payload);
+        flushMicrotasks();
+
+        expect(globalParticipant.current_room?.label).toEqual('JudgeJOHConsultationRoom1');
+        expect(titleService.setTitle).toHaveBeenCalled();
+        expect(titleService.setTitle).toHaveBeenCalledWith('Video Hearings - JOH Consultation Room');
     }));
 
     describe('createOrUpdateWaitingOnLinkedParticipantsNotification', () => {

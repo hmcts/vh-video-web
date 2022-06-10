@@ -30,7 +30,7 @@ import {
     notificationSoundsService,
     notificationToastrService,
     roomClosingToastrService,
-    router,
+    router, titleService,
     videoCallService,
     videoWebService
 } from '../../waiting-room-shared/tests/waiting-room-base-setup';
@@ -253,7 +253,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             unloadDetectorServiceSpy,
             hearingLayoutServiceSpy,
             participantRemoteMuteStoreServiceSpy,
-            mockedHearingVenueFlagsService
+            mockedHearingVenueFlagsService,
+            titleService
         );
 
         consultationInvitiationService.getInvitation.and.returnValue(consultationInvitiation);
