@@ -27,6 +27,7 @@ import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.s
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 import { CaseTypeGroup } from '../models/case-type-group';
+import { Title } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -36,6 +37,7 @@ import { CaseTypeGroup } from '../models/case-type-group';
 export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
     private readonly loggerPrefixParticipant = '[Participant WR] -';
     private destroyedSubject = new Subject();
+    private title = 'Participant waiting room';
 
     currentTime: Date;
     hearingStartingAnnounced: boolean;
@@ -64,7 +66,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         private unloadDetectorService: UnloadDetectorService,
         protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
         protected hearingVenueFlagsService: HearingVenueFlagsService,
-        protected userMediaService: UserMediaService
+        protected userMediaService: UserMediaService,
+        protected titleService: Title
     ) {
         super(
             route,
@@ -83,11 +86,13 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             clockService,
             consultationInvitiationService,
             participantRemoteMuteStoreService,
-            hearingVenueFlagsService
+            hearingVenueFlagsService,
+            titleService
         );
     }
 
     ngOnInit() {
+        this.titleService.setTitle(this.title);
         this.init();
         this.userMediaService.isAudioOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(async audioOnly => {
             this.audioOnly = audioOnly;

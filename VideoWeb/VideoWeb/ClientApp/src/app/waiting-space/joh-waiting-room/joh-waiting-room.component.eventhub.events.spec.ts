@@ -3,7 +3,7 @@ import { Guid } from 'guid-typescript';
 import { ConferenceResponse, ConferenceStatus, ParticipantResponse } from 'src/app/services/clients/api-client';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { Hearing } from 'src/app/shared/models/hearing';
-import { hearingStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
+import { hearingStatusSubjectMock, roomTransferSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import {
     activatedRoute,
     clockService,
@@ -13,6 +13,7 @@ import {
     errorService,
     eventsService,
     globalConference,
+    globalJudge,
     globalParticipant,
     heartbeatModelMapper,
     initAllWRDependencies,
@@ -22,6 +23,7 @@ import {
     notificationToastrService,
     roomClosingToastrService,
     router,
+    titleService,
     videoCallService,
     videoWebService
 } from '../waiting-room-shared/tests/waiting-room-base-setup';
@@ -31,6 +33,7 @@ import { UnloadDetectorService } from 'src/app/services/unload-detector.service'
 import { Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { createParticipantRemoteMuteStoreServiceSpy } from '../services/mock-participant-remote-mute-store.service';
+import { RoomTransfer } from '../../shared/models/room-transfer';
 
 describe('JohWaitingRoomComponent eventhub events', () => {
     let component: JohWaitingRoomComponent;
@@ -71,7 +74,8 @@ describe('JohWaitingRoomComponent eventhub events', () => {
             consultationInvitiationService,
             unloadDetectorServiceSpy,
             participantRemoteMuteStoreServiceSpy,
-            mockedHearingVenueFlagsService
+            mockedHearingVenueFlagsService,
+            titleService
         );
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));

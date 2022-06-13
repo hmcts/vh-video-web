@@ -22,6 +22,7 @@ import { ToastrService } from 'ngx-toastr';
 import { ConsultationInvitationService } from '../../services/consultation-invitation.service';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
+import { Title } from '@angular/platform-browser';
 const conferenceTestData = new ConferenceTestData();
 
 export let component: WRTestComponent;
@@ -37,6 +38,7 @@ participantsPanelMemebers.forEach(x => {
     globalConference.participants.push(x);
 });
 export const globalParticipant = globalConference.participants.filter(x => x.role === Role.Individual)[0];
+export const globalJudge = globalConference.participants.filter(x => x.role === Role.Judge)[0];
 export const globalWitness = globalConference.participants.filter(x => x.hearing_role === HearingRole.WITNESS)[0];
 export const globalEndpoint = globalConference.endpoints[0];
 export const activatedRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: globalConference.id }) } };
@@ -63,6 +65,7 @@ export const jwToken = new TokenResponse({
     expires_on: '06/10/2020 01:13:00',
     token: 'eyJhbGciOiJIUzUxMuIsInR5cCI6IkpXRCJ9.eyJ1bmlxdWVfbmFtZSI6IjA0NjllNGQzLTUzZGYtNGExYS04N2E5LTA4OGI0MmExMTQxMiIsIm5iZiI6MTU5MTcyMjcyMCwiZXhwIjoxNTkxNzUxNjQwLCJpYXQiOjE1OTE3MjI3ODAsImlzcyI6ImhtY3RzLnZpZGVvLmhlYXJpbmdzLnNlcnZpY2UifO.USebpA7R7GUiPwF-uSuAd7Sx-bveOFi8LNE3oV7SLxdxASTlq7MfwhgYJhaC69OQAhWcrV7wSdcZ2OS-ZHkSUg'
 });
+export let titleService: jasmine.SpyObj<Title>;
 
 export function initAllWRDependencies() {
     mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
@@ -129,4 +132,6 @@ export function initAllWRDependencies() {
         'rejectInvitation',
         'linkedParticipantRejectedInvitation'
     ]);
+
+    titleService = jasmine.createSpyObj<Title>(['setTitle']);
 }
