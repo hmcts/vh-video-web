@@ -1,4 +1,14 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    ElementRef,
+    EventEmitter,
+    Input,
+    OnDestroy,
+    OnInit,
+    Output,
+    ViewChild
+} from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
@@ -15,10 +25,13 @@ import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
     templateUrl: './select-media-devices.component.html',
     styleUrls: ['./select-media-devices.component.scss']
 })
-export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
+export class SelectMediaDevicesComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly loggerPrefix = '[SelectMediaDevices] -';
     @Output() shouldClose = new EventEmitter();
     @Input() showAudioOnlySetting = false;
+
+    @ViewChild('availableMicsListRef') availableMicsList: ElementRef;
+    //@ViewChild('availableMicsListRef') availableMicsList: ElementRef;
 
     availableCameraDevices: UserMediaDevice[] = [];
     availableMicrophoneDevices: UserMediaDevice[] = [];
@@ -41,7 +54,37 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         private videoFilterService: VideoFilterService
     ) {}
 
+    ngAfterViewInit() {
+        // create a trap focus for the modal window
+        const element = document.getElementById('select-device-modal');
+        const focusableEls = element.querySelectorAll('a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])');
+
+        const firstFocusableEl = focusableEls[0];
+        const lastFocusableEl = focusableEls[focusableEls.length - 1];
+
+        const KEYCODE_TAB = 9;
+
+        element.addEventListener('keydown', function(e) {
+            if (e.key === 'Tab' || e.keyCode === KEYCODE_TAB) {
+                if ( e.shiftKey ) /* shift + tab */ {
+                    if (document.activeElement === firstFocusableEl) {
+                        //lastFocusableEl.focus();
+                        e.preventDefault();
+                    }
+                } else /* tab */ {
+                    if (document.activeElement === lastFocusableEl) {
+                        //firstFocusableEl.focus();
+                        e.preventDefault();
+                    }
+                }
+            }
+        });
+
+        this.availableMicsList.nativeElement.focus();
+    }
+
     ngOnInit() {
+
         this.userMediaService.connectedVideoDevices$.pipe(takeUntil(this.destroyedSubject)).subscribe(cameraDevices => {
             this.availableCameraDevices = cameraDevices;
             this.selectedCameraDevice = this.availableCameraDevices.find(camera => this.selectedCameraDevice?.deviceId === camera.deviceId);
@@ -81,6 +124,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         this.videoFilterService.onFilterChanged$.pipe(takeUntil(this.destroyedSubject)).subscribe(() => {
             this.updateSelectedCamera(this.selectedCameraDevice);
         });
+
     }
 
     determineFilterSelectionVisibility(profile: UserProfileResponse) {

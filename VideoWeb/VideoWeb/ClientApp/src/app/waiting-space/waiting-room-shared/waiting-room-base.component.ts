@@ -112,6 +112,7 @@ export abstract class WaitingRoomBaseDirective {
 
     @ViewChild('roomTitleLabel', { static: false }) roomTitleLabel: ElementRef<HTMLDivElement>;
     @ViewChild('hearingControls', { static: false }) hearingControls: PrivateConsultationRoomControlsComponent;
+
     countdownComplete: boolean;
     hasTriedToLeaveConsultation: boolean;
 
