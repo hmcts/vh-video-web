@@ -24,6 +24,7 @@ export class MediaStreamService {
     }
 
     initialiseNewStream(tracks?: MediaStreamTrack[]) {
+        this.logger.info(`[MediaStreamTrack] - Returning audio or video tracks: ${tracks}`);
         return new MediaStream(tracks);
     }
 
