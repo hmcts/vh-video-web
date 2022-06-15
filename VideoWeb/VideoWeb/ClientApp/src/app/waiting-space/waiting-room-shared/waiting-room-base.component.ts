@@ -1227,6 +1227,9 @@ export abstract class WaitingRoomBaseDirective {
 
     onSelectMediaDeviceShouldClose() {
         this.displayDeviceChangeModal = false;
+        // focusing on the div using scrolling method
+        const elm = document.getElementById('toggle-media-device-img-desktop');
+        elm.scrollIntoView();
     }
 
     async publishMediaDeviceStatus() {
