@@ -99,6 +99,14 @@ describe('SelectMediaDevicesComponent', () => {
         expect(component).toBeTruthy();
     });
 
+    describe('AfterViewInit', () => {
+        it('should set focus on availableMicsList', fakeAsync(() => {
+            component.ngAfterViewInit();
+            expect(component.availableMicsList.nativeElement.focus()).toHaveBeenCalled();
+        }));
+
+    });
+
     describe('OnInit', () => {
         it('should initialise connectWithCameraOn with input', fakeAsync(() => {
             component.ngOnInit();
