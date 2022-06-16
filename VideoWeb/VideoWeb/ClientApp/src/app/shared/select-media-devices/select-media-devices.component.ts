@@ -68,7 +68,6 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, AfterView
                 }
             }
         });
-
         this.availableMicsList.nativeElement.focus();
     }
 

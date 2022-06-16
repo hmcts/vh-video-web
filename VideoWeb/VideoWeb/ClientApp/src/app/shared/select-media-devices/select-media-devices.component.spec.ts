@@ -104,7 +104,6 @@ describe('SelectMediaDevicesComponent', () => {
             component.ngAfterViewInit();
             expect(component.availableMicsList.nativeElement.focus()).toHaveBeenCalled();
         }));
-
     });
 
     describe('OnInit', () => {
