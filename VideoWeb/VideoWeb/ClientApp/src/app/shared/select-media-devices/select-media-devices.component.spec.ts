@@ -101,14 +101,34 @@ describe('SelectMediaDevicesComponent', () => {
 
     describe('AfterViewInit', () => {
         it('should set focus on availableMicsList', fakeAsync(() => {
+            component.ngOnInit();
+            flushMicrotasks();
+            const divElm = document.createElement('div');
+            const child: Node = divElm.cloneNode();
+            child.textContent =
+                '<div><select required name="microphone" [(ngModel)]="selectedMicrophoneDevice"\n' +
+                '                                (ngModelChange)="onSelectedMicrophoneDeviceChange()" #availableMicsListRef\n' +
+                '                                class="govuk-select govuk-!-width-two-thirds" id="available-mics-list">\n' +
+                '                                <option *ngFor="let availableMic of availableMicrophoneDevices"\n' +
+                '                                    [ngValue]="availableMic">\n' +
+                '                                    {{ availableMic.label }}\n' +
+                '                                </option>\n' +
+                '                            </select></div>';
+            divElm.appendChild(child);
+            spyOn(document, 'getElementById').and.callFake(() => divElm);
+            component.availableMicsList = jasmine.createSpyObj('availableMicsList', ['nativeElement']);
+            const elmSpy = component.availableMicsList.nativeElement;
+            elmSpy.focus = function () {};
+            spyOn(elmSpy, 'focus').and.callFake(() => {});
             component.ngAfterViewInit();
-            expect(component.availableMicsList.nativeElement.focus()).toHaveBeenCalled();
+            expect(component.availableMicsList.nativeElement.focus).toHaveBeenCalled();
         }));
     });
 
     describe('OnInit', () => {
         it('should initialise connectWithCameraOn with input', fakeAsync(() => {
             component.ngOnInit();
+            flushMicrotasks();
             expect(component.connectWithCameraOn).toBeFalsy();
         }));
 
