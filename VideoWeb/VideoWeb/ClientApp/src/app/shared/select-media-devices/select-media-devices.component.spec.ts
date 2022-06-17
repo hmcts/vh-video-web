@@ -115,7 +115,7 @@ describe('SelectMediaDevicesComponent', () => {
                 '                                </option>\n' +
                 '                            </select></div>';
             divElm.appendChild(child);
-            spyOn(document, 'getElementById').and.callFake(() => divElm);
+            document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(divElm);
             component.availableMicsList = jasmine.createSpyObj('availableMicsList', ['nativeElement']);
             const elmSpy = component.availableMicsList.nativeElement;
             elmSpy.focus = function () {};
