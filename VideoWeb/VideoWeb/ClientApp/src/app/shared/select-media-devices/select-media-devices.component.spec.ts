@@ -1,4 +1,4 @@
-import { fakeAsync, flush, flushMicrotasks } from '@angular/core/testing';
+import { fakeAsync, flush, flushMicrotasks, tick } from '@angular/core/testing';
 import { Role, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { BackgroundFilter } from 'src/app/services/models/background-filter';
 import { UserMediaService } from 'src/app/services/user-media.service';
@@ -106,22 +106,42 @@ describe('SelectMediaDevicesComponent', () => {
             const divElm = document.createElement('div');
             const child: Node = divElm.cloneNode();
             child.textContent =
-                '<div><select required name="microphone" [(ngModel)]="selectedMicrophoneDevice"\n' +
+                '<div id="select-device-modal"><select required name="microphone" [(ngModel)]="selectedMicrophoneDevice"\n' +
                 '                                (ngModelChange)="onSelectedMicrophoneDeviceChange()" #availableMicsListRef\n' +
                 '                                class="govuk-select govuk-!-width-two-thirds" id="available-mics-list">\n' +
-                '                                <option *ngFor="let availableMic of availableMicrophoneDevices"\n' +
-                '                                    [ngValue]="availableMic">\n' +
-                '                                    {{ availableMic.label }}\n' +
-                '                                </option>\n' +
+                '                                <option value="dog">Dog</option>\n' +
+                '                                <option value="cat">Cat</option>\n' +
                 '                            </select></div>';
             divElm.appendChild(child);
             document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(divElm);
+
+
+
+
             component.availableMicsList = jasmine.createSpyObj('availableMicsList', ['nativeElement']);
+            //spyOn(divElm, 'querySelectorAll').and.returnValue(new NodeList[] { new Node() });
+
+
+
             const elmSpy = component.availableMicsList.nativeElement;
             elmSpy.focus = function () {};
             spyOn(elmSpy, 'focus').and.callFake(() => {});
+            elmSpy.addEventListener = function () {};
+            spyOn(elmSpy, 'addEventListener');
+
             component.ngAfterViewInit();
             expect(component.availableMicsList.nativeElement.focus).toHaveBeenCalled();
+
+            const event = new KeyboardEvent('keydown', { key: 'Tab' });
+            spyOn(event, 'preventDefault');
+
+            elmSpy.addEventListener = function (event) {};
+
+            spyOn(divElm, 'addEventListener').and.callFake(() => {});
+            divElm.dispatchEvent(event);
+            tick();
+
+            expect(event.preventDefault).toHaveBeenCalled();
         }));
     });
 
