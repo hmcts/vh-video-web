@@ -45,11 +45,11 @@ describe('SelectMediaDevicesComponent', () => {
         document.body.insertAdjacentHTML(
             'beforebegin',
             '<div id="select-device-modal"><select required name="microphone" [(ngModel)]="selectedMicrophoneDevice"\n' +
-            '                                (ngModelChange)="onSelectedMicrophoneDeviceChange()" #availableMicsListRef\n' +
-            '                                class="govuk-select govuk-!-width-two-thirds" id="available-mics-list">\n' +
-            '                                <option value="mic1">Mic1</option>\n' +
-            '                                <option value="mic2">Mic2</option>\n' +
-            '                            </select></div>'
+                '                                (ngModelChange)="onSelectedMicrophoneDeviceChange()" #availableMicsListRef\n' +
+                '                                class="govuk-select govuk-!-width-two-thirds" id="available-mics-list">\n' +
+                '                                <option value="mic1">Mic1</option>\n' +
+                '                                <option value="mic2">Mic2</option>\n' +
+                '                            </select></div>'
         );
     });
 
@@ -98,7 +98,6 @@ describe('SelectMediaDevicesComponent', () => {
         );
 
         component.availableCameraDevices = testData.getListOfCameras();
-
     }));
 
     afterEach(() => {
