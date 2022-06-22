@@ -106,16 +106,17 @@ describe('SelectMediaDevicesComponent', () => {
             //const divElm = document.createElement('div');
             const child: Node = document.body.cloneNode();
 
-            //child.textContent =
-            document.body.innerHTML =
+            child.textContent =
                 '<div id="select-device-modal"><select required name="microphone" [(ngModel)]="selectedMicrophoneDevice"\n' +
                 '                                (ngModelChange)="onSelectedMicrophoneDeviceChange()" #availableMicsListRef\n' +
                 '                                class="govuk-select govuk-!-width-two-thirds" id="available-mics-list">\n' +
                 '                                <option value="mic1">Mic1</option>\n' +
                 '                                <option value="mic2">Mic2</option>\n' +
                 '                            </select></div>';
+
+            document.body.innerHTML = child.textContent;
             //divElm.appendChild(child);
-            //document.body.appendChild(divElm);
+            //document.body.appendChild(child);
             const divElm = document.getElementById('select-device-modal');
             const activeElm = document.getElementById('available-mics-list');
 
