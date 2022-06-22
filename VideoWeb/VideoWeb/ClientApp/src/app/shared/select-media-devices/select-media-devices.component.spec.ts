@@ -103,25 +103,28 @@ describe('SelectMediaDevicesComponent', () => {
         it('should set focus on availableMicsList', fakeAsync(() => {
             component.ngOnInit();
             flushMicrotasks();
-            const divElm = document.createElement('div');
-            const child: Node = divElm.cloneNode();
-            child.textContent =
+            //const divElm = document.createElement('div');
+            const child: Node = document.body.cloneNode();
+
+            //child.textContent =
+            document.body.innerHTML =
                 '<div id="select-device-modal"><select required name="microphone" [(ngModel)]="selectedMicrophoneDevice"\n' +
                 '                                (ngModelChange)="onSelectedMicrophoneDeviceChange()" #availableMicsListRef\n' +
                 '                                class="govuk-select govuk-!-width-two-thirds" id="available-mics-list">\n' +
-                '                                <option value="dog">Dog</option>\n' +
-                '                                <option value="cat">Cat</option>\n' +
+                '                                <option value="mic1">Mic1</option>\n' +
+                '                                <option value="mic2">Mic2</option>\n' +
                 '                            </select></div>';
-            divElm.appendChild(child);
+            //divElm.appendChild(child);
+            //document.body.appendChild(divElm);
+            const divElm = document.getElementById('select-device-modal');
+            const activeElm = document.getElementById('available-mics-list');
+
+            activeElm.focus();
             document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(divElm);
+            divElm.querySelectorAll = jasmine.createSpy('Query Selector').and.returnValue(divElm.childNodes);
 
-
-
-
-            component.availableMicsList = jasmine.createSpyObj('availableMicsList', ['nativeElement']);
             //spyOn(divElm, 'querySelectorAll').and.returnValue(new NodeList[] { new Node() });
-
-
+            component.availableMicsList = jasmine.createSpyObj('availableMicsList', ['nativeElement']);
 
             const elmSpy = component.availableMicsList.nativeElement;
             elmSpy.focus = function () {};
@@ -133,11 +136,9 @@ describe('SelectMediaDevicesComponent', () => {
             expect(component.availableMicsList.nativeElement.focus).toHaveBeenCalled();
 
             const event = new KeyboardEvent('keydown', { key: 'Tab' });
+            event.preventDefault = function () {};
             spyOn(event, 'preventDefault');
 
-            elmSpy.addEventListener = function (event) {};
-
-            spyOn(divElm, 'addEventListener').and.callFake(() => {});
             divElm.dispatchEvent(event);
             tick();
 
