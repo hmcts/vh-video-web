@@ -1188,7 +1188,7 @@
     "page-title": "Rhowch eich manylion i ymuno â'ch gwrandawiad",
     "paragraph1": "Dywedwch wrthym eich enw a'ch rôl yn y gwrandawiad.",
     "name-label": "Eich enw llawn",
-    "name-error": "Rhowch eich enw llawn",
+    "name-error-empty": "Rhowch eich enw llawn",
     "role-label": "Beth yw eich rôl yn y gwrandawiad?",
     "role-error": "Dewiswch eich rôl yn y gwrandawiad",
     "roles": {
