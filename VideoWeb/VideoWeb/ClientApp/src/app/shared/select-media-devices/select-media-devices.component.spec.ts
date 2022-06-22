@@ -42,6 +42,15 @@ describe('SelectMediaDevicesComponent', () => {
     beforeAll(() => {
         profileService = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
         videoFilterService = jasmine.createSpyObj<VideoFilterService>('VideoFilterService', ['isFeatureEnabled'], ['onFilterChanged$']);
+        document.body.insertAdjacentHTML(
+            'beforebegin',
+            '<div id="select-device-modal"><select required name="microphone" [(ngModel)]="selectedMicrophoneDevice"\n' +
+            '                                (ngModelChange)="onSelectedMicrophoneDeviceChange()" #availableMicsListRef\n' +
+            '                                class="govuk-select govuk-!-width-two-thirds" id="available-mics-list">\n' +
+            '                                <option value="mic1">Mic1</option>\n' +
+            '                                <option value="mic2">Mic2</option>\n' +
+            '                            </select></div>'
+        );
     });
 
     beforeEach(fakeAsync(() => {
@@ -89,6 +98,7 @@ describe('SelectMediaDevicesComponent', () => {
         );
 
         component.availableCameraDevices = testData.getListOfCameras();
+
     }));
 
     afterEach(() => {
@@ -103,20 +113,7 @@ describe('SelectMediaDevicesComponent', () => {
         it('should set focus on availableMicsList', fakeAsync(() => {
             component.ngOnInit();
             flushMicrotasks();
-            //const divElm = document.createElement('div');
-            const child: Node = document.body.cloneNode();
 
-            child.textContent =
-                '<div id="select-device-modal"><select required name="microphone" [(ngModel)]="selectedMicrophoneDevice"\n' +
-                '                                (ngModelChange)="onSelectedMicrophoneDeviceChange()" #availableMicsListRef\n' +
-                '                                class="govuk-select govuk-!-width-two-thirds" id="available-mics-list">\n' +
-                '                                <option value="mic1">Mic1</option>\n' +
-                '                                <option value="mic2">Mic2</option>\n' +
-                '                            </select></div>';
-
-            document.body.innerHTML = child.textContent;
-            //divElm.appendChild(child);
-            //document.body.appendChild(child);
             const divElm = document.getElementById('select-device-modal');
             const activeElm = document.getElementById('available-mics-list');
 
@@ -124,7 +121,28 @@ describe('SelectMediaDevicesComponent', () => {
             document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(divElm);
             divElm.querySelectorAll = jasmine.createSpy('Query Selector').and.returnValue(divElm.childNodes);
 
-            //spyOn(divElm, 'querySelectorAll').and.returnValue(new NodeList[] { new Node() });
+            component.availableMicsList = jasmine.createSpyObj('availableMicsList', ['nativeElement']);
+
+            const elmSpy = component.availableMicsList.nativeElement;
+            elmSpy.focus = function () {};
+            spyOn(elmSpy, 'focus').and.callFake(() => {});
+
+            component.ngAfterViewInit();
+            expect(component.availableMicsList.nativeElement.focus).toHaveBeenCalled();
+        }));
+
+        it('should handle keydown Tab', fakeAsync(() => {
+            component.ngOnInit();
+            flushMicrotasks();
+            const child: Node = document.body.cloneNode();
+
+            const divElm = document.getElementById('select-device-modal');
+            const activeElm = document.getElementById('available-mics-list');
+
+            activeElm.focus();
+            document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(divElm);
+            divElm.querySelectorAll = jasmine.createSpy('Query Selector').and.returnValue(divElm.childNodes);
+
             component.availableMicsList = jasmine.createSpyObj('availableMicsList', ['nativeElement']);
 
             const elmSpy = component.availableMicsList.nativeElement;
@@ -134,9 +152,40 @@ describe('SelectMediaDevicesComponent', () => {
             spyOn(elmSpy, 'addEventListener');
 
             component.ngAfterViewInit();
-            expect(component.availableMicsList.nativeElement.focus).toHaveBeenCalled();
 
             const event = new KeyboardEvent('keydown', { key: 'Tab' });
+            event.preventDefault = function () {};
+            spyOn(event, 'preventDefault');
+
+            divElm.dispatchEvent(event);
+            tick();
+
+            expect(event.preventDefault).toHaveBeenCalled();
+        }));
+
+        it('should handle keydown Shift-Tab', fakeAsync(() => {
+            component.ngOnInit();
+            flushMicrotasks();
+            const child: Node = document.body.cloneNode();
+
+            const divElm = document.getElementById('select-device-modal');
+            const activeElm = document.getElementById('available-mics-list');
+
+            activeElm.focus();
+            document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(divElm);
+            divElm.querySelectorAll = jasmine.createSpy('Query Selector').and.returnValue(divElm.childNodes);
+
+            component.availableMicsList = jasmine.createSpyObj('availableMicsList', ['nativeElement']);
+
+            const elmSpy = component.availableMicsList.nativeElement;
+            elmSpy.focus = function () {};
+            spyOn(elmSpy, 'focus').and.callFake(() => {});
+            elmSpy.addEventListener = function () {};
+            spyOn(elmSpy, 'addEventListener');
+
+            component.ngAfterViewInit();
+
+            const event = new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true });
             event.preventDefault = function () {};
             spyOn(event, 'preventDefault');
 
