@@ -872,6 +872,8 @@ PexRTCCall.prototype.handleError = function (err) {
                     err = err.message;
                 }
                 if (err) {
+                    //this.logger.debug('Oliver debug - error from pexip');
+                    this.logger.debug('Oliver debug - error from pexip: ' + err);
                     self.onError(self.parent.trans.ERROR_CALL_FAILED + err);
                 } else {
                     self.onError(self.parent.trans.ERROR_CALL_FAILED);

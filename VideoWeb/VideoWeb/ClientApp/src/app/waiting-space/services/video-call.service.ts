@@ -88,6 +88,7 @@ export class VideoCallService {
         this.hasDisconnected$ = new Subject();
 
         const self = this;
+        this.logger.debug('Oliver debug - setupClient - new PexRTC object');
         this.pexipAPI = new PexRTC();
         this.initCallTag();
         this.initTurnServer();
