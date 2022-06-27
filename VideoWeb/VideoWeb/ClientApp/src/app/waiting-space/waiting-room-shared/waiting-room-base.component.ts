@@ -898,6 +898,13 @@ export abstract class WaitingRoomBaseDirective {
             conference: this.conferenceId,
             participant: this.participant.id
         });
+
+        if (error.reason.includes('IP address')) {
+            // TODO implement retry loop
+            // TODO move to errorService
+            return;
+        }
+
         this.errorService.handlePexipError(error, this.conferenceId);
     }
 
