@@ -1,4 +1,4 @@
-import { fakeAsync, flush, flushMicrotasks } from '@angular/core/testing';
+import { fakeAsync, flush, flushMicrotasks, tick } from '@angular/core/testing';
 import { Role, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { BackgroundFilter } from 'src/app/services/models/background-filter';
 import { UserMediaService } from 'src/app/services/user-media.service';
@@ -99,9 +99,110 @@ describe('SelectMediaDevicesComponent', () => {
         expect(component).toBeTruthy();
     });
 
+    describe('AfterViewInit', () => {
+        let div;
+        let divElm;
+        beforeEach(fakeAsync(() => {
+            component.ngOnInit();
+            flushMicrotasks();
+            div =
+                '<div id="select-device-modal"><select required name="microphone" [(ngModel)]="selectedMicrophoneDevice"\n' +
+                '                                (ngModelChange)="onSelectedMicrophoneDeviceChange()" #availableMicsListRef\n' +
+                '                                class="govuk-select govuk-!-width-two-thirds" id="available-mics-list">\n' +
+                '                                <option value="mic1">Mic1</option>\n' +
+                '                                <option value="mic2">Mic2</option>\n' +
+                '                            </select></div>';
+
+            divElm = document.createElement('div');
+            divElm.innerHTML = div;
+
+            document.body.appendChild(divElm);
+        }));
+        afterEach(() => {
+            divElm.remove();
+        });
+        it('should set focus on availableMicsList', fakeAsync(() => {
+            const activeElm = document.getElementById('available-mics-list');
+
+            activeElm.focus();
+            document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(divElm);
+            divElm.querySelectorAll = jasmine.createSpy('Query Selector').and.returnValue(divElm.childNodes);
+
+            component.availableMicsList = jasmine.createSpyObj('availableMicsList', ['nativeElement']);
+
+            const elmSpy = component.availableMicsList.nativeElement;
+            elmSpy.focus = function () {};
+            spyOn(elmSpy, 'focus').and.callFake(() => {});
+
+            component.ngAfterViewInit();
+            expect(component.availableMicsList.nativeElement.focus).toHaveBeenCalled();
+        }));
+
+        it('should handle keydown Tab', fakeAsync(() => {
+            const focusableEls: NodeListOf<HTMLElement> = divElm.querySelectorAll(
+                'a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])'
+            );
+
+            const firstFocusableEl = focusableEls[0];
+
+            firstFocusableEl.focus();
+
+            document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(divElm);
+            divElm.querySelectorAll = jasmine.createSpy('Query Selector').and.returnValue(focusableEls);
+
+            component.availableMicsList = jasmine.createSpyObj('availableMicsList', ['nativeElement']);
+
+            const elmSpy = component.availableMicsList.nativeElement;
+            elmSpy.focus = function () {};
+            spyOn(elmSpy, 'focus').and.callFake(() => {});
+
+            component.ngAfterViewInit();
+
+            const event = new KeyboardEvent('keydown', { key: 'Tab' });
+            event.preventDefault = function () {};
+            spyOn(event, 'preventDefault');
+
+            divElm.dispatchEvent(event);
+            tick();
+
+            expect(event.preventDefault).toHaveBeenCalled();
+        }));
+
+        it('should handle keydown Shift-Tab', fakeAsync(() => {
+            const focusableEls: NodeListOf<HTMLElement> = divElm.querySelectorAll(
+                'a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])'
+            );
+
+            const firstFocusableEl = focusableEls[0];
+
+            firstFocusableEl.focus();
+
+            document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(divElm);
+            divElm.querySelectorAll = jasmine.createSpy('Query Selector').and.returnValue(focusableEls);
+
+            component.availableMicsList = jasmine.createSpyObj('availableMicsList', ['nativeElement']);
+
+            const elmSpy = component.availableMicsList.nativeElement;
+            elmSpy.focus = function () {};
+            spyOn(elmSpy, 'focus').and.callFake(() => {});
+
+            component.ngAfterViewInit();
+
+            const event = new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true });
+            event.preventDefault = function () {};
+            spyOn(event, 'preventDefault');
+
+            divElm.dispatchEvent(event);
+            tick();
+
+            expect(event.preventDefault).toHaveBeenCalled();
+        }));
+    });
+
     describe('OnInit', () => {
         it('should initialise connectWithCameraOn with input', fakeAsync(() => {
             component.ngOnInit();
+            flushMicrotasks();
             expect(component.connectWithCameraOn).toBeFalsy();
         }));
 

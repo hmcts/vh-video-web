@@ -112,6 +112,7 @@ export abstract class WaitingRoomBaseDirective {
 
     @ViewChild('roomTitleLabel', { static: false }) roomTitleLabel: ElementRef<HTMLDivElement>;
     @ViewChild('hearingControls', { static: false }) hearingControls: PrivateConsultationRoomControlsComponent;
+
     countdownComplete: boolean;
     hasTriedToLeaveConsultation: boolean;
 
@@ -1226,6 +1227,9 @@ export abstract class WaitingRoomBaseDirective {
 
     onSelectMediaDeviceShouldClose() {
         this.displayDeviceChangeModal = false;
+        // focusing on the div using scrolling method
+        const elm = document.getElementById('toggle-media-device-img-desktop');
+        elm.scrollIntoView();
     }
 
     async publishMediaDeviceStatus() {
