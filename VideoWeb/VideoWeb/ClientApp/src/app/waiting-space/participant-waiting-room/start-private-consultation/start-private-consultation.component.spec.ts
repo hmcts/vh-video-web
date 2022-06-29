@@ -146,6 +146,12 @@ describe('StartPrivateConsultationComponent', () => {
         expect(component.getParticipantDisabled(participant as any)).toBe(false);
     });
 
+    it('should return enabled for participant with all linked participants available or in consultation', () => {
+        const participant = { status: ParticipantStatus.InConsultation, linked_participants: [{ linked_id: '12345' }] };
+        component.participants = [{ id: '12345', status: ParticipantStatus.InConsultation }] as any[];
+        expect(component.getParticipantDisabled(participant as any)).toBe(false);
+    });
+
     it('should return disabled for participant with some linked participants unavailable', () => {
         const participant = { status: ParticipantStatus.Available, linked_participants: [{ linked_id: '12345' }] };
         component.participants = [{ id: '12345', status: ParticipantStatus.NotSignedIn }] as any[];
