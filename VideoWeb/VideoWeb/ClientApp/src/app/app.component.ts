@@ -129,7 +129,7 @@ export class AppComponent implements OnInit, OnDestroy {
         }
         this.loggedIn = loggedIn;
 
-        if (loggedIn || this.isSignInUrl) {
+        if (loggedIn) {
             await this.retrieveProfileRole();
         }
 
