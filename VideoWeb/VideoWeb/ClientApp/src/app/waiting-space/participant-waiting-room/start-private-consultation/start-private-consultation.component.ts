@@ -97,11 +97,10 @@ export class StartPrivateConsultationComponent implements OnChanges {
                 return p.status !== ParticipantStatus.Available && p.status !== ParticipantStatus.InConsultation;
             });
 
-        const result = (
+        return (
             someLinkedParticipantsUnavailable ||
             (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation)
         );
-        return result;
     }
 
     getEndpointStatusCss(endpoint: VideoEndpointResponse): string {
