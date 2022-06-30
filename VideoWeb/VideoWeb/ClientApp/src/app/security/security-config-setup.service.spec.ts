@@ -25,6 +25,21 @@ describe('SecurityConfigSetupService', () => {
         expect(result).toBe(IdpProviders.vhaad);
     });
 
+    it('should set config associated to provider when idp has been set', async () => {
+        // Arrange
+        const provider = IdpProviders.ejud;
+        window.sessionStorage.clear();
+        oidcConfigServiceSpy = jasmine.createSpyObj<OidcConfigService>('OidcConfigService', ['withConfig']);
+        sut = new SecurityConfigSetupService(oidcConfigServiceSpy, configService as any);
+        window.sessionStorage.setItem('IdpProviders', provider);
+
+        // Act
+        sut.setupConfig().subscribe();
+
+        // Assert
+        expect(oidcConfigServiceSpy.withConfig).toHaveBeenCalledWith(sut.config[provider]);
+    });
+
     it('should set store when setting idp', async () => {
         // Arrange
         const testProvider = IdpProviders.ejud;
