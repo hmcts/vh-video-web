@@ -50,7 +50,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].ClickRadioButton(IsAnEjudUser()
                 ? AccountTypeSelectionPage.JohUserRadioButton
                 : AccountTypeSelectionPage.HearingParticipantRadioButton);
-            _browsers[_c.CurrentUser].Click(AccountTypeSelectionPage.NextButton);
+            _browsers[_c.CurrentUser].Click(AccountTypeSelectionPage.ContinueButton);
         }
 
         [Then(@"they should have the option to log back in when they logout")]
@@ -62,6 +62,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             if (isEjudEnabled)
             {
                 _browsers[_c.CurrentUser].PageUrl(Page.IdpSelection.Url);
+                _browsers[_c.CurrentUser].Click(AccountTypeSelectionPage.ContinueButton);
             }
             else
             {

@@ -35,7 +35,14 @@ export class SecurityConfigSetupService {
             map(clientSettings => {
                 this.config[IdpProviders.ejud] = this.initOidcConfig(clientSettings.e_jud_idp_settings);
                 this.config[IdpProviders.vhaad] = this.initOidcConfig(clientSettings.vh_idp_settings);
-                this.oidcConfigService.withConfig(this.config[this.defaultProvider]);
+
+                const provider = this.getIdp();
+
+                if (provider !== IdpProviders.quickLink) {
+                    this.oidcConfigService.withConfig(this.config[provider]);
+                } else {
+                    this.oidcConfigService.withConfig(this.config[this.defaultProvider]);
+                }
 
                 this._configSetupSubject.next(true);
 
