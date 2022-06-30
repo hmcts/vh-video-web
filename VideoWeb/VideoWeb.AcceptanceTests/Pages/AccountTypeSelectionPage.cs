@@ -8,6 +8,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static readonly By HearingParticipantRadioButton = By.Id("vhaad");
         public static readonly By JohUserRadioButton = By.Id("ejud");
         public static readonly By NextButton = By.XPath("//button[text()=' Next ']");
+        public static readonly By ContinueButton = By.XPath("//button[text()=' Continue ']");
         public static readonly By DoNotStayLoggedInButton = By.Id("idBtn_Back");
     }
 }
