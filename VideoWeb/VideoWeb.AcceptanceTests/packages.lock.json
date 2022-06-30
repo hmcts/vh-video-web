@@ -4,9 +4,9 @@
     ".NETCoreApp,Version=v3.1": {
       "BookingsApi.Client": {
         "type": "Direct",
-        "requested": "[1.30.18, )",
-        "resolved": "1.30.18",
-        "contentHash": "hRhZn7r3suS1lW5xeUeA5WBQUmuZXjUbrDee+jZpv7sOet9qxOGglI0vN5GTzR398h/MCW7cH0VMb8JSNtwE9w==",
+        "requested": "[1.36.4, )",
+        "resolved": "1.36.4",
+        "contentHash": "QYj5ayeMAx3i3ZsG+CaP6UPxxvXzWYGUMBCRZNLCxzPgNER7lNUaX84UrX6hABTwv0M7s6jp3bMRClCmZ7ShBA==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
           "Newtonsoft.Json": "12.0.3"
@@ -193,9 +193,9 @@
       },
       "SpecFlow": {
         "type": "Direct",
-        "requested": "[3.9.40, )",
-        "resolved": "3.9.40",
-        "contentHash": "ru7twstJSKrTv3XfcxyttzrdZ/FvXOF5cYN/x/2js755wVk1zpSPUPa/ml3lSZmPNkS5OAOuSt1JLEa5hhDhdw==",
+        "requested": "[3.9.74, )",
+        "resolved": "3.9.74",
+        "contentHash": "n6kcg9ZeQWxqJFoT23SsFT89U1QQNwvcN9pAX5alB6ZPr6K0p5D5nGIJ1PZsSaFaRFutiwQ+DicmxBCPAZVYIA==",
         "dependencies": {
           "BoDi": "1.5.0",
           "Gherkin": "19.0.3",
@@ -208,13 +208,13 @@
       },
       "SpecFlow.NUnit": {
         "type": "Direct",
-        "requested": "[3.9.40, )",
-        "resolved": "3.9.40",
-        "contentHash": "+brbJAe0LLzmXh2L78kOJc2fa5EH/7cugmbnfZQdBeWCzL6iFDWFl3MHZ0xx/2BQyu6N/xokqw53Rl30LIo7lw==",
+        "requested": "[3.9.74, )",
+        "resolved": "3.9.74",
+        "contentHash": "nMPLztTT5IZDMnvNCUxklqaM+agn4kjuNy/qAcYQQOxau2G1MF73UxhL9OXjJQaEuPuyT8gJvXudOYCFZWztxA==",
         "dependencies": {
           "NUnit": "3.13.1",
-          "SpecFlow": "[3.9.40]",
-          "SpecFlow.Tools.MsBuild.Generation": "[3.9.40]"
+          "SpecFlow": "[3.9.74]",
+          "SpecFlow.Tools.MsBuild.Generation": "[3.9.74]"
         }
       },
       "System.Drawing.Common": {
@@ -251,9 +251,9 @@
       },
       "VH.AcceptanceTests.Common": {
         "type": "Direct",
-        "requested": "[1.21.64, )",
-        "resolved": "1.21.64",
-        "contentHash": "Nr4an9YakJsaYyHTeqpRS05XHvMqmTN+KkMKbWxtuCpUtH1Q5H8Esq41huD2nQBnyJec/hBakWFb8+5thUtOFA==",
+        "requested": "[1.21.69, )",
+        "resolved": "1.21.69",
+        "contentHash": "C/bsf3gpsuOfLysVh+V0Ks1nXiqIXgPHM12SPT3yZJLk2KN2dn9XGQkN4gcajK+Y9ufj8hoKZtrvKaaO4xc+mw==",
         "dependencies": {
           "Appium.WebDriver": "4.3.1",
           "Azure.Storage.Blobs": "12.8.0",
@@ -282,7 +282,7 @@
           "Selenium.Firefox.WebDriver": "0.27.0",
           "Selenium.Support": "3.141.0",
           "Selenium.WebDriver": "3.141.0",
-          "Selenium.WebDriver.ChromeDriver": "97.0.4692.7100",
+          "Selenium.WebDriver.ChromeDriver": "103.0.5060.5300",
           "Selenium.WebDriver.IEDriver": "3.150.1.2",
           "Selenium.WebDriver.MicrosoftDriver": "17.17134.0",
           "SpecFlow": "3.9.40",
@@ -1311,8 +1311,8 @@
       },
       "Selenium.WebDriver.ChromeDriver": {
         "type": "Transitive",
-        "resolved": "97.0.4692.7100",
-        "contentHash": "/5wf4Rv9vTmab2qWo3enuYLoumOyVb6+rO0f2hbym+MQzDGYb7GpadhWk/jgNtUf6eFvsqL90TyzXrcCfOhCyQ=="
+        "resolved": "103.0.5060.5300",
+        "contentHash": "UwIFn3QINPCwFrQwJUoV7yyAcuvIrRtleLitw8dx+a6db/Lizc0oBxuMyXttQolEVhS8Jf05IhvG+vLKZzBhjg=="
       },
       "SpecFlow.Internal.Json": {
         "type": "Transitive",
@@ -1321,10 +1321,10 @@
       },
       "SpecFlow.Tools.MsBuild.Generation": {
         "type": "Transitive",
-        "resolved": "3.9.40",
-        "contentHash": "DFClKzQH0ijUBiZNpas8sQ66EdGwVSS18UtC1hVIM7PiT0F+xzKs4VX5hsz+ZY/RKyQEfY9HELUAC8AoZicxSg==",
+        "resolved": "3.9.74",
+        "contentHash": "I/9OvmKOohJqIUNJ0xGYJCWfL6WKDaes8OoOAD/2yhGX+tzC5ofs9yqkP9Cu/xfnIx+11IR3pZs7YhBhGAcgWQ==",
         "dependencies": {
-          "SpecFlow": "[3.9.40]"
+          "SpecFlow": "[3.9.74]"
         }
       },
       "StackExchange.Redis": {
