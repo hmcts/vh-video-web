@@ -62,7 +62,7 @@
         "core-js": "^3.8.2",
         "govuk-frontend": "^3.14.0",
         "guid-typescript": "^1.0.9",
-        "moment": "^2.29.1",
+        "moment": "^2.29.2",
         "ng2-charts": "^2.4.2",
         "ngx-clipboard": "^14.0.1",
         "ngx-device-detector": "2.0.5",
