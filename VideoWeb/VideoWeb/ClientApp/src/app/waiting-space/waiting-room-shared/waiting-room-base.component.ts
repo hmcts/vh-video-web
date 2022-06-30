@@ -115,6 +115,8 @@ export abstract class WaitingRoomBaseDirective {
 
     countdownComplete: boolean;
     hasTriedToLeaveConsultation: boolean;
+    connectionFailedCount: number;
+    CONNECTION_FAILED_LIMIT = 3;
 
     protected constructor(
         protected route: ActivatedRoute,
@@ -142,6 +144,7 @@ export abstract class WaitingRoomBaseDirective {
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
         this.errorCount = 0;
+        this.connectionFailedCount = 0;
 
         this.phoneNumber$ = this.hearingVenueFlagsService.hearingVenueIsScottish$.pipe(
             map(x => (x ? this.contactDetails.scotland.phoneNumber : this.contactDetails.englandAndWales.phoneNumber))
@@ -899,11 +902,18 @@ export abstract class WaitingRoomBaseDirective {
             participant: this.participant.id
         });
 
-        // if (error.reason.includes('IP address')) {
-        //     // TODO implement retry loop
-        //     // TODO move to errorService
-        //     return;
-        // }
+        if (error.reason.toUpperCase().includes('FAILED TO GATHER IP ADDRESSES')) {
+            // This error happens when the Pexip connection isn't completely set up
+            this.logger.info(`${this.loggerPrefix} Failed to gather IP addresses, retrying`);
+            this.connectionFailedCount++;
+
+            if (this.connectionFailedCount < this.CONNECTION_FAILED_LIMIT) {
+                // Suppress the error, in order to trigger another connection setup
+                return;
+            }
+
+            this.logger.warn(`${this.loggerPrefix} Failed to gather IP addresses, retry limit reached`);
+        }
 
         this.errorService.handlePexipError(error, this.conferenceId);
     }
