@@ -97,7 +97,6 @@ export class ErrorComponent implements OnInit, OnDestroy {
             this.logger.debug(`${this.loggerPrefix} Internet connection detected. Navigating to previous page`, {
                 returnUrl: previousPage
             });
-            this.logger.debug('Oliver debug - disconnected, attempting reconnect');
             this.attemptingReconnect = false;
             this.router.navigate([previousPage]);
             this.connectionStatusService.userTriggeredReconnect();

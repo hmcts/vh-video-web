@@ -88,7 +88,6 @@ export class VideoCallService {
         this.hasDisconnected$ = new Subject();
 
         const self = this;
-        this.logger.debug('Oliver debug - setupClient - new PexRTC object');
         this.pexipAPI = new PexRTC();
         this.initCallTag();
         this.initTurnServer();
@@ -226,9 +225,6 @@ export class VideoCallService {
         });
         this.stopPresentation();
         this.initCallTag();
-        this.logger.debug('Oliver debug - pexipAPI.makeCall', {
-            pexipNode: pexipNode
-        });
         this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, null);
     }
 
@@ -236,7 +232,6 @@ export class VideoCallService {
         if (this.pexipAPI) {
             this.logger.info(`${this.loggerPrefix} Disconnecting from pexip node.`);
             this.stopPresentation();
-            this.logger.debug('Oliver debug - pexipAPI.disconnect');
             this.pexipAPI.disconnect();
             this.cleanUpConnection();
         } else {
@@ -253,7 +248,6 @@ export class VideoCallService {
     }
 
     connect(pin: string, extension: string) {
-        this.logger.debug('Oliver debug - pexipAPI.connect');
         this.pexipAPI.connect(pin, extension);
     }
 
