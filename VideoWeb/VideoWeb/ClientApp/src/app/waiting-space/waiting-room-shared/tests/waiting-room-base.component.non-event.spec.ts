@@ -47,6 +47,7 @@ import { WRTestComponent } from './WRTestComponent';
 import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { vhContactDetails } from 'src/app/shared/contact-information';
+import { CallError } from '../../models/video-call-models';
 
 describe('WaitingRoomComponent message and clock', () => {
     let component: WRTestComponent;
@@ -853,6 +854,19 @@ describe('WaitingRoomComponent message and clock', () => {
             component.phoneNumber$.subscribe(value => {
                 expect(value).toEqual(vhContactDetails.englandAndWales.phoneNumber);
             });
+        });
+    });
+
+    describe('handleCallError', () => {
+        it('should suppress failed to gather ip address error', () => {
+            component.handleCallError(new CallError('Failed to gather IP addresses'));
+            expect(errorService.handlePexipError).toHaveBeenCalledTimes(0);
+        });
+
+        it('should not suppress failed to gather ip address error after failure limit reached', () => {
+            component.connectionFailedCount = 2;
+            component.handleCallError(new CallError('Failed to gather IP addresses'));
+            expect(errorService.handlePexipError).toHaveBeenCalledTimes(1);
         });
     });
 });
