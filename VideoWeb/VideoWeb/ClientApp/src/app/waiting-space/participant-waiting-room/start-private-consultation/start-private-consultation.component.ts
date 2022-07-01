@@ -94,7 +94,7 @@ export class StartPrivateConsultationComponent implements OnChanges {
             participant.linked_participants &&
             participant.linked_participants.some(lp => {
                 const p = this.getParticipantFromLinkedParticipant(lp);
-                return p.status !== ParticipantStatus.Available;
+                return p.status !== ParticipantStatus.Available && p.status !== ParticipantStatus.InConsultation;
             });
 
         return (
