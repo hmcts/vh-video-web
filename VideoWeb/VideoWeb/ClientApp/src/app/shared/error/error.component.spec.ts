@@ -15,6 +15,7 @@ import { connectionStatusServiceSpyFactory } from 'src/app/testing/mocks/mock-co
 import { TranslateService } from '@ngx-translate/core';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { TranslatePipeMock } from 'src/app/testing/mocks/mock-translation-pipe';
+import {By} from "@angular/platform-browser";
 
 class MockRouter {
     public ne = new NavigationEnd(0, '/testUrl-test-error1', null);
@@ -173,8 +174,10 @@ describe('ErrorComponent', () => {
         component.reconnect();
 
         // ASSERT
+        expect(component.failedAttemptToReconnect).toBeTrue();
         expect(pageTrackerSpy.getPreviousUrl).toHaveBeenCalledTimes(0);
         expect(connectionStatusServiceSpy.userTriggeredReconnect).toHaveBeenCalledTimes(1);
+        expect(fixture.debugElement.query(By.css('#failed-connect-ui'))).toBeDefined();
     });
 
     it('should return true when browser has an internet connection', () => {
@@ -193,6 +196,22 @@ describe('ErrorComponent', () => {
         expect(component.hasInternetConnection).toBeFalsy();
     });
 
+    it('should return the value of the internet connection status', () => {
+        // ARRANGE
+        spyPropertyGetter(connectionStatusServiceSpy, 'status').and.returnValue(true);
+
+        // ASSERT
+        expect(component.connectionStatus).toBeTrue();
+    });
+
+    it('should return the value of the internet connection status', () => {
+        // ARRANGE
+        spyPropertyGetter(connectionStatusServiceSpy, 'status').and.returnValue(false);
+
+        // ASSERT
+        expect(component.connectionStatus).toBeFalse();
+    });
+
     it('should not go back if already reconnecting in progress', () => {
         // ARRANGE
         component.attemptingReconnect = true;
@@ -201,6 +220,7 @@ describe('ErrorComponent', () => {
 
         // ASSERT
         expect(pageTrackerSpy.getPreviousUrl).toHaveBeenCalledTimes(0);
+        expect(fixture.debugElement.query(By.css('#failed-connect-ui'))).toBeNull();
     });
 
     it('should show error message for firewall issue if session storage returns a value', () => {
