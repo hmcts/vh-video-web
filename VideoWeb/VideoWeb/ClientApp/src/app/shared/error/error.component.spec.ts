@@ -15,7 +15,7 @@ import { connectionStatusServiceSpyFactory } from 'src/app/testing/mocks/mock-co
 import { TranslateService } from '@ngx-translate/core';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { TranslatePipeMock } from 'src/app/testing/mocks/mock-translation-pipe';
-import {By} from "@angular/platform-browser";
+import { By } from '@angular/platform-browser';
 
 class MockRouter {
     public ne = new NavigationEnd(0, '/testUrl-test-error1', null);

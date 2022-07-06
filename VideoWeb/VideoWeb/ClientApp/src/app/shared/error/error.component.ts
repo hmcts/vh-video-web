@@ -19,7 +19,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
 
     private browserRefresh: boolean;
 
-    failedAttemptToReconnect: boolean = false;
+    failedAttemptToReconnect = false;
     errorMessageTitle: string;
     errorMessageBody: string;
     connectionError: boolean;
