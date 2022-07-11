@@ -36,7 +36,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BookingsApi.Client" Version="1.36.4" />
     <PackageReference Include="DotNetSeleniumExtras.PageObjects" Version="3.11.0" />
     <PackageReference Include="DotNetSeleniumExtras.WaitHelpers" Version="3.11.0" />
     <PackageReference Include="Faker.NETCore" Version="1.0.2" />
@@ -59,10 +58,8 @@
     <PackageReference Include="SpecFlow" Version="3.9.74" />
     <PackageReference Include="SpecFlow.NUnit" Version="3.9.74" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
-    <PackageReference Include="TestApi.Client" Version="1.30.0" />
-    <PackageReference Include="UserApi.Client" Version="1.30.0" />
+    <PackageReference Include="TestApi.Client" Version="1.31.1" />
     <PackageReference Include="VH.AcceptanceTests.Common" Version="1.21.69" />
-    <PackageReference Include="VideoApi.Client" Version="1.35.3" />
   </ItemGroup>
 
   <ItemGroup>
