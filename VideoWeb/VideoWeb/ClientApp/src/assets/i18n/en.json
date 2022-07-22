@@ -98,7 +98,7 @@
     "need-to-speak": "If you need to speak to someone please contact us using the options below.",
     "problem-with-connection": "There's a problem with your connection",
     "default-body-message": "Please reconnect. Call us if you keep seeing this message.",
-    "you-not-connected": "You are not connected to the internet. You will not be able to join your video hearing until you are reconnected. Please call the Video Hearings Team to let them know you cannot connect to our service.",
+    "you-not-connected": "An internet connection has not been detected. Please check your internet connection and then press the reconnect button to get back to the previous page. Call us if you keep seeing this message.",
     "check-security-settings": "Please check that your security settings are not blocking the connection.",
     "keep-seeing-message": "If you keep seeing this message contact the video hearings team.",
     "find-out-more": "Find out more about your computer set-up and internet connection at:",
@@ -106,7 +106,8 @@
     "button-reconnect": "Reconnect",
     "contact-for-help": "Contact us for help",
     "call-vh-team": "Call the Video Hearings team on",
-    "click-reconnect": "Please click \"Reconnect\" to return to the previous page. Call us if you keep seeing this message."
+    "click-reconnect": "Please click \"Reconnect\" to return to the previous page. Call us if you keep seeing this message.",
+    "internet-connection-detected": "Internet connection detected"
   },
   "error-service": {
     "unexpected-error": "An unexpected error occurred",
@@ -1227,5 +1228,7 @@
     "title": "We'd like your opinion",
     "body": "Before you go, how was your experience of the Video Hearings Service?",
     "link-text": "Complete our short survey here"
-  }
+  },
+    "true": "Yes",
+    "false": "No"
 }
