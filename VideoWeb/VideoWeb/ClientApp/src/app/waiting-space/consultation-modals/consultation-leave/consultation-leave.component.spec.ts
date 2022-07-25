@@ -46,7 +46,7 @@ describe('ConsultationLeaveComponent', () => {
                 '        (click)="leaveConsultation()"\n' +
                 '        [attr.alt]="\'consultation-leave.leave\' | translate"\n' +
                 '        >\n' +
-                "          {{'consultation-leave.leave' | translate}}\n" +
+                '          {{\'consultation-leave.leave\' | translate}}\n' +
                 '        </button>\n' +
                 '        <button\n' +
                 '        id="consultation-stay-button"\n' +
@@ -55,9 +55,9 @@ describe('ConsultationLeaveComponent', () => {
                 '        (click)="closeModal()"\n' +
                 '        [attr.alt]="\'consultation-leave.stay\' | translate"\n' +
                 '        >\n' +
-                "          {{'consultation-leave.stay' | translate}}\n" +
-                '        </button>';
-            ('</div>');
+                '          {{\'consultation-leave.stay\' | translate}}\n' +
+                '        </button>\n' +
+                '</div>';
 
             divElm = document.createElement('div');
             divElm.innerHTML = div;
