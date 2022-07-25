@@ -8,7 +8,6 @@ export class ConsultationLeaveComponent implements AfterViewInit {
     @Output() closedModal = new EventEmitter();
     @Output() leave = new EventEmitter();
 
-
     constructor() {}
 
     ngAfterViewInit(): void {
@@ -36,7 +35,6 @@ export class ConsultationLeaveComponent implements AfterViewInit {
                 }
             }
         });
-
     }
 
     closeModal() {
@@ -48,4 +46,3 @@ export class ConsultationLeaveComponent implements AfterViewInit {
         this.closeModal();
     }
 }
-

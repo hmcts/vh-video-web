@@ -46,7 +46,7 @@ describe('ConsultationLeaveComponent', () => {
                 '        (click)="leaveConsultation()"\n' +
                 '        [attr.alt]="\'consultation-leave.leave\' | translate"\n' +
                 '        >\n' +
-                '          {{\'consultation-leave.leave\' | translate}}\n' +
+                '          Leave\n' +
                 '        </button>\n' +
                 '        <button\n' +
                 '        id="consultation-stay-button"\n' +
@@ -55,7 +55,7 @@ describe('ConsultationLeaveComponent', () => {
                 '        (click)="closeModal()"\n' +
                 '        [attr.alt]="\'consultation-leave.stay\' | translate"\n' +
                 '        >\n' +
-                '          {{\'consultation-leave.stay\' | translate}}\n' +
+                '          Close\n' +
                 '        </button>\n' +
                 '</div>';
 
@@ -100,7 +100,6 @@ describe('ConsultationLeaveComponent', () => {
             const firstFocusableEl = focusableEls[0];
 
             firstFocusableEl.focus();
-
 
             document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(divElm);
             divElm.querySelectorAll = jasmine.createSpy('Query Selector').and.returnValue(focusableEls);
