@@ -141,8 +141,8 @@
       },
       "BookingsApi.Client": {
         "type": "Transitive",
-        "resolved": "1.36.10",
-        "contentHash": "GGsYhq61juW0yCwdqVHNR3B3vDPkenIlYEl3hJKoPxvItBkdtc8YOlUBYD8trrNAAUU8UDdUOvoIS5YI2H4+gw==",
+        "resolved": "1.36.18",
+        "contentHash": "UP99WMtkRvoHxDLtB8u7vdsQf8oeu4I46R/s0XILe/BNsgG9+Z2nyZDul16YaG5dk56XuNexGTnYbaJNEVu/ZA==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
           "Newtonsoft.Json": "12.0.3"
@@ -2354,7 +2354,7 @@
       "videoweb": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Client": "1.36.10",
+          "BookingsApi.Client": "1.36.18",
           "Castle.Core": "4.4.0",
           "FluentValidation.AspNetCore": "9.5.1",
           "MicroElements.Swashbuckle.FluentValidation": "3.0.0-rc.4",

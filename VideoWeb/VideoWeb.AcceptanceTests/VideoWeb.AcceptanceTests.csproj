@@ -59,7 +59,9 @@
     <PackageReference Include="SpecFlow.NUnit" Version="3.9.74" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
     <PackageReference Include="TestApi.Client" Version="1.31.1" />
+    <PackageReference Include="UserApi.Client" Version="1.30.6" />
     <PackageReference Include="VH.AcceptanceTests.Common" Version="1.21.69" />
+    <PackageReference Include="VideoApi.Client" Version="1.35.3" />
   </ItemGroup>
 
   <ItemGroup>

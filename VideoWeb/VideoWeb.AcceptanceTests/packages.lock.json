@@ -230,6 +230,16 @@
           "VideoApi.Client": "1.35.3"
         }
       },
+      "UserApi.Client": {
+        "type": "Direct",
+        "requested": "[1.30.6, )",
+        "resolved": "1.30.6",
+        "contentHash": "OUnsGghKbQeRvC+4cW2nB7KIUW+CJBJ26B3BtCt45cW/lDCGDaf60NPNTKZLOI3YJZB1V5oZARL8szEiBQ7WGw==",
+        "dependencies": {
+          "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
+          "Newtonsoft.Json": "12.0.3"
+        }
+      },
       "VH.AcceptanceTests.Common": {
         "type": "Direct",
         "requested": "[1.21.69, )",
@@ -272,6 +282,16 @@
           "System.Collections": "4.3.0",
           "System.Configuration.ConfigurationManager": "5.0.0",
           "TimeZoneConverter": "3.4.0"
+        }
+      },
+      "VideoApi.Client": {
+        "type": "Direct",
+        "requested": "[1.35.3, )",
+        "resolved": "1.35.3",
+        "contentHash": "CenFFPsHySmV0WosJnLrc5H7mfFfm5BssC/KsIlor4qie8JNdG8cjL1EDmSvppiX5feHcjQE2sK+gYH3yhXSRA==",
+        "dependencies": {
+          "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
+          "Newtonsoft.Json": "12.0.3"
         }
       },
       "Appium.WebDriver": {
@@ -2431,24 +2451,6 @@
         "type": "Transitive",
         "resolved": "3.4.0",
         "contentHash": "4rqXd06uLqaLPGpO+whrZnSTJyG3SG5DEbeldMTvaGit0+gI6XLVb9YMnfM+5wtV0DDM1QPd/QhbE6j5vJCWDw=="
-      },
-      "UserApi.Client": {
-        "type": "Transitive",
-        "resolved": "1.30.6",
-        "contentHash": "OUnsGghKbQeRvC+4cW2nB7KIUW+CJBJ26B3BtCt45cW/lDCGDaf60NPNTKZLOI3YJZB1V5oZARL8szEiBQ7WGw==",
-        "dependencies": {
-          "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
-          "Newtonsoft.Json": "12.0.3"
-        }
-      },
-      "VideoApi.Client": {
-        "type": "Transitive",
-        "resolved": "1.35.3",
-        "contentHash": "CenFFPsHySmV0WosJnLrc5H7mfFfm5BssC/KsIlor4qie8JNdG8cjL1EDmSvppiX5feHcjQE2sK+gYH3yhXSRA==",
-        "dependencies": {
-          "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
-          "Newtonsoft.Json": "12.0.3"
-        }
       },
       "videoweb.common": {
         "type": "Project",
