@@ -1321,6 +1321,9 @@ export abstract class WaitingRoomBaseDirective {
 
     showLeaveConsultationModal(): void {
         this.consultationService.displayConsultationLeaveModal();
+        // focusing on the button
+        const elm = document.getElementById('consultation-leave-button');
+        elm.focus();
     }
 
     switchStreamWindows(): void {
