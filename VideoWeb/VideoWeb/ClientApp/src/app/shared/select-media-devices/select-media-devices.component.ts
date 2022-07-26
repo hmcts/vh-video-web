@@ -9,6 +9,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { VideoFilterService } from 'src/app/services/video-filter.service';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
+import { ModalTrapFocus } from '../modal/modal-trap-focus';
 
 @Component({
     selector: 'app-select-media-devices',
@@ -44,30 +45,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, AfterView
     ) {}
 
     ngAfterViewInit() {
-        // create a trap focus for the modal window
-        const element = document.getElementById('select-device-modal');
-        const focusableEls = element.querySelectorAll(
-            'a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])'
-        );
-
-        const firstFocusableEl = focusableEls[0];
-        const lastFocusableEl = focusableEls[focusableEls.length - 1];
-
-        const KEYCODE_TAB = 9;
-
-        element.addEventListener('keydown', function (e) {
-            if (e.key === 'Tab' || e.keyCode === KEYCODE_TAB) {
-                if (e.shiftKey) {
-                    /* shift + tab */ if (document.activeElement === firstFocusableEl) {
-                        e.preventDefault();
-                    }
-                } /* tab */ else {
-                    if (document.activeElement === lastFocusableEl) {
-                        e.preventDefault();
-                    }
-                }
-            }
-        });
+        ModalTrapFocus.trap('select-device-modal');
         this.availableMicsList.nativeElement.focus();
     }
 
