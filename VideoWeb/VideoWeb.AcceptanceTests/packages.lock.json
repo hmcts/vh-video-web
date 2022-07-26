@@ -218,16 +218,16 @@
       },
       "TestApi.Client": {
         "type": "Direct",
-        "requested": "[1.31.1, )",
-        "resolved": "1.31.1",
-        "contentHash": "ZEujgH/MynnyQZaB5AEDhz6tMjYK8pqXPole+e1LyNWyjcNbc80t6diK4wVk7o/I3kJR/1mGEpRleBHeAtTVHg==",
+        "requested": "[1.31.2-upgrade-to-dotn-0002, )",
+        "resolved": "1.31.2-upgrade-to-dotn-0002",
+        "contentHash": "nQkljLxEpEiSJQ8T8g2kBtG/3iCid/oUvRLhGVTNJyCIRsjZ5CiD0XDuBRfy0aM7Yn3Ho4NHegBedzvgURXoFA==",
         "dependencies": {
-          "BookingsApi.Client": "1.36.10",
+          "BookingsApi.Client": "1.36.18",
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
           "NUnit": "3.13.2",
           "Newtonsoft.Json": "12.0.3",
-          "UserApi.Client": "1.30.4",
-          "VideoApi.Client": "1.35.3"
+          "UserApi.Client": "1.30.6",
+          "VideoApi.Client": "1.37.0"
         }
       },
       "UserApi.Client": {
@@ -286,9 +286,9 @@
       },
       "VideoApi.Client": {
         "type": "Direct",
-        "requested": "[1.35.3, )",
-        "resolved": "1.35.3",
-        "contentHash": "CenFFPsHySmV0WosJnLrc5H7mfFfm5BssC/KsIlor4qie8JNdG8cjL1EDmSvppiX5feHcjQE2sK+gYH3yhXSRA==",
+        "requested": "[1.37.0, )",
+        "resolved": "1.37.0",
+        "contentHash": "/Axr/EKmcn2uhRAYsH1JrBBy+22RlDjeHtk9gqe+YWwOIr//Nv+U+7WeaSb3LrOfVUqP7bRr5VbDD/0vlNKDKg==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
           "Newtonsoft.Json": "12.0.3"
@@ -345,8 +345,8 @@
       },
       "BookingsApi.Client": {
         "type": "Transitive",
-        "resolved": "1.36.10",
-        "contentHash": "GGsYhq61juW0yCwdqVHNR3B3vDPkenIlYEl3hJKoPxvItBkdtc8YOlUBYD8trrNAAUU8UDdUOvoIS5YI2H4+gw==",
+        "resolved": "1.36.18",
+        "contentHash": "UP99WMtkRvoHxDLtB8u7vdsQf8oeu4I46R/s0XILe/BNsgG9+Z2nyZDul16YaG5dk56XuNexGTnYbaJNEVu/ZA==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
           "Newtonsoft.Json": "12.0.3"
@@ -2464,7 +2464,7 @@
           "StackExchange.Redis": "2.1.28",
           "System.IdentityModel.Tokens.Jwt": "5.6.0",
           "UserApi.Client": "1.30.6",
-          "VideoApi.Client": "1.35.3"
+          "VideoApi.Client": "1.37.0"
         }
       },
       "videoweb.contract": {
