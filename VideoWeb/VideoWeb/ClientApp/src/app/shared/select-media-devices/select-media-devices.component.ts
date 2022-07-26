@@ -10,7 +10,6 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { VideoFilterService } from 'src/app/services/video-filter.service';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { ModalTrapFocus } from '../modal/modal-trap-focus';
-import { Constants } from '../constants/div-ids';
 
 @Component({
     selector: 'app-select-media-devices',
@@ -23,6 +22,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, AfterView
     @Input() showAudioOnlySetting = false;
 
     @ViewChild('availableMicsListRef') availableMicsList: ElementRef;
+    private readonly SELECT_MEDIA_DEVICES_MODAL = 'select-device-modal';
 
     availableCameraDevices: UserMediaDevice[] = [];
     availableMicrophoneDevices: UserMediaDevice[] = [];
@@ -46,7 +46,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, AfterView
     ) {}
 
     ngAfterViewInit() {
-        ModalTrapFocus.trap(Constants.SELECT_MEDIA_DEVICES_MODAL);
+        ModalTrapFocus.trap(this.SELECT_MEDIA_DEVICES_MODAL);
         this.availableMicsList.nativeElement.focus();
     }
 
