@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, EventEmitter, Output } from '@angular/core';
 import { ModalTrapFocus } from '../../../shared/modal/modal-trap-focus';
+import { Constants } from '../../../shared/constants/div-ids';
 @Component({
     selector: 'app-consultation-leave',
     templateUrl: './consultation-leave.component.html',
@@ -12,7 +13,7 @@ export class ConsultationLeaveComponent implements AfterViewInit {
     constructor() {}
 
     ngAfterViewInit(): void {
-        ModalTrapFocus.trap('modal-window-confirmation');
+        ModalTrapFocus.trap(Constants.CONSULATION_LEAVE_MODAL);
     }
 
     closeModal() {
