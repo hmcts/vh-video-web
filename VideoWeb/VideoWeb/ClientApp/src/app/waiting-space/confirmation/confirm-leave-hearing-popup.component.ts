@@ -7,7 +7,6 @@ import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
     templateUrl: './confirm-leave-hearing-popup.component.html',
     styleUrls: ['./yes-no-popup-base.component.scss']
 })
-
 export class ConfirmLeaveHearingPopupComponent extends YesNoPopupBaseDirective implements AfterViewInit {
     private readonly LEAVE_MODAL = 'confirm-leave-hearing-modal';
 
