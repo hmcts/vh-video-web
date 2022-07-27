@@ -1,32 +1,32 @@
 <div id="confirmationDialog" class="vh-popup-overlay">
-  <div class="modal-content">
-    <h1 class="govuk-heading-m">{{ 'confirm-start-hearing-popup.hearing-about-to-start' | translate:{ action: action } }}</h1>
+    <div class="modal-content">
+        <h1 class="govuk-heading-m">{{ 'confirm-start-hearing-popup.hearing-about-to-start' | translate:{action: action} }}</h1>
 
-    <p class="govuk-body">{{ 'confirm-start-hearing-popup.participant-sees-countdown-timer' | translate }}</p>
-    <p class="govuk-body govuk-!-margin-bottom-9">
-      {{ 'confirm-start-hearing-popup.private-consultations' | translate }}
-    </p>
+        <p class="govuk-body">{{ 'confirm-start-hearing-popup.participant-sees-countdown-timer' | translate }}</p>
+        <p class="govuk-body govuk-!-margin-bottom-9">
+            {{ 'confirm-start-hearing-popup.private-consultations' | translate }}
+        </p>
 
-    <button
-      id="btnConfirmStart"
-      class="govuk-button govuk-!-margin-right-1"
-      type="button"
-      data-module="govuk-button"
-      [attr.aria-label]="'confirm-start-hearing-popup.confirm-start-hearing' | translate"
-      (click)="respondWithYes()"
-    >
-      {{ action | titlecase }} {{ 'confirm-start-hearing-popup.hearing' | translate }}
-    </button>
+        <button
+            id="btnConfirmStart"
+            class="govuk-button govuk-!-margin-right-1"
+            type="button"
+            data-module="govuk-button"
+            [attr.aria-label]="'confirm-start-hearing-popup.confirm-start-hearing' | translate"
+            (click)="respondWithYes()"
+        >
+            {{ action | titlecase }} {{ 'confirm-start-hearing-popup.hearing' | translate }}
+        </button>
 
-    <button
-      id="btnCancelStart"
-      class="govuk-button govuk-button--secondary"
-      type="button"
-      data-module="govuk-button"
-      [attr.aria-label]="'confirm-start-hearing-popup.cancel-start-hearing' | translate"
-      (click)="respondWithNo()"
-    >
-      {{ 'confirm-start-hearing-popup.cancel' | translate }}
-    </button>
-  </div>
+        <button
+            id="btnCancelStart"
+            class="govuk-button govuk-button--secondary"
+            type="button"
+            data-module="govuk-button"
+            [attr.aria-label]="'confirm-start-hearing-popup.cancel-start-hearing' | translate"
+            (click)="respondWithNo()"
+        >
+            {{ 'confirm-start-hearing-popup.cancel' | translate }}
+        </button>
+    </div>
 </div>
