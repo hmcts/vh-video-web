@@ -1,0 +1,290 @@
+name: $(Date:yyyyMMddhhmm)-$(Rev:r)
+
+resources:
+  repositories:
+    - repository: azTemplates
+      type: github
+      name: hmcts/azure-devops-templates
+      ref: master
+      endpoint: hmcts
+
+trigger: none
+
+pr:
+  - master
+
+variables:
+  - group: vh-github-app-credentials
+  - group: vh-video-web
+  - name: run_acceptance_tests
+    value: false
+
+stages:
+  #####################################################
+  # CI Build Checks. ##################################
+  - stage: CI_Build
+    displayName: CI Build
+    variables:
+      - template: variables/shared.yaml
+        parameters:
+          env: ""
+    jobs:
+      - job: CI_Helm
+        displayName: "Helm CI"
+        steps:
+          - checkout: self
+
+          - template: templates\Containerisation\helm\helm-lint.yaml@azTemplates
+            parameters:
+              chartPath: ${{ variables.chartPath }}
+              chartValuesPath: ${{ variables.chartPath }}
+
+      - job: UnitTests
+        displayName: "Unit Tests"
+        steps:
+          - checkout: self
+
+          - template: stages\dotnet-tests\unit-tests.yml@azTemplates
+            parameters:
+              #vstsFeedId: 'Video Hearings/vh-packages'
+              nugetConfigPath: ${{ variables.app_path }} # Temp - Change To SDS Feed When Possible.
+              unitTestProjectPath: "${{ variables.app_path }}/${{ variables.app_path }}.UnitTests"
+              coverletCoverageExclusions:
+                - "[${{ variables.app_path }}.*Tests?]*"
+                - "[${{ variables.app_path }}]Startup"
+                - "[*]${{ variables.app_path }}.Common.*"
+                - "[Testing.Common]*"
+
+      - job: SonarCloud
+        displayName: SonarCloud Test Analysis
+        steps:
+          - template: templates/sonarCloud/prepare.yml@azTemplates
+            parameters:
+              sonarCloud_ExtraProperties: |
+                sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)\Coverage\coverage.opencover.xml
+                sonar.coverage.exclusions=${{ variables.sonar_exclusion }}
+
+          - task: DotNetCoreCLI@2
+            displayName: Restore .NET Project(s)
+            inputs:
+              command: restore
+              restoreArguments: --force-evaluate
+              projects: "${{ variables.app_path }}/${{ variables.app_path }}.UnitTests/*.UnitTests.csproj"
+              feedsToUse: config
+              nugetConfigPath: "${{ variables.app_path }}/nuget.config" # Temp - Change To SDS Feed When Possible.
+              # vstsFeed: 'Video Hearings/vh-packages'
+
+          - task: DotNetCoreCLI@2
+            displayName: Build .NET Project(s)
+            inputs:
+              command: build
+              projects: "${{ variables.app_path }}/${{ variables.app_path }}.UnitTests/*.UnitTests.csproj"
+              arguments: "-c Release"
+
+          - template: templates/sonarCloud/runAnalysis.yml@azTemplates
+
+  #####################################################
+  # Pre Steps. ########################################
+  # Build Docker Image & Generate EF Script. ##########
+  - stage: Dock
+    displayName: Build Video Web
+    variables:
+      - template: variables/dev.yaml
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ variables.env }}
+      - group: vh-github-app-credentials
+    jobs:
+      - job: Dock
+        displayName: "Build and Push Image ${{ variables.git_repo_name }}"
+        steps:
+          - checkout: self
+
+          - template: templates\Github\get-app-token.yaml@azTemplates
+            parameters:
+              privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
+              appId: $(gh_app_app_id)
+
+          - template: templates\Github\bump-chart-versions.yaml@azTemplates
+            parameters:
+              chartName: ${{ variables.chartName }}
+              chartPath: $(Build.SourcesDirectory)
+              chartBranch: $(System.PullRequest.SourceBranch)
+              githubToken: $(githubappinstall.token)
+              githubUsername: $(gh_app_name)
+              githubEmail: "$(gh_app_app_id)+$(gh_app_name)[bot]@users.noreply.github.com"
+
+          - bash: |
+              sed -i "s|</configuration>|<packageSourceCredentials><vh-packages><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"$(System.AccessToken)\" /></vh-packages></packageSourceCredentials></configuration>|" nuget.sds.config
+            displayName: Add NuGet Feed Authentication
+            workingDirectory: ${{ variables.app_path }}
+
+          - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates # Temp - Change nuget.config to nuget.sds.config.
+            parameters:
+              azureSubscription: ${{ variables.acrSubscription }}
+              acrName: ${{ variables.acrName }}
+              repositoryName: ${{ variables.repositoryName }}
+
+          - template: templates\Containerisation\docker\docker-push-azure.yaml@azTemplates
+            parameters:
+              azureSubscription: ${{ variables.acrSubscription }}
+              acrName: ${{ variables.acrName }}
+              repositoryName: ${{ variables.repositoryName }}
+              imageName: "${{ replace(variables.git_repo_name, '-', '') }}"
+              imageTags:
+                - "${{ variables.prTagName }}"
+
+      # - ${{ if eq(variables.run_acceptance_tests, true) }}:
+      #     - job: PublishAcceptanceTests
+      #       displayName: Publish Acceptance Tests
+      #       variables:
+      #         projectPath: "$(app_path)/$(app_path)"
+      #       steps:
+      #         - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
+      #           parameters:
+      #             coreProjectPath: $(projectPath)
+      #             nugetProjectPath: $(projectPath)
+      #             nugetConfigPath: $(app_path)
+      #             useNugetConfig: true
+
+  #####################################################
+  # Deploy Helm Chart to Dev. #########################
+  - stage: Install
+    dependsOn: Dock
+    displayName: Deploy Helm Chart Dev AKS
+    variables:
+      - template: variables/dev.yaml
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ variables.env }}
+      - name: dnsRecordName
+        value: vh-${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
+    jobs:
+      - job: helm_uninstall
+        displayName: Uninstall Helm from Dev
+        steps:
+          - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
+            parameters:
+              subscriptionName: "${{ variables.subscriptionName }}"
+              environment: ${{ variables.env }}
+
+          - template: templates/Containerisation/helm/helm-uninstall.yaml@azTemplates
+            parameters:
+              namespace: "vh"
+              releaseName: "${{ variables.chartName }}-${{ variables.prTagPrefix }}"
+              azureSubscription: "${{ variables.subscriptionName }}"
+              aksResourceGroupName: "$(aksCluster.resourceGroup)"
+              aksClusterName: "$(aksCluster.name)"
+      - job: aks_push
+        displayName: Deploy To Dev AKS
+        steps:
+          - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
+            parameters:
+              subscriptionName: "${{ variables.subscriptionName }}"
+              environment: ${{ variables.env }}
+          - template: templates/Containerisation/helm/helm-install.yaml@azTemplates
+            parameters:
+              privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
+              appId: $(gh_app_app_id)
+              envValuesTemplatePath: ${{ variables.envValuesTemplatePath }}
+              envValuesPath: ${{ variables.envValuesPath }}
+              acrName: ${{ variables.acrName }}
+              repositoryName: ${{ variables.repositoryName }}
+              prTagName: ${{ variables.prTagName }}
+              releaseName: "${{ variables.chartName }}-${{ variables.prTagPrefix }}"
+              dnsRecordName: ${{ variables.dnsRecordName }}
+              dnsZone: ${{ variables.dnsZone }}
+              env: ${{ variables.env }}
+              chartName: ${{ variables.chartName }}
+              chartPath: ${{ variables.chartPath }}
+              subscriptionName: "${{ variables.subscriptionName }}"
+              aksResourceGroupName: "$(aksCluster.resourceGroup)"
+              aksClusterName: "$(aksCluster.name)"
+              dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
+              dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
+
+      # - ${{ if eq(variables.run_acceptance_tests, true) }}:
+      #   - job: AcceptanceTestsDev
+      #     dependsOn: aks_push
+      #     displayName: Acceptance Tests Dev
+      #     variables:
+      #     - group: KinlyConfiguration_${{ variables.env }}
+      #     - group: Saucelabs
+      #     - group: vh-test-users
+      #     - group: govuk-notify-${{ variables.env }}
+      #     steps:
+      #     - template: templates/dotnet/run-acceptance-tests.yml@azTemplates
+      #       parameters:
+      #         environment: ${{ variables.env }}
+      #         azureSubscription: ${{ variables.subscriptionName }}
+      #         acceptanceTestSettings:
+
+  #####################################################
+  # Manual Approval To Demo. ##########################
+  - stage: Wait
+    jobs:
+      - job: Wait
+        displayName: "Approve Release Demo"
+        pool: server
+        steps:
+          - task: ManualValidation@0
+            timeoutInMinutes: 1440 # task times out in 1 day
+            inputs:
+              instructions: "Please approve the release of PR-$(System.PullRequest.PullRequestNumber) to the Demo environment to resume"
+              onTimeout: "reject"
+
+  #####################################################
+  # Deploy Helm Chart to QA. ##########################
+  - stage: Install_Demo
+    displayName: Deploy Helm Chart Demo AKS
+    dependsOn: Wait
+    variables:
+      - template: variables/qa.yaml
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ variables.env }}
+      - name: dnsRecordName
+        value: vh-${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
+    jobs:
+      - job: helm_uninstall
+        displayName: Uninstall Helm from Demo
+        steps:
+          - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
+            parameters:
+              subscriptionName: "${{ variables.subscriptionName }}"
+              environment: ${{ variables.env }}
+
+          - template: templates/Containerisation/helm/helm-uninstall.yaml@azTemplates
+            parameters:
+              namespace: "vh"
+              releaseName: "${{ variables.chartName }}-${{ variables.prTagPrefix }}"
+              azureSubscription: "${{ variables.subscriptionName }}"
+              aksResourceGroupName: "$(aksCluster.resourceGroup)"
+              aksClusterName: "$(aksCluster.name)"
+      - job: aks_push
+        displayName: Deploy To Demo AKS
+        steps:
+          - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
+            parameters:
+              subscriptionName: "${{ variables.subscriptionName }}"
+              environment: ${{ variables.env }}
+          - template: templates/Containerisation/helm/helm-install.yaml@azTemplates
+            parameters:
+              privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
+              appId: $(gh_app_app_id)
+              envValuesTemplatePath: ${{ variables.envValuesTemplatePath }}
+              envValuesPath: ${{ variables.envValuesPath }}
+              acrName: ${{ variables.acrName }}
+              repositoryName: ${{ variables.repositoryName }}
+              prTagName: ${{ variables.prTagName }}
+              releaseName: "${{ variables.chartName }}-${{ variables.prTagPrefix }}"
+              dnsRecordName: ${{ variables.dnsRecordName }}
+              dnsZone: ${{ variables.dnsZone }}
+              env: ${{ variables.env }}
+              chartName: ${{ variables.chartName }}
+              chartPath: ${{ variables.chartPath }}
+              subscriptionName: "${{ variables.subscriptionName }}"
+              aksResourceGroupName: "$(aksCluster.resourceGroup)"
+              aksClusterName: "$(aksCluster.name)"
+              dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
+              dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"

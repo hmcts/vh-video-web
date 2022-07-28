@@ -1,0 +1,99 @@
+name: $(Date:yyyyMMddhhmm)-$(Rev:r)
+
+resources:
+  repositories:
+    - repository: azTemplates
+      type: github
+      name: hmcts/azure-devops-templates
+      ref: master
+      endpoint: hmcts
+
+pr: none
+trigger: none
+
+variables:
+  - group: vh-github-app-credentials
+
+parameters: 
+  - name: prNumber
+    displayName: Pull Request Number 
+    type: string
+
+stages:
+  - stage: uninstall_dev
+    displayName: Uninstall Dev Helm and DNS
+    dependsOn: []
+    variables:
+      - template: variables/dev.yaml
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ variables.env }}
+          prNumber: ${{ parameters.prNumber }}
+      - name: dnsRecordName
+        value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
+    jobs:
+      - job: helm_uninstall
+        displayName: Uninstall Helm from Dev
+        steps:
+        - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
+          parameters:
+            subscriptionName: "${{ variables.subscriptionName }}"
+            environment: ${{ variables.env }}
+
+        - bash: |
+            echo "$(appName)"
+            
+        - template: templates/Containerisation/helm/helm-uninstall.yaml@azTemplates
+          parameters:
+            namespace: 'vh'
+            releaseName: "${{ variables.chartName }}-${{ variables.prTagPrefix }}"
+            azureSubscription: "${{ variables.subscriptionName }}"
+            aksResourceGroupName: "$(aksCluster.resourceGroup)"
+            aksClusterName: "$(aksCluster.name)"
+      - job: dns_uninstall
+        displayName: Uninstall DNS from Dev
+        steps:
+        - template: templates\Azure\Dns\private-dns-remove.yaml@azTemplates
+          parameters:
+            subscriptionName: "${{ variables.subscriptionName }}"
+            dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
+            dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
+            zoneName: ${{ variables.dnsZone }}
+            recordName: ${{ variables.dnsRecordName }}
+
+  - stage: uninstall_demo
+    displayName: Uninstall Demo Helm and DNS
+    dependsOn: []
+    variables:
+      - template: variables/qa.yaml
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ variables.env }}
+          prNumber: ${{ parameters.prNumber }}
+      - name: dnsRecordName
+        value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
+    jobs:
+      - job: helm_uninstall
+        displayName: Uninstall Helm from Demo
+        steps:
+        - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
+          parameters:
+            subscriptionName: "${{ variables.subscriptionName }}"
+            environment: ${{ variables.env }}
+        - template: templates/Containerisation/helm/helm-uninstall.yaml@azTemplates
+          parameters:
+            namespace: 'vh'
+            releaseName: "${{ variables.chartName }}-${{ variables.prTagPrefix }}"
+            azureSubscription: "${{ variables.subscriptionName }}"
+            aksResourceGroupName: "$(aksCluster.resourceGroup)"
+            aksClusterName: "$(aksCluster.name)"
+      - job: dns_uninstall
+        displayName: Uninstall DNS from Demo
+        steps:
+        - template: templates\Azure\Dns\private-dns-remove.yaml@azTemplates
+          parameters:
+            subscriptionName: "${{ variables.subscriptionName }}"
+            dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
+            dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
+            zoneName: ${{ variables.dnsZone }}
+            recordName: ${{ variables.dnsRecordName }}
