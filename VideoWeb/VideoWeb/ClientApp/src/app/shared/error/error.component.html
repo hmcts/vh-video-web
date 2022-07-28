@@ -20,7 +20,7 @@
             <p class="govuk-body">{{'error.check-security-settings' | translate}}</p>
             <p class="govuk-body">{{'error.keep-seeing-message' | translate}}</p>
             <div class="govuk-body govuk-!-margin-top-8">
-                {{'error.find-out-more' | translate}} 
+                {{'error.find-out-more' | translate}}
                 <a class="govuk-link vh-new-line" target="_blank"
                    href="https://www.gov.uk/guidance/hmcts-video-hearings-service-guidance-for-joining-a-hearing"
                    rel="noopener">
@@ -45,8 +45,10 @@
                     type="button"
                     (click)="reconnect()"
                     [attr.aria-label]="'error.button-reconnect' | translate">
-                {{'error.button-reconnect' | translate}} 
+                {{'error.button-reconnect' | translate}}
             </button>
+            <p *ngIf="failedAttemptToReconnect" id="failed-connect-ui">
+                {{'error.internet-connection-detected' | translate}}: <strong [ngStyle]="{'color':connectionStatus?'green':'red'}"> {{connectionStatus.toString() | translate}} </strong></p>
         </div>
         <h2 class="govuk-heading-m">{{'error.contact-for-help' | translate}}</h2>
         <p class="govuk-body govuk-!-margin-bottom-4">{{'equipment-problem.hearing-location' | translate}} {{'equipment-problem.in-england-or-wales' | translate}} <strong>{{'equipment-problem.england-or-wales' | translate}}</strong> {{'equipment-problem.phone' | translate}} {{ contactDetails.englandAndWales.phoneNumber }}</p>

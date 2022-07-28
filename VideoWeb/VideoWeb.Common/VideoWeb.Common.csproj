@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BookingsApi.Client" Version="1.27.12" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.16.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.16.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
@@ -19,8 +18,8 @@
     </PackageReference>
     <PackageReference Include="StackExchange.Redis" Version="2.1.28" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
-    <PackageReference Include="UserApi.Client" Version="1.27.1" />
-    <PackageReference Include="VideoApi.Client" Version="1.35.3" />
+    <PackageReference Include="UserApi.Client" Version="1.37.4" />
+    <PackageReference Include="VideoApi.Client" Version="1.37.0" />
   </ItemGroup>
 
 </Project>

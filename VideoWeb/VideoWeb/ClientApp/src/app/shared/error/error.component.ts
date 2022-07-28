@@ -19,6 +19,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
 
     private browserRefresh: boolean;
 
+    failedAttemptToReconnect = false;
     errorMessageTitle: string;
     errorMessageBody: string;
     connectionError: boolean;
@@ -43,6 +44,10 @@ export class ErrorComponent implements OnInit, OnDestroy {
     get hasInternetConnection(): boolean {
         this.hasLostInternet = this.hasLostInternet || !this.connectionStatusService.status;
         return !this.hasLostInternet;
+    }
+
+    get connectionStatus(): boolean {
+        return this.connectionStatusService.status;
     }
 
     ngOnInit(): void {
@@ -101,6 +106,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
             this.router.navigate([previousPage]);
             this.connectionStatusService.userTriggeredReconnect();
         } else {
+            this.failedAttemptToReconnect = true;
             this.attemptingReconnect = false;
             this.logger.debug(`${this.loggerPrefix} No internet connection detected.`);
             this.connectionStatusService.userTriggeredReconnect();
