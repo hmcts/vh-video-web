@@ -1,0 +1,65 @@
+parameters:
+  - name: env
+    type: string
+    default: ""
+  - name: prNumber
+    type: string
+    default: ""
+
+variables:
+  - name: git_version_config_path
+    value: $(Build.SourcesDirectory)/sds-git-version-config.yml
+
+  - name: git_repo_name
+    value: "video-web"
+  - name: sonar_exclusion
+    value: "**/VideoWeb.Contract/**,**/Video.Website/Program.cs, **/Video.Web/Startup.cs, **/Video.Web/Extensions/**, **/Video.Web/Swagger/**, **/Video.Web/ConfigureServicesExtensions.cs, **/Testing.Common/**, **/Test.Common/**, **/Test.DAL/Mappings/**, **/Test.DAL/SeedData/**, **/Test.DAL/TestDbContext.cs, **/Test.DAL/**/DesignTimeHearingsContextFactory.cs, Test.DAL/Migrations/**, **/Test.Domain/Ddd/**, **/Test.DAL/Commands/Core/**, **/Test.DAL/Queries/Core/**, **/Testing.Common/**, **/Test.DAL/Migrations/*, **/Test.DAL/Migrations/**, **/Migrations/*"
+
+  - name: prNumber
+    ${{ if eq(parameters.prNumber, '')}}:
+      value: $(System.PullRequest.PullRequestNumber)
+    ${{ else }}:
+      value: ${{ parameters.prNumber }}
+  - name: prTagPrefix
+    value: "pr-${{ variables.prNumber }}"
+  - name: prTagName
+    value: "${{ variables.prTagPrefix }}-$(Build.BuildNumber)"
+
+  - name: imageName
+    value: "${{ replace(variables.git_repo_name, '-', '') }}"
+  - name: subscriptionName
+    value: "DTS-SHAREDSERVICES-${{ upper(parameters.env) }}-Video Hearings"
+  - name: acrSubscription
+    value: "DTS-SHAREDSERVICES-PROD-Video Hearings"
+  - name: acrName
+    value: "sdshmctspublic"
+  - name: repositoryName
+    value: "vh/${{ variables.git_repo_name }}"
+  - name: gitRepoName
+    value: vh-${{ variables.git_repo_name }}
+
+  - name: chartName
+    value: "vh-${{ variables.git_repo_name }}"
+  - name: chartRepoPath
+    value: "$(Build.SourcesDirectory)/"
+  - name: chartPath
+    value: "$(Build.SourcesDirectory)/charts/vh-${{ variables.git_repo_name }}"
+  - name: envValuesPath
+    value: "${{ variables.chartPath }}/values.${env}.yaml"
+  - name: envValuesTemplatePath
+    value: "${{ variables.chartPath }}/values.${env}.template.yaml"
+  - name: dnsZoneSubscription
+    value: "DTS-CFTPTL-INTSVC"
+  - name: dnsZoneResourceGroup
+    value: "core-infra-intsvc-rg"
+  - name: dnsZone
+    value: ${{ parameters.env }}.platform.hmcts.net
+
+  - name: gh_app_private_key_file_name
+    value: hmcts-ado-cnp-app.private-key.pem
+
+  - name: vhResourceGroup
+    value: vh-infra-core-${{ parameters.env }}
+
+  - name: app_path
+    value: VideoWeb
