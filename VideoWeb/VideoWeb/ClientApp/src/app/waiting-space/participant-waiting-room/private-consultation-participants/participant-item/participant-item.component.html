@@ -6,7 +6,7 @@
      'individual-endpoint-row': interpreter != null  }">
     <div class="header-left" [class]="getRowClasses(participant)">
         <app-invite-participant
-            *ngIf="!isParticipantInCurrentRoom(participant) && isParticipantAvailable(participant) && canInvite"
+            *ngIf="!isParticipantInCurrentRoom(participant) && isParticipantAvailable(participant) && isInterpreterAvailable() && canInvite"
             [participantId]="participant.id" 
             [conferenceId]="conferenceId" 
             [roomLabel]="roomLabel">
@@ -34,4 +34,9 @@ class="individual-endpoint-row">
         [isInCurrentRoom]="isParticipantInCurrentRoom(interpreter)" 
         [isAvailable]="isParticipantAvailable(interpreter)">
     </app-private-consultation-participant-display-name>
+    <app-private-consultation-participant-status 
+        [entity]="interpreter" 
+        [status]="status" 
+        [roomLabel]="roomLabel">
+    </app-private-consultation-participant-status>
 </div>
