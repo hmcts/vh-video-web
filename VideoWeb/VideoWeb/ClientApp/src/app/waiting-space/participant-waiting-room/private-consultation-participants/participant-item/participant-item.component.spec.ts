@@ -4,8 +4,11 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
     EndpointStatus,
+    LinkedParticipantResponse2,
+    LinkedParticipantType,
     LoggedParticipantResponse,
     ParticipantResponse,
+    ParticipantResponseVho,
     ParticipantStatus,
     Role,
     RoomSummaryResponse
@@ -14,6 +17,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-security.service';
+import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { ParticipantItemComponent } from './participant-item.component';
 
 describe('ParticipantItemComponent', () => {
@@ -143,5 +147,71 @@ describe('ParticipantItemComponent', () => {
         const p = conference.participants[0];
         p.current_room.label = 'test-room-two';
         expect(component.getRowClasses(p)).toEqual('');
+    });
+
+    describe('isInterpreterAvailable', () => {
+        it('should return true when no interpreter is linked', () => {
+            component.interpreter = null;
+            const result = component.isInterpreterAvailable();
+            expect(result).toBeTrue();
+        });
+
+        it('should return true when interpreter is linked and available', () => {
+            const linkedParticipants: LinkedParticipantResponse2[] = [];
+
+            const linkedParticipant = new LinkedParticipantResponse2({
+                type: LinkedParticipantType.Interpreter,
+                linked_id: '9b115922-47cb-4f60-94b1-fccd714f94fa'
+            });
+
+            linkedParticipants.push(linkedParticipant);
+
+            const interpreter = new ParticipantResponseVho({
+                id: 'ff685c8a-6170-464f-ad2c-59362ff40e22',
+                name: 'B Smith',
+                status: ParticipantStatus.Available,
+                role: Role.Individual,
+                display_name: 'B Smith Interpreter',
+                case_type_group: 'Applicant',
+                tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;B Smith Interpreter;ff685c8a-6170-464f-ad2c-59362ff40e22',
+                hearing_role: HearingRole.INTERPRETER,
+                current_room: undefined,
+                linked_participants: linkedParticipants
+            });
+
+            component.interpreter = interpreter;
+
+            const result = component.isInterpreterAvailable();
+            expect(result).toBeTrue();
+        });
+
+        it('should return false when interpreter is linked and not available', () => {
+            const linkedParticipants: LinkedParticipantResponse2[] = [];
+
+            const participant3LinkedParticipants1 = new LinkedParticipantResponse2({
+                type: LinkedParticipantType.Interpreter,
+                linked_id: '9b115922-47cb-4f60-94b1-fccd714f94fa'
+            });
+
+            linkedParticipants.push(participant3LinkedParticipants1);
+
+            const participant3 = new ParticipantResponseVho({
+                id: 'ff685c8a-6170-464f-ad2c-59362ff40e22',
+                name: 'B Smith',
+                status: ParticipantStatus.Disconnected,
+                role: Role.Individual,
+                display_name: 'B Smith Interpreter',
+                case_type_group: 'Applicant',
+                tiled_display_name: 'CIVILIAN;NO_HEARTBEAT;B Smith Interpreter;ff685c8a-6170-464f-ad2c-59362ff40e22',
+                hearing_role: HearingRole.INTERPRETER,
+                current_room: undefined,
+                linked_participants: linkedParticipants
+            });
+
+            component.interpreter = participant3;
+
+            const result = component.isInterpreterAvailable();
+            expect(result).toBeFalse();
+        });
     });
 });

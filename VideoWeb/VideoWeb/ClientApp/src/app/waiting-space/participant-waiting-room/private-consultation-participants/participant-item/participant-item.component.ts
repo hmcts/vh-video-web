@@ -32,4 +32,12 @@ export class ParticipantItemComponent {
     isParticipantInCurrentRoom(roomParticipant: any): boolean {
         return roomParticipant.current_room?.label === this.roomLabel;
     }
+
+    isInterpreterAvailable(): boolean {
+        if (!this.interpreter) {
+            return true;
+        }
+
+        return this.isParticipantAvailable(this.interpreter);
+    }
 }
