@@ -64,7 +64,7 @@ java:
     VHSERVICES__ENABLEVIDEOFILTERS: true
     VHSERVICES__USERAPIRESOURCEID: https://vh-user-api.{{ .Values.global.environment }}.platform.hmcts.net
     VHSERVICES__USERAPIURL: https://vh-user-api.{{ .Values.global.environment }}.platform.hmcts.net/
-    VHSERVICES__VIDEOAPIESOURCEID: https://vh-video-api.{{ .Values.global.environment }}.platform.hmcts.net
+    VHSERVICES__VIDEOAPIRESOURCEID: https://vh-video-api.{{ .Values.global.environment }}.platform.hmcts.net
     VHSERVICES__VIDEOAPIURL: https://vh-video-api.{{ .Values.global.environment }}.platform.hmcts.net/
     Logging__LogLevel__Default: debug
     Logging__LogLevel__System: debug
