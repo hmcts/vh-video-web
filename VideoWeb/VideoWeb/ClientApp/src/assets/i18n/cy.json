@@ -1,5 +1,5 @@
 {
-  "privacy-policy": {
+    "privacy-policy": {
     "crest-image-alt": "Delwedd o arwyddlun logo GLlTEM",
     "heading": "Ein polisi preifatrwydd ar gyfer y gwasanaeth gwrandawiadau fideo ",
     "print-button": "Argraffu",
@@ -329,7 +329,7 @@
   "error": {
     "contact-for-help": "Cysylltu â ni i gael cymorth",
     "call-vh-team": "Ffoniwch y tîm Gwrandawiadau Fideo ar",
-    "you-not-connected": "Nid ydych wedi cysylltu â'r rhyngrwyd. Ni fyddwch yn gallu ymuno â'ch gwrandawiad fideo hyd nes y byddwch wedi ailgysylltu. Ffoniwch y Tîm Gwrandawiadau Fideo i roi gwybod iddynt na allwch gysylltu â'n gwasanaeth. ",
+    "you-not-connected": "Ni ddaethwyd o hyd i gysylltiad rhyngrwyd. Gwiriwch eich cysylltiad rhyngrwyd ac yna pwyswch y botwm ailgysylltu i fynd yn ôl at y dudalen flaenorol. Cysylltwch â ni os byddwch yn dal i weld y neges hon.",
     "button-reconnect": "Ailgysylltu",
     "problem-with-connection": "Mae problem gyda'ch cysylltiad",
     "check-security-settings": "Gwiriwch nad yw eich gosodiadau diogelwch yn eich atal rhag gallu cysylltu. ",
@@ -340,7 +340,8 @@
     "try-later": "Rhowch gynnig arall arni yn hwyrach ymlaen.",
     "default-body-message": "Ceisiwch ailgysylltu. Ffoniwch ni os ydych dal i weld y neges hon.",
     "click-reconnect": "Cliciwch ar Ailgysylltu i ddychwelyd i'r dudalen flaenorol. Ffoniwch ni os ydych dal i weld y neges hon.",
-    "need-to-speak": "Os ydych eisiau siarad â rhywun, cysylltwch â ni gan ddefnyddio'r opsiynau isod. "
+    "need-to-speak": "Os ydych eisiau siarad â rhywun, cysylltwch â ni gan ddefnyddio'r opsiynau isod. ",
+    "internet-connection-detected": "Wedi dod o hyd i gysylltiad rhyngrwyd"
   },
   "error-camera-microphone": {
     "problem-with-camera-mic": "Mae yna broblem gyda'ch camera a'ch microffon",
@@ -1229,5 +1230,7 @@
     "title": "Hoffem gael eich barn",
     "body": "Cyn i chi fynd, sut oedd eich profiad o'r Gwasanaeth Gwrandawiadau Fideo?",
     "link-text": "Cwblhewch ein harolwg byr yma"
-  }
+  },
+    "true": "Do",
+    "false": "Naddo"
 }
