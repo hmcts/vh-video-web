@@ -118,6 +118,9 @@ export abstract class WaitingRoomBaseDirective {
     connectionFailedCount: number;
     CONNECTION_FAILED_LIMIT = 3;
 
+    private readonly CONSULATION_LEAVE_MODAL_DEFAULT_ELEMENT = 'consultation-leave-button';
+    private readonly SELECT_MEDIA_DEVICES_MODAL_DEFAULT_ELEMENT = 'toggle-media-device-img-desktop';
+
     protected constructor(
         protected route: ActivatedRoute,
         protected videoWebService: VideoWebService,
@@ -1245,7 +1248,7 @@ export abstract class WaitingRoomBaseDirective {
     onSelectMediaDeviceShouldClose() {
         this.displayDeviceChangeModal = false;
         // focusing on the div using scrolling method
-        const elm = document.getElementById('toggle-media-device-img-desktop');
+        const elm = document.getElementById(this.SELECT_MEDIA_DEVICES_MODAL_DEFAULT_ELEMENT);
         elm.scrollIntoView();
     }
 
@@ -1321,6 +1324,9 @@ export abstract class WaitingRoomBaseDirective {
 
     showLeaveConsultationModal(): void {
         this.consultationService.displayConsultationLeaveModal();
+        // focusing on the button
+        const elm = document.getElementById(this.CONSULATION_LEAVE_MODAL_DEFAULT_ELEMENT);
+        elm.focus();
     }
 
     switchStreamWindows(): void {

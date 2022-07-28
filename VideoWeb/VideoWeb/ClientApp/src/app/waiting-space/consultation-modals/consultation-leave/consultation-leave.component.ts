@@ -1,14 +1,21 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Output } from '@angular/core';
+import { ModalTrapFocus } from '../../../shared/modal/modal-trap-focus';
 @Component({
     selector: 'app-consultation-leave',
     templateUrl: './consultation-leave.component.html',
     styleUrls: ['./consultation-leave.component.scss']
 })
-export class ConsultationLeaveComponent {
+export class ConsultationLeaveComponent implements AfterViewInit {
     @Output() closedModal = new EventEmitter();
     @Output() leave = new EventEmitter();
 
+    private readonly CONSULATION_LEAVE_MODAL = 'modal-window-confirmation';
+
     constructor() {}
+
+    ngAfterViewInit(): void {
+        ModalTrapFocus.trap(this.CONSULATION_LEAVE_MODAL);
+    }
 
     closeModal() {
         this.closedModal.emit();
