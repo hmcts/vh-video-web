@@ -79,6 +79,7 @@ stages:
             inputs:
               command: build
               projects: "${{ variables.app_path }}/${{ variables.app_path }}.UnitTests/*.UnitTests.csproj"
+              arguments: "-c Release"
 
           - template: templates/sonarCloud/runAnalysis.yml@azTemplates
 

@@ -15,7 +15,6 @@ WORKDIR /src
 COPY VideoWeb .
 RUN dotnet restore --configfile nuget.config "VideoWeb/VideoWeb.csproj"
 WORKDIR "/src/VideoWeb"
-COPY --from=gitversion /version/AssemblyInfo.cs .
 RUN dotnet build "VideoWeb.csproj" -c Release -o /app/build
 
 FROM build AS publish
