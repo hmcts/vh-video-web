@@ -288,3 +288,4 @@ stages:
               aksClusterName: "$(aksCluster.name)"
               dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
               dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
+              serviceName: traefik-private
