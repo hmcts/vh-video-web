@@ -13,16 +13,8 @@ resources:
       ref: master
       endpoint: hmcts
 
-parameters:
-  - name: environment
-    type: object
-    default:
-      - Dev
-      - Demo
-      - Staging
-      - Prod
-
 stages:
+
   #####################################################
   # Approval Gate for Video Web Release. #######
 
