@@ -1,0 +1,7 @@
+variables:
+  - name: env
+    value: stg 
+  - name: stagingTagName
+    value: "staging-#{SHORTCOMMITID}#-#{DATETIME}#"
+  - name: subDirectory
+    value: "/non-prod"

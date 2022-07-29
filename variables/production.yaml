@@ -1,0 +1,7 @@
+variables:
+  - name: env
+    value: prod 
+  - name: releaseTagName
+    value: "prod-#{SHORTCOMMITID}#-#{DATETIME}#"
+  - name: subDirectory
+    value: "/prod"

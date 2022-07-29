@@ -1,0 +1,45 @@
+mode: ContinuousDelivery
+ignore:
+  sha: []
+merge-message-formats: {}
+major-version-bump-message: '\+semver:\s?(breaking|major)'
+minor-version-bump-message: '\+semver:\s?(feature|minor)'
+patch-version-bump-message: '\+semver:\s?(fix|patch)'
+commit-message-incrementing: Enabled
+branches:
+  main:
+    regex: ^master$
+    mode: ContinuousDelivery
+    tag: staging
+    increment: Patch
+    source-branches: [ 'feature', 'release', 'hotfix' ]
+    prevent-increment-of-merged-branch-version: true
+    is-mainline: true
+    pre-release-weight: 55000
+  release:
+    regex: ^releases?[/-]
+    mode: ContinuousDelivery
+    tag: ''
+    increment: None
+    source-branches: [ 'main', 'hotfix', 'release' ]
+    is-release-branch: true
+  feature:
+    regex: ^features?[/-]$
+    mode: ContinuousDelivery
+    tag: useBranchName
+    increment: Patch
+    source-branches: [ 'pull-request', 'main', 'release', 'feature', 'hotfix' ]
+  pull-request:
+    regex: ^(pull|pull\-requests|pr)[/-]
+    mode: ContinuousDelivery
+    tag: pr-
+    increment: Patch
+    tag-number-pattern: '[/-](?<number>\d+)[-/]'
+    source-branches: [ 'main', 'release', 'feature', 'hotfix' ]
+  hotfix:
+    regex: ^hotfix(es)?[/-]
+    mode: ContinuousDelivery
+    tag: hotfix
+    increment: Patch
+    track-merge-target: false
+    source-branches: [ 'pull-request', 'main', 'release' ]

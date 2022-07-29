@@ -1,0 +1,110 @@
+name: $(Date:yyyyMMddhhmm)-$(Rev:r)
+
+trigger:
+  - master
+
+pr: none
+
+resources:
+  repositories:
+    - repository: azTemplates
+      type: github
+      name: hmcts/azure-devops-templates
+      ref: master
+      endpoint: hmcts
+
+stages:
+
+  #####################################################
+  # Approval Gate for Video Web Release. #######
+
+  - stage: Approve_Helm_Release
+    displayName: "Approve Helm Release"
+    pool:
+      vmImage: "ubuntu-latest"
+    jobs:
+      - job: waitForValidation
+        displayName: "Approve Helm Release"
+        pool: server
+        timeoutInMinutes: 4320 # job times out in 3 days
+        steps:
+          - task: ManualValidation@0
+            timeoutInMinutes: 1440 # task times out in 1 day
+            inputs:
+              instructions: "Please Approve for Helm Release..."
+              onTimeout: "reject"
+
+  #####################################################
+  # Build Docker Image & Push. ########################
+
+  - stage: Docker_Build_Push
+    displayName: Docker Build & Push Image
+    variables:
+      - ? ${{ if contains(variables['Build.SourceBranch'], 'refs/heads/release') }}
+        : - template: variables/production.yaml
+      - ${{ else }}:
+          - template: variables/staging.yaml
+
+      - template: variables/shared.yaml
+    jobs:
+      - job: Docker_Build
+        displayName: "Docker Build and Push"
+        steps:
+          - checkout: self
+
+          - bash: |
+              sed -i "s|</configuration>|<packageSourceCredentials><vh-packages><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"$(System.AccessToken)\" /></vh-packages></packageSourceCredentials></configuration>|" nuget.sds.config
+            displayName: Add NuGet Feed Authentication
+            workingDirectory: $(app_path)
+
+          - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
+            parameters:
+              azureSubscription: ${{ variables.acrSubscription }}
+              acrName: ${{ variables.acrName }}
+              repositoryName: ${{ variables.repositoryName }}
+
+          - template: templates\Containerisation\docker\docker-push-azure.yaml@azTemplates
+            parameters:
+              azureSubscription: ${{ variables.acrSubscription }}
+              acrName: ${{ variables.acrName }}
+              repositoryName: ${{ variables.repositoryName }}
+              imageName: "${{ variables.imageName }}"
+              imageTags:
+                - ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
+                    - "${{ variables.stagingTagName }}"
+                - ? ${{ if contains(variables['Build.SourceBranch'], 'refs/heads/release') }}
+                  : - "latest"
+                    - "${{ variables.releaseTagName }}"
+
+  #########################################
+  # Push Helm Charts to Repo. #############
+  - stage: Helm
+    displayName: Push Helm Charts
+    dependsOn: Docker_Build_Push
+    variables:
+      - ? ${{ if contains(variables['Build.SourceBranch'], 'refs/heads/release') }}
+        : - template: variables/production.yaml
+      - ${{ else }}:
+          - template: variables/staging.yaml
+
+      - template: variables/shared.yaml
+      - group: vh-github-app-credentials
+    jobs:
+      - job: Helm
+        displayName: "Helm Push"
+        steps:
+          - checkout: self
+
+          - template: templates\Github\get-app-token.yaml@azTemplates
+            parameters:
+              privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
+              appId: $(gh_app_app_id)
+
+          - template: templates\Github\push-to-helm-chart-repo.yaml@azTemplates
+            parameters:
+              chartName: ${{ variables.chartName }}
+              chartPath: ${{ variables.chartPath }}
+              githubToken: $(githubappinstall.token)
+              githubUsername: $(gh_app_name)
+              githubEmail: "$(gh_app_app_id)+$(gh_app_name)[bot]@users.noreply.github.com"
+              subDirectory: ${{ variables.subDirectory }}
