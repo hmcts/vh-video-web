@@ -1,62 +1,29 @@
-import { ConsultationLeaveComponent } from './consultation-leave.component';
+import { ConfirmLeaveHearingPopupComponent } from './confirm-leave-hearing-popup.component';
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 
-describe('ConsultationLeaveComponent', () => {
-    let component: ConsultationLeaveComponent;
+describe('ConfirmLeaveHearingPopupComponent', () => {
+    let component: ConfirmLeaveHearingPopupComponent;
 
     beforeEach(() => {
-        component = new ConsultationLeaveComponent();
+        component = new ConfirmLeaveHearingPopupComponent();
     });
 
-    it('should emit leave', () => {
-        // Arrange
-        spyOn(component.leave, 'emit');
-        spyOn(component.closedModal, 'emit');
-
-        // Act
-        component.leaveConsultation();
-
-        // Assert
-        expect(component.leave.emit).toHaveBeenCalled();
-        expect(component.closedModal.emit).toHaveBeenCalled();
-    });
-
-    it('should emit closed modal with modal name', () => {
-        // Arrange
-        spyOn(component.closedModal, 'emit');
-
-        // ACT
-        component.closeModal();
-
-        // Assert
-        expect(component.closedModal.emit).toHaveBeenCalled();
-    });
-
-    describe('ConsultationLeaveComponent.AfterViewInit', () => {
+    describe('AfterViewInit', () => {
         let div;
         let divElm;
         beforeEach(fakeAsync(() => {
             flushMicrotasks();
             div =
-                '<div class="consultation-modal" id="modal-window-confirmation">' +
+                '<div id="confirm-leave-hearing-modal" class="vh-popup-overlay">' +
                 '<button\n' +
-                '        id="consultation-leave-button"\n' +
-                '        class="govuk-button govuk-!-margin-top-6 govuk-!-margin-bottom-0 govuk-!-margin-right-3"\n' +
-                '        data-module="govuk-button"\n' +
-                '        (click)="leaveConsultation()"\n' +
-                '        [attr.alt]="\'consultation-leave.leave\' | translate"\n' +
-                '        >\n' +
-                '          Leave\n' +
-                '        </button>\n' +
-                '        <button\n' +
-                '        id="consultation-stay-button"\n' +
-                '        class="govuk-button govuk-!-margin-top-6 govuk-!-margin-bottom-0 govuk-button--secondary"\n' +
-                '        data-module="govuk-button"\n' +
-                '        (click)="closeModal()"\n' +
-                '        [attr.alt]="\'consultation-leave.stay\' | translate"\n' +
-                '        >\n' +
-                '          Close\n' +
-                '        </button>\n' +
+                '      id="btnConfirmLeave"\n' +
+                '      class="govuk-button govuk-!-margin-right-1"\n' +
+                '      type="button"\n' +
+                '      data-module="govuk-button"\n' +
+                '      (click)="respondWithYes()"\n' +
+                '    >\n' +
+                '    Leave\n' +
+                '    </button>\n' +
                 '</div>';
 
             divElm = document.createElement('div');
@@ -67,18 +34,40 @@ describe('ConsultationLeaveComponent', () => {
         afterEach(() => {
             divElm.remove();
         });
+        it('should set focus on btnLeave', fakeAsync(() => {
+            const activeElm = document.getElementById('btnConfirmLeave');
+
+            activeElm.focus();
+            document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(divElm);
+            divElm.querySelectorAll = jasmine.createSpy('Query Selector').and.returnValue(divElm.childNodes);
+
+            component.btnLeave = jasmine.createSpyObj('btnLeave', ['nativeElement']);
+
+            const elmSpy = component.btnLeave.nativeElement;
+            elmSpy.focus = function () {};
+            spyOn(elmSpy, 'focus').and.callFake(() => {});
+
+            component.ngAfterViewInit();
+            expect(component.btnLeave.nativeElement.focus).toHaveBeenCalled();
+        }));
 
         it('should handle keydown Tab', fakeAsync(() => {
             const focusableEls: NodeListOf<HTMLElement> = divElm.querySelectorAll(
                 'a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])'
             );
 
-            const lastFocusableEl = focusableEls[1];
+            const firstFocusableEl = focusableEls[0];
 
-            lastFocusableEl.focus();
+            firstFocusableEl.focus();
 
             document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(divElm);
             divElm.querySelectorAll = jasmine.createSpy('Query Selector').and.returnValue(focusableEls);
+
+            component.btnLeave = jasmine.createSpyObj('btnLeave', ['nativeElement']);
+
+            const elmSpy = component.btnLeave.nativeElement;
+            elmSpy.focus = function () {};
+            spyOn(elmSpy, 'focus').and.callFake(() => {});
 
             component.ngAfterViewInit();
 
@@ -103,6 +92,12 @@ describe('ConsultationLeaveComponent', () => {
 
             document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(divElm);
             divElm.querySelectorAll = jasmine.createSpy('Query Selector').and.returnValue(focusableEls);
+
+            component.btnLeave = jasmine.createSpyObj('btnLeave', ['nativeElement']);
+
+            const elmSpy = component.btnLeave.nativeElement;
+            elmSpy.focus = function () {};
+            spyOn(elmSpy, 'focus').and.callFake(() => {});
 
             component.ngAfterViewInit();
 

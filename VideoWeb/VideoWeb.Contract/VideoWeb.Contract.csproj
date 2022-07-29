@@ -12,13 +12,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BookingsApi.Client" Version="1.27.12" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="8.18.0.27296">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="UserApi.Client" Version="1.27.1" />
-    <PackageReference Include="VideoApi.Client" Version="1.35.3" />
   </ItemGroup>
 
   <ItemGroup>
