@@ -14,6 +14,8 @@ using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using VideoWeb.EventHub.Services;
 using VideoWeb.Helpers;
+using StackExchange.Redis;
+using VideoApi.Contract.Responses;
 using ConsultationAnswer = VideoWeb.Common.Models.ConsultationAnswer;
 
 namespace VideoWeb.Controllers
@@ -171,7 +173,7 @@ namespace VideoWeb.Controllers
             try
             {
                 var username = User.Identity.Name?.ToLower().Trim();
-                var conference = await GetConference(request.ConferenceId);
+                Conference conference = await GetConference(request.ConferenceId);
 
                 var requestedBy = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedBy && x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
                 if (requestedBy == null)
@@ -182,15 +184,27 @@ namespace VideoWeb.Controllers
 
                 var consultationRequestMapper = _mapperFactory.Get<StartPrivateConsultationRequest, StartConsultationRequest>();
                 var mappedRequest = consultationRequestMapper.Map(request);
+                //IF(request.RoomType == VirtualCourtRoomType.JudgeJOH)
+                // Check if redis cache entry "{conferenceId}-{johRoom}" exists < (Create a new method for this)
+                //IF == Exists
+                // Return
+                //ELSE
+                //  Add entry into Redis Cache  < (Create a new method for this)
+                // Continue normal flow of logic
 
+                //if 1 room per conference then id should be generated from client side and should be passed in request.
+                
+                if (request.RoomType == Contract.Enums.VirtualCourtRoomType.JudgeJOH)
+                {
+                    RoomResponse room = await GetRoom(request.ConferenceId, mappedRequest, (int)Contract.Enums.VirtualCourtRoomType.JudgeJOH);
+                }
                 if (request.RoomType == Contract.Enums.VirtualCourtRoomType.Participant)
                 {
-                    var room = await _videoApiClient.CreatePrivateConsultationAsync(mappedRequest);
+
+                    RoomResponse room = await _videoApiClient.CreatePrivateConsultationAsync(mappedRequest);
+
                     await _consultationNotifier.NotifyRoomUpdateAsync(conference, new Room { Label = room.Label, Locked = room.Locked, ConferenceId = conference.Id });
-                    foreach (var participantId in request.InviteParticipants.Where(participantId => conference.Participants.Any(p => p.Id == participantId)))
-                    {
-                        await _consultationNotifier.NotifyConsultationRequestAsync(conference, room.Label, request.RequestedBy, participantId);
-                    }
+                    
 
                     var validSelectedEndpoints = request.InviteEndpoints
                         .Select(endpointId => conference.Endpoints.SingleOrDefault(p => p.Id == endpointId))
@@ -327,10 +341,15 @@ namespace VideoWeb.Controllers
             return _conferenceCache.GetOrAddConferenceAsync(conferenceId,
                 () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
         }
-
+        private Task<RoomResponse> GetRoom(Guid conferenceId , StartConsultationRequest mappedRequest, int roomType)
+        {
+            string roomKey = $"{conferenceId.ToString()}_{roomType.ToString()}";
+            return _conferenceCache.GetOrAddRoomAsync(roomKey,
+                () => _videoApiClient.CreatePrivateConsultationAsync(mappedRequest));
+        }
         private bool CanStartJohConsultation()
         {
             return User.IsInRole(AppRoles.JudgeRole) || User.IsInRole(AppRoles.StaffMember) || User.IsInRole(AppRoles.JudicialOfficeHolderRole);
-        }
+        } 
     }
 }
