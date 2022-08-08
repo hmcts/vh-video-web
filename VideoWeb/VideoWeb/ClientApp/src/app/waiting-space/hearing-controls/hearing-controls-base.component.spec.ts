@@ -331,6 +331,12 @@ describe('HearingControlsBaseComponent', () => {
         expect(component.selfViewOpen).toBeTruthy();
     });
 
+    it('should open self-view by default for non judge participants', () => {
+        component.participant = gloalConference.participants.find(x => x.role === Role.Individual);
+        component.ngOnInit();
+        expect(component.selfViewOpen).toBeTruthy();
+    });
+
     it('should mute non-judge by default', () => {
         component.participant = gloalConference.participants.find(x => x.role === Role.Individual);
         component.ngOnInit();
@@ -344,12 +350,6 @@ describe('HearingControlsBaseComponent', () => {
         component.audioMuted = true;
         component.initialiseMuteStatus();
         expect(videoCallService.toggleMute).toHaveBeenCalled();
-    });
-
-    it('should close self-view by default for non judge participants', () => {
-        component.participant = gloalConference.participants.find(x => x.role === Role.Individual);
-        component.ngOnInit();
-        expect(component.selfViewOpen).toBeFalsy();
     });
 
     it('should raise hand on toggle if hand not raised', () => {

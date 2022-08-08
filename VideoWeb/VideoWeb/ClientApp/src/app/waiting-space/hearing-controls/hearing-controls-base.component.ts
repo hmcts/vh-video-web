@@ -68,7 +68,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     ) {
         this.handRaised = false;
         this.remoteMuted = false;
-        this.selfViewOpen = false;
+        this.selfViewOpen = true;
         this.isSpotlighted = false;
         this.displayConfirmPopup = false;
         this.showEvidenceContextMenu = false;
@@ -129,9 +129,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             )
             .subscribe(participant => this.onLoggedInParticipantChanged(participant));
 
-        if (this.isJudge) {
-            this.toggleView();
-        }
         this.initialiseMuteStatus();
     }
 
