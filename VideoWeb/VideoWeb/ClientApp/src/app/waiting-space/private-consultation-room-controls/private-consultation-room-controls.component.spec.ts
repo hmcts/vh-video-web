@@ -296,10 +296,10 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         expect(videoCallService.toggleMute).toHaveBeenCalled();
     });
 
-    it('should close self-view by default for non judge participants', () => {
+    it('should open self-view by default for non judge participants', () => {
         component.participant = gloalConference.participants.find(x => x.role === Role.Individual);
         component.ngOnInit();
-        expect(component.selfViewOpen).toBeFalsy();
+        expect(component.selfViewOpen).toBeTruthy();
     });
 
     it('should raise hand on toggle if hand not raised', () => {
