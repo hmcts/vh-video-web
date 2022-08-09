@@ -10,7 +10,7 @@ namespace VideoWeb.Common.Caching
         {
             CacheEntryOptions = new DistributedCacheEntryOptions
             {
-                SlidingExpiration = TimeSpan.FromMinutes(5)
+                SlidingExpiration = TimeSpan.FromMinutes(5) //reduce this to few seconds?
             };
         }
 

@@ -4,6 +4,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
@@ -27,6 +28,7 @@ namespace VideoWeb.Controllers
         private readonly IConferenceCache _conferenceCache;
         private readonly IConsultationNotifier _consultationNotifier;
         private readonly IConsultationInvitationTracker _consultationInvitationTracker;
+        private readonly IDistributedJOHConsultationRoomLockCache _distributedJohConsultationRoomLockCache;
         private readonly ILogger<ConsultationsController> _logger;
         private readonly IMapperFactory _mapperFactory;
 
@@ -34,7 +36,8 @@ namespace VideoWeb.Controllers
             IVideoApiClient videoApiClient,
             IConferenceCache conferenceCache,
             ILogger<ConsultationsController> logger,
-            IMapperFactory mapperFactory, IConsultationNotifier consultationNotifier, IConsultationInvitationTracker consultationInvitationTracker)
+            IMapperFactory mapperFactory, IConsultationNotifier consultationNotifier, IConsultationInvitationTracker consultationInvitationTracker,
+            IDistributedJOHConsultationRoomLockCache distributedJohConsultationRoomLockCache)
         {
             _videoApiClient = videoApiClient;
             _conferenceCache = conferenceCache;
@@ -42,6 +45,7 @@ namespace VideoWeb.Controllers
             _mapperFactory = mapperFactory;
             _consultationNotifier = consultationNotifier;
             _consultationInvitationTracker = consultationInvitationTracker;
+            _distributedJohConsultationRoomLockCache = distributedJohConsultationRoomLockCache;
         }
 
         [HttpPost("leave")]
@@ -222,6 +226,23 @@ namespace VideoWeb.Controllers
                     {
                         return Forbid();
                     }
+
+                    var johConsultationRoomLockedStatusKeyName = $"johConsultationRoomLockedStatus_{conference.Id}";
+                    var isLocked =
+                        await _distributedJohConsultationRoomLockCache.IsJOHRoomLocked(johConsultationRoomLockedStatusKeyName);
+
+                    if (isLocked)
+                    {
+                        Thread.Sleep(30000); //this is really not ideal, but I cant think of any other options, this should be done from kinly
+                        // await _distributedJohConsultationRoomLockCache.UpdateJohConsultationRoomLockStatus(false,
+                        //     johConsultationRoomLockedStatusKeyName);
+                    }
+                    else
+                    {
+                        await _distributedJohConsultationRoomLockCache.UpdateJohConsultationRoomLockStatus(true,
+                            johConsultationRoomLockedStatusKeyName);
+                    }
+                    
                     await _videoApiClient.StartPrivateConsultationAsync(mappedRequest);
                 }
 
