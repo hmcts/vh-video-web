@@ -117,6 +117,7 @@ namespace VideoWeb.Extensions
             services.AddScoped<IConferenceVideoControlStatusService, ConferenceVideoControlStatusService>();
             services.AddScoped<IConferenceVideoControlStatusCache, DistributedConferenceVideoControlStatusCache>();
             services.AddScoped<IParticipantService, ParticipantService>();
+            services.AddScoped<IDistributedJOHConsultationRoomLockCache, DistributedJOHConsultationRoomLockCache>();
             
             RegisterMappers(services);
 
