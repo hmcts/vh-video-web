@@ -233,9 +233,7 @@ namespace VideoWeb.Controllers
 
                     if (isLocked)
                     {
-                        Thread.Sleep(30000); //this is really not ideal, but I cant think of any other options, this should be done from kinly
-                        // await _distributedJohConsultationRoomLockCache.UpdateJohConsultationRoomLockStatus(false,
-                        //     johConsultationRoomLockedStatusKeyName);
+                        Thread.Sleep(3000);
                     }
                     else
                     {
