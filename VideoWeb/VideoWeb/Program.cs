@@ -16,8 +16,6 @@ namespace VideoWeb
 
         private static IHostBuilder CreateWebHostBuilder(string[] args)
         {
-            const string vhInfraCore = "/mnt/secrets/vh-infra-core";
-            const string vhVideoWeb = "/mnt/secrets/vh-video-web";
             var keyVaults=new List<string> (){
             "vh-infra-core",
             "vh-admin-web",
