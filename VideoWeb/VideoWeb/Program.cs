@@ -48,8 +48,10 @@ namespace VideoWeb
                     });
                     webBuilder.ConfigureAppConfiguration(configBuilder =>
                     {
-                        configBuilder.AddAksKeyVaultSecretProvider(vhInfraCore);
-                        configBuilder.AddAksKeyVaultSecretProvider(vhVideoWeb);
+                        foreach (var keyVault in keyVaults)
+                        {
+                            configBuilder.AddAksKeyVaultSecretProvider($"/mnt/secrets/{keyVault}");
+                        }
                     });
                 });
         }
