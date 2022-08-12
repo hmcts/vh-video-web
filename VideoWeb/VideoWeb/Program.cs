@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using VH.Core.Configuration;
+using System.Collections.Generic;
 
 namespace VideoWeb
 {
