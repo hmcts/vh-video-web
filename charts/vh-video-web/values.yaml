@@ -44,28 +44,46 @@ java:
         - quicklinks--validaudience
         - vhservices--emailreformdomain
         - vhservices--internaleventsecret
+        - ejud--clientid
+        - ejud--tenantid
+        - name: azuread--identifieruri
+          alias: azuread--vhvideowebresourceid
+    vh-bookings-api:
+      excludeEnvironmentSuffix: false
+      resourceGroup: vh-infra-core-{{ .Values.global.environment }}
+      usePodIdentity: true
+      secrets:
+        - name: azuread--identifieruri
+          alias: vhservices--bookingsapiresourceid
+    vh-user-api:
+      excludeEnvironmentSuffix: false
+      resourceGroup: vh-infra-core-{{ .Values.global.environment }}
+      usePodIdentity: true
+      secrets:
+        - name: azuread--identifieruri
+          alias: vhservices--userapiresourceid
+    vh-video-api:
+      excludeEnvironmentSuffix: false
+      resourceGroup: vh-infra-core-{{ .Values.global.environment }}
+      usePodIdentity: true
+      secrets:
+        - name: azuread--identifieruri
+          alias: vhservices--videoapiresourceid
   environment:
     ASPNETCORE_URLS: http://+:8080
     AZUREAD__POSTLOGOUTREDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/logout
     AZUREAD__REDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/home
-    AZUREAD__VHVIDEOWEBRESOURCEID: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net
     DISABLEHTTPSREDIRECTION: true
-    EJUDAD__CLIENTID: placeholder
-    EJUDAD__POSTLOGOUTREDIRECTURI: placeholder
-    EJUDAD__REDIRECTURI: placeholder
-    EJUDAD__TENANTID: placeholder
-    MSDEPLOY_RENAME_LOCKED_FILES: 1
-    VHSERVICES__BOOKINGSAPIRESOURCEID: https://vh-bookings-api.{{ .Values.global.environment }}.platform.hmcts.net
+    EJUDAD__POSTLOGOUTREDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/logout
+    EJUDAD__REDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/home
+    Logging__LogLevel__Default: debug
+    Logging__LogLevel__Microsoft: debug
+    Logging__LogLevel__System: debug
     VHSERVICES__BOOKINGSAPIURL: https://vh-bookings-api.{{ .Values.global.environment }}.platform.hmcts.net/
     VHSERVICES__ENABLEANDROIDSUPPORT: true
     VHSERVICES__ENABLEDYNAMICEVIDENCESHARING: true
     VHSERVICES__ENABLEIOSMOBILESUPPORT: true
     VHSERVICES__ENABLEIOSTABLETSUPPORT: true
     VHSERVICES__ENABLEVIDEOFILTERS: true
-    VHSERVICES__USERAPIRESOURCEID: https://vh-user-api.{{ .Values.global.environment }}.platform.hmcts.net
     VHSERVICES__USERAPIURL: https://vh-user-api.{{ .Values.global.environment }}.platform.hmcts.net/
-    VHSERVICES__VIDEOAPIRESOURCEID: https://vh-video-api.{{ .Values.global.environment }}.platform.hmcts.net
     VHSERVICES__VIDEOAPIURL: https://vh-video-api.{{ .Values.global.environment }}.platform.hmcts.net/
-    Logging__LogLevel__Default: debug
-    Logging__LogLevel__System: debug
-    Logging__LogLevel__Microsoft: debug
