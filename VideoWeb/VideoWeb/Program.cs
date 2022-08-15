@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using VH.Core.Configuration;
+using System.Collections.Generic;
 
 namespace VideoWeb
 {
@@ -15,14 +16,23 @@ namespace VideoWeb
 
         private static IHostBuilder CreateWebHostBuilder(string[] args)
         {
-            const string vhInfraCore = "/mnt/secrets/vh-infra-core";
-            const string vhVideoWeb = "/mnt/secrets/vh-video-web";
+            var keyVaults=new List<string> (){
+                "vh-bookings-api",
+                "vh-infra-core",
+                "vh-notification-api",
+                "vh-user-api",
+                "vh-video-api",
+                "vh-video-web"
+            };
 
+            
             return Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((configBuilder) =>
                 {
-                    configBuilder.AddAksKeyVaultSecretProvider(vhInfraCore);
-                    configBuilder.AddAksKeyVaultSecretProvider(vhVideoWeb);
+                    foreach (var keyVault in keyVaults)
+                    {
+                        configBuilder.AddAksKeyVaultSecretProvider($"/mnt/secrets/{keyVault}");
+                    }
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
@@ -39,8 +49,10 @@ namespace VideoWeb
                     });
                     webBuilder.ConfigureAppConfiguration(configBuilder =>
                     {
-                        configBuilder.AddAksKeyVaultSecretProvider(vhInfraCore);
-                        configBuilder.AddAksKeyVaultSecretProvider(vhVideoWeb);
+                        foreach (var keyVault in keyVaults)
+                        {
+                            configBuilder.AddAksKeyVaultSecretProvider($"/mnt/secrets/{keyVault}");
+                        }
                     });
                 });
         }
