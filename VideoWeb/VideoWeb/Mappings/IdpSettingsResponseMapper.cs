@@ -13,7 +13,8 @@ namespace VideoWeb.Mappings
                 ClientId = input.ClientId,
                 TenantId = input.TenantId,
                 RedirectUri = input.RedirectUri,
-                PostLogoutRedirectUri = input.PostLogoutRedirectUri
+                PostLogoutRedirectUri = input.PostLogoutRedirectUri,
+                ResourceId = input.ResourceId
             };
         }
     }

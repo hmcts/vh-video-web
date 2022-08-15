@@ -52,11 +52,12 @@ export class SecurityConfigSetupService {
     }
 
     initOidcConfig(idpSettings: IdpSettingsResponse): OpenIdConfiguration {
+        const resource = idpSettings.resource_id ? idpSettings.resource_id : `api://${idpSettings.client_id}`;
         return {
             stsServer: `https://login.microsoftonline.com/${idpSettings.tenant_id}/v2.0`,
             redirectUrl: idpSettings.redirect_uri,
             clientId: idpSettings.client_id,
-            scope: `openid profile offline_access api://${idpSettings.client_id}/feapi`,
+            scope: `openid profile offline_access ${resource}/feapi`,
             responseType: 'code',
             maxIdTokenIatOffsetAllowedInSeconds: 600,
             autoUserinfo: false,
