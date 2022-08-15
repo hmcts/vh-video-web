@@ -70,7 +70,7 @@ java:
         - name: azuread--identifieruri
           alias: vhservices--videoapiresourceid
   environment:
-    ASPNETCORE_URLS: http://+:8080
+    ASPNETCORE__URLS: http://+:8080
     AZUREAD__POSTLOGOUTREDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/logout
     AZUREAD__REDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/home
     DISABLEHTTPSREDIRECTION: true

@@ -17,14 +17,15 @@ namespace VideoWeb
         private static IHostBuilder CreateWebHostBuilder(string[] args)
         {
             var keyVaults=new List<string> (){
-            "vh-infra-core",
-            "vh-admin-web",
-            "vh-bookings-api",
-            "vh-video-api",
-            "vh-notification-api",
-            "vh-user-api"
+                "vh-bookings-api",
+                "vh-infra-core",
+                "vh-notification-api",
+                "vh-user-api",
+                "vh-video-api",
+                "vh-video-web"
             };
 
+            
             return Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((configBuilder) =>
                 {
