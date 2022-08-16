@@ -7,5 +7,6 @@ namespace VideoWeb.Common.Configuration
         public string TenantId { get; set; }
         public string RedirectUri { get; set; }
         public string PostLogoutRedirectUri { get; set; }
+        public string ResourceId { get; set; }
     }
 }

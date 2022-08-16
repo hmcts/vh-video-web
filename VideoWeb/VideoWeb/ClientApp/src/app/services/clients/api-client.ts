@@ -6926,6 +6926,7 @@ export interface IConferenceVideoControlStatuses {
 export class IdpSettingsResponse implements IIdpSettingsResponse {
     tenant_id?: string | undefined;
     client_id?: string | undefined;
+    resource_id?: string | undefined;
     redirect_uri?: string | undefined;
     post_logout_redirect_uri?: string | undefined;
 
@@ -6941,6 +6942,7 @@ export class IdpSettingsResponse implements IIdpSettingsResponse {
         if (_data) {
             this.tenant_id = _data['tenant_id'];
             this.client_id = _data['client_id'];
+            this.resource_id = _data['resource_id'];
             this.redirect_uri = _data['redirect_uri'];
             this.post_logout_redirect_uri = _data['post_logout_redirect_uri'];
         }
@@ -6957,6 +6959,7 @@ export class IdpSettingsResponse implements IIdpSettingsResponse {
         data = typeof data === 'object' ? data : {};
         data['tenant_id'] = this.tenant_id;
         data['client_id'] = this.client_id;
+        data['resource_id'] = this.resource_id;
         data['redirect_uri'] = this.redirect_uri;
         data['post_logout_redirect_uri'] = this.post_logout_redirect_uri;
         return data;
@@ -6966,6 +6969,7 @@ export class IdpSettingsResponse implements IIdpSettingsResponse {
 export interface IIdpSettingsResponse {
     tenant_id?: string | undefined;
     client_id?: string | undefined;
+    resource_id?: string | undefined;
     redirect_uri?: string | undefined;
     post_logout_redirect_uri?: string | undefined;
 }

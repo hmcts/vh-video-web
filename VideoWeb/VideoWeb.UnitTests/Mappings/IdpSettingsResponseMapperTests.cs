@@ -19,6 +19,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.TenantId.Should().Be(ejudAdConfiguration.TenantId);
             response.RedirectUri.Should().Be(ejudAdConfiguration.RedirectUri);
             response.PostLogoutRedirectUri.Should().Be(ejudAdConfiguration.PostLogoutRedirectUri);
+            response.ResourceId.Should().Be(ejudAdConfiguration.ResourceId);
         }
 
         [Test]
@@ -34,6 +35,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.TenantId.Should().Be(azureAdConfiguration.TenantId);
             response.RedirectUri.Should().Be(azureAdConfiguration.RedirectUri);
             response.PostLogoutRedirectUri.Should().Be(azureAdConfiguration.PostLogoutRedirectUri);
+            response.ResourceId.Should().Be(azureAdConfiguration.ResourceId);
         }
     }
 }
