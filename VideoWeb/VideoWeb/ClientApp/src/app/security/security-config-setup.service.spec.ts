@@ -80,12 +80,12 @@ describe('SecurityConfigSetupService', () => {
 
     it('should set scope correctly when resource id is specified', async () => {
         // Arrange
-        let configService = new MockConfigService();
+        const mockConfigService = new MockConfigService();
         const ejudResourceId = '123';
         const vhResourceId = '234';
-        configService.ejudSettings.resource_id = ejudResourceId;
-        configService.vhAdSettings.resource_id = vhResourceId;
-        sut = new SecurityConfigSetupService(oidcConfigServiceSpy, configService as any);
+        mockConfigService.ejudSettings.resource_id = ejudResourceId;
+        mockConfigService.vhAdSettings.resource_id = vhResourceId;
+        sut = new SecurityConfigSetupService(oidcConfigServiceSpy, mockConfigService as any);
 
         // Act
         sut.setupConfig().subscribe();
@@ -97,10 +97,10 @@ describe('SecurityConfigSetupService', () => {
 
     it('should set scope correctly when resource id is not specified', async () => {
         // Arrange
-        let configService = new MockConfigService();
-        const ejudClientId = configService.ejudSettings.client_id;
-        const vhClientId = configService.vhAdSettings.client_id;
-        sut = new SecurityConfigSetupService(oidcConfigServiceSpy, configService as any);
+        const mockConfigService = new MockConfigService();
+        const ejudClientId = mockConfigService.ejudSettings.client_id;
+        const vhClientId = mockConfigService.vhAdSettings.client_id;
+        sut = new SecurityConfigSetupService(oidcConfigServiceSpy, mockConfigService as any);
 
         // Act
         sut.setupConfig().subscribe();
