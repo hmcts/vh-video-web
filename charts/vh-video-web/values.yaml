@@ -47,7 +47,7 @@ java:
         - ejudad--clientid
         - ejudad--tenantid
         - name: azuread--identifieruri
-          alias: azuread--vhvideowebresourceid
+          alias: azuread--resourceid
     vh-bookings-api:
       excludeEnvironmentSuffix: false
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
@@ -73,9 +73,9 @@ java:
     ASPNETCORE_URLS: http://+:8080
     AZUREAD__POSTLOGOUTREDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/logout
     AZUREAD__REDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/home
-    DISABLEHTTPSREDIRECTION: true
     EJUDAD__POSTLOGOUTREDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/logout
     EJUDAD__REDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/home
+    DISABLEHTTPSREDIRECTION: true
     Logging__LogLevel__Default: debug
     Logging__LogLevel__Microsoft: debug
     Logging__LogLevel__System: debug
