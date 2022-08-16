@@ -77,4 +77,36 @@ describe('SecurityConfigSetupService', () => {
         expect(sut.config.ejud.clientId).toBe(configService.ejudSettings.client_id);
         expect(sut.config.ejud.redirectUrl).toBe(configService.ejudSettings.redirect_uri);
     });
+
+    it('should set scope correctly when resource id is specified', async () => {
+        // Arrange
+        let configService = new MockConfigService();
+        const ejudResourceId = '123';
+        const vhResourceId = '234';
+        configService.ejudSettings.resource_id = ejudResourceId;
+        configService.vhAdSettings.resource_id = vhResourceId;
+        sut = new SecurityConfigSetupService(oidcConfigServiceSpy, configService as any);
+
+        // Act
+        sut.setupConfig().subscribe();
+
+        // Assert
+        expect(sut.config[IdpProviders.ejud].scope).toBe(`openid profile offline_access ${ejudResourceId}/feapi`);
+        expect(sut.config[IdpProviders.vhaad].scope).toBe(`openid profile offline_access ${vhResourceId}/feapi`);
+    });
+
+    it('should set scope correctly when resource id is not specified', async () => {
+        // Arrange
+        let configService = new MockConfigService();
+        const ejudClientId = configService.ejudSettings.client_id;
+        const vhClientId = configService.vhAdSettings.client_id;
+        sut = new SecurityConfigSetupService(oidcConfigServiceSpy, configService as any);
+
+        // Act
+        sut.setupConfig().subscribe();
+
+        // Assert
+        expect(sut.config[IdpProviders.ejud].scope).toBe(`openid profile offline_access api://${ejudClientId}/feapi`);
+        expect(sut.config[IdpProviders.vhaad].scope).toBe(`openid profile offline_access api://${vhClientId}/feapi`);
+    });
 });
