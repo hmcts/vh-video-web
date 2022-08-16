@@ -1,5 +1,10 @@
 ---
 java:
-  image: '${IMAGE_NAME}'
+  image: "${IMAGE_NAME}"
   ingressHost: ${SERVICE_FQDN}
   releaseNameOverride: ${RELEASE_NAME}
+  environment:
+    AZUREAD__POSTLOGOUTREDIRECTURI: https://${SERVICE_FQDN}/logout
+    AZUREAD__REDIRECTURI: https://${SERVICE_FQDN}/home
+    EJUDAD__POSTLOGOUTREDIRECTURI: https://${SERVICE_FQDN}/logout
+    EJUDAD__REDIRECTURI: https://${SERVICE_FQDN}/home
