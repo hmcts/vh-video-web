@@ -19,7 +19,7 @@ namespace VideoWeb.AuthenticationSchemes
         public override void SetJwtBearerOptions(JwtBearerOptions options)
         {
             options.Authority = $"{_idpConfiguration.Authority}{_idpConfiguration.TenantId}/v2.0";
-            options.Audience = _idpConfiguration.ClientId;
+            options.Audience = string.IsNullOrEmpty(_idpConfiguration.ResourceId) ? _idpConfiguration.ClientId :  _idpConfiguration.ResourceId;
             options.TokenValidationParameters.NameClaimType = "preferred_username";
             options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
             options.TokenValidationParameters.ValidateLifetime = true;
