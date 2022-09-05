@@ -1,17 +1,22 @@
-import { AfterViewInit, Directive, Input } from '@angular/core';
-//import { ModalTrapFocus } from '../modal/modal-trap-focus';
+import {Directive, EventEmitter, Input, Output} from '@angular/core';
 
 @Directive({
     selector: '[hookelement]'
 })
-export class HookElement implements AfterViewInit {
-    @Input() hookElement = () => { };
+export class HookElement {
+    videoContainerReady = true;
+    overflowDivReady = true;
+    @Input() readyElm: string;
+    @Output('readyEvent') initEvent: EventEmitter<any> = new EventEmitter();
 
-    constructor() {}
-
-    ngAfterViewInit(): void {
-        //ModalTrapFocus.trap('video-container');
-        //alert(this.el.nativeElement.id);
-        //this.hookElement();
+    ngOnInit(): void {
+        if(this.readyElm == "videoContainer" && this.videoContainerReady){
+            this.videoContainerReady = false;
+            setTimeout(() => this.initEvent.emit(), 20);
+        }
+        else if(this.readyElm == "overflowDiv" && this.overflowDivReady){
+            this.overflowDivReady = false;
+            setTimeout(() => this.initEvent.emit(), 20);
+        }
     }
 }

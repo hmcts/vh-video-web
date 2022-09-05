@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { merge, Subject, Subscription } from 'rxjs';
@@ -35,6 +35,7 @@ import { RoomClosingToastrService } from '../services/room-closing-toast.service
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
 import { Title } from '@angular/platform-browser';
+import {ModalTrapFocus} from "../../shared/modal/modal-trap-focus";
 
 @Component({
     selector: 'app-judge-waiting-room',
@@ -565,5 +566,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         return super.shouldUnmuteForHearing() && this.hostWantsToJoinHearing;
     }
 
-    myMethod() {}
+    setTrapFocus() {
+        ModalTrapFocus.trap('video-container');
+    }
 }

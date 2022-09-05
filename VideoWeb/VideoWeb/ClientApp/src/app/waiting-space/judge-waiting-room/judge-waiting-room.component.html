@@ -3,7 +3,10 @@
 </div>
 <div>
     <!-- contains the in-hearing participant list and incoming video -->
-    <div class="govuk-grid-row" *ngIf="showVideo">
+    <div class="govuk-grid-row" *ngIf="showVideo"
+         hookelement
+         [readyElm] = "'videoContainer'"
+         (readyEvent)="setTrapFocus()">
         <div id="video-container" hookelement>
             <div class="hearing-video">
                 <div class="video-background">
@@ -18,8 +21,9 @@
                                     [text]="getCaseNameAndNumber()"
                                     colour="grey"
                                     [isDesktopOnly]="false"
-                                     hookelement
-                                    [hookElement] = "myMethod()"
+                                    hookelement
+                                    [readyElm] = "'overflowDiv'"
+                                    (readyEvent)="setTrapFocus()"
                                 >
                                     (show more)
                                 </div>

@@ -1273,7 +1273,6 @@ export abstract class WaitingRoomBaseDirective implements AfterViewChecked {
         if (!this.roomTitleLabel) {
             return false;
         }
-        //ModalTrapFocus.trap(this.divTrapId);
         return this.roomTitleLabel.nativeElement.scrollWidth > this.roomTitleLabel.nativeElement.clientWidth;
     }
 
