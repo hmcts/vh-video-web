@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
@@ -23,17 +23,19 @@ import { RoomClosingToastrService } from '../services/room-closing-toast.service
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
 import { Title } from '@angular/platform-browser';
+import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
 
 @Component({
     selector: 'app-joh-waiting-room',
     templateUrl: './joh-waiting-room.component.html',
     styleUrls: ['../waiting-room-global-styles.scss', './joh-waiting-room.component.scss']
 })
-export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
+export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy, AfterViewInit {
     private readonly loggerPrefixJOH = '[JOH WR] -';
     private destroyedSubject = new Subject();
     isParticipantsPanelHidden = false;
     private title = 'JOH waiting room';
+    private readonly MODAL_WINDOW = 'video-hearing-container';
 
     constructor(
         protected route: ActivatedRoute,
@@ -79,7 +81,12 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         );
     }
 
+    ngAfterViewInit(): void {
+        ModalTrapFocus.trap(this.MODAL_WINDOW);
+    }
+
     ngOnInit(): void {
+        this.divTrapId = 'video-container';
         this.titleService.setTitle(this.title);
         this.init();
     }

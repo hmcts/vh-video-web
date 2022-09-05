@@ -2,7 +2,7 @@
   <p class="govuk-body">{{ 'participant-waiting-room.loading-please-wait' | translate }}</p>
 </div>
 
-<div *ngIf="showVideo" class="video-background">
+<div *ngIf="showVideo" class="video-background" id="video-container">
   <div class="header-bar">
     <div class="govuk-body" [class]="!isJohRoom && isPrivateConsultation ? 'header-content-grid-with-lock' : 'header-content-grid'">
       <ng-container *ngIf="!isJohRoom && isPrivateConsultation">

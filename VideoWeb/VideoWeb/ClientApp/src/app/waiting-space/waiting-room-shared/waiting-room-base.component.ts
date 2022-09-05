@@ -1,4 +1,4 @@
-import { Directive, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewChecked, Directive, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
 import { Observable, Subscription } from 'rxjs';
@@ -60,9 +60,10 @@ import { RoomClosingToastrService } from '../services/room-closing-toast.service
 import { VideoCallService } from '../services/video-call.service';
 import { Title } from '@angular/platform-browser';
 import { RoomTransfer } from '../../shared/models/room-transfer';
+//import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
 
 @Directive()
-export abstract class WaitingRoomBaseDirective {
+export abstract class WaitingRoomBaseDirective implements AfterViewChecked {
     maxBandwidth = null;
     audioOnly: boolean;
     hearingStartingAnnounced: boolean;
@@ -97,6 +98,8 @@ export abstract class WaitingRoomBaseDirective {
     conferenceStartedBy: string;
     phoneNumber$: Observable<string>;
 
+    divTrapId: string;
+
     panelTypes = ['Participants', 'Chat'];
     panelStates = {
         Participants: true,
@@ -117,6 +120,7 @@ export abstract class WaitingRoomBaseDirective {
     hasTriedToLeaveConsultation: boolean;
     connectionFailedCount: number;
     CONNECTION_FAILED_LIMIT = 3;
+    //private readonly MODAL_WINDOW2 = 'video-container';
 
     private readonly CONSULATION_LEAVE_MODAL_DEFAULT_ELEMENT = 'consultation-leave-button';
     private readonly SELECT_MEDIA_DEVICES_MODAL_DEFAULT_ELEMENT = 'toggle-media-device-img-desktop';
@@ -154,6 +158,9 @@ export abstract class WaitingRoomBaseDirective {
         );
     }
 
+    ngAfterViewChecked(): void {
+        //ModalTrapFocus.trap(this.divTrapId);
+    }
     isParticipantInCorrectWaitingRoomState(): boolean {
         return (
             this.connected &&
@@ -464,6 +471,7 @@ export abstract class WaitingRoomBaseDirective {
                 );
 
                 this.setTitle(roomTransfer);
+                //ModalTrapFocus.trap(this.divTrapId);
             })
         );
 
@@ -1265,6 +1273,7 @@ export abstract class WaitingRoomBaseDirective {
         if (!this.roomTitleLabel) {
             return false;
         }
+        //ModalTrapFocus.trap(this.divTrapId);
         return this.roomTitleLabel.nativeElement.scrollWidth > this.roomTitleLabel.nativeElement.clientWidth;
     }
 

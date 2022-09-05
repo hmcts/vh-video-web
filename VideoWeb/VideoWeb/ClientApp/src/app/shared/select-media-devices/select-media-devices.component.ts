@@ -21,7 +21,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, AfterView
     @Output() shouldClose = new EventEmitter();
     @Input() showAudioOnlySetting = false;
 
-    @ViewChild('availableMicsListRef') availableMicsList: ElementRef;
+    @ViewChild('availableMicsListRef') availableMicsList: ElementRef<HTMLDivElement>;
     private readonly SELECT_MEDIA_DEVICES_MODAL = 'select-device-modal';
 
     availableCameraDevices: UserMediaDevice[] = [];

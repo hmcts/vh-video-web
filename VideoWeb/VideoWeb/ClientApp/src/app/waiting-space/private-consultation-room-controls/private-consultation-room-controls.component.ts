@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { first, takeUntil } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
@@ -30,12 +30,14 @@ import { VideoControlCacheService } from '../../services/conference/video-contro
     ],
     outputs: ['leaveConsultation', 'lockConsultation', 'togglePanel', 'changeDeviceToggle', 'leaveHearing']
 })
-export class PrivateConsultationRoomControlsComponent extends HearingControlsBaseComponent {
+export class PrivateConsultationRoomControlsComponent extends HearingControlsBaseComponent implements AfterViewInit {
     showContextMenu = false;
 
     @Input() public canToggleParticipantsPanel: boolean;
     @Input() public isChatVisible: boolean;
     @Input() public areParticipantsVisible: boolean;
+
+    @ViewChild('firstElementToFocus') firstElm: ElementRef<HTMLDivElement>;
 
     private conferenceStatus: ConferenceStatusChanged;
     enableDynamicEvidenceSharing = false;
@@ -79,6 +81,10 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
             .getFeatureFlagByName('StaffMemberFeature')
             .pipe(first())
             .subscribe(result => (this.isStaffMemberFeatureEnabled = result));
+    }
+
+    ngAfterViewInit() {
+        this.firstElm.nativeElement.focus();
     }
 
     get canShowCloseHearingPopup(): boolean {

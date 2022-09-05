@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { merge, Subject, Subscription } from 'rxjs';
@@ -41,7 +41,7 @@ import { Title } from '@angular/platform-browser';
     templateUrl: './judge-waiting-room.component.html',
     styleUrls: ['./judge-waiting-room.component.scss', '../waiting-room-global-styles.scss']
 })
-export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
+export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy, AfterViewInit {
     private readonly loggerPrefixJudge = '[Judge WR] -';
     private destroyedSubject = new Subject();
 
@@ -119,8 +119,14 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.hearingStartingAnnounced = true; // no need to play announcements for a judge
     }
 
+    ngAfterViewInit(): void {
+        console.log('pippo');
+        //ModalTrapFocus.trap('div-controls-container');
+    }
+
     ngOnInit() {
         this.init();
+        this.divTrapId = 'video-container';
     }
 
     private init() {
@@ -558,4 +564,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     shouldUnmuteForHearing(): boolean {
         return super.shouldUnmuteForHearing() && this.hostWantsToJoinHearing;
     }
+
+    myMethod() {}
 }
