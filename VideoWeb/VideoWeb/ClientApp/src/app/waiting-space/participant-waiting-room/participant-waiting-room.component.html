@@ -24,7 +24,7 @@
       <ng-container *ngIf="isJohRoom || !isPrivateConsultation">
         <div class="room-title">
           <h1 #roomTitleLabel class="room-title-label">{{ getCaseNameAndNumber() }}</h1>
-          <div *ngIf="hasCaseNameOverflowed" class="room-title-show-more" appTooltip [text]="getCaseNameAndNumber()" colour="grey" [isDesktopOnly]=false>
+          <div *ngIf="hasCaseNameOverflowed" class="room-title-show-more" appTooltip [text]="getCaseNameAndNumber()" colour="grey" [isDesktopOnly]=false tabindex="0">
             (show more)
           </div>
         </div>
@@ -57,7 +57,10 @@
     >
     </app-private-consultation-participants>
   </div>
-  <div class="video-wrapper">
+  <div class="video-wrapper"
+       hookelement
+       [readyElm] = "'videoContainer'"
+       (readyEvent)="setTrapFocus()">
     <video
       appForcePlayVideo
       id="incomingFeedPrivate"

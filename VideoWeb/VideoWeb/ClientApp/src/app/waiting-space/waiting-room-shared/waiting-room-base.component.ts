@@ -1,4 +1,4 @@
-import { AfterViewChecked, Directive, ElementRef, ViewChild } from '@angular/core';
+import { Directive, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
 import { Observable, Subscription } from 'rxjs';
@@ -63,7 +63,7 @@ import { RoomTransfer } from '../../shared/models/room-transfer';
 //import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
 
 @Directive()
-export abstract class WaitingRoomBaseDirective implements AfterViewChecked {
+export abstract class WaitingRoomBaseDirective {
     maxBandwidth = null;
     audioOnly: boolean;
     hearingStartingAnnounced: boolean;
@@ -158,9 +158,6 @@ export abstract class WaitingRoomBaseDirective implements AfterViewChecked {
         );
     }
 
-    ngAfterViewChecked(): void {
-        //ModalTrapFocus.trap(this.divTrapId);
-    }
     isParticipantInCorrectWaitingRoomState(): boolean {
         return (
             this.connected &&

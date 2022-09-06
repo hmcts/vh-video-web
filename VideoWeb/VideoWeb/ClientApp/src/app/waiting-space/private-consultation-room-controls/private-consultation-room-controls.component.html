@@ -156,7 +156,7 @@
         </div>
         <div class='flexBar'></div>
         <div class='icon-button' id='toggle-participants-panel' appTooltip *ngIf="canToggleParticipantsPanel"
-                tabindex="0" #firstElementToFocus
+                tabindex="0"
                 [text]="'private-consultation-room-controls.participants-panel' | translate" colour='grey'
                 (click)="togglePanelStatus('Participants')">
             <fa-icon [icon]="[areParticipantsVisible ? 'fas' : 'far', 'user']" (keyup.enter)="togglePanelStatus('Participants')"></fa-icon>

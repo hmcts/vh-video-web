@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { merge, Subject, Subscription } from 'rxjs';
@@ -42,7 +42,7 @@ import {ModalTrapFocus} from "../../shared/modal/modal-trap-focus";
     templateUrl: './judge-waiting-room.component.html',
     styleUrls: ['./judge-waiting-room.component.scss', '../waiting-room-global-styles.scss']
 })
-export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy, AfterViewInit {
+export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implements OnDestroy {
     private readonly loggerPrefixJudge = '[Judge WR] -';
     private destroyedSubject = new Subject();
 
@@ -63,6 +63,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     conferenceStatusChangedSubscription: Subscription;
     participantStatusChangedSubscription: Subscription;
     onConferenceStatusChangedSubscription: Subscription;
+
 
     get isChatVisible() {
         return this.panelStates['Chat'];
@@ -118,11 +119,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         );
         this.displayConfirmStartHearingPopup = false;
         this.hearingStartingAnnounced = true; // no need to play announcements for a judge
-    }
-
-    ngAfterViewInit(): void {
-        console.log('pippo');
-        //ModalTrapFocus.trap('div-controls-container');
     }
 
     ngOnInit() {

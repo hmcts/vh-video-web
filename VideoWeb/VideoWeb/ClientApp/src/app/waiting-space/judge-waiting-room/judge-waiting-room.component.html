@@ -3,11 +3,11 @@
 </div>
 <div>
     <!-- contains the in-hearing participant list and incoming video -->
-    <div class="govuk-grid-row" *ngIf="showVideo"
-         hookelement
-         [readyElm] = "'videoContainer'"
-         (readyEvent)="setTrapFocus()">
-        <div id="video-container" hookelement>
+    <div class="govuk-grid-row" *ngIf="showVideo">
+        <div id="video-container"
+             hookelement
+             [readyElm] = "'videoContainer'"
+             (readyEvent)="setTrapFocus()">
             <div class="hearing-video">
                 <div class="video-background">
                     <div class="header-bar">
@@ -20,11 +20,7 @@
                                     appTooltip
                                     [text]="getCaseNameAndNumber()"
                                     colour="grey"
-                                    [isDesktopOnly]="false"
-                                    hookelement
-                                    [readyElm] = "'overflowDiv'"
-                                    (readyEvent)="setTrapFocus()"
-                                >
+                                    [isDesktopOnly]="false">
                                     (show more)
                                 </div>
                             </div>
@@ -42,8 +38,7 @@
                                 (leaveConsultation)="leaveConsultation()"
                                 (togglePanel)="togglePanel($event)"
                                 (changeDeviceToggle)="showChooseCameraDialog()"
-                                (leaveHearing)="leaveHearing()"
-                            >
+                                (leaveHearing)="leaveHearing()">
                             </app-private-consultation-room-controls>
                         </div>
                     </div>

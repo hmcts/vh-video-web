@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
@@ -28,14 +28,14 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 import { CaseTypeGroup } from '../models/case-type-group';
 import { Title } from '@angular/platform-browser';
-//import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
+import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
 
 @Component({
     selector: 'app-participant-waiting-room',
     templateUrl: './participant-waiting-room.component.html',
     styleUrls: ['../waiting-room-global-styles.scss', './participant-waiting-room.component.scss']
 })
-export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy, AfterViewInit {
+export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy{
     private readonly loggerPrefixParticipant = '[Participant WR] -';
     private destroyedSubject = new Subject();
     private title = 'Participant waiting room';
@@ -102,10 +102,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             const mediaStatus = new ParticipantMediaStatus(false, audioOnly);
             await this.eventService.sendMediaStatus(this.conferenceId, this.participant.id, mediaStatus);
         });
-    }
-
-    ngAfterViewInit(): void {
-        //this.divTrapId = 'video-container';
     }
 
     get allowAudioOnlyToggle(): boolean {
@@ -348,5 +344,9 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
 
     toggleAccordian() {
         this.privateConsultationAccordianExpanded = !this.privateConsultationAccordianExpanded;
+    }
+
+    setTrapFocus() {
+        ModalTrapFocus.trap('video-container');
     }
 }
