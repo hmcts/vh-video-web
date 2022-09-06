@@ -14,9 +14,9 @@ trigger: none
 variables:
   - group: vh-github-app-credentials
 
-parameters: 
+parameters:
   - name: prNumber
-    displayName: Pull Request Number 
+    displayName: Pull Request Number
     type: string
 
 stages:
@@ -30,36 +30,50 @@ stages:
           env: ${{ variables.env }}
           prNumber: ${{ parameters.prNumber }}
       - name: dnsRecordName
-        value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
+        value: vh-${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
+      - group: vh-tenant-creds
     jobs:
       - job: helm_uninstall
         displayName: Uninstall Helm from Dev
         steps:
-        - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
-          parameters:
-            subscriptionName: "${{ variables.subscriptionName }}"
-            environment: ${{ variables.env }}
+          - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
+            parameters:
+              subscriptionName: "${{ variables.subscriptionName }}"
+              environment: ${{ variables.env }}
 
-        - bash: |
-            echo "$(appName)"
-            
-        - template: templates/Containerisation/helm/helm-uninstall.yaml@azTemplates
-          parameters:
-            namespace: 'vh'
-            releaseName: "${{ variables.chartName }}-${{ variables.prTagPrefix }}"
-            azureSubscription: "${{ variables.subscriptionName }}"
-            aksResourceGroupName: "$(aksCluster.resourceGroup)"
-            aksClusterName: "$(aksCluster.name)"
+          - bash: |
+              echo "$(appName)"
+
+          - template: templates/Containerisation/helm/helm-uninstall.yaml@azTemplates
+            parameters:
+              namespace: "vh"
+              releaseName: "${{ variables.chartName }}-${{ variables.prTagPrefix }}"
+              azureSubscription: "${{ variables.subscriptionName }}"
+              aksResourceGroupName: "$(aksCluster.resourceGroup)"
+              aksClusterName: "$(aksCluster.name)"
       - job: dns_uninstall
         displayName: Uninstall DNS from Dev
         steps:
-        - template: templates\Azure\Dns\private-dns-remove.yaml@azTemplates
-          parameters:
-            subscriptionName: "${{ variables.subscriptionName }}"
-            dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
-            dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
-            zoneName: ${{ variables.dnsZone }}
-            recordName: ${{ variables.dnsRecordName }}
+          - template: templates\Azure\Dns\private-dns-remove.yaml@azTemplates
+            parameters:
+              subscriptionName: "${{ variables.subscriptionName }}"
+              dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
+              dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
+              zoneName: ${{ variables.dnsZone }}
+              recordName: ${{ variables.dnsRecordName }}
+
+      - job: redirect_url_remove
+        displayName: Remove AAD Redirect Url
+        steps:
+          - template: templates\Azure\AAD\apps\add-remove-replyruls--no-sc.yaml@azTemplates
+            parameters:
+              azureClientId: $(vh_client_id)
+              azureClientSecret: $(vh_client_secret)
+              azureTenant: $(vh_tenant_id)
+              action: "remove"
+              domain: "https://${{ variables.dnsRecordName }}.${{ variables.dnsZone }}"
+              name: "a${{ variables.gitRepoName }}.${{ variables.dnsZone }}"
+              domainUris: ${{ variables.app_redirect_uri }}
 
   - stage: uninstall_demo
     displayName: Uninstall Demo Helm and DNS
@@ -71,29 +85,43 @@ stages:
           env: ${{ variables.env }}
           prNumber: ${{ parameters.prNumber }}
       - name: dnsRecordName
-        value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
+        value: vh-${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
+      - group: vh-tenant-creds
     jobs:
       - job: helm_uninstall
         displayName: Uninstall Helm from Demo
         steps:
-        - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
-          parameters:
-            subscriptionName: "${{ variables.subscriptionName }}"
-            environment: ${{ variables.env }}
-        - template: templates/Containerisation/helm/helm-uninstall.yaml@azTemplates
-          parameters:
-            namespace: 'vh'
-            releaseName: "${{ variables.chartName }}-${{ variables.prTagPrefix }}"
-            azureSubscription: "${{ variables.subscriptionName }}"
-            aksResourceGroupName: "$(aksCluster.resourceGroup)"
-            aksClusterName: "$(aksCluster.name)"
+          - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
+            parameters:
+              subscriptionName: "${{ variables.subscriptionName }}"
+              environment: ${{ variables.env }}
+          - template: templates/Containerisation/helm/helm-uninstall.yaml@azTemplates
+            parameters:
+              namespace: "vh"
+              releaseName: "${{ variables.chartName }}-${{ variables.prTagPrefix }}"
+              azureSubscription: "${{ variables.subscriptionName }}"
+              aksResourceGroupName: "$(aksCluster.resourceGroup)"
+              aksClusterName: "$(aksCluster.name)"
       - job: dns_uninstall
         displayName: Uninstall DNS from Demo
         steps:
-        - template: templates\Azure\Dns\private-dns-remove.yaml@azTemplates
-          parameters:
-            subscriptionName: "${{ variables.subscriptionName }}"
-            dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
-            dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
-            zoneName: ${{ variables.dnsZone }}
-            recordName: ${{ variables.dnsRecordName }}
+          - template: templates\Azure\Dns\private-dns-remove.yaml@azTemplates
+            parameters:
+              subscriptionName: "${{ variables.subscriptionName }}"
+              dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
+              dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
+              zoneName: ${{ variables.dnsZone }}
+              recordName: ${{ variables.dnsRecordName }}
+
+      - job: redirect_url_remove
+        displayName: Remove AAD Redirect Url
+        steps:
+          - template: templates\Azure\AAD\apps\add-remove-replyruls--no-sc.yaml@azTemplates
+            parameters:
+              azureClientId: $(vh_client_id)
+              azureClientSecret: $(vh_client_secret)
+              azureTenant: $(vh_tenant_id)
+              action: "remove"
+              domain: "https://${{ variables.dnsRecordName }}.${{ variables.dnsZone }}"
+              name: "a${{ variables.gitRepoName }}.${{ variables.dnsZone }}"
+              domainUris: ${{ variables.app_redirect_uri }}
