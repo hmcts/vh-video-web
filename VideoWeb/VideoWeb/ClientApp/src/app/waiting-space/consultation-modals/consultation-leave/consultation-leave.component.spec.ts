@@ -3,7 +3,6 @@ import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 
 describe('ConsultationLeaveComponent', () => {
     let component: ConsultationLeaveComponent;
-
     beforeEach(() => {
         component = new ConsultationLeaveComponent();
     });
@@ -35,6 +34,11 @@ describe('ConsultationLeaveComponent', () => {
     describe('ConsultationLeaveComponent.AfterViewInit', () => {
         let div;
         let divElm;
+        const CSS_QUERY =
+            'div.icon-button.dropdown.always-on, div.icon-button[tabindex], div.small-button[tabindex], ' +
+            'div.icon-button:not(.dropdown) > fa-icon[tabindex], a[href]:not([disabled]), ' +
+            'button:not([disabled]), div:not(.hide-panel) > * > * > * > * > textarea, input[type="text"]:not([disabled]), ' +
+            'select:not([disabled])';
         beforeEach(fakeAsync(() => {
             flushMicrotasks();
             div =
@@ -69,19 +73,19 @@ describe('ConsultationLeaveComponent', () => {
         });
 
         it('should handle keydown Tab', fakeAsync(() => {
-            const focusableEls: NodeListOf<HTMLElement> = divElm.querySelectorAll(
-                'a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])'
-            );
-
+            const focusableEls: NodeListOf<HTMLElement> = divElm.querySelectorAll(CSS_QUERY);
+            const emptyList: NodeListOf<HTMLElement> = divElm.querySelectorAll('div.room-title-show-more[tabindex]');
             const lastFocusableEl = focusableEls[1];
 
-            lastFocusableEl.focus();
-
             document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(divElm);
-            divElm.querySelectorAll = jasmine.createSpy('Query Selector').and.returnValue(focusableEls);
+
+            const documentSpy = jasmine.createSpyObj<Document>(['querySelectorAll']);
+            documentSpy.querySelectorAll.withArgs(CSS_QUERY).and.returnValue(focusableEls);
+            documentSpy.querySelectorAll.withArgs('div.room-title-show-more[tabindex]').and.returnValue(emptyList);
 
             component.ngAfterViewInit();
 
+            lastFocusableEl.focus();
             const event = new KeyboardEvent('keydown', { key: 'Tab' });
             event.preventDefault = function () {};
             spyOn(event, 'preventDefault');
@@ -93,18 +97,21 @@ describe('ConsultationLeaveComponent', () => {
         }));
 
         it('should handle keydown Shift-Tab', fakeAsync(() => {
-            const focusableEls: NodeListOf<HTMLElement> = divElm.querySelectorAll(
-                'a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])'
-            );
+            const focusableEls: NodeListOf<HTMLElement> = divElm.querySelectorAll(CSS_QUERY);
+            const emptyList: NodeListOf<HTMLElement> = divElm.querySelectorAll('div.room-title-show-more[tabindex]');
 
             const firstFocusableEl = focusableEls[0];
 
-            firstFocusableEl.focus();
+
 
             document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(divElm);
-            divElm.querySelectorAll = jasmine.createSpy('Query Selector').and.returnValue(focusableEls);
+            const documentSpy = jasmine.createSpyObj<Document>(['querySelectorAll']);
+            documentSpy.querySelectorAll.withArgs(CSS_QUERY).and.returnValue(focusableEls);
+            documentSpy.querySelectorAll.withArgs('div.room-title-show-more[tabindex]').and.returnValue(emptyList);
 
             component.ngAfterViewInit();
+
+            firstFocusableEl.focus();
 
             const event = new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true });
             event.preventDefault = function () {};

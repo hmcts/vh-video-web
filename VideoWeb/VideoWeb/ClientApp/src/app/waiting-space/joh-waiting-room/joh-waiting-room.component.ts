@@ -30,7 +30,7 @@ import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
     templateUrl: './joh-waiting-room.component.html',
     styleUrls: ['../waiting-room-global-styles.scss', './joh-waiting-room.component.scss']
 })
-export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy, AfterViewInit {
+export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
     private readonly loggerPrefixJOH = '[JOH WR] -';
     private destroyedSubject = new Subject();
     isParticipantsPanelHidden = false;
@@ -81,12 +81,7 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         );
     }
 
-    ngAfterViewInit(): void {
-        ModalTrapFocus.trap(this.MODAL_WINDOW);
-    }
-
     ngOnInit(): void {
-        this.divTrapId = 'video-container';
         this.titleService.setTitle(this.title);
         this.init();
     }
@@ -173,5 +168,9 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
 
         this.destroyedSubject.next();
         this.destroyedSubject.complete();
+    }
+
+    setTrapFocus() {
+        ModalTrapFocus.trap(this.MODAL_WINDOW);
     }
 }
