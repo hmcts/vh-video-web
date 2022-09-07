@@ -35,7 +35,7 @@ import { RoomClosingToastrService } from '../services/room-closing-toast.service
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
 import { Title } from '@angular/platform-browser';
-import {ModalTrapFocus} from '../../shared/modal/modal-trap-focus';
+import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
 
 @Component({
     selector: 'app-judge-waiting-room',
@@ -63,7 +63,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     conferenceStatusChangedSubscription: Subscription;
     participantStatusChangedSubscription: Subscription;
     onConferenceStatusChangedSubscription: Subscription;
-
 
     get isChatVisible() {
         return this.panelStates['Chat'];

@@ -102,8 +102,6 @@ describe('ConsultationLeaveComponent', () => {
 
             const firstFocusableEl = focusableEls[0];
 
-
-
             document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(divElm);
             const documentSpy = jasmine.createSpyObj<Document>(['querySelectorAll']);
             documentSpy.querySelectorAll.withArgs(CSS_QUERY).and.returnValue(focusableEls);
