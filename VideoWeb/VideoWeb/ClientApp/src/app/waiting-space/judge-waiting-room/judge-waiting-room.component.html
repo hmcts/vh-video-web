@@ -5,7 +5,7 @@
     <!-- contains the in-hearing participant list and incoming video -->
     <div class="govuk-grid-row" *ngIf="showVideo">
         <div id="video-container"
-             hookelement
+             appHookElement
              [readyElm] = "'videoContainer'"
              (readyEvent)="setTrapFocus()">
             <div class="hearing-video">

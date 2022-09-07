@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { merge, Subject, Subscription } from 'rxjs';
@@ -35,14 +35,14 @@ import { RoomClosingToastrService } from '../services/room-closing-toast.service
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
 import { Title } from '@angular/platform-browser';
-import {ModalTrapFocus} from "../../shared/modal/modal-trap-focus";
+import {ModalTrapFocus} from '../../shared/modal/modal-trap-focus';
 
 @Component({
     selector: 'app-judge-waiting-room',
     templateUrl: './judge-waiting-room.component.html',
     styleUrls: ['./judge-waiting-room.component.scss', '../waiting-room-global-styles.scss']
 })
-export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implements OnDestroy {
+export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implements OnDestroy, OnInit {
     private readonly loggerPrefixJudge = '[Judge WR] -';
     private destroyedSubject = new Subject();
 

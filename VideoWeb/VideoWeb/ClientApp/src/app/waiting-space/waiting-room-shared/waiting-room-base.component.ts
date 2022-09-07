@@ -60,7 +60,6 @@ import { RoomClosingToastrService } from '../services/room-closing-toast.service
 import { VideoCallService } from '../services/video-call.service';
 import { Title } from '@angular/platform-browser';
 import { RoomTransfer } from '../../shared/models/room-transfer';
-//import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
 
 @Directive()
 export abstract class WaitingRoomBaseDirective {
@@ -120,7 +119,6 @@ export abstract class WaitingRoomBaseDirective {
     hasTriedToLeaveConsultation: boolean;
     connectionFailedCount: number;
     CONNECTION_FAILED_LIMIT = 3;
-    //private readonly MODAL_WINDOW2 = 'video-container';
 
     private readonly CONSULATION_LEAVE_MODAL_DEFAULT_ELEMENT = 'consultation-leave-button';
     private readonly SELECT_MEDIA_DEVICES_MODAL_DEFAULT_ELEMENT = 'toggle-media-device-img-desktop';
@@ -468,7 +466,6 @@ export abstract class WaitingRoomBaseDirective {
                 );
 
                 this.setTitle(roomTransfer);
-                //ModalTrapFocus.trap(this.divTrapId);
             })
         );
 

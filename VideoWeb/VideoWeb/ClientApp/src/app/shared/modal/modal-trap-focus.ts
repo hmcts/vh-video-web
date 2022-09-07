@@ -15,7 +15,7 @@ export class ModalTrapFocus {
         if (element) {
             const focusableEls = element.querySelectorAll(this.CSS_QUERY);
             const focusableShowMore = element.querySelectorAll('div.room-title-show-more[tabindex]');
-            let focusArray = Array.from(focusableEls);
+            const focusArray = Array.from(focusableEls);
             if (focusableShowMore && focusableShowMore.length > 0) {
                 focusArray.unshift(focusableShowMore[0]);
             }

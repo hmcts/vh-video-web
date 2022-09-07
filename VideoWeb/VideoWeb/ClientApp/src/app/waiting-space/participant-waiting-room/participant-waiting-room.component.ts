@@ -35,7 +35,7 @@ import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
     templateUrl: './participant-waiting-room.component.html',
     styleUrls: ['../waiting-room-global-styles.scss', './participant-waiting-room.component.scss']
 })
-export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy{
+export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
     private readonly loggerPrefixParticipant = '[Participant WR] -';
     private destroyedSubject = new Subject();
     private title = 'Participant waiting room';

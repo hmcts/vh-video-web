@@ -1,10 +1,10 @@
-import { HookElement } from './hook-element.directive';
+import { HookElementDirective } from './hook-element.directive';
 
 describe('HookElement', () => {
-    let directive: HookElement;
+    let directive: HookElementDirective;
 
     beforeEach(() => {
-        directive = new HookElement();
+        directive = new HookElementDirective();
     });
 
     it('videoContainer', () => {

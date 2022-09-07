@@ -95,7 +95,7 @@ import {
     faUser as faUserRegular
 } from '@fortawesome/free-regular-svg-icons';
 import { RoomNamePipe } from './pipes/room-name.pipe';
-import { HookElement } from './directives/hook-element.directive';
+import { HookElementDirective } from './directives/hook-element.directive';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -164,7 +164,7 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         StaffMemberVenueListComponent,
         VhOfficerVenueListComponent,
         RoomNamePipe,
-        HookElement
+        HookElementDirective
     ],
     providers: [
         { provide: Logger, useClass: LoggerService },
@@ -217,7 +217,7 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         VhOfficerVenueListComponent,
         FontAwesomeModule,
         RoomNamePipe,
-        HookElement
+        HookElementDirective
     ]
 })
 export class SharedModule {

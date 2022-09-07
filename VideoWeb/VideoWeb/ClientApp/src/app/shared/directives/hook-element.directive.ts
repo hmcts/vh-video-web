@@ -1,25 +1,25 @@
-import { Directive, EventEmitter, Input, Output } from '@angular/core';
+import { Directive, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Directive({
-    selector: '[hookelement]'
+    selector: '[appHookElement]'
 })
-export class HookElement {
+export class HookElementDirective implements OnInit {
     videoContainerReady = true;
     overflowDivReady = true;
     participantDivReady = true;
     @Input() readyElm: string;
-    @Output('readyEvent') initEvent: EventEmitter<any> = new EventEmitter();
+    @Output() readyEvent: EventEmitter<any> = new EventEmitter();
 
     ngOnInit(): void {
-        if (this.readyElm == 'videoContainer' && this.videoContainerReady) {
+        if (this.readyElm === 'videoContainer' && this.videoContainerReady) {
             this.videoContainerReady = false;
-            setTimeout(() => this.initEvent.emit(), 20);
-        } else if (this.readyElm == 'overflowDiv' && this.overflowDivReady) {
+            setTimeout(() => this.readyEvent.emit(), 20);
+        } else if (this.readyElm === 'overflowDiv' && this.overflowDivReady) {
             this.overflowDivReady = false;
-            setTimeout(() => this.initEvent.emit(), 20);
-        } else if (this.readyElm == 'participantDiv' && this.participantDivReady) {
+            setTimeout(() => this.readyEvent.emit(), 20);
+        } else if (this.readyElm === 'participantDiv' && this.participantDivReady) {
             this.participantDivReady = false;
-            setTimeout(() => this.initEvent.emit(), 20);
+            setTimeout(() => this.readyEvent.emit(), 20);
         }
     }
 }
