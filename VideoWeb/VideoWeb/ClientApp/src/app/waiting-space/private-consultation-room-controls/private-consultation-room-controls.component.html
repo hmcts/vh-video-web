@@ -158,7 +158,7 @@
         <div class='icon-button' id='toggle-participants-panel' appTooltip *ngIf="canToggleParticipantsPanel"
                 [text]="'private-consultation-room-controls.participants-panel' | translate" colour='grey'
                 (click)="togglePanelStatus('Participants')">
-            <fa-icon tabindex="0" [icon]="[areParticipantsVisible ? 'fas' : 'far', 'user']" (keyup.enter)="togglePanelStatus('Participants')"></fa-icon>
+            <fa-icon [icon]="[areParticipantsVisible ? 'fas' : 'far', 'user']" (keyup.enter)="togglePanelStatus('Participants')"></fa-icon>
         </div>
         <div class='show-for-medium-only'>
 
@@ -210,6 +210,7 @@
             <div class="icon-button dropdown always-on" id="start-screenshare-img-desktop"
                 *ngIf="!screenShareStream && canShowScreenShareButton" appTooltip
                 [text]="'private-consultation-room-controls.share-my-screen' | translate" colour="grey"
+                 tabindex="0"
                 (click)="showEvidenceContextMenu = !showEvidenceContextMenu">
                 <fa-icon icon='share-square' tabindex="0" (keyup.enter)="showEvidenceContextMenu = !showEvidenceContextMenu"></fa-icon>
 
