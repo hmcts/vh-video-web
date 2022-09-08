@@ -23,6 +23,7 @@ import { RoomClosingToastrService } from '../services/room-closing-toast.service
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
 import { Title } from '@angular/platform-browser';
+import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
 
 @Component({
     selector: 'app-joh-waiting-room',
@@ -34,6 +35,7 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
     private destroyedSubject = new Subject();
     isParticipantsPanelHidden = false;
     private title = 'JOH waiting room';
+    private readonly MODAL_WINDOW = 'video-hearing-container';
 
     constructor(
         protected route: ActivatedRoute,
@@ -166,5 +168,9 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
 
         this.destroyedSubject.next();
         this.destroyedSubject.complete();
+    }
+
+    setTrapFocus() {
+        ModalTrapFocus.trap(this.MODAL_WINDOW);
     }
 }

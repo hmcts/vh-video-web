@@ -2,7 +2,7 @@
   <p class="govuk-body">{{ 'participant-waiting-room.loading-please-wait' | translate }}</p>
 </div>
 
-<div *ngIf="showVideo" class="video-background">
+<div *ngIf="showVideo" class="video-background" id="video-container">
   <div class="header-bar">
     <div class="govuk-body" [class]="!isJohRoom && isPrivateConsultation ? 'header-content-grid-with-lock' : 'header-content-grid'">
       <ng-container *ngIf="!isJohRoom && isPrivateConsultation">
@@ -24,7 +24,7 @@
       <ng-container *ngIf="isJohRoom || !isPrivateConsultation">
         <div class="room-title">
           <h1 #roomTitleLabel class="room-title-label">{{ getCaseNameAndNumber() }}</h1>
-          <div *ngIf="hasCaseNameOverflowed" class="room-title-show-more" appTooltip [text]="getCaseNameAndNumber()" colour="grey" [isDesktopOnly]=false>
+          <div *ngIf="hasCaseNameOverflowed" class="room-title-show-more" appTooltip [text]="getCaseNameAndNumber()" colour="grey" [isDesktopOnly]=false tabindex="0">
             (show more)
           </div>
         </div>
@@ -57,7 +57,10 @@
     >
     </app-private-consultation-participants>
   </div>
-  <div class="video-wrapper">
+  <div class="video-wrapper"
+       appHookElement
+       [readyElm] = "'videoContainer'"
+       (readyEvent)="setTrapFocus()">
     <video
       appForcePlayVideo
       id="incomingFeedPrivate"

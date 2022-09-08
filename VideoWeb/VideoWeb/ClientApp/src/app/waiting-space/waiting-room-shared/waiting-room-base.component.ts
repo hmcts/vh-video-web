@@ -97,6 +97,8 @@ export abstract class WaitingRoomBaseDirective {
     conferenceStartedBy: string;
     phoneNumber$: Observable<string>;
 
+    divTrapId: string;
+
     panelTypes = ['Participants', 'Chat'];
     panelStates = {
         Participants: true,

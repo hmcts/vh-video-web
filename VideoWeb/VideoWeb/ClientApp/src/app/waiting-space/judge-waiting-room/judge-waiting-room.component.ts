@@ -35,13 +35,14 @@ import { RoomClosingToastrService } from '../services/room-closing-toast.service
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
 import { Title } from '@angular/platform-browser';
+import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
 
 @Component({
     selector: 'app-judge-waiting-room',
     templateUrl: './judge-waiting-room.component.html',
     styleUrls: ['./judge-waiting-room.component.scss', '../waiting-room-global-styles.scss']
 })
-export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
+export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implements OnDestroy, OnInit {
     private readonly loggerPrefixJudge = '[Judge WR] -';
     private destroyedSubject = new Subject();
 
@@ -121,6 +122,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     ngOnInit() {
         this.init();
+        this.divTrapId = 'video-container';
     }
 
     private init() {
@@ -557,5 +559,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     shouldUnmuteForHearing(): boolean {
         return super.shouldUnmuteForHearing() && this.hostWantsToJoinHearing;
+    }
+
+    setTrapFocus() {
+        ModalTrapFocus.trap('video-container');
     }
 }

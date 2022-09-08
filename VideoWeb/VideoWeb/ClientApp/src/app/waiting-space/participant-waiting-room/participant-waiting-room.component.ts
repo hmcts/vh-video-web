@@ -28,6 +28,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 import { CaseTypeGroup } from '../models/case-type-group';
 import { Title } from '@angular/platform-browser';
+import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -93,6 +94,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
 
     ngOnInit() {
         this.titleService.setTitle(this.title);
+        this.divTrapId = 'video-container';
         this.init();
         this.userMediaService.isAudioOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(async audioOnly => {
             this.audioOnly = audioOnly;
@@ -124,6 +126,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     }
 
     private init() {
+        this.divTrapId = 'video-container';
         this.destroyedSubject = new Subject();
 
         this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.destroyedSubject)).subscribe(() => this.onShouldUnload());
@@ -341,5 +344,9 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
 
     toggleAccordian() {
         this.privateConsultationAccordianExpanded = !this.privateConsultationAccordianExpanded;
+    }
+
+    setTrapFocus() {
+        ModalTrapFocus.trap('video-container');
     }
 }
