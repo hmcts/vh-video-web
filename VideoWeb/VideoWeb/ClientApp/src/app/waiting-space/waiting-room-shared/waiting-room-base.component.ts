@@ -157,11 +157,12 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     isParticipantInCorrectWaitingRoomState(): boolean {
-        return (
+        const result =
             this.connected &&
             this.participant.status === ParticipantStatus.Available &&
-            (!this.participant.current_room || this.participant.current_room.label === 'WaitingRoom')
-        );
+            (!this.participant.current_room || this.participant.current_room.label === 'WaitingRoom');
+
+        return result;
     }
 
     get conferenceId(): string {
@@ -868,6 +869,7 @@ export abstract class WaitingRoomBaseDirective {
         }
         this.callStream = null;
         this.outgoingStream = null;
+        this.logger.debug(`${this.loggerPrefix} Pexip debug - this.connected set to false`);
         this.connected = false;
         this.showVideo = false;
     }
@@ -884,9 +886,12 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     async handleCallConnected(callConnected: ConnectedCall): Promise<void> {
+        this.logger.debug(`${this.loggerPrefix} Pexip debug - handleCallConnected`);
         this.errorCount = 0;
         this.connected = true;
+        this.logger.debug(`${this.loggerPrefix} Pexip debug - this.connected set to true`);
         this.logger.debug(`${this.loggerPrefix} Successfully connected to hearing`, { conference: this.conferenceId });
+        this.logger.debug(`${this.loggerPrefix} Pexip debug - participant: ${JSON.stringify(this.participant)}`);
         this.callStream = callConnected.stream;
 
         if (this.callStream) {

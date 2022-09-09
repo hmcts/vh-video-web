@@ -192,6 +192,7 @@ export class VideoCallService {
             }
         }
 
+        this.logger.debug(`${this.loggerPrefix} Pexip Debug - onConnectedSubject.next`);
         this.onConnectedSubject.next(new ConnectedCall(stream));
     }
 
