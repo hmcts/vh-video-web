@@ -171,10 +171,12 @@ export class VideoCallService {
     }
 
     private handleSetup(stream: MediaStream | URL) {
+        this.logger.debug(`${this.loggerPrefix} Pexip Debug - onSetup`);
         this.onSetupSubject.next(new CallSetup(stream));
     }
 
     private handleConnect(stream: MediaStream | URL) {
+        this.logger.debug(`${this.loggerPrefix} Pexip Debug - onConnect`);
         if (this.renegotiating || this.justRenegotiated) {
             this.logger.warn(
                 `${this.loggerPrefix} Not initialising heartbeat or subscribing to stream modified as it was during a renegotation`
@@ -205,6 +207,7 @@ export class VideoCallService {
     }
 
     private handleError(error: string) {
+        this.logger.debug(`${this.loggerPrefix} Pexip Debug - onError`);
         this.cleanUpConnection();
 
         this.onErrorSubject.next(new CallError(error));
@@ -214,6 +217,7 @@ export class VideoCallService {
     // https://docs.pexip.com/api_client/api_pexrtc.htm#onDisconnect
     private handleServerDisconnect(reason: string) {
         this.logger.debug(`${this.loggerPrefix} handling server disconnection`);
+        this.logger.debug(`${this.loggerPrefix} Pexip Debug - onDisconnect`);
 
         this.cleanUpConnection();
         this.onDisconnected.next(new DisconnectedCall(reason));
