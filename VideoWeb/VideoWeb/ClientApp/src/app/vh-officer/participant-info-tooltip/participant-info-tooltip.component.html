@@ -11,13 +11,13 @@
     </p>
   </div>
   <div class="govuk-grid-column-full" *ngIf="participant.isQuickLinkUser">
-    <p id="tooltip-joined-by-quick-link-{{ participant.id }}" class="govuk-!-margin-bottom-1">{{ joinByQuickLinkText }}</p>
+    <p id="tooltip-joined-by-quick-link-{{ participant.id }}" class="govuk-!-margin-bottom-1">{{ joinedByVideoLinkText }}</p>
   </div>
   <div class="govuk-grid-column-full">
     <p *ngIf="participant.showCaseRole" id="tooltip-case-role-{{ participant.id }}" class="govuk-!-margin-bottom-1">
       {{ participant.caseGroup }}
     </p>
-  </div>    
+  </div>
   <div class="govuk-grid-column-full">
     <a id="tooltip-email-{{ participant.id }}" class="govuk-body-s govuk-link vh-overflow" href="mailto:{{ participant.contactEmail }}">{{
       participant.contactEmail

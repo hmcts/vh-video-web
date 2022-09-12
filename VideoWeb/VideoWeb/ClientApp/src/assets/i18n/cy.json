@@ -1181,9 +1181,13 @@
     "display-text": "Copïo'r rhif adnabod gwrandawiad i'r clipfwrdd",
     "tooltip-copied": "Wedi copïo'r rhif adnabod cynhadledd i'r clipfwrdd"
   },
+  "video-hearing-link": "Dolen i’r gwrandawiad fideo",
+  "participant-info-tooltip": {
+      "join-by-link-text": "Dolen ymuno drwy wrandawiad fideo"
+  },
   "copy-quick-link": {
-    "tooltip-copied": "Manylion ymuno drwy ddolen gyflym i'r clipfwrdd wedi cael eu copïo i'r clipfwrdd",
-    "display-text": "Copïo'r manylion ymuno drwy ddolen gyflym i'r clipfwrdd"
+    "tooltip-copied": "Manylion y ddolen i ymuno â’r gwrandawiad  fideo wedi eu copïo i’r clipfwrdd",
+    "display-text": "Copïo manylion y ddolen i ymuno â’r gwrandawiad  fideo i’r clipfwrdd"
   },
   "quick-participant-landing-page": {
     "page-title": "Rhowch eich manylion i ymuno â'ch gwrandawiad",
