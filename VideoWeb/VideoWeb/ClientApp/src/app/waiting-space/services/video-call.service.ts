@@ -171,7 +171,7 @@ export class VideoCallService {
     }
 
     private handleSetup(stream: MediaStream | URL) {
-        this.logger.debug(`${this.loggerPrefix} Pexip Debug - onSetup`);
+        this.logger.debug(`${this.loggerPrefix} Pexip Debug - onSetup `);
         this.onSetupSubject.next(new CallSetup(stream));
     }
 
