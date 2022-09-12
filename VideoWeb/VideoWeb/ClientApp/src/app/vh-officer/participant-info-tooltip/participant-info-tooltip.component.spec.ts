@@ -3,6 +3,8 @@ import { By } from '@angular/platform-browser';
 import { ParticipantContactDetailsResponseVho, Role } from 'src/app/services/clients/api-client';
 import { ParticipantContactDetails } from 'src/app/shared/models/participant-contact-details';
 import { ParticipantInfoTooltipComponent } from './participant-info-tooltip.component';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import {TranslateService} from "@ngx-translate/core";
 
 describe('ParticipantInfoTooltip component', () => {
     let component: ParticipantInfoTooltipComponent;
@@ -10,7 +12,8 @@ describe('ParticipantInfoTooltip component', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [ParticipantInfoTooltipComponent]
+            declarations: [ParticipantInfoTooltipComponent],
+            providers : [{provide: TranslateService, useValue: translateServiceSpy}]
         }).compileComponents();
     });
 
