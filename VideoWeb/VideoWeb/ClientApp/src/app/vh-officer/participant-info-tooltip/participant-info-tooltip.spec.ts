@@ -4,6 +4,8 @@ import { ParticipantContactDetails } from 'src/app/shared/models/participant-con
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 
 import { ParticipantInfoTooltipComponent } from './participant-info-tooltip.component';
+import { TranslateService } from '@ngx-translate/core';
+import { translateServiceSpy } from '../../testing/mocks/mock-translation.service';
 
 describe('ParticipantInfoTooltipComponent', () => {
     let component: ParticipantInfoTooltipComponent;
@@ -12,7 +14,8 @@ describe('ParticipantInfoTooltipComponent', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            declarations: [ParticipantInfoTooltipComponent]
+            declarations: [ParticipantInfoTooltipComponent],
+            providers: [{ provide: TranslateService, useValue: translateServiceSpy }]
         });
 
         fixture = TestBed.createComponent(ParticipantInfoTooltipComponent);

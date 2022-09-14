@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Role } from 'src/app/services/clients/api-client';
 import { ParticipantContactDetails } from '../../shared/models/participant-contact-details';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-participant-info-tooltip',
@@ -8,8 +9,9 @@ import { ParticipantContactDetails } from '../../shared/models/participant-conta
     styleUrls: ['../vho-global-styles.scss']
 })
 export class ParticipantInfoTooltipComponent {
+    constructor(private translateService: TranslateService) {}
     @Input() participant: ParticipantContactDetails;
-    joinByQuickLinkText = 'Joined by quick link';
+    joinedByVideoLinkText = this.translateService.instant('participant-info-tooltip.join-by-link-text');
     quickLinkParticipantDisplayText = 'Participant';
     quickLinkObserverDisplayText = 'Observer';
 
