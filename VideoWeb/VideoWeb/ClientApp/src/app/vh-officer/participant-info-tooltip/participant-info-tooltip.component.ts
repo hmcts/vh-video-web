@@ -11,7 +11,6 @@ import { TranslateService } from '@ngx-translate/core';
 export class ParticipantInfoTooltipComponent {
     constructor(private translateService: TranslateService) {}
     @Input() participant: ParticipantContactDetails;
-    joinedByVideoLinkText = this.translateService.instant('participant-info-tooltip.join-by-link-text');
     quickLinkParticipantDisplayText = 'Participant';
     quickLinkObserverDisplayText = 'Observer';
 
@@ -23,5 +22,9 @@ export class ParticipantInfoTooltipComponent {
             hearingRole = this.quickLinkObserverDisplayText;
         }
         return hearingRole;
+    }
+
+    getJoinByLinkText() {
+        return this.translateService.instant('participant-info-tooltip.join-by-link-text');
     }
 }
