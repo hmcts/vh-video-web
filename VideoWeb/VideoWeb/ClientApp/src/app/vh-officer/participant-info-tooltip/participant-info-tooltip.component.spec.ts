@@ -33,7 +33,7 @@ describe('ParticipantInfoTooltip component', () => {
         );
         fixture.detectChanges();
         const quickLinkTextElement = fixture.debugElement.query(By.css(`#tooltip-joined-by-quick-link-${expectedId}`));
-        expect(quickLinkTextElement.nativeElement.innerHTML).toBe(component.joinedByVideoLinkText);
+        expect(quickLinkTextElement.nativeElement.innerHTML).toBe(component.getJoinByLinkText());
     });
 
     it('does not render join by quick link text', () => {
