@@ -179,6 +179,12 @@
           "Newtonsoft.Json": "10.0.3"
         }
       },
+      "Selenium.WebDriver.ChromeDriver": {
+        "type": "Direct",
+        "requested": "[105.0.5195.5200, )",
+        "resolved": "105.0.5195.5200",
+        "contentHash": "/OV++ThfRp7YcWilvbbfeZQDwtlQr0Gbkczxg+ll1EvTfxI02yjK52DSNyy39NkgsD4/643PZ2icAdTBSylzAw=="
+      },
       "Selenium.WebDriver.IEDriver": {
         "type": "Direct",
         "requested": "[3.150.1.2, )",
@@ -1309,11 +1315,6 @@
         "type": "Transitive",
         "resolved": "4.3.2",
         "contentHash": "leXiwfiIkW7Gmn7cgnNcdtNAU70SjmKW3jxGj1iKHOvdn0zRWsgv/l2OJUO5zdGdiv2VRFnAsxxhDgMzofPdWg=="
-      },
-      "Selenium.WebDriver.ChromeDriver": {
-        "type": "Transitive",
-        "resolved": "103.0.5060.5300",
-        "contentHash": "UwIFn3QINPCwFrQwJUoV7yyAcuvIrRtleLitw8dx+a6db/Lizc0oBxuMyXttQolEVhS8Jf05IhvG+vLKZzBhjg=="
       },
       "SpecFlow.Internal.Json": {
         "type": "Transitive",

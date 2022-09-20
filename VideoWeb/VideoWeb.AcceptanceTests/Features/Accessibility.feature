@@ -3,8 +3,8 @@ Feature: Accessibility
 	As a service
 	I want to check each page for potential accessibility issues@Smoketest
 
-@Smoketest @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
-Scenario Outline: Hearing List page accessibility
+@Smoketest @Accessibility
+Scenario Outline: Hearing List page accessibility smoke test
 	Given the <Role> user has progressed to the <Hearing List> page
 	Then the page should be accessible
 	Examples: 
@@ -12,23 +12,23 @@ Scenario Outline: Hearing List page accessibility
 	| Judge       | Judge Hearing List |
 	| Participant | Hearing List       |
 
-@Smoketest @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
-Scenario: Introduction page accessibility
+@Smoketest @Accessibility
+Scenario: Introduction page accessibility smoke test
 	Given the Participant user has progressed to the Introduction page
 	Then the page should be accessible 
 
-@Smoketest @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
-Scenario: Equipment Check page accessibility
+@Smoketest @Accessibility
+Scenario: Equipment Check page accessibility smoke test
 	Given the Participant user has progressed to the Equipment Check page
 	Then the page should be accessible 
 
-@Smoketest @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
-Scenario: Switch on your camera and microphone page accessibility
+@Smoketest @Accessibility
+Scenario: Switch on your camera and microphone page accessibility smoke test
 	Given the Participant user has progressed to the Switch on your camera and microphone page
 	Then the page should be accessible 
 
-@Smoketest @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
-Scenario Outline: Practice video hearing page accessibility
+@Smoketest @Accessibility
+Scenario Outline: Practice video hearing page accessibility smoke test
 	Given the <Role> user has progressed to the Practice video hearing page
   And the practice video hearing video has started
 	Then the page should be accessible 
@@ -38,39 +38,39 @@ Scenario Outline: Practice video hearing page accessibility
 	| Representative Self Test |
 	| Individual               |
 
-@Smoketest @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari 
-Scenario: Camera Working page accessibility
+@Smoketest @Accessibility 
+Scenario: Camera Working page accessibility smoke test
 	Given the Participant user has progressed to the Camera Working page
 	Then the page should be accessible 
 
-@Smoketest @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
-Scenario: Microphone Working page accessibility
+@Smoketest @Accessibility
+Scenario: Microphone Working page accessibility smoke test
 	Given the Participant user has progressed to the Microphone Working page
 	Then the page should be accessible 
 
-@Smoketest @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
-Scenario: See and Hear Video page accessibility
+@Smoketest @Accessibility
+Scenario: See and Hear Video page accessibility smoke test
 	Given the Participant user has progressed to the See and Hear Video page
 	Then the page should be accessible 
 
-@Smoketest @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
-Scenario: Rules page accessibility
+@Smoketest @Accessibility
+Scenario: Rules page accessibility smoke test
 	Given the Participant user has progressed to the Rules page
 	Then the page should be accessible 
 
-@Smoketest @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
-Scenario: Declaration page accessibility
+@Smoketest @Accessibility
+Scenario: Declaration page accessibility smoke test
 	Given the Participant user has progressed to the Declaration page
 	Then the page should be accessible 
 
-@Smoketest @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
-Scenario: Change camera and microphone page accessibility
+@Smoketest @Accessibility
+Scenario: Change camera and microphone page accessibility smoke test
     Given the Judge user has progressed to the Judge Waiting Room page
     When the waiting room page has loaded for the Judge
     Then the page should be accessible 
 
-@Smoketest @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
-Scenario: Judge Waiting Room page accessibility
+@Smoketest @Accessibility
+Scenario: Judge Waiting Room page accessibility smoke test
     Given the Judge user has progressed to the Judge Waiting Room page
     When the waiting room page has loaded for the Judge
     Then the page should be accessible
@@ -89,8 +89,8 @@ Scenario: Judge Waiting Room Change Camera popup accessibility
     Then the page should be accessible 
     And the judge dismisses the change camera popup
 
-@Smoketest @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
-Scenario: Participant Waiting Room page accessibility
+@Smoketest @Accessibility
+Scenario: Participant Waiting Room page accessibility smoke test
     Given the Participant user has progressed to the Waiting Room page
     When the waiting room page has loaded for the Participant
     Then the page should be accessible
@@ -101,8 +101,8 @@ Scenario: Participant Private Consultation page accessibility
   When the individual starts a private consultation with their representative
   Then the page should be accessible
 
-@Smoketest @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
-Scenario: Help page accessibility
+@Smoketest @Accessibility
+Scenario: Help page accessibility smoke test
 	Given the Participant user has progressed to the Microphone Working page
 	When the user selects the No radiobutton
 	And the user clicks the Continue button
@@ -135,8 +135,8 @@ Scenario: VHO Command Centre Hearing Tab page accessibility
   And the VHO selects the Hearings tab
 	Then the page should be accessible 
 
-@Smoketest @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
-Scenario: VHO Command Centre Messages Tab page accessibility
+@Smoketest @Accessibility
+Scenario: VHO Command Centre Messages Tab page accessibility smoke test
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
   And the VHO selects the Messages tab
 	Then the page should be accessible 

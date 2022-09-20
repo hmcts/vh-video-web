@@ -19,7 +19,7 @@ Scenario: Judicial Office Holder waiting room with StaffMember
 
 #@VIH-8266
 @HearingTest @Smoketest-Extended
-Scenario: Staff Member starts hearing with Judge in Waiting Room 
+Scenario: Staff Member starts hearing with Judge in Waiting Room
   Given I have a scheduled hearing with a Judge and a Staff Member
 	And the first Individual user has progressed to the Waiting Room page for the existing hearing
 	And the second Individual user has progressed to the Waiting Room page for the existing hearing
