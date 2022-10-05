@@ -1,3 +1,0 @@
-variables:
-  - name: env
-    value: "demo"
