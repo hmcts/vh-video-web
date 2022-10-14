@@ -75,6 +75,14 @@ describe('ParticipantWaitingRoomGuard', () => {
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.ParticipantHearingList]);
     });
 
+    it('should not be able to activate component if authorisation is false', async () => {
+        spyOn(guard, 'isUserAuthorized').and.returnValue(of(false));
+        const result = await guard.canActivate(activateRoute, null);
+
+        expect(result).toBeFalsy();
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.Login]);
+    });
+
     it('should not be able to activate component when exception', async () => {
         videoWebServiceSpy.getConferenceById.and.callFake(() => Promise.reject({ status: 500, isApiException: true }));
         spyOn(guard, 'isUserAuthorized').and.returnValue(of(true));

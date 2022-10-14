@@ -10,6 +10,7 @@ import { FeatureFlagService } from '../services/feature-flag.service';
 import { of } from 'rxjs';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
 import { ISecurityService } from './authentication/security-service.interface';
+import { pageUrls } from '../shared/page-url.constants';
 
 const testCases = [
     { role: Role.None, shouldFireJoiningEvent: false },
@@ -92,5 +93,22 @@ describe('ParticipantStatusGuard', () => {
             testCase.shouldFireJoiningEvent ? expect(result).toBeTruthy() : expect(result).toBeFalsy();
             expect(participantStatusUpdateService.postParticipantStatus).toHaveBeenCalledTimes(expectedCalls);
         });
+    });
+
+    it('should not be able to activate component if authorisation is false', async () => {
+        spyOn(guard, 'isUserAuthorized').and.returnValue(of(false));
+        const result = await guard.canActivate(activateRoute, null);
+
+        expect(result).toBeFalsy();
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.Login]);
+    });
+
+    it('should not be able to activate component when exception', async () => {
+        profileServiceSpy.getUserProfile.and.callFake(() => Promise.reject({ status: 500, isApiException: true }));
+        spyOn(guard, 'isUserAuthorized').and.returnValue(of(true));
+        const result = await guard.canActivate(activateRoute, null);
+
+        expect(result).toBeFalsy();
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.Logout]);
     });
 });

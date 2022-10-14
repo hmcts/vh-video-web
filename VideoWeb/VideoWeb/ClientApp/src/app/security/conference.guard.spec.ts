@@ -64,7 +64,15 @@ describe('ConferenceGuard', () => {
         const result = await guard.canActivate(activateRoute, null);
 
         expect(result).toBeFalsy();
-        expect(router.navigate).toHaveBeenCalledWith(['home']);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.Home]);
+    });
+
+    it('should not be able to activate component if authorisation is false', async () => {
+        spyOn(guard, 'isUserAuthorized').and.returnValue(of(false));
+        const result = await guard.canActivate(activateRoute, null);
+
+        expect(result).toBeFalsy();
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.Login]);
     });
 
     it('should not be able to activate component when exception', async () => {
@@ -73,6 +81,6 @@ describe('ConferenceGuard', () => {
         const result = await guard.canActivate(activateRoute, null);
 
         expect(result).toBeFalsy();
-        expect(router.navigate).toHaveBeenCalledWith(['home']);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.Home]);
     });
 });

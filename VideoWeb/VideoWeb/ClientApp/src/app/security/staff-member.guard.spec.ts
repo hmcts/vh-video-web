@@ -52,6 +52,14 @@ describe('StaffMemberGuard', () => {
         expect(result).toBeTruthy();
     });
 
+    it('should not be able to activate component if authorisation is false', async () => {
+        spyOn(guard, 'isUserAuthorized').and.returnValue(of(false));
+        const result = await guard.canActivate(null, null);
+
+        expect(result).toBeFalsy();
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.Login]);
+    });
+
     it('should logout when user profile cannot be retrieved', async () => {
         profileServiceSpy.getUserProfile.and.callFake(() => Promise.reject({ status: 404, isApiException: true }));
         spyOn(guard, 'isUserAuthorized').and.returnValue(of(true));
