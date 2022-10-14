@@ -7,6 +7,7 @@ import { FeatureFlagService } from '../services/feature-flag.service';
 import { Logger } from '../services/logging/logger-base';
 import { AuthBaseGuard } from './auth-base.guard';
 import { SecurityServiceProvider } from './authentication/security-provider.service';
+import { pageUrls } from '../shared/page-url.constants';
 
 @Injectable({
     providedIn: 'root'
@@ -28,7 +29,7 @@ export class JudgeGuard extends AuthBaseGuard implements CanActivate {
             .toPromise()
             .then(async (auth: boolean) => {
                 if (!auth) {
-                    this.router.navigate(['/login']);
+                    this.router.navigate([pageUrls.Login]);
                     return false;
                 }
 
@@ -40,12 +41,12 @@ export class JudgeGuard extends AuthBaseGuard implements CanActivate {
                         return true;
                     } else {
                         this.logger.debug(`[JudgeGuard] User is not a judge. Going back home`);
-                        this.router.navigate(['/home']);
+                        this.router.navigate([pageUrls.Home]);
                         return false;
                     }
                 } catch (err) {
                     this.logger.error(`[JudgeGuard] Failed to get user profile. Logging out.`, err);
-                    this.router.navigate(['/logout']);
+                    this.router.navigate([pageUrls.Logout]);
                     return false;
                 }
             });

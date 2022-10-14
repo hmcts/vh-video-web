@@ -1,4 +1,3 @@
-import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { of, Subject } from 'rxjs';
 import { ProfileService } from '../services/api/profile.service';
@@ -9,6 +8,7 @@ import { MockLogger } from '../testing/mocks/mock-logger';
 import { SecurityServiceProvider } from './authentication/security-provider.service';
 import { ISecurityService } from './authentication/security-service.interface';
 import { ParticipantGuard } from './participant.guard';
+import { pageUrls } from '../shared/page-url.constants';
 
 describe('ParticipantGuard', () => {
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
@@ -43,7 +43,7 @@ describe('ParticipantGuard', () => {
 
         const result = await guard.canActivate(null, null);
         expect(result).toBeFalsy();
-        expect(router.navigate).toHaveBeenCalledWith(['/home']);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.Home]);
     });
 
     it('should not be able to activate component if role is Judge', async () => {
@@ -53,7 +53,7 @@ describe('ParticipantGuard', () => {
 
         const result = await guard.canActivate(null, null);
         expect(result).toBeFalsy();
-        expect(router.navigate).toHaveBeenCalledWith(['/home']);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.Home]);
     });
 
     it('should not be able to activate component if role is Case Admin', async () => {
@@ -63,7 +63,7 @@ describe('ParticipantGuard', () => {
 
         const result = await guard.canActivate(null, null);
         expect(result).toBeFalsy();
-        expect(router.navigate).toHaveBeenCalledWith(['/home']);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.Home]);
     });
 
     it('should be able to activate component if role is Individual', async () => {
@@ -96,7 +96,7 @@ describe('ParticipantGuard', () => {
         spyOn(guard, 'isUserAuthorized').and.returnValue(of(true));
         const result = await guard.canActivate(null, null);
         expect(result).toBeFalsy();
-        expect(router.navigate).toHaveBeenCalledWith(['/logout']);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.Logout]);
     });
 
     it('should back to login when user profile is not authoried', async () => {
@@ -104,6 +104,6 @@ describe('ParticipantGuard', () => {
 
         const result = await guard.canActivate(null, null);
         expect(result).toBeFalsy();
-        expect(router.navigate).toHaveBeenCalledWith(['/login']);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.Login]);
     });
 });
