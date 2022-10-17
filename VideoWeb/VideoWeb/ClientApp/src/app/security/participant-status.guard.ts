@@ -33,8 +33,7 @@ export class ParticipantStatusGuard extends AuthBaseGuard implements CanActivate
             .pipe(take(1))
             .toPromise()
             .then(async (auth: boolean) => {
-                if (!auth) {
-                    this.router.navigate([pageUrls.Login]);
+                if (!this.isAuthorised(auth)) {
                     return false;
                 }
 

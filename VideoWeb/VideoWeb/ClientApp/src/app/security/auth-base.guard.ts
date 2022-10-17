@@ -9,6 +9,9 @@ import { SecurityServiceProvider } from './authentication/security-provider.serv
 import { ISecurityService } from './authentication/security-service.interface';
 import { VideoWebService } from '../services/api/video-web.service';
 import { Hearing } from '../shared/models/hearing';
+import { ProfileService } from '../services/api/profile.service';
+import { ParticipantStatusUpdateService } from '../services/participant-status-update.service';
+import { EventType } from '../services/clients/api-client';
 
 @Injectable()
 export class AuthBaseGuard {
@@ -71,6 +74,37 @@ export class AuthBaseGuard {
             return false;
         }
     }
+
+    async checkUserProfile(
+        next: ActivatedRouteSnapshot,
+        auth: boolean,
+        userProfileService: ProfileService,
+        prefix: string,
+        validProfiles: Array<string>
+    ) {
+        if (!this.isAuthorised(auth)) {
+            return false;
+        }
+
+        this.logger.debug(`${prefix} Checking if user is a ${validProfiles}`);
+        try {
+            const profile = await userProfileService.getUserProfile();
+            const userProfile = profile.role.toString();
+            if (validProfiles.includes(userProfile)) {
+                this.logger.debug(`${prefix} User is a ${userProfile}`);
+                return true;
+            } else {
+                this.logger.debug(`${prefix} User is not a ${validProfiles}. Going back home`);
+                this.router.navigate([pageUrls.Home]);
+                return false;
+            }
+        } catch (err) {
+            this.logger.error(`${prefix} Failed to get user profile. Logging out.`, err);
+            this.router.navigate([pageUrls.Logout]);
+            return false;
+        }
+    }
+
 
     isAuthorised(auth: boolean): boolean {
         if (!auth) {
