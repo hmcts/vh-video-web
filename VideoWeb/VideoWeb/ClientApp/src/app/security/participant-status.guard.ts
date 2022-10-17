@@ -33,12 +33,7 @@ export class ParticipantStatusGuard extends AuthBaseGuard implements CanActivate
             .pipe(take(1))
             .toPromise()
             .then(async (auth: boolean) => {
-                if (!auth) {
-                    this.router.navigate([pageUrls.Login]);
-                    return false;
-                }
-
-                this.logger.debug(`[ParticipantStatusGuard] Checking if user is a admin`);
+                this.logger.debug(`[ParticipantStatusGuard] Checking if user is a individual`);
                 try {
                     const profile = await this.userProfileService.getUserProfile();
 

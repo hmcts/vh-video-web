@@ -1,13 +1,11 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 import { ProfileService } from '../services/api/profile.service';
-import { Role } from '../services/clients/api-client';
 import { Logger } from '../services/logging/logger-base';
 import { AuthBaseGuard } from './auth-base.guard';
 import { SecurityServiceProvider } from './authentication/security-provider.service';
 import { FeatureFlagService } from '../services/feature-flag.service';
 import { take } from 'rxjs/operators';
-import { pageUrls } from '../shared/page-url.constants';
 
 @Injectable({
     providedIn: 'root'
@@ -28,27 +26,15 @@ export class AdminGuard extends AuthBaseGuard implements CanActivate {
             .pipe(take(1))
             .toPromise()
             .then(async (auth: boolean) => {
-                if (!auth) {
-                    this.router.navigate([pageUrls.Login]);
-                    return false;
+                const result = await this.checkUserProfileAuthorisation(auth, next, this.userProfileService, '[AdminGuard]');
+                let canAuth = false;
+                if (result != '') {
+                    canAuth = true;
                 }
-
-                this.logger.debug(`[AdminGuard] Checking if user is a admin`);
-                try {
-                    const profile = await this.userProfileService.getUserProfile();
-                    if (profile.role === Role.VideoHearingsOfficer) {
-                        this.logger.debug(`[AdminGuard] User is a admin.`);
-                        return true;
-                    } else {
-                        this.logger.debug(`[AdminGuard] User is not a admin. Going back home`);
-                        this.router.navigate([pageUrls.Home]);
-                        return false;
-                    }
-                } catch (err) {
-                    this.logger.error(`[AdminGuard] Failed to get user profile. Logging out.`, err);
-                    this.router.navigate([pageUrls.Logout]);
-                    return false;
+                else {
+                    this.router.navigate([result]);
                 }
+                return canAuth;
             });
     }
 }
