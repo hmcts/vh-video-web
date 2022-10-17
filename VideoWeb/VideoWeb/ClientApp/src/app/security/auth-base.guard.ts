@@ -43,9 +43,15 @@ export class AuthBaseGuard {
         );
     }
 
-    async canConferenceBeActivate(next: ActivatedRouteSnapshot, auth: boolean, videoWebService: VideoWebService, urlToRoute: string, urlToRouteError: string, prefix: string) {
-        if (!auth) {
-            this.router.navigate([pageUrls.Login]);
+    async canConferenceBeActivate(
+        next: ActivatedRouteSnapshot,
+        auth: boolean,
+        videoWebService: VideoWebService,
+        urlToRoute: string,
+        urlToRouteError: string,
+        prefix: string
+    ) {
+        if (!this.isAuthorised(auth)) {
             return false;
         }
         const conferenceId = next.paramMap.get('conferenceId');
@@ -64,5 +70,12 @@ export class AuthBaseGuard {
             this.router.navigate([urlToRouteError]);
             return false;
         }
+    }
+
+    isAuthorised(auth: boolean): boolean {
+        if (!auth) {
+            this.router.navigate([pageUrls.Login]);
+        }
+        return auth;
     }
 }
