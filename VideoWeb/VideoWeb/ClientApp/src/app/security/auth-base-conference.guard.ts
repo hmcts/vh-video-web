@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
-import { first, map, take } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 import { FeatureFlagService } from '../services/feature-flag.service';
 import { Logger } from '../services/logging/logger-base';
-import { pageUrls } from '../shared/page-url.constants';
 import { SecurityServiceProvider } from './authentication/security-provider.service';
 import { ISecurityService } from './authentication/security-service.interface';
 import { AuthBaseGuard } from './auth-base.guard';
