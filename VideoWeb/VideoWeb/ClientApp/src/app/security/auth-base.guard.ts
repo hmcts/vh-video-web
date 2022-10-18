@@ -44,7 +44,7 @@ export class AuthBaseGuard {
         );
     }
 
-    async canConferenceBeActivate(
+    async canConferenceBeActivated(
         next: ActivatedRouteSnapshot,
         auth: boolean,
         videoWebService: VideoWebService,
