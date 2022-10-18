@@ -27,7 +27,14 @@ export class ConferenceGuard extends AuthBaseGuard implements CanActivate {
             .pipe(take(1))
             .toPromise()
             .then(async (auth: boolean) => {
-                return await this.canConferenceBeActivate(next, auth, this.videoWebService, pageUrls.JudgeHearingList, pageUrls.Home, '[ConferenceGuard]');
+                return await this.canConferenceBeActivate(
+                    next,
+                    auth,
+                    this.videoWebService,
+                    pageUrls.JudgeHearingList,
+                    pageUrls.Home,
+                    '[ConferenceGuard]'
+                );
             });
     }
 }

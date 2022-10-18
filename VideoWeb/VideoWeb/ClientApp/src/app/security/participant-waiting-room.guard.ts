@@ -27,7 +27,14 @@ export class ParticipantWaitingRoomGuard extends AuthBaseGuard implements CanAct
             .pipe(take(1))
             .toPromise()
             .then(async (auth: boolean) => {
-                return await this.canConferenceBeActivate(next, auth, this.videoWebService, pageUrls.ParticipantHearingList, pageUrls.Logout, '[ParticipantWaitingRoomGuard]');
+                return await this.canConferenceBeActivate(
+                    next,
+                    auth,
+                    this.videoWebService,
+                    pageUrls.ParticipantHearingList,
+                    pageUrls.Logout,
+                    '[ParticipantWaitingRoomGuard]'
+                );
             });
     }
 }

@@ -105,7 +105,6 @@ export class AuthBaseGuard {
         }
     }
 
-
     isAuthorised(auth: boolean): boolean {
         if (!auth) {
             this.router.navigate([pageUrls.Login]);

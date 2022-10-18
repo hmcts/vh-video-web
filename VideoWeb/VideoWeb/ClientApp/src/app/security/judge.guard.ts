@@ -27,7 +27,10 @@ export class JudgeGuard extends AuthBaseGuard implements CanActivate {
             .pipe(take(1))
             .toPromise()
             .then(async (auth: boolean) => {
-                return await this.checkUserProfile(next, auth, this.userProfileService, '[JudgeGuard]', [Role.Judge, Role.JudicialOfficeHolder])
+                return await this.checkUserProfile(next, auth, this.userProfileService, '[JudgeGuard]', [
+                    Role.Judge,
+                    Role.JudicialOfficeHolder
+                ]);
             });
     }
 }
