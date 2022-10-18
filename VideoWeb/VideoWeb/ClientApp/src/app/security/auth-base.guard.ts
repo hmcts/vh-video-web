@@ -10,8 +10,6 @@ import { ISecurityService } from './authentication/security-service.interface';
 import { VideoWebService } from '../services/api/video-web.service';
 import { Hearing } from '../shared/models/hearing';
 import { ProfileService } from '../services/api/profile.service';
-import { ParticipantStatusUpdateService } from '../services/participant-status-update.service';
-import { EventType } from '../services/clients/api-client';
 
 @Injectable()
 export class AuthBaseGuard {
