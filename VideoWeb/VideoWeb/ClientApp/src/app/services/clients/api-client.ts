@@ -27,11 +27,6 @@ export class ApiClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : 'https://localhost:5800';
     }
 
-    // protected transformOptions(options: any) {
-    //     options = options.headers.append('Cache-Control', 'no-store');
-    //     return Promise.resolve(options);
-    // }
-
     protected transformOptions(options: any) {
         options.headers = options.headers.append('Cache-Control', 'no-store');
         return Promise.resolve(options);
