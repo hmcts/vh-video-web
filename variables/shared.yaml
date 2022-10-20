@@ -63,6 +63,3 @@ variables:
 
   - name: app_path
     value: VideoWeb
-
-  - name: app_redirect_uri
-    value: "/,/logout,/home"
