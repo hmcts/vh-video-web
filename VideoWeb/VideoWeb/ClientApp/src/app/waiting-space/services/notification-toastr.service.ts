@@ -280,7 +280,8 @@ export class NotificationToastrService {
         message += `<br/>${this.translateService.instant('audio-alert.message')}<br/>`;
         const toast = this.toastr.show('', '', {
             tapToDismiss: false,
-            toastComponent: VhToastComponent
+            toastComponent: VhToastComponent,
+            disableTimeOut: true
         });
         (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
             color: 'white',

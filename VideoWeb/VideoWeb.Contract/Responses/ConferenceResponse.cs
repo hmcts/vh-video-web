@@ -92,5 +92,10 @@ namespace VideoWeb.Contract.Responses
         /// Flags true when hearing venue is in Scotland
         /// </summary>
         public bool HearingVenueIsScottish { get; set; }
+
+        /// <summary>
+        /// Property to indicate whether wowza recording is via single app setup or bespoke hearing setup
+        /// </summary>
+        public bool WowzaSingleApp { get; set; }
     }
 }
