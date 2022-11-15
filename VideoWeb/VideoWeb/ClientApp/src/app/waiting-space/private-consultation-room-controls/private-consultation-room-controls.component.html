@@ -3,7 +3,7 @@
         <div class='icon-button dropdown' id='toggle-context-menu' colour='grey'
             [class]="{ 'dropdown-opaque': showContextMenu }" (click)='showContextMenu = !showContextMenu'>
             <fa-icon icon='ellipsis-h'></fa-icon>
-            <div  class='dropdown-content show'>
+            <div  class='dropdown-content' [class]="{ 'show': showContextMenu }">
                     <app-context-menu-header [isPrivateConsultation]='isPrivateConsultation'></app-context-menu-header>
                 <div class='icon-button-dark' id='toggle-chat-panel' *ngIf='isHost && !isPrivateConsultation'
                     colour='grey' (click)="togglePanelStatus('Chat')">
