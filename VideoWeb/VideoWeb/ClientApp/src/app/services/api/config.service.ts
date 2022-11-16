@@ -1,4 +1,4 @@
-import { HttpBackend, HttpClient } from '@angular/common/http';
+import { HttpBackend, HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
@@ -48,6 +48,11 @@ export class ConfigService {
     private retrieveConfigFromApi(): Observable<ClientSettingsResponse> {
         let url = '/config';
         url = url.replace(/[?&]$/, '');
-        return this.httpClient.get<ClientSettingsResponse>(url);
+        const options: any = {
+            headers: new HttpHeaders()
+        };
+        options.headers.append('Cache-Control', 'no-store');
+
+        return this.httpClient.get<ClientSettingsResponse>(url, options as object);
     }
 }
