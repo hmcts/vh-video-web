@@ -42,12 +42,12 @@
     <PackageReference Include="FluentValidation.AspNetCore" Version="9.5.1" />
     <PackageReference Include="MicroElements.Swashbuckle.FluentValidation" Version="3.0.0-rc.4" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.16.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.10" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Connections.Common" Version="3.1.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Connections.Common" Version="6.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.NewtonsoftJson" Version="3.1.10" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.NewtonsoftJson" Version="6.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.1.10" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="6.0.11" />
     <PackageReference Include="Microsoft.Azure.SignalR" Version="1.4.1" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="3.1.10" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="3.1.6" />
