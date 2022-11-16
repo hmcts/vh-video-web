@@ -506,10 +506,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             this.continueWithNoRecording = false;
         }
 
-        if (this.conferenceRecordingInSessionForSeconds > 60 && !this.continueWithNoRecording) {
+        if (this.conferenceRecordingInSessionForSeconds > 20 && !this.continueWithNoRecording) {
             this.logger.debug(`${this.loggerPrefixJudge} Attempting to retrieve audio stream info for ${hearingId}`);
             try {
-                const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId);
+                const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId, this.conference.wowza_single_app);
                 this.logger.debug(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
                 if (!audioStreamWorking && !this.continueWithNoRecording && this.showVideo) {
                     this.logger.debug(`${this.loggerPrefixJudge} not recording when expected, show alert`);

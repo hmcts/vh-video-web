@@ -38,10 +38,12 @@ export class ApiClient extends ApiClientBase {
     /**
      * @return Success
      */
-    getAudioStreamInfo(hearingId: string): Observable<boolean> {
-        let url_ = this.baseUrl + '/conferences/audiostreams/{hearingId}';
+    getAudioStreamInfo(hearingId: string, wowzaSingleApp: boolean): Observable<boolean> {
+        let url_ = this.baseUrl + '/conferences/audiostreams/{hearingId}/{wowzaSingleApp}';
         if (hearingId === undefined || hearingId === null) throw new Error("The parameter 'hearingId' must be defined.");
         url_ = url_.replace('{hearingId}', encodeURIComponent('' + hearingId));
+        if (wowzaSingleApp === undefined || wowzaSingleApp === null) throw new Error("The parameter 'wowzaSingleApp' must be defined.");
+        url_ = url_.replace('{wowzaSingleApp}', encodeURIComponent('' + wowzaSingleApp));
         url_ = url_.replace(/[?&]$/, '');
 
         let options_: any = {
@@ -6877,6 +6879,7 @@ export class ConferenceResponse implements IConferenceResponse {
     /** The video access endpoints in the conference */
     endpoints?: VideoEndpointResponse[] | undefined;
     hearing_venue_is_scottish?: boolean;
+    wowza_single_app?: boolean;
 
     constructor(data?: IConferenceResponse) {
         if (data) {
@@ -6911,6 +6914,7 @@ export class ConferenceResponse implements IConferenceResponse {
                 for (let item of _data['endpoints']) this.endpoints!.push(VideoEndpointResponse.fromJS(item));
             }
             this.hearing_venue_is_scottish = _data['hearing_venue_is_scottish'];
+            this.wowza_single_app = _data['wowza_single_app'];
         }
     }
 
@@ -6946,6 +6950,7 @@ export class ConferenceResponse implements IConferenceResponse {
             for (let item of this.endpoints) data['endpoints'].push(item.toJSON());
         }
         data['hearing_venue_is_scottish'] = this.hearing_venue_is_scottish;
+        data['wowza_single_app'] = this.wowza_single_app;
         return data;
     }
 }
@@ -6973,6 +6978,7 @@ export interface IConferenceResponse {
     /** The video access endpoints in the conference */
     endpoints?: VideoEndpointResponse[] | undefined;
     hearing_venue_is_scottish?: boolean;
+    wowza_single_app?: boolean;
 }
 
 export class SetConferenceVideoControlStatusesRequest_VideoControlStatusRequest
@@ -9218,6 +9224,7 @@ export class ConferenceDetailsResponse implements IConferenceDetailsResponse {
     audio_recording_required?: boolean;
     civilian_rooms?: CivilianRoomResponse[] | undefined;
     hearing_venue_is_scottish?: boolean;
+    wowza_single_app?: boolean | undefined;
 
     constructor(data?: IConferenceDetailsResponse) {
         if (data) {
@@ -9255,6 +9262,7 @@ export class ConferenceDetailsResponse implements IConferenceDetailsResponse {
                 for (let item of _data['civilian_rooms']) this.civilian_rooms!.push(CivilianRoomResponse.fromJS(item));
             }
             this.hearing_venue_is_scottish = _data['hearing_venue_is_scottish'];
+            this.wowza_single_app = _data['wowza_single_app'];
         }
     }
 
@@ -9293,6 +9301,7 @@ export class ConferenceDetailsResponse implements IConferenceDetailsResponse {
             for (let item of this.civilian_rooms) data['civilian_rooms'].push(item.toJSON());
         }
         data['hearing_venue_is_scottish'] = this.hearing_venue_is_scottish;
+        data['wowza_single_app'] = this.wowza_single_app;
         return data;
     }
 }
@@ -9315,6 +9324,7 @@ export interface IConferenceDetailsResponse {
     audio_recording_required?: boolean;
     civilian_rooms?: CivilianRoomResponse[] | undefined;
     hearing_venue_is_scottish?: boolean;
+    wowza_single_app?: boolean | undefined;
 }
 
 export class UserProfileResponse implements IUserProfileResponse {
