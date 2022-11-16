@@ -4,11 +4,12 @@
     ".NETCoreApp,Version=v3.1": {
       "BookingsApi.Client": {
         "type": "Direct",
-        "requested": "[1.39.44, )",
-        "resolved": "1.39.44",
-        "contentHash": "BJC1KMAtmmzxqm3UITNCzuJMmDV+sZvrt9pc3eV09Z5g/kX3BtYJ4ZOkAD8p/pX2dwqcwGTqyy3fUPLlMxRAFA==",
+        "requested": "[1.36.18, )",
+        "resolved": "1.36.18",
+        "contentHash": "UP99WMtkRvoHxDLtB8u7vdsQf8oeu4I46R/s0XILe/BNsgG9+Z2nyZDul16YaG5dk56XuNexGTnYbaJNEVu/ZA==",
         "dependencies": {
-          "Microsoft.AspNetCore.Mvc.Core": "2.2.5"
+          "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
+          "Newtonsoft.Json": "12.0.3"
         }
       },
       "Castle.Core": {
@@ -2270,33 +2271,33 @@
       "videoweb.common": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.ApplicationInsights": "2.16.0",
-          "Microsoft.ApplicationInsights.AspNetCore": "2.16.0",
-          "Microsoft.AspNetCore.SignalR": "1.1.0",
-          "Microsoft.Extensions.Caching.Abstractions": "3.1.10",
-          "Microsoft.Extensions.Options": "3.1.10",
-          "Microsoft.IdentityModel.Clients.ActiveDirectory": "5.2.8",
-          "StackExchange.Redis": "2.1.28",
-          "System.IdentityModel.Tokens.Jwt": "5.6.0",
-          "UserApi.Client": "1.37.4",
-          "VideoApi.Client": "1.41.1"
+          "Microsoft.ApplicationInsights": "[2.16.0, )",
+          "Microsoft.ApplicationInsights.AspNetCore": "[2.16.0, )",
+          "Microsoft.AspNetCore.SignalR": "[1.1.0, )",
+          "Microsoft.Extensions.Caching.Abstractions": "[3.1.10, )",
+          "Microsoft.Extensions.Options": "[3.1.10, )",
+          "Microsoft.IdentityModel.Clients.ActiveDirectory": "[5.2.8, )",
+          "StackExchange.Redis": "[2.1.28, )",
+          "System.IdentityModel.Tokens.Jwt": "[5.6.0, )",
+          "UserApi.Client": "[1.37.4, )",
+          "VideoApi.Client": "[1.41.1, )"
         }
       },
       "videoweb.contract": {
         "type": "Project",
         "dependencies": {
-          "VideoWeb.Common": "1.0.0"
+          "VideoWeb.Common": "[1.0.0, )"
         }
       },
       "videoweb.eventhub": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.ApplicationInsights.AspNetCore": "2.16.0",
-          "Microsoft.AspNetCore.SignalR": "1.1.0",
-          "Microsoft.Extensions.Caching.Abstractions": "3.1.10",
-          "System.Text.Json": "4.7.1",
-          "VideoWeb.Common": "1.0.0",
-          "VideoWeb.Contract": "1.0.0"
+          "Microsoft.ApplicationInsights.AspNetCore": "[2.16.0, )",
+          "Microsoft.AspNetCore.SignalR": "[1.1.0, )",
+          "Microsoft.Extensions.Caching.Abstractions": "[3.1.10, )",
+          "System.Text.Json": "[4.7.1, )",
+          "VideoWeb.Common": "[1.0.0, )",
+          "VideoWeb.Contract": "[1.0.0, )"
         }
       }
     }

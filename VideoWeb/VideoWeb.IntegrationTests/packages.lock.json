@@ -4,11 +4,12 @@
     ".NETCoreApp,Version=v3.1": {
       "BookingsApi.Client": {
         "type": "Direct",
-        "requested": "[1.39.44, )",
-        "resolved": "1.39.44",
-        "contentHash": "BJC1KMAtmmzxqm3UITNCzuJMmDV+sZvrt9pc3eV09Z5g/kX3BtYJ4ZOkAD8p/pX2dwqcwGTqyy3fUPLlMxRAFA==",
+        "requested": "[1.36.18, )",
+        "resolved": "1.36.18",
+        "contentHash": "UP99WMtkRvoHxDLtB8u7vdsQf8oeu4I46R/s0XILe/BNsgG9+Z2nyZDul16YaG5dk56XuNexGTnYbaJNEVu/ZA==",
         "dependencies": {
-          "Microsoft.AspNetCore.Mvc.Core": "2.2.5"
+          "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
+          "Newtonsoft.Json": "12.0.3"
         }
       },
       "coverlet.msbuild": {
@@ -2658,66 +2659,66 @@
       "videoweb": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Client": "1.39.44",
-          "Castle.Core": "4.4.0",
-          "FluentValidation.AspNetCore": "9.5.1",
-          "MicroElements.Swashbuckle.FluentValidation": "3.0.0-rc.4",
-          "Microsoft.ApplicationInsights.AspNetCore": "2.16.0",
-          "Microsoft.AspNetCore.Authentication.JwtBearer": "3.1.10",
-          "Microsoft.AspNetCore.Http.Connections.Common": "3.1.10",
-          "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
-          "Microsoft.AspNetCore.SignalR.Protocols.NewtonsoftJson": "3.1.10",
-          "Microsoft.AspNetCore.SpaServices": "3.1.10",
-          "Microsoft.AspNetCore.SpaServices.Extensions": "3.1.1",
-          "Microsoft.Azure.SignalR": "1.4.1",
-          "Microsoft.Extensions.Caching.StackExchangeRedis": "3.1.10",
-          "Microsoft.Extensions.DependencyModel": "3.1.6",
-          "Microsoft.Extensions.Http.Polly": "3.1.1",
-          "Microsoft.Extensions.Logging.ApplicationInsights": "2.16.0",
-          "Microsoft.OpenApi": "1.1.4",
-          "Polly": "7.2.1",
-          "Scrutor": "3.3.0",
-          "Swashbuckle.AspNetCore": "5.0.0",
-          "Swashbuckle.AspNetCore.Annotations": "5.0.0",
-          "Swashbuckle.AspNetCore.Newtonsoft": "5.0.0",
-          "UserApi.Client": "1.37.4",
-          "VH.Core.Configuration": "0.1.13",
-          "VideoApi.Client": "1.41.1",
-          "VideoWeb.Common": "1.0.0",
-          "VideoWeb.Contract": "1.0.0",
-          "VideoWeb.EventHub": "1.0.0"
+          "BookingsApi.Client": "[1.36.18, )",
+          "Castle.Core": "[4.4.0, )",
+          "FluentValidation.AspNetCore": "[9.5.1, )",
+          "MicroElements.Swashbuckle.FluentValidation": "[3.0.0-rc.4, )",
+          "Microsoft.ApplicationInsights.AspNetCore": "[2.16.0, )",
+          "Microsoft.AspNetCore.Authentication.JwtBearer": "[3.1.10, )",
+          "Microsoft.AspNetCore.Http.Connections.Common": "[3.1.10, )",
+          "Microsoft.AspNetCore.Mvc.Core": "[2.2.5, )",
+          "Microsoft.AspNetCore.SignalR.Protocols.NewtonsoftJson": "[3.1.10, )",
+          "Microsoft.AspNetCore.SpaServices": "[3.1.10, )",
+          "Microsoft.AspNetCore.SpaServices.Extensions": "[3.1.1, )",
+          "Microsoft.Azure.SignalR": "[1.4.1, )",
+          "Microsoft.Extensions.Caching.StackExchangeRedis": "[3.1.10, )",
+          "Microsoft.Extensions.DependencyModel": "[3.1.6, )",
+          "Microsoft.Extensions.Http.Polly": "[3.1.1, )",
+          "Microsoft.Extensions.Logging.ApplicationInsights": "[2.16.0, )",
+          "Microsoft.OpenApi": "[1.1.4, )",
+          "Polly": "[7.2.1, )",
+          "Scrutor": "[3.3.0, )",
+          "Swashbuckle.AspNetCore": "[5.0.0, )",
+          "Swashbuckle.AspNetCore.Annotations": "[5.0.0, )",
+          "Swashbuckle.AspNetCore.Newtonsoft": "[5.0.0, )",
+          "UserApi.Client": "[1.37.4, )",
+          "VH.Core.Configuration": "[0.1.13, )",
+          "VideoApi.Client": "[1.41.1, )",
+          "VideoWeb.Common": "[1.0.0, )",
+          "VideoWeb.Contract": "[1.0.0, )",
+          "VideoWeb.EventHub": "[1.0.0, )"
         }
       },
       "videoweb.common": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.ApplicationInsights": "2.16.0",
-          "Microsoft.ApplicationInsights.AspNetCore": "2.16.0",
-          "Microsoft.AspNetCore.SignalR": "1.1.0",
-          "Microsoft.Extensions.Caching.Abstractions": "3.1.10",
-          "Microsoft.Extensions.Options": "3.1.10",
-          "Microsoft.IdentityModel.Clients.ActiveDirectory": "5.2.8",
-          "StackExchange.Redis": "2.1.28",
-          "System.IdentityModel.Tokens.Jwt": "5.6.0",
-          "UserApi.Client": "1.37.4",
-          "VideoApi.Client": "1.41.1"
+          "Microsoft.ApplicationInsights": "[2.16.0, )",
+          "Microsoft.ApplicationInsights.AspNetCore": "[2.16.0, )",
+          "Microsoft.AspNetCore.SignalR": "[1.1.0, )",
+          "Microsoft.Extensions.Caching.Abstractions": "[3.1.10, )",
+          "Microsoft.Extensions.Options": "[3.1.10, )",
+          "Microsoft.IdentityModel.Clients.ActiveDirectory": "[5.2.8, )",
+          "StackExchange.Redis": "[2.1.28, )",
+          "System.IdentityModel.Tokens.Jwt": "[5.6.0, )",
+          "UserApi.Client": "[1.37.4, )",
+          "VideoApi.Client": "[1.41.1, )"
         }
       },
       "videoweb.contract": {
         "type": "Project",
         "dependencies": {
-          "VideoWeb.Common": "1.0.0"
+          "VideoWeb.Common": "[1.0.0, )"
         }
       },
       "videoweb.eventhub": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.ApplicationInsights.AspNetCore": "2.16.0",
-          "Microsoft.AspNetCore.SignalR": "1.1.0",
-          "Microsoft.Extensions.Caching.Abstractions": "3.1.10",
-          "System.Text.Json": "4.7.1",
-          "VideoWeb.Common": "1.0.0",
-          "VideoWeb.Contract": "1.0.0"
+          "Microsoft.ApplicationInsights.AspNetCore": "[2.16.0, )",
+          "Microsoft.AspNetCore.SignalR": "[1.1.0, )",
+          "Microsoft.Extensions.Caching.Abstractions": "[3.1.10, )",
+          "System.Text.Json": "[4.7.1, )",
+          "VideoWeb.Common": "[1.0.0, )",
+          "VideoWeb.Contract": "[1.0.0, )"
         }
       }
     }
