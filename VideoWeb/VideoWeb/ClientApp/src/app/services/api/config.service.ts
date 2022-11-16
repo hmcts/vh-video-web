@@ -51,7 +51,7 @@ export class ConfigService {
         const options: any = {
             headers: new HttpHeaders()
         };
-        options.headers.append('Cache-Control', 'no-store');
+        options.headers = options.headers.append('Cache-Control', 'no-store');
 
         return this.httpClient.get<ClientSettingsResponse>(url, options as object);
     }
