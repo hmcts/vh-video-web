@@ -15,9 +15,9 @@
       },
       "coverlet.msbuild": {
         "type": "Direct",
-        "requested": "[3.0.2, )",
-        "resolved": "3.0.2",
-        "contentHash": "chWBtSiXjjjQDOpnSl6Qld7jaUrGg+raxyCUaGKOab5Mc5TyQmCGYgU1CwWx6Zcb9KdRuAz/5r4hmqMmyhvFfw=="
+        "requested": "[3.2.0, )",
+        "resolved": "3.2.0",
+        "contentHash": "lu/eJJpqJb4qy3BGPtDD/LI5RSOwXYYyRErTyaG0OTP69llzVK3FEe74hBQx0JtLUTLEVBfERV4uGYcE1Br2sg=="
       },
       "Faker.NETCore": {
         "type": "Direct",
