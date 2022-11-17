@@ -10,7 +10,7 @@ COPY VideoWeb/VideoWeb/ClientApp .
 RUN [[ ${skip_client_build} = true ]] && echo "Skipping npm install" || npm install
 RUN [[ ${skip_client_build} = true ]] && mkdir dist || npm run-script build-prod
 
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY VideoWeb .
 RUN dotnet restore --configfile nuget.config "VideoWeb/VideoWeb.csproj"
