@@ -315,7 +315,7 @@ extends:
             - npm
         Test: ${{ or(parameters.RunUnitTests, parameters.RunIntegTests, parameters.RunMutationTests) }}
         testParameters:
-          netVersion: 6.x
+            netVersion: 6.x
             coreProjectPath: VideoWeb/VideoWeb
             nodeProjectPath: VideoWeb/VideoWeb/ClientApp
             RunNode: true
