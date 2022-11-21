@@ -1,8 +1,8 @@
 using AcceptanceTests.Common.Api;
 using Microsoft.Extensions.Configuration;
-using AcceptanceTests.Common.Configuration;
 using VideoWeb.AcceptanceTests.Configuration;
 using TechTalk.SpecFlow;
+using ConfigurationManager = AcceptanceTests.Common.Configuration.ConfigurationManager;
 
 namespace VideoWeb.AcceptanceTests.Hooks
 {

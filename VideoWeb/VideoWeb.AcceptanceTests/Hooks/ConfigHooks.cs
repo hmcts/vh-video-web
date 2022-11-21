@@ -18,7 +18,7 @@ using BookingsApi.Contract.Responses;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security;
-using BookingsApi.Contract.Configuration;
+using ConfigurationManager = AcceptanceTests.Common.Configuration.ConfigurationManager;
 
 namespace VideoWeb.AcceptanceTests.Hooks
 {

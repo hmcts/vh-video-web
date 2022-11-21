@@ -16,7 +16,7 @@ namespace VideoWeb.UnitTests.Builders
                 new Claim(ClaimTypes.NameIdentifier, "userId"),
                 new Claim(ClaimTypes.GivenName, "John"),
                 new Claim(ClaimTypes.Surname, "Doe"),
-                new Claim("name", "John Doe")
+                new Claim(ClaimTypes.Name, "John Doe")
             };
         }
 
