@@ -1,0 +1,77 @@
+name: $(Date:yyyyMMddHHmm)-$(Rev:r)
+
+trigger:
+  - master
+
+pr: none
+
+resources:
+  repositories:
+    - repository: azTemplates
+      type: github
+      name: hmcts/azure-devops-templates
+      ref: master
+      endpoint: hmcts
+
+stages:
+#####################################################
+# Build Docker Image & Push. ########################
+- stage: Docker_Build_Push
+  displayName: Docker Build & Push Image
+  variables:
+    - template: variables/staging.yaml
+    - template: variables/shared.yaml
+  jobs:
+  - job: Docker_Build
+    displayName: "Docker Build and Push"
+    steps:
+    - checkout: self
+
+    - bash: |
+        sed -i "s|</configuration>|<packageSourceCredentials><vh-packages><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"$(System.AccessToken)\" /></vh-packages></packageSourceCredentials></configuration>|" nuget.sds.config
+      displayName: Add NuGet Feed Authentication
+      workingDirectory: $(app_path)
+
+    - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
+      parameters:
+        azureSubscription: ${{ variables.acrSubscription }}
+        acrName: ${{ variables.acrName }}
+        repositoryName: ${{ variables.repositoryName }}
+
+    - template: templates\Containerisation\docker\docker-push-azure.yaml@azTemplates
+      parameters:
+        azureSubscription: ${{ variables.acrSubscription }}
+        acrName: ${{ variables.acrName }}
+        repositoryName: ${{ variables.repositoryName }}
+        imageName: "${{ variables.imageName }}"
+        imageTags:
+          - "${{ variables.stagingTagName }}"
+
+#########################################
+# Push Helm Charts to Repo. #############
+- stage: Helm
+  displayName: Push Helm Charts
+  dependsOn: Docker_Build_Push
+  variables:
+    - template: variables/staging.yaml
+    - template: variables/shared.yaml
+    - group: vh-github-app-credentials
+  jobs:
+  - job: Helm
+    displayName: "Helm Push"
+    steps:
+    - checkout: self
+
+    - template: templates\Github\get-app-token.yaml@azTemplates
+      parameters:
+        privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
+        appId: $(gh_app_app_id)
+
+    - template: templates\Github\push-to-helm-chart-repo.yaml@azTemplates
+      parameters:
+        chartName: ${{ variables.chartName }}
+        chartPath: ${{ variables.chartPath }}
+        githubToken: $(githubappinstall.token)
+        githubUsername: $(gh_app_name)
+        githubEmail: "$(gh_app_app_id)+$(gh_app_name)[bot]@users.noreply.github.com"
+        subDirectory: ${{ variables.subDirectory }}
