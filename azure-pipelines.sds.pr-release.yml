@@ -1,4 +1,4 @@
-name: $(Date:yyyyMMddhhmm)-$(Rev:r)
+name: $(Date:yyyyMMddHHmm)-$(Rev:r)
 
 resources:
   repositories:
@@ -64,7 +64,7 @@ stages:
               #vstsFeedId: 'Video Hearings/vh-packages'
               nugetConfigPath: ${{ variables.app_path }} # Temp - Change To SDS Feed When Possible.
               unitTestProjectPath: "${{ variables.app_path }}/${{ variables.app_path }}.UnitTests"
-              dotNetCoreVersion: '6.x'
+              dotNetCoreVersion: "6.x"
               coverletCoverageExclusions:
                 - "[VideoWeb]VideoWeb.ConfigureServicesExtensions"
                 - "[VideoWeb]VideoWeb.Program"
@@ -131,19 +131,19 @@ stages:
               imageTags:
                 - "${{ variables.prTagName }}"
 
-#       - ${{ if eq(variables.run_acceptance_tests, true) }}:
-#           - job: PublishAcceptanceTests
-#             displayName: Publish Acceptance Tests
-#             variables:
-#               projectPath: "$(app_path)/$(app_path)"
-#             steps:
-#               - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
-#                 parameters:
-#                   netVersion: 6.x
-#                   coreProjectPath: $(projectPath)
-#                   nugetProjectPath: $(projectPath)
-#                   nugetConfigPath: $(app_path)
-#                   useNugetConfig: true
+  #       - ${{ if eq(variables.run_acceptance_tests, true) }}:
+  #           - job: PublishAcceptanceTests
+  #             displayName: Publish Acceptance Tests
+  #             variables:
+  #               projectPath: "$(app_path)/$(app_path)"
+  #             steps:
+  #               - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
+  #                 parameters:
+  #                   netVersion: 6.x
+  #                   coreProjectPath: $(projectPath)
+  #                   nugetProjectPath: $(projectPath)
+  #                   nugetConfigPath: $(app_path)
+  #                   useNugetConfig: true
 
   #####################################################
   # Deploy Helm Chart to Dev. #########################
