@@ -24,12 +24,12 @@ stages:
   - job: CI_Helm
     displayName: "Helm CI"
     steps:
-      - checkout: self
+    - checkout: self
 
-      - template: templates\Containerisation\helm\helm-lint.yaml@azTemplates
-        parameters:
-          chartPath: ${{ variables.chartPath }}
-          chartValuesPath: ${{ variables.chartPath }}
+    - template: templates\Containerisation\helm\helm-lint.yaml@azTemplates
+      parameters:
+        chartPath: ${{ variables.chartPath }}
+        chartValuesPath: ${{ variables.chartPath }}
 
   - job: UnitTests
     displayName: "Unit Tests"
@@ -74,7 +74,7 @@ stages:
 #####################################################
 # Docker Build. #####################################
 - stage: Dock
-  displayName: Docker Build & Push
+  displayName: Docker Build & Push Image
   variables:
   - template: variables/dev.yaml
   - template: variables/shared.yaml
@@ -156,38 +156,38 @@ stages:
     displayName: Deploy To Dev AKS
     dependsOn: helm_uninstall
     steps:
-      - template: templates\Azure\AAD\apps\add-remove-replyruls--no-sc.yaml@azTemplates
-        parameters:
-          azureClientId: $(vh_client_id)
-          azureClientSecret: $(vh_client_secret)
-          azureTenant: $(vh_tenant_id)
-          action: "add"
-          domain: "https://${{ variables.dnsRecordName }}.${{ variables.dnsZone }}"
-          name: "a${{ variables.gitRepoName }}.${{ variables.dnsZone }}"
-          domainUris: ${{ variables.app_redirect_uri }}
+    - template: templates\Azure\AAD\apps\add-remove-replyruls--no-sc.yaml@azTemplates
+      parameters:
+        azureClientId: $(vh_client_id)
+        azureClientSecret: $(vh_client_secret)
+        azureTenant: $(vh_tenant_id)
+        action: "add"
+        domain: "https://${{ variables.dnsRecordName }}.${{ variables.dnsZone }}"
+        name: "a${{ variables.gitRepoName }}.${{ variables.dnsZone }}"
+        domainUris: ${{ variables.app_redirect_uri }}
 
-      - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
-        parameters:
-          subscriptionName: "${{ variables.subscriptionName }}"
-          environment: ${{ variables.env }}
+    - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
+      parameters:
+        subscriptionName: "${{ variables.subscriptionName }}"
+        environment: ${{ variables.env }}
 
-      - template: templates/Containerisation/helm/helm-install.yaml@azTemplates
-        parameters:
-          privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
-          appId: $(gh_app_app_id)
-          envValuesTemplatePath: ${{ variables.envValuesTemplatePath }}
-          envValuesPath: ${{ variables.envValuesPath }}
-          acrName: ${{ variables.acrName }}
-          repositoryName: ${{ variables.repositoryName }}
-          prTagName: ${{ variables.prTagName }}
-          releaseName: "${{ variables.chartName }}-${{ variables.prTagPrefix }}"
-          dnsRecordName: ${{ variables.dnsRecordName }}
-          dnsZone: ${{ variables.dnsZone }}
-          env: ${{ variables.env }}
-          chartName: ${{ variables.chartName }}
-          chartPath: ${{ variables.chartPath }}
-          subscriptionName: "${{ variables.subscriptionName }}"
-          aksResourceGroupName: "$(aksCluster.resourceGroup)"
-          aksClusterName: "$(aksCluster.name)"
-          dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
-          dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
+    - template: templates/Containerisation/helm/helm-install.yaml@azTemplates
+      parameters:
+        privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
+        appId: $(gh_app_app_id)
+        envValuesTemplatePath: ${{ variables.envValuesTemplatePath }}
+        envValuesPath: ${{ variables.envValuesPath }}
+        acrName: ${{ variables.acrName }}
+        repositoryName: ${{ variables.repositoryName }}
+        prTagName: ${{ variables.prTagName }}
+        releaseName: "${{ variables.chartName }}-${{ variables.prTagPrefix }}"
+        dnsRecordName: ${{ variables.dnsRecordName }}
+        dnsZone: ${{ variables.dnsZone }}
+        env: ${{ variables.env }}
+        chartName: ${{ variables.chartName }}
+        chartPath: ${{ variables.chartPath }}
+        subscriptionName: "${{ variables.subscriptionName }}"
+        aksResourceGroupName: "$(aksCluster.resourceGroup)"
+        aksClusterName: "$(aksCluster.name)"
+        dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
+        dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
