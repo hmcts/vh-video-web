@@ -74,7 +74,7 @@ stages:
 #####################################################
 # Docker Build. #####################################
 - stage: Dock
-  displayName: Docker Build & Push
+  displayName: Docker Build & Push Image
   variables:
   - template: variables/dev.yaml
   - template: variables/shared.yaml
