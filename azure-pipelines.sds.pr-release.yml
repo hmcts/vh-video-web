@@ -51,25 +51,25 @@ stages:
           sonar.issue.ignore.multicriteria.e2.ruleKey=typescript:S1874
           sonar.issue.ignore.multicriteria.e2.resourceKey=**/*.ts
 
-  - template: stages\dotnet-tests\unit-tests.yml@azTemplates
-    parameters:
-      #vstsFeedId: 'Video Hearings/vh-packages'
-      nugetConfigPath: ${{ variables.app_path }} # Temp - Change To SDS Feed When Possible.
-      unitTestProjectPath: "${{ variables.app_path }}/${{ variables.app_path }}.UnitTests"
-      dotNetCoreVersion: "6.x"
-      coverletCoverageExclusions:
-        - "[VideoWeb]VideoWeb.ConfigureServicesExtensions"
-        - "[VideoWeb]VideoWeb.Program"
-        - "[VideoWeb]VideoWeb.Startup"
-        - "[*]VideoWeb.Common.*"
-        - "[*]VideoWeb.Extensions.*"
-        - "[*]VideoWeb.Pages.*"
-        - "[*]VideoWeb.Swagger.*"
-        - "[*]VideoWeb.Views.*"
-        - "[*]VideoWeb.UnitTests.*"
-        - "[*]Testing.Common.*"
+    - template: stages\dotnet-tests\unit-tests.yml@azTemplates
+      parameters:
+        #vstsFeedId: 'Video Hearings/vh-packages'
+        nugetConfigPath: ${{ variables.app_path }} # Temp - Change To SDS Feed When Possible.
+        unitTestProjectPath: "${{ variables.app_path }}/${{ variables.app_path }}.UnitTests"
+        dotNetCoreVersion: "6.x"
+        coverletCoverageExclusions:
+          - "[VideoWeb]VideoWeb.ConfigureServicesExtensions"
+          - "[VideoWeb]VideoWeb.Program"
+          - "[VideoWeb]VideoWeb.Startup"
+          - "[*]VideoWeb.Common.*"
+          - "[*]VideoWeb.Extensions.*"
+          - "[*]VideoWeb.Pages.*"
+          - "[*]VideoWeb.Swagger.*"
+          - "[*]VideoWeb.Views.*"
+          - "[*]VideoWeb.UnitTests.*"
+          - "[*]Testing.Common.*"
 
-  - template: templates/sonarCloud/runAnalysis.yml@azTemplates
+    - template: templates/sonarCloud/runAnalysis.yml@azTemplates
 
 #####################################################
 # Docker Build. #####################################
