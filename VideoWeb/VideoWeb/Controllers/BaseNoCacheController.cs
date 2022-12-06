@@ -4,7 +4,7 @@ using Microsoft.Net.Http.Headers;
 
 namespace VideoWeb.Controllers;
 
-public class BaseController : Controller
+public class BaseNoCacheController : Controller
 {
     public override void OnActionExecuting(ActionExecutingContext context)
     {

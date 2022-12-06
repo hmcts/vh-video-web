@@ -17,7 +17,7 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("config")]
-    public class ConfigSettingsController : BaseController
+    public class ConfigSettingsController : BaseNoCacheController
     {
         private readonly AzureAdConfiguration _azureAdConfiguration;
         private readonly EJudAdConfiguration _ejudAdConfiguration;
