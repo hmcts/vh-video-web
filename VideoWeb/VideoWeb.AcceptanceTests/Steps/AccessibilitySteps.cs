@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using AcceptanceTests.Common.Driver.Drivers;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
@@ -26,7 +27,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_c.CurrentUser].Driver.WaitForPageToLoad();
             var axeResult = new AxeBuilder(_browsers[_c.CurrentUser].Driver).Analyze();
-            axeResult.Violations.Should().BeEmpty();
+            axeResult.Violations.Where(e => e.Impact != "minor").Should().BeEmpty();
         }
 
         [Then(@"the page should be accessible apart from a missing header")]
