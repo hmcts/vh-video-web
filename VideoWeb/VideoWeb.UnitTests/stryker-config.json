@@ -4,15 +4,14 @@
       "Progress",
       "ClearText"
     ],
-    "log-level": "error",
-    "timeout-ms": 10000,
-    "log-file": false,
-    "project-file": "VideoWeb.csproj",
+    "verbosity": "error",
+    "additional-timeout": 10000,
+    "project": "VideoWeb.csproj",
     "concurrency": 4,
     "thresholds.high": 95,
     "thresholds.low": 90,
     "thresholds.break": 85,
-    "excluded-mutations": [
+    "ignore-mutations": [
     ],
     "ignore-methods": [
       "*LogDebug",
