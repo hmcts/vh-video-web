@@ -290,7 +290,7 @@ resources:
         - repository: templates
           type: github
           name: hmcts/azure-devops-templates
-          ref: 'VIH-9999-Test-stryker-version'
+          ref: refs/head/master
           endpoint: hmcts
     containers:
         - container: dotnetsdk
