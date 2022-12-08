@@ -4,7 +4,6 @@ java:
   applicationPort: 8080
   replicas: 2
   ingressHost: vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net
-  additionalIngressHosts: ['vh-video-web-{{ .Values.global.environment | replace "stg" "preprod" }}.hearings.reform.hmcts.net']
   releaseNameOverride: vh-video-web
   readinessPath: /healthcheck/health
   livenessPath: /healthcheck/health
