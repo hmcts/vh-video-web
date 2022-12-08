@@ -8,9 +8,11 @@
     "additional-timeout": 10000,
     "project": "VideoWeb.csproj",
     "concurrency": 4,
-    "thresholds.high": 95,
-    "thresholds.low": 90,
-    "thresholds.break": 85,
+    "thresholds":{
+      "high": 95,
+      "low": 90,
+      "break": 85
+    },
     "ignore-mutations": [
     ],
     "ignore-methods": [
