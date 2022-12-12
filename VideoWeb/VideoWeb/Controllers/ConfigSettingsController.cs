@@ -59,7 +59,6 @@ namespace VideoWeb.Controllers
                     >();
                 var response = clientSettingsResponseMapper.Map(_azureAdConfiguration, _ejudAdConfiguration, _servicesConfiguration,
                     _kinlyConfiguration);
-                
                 return Ok(response);
             }
             catch (Exception e)
