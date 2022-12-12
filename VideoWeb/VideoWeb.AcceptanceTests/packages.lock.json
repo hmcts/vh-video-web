@@ -11,15 +11,6 @@
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5"
         }
       },
-      "DotNetSeleniumExtras.PageObjects": {
-        "type": "Direct",
-        "requested": "[3.11.0, )",
-        "resolved": "3.11.0",
-        "contentHash": "DJCLQ3beq1fzqpeQ5jTZwDqmzbOD2Xxsb/jCyShYam88CNwGGn5aBBqu4LVSj0sy0Ai76OauQQncYlC48VvQUQ==",
-        "dependencies": {
-          "Selenium.WebDriver": "3.10.0"
-        }
-      },
       "DotNetSeleniumExtras.WaitHelpers": {
         "type": "Direct",
         "requested": "[3.11.0, )",
@@ -235,9 +226,9 @@
       },
       "VH.AcceptanceTests.Common": {
         "type": "Direct",
-        "requested": "[1.23.2-pullrequest0092-0006, )",
-        "resolved": "1.23.2-pullrequest0092-0006",
-        "contentHash": "J3pOhxqODR7SeKUMev0RRKUlbWri2YwpyD9v43gpiLq8d/jJx2VomlIX8RwX4FDlyrbKjJO8ctHyHI9n2D83eA==",
+        "requested": "[1.23.2, )",
+        "resolved": "1.23.2",
+        "contentHash": "IACJ9+e52/ibs0O2VvHkmMbq2dggC89bNf98XKpnQNyYH5pxISM82folDA7+i2Q61tUht46UmOKIBxi7ddqX7w==",
         "dependencies": {
           "Appium.WebDriver": "4.4.0",
           "Azure.Storage.Blobs": "12.14.1",
@@ -251,10 +242,11 @@
           "Microsoft.Extensions.Configuration.Json": "7.0.0",
           "Microsoft.Extensions.Configuration.UserSecrets": "7.0.0",
           "Microsoft.Extensions.Options": "7.0.0",
+          "Microsoft.Identity.Client": "4.48.1",
           "Microsoft.IdentityModel.Clients.ActiveDirectory": "5.2.8",
-          "Microsoft.NET.Test.Sdk": "16.8.3",
+          "Microsoft.NET.Test.Sdk": "17.4.0",
           "Moq": "4.16.0",
-          "NUnit": "3.13.1",
+          "NUnit": "3.13.3",
           "NUnit3TestAdapter": "3.17.0",
           "Newtonsoft.Json": "13.0.2",
           "Polly": "7.2.1",
@@ -349,6 +341,14 @@
           "System.Reflection.Emit": "4.3.0",
           "System.Reflection.TypeExtensions": "4.3.0",
           "System.Xml.XmlDocument": "4.3.0"
+        }
+      },
+      "DotNetSeleniumExtras.PageObjects": {
+        "type": "Transitive",
+        "resolved": "3.11.0",
+        "contentHash": "DJCLQ3beq1fzqpeQ5jTZwDqmzbOD2Xxsb/jCyShYam88CNwGGn5aBBqu4LVSj0sy0Ai76OauQQncYlC48VvQUQ==",
+        "dependencies": {
+          "Selenium.WebDriver": "3.10.0"
         }
       },
       "Gherkin": {
@@ -1075,6 +1075,19 @@
           "System.Runtime.CompilerServices.Unsafe": "6.0.0"
         }
       },
+      "Microsoft.Identity.Client": {
+        "type": "Transitive",
+        "resolved": "4.48.1",
+        "contentHash": "AsTnTKgmJqhL1hjZ7TA13TDQVyWdn0vpYwhDMdb1mTg+w5m9AZsacLvmxsUZt03uamZ81pDY78himvXOM//tpw==",
+        "dependencies": {
+          "Microsoft.IdentityModel.Abstractions": "6.22.0"
+        }
+      },
+      "Microsoft.IdentityModel.Abstractions": {
+        "type": "Transitive",
+        "resolved": "6.22.0",
+        "contentHash": "iI+9V+2ciCrbheeLjpmjcqCnhy+r6yCoEcid3nkoFWerHgjVuT6CPM4HODUTtUPe1uwks4wcnAujJ8u+IKogHQ=="
+      },
       "Microsoft.IdentityModel.JsonWebTokens": {
         "type": "Transitive",
         "resolved": "5.6.0",
@@ -1189,8 +1202,8 @@
       },
       "NUnit": {
         "type": "Transitive",
-        "resolved": "3.13.2",
-        "contentHash": "u+fz/lXyR4vlamySNAEMrXvh+GhAQiB6/aVZtU5WjivR5zF26Ui0tfteDtWqT90k9D8y6g8rFKYQC97Z7d195w==",
+        "resolved": "3.13.3",
+        "contentHash": "KNPDpls6EfHwC3+nnA67fh5wpxeLb3VLFAfLxrug6JMYDLHH6InaQIWR7Sc3y75d/9IKzMksH/gi08W7XWbmnQ==",
         "dependencies": {
           "NETStandard.Library": "2.0.0"
         }
