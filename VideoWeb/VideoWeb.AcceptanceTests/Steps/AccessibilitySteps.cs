@@ -39,6 +39,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         
         //disable and review these accessibility violations in #VIH-VIH-9546
         private static AxeResultItem[] UnacceptableViolations(AxeResultItem[] violations) 
-            => violations.Where(e => e.Id != "color-contrast" || e.Impact == "minor").ToArray();
+            => violations.Where(e => e.Id != "color-contrast" && e.Impact != "minor").ToArray();
     }
 }
