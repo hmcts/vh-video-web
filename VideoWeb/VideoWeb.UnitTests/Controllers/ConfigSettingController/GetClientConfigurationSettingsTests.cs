@@ -1,7 +1,13 @@
+using System;
+using System.Collections.Specialized;
 using Autofac.Extras.Moq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
+using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security.HashGen;
@@ -25,7 +31,7 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<IdpConfiguration, IdpSettingsResponse>())
                 .Returns(_mocker.Create<IdpSettingsResponseMapper>());
         }
-
+        
         [Test]
         public void Should_return_response_with_settings()
         {
@@ -59,6 +65,13 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
             {
                 JoinByPhoneFromDate = "2021-02-09"
             };
+            
+            var headers = new NameValueCollection
+            {
+                { HeaderNames.CacheControl, "no-cache" }
+            };
+            
+            
 
             var parameters = new ParameterBuilder(_mocker).AddObject(Options.Create(securitySettings))
                 .AddObject(Options.Create(servicesConfiguration))
@@ -67,7 +80,8 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
                 .Build();
 
             var configSettingsController = _mocker.Create<ConfigSettingsController>(parameters);
-
+            
+            
             var result = configSettingsController.GetClientConfigurationSettings();
             result.Should().BeOfType<ActionResult<ClientSettingsResponse>>().Which.Result.Should().BeOfType<OkObjectResult>();
             var okObjectResult = (OkObjectResult)result.Result;
