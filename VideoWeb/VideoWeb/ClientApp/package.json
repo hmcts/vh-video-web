@@ -69,7 +69,7 @@
         "ngx-moment": "^5.0.0",
         "ngx-toastr": "^13.2.1",
         "rxjs": "^6.6.6",
-        "snyk": "^1.752.0",
+        "snyk": "^1.996.0",
         "tslib": "^2.1.0",
         "webrtc-adapter": "^8.1.0",
         "zone.js": "~0.11.3"
