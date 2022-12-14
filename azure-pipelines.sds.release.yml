@@ -12,6 +12,9 @@ resources:
       ref: master
       endpoint: hmcts
 
+pool:
+  vmImage: ubuntu-22.04
+
 stages:
   #####################################################
   # Approval Gate for Video Web Release. #######
@@ -19,8 +22,6 @@ stages:
   - ${{ if contains(variables['Build.SourceBranch'], 'refs/heads/release') }}:
       - stage: Approve_Helm_Release
         displayName: "Approve Helm Release"
-        pool:
-          vmImage: "ubuntu-latest"
         jobs:
           - job: waitForValidation
             displayName: "Approve Helm Release"
