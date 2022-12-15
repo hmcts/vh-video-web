@@ -23,7 +23,7 @@
             {{'chat-input-box.send' | translate}}
         </button>
     </div>
-    <div *ngIf="newMessageBody.pristine || !isInputInvalid" class="govuk-hint govuk-!-margin-left-2 length-hint govuk-!-margin-padding-2">
+    <div *ngIf="newMessageBody.pristine || !isInputInvalid" class="govuk-hint govuk-!-margin-left-2 length-hint govuk-!-margin-padding-2 text-white">
         {{'chat-input-box.char-count' | translate}} {{ currentInputLength }} ({{'chat-input-box.maximum' | translate}} {{ maxInputLength }}).
     </div>
     <div id="input-errors"
