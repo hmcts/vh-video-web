@@ -20,6 +20,7 @@ namespace VideoWeb.EventHub.Mappers
                 OutgoingVideoPercentageLost = heartbeat.OutgoingVideoPercentageLost,
                 OutgoingVideoPercentageLostRecent = heartbeat.OutgoingVideoPercentageLostRecent,
                 BrowserName = heartbeat.BrowserName,
+                Device = heartbeat.Device,
                 BrowserVersion = heartbeat.BrowserVersion,
                 OperatingSystem = heartbeat.OperatingSystem,
                 OperatingSystemVersion = heartbeat.OperatingSystemVersion,

@@ -6,7 +6,7 @@ import { browsers } from '../shared/browser.constants';
     providedIn: 'root'
 })
 export class DeviceTypeService {
-    constructor(private deviceDetectorService: DeviceDetectorService) {}
+    constructor(private deviceDetectorService: DeviceDetectorService) { }
 
     isMobile(): boolean {
         return this.deviceDetectorService.isMobile();
@@ -71,5 +71,8 @@ export class DeviceTypeService {
 
     getOSVersion(): string {
         return this.deviceDetectorService.os_version;
+    }
+    getDevice(): string {
+        return this.deviceDetectorService.device;
     }
 }
