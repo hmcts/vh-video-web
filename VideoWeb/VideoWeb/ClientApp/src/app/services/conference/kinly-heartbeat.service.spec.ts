@@ -61,7 +61,7 @@ describe('KinlyHeartbeatService', () => {
         getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference$').and.returnValue(currentConferenceSubject.asObservable());
 
         deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(
-            ['getBrowserName', 'getBrowserVersion', 'getOSName', 'getOSVersion'],
+            ['getBrowserName', 'getBrowserVersion', 'getOSName', 'getOSVersion', 'getDevice'],
             []
         );
         heartbeatMapperSpy = jasmine.createSpyObj<HeartbeatModelMapper>(['map'], []);
@@ -201,6 +201,10 @@ describe('KinlyHeartbeatService', () => {
 
             const osVersion = 'os-version';
             deviceTypeServiceSpy.getOSVersion.and.returnValue(osVersion);
+
+            const device = 'device-type';
+            deviceTypeServiceSpy.getDevice.and.returnValue(device);
+
 
             currentConferenceSubject.next(conference);
             loggedInParticipantSubject.next(participant);

@@ -29,7 +29,7 @@ export class KinlyHeartbeatService {
         private heartbeatMapper: HeartbeatModelMapper,
         private eventService: EventsService,
         private logger: Logger
-    ) {}
+    ) { }
 
     private getCurrentConferenceAndParticipant(): Observable<{ conference: ConferenceResponse; participant: ParticipantModel }> {
         return combineLatest([this.conferenceService.currentConference$, this.participantService.loggedInParticipant$]).pipe(
@@ -84,7 +84,8 @@ export class KinlyHeartbeatService {
             this.deviceTypeService.getBrowserName(),
             this.deviceTypeService.getBrowserVersion(),
             this.deviceTypeService.getOSName(),
-            this.deviceTypeService.getOSVersion()
+            this.deviceTypeService.getOSVersion(),
+            this.deviceTypeService.getDevice()
         );
 
         await this.eventService.sendHeartbeat(this.currentConference.id, this.currentParticipant.id, heartbeatModel);
