@@ -44,7 +44,8 @@ namespace VideoWeb.UnitTests.Mappings
                 IncomingVideoCodec = "VP8",
                 IncomingVideoResolution = "1280x720",
                 IncomingVideoPacketReceived = 1,
-                IncomingVideoPacketsLost = 0
+                IncomingVideoPacketsLost = 0,
+                Device="iPhone"
             };
 
             var result = _mapper.MapToRequest(heartbeat);
@@ -79,6 +80,7 @@ namespace VideoWeb.UnitTests.Mappings
             result.IncomingVideoResolution.Should().Be("1280x720");
             result.IncomingVideoPacketReceived.Should().Be(1);
             result.IncomingVideoPacketsLost.Should().Be(0);
+            result.Device.Should().Be("iPhone");
 
 
         }
