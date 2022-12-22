@@ -29,7 +29,7 @@ export class KinlyHeartbeatService {
         private heartbeatMapper: HeartbeatModelMapper,
         private eventService: EventsService,
         private logger: Logger
-    ) { }
+    ) {}
 
     private getCurrentConferenceAndParticipant(): Observable<{ conference: ConferenceResponse; participant: ParticipantModel }> {
         return combineLatest([this.conferenceService.currentConference$, this.participantService.loggedInParticipant$]).pipe(

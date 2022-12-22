@@ -205,7 +205,6 @@ describe('KinlyHeartbeatService', () => {
             const device = 'device-type';
             deviceTypeServiceSpy.getDevice.and.returnValue(device);
 
-
             currentConferenceSubject.next(conference);
             loggedInParticipantSubject.next(participant);
             flush();
