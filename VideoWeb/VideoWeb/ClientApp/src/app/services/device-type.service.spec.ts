@@ -167,6 +167,7 @@ describe('DeviceType', () => {
             deviceDetectorService.isDesktop.and.returnValue(false);
             deviceDetectorService.os = 'ios';
             deviceDetectorService.browser = test.browser;
+            deviceDetectorService.device = 'iPhone';
             expect(service.isSupportedBrowser()).toBe(test.expected);
         });
     });
