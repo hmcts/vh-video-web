@@ -215,7 +215,7 @@ describe('KinlyHeartbeatService', () => {
 
             // Assert
             expect(stopHeartbeatSpy).not.toHaveBeenCalled();
-            expect(heartbeatMapperSpy.map).toHaveBeenCalledOnceWith({}, browserName, browserVersion, osName, osVersion);
+            expect(heartbeatMapperSpy.map).toHaveBeenCalledOnceWith({}, browserName, browserVersion, osName, osVersion, device);
         }));
 
         it('should send the mapped heartbeat across the event bus', fakeAsync(() => {

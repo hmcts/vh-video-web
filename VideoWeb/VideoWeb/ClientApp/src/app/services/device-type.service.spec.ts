@@ -96,9 +96,9 @@ describe('DeviceType', () => {
         deviceDetectorService.os_version = testOsVersion;
         expect(service.getOSVersion()).toBe(testOsVersion);
     });
-    it('should return the device name', () => {
+    it('should return the device', () => {
         const testDeviceName = 'iPhone';
-        deviceDetectorService.deviceName = testDeviceName;
+        deviceDetectorService.device = testDeviceName;
         expect(service.getDevice()).toBe(testDeviceName);
     });
     it('should return whether the OS is iOS', () => {
