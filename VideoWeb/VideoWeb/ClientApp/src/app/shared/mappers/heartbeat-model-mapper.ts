@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
     providedIn: 'root'
 })
 export class HeartbeatModelMapper {
-    map(heartbeat: any, browserName: string, browserVersion: string, os: string, osVersion: string) {
+    map(heartbeat: any, browserName: string, browserVersion: string, os: string, osVersion: string, device: string) {
         const model = new Heartbeat();
 
         model.hearingId = heartbeat.hearing_id;
@@ -49,6 +49,7 @@ export class HeartbeatModelMapper {
 
         model.operatingSystem = os;
         model.operatingSystemVersion = osVersion;
+        model.device = device;
 
         return model;
     }
