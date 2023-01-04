@@ -638,7 +638,8 @@
     "leave-hearing": "Leave Hearing",
     "share-video-evidence": "Share video or audio",
     "share-document-evidence": "Share documents",
-    "unsupported-dynamic-evidence": "Video sharing is not supported on this browser"
+    "unsupported-dynamic-evidence": "Video sharing is not supported on this browser",
+    "change-hearing-layout": "Change Layout"
   },
   "chat-panel": {
     "heading": "VH Officer messages",
@@ -915,7 +916,7 @@
   },
   "video-hearing-link": "Video Hearing link",
   "participant-info-tooltip": {
-   "join-by-link-text": "Joined by Video Hearing link"
+    "join-by-link-text": "Joined by Video Hearing link"
   },
   "copy-quick-link": {
     "tooltip-copied": "Join by Video Hearing link details copied to clipboard",
@@ -1234,6 +1235,6 @@
     "body": "Before you go, how was your experience of the Video Hearings Service?",
     "link-text": "Complete our short survey here"
   },
-    "true": "Yes",
-    "false": "No"
+  "true": "Yes",
+  "false": "No"
 }

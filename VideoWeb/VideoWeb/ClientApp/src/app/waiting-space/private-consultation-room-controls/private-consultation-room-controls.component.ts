@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { first, takeUntil } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
-import { ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConferenceStatus, HearingLayout, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
@@ -15,6 +15,7 @@ import { HearingControlsBaseComponent } from '../hearing-controls/hearing-contro
 import { VideoCallService } from '../services/video-call.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
+
 @Component({
     selector: 'app-private-consultation-room-controls',
     templateUrl: './private-consultation-room-controls.component.html',
@@ -36,6 +37,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     @Input() public canToggleParticipantsPanel: boolean;
     @Input() public isChatVisible: boolean;
     @Input() public areParticipantsVisible: boolean;
+    @Input() public conference: ConferenceResponse;
 
     private conferenceStatus: ConferenceStatusChanged;
     enableDynamicEvidenceSharing = false;
@@ -79,6 +81,9 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
             .getFeatureFlagByName('StaffMemberFeature')
             .pipe(first())
             .subscribe(result => (this.isStaffMemberFeatureEnabled = result));
+
+        // Needed to prevent 'this' being undefined in the callback
+        this.onLayoutUpdate = this.onLayoutUpdate.bind(this);
     }
 
     get canShowCloseHearingPopup(): boolean {
@@ -111,5 +116,27 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
 
     leave(confirmation: boolean) {
         super.leave(confirmation, this.participantService.participants);
+    }
+
+    onLayoutUpdate(layout: HearingLayout) {
+        const mappedLayout = this.mapLayout(layout);
+        this.videoCallService.transformLayout(mappedLayout);
+    }
+
+    mapLayout(layout: HearingLayout) {
+        // See https://docs.pexip.com/api_client/api_pexrtc.htm#transformlayout
+        let mappedLayout = '';
+        switch (layout) {
+            case HearingLayout.OnePlus7:
+                mappedLayout = '1:7';
+                break;
+            case HearingLayout.TwoPlus21:
+                mappedLayout = '2:21';
+                break;
+            case HearingLayout.Dynamic:
+                mappedLayout = 'ac';
+                break;
+        }
+        return mappedLayout;
     }
 }

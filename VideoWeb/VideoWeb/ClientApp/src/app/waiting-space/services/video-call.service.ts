@@ -533,4 +533,8 @@ export class VideoCallService {
 
         return this.apiClient.getParticipantRoomForParticipant(conferenceId, participantId, 'Judicial').toPromise();
     }
+
+    transformLayout(layout: string) {
+        return this.pexipAPI.transformLayout({ layout: layout });
+    }
 }

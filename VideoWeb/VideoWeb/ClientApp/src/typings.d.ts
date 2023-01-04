@@ -114,6 +114,7 @@ declare interface PexipClient {
      * Although this method can be used at any time, it only makes sense to do this after onPresentation callback has said that a presentation is available.
      */
     getPresentation();
+    transformLayout(transforms: any);
 }
 
 declare interface PexipParticipant {

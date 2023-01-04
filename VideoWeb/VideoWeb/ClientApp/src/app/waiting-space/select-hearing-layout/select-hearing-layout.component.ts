@@ -13,6 +13,7 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
     accordionOpenAllElement: HTMLButtonElement;
     currentButtonContentKey: string;
     @Input() conference: ConferenceResponse;
+    @Input() callback: Function;
     subscriptions = new Subscription();
 
     constructor(private hearingLayoutService: HearingLayoutService, protected translateService: TranslateService) {}
@@ -78,7 +79,10 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
         return document.getElementById('accordian-container').classList.contains('govuk-accordion__section--expanded');
     }
 
-    updateSelectedLayout(layout: HearingLayout) {
+    updateSelectedLayout(layout: HearingLayout, callback: Function) {
         this.hearingLayoutService.updateCurrentLayout(layout);
+        if (callback) {
+            callback(layout);
+        }
     }
 }

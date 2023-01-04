@@ -55,6 +55,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     protected destroyedSubject = new Subject<void>();
     sharingDynamicEvidence: boolean;
+    displayChangeLayoutPopup: boolean;
 
     protected constructor(
         protected videoCallService: VideoCallService,
