@@ -5,7 +5,7 @@
 <div *ngIf="!loadingData && hasHearings()">
   <div class="govuk-!-margin-top-5">
     <h1 class="govuk-heading-xl govuk-!-padding-top-5">
-      {{ this.conferences.length | pluraliseTextPipe: getTranslation('your-video-hearing') : getTranslation('your-video-hearings') }}
+      {{ this.conferences.length | pluraliseTextPipe: getTranslation('your-video-hearing'):getTranslation('your-video-hearings') }}
     </h1>
   </div>
   <div class="govuk-!-margin-top-1">
@@ -25,6 +25,28 @@
   <p class="govuk-body">
     {{ 'participant-hearings.if-no-details-shown-please-contact-us' | translate }}
   </p>
+</div>
+
+<div class="govuk-!-margin-top-1">
+  <button
+    id="inithearing-alert-btn"
+    class="govuk-button govuk-button--secondary"
+    data-module="govuk-button"
+    (click)="playHearingAlertFromAsset()"
+  >
+    Play hearing alert from asset
+  </button>
+</div>
+
+<div class="govuk-!-margin-top-1">
+  <button
+    id="inithearing-alert-btn"
+    class="govuk-button govuk-button--secondary"
+    data-module="govuk-button"
+    (click)="playIncomingCallFromAsset()"
+  >
+    Play incoming call from asset
+  </button>
 </div>
 
 <app-contact-us-folding *ngIf="!loadingData"></app-contact-us-folding>

@@ -266,7 +266,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     }
 
     openStartConsultationModal() {
-        this.displayStartPrivateConsultationModal = true;
+        this.notificationSoundsService.playConsultationRequestRingtone();
+        // this.displayStartPrivateConsultationModal = true;
     }
 
     openJoinConsultationModal() {

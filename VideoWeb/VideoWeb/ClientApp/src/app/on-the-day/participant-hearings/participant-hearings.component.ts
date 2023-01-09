@@ -7,6 +7,7 @@ import { ConferenceForIndividualResponse, LoggedParticipantResponse } from 'src/
 import { ErrorService } from 'src/app/services/error.service';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { NotificationSoundsService } from 'src/app/waiting-space/services/notification-sounds.service';
 import { pageUrls } from '../../shared/page-url.constants';
 
 @Component({
@@ -27,7 +28,8 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
         private router: Router,
         private logger: Logger,
         private translate: TranslateService,
-        private hearingVenueFlagsService: HearingVenueFlagsService
+        private hearingVenueFlagsService: HearingVenueFlagsService,
+        private notificationService: NotificationSoundsService
     ) {
         this.loadingData = true;
     }
@@ -39,6 +41,8 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.errorCount = 0;
         this.retrieveHearingsForUser();
+        this.notificationService.initHearingSoundAlertAsset();
+        this.notificationService.initConsultationSoundAlertAsset();
         this.interval = setInterval(() => {
             this.retrieveHearingsForUser();
         }, 30000);
@@ -109,5 +113,13 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
             this.logger.warn('[ParticipantHearings] - Error retrieving conferences details', { conference: conference.id });
             this.errorService.handleApiError(error);
         }
+    }
+
+    playHearingAlertFromAsset() {
+        this.notificationService.playHearingAlertSoundFromAsset();
+    }
+
+    playIncomingCallFromAsset() {
+        this.notificationService.playConsultationAlertSoundFromAsset();
     }
 }
