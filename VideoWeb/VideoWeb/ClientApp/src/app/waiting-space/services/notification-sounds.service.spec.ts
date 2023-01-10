@@ -16,7 +16,7 @@ describe('NotificationSoundsService', () => {
     });
 
     it('should play sound again when ended', async () => {
-        service.initConsultationRequestRingtone();
+        await service.initConsultationRequestRingtone();
         const spy = spyOn(service.consultationRequestSound, 'play').and.resolveTo();
 
         service.consultationRequestSound.dispatchEvent(new Event('ended'));
@@ -62,7 +62,7 @@ describe('NotificationSoundsService', () => {
         expect(service.hearingAlertPlayCount).toBe(1);
     });
 
-    it('should init hearing starting sound on play if not already initialised', () => {
+    it('should init hearing starting sound on play if not already initialised', async () => {
         const audio = new Audio();
         spyOn(audio, 'play').and.resolveTo();
 
@@ -70,8 +70,9 @@ describe('NotificationSoundsService', () => {
         spyOn(service, 'initHearingAlertSound').and.callFake(() => {
             service.hearingAlertSound = audio;
             service.hearingAlertPlayCount = 1;
+            return Promise.resolve();
         });
-        service.playHearingAlertSound();
+        await service.playHearingAlertSound();
         expect(audio.play).toHaveBeenCalled();
     });
 
@@ -84,8 +85,8 @@ describe('NotificationSoundsService', () => {
         expect(service.hearingAlertPlayCount).toBe(1);
     });
 
-    it('should increment hearing sound play count on end and keep playing until third count', () => {
-        service.initHearingAlertSound();
+    it('should increment hearing sound play count on end and keep playing until third count', async () => {
+        await service.initHearingAlertSound();
         const spy = spyOn(service.hearingAlertSound, 'play').and.resolveTo();
         service.hearingAlertSound.dispatchEvent(new Event('ended')); // first manual play
         service.hearingAlertSound.dispatchEvent(new Event('ended')); // auto replay 1
