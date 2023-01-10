@@ -5,7 +5,7 @@
 <div *ngIf="!loadingData && hasHearings()">
   <div class="govuk-!-margin-top-5">
     <h1 class="govuk-heading-xl govuk-!-padding-top-5">
-      {{ this.conferences.length | pluraliseTextPipe: getTranslation('your-video-hearing'):getTranslation('your-video-hearings') }}
+      {{ this.conferences.length | pluraliseTextPipe: getTranslation('your-video-hearing') : getTranslation('your-video-hearings') }}
     </h1>
   </div>
   <div class="govuk-!-margin-top-1">
