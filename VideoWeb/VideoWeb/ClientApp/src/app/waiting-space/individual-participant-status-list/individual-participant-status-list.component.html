@@ -94,29 +94,29 @@
         <div class='vh-border'>
             <div *ngFor='let participant of nonJudgeParticipants; let lastItem = last'
                  class='govuk-grid-row govuk-!-margin-bottom-1'>
-                <div id='p-row-{{ participant.id }}-participant'
-                     class='govuk-grid-column-full'>
-                    <p id='p-{{ participant.id }}-name-participant'
+                <dl id='p-row-{{ participant.id }}-participant'
+                     class='govuk-grid-column-full participant-details'>
+                    <dt id='p-{{ participant.id }}-name-participant'
                        class='govuk-heading-s govuk-!-margin-bottom-0'>
             <span *ngIf='hasInterpreterLink(participant)'
                   class='vh-interpreter-icon'>
               <fa-icon icon="language" size="2x"></fa-icon>
             </span>
                         {{ participant.name }}
-                    </p>
+                    </dt>
 
-                    <p id='p-{{ participant.id }}-hearing-role-participant'
+                    <dd id='p-{{ participant.id }}-hearing-role-participant'
                        class='govuk-body-m govuk-!-margin-bottom-3'
                        [innerHtml]='getHearingRole(participant)'>
-                    </p>
+                    </dd>
 
-                    <p *ngIf='!isCaseTypeNone(participant)'
+                    <dd *ngIf='!isCaseTypeNone(participant)'
                        id='p-{{ participant.id }}-case-type-group-participant'
                        class='govuk-body-s govuk-!-margin-bottom-1'>
                        {{ ('case-type-group.' + participant.case_type_group.toLowerCase()) | translate }}
-                    </p>
+                    </dd>
 
-                    <div *ngIf='!isLoggedInParticipant(participant)'
+                    <dd *ngIf='!isLoggedInParticipant(participant)'
                          class='govuk-body-s govuk-!-margin-bottom-3'>
                         <label id='p-{{ participant.id }}-status-participant'
                                class='govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}'>
@@ -134,10 +134,10 @@
                                     </ng-container>
                                </ng-container>
                         </label>
-                    </div>
-                    <div class='vh-line'
-                         *ngIf='!lastItem'></div>
-                </div>
+                    </dd>
+                    <dd class='vh-line'
+                         *ngIf='!lastItem'></dd>
+                </dl>
             </div>
         </div>
     </div>
