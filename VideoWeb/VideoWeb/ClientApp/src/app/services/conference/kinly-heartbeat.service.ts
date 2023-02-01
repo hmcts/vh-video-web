@@ -84,7 +84,8 @@ export class KinlyHeartbeatService {
             this.deviceTypeService.getBrowserName(),
             this.deviceTypeService.getBrowserVersion(),
             this.deviceTypeService.getOSName(),
-            this.deviceTypeService.getOSVersion()
+            this.deviceTypeService.getOSVersion(),
+            this.deviceTypeService.getDevice()
         );
 
         await this.eventService.sendHeartbeat(this.currentConference.id, this.currentParticipant.id, heartbeatModel);

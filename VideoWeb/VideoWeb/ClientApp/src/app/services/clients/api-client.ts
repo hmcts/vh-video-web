@@ -8,21 +8,29 @@
 // ReSharper disable InconsistentNaming
 
 import { mergeMap as _observableMergeMap, catchError as _observableCatch } from 'rxjs/operators';
-import { Observable, throwError as _observableThrow, of as _observableOf } from 'rxjs';
+import { Observable, from as _observableFrom, throwError as _observableThrow, of as _observableOf } from 'rxjs';
 import { Injectable, Inject, Optional, InjectionToken } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
+export class ApiClientBase {
+    protected transformOptions(options: any) {
+        options.headers = options.headers.append('Cache-Control', 'no-store');
+        return Promise.resolve(options);
+    }
+}
+
 @Injectable({
     providedIn: 'root'
 })
-export class ApiClient {
+export class ApiClient extends ApiClientBase {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
 
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        super();
         this.http = http;
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : 'https://localhost:5800';
     }
@@ -30,10 +38,12 @@ export class ApiClient {
     /**
      * @return Success
      */
-    getAudioStreamInfo(hearingId: string): Observable<boolean> {
-        let url_ = this.baseUrl + '/conferences/audiostreams/{hearingId}';
+    getAudioStreamInfo(hearingId: string, wowzaSingleApp: boolean): Observable<boolean> {
+        let url_ = this.baseUrl + '/conferences/audiostreams/{hearingId}/{wowzaSingleApp}';
         if (hearingId === undefined || hearingId === null) throw new Error("The parameter 'hearingId' must be defined.");
         url_ = url_.replace('{hearingId}', encodeURIComponent('' + hearingId));
+        if (wowzaSingleApp === undefined || wowzaSingleApp === null) throw new Error("The parameter 'wowzaSingleApp' must be defined.");
+        url_ = url_.replace('{wowzaSingleApp}', encodeURIComponent('' + wowzaSingleApp));
         url_ = url_.replace(/[?&]$/, '');
 
         let options_: any = {
@@ -44,8 +54,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetAudioStreamInfo(response_);
@@ -124,8 +138,12 @@ export class ApiClient {
             headers: new HttpHeaders({})
         };
 
-        return this.http
-            .request('delete', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('delete', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processStopAudioRecording(response_);
@@ -209,8 +227,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('post', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processStartOrResumeVideoHearing(response_);
@@ -281,8 +303,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetLayoutForHearing(response_);
@@ -375,8 +401,12 @@ export class ApiClient {
             headers: new HttpHeaders({})
         };
 
-        return this.http
-            .request('post', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processUpdateLayoutForHearing(response_);
@@ -465,8 +495,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('post', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetRecommendedLayoutForHearing(response_);
@@ -556,8 +590,12 @@ export class ApiClient {
             headers: new HttpHeaders({})
         };
 
-        return this.http
-            .request('post', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processPauseVideoHearing(response_);
@@ -626,8 +664,12 @@ export class ApiClient {
             headers: new HttpHeaders({})
         };
 
-        return this.http
-            .request('post', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processSuspendVideoHearing(response_);
@@ -696,8 +738,12 @@ export class ApiClient {
             headers: new HttpHeaders({})
         };
 
-        return this.http
-            .request('post', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processEndVideoHearing(response_);
@@ -769,8 +815,12 @@ export class ApiClient {
             headers: new HttpHeaders({})
         };
 
-        return this.http
-            .request('post', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processCallParticipant(response_);
@@ -842,8 +892,12 @@ export class ApiClient {
             headers: new HttpHeaders({})
         };
 
-        return this.http
-            .request('post', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processJoinHearingInSession(response_);
@@ -915,8 +969,12 @@ export class ApiClient {
             headers: new HttpHeaders({})
         };
 
-        return this.http
-            .request('post', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processDismissParticipant(response_);
@@ -988,8 +1046,12 @@ export class ApiClient {
             headers: new HttpHeaders({})
         };
 
-        return this.http
-            .request('post', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processLeaveHearing(response_);
@@ -1057,8 +1119,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetConferencesForHost(response_);
@@ -1150,8 +1216,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetConferencesForStaffMember(response_);
@@ -1236,8 +1306,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetConferencesForIndividual(response_);
@@ -1329,8 +1403,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetConferencesForVhOfficer(response_);
@@ -1412,8 +1490,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetConferenceByIdVHO(response_);
@@ -1502,8 +1584,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetConferenceById(response_);
@@ -1599,8 +1685,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('put', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('put', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processSetVideoControlStatusesForConference(response_);
@@ -1680,8 +1770,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetVideoControlStatusesForConference(response_);
@@ -1761,8 +1855,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetClientConfigurationSettings(response_);
@@ -1845,8 +1943,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('post', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processLeaveConsultation(response_);
@@ -1935,8 +2037,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('post', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processRespondToConsultationRequest(response_);
@@ -2025,8 +2131,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('post', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processJoinPrivateConsultation(response_);
@@ -2115,8 +2225,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('post', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processStartOrJoinConsultation(response_);
@@ -2214,8 +2328,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('post', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processLockConsultationRoomRequest(response_);
@@ -2304,8 +2422,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('post', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processInviteToConsultation(response_);
@@ -2394,8 +2516,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('post', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processAddEndpointToConsultation(response_);
@@ -2482,8 +2608,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetVideoEndpointsForConference(response_);
@@ -2560,8 +2690,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processAllowedVideoCallEndpoints(response_);
@@ -2649,8 +2783,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetFeatureFlag(response_);
@@ -2730,8 +2868,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processCheckServiceHealth(response_);
@@ -2811,8 +2953,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processCheckServiceHealth2(response_);
@@ -2893,8 +3039,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetHeartbeatConfigForParticipant(response_);
@@ -2980,8 +3130,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetConferenceInstantMessageHistoryForParticipant(response_);
@@ -3069,8 +3223,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetNumberOfUnreadAdminMessagesForConference(response_);
@@ -3152,8 +3310,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetNumberOfUnreadAdminMessagesForConferenceByParticipant(response_);
@@ -3226,8 +3388,12 @@ export class ApiClient {
             headers: new HttpHeaders({})
         };
 
-        return this.http
-            .request('post', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processConferenceAdded(response_);
@@ -3310,8 +3476,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('post', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processParticipantsUpdated(response_);
@@ -3393,8 +3563,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('post', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processAddMediaEventToConference(response_);
@@ -3485,8 +3659,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('post', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processAddSelfTestFailureEventToConference(response_);
@@ -3575,8 +3753,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetTestCallResult(response_);
@@ -3661,8 +3843,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('post', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processUpdateParticipantStatus(response_);
@@ -3750,8 +3936,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetIndependentTestCallResult(response_);
@@ -3834,8 +4024,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetHeartbeatDataForParticipant(response_);
@@ -3931,8 +4125,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('post', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processUpdateParticipantDisplayName(response_);
@@ -4012,8 +4210,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetParticipantsWithContactDetailsByConferenceId(response_);
@@ -4110,8 +4312,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetParticipantsByConferenceId(response_);
@@ -4197,8 +4403,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetCurrentParticipant(response_);
@@ -4287,8 +4497,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('post', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processStaffMemberJoinConference(response_);
@@ -4377,8 +4591,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetUserProfile(response_);
@@ -4452,8 +4670,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetProfileByUsername(response_);
@@ -4523,8 +4745,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetQuickLinkParticipantRoles(response_);
@@ -4601,8 +4827,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processValidateQuickLink(response_);
@@ -4683,8 +4913,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('post', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processJoinConferenceAsAQuickLinkUser(response_);
@@ -4753,8 +4987,12 @@ export class ApiClient {
             headers: new HttpHeaders({})
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processIsQuickLinkParticipantAuthorised(response_);
@@ -4831,8 +5069,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetPexipConfig(response_);
@@ -4913,8 +5155,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetTasks(response_);
@@ -4996,8 +5242,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('patch', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('patch', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processCompleteTask(response_);
@@ -5087,8 +5337,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetSelfTestToken(response_);
@@ -5175,8 +5429,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetCourtRoomAccounts(response_);
@@ -5261,8 +5519,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetVenues(response_);
@@ -5350,8 +5612,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('post', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processSendEvent(response_);
@@ -5438,8 +5704,12 @@ export class ApiClient {
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('get', url_, transformedOptions_);
+                })
+            )
             .pipe(
                 _observableMergeMap((response_: any) => {
                     return this.processGetParticipantRoomForParticipant(response_);
@@ -6609,6 +6879,7 @@ export class ConferenceResponse implements IConferenceResponse {
     /** The video access endpoints in the conference */
     endpoints?: VideoEndpointResponse[] | undefined;
     hearing_venue_is_scottish?: boolean;
+    wowza_single_app?: boolean;
 
     constructor(data?: IConferenceResponse) {
         if (data) {
@@ -6643,6 +6914,7 @@ export class ConferenceResponse implements IConferenceResponse {
                 for (let item of _data['endpoints']) this.endpoints!.push(VideoEndpointResponse.fromJS(item));
             }
             this.hearing_venue_is_scottish = _data['hearing_venue_is_scottish'];
+            this.wowza_single_app = _data['wowza_single_app'];
         }
     }
 
@@ -6678,6 +6950,7 @@ export class ConferenceResponse implements IConferenceResponse {
             for (let item of this.endpoints) data['endpoints'].push(item.toJSON());
         }
         data['hearing_venue_is_scottish'] = this.hearing_venue_is_scottish;
+        data['wowza_single_app'] = this.wowza_single_app;
         return data;
     }
 }
@@ -6705,6 +6978,7 @@ export interface IConferenceResponse {
     /** The video access endpoints in the conference */
     endpoints?: VideoEndpointResponse[] | undefined;
     hearing_venue_is_scottish?: boolean;
+    wowza_single_app?: boolean;
 }
 
 export class SetConferenceVideoControlStatusesRequest_VideoControlStatusRequest
@@ -8950,6 +9224,7 @@ export class ConferenceDetailsResponse implements IConferenceDetailsResponse {
     audio_recording_required?: boolean;
     civilian_rooms?: CivilianRoomResponse[] | undefined;
     hearing_venue_is_scottish?: boolean;
+    wowza_single_app?: boolean | undefined;
 
     constructor(data?: IConferenceDetailsResponse) {
         if (data) {
@@ -8987,6 +9262,7 @@ export class ConferenceDetailsResponse implements IConferenceDetailsResponse {
                 for (let item of _data['civilian_rooms']) this.civilian_rooms!.push(CivilianRoomResponse.fromJS(item));
             }
             this.hearing_venue_is_scottish = _data['hearing_venue_is_scottish'];
+            this.wowza_single_app = _data['wowza_single_app'];
         }
     }
 
@@ -9025,6 +9301,7 @@ export class ConferenceDetailsResponse implements IConferenceDetailsResponse {
             for (let item of this.civilian_rooms) data['civilian_rooms'].push(item.toJSON());
         }
         data['hearing_venue_is_scottish'] = this.hearing_venue_is_scottish;
+        data['wowza_single_app'] = this.wowza_single_app;
         return data;
     }
 }
@@ -9047,6 +9324,7 @@ export interface IConferenceDetailsResponse {
     audio_recording_required?: boolean;
     civilian_rooms?: CivilianRoomResponse[] | undefined;
     hearing_venue_is_scottish?: boolean;
+    wowza_single_app?: boolean | undefined;
 }
 
 export class UserProfileResponse implements IUserProfileResponse {

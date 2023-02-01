@@ -96,7 +96,11 @@ describe('DeviceType', () => {
         deviceDetectorService.os_version = testOsVersion;
         expect(service.getOSVersion()).toBe(testOsVersion);
     });
-
+    it('should return the device', () => {
+        const testDeviceName = 'iPhone';
+        deviceDetectorService.device = testDeviceName;
+        expect(service.getDevice()).toBe(testDeviceName);
+    });
     it('should return whether the OS is iOS', () => {
         deviceDetectorService.os = 'ios';
         expect(service.isIOS()).toBeTrue();
@@ -163,6 +167,7 @@ describe('DeviceType', () => {
             deviceDetectorService.isDesktop.and.returnValue(false);
             deviceDetectorService.os = 'ios';
             deviceDetectorService.browser = test.browser;
+            deviceDetectorService.device = 'iPhone';
             expect(service.isSupportedBrowser()).toBe(test.expected);
         });
     });

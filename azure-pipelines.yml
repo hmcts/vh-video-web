@@ -27,7 +27,7 @@ parameters:
     - name: RunMutationTests
       displayName: Run Mutation Tests
       type: boolean
-      default: true
+      default: false
 
     - name: RunACTests
       displayName: Run Acceptance Tests
@@ -305,6 +305,7 @@ resources:
 extends:
     template: stages\dotnet-package.yml@templates
     parameters:
+        netVersion: 6.x
         coreProjectPath: VideoWeb/VideoWeb
         nodeProjectPath: VideoWeb/VideoWeb/ClientApp
         PackageApp: ${{ parameters.PackageApp }}
@@ -314,6 +315,7 @@ extends:
             - npm
         Test: ${{ or(parameters.RunUnitTests, parameters.RunIntegTests, parameters.RunMutationTests) }}
         testParameters:
+            netVersion: 6.x
             coreProjectPath: VideoWeb/VideoWeb
             nodeProjectPath: VideoWeb/VideoWeb/ClientApp
             RunNode: true

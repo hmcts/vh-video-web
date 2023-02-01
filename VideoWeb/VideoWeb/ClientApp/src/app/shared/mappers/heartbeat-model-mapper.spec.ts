@@ -34,8 +34,9 @@ describe('HeartbeatModelMapper', () => {
 
         const os = 'chrome';
         const osVersion = 'v1.0.1';
+        const device = 'iPhone';
 
-        const result = mapper.map(heartbeat, browserName, browserVersion, os, osVersion);
+        const result = mapper.map(heartbeat, browserName, browserVersion, os, osVersion, device);
 
         expect(result).not.toBeNull();
         expect(result.outgoingAudioPercentageLost).toBe('1');
@@ -79,7 +80,8 @@ describe('HeartbeatModelMapper', () => {
         const browserVersion = 'v1.0.1';
         const os = 'chrome';
         const osVersion = 'v1.0.1';
-        const result = mapper.map(heartbeat, browserName, browserVersion, os, osVersion);
+        const device = 'iphone';
+        const result = mapper.map(heartbeat, browserName, browserVersion, os, osVersion, device);
 
         expect(result).not.toBeNull();
         expect(result.outgoingAudioPercentageLost).toBe('0');

@@ -4,18 +4,20 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
+using CacheControlHeaderValue = System.Net.Http.Headers.CacheControlHeaderValue;
 
 namespace VideoWeb.Controllers
 {
     [Produces("application/json")]
     [ApiController]
     [Route("config")]
-    public class ConfigSettingsController : Controller
+    public class ConfigSettingsController : BaseNoCacheController
     {
         private readonly AzureAdConfiguration _azureAdConfiguration;
         private readonly EJudAdConfiguration _ejudAdConfiguration;

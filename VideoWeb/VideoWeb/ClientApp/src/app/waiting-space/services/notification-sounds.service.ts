@@ -10,12 +10,12 @@ export class NotificationSoundsService {
     hearingStartingAnnounced: boolean;
     currentPlayCount: number;
     hearingAlertSound: HTMLAudioElement;
-
     hearingAlertPlayCount: number;
 
-    initConsultationRequestRingtone(): void {
+    async initConsultationRequestRingtone() {
         this.consultationRequestSound = new Audio();
-        this.consultationRequestSound.src = '/assets/audio/consultation_request.mp3';
+        const response = await fetch('/assets/audio/consultation_request.txt');
+        this.consultationRequestSound.src = `data:audio/mpeg;base64,${await response.text()}`;
         this.consultationRequestSound.load();
         this.consultationRequestSound.addEventListener(
             'ended',
@@ -39,9 +39,9 @@ export class NotificationSoundsService {
         this.consultationRequestSound.currentTime = 0;
     }
 
-    playHearingAlertSound() {
+    async playHearingAlertSound() {
         if (!this.hearingAlertSound) {
-            this.initHearingAlertSound();
+            await this.initHearingAlertSound();
         }
         if (this.hearingAlertPlayCount >= 3) {
             this.hearingAlertPlayCount = 1;
@@ -60,10 +60,11 @@ export class NotificationSoundsService {
         this.hearingAlertPlayCount = 1;
     }
 
-    initHearingAlertSound() {
+    async initHearingAlertSound() {
         this.hearingAlertPlayCount = 1;
         this.hearingAlertSound = new Audio();
-        this.hearingAlertSound.src = '/assets/audio/hearing_starting_soon.mp3';
+        const response = await fetch('/assets/audio/hearing_starting_soon.txt');
+        this.hearingAlertSound.src = `data:audio/mpeg;base64,${await response.text()}`;
         this.hearingAlertSound.load();
         const self = this;
         this.hearingAlertSound.addEventListener(

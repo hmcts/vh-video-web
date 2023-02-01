@@ -1,4 +1,4 @@
-name: $(Date:yyyyMMddhhmm)-$(Rev:r)
+name: $(Date:yyyyMMddHHmm)-$(Rev:r)
 
 resources:
   repositories:
@@ -13,11 +13,8 @@ trigger: none
 pr:
   - master
 
-variables:
-  - group: vh-github-app-credentials
-  - group: vh-video-web
-  - name: run_acceptance_tests
-    value: false
+pool:
+  vmImage: ubuntu-22.04
 
 stages:
   #####################################################
@@ -26,8 +23,6 @@ stages:
     displayName: CI Build
     variables:
       - template: variables/shared.yaml
-        parameters:
-          env: ""
     jobs:
       - job: CI_Helm
         displayName: "Helm CI"
@@ -64,6 +59,7 @@ stages:
               #vstsFeedId: 'Video Hearings/vh-packages'
               nugetConfigPath: ${{ variables.app_path }} # Temp - Change To SDS Feed When Possible.
               unitTestProjectPath: "${{ variables.app_path }}/${{ variables.app_path }}.UnitTests"
+              dotNetCoreVersion: "6.x"
               coverletCoverageExclusions:
                 - "[VideoWeb]VideoWeb.ConfigureServicesExtensions"
                 - "[VideoWeb]VideoWeb.Program"
@@ -79,17 +75,15 @@ stages:
           - template: templates/sonarCloud/runAnalysis.yml@azTemplates
 
   #####################################################
-  # Pre Steps. ########################################
-  # Build Docker Image & Generate EF Script. ##########
+  # Docker Build. #####################################
   - stage: Dock
-    displayName: Build Video Web
+    displayName: Docker Build & Push Image
     variables:
       - template: variables/dev.yaml
       - template: variables/shared.yaml
         parameters:
           env: ${{ variables.env }}
       - group: vh-github-app-credentials
-
     jobs:
       - job: Dock
         displayName: "Build and Push Image ${{ variables.git_repo_name }}"
@@ -130,19 +124,6 @@ stages:
               imageTags:
                 - "${{ variables.prTagName }}"
 
-      # - ${{ if eq(variables.run_acceptance_tests, true) }}:
-      #     - job: PublishAcceptanceTests
-      #       displayName: Publish Acceptance Tests
-      #       variables:
-      #         projectPath: "$(app_path)/$(app_path)"
-      #       steps:
-      #         - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
-      #           parameters:
-      #             coreProjectPath: $(projectPath)
-      #             nugetProjectPath: $(projectPath)
-      #             nugetConfigPath: $(app_path)
-      #             useNugetConfig: true
-
   #####################################################
   # Deploy Helm Chart to Dev. #########################
   - stage: Install
@@ -156,6 +137,7 @@ stages:
       - name: dnsRecordName
         value: vh-${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
       - group: vh-tenant-creds
+      - group: vh-github-app-credentials
     jobs:
       - job: helm_uninstall
         displayName: Uninstall Helm from Dev
@@ -172,6 +154,7 @@ stages:
               azureSubscription: "${{ variables.subscriptionName }}"
               aksResourceGroupName: "$(aksCluster.resourceGroup)"
               aksClusterName: "$(aksCluster.name)"
+
       - job: aks_push
         displayName: Deploy To Dev AKS
         dependsOn: helm_uninstall
@@ -185,10 +168,12 @@ stages:
               domain: "https://${{ variables.dnsRecordName }}.${{ variables.dnsZone }}"
               name: "a${{ variables.gitRepoName }}.${{ variables.dnsZone }}"
               domainUris: ${{ variables.app_redirect_uri }}
+
           - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
             parameters:
               subscriptionName: "${{ variables.subscriptionName }}"
               environment: ${{ variables.env }}
+
           - template: templates/Containerisation/helm/helm-install.yaml@azTemplates
             parameters:
               privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
@@ -209,19 +194,3 @@ stages:
               aksClusterName: "$(aksCluster.name)"
               dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
               dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
-
-      # - ${{ if eq(variables.run_acceptance_tests, true) }}:
-      #   - job: AcceptanceTestsDev
-      #     dependsOn: aks_push
-      #     displayName: Acceptance Tests Dev
-      #     variables:
-      #     - group: KinlyConfiguration_${{ variables.env }}
-      #     - group: Saucelabs
-      #     - group: vh-test-users
-      #     - group: govuk-notify-${{ variables.env }}
-      #     steps:
-      #     - template: templates/dotnet/run-acceptance-tests.yml@azTemplates
-      #       parameters:
-      #         environment: ${{ variables.env }}
-      #         azureSubscription: ${{ variables.subscriptionName }}
-      #         acceptanceTestSettings:

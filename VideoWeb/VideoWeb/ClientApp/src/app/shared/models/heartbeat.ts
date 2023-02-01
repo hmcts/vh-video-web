@@ -32,4 +32,5 @@ export class Heartbeat {
     incomingVideoResolution: string;
     incomingVideoPacketReceived: number;
     incomingVideoPacketsLost: number;
+    device: string;
 }

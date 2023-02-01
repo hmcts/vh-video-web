@@ -1,4 +1,4 @@
-name: $(Date:yyyyMMddhhmm)-$(Rev:r)
+name: $(Date:yyyyMMddHHmm)-$(Rev:r)
 
 resources:
   repositories:
@@ -7,6 +7,9 @@ resources:
       name: hmcts/azure-devops-templates
       ref: master
       endpoint: hmcts
+
+pool:
+  vmImage: ubuntu-22.04
 
 pr: none
 trigger: none

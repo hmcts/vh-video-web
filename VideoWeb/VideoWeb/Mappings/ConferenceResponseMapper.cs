@@ -36,7 +36,8 @@ namespace VideoWeb.Mappings
                 AudioRecordingRequired = conference.AudioRecordingRequired,
                 HearingRefId = conference.HearingId,
                 Endpoints = MapEndpoints(conference),
-                HearingVenueIsScottish = conference.HearingVenueIsScottish
+                HearingVenueIsScottish = conference.HearingVenueIsScottish,
+                WowzaSingleApp = conference.WowzaSingleApp ?? true
             };
 
             if (conference.MeetingRoom != null)
