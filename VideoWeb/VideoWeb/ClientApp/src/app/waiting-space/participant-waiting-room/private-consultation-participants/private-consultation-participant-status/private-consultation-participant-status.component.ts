@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { ConsultationAnswer, EndpointResponse, ParticipantResponse } from 'src/app/services/clients/api-client';
+import { ConsultationAnswer, ParticipantResponse, VideoEndpointResponse } from 'src/app/services/clients/api-client';
 
 @Component({
     selector: 'app-private-consultation-participant-status',
@@ -8,7 +8,7 @@ import { ConsultationAnswer, EndpointResponse, ParticipantResponse } from 'src/a
 })
 export class PrivateConsultationParticipantStatusComponent {
     ConsultationAnswer = ConsultationAnswer;
-    @Input() entity: ParticipantResponse | EndpointResponse;
+    @Input() entity: ParticipantResponse | VideoEndpointResponse;
     @Input() status: string;
     @Input() roomLabel: string;
     private availableStatuses = ['Available', 'Connected', 'InConsultation'];

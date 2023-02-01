@@ -112,7 +112,7 @@ namespace VideoWeb.Controllers
             catch (Exception exception)
             {
                 _logger.LogError(exception, "Could not get layout for {conferenceId} an unkown exception was thrown", conferenceId);
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                throw;
             }
         }
 
@@ -156,7 +156,7 @@ namespace VideoWeb.Controllers
             catch (Exception exception)
             {
                 _logger.LogError(exception, "Could not update layout for {conferenceId} an unkown exception was thrown", conferenceId);
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                throw;
             }
         }
 
@@ -189,7 +189,7 @@ namespace VideoWeb.Controllers
             catch (Exception exception)
             {
                 _logger.LogError(exception, "Could not get recommended layout for {conferenceId} an unkown exception was thrown", conferenceId);
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                throw;
             }
         }
 

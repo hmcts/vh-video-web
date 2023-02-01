@@ -4,8 +4,9 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
     EndpointStatus,
-    LinkedParticipantResponse2,
+    LinkedParticipantResponse,
     LinkedParticipantType,
+    LinkType,
     LoggedParticipantResponse,
     ParticipantResponse,
     ParticipantResponseVho,
@@ -157,10 +158,10 @@ describe('ParticipantItemComponent', () => {
         });
 
         it('should return true when interpreter is linked and available', () => {
-            const linkedParticipants: LinkedParticipantResponse2[] = [];
+            const linkedParticipants: LinkedParticipantResponse[] = [];
 
-            const linkedParticipant = new LinkedParticipantResponse2({
-                type: LinkedParticipantType.Interpreter,
+            const linkedParticipant = new LinkedParticipantResponse({
+                link_type: LinkType.Interpreter,
                 linked_id: '9b115922-47cb-4f60-94b1-fccd714f94fa'
             });
 
@@ -186,10 +187,10 @@ describe('ParticipantItemComponent', () => {
         });
 
         it('should return false when interpreter is linked and not available', () => {
-            const linkedParticipants: LinkedParticipantResponse2[] = [];
+            const linkedParticipants: LinkedParticipantResponse[] = [];
 
-            const participant3LinkedParticipants1 = new LinkedParticipantResponse2({
-                type: LinkedParticipantType.Interpreter,
+            const participant3LinkedParticipants1 = new LinkedParticipantResponse({
+                link_type: LinkType.Interpreter,
                 linked_id: '9b115922-47cb-4f60-94b1-fccd714f94fa'
             });
 

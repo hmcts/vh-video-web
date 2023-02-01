@@ -104,10 +104,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             _mocker.Mock<IConferenceVideoControlStatusService>().Setup(x => x.SetVideoControlStateForConference(It.IsAny<Guid>(), It.IsAny<ConferenceVideoControlStatuses>())).Throws<Exception>();
 
             // Act
-            var result = await _sut.SetVideoControlStatusesForConference(conferenceId, null) as StatusCodeResult;
-
-            // Assert
-            result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
+            Assert.ThrowsAsync<Exception>(async () => await _sut.SetVideoControlStatusesForConference(conferenceId, null));
         }
     }
 }

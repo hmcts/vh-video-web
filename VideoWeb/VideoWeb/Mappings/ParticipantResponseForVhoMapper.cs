@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
@@ -33,7 +34,11 @@ namespace VideoWeb.Mappings
                 HearingRole = participant.HearingRole,
                 CurrentRoom = _roomResponseMapper.Map(participant.CurrentRoom),
                 InterpreterRoom = _roomResponseMapper.Map(participant.CurrentInterpreterRoom),
-                LinkedParticipants = participant.LinkedParticipants
+                LinkedParticipants = participant.LinkedParticipants.Select(lp => new VideoWeb.Contract.Responses.LinkedParticipantResponse()
+                {
+                    LinkedId = lp.LinkedId,
+                    LinkType = (LinkType)lp.Type
+                }).ToList()
             };
 
             if (role == Role.Judge)

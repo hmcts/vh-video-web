@@ -103,10 +103,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(x => x == _conference.Id), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ThrowsAsync(new Exception());
 
             // Act
-            var layoutResponse = await _sut.GetRecommendedLayoutForHearing(_conference.Id);
-
-            // Assert
-            layoutResponse.Should().BeAssignableTo<StatusCodeResult>().Which.StatusCode.Should().Be(statusCode);
+            Assert.ThrowsAsync<Exception>(async () => await _sut.GetRecommendedLayoutForHearing(_conference.Id));
         }
     }
 }

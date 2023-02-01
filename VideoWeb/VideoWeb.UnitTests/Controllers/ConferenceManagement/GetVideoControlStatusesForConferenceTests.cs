@@ -64,10 +64,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .Throws<Exception>();
 
             // Act
-            var result = await _sut.GetVideoControlStatusesForConference(_conferenceId) as StatusCodeResult;
-
-            // Assert
-            result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
+            Assert.ThrowsAsync<Exception>(async () => await _sut.GetVideoControlStatusesForConference(_conferenceId));
         }
     }
 }

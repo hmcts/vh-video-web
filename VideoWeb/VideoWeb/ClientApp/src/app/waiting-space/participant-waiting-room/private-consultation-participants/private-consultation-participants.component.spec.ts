@@ -6,14 +6,13 @@ import {
     AllowedEndpointResponse,
     ConferenceResponse,
     ConsultationAnswer,
-    EndpointResponse,
-    EndpointState,
     EndpointStatus,
     LoggedParticipantResponse,
     ParticipantResponse,
     ParticipantStatus,
     Role,
-    RoomSummaryResponse
+    RoomSummaryResponse,
+    VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
@@ -297,11 +296,11 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
     it('should get endpoint status', () => {
         component.roomLabel = 'Room1';
-        const allStatuses = Object.values(EndpointState);
+        const allStatuses = Object.values(EndpointStatus);
         allStatuses.forEach(status => {
             const statusString = status.toString();
             const endpointId = 'Endpoint1';
-            const endpoint = new EndpointResponse({
+            const endpoint = new VideoEndpointResponse({
                 id: endpointId
             });
             component.participantCallStatuses[endpointId] = statusString;

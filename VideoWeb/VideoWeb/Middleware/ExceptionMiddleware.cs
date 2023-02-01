@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using VideoWeb.Common;
@@ -36,10 +37,15 @@ namespace VideoWeb.Middleware
 
         private Task HandleExceptionAsync(HttpContext context, HttpStatusCode statusCode, Exception exception)
         {
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)statusCode;
-
-            return context.Response.WriteAsync(exception.Message);
+            context.Response.StatusCode = (int) statusCode;
+            var sb = new StringBuilder(exception.Message);
+            var innerException = exception.InnerException;
+            while (innerException != null)
+            {
+                sb.Append($" {innerException.Message}");
+                innerException = innerException.InnerException;
+            }
+            return context.Response.WriteAsJsonAsync(sb.ToString());
         }
     }
 }

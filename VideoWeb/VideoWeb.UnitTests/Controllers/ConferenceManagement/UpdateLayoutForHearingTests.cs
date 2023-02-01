@@ -117,10 +117,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             _mocker.Mock<IHearingLayoutService>().Setup(x => x.UpdateLayout(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<HearingLayout>())).ThrowsAsync(new Exception());
 
             // Act
-            var layoutResponse = await _sut.UpdateLayoutForHearing(_conference.Id, expectedLayout);
-
+            Assert.ThrowsAsync<Exception>(async () => await _sut.UpdateLayoutForHearing(_conference.Id, expectedLayout));
+            
             // Assert
-            layoutResponse.Should().BeAssignableTo<StatusCodeResult>().Which.StatusCode.Should().Be(statusCode);
             _mocker.Mock<IHearingLayoutService>().Verify(x => x.UpdateLayout(It.Is<Guid>(x => x == _conference.Id), It.Is<Guid>(x => x == _judgeParticipant.Id), expectedLayout));
         }
     }
