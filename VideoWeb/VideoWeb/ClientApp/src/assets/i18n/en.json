@@ -65,7 +65,10 @@
     "char-count": "Character count",
     "maximum": "maximum allowed",
     "unable-send": "Unable to send message.",
-    "type-a-message": "Type a message"
+    "type-a-message": "Type a message",
+    "you-can-enter-up-to": "You can enter up to",
+    "characters-in-this-field": "characters in this field",
+    "maximum-characters-entered": "You have entered the maximum number of characters"
   },
   "contact-us": {
     "contact-video-hearings": "Contact the video hearings service",
@@ -915,7 +918,7 @@
   },
   "video-hearing-link": "Video Hearing link",
   "participant-info-tooltip": {
-   "join-by-link-text": "Joined by Video Hearing link"
+    "join-by-link-text": "Joined by Video Hearing link"
   },
   "copy-quick-link": {
     "tooltip-copied": "Join by Video Hearing link details copied to clipboard",
@@ -1234,6 +1237,6 @@
     "body": "Before you go, how was your experience of the Video Hearings Service?",
     "link-text": "Complete our short survey here"
   },
-    "true": "Yes",
-    "false": "No"
+  "true": "Yes",
+  "false": "No"
 }

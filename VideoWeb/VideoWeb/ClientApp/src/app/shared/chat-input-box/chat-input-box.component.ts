@@ -9,11 +9,13 @@ import { FormControl, Validators } from '@angular/forms';
 export class ChatInputBoxComponent implements OnInit {
     maxInputLength = 256;
     newMessageBody: FormControl;
+    screenReaderAlertContainer: HTMLElement;
     @Output() submittedMessage = new EventEmitter<string>();
     constructor() {}
 
     ngOnInit() {
         this.initForm();
+        this.screenReaderAlertContainer = document.getElementById('screen-reader-input-limit-alert');
     }
 
     initForm() {
@@ -51,5 +53,37 @@ export class ChatInputBoxComponent implements OnInit {
             event.preventDefault();
             this.sendMessage();
         }
+    }
+
+    onKeyup(event: KeyboardEvent) {
+        this.toggleInputAlertForScreenReaders(event);
+    }
+
+    toggleInputAlertForScreenReaders(event: KeyboardEvent) {
+        if (this.currentInputLength < this.maxInputLength) {
+            this.hideInputAlertForScreenReaders();
+            return;
+        }
+
+        if (event.key == 'Delete' || event.key == 'Backspace') {
+            this.hideInputAlertForScreenReaders();
+            return;
+        }
+
+        this.showInputAlertForScreenReaders();
+    }
+
+    hideInputAlertForScreenReaders() {
+        if (this.screenReaderAlertContainer.textContent !== '') {
+            this.screenReaderAlertContainer.textContent = '';
+        }
+    }
+
+    showInputAlertForScreenReaders() {
+        // Update the DOM to trigger the aria alert for screen readers
+        // See https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/alert_role#example_3_visually_hidden_alert_container_for_screen_reader_notifications
+        this.screenReaderAlertContainer.textContent = '';
+        // TODO implement translations
+        this.screenReaderAlertContainer.textContent = 'You have reached the maximum number of characters';
     }
 }
