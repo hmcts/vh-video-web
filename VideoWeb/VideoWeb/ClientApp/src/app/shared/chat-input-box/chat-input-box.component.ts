@@ -9,13 +9,13 @@ import { FormControl, Validators } from '@angular/forms';
 export class ChatInputBoxComponent implements OnInit {
     maxInputLength = 256;
     newMessageBody: FormControl;
-    screenReaderAlertContainer: HTMLElement;
+    screenReaderAlert: HTMLElement;
     @Output() submittedMessage = new EventEmitter<string>();
     constructor() {}
 
     ngOnInit() {
         this.initForm();
-        this.screenReaderAlertContainer = document.getElementById('screen-reader-input-limit-alert');
+        this.screenReaderAlert = document.getElementById('screen-reader-input-limit-alert');
     }
 
     initForm() {
@@ -74,16 +74,16 @@ export class ChatInputBoxComponent implements OnInit {
     }
 
     hideInputAlertForScreenReaders() {
-        if (this.screenReaderAlertContainer.textContent !== '') {
-            this.screenReaderAlertContainer.textContent = '';
+        if (this.screenReaderAlert.textContent !== '') {
+            this.screenReaderAlert.textContent = '';
         }
     }
 
     showInputAlertForScreenReaders() {
         // Update the DOM to trigger the aria alert for screen readers
         // See https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/alert_role#example_3_visually_hidden_alert_container_for_screen_reader_notifications
-        this.screenReaderAlertContainer.textContent = '';
+        this.screenReaderAlert.textContent = '';
         // TODO implement translations
-        this.screenReaderAlertContainer.textContent = 'You have reached the maximum number of characters';
+        this.screenReaderAlert.textContent = 'You have reached the maximum number of characters';
     }
 }
