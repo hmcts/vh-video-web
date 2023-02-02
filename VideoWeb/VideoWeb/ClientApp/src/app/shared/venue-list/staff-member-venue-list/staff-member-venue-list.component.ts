@@ -24,4 +24,8 @@ export class StaffMemberVenueListComponent extends VenueListComponentDirective {
     goToHearingList() {
         this.router.navigateByUrl(pageUrls.StaffMemberHearingList);
     }
+
+    get showVhoSpecificContent(): boolean {
+        return false;
+    }
 }

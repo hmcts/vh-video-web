@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -8,9 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Models;
-using VideoApi.Client;
-using VideoApi.Contract.Responses;
-
 namespace VideoWeb.Controllers
 {
     [Produces("application/json")]
@@ -23,7 +21,7 @@ namespace VideoWeb.Controllers
         private readonly IBookingsApiClient _bookingsApiClient;
 
 
-        public VenuesController(IVideoApiClient videoApiClient, ILogger<VenuesController> logger, IBookingsApiClient bookingsApiClient)
+        public VenuesController(ILogger<VenuesController> logger, IBookingsApiClient bookingsApiClient)
         {
             _logger = logger;
             _bookingsApiClient = bookingsApiClient;
@@ -51,5 +49,17 @@ namespace VideoWeb.Controllers
                 return NotFound();
             }
         }
+        
+        /// <summary>
+        /// Get Hearing Venue Names By Cso
+        /// </summary>
+        /// <returns>Hearing Venue Names</returns>
+        [Authorize(AppRoles.VhOfficerRole)]
+        [HttpGet("allocated-cso", Name = "GetVenuesByAllocatedCso")]
+        [ProducesResponseType(typeof(IList<string>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<ActionResult<IList<string>>> GetVenuesByCso([FromQuery] Guid[] csos) 
+            => Ok(await _bookingsApiClient.GetHearingVenuesByAllocatedCsoAsync(csos));
+
     }
 }

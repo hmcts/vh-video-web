@@ -3,20 +3,33 @@
     <h1 class="govuk-heading-m">{{'venue-list.title' | translate}}</h1>
   </div>
 
-  <div class="govuk-grid-column-three-quarters">
-    <ng-select id="venue-allocation-list" class="custom"
-      [attr.aria-label]="'venue-list.allocation-list-label' | translate" [items]="venues" [multiple]="true"
-      bindLabel="name" bindValue="name" [placeholder]="'venue-list.selection-default-text' | translate" [(ngModel)]="selectedVenues" [closeOnSelect]="false"
-      (change)="updateSelection()" [clearSearchOnAdd]="true" [selectOnTab]="true">
-      <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
-        <input id="venue-{{ index }}" type="checkbox" [ngModel]="item$.selected"
-          [attr.aria-label]="'venue-list.label' | translate: { name: item.name}" />
-        {{ item.name }}
-      </ng-template>
-    </ng-select>
-  </div>
+    <div class="govuk-grid-column-three-quarters">
+        <ng-select id="venue-allocation-list" class="selection-list"
+                   [attr.aria-label]="'venue-list.allocation-list-label' | translate" [items]="venues" [multiple]="true"
+                   bindLabel="name" bindValue="name" [placeholder]="'venue-list.selection-default-text' | translate" [(ngModel)]="selectedVenues" [closeOnSelect]="false"
+                   (change)="updateVenueSelection()" [clearSearchOnAdd]="true" [selectOnTab]="true">
+            <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                <input id="venue-{{ index }}" type="checkbox" [ngModel]="item$.selected" [attr.aria-label]="'venue-list.label' | translate: { name: item.name}" />
+                {{ item.name }}
+            </ng-template>
+        </ng-select>
+    </div>
+    <div class="govuk-grid-column-three-quarters">
+        <p>OR</p>
+    </div>
+    <div class="govuk-grid-column-three-quarters" *ngIf="showVhoSpecificContent && vhoWorkAllocationFlag">
+        <ng-select id="cso-allocation-list" class="selection-list" [attr.aria-label]="'Cso list'" [items]="csos" [multiple]="true"
+                   bindLabel="first_name" bindValue="id" [placeholder]="'Select CSOs'" [(ngModel)]="selectedCsos" [closeOnSelect]="false"
+                   (change)="clearVenue()" [clearSearchOnAdd]="true" [selectOnTab]="true">
+            <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                <input id="cso-{{ index }}" type="checkbox" [ngModel]="item$.selected" [checked]="item$.selected" [attr.aria-label]="'CSO '+ item.first_name" />
+                {{ item.full_name }}
+            </ng-template>
+        </ng-select>
+    </div>
+
   <div class="govuk-grid-column-one-quarter">
-    <input type="button" [disabled]="!venuesSelected" [value]="'venue-list.selection-button-text' | translate" (click)="goToHearingList()"
+    <input type="button" [disabled]="!venuesSelected && !csosSelected" [value]="'venue-list.selection-button-text' | translate" (click)="goToHearingList()"
       id="select-venue-allocation-btn" class="govuk-button" />
   </div>
 </div>

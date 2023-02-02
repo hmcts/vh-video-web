@@ -23,8 +23,19 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
         super(videoWebService, router, vhoQueryService, logger);
     }
 
+    ngOnInit() {
+        super.ngOnInit();
+        this.videoWebService.getCSOs().subscribe((value) => {
+            this.csos = value;
+        })
+    }
+
     goToHearingList() {
-        this.updateSelection();
+        if(this.csosSelected)
+            this.videoWebService.getVenuesForAllocatedCSOs(this.selectedCsos)
+                                .subscribe(response => this.selectedVenues = response)
+
+        this.updateVenueSelection();
         this.vhoQueryService.getCourtRoomsAccounts(this.selectedVenues).then(response => {
             this.getFiltersCourtRoomsAccounts(response);
             this.router.navigateByUrl(pageUrls.AdminHearingList);
@@ -51,5 +62,9 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
             courtroomAccount.selected = filterVenue.selected;
             courtroomAccount.updateRoomSelection(filterVenue.courtsRooms);
         }
+    }
+
+    get showVhoSpecificContent(): boolean {
+        return true;
     }
 }

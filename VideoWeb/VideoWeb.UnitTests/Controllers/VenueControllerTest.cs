@@ -17,17 +17,15 @@ namespace VideoWeb.UnitTests.Controllers
     public class VenueControllerTest
     {
         private VenuesController _controller;
-        private Mock<IVideoApiClient> _videoApiClientMock;
         private Mock<ILogger<VenuesController>> _mockLogger;
         private Mock<IBookingsApiClient> _bookingsApiClientMock;
 
         [SetUp]
         public void Setup()
         {
-            _videoApiClientMock = new Mock<IVideoApiClient>();
             _mockLogger = new Mock<ILogger<VenuesController>>();
             _bookingsApiClientMock = new Mock<IBookingsApiClient>();
-            _controller = new VenuesController(_videoApiClientMock.Object, _mockLogger.Object, _bookingsApiClientMock.Object);
+            _controller = new VenuesController( _mockLogger.Object, _bookingsApiClientMock.Object);
         }
 
         [Test]
