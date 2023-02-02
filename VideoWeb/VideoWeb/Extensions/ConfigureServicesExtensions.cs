@@ -32,6 +32,7 @@ using VideoWeb.Mappings.Decorators;
 using VideoWeb.Mappings.Interfaces;
 using VideoWeb.Middleware;
 using BookingsApi.Client;
+using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using UserApi.Client;
 using VideoApi.Client;
 using VideoWeb.EventHub.Services;
@@ -50,11 +51,10 @@ namespace VideoWeb.Extensions
 
             var contractsXmlFile = $"{typeof(AddMediaEventRequest).Assembly.GetName().Name}.xml";
             var contractsXmlPath = Path.Combine(AppContext.BaseDirectory, contractsXmlFile);
-
+            serviceCollection.AddFluentValidationRulesToSwagger();
             serviceCollection.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Video Web App API", Version = "v1" });
-                c.AddFluentValidationRules();
                 c.IncludeXmlComments(xmlPath);
                 c.IncludeXmlComments(contractsXmlPath);
                 c.EnableAnnotations();

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FluentAssertions;
@@ -20,7 +19,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
     {
         private class FakeMapper : IMapTo<SetConferenceVideoControlStatusesRequest, ConferenceVideoControlStatuses>
         {
-            public ConferenceVideoControlStatuses ReturnValue { get; set; } = null;
+            public ConferenceVideoControlStatuses ReturnValue { get; set; }
             public ConferenceVideoControlStatuses Map(SetConferenceVideoControlStatusesRequest input)
             {
                 return ReturnValue;
@@ -73,7 +72,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         {
             // Arrange
             var conferenceId = Guid.NewGuid();
-            var map = new Dictionary<Guid, VideoControlStatus>();
 
             _mocker.Mock<IMapperFactory>()
                 .Setup(x => x.Get<SetConferenceVideoControlStatusesRequest, ConferenceVideoControlStatuses>())
@@ -90,11 +88,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         }
 
         [Test]
-        public async Task SetVideoControlStatusesForConference_When_Exception_is_thrown_by_SetVideoControlStateForConference()
+        public void SetVideoControlStatusesForConference_When_Exception_is_thrown_by_SetVideoControlStateForConference()
         {
             // Arrange
             var conferenceId = Guid.NewGuid();
-            var map = new Dictionary<Guid, VideoControlStatus>();
 
             _mocker.Mock<IMapperFactory>()
                 .Setup(x => x.Get<SetConferenceVideoControlStatusesRequest, ConferenceVideoControlStatuses>())
@@ -104,10 +101,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             _mocker.Mock<IConferenceVideoControlStatusService>().Setup(x => x.SetVideoControlStateForConference(It.IsAny<Guid>(), It.IsAny<ConferenceVideoControlStatuses>())).Throws<Exception>();
 
             // Act
-            var result = await _sut.SetVideoControlStatusesForConference(conferenceId, null) as StatusCodeResult;
-
-            // Assert
-            result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
+            Assert.ThrowsAsync<Exception>(async () => await _sut.SetVideoControlStatusesForConference(conferenceId, null));
         }
     }
 }

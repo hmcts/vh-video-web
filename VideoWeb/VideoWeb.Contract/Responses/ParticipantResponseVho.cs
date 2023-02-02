@@ -68,6 +68,6 @@ namespace VideoWeb.Contract.Responses
         /// <summary>
         /// The linked participants
         /// </summary>
-        public IList<VideoApi.Contract.Responses.LinkedParticipantResponse> LinkedParticipants { get; set; }
+        public IList<LinkedParticipantResponse> LinkedParticipants { get; set; }
     }
 }

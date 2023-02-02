@@ -45,7 +45,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.AdminIframeError).Displayed.Should().BeFalse();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new Exception("Unable to click the participant '" + GetParticipantDisplayName(text) + "' in iframe because login.microsoftonline.com refused to connect.");
             }
