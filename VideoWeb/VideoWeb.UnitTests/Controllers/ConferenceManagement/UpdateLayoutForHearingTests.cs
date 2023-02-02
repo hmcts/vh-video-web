@@ -4,7 +4,6 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
@@ -13,11 +12,8 @@ using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using FluentAssertions;
 using VideoApi.Client;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using VideoWeb.UnitTests.Builders;
-using System.Net;
-using VideoWeb.Helpers;
 using VideoWeb.EventHub.Services;
 using FizzWare.NBuilder;
 using System.Linq;
@@ -66,7 +62,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             // Assert
             layoutResponse.Should().BeAssignableTo<OkResult>();
-            _mocker.Mock<IHearingLayoutService>().Verify(x => x.UpdateLayout(It.Is<Guid>(x => x == _conference.Id), It.Is<Guid>(x => x == _judgeParticipant.Id), expectedLayout), Times.Once);
+            _mocker.Mock<IHearingLayoutService>()
+                .Verify(
+                    x => x.UpdateLayout(It.Is<Guid>(guid => guid == _conference.Id),
+                        It.Is<Guid>(guid => guid == _judgeParticipant.Id), expectedLayout), Times.Once);
         }
 
         [Test]
@@ -97,30 +96,38 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var statusCode = 123;
 
 
-            _mocker.Mock<IHearingLayoutService>().Setup(x => x.UpdateLayout(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<HearingLayout>())).ThrowsAsync(new VideoApiException("message", statusCode, "response", null, null));
+            _mocker.Mock<IHearingLayoutService>()
+                .Setup(x => x.UpdateLayout(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<HearingLayout>()))
+                .ThrowsAsync(new VideoApiException("message", statusCode, "response", null, null));
 
             // Act
             var layoutResponse = await _sut.UpdateLayoutForHearing(_conference.Id, expectedLayout);
 
             // Assert
             layoutResponse.Should().BeAssignableTo<ObjectResult>().Which.StatusCode.Should().Be(statusCode);
-            _mocker.Mock<IHearingLayoutService>().Verify(x => x.UpdateLayout(It.Is<Guid>(x => x == _conference.Id), It.Is<Guid>(x => x == _judgeParticipant.Id), expectedLayout));
+            _mocker.Mock<IHearingLayoutService>().Verify(x =>
+                x.UpdateLayout(It.Is<Guid>(guid => guid == _conference.Id), It.Is<Guid>(participantId => participantId == _judgeParticipant.Id),
+                    expectedLayout));
         }
 
         [Test]
-        public async Task should_return_an_internal_server_error_if_an_exception_is_thrown_in_hearing_service()
+        public void should_return_an_internal_server_error_if_an_exception_is_thrown_in_hearing_service()
         {
             // Arrange
             var expectedLayout = HearingLayout.TwoPlus21;
-            var statusCode = (int)HttpStatusCode.InternalServerError;
 
-            _mocker.Mock<IHearingLayoutService>().Setup(x => x.UpdateLayout(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<HearingLayout>())).ThrowsAsync(new Exception());
+            _mocker.Mock<IHearingLayoutService>()
+                .Setup(x => x.UpdateLayout(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<HearingLayout>()))
+                .ThrowsAsync(new Exception());
 
             // Act
-            Assert.ThrowsAsync<Exception>(async () => await _sut.UpdateLayoutForHearing(_conference.Id, expectedLayout));
-            
+            Assert.ThrowsAsync<Exception>(async () =>
+                await _sut.UpdateLayoutForHearing(_conference.Id, expectedLayout));
+
             // Assert
-            _mocker.Mock<IHearingLayoutService>().Verify(x => x.UpdateLayout(It.Is<Guid>(x => x == _conference.Id), It.Is<Guid>(x => x == _judgeParticipant.Id), expectedLayout));
+            _mocker.Mock<IHearingLayoutService>().Verify(x =>
+                x.UpdateLayout(It.Is<Guid>(guid => guid == _conference.Id), It.Is<Guid>(participantId => participantId == _judgeParticipant.Id),
+                    expectedLayout));
         }
     }
 }

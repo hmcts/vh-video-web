@@ -55,7 +55,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         }
 
         [Test]
-        public async Task GetVideoControlStatusesForConference_when_GetVideoControlStateForConference_throw_Exception()
+        public void GetVideoControlStatusesForConference_when_GetVideoControlStateForConference_throw_Exception()
         {
             // Arrange
 

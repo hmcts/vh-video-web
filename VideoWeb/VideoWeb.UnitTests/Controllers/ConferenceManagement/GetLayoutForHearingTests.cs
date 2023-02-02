@@ -33,12 +33,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             // Arrange
             var conferenceId = Guid.NewGuid();
             var expectedLayout = HearingLayout.TwoPlus21;
-            var conference = new Conference()
-            {
-                Id = conferenceId
-            };
 
-            _mocker.Mock<IHearingLayoutService>().Setup(x => x.GetCurrentLayout(It.Is<Guid>(x => x == conferenceId))).ReturnsAsync(expectedLayout);
+            _mocker.Mock<IHearingLayoutService>().Setup(x => x.GetCurrentLayout(It.Is<Guid>(guid => guid == conferenceId))).ReturnsAsync(expectedLayout);
 
             // Act
             var layoutResponse = await _sut.GetLayoutForHearing(conferenceId);
@@ -53,7 +49,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             // Arrange
             var conferenceId = Guid.NewGuid();
 
-            var exception = new VideoApiException("message", 404, null, null, null);
             _mocker.Mock<IHearingLayoutService>().Setup(x => x.GetCurrentLayout(It.Is<Guid>(x => x == conferenceId))).Returns(Task.FromResult<HearingLayout?>(null));
 
             // Act
@@ -82,7 +77,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         }
         
         [Test]
-        public async Task GetLayoutForHearing_handles_when_GetCurrentLayoutThrows_Exception()
+        public void GetLayoutForHearing_handles_when_GetCurrentLayoutThrows_Exception()
         {
             // Arrange
             var conferenceId = Guid.NewGuid();
