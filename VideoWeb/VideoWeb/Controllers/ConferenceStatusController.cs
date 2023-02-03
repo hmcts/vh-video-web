@@ -59,7 +59,7 @@ namespace VideoWeb.Controllers
             catch (Exception exception)
             {
                 _logger.LogError(exception, "Could not set video control statuses for {conferenceId} an unkown exception was thrown", conferenceId);
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                throw;
             }
         }
         
@@ -94,7 +94,7 @@ namespace VideoWeb.Controllers
             catch (Exception exception)
             {
                 _logger.LogError(exception, "Could not get video control statuses for {conferenceId} an unkown exception was thrown", conferenceId);
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                throw;
             }
         }
     }
