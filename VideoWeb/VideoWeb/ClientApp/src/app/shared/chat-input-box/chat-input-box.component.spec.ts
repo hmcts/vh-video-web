@@ -1,11 +1,15 @@
 import { ChatInputBoxComponent } from './chat-input-box.component';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 
 describe('ChatInputBoxComponent', () => {
     let component: ChatInputBoxComponent;
     let emitSpy;
+    const translateService = translateServiceSpy;
 
     beforeEach(() => {
-        component = new ChatInputBoxComponent();
+        translateService.instant.calls.reset();
+
+        component = new ChatInputBoxComponent(translateService);
         emitSpy = spyOn(component.submittedMessage, 'emit');
         component.ngOnInit();
     });
