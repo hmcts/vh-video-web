@@ -1,5 +1,6 @@
 import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-chat-input-box',
@@ -11,7 +12,7 @@ export class ChatInputBoxComponent implements OnInit {
     newMessageBody: FormControl;
     screenReaderAlert: HTMLElement;
     @Output() submittedMessage = new EventEmitter<string>();
-    constructor() {}
+    constructor(private translateService: TranslateService) {}
 
     ngOnInit() {
         this.initForm();
@@ -83,7 +84,6 @@ export class ChatInputBoxComponent implements OnInit {
         // Update the DOM to trigger the aria alert for screen readers
         // See https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/alert_role#example_3_visually_hidden_alert_container_for_screen_reader_notifications
         this.screenReaderAlert.textContent = '';
-        // TODO implement translations
-        this.screenReaderAlert.textContent = 'You have reached the maximum number of characters';
+        this.screenReaderAlert.textContent = this.translateService.instant('chat-input-box.maximum-characters-entered');
     }
 }
