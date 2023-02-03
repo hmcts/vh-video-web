@@ -6,6 +6,7 @@ describe('ChatInputBoxComponent', () => {
     let component: ChatInputBoxComponent;
     let emitSpy;
     const translateService = translateServiceSpy;
+    const SCREEN_READER_INPUT_ALERT_MESSAGE = 'chat-input-box.maximum-characters-entered';
 
     beforeEach(() => {
         translateService.instant.calls.reset();
@@ -109,6 +110,17 @@ describe('ChatInputBoxComponent', () => {
             expect(component.screenReaderInputLimitAlert.nativeElement.textContent).toBe('');
         });
 
+        it('should hide existing input alert for screen readers when current input length is less than max length', () => {
+            const body = 'Lorem';
+            setTextInput(body);
+            showInputAlertForScreenReaders();
+            const event = new KeyboardEvent('keyup', {
+                key: 'a'
+            });
+            component.onKeyup(event);
+            expect(component.screenReaderInputLimitAlert.nativeElement.textContent).toBe('');
+        });
+
         it('should hide input alert for screen readers when current input length is greater than max length and Delete key pressed', () => {
             const body =
                 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
@@ -139,7 +151,7 @@ describe('ChatInputBoxComponent', () => {
                 key: 'a'
             });
             component.onKeyup(event);
-            expect(component.screenReaderInputLimitAlert.nativeElement.textContent).toBe('chat-input-box.maximum-characters-entered');
+            expect(component.screenReaderInputLimitAlert.nativeElement.textContent).toBe(SCREEN_READER_INPUT_ALERT_MESSAGE);
         });
 
         it('should show input alert for screen readers when current input length is equal to max length and key pressed', () => {
@@ -150,12 +162,16 @@ describe('ChatInputBoxComponent', () => {
                 key: 'a'
             });
             component.onKeyup(event);
-            expect(component.screenReaderInputLimitAlert.nativeElement.textContent).toBe('chat-input-box.maximum-characters-entered');
+            expect(component.screenReaderInputLimitAlert.nativeElement.textContent).toBe(SCREEN_READER_INPUT_ALERT_MESSAGE);
         });
     });
 
     function setTextInput(value: string) {
         component.newMessageBody.setValue(value);
         component.newMessageBody.markAsDirty();
+    }
+
+    function showInputAlertForScreenReaders() {
+        component.screenReaderInputLimitAlert.nativeElement.textContent = SCREEN_READER_INPUT_ALERT_MESSAGE;
     }
 });
