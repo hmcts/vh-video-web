@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Output, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -7,7 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
     templateUrl: './chat-input-box.component.html',
     styleUrls: ['./chat-input-box.component.scss']
 })
-export class ChatInputBoxComponent implements OnInit {
+export class ChatInputBoxComponent implements OnInit, AfterViewInit {
     maxInputLength = 256;
     newMessageBody: FormControl;
     screenReaderAlert: HTMLElement;
@@ -70,7 +70,7 @@ export class ChatInputBoxComponent implements OnInit {
             return;
         }
 
-        if (event.key == 'Delete' || event.key == 'Backspace') {
+        if (event.key === 'Delete' || event.key === 'Backspace') {
             this.hideInputAlertForScreenReaders();
             return;
         }
