@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -12,11 +12,15 @@ export class ChatInputBoxComponent implements OnInit {
     newMessageBody: FormControl;
     screenReaderAlert: HTMLElement;
     @Output() submittedMessage = new EventEmitter<string>();
+    @ViewChild('screenReaderInputLimitAlert') screenReaderInputLimitAlert: ElementRef;
     constructor(private translateService: TranslateService) {}
 
     ngOnInit() {
         this.initForm();
-        this.screenReaderAlert = document.getElementById('screen-reader-input-limit-alert');
+    }
+
+    ngAfterViewInit() {
+        this.screenReaderAlert = this.screenReaderInputLimitAlert.nativeElement;
     }
 
     initForm() {

@@ -29,7 +29,7 @@
         {{'chat-input-box.char-count' | translate}} {{ currentInputLength }} ({{'chat-input-box.maximum' | translate}} {{ maxInputLength }}).
     </div>
     <div id="screen-reader-input-limit-hint" hidden>{{'chat-input-box.you-can-enter-up-to' | translate}} {{ maxInputLength }} {{'chat-input-box.characters-in-this-field' | translate}} </div>
-    <div id="screen-reader-input-limit-alert" aria-live="polite" class="visually-hidden">
+    <div id="screen-reader-input-limit-alert" aria-live="polite" class="visually-hidden" #screenReaderInputLimitAlert>
     </div>
     <div id="input-errors"
          *ngIf="isInputInvalid"
