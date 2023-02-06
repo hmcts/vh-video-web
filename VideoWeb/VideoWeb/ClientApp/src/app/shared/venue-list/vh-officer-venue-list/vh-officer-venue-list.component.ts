@@ -25,43 +25,43 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
 
     ngOnInit() {
         super.ngOnInit();
-        this.videoWebService.getCSOs().subscribe((value) => {
+        this.videoWebService.getCSOs().subscribe(value => {
             this.csos = value;
-        })
-    }
-
-    goToHearingList() {
-        if(this.csosSelected)
-            this.videoWebService.getVenuesForAllocatedCSOs(this.selectedCsos)
-                                .subscribe(response => this.selectedVenues = response)
-
-        this.updateVenueSelection();
-        this.vhoQueryService.getCourtRoomsAccounts(this.selectedVenues).then(response => {
-            this.getFiltersCourtRoomsAccounts(response);
-            this.router.navigateByUrl(pageUrls.AdminHearingList);
         });
     }
 
-    getFiltersCourtRoomsAccounts(response: CourtRoomsAccountResponse[]) {
+    async goToHearingList() {
+        this.errorMessage = null;
+        if (this.csosSelected) {
+            this.selectedVenues = await this.videoWebService.getVenuesForAllocatedCSOs(this.selectedCsos).toPromise();
+        }
+        this.updateVenueSelection();
+        const courtRoomAccounts = await this.vhoQueryService.getCourtRoomsAccounts(this.selectedVenues);
         if (this.venuesSelected) {
-            this.filterCourtRoomsAccounts = response.map(x => new CourtRoomsAccounts(x.first_name, x.last_names, true));
-            const previousFilter = this.courtAccountsAllocationStorage.get();
-            if (previousFilter) {
-                previousFilter.forEach(x => this.updateFilterSelection(x));
-            }
-            this.courtAccountsAllocationStorage.set(this.filterCourtRoomsAccounts);
-            this.logger.info('[VenueList] - Venue selection is changed');
+            this.getFiltersCourtRoomsAccounts(courtRoomAccounts);
+            await this.router.navigateByUrl(pageUrls.AdminHearingList);
         } else {
             this.logger.warn('[VenueList] - No venues selected');
+            this.errorMessage = 'Failed to find venues';
         }
     }
 
-    updateFilterSelection(filterVenue: CourtRoomsAccounts) {
-        const courtroomAccount = this.filterCourtRoomsAccounts.find(x => x.venue === filterVenue.venue);
-        if (courtroomAccount) {
-            courtroomAccount.selected = filterVenue.selected;
-            courtroomAccount.updateRoomSelection(filterVenue.courtsRooms);
+     getFiltersCourtRoomsAccounts(response: CourtRoomsAccountResponse[]) {
+        const updateFilterSelection = (filterVenue: CourtRoomsAccounts) => {
+            const courtroomAccount = this.filterCourtRoomsAccounts.find(x => x.venue === filterVenue.venue);
+            if (courtroomAccount) {
+                ``
+                courtroomAccount.selected = filterVenue.selected;
+                courtroomAccount.updateRoomSelection(filterVenue.courtsRooms);
+            }
+        };
+        this.filterCourtRoomsAccounts = response.map(x => new CourtRoomsAccounts(x.first_name, x.last_names, true));
+        const previousFilter = this.courtAccountsAllocationStorage.get();
+        if (previousFilter) {
+            previousFilter.forEach(x => updateFilterSelection(x));
         }
+        this.courtAccountsAllocationStorage.set(this.filterCourtRoomsAccounts);
+        this.logger.info('[VenueList] - Venue selection is changed');
     }
 
     get showVhoSpecificContent(): boolean {

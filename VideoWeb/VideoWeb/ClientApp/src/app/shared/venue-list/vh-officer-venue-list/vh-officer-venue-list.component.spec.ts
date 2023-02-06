@@ -63,15 +63,14 @@ describe('VHOfficerVenueListComponent', () => {
     it('should update storage with selection', () => {
         const selection = [venueNames[0].name];
         component.selectedVenues = selection;
-        component.updateSelection();
+        component.updateVenueSelection();
         const result = venueSessionStorage.get();
         expect(result.length).toBe(selection.length);
         expect(result[0]).toBe(venueNames[0].name);
     });
 
-    it('should navigate to admin hearing list', fakeAsync(() => {
-        component.goToHearingList();
-        tick();
+    it('should navigate to admin hearing list', ( async () => {
+        await component.goToHearingList();
         expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.AdminHearingList);
     }));
 

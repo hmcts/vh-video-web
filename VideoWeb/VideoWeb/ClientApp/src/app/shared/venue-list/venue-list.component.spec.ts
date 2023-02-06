@@ -12,6 +12,10 @@ import { VenueListComponentDirective } from './venue-list.component';
 
 class MockedVenueListComponent extends VenueListComponentDirective {
     goToHearingList() {}
+
+    get showVhoSpecificContent(): boolean {
+        return false;
+    }
 }
 
 describe('VenueListComponent', () => {

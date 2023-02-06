@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
@@ -45,12 +44,15 @@ namespace VideoWeb.Controllers
         [HttpGet("courtrooms", Name = "GetCourtRoomAccounts")]
         [ProducesResponseType(typeof(IList<CourtRoomsAccountResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<IList<CourtRoomsAccountResponse>>> GetCourtRoomsAccounts([FromQuery]VhoConferenceFilterQuery query)
+        public async Task<ActionResult<IList<CourtRoomsAccountResponse>>> GetCourtRoomsAccounts(
+            [FromQuery] VhoConferenceFilterQuery query)
         {
             try
             {
-                var conferences = await _videoApiClient.GetConferencesTodayForAdminByHearingVenueNameAsync(query.HearingVenueNames);
-                var courtRoomsAccountResponsesMapper = _mapperFactory.Get<IEnumerable<ConferenceForAdminResponse>, List<CourtRoomsAccountResponse>>();
+                var conferences =
+                    await _videoApiClient.GetConferencesTodayForAdminByHearingVenueNameAsync(query.HearingVenueNames);
+                var courtRoomsAccountResponsesMapper = _mapperFactory
+                    .Get<IEnumerable<ConferenceForAdminResponse>, List<CourtRoomsAccountResponse>>();
                 var accountList = courtRoomsAccountResponsesMapper.Map(conferences);
 
                 return Ok(accountList);
@@ -61,13 +63,12 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
-        
+
         /// <summary>
         ///Get CSOS
         /// </summary>
         [HttpGet("csos", Name = "GetCSOs")]
         [ProducesResponseType(typeof(IList<JusticeUserResponse>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<IList<JusticeUserResponse>>> GetJusticeUsers() 
-            => Ok(await _bookingApiClient.GetJusticeUserListAsync());
+        public async Task<ActionResult<IList<JusticeUserResponse>>> GetJusticeUsers() =>Ok(await _bookingApiClient.GetJusticeUserListAsync());
     }
 }

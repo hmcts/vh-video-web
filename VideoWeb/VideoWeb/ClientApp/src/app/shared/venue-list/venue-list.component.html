@@ -2,7 +2,6 @@
   <div class="govuk-grid-column-full">
     <h1 class="govuk-heading-m">{{'venue-list.title' | translate}}</h1>
   </div>
-
     <div class="govuk-grid-column-three-quarters">
         <ng-select id="venue-allocation-list" class="selection-list"
                    [attr.aria-label]="'venue-list.allocation-list-label' | translate" [items]="venues" [multiple]="true"
@@ -14,10 +13,10 @@
             </ng-template>
         </ng-select>
     </div>
-    <div class="govuk-grid-column-three-quarters">
+    <div class="govuk-grid-column-full">
         <p>OR</p>
     </div>
-    <div class="govuk-grid-column-three-quarters" *ngIf="showVhoSpecificContent && vhoWorkAllocationFlag">
+    <div class="govuk-grid-column-three-quarters" *ngIf="showVhoSpecificContent">
         <ng-select id="cso-allocation-list" class="selection-list" [attr.aria-label]="'Cso list'" [items]="csos" [multiple]="true"
                    bindLabel="first_name" bindValue="id" [placeholder]="'Select CSOs'" [(ngModel)]="selectedCsos" [closeOnSelect]="false"
                    (change)="clearVenue()" [clearSearchOnAdd]="true" [selectOnTab]="true">
@@ -27,9 +26,11 @@
             </ng-template>
         </ng-select>
     </div>
-
   <div class="govuk-grid-column-one-quarter">
     <input type="button" [disabled]="!venuesSelected && !csosSelected" [value]="'venue-list.selection-button-text' | translate" (click)="goToHearingList()"
       id="select-venue-allocation-btn" class="govuk-button" />
   </div>
+    <div class="govuk-grid-column-full" *ngIf="errorMessage">
+        <p class="govuk-error-message">{{ errorMessage }}</p>
+    </div>
 </div>

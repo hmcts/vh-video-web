@@ -5,7 +5,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { CourtRoomsAccounts } from 'src/app/vh-officer/services/models/court-rooms-accounts';
 import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
-import {HearingVenueResponse, JusticeUserResponse} from '../../services/clients/api-client';
+import { HearingVenueResponse, JusticeUserResponse } from '../../services/clients/api-client';
 import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
 
 @Directive()
@@ -17,6 +17,7 @@ export abstract class VenueListComponentDirective implements OnInit {
     selectedVenues: string[];
     selectedCsos: string[];
     filterCourtRoomsAccounts: CourtRoomsAccounts[];
+    errorMessage: string | null;
 
     constructor(
         protected videoWebService: VideoWebService,
@@ -26,6 +27,7 @@ export abstract class VenueListComponentDirective implements OnInit {
     ) {
         this.selectedVenues = [];
         this.selectedCsos = [];
+        this.errorMessage = null;
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
         this.courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
     }
@@ -49,7 +51,7 @@ export abstract class VenueListComponentDirective implements OnInit {
         this.selectedCsos = [];
         this.judgeAllocationStorage.set(this.selectedVenues);
     }
-    clearVenue(){
+    clearVenue() {
         this.selectedVenues = [];
     }
 
