@@ -47,6 +47,13 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ClaimsPrincipal, UserProfileResponse>())
                 .Returns(_mocker.Create<ClaimsPrincipalToUserProfileResponseMapper>());
 
+            var parameters = new ParameterBuilder(_mocker)
+                .AddTypedParameters<ConferenceResponseMapper>()
+                .AddTypedParameters<ParticipantResponseMapper>()
+                .Build();
+            
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDetailsResponse, ConferenceResponse>()).Returns(_mocker.Create<ConferenceResponseMapper>(parameters));
+            
             var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.StaffMember).Build();
             _testConference = CreateValidConferenceResponse();
             var context = new ControllerContext

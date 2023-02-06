@@ -335,7 +335,7 @@ namespace VideoWeb.Controllers
 
         [HttpPost("{conferenceId}/joinConference")]
         [SwaggerOperation(OperationId = "StaffMemberJoinConference")]
-        [ProducesResponseType(typeof(ConferenceDetailsResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ConferenceResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [Authorize(AppRoles.StaffMember)]
@@ -370,7 +370,10 @@ namespace VideoWeb.Controllers
                 
                 var updatedConference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
               
-                return Ok(updatedConference);
+                var conferenceResponseVhoMapper = _mapperFactory.Get<ConferenceDetailsResponse, ConferenceResponse>();
+                var mappedUpdatedConference = conferenceResponseVhoMapper.Map(updatedConference);
+                
+                return Ok(mappedUpdatedConference);
             }
             catch (VideoApiException e)
             {

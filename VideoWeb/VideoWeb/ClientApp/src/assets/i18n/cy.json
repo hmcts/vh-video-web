@@ -1,5 +1,5 @@
 {
-    "privacy-policy": {
+  "privacy-policy": {
     "crest-image-alt": "Delwedd o arwyddlun logo GLlTEM",
     "heading": "Ein polisi preifatrwydd ar gyfer y gwasanaeth gwrandawiadau fideo ",
     "print-button": "Argraffu",
@@ -535,7 +535,10 @@
     "char-count": "Nifer o nodau",
     "maximum": "caniateir hyd at",
     "unable-send": "Methu anfon y neges",
-    "type-a-message": "Teipiwch neges"
+    "type-a-message": "Teipiwch neges",
+    "you-can-enter-up-to": "gallwch ddefnyddio hyd a",
+    "characters-in-this-field": "o nodau yn y blwch hwn",
+    "maximum-characters-entered": "Rydych wedi defnyddio’r nifer uchaf o nodau a ganiateir"
   },
   "start-private-consultation": {
     "invite": "Gwahodd eraill i gyfarfod preifat",
@@ -1184,7 +1187,7 @@
   },
   "video-hearing-link": "Dolen i’r gwrandawiad fideo",
   "participant-info-tooltip": {
-      "join-by-link-text": "Dolen ymuno drwy wrandawiad fideo"
+    "join-by-link-text": "Dolen ymuno drwy wrandawiad fideo"
   },
   "copy-quick-link": {
     "tooltip-copied": "Manylion y ddolen i ymuno â’r gwrandawiad  fideo wedi eu copïo i’r clipfwrdd",
@@ -1236,6 +1239,6 @@
     "body": "Cyn i chi fynd, sut oedd eich profiad o'r Gwasanaeth Gwrandawiadau Fideo?",
     "link-text": "Cwblhewch ein harolwg byr yma"
   },
-    "true": "Do",
-    "false": "Naddo"
+  "true": "Do",
+  "false": "Naddo"
 }
