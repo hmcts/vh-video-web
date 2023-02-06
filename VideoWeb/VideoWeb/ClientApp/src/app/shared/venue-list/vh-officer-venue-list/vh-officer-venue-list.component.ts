@@ -46,11 +46,10 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
         }
     }
 
-     getFiltersCourtRoomsAccounts(response: CourtRoomsAccountResponse[]) {
+    private getFiltersCourtRoomsAccounts(response: CourtRoomsAccountResponse[]) {
         const updateFilterSelection = (filterVenue: CourtRoomsAccounts) => {
             const courtroomAccount = this.filterCourtRoomsAccounts.find(x => x.venue === filterVenue.venue);
             if (courtroomAccount) {
-                ``
                 courtroomAccount.selected = filterVenue.selected;
                 courtroomAccount.updateRoomSelection(filterVenue.courtsRooms);
             }

@@ -16,7 +16,7 @@
     <div class="govuk-grid-column-full">
         <p>OR</p>
     </div>
-    <div class="govuk-grid-column-three-quarters" *ngIf="showVhoSpecificContent">
+    <div class="govuk-grid-column-three-quarters" *ngIf="showVhoSpecificContent" id="cso-list">
         <ng-select id="cso-allocation-list" class="selection-list" [attr.aria-label]="'Cso list'" [items]="csos" [multiple]="true"
                    bindLabel="first_name" bindValue="id" [placeholder]="'Select CSOs'" [(ngModel)]="selectedCsos" [closeOnSelect]="false"
                    (change)="clearVenue()" [clearSearchOnAdd]="true" [selectOnTab]="true">

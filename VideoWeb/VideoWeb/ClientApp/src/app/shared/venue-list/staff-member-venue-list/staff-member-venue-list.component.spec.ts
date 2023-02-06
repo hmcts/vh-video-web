@@ -10,6 +10,9 @@ import { CourtRoomsAccounts } from '../../../vh-officer/services/models/court-ro
 import { VhoStorageKeys } from '../../../vh-officer/services/models/session-keys';
 import { pageUrls } from '../../page-url.constants';
 import { StaffMemberVenueListComponent } from './staff-member-venue-list.component';
+import { TestBed } from '@angular/core/testing';
+import { VhOfficerVenueListComponent } from '../vh-officer-venue-list/vh-officer-venue-list.component';
+import { By } from '@angular/platform-browser';
 
 describe('StaffMemerVenueListComponent', () => {
     let component: StaffMemberVenueListComponent;
@@ -61,5 +64,21 @@ describe('StaffMemerVenueListComponent', () => {
     it('should navigate to staff member hearing list', () => {
         component.goToHearingList();
         expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.StaffMemberHearingList);
+    });
+
+    describe('component rendering', () => {
+        it('Should not show cso list, when implemented by staff-member-venue-list', () => {
+            TestBed.configureTestingModule({
+                declarations: [VhOfficerVenueListComponent],
+                providers: [
+                    { provide: VideoWebService, useValue: videoWebServiceSpy },
+                    { provide: Router, useValue: router },
+                    { provide: VhoQueryService, useValue: vhoQueryService },
+                    { provide: Logger, useValue: logger }
+                ]
+            });
+            const fixture = TestBed.createComponent(VhOfficerVenueListComponent);
+            expect(fixture.debugElement.query(By.css('#cso-list'))).toBeFalsy();
+        });
     });
 });

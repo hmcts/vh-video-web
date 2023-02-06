@@ -1,4 +1,4 @@
-import { fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -11,6 +11,7 @@ import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.s
 import { CourtRoomsAccounts } from '../../../vh-officer/services/models/court-rooms-accounts';
 import { VhoStorageKeys } from '../../../vh-officer/services/models/session-keys';
 import { VhOfficerVenueListComponent } from './vh-officer-venue-list.component';
+import { By } from '@angular/platform-browser';
 
 describe('VHOfficerVenueListComponent', () => {
     let component: VhOfficerVenueListComponent;
@@ -48,7 +49,7 @@ describe('VHOfficerVenueListComponent', () => {
     venueAccounts.push(venueAccounts2);
 
     beforeAll(() => {
-        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getVenues']);
+        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getVenues', 'getVenuesForAllocatedCSOs']);
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
         vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getCourtRoomsAccounts']);
     });
@@ -56,6 +57,7 @@ describe('VHOfficerVenueListComponent', () => {
     beforeEach(() => {
         component = new VhOfficerVenueListComponent(videoWebServiceSpy, router, vhoQueryService, logger);
         videoWebServiceSpy.getVenues.and.returnValue(of(venueNames));
+        videoWebServiceSpy.getVenuesForAllocatedCSOs.and.returnValue(of(venueNames.map(e => e.name)));
         vhoQueryService.getCourtRoomsAccounts.and.returnValue(Promise.resolve(courtAccounts));
         venueSessionStorage.clear();
     });
@@ -69,9 +71,35 @@ describe('VHOfficerVenueListComponent', () => {
         expect(result[0]).toBe(venueNames[0].name);
     });
 
-    it('should navigate to admin hearing list', ( async () => {
-        await component.goToHearingList();
+    it('should navigate to admin hearing list, with venues selected', fakeAsync(() => {
+        component.selectedVenues = selectedJudgeNames;
+        component.selectedCsos = [];
+        component.goToHearingList();
+        tick();
         expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.AdminHearingList);
+    }));
+
+    it('should navigate to admin hearing list, with allocated csos selected', fakeAsync(() => {
+        const csos = ['test-user-id1', 'test-user-id2'];
+        component.selectedVenues = [];
+        component.selectedCsos = csos;
+        component.goToHearingList();
+        tick();
+        expect(videoWebServiceSpy.getVenuesForAllocatedCSOs).toHaveBeenCalledWith(csos);
+        expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.AdminHearingList);
+    }));
+
+    it('should attempt to navigate to admin hearing list but log and display error when no venues returned', fakeAsync(() => {
+        const csos = ['test-user-id1', 'test-user-id2'];
+        component.selectedVenues = [];
+        component.selectedCsos = csos;
+        const loggerSpy = spyOn(logger, 'warn');
+        videoWebServiceSpy.getVenuesForAllocatedCSOs.and.returnValue(of([]));
+        component.goToHearingList();
+        tick();
+        expect(videoWebServiceSpy.getVenuesForAllocatedCSOs).toHaveBeenCalledWith(csos);
+        expect(loggerSpy).toHaveBeenCalled();
+        expect(component.errorMessage).toBe('Failed to find venues');
     }));
 
     it('should  create filter records with all options are selected and store in storage', fakeAsync(() => {
@@ -124,4 +152,20 @@ describe('VHOfficerVenueListComponent', () => {
         tick();
         expect(logger.warn).toHaveBeenCalled();
     }));
+
+    describe('component rendering', () => {
+        it('Should show cso list, when implemented by vh-officer-venue-list', () => {
+            TestBed.configureTestingModule({
+                declarations: [VhOfficerVenueListComponent],
+                providers: [
+                    { provide: VideoWebService, useValue: videoWebServiceSpy },
+                    { provide: Router, useValue: router },
+                    { provide: VhoQueryService, useValue: vhoQueryService },
+                    { provide: Logger, useValue: logger }
+                ]
+            });
+            const fixture = TestBed.createComponent(VhOfficerVenueListComponent);
+            expect(fixture.debugElement.query(By.css('#cso-list'))).toBeTruthy();
+        });
+    });
 });
