@@ -7,6 +7,7 @@ import { CourtRoomsAccounts } from 'src/app/vh-officer/services/models/court-roo
 import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 import { pageUrls } from '../../page-url.constants';
 import { VenueListComponentDirective } from '../venue-list.component';
+import { LaunchDarklyService } from '../../../services/launch-darkly.service';
 
 @Component({
     selector: 'app-vh-officer-venue-list',
@@ -18,9 +19,10 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
         protected videoWebService: VideoWebService,
         protected router: Router,
         protected vhoQueryService: VhoQueryService,
-        protected logger: Logger
+        protected logger: Logger,
+        protected ldService: LaunchDarklyService
     ) {
-        super(videoWebService, router, vhoQueryService, logger);
+        super(videoWebService, router, vhoQueryService, logger, ldService);
     }
 
     ngOnInit() {

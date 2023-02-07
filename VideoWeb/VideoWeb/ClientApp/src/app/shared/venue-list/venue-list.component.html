@@ -13,18 +13,20 @@
             </ng-template>
         </ng-select>
     </div>
-    <div class="govuk-grid-column-full">
-        <p>OR</p>
-    </div>
-    <div class="govuk-grid-column-three-quarters" *ngIf="showVhoSpecificContent" id="cso-list">
-        <ng-select id="cso-allocation-list" class="selection-list" [attr.aria-label]="'Cso list'" [items]="csos" [multiple]="true"
-                   bindLabel="first_name" bindValue="id" [placeholder]="'Select CSOs'" [(ngModel)]="selectedCsos" [closeOnSelect]="false"
-                   (change)="clearVenue()" [clearSearchOnAdd]="true" [selectOnTab]="true">
-            <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
-                <input id="cso-{{ index }}" type="checkbox" [ngModel]="item$.selected" [checked]="item$.selected" [attr.aria-label]="'CSO '+ item.first_name" />
-                {{ item.full_name }}
-            </ng-template>
-        </ng-select>
+    <div id="cso-list" *ngIf="vhoWorkAllocationFeatureFlag && showVhoSpecificContent">
+        <div class="govuk-grid-column-full">
+            <p>OR</p>
+        </div>
+        <div class="govuk-grid-column-three-quarters">
+            <ng-select id="cso-allocation-list" class="selection-list" [attr.aria-label]="'Cso list'" [items]="csos" [multiple]="true"
+                       bindLabel="first_name" bindValue="id" [placeholder]="'Select CSOs'" [(ngModel)]="selectedCsos" [closeOnSelect]="false"
+                       (change)="clearVenue()" [clearSearchOnAdd]="true" [selectOnTab]="true">
+                <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                    <input id="cso-{{ index }}" type="checkbox" [ngModel]="item$.selected" [checked]="item$.selected" [attr.aria-label]="'CSO '+ item.first_name" />
+                    {{ item.full_name }}
+                </ng-template>
+            </ng-select>
+        </div>
     </div>
   <div class="govuk-grid-column-one-quarter">
     <input type="button" [disabled]="!venuesSelected && !csosSelected" [value]="'venue-list.selection-button-text' | translate" (click)="goToHearingList()"

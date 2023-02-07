@@ -1,5 +1,5 @@
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
+import { of, ReplaySubject } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { CourtRoomsAccountResponse, HearingVenueResponse } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -11,8 +11,9 @@ import { VhoStorageKeys } from '../../../vh-officer/services/models/session-keys
 import { pageUrls } from '../../page-url.constants';
 import { StaffMemberVenueListComponent } from './staff-member-venue-list.component';
 import { TestBed } from '@angular/core/testing';
-import { VhOfficerVenueListComponent } from '../vh-officer-venue-list/vh-officer-venue-list.component';
 import { By } from '@angular/platform-browser';
+import { LaunchDarklyService } from '../../../services/launch-darkly.service';
+import { TranslatePipeMock } from '../../../testing/mocks/mock-translation-pipe';
 
 describe('StaffMemerVenueListComponent', () => {
     let component: StaffMemberVenueListComponent;
@@ -20,6 +21,7 @@ describe('StaffMemerVenueListComponent', () => {
     let router: jasmine.SpyObj<Router>;
     let vhoQueryService: jasmine.SpyObj<VhoQueryService>;
     const logger: Logger = new MockLogger();
+    let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
 
     const venueSessionStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
 
@@ -52,12 +54,15 @@ describe('StaffMemerVenueListComponent', () => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getVenues']);
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
         vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getCourtRoomsAccounts']);
+        launchDarklyServiceSpy = jasmine.createSpyObj('LaunchDarklyService', ['flagChange']);
     });
 
     beforeEach(() => {
-        component = new StaffMemberVenueListComponent(videoWebServiceSpy, router, vhoQueryService, logger);
+        component = new StaffMemberVenueListComponent(videoWebServiceSpy, router, vhoQueryService, logger, launchDarklyServiceSpy);
         videoWebServiceSpy.getVenues.and.returnValue(of(venueNames));
         vhoQueryService.getCourtRoomsAccounts.and.returnValue(Promise.resolve(courtAccounts));
+        launchDarklyServiceSpy.flagChange = new ReplaySubject();
+        launchDarklyServiceSpy.flagChange.next({ 'vho-work-allocation': true });
         venueSessionStorage.clear();
     });
 
@@ -67,17 +72,18 @@ describe('StaffMemerVenueListComponent', () => {
     });
 
     describe('component rendering', () => {
-        it('Should not show cso list, when implemented by staff-member-venue-list', () => {
+        it('Should not show cso list, when implemented by staff-member-venue-list and feature flag on', () => {
             TestBed.configureTestingModule({
-                declarations: [VhOfficerVenueListComponent],
+                declarations: [StaffMemberVenueListComponent, TranslatePipeMock],
                 providers: [
                     { provide: VideoWebService, useValue: videoWebServiceSpy },
                     { provide: Router, useValue: router },
                     { provide: VhoQueryService, useValue: vhoQueryService },
-                    { provide: Logger, useValue: logger }
+                    { provide: Logger, useValue: logger },
+                    { provide: LaunchDarklyService, useValue: launchDarklyServiceSpy }
                 ]
             });
-            const fixture = TestBed.createComponent(VhOfficerVenueListComponent);
+            const fixture = TestBed.createComponent(StaffMemberVenueListComponent);
             expect(fixture.debugElement.query(By.css('#cso-list'))).toBeFalsy();
         });
     });

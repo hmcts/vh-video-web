@@ -7,6 +7,7 @@ import { CourtRoomsAccounts } from 'src/app/vh-officer/services/models/court-roo
 import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 import { HearingVenueResponse, JusticeUserResponse } from '../../services/clients/api-client';
 import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
+import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 
 @Directive()
 export abstract class VenueListComponentDirective implements OnInit {
@@ -18,12 +19,13 @@ export abstract class VenueListComponentDirective implements OnInit {
     selectedCsos: string[];
     filterCourtRoomsAccounts: CourtRoomsAccounts[];
     errorMessage: string | null;
-
+    vhoWorkAllocationFeatureFlag: boolean;
     constructor(
         protected videoWebService: VideoWebService,
         protected router: Router,
         protected vhoQueryService: VhoQueryService,
-        protected logger: Logger
+        protected logger: Logger,
+        protected ldService: LaunchDarklyService
     ) {
         this.selectedVenues = [];
         this.selectedCsos = [];
@@ -33,12 +35,23 @@ export abstract class VenueListComponentDirective implements OnInit {
     }
 
     ngOnInit() {
+        this.setupSubscribers();
+    }
+
+    private setupSubscribers() {
+        this.ldService.flagChange.subscribe(value => {
+            if (value) {
+                this.vhoWorkAllocationFeatureFlag = value[FEATURE_FLAGS.vhoWorkAllocation];
+            }
+        });
+
         this.videoWebService.getVenues().subscribe(venues => {
             this.venues = venues;
             this.selectedVenues = this.judgeAllocationStorage.get();
         });
     }
-
+    abstract goToHearingList();
+    abstract get showVhoSpecificContent(): boolean;
     get venuesSelected(): boolean {
         return this.selectedVenues && this.selectedVenues.length > 0;
     }
@@ -54,8 +67,4 @@ export abstract class VenueListComponentDirective implements OnInit {
     clearVenue() {
         this.selectedVenues = [];
     }
-
-    abstract goToHearingList();
-
-    abstract get showVhoSpecificContent(): boolean;
 }

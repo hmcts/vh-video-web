@@ -1,8 +1,8 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
+import { of, ReplaySubject } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { CourtRoomsAccountResponse, HearingVenueResponse } from 'src/app/services/clients/api-client';
+import { CourtRoomsAccountResponse, HearingVenueResponse, JusticeUserResponse } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -12,6 +12,8 @@ import { CourtRoomsAccounts } from '../../../vh-officer/services/models/court-ro
 import { VhoStorageKeys } from '../../../vh-officer/services/models/session-keys';
 import { VhOfficerVenueListComponent } from './vh-officer-venue-list.component';
 import { By } from '@angular/platform-browser';
+import { LaunchDarklyService } from '../../../services/launch-darkly.service';
+import { TranslatePipeMock } from '../../../testing/mocks/mock-translation-pipe';
 
 describe('VHOfficerVenueListComponent', () => {
     let component: VhOfficerVenueListComponent;
@@ -19,6 +21,7 @@ describe('VHOfficerVenueListComponent', () => {
     let router: jasmine.SpyObj<Router>;
     let vhoQueryService: jasmine.SpyObj<VhoQueryService>;
     const logger: Logger = new MockLogger();
+    let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
 
     const venueSessionStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
     const roomSessionStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
@@ -48,18 +51,41 @@ describe('VHOfficerVenueListComponent', () => {
     venueAccounts.push(venueAccounts1);
     venueAccounts.push(venueAccounts2);
 
+    const cso1 = new JusticeUserResponse({ username: 'test-user1@hearings.reform.hmcts.net' });
+    const cso2 = new JusticeUserResponse({ username: 'test-user2@hearings.reform.hmcts.net' });
+    const csos: JusticeUserResponse[] = [];
+    csos.push(cso1);
+    csos.push(cso2);
+
+    const selectedCsos = ['test-user-id1', 'test-user-id2'];
+
     beforeAll(() => {
-        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getVenues', 'getVenuesForAllocatedCSOs']);
+        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
+            'getVenues',
+            'getVenuesForAllocatedCSOs',
+            'getCSOs'
+        ]);
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
         vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getCourtRoomsAccounts']);
+        launchDarklyServiceSpy = jasmine.createSpyObj('LaunchDarklyService', ['flagChange']);
     });
 
     beforeEach(() => {
-        component = new VhOfficerVenueListComponent(videoWebServiceSpy, router, vhoQueryService, logger);
+        component = new VhOfficerVenueListComponent(videoWebServiceSpy, router, vhoQueryService, logger, launchDarklyServiceSpy);
         videoWebServiceSpy.getVenues.and.returnValue(of(venueNames));
         videoWebServiceSpy.getVenuesForAllocatedCSOs.and.returnValue(of(venueNames.map(e => e.name)));
+        videoWebServiceSpy.getCSOs.and.returnValue(of(csos));
         vhoQueryService.getCourtRoomsAccounts.and.returnValue(Promise.resolve(courtAccounts));
+        launchDarklyServiceSpy.flagChange = new ReplaySubject();
+        launchDarklyServiceSpy.flagChange.next({ 'vho-work-allocation': true });
         venueSessionStorage.clear();
+    });
+
+    it('ngOnit should get csos and populate csos property for multi-select list', () => {
+        component.csos = [];
+        component.ngOnInit();
+        expect(videoWebServiceSpy.getCSOs).toHaveBeenCalled();
+        expect(component.csos).toEqual(csos);
     });
 
     it('should update storage with selection', () => {
@@ -80,24 +106,22 @@ describe('VHOfficerVenueListComponent', () => {
     }));
 
     it('should navigate to admin hearing list, with allocated csos selected', fakeAsync(() => {
-        const csos = ['test-user-id1', 'test-user-id2'];
         component.selectedVenues = [];
-        component.selectedCsos = csos;
+        component.selectedCsos = selectedCsos;
         component.goToHearingList();
         tick();
-        expect(videoWebServiceSpy.getVenuesForAllocatedCSOs).toHaveBeenCalledWith(csos);
+        expect(videoWebServiceSpy.getVenuesForAllocatedCSOs).toHaveBeenCalledWith(selectedCsos);
         expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.AdminHearingList);
     }));
 
     it('should attempt to navigate to admin hearing list but log and display error when no venues returned', fakeAsync(() => {
-        const csos = ['test-user-id1', 'test-user-id2'];
         component.selectedVenues = [];
-        component.selectedCsos = csos;
+        component.selectedCsos = selectedCsos;
         const loggerSpy = spyOn(logger, 'warn');
         videoWebServiceSpy.getVenuesForAllocatedCSOs.and.returnValue(of([]));
         component.goToHearingList();
         tick();
-        expect(videoWebServiceSpy.getVenuesForAllocatedCSOs).toHaveBeenCalledWith(csos);
+        expect(videoWebServiceSpy.getVenuesForAllocatedCSOs).toHaveBeenCalledWith(selectedCsos);
         expect(loggerSpy).toHaveBeenCalled();
         expect(component.errorMessage).toBe('Failed to find venues');
     }));
@@ -145,6 +169,7 @@ describe('VHOfficerVenueListComponent', () => {
         expect(result[1].courtsRooms[1].selected).toBeTrue();
         roomSessionStorage.set(currentStorage);
     }));
+
     it('should not get court rooms accounts if no venues selected', fakeAsync(() => {
         component.selectedVenues = null;
         spyOn(logger, 'warn');
@@ -154,18 +179,32 @@ describe('VHOfficerVenueListComponent', () => {
     }));
 
     describe('component rendering', () => {
-        it('Should show cso list, when implemented by vh-officer-venue-list', () => {
+        let fixture: ComponentFixture<VhOfficerVenueListComponent>;
+        let fixtureComponent: VhOfficerVenueListComponent;
+        beforeEach(() => {
             TestBed.configureTestingModule({
-                declarations: [VhOfficerVenueListComponent],
+                declarations: [VhOfficerVenueListComponent, TranslatePipeMock],
                 providers: [
                     { provide: VideoWebService, useValue: videoWebServiceSpy },
                     { provide: Router, useValue: router },
                     { provide: VhoQueryService, useValue: vhoQueryService },
-                    { provide: Logger, useValue: logger }
+                    { provide: Logger, useValue: logger },
+                    { provide: LaunchDarklyService, useValue: launchDarklyServiceSpy }
                 ]
             });
-            const fixture = TestBed.createComponent(VhOfficerVenueListComponent);
+            fixture = TestBed.createComponent(VhOfficerVenueListComponent);
+            fixtureComponent = fixture.componentInstance;
+        });
+
+        it('Should show cso list, when implemented by vh-officer-venue-list', () => {
+            fixture.detectChanges();
             expect(fixture.debugElement.query(By.css('#cso-list'))).toBeTruthy();
+        });
+
+        it('Should not show cso list, when implemented by vh-officer-venue-list and feature flag off', () => {
+            launchDarklyServiceSpy.flagChange.next({ 'vho-work-allocation': false });
+            fixture.detectChanges();
+            expect(fixture.debugElement.query(By.css('#cso-list'))).toBeFalsy();
         });
     });
 });
