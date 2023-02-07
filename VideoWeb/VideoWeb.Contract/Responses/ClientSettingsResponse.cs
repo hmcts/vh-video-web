@@ -74,5 +74,10 @@ namespace VideoWeb.Contract.Responses
         /// Blur radius in pixels
         /// </summary>
         public int BlurRadius { get; set; }
+
+        /// <summary>
+        /// Launch Darkly Client for feature toggling
+        /// </summary>
+        public string LaunchDarklyClientId { get; set; }
     }
 }
