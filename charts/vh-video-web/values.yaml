@@ -45,6 +45,7 @@ java:
         - vhservices--emailreformdomain
         - vhservices--internaleventsecret
         - ejudad--clientid
+        - ejudad--tenantid
         - name: launchdarkly-client-id
           alias: VHSERVICES--LAUNCHDARKLYCLIENTID
         - name: azuread--identifieruri
