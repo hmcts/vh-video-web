@@ -2,8 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { MockComponent, MockPipe } from 'ng-mocks';
 import {
-    EndpointResponse,
-    EndpointState,
+    VideoEndpointResponse,
+    EndpointStatus,
     ParticipantResponse,
     ParticipantStatus,
     RoomSummaryResponse
@@ -16,7 +16,7 @@ describe('PrivateConsultationParticipantStatusComponent', () => {
     let component: PrivateConsultationParticipantStatusComponent;
     let fixture: ComponentFixture<PrivateConsultationParticipantStatusComponent>;
     let testParticipant: ParticipantResponse;
-    let testEndpoint: EndpointResponse;
+    let testEndpoint: VideoEndpointResponse;
     const availableStatusStrings = ['Available', 'Connected', 'InConsultation'];
 
     beforeEach(async () => {
@@ -51,12 +51,12 @@ describe('PrivateConsultationParticipantStatusComponent', () => {
         });
 
         describe('when entity is a endpoint', () => {
-            const allStatuses = Object.values(EndpointState);
+            const allStatuses = Object.values(EndpointStatus);
 
             allStatuses.forEach(status => {
                 const shouldBeAvailable = availableStatusStrings.includes(status);
                 it(`should return ${shouldBeAvailable} when status is ${status}`, () => {
-                    testEndpoint = new EndpointResponse();
+                    testEndpoint = new VideoEndpointResponse();
                     testEndpoint.status = status;
                     component.entity = testEndpoint;
                     expect(component.isAvailable()).toBe(shouldBeAvailable);

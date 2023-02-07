@@ -1,6 +1,5 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import * as signalR from '@microsoft/signalr';
-import { IHttpConnectionOptions } from '@microsoft/signalr';
 import { BehaviorSubject, Observable, of, ReplaySubject, Subject } from 'rxjs';
 import { SecurityServiceProvider } from '../security/authentication/security-provider.service';
 import { ISecurityService } from '../security/authentication/security-service.interface';
