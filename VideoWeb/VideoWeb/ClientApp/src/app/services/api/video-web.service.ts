@@ -23,7 +23,8 @@ import {
     LoggedParticipantResponse,
     AllowedEndpointResponse,
     HearingVenueResponse,
-    StaffMemberJoinConferenceRequest
+    StaffMemberJoinConferenceRequest,
+    JusticeUserResponse
 } from '../clients/api-client';
 import { ConferenceLite } from '../models/conference-lite';
 import { SessionStorage } from '../session-storage';
@@ -97,6 +98,14 @@ export class VideoWebService implements IVideoWebApiService {
 
     getVenues(): Observable<HearingVenueResponse[]> {
         return this.apiClient.getVenues();
+    }
+
+    getCSOs(): Observable<JusticeUserResponse[]> {
+        return this.apiClient.getCSOs();
+    }
+
+    getVenuesForAllocatedCSOs(csoIds): Observable<string[]> {
+        return this.apiClient.getVenuesByAllocatedCso(csoIds);
     }
 
     staffMemberJoinConference(conferenceId: string, request: StaffMemberJoinConferenceRequest): Promise<ConferenceForHostResponse> {

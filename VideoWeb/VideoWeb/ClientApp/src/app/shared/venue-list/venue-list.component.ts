@@ -5,45 +5,66 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { CourtRoomsAccounts } from 'src/app/vh-officer/services/models/court-rooms-accounts';
 import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
-import { HearingVenueResponse } from '../../services/clients/api-client';
+import { HearingVenueResponse, JusticeUserResponse } from '../../services/clients/api-client';
 import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
+import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 
 @Directive()
 export abstract class VenueListComponentDirective implements OnInit {
     protected readonly judgeAllocationStorage: SessionStorage<string[]>;
     protected readonly courtAccountsAllocationStorage: SessionStorage<CourtRoomsAccounts[]>;
     venues: HearingVenueResponse[];
+    csos: JusticeUserResponse[];
     selectedVenues: string[];
-    venueListLoading: boolean;
+    selectedCsos: string[];
     filterCourtRoomsAccounts: CourtRoomsAccounts[];
-
+    errorMessage: string | null;
+    vhoWorkAllocationFeatureFlag: boolean;
     constructor(
         protected videoWebService: VideoWebService,
         protected router: Router,
         protected vhoQueryService: VhoQueryService,
-        protected logger: Logger
+        protected logger: Logger,
+        protected ldService: LaunchDarklyService
     ) {
         this.selectedVenues = [];
+        this.selectedCsos = [];
+        this.errorMessage = null;
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
         this.courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
     }
 
     ngOnInit() {
-        this.venueListLoading = false;
+        this.setupSubscribers();
+    }
+
+    private setupSubscribers() {
+        this.ldService.flagChange.subscribe(value => {
+            if (value) {
+                this.vhoWorkAllocationFeatureFlag = value[FEATURE_FLAGS.vhoWorkAllocation];
+            }
+        });
+
         this.videoWebService.getVenues().subscribe(venues => {
             this.venues = venues;
             this.selectedVenues = this.judgeAllocationStorage.get();
-            this.venueListLoading = false;
         });
     }
-
+    abstract goToHearingList();
+    abstract get showVhoSpecificContent(): boolean;
     get venuesSelected(): boolean {
         return this.selectedVenues && this.selectedVenues.length > 0;
     }
 
-    updateSelection() {
-        this.judgeAllocationStorage.set(this.selectedVenues);
+    get csosSelected(): boolean {
+        return this.selectedCsos && this.selectedCsos.length > 0;
     }
 
-    abstract goToHearingList();
+    updateVenueSelection() {
+        this.selectedCsos = [];
+        this.judgeAllocationStorage.set(this.selectedVenues);
+    }
+    clearVenue() {
+        this.selectedVenues = [];
+    }
 }

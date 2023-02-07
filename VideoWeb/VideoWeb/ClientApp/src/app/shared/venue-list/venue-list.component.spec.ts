@@ -1,5 +1,5 @@
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
+import { of, ReplaySubject } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { CourtRoomsAccountResponse, HearingVenueResponse } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -9,9 +9,13 @@ import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.s
 import { CourtRoomsAccounts } from '../../vh-officer/services/models/court-rooms-accounts';
 import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
 import { VenueListComponentDirective } from './venue-list.component';
+import { LaunchDarklyService } from '../../services/launch-darkly.service';
 
 class MockedVenueListComponent extends VenueListComponentDirective {
     goToHearingList() {}
+    get showVhoSpecificContent() {
+        return true;
+    }
 }
 
 describe('VenueListComponent', () => {
@@ -19,6 +23,7 @@ describe('VenueListComponent', () => {
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     let router: jasmine.SpyObj<Router>;
     let vhoQueryService: jasmine.SpyObj<VhoQueryService>;
+    let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
     const logger: Logger = new MockLogger();
 
     const venueSessionStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
@@ -52,12 +57,15 @@ describe('VenueListComponent', () => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getVenues']);
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
         vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getCourtRoomsAccounts']);
+        launchDarklyServiceSpy = jasmine.createSpyObj('LaunchDarklyService', ['flagChange']);
     });
 
     beforeEach(() => {
-        component = new MockedVenueListComponent(videoWebServiceSpy, router, vhoQueryService, logger);
+        component = new MockedVenueListComponent(videoWebServiceSpy, router, vhoQueryService, logger, launchDarklyServiceSpy);
         videoWebServiceSpy.getVenues.and.returnValue(of(venueNames));
         vhoQueryService.getCourtRoomsAccounts.and.returnValue(Promise.resolve(courtAccounts));
+        launchDarklyServiceSpy.flagChange = new ReplaySubject();
+        launchDarklyServiceSpy.flagChange.next({ 'vho-work-allocation': true });
         venueSessionStorage.clear();
     });
 
