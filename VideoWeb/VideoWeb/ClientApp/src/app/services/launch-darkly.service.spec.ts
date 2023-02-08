@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ConfigService } from './api/config.service';
-
+import { Logger } from 'src/app/services/logging/logger-base';
 import { LaunchDarklyService } from './launch-darkly.service';
 
 describe('LaunchDarklyService', () => {
@@ -10,7 +10,7 @@ describe('LaunchDarklyService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{ provide: ConfigService, useValue: configServiceSpy }]
+            providers: [{ provide: ConfigService, useValue: configServiceSpy }, Logger]
         });
         service = TestBed.inject(LaunchDarklyService);
     });

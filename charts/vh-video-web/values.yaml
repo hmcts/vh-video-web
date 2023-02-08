@@ -21,6 +21,8 @@ java:
         - azuread--vhvideowebclientid
         - connectionstrings--signalr
         - connectionstrings--rediscache
+        - name: launchdarkly-client-id
+          alias: VHSERVICES--LAUNCHDARKLYCLIENTID
     vh-video-web:
       excludeEnvironmentSuffix: false
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
@@ -46,8 +48,6 @@ java:
         - vhservices--internaleventsecret
         - ejudad--clientid
         - ejudad--tenantid
-        - name: launchdarkly-client-id
-          alias: VHSERVICES--LAUNCHDARKLYCLIENTID
         - name: azuread--identifieruri
           alias: azuread--resourceid
     vh-bookings-api:

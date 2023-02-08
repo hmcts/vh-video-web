@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import * as LDClient from 'launchdarkly-js-client-sdk';
 import { ReplaySubject } from 'rxjs';
 import { ConfigService } from './api/config.service';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 export const FEATURE_FLAGS = {
     vhoWorkAllocation: 'vho-work-allocation'
@@ -15,7 +16,7 @@ export class LaunchDarklyService {
     ldClient: LDClient.LDClient;
     flagChange = new ReplaySubject();
 
-    constructor(private configService: ConfigService) {
+    constructor(private configService: ConfigService, private logger: Logger) {
         this.initialize();
 
         this.onReady();
@@ -42,13 +43,13 @@ export class LaunchDarklyService {
                 this.flags[flag] = flags[flag].current;
             }
             this.flagChange.next(this.flags);
-            console.log('Flags updated', this.flags);
+            this.logger.info('Flags updated', this.flags);
         });
     }
 
     private setAllFlags(): void {
         this.flags = this.ldClient.allFlags();
         this.flagChange.next(this.flags);
-        console.log('Flags initialized');
+        this.logger.info('Flags initialized');
     }
 }
