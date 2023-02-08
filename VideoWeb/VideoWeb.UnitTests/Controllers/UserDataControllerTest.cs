@@ -6,6 +6,8 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using BookingsApi.Client;
+using BookingsApi.Contract.Responses;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
@@ -76,6 +78,23 @@ namespace VideoWeb.UnitTests.Controllers
             typedResult.Should().NotBeNull();
             typedResult.StatusCode.Should().Be(apiException.StatusCode);
         }
+
+        [Test]
+        public async Task GetVenuesByCso_should_return_list_of_venue_names()
+        {
+            var csos = new List<JusticeUserResponse>
+            {
+                Mock.Of<JusticeUserResponse>(),
+                Mock.Of<JusticeUserResponse>(),
+                Mock.Of<JusticeUserResponse>(),
+            };
+            _mocker.Mock<IBookingsApiClient>().Setup(x => x.GetJusticeUserListAsync()).ReturnsAsync(csos);
+            var result = await _sut.GetJusticeUsers();
+            var objectResult = result.Result as OkObjectResult;
+            objectResult.Should().NotBeNull();
+            objectResult?.StatusCode.Should().Be(200);
+            objectResult?.Value.Should().BeEquivalentTo(csos);
+        }     
     }
 }
 

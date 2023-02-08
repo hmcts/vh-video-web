@@ -7,6 +7,7 @@ import { CourtRoomsAccounts } from 'src/app/vh-officer/services/models/court-roo
 import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 import { pageUrls } from '../../page-url.constants';
 import { VenueListComponentDirective } from '../venue-list.component';
+import { LaunchDarklyService } from '../../../services/launch-darkly.service';
 
 @Component({
     selector: 'app-vh-officer-venue-list',
@@ -18,38 +19,53 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
         protected videoWebService: VideoWebService,
         protected router: Router,
         protected vhoQueryService: VhoQueryService,
-        protected logger: Logger
+        protected logger: Logger,
+        protected ldService: LaunchDarklyService
     ) {
-        super(videoWebService, router, vhoQueryService, logger);
+        super(videoWebService, router, vhoQueryService, logger, ldService);
     }
 
-    goToHearingList() {
-        this.updateSelection();
-        this.vhoQueryService.getCourtRoomsAccounts(this.selectedVenues).then(response => {
-            this.getFiltersCourtRoomsAccounts(response);
-            this.router.navigateByUrl(pageUrls.AdminHearingList);
+    ngOnInit() {
+        super.ngOnInit();
+        this.videoWebService.getCSOs().subscribe(value => {
+            this.csos = value;
         });
     }
 
-    getFiltersCourtRoomsAccounts(response: CourtRoomsAccountResponse[]) {
+    async goToHearingList() {
+        this.errorMessage = null;
+        if (this.csosSelected) {
+            this.selectedVenues = await this.videoWebService.getVenuesForAllocatedCSOs(this.selectedCsos).toPromise();
+        }
+        this.updateVenueSelection();
+        const courtRoomAccounts = await this.vhoQueryService.getCourtRoomsAccounts(this.selectedVenues);
         if (this.venuesSelected) {
-            this.filterCourtRoomsAccounts = response.map(x => new CourtRoomsAccounts(x.first_name, x.last_names, true));
-            const previousFilter = this.courtAccountsAllocationStorage.get();
-            if (previousFilter) {
-                previousFilter.forEach(x => this.updateFilterSelection(x));
-            }
-            this.courtAccountsAllocationStorage.set(this.filterCourtRoomsAccounts);
-            this.logger.info('[VenueList] - Venue selection is changed');
+            this.getFiltersCourtRoomsAccounts(courtRoomAccounts);
+            await this.router.navigateByUrl(pageUrls.AdminHearingList);
         } else {
             this.logger.warn('[VenueList] - No venues selected');
+            this.errorMessage = 'Failed to find venues';
         }
     }
 
-    updateFilterSelection(filterVenue: CourtRoomsAccounts) {
-        const courtroomAccount = this.filterCourtRoomsAccounts.find(x => x.venue === filterVenue.venue);
-        if (courtroomAccount) {
-            courtroomAccount.selected = filterVenue.selected;
-            courtroomAccount.updateRoomSelection(filterVenue.courtsRooms);
+    private getFiltersCourtRoomsAccounts(response: CourtRoomsAccountResponse[]) {
+        const updateFilterSelection = (filterVenue: CourtRoomsAccounts) => {
+            const courtroomAccount = this.filterCourtRoomsAccounts.find(x => x.venue === filterVenue.venue);
+            if (courtroomAccount) {
+                courtroomAccount.selected = filterVenue.selected;
+                courtroomAccount.updateRoomSelection(filterVenue.courtsRooms);
+            }
+        };
+        this.filterCourtRoomsAccounts = response.map(x => new CourtRoomsAccounts(x.first_name, x.last_names, true));
+        const previousFilter = this.courtAccountsAllocationStorage.get();
+        if (previousFilter) {
+            previousFilter.forEach(x => updateFilterSelection(x));
         }
+        this.courtAccountsAllocationStorage.set(this.filterCourtRoomsAccounts);
+        this.logger.info('[VenueList] - Venue selection is changed');
+    }
+
+    get showVhoSpecificContent(): boolean {
+        return true;
     }
 }
