@@ -304,7 +304,12 @@ stages:
             value: $(EnableVideoFilters)
           - name: VhServices:EnableDynamicEvidenceSharing
             value: $(EnableDynamicEvidenceSharing)
-
+            
+            #Launch Darkly Config
+          - name: VhServices:LaunchDarklyClientId
+            value: vh-launchdarkly-client-id
+            secret: true
+            
           # Quick Links Configuration
           - name: QuickLinks:Issuer
             value: $(video_api_url)
@@ -353,7 +358,12 @@ stages:
             value: $(EnableVideoFilters)
           - name: VhServices:EnableDynamicEvidenceSharing
             value: $(EnableDynamicEvidenceSharing)
-
+            
+            #Launch Darkly Config
+          - name: VhServices:LaunchDarklyClientId
+            value: vh-launchdarkly-client-id
+            secret: true
+            
           # AzureAd
           - name: AzureAd:TenantId
             value: tenantid

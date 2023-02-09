@@ -79,7 +79,12 @@ parameters:
             value: $(EnableVideoFilters)
           - name: VhServices:EnableDynamicEvidenceSharing
             value: $(EnableDynamicEvidenceSharing)
-
+            
+            #Launch Darkly Config
+          - name: VhServices:LaunchDarklyClientId
+            value: vh-launchdarkly-client-id
+            secret: true
+            
           # AzureAd
           - name: AzureAd:TenantId
             value: tenantid
@@ -242,7 +247,7 @@ parameters:
             value: $(EnableVideoFilters)
           - name: VhServices:EnableDynamicEvidenceSharing
             value: $(EnableDynamicEvidenceSharing)
-            
+          
             #Launch Darkly Config
           - name: VhServices:LaunchDarklyClientId
             value: vh-launchdarkly-client-id
