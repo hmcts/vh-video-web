@@ -21,6 +21,7 @@ import { EventBusService, EmitEvent, VHEventType } from 'src/app/services/event-
 import { CourtRoomsAccounts } from '../services/models/court-rooms-accounts';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
 import { ConfigService } from 'src/app/services/api/config.service';
+import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 
 @Component({
     selector: 'app-command-centre',
@@ -54,6 +55,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
     displayFilters = false;
     private readonly loggerPrefix = '[CommandCentre] -';
+    vhoWorkAllocationFeatureFlag: boolean;
 
     constructor(
         private queryService: VhoQueryService,
@@ -63,11 +65,17 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         private router: Router,
         private screenHelper: ScreenHelper,
         private eventbus: EventBusService,
-        private configService: ConfigService
+        private configService: ConfigService,
+        private ldService: LaunchDarklyService
     ) {
         this.loadingData = false;
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
         this.courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
+        this.ldService.flagChange.subscribe(value => {
+            if (value) {
+                this.vhoWorkAllocationFeatureFlag = value[FEATURE_FLAGS.vhoWorkAllocation];
+            }
+        });
     }
 
     ngOnInit(): void {

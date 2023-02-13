@@ -5,6 +5,8 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
+using BookingsApi.Client;
+using BookingsApi.Contract.Responses;
 using Faker;
 using FizzWare.NBuilder;
 using FluentAssertions;
@@ -74,6 +76,11 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .With(x => x.Status = ConferenceState.NotStarted)
                 .With(x => x.ClosedDateTime = null)
                 .Build().ToList();
+
+            var allocatedCsoResponses = 
+                conferences.Select(conference => new AllocatedCsoResponse { HearingId = conference.HearingRefId, Cso = new JusticeUserResponse{FullName = $"TestUserFor{conference.HearingRefId}"}}).ToList();
+            allocatedCsoResponses.Add(new AllocatedCsoResponse{ HearingId = Guid.NewGuid() }); //add one non existing hearing
+            
             conferences.Last().Status = ConferenceState.InSession;
 
             var minutes = -60;
@@ -93,6 +100,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(It.IsAny<IEnumerable<string>>()))
                 .ReturnsAsync(conferences);
 
+            _mocker.Mock<IBookingsApiClient>()
+                .Setup(x => x.GetAllocationsForHearingsAsync(It.IsAny<IEnumerable<Guid>>()))
+                .ReturnsAsync(allocatedCsoResponses);
+            
             var conferenceWithMessages = conferences.First();
             var judge = conferenceWithMessages.Participants.Single(x => x.UserRole == UserRole.Judge);
             var messages = new List<InstantMessageResponse>
