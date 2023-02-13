@@ -80,6 +80,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var allocatedCsoResponses = 
                 conferences.Select(conference => new AllocatedCsoResponse { HearingId = conference.HearingRefId, Cso = new JusticeUserResponse{FullName = $"TestUserFor{conference.HearingRefId}"}}).ToList();
             allocatedCsoResponses.Add(new AllocatedCsoResponse{ HearingId = Guid.NewGuid() }); //add one non existing hearing
+            allocatedCsoResponses.First().Cso = null; //on unallocated hearing 
             
             conferences.Last().Status = ConferenceState.InSession;
 

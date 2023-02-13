@@ -25,6 +25,7 @@ describe('HearingSummary', () => {
         expect(hearing.endedDateTime).toEqual(c.closed_date_time);
         expect(hearing.judgeName).toEqual('Judge Fudge');
         expect(hearing.actualCloseTime).toEqual(c.closed_date_time);
+        expect(hearing.allocatedCso).toEqual(c.allocated_cso);
     });
 
     it('should get applicant rep', () => {
