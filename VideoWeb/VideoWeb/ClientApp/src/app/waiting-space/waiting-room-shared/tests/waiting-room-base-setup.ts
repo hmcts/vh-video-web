@@ -23,7 +23,7 @@ import { ConsultationInvitationService } from '../../services/consultation-invit
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { Title } from '@angular/platform-browser';
-import { HideComponentsService } from '../../services/hide-background.service';
+import { HideComponentsService } from '../../services/hide-components.service';
 const conferenceTestData = new ConferenceTestData();
 
 export let component: WRTestComponent;

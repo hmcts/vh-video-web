@@ -29,7 +29,7 @@ import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-
 import { CaseTypeGroup } from '../models/case-type-group';
 import { Title } from '@angular/platform-browser';
 import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
-import { HideComponentsService } from '../services/hide-background.service';
+import { HideComponentsService } from '../services/hide-components.service';
 
 @Component({
     selector: 'app-participant-waiting-room',

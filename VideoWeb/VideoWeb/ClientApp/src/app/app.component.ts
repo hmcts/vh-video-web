@@ -22,7 +22,7 @@ import { ISecurityService } from './security/authentication/security-service.int
 import { BackLinkDetails } from './shared/models/back-link-details';
 import { Location } from '@angular/common';
 import { NoSleepService } from './services/no-sleep.service';
-import { HideComponentsService } from './waiting-space/services/hide-background.service';
+import { HideComponentsService } from './waiting-space/services/hide-components.service';
 
 @Component({
     selector: 'app-root',

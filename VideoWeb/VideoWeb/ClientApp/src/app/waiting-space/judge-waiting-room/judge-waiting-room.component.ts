@@ -36,7 +36,7 @@ import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
 import { Title } from '@angular/platform-browser';
 import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
-import { HideComponentsService } from '../services/hide-background.service';
+import { HideComponentsService } from '../services/hide-components.service';
 
 @Component({
     selector: 'app-judge-waiting-room',

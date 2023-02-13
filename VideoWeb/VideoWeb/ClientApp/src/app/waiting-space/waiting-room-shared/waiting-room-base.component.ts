@@ -60,7 +60,7 @@ import { RoomClosingToastrService } from '../services/room-closing-toast.service
 import { VideoCallService } from '../services/video-call.service';
 import { Title } from '@angular/platform-browser';
 import { RoomTransfer } from '../../shared/models/room-transfer';
-import { HideComponentsService } from '../services/hide-background.service';
+import { HideComponentsService } from '../services/hide-components.service';
 
 @Directive()
 export abstract class WaitingRoomBaseDirective {

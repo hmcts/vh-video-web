@@ -17,7 +17,7 @@ import { Component } from '@angular/core';
 import { ParticipantRemoteMuteStoreService } from '../../services/participant-remote-mute-store.service';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
 import { Title } from '@angular/platform-browser';
-import { HideComponentsService } from '../../services/hide-background.service';
+import { HideComponentsService } from '../../services/hide-components.service';
 
 @Component({
     selector: 'app-test-waiting-room',
