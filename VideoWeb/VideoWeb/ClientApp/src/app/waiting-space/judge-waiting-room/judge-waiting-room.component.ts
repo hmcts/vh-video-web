@@ -36,6 +36,7 @@ import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
 import { Title } from '@angular/platform-browser';
 import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
+import { HideComponentsService } from '../services/hide-background.service';
 
 @Component({
     selector: 'app-judge-waiting-room',
@@ -94,7 +95,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         private hearingLayoutService: HearingLayoutService,
         protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
         protected hearingVenueFlagsService: HearingVenueFlagsService,
-        protected titleService: Title
+        protected titleService: Title,
+        protected hideBackgroundService: HideComponentsService
     ) {
         super(
             route,
@@ -114,7 +116,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             consultationInvitiationService,
             participantRemoteMuteStoreService,
             hearingVenueFlagsService,
-            titleService
+            titleService,
+            hideBackgroundService
         );
         this.displayConfirmStartHearingPopup = false;
         this.hearingStartingAnnounced = true; // no need to play announcements for a judge

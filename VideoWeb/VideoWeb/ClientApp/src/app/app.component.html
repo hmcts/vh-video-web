@@ -1,24 +1,26 @@
-<div>
+<div [ngClass]="(hideNonVideoComponents$ | async) ? 'hide-non-video-elements' : ''">
   <div #skipLink tabindex="0"></div>
   <div role="navigation">
-    <a href="javascript:void(0)" class="govuk-skip-link" (click)="skipToContent()">{{ 'app.skip-to-main-content' | translate }}</a>
+    <a href="javascript:void(0)" class="govuk-skip-link non-video-element" (click)="skipToContent()">{{
+      'app.skip-to-main-content' | translate
+    }}</a>
   </div>
-  <header role="banner">    
-      <app-header class="govuk-!-display-none-print" [loggedIn]="loggedIn"></app-header>
-      <div class="govuk-width-container" [ngClass] ="(backLinkDetails$ | async)?.className">
-        <app-beta-banner *ngIf="loggedIn" [isRepresentativeOrIndividual]="isRepresentativeOrIndividual"></app-beta-banner>
-        <app-back-navigation *ngIf="backLinkDetails$ | async as backLinkDetails" [linkText]="backLinkDetails.text" (navigateBack)="navigateBack(backLinkDetails.path)"></app-back-navigation>
-      </div>
+  <header role="banner">
+    <app-header class="govuk-!-display-none-print non-video-element" [loggedIn]="loggedIn"></app-header>
+    <div class="govuk-width-container non-video-element" [ngClass]="(backLinkDetails$ | async)?.className">
+      <app-beta-banner *ngIf="loggedIn" [isRepresentativeOrIndividual]="isRepresentativeOrIndividual"></app-beta-banner>
+      <app-back-navigation
+        *ngIf="backLinkDetails$ | async as backLinkDetails"
+        [linkText]="backLinkDetails.text"
+        (navigateBack)="navigateBack(backLinkDetails.path)"
+        class="non-video-element"
+      ></app-back-navigation>
+    </div>
   </header>
   <div class="govuk-width-container" id="master-container">
-    <main
-      #maincontent
-      class="govuk-main-wrapper app-width-container--wide"
-      id="main-content"
-      role="main"
-      tabindex="-1">
+    <main #maincontent class="govuk-main-wrapper app-width-container--wide" id="main-content" role="main" tabindex="-1">
       <router-outlet></router-outlet>
     </main>
   </div>
-  <app-footer class="govuk-!-display-none-print"></app-footer>
+  <app-footer class="govuk-!-display-none-print non-video-element"></app-footer>
 </div>

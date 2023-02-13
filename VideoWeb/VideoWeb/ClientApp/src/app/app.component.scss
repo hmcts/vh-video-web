@@ -2,3 +2,9 @@
   outline: none;
   padding: 0px;
 }
+
+.hide-non-video-elements {
+  .non-video-element {
+    display: none;
+  }
+}

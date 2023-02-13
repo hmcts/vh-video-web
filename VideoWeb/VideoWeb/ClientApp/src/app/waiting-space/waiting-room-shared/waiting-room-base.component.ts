@@ -60,6 +60,7 @@ import { RoomClosingToastrService } from '../services/room-closing-toast.service
 import { VideoCallService } from '../services/video-call.service';
 import { Title } from '@angular/platform-browser';
 import { RoomTransfer } from '../../shared/models/room-transfer';
+import { HideComponentsService } from '../services/hide-background.service';
 
 @Directive()
 export abstract class WaitingRoomBaseDirective {
@@ -141,11 +142,12 @@ export abstract class WaitingRoomBaseDirective {
         protected consultationInvitiationService: ConsultationInvitationService,
         protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
         protected hearingVenueFlagsService: HearingVenueFlagsService,
-        protected titleService: Title
+        protected titleService: Title,
+        protected hideBackgroundService: HideComponentsService
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;
-        this.showVideo = false;
+        this.setShowVideo(false);
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
         this.errorCount = 0;
@@ -869,7 +871,7 @@ export abstract class WaitingRoomBaseDirective {
         this.callStream = null;
         this.outgoingStream = null;
         this.connected = false;
-        this.showVideo = false;
+        this.setShowVideo(false);
     }
 
     handleCallSetup(callSetup: CallSetup) {
@@ -1155,7 +1157,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     resetVideoFlags() {
-        this.showVideo = false;
+        this.setShowVideo(false);
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
     }
@@ -1163,7 +1165,7 @@ export abstract class WaitingRoomBaseDirective {
     willShowHearing() {
         if (this.hearing.isInSession() && this.shouldCurrentUserJoinHearing()) {
             this.displayDeviceChangeModal = false;
-            this.showVideo = true;
+            this.setShowVideo(true);
             this.showConsultationControls = false;
             this.isPrivateConsultation = false;
             return true;
@@ -1174,7 +1176,7 @@ export abstract class WaitingRoomBaseDirective {
     willShowConsultation(): boolean {
         if (this.participant.status === ParticipantStatus.InConsultation) {
             this.displayDeviceChangeModal = false;
-            this.showVideo = true;
+            this.setShowVideo(true);
             this.isPrivateConsultation = true;
             this.showConsultationControls = !this.isAdminConsultation;
 
@@ -1211,7 +1213,7 @@ export abstract class WaitingRoomBaseDirective {
             logPayload.reason = 'Showing video because witness is in hearing';
             this.logger.debug(`${this.loggerPrefix} ${logPayload.reason}`, logPayload);
             this.displayDeviceChangeModal = false;
-            this.showVideo = true;
+            this.setShowVideo(true);
             this.showConsultationControls = false;
             this.isPrivateConsultation = false;
             return;
@@ -1338,5 +1340,10 @@ export abstract class WaitingRoomBaseDirective {
     async callAndUpdateShowVideo(): Promise<void> {
         await this.call();
         this.getConference().then(() => this.updateShowVideo());
+    }
+
+    private setShowVideo(showVideo: boolean) {
+        this.showVideo = showVideo;
+        this.hideBackgroundService.hideNonVideoComponents$.next(showVideo);
     }
 }
