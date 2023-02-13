@@ -20,6 +20,7 @@ import {
     globalJudge,
     globalParticipant,
     heartbeatModelMapper,
+    hideComponentsService,
     initAllWRDependencies,
     logger,
     mockedHearingVenueFlagsService,
@@ -94,7 +95,8 @@ describe('JohWaitingRoomComponent', () => {
             unloadDetectorServiceSpy,
             participantRemoteMuteStoreServiceSpy,
             mockedHearingVenueFlagsService,
-            titleService
+            titleService,
+            hideComponentsService
         );
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));

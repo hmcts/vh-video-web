@@ -70,7 +70,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         protected hearingVenueFlagsService: HearingVenueFlagsService,
         protected userMediaService: UserMediaService,
         protected titleService: Title,
-        protected hideBackgroundService: HideComponentsService
+        protected hideComponentsService: HideComponentsService
     ) {
         super(
             route,
@@ -91,7 +91,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             participantRemoteMuteStoreService,
             hearingVenueFlagsService,
             titleService,
-            hideBackgroundService
+            hideComponentsService
         );
     }
 

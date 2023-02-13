@@ -96,7 +96,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
         protected hearingVenueFlagsService: HearingVenueFlagsService,
         protected titleService: Title,
-        protected hideBackgroundService: HideComponentsService
+        protected hideComponentsService: HideComponentsService
     ) {
         super(
             route,
@@ -117,7 +117,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             participantRemoteMuteStoreService,
             hearingVenueFlagsService,
             titleService,
-            hideBackgroundService
+            hideComponentsService
         );
         this.displayConfirmStartHearingPopup = false;
         this.hearingStartingAnnounced = true; // no need to play announcements for a judge

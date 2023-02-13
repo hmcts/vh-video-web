@@ -143,7 +143,7 @@ export abstract class WaitingRoomBaseDirective {
         protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
         protected hearingVenueFlagsService: HearingVenueFlagsService,
         protected titleService: Title,
-        protected hideBackgroundService: HideComponentsService
+        protected hideComponentsService: HideComponentsService
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;
@@ -1344,6 +1344,6 @@ export abstract class WaitingRoomBaseDirective {
 
     private setShowVideo(showVideo: boolean) {
         this.showVideo = showVideo;
-        this.hideBackgroundService.hideNonVideoComponents$.next(showVideo);
+        this.hideComponentsService.hideNonVideoComponents$.next(showVideo);
     }
 }

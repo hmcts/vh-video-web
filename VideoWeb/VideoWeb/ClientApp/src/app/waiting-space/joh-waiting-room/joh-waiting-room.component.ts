@@ -59,7 +59,7 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
         protected hearingVenueFlagsService: HearingVenueFlagsService,
         protected titleService: Title,
-        protected hideBackgroundService: HideComponentsService
+        protected hideComponentsService: HideComponentsService
     ) {
         super(
             route,
@@ -80,7 +80,7 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
             participantRemoteMuteStoreService,
             hearingVenueFlagsService,
             titleService,
-            hideBackgroundService
+            hideComponentsService
         );
     }
 

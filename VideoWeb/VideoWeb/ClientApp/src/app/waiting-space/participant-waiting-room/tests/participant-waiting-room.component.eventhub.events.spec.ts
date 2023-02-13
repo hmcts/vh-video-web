@@ -16,6 +16,7 @@ import {
     globalParticipant,
     globalWitness,
     heartbeatModelMapper,
+    hideComponentsService,
     initAllWRDependencies,
     logger,
     mockedHearingVenueFlagsService,
@@ -78,7 +79,8 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
             participantRemoteMuteStoreServiceSpy,
             mockedHearingVenueFlagsService,
             userMediaServiceSpy,
-            titleService
+            titleService,
+            hideComponentsService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
