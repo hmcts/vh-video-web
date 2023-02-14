@@ -22,6 +22,7 @@ import { ISecurityService } from './security/authentication/security-service.int
 import { BackLinkDetails } from './shared/models/back-link-details';
 import { Location } from '@angular/common';
 import { NoSleepService } from './services/no-sleep.service';
+import { HideComponentsService } from './waiting-space/services/hide-components.service';
 
 @Component({
     selector: 'app-root',
@@ -46,6 +47,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private destroyed$ = new Subject();
     private serviceChanged$ = new Subject();
 
+    hideNonVideoComponents$ = new Observable<boolean>();
+
     constructor(
         private router: Router,
         private deviceTypeService: DeviceTypeService,
@@ -63,7 +66,8 @@ export class AppComponent implements OnInit, OnDestroy {
         private securityConfigSetupService: SecurityConfigSetupService,
         private location: Location,
         private noSleepService: NoSleepService,
-        private logger: Logger
+        private logger: Logger,
+        private hideBackgroundService: HideComponentsService
     ) {
         this.isRepresentativeOrIndividual = false;
 
@@ -73,6 +77,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
         testLanguageService.setupSubscriptions();
         pageTracker.trackPreviousPage(router);
+
+        this.hideNonVideoComponents$ = this.hideBackgroundService.hideNonVideoComponents$;
     }
 
     ngOnInit() {
