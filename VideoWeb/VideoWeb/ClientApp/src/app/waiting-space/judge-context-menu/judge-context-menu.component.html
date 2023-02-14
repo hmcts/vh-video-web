@@ -6,25 +6,25 @@
   tabindex="0"
   (keyup.enter)="toggleDropdown()"
 />
-<div [hidden]="!isDroppedDown" class="dropdown-content" [id]="idPrefix + '-dropdown-' + (10000 | random)">
+<div [hidden]="!isDroppedDown" class="dropdown-content" [id]="idPrefix + '-dropdown-' + (1 | random)">
   <p class="govuk-body-s dropdown-header">
-    <span [id]="idPrefix + '-display-name-' + (10000 | random)">
+    <span [id]="idPrefix + '-display-name-' + (1 | random)">
       <strong>{{ participant.displayName }}</strong>
     </span>
-    <span *ngIf="showHearingRole()" [id]="idPrefix + '-hearing-role-full-' + (10000 | random)">
-      <span [id]="idPrefix + '-hearing-role-' + (10000 | random)">
+    <span *ngIf="showHearingRole()" [id]="idPrefix + '-hearing-role-full-' + (1 | random)">
+      <span [id]="idPrefix + '-hearing-role-' + (1 | random)">
         {{ 'hearing-role.' + (participant.hearingRole | hyphenate) | translate }}
       </span>
       <ng-container *ngIf="!!this.participant.representee">
-        <span [id]="idPrefix + '-for-' + (10000 | random)">
+        <span [id]="idPrefix + '-for-' + (1 | random)">
           {{ 'participants-panel.for' | translate }}
         </span>
-        <span [id]="idPrefix + '-representee-' + (10000 | random)">
+        <span [id]="idPrefix + '-representee-' + (1 | random)">
           {{ this.participant.representee }}
         </span>
       </ng-container>
     </span>
-    <span *ngIf="showCaseTypeGroup()" [id]="idPrefix + '-case-type-group-' + (10000 | random)">
+    <span *ngIf="showCaseTypeGroup()" [id]="idPrefix + '-case-type-group-' + (1 | random)">
       {{ 'case-role.' + (participant.caseTypeGroup | hyphenate) | translate }}
     </span>
   </p>
@@ -34,7 +34,7 @@
     (click)="toggleMuteParticipant()"
     (keyup.enter)="toggleMuteParticipant()"
     tabindex="0"
-    [id]="idPrefix + '-toggle-mute-' + (10000 | random)"
+    [id]="idPrefix + '-toggle-mute-' + (1 | random)"
     >{{ getMutedStatusText() }}</a
   >
   <a
@@ -42,7 +42,7 @@
     (keyup.enter)="callParticipantIntoHearing()"
     tabindex="0"
     (click)="callParticipantIntoHearing()"
-    [id]="idPrefix + '-call-' + (10000 | random)"
+    [id]="idPrefix + '-call-' + (1 | random)"
   >
     <ng-container *ngIf="isWitness; then isWitnessCallContent; else isNotWitnessCallContent"> </ng-container>
   </a>
@@ -51,7 +51,7 @@
     (keyup.enter)="dismissParticipantFromHearing()"
     tabindex="0"
     (click)="dismissParticipantFromHearing()"
-    [id]="idPrefix + '-dismiss-' + (10000 | random)"
+    [id]="idPrefix + '-dismiss-' + (1 | random)"
   >
     {{
       'judge-context-menu.dismiss-participant'
@@ -63,7 +63,7 @@
     (keyup.enter)="lowerParticipantHand()"
     tabindex="0"
     (click)="lowerParticipantHand()"
-    [id]="idPrefix + '-lower-hand-' + (10000 | random)"
+    [id]="idPrefix + '-lower-hand-' + (1 | random)"
     >{{ 'judge-context-menu.lower-hand' | translate }}</a
   >
   <a
@@ -71,7 +71,7 @@
     (keyup.enter)="toggleSpotlightParticipant()"
     tabindex="0"
     (click)="toggleSpotlightParticipant()"
-    [id]="idPrefix + '-toggle-spotlight-' + (10000 | random)"
+    [id]="idPrefix + '-toggle-spotlight-' + (1 | random)"
     >{{ getPinStatusText() }}</a
   >
 </div>

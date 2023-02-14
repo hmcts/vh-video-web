@@ -5,6 +5,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class RandomPipe implements PipeTransform {
     transform(value: any, ...args: any[]) {
-        return Math.floor(Math.random() * value);
+        const buf = new Uint16Array(value);
+        window.crypto.getRandomValues(buf);
+        return buf[0];
     }
 }
