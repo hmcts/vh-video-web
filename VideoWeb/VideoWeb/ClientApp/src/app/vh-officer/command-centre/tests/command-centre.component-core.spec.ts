@@ -1,6 +1,6 @@
 import { discardPeriodicTasks, fakeAsync, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { of, throwError } from 'rxjs';
+import { of, ReplaySubject, throwError } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ClientSettingsResponse, ConferenceResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
@@ -20,6 +20,7 @@ import { CourtRoomsAccounts } from '../../services/models/court-rooms-accounts';
 import { VhoStorageKeys } from '../../services/models/session-keys';
 import { VhoQueryService } from '../../services/vho-query-service.service';
 import { CommandCentreComponent } from '../command-centre.component';
+import { LaunchDarklyService } from '../../../services/launch-darkly.service';
 
 describe('CommandCentreComponent - Core', () => {
     let component: CommandCentreComponent;
@@ -33,6 +34,7 @@ describe('CommandCentreComponent - Core', () => {
     let errorService: jasmine.SpyObj<ErrorService>;
     let router: jasmine.SpyObj<Router>;
     let eventBusServiceSpy: jasmine.SpyObj<EventBusService>;
+    let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
 
     const conferenceDetail = new ConferenceTestData().getConferenceDetailFuture();
 
@@ -57,7 +59,7 @@ describe('CommandCentreComponent - Core', () => {
         ]);
 
         eventBusServiceSpy = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit', 'on']);
-
+        launchDarklyServiceSpy = jasmine.createSpyObj('LaunchDarklyService', ['flagChange']);
         const config = new ClientSettingsResponse({ join_by_phone_from_date: '2021-02-09' });
         configService.getClientSettings.and.returnValue(of(config));
     });
@@ -74,6 +76,9 @@ describe('CommandCentreComponent - Core', () => {
         vhoQueryService.getConferencesForVHOfficer.and.returnValue(of(conferences));
         vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceDetail));
 
+        launchDarklyServiceSpy.flagChange = new ReplaySubject();
+        launchDarklyServiceSpy.flagChange.next({ 'vho-work-allocation': true });
+
         component = new CommandCentreComponent(
             vhoQueryService,
             errorService,
@@ -82,7 +87,8 @@ describe('CommandCentreComponent - Core', () => {
             router,
             screenHelper,
             eventBusServiceSpy,
-            configService
+            configService,
+            launchDarklyServiceSpy
         );
         component.hearings = hearings;
         screenHelper.enableFullScreen.calls.reset();

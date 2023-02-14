@@ -4,6 +4,8 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using BookingsApi.Client;
+using BookingsApi.Contract.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -33,17 +35,20 @@ namespace VideoWeb.Controllers
         private readonly ILogger<ConferencesController> _logger;
         private readonly IConferenceCache _conferenceCache;
         private readonly IMapperFactory _mapperFactory;
+        private readonly IBookingsApiClient _bookingApiClient;
 
         public ConferencesController(
             IVideoApiClient videoApiClient,
             ILogger<ConferencesController> logger,
             IConferenceCache conferenceCache,
-            IMapperFactory mapperFactory)
+            IMapperFactory mapperFactory,
+            IBookingsApiClient bookingApiClient)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
             _conferenceCache = conferenceCache;
             _mapperFactory = mapperFactory;
+            _bookingApiClient = bookingApiClient;
         }
 
         /// <summary>
@@ -151,7 +156,8 @@ namespace VideoWeb.Controllers
             try
             {
                 var conferences = await _videoApiClient.GetConferencesTodayForAdminByHearingVenueNameAsync(query.HearingVenueNames);
-
+                var allocatedHearings =
+                    await _bookingApiClient.GetAllocationsForHearingsAsync(conferences.Select(e => e.HearingRefId));
                 var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, ConferenceForVhOfficerResponse>();
                 var responses = conferences
                     .Where(c => ConferenceHelper.HasNotPassed(c.Status, c.ClosedDateTime))
@@ -159,12 +165,29 @@ namespace VideoWeb.Controllers
                     .Select(conferenceForVhOfficerResponseMapper.Map)
                     .ToList();
 
+                UpdateConferencesWithAllocatedCsos(allocatedHearings, responses);
+                
                 return Ok(responses);
             }
             catch (VideoApiException e)
             {
                 _logger.LogError(e, "Unable to get conferences for vh officer");
                 return StatusCode(e.StatusCode, e.Response);
+            }
+        }
+
+        private void UpdateConferencesWithAllocatedCsos(ICollection<AllocatedCsoResponse> allocatedHearings, List<ConferenceForVhOfficerResponse> responses)
+        {
+            foreach (var hearings in allocatedHearings)
+            {
+                var conference = responses.FirstOrDefault(conference => hearings.HearingId == conference.HearingRefId);
+                if (conference == null)
+                {
+                    _logger.LogWarning("Allocated hearing id, not in list of conferences for response");
+                    continue;
+                }
+
+                conference.AllocatedCso = hearings?.Cso?.FullName ?? "Unallocated";
             }
         }
 

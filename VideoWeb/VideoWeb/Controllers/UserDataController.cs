@@ -44,8 +44,7 @@ namespace VideoWeb.Controllers
         [HttpGet("courtrooms", Name = "GetCourtRoomAccounts")]
         [ProducesResponseType(typeof(IList<CourtRoomsAccountResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<IList<CourtRoomsAccountResponse>>> GetCourtRoomsAccounts(
-            [FromQuery] VhoConferenceFilterQuery query)
+        public async Task<ActionResult<IList<CourtRoomsAccountResponse>>> GetCourtRoomsAccounts([FromQuery] VhoConferenceFilterQuery query)
         {
             try
             {
@@ -69,6 +68,6 @@ namespace VideoWeb.Controllers
         /// </summary>
         [HttpGet("csos", Name = "GetCSOs")]
         [ProducesResponseType(typeof(IList<JusticeUserResponse>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<IList<JusticeUserResponse>>> GetJusticeUsers() =>Ok(await _bookingApiClient.GetJusticeUserListAsync());
+        public async Task<ActionResult<IList<JusticeUserResponse>>> GetJusticeUsers() =>Ok(await _bookingApiClient.GetJusticeUserListAsync(null));
     }
 }
