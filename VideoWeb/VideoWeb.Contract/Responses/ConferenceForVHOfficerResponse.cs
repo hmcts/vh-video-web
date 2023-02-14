@@ -74,5 +74,15 @@ namespace VideoWeb.Contract.Responses
         /// Created date time as UTC
         /// </summary>
         public DateTime? CreatedDateTime { get; set; }
+
+        /// <summary>
+        /// Hearing Id for the vh-booking database
+        /// </summary>
+        public Guid HearingRefId { get; set; }
+
+        /// <summary>
+        /// Allocated Cso Full name
+        /// </summary>
+        public string AllocatedCso { get; set; }
     }
 }

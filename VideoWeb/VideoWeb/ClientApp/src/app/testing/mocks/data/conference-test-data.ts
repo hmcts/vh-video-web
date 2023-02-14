@@ -67,7 +67,8 @@ export class ConferenceTestData {
             scheduled_duration: 50,
             status: ConferenceStatus.NotStarted,
             participants: this.getListOfParticipants(),
-            hearing_venue_name: 'Birmingham'
+            hearing_venue_name: 'Birmingham',
+            allocated_cso: 'test cso'
         });
     }
 
@@ -98,7 +99,8 @@ export class ConferenceTestData {
             status: ConferenceStatus.NotStarted,
             participants: this.getListOfParticipants(),
             telephone_conference_id: '0345855',
-            telephone_conference_numbers: '+441234567890'
+            telephone_conference_numbers: '+441234567890',
+            allocated_cso: 'test cso'
         });
     }
 
@@ -118,7 +120,8 @@ export class ConferenceTestData {
             started_date_time: null,
             closed_date_time: null,
             telephone_conference_id: '0345855',
-            telephone_conference_numbers: '+441234567890,+440987654321'
+            telephone_conference_numbers: '+441234567890,+440987654321',
+            allocated_cso: 'test cso'
         });
     }
 
@@ -136,7 +139,8 @@ export class ConferenceTestData {
             participants: this.getListOfParticipants(),
             hearing_venue_name: 'Manchester',
             started_date_time: futureDate,
-            closed_date_time: null
+            closed_date_time: null,
+            allocated_cso: 'test cso'
         });
     }
 

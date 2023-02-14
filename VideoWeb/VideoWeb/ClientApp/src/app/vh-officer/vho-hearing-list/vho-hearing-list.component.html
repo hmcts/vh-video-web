@@ -39,9 +39,10 @@
     <div class="ref listItemGreySmall" id="{{ conference.id }}-case-number">{{ conference.caseNumber }}</div>
     <div class="judge listItemBold" id="{{ conference.id }}-judge">{{ conference.judgeName }}</div>
     <div class="venue listItem" id="{{ conference.id }}-venue">{{ conference.hearingVenueName }}</div>
+    <div *ngIf="workAllocationFeatureFlag" class="cso listItem" id="{{ conference.id }}-cso">Allocated To: {{ conference.allocatedCso }}</div>
     <div class="alert"><app-pending-tasks [conferenceId]="conference.id"></app-pending-tasks></div>
     <div class="message"><app-unread-messages [hearing]="mapToHearingWithParticipants(conference)"></app-unread-messages></div>
-    <div id="{{ conference.id }}-hearing-status" class="status">
+    <div id="{{ conference.id }}-hearing-status" [ngClass]="{'status-down': workAllocationFeatureFlag === true, 'status-up': workAllocationFeatureFlag === false}">
       <app-hearing-status [hearing]="mapToHearing(conference)"></app-hearing-status>
     </div>
     <div class="pIcons vh-top-padding">
