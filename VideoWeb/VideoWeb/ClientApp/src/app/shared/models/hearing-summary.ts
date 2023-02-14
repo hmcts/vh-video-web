@@ -132,11 +132,16 @@ export class HearingSummary extends HearingBase {
     get telephoneConferenceNumbers(): string {
         return this.conference.telephone_conference_numbers;
     }
+
     get createdDateTime(): Date {
         return this.conference.created_date_time;
     }
 
     get actualCloseTime(): Date | null {
         return this.conference.closed_date_time;
+    }
+
+    get allocatedCso(): string {
+        return this.conference.allocated_cso;
     }
 }

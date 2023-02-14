@@ -9052,6 +9052,10 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
     telephone_conference_numbers?: string | undefined;
     /** Created date time as UTC */
     created_date_time?: Date | undefined;
+    /** Hearing Id for the vh-booking database */
+    hearing_ref_id?: string;
+    /** Allocated Cso Full name */
+    allocated_cso?: string | undefined;
 
     constructor(data?: IConferenceForVhOfficerResponse) {
         if (data) {
@@ -9080,6 +9084,8 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
             this.telephone_conference_id = _data['telephone_conference_id'];
             this.telephone_conference_numbers = _data['telephone_conference_numbers'];
             this.created_date_time = _data['created_date_time'] ? new Date(_data['created_date_time'].toString()) : <any>undefined;
+            this.hearing_ref_id = _data['hearing_ref_id'];
+            this.allocated_cso = _data['allocated_cso'];
         }
     }
 
@@ -9109,6 +9115,8 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
         data['telephone_conference_id'] = this.telephone_conference_id;
         data['telephone_conference_numbers'] = this.telephone_conference_numbers;
         data['created_date_time'] = this.created_date_time ? this.created_date_time.toISOString() : <any>undefined;
+        data['hearing_ref_id'] = this.hearing_ref_id;
+        data['allocated_cso'] = this.allocated_cso;
         return data;
     }
 }
@@ -9141,6 +9149,10 @@ export interface IConferenceForVhOfficerResponse {
     telephone_conference_numbers?: string | undefined;
     /** Created date time as UTC */
     created_date_time?: Date | undefined;
+    /** Hearing Id for the vh-booking database */
+    hearing_ref_id?: string;
+    /** Allocated Cso Full name */
+    allocated_cso?: string | undefined;
 }
 
 /** Detailed information about a conference */

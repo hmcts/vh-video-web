@@ -24,6 +24,7 @@ import {
     globalConference,
     globalParticipant,
     heartbeatModelMapper,
+    hideComponentsService,
     initAllWRDependencies,
     logger,
     mockedHearingVenueFlagsService,
@@ -255,7 +256,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             hearingLayoutServiceSpy,
             participantRemoteMuteStoreServiceSpy,
             mockedHearingVenueFlagsService,
-            titleService
+            titleService,
+            hideComponentsService
         );
 
         consultationInvitiationService.getInvitation.and.returnValue(consultationInvitiation);

@@ -11,6 +11,7 @@ import {
     errorService,
     eventsService,
     heartbeatModelMapper,
+    hideComponentsService,
     initAllWRDependencies,
     logger,
     mockedHearingVenueFlagsService,
@@ -71,7 +72,8 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
             participantRemoteMuteStoreServiceSpy,
             mockedHearingVenueFlagsService,
             userMediaServiceSpy,
-            titleService
+            titleService,
+            hideComponentsService
         );
     });
 

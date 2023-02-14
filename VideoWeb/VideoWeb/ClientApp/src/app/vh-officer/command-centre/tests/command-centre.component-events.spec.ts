@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
-import { of } from 'rxjs';
+import { of, ReplaySubject } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ClientSettingsResponse, ConferenceResponseVho, ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
@@ -25,6 +25,7 @@ import {
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { VhoQueryService } from '../../services/vho-query-service.service';
 import { CommandCentreComponent } from '../command-centre.component';
+import { LaunchDarklyService } from '../../../services/launch-darkly.service';
 
 describe('CommandCentreComponent - Events', () => {
     let component: CommandCentreComponent;
@@ -35,6 +36,7 @@ describe('CommandCentreComponent - Events', () => {
     const eventsService = eventsServiceSpy;
     let router: jasmine.SpyObj<Router>;
     let eventBusServiceSpy: jasmine.SpyObj<EventBusService>;
+    let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
 
     const logger: Logger = new MockLogger();
 
@@ -66,6 +68,7 @@ describe('CommandCentreComponent - Events', () => {
         ]);
 
         eventBusServiceSpy = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit', 'on']);
+        launchDarklyServiceSpy = jasmine.createSpyObj('LaunchDarklyService', ['flagChange']);
 
         const config = new ClientSettingsResponse({ join_by_phone_from_date: '' });
         configService.getClientSettings.and.returnValue(of(config));
@@ -79,6 +82,8 @@ describe('CommandCentreComponent - Events', () => {
     beforeEach(() => {
         vhoQueryService.getConferencesForVHOfficer.and.returnValue(of(conferences));
         vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceDetail));
+        launchDarklyServiceSpy.flagChange = new ReplaySubject();
+        launchDarklyServiceSpy.flagChange.next({ 'vho-work-allocation': true });
 
         component = new CommandCentreComponent(
             vhoQueryService,
@@ -88,7 +93,8 @@ describe('CommandCentreComponent - Events', () => {
             router,
             screenHelper,
             eventBusServiceSpy,
-            configService
+            configService,
+            launchDarklyServiceSpy
         );
         component.hearings = hearings;
         component.selectedHearing = hearing;
