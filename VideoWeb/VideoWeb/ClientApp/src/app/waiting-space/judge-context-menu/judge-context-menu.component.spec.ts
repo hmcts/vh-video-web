@@ -25,6 +25,7 @@ import { By } from '@angular/platform-browser';
 import { finalize } from 'rxjs/operators';
 import { PanelModel } from '../models/panel-model-base';
 import { HearingRoleHelper } from 'src/app/shared/helpers/hearing-role-helper';
+import { RandomPipe } from 'src/app/shared/pipes/random.pipe';
 
 export class MockElementRef extends ElementRef {
     constructor() {
@@ -60,18 +61,21 @@ describe('JudgeContextMenuComponent', () => {
     let hyphenateSpy: jasmine.Spy;
     let translateSpy: jasmine.Spy;
     let lowerCaseSpy: jasmine.Spy;
+    let random: jasmine.Spy;
 
     beforeEach(async () => {
         hyphenateSpy = jasmine.createSpy('transform').and.callThrough();
         translateSpy = jasmine.createSpy('transform').and.callThrough();
         lowerCaseSpy = jasmine.createSpy('transform').and.callThrough();
+        random = jasmine.createSpy('transform').and.callThrough();
 
         await TestBed.configureTestingModule({
             declarations: [
                 JudgeContextMenuComponent,
                 MockPipe(TranslatePipe, translateSpy),
                 MockPipe(HyphenatePipe, hyphenateSpy),
-                MockPipe(LowerCasePipe, lowerCaseSpy)
+                MockPipe(LowerCasePipe, lowerCaseSpy),
+                MockPipe(RandomPipe, random)
             ],
             providers: [
                 {
@@ -451,9 +455,8 @@ describe('JudgeContextMenuComponent', () => {
     describe('UI tests', () => {
         let dropdownElement;
         function fakeGetElementId(section: string) {
-            return `${component.idPrefix}-${section}`;
+            return `${component.idPrefix}-${section}-undefined`;
         }
-
         describe('dropdown', () => {
             beforeEach(() => {
                 const dropdownId = fakeGetElementId('dropdown');
