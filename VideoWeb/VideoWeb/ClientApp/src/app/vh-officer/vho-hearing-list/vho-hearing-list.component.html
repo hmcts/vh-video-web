@@ -45,11 +45,11 @@
     <div id="{{ conference.id }}-hearing-status" [ngClass]="{'status-down': workAllocationFeatureFlag === true, 'status-up': workAllocationFeatureFlag === false}">
       <app-hearing-status [hearing]="mapToHearing(conference)"></app-hearing-status>
     </div>
-    <div class="pIcons vh-top-padding">
+    <div class="vh-top-padding" [ngClass]="{'pIcons-down': workAllocationFeatureFlag === true, 'pIcons-up': workAllocationFeatureFlag === false}">
       <div *ngFor="let participant of getParticipantsForConference(conference)" class="vh-pIcons">
         <app-participant-network-status [participant]="participant" [conferenceId]="conference.id"> </app-participant-network-status>
       </div>
     </div>
-    <div class="line"><hr /></div>
+    <div [ngClass]="{'line-down': workAllocationFeatureFlag === true, 'line-up': workAllocationFeatureFlag === false}"><hr /></div>
   </div>
 </div>

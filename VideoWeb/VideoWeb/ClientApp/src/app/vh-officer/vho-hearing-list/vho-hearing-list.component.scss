@@ -250,7 +250,12 @@
   align-self: center;
   justify-self: start;
 }
-.line {
+.line-down {
+  grid-column: 1/7;
+  grid-row: 8/8;
+}
+
+.line-up {
   grid-column: 1/7;
   grid-row: 7/7;
 }
@@ -260,9 +265,15 @@
   justify-self: start;
   align-self: center;
 }
-.pIcons {
+.pIcons-up {
   grid-column: 1/6;
   grid-row: 6/6;
+  justify-self: start;
+  align-self: center;
+}
+.pIcons-down {
+  grid-column: 1/6;
+  grid-row: 7/7;
   justify-self: start;
   align-self: center;
 }
