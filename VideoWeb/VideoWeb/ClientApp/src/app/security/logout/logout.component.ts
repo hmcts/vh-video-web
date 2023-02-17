@@ -33,10 +33,16 @@ export class LogoutComponent implements OnInit {
 
     ngOnInit() {
         this.securityService.isAuthenticated$.subscribe(authenticated => {
+            console.log('LogoutComponent - checking if authenticated');
             if (authenticated) {
+                console.log('LogoutComponent - clearing user profile');
                 this.profileService.clearUserProfile();
+                console.log('LogoutComponent - clearing judge allocation storage');
                 this.judgeAllocationStorage.clear();
+                console.log('LogoutComponent - logging off and revoking tokens');
                 this.securityService.logoffAndRevokeTokens();
+            } else {
+                console.log('LogoutComponent - not authenticated');
             }
         });
     }
