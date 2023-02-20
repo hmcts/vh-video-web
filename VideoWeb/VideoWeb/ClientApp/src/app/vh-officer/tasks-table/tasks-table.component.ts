@@ -5,6 +5,8 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { TaskCompleted } from '../../on-the-day/models/task-completed';
 import { VhoQueryService } from '../services/vho-query-service.service';
 import { Subscription } from 'rxjs';
+import { SessionStorage } from 'src/app/services/session-storage';
+import { VhoStorageKeys } from '../services/models/session-keys';
 
 @Component({
     selector: 'app-tasks-table',
@@ -18,6 +20,7 @@ export class TasksTableComponent implements OnInit, OnDestroy {
     tasks: TaskResponse[];
     conference: ConferenceResponse;
     taskSubscription$: Subscription;
+    sessionStorage = new SessionStorage<boolean>(VhoStorageKeys.EQUIPMENT_SELF_TEST_KEY);
 
     constructor(private vhoQueryService: VhoQueryService, private logger: Logger, private eventbus: EventBusService) {}
 
