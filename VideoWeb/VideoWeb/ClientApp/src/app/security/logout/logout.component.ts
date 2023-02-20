@@ -33,18 +33,18 @@ export class LogoutComponent implements OnInit {
 
     ngOnInit() {
         this.securityService.isAuthenticated$.subscribe(authenticated => {
-            console.log('LogoutComponent - checking if authenticated');
+            console.log('OliverDebug - checking if authenticated');
             if (authenticated) {
-                console.log('LogoutComponent - clearing user profile');
+                console.log('OliverDebug - clearing user profile');
                 this.profileService.clearUserProfile();
-                console.log('LogoutComponent - clearing judge allocation storage');
+                console.log('OliverDebug - clearing judge allocation storage');
                 this.judgeAllocationStorage.clear();
-                console.log('LogoutComponent - logging off and revoking tokens');
-                this.securityService.logoffAndRevokeTokens().subscribe(result => {
-                    console.log(result);
-                });
+                console.log('OliverDebug - logging off and revoking tokens');
+                //this.securityService.logoffAndRevokeTokens();
+                this.securityService.logoffAndRevokeTokens();
+                this.securityService.revokeAccessToken();
             } else {
-                console.log('LogoutComponent - not authenticated');
+                console.log('OliverDebug - not authenticated');
             }
         });
     }

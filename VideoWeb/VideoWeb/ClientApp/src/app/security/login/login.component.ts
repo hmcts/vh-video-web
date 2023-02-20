@@ -28,12 +28,12 @@ export class LoginComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.logger.debug('[Login] - ngOnInit()');
+        this.logger.debug('OliverDebug - ngOnInit()');
         this.configService.getClientSettings().subscribe(() => {
             this.securityService.isAuthenticated$
                 .pipe(
                     catchError(err => {
-                        this.logger.error('[Login] - Check Auth Error', err);
+                        this.logger.error('OliverDebug - Check Auth Error', err);
                         if (
                             !window.location.pathname.includes(pageUrls.EJudSignIn) &&
                             !window.location.pathname.includes(pageUrls.VHSignIn)
@@ -44,22 +44,22 @@ export class LoginComponent implements OnInit {
                     })
                 )
                 .subscribe(loggedIn => {
-                    this.logger.debug('[Login] - isLoggedIn ' + loggedIn);
+                    this.logger.debug('OliverDebug - isLoggedIn ' + loggedIn);
                     if (loggedIn) {
                         try {
                             const returnUrl = this.returnUrlService.popUrl() || '/';
-                            this.logger.debug(`[Login] - User is authenticated. Returning to ${returnUrl}`);
+                            this.logger.debug(`OliverDebug - User is authenticated. Returning to ${returnUrl}`);
                             this.router.navigateByUrl(returnUrl);
                         } catch (err) {
-                            this.logger.error('[Login] - Redirect Failed', err);
+                            this.logger.error('OliverDebug - Redirect Failed', err);
                             this.router.navigate(['/']);
                         }
                     } else {
-                        this.logger.debug('[Login] - User not authenticated. Logging in');
+                        this.logger.debug('OliverDebug - User not authenticated. Logging in');
                         try {
                             this.securityService.authorize();
                         } catch (err) {
-                            this.logger.error('[Login] - Authorize Failed', err);
+                            this.logger.error('OliverDebug - Authorize Failed', err);
                         }
                     }
                 });

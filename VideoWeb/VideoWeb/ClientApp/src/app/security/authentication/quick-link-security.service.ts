@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AuthOptions, PublicConfiguration } from 'angular-auth-oidc-client';
-import { ReplaySubject, Observable, EMPTY, BehaviorSubject, Subscription } from 'rxjs';
+import { ReplaySubject, Observable, EMPTY, BehaviorSubject, Subscription, of } from 'rxjs';
 import { map, take, tap } from 'rxjs/operators';
 import { ApiClient } from 'src/app/services/clients/api-client';
 import { SessionStorage } from 'src/app/services/session-storage';
@@ -119,6 +119,15 @@ export class QuickLinkSecurityService implements ISecurityService {
         this.clearToken();
         this.isAuthenticatedSubject.next(false);
         return EMPTY;
+    }
+
+    logoff(): void {
+        // TODO implement
+    }
+
+    revokeAccessToken(accessToken?: any): Observable<any> {
+        // TODO implement
+        return of(true);
     }
 
     private isTokenValid(token: string): boolean {
