@@ -28,6 +28,7 @@ export class LoginComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.logger.debug('[Login] - ngOnInit()');
         this.configService.getClientSettings().subscribe(() => {
             this.securityService.isAuthenticated$
                 .pipe(
