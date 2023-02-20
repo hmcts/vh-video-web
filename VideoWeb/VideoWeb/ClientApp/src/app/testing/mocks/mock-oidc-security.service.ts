@@ -12,13 +12,6 @@ interface UserData {
 }
 
 export class MockOidcSecurityService implements ISecurityService {
-    logoff(urlHandler?: (url: string) => any): void {
-        // TODO implement
-    }
-    revokeAccessToken(accessToken?: any): Observable<any> {
-        // TODO implement
-        return of(true);
-    }
     get userData$(): Observable<UserData> {
         return of(this.userData);
     }
@@ -54,5 +47,13 @@ export class MockOidcSecurityService implements ISecurityService {
 
     checkAuth(url?: string): Observable<boolean> {
         return of(this.authenticated);
+    }
+
+    logoff(urlHandler?: (url: string) => any): void {
+        // TODO implement
+    }
+    revokeAccessToken(accessToken?: any): Observable<any> {
+        // TODO implement
+        return of(true);
     }
 }

@@ -40,9 +40,9 @@ export class LogoutComponent implements OnInit {
                 console.log('OliverDebug - clearing judge allocation storage');
                 this.judgeAllocationStorage.clear();
                 console.log('OliverDebug - logging off and revoking tokens');
-                //this.securityService.logoffAndRevokeTokens();
                 this.securityService.logoffAndRevokeTokens();
-                this.securityService.revokeAccessToken();
+                console.log('OliverDebug - logging off');
+                this.securityService.logoff();
             } else {
                 console.log('OliverDebug - not authenticated');
             }
