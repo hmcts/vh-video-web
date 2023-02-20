@@ -40,7 +40,7 @@ export class LogoutComponent implements OnInit {
                 console.log('LogoutComponent - clearing judge allocation storage');
                 this.judgeAllocationStorage.clear();
                 console.log('LogoutComponent - logging off and revoking tokens');
-                this.securityService.logoffAndRevokeTokens().subscribe();
+                this.securityService.logoffAndRevokeTokens();
             } else {
                 console.log('LogoutComponent - not authenticated');
             }
