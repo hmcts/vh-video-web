@@ -395,7 +395,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.displayConfirmPopup = false;
         if (answer) {
             this.logger.debug(`${this.loggerPrefix} Attempting to close hearing`, this.logPayload);
-            this.logger.debug(`vho.equipment.check: cleared ${this.sessionStorage.get()}`);
             this.videoCallService.endHearing(this.conferenceId);
             this.sessionStorage.clear();
         }
