@@ -5,7 +5,12 @@
   <div *ngFor="let task of tasks" class="govuk-grid-row govuk-!-margin-0">
     <ng-container
       *ngIf="sessionStorage.get() && task.body !== 'Failed self-test (Incomplete Test)' && task.body !== 'Failed self-test (Bad Score)'"
-    >
+      ><ng-container *ngTemplateOutlet="alertTask"></ng-container
+    ></ng-container>
+
+    <ng-container *ngIf="!sessionStorage.get()"><ng-container *ngTemplateOutlet="alertTask"></ng-container></ng-container>
+
+    <ng-template #alertTask>
       <div class="govuk-grid-column-one-quarter task-checkbox-and-time govuk-!-padding-right-0">
         <div class="govuk-checkboxes__item">
           <input
@@ -45,6 +50,6 @@
           <span class="updated-time">{{ task.updated | date: 'HH:mm' }}</span>
         </p>
       </div>
-    </ng-container>
+    </ng-template>
   </div>
 </div>
