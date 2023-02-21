@@ -1238,5 +1238,8 @@
     "link-text": "Complete our short survey here"
   },
   "true": "Yes",
-  "false": "No"
+  "false": "No",
+    "allocations-toastr": {
+        "header" : "New hearing(s) allocated"
+    }
 }

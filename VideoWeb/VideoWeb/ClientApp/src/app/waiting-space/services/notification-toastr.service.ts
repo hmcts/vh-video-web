@@ -11,6 +11,7 @@ import { ParticipantHeartbeat } from '../../services/models/participant-heartbea
 import { TranslateService } from '@ngx-translate/core';
 import { ConsultationInvitation } from './consultation-invitation.service';
 import { VideoCallService } from './video-call.service';
+import { HearingSummary } from '../../shared/models/hearing-summary';
 
 @Injectable()
 export class NotificationToastrService {
@@ -430,6 +431,63 @@ export class NotificationToastrService {
         };
 
         return toast.toastRef.componentInstance as VhToastComponent;
+    }
+
+    createAllocationNotificationToast(hearings: HearingSummary[]): VhToastComponent {
+        const toast = this.toastr.show('', '', {
+            timeOut: 0,
+            extendedTimeOut: 0,
+            toastClass: 'vh-no-pointer',
+            tapToDismiss: false,
+            toastComponent: VhToastComponent
+        });
+
+        let header = `<div class="govuk-!-font-weight-bold toast-content toast-header">${this.translateService.instant(
+            'allocations-toastr.header'
+        )}</div></br></br>`;
+
+
+        let messageBody = '';
+
+
+
+        hearings.forEach(h=> {
+            const judge = h.judgeName;
+            const time = this.getTime(h.scheduledStartTime);
+            const caseName = h.caseName;
+
+            messageBody += '<div class="govuk-!-font-weight-bold">' + time + '</div>';
+            messageBody += '<div class="govuk-!-font-weight-bold">' + judge + '</div>';
+            messageBody += '<div class="govuk-!-font-weight-bold">' + caseName + '</div>';
+            messageBody += '</br></br>';
+
+        });
+
+        let message: string = header + `<span class="toast-content toast-body">${messageBody}</span>`;
+
+        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
+            color: 'black',
+            htmlBody: message,
+            onNoAction: async () => {
+                this.logger.info(`${this.loggerPrefix} No action called on allocation hearing alert`);
+            },
+            buttons: [
+                {
+                    id: 'notification-toastr-create-consultation-notification-close',
+                    label: this.translateService.instant('notification-toastr.linked-participants.button-close'),
+                    cssClass: 'red',
+                    action: async () => {
+                        this.toastr.remove(toast.toastId);
+                    }
+                }
+            ]
+        };
+
+        return toast.toastRef.componentInstance as VhToastComponent;
+    }
+
+    private getTime(date: Date): string {
+        return date.getHours() + ' : ' + date.getMinutes();
     }
 
     private translateHearingRole(hearingRole: string) {

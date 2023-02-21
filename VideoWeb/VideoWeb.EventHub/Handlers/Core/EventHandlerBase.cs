@@ -40,19 +40,18 @@ namespace VideoWeb.EventHub.Handlers.Core
 
         public abstract EventType EventType { get; }
 
-        public async Task HandleAsync(CallbackEvent callbackEvent)
+        public async virtual Task HandleAsync(CallbackEvent callbackEvent)
         {
             SourceConference = await GetConference(callbackEvent.ConferenceId);
             if (SourceConference == null) throw new ConferenceNotFoundException(callbackEvent.ConferenceId);
-
             SourceParticipant = SourceConference.Participants
                 .SingleOrDefault(x => x.Id == callbackEvent.ParticipantId);
-
             SourceEndpoint = SourceConference.Endpoints
                 .SingleOrDefault(x => x.Id == callbackEvent.ParticipantId);
 
             Logger.LogTrace("Handling Event: {EventType} for conferenceId {ConferenceId} with reason {Reason}",
                 callbackEvent.EventType, callbackEvent.ConferenceId, callbackEvent.Reason);
+
             await PublishStatusAsync(callbackEvent);
         }
 
@@ -138,7 +137,8 @@ namespace VideoWeb.EventHub.Handlers.Core
             Logger.LogTrace("RoomTransfer sent to group: {Group}", Hub.EventHub.VhOfficersGroupName);
         }
 
-        protected async Task PublishParticipantsUpdatedMessage(List<ParticipantResponse> updatedParticipants, List<ParticipantResponse> participantsToNotify)
+        protected async Task PublishParticipantsUpdatedMessage(List<ParticipantResponse> updatedParticipants,
+            List<ParticipantResponse> participantsToNotify)
         {
             foreach (var participant in participantsToNotify)
             {
@@ -156,6 +156,12 @@ namespace VideoWeb.EventHub.Handlers.Core
         {
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .NewConferenceAddedMessage(conferenceId);
+        }
+
+        protected async Task PublishAllocationHearingsMessage(string csoUserName, IList<Guid> hearingsIds)
+        {
+            await HubContext.Clients.Group(csoUserName)
+                .AllocationHearings(csoUserName, hearingsIds);
         }
 
         protected abstract Task PublishStatusAsync(CallbackEvent callbackEvent);
