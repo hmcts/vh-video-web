@@ -41,6 +41,18 @@ export class TasksTableComponent implements OnInit, OnDestroy {
             });
     }
 
+    getSelfTestResponse(task: TaskResponse): boolean {
+        if (
+            (this.sessionStorage.get() &&
+                task.body !== 'Failed self-test (Incomplete Test)' &&
+                task.body !== 'Failed self-test (Bad Score)') ||
+            !this.sessionStorage.get()
+        ) {
+            return true;
+        }
+        return false;
+    }
+
     getOriginName(task: TaskResponse): string {
         if (task.type !== TaskType.Hearing) {
             const participantTask = this.conference.participants.find(x => x.id === task.origin_id);
