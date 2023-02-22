@@ -71,6 +71,7 @@ export class TasksTestData {
         testData.push(task3);
         testData.push(task4);
         testData.push(task5);
+        testData.push(task6);
         return testData;
     }
 
