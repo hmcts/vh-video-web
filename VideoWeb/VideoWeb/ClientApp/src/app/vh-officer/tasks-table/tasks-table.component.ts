@@ -50,7 +50,6 @@ export class TasksTableComponent implements OnInit, OnDestroy {
         ) {
             return true;
         }
-        return false;
     }
 
     getOriginName(task: TaskResponse): string {

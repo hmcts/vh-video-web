@@ -208,5 +208,13 @@ describe('TasksTableComponent', () => {
             const res = component.getSelfTestResponse(task);
             expect(res).toEqual(true);
         });
+
+        it('should display all the tasks when self test not done and session is cleaed', () => {
+            component.sessionStorage.clear();
+            component.tasks = new TasksTestData().getTestData();
+            const task = component.tasks.find(x => x.body === 'Disconnected');
+            const res = component.getSelfTestResponse(task);
+            expect(res).toEqual(true);
+        });
     });
 });
