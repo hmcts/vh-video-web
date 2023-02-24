@@ -42,14 +42,10 @@ export class TasksTableComponent implements OnInit, OnDestroy {
     }
 
     getSelfTestResponse(task: TaskResponse): boolean {
-        if (
-            (this.sessionStorage.get() &&
-                task.body !== 'Failed self-test (Incomplete Test)' &&
-                task.body !== 'Failed self-test (Bad Score)') ||
-            !this.sessionStorage.get()
-        ) {
-            return true;
-        }
+        return (
+            !this.sessionStorage.get() ||
+            (task.body !== 'Failed self-test (Incomplete Test)' && task.body !== 'Failed self-test (Bad Score)')
+        );
     }
 
     getOriginName(task: TaskResponse): string {
