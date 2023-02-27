@@ -46,6 +46,8 @@ import { ConfigService } from 'src/app/services/api/config.service';
 import { FeatureFlagService } from 'src/app/services/feature-flag.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
+import { SessionStorage } from 'src/app/services/session-storage';
+import { VhoStorageKeys } from 'src/app/vh-officer/services/models/session-keys';
 
 describe('HearingControlsBaseComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -158,6 +160,8 @@ describe('HearingControlsBaseComponent', () => {
         component.isPrivateConsultation = false;
         component.setupEventhubSubscribers();
         component.setupVideoCallSubscribers();
+        component.sessionStorage = new SessionStorage<boolean>(VhoStorageKeys.EQUIPMENT_SELF_TEST_KEY);
+        component.sessionStorage.set(true);
     });
 
     afterEach(() => {
@@ -627,11 +631,13 @@ describe('HearingControlsBaseComponent', () => {
         component.close(true);
         expect(component.displayConfirmPopup).toBeFalsy();
         expect(videoCallService.endHearing).toHaveBeenCalledWith(component.conferenceId);
+        expect(component.sessionStorage.get()).toBeNull();
     });
 
     it('should close the hearing', () => {
         component.close(true);
         expect(videoCallService.endHearing).toHaveBeenCalledWith(component.conferenceId);
+        expect(component.sessionStorage.get()).toBeNull();
     });
 
     it('should return true when partipant is judge', () => {
