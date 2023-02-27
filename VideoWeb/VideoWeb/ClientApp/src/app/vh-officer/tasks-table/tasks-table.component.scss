@@ -56,7 +56,7 @@
 
 .task-list {
   height: 200px;
-  overflow-y: scroll;
+  overflow: auto;
 }
 
 ::-webkit-scrollbar {

@@ -19,6 +19,8 @@ import { ConnectedScreenshare, ParticipantUpdated, StoppedScreenshare } from '..
 import { VideoCallService } from '../services/video-call.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
 import { CaseTypeGroup } from '../models/case-type-group';
+import { SessionStorage } from 'src/app/services/session-storage';
+import { VhoStorageKeys } from 'src/app/vh-officer/services/models/session-keys';
 
 @Injectable()
 export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy {
@@ -55,6 +57,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     protected destroyedSubject = new Subject<void>();
     sharingDynamicEvidence: boolean;
+    sessionStorage = new SessionStorage<boolean>(VhoStorageKeys.EQUIPMENT_SELF_TEST_KEY);
 
     protected constructor(
         protected videoCallService: VideoCallService,
@@ -393,6 +396,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         if (answer) {
             this.logger.debug(`${this.loggerPrefix} Attempting to close hearing`, this.logPayload);
             this.videoCallService.endHearing(this.conferenceId);
+            this.sessionStorage.clear();
         }
     }
 

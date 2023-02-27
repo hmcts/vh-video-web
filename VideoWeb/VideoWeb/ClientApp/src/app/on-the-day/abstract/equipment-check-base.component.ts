@@ -9,6 +9,8 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { Directive } from '@angular/core';
+import { SessionStorage } from 'src/app/services/session-storage';
+import { VhoStorageKeys } from 'src/app/vh-officer/services/models/session-keys';
 
 @Directive()
 export abstract class EquipmentCheckBaseComponentDirective extends ParticipantStatusBaseDirective {
@@ -19,6 +21,7 @@ export abstract class EquipmentCheckBaseComponentDirective extends ParticipantSt
     conference: ConferenceLite;
     participantId: string;
     participantName: string;
+    sessionStorage = new SessionStorage<boolean>(VhoStorageKeys.EQUIPMENT_SELF_TEST_KEY);
 
     constructor(
         protected router: Router,
@@ -74,6 +77,7 @@ export abstract class EquipmentCheckBaseComponentDirective extends ParticipantSt
         }
 
         if (this.form.valid && this.form.dirty) {
+            this.sessionStorage.set(this.form.valid);
             this.navigateToNextPage();
             return;
         }
