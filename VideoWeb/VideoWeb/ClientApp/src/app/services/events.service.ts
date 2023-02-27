@@ -82,9 +82,9 @@ export class EventsService {
             this.eventsHubConnection.invoke('AddToGroup', conferenceId);
         },
 
-        AllocationHearings: (csoUserName: string, hearingsIds: []) => {
+        AllocationHearings: (csoUserName: string, hearingDetails: []) => {
             this.eventsHubConnection.invoke('AddToGroup', csoUserName);
-            const message = new NewAllocationMessage(hearingsIds);
+            const message = new NewAllocationMessage(hearingDetails);
             this.logger.debug(`[EventsService] - ReceiveMessage allocation for {csoUserName} for hearings`);
             this.messageAllocationSubject.next(message);
         },

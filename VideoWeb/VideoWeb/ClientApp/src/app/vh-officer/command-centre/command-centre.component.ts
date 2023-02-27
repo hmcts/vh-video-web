@@ -354,13 +354,11 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     private handleAllocationUpdate(allocationHearingMessage: NewAllocationMessage) {
-        let hearingsReceived: HearingSummary[] = [];
-        allocationHearingMessage.hearingIds.forEach(id =>
-        {
-            const hearing = this.hearings.find(h => h.getConference().hearing_ref_id === id);
-            if (hearing) hearingsReceived.push(hearing);
-        });
 
-        this.notificationToastrService.createAllocationNotificationToast(hearingsReceived);
+
+        this.notificationToastrService.createAllocationNotificationToast(allocationHearingMessage.hearingDetails);
+
+
+
     }
 }

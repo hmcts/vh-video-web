@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using VideoApi.Client;
+using VideoApi.Contract.Requests;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
@@ -158,10 +159,10 @@ namespace VideoWeb.EventHub.Handlers.Core
                 .NewConferenceAddedMessage(conferenceId);
         }
 
-        protected async Task PublishAllocationHearingsMessage(string csoUserName, IList<Guid> hearingsIds)
+        protected async Task PublishAllocationHearingsMessage(string csoUserName, IList<HearingDetailRequest> hearings)
         {
             await HubContext.Clients.Group(csoUserName)
-                .AllocationHearings(csoUserName, hearingsIds);
+                .AllocationHearings(csoUserName, hearings);
         }
 
         protected abstract Task PublishStatusAsync(CallbackEvent callbackEvent);

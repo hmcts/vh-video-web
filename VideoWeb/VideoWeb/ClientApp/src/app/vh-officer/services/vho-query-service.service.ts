@@ -5,7 +5,7 @@ import {
     ConferenceResponseVho,
     ParticipantHeartbeatResponse,
     TaskResponse,
-    CourtRoomsAccountResponse
+    CourtRoomsAccountResponse, ConferenceForIndividualResponse
 } from 'src/app/services/clients/api-client';
 import { Injectable } from '@angular/core';
 
@@ -61,5 +61,9 @@ export class VhoQueryService {
 
     getCourtRoomsAccounts(venueAllocation: string[]): Promise<CourtRoomsAccountResponse[]> {
         return this.apiClient.getCourtRoomAccounts(venueAllocation).toPromise();
+    }
+
+    getConferencesForUser(): Promise<ConferenceForIndividualResponse[]> {
+        return this.apiClient.getConferencesForIndividual().toPromise();
     }
 }

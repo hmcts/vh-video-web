@@ -132,7 +132,7 @@ namespace VideoWeb.Controllers
                 _logger.LogDebug($"AllocationHearings called. Request {JsonSerializer.Serialize(request)}");
 
                 var csoToNotify = request.AllocatedCsoUserName;
-                var hearings = request.HearingsRequest;
+                var hearings = request.Hearings;
                 
                 await _allocationHearingsEventNotifier.PushAllocationHearingsEvent(csoToNotify, hearings);
                 return NoContent();

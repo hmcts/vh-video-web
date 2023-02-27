@@ -1,6 +1,6 @@
 export class NewAllocationMessage {
-    constructor(hearingIds: []) {
-        this.hearingIds = hearingIds;
+    constructor(hearingDetails: []) {
+        this.hearingDetails = hearingDetails;
     }
-    hearingIds: [];
+    hearingDetails: [];
 }

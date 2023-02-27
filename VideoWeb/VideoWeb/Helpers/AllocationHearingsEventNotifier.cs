@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using VideoApi.Contract.Requests;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Handlers.Core;
@@ -28,13 +29,13 @@ namespace VideoWeb.Helpers
             _logger = logger;
         }
         
-        public Task PushAllocationHearingsEvent(string csoUserName, IList<Guid> hearingsIds)
+        public Task PushAllocationHearingsEvent(string csoUserName, IList<HearingDetailRequest> hearings)
         {
             CallbackEvent callbackEvent = new CallbackEvent()
             {
                 EventType = EventType.AllocationHearings,
                 TimeStampUtc = DateTime.UtcNow,
-                AllocatedHearingsIds = hearingsIds.ToList(),
+                AllocatedHearingsDetails = hearings.ToList(),
                 CsoAllocatedUserName = csoUserName
             };
 

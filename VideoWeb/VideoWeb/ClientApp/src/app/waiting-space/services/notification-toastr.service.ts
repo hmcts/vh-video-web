@@ -11,7 +11,6 @@ import { ParticipantHeartbeat } from '../../services/models/participant-heartbea
 import { TranslateService } from '@ngx-translate/core';
 import { ConsultationInvitation } from './consultation-invitation.service';
 import { VideoCallService } from './video-call.service';
-import { HearingSummary } from '../../shared/models/hearing-summary';
 
 @Injectable()
 export class NotificationToastrService {
@@ -433,7 +432,7 @@ export class NotificationToastrService {
         return toast.toastRef.componentInstance as VhToastComponent;
     }
 
-    createAllocationNotificationToast(hearings: HearingSummary[]): VhToastComponent {
+    createAllocationNotificationToast(hearings: any[]): VhToastComponent {
         const toast = this.toastr.show('', '', {
             timeOut: 0,
             extendedTimeOut: 0,
@@ -452,9 +451,9 @@ export class NotificationToastrService {
 
 
         hearings.forEach(h=> {
-            const judge = h.judgeName;
-            const time = this.getTime(h.scheduledStartTime);
-            const caseName = h.caseName;
+            const judge = h.judge;
+            const time = h.time;
+            const caseName = h.case_name;
 
             messageBody += '<div class="govuk-!-font-weight-bold">' + time + '</div>';
             messageBody += '<div class="govuk-!-font-weight-bold">' + judge + '</div>';
@@ -484,10 +483,6 @@ export class NotificationToastrService {
         };
 
         return toast.toastRef.componentInstance as VhToastComponent;
-    }
-
-    private getTime(date: Date): string {
-        return date.getHours() + ' : ' + date.getMinutes();
     }
 
     private translateHearingRole(hearingRole: string) {
