@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VideoApi.Contract.Requests;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Enums;
@@ -19,35 +20,24 @@ namespace VideoWeb.UnitTests.EventHandlers
         private AllocationHearingsEventHandler _eventHandler;
 
         [Test]
-        public async Task Should_send_participants_updated_message_to_participants()
+        public async Task Should_send_allocation_message_to_cso()
         {
             _eventHandler = new AllocationHearingsEventHandler(EventHubContextMock.Object, ConferenceCache,
                 LoggerMock.Object, VideoApiClientMock.Object);
 
-            var conference = TestConference;
-
-            var participantCount = conference.Participants.Count;
-            var participants = conference.Participants
-                .Select(p => new ParticipantResponse
-                {
-                    UserName = p.Username
-                })
-                .ToList();
-
+            var allocatedHearingsDetails = new List<HearingDetailRequest>();
             var callbackEvent = new CallbackEvent
             {
-                EventType = EventType.ParticipantsUpdated,
-                EventId = Guid.NewGuid().ToString(),
-                ConferenceId = conference.Id,
-                Participants = participants,
-                ParticipantsToNotify = participants,
+                EventType = EventType.AllocationHearings,
+                CsoAllocatedUserName = "csousername@email.com",
+                AllocatedHearingsDetails = allocatedHearingsDetails,
                 TimeStampUtc = DateTime.UtcNow
             };
 
             await _eventHandler.HandleAsync(callbackEvent);
 
             EventHubClientMock.Verify(
-                x => x.ParticipantsUpdatedMessage(conference.Id, participants), Times.Exactly(participantCount + 1));
+                x => x.AllocationHearings("csousername@email.com", allocatedHearingsDetails), Times.Exactly(1));
         }
     }
 }
