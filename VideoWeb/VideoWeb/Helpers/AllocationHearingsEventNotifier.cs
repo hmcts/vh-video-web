@@ -18,14 +18,11 @@ namespace VideoWeb.Helpers
     public class AllocationHearingsEventNotifier: IAllocationHearingsEventNotifier
     {     
         private readonly IEventHandlerFactory _eventHandlerFactory;
-        private readonly IMapperFactory _mapperFactory;
         private readonly ILogger<AllocationHearingsEventNotifier> _logger;
 
-        public AllocationHearingsEventNotifier(IEventHandlerFactory eventHandlerFactory, 
-            IMapperFactory mapperFactory, ILogger<AllocationHearingsEventNotifier> logger)
+        public AllocationHearingsEventNotifier(IEventHandlerFactory eventHandlerFactory, ILogger<AllocationHearingsEventNotifier> logger)
         {
             _eventHandlerFactory = eventHandlerFactory;
-            _mapperFactory = mapperFactory;
             _logger = logger;
         }
         
