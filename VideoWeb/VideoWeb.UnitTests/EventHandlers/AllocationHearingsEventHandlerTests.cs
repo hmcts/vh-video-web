@@ -2,16 +2,11 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using VideoApi.Contract.Requests;
-using VideoWeb.Common.Models;
-using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Mappings;
 
 namespace VideoWeb.UnitTests.EventHandlers
 {
@@ -22,6 +17,8 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task Should_send_allocation_message_to_cso()
         {
+            EventHubContextMock.Setup(x => x.Clients.Group("csousername@email.com"))
+                .Returns(EventHubClientMock.Object);
             _eventHandler = new AllocationHearingsEventHandler(EventHubContextMock.Object, ConferenceCache,
                 LoggerMock.Object, VideoApiClientMock.Object);
 

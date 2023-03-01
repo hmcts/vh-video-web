@@ -161,7 +161,7 @@ namespace VideoWeb.EventHub.Handlers.Core
 
         protected async Task PublishAllocationHearingsMessage(string csoUserName, IList<HearingDetailRequest> hearings)
         {
-            await HubContext.Clients.Group(csoUserName)
+            await HubContext.Clients.Group(csoUserName.ToLowerInvariant())
                 .AllocationHearings(csoUserName, hearings);
         }
 
