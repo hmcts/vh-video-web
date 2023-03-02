@@ -5,12 +5,9 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using VideoApi.Contract.Requests;
-using VideoWeb.Common.Models;
-using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Helpers.Interfaces;
-using VideoWeb.Mappings;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 
 namespace VideoWeb.Helpers
@@ -36,7 +33,7 @@ namespace VideoWeb.Helpers
                 CsoAllocatedUserName = csoUserName
             };
 
-            _logger.LogTrace($"Publishing event to UI: {JsonSerializer.Serialize(callbackEvent)}");
+            _logger.LogTrace("Publishing event to UI: {event}", JsonSerializer.Serialize(callbackEvent));
             return PublishEventToUi(callbackEvent);
         }
 
