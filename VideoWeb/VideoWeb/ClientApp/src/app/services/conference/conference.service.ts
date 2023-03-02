@@ -73,7 +73,7 @@ export class ConferenceService {
 
     getConferenceById(conferenceId: string | Guid): Observable<ConferenceResponse> {
         this.logger.info(`${this.loggerPrefix} getting conference by ID: ${conferenceId}`);
-        
+
         return this.apiClient.getConferenceById(conferenceId.toString());
     }
 

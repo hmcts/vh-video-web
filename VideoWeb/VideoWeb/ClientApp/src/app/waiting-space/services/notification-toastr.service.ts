@@ -441,16 +441,13 @@ export class NotificationToastrService {
             toastComponent: VhToastComponent
         });
 
-        let header = `<div class="govuk-!-font-weight-bold toast-content toast-header">${this.translateService.instant(
+        const header = `<div class="govuk-!-font-weight-bold toast-content toast-header">${this.translateService.instant(
             'allocations-toastr.header'
         )}</div></br></br>`;
 
-
         let messageBody = '';
 
-
-
-        hearings.forEach(h=> {
+        hearings.forEach(h => {
             const judge = h.judge;
             const time = h.time;
             const caseName = h.case_name;
@@ -459,10 +456,9 @@ export class NotificationToastrService {
             messageBody += '<div class="govuk-!-font-weight-bold">' + judge + '</div>';
             messageBody += '<div class="govuk-!-font-weight-bold">' + caseName + '</div>';
             messageBody += '</br></br>';
-
         });
 
-        let message: string = header + `<span class="toast-content toast-body">${messageBody}</span>`;
+        const message: string = header + `<span class="toast-content toast-body">${messageBody}</span>`;
 
         (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
             color: 'black',

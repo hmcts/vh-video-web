@@ -19,7 +19,8 @@ import {
     eventHubReconnectSubjectMock,
     eventsServiceSpy,
     hearingStatusSubjectMock,
-    heartbeatSubjectMock, newAllocationMessageSubjectMock,
+    heartbeatSubjectMock,
+    newAllocationMessageSubjectMock,
     participantStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';

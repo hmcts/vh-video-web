@@ -5,7 +5,8 @@ import {
     ConferenceResponseVho,
     ParticipantHeartbeatResponse,
     TaskResponse,
-    CourtRoomsAccountResponse, ConferenceForIndividualResponse
+    CourtRoomsAccountResponse,
+    ConferenceForIndividualResponse
 } from 'src/app/services/clients/api-client';
 import { Injectable } from '@angular/core';
 
