@@ -23,7 +23,7 @@ import { Guid } from 'guid-typescript';
 
 describe('NotificationToastrService', () => {
     let service: NotificationToastrService;
-    //const logger: Logger = new MockLogger();
+    // const logger: Logger = new MockLogger();
     let logger: jasmine.SpyObj<Logger>;
     let roomLabel: string;
     let translateServiceSpy: jasmine.SpyObj<TranslateService>;
@@ -1096,14 +1096,14 @@ describe('NotificationToastrService', () => {
         const expectedToastId = 2;
         const hearingsPassed = [
             {
-               judge:'Judge1',
-               time:'10:00',
-               case_name:'case name 1'
+                judge: 'Judge1',
+                time: '10:00',
+                case_name: 'case name 1'
             },
             {
-                judge:'Judge2',
-                time:'11:00',
-                case_name:'case name 2'
+                judge: 'Judge2',
+                time: '11:00',
+                case_name: 'case name 2'
             }
         ];
 
@@ -1123,9 +1123,7 @@ describe('NotificationToastrService', () => {
                 }
             } as ActiveToast<VhToastComponent>;
 
-            translateServiceSpy.instant
-                .withArgs('allocations-toastr.header', jasmine.any(Object))
-                .and.returnValue(translatedMessageHeader);
+            translateServiceSpy.instant.withArgs('allocations-toastr.header', jasmine.any(Object)).and.returnValue(translatedMessageHeader);
 
             translateServiceSpy.instant
                 .withArgs('notification-toastr.linked-participants.button-close', jasmine.any(Object))
