@@ -23,7 +23,8 @@ import { Guid } from 'guid-typescript';
 
 describe('NotificationToastrService', () => {
     let service: NotificationToastrService;
-    const logger: Logger = new MockLogger();
+    //const logger: Logger = new MockLogger();
+    let logger: jasmine.SpyObj<Logger>;
     let roomLabel: string;
     let translateServiceSpy: jasmine.SpyObj<TranslateService>;
     let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
@@ -37,6 +38,7 @@ describe('NotificationToastrService', () => {
         translateServiceSpy.instant.and.callFake(k => k);
         videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>('VideoCallService', ['joinHearingInSession']);
         videoCallServiceSpy.joinHearingInSession.and.returnValue(Promise.resolve());
+        logger = jasmine.createSpyObj<Logger>('Logger', ['info']);
         service = new NotificationToastrService(
             logger,
             toastrService,
@@ -1086,6 +1088,108 @@ describe('NotificationToastrService', () => {
 
             // Assert
             expect(toastComponentInstance.vhToastOptions.color).toBe(expectedInHearingColor);
+        });
+    });
+
+    describe('showAllocationHearings', () => {
+        let mockToast: ActiveToast<VhToastComponent>;
+        const expectedToastId = 2;
+        const hearingsPassed = [
+            {
+               judge:'Judge1',
+               time:'10:00',
+               case_name:'case name 1'
+            },
+            {
+                judge:'Judge2',
+                time:'11:00',
+                case_name:'case name 2'
+            }
+        ];
+
+        const translatedMessageHeader = 'TranslatedMessageHeader';
+        const translatedMessageClose = 'TranslatedMessageClose';
+
+        const expectedButtonTranslationString = 'notification-toastr.linked-participants.button-close';
+
+        beforeEach(() => {
+            toastrService.show.calls.reset();
+            toastrService.remove.calls.reset();
+            translateServiceSpy.instant.calls.reset();
+            mockToast = {
+                toastId: expectedToastId,
+                toastRef: {
+                    componentInstance: {}
+                }
+            } as ActiveToast<VhToastComponent>;
+
+            translateServiceSpy.instant
+                .withArgs('allocations-toastr.header', jasmine.any(Object))
+                .and.returnValue(translatedMessageHeader);
+
+            translateServiceSpy.instant
+                .withArgs('notification-toastr.linked-participants.button-close', jasmine.any(Object))
+                .and.returnValue(translatedMessageClose);
+        });
+
+        it('should call toastr.show with the correct parameters', () => {
+            toastrService.show.and.returnValue(mockToast);
+
+            // Act
+            service.createAllocationNotificationToast(hearingsPassed);
+
+            // Assert
+            expect(toastrService.show).toHaveBeenCalledOnceWith('', '', {
+                timeOut: 0,
+                extendedTimeOut: 0,
+                toastClass: 'vh-no-pointer',
+                tapToDismiss: false,
+                toastComponent: VhToastComponent
+            });
+        });
+
+        it('should have a button to close the toast', () => {
+            // Arrange
+            const expectedHoverColor = 'red';
+            toastrService.show.and.returnValue(mockToast);
+            const btnId = 'notification-toastr-create-consultation-notification-close';
+
+            // Act
+            const toastComponentInstance = service.createAllocationNotificationToast(hearingsPassed);
+
+            // Assert
+            expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(1);
+            expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy();
+            expect(toastComponentInstance.vhToastOptions.buttons[0].id).toBe(btnId);
+            expect(toastComponentInstance.vhToastOptions.buttons[0].cssClass).toBe(expectedHoverColor);
+            expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedButtonTranslationString);
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedButtonTranslationString);
+        });
+
+        it('should call toastr.remove with the toast id when the button action is triggered', () => {
+            // Arrange
+            toastrService.show.and.returnValue(mockToast);
+
+            const toastComponentInstance = service.createAllocationNotificationToast(hearingsPassed);
+            const button = toastComponentInstance.vhToastOptions.buttons[0];
+
+            // Act
+            button.action();
+
+            // Assert
+            expect(toastrService.remove).toHaveBeenCalledOnceWith(expectedToastId);
+        });
+
+        it('should NOT call toastr.remove with the toast id when the NO action is triggered', () => {
+            // Arrange
+            toastrService.show.and.returnValue(mockToast);
+            const toastComponentInstance = service.createAllocationNotificationToast(hearingsPassed);
+
+            // Act
+            toastComponentInstance.vhToastOptions.onNoAction();
+
+            // Assert
+            expect(logger.info).toHaveBeenCalled();
         });
     });
 });

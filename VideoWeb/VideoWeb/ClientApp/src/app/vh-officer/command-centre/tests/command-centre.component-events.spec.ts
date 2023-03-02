@@ -243,5 +243,6 @@ describe('CommandCentreComponent - Events', () => {
         newAllocationMessageSubjectMock.next(message);
 
         expect(component).toBeTruthy();
+        expect(notificationToastrServiceSpy.createAllocationNotificationToast).toHaveBeenCalledTimes(1);
     });
 });
