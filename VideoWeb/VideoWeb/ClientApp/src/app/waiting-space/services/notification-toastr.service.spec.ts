@@ -38,7 +38,7 @@ describe('NotificationToastrService', () => {
         translateServiceSpy.instant.and.callFake(k => k);
         videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>('VideoCallService', ['joinHearingInSession']);
         videoCallServiceSpy.joinHearingInSession.and.returnValue(Promise.resolve());
-        logger = jasmine.createSpyObj<Logger>('Logger', ['info']);
+        logger = jasmine.createSpyObj<Logger>('Logger', ['info', 'debug']);
         service = new NotificationToastrService(
             logger,
             toastrService,
