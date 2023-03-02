@@ -3,8 +3,6 @@ import { ConsultationAnswer, ParticipantResponse, Role } from 'src/app/services/
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Participant } from 'src/app/shared/models/participant';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
-import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import {
     consultationService,
     globalConference,
