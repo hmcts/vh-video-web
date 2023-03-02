@@ -63,8 +63,4 @@ export class VhoQueryService {
     getCourtRoomsAccounts(venueAllocation: string[]): Promise<CourtRoomsAccountResponse[]> {
         return this.apiClient.getCourtRoomAccounts(venueAllocation).toPromise();
     }
-
-    getConferencesForUser(): Promise<ConferenceForIndividualResponse[]> {
-        return this.apiClient.getConferencesForIndividual().toPromise();
-    }
 }
