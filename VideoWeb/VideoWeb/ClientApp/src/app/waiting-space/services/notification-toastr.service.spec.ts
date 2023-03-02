@@ -18,6 +18,7 @@ import { ConsultationInvitation } from './consultation-invitation.service';
 import { TranslateService } from '@ngx-translate/core';
 import { VideoCallService } from './video-call.service';
 import { Guid } from 'guid-typescript';
+import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 
 describe('NotificationToastrService', () => {
     let service: NotificationToastrService;
