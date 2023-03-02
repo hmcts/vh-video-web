@@ -353,7 +353,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         }
     }
 
-    private handleAllocationUpdate(allocationHearingMessage: NewAllocationMessage) {
+        handleAllocationUpdate(allocationHearingMessage: NewAllocationMessage) {
         this.notificationToastrService.createAllocationNotificationToast(allocationHearingMessage.hearingDetails);
     }
 }

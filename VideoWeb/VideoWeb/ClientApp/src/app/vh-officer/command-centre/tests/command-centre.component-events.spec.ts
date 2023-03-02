@@ -19,7 +19,7 @@ import {
     eventHubReconnectSubjectMock,
     eventsServiceSpy,
     hearingStatusSubjectMock,
-    heartbeatSubjectMock,
+    heartbeatSubjectMock, newAllocationMessageSubjectMock,
     participantStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
@@ -27,6 +27,7 @@ import { VhoQueryService } from '../../services/vho-query-service.service';
 import { CommandCentreComponent } from '../command-centre.component';
 import { LaunchDarklyService } from '../../../services/launch-darkly.service';
 import { NotificationToastrService } from '../../../waiting-space/services/notification-toastr.service';
+import { NewAllocationMessage } from '../../../services/models/new-allocation-message';
 
 describe('CommandCentreComponent - Events', () => {
     let component: CommandCentreComponent;
@@ -229,6 +230,16 @@ describe('CommandCentreComponent - Events', () => {
             '10.15.1'
         );
         heartbeatSubjectMock.next(heartBeat);
+
+        expect(component).toBeTruthy();
+    });
+
+    it('should update when allocation hearings message is received', () => {
+        component.setupEventHubSubscribers();
+
+        const message = new NewAllocationMessage([]);
+
+        newAllocationMessageSubjectMock.next(message);
 
         expect(component).toBeTruthy();
     });
