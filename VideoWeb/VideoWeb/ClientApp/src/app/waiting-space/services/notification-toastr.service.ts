@@ -458,7 +458,7 @@ export class NotificationToastrService {
             messageBody += '</br></br>';
         });
 
-        const message: string = header + `<span class="toast-content toast-body">${messageBody}</span>`;
+        const message: string = header + `<div class="toast-content toast-body">${messageBody}</div>`;
 
         (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
             color: 'black',
