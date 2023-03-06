@@ -4,7 +4,12 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ToastrService } from 'ngx-toastr';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { ConsultationAnswer, ParticipantResponse, VideoEndpointResponse } from 'src/app/services/clients/api-client';
+import {
+    ConsultationAnswer,
+    HearingDetailRequest,
+    ParticipantResponse,
+    VideoEndpointResponse
+} from 'src/app/services/clients/api-client';
 import { NotificationSoundsService } from './notification-sounds.service';
 import { Guid } from 'guid-typescript';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
@@ -432,7 +437,7 @@ export class NotificationToastrService {
         return toast.toastRef.componentInstance as VhToastComponent;
     }
 
-    createAllocationNotificationToast(hearings: any[]): VhToastComponent {
+    createAllocationNotificationToast(hearings: HearingDetailRequest[]): VhToastComponent {
         const toast = this.toastr.show('', '', {
             timeOut: 0,
             extendedTimeOut: 0,

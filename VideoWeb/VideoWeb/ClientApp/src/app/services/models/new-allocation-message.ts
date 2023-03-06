@@ -1,6 +1,8 @@
+import { HearingDetailRequest } from '../clients/api-client';
+
 export class NewAllocationMessage {
-    constructor(hearingDetails: []) {
+    constructor(hearingDetails: HearingDetailRequest[]) {
         this.hearingDetails = hearingDetails;
     }
-    hearingDetails: Array<any>;
+    hearingDetails: HearingDetailRequest[];
 }

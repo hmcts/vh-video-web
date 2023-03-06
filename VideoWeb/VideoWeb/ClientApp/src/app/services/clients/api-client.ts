@@ -7219,7 +7219,7 @@ export enum UserRole {
 
 export class AllocationHearingsToCsoRequest implements IAllocationHearingsToCsoRequest {
     allocated_cso_user_name?: string | undefined;
-    hearings_request?: string[] | undefined;
+    hearings?: HearingDetailRequest[] | undefined;
 
     constructor(data?: IAllocationHearingsToCsoRequest) {
         if (data) {
@@ -7232,9 +7232,9 @@ export class AllocationHearingsToCsoRequest implements IAllocationHearingsToCsoR
     init(_data?: any) {
         if (_data) {
             this.allocated_cso_user_name = _data['allocated_cso_user_name'];
-            if (Array.isArray(_data['hearings_request'])) {
-                this.hearings_request = [] as any;
-                for (let item of _data['hearings_request']) this.hearings_request!.push(item);
+            if (Array.isArray(_data['hearings'])) {
+                this.hearings = [] as any;
+                for (let item of _data['hearings']) this.hearings!.push(HearingDetailRequest.fromJS(item));
             }
         }
     }
@@ -7249,9 +7249,9 @@ export class AllocationHearingsToCsoRequest implements IAllocationHearingsToCsoR
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data['allocated_cso_user_name'] = this.allocated_cso_user_name;
-        if (Array.isArray(this.hearings_request)) {
-            data['hearings_request'] = [];
-            for (let item of this.hearings_request) data['hearings_request'].push(item);
+        if (Array.isArray(this.hearings)) {
+            data['hearings'] = [];
+            for (let item of this.hearings) data['hearings'].push(item.toJSON());
         }
         return data;
     }
@@ -7259,7 +7259,7 @@ export class AllocationHearingsToCsoRequest implements IAllocationHearingsToCsoR
 
 export interface IAllocationHearingsToCsoRequest {
     allocated_cso_user_name?: string | undefined;
-    hearings_request?: string[] | undefined;
+    hearings?: HearingDetailRequest[] | undefined;
 }
 
 export class ConferenceEventRequest implements IConferenceEventRequest {
@@ -7331,6 +7331,49 @@ export interface IConferenceEventRequest {
     transfer_to?: string | undefined;
     reason?: string | undefined;
     phone?: string | undefined;
+}
+
+export class HearingDetailRequest implements IHearingDetailRequest {
+    time?: string | undefined;
+    judge?: string | undefined;
+    case_name?: string | undefined;
+
+    constructor(data?: IHearingDetailRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.time = _data['time'];
+            this.judge = _data['judge'];
+            this.case_name = _data['case_name'];
+        }
+    }
+
+    static fromJS(data: any): HearingDetailRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new HearingDetailRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['time'] = this.time;
+        data['judge'] = this.judge;
+        data['case_name'] = this.case_name;
+        return data;
+    }
+}
+
+export interface IHearingDetailRequest {
+    time?: string | undefined;
+    judge?: string | undefined;
+    case_name?: string | undefined;
 }
 
 export enum HearingLayout {

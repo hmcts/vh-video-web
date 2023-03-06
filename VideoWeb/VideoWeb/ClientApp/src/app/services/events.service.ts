@@ -13,6 +13,7 @@ import {
     ConferenceStatus,
     ConsultationAnswer,
     EndpointStatus,
+    HearingDetailRequest,
     HearingLayout,
     ParticipantResponse,
     ParticipantStatus
@@ -82,7 +83,7 @@ export class EventsService {
             this.eventsHubConnection.invoke('AddToGroup', conferenceId);
         },
 
-        AllocationHearings: (csoUserName: string, hearingDetails: []) => {
+        AllocationHearings: (csoUserName: string, hearingDetails: HearingDetailRequest[]) => {
             this.eventsHubConnection.invoke('AddToGroup', csoUserName);
             const message = new NewAllocationMessage(hearingDetails);
             this.logger.debug(`[EventsService] - ReceiveMessage allocation for {csoUserName} for hearings`);
