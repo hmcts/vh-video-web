@@ -4,12 +4,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ToastrService } from 'ngx-toastr';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
-import {
-    ConsultationAnswer,
-    HearingDetailRequest,
-    ParticipantResponse,
-    VideoEndpointResponse
-} from 'src/app/services/clients/api-client';
+import { ConsultationAnswer, HearingDetailRequest, ParticipantResponse, VideoEndpointResponse } from 'src/app/services/clients/api-client';
 import { NotificationSoundsService } from './notification-sounds.service';
 import { Guid } from 'guid-typescript';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
