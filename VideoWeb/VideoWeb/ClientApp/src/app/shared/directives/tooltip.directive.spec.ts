@@ -321,6 +321,35 @@ describe('TooltipDirective', () => {
                 // Then
                 expect(spyHideTooltip).toHaveBeenCalled();
             });
+
+            it('should set tooltip text on key up event', () => {
+                // Given
+                directive.tooltipKeyTab = document.createElement('span');
+                // When
+                directive.setTooltipTextKeyTab();
+                // Then
+                expect(directive.tooltipKeyTab.innerHTML).toContain('test');
+            });
+
+            it('should hide tooltip on key up event', () => {
+                // Given
+                directive.tooltipKeyTab = document.createElement('span');
+                const spy = spyOn(directive, 'hideTooltipKeyEvent');
+                // When
+                directive.onKeyUp();
+                // Then
+                expect(spy).toHaveBeenCalled();
+            });
+
+            it('should set element text if created', () => {
+                // Given
+                const text = 'test';
+                directive.tooltipKeyTab = document.createElement('span');
+                // When
+                directive.text = text;
+                // Then
+                expect(directive.tooltipKeyTab.innerText).toBe(text);
+            });
         });
     });
 });

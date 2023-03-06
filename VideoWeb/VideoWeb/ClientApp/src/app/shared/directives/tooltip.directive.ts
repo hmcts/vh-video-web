@@ -125,11 +125,6 @@ export class TooltipDirective implements OnDestroy {
 
     showTooltipKeyEvent() {
         if (this.tooltipKeyTab) {
-            if (!this.deviceTypeService.isDesktop()) {
-                setTimeout(() => {
-                    this.hide();
-                }, 5000);
-            }
             this.renderer.addClass(this.tooltipKeyTab, 'vh-tooltip-show');
             this.tooltipShown.emit();
         }
