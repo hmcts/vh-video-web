@@ -1,5 +1,10 @@
 import { ActiveToast } from 'ngx-toastr';
-import { ConsultationAnswer, ParticipantResponse, Role } from 'src/app/services/clients/api-client';
+import {
+    ConsultationAnswer,
+    HearingDetailRequest,
+    ParticipantResponse,
+    Role
+} from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Participant } from 'src/app/shared/models/participant';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
@@ -1092,18 +1097,17 @@ describe('NotificationToastrService', () => {
     describe('showAllocationHearings', () => {
         let mockToast: ActiveToast<VhToastComponent>;
         const expectedToastId = 2;
-        const hearingsPassed = [
-            {
-                judge: 'Judge1',
-                time: '10:00',
-                case_name: 'case name 1'
-            },
-            {
-                judge: 'Judge2',
-                time: '11:00',
-                case_name: 'case name 2'
-            }
-        ];
+        const hearingsPassed: HearingDetailRequest[] = [];
+        let hearing =  new HearingDetailRequest();
+        hearing.judge = 'Judge1';
+        hearing.time = '10:00';
+        hearing.case_name = 'case name 1';
+        hearingsPassed.push(hearing);
+        hearing =  new HearingDetailRequest();
+        hearing.judge = 'Judge2';
+        hearing.time = '11:00';
+        hearing.case_name = 'case name 2';
+        hearingsPassed.push(hearing);
 
         const translatedMessageHeader = 'TranslatedMessageHeader';
         const translatedMessageClose = 'TranslatedMessageClose';
