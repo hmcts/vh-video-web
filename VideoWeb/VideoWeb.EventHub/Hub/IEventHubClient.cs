@@ -30,6 +30,6 @@ namespace VideoWeb.EventHub.Hub
         Task ParticipantsUpdatedMessage(Guid conferenceId, List<ParticipantResponse> participants);
         Task HearingLayoutChanged(Guid conferenceId, Guid changedById, HearingLayout newLayout, HearingLayout oldLayout);
         Task NewConferenceAddedMessage(Guid conferenceId);
-        Task AllocationHearings(string csoUserName, IList<HearingDetailRequest> hearings);
+        Task AllocationHearings(string csoUserName, List<HearingDetailRequest> hearings);
     }
 }

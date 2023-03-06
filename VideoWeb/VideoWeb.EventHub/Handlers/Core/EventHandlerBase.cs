@@ -159,7 +159,7 @@ namespace VideoWeb.EventHub.Handlers.Core
                 .NewConferenceAddedMessage(conferenceId);
         }
 
-        protected async Task PublishAllocationHearingsMessage(string csoUserName, IList<HearingDetailRequest> hearings)
+        protected async Task PublishAllocationHearingsMessage(string csoUserName, List<HearingDetailRequest> hearings)
         {
             await HubContext.Clients.Group(csoUserName.ToLowerInvariant())
                 .AllocationHearings(csoUserName, hearings);
