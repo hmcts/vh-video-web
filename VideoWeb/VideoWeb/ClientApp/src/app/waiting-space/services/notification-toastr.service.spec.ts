@@ -22,7 +22,6 @@ import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/par
 
 describe('NotificationToastrService', () => {
     let service: NotificationToastrService;
-    // const logger: Logger = new MockLogger();
     let logger: jasmine.SpyObj<Logger>;
     let roomLabel: string;
     let translateServiceSpy: jasmine.SpyObj<TranslateService>;

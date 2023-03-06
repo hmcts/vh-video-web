@@ -32,8 +32,6 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventControllerTests
         private AutoMock _mocker;
         protected InternalEventController _controller;
 
-        Mock<Conference> mockConference;
-        
         [SetUp]
         public void Setup()
         {
