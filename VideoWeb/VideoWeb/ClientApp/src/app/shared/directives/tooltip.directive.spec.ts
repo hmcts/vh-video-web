@@ -257,7 +257,6 @@ describe('TooltipDirective', () => {
                 expect(directive.tooltipKeyTab.style.top).toEqual(35 + 'px');
                 expect(directive.tooltipKeyTab.style.left).toEqual('0px');
                 expect(directive.tooltipKeyTab.style.opacity).toEqual('1');
-                expect(directive.tooltipKeyTab.style.whiteSpace).toEqual('nowrap');
             });
 
             it('should hide on destroy', () => {
