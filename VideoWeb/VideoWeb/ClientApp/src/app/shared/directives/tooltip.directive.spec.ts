@@ -101,23 +101,29 @@ describe('TooltipDirective', () => {
     });
 
     it('should create and display element', () => {
+        spyOn(directive, 'setParentStyles');
         directive.createAndDisplay(new MouseEvent('mouseenter', {}));
         expect(directive.tooltip).toBeDefined();
         expect(directive.tooltip.classList).toContain('vh-tooltip');
+        expect(directive.setParentStyles).toHaveBeenCalled();
     });
 
     it('should create tooltip if not created on mouse enter', () => {
+        spyOn(directive, 'setParentStyles');
         deviceTypeService.isDesktop.and.returnValue(true);
         directive.tooltip = undefined;
         directive.onMouseEnter(new MouseEvent('mouseenter', {}));
         expect(directive.tooltip).toBeDefined();
+        expect(directive.setParentStyles).toHaveBeenCalled();
     });
 
     it('should create tooltip in mobile when canShowInMobile is true', () => {
+        spyOn(directive, 'setParentStyles');
         directive._isDesktopOnly = false;
         directive.tooltip = undefined;
         directive.onMouseEnter(new MouseEvent('mouseenter', {}));
         expect(directive.tooltip).toBeDefined();
+        expect(directive.setParentStyles).toHaveBeenCalled();
     });
 
     it('should not create tooltip in mobile when canShowInMobile is false', () => {
@@ -290,11 +296,13 @@ describe('TooltipDirective', () => {
 
             it('should hide on destroy', () => {
                 // Given
+                spyOn(directive, 'hideTooltipKeyEvent');
                 directive.tooltipKeyTab = document.createElement('span');
                 // When
                 directive.ngOnDestroy();
                 // Then
                 expect(renderer2.removeClass).toHaveBeenCalledWith(directive.tooltipKeyTab, 'vh-tooltip-show');
+                expect(directive.hideTooltipKeyEvent).toHaveBeenCalled();
             });
 
             it('should remove class hide', () => {
@@ -310,10 +318,12 @@ describe('TooltipDirective', () => {
 
             it('should add class show when tooltip exists', () => {
                 // Given
+                spyOn(directive, 'setParentStyles');
                 directive.tooltipKeyTab = document.createElement('span');
                 // When
                 directive.showTooltipKeyEvent();
                 // Then
+                expect(directive.setParentStyles).toHaveBeenCalled();
                 expect(renderer2.addClass).toHaveBeenCalledWith(directive.tooltipKeyTab, 'vh-tooltip-show');
             });
 
