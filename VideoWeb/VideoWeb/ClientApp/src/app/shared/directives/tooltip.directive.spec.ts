@@ -396,6 +396,18 @@ describe('TooltipDirective', () => {
                 // Then
                 expect(directive.tooltipKeyTab.innerText).toBe(text);
             });
+
+            it('should reset parent elemenet position to relative', () => {
+                // Given
+                const event = mockHTMLElement();
+                directive.tooltipKeyTab = document.createElement('span');
+                const wrapper = document.createElement('div');
+                wrapper.appendChild(directive.tooltipKeyTab);
+                // When
+                directive.resetParentPosition('relative');
+                // Then
+                expect((<HTMLElement>directive.tooltipKeyTab.parentNode).getAttribute('style')).toEqual('position:relative');
+            });
         });
     });
 });
