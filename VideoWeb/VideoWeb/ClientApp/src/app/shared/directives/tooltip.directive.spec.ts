@@ -91,7 +91,7 @@ describe('TooltipDirective', () => {
         directive.tooltip = document.createElement('span');
         directive.show();
         expect(renderer2.addClass).toHaveBeenCalledWith(directive.tooltip, 'vh-tooltip-show');
-        expect(spy).toHaveBeenCalledOnceWith('relative');
+        expect(spy).toHaveBeenCalledWith('relative');
     });
 
     it('should create tooltip element', () => {
@@ -105,7 +105,7 @@ describe('TooltipDirective', () => {
         directive.createAndDisplay(new MouseEvent('mouseenter', {}));
         expect(directive.tooltip).toBeDefined();
         expect(directive.tooltip.classList).toContain('vh-tooltip');
-        expect(directive.setParentStyles).toHaveBeenCalled();
+        expect(directive.setParentStyles).toHaveBeenCalledWith('relative');
     });
 
     it('should create tooltip if not created on mouse enter', () => {
@@ -114,7 +114,7 @@ describe('TooltipDirective', () => {
         directive.tooltip = undefined;
         directive.onMouseEnter(new MouseEvent('mouseenter', {}));
         expect(directive.tooltip).toBeDefined();
-        expect(directive.setParentStyles).toHaveBeenCalled();
+        expect(directive.setParentStyles).toHaveBeenCalledWith('relative');
     });
 
     it('should create tooltip in mobile when canShowInMobile is true', () => {
@@ -123,7 +123,7 @@ describe('TooltipDirective', () => {
         directive.tooltip = undefined;
         directive.onMouseEnter(new MouseEvent('mouseenter', {}));
         expect(directive.tooltip).toBeDefined();
-        expect(directive.setParentStyles).toHaveBeenCalled();
+        expect(directive.setParentStyles).toHaveBeenCalledWith('relative');
     });
 
     it('should not create tooltip in mobile when canShowInMobile is false', () => {
