@@ -13,7 +13,10 @@ using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using System.Text.Json;
-using VideoWeb.Helpers.Interfaces;
+using Microsoft.AspNetCore.Routing;
+using VideoApi.Contract.Responses;
+using VideoWeb.Contract.Request;
+using VideoWeb.InternalEvents.Interfaces;
 
 namespace VideoWeb.Controllers
 {
@@ -21,15 +24,16 @@ namespace VideoWeb.Controllers
     [ApiController]
     [Route("internalevent")]
     [Authorize(AuthenticationSchemes = "InternalEvent")]
+    [ExcludeFromDescription]
     public class InternalEventController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly IParticipantsUpdatedEventNotifier _participantsUpdatedEventNotifier;
-        private readonly IAllocationHearingsEventNotifier _allocationHearingsEventNotifier;
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<InternalEventController> _logger;
         private readonly IMapperFactory _mapperFactory;
         private readonly INewConferenceAddedEventNotifier _newConferenceAddedEventNotifier;
+        private readonly IAllocationUpdatedEventNotifier _allocationUpdatedNotifier;
 
         public InternalEventController(
             IVideoApiClient videoApiClient,
@@ -37,8 +41,7 @@ namespace VideoWeb.Controllers
             IConferenceCache conferenceCache,
             ILogger<InternalEventController> logger,
             IMapperFactory mapperFactory,
-            INewConferenceAddedEventNotifier newConferenceAddedEventNotifier,
-            IAllocationHearingsEventNotifier allocationHearingsEventNotifier)
+            INewConferenceAddedEventNotifier newConferenceAddedEventNotifier)
         {
             _videoApiClient = videoApiClient;
             _participantsUpdatedEventNotifier = participantsUpdatedEventNotifier;
@@ -46,7 +49,6 @@ namespace VideoWeb.Controllers
             _logger = logger;
             _mapperFactory = mapperFactory;
             _newConferenceAddedEventNotifier = newConferenceAddedEventNotifier;
-            _allocationHearingsEventNotifier = allocationHearingsEventNotifier;
         }
 
         [HttpPost("ConferenceAdded")]
@@ -121,27 +123,19 @@ namespace VideoWeb.Controllers
             }
         }
 
-        [HttpPost("AllocationHearings")]
-        [SwaggerOperation(OperationId = "AllocationHearings")]
+        [HttpPost("UpdatedAllocation")]
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
-        [ProducesResponseType(typeof(string), (int) HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> AllocationHearings(AllocationHearingsToCsoRequest request)
+        public async Task<IActionResult> AllocationUpdated(AllocationUpdatedRequest request)
         {
-            try
-            {
-                _logger.LogDebug($"AllocationHearings called. Request {JsonSerializer.Serialize(request)}");
+            // optional
+            request.Conferences.ForEach(async x => await _conferenceCache.AddConferenceAsync(x));
 
-                var csoToNotify = request.AllocatedCsoUserName;
-                var hearings = request.Hearings;
-                
-                await _allocationHearingsEventNotifier.PushAllocationHearingsEvent(csoToNotify, hearings);
-                return NoContent();
-            }
-            catch (VideoApiException e)
-            {
-                _logger.LogError(e, $"HearingIds: {JsonSerializer.Serialize(request)}, ErrorCode: {e.StatusCode}");
-                return StatusCode(e.StatusCode, e.Response);
-            }
+            var mapper = _mapperFactory.Get<ConferenceDetailsResponse, Conference>();
+            var conferences = request.Conferences.Select(mapper.Map).ToList();
+            _allocationUpdatedNotifier.PushAllocationUpdatedEvent(request.AllocatedCsoUsername, conferences);
+
+            return NoContent();
         }
+
     }
 }
