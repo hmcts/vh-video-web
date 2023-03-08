@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using VideoApi.Client;
+using VideoApi.Contract.Requests;
 using VideoWeb.Common.Caching;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
@@ -28,6 +30,12 @@ namespace VideoWeb.EventHub.Handlers
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
             return PublishAllocationHearingsMessage(callbackEvent.CsoAllocatedUserName, callbackEvent.AllocatedHearingsDetails);
+        }
+        
+        private async Task PublishAllocationHearingsMessage(string csoUserName, List<HearingDetailRequest> hearings)
+        {
+            await HubContext.Clients.Group(csoUserName.ToLowerInvariant())
+                .AllocationHearings(csoUserName, hearings);
         }
     }
 }
