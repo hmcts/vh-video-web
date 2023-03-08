@@ -23,6 +23,7 @@ namespace VideoWeb.Controllers
             _videoApiClient = videoApiClient;
             _logger = logger;
 
+            
         }
 
         [HttpGet("audiostreams/{hearingId}/{wowzaSingleApp}")]
