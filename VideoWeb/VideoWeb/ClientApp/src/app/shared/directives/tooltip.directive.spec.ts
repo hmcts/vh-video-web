@@ -1,4 +1,5 @@
 import { ElementRef, Renderer2 } from '@angular/core';
+import * as exp from 'constants';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { TooltipDirective } from './tooltip.directive';
 
@@ -22,6 +23,20 @@ describe('TooltipDirective', () => {
 
         elementRef = new ElementRef<HTMLDivElement>(nativeElement);
         directive = new TooltipDirective(elementRef, renderer2, deviceTypeService);
+    });
+
+    it('should return _isDesktopOnly true when set isDesktopOnly true', () => {
+        // When
+        directive.isDesktopOnly = true;
+        // Then
+        expect(directive._isDesktopOnly).toEqual(true);
+    });
+
+    it('should return _isDesktopOnly false when set isDesktopOnly false', () => {
+        // When
+        directive.isDesktopOnly = false;
+        // Then
+        expect(directive._isDesktopOnly).toEqual(false);
     });
 
     it('should set tooltip text', () => {
@@ -235,6 +250,163 @@ describe('TooltipDirective', () => {
                 directive.updatePosition(mouseEvent);
 
                 expect(parseInt(directive.tooltip.style.top, 10)).toBeLessThan(y);
+            });
+        });
+
+        describe('Keyboard Event', () => {
+            const mockHTMLElement = (): FocusEvent => {
+                const otherElement = document.createElement('div');
+                otherElement.setAttribute('appTooltip', 'appTooltip');
+                const event = new FocusEvent('focus');
+                Object.defineProperty(event, 'target', { value: otherElement });
+                (<HTMLElement>event.target).id = 'toggle-participants-panel';
+
+                return event;
+            };
+            it('should create and display element', () => {
+                // Given
+                const spy = spyOn(directive, 'setTooltipPosition');
+                // When
+                directive.createTooltipKeyEvent(mockHTMLElement());
+                // Then
+                expect(spy).toHaveBeenCalled();
+                expect(directive.tooltipKeyTab).toBeDefined();
+                expect(directive.tooltipKeyTab.classList).toContain('vh-tooltip');
+            });
+
+            it('should set tooltip position', () => {
+                // Given
+                const spy = spyOn(directive, 'resetParentPosition');
+                // When
+                directive.createTooltipKeyEvent(mockHTMLElement());
+                // Then
+                expect(spy).toHaveBeenCalledWith('relative');
+                expect(directive.tooltipKeyTab.style.top).toEqual(35 + 'px');
+                expect(directive.tooltipKeyTab.style.left).toEqual('0px');
+                expect(directive.tooltipKeyTab.style.opacity).toEqual('1');
+            });
+
+            it('should hide on destroy', () => {
+                // Given
+                directive.tooltipKeyTab = document.createElement('span');
+                // When
+                directive.ngOnDestroy();
+                // Then
+                expect(renderer2.removeClass).toHaveBeenCalledWith(directive.tooltipKeyTab, 'vh-tooltip-show');
+            });
+
+            it('should remove class hide', () => {
+                // Given
+                directive.tooltipKeyTab = document.createElement('span');
+                // When
+                directive.hideTooltipKeyEvent();
+                // Then
+                expect(renderer2.removeClass).toHaveBeenCalledWith(directive.tooltipKeyTab, 'vh-tooltip-show');
+            });
+
+            it('should add class show when tooltip exists', () => {
+                // Given
+                directive.tooltipKeyTab = document.createElement('span');
+                // When
+                directive.showTooltipKeyEvent();
+                // Then
+                expect(renderer2.addClass).toHaveBeenCalledWith(directive.tooltipKeyTab, 'vh-tooltip-show');
+            });
+
+            it('should not add class show when tooltip do not exists', () => {
+                // Given
+                directive.tooltipKeyTab = undefined;
+                // When
+                directive.showTooltipKeyEvent();
+                // Then
+                expect(renderer2.addClass).not.toHaveBeenCalledWith(directive.tooltipKeyTab, 'vh-tooltip-show');
+            });
+
+            it('should create and display tooltip on key down event', () => {
+                // Given
+                const event = new FocusEvent('focus');
+                directive.tooltipKeyTab = undefined;
+                const spyCreateTooltip = spyOn(directive, 'createTooltipKeyEvent');
+                const spyShowTooltip = spyOn(directive, 'showTooltipKeyEvent');
+                // When
+                directive.onKeyDown(event);
+                // Then
+                expect(spyCreateTooltip).toHaveBeenCalled();
+                expect(spyShowTooltip).toHaveBeenCalled();
+            });
+
+            it('should not create new tooltip on key down event when it exists', () => {
+                // Given
+                const event = new FocusEvent('focus');
+                directive.tooltipKeyTab = document.createElement('span');
+                const spyCreateTooltip = spyOn(directive, 'createTooltipKeyEvent');
+                const spyShowTooltip = spyOn(directive, 'showTooltipKeyEvent');
+                // When
+                directive.onKeyDown(event);
+                // Then
+                expect(spyCreateTooltip).not.toHaveBeenCalled();
+                expect(spyShowTooltip).toHaveBeenCalled();
+            });
+
+            it('should hide tooltip on key up event', () => {
+                // Given
+                directive.tooltipKeyTab = document.createElement('span');
+                const spyHideTooltip = spyOn(directive, 'hideTooltipKeyEvent');
+                // When
+                directive.onKeyUp();
+                // Then
+                expect(spyHideTooltip).toHaveBeenCalled();
+            });
+
+            it('should set tooltip text on key up event', () => {
+                // Given
+                directive.tooltipKeyTab = document.createElement('span');
+                // When
+                directive.setTooltipTextKeyTab();
+                // Then
+                expect(directive.tooltipKeyTab.innerHTML).toContain('test');
+            });
+
+            it('should hide tooltip on key up event', () => {
+                // Given
+                directive.tooltipKeyTab = document.createElement('span');
+                const spy = spyOn(directive, 'hideTooltipKeyEvent');
+                // When
+                directive.onKeyUp();
+                // Then
+                expect(spy).toHaveBeenCalled();
+            });
+
+            it('should not hide tooltip when not on key up event', () => {
+                // Given
+                directive.tooltipKeyTab = undefined;
+                const spy = spyOn(directive, 'hideTooltipKeyEvent');
+                // When
+                directive.onKeyUp();
+                // Then
+                expect(spy).not.toHaveBeenCalled();
+            });
+
+            it('should set element text if created', () => {
+                // Given
+                const text = 'test';
+                directive.tooltipKeyTab = document.createElement('span');
+                // When
+                directive.text = text;
+                // Then
+                expect(directive.tooltipKeyTab.innerText).toBe(text);
+            });
+
+            it('should reset parent elemenet position to relative', () => {
+                // Given
+                const event = mockHTMLElement();
+                directive.tooltipKeyTab = document.createElement('span');
+                const wrapper = document.createElement('div');
+                wrapper.appendChild(directive.tooltipKeyTab);
+                // When
+                directive.resetParentPosition('relative');
+                // Then
+                expect((<HTMLElement>directive.tooltipKeyTab.parentNode).getAttribute('style')).toEqual('position:relative');
             });
         });
     });
