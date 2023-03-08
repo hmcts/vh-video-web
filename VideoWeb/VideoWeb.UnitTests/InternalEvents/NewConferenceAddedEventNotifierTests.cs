@@ -1,17 +1,15 @@
+using System;
+using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Helpers;
+using VideoWeb.InternalEvents;
 
-namespace VideoWeb.UnitTests.Helpers
+namespace VideoWeb.UnitTests.InternalEvents
 {
     public class NewConferenceAddedEventNotifierTests
     {
