@@ -10,7 +10,7 @@ import { EventsHubService } from './events-hub.service';
 import { Heartbeat } from '../shared/models/heartbeat';
 import { TransferDirection } from './models/hearing-transfer';
 import { ParticipantMediaStatus } from '../shared/models/participant-media-status';
-import { HearingLayout, ParticipantResponse } from './clients/api-client';
+import { ParticipantResponse } from './clients/api-client';
 
 describe('EventsService', () => {
     function spyPropertyGetter<T, K extends keyof T>(spyObj: jasmine.SpyObj<T>, propName: K): jasmine.Spy<() => T[K]> {
@@ -137,7 +137,7 @@ describe('EventsService', () => {
     });
 
     describe('handlers', () => {
-        const expectedNumberOfRegisterations = 19;
+        const expectedNumberOfRegisterations = 20;
 
         describe('registerHandlers', () => {
             it('should register the handlers if they are NOT already registered', () => {

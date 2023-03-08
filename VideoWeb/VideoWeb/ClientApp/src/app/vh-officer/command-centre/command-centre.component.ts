@@ -22,6 +22,8 @@ import { CourtRoomsAccounts } from '../services/models/court-rooms-accounts';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
+import { NewAllocationMessage } from '../../services/models/new-allocation-message';
+import { NotificationToastrService } from '../../waiting-space/services/notification-toastr.service';
 
 @Component({
     selector: 'app-command-centre',
@@ -66,7 +68,8 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         private screenHelper: ScreenHelper,
         private eventbus: EventBusService,
         private configService: ConfigService,
-        private ldService: LaunchDarklyService
+        private ldService: LaunchDarklyService,
+        protected notificationToastrService: NotificationToastrService
     ) {
         this.loadingData = false;
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
@@ -141,6 +144,12 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
                 this.persistHeartbeat(heartbeat);
                 this.handleHeartbeat(heartbeat);
             })
+        );
+
+        this.eventHubSubscriptions.add(
+            this.eventService
+                .getAllocationMessage()
+                .subscribe(allocationHearingMessage => this.handleAllocationUpdate(allocationHearingMessage))
         );
     }
 
@@ -342,5 +351,9 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             );
             return false;
         }
+    }
+
+    handleAllocationUpdate(allocationHearingMessage: NewAllocationMessage) {
+        this.notificationToastrService.createAllocationNotificationToast(allocationHearingMessage.hearingDetails);
     }
 }

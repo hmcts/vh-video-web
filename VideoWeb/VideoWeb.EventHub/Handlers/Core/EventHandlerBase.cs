@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using VideoApi.Client;
+using VideoApi.Contract.Requests;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
@@ -40,19 +41,18 @@ namespace VideoWeb.EventHub.Handlers.Core
 
         public abstract EventType EventType { get; }
 
-        public async Task HandleAsync(CallbackEvent callbackEvent)
+        public async virtual Task HandleAsync(CallbackEvent callbackEvent)
         {
             SourceConference = await GetConference(callbackEvent.ConferenceId);
             if (SourceConference == null) throw new ConferenceNotFoundException(callbackEvent.ConferenceId);
-
             SourceParticipant = SourceConference.Participants
                 .SingleOrDefault(x => x.Id == callbackEvent.ParticipantId);
-
             SourceEndpoint = SourceConference.Endpoints
                 .SingleOrDefault(x => x.Id == callbackEvent.ParticipantId);
 
             Logger.LogTrace("Handling Event: {EventType} for conferenceId {ConferenceId} with reason {Reason}",
                 callbackEvent.EventType, callbackEvent.ConferenceId, callbackEvent.Reason);
+
             await PublishStatusAsync(callbackEvent);
         }
 
@@ -137,27 +137,6 @@ namespace VideoWeb.EventHub.Handlers.Core
                 .RoomTransfer(roomTransfer);
             Logger.LogTrace("RoomTransfer sent to group: {Group}", Hub.EventHub.VhOfficersGroupName);
         }
-
-        protected async Task PublishParticipantsUpdatedMessage(List<ParticipantResponse> updatedParticipants, List<ParticipantResponse> participantsToNotify)
-        {
-            foreach (var participant in participantsToNotify)
-            {
-                await HubContext.Clients.Group(participant.UserName.ToLowerInvariant())
-                    .ParticipantsUpdatedMessage(SourceConference.Id, updatedParticipants);
-                Logger.LogTrace("{UserName} | Role: {Role}", participant.UserName,
-                    participant.Role);
-            }
-
-            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
-                .ParticipantsUpdatedMessage(SourceConference.Id, updatedParticipants);
-        }
-
-        protected async Task PublishNewConferenceAddedMessage(Guid conferenceId)
-        {
-            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
-                .NewConferenceAddedMessage(conferenceId);
-        }
-
         protected abstract Task PublishStatusAsync(CallbackEvent callbackEvent);
     }
 }

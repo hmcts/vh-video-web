@@ -1240,5 +1240,8 @@
     "link-text": "Cwblhewch ein harolwg byr yma"
   },
   "true": "Do",
-  "false": "Naddo"
+  "false": "Naddo",
+    "allocations-toastr": {
+        "header" : "Gwrandawiad newydd wedi'i ddyrannu"
+    }
 }
