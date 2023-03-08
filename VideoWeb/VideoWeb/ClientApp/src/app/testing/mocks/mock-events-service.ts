@@ -16,6 +16,7 @@ import { ParticipantRemoteMuteMessage } from 'src/app/shared/models/participant-
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { Room } from '../../shared/models/room';
 import { RoomTransfer } from '../../shared/models/room-transfer';
+import { NewAllocationMessage } from '../../services/models/new-allocation-message';
 
 export let eventsServiceSpy: jasmine.SpyObj<EventsService>;
 
@@ -40,6 +41,7 @@ export const onEventsHubReadySubjectMock = new Subject<boolean>();
 export let eventHubIsConnectedMock: boolean;
 export const getParticipantsUpdatedSubjectMock = new Subject<ParticipantsUpdatedMessage>();
 export const hearingLayoutChangedSubjectMock = new Subject<HearingLayoutChanged>();
+export const newAllocationMessageSubjectMock = new Subject<NewAllocationMessage>();
 
 eventsServiceSpy = jasmine.createSpyObj<EventsService>(
     'EventsService',
@@ -71,7 +73,8 @@ eventsServiceSpy = jasmine.createSpyObj<EventsService>(
         'publishRemoteMuteStatus',
         'onEventsHubReady',
         'getParticipantsUpdated',
-        'getHearingLayoutChanged'
+        'getHearingLayoutChanged',
+        'getAllocationMessage'
     ],
     ['eventHubIsConnected']
 );
@@ -96,3 +99,4 @@ eventsServiceSpy.getAdminAnsweredChat.and.returnValue(adminAnsweredChatSubjectMo
 eventsServiceSpy.onEventsHubReady.and.returnValue(onEventsHubReadySubjectMock.asObservable());
 eventsServiceSpy.getParticipantsUpdated.and.returnValue(getParticipantsUpdatedSubjectMock.asObservable());
 eventsServiceSpy.getHearingLayoutChanged.and.returnValue(hearingLayoutChangedSubjectMock.asObservable());
+eventsServiceSpy.getAllocationMessage.and.returnValue(newAllocationMessageSubjectMock.asObservable());

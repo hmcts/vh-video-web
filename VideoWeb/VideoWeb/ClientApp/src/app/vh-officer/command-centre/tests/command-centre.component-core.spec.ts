@@ -21,6 +21,7 @@ import { VhoStorageKeys } from '../../services/models/session-keys';
 import { VhoQueryService } from '../../services/vho-query-service.service';
 import { CommandCentreComponent } from '../command-centre.component';
 import { LaunchDarklyService } from '../../../services/launch-darkly.service';
+import { NotificationToastrService } from '../../../waiting-space/services/notification-toastr.service';
 
 describe('CommandCentreComponent - Core', () => {
     let component: CommandCentreComponent;
@@ -35,6 +36,7 @@ describe('CommandCentreComponent - Core', () => {
     let router: jasmine.SpyObj<Router>;
     let eventBusServiceSpy: jasmine.SpyObj<EventBusService>;
     let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
+    let notificationToastrServiceSpy: jasmine.SpyObj<NotificationToastrService>;
 
     const conferenceDetail = new ConferenceTestData().getConferenceDetailFuture();
 
@@ -60,6 +62,7 @@ describe('CommandCentreComponent - Core', () => {
 
         eventBusServiceSpy = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit', 'on']);
         launchDarklyServiceSpy = jasmine.createSpyObj('LaunchDarklyService', ['flagChange']);
+        notificationToastrServiceSpy = jasmine.createSpyObj('NotificationToastrService', ['createAllocationNotificationToast']);
         const config = new ClientSettingsResponse({ join_by_phone_from_date: '2021-02-09' });
         configService.getClientSettings.and.returnValue(of(config));
     });
@@ -88,7 +91,8 @@ describe('CommandCentreComponent - Core', () => {
             screenHelper,
             eventBusServiceSpy,
             configService,
-            launchDarklyServiceSpy
+            launchDarklyServiceSpy,
+            notificationToastrServiceSpy
         );
         component.hearings = hearings;
         screenHelper.enableFullScreen.calls.reset();

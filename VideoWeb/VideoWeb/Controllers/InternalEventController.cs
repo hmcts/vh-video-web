@@ -9,18 +9,11 @@ using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
-using VideoWeb.EventHub.Handlers.Core;
-using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
-using EventType = VideoWeb.EventHub.Enums.EventType;
-using Task = System.Threading.Tasks.Task;
-using VideoWeb.Contract.Responses;
-using VideoWeb.Helpers;
 using System.Text.Json;
 using VideoWeb.Helpers.Interfaces;
-using Microsoft.AspNetCore.SignalR;
 
 namespace VideoWeb.Controllers
 {
@@ -32,6 +25,7 @@ namespace VideoWeb.Controllers
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly IParticipantsUpdatedEventNotifier _participantsUpdatedEventNotifier;
+        private readonly IAllocationHearingsEventNotifier _allocationHearingsEventNotifier;
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<InternalEventController> _logger;
         private readonly IMapperFactory _mapperFactory;
@@ -43,7 +37,8 @@ namespace VideoWeb.Controllers
             IConferenceCache conferenceCache,
             ILogger<InternalEventController> logger,
             IMapperFactory mapperFactory,
-            INewConferenceAddedEventNotifier newConferenceAddedEventNotifier)
+            INewConferenceAddedEventNotifier newConferenceAddedEventNotifier,
+            IAllocationHearingsEventNotifier allocationHearingsEventNotifier)
         {
             _videoApiClient = videoApiClient;
             _participantsUpdatedEventNotifier = participantsUpdatedEventNotifier;
@@ -51,6 +46,7 @@ namespace VideoWeb.Controllers
             _logger = logger;
             _mapperFactory = mapperFactory;
             _newConferenceAddedEventNotifier = newConferenceAddedEventNotifier;
+            _allocationHearingsEventNotifier = allocationHearingsEventNotifier;
         }
 
         [HttpPost("ConferenceAdded")]
@@ -124,7 +120,28 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
-    }
 
-    
+        [HttpPost("AllocationHearings")]
+        [SwaggerOperation(OperationId = "AllocationHearings")]
+        [ProducesResponseType((int) HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(string), (int) HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> AllocationHearings(AllocationHearingsToCsoRequest request)
+        {
+            try
+            {
+                _logger.LogDebug($"AllocationHearings called. Request {JsonSerializer.Serialize(request)}");
+
+                var csoToNotify = request.AllocatedCsoUserName;
+                var hearings = request.Hearings;
+                
+                await _allocationHearingsEventNotifier.PushAllocationHearingsEvent(csoToNotify, hearings);
+                return NoContent();
+            }
+            catch (VideoApiException e)
+            {
+                _logger.LogError(e, $"HearingIds: {JsonSerializer.Serialize(request)}, ErrorCode: {e.StatusCode}");
+                return StatusCode(e.StatusCode, e.Response);
+            }
+        }
+    }
 }

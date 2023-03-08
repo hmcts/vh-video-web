@@ -13,6 +13,7 @@ import {
     ConferenceStatus,
     ConsultationAnswer,
     EndpointStatus,
+    HearingDetailRequest,
     HearingLayout,
     ParticipantResponse,
     ParticipantStatus
@@ -29,6 +30,7 @@ import { InstantMessage } from './models/instant-message';
 import { HeartbeatHealth, ParticipantHeartbeat } from './models/participant-heartbeat';
 import { ParticipantStatusMessage } from './models/participant-status-message';
 import { RequestedConsultationMessage } from './models/requested-consultation-message';
+import { NewAllocationMessage } from './models/new-allocation-message';
 
 @Injectable({
     providedIn: 'root'
@@ -66,6 +68,7 @@ export class EventsService {
     private roomUpdateSubject = new Subject<Room>();
     private roomTransferSubject = new Subject<RoomTransfer>();
     private hearingLayoutChangedSubject = new Subject<HearingLayoutChanged>();
+    private messageAllocationSubject = new Subject<NewAllocationMessage>();
 
     private _handlersRegistered = false;
 
@@ -78,6 +81,13 @@ export class EventsService {
 
         NewConferenceAddedMessage: (conferenceId: string) => {
             this.eventsHubConnection.invoke('AddToGroup', conferenceId);
+        },
+
+        AllocationHearings: (csoUserName: string, hearingDetails: HearingDetailRequest[]) => {
+            this.eventsHubConnection.invoke('AddToGroup', csoUserName);
+            const message = new NewAllocationMessage(hearingDetails);
+            this.logger.debug(`[EventsService] - ReceiveMessage allocation for {csoUserName} for hearings`);
+            this.messageAllocationSubject.next(message);
         },
 
         EndpointStatusMessage: (endpointId: string, conferenceId: string, status: EndpointStatus) => {
@@ -287,6 +297,10 @@ export class EventsService {
 
     getParticipantStatusMessage(): Observable<ParticipantStatusMessage> {
         return this.participantStatusSubject.asObservable();
+    }
+
+    getAllocationMessage(): Observable<NewAllocationMessage> {
+        return this.messageAllocationSubject.asObservable();
     }
 
     getHearingStatusMessage(): Observable<ConferenceStatusMessage> {

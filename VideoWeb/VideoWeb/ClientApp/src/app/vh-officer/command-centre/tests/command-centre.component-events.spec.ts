@@ -20,12 +20,15 @@ import {
     eventsServiceSpy,
     hearingStatusSubjectMock,
     heartbeatSubjectMock,
+    newAllocationMessageSubjectMock,
     participantStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { VhoQueryService } from '../../services/vho-query-service.service';
 import { CommandCentreComponent } from '../command-centre.component';
 import { LaunchDarklyService } from '../../../services/launch-darkly.service';
+import { NotificationToastrService } from '../../../waiting-space/services/notification-toastr.service';
+import { NewAllocationMessage } from '../../../services/models/new-allocation-message';
 
 describe('CommandCentreComponent - Events', () => {
     let component: CommandCentreComponent;
@@ -37,6 +40,7 @@ describe('CommandCentreComponent - Events', () => {
     let router: jasmine.SpyObj<Router>;
     let eventBusServiceSpy: jasmine.SpyObj<EventBusService>;
     let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
+    let notificationToastrServiceSpy: jasmine.SpyObj<NotificationToastrService>;
 
     const logger: Logger = new MockLogger();
 
@@ -69,6 +73,7 @@ describe('CommandCentreComponent - Events', () => {
 
         eventBusServiceSpy = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit', 'on']);
         launchDarklyServiceSpy = jasmine.createSpyObj('LaunchDarklyService', ['flagChange']);
+        notificationToastrServiceSpy = jasmine.createSpyObj('NotificationToastrService', ['createAllocationNotificationToast']);
 
         const config = new ClientSettingsResponse({ join_by_phone_from_date: '' });
         configService.getClientSettings.and.returnValue(of(config));
@@ -94,7 +99,8 @@ describe('CommandCentreComponent - Events', () => {
             screenHelper,
             eventBusServiceSpy,
             configService,
-            launchDarklyServiceSpy
+            launchDarklyServiceSpy,
+            notificationToastrServiceSpy
         );
         component.hearings = hearings;
         component.selectedHearing = hearing;
@@ -227,5 +233,16 @@ describe('CommandCentreComponent - Events', () => {
         heartbeatSubjectMock.next(heartBeat);
 
         expect(component).toBeTruthy();
+    });
+
+    it('should update when allocation hearings message is received', () => {
+        component.setupEventHubSubscribers();
+
+        const message = new NewAllocationMessage([]);
+
+        newAllocationMessageSubjectMock.next(message);
+
+        expect(component).toBeTruthy();
+        expect(notificationToastrServiceSpy.createAllocationNotificationToast).toHaveBeenCalledTimes(1);
     });
 });

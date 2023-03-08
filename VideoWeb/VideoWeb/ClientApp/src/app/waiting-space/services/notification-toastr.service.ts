@@ -4,7 +4,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ToastrService } from 'ngx-toastr';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { ConsultationAnswer, ParticipantResponse, VideoEndpointResponse } from 'src/app/services/clients/api-client';
+import { ConsultationAnswer, HearingDetailRequest, ParticipantResponse, VideoEndpointResponse } from 'src/app/services/clients/api-client';
 import { NotificationSoundsService } from './notification-sounds.service';
 import { Guid } from 'guid-typescript';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
@@ -422,6 +422,55 @@ export class NotificationToastrService {
                     id: 'notification-toastr-hearing-started-dismiss',
                     label: this.translateService.instant('notification-toastr.hearing-started.dismiss'),
                     cssClass: 'hearing-started-dismiss',
+                    action: async () => {
+                        this.toastr.remove(toast.toastId);
+                    }
+                }
+            ]
+        };
+
+        return toast.toastRef.componentInstance as VhToastComponent;
+    }
+
+    createAllocationNotificationToast(hearings: HearingDetailRequest[]): VhToastComponent {
+        const toast = this.toastr.show('', '', {
+            timeOut: 0,
+            extendedTimeOut: 0,
+            toastClass: 'vh-no-pointer',
+            tapToDismiss: false,
+            toastComponent: VhToastComponent
+        });
+
+        const header = `<div class="govuk-!-font-weight-bold toast-content toast-header">${this.translateService.instant(
+            'allocations-toastr.header'
+        )}</div></br></br>`;
+
+        let messageBody = '';
+
+        hearings.forEach(h => {
+            const judge = h.judge;
+            const time = h.time;
+            const caseName = h.case_name;
+
+            messageBody += '<div class="govuk-!-font-weight-bold">' + time + '</div>';
+            messageBody += '<div class="govuk-!-font-weight-bold">' + judge + '</div>';
+            messageBody += '<div class="govuk-!-font-weight-bold">' + caseName + '</div>';
+            messageBody += '</br></br>';
+        });
+
+        const message: string = header + `<div class="toast-content toast-body">${messageBody}</div>`;
+
+        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
+            color: 'black',
+            htmlBody: message,
+            onNoAction: async () => {
+                this.logger.info(`${this.loggerPrefix} No action called on allocation hearing alert`);
+            },
+            buttons: [
+                {
+                    id: 'notification-toastr-create-consultation-notification-close',
+                    label: this.translateService.instant('notification-toastr.linked-participants.button-close'),
+                    cssClass: 'red',
                     action: async () => {
                         this.toastr.remove(toast.toastId);
                     }

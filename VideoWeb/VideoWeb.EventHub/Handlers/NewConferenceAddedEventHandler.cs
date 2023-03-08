@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using VideoApi.Client;
+using VideoApi.Contract.Requests;
 using VideoWeb.Common.Caching;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers.Core;
@@ -24,6 +26,11 @@ namespace VideoWeb.EventHub.Handlers
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
             return PublishNewConferenceAddedMessage(callbackEvent.ConferenceId);
+        }
+        private async Task PublishNewConferenceAddedMessage(Guid conferenceId)
+        {
+            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
+                .NewConferenceAddedMessage(conferenceId);
         }
     }
 }
