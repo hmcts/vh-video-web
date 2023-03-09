@@ -8,6 +8,9 @@ export class TooltipDirective implements OnDestroy {
     _text: string;
     _colour = 'blue';
     _isDesktopOnly = true;
+    _OPACITY_ONE = '1';
+    _OPACITY_ZERO_FIVE = '0.5';
+    _POSITION_RELATIVE = 'relative';
     @Input() set text(value: string) {
         this._text = value;
         if (this.tooltip) {
@@ -119,6 +122,7 @@ export class TooltipDirective implements OnDestroy {
                 }, 5000);
             }
             this.renderer.addClass(this.tooltip, 'vh-tooltip-show');
+            this.setParentStyles(this._POSITION_RELATIVE);
             this.tooltipShown.emit();
         }
     }
@@ -126,6 +130,7 @@ export class TooltipDirective implements OnDestroy {
     showTooltipKeyEvent() {
         if (this.tooltipKeyTab) {
             this.renderer.addClass(this.tooltipKeyTab, 'vh-tooltip-show');
+            this.setParentStyles(this._POSITION_RELATIVE, this._OPACITY_ONE);
             this.tooltipShown.emit();
         }
     }
@@ -139,6 +144,7 @@ export class TooltipDirective implements OnDestroy {
     hideTooltipKeyEvent() {
         if (this.tooltipKeyTab) {
             this.renderer.removeClass(this.tooltipKeyTab, 'vh-tooltip-show');
+            this.setParentStyles(this._POSITION_RELATIVE, this._OPACITY_ZERO_FIVE);
         }
     }
 
@@ -162,14 +168,14 @@ export class TooltipDirective implements OnDestroy {
     }
 
     setTooltipPosition() {
-        this.resetParentPosition('relative');
+        this.setParentStyles(this._POSITION_RELATIVE, this._OPACITY_ONE);
         this.tooltipKeyTab.style.top = 35 + 'px';
         this.tooltipKeyTab.style.left = '0';
-        this.tooltipKeyTab.style.opacity = '1';
+        this.tooltipKeyTab.style.opacity = this._OPACITY_ONE;
     }
 
-    resetParentPosition(val: string) {
-        (<HTMLElement>this.tooltipKeyTab.parentNode).setAttribute('style', `position:${val}`);
+    setParentStyles(positionVal: string, opacityVal?: string) {
+        (<HTMLElement>this.tooltipKeyTab.parentNode).setAttribute('style', `position:${positionVal};opacity:${opacityVal}`);
     }
 
     setTooltipText() {

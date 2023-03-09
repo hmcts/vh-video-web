@@ -87,9 +87,11 @@ describe('TooltipDirective', () => {
     });
 
     it('should add class show', () => {
+        const spy = spyOn(directive, 'setParentStyles');
         directive.tooltip = document.createElement('span');
         directive.show();
         expect(renderer2.addClass).toHaveBeenCalledWith(directive.tooltip, 'vh-tooltip-show');
+        expect(spy).toHaveBeenCalledWith('relative');
     });
 
     it('should create tooltip element', () => {
@@ -99,23 +101,29 @@ describe('TooltipDirective', () => {
     });
 
     it('should create and display element', () => {
+        spyOn(directive, 'setParentStyles');
         directive.createAndDisplay(new MouseEvent('mouseenter', {}));
         expect(directive.tooltip).toBeDefined();
         expect(directive.tooltip.classList).toContain('vh-tooltip');
+        expect(directive.setParentStyles).toHaveBeenCalledWith('relative');
     });
 
     it('should create tooltip if not created on mouse enter', () => {
+        spyOn(directive, 'setParentStyles');
         deviceTypeService.isDesktop.and.returnValue(true);
         directive.tooltip = undefined;
         directive.onMouseEnter(new MouseEvent('mouseenter', {}));
         expect(directive.tooltip).toBeDefined();
+        expect(directive.setParentStyles).toHaveBeenCalledWith('relative');
     });
 
     it('should create tooltip in mobile when canShowInMobile is true', () => {
+        spyOn(directive, 'setParentStyles');
         directive._isDesktopOnly = false;
         directive.tooltip = undefined;
         directive.onMouseEnter(new MouseEvent('mouseenter', {}));
         expect(directive.tooltip).toBeDefined();
+        expect(directive.setParentStyles).toHaveBeenCalledWith('relative');
     });
 
     it('should not create tooltip in mobile when canShowInMobile is false', () => {
@@ -276,11 +284,11 @@ describe('TooltipDirective', () => {
 
             it('should set tooltip position', () => {
                 // Given
-                const spy = spyOn(directive, 'resetParentPosition');
+                const spy = spyOn(directive, 'setParentStyles');
                 // When
                 directive.createTooltipKeyEvent(mockHTMLElement());
                 // Then
-                expect(spy).toHaveBeenCalledWith('relative');
+                expect(spy).toHaveBeenCalledWith('relative', '1');
                 expect(directive.tooltipKeyTab.style.top).toEqual(35 + 'px');
                 expect(directive.tooltipKeyTab.style.left).toEqual('0px');
                 expect(directive.tooltipKeyTab.style.opacity).toEqual('1');
@@ -288,28 +296,34 @@ describe('TooltipDirective', () => {
 
             it('should hide on destroy', () => {
                 // Given
+                spyOn(directive, 'hideTooltipKeyEvent');
                 directive.tooltipKeyTab = document.createElement('span');
                 // When
                 directive.ngOnDestroy();
                 // Then
                 expect(renderer2.removeClass).toHaveBeenCalledWith(directive.tooltipKeyTab, 'vh-tooltip-show');
+                expect(directive.hideTooltipKeyEvent).toHaveBeenCalled();
             });
 
             it('should remove class hide', () => {
                 // Given
                 directive.tooltipKeyTab = document.createElement('span');
+                const spySetParentStyles = spyOn(directive, 'setParentStyles');
                 // When
                 directive.hideTooltipKeyEvent();
                 // Then
+                expect(spySetParentStyles).toHaveBeenCalledWith('relative', '0.5');
                 expect(renderer2.removeClass).toHaveBeenCalledWith(directive.tooltipKeyTab, 'vh-tooltip-show');
             });
 
             it('should add class show when tooltip exists', () => {
                 // Given
+                spyOn(directive, 'setParentStyles');
                 directive.tooltipKeyTab = document.createElement('span');
                 // When
                 directive.showTooltipKeyEvent();
                 // Then
+                expect(directive.setParentStyles).toHaveBeenCalled();
                 expect(renderer2.addClass).toHaveBeenCalledWith(directive.tooltipKeyTab, 'vh-tooltip-show');
             });
 
@@ -399,14 +413,13 @@ describe('TooltipDirective', () => {
 
             it('should reset parent elemenet position to relative', () => {
                 // Given
-                const event = mockHTMLElement();
                 directive.tooltipKeyTab = document.createElement('span');
                 const wrapper = document.createElement('div');
                 wrapper.appendChild(directive.tooltipKeyTab);
                 // When
-                directive.resetParentPosition('relative');
+                directive.setParentStyles('relative', '1');
                 // Then
-                expect((<HTMLElement>directive.tooltipKeyTab.parentNode).getAttribute('style')).toEqual('position:relative');
+                expect((<HTMLElement>directive.tooltipKeyTab.parentNode).getAttribute('style')).toEqual('position:relative;opacity:1');
             });
         });
     });
