@@ -26,7 +26,7 @@ namespace VideoWeb.InternalEvents
                 JudgeDisplayName = x.GetJudge().DisplayName,
                 ScheduledDateTime = x.ScheduledDateTime
             }).ToList();
-            await _hubContext.Clients.Group(csoUsername.ToLowerInvariant()).AllocationHearings(dtos);
+            await _hubContext.Clients.Group(csoUsername.ToLowerInvariant()).AllocationsUpdated(dtos);
         }
     }
 }

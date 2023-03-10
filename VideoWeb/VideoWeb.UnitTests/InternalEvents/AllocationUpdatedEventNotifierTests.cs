@@ -48,6 +48,6 @@ public class AllocationUpdatedEventNotifierTests
         await _sut.PushAllocationUpdatedEvent(csoUsername, _conferences);
 
         _eventComponentHelper.EventHubClientMock.Verify(
-            x => x.AllocationHearings(It.IsAny<List<UpdatedAllocationDto>>()), Times.Once);
+            x => x.AllocationsUpdated(It.IsAny<List<UpdatedAllocationDto>>()), Times.Once);
     }
 }

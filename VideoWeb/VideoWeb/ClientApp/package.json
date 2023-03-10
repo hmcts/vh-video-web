@@ -24,7 +24,7 @@
         "prettify-api-client:default": "npx prettier --write \"src\\app\\services\\clients\\api-client.ts\"",
         "snyk-protect": "snyk protect",
         "prepare": "npm run snyk-protect",
-        "update-api-client": "nswag run /runtime:Net60 && run prettify-fix"
+        "update-api-client": "nswag run /runtime:Net60 && npm run prettify-fix"
     },
     "private": true,
     "dependencies": {
