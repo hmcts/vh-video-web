@@ -13,7 +13,6 @@ using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using System.Text.Json;
-using Microsoft.AspNetCore.Routing;
 using VideoApi.Contract.Responses;
 using VideoWeb.Contract.Request;
 using VideoWeb.InternalEvents.Interfaces;
@@ -24,7 +23,7 @@ namespace VideoWeb.Controllers
     [ApiController]
     [Route("internalevent")]
     [Authorize(AuthenticationSchemes = "InternalEvent")]
-    [ExcludeFromDescription]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class InternalEventController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
@@ -41,7 +40,8 @@ namespace VideoWeb.Controllers
             IConferenceCache conferenceCache,
             ILogger<InternalEventController> logger,
             IMapperFactory mapperFactory,
-            INewConferenceAddedEventNotifier newConferenceAddedEventNotifier)
+            INewConferenceAddedEventNotifier newConferenceAddedEventNotifier,
+            IAllocationUpdatedEventNotifier allocationUpdatedNotifier)
         {
             _videoApiClient = videoApiClient;
             _participantsUpdatedEventNotifier = participantsUpdatedEventNotifier;
@@ -49,6 +49,7 @@ namespace VideoWeb.Controllers
             _logger = logger;
             _mapperFactory = mapperFactory;
             _newConferenceAddedEventNotifier = newConferenceAddedEventNotifier;
+            _allocationUpdatedNotifier = allocationUpdatedNotifier;
         }
 
         [HttpPost("ConferenceAdded")]
@@ -91,7 +92,7 @@ namespace VideoWeb.Controllers
                 });
 
                 var removedParticipants = conference.Participants.Where(p => request.RemovedParticipants.Contains(p.Id)).ToList();
-                
+
                 request.RemovedParticipants.ToList().ForEach(referenceId =>
                 {
                     _logger.LogTrace($"Removing participant from conference. ReferenceID: {referenceId}");
@@ -124,7 +125,7 @@ namespace VideoWeb.Controllers
         }
 
         [HttpPost("UpdatedAllocation")]
-        [ProducesResponseType((int) HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> AllocationUpdated(AllocationUpdatedRequest request)
         {
             // optional
@@ -132,7 +133,7 @@ namespace VideoWeb.Controllers
 
             var mapper = _mapperFactory.Get<ConferenceDetailsResponse, Conference>();
             var conferences = request.Conferences.Select(mapper.Map).ToList();
-            _allocationUpdatedNotifier.PushAllocationUpdatedEvent(request.AllocatedCsoUsername, conferences);
+            await _allocationUpdatedNotifier.PushAllocationUpdatedEvent(request.AllocatedCsoUsername, conferences);
 
             return NoContent();
         }

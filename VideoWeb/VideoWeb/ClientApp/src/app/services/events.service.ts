@@ -13,7 +13,6 @@ import {
     ConferenceStatus,
     ConsultationAnswer,
     EndpointStatus,
-    HearingDetailRequest,
     HearingLayout,
     ParticipantResponse,
     ParticipantStatus
@@ -30,7 +29,8 @@ import { InstantMessage } from './models/instant-message';
 import { HeartbeatHealth, ParticipantHeartbeat } from './models/participant-heartbeat';
 import { ParticipantStatusMessage } from './models/participant-status-message';
 import { RequestedConsultationMessage } from './models/requested-consultation-message';
-import { NewAllocationMessage } from './models/new-allocation-message';
+import { UpdatedAllocationDto } from './models/updated-allocation';
+import { UpdatedAllocationMessage } from './models/updated-allocation-message';
 
 @Injectable({
     providedIn: 'root'
@@ -68,7 +68,7 @@ export class EventsService {
     private roomUpdateSubject = new Subject<Room>();
     private roomTransferSubject = new Subject<RoomTransfer>();
     private hearingLayoutChangedSubject = new Subject<HearingLayoutChanged>();
-    private messageAllocationSubject = new Subject<NewAllocationMessage>();
+    private messageAllocationSubject = new Subject<UpdatedAllocationMessage>();
 
     private _handlersRegistered = false;
 
@@ -83,10 +83,9 @@ export class EventsService {
             this.eventsHubConnection.invoke('AddToGroup', conferenceId);
         },
 
-        AllocationHearings: (csoUserName: string, hearingDetails: HearingDetailRequest[]) => {
-            this.eventsHubConnection.invoke('AddToGroup', csoUserName);
-            const message = new NewAllocationMessage(hearingDetails);
-            this.logger.debug(`[EventsService] - ReceiveMessage allocation for {csoUserName} for hearings`);
+        AllocationsUpdated: (hearingDetails: UpdatedAllocationDto[]) => {
+            const message = new UpdatedAllocationMessage(hearingDetails);
+            this.logger.debug(`[EventsService] - ReceiveMessage updated allocations`, message);
             this.messageAllocationSubject.next(message);
         },
 
@@ -299,7 +298,7 @@ export class EventsService {
         return this.participantStatusSubject.asObservable();
     }
 
-    getAllocationMessage(): Observable<NewAllocationMessage> {
+    getAllocationMessage(): Observable<UpdatedAllocationMessage> {
         return this.messageAllocationSubject.asObservable();
     }
 

@@ -73,8 +73,6 @@ namespace VideoWeb.UnitTests.Builders
                 new EndpointDisconnectedEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object,
                     apiClientMock.Object),
                 new EndpointTransferEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object,
-                    apiClientMock.Object),
-                new AllocationHearingsEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object,
                     apiClientMock.Object)
             };
         }
