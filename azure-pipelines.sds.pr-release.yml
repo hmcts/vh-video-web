@@ -105,11 +105,11 @@ stages:
               githubEmail: "$(gh_app_app_id)+$(gh_app_name)[bot]@users.noreply.github.com"
 
           - bash: |
-              sed -i "s|</configuration>|<packageSourceCredentials><vh-packages><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"$(System.AccessToken)\" /></vh-packages></packageSourceCredentials></configuration>|" nuget.sds.config
+              sed -i "s|</configuration>|<packageSourceCredentials><vh-packages><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"$(System.AccessToken)\" /></vh-packages></packageSourceCredentials></configuration>|" nuget.config
             displayName: Add NuGet Feed Authentication
             workingDirectory: ${{ variables.app_path }}
 
-          - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates # Temp - Change nuget.config to nuget.sds.config.
+          - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
             parameters:
               azureSubscription: ${{ variables.acrSubscription }}
               acrName: ${{ variables.acrName }}
