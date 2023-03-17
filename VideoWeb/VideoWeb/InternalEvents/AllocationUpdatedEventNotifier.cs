@@ -22,6 +22,7 @@ namespace VideoWeb.InternalEvents
         {
             var dtos = conferences.Select(x => new UpdatedAllocationDto
             {
+                ConferenceId = x.Id,
                 CaseName = x.CaseName,
                 JudgeDisplayName = x.GetJudge().DisplayName,
                 ScheduledDateTime = x.ScheduledDateTime

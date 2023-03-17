@@ -85,6 +85,9 @@ export class EventsService {
 
         AllocationsUpdated: (hearingDetails: UpdatedAllocationDto[]) => {
             const message = new UpdatedAllocationMessage(hearingDetails);
+            hearingDetails.forEach(hearing => {
+                this.eventsHubConnection.invoke('AddToGroup', hearing.conference_id);
+            });
             this.logger.debug(`[EventsService] - ReceiveMessage updated allocations`, message);
             this.messageAllocationSubject.next(message);
         },
