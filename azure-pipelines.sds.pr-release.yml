@@ -61,12 +61,12 @@ stages:
                       arguments: --build --abort-on-container-exit
                   continueOnError: true
 
-                 - task: PublishCodeCoverageResults@1
-                  displayName: "Publish Code Coverage Report"
+                - task: PublishCodeCoverageResults@1
+                  displayName: 'Publish Code Coverage Report'
                   inputs:
-                    codeCoverageTool: "Cobertura"
-                    pathToSources: $(Build.SourcesDirectory)
-                    summaryFileLocation: "$(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml"
+                      codeCoverageTool: 'Cobertura'
+                      pathToSources: $(Build.SourcesDirectory)
+                      summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml'
 
                 - task: PublishTestResults@2
                   displayName: Publish DotNet Test Results
