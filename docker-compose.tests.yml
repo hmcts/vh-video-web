@@ -19,7 +19,6 @@ services:
       - SONAR_HOST=${SONAR_HOST}
       - SONAR_PROJECT_VERSION=${SONAR_PROJECT_VERSION}
       - SONAR_PROJECT_NAME=${SONAR_PROJECT_NAME}
-      - VSS_NUGET_EXTERNAL_FEED_ENDPOINTS=${VSS_NUGET_EXTERNAL_FEED_ENDPOINTS}
     volumes:
       - ./TestResults:/TestResults:rw
       - ./Coverage:/Coverage:rw

@@ -14,7 +14,7 @@ RUN apt-get update && apt-get dist-upgrade -y && apt-get install -y openjdk-11-j
 # Install NodeJS
 RUN apt-get -y update \
     && apt-get install -y curl \
-    && curl -sL https://deb.nodesource.com/setup_18.x | bash - \ 
+    && curl -sL https://deb.nodesource.com/setup_12.x | bash - \ 
     && apt-get install -y nodejs \
     && apt-get clean
 
