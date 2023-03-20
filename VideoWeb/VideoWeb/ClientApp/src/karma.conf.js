@@ -58,7 +58,7 @@ module.exports = function (config) {
             },
             ChromeHeadlessNoPrompt: {
                 base: 'ChromeHeadless',
-                flags: ['--remote-debugging-port=9222', '--use-fake-ui-for-media-stream', '--mute-audio']
+                flags: ['--remote-debugging-port=9222', '--use-fake-ui-for-media-stream', '--mute-audio', '--no-sandbox']
             }
         },
         browserDisconnectTimeout: 10000,
