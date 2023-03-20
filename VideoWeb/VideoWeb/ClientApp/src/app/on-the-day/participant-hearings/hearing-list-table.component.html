@@ -23,17 +23,15 @@
         </p>
       </td>
       <td class="govuk-table__cell">
-        <button
-          id="sign-into-hearing-btn-{{ conference.id }}"
-          class="govuk-button"
-          data-module="govuk-button"
-          type="button"
-          *ngIf="canStartHearing(conference)"
-          (click)="signIntoConference(conference)"
-          [attr.aria-label]="'hearing-list-table.button.sign-into-hearing' | translate"
-        >
-        {{ 'hearing-list-table.button.sign-into-hearing' | translate }}
-        </button>
+          <button id="sign-into-hearing-btn-{{ conference.id }}"
+                  class="govuk-button"
+                  data-module="govuk-button"
+                  type="button"
+                  *ngIf="canStartHearing(conference)"
+                  (click)="signIntoConference(conference)"
+                  [attr.aria-label]="'hearing-list-table.button.sign-into-hearing' | translate">
+              {{ 'hearing-list-table.button.sign-into-hearing' | translate }} {{ conference.case_name }}
+          </button>
         <span *ngIf="!canStartHearing(conference)">
           <p id="participant-sign-in-date-{{ conference.id }}" class="govuk-!-margin-0 govuk-!-padding-0">
             {{ 'hearing-list-table.sign-in' | translate:{ date: getSignInDate(conference)} }}
