@@ -3,7 +3,8 @@ set -x
 
 rm -d -r ${PWD}/Coverage
 rm -d -r ${PWD}/TestResults
-# rm -d -r ${PWD}/VideoWeb/VideoWeb/ClientApp/node_modules
+rm -d -r ${PWD}/VideoWeb/VideoWeb/ClientApp/coverage
+rm -d -r ${PWD}/VideoWeb/VideoWeb/ClientApp/node_modules
 
 configuration=Release
 exclusions="[VideoWeb]VideoWeb.ConfigureServicesExtensions,[VideoWeb]VideoWeb.Program,[*]VideoWeb.Extensions.*[VideoWeb]VideoWeb.Startup,[Testing.Common]*,[VideoWeb.Common]VideoWeb.Common.*,[VideoWeb]VideoWeb.Security.*,[VideoWeb]VideoWeb.Configuration.*,[VideoWeb]VideoWeb.Pages.*,[VideoWeb.Testing.Common]*,[*]VideoWeb.Swagger.*"
