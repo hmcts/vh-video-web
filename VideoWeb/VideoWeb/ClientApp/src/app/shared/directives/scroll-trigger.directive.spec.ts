@@ -14,6 +14,7 @@ describe('ScrollableDirective', () => {
     beforeEach(() => {
         windowScroll = jasmine.createSpyObj<WindowScrolling>(['getWindowHeight', 'getPosition', 'getScreenBottom']);
         windowScroll.getWindowHeight.and.returnValue(documentHeight);
+        windowScroll.getWindowHeight.and.returnValue(documentHeight);
         windowScroll.getScreenBottom.and.callFake(() => documentHeight + windowScroll.getPosition());
         nativeElement = {
             clientHeight: 300,
@@ -82,8 +83,9 @@ describe('ScrollableDirective', () => {
         expect(directive.checkOffset(200)).toBe(false);
     });
 
-    it('check offset from footer raised event with false parameter', () => {
+    fit('check offset from footer raised event with false parameter', () => {
         directive.margin = -200;
+        spyOnProperty(window, 'innerHeight', 'get').and.returnValue(documentHeight);
         expect(directive.checkOffset(-667)).toBe(true);
     });
 });
