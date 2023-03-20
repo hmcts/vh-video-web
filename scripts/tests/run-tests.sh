@@ -23,6 +23,7 @@ dotnet test VideoWeb/VideoWeb.UnitTests/VideoWeb.UnitTests.csproj -c $configurat
 # Run the Jasmine tests
 cd VideoWeb/VideoWeb/ClientApp
 npm install
+npm run lint
 npm run build-prod
 npm run test-once-ci
 
