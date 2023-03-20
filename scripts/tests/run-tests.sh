@@ -5,7 +5,7 @@ rm -d -r ${PWD}/Coverage
 rm -d -r ${PWD}/TestResults
 # rm -d -r ${PWD}/VideoWeb/VideoWeb/ClientApp/node_modules
 
-configuration=Debug
+configuration=Release
 exclusions="[VideoWeb]VideoWeb.ConfigureServicesExtensions,[VideoWeb]VideoWeb.Program,[*]VideoWeb.Extensions.*[VideoWeb]VideoWeb.Startup,[Testing.Common]*,[VideoWeb.Common]VideoWeb.Common.*,[VideoWeb]VideoWeb.Security.*,[VideoWeb]VideoWeb.Configuration.*,[VideoWeb]VideoWeb.Pages.*,[VideoWeb.Testing.Common]*,[*]VideoWeb.Swagger.*"
 
 dotnet sonarscanner begin /k:"${SONAR_PROJECT_KEY}" /o:"${SONAR_ORG}" /version:"${SONAR_PROJECT_VERSION}" /name:"${SONAR_PROJECT_NAME}" /d:sonar.host.url="${SONAR_HOST}" /d:sonar.login="${SONAR_TOKEN}" /s:"${PWD}/vh-video-web-sonar-settings.xml"
@@ -23,6 +23,7 @@ dotnet test VideoWeb/VideoWeb.UnitTests/VideoWeb.UnitTests.csproj -c $configurat
 # Run the Jasmine tests
 cd VideoWeb/VideoWeb/ClientApp
 npm install
+npm run build-prod
 npm run test-once-ci
 
 # Return to the root directory to finish the SonarQube analysis
