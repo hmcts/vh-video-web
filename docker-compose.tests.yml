@@ -1,0 +1,28 @@
+version: '3.4'
+
+networks:
+  integration-tests:
+    driver: bridge
+
+services:
+
+  vh-video-web-tests:
+    image: video-web-tests
+    build:
+      context: ./
+      dockerfile: tests/Dockerfile
+    entrypoint: /run-tests.sh
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - SONAR_PROJECT_KEY=${SONAR_PROJECT_KEY}
+      - SONAR_TOKEN=${SONAR_TOKEN}
+      - SONAR_HOST=${SONAR_HOST}
+      - SONAR_PROJECT_VERSION=${SONAR_PROJECT_VERSION}
+      - SONAR_PROJECT_NAME=${SONAR_PROJECT_NAME}
+      - VSS_NUGET_EXTERNAL_FEED_ENDPOINTS=${VSS_NUGET_EXTERNAL_FEED_ENDPOINTS}
+    volumes:
+      - ./TestResults:/TestResults:rw
+      - ./Coverage:/Coverage:rw
+      - ./:/app:rw
+    networks:
+      - integration-tests

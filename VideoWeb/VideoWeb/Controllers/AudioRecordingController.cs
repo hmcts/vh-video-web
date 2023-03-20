@@ -49,6 +49,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(AppRoles.VhOfficerRole)]
+        [Obsolete("This method is no longer used and will be removed in a future release")]
         public async Task<ActionResult> StopAudioRecordingAsync(Guid hearingId)
         {
             try

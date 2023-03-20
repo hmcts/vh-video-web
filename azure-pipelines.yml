@@ -282,10 +282,6 @@ trigger:
             - release/*
             - hotfix/*
 
-pr:
-    branches:
-        include:
-            - master
 
 schedules:
 - cron: "0 0 5,15,25 * *"
