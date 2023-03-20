@@ -68,12 +68,27 @@ stages:
                       pathToSources: $(Build.SourcesDirectory)
                       summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml'
 
+                - task: PublishCodeCoverageResults@1
+                  displayName: 'Publish Node Code Coverage Report'
+                  inputs:
+                      codeCoverageTool: 'Cobertura'
+                      pathToSources: $(Build.SourcesDirectory)
+                      summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/cobertura-coverage.xml'
+
                 - task: PublishTestResults@2
                   displayName: Publish DotNet Test Results
                   inputs:
                       testResultsFormat: 'VSTest' # Options: JUnit, NUnit, VSTest, xUnit, cTest
                       testResultsFiles: '**/*TestResults.trx'
                       searchFolder: $(System.DefaultWorkingDirectory)/TestResults
+                      failTaskOnFailedTests: true
+
+                - task: PublishTestResults@2
+                  displayName: Publish Jasmine Test Results
+                  inputs:
+                      testResultsFormat: 'JUnit' # Options: JUnit, NUnit, VSTest, xUnit, cTest
+                      testResultsFiles: '**/TESTS.xml'
+                      searchFolder: $(System.DefaultWorkingDirectory)/VideoWeb/VideoWeb/ClientApp
                       failTaskOnFailedTests: true
 
     #####################################################

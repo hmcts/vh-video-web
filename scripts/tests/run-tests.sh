@@ -21,10 +21,10 @@ dotnet test VideoWeb/VideoWeb.UnitTests/VideoWeb.UnitTests.csproj -c $configurat
     "/p:CoverletOutputFormat=\"opencover,json,cobertura,lcov\""
 
 # Run the Jasmine tests
-# cd VideoWeb/VideoWeb/ClientApp
-# npm install
-# npm run test-once-ci
+cd VideoWeb/VideoWeb/ClientApp
+npm install
+npm run test-once-ci
 
 # Return to the root directory to finish the SonarQube analysis
-# cd $OLDPWD
+cd $OLDPWD
 dotnet sonarscanner end /d:sonar.login="${SONAR_TOKEN}"
