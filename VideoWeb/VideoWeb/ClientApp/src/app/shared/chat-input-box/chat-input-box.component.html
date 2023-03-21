@@ -15,7 +15,7 @@
                   (keydown)="onKeydown($event)"
                   (keyup)="onKeyup($event)"
                   attr.aria-label="{{'chat-input-box.type-a-message' | translate}}"
-                  aria-describedby="screen-reader-input-limit-hint">
+                  aria-labelledby="screen-reader-input-limit-hint">
         </textarea>
         <button [disabled]="isSendingBlocked"
                 (click)="sendMessage()"
