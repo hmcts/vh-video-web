@@ -1155,10 +1155,15 @@
       "dismiss": "Dismiss"
     },
     "participant-added": {
-      "title": "{{name}}",
-      "message-without-party": "{{role}} has been added to the hearing.",
-      "message-with-party": "{{role}} ({{party}}) has been added to the hearing.",
-      "dismiss": "Dismiss"
+        "title": "{{name}}",
+        "message-without-party": "{{role}} has been added to the hearing.",
+        "message-with-party": "{{role}} ({{party}}) has been added to the hearing.",
+        "dismiss": "Dismiss"
+    },
+    "endpoint-addded": {
+        "title": "{{name}}",
+        "message": "Video Access Point has been added to the hearing",
+        "dismiss": "Dismiss"
     },
     "hearing-layout-changed": {
       "title": "{{name}}",

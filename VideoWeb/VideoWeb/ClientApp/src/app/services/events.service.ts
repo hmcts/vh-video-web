@@ -7,6 +7,7 @@ import { ParticipantMediaStatus } from '../shared/models/participant-media-statu
 import { ParticipantMediaStatusMessage } from '../shared/models/participant-media-status-message';
 import { ParticipantRemoteMuteMessage } from '../shared/models/participant-remote-mute-message';
 import { ParticipantsUpdatedMessage } from '../shared/models/participants-updated-message';
+import { EndpointsUpdatedMessage } from '../shared/models/endpoints-updated-message';
 import { Room } from '../shared/models/room';
 import { RoomTransfer } from '../shared/models/room-transfer';
 import {
@@ -51,6 +52,7 @@ export class EventsService {
     private endpointStatusSubject = new Subject<EndpointStatusMessage>();
     private hearingStatusSubject = new Subject<ConferenceStatusMessage>();
     private participantsUpdatedSubject = new Subject<ParticipantsUpdatedMessage>();
+    private endpointsUpdatedSubject = new Subject<EndpointsUpdatedMessage>();
 
     private hearingCountdownCompleteSubject = new Subject<string>();
     private helpMessageSubject = new Subject<HelpMessage>();
@@ -360,6 +362,10 @@ export class EventsService {
 
     getParticipantsUpdated(): Observable<ParticipantsUpdatedMessage> {
         return this.participantsUpdatedSubject.asObservable();
+    }
+
+    getEndpointsUpdated(): Observable<EndpointsUpdatedMessage> {
+        return this.endpointsUpdatedSubject.asObservable();
     }
 
     getHearingLayoutChanged(): Observable<HearingLayoutChanged> {

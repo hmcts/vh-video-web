@@ -348,6 +348,44 @@ export class NotificationToastrService {
         return toast.toastRef.componentInstance as VhToastComponent;
     }
 
+    showEndpointAdded(endpoint: VideoEndpointResponse, inHearing: boolean = false): VhToastComponent {
+
+        const messageBody = this.translateService.instant('notification-toastr.endpoint-added.message');
+        let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${this.translateService.instant(
+            'notification-toastr.endpoint-added.title',
+            {
+                name: endpoint.display_name
+            }
+        )}</span>`;
+        message += `<span class="toast-content toast-body">${messageBody}</span>`;
+
+        const toast = this.toastr.show('', '', {
+            timeOut: 0,
+            extendedTimeOut: 0,
+            tapToDismiss: false,
+            toastComponent: VhToastComponent
+        });
+        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
+            color: inHearing ? 'white' : 'black',
+            htmlBody: message,
+            onNoAction: async () => {
+                this.logger.info(`${this.loggerPrefix} No action called on endpoint added alert`);
+            },
+            buttons: [
+                {
+                    id: 'notification-toastr-endpoint-added-dismiss',
+                    label: this.translateService.instant('notification-toastr.endpoint-added.dismiss'),
+                    cssClass: 'green',
+                    action: async () => {
+                        this.toastr.remove(toast.toastId);
+                    }
+                }
+            ]
+        };
+
+        return toast.toastRef.componentInstance as VhToastComponent;
+    }
+
     showHearingLayoutchanged(participant: ParticipantResponse, inHearing: boolean = false): VhToastComponent {
         const messageBody = this.translateService.instant('notification-toastr.hearing-layout-changed.message');
         let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${this.translateService.instant(

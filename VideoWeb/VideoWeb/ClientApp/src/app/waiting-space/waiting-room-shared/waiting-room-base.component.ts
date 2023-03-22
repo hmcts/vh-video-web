@@ -39,6 +39,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
 import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
+import { EndpointsUpdatedMessage } from 'src/app/shared/models/endpoints-updated-message';
 import { Room } from 'src/app/shared/models/room';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { HearingRole } from '../models/hearing-role-model';
@@ -505,6 +506,13 @@ export abstract class WaitingRoomBaseDirective {
             })
         );
 
+        this.logger.debug('[WR] - Subscribing to endpoints update complete message');
+        this.eventHubSubscription$.add(
+            this.eventService.getEndpointsUpdated().subscribe(async endpointsUpdatedMessage => {
+                this.handleEndpointsUpdatedMessage(endpointsUpdatedMessage);
+            })
+        );
+
         this.logger.debug('[WR] - Subscribing to hearing layout update complete message');
         this.eventHubSubscription$.add(
             this.eventService.getHearingLayoutChanged().subscribe(async hearingLayout => {
@@ -763,6 +771,7 @@ export abstract class WaitingRoomBaseDirective {
         this.presentationStream = null;
         this.videoCallService.stopPresentation();
     }
+
     handlePresentationConnected(connectedPresentation: ConnectedPresentation): void {
         const logPayload = {
             conference: this.conferenceId,
@@ -1092,6 +1101,26 @@ export abstract class WaitingRoomBaseDirective {
             return participant;
         });
         this.participant = this.getLoggedParticipant();
+    }
+
+    private handleEndpointsUpdatedMessage(endpointsUpdatedMessage: EndpointsUpdatedMessage) {
+        this.logger.debug(`[WR] - Endpoints updated message recieved`, endpointsUpdatedMessage.endpoints);
+
+        if (!this.validateIsForConference(endpointsUpdatedMessage.conferenceId)) {
+            return;
+        }
+
+        const newEndpoints = endpointsUpdatedMessage.endpoints.filter(x => !this.hearing.getEndpoints().map(y => y.id).includes(x.id));
+
+        newEndpoints.forEach(endpoint => {
+            this.logger.debug(`[WR] - Endpoint added, showing notification`, endpoint);
+            this.notificationToastrService.showEndpointAdded(
+                endpoint,
+                this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
+            );
+        });
+
+        this.conference.endpoints = endpointsUpdatedMessage.endpoints;
     }
 
     private handleHearingLayoutUpdatedMessage(hearingLayoutMessage: HearingLayoutChanged) {
