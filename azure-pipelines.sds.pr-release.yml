@@ -34,55 +34,13 @@ stages:
                       chartPath: ${{ variables.chartPath }}
                       chartValuesPath: ${{ variables.chartPath }}
 
-          - job: UnitAndIntegrationTests
-            displayName: 'Unit & Integration Tests'
-            steps:
-                - checkout: self
-
-                - bash: |
-                      sed -i "s|</configuration>|<packageSourceCredentials><vh-packages><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"$(System.AccessToken)\" /></vh-packages></packageSourceCredentials></configuration>|" nuget.sds.config
-                  displayName: Add NuGet Feed Authentication
-                  workingDirectory: ${{ variables.appName }}
-
-                - task: DockerCompose@0
-                  displayName: Run Unit & Integration Tests
-                  env:
-                      SONAR_HOST: https://sonarcloud.io
-                      SONAR_ORG: hmcts
-                      SONAR_TOKEN: $(SonarLoginToken)
-                      SONAR_PROJECT_KEY: $(gitRepoName)
-                      SONAR_PROJECT_VERSION: $(Build.BuildNumber)
-                      SONAR_PROJECT_NAME: $(Build.Repository.Name)
-                  inputs:
-                      action: Run a Docker Compose command
-                      dockerComposeFile: docker-compose.tests.yml
-                      projectName: $(Build.Repository.Name)
-                      dockerComposeCommand: up
-                      arguments: --build --abort-on-container-exit
-                  continueOnError: true
-
-                - task: PublishCodeCoverageResults@1
-                  displayName: 'Publish Code Coverage Report'
-                  inputs:
-                      codeCoverageTool: 'Cobertura'
-                      pathToSources: $(Build.SourcesDirectory)
-                      summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml'
-
-                - task: PublishTestResults@2
-                  displayName: Publish DotNet Test Results
-                  inputs:
-                      testResultsFormat: 'VSTest' # Options: JUnit, NUnit, VSTest, xUnit, cTest
-                      testResultsFiles: '**/*TestResults.trx'
-                      searchFolder: $(System.DefaultWorkingDirectory)/TestResults
-                      failTaskOnFailedTests: true
-
-                - task: PublishTestResults@2
-                  displayName: Publish Jasmine Test Results
-                  inputs:
-                      testResultsFormat: 'JUnit' # Options: JUnit, NUnit, VSTest, xUnit, cTest
-                      testResultsFiles: '**/TESTS.xml'
-                      searchFolder: $(System.DefaultWorkingDirectory)/VideoWeb/VideoWeb/ClientApp
-                      failTaskOnFailedTests: true
+          - template: stages\dotnet-tests\unit-and-integration-tests-container.yml@azTemplates
+            parameters:
+                nugetConfigPath: nuget.sds.config # remove this once the sds config file is removed
+                appName: ${{ variables.appName }}
+                dockerComposeTestFile: docker-compose.tests.yml
+                publishNodeTests: true
+                nodeTestResultFolder: $(System.DefaultWorkingDirectory)/AdminWebsite/AdminWebsite/ClientApp
 
     #####################################################
     # Docker Build. #####################################
