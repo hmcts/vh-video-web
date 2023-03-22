@@ -4,8 +4,8 @@
     <Property Name="sonar.exclusions">**/node_modules/**,**/*.spec.ts, *.spec.ts, **/ClientApp/src/*, **/ClientApp/coverage/**/**, **/ConfigureServicesExtensions.cs, **/Startup.cs, **/Program.cs, **/Testing.Common/**, **/VideoWeb.UnitTests/**, **/VideoWeb.Common/**, **/VideoWeb/Swagger/**, **/VideoWeb/Extensions/**, **/ClientApp/src/scripts/*.js, **/VideoWeb/VideoWeb.AcceptanceTests/Videos/**.y4m</Property>
     <Property Name="sonar.typescript.exclusions">**/node_modules/**,**/typings.d.ts,**/main.ts,**/environments/environment*.ts,**/*routing.module.ts,**/api-client.ts,**/app-insights-logger.service.ts</Property>
     <Property Name="sonar.coverage.exclusions">**/Testing.Common/**, VideoWeb/Views/*,VideoWeb/Pages/*,VideoWeb.AcceptanceTests/*,**/ClientApp/src/scripts/*.js,**/ClientApp/src/app/testing/**,**/ClientApp/src/app/vh-officer/helper.ts,**/ClientApp/src/app/services/events.service.ts, **/ClientApp/src/app/send-video-events/send-video-events.component.ts,**/ClientApp/src/app/services/api/video-web.service.ts,**/ClientApp/src/app/waiting-space/analogue-clock/analogue-clock.component.ts,**/app-insights-logger.service.ts,**/video-filter.service.ts,**/video-filter.service.ts,**/audio-only-image.service.ts</Property>
-    <Property Name="sonar.cs.opencover.reportsPaths">/app/Coverage/coverage.opencover.xml</Property>
-    <Property Name="sonar.javascript.lcov.reportPaths">/app/VideoWeb/VideoWeb/ClientApp/coverage/lcov.info</Property>
+    <Property Name="sonar.cs.opencover.reportsPaths">**/coverage.opencover.xml</Property>
+    <Property Name="sonar.javascript.lcov.reportPaths">**/ClientApp/coverage/lcov.info</Property>
     <Property Name="sonar.cpd.exclusions">**/tests/WRTestComponent.ts,**/joh-waiting-room/**</Property>
     <Property Name="sonar.issue.ignore.multicriteria">e1,e2</Property>
     <Property Name="sonar.issue.ignore.multicriteria.e1.ruleKey">typescript:S107</Property>
