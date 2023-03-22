@@ -20,32 +20,32 @@ stages:
     #####################################################
     # CI Build Checks. ##################################
     - stage: CI_Build
-    displayName: CI Build
-    variables:
-      - template: variables/shared.yaml
-    jobs:
-      - job: CI_Helm
-        displayName: "Helm CI"
-        steps:
-          - checkout: self
+      displayName: CI Build
+      variables:
+          - template: variables/shared.yaml
+      jobs:
+          - job: CI_Helm
+            displayName: 'Helm CI'
+            steps:
+                - checkout: self
 
-          - template: templates\Containerisation\helm\helm-lint.yaml@azTemplates
-            parameters:
-              chartPath: ${{ variables.chartPath }}
-              chartValuesPath: ${{ variables.chartPath }}
+                - template: templates\Containerisation\helm\helm-lint.yaml@azTemplates
+                  parameters:
+                      chartPath: ${{ variables.chartPath }}
+                      chartValuesPath: ${{ variables.chartPath }}
 
-      - job: UnitAndIntegrationTests
-        displayName: "Unit and Integration Tests"
-        steps:
-          - checkout: self
+          - job: UnitAndIntegrationTests
+            displayName: 'Unit and Integration Tests'
+            steps:
+                - checkout: self
 
-          - template: stages\dotnet-tests\unit-and-integration-tests-container.yml@azTemplates
-            parameters:
-              nugetConfigPath: nuget.sds.config # remove this once the sds config file is removed
-              appName: ${{ variables.appName }}
-              dockerComposeTestFile: docker-compose.tests.yml
-              publishNodeTests: true
-              nodeTestResultFolder: $(System.DefaultWorkingDirectory)/VideoWeb/VideoWeb/ClientApp
+                - template: stages\dotnet-tests\unit-and-integration-tests-container.yml@azTemplates
+                  parameters:
+                      nugetConfigPath: nuget.sds.config # remove this once the sds config file is removed
+                      appName: ${{ variables.appName }}
+                      dockerComposeTestFile: docker-compose.tests.yml
+                      publishNodeTests: true
+                      nodeTestResultFolder: $(System.DefaultWorkingDirectory)/VideoWeb/VideoWeb/ClientApp
 
     #####################################################
     # Docker Build. #####################################
