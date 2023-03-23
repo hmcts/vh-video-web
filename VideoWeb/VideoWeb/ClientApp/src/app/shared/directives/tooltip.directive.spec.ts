@@ -261,6 +261,20 @@ describe('TooltipDirective', () => {
             });
         });
 
+        describe('removeTooltips', () => {
+            it('should remove tooltips when exist', () => {
+                directive.tooltip = document.createElement('div');
+                directive.tooltip.setAttribute('class', 'vh-tooltip');
+
+                // When
+                directive.removeTooltips('vh-tooltip');
+
+                // Then
+                expect(directive.tooltip.style.top).toEqual('');
+                expect(directive.tooltip.style.left).toEqual('');
+            });
+        });
+
         describe('Keyboard Event', () => {
             const mockHTMLElement = (): FocusEvent => {
                 const otherElement = document.createElement('div');

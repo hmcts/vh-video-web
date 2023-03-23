@@ -58,13 +58,8 @@ export class TooltipDirective implements OnDestroy {
         }
 
         this.hideTooltipKeyEvent();
-
-        if (this.tooltip) {
-            this.show();
-            this.updatePosition($event);
-        } else {
-            this.createAndDisplay($event);
-        }
+        this.removeTooltips('vh-tooltip');
+        this.createAndDisplay($event);
     }
 
     @HostListener('mousemove', ['$event']) onMouseMove($event: MouseEvent) {
@@ -89,6 +84,13 @@ export class TooltipDirective implements OnDestroy {
     @HostListener('mouseleave', ['$event']) onMouseLeave($event: MouseEvent) {
         if (this.tooltip) {
             this.hide();
+        }
+    }
+
+    removeTooltips(className: string) {
+        const elements = document.getElementsByClassName(className);
+        while (elements.length > 0) {
+            elements[0].parentNode.removeChild(elements[0]);
         }
     }
 
