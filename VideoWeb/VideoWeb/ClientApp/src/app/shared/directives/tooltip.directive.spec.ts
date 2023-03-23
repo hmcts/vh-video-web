@@ -263,6 +263,7 @@ describe('TooltipDirective', () => {
 
         describe('removeTooltips', () => {
             it('should remove tooltips when exist', () => {
+                // Given
                 directive.tooltip = document.createElement('div');
                 directive.tooltip.setAttribute('class', 'vh-tooltip');
 
