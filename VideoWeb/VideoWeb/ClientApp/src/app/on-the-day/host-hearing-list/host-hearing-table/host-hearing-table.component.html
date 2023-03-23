@@ -110,9 +110,10 @@
                     <td class="govuk-table__cell">
                         <div *ngIf="!hearing.isClosed() && hearing.isReadyToStart()">
                             <button id="start-hearing-btn-{{ hearing.id }}"
-                                class="govuk-button govuk-!-margin-top-3 govuk-!-margin-bottom-3"
-                                data-module="govuk-button" type="button" (click)="signIntoConference(hearing)">
-                                {{ 'judge-hearing-table.select' | translate }} <span class="sr-only">{{ 'judge-hearing-table.hearing' | translate }}: {{ hearing.caseName }}</span>
+                                    class="govuk-button govuk-!-margin-top-3 govuk-!-margin-bottom-3"
+                                    data-module="govuk-button" type="button" (click)="signIntoConference(hearing)"
+                                    [attr.aria-label]="('judge-hearing-table.select' | translate) + ' ' + ('judge-hearing-table.hearing' | translate) + ': ' + hearing.caseName">
+                                    {{ 'judge-hearing-table.select' | translate }}
                             </button>
                         </div>
                         <div *ngIf="!hearing.isClosed() && !hearing.isReadyToStart()">{{
