@@ -510,23 +510,18 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         }
 
         if (this.conferenceRecordingInSessionForSeconds > 20 && !this.continueWithNoRecording) {
-            this.logger.debug(`${this.loggerPrefixJudge} Attempting to retrieve audio stream info for ${hearingId}`);
+            this.logger.info(`${this.loggerPrefixJudge} Attempting to retrieve audio stream info for ${hearingId}`);
             try {
                 const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId, this.conference.wowza_single_app);
-                this.logger.debug(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
+                this.logger.info(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
                 if (!audioStreamWorking && !this.continueWithNoRecording && this.showVideo) {
-                    this.logger.debug(`${this.loggerPrefixJudge} not recording when expected, show alert`);
-                    this.showAudioRecordingAlert();
-                }
-            } catch (error) {
-                this.logger.error(`${this.loggerPrefixJudge} Failed to get audio stream info`, error, { conference: this.conferenceId });
-
-                if (!this.continueWithNoRecording) {
-                    this.logger.info(`${this.loggerPrefixJudge} Should not continue without a recording. Show alert.`, {
+                    this.logger.warn(`${this.loggerPrefixJudge} not recording when expected, show alert`, {
                         conference: this.conferenceId
                     });
                     this.showAudioRecordingAlert();
                 }
+            } catch (error) {
+                this.logger.error(`${this.loggerPrefixJudge} Failed to get audio stream info.`, error, { conference: this.conferenceId });
             }
         }
     }
