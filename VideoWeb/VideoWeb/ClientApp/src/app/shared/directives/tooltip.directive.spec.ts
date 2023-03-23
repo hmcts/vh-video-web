@@ -274,6 +274,18 @@ describe('TooltipDirective', () => {
                 expect(directive.tooltip.style.top).toEqual('');
                 expect(directive.tooltip.style.left).toEqual('');
             });
+
+            it('should not remove tooltips if not exist', () => {
+                // Given
+                directive.tooltip = undefined;
+
+                // When
+                directive.removeTooltips('vh-tooltip');
+
+                // Then
+                expect(directive.tooltip).toBeUndefined();
+                expect(directive.tooltip).toBeUndefined();
+            });
         });
 
         describe('Keyboard Event', () => {
