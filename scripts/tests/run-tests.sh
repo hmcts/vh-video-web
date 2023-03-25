@@ -20,7 +20,6 @@ dotnet test VideoWeb/VideoWeb.UnitTests/VideoWeb.UnitTests.csproj -c $configurat
     "/p:CoverletOutputFormat=\"opencover,json,cobertura,lcov\""
 
 # Run the Jasmine tests
-cd VideoWeb/VideoWeb/ClientApp
 npm install --prefix VideoWeb/VideoWeb/ClientApp
 npm run --prefix VideoWeb/VideoWeb/ClientApp lint
 npm run --prefix VideoWeb/VideoWeb/ClientApp test-once-ci
