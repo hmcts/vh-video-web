@@ -14,14 +14,6 @@ services:
     entrypoint: /run-tests.sh
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - SONAR_PROJECT_KEY=${SONAR_PROJECT_KEY}
-      - SONAR_TOKEN=${SONAR_TOKEN}
-      - SONAR_HOST=${SONAR_HOST}
-      - SONAR_PROJECT_VERSION=${SONAR_PROJECT_VERSION}
-      - SONAR_PROJECT_NAME=${SONAR_PROJECT_NAME}
-      - SONAR_PR_KEY=${SONAR_PR_KEY}
-      - SONAR_PR_BRANCH=${SONAR_PR_BRANCH}
-      - SONAR_PR_BASE=${SONAR_PR_BASE}
     volumes:
       - ./TestResults:/TestResults:rw
       - ./Coverage:/Coverage:rw
