@@ -347,3 +347,4 @@ TESTS.xml
 .sonarqube/
 .env
 Coverage/
+**/SpecFlow/userid
