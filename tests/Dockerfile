@@ -18,3 +18,6 @@ RUN apt-get update \
 
 COPY ["scripts/tests/run-tests.sh", "/"]
 RUN chmod +x /run-tests.sh
+
+# Remove once npm has been upgraded
+RUN sudo chown -R 1001:0 "/root/.npm"
