@@ -11,6 +11,8 @@ export class TooltipDirective implements OnDestroy {
     _OPACITY_ONE = '1';
     _OPACITY_ZERO_FIVE = '0.5';
     _POSITION_RELATIVE = 'relative';
+    _tooltipElements = undefined;
+
     @Input() set text(value: string) {
         this._text = value;
         if (this.tooltip) {
@@ -88,9 +90,9 @@ export class TooltipDirective implements OnDestroy {
     }
 
     removeTooltips(className: string) {
-        const elements = document.getElementsByClassName(className);
-        while (elements.length > 0) {
-            elements[0].parentNode.removeChild(elements[0]);
+        this._tooltipElements = document.getElementsByClassName(className);
+        while (this._tooltipElements.length > 0) {
+            this._tooltipElements[0].parentNode.removeChild(this._tooltipElements[0]);
         }
     }
 
