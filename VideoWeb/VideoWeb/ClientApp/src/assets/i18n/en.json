@@ -66,6 +66,7 @@
     "maximum": "maximum allowed",
     "unable-send": "Unable to send message.",
     "type-a-message": "Type a message",
+      "text-area": "Text area",
     "you-can-enter-up-to": "You can enter up to",
     "characters-in-this-field": "characters in this field",
     "maximum-characters-entered": "You have entered the maximum number of characters"
