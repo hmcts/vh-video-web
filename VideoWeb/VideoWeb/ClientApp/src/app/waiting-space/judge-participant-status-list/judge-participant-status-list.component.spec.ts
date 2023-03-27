@@ -160,6 +160,14 @@ describe('JudgeParticipantStatusListComponent', () => {
         expect(videoWebService.updateParticipantDetails).toHaveBeenCalledTimes(1);
     });
 
+    it('should updateParticipantDetails when save judge new display name with alphanumeric characters', async () => {
+        const newName = 'new name%$*^^';
+        component.onEnterJudgeDisplayName(newName);
+        await component.saveJudgeDisplayName();
+        expect(component.judge.display_name).toBe('new name');
+        expect(component.showChangeJudgeDisplayName).toBe(false);
+    });
+
     it('should log error when unable to save new judge name', async () => {
         const error = { error: 'test failure' };
         const newName = 'new name';
