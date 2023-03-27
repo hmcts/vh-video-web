@@ -492,10 +492,10 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.shouldCurrentUserJoinHearing()).toBeTrue();
     });
 
-    describe('Audio Alert tests', ()=>{
-        beforeEach(()=>{
+    describe('Audio Alert tests', () => {
+        beforeEach(() => {
             component.showVideo = true;
-        })
+        });
 
         it('should continue with no recording when judge dismisses the audio recording alert mid hearing', async () => {
             const toast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', { actioned: true });
@@ -618,7 +618,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             await component.retrieveAudioStreamInfo(globalConference.id);
             expect(component.audioErrorToastOpen).toBeTruthy();
         });
-    })
+    });
 
     describe('shouldCurrentUserJoinHearing', () => {
         it('should return false if user is a host and status is not InHearing', () => {

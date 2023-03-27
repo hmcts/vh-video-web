@@ -44,6 +44,7 @@ export class VideoCallService {
     private onParticipantUpdatedSubject = new Subject<ParticipantUpdated>();
     private onConferenceUpdatedSubject = new Subject<ConferenceUpdated>();
     private onParticipantCreatedSubject = new Subject<ParticipantUpdated>();
+    private onParticipantDeletedSubject = new Subject<ParticipantUpdated>();
 
     private onConnectedScreenshareSubject = new Subject<ConnectedScreenshare>();
     private onStoppedScreenshareSubject = new Subject<StoppedScreenshare>();
@@ -115,6 +116,7 @@ export class VideoCallService {
 
         this.pexipAPI.onParticipantUpdate = this.handleParticipantUpdate.bind(this);
         this.pexipAPI.onParticipantCreate = this.handleParticipantCreated.bind(this);
+        this.pexipAPI.onParticipantDelete = this.handleParticipantDeleted.bind(this);
 
         this.pexipAPI.onConferenceUpdate = function (conferenceUpdate) {
             self.onConferenceUpdatedSubject.next(new ConferenceUpdated(conferenceUpdate.guests_muted));
@@ -199,6 +201,12 @@ export class VideoCallService {
         this.onParticipantCreatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
     }
 
+    private handleParticipantDeleted(participantUpdate: PexipParticipant) {
+        this.logger.debug(`${this.loggerPrefix} handling participant Delete`);
+
+        this.onParticipantDeletedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
+    }
+
     private handleParticipantUpdate(participantUpdate: PexipParticipant) {
         this.videoCallEventsService.handleParticipantUpdated(ParticipantUpdated.fromPexipParticipant(participantUpdate));
         this.onParticipantUpdatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
@@ -273,6 +281,10 @@ export class VideoCallService {
 
     onParticipantCreated(): Observable<ParticipantUpdated> {
         return this.onParticipantCreatedSubject.asObservable();
+    }
+
+    onParticipantDeleted(): Observable<ParticipantUpdated> {
+        return this.onParticipantDeletedSubject.asObservable();
     }
 
     onParticipantUpdated(): Observable<ParticipantUpdated> {

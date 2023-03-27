@@ -1,3 +1,4 @@
+using System;
 using Autofac.Extras.Moq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -88,7 +89,7 @@ namespace VideoWeb.UnitTests.Controllers
                 Mock.Of<JusticeUserResponse>(),
                 Mock.Of<JusticeUserResponse>(),
             };
-            _mocker.Mock<IBookingsApiClient>().Setup(x => x.GetJusticeUserListAsync(null)).ReturnsAsync(csos);
+            _mocker.Mock<IBookingsApiClient>().Setup(x => x.GetJusticeUserListAsync(String.Empty, null)).ReturnsAsync(csos);
             var result = await _sut.GetJusticeUsers();
             var objectResult = result.Result as OkObjectResult;
             objectResult.Should().NotBeNull();
