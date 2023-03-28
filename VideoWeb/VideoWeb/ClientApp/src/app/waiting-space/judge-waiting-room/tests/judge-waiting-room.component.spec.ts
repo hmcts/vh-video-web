@@ -135,6 +135,24 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         linked_participants: []
     });
 
+    const wowzaParticipant = {
+        buzz_time: 0,
+        call_tag: null,
+        display_name: `vh-wowza-dev`,
+        external_node_uuid: '',
+        has_media: true,
+        is_audio_only_call: '',
+        is_external: false,
+        is_muted: 'NO',
+        is_video_call: 'false',
+        local_alias: '',
+        mute_supported: 'false',
+        protocol: '',
+        spotlight: 0,
+        start_time: 0,
+        uuid: 'wowza_id'
+    };
+
     let component: JudgeWaitingRoomComponent;
     let audioRecordingService: jasmine.SpyObj<AudioRecordingService>;
     let activatedRoute: ActivatedRoute;
@@ -492,9 +510,29 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.shouldCurrentUserJoinHearing()).toBeTrue();
     });
 
+    describe('Monitoring the wowza-listener participant', () => {
+        beforeEach(() => {
+            videoCallService.onParticipantCreated.and.returnValue(of(ParticipantUpdated.fromPexipParticipant(wowzaParticipant)));
+        });
+        it('Should set wowza listener property when participant exists in onParticipantCreated callback', () => {
+            component.ngOnInit();
+            expect(component.wowzaListener).toBeTruthy();
+        });
+
+        it('Should display audio alert if wowza listener is deleted', () => {
+            videoCallService.onParticipantDeleted.and.returnValue(of(ParticipantUpdated.fromPexipParticipant(wowzaParticipant)));
+            component.conference.audio_recording_required = true;
+
+            component.ngOnInit();
+            expect(component.audioErrorToastOpen).toBe(true);
+            expect(notificationToastrService.showAudioRecordingError).toHaveBeenCalled();
+        });
+    });
+
     describe('Audio Alert tests', () => {
         beforeEach(() => {
             component.showVideo = true;
+            component.wowzaListener = ParticipantUpdated.fromPexipParticipant(wowzaParticipant);
         });
 
         it('should continue with no recording when judge dismisses the audio recording alert mid hearing', async () => {
@@ -612,6 +650,16 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         it('should display audio recording alert when audio info returns false and hearing must be recorded', async () => {
             audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(false));
+            component.continueWithNoRecording = false;
+            component.conferenceRecordingInSessionForSeconds = 61;
+            component.conference.status = ConferenceStatus.InSession;
+            await component.retrieveAudioStreamInfo(globalConference.id);
+            expect(component.audioErrorToastOpen).toBeTruthy();
+        });
+
+        it('should display audio recording alert when audio info returns true but wowza listener missing', async () => {
+            component.wowzaListener = null;
+            audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(true));
             component.continueWithNoRecording = false;
             component.conferenceRecordingInSessionForSeconds = 61;
             component.conference.status = ConferenceStatus.InSession;

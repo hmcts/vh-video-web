@@ -65,6 +65,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     participantStatusChangedSubscription: Subscription;
     onConferenceStatusChangedSubscription: Subscription;
     wowzaListener: ParticipantUpdated;
+    participants: ParticipantUpdated[] = [];
+
     private wowzaName = 'vh-wowza';
 
     get isChatVisible() {
@@ -157,6 +159,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 this.assignPexipIdToRemoteStore(createdParticipant);
                 if (createdParticipant.pexipDisplayName.includes(this.wowzaName)) {
                     this.wowzaListener = createdParticipant;
+                    this.participants.push(createdParticipant);
                     this.logger.debug(`${this.loggerPrefixJudge} WowzaListener added`, {
                         pexipId: createdParticipant.uuid,
                         dispayName: createdParticipant.pexipDisplayName
@@ -177,19 +180,20 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             )
             .subscribe(updatedParticipant => this.assignPexipIdToRemoteStore(updatedParticipant));
 
-        this.videoCallService
-            .onParticipantDeleted()
-            .subscribe(deletedParticipant => {
-                if (this.wowzaListener) {
-                    if (deletedParticipant.uuid === this.wowzaListener.uuid && this.conference.audio_recording_required) {
-                        this.logger.warn(`${this.loggerPrefixJudge} WowzaListener removed: ParticipantDeleted callback received for participant from Pexip`, {
+        this.videoCallService.onParticipantDeleted().subscribe(deletedParticipant => {
+            if (this.wowzaListener) {
+                if (deletedParticipant.uuid === this.wowzaListener.uuid && this.conference.audio_recording_required) {
+                    this.logger.warn(
+                        `${this.loggerPrefixJudge} WowzaListener removed: ParticipantDeleted callback received for participant from Pexip`,
+                        {
                             pexipId: deletedParticipant.uuid,
                             dispayName: deletedParticipant.pexipDisplayName
-                        });
-                        this.showAudioRecordingAlert();
-                    }
+                        }
+                    );
+                    this.showAudioRecordingAlert();
                 }
-            });
+            }
+        });
 
         this.eventService
             .getParticipantMediaStatusMessage()
@@ -540,7 +544,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId, this.conference.wowza_single_app);
                 this.logger.info(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
                 // if recorder not found on a wowza vm and returns false OR wowzaListener participant is not present in conference
-                if ((!audioStreamWorking || !this.wowzaListener) && (!this.continueWithNoRecording && this.showVideo)) {
+                if ((!audioStreamWorking || !this.wowzaListener) && !this.continueWithNoRecording && this.showVideo) {
                     this.logger.warn(`${this.loggerPrefixJudge} not recording when expected, show alert`, {
                         conference: this.conferenceId
                     });

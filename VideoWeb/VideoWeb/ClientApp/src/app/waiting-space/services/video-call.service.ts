@@ -203,7 +203,6 @@ export class VideoCallService {
 
     private handleParticipantDeleted(participantUpdate: PexipParticipant) {
         this.logger.debug(`${this.loggerPrefix} handling participant Delete`);
-
         this.onParticipantDeletedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
     }
 
