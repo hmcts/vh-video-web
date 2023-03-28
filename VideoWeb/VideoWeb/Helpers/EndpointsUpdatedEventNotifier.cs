@@ -31,10 +31,12 @@ namespace VideoWeb.Helpers
             var newEndpointsResponse = endpointsToNotify.NewEndpoints.Select(videoEndpointResponseMapper.Map).ToList();
             var existingEndpointsResponse = endpointsToNotify.ExistingEndpoints.Select(videoEndpointResponseMapper.Map).ToList();
 
+            var endpoints = newEndpointsResponse.Concat(existingEndpointsResponse).ToList();
+
             foreach (var participant in conference.Participants)
             {
                 await _hubContext.Clients.Group(participant.Username.ToLowerInvariant())
-                    .EndpointsUpdated(conference.Id, endpointsToNotify);
+                    .EndpointsUpdated(conference.Id, endpoints);
             }
         }
     }

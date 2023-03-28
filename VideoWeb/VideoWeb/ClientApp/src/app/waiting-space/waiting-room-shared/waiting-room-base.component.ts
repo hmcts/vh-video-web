@@ -1110,25 +1110,37 @@ export abstract class WaitingRoomBaseDirective {
             return;
         }
 
-        endpointsUpdatedMessage.endpoints.new_endpoints.forEach(endpoint => {
-            this.logger.debug(`[WR] - Endpoint added, showing notification`, endpoint);
-            this.notificationToastrService.showEndpointAdded(
-                endpoint,
-                this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
-            );
+        //this.hearing.getEndpoints().forEach(x => {
+        //    x.display_name = "UPDATED NAME TEST";
+        //});
+        var hearingEndpoints = this.hearing.getEndpoints();
+
+        endpointsUpdatedMessage.endpoints.forEach(ep => {
+            var endpoint = hearingEndpoints.find(x => x.id === ep.id);
+
+            if (!endpoint)
+            {
+                this.logger.debug(`[WR] - Endpoint added, showing notification`, ep);
+                this.notificationToastrService.showEndpointAdded(
+                    ep,
+                    this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
+                );
+
+                this.hearing.addEndpoint(ep);
+            }
+            else
+            {
+                this.logger.debug(`[WR] - Endpoint updated, showing notification`, ep);
+                this.notificationToastrService.showEndpointUpdated(
+                    ep,
+                    this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
+                );
+
+                this.hearing.updateEndpoint(ep);
+            }
         });
 
-        endpointsUpdatedMessage.endpoints.existing_endpoints.forEach(endpoint => {
-            this.logger.debug(`[WR] - Endpoint updated, showing notification`, endpoint);
-            this.notificationToastrService.showEndpointUpdated(
-                endpoint,
-                this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
-            );
-        });
-        console.log(this.conference.endpoints);
-        console.log(this.participantEndpoints);
-        this.conference.endpoints = new Array<VideoEndpointResponse>();
-        this.participantEndpoints = [];
+        this.conference.endpoints = hearingEndpoints;
     }
 
     private handleHearingLayoutUpdatedMessage(hearingLayoutMessage: HearingLayoutChanged) {

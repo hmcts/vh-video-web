@@ -18,7 +18,7 @@ import {
     HearingLayout,
     ParticipantResponse,
     ParticipantStatus,
-    UpdateConferenceEndpointsRequest
+    VideoEndpointResponse
 } from './clients/api-client';
 import { EventsHubService } from './events-hub.service';
 import { Logger } from './logging/logger-base';
@@ -112,7 +112,7 @@ export class EventsService {
             this.participantsUpdatedSubject.next(message);
         },
 
-        EndpointsUpdated: (conferenceId: string, endpoints: UpdateConferenceEndpointsRequest) => {
+        EndpointsUpdated: (conferenceId: string, endpoints: VideoEndpointResponse[]) => {
             const message = new EndpointsUpdatedMessage(conferenceId, endpoints);
             this.logger.debug('[EventsService] - EndpointsUpdatedMessage received', message);
             this.endpointsUpdatedSubject.next(message);

@@ -4,7 +4,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ToastrService } from 'ngx-toastr';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { ConsultationAnswer, EndpointResponse, HearingDetailRequest, ParticipantResponse, VideoEndpointResponse } from 'src/app/services/clients/api-client';
+import { ConsultationAnswer, HearingDetailRequest, ParticipantResponse, VideoEndpointResponse } from 'src/app/services/clients/api-client';
 import { NotificationSoundsService } from './notification-sounds.service';
 import { Guid } from 'guid-typescript';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
@@ -348,7 +348,7 @@ export class NotificationToastrService {
         return toast.toastRef.componentInstance as VhToastComponent;
     }
 
-    showEndpointAdded(endpoint: EndpointResponse, inHearing: boolean = false): VhToastComponent
+    showEndpointAdded(endpoint: VideoEndpointResponse, inHearing: boolean = false): VhToastComponent
     {
         const messageBody = this.translateService.instant('notification-toastr.endpoint-added.message');
         let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${this.translateService.instant(
@@ -386,7 +386,7 @@ export class NotificationToastrService {
         return toast.toastRef.componentInstance as VhToastComponent;
     }
 
-    showEndpointUpdated(endpoint: EndpointResponse, inHearing: boolean = false): VhToastComponent {
+    showEndpointUpdated(endpoint: VideoEndpointResponse, inHearing: boolean = false): VhToastComponent {
 
         const messageBody = this.translateService.instant('notification-toastr.endpoint-updated.message');
         let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${this.translateService.instant(
