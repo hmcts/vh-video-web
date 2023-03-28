@@ -13,7 +13,6 @@ import {
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Hearing } from 'src/app/shared/models/hearing';
-import { SafePipe } from 'src/app/shared/pipes/safe.pipe';
 import { HearingRole } from '../models/hearing-role-model';
 import { WRParticipantStatusListDirective } from '../waiting-room-shared/wr-participant-list-shared.component';
 
@@ -122,9 +121,13 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         this.newStaffMemberDisplayName = value;
     }
 
+    removeSpecialCharacters(value: string): string {
+        return value.replace(/[^a-zA-Z0-9_ ]/g, '');
+    }
+
     async saveJudgeDisplayName() {
         this.judge.display_name = this.newJudgeDisplayName;
-        this.judge.display_name = new SafePipe().transform(this.judge.display_name);
+        this.judge.display_name = this.removeSpecialCharacters(this.judge.display_name);
         this.showChangeJudgeDisplayName = false;
         await this.updateJudgeDisplayName();
     }
