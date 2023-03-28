@@ -97,7 +97,6 @@ import {
 import { RoomNamePipe } from './pipes/room-name.pipe';
 import { HookElementDirective } from './directives/hook-element.directive';
 import { RandomPipe } from './pipes/random.pipe';
-import { SafePipe } from './pipes/safe.pipe';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -167,8 +166,7 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         VhOfficerVenueListComponent,
         RoomNamePipe,
         HookElementDirective,
-        RandomPipe,
-        SafePipe
+        RandomPipe
     ],
     providers: [
         { provide: Logger, useClass: LoggerService },
