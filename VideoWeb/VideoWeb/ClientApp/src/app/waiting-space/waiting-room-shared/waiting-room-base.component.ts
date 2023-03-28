@@ -1110,9 +1110,7 @@ export abstract class WaitingRoomBaseDirective {
             return;
         }
 
-        const newEndpoints = endpointsUpdatedMessage.endpoints.filter(x => !this.hearing.getEndpoints().map(y => y.id).includes(x.id));
-
-        newEndpoints.forEach(endpoint => {
+        endpointsUpdatedMessage.endpoints.new_endpoints.forEach(endpoint => {
             this.logger.debug(`[WR] - Endpoint added, showing notification`, endpoint);
             this.notificationToastrService.showEndpointAdded(
                 endpoint,
@@ -1120,7 +1118,17 @@ export abstract class WaitingRoomBaseDirective {
             );
         });
 
-        this.conference.endpoints = endpointsUpdatedMessage.endpoints;
+        endpointsUpdatedMessage.endpoints.existing_endpoints.forEach(endpoint => {
+            this.logger.debug(`[WR] - Endpoint updated, showing notification`, endpoint);
+            this.notificationToastrService.showEndpointUpdated(
+                endpoint,
+                this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
+            );
+        });
+        console.log(this.conference.endpoints);
+        console.log(this.participantEndpoints);
+        this.conference.endpoints = new Array<VideoEndpointResponse>();
+        this.participantEndpoints = [];
     }
 
     private handleHearingLayoutUpdatedMessage(hearingLayoutMessage: HearingLayoutChanged) {

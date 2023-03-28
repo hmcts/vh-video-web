@@ -592,6 +592,11 @@
         "message": "Pwynt mynediad fideo wedi cael ei (h)ychwanegu at y gwrandawiad.",
         "dismiss": "Gwrthod"
     },
+    "endpoint-updated": {
+        "title": "{{name}}",
+        "message": "Pwynt mynediad fideo has been updated in hearing",
+        "dismiss": "Gwrthod"
+    },
     "hearing-layout-changed": {
       "title": "Mae {{name}}",
       "message": "wedi newid cynllun y gwrandawiad.",

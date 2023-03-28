@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VideoApi.Contract.Requests;
+using VideoApi.Contract.Responses;
 using VideoWeb.Common.Models;
+using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Models;
@@ -31,5 +33,6 @@ namespace VideoWeb.EventHub.Hub
         Task HearingLayoutChanged(Guid conferenceId, Guid changedById, HearingLayout newLayout, HearingLayout oldLayout);
         Task NewConferenceAddedMessage(Guid conferenceId);
         Task AllocationHearings(string csoUserName, List<HearingDetailRequest> hearings);
+        Task EndpointsUpdated(Guid conferenceId, UpdateConferenceEndpointsRequest endpoints);
     }
 }
