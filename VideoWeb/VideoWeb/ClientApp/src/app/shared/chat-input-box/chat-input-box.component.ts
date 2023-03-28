@@ -11,7 +11,7 @@ export class ChatInputBoxComponent implements OnInit, AfterViewInit {
     maxInputLength = 256;
     newMessageBody: FormControl;
     screenReaderAlert: HTMLElement;
-    @Input() useLightText: boolean = false;
+    @Input() useLightText = false;
     @Output() submittedMessage = new EventEmitter<string>();
     @ViewChild('screenReaderInputLimitAlert') screenReaderInputLimitAlert: ElementRef;
     constructor(private translateService: TranslateService) {}
