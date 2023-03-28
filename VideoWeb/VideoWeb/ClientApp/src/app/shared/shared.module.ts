@@ -220,8 +220,7 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
         FontAwesomeModule,
         RoomNamePipe,
         HookElementDirective,
-        RandomPipe,
-        SafePipe
+        RandomPipe
     ]
 })
 export class SharedModule {
