@@ -5,9 +5,9 @@
         <img
           appCrestLogoImageSource
           [sctsImageSource]="'/assets/images/scottish-crest-grey.png'"
-          [sctsAltText]="'judge-participant-status-list.scottish-crest' | translate"
+          [sctsAltText]=" ('judge-participant-status-list.scottish-crest' | translate)"
           [hmctsImageSource]="'/assets/images/govuk-crest.png'"
-          [hmctsAltText]="'judge-participant-status-list.crest-alt' | translate"
+          [hmctsAltText]=" ('judge-participant-status-list.crest-alt' | translate)"
           alt=""
           class="govuk-header__logotype-crest"
           height="50"
@@ -16,12 +16,8 @@
 
       <dl class="govuk-grid-column-two-thirds participant-details">
         <dt class="govuk-heading-m govuk-!-margin-bottom-0">
-          <span>{{ 'judge-participant-status-list.judge' | translate }}</span>
-          <span *ngIf="isUserJudge"
-            ><a href="javascript:void(0);" (click)="changeJudgeNameShow()" class="govuk-body govuk-link vh-ml10">{{
-              'judge-participant-status-list.edit' | translate
-            }}</a></span
-          >
+            <span>{{'judge-participant-status-list.judge' | translate}}</span>
+          <span *ngIf="isUserJudge"><a href="javascript:void(0);" (click)="changeJudgeNameShow()" class="govuk-body govuk-link vh-ml10">{{'judge-participant-status-list.edit' | translate}}</a></span>
         </dt>
         <dd class="govuk-body-s govuk-!-margin-bottom-0" *ngIf="!showChangeJudgeDisplayName">
           <strong>{{ judge.display_name }}</strong>
@@ -40,20 +36,14 @@
           </div>
           <div class="vh-mt10">
             <span>
-              <input
-                type="button"
-                id="editJudgeDisplayName"
-                (click)="saveJudgeDisplayName()"
-                value="{{ 'judge-participant-status-list.save' | translate }}"
-                class="govuk-button"
-              />
+              <input type="button" id="editJudgeDisplayName" (click)="saveJudgeDisplayName()" value="{{'judge-participant-status-list.save' | translate}}" class="govuk-button" />
             </span>
             <span>
               <input
                 type="button"
                 id="cancelJudgeDisplayName"
                 (click)="cancelJudgeDisplayName()"
-                value="{{ 'judge-participant-status-list.cancel' | translate }}"
+                value="{{'judge-participant-status-list.cancel' | translate}}"
                 class="govuk-button vh-ml10 govuk-button--secondary"
               />
             </span>
@@ -79,7 +69,7 @@
   <div *ngIf="wingers.length > 0">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-s">{{ 'judge-participant-status-list.wingers' | translate }} ({{ wingers.length }})</h2>
+          <h2 class="govuk-heading-s">{{'judge-participant-status-list.wingers' | translate}} ({{ wingers.length }})</h2>
       </div>
     </div>
     <div class="vh-border">
@@ -107,7 +97,7 @@
   <div *ngIf="panelMembers.length > 0">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-s">{{ 'judge-participant-status-list.panel-members' | translate }} ({{ panelMembers.length }})</h2>
+          <h2 class="govuk-heading-s">{{'judge-participant-status-list.panel-members' | translate}} ({{ panelMembers.length }})</h2>
       </div>
     </div>
     <div class="vh-border">
@@ -130,10 +120,10 @@
       </div>
     </div>
   </div>
-  <div *ngIf="staffMembers.length > 0">
+    <div *ngIf="staffMembers.length > 0">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-s">{{ 'judge-participant-status-list.staff-members' | translate }} ({{ staffMembers.length }})</h2>
+          <h2 class="govuk-heading-s">{{'judge-participant-status-list.staff-members' | translate}} ({{ staffMembers.length }})</h2>
       </div>
     </div>
     <div class="vh-border">
@@ -141,44 +131,34 @@
         <dl id="p-row-{{ participant.id }}-staff-member" class="govuk-grid-column-full govuk-!-margin-top-2 participant-details">
           <dt id="p-{{ participant.id }}-name-staff-member" class="govuk-heading-s govuk-!-margin-bottom-3">
             {{ participant.display_name }}
-            <span *ngIf="canChangeStaffMemberName(participant.id)"
-              ><a href="javascript:void(0);" (click)="changeStaffMemberNameShow(participant.id)" class="govuk-body govuk-link vh-ml10">{{
-                'judge-participant-status-list.edit' | translate
-              }}</a></span
-            >
+              <span *ngIf="canChangeStaffMemberName(participant.id)"><a href="javascript:void(0);" (click)="changeStaffMemberNameShow(participant.id)" class="govuk-body govuk-link vh-ml10">{{'judge-participant-status-list.edit' | translate}}</a></span>
           </dt>
-          <dd *ngIf="canChangeStaffMemberName(participant.id) && showChangeStaffMemberDisplayName">
-            <div class="govuk-form-group vh-mt10">
-              <input
-                type="text"
-                id="new-staff-member-name"
-                #staffMemberInputName
-                (blur)="onEnterStaffMemberDisplayName(staffMemberInputName.value)"
-                value="{{ newStaffMemberDisplayName }}"
-                class="govuk-input govuk-input--width-20"
-              />
-            </div>
-            <div class="vh-mt10">
+            <dd *ngIf="canChangeStaffMemberName(participant.id) && showChangeStaffMemberDisplayName">
+                <div class="govuk-form-group vh-mt10">
+                    <input
+                        type="text"
+                        id="new-staff-member-name"
+                        #staffMemberInputName
+                        (blur)="onEnterStaffMemberDisplayName(staffMemberInputName.value)"
+                        value="{{ newStaffMemberDisplayName }}"
+                        class="govuk-input govuk-input--width-20"
+                    />
+                </div>
+                <div class="vh-mt10">
               <span>
+                <input type="button" id="editStaffmemberDisplayName" (click)="saveStaffMemberDisplayName(participant.id)" value="{{'judge-participant-status-list.save' | translate}}" class="govuk-button" />
+              </span>
+                    <span>
                 <input
-                  type="button"
-                  id="editStaffmemberDisplayName"
-                  (click)="saveStaffMemberDisplayName(participant.id)"
-                  value="{{ 'judge-participant-status-list.save' | translate }}"
-                  class="govuk-button"
+                    type="button"
+                    id="cancelStaffMemberDisplayName"
+                    (click)="cancelStaffMemberDisplayName()"
+                    value="{{'judge-participant-status-list.cancel' | translate}}"
+                    class="govuk-button vh-ml10 govuk-button--secondary"
                 />
               </span>
-              <span>
-                <input
-                  type="button"
-                  id="cancelStaffMemberDisplayName"
-                  (click)="cancelStaffMemberDisplayName()"
-                  value="{{ 'judge-participant-status-list.cancel' | translate }}"
-                  class="govuk-button vh-ml10 govuk-button--secondary"
-                />
-              </span>
-            </div>
-          </dd>
+                </div>
+            </dd>
           <dd class="govuk-body-s govuk-!-margin-bottom-3">
             <label
               id="p-{{ participant.id }}-status-staff-member"
@@ -194,56 +174,56 @@
     </div>
   </div>
 
-  <div *ngIf="nonJudgeParticipants.length > 0 && !hearing.isClosed()">
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-s">{{ 'judge-participant-status-list.participants' | translate }} ({{ nonJudgeParticipants.length }})</h2>
-      </div>
+    <div *ngIf="nonJudgeParticipants.length > 0 && !hearing.isClosed()">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <h2 class="govuk-heading-s">{{'judge-participant-status-list.participants' | translate}} ({{ nonJudgeParticipants.length }})</h2>
+            </div>
+        </div>
+
+        <div class="vh-border">
+            <div *ngFor="let participant of nonJudgeParticipants; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
+                <dl id="p-row-{{ participant.id }}-participant" class="govuk-grid-column-full govuk-!-margin-top-2 participant-details">
+
+                    <dt id="p-{{ participant.id }}-name-participant" class="govuk-heading-s govuk-!-margin-bottom-3">
+                        <span *ngIf="hasInterpreterLink(participant)" class="vh-interpreter-icon">
+                          <fa-icon icon="language" size="2x"></fa-icon>
+                        </span>
+                        {{ participant.name }}
+                    </dt>
+
+                    <dd id="p-{{ participant.id }}-hearing-role-participant"
+                       class="govuk-body-m govuk-!-margin-bottom-3"
+                       [innerHtml]="getHearingRole(participant)">
+                    </dd>
+
+                    <dd
+                        *ngIf="!isCaseTypeNone(participant)"
+                        id="p-{{ participant.id }}-case-type-group-participant"
+                        class="govuk-body-m govuk-!-margin-bottom-3"
+                    >
+                        {{ ('case-type-group.' + stringToTranslateId(participant.case_type_group)) | translate }}
+                    </dd>
+
+                    <dd class="govuk-body-s govuk-!-margin-bottom-3">
+                        <label
+                            id="p-{{ participant.id }}-status-participant"
+                            class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
+                        >
+                            {{ getParticipantStatus(participant) }}
+                        </label>
+                    </dd>
+
+                    <div class="vh-line" *ngIf="!lastItem"></div>
+                </dl>
+            </div>
+        </div>
     </div>
-
-    <div class="vh-border">
-      <div *ngFor="let participant of nonJudgeParticipants; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
-        <dl id="p-row-{{ participant.id }}-participant" class="govuk-grid-column-full govuk-!-margin-top-2 participant-details">
-          <dt id="p-{{ participant.id }}-name-participant" class="govuk-heading-s govuk-!-margin-bottom-3">
-            <span *ngIf="hasInterpreterLink(participant)" class="vh-interpreter-icon">
-              <fa-icon icon="language" size="2x"></fa-icon>
-            </span>
-            {{ participant.name }}
-          </dt>
-
-          <dd
-            id="p-{{ participant.id }}-hearing-role-participant"
-            class="govuk-body-m govuk-!-margin-bottom-3"
-            [innerHtml]="getHearingRole(participant)"
-          ></dd>
-
-          <dd
-            *ngIf="!isCaseTypeNone(participant)"
-            id="p-{{ participant.id }}-case-type-group-participant"
-            class="govuk-body-m govuk-!-margin-bottom-3"
-          >
-            {{ 'case-type-group.' + stringToTranslateId(participant.case_type_group) | translate }}
-          </dd>
-
-          <dd class="govuk-body-s govuk-!-margin-bottom-3">
-            <label
-              id="p-{{ participant.id }}-status-participant"
-              class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
-            >
-              {{ getParticipantStatus(participant) }}
-            </label>
-          </dd>
-
-          <div class="vh-line" *ngIf="!lastItem"></div>
-        </dl>
-      </div>
-    </div>
-  </div>
 
   <div *ngIf="endpoints.length > 0 && !hearing.isClosed()">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-s">{{ 'judge-participant-status-list.video-access-points' | translate }} ({{ endpoints.length }})</h2>
+        <h2 class="govuk-heading-s">{{'judge-participant-status-list.video-access-points' | translate}} ({{ endpoints.length }})</h2>
       </div>
     </div>
     <div class="vh-border">
@@ -271,7 +251,7 @@
   <div *ngIf="observers.length > 0 && !hearing.isClosed()">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-s">{{ 'judge-participant-status-list.observers' | translate }} ({{ observers.length }})</h2>
+        <h2 class="govuk-heading-s">{{'judge-participant-status-list.observers' | translate}} ({{ observers.length }})</h2>
       </div>
     </div>
 
