@@ -508,7 +508,7 @@ export abstract class WaitingRoomBaseDirective {
 
         this.logger.debug('[WR] - Subscribing to endpoints update complete message');
         this.eventHubSubscription$.add(
-            this.eventService.getEndpointsUpdated().subscribe(async endpointsUpdatedMessage => {
+            this.eventService.getEndpointsUpdated().subscribe(endpointsUpdatedMessage => {
                 this.handleEndpointsUpdatedMessage(endpointsUpdatedMessage);
             })
         );
@@ -1094,12 +1094,13 @@ export abstract class WaitingRoomBaseDirective {
             );
         });
 
-        this.conference.participants = [...participantsUpdatedMessage.participants].map(participant => {
+        const updatedParticipantsList = [...participantsUpdatedMessage.participants].map(participant => {
             const currentParticipant = this.conference.participants.find(x => x.id === participant.id);
             participant.current_room = currentParticipant ? currentParticipant.current_room : null;
             participant.status = currentParticipant ? currentParticipant.status : ParticipantStatus.NotSignedIn;
             return participant;
         });
+        this.conference = { ...this.conference, participants: updatedParticipantsList } as ConferenceResponse;
         this.participant = this.getLoggedParticipant();
     }
 
@@ -1110,16 +1111,12 @@ export abstract class WaitingRoomBaseDirective {
             return;
         }
 
-        //this.hearing.getEndpoints().forEach(x => {
-        //    x.display_name = "UPDATED NAME TEST";
-        //});
         var hearingEndpoints = this.hearing.getEndpoints();
 
         endpointsUpdatedMessage.endpoints.forEach(ep => {
             var endpoint = hearingEndpoints.find(x => x.id === ep.id);
 
-            if (!endpoint)
-            {
+            if (!endpoint) {
                 this.logger.debug(`[WR] - Endpoint added, showing notification`, ep);
                 this.notificationToastrService.showEndpointAdded(
                     ep,
@@ -1127,9 +1124,7 @@ export abstract class WaitingRoomBaseDirective {
                 );
 
                 this.hearing.addEndpoint(ep);
-            }
-            else
-            {
+            } else {
                 this.logger.debug(`[WR] - Endpoint updated, showing notification`, ep);
                 this.notificationToastrService.showEndpointUpdated(
                     ep,
@@ -1140,7 +1135,7 @@ export abstract class WaitingRoomBaseDirective {
             }
         });
 
-        this.conference.endpoints = hearingEndpoints;
+        this.conference = { ...this.conference, endpoints: [...hearingEndpoints] } as ConferenceResponse;
     }
 
     private handleHearingLayoutUpdatedMessage(hearingLayoutMessage: HearingLayoutChanged) {

@@ -170,7 +170,7 @@ namespace VideoWeb.Controllers
 
                 var csoToNotify = request.AllocatedCsoUserName;
                 var hearings = request.Hearings;
-                
+
                 await _allocationHearingsEventNotifier.PushAllocationHearingsEvent(csoToNotify, hearings);
                 return NoContent();
             }
