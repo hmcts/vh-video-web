@@ -115,9 +115,9 @@
       },
       "RestSharp": {
         "type": "Direct",
-        "requested": "[109.0.1, )",
-        "resolved": "109.0.1",
-        "contentHash": "OkJ23uaV8qwCKuR7RKBUFlnXxIDZ7P1jEaoDawXgysujIcWZgIwE6p90kJZxY9EVv9ESjZtGlSmP8k+kOfDH9g=="
+        "requested": "[106.11.7, )",
+        "resolved": "106.11.7",
+        "contentHash": "NzndH096CTulvq+ihr7u1mBJ29oukdi9A8bypQJk+kaHxbRzTTrtgsEEQAb04ptTUZmQa7cgo7uF5z7NuEPX1Q=="
       },
       "Selenium.Axe": {
         "type": "Direct",
