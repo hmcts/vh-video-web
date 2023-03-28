@@ -24,7 +24,7 @@
           >
         </dt>
         <dd class="govuk-body-s govuk-!-margin-bottom-0" *ngIf="!showChangeJudgeDisplayName">
-          <strong>{{ judge.display_name | safe }}</strong>
+          <strong>{{ judge.display_name }}</strong>
         </dd>
 
         <dd *ngIf="showChangeJudgeDisplayName">
@@ -34,7 +34,7 @@
               id="new-judge-name"
               #judgeInputName
               (blur)="onEnterJudgeDisplayName(judgeInputName.value)"
-              value="{{ newJudgeDisplayName | safe }}"
+              value="{{ newJudgeDisplayName }}"
               class="govuk-input govuk-input--width-20"
             />
           </div>
