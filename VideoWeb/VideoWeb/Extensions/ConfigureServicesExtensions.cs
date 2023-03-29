@@ -34,9 +34,8 @@ using BookingsApi.Client;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using UserApi.Client;
 using VideoApi.Client;
+using VideoWeb.EventHub.InternalHandlers.Core;
 using VideoWeb.EventHub.Services;
-using VideoWeb.InternalEvents;
-using VideoWeb.InternalEvents.Interfaces;
 using VideoWeb.Swagger;
 using VideoWeb.Services;
 
@@ -139,11 +138,9 @@ namespace VideoWeb.Extensions
                 .AddTypedClient(httpClient => BuildUserApiClient(httpClient, servicesConfiguration));
 
             services.AddScoped<IEventHandlerFactory, EventHandlerFactory>();
-            services.AddScoped<IParticipantsUpdatedEventNotifier, ParticipantsUpdatedEventNotifier>();
-            services.AddScoped<INewConferenceAddedEventNotifier, NewConferenceAddedEventNotifier>();
-            services.AddScoped<IAllocationUpdatedEventNotifier, AllocationUpdatedEventNotifier>();
+            services.AddScoped<IInternalEventHandlerFactory, InternalEventHandlerFactory>();
             RegisterEventHandlers(services);
-
+            RegisterInternalEventHandlers(services);
             var contractResolver = new DefaultContractResolver
             {
                 NamingStrategy = new SnakeCaseNamingStrategy()
@@ -226,7 +223,7 @@ namespace VideoWeb.Extensions
                 serviceCollection.AddScoped(serviceType, eventHandler);
             }
         }
-
+        
         private static IEnumerable<Type> GetAllTypesOf<T>()
         {
             var platform = Environment.OSVersion.Platform.ToString();
@@ -236,6 +233,25 @@ namespace VideoWeb.Extensions
                 .Select(Assembly.Load)
                 .SelectMany(a => a.ExportedTypes)
                 .Where(t => typeof(T).IsAssignableFrom(t));
+        }
+        
+        private static void RegisterInternalEventHandlers(IServiceCollection serviceCollection)
+        {
+            var internalEventHandler = GetAllTypesOf(typeof(IInternalEventHandler<>)).ToList();
+
+            foreach (var messageHandler in internalEventHandler)
+            {
+                var serviceType = messageHandler.GetInterfaces()[0];
+                serviceCollection.AddScoped(serviceType, messageHandler);
+            }
+        }
+        
+        private static IEnumerable<Type> GetAllTypesOf(Type i)
+        {
+            return i.Assembly.GetTypes().Where(t =>
+                t.GetInterfaces().Any(x =>
+                    x.IsGenericType &&
+                    x.GetGenericTypeDefinition() == i));
         }
 
         public static IServiceCollection AddJsonOptions(this IServiceCollection serviceCollection)

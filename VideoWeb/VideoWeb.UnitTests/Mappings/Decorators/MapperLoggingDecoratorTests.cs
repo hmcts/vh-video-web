@@ -1,15 +1,15 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Autofac.Extras.Moq;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using VideoWeb.Mappings.Decorators;
 using VideoWeb.Mappings.Interfaces;
 
-namespace VideoWeb.UnitTests.Mappings
+namespace VideoWeb.UnitTests.Mappings.Decorators
 {
     public class MapperLoggingDecoratorTests
     {

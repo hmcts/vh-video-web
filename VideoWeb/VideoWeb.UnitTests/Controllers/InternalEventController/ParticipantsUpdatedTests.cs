@@ -1,42 +1,30 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
-using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
-using VideoWeb.Controllers;
-using VideoWeb.EventHub.Enums;
-using VideoWeb.EventHub.Handlers;
-using VideoWeb.EventHub.Handlers.Core;
-using VideoWeb.EventHub.Models;
-using VideoWeb.InternalEvents.Interfaces;
+using VideoWeb.EventHub.InternalHandlers.Core;
+using VideoWeb.EventHub.InternalHandlers.Models;
 using VideoWeb.Mappings;
 using VideoWeb.UnitTests.Builders;
-using Endpoint = VideoWeb.Common.Models.Endpoint;
+using LinkedParticipantResponse = VideoWeb.Contract.Responses.LinkedParticipantResponse;
 
-namespace VideoWeb.UnitTests.Controllers.InternalEventControllerTests
+namespace VideoWeb.UnitTests.Controllers.InternalEventController
 {
     public class ParticipantsUpdatedTests
     {
         private AutoMock _mocker;
-        protected InternalEventController _controller;
-
-        private Guid testConferenceId;
-        private Guid existingParticipantId;
-
-        Mock<Conference> mockConference;
-
+        private VideoWeb.Controllers.InternalEventController _controller;
+        private Conference _conference;
 
         [SetUp]
         public void Setup()
@@ -52,32 +40,41 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventControllerTests
             };
 
             var parameters = new ParameterBuilder(_mocker)
-                .AddTypedParameters<ParticipantResponseMapper>()
-                .AddTypedParameters<EndpointsResponseMapper>()
-                .AddTypedParameters<ParticipantForHostResponseMapper>()
-                .AddTypedParameters<ParticipantResponseForVhoMapper>()
                 .AddTypedParameters<ParticipantForUserResponseMapper>()
+                .AddTypedParameters<LinkedParticipantToLinkedParticipantResponseMapper>()
+                .AddTypedParameters<CivilianRoomToRoomSummaryResponseMapper>()
                 .Build();
 
 
-            _controller = _mocker.Create<InternalEventController>();
+            _controller = _mocker.Create<VideoWeb.Controllers.InternalEventController>();
             _controller.ControllerContext = context;
 
-            testConferenceId = Guid.NewGuid();
-            existingParticipantId = Guid.NewGuid();
-
-            mockConference = _mocker.Mock<Conference>();
-            mockConference.Object.Id = testConferenceId;
+            _conference = new ConferenceCacheModelBuilder().Build();
 
             _mocker.Mock<IConferenceCache>()
-                .Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(id => id == testConferenceId),
+                .Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(id => id == _conference.Id),
                     It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .ReturnsAsync(mockConference.Object);
+                .ReturnsAsync(_conference);
 
-            _mocker.Mock<IParticipantsUpdatedEventNotifier>();
-
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantRequest, IEnumerable<Participant>, Participant>()).Returns(_mocker.Create<ParticipantRequestMapper>());
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<UpdateParticipantRequest, IEnumerable<Participant>, UpdateParticipant>()).Returns(_mocker.Create<UpdateParticipantRequestToUpdateParticipantMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantRequest, IEnumerable<Participant>, Participant>()).Returns(_mocker.Create<ParticipantRequestMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<UpdateParticipantRequest, IEnumerable<Participant>, UpdateParticipant>()).Returns(_mocker.Create<UpdateParticipantRequestToUpdateParticipantMapper>(parameters));
+            
+            _mocker.Mock<IMapperFactory>()
+                .Setup(x => x.Get<CivilianRoom, RoomSummaryResponse>())
+                .Returns(_mocker.Create<CivilianRoomToRoomSummaryResponseMapper>(parameters));
+            
+            _mocker.Mock<IMapperFactory>()
+                .Setup(x => x.Get<LinkedParticipant, LinkedParticipantResponse>())
+                .Returns(_mocker.Create<LinkedParticipantToLinkedParticipantResponseMapper>(parameters));
+            
+            _mocker.Mock<IMapperFactory>()
+                .Setup(x => x.Get<Participant, Conference, ParticipantResponse>())
+                .Returns(_mocker.Create<ParticipantToParticipantResponseMapper>(parameters));
+            
+            
+            
+            _mocker.Mock<IInternalEventHandlerFactory>().Setup(x => x.Get(It.IsAny<ParticipantsUpdatedEventDto>()))
+                .Returns(new Mock<IInternalEventHandler<ParticipantsUpdatedEventDto>>().Object);
             
         }
 
@@ -89,12 +86,13 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventControllerTests
             var updateParticipantsRequest = new UpdateConferenceParticipantsRequest();
 
             // Act
-            var result = await _controller.ParticipantsUpdated(testConferenceId, updateParticipantsRequest);
+            var result = await _controller.ParticipantsUpdated(_conference.Id, updateParticipantsRequest);
 
             // Assert
             result.Should().BeOfType<NoContentResult>();
 
-            _mocker.Mock<IParticipantsUpdatedEventNotifier>().Verify(x => x.PushParticipantsUpdatedEvent(mockConference.Object, mockConference.Object.Participants), Times.Once);
+            _mocker.Mock<IInternalEventHandlerFactory>().Verify(x=> x.Get(It.Is<ParticipantsUpdatedEventDto>(dto => dto.ConferenceId == _conference.Id)));
+            // _mocker.Mock<IParticipantsUpdatedEventNotifier>().Verify(x => x.PushParticipantsUpdatedEvent(_conference.Object, _conference.Object.Participants), Times.Once);
         }
     }
 }

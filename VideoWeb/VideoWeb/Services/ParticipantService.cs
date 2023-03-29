@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -13,7 +14,8 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Exceptions;
-using VideoWeb.InternalEvents.Interfaces;
+using VideoWeb.EventHub.InternalHandlers.Core;
+using VideoWeb.EventHub.InternalHandlers.Models;
 using VideoWeb.Mappings;
 
 namespace VideoWeb.Services
@@ -24,22 +26,19 @@ namespace VideoWeb.Services
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<ParticipantsController> _logger;
         private readonly IMapperFactory _mapperFactory;
-        private readonly IParticipantsUpdatedEventNotifier _participantsUpdatedEventNotifier;
+        private readonly IInternalEventHandlerFactory _internalEventHandlerFactory;
         private readonly int startingSoonMinutesThreshold = 30;
         private readonly int closedMinutesThreshold = 30;
 
-        public ParticipantService(IVideoApiClient videoApiClient, IConferenceCache conferenceCache, ILogger<ParticipantsController> logger,
-            IMapperFactory mapperFactory, IParticipantsUpdatedEventNotifier participantsUpdatedEventNotifier)
+        public ParticipantService(IVideoApiClient videoApiClient, IConferenceCache conferenceCache,
+            ILogger<ParticipantsController> logger,
+            IMapperFactory mapperFactory, IInternalEventHandlerFactory internalEventHandlerFactory)
         {
             _videoApiClient = videoApiClient;
             _conferenceCache = conferenceCache;
             _logger = logger;
             _mapperFactory = mapperFactory;
-            _participantsUpdatedEventNotifier = participantsUpdatedEventNotifier;
-        }
-
-        public ParticipantService()
-        {
+            _internalEventHandlerFactory = internalEventHandlerFactory;
         }
 
         public AddStaffMemberRequest InitialiseAddStaffMemberRequest(UserProfileResponse staffMemberProfile,
@@ -76,11 +75,21 @@ namespace VideoWeb.Services
             }
 
             var requestToParticipantMapper = _mapperFactory.Get<ParticipantDetailsResponse, Participant>();
-            conference.AddParticipant(requestToParticipantMapper.Map(response.ParticipantDetails));
+            var participant = requestToParticipantMapper.Map(response.ParticipantDetails);
+            conference.AddParticipant(participant);
 
-            _logger.LogTrace($"Updating conference in cache: {JsonSerializer.Serialize(conference)}");
+            _logger.LogDebug("Updating conference in cache: {ConferenceObject}", JsonSerializer.Serialize(conference));
             await _conferenceCache.UpdateConferenceAsync(conference);
-            await _participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference, conference.Participants);
+
+            var participantsToResponseMapper = _mapperFactory.Get<Participant, Conference, ParticipantResponse>();
+            var eventDto = new ParticipantsUpdatedEventDto
+            {
+                ConferenceId = conference.Id,
+                Participants = conference.Participants
+                    .Select(participant => participantsToResponseMapper.Map(participant, conference)).ToList()
+            };
+            var handler = _internalEventHandlerFactory.Get(eventDto);
+            await handler.HandleAsync(eventDto);
         }
     }
 }

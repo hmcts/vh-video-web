@@ -11,8 +11,9 @@ using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
 using VideoApi.Client;
+using VideoWeb.EventHub.InternalHandlers;
+using VideoWeb.EventHub.InternalHandlers.Core;
 using VideoWeb.EventHub.Services;
-using VideoWeb.Helpers;
 
 namespace VideoWeb.UnitTests.Builders
 {
@@ -75,6 +76,18 @@ namespace VideoWeb.UnitTests.Builders
                     apiClientMock.Object),
                 new EndpointTransferEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object,
                     apiClientMock.Object)
+            };
+        }
+
+        public List<IInternalEventHandler> GetInternalEventHandlers()
+        {
+            var eventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>();
+            EventHubContextMock = eventHubContextMock;
+            return new List<IInternalEventHandler>
+            {
+                new AllocationUpdatedEventHandler(eventHubContextMock.Object),
+                new EventHub.InternalHandlers.ParticipantsUpdatedEventHandler(eventHubContextMock.Object),
+                new EventHub.InternalHandlers.NewConferenceAddedEventHandler(eventHubContextMock.Object)
             };
         }
 

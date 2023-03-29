@@ -17,28 +17,30 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
-using VideoWeb.Helpers;
-using VideoWeb.InternalEvents.Interfaces;
+using VideoWeb.EventHub.InternalHandlers.Core;
+using VideoWeb.EventHub.InternalHandlers.Models;
 using VideoWeb.Mappings;
 
 namespace VideoWeb.Controllers
 {
-    
+
     [Produces("application/json")]
     [ApiController]
     [Route("quickjoin")]
     public class QuickLinksController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;
-        private readonly IParticipantsUpdatedEventNotifier _participantsUpdatedEventNotifier;
+        private readonly IInternalEventHandlerFactory _internalEventHandlerFactory;
         private readonly IConferenceCache _conferenceCache;
         private readonly IMapperFactory _mapperFactory;
         private readonly ILogger<QuickLinksController> _logger;
 
-        public QuickLinksController(IVideoApiClient videoApiClient, IParticipantsUpdatedEventNotifier participantsUpdatedEventNotifier, IConferenceCache conferenceCache, IMapperFactory mapperFactory, ILogger<QuickLinksController> logger)
+        public QuickLinksController(IVideoApiClient videoApiClient,
+            IInternalEventHandlerFactory internalEventHandlerFactory, IConferenceCache conferenceCache,
+            IMapperFactory mapperFactory, ILogger<QuickLinksController> logger)
         {
             _videoApiClient = videoApiClient;
-            _participantsUpdatedEventNotifier = participantsUpdatedEventNotifier;
+            _internalEventHandlerFactory = internalEventHandlerFactory;
             _conferenceCache = conferenceCache;
             _mapperFactory = mapperFactory;
             _logger = logger;
@@ -69,9 +71,9 @@ namespace VideoWeb.Controllers
                 var response = await _videoApiClient.ValidateQuickLinkAsync(hearingId);
                 return Ok(response);
             }
-            catch(VideoApiException e)
+            catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Unable to get conference with hearing id: {hearingId}");
+                _logger.LogError(e, "Unable to get conference with hearing id: {HearingId}", hearingId);
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -98,7 +100,7 @@ namespace VideoWeb.Controllers
                     Name = joinRequest.Name,
                     UserRole = roleAsUserRole
                 };
-                
+
                 var response = await _videoApiClient.AddQuickLinkParticipantAsync(hearingId, request);
 
                 await AddQuickLinkParticipantToConferenceCache(response);
@@ -114,11 +116,12 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Unable to join hearing: {hearingId} {joinRequest.Name} {joinRequest.Role}");
+                _logger.LogError(e, "Unable to join hearing: {HearingId} {JoinRequestName} {JoinRequestRole}",
+                    hearingId, joinRequest.Name, joinRequest.Role);
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
-        
+
         [HttpGet("isQuickLinkParticipantAuthorised")]
         [SwaggerOperation("isQuickLinkParticipantAuthorised")]
         [ProducesResponseType((int) HttpStatusCode.OK)]
@@ -130,16 +133,24 @@ namespace VideoWeb.Controllers
 
         private async Task AddQuickLinkParticipantToConferenceCache(AddQuickLinkParticipantResponse response)
         {
-            var conference = await _conferenceCache.GetOrAddConferenceAsync(response.ConferenceId, 
+            var conference = await _conferenceCache.GetOrAddConferenceAsync(response.ConferenceId,
                 () => _videoApiClient.GetConferenceDetailsByIdAsync(response.ConferenceId));
-                
+
             var requestToParticipantMapper = _mapperFactory.Get<ParticipantDetailsResponse, Participant>();
             conference.AddParticipant(requestToParticipantMapper.Map(response.ParticipantDetails));
 
-            _logger.LogTrace($"Updating conference in cache: {JsonSerializer.Serialize(conference)}");
+            _logger.LogDebug("Updating conference in cache: {Serialize}", JsonSerializer.Serialize(conference));
             await _conferenceCache.UpdateConferenceAsync(conference);
 
-            await _participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference, conference.Participants);
+            var participantsToResponseMapper = _mapperFactory.Get<Participant, Conference, ParticipantResponse>();
+            var eventDto = new ParticipantsUpdatedEventDto
+            {
+                ConferenceId = conference.Id,
+                Participants = conference.Participants
+                    .Select(participant => participantsToResponseMapper.Map(participant, conference)).ToList()
+            };
+            var handler = _internalEventHandlerFactory.Get(eventDto);
+            await handler.HandleAsync(eventDto);
         }
     }
 }

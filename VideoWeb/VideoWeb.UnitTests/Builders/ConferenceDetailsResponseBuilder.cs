@@ -4,9 +4,8 @@ using System.Linq;
 using FizzWare.NBuilder;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Responses;
-using VideoWeb.UnitTests.Builders;
 
-namespace VideoWeb.UnitTests.Controllers.ConferenceController;
+namespace VideoWeb.UnitTests.Builders;
 
 public static class ConferenceDetailsResponseBuilder
 {

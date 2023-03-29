@@ -60,7 +60,7 @@ namespace VideoWeb.Common.Models
 
         public void UpdateParticipant(UpdateParticipant updateParticipant)
         {
-            var participant = Participants.FirstOrDefault(x => x.RefId == updateParticipant.ParticipantRefId);
+            var participant = Participants.First(x => x.RefId == updateParticipant.ParticipantRefId);
             participant.Name = updateParticipant.Fullname;
             participant.FirstName = updateParticipant.FirstName;
             participant.LastName = updateParticipant.LastName;

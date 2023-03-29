@@ -6,7 +6,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
 
-namespace VideoWeb.UnitTests.InternalEvents
+namespace VideoWeb.UnitTests.Helpers
 {
     [TestFixture]
     public class ParticipantTilePositionHelperTest

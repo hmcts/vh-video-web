@@ -15,7 +15,8 @@ using VideoApi.Contract.Requests;
 using System.Text.Json;
 using VideoApi.Contract.Responses;
 using VideoWeb.Contract.Request;
-using VideoWeb.InternalEvents.Interfaces;
+using VideoWeb.EventHub.InternalHandlers.Core;
+using VideoWeb.EventHub.InternalHandlers.Models;
 
 namespace VideoWeb.Controllers
 {
@@ -23,33 +24,28 @@ namespace VideoWeb.Controllers
     [ApiController]
     [Route("internalevent")]
     [Authorize(AuthenticationSchemes = "InternalEvent")]
-    [ApiExplorerSettings(IgnoreApi = true)]
+    [ApiExplorerSettings(IgnoreApi = false)]
+    [AllowAnonymous]
     public class InternalEventController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
-        private readonly IParticipantsUpdatedEventNotifier _participantsUpdatedEventNotifier;
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<InternalEventController> _logger;
         private readonly IMapperFactory _mapperFactory;
-        private readonly INewConferenceAddedEventNotifier _newConferenceAddedEventNotifier;
-        private readonly IAllocationUpdatedEventNotifier _allocationUpdatedNotifier;
+        private readonly IInternalEventHandlerFactory _internalEventHandlerFactory;
 
         public InternalEventController(
             IVideoApiClient videoApiClient,
-            IParticipantsUpdatedEventNotifier participantsUpdatedEventNotifier,
             IConferenceCache conferenceCache,
             ILogger<InternalEventController> logger,
             IMapperFactory mapperFactory,
-            INewConferenceAddedEventNotifier newConferenceAddedEventNotifier,
-            IAllocationUpdatedEventNotifier allocationUpdatedNotifier)
+            IInternalEventHandlerFactory internalEventHandlerFactory)
         {
             _videoApiClient = videoApiClient;
-            _participantsUpdatedEventNotifier = participantsUpdatedEventNotifier;
             _conferenceCache = conferenceCache;
             _logger = logger;
             _mapperFactory = mapperFactory;
-            _newConferenceAddedEventNotifier = newConferenceAddedEventNotifier;
-            _allocationUpdatedNotifier = allocationUpdatedNotifier;
+            _internalEventHandlerFactory = internalEventHandlerFactory;
         }
 
         [HttpPost("ConferenceAdded")]
@@ -58,7 +54,12 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> ConferenceAdded(Guid conferenceId)
         {
-            await _newConferenceAddedEventNotifier.PushNewConferenceAddedEvent(conferenceId);
+            var eventDto = new NewConferenceAddedEventDto()
+            {
+                ConferenceId = conferenceId
+            };
+            var handler = _internalEventHandlerFactory.Get(eventDto);
+            await handler.HandleAsync(eventDto);
             return NoContent();
         }
 
@@ -111,8 +112,16 @@ namespace VideoWeb.Controllers
                 await _conferenceCache.UpdateConferenceAsync(conference);
 
                 var participantsToNotify = conference.Participants.Union(removedParticipants).ToList();
-
-                await _participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference, participantsToNotify);
+                var participantsToResponseMapper = _mapperFactory.Get<Participant, Conference, Contract.Responses.ParticipantResponse>();
+                
+                var eventDto = new ParticipantsUpdatedEventDto
+                {
+                    ConferenceId = conferenceId,
+                    Participants = conference.Participants.Select(participant => participantsToResponseMapper.Map(participant, conference)).ToList()
+                };
+                var handler = _internalEventHandlerFactory.Get(eventDto);
+                await handler.HandleAsync(eventDto);
+                
                 _logger.LogDebug($"ParticipantsUpdated finished. ConferenceId: {conferenceId}");
                 return NoContent();
             }
@@ -129,11 +138,17 @@ namespace VideoWeb.Controllers
         public async Task<IActionResult> AllocationUpdated(AllocationUpdatedRequest request)
         {
             // optional
-            request.Conferences.ForEach(async x => await _conferenceCache.AddConferenceAsync(x));
+            // request.Conferences.ForEach(async x => await _conferenceCache.AddConferenceAsync(x));
 
             var mapper = _mapperFactory.Get<ConferenceDetailsResponse, Conference>();
             var conferences = request.Conferences.Select(mapper.Map).ToList();
-            await _allocationUpdatedNotifier.PushAllocationUpdatedEvent(request.AllocatedCsoUsername, conferences);
+            var eventDto = new AllocationUpdatedEventDto
+            {
+                CsoUsername = request.AllocatedCsoUsername,
+                Conferences = conferences
+            };
+            var handler = _internalEventHandlerFactory.Get(eventDto);
+            await handler.HandleAsync(eventDto);
 
             return NoContent();
         }
