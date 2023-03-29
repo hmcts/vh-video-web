@@ -17,8 +17,7 @@ import {
     HearingDetailRequest,
     HearingLayout,
     ParticipantResponse,
-    ParticipantStatus,
-    VideoEndpointResponse
+    ParticipantStatus
 } from './clients/api-client';
 import { EventsHubService } from './events-hub.service';
 import { Logger } from './logging/logger-base';
@@ -33,6 +32,7 @@ import { HeartbeatHealth, ParticipantHeartbeat } from './models/participant-hear
 import { ParticipantStatusMessage } from './models/participant-status-message';
 import { RequestedConsultationMessage } from './models/requested-consultation-message';
 import { NewAllocationMessage } from './models/new-allocation-message';
+import { UpdateEndpointsDto } from '../shared/models/update-endpoints-dto';
 
 @Injectable({
     providedIn: 'root'
@@ -112,7 +112,7 @@ export class EventsService {
             this.participantsUpdatedSubject.next(message);
         },
 
-        EndpointsUpdated: (conferenceId: string, endpoints: VideoEndpointResponse[]) => {
+        EndpointsUpdated: (conferenceId: string, endpoints: UpdateEndpointsDto) => {
             const message = new EndpointsUpdatedMessage(conferenceId, endpoints);
             this.logger.debug('[EventsService] - EndpointsUpdatedMessage received', message);
             this.endpointsUpdatedSubject.next(message);

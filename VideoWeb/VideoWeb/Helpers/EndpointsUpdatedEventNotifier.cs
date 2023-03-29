@@ -11,6 +11,7 @@ using VideoWeb.Contract.Request;
 using BookingsApi.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Contract.Responses;
+using VideoWeb.EventHub.Models;
 
 namespace VideoWeb.Helpers
 {
@@ -28,10 +29,13 @@ namespace VideoWeb.Helpers
         public async Task PushEndpointsUpdatedEvent(Conference conference, UpdateConferenceEndpointsRequest endpointsToNotify)
         {
             var videoEndpointResponseMapper = _mapperFactory.Get<VideoApi.Contract.Responses.EndpointResponse, int, VideoEndpointResponse>();
-            var newEndpointsResponse = endpointsToNotify.NewEndpoints.Select(videoEndpointResponseMapper.Map).ToList();
-            var existingEndpointsResponse = endpointsToNotify.ExistingEndpoints.Select(videoEndpointResponseMapper.Map).ToList();
 
-            var endpoints = newEndpointsResponse.Concat(existingEndpointsResponse).ToList();
+            var endpoints = new UpdateEndpointsDto
+            {
+                ExistingEndpoints = endpointsToNotify.ExistingEndpoints.Select(videoEndpointResponseMapper.Map).ToList(),
+                NewEndpoints = endpointsToNotify.NewEndpoints.Select(videoEndpointResponseMapper.Map).ToList(),
+                RemovedEndpoints = endpointsToNotify.RemovedEndpoints
+            };
 
             foreach (var participant in conference.Participants)
             {

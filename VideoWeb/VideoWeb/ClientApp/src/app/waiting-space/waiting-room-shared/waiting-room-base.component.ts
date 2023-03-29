@@ -1105,37 +1105,35 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     private handleEndpointsUpdatedMessage(endpointsUpdatedMessage: EndpointsUpdatedMessage) {
-        this.logger.debug(`[WR] - Endpoints updated message recieved`, endpointsUpdatedMessage.endpoints);
+        this.logger.debug(`[WR] - Endpoints updated message recieved - new endpoints`, endpointsUpdatedMessage.endpoints.NewEndpoints);
+        this.logger.debug(`[WR] - Endpoints updated message recieved - existing endpoints`, endpointsUpdatedMessage.endpoints.ExistingEndpoints);
 
         if (!this.validateIsForConference(endpointsUpdatedMessage.conferenceId)) {
             return;
         }
 
-        var hearingEndpoints = this.hearing.getEndpoints();
+        endpointsUpdatedMessage.endpoints.NewEndpoints.forEach(endpoint => {
 
-        endpointsUpdatedMessage.endpoints.forEach(ep => {
-            var endpoint = hearingEndpoints.find(x => x.id === ep.id);
+            this.logger.debug(`[WR] - Endpoint added, showing notification`, endpoint);
+            this.notificationToastrService.showEndpointAdded(
+                endpoint,
+                this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
+            );
 
-            if (!endpoint) {
-                this.logger.debug(`[WR] - Endpoint added, showing notification`, ep);
-                this.notificationToastrService.showEndpointAdded(
-                    ep,
-                    this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
-                );
-
-                this.hearing.addEndpoint(ep);
-            } else {
-                this.logger.debug(`[WR] - Endpoint updated, showing notification`, ep);
-                this.notificationToastrService.showEndpointUpdated(
-                    ep,
-                    this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
-                );
-
-                this.hearing.updateEndpoint(ep);
-            }
+            this.hearing.addEndpoint(endpoint);
         });
 
-        this.conference = { ...this.conference, endpoints: [...hearingEndpoints] } as ConferenceResponse;
+        endpointsUpdatedMessage.endpoints.ExistingEndpoints.forEach(endpoint => {
+            this.logger.debug(`[WR] - Endpoint updated, showing notification`, endpoint);
+            this.notificationToastrService.showEndpointUpdated(
+                endpoint,
+                this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
+            );
+
+            this.hearing.updateEndpoint(endpoint);
+        })
+
+        this.conference = { ...this.conference, endpoints: [...this.hearing.getEndpoints()] } as ConferenceResponse;
     }
 
     private handleHearingLayoutUpdatedMessage(hearingLayoutMessage: HearingLayoutChanged) {
