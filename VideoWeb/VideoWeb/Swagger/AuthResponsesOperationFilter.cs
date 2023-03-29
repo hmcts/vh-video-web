@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.OpenApi.Models;
@@ -5,6 +6,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace VideoWeb.Swagger
 {
+    [ExcludeFromCodeCoverage]
     public class AuthResponsesOperationFilter : IOperationFilter
     {
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
