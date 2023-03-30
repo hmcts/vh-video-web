@@ -1695,8 +1695,11 @@ describe('WaitingRoomComponent EventHub Call', () => {
         describe('when is correct conference', () => {
             let testEndpointMessageAdd: EndpointsUpdatedMessage;
             let testEndpointMessageUpdate: EndpointsUpdatedMessage;
+            let existingEndpoint: VideoEndpointResponse;
 
             beforeEach(() => {
+                existingEndpoint = testExistingVideoEndpointResponse;
+                component.conference.endpoints = [existingEndpoint];
                 testEndpointMessageAdd = new EndpointsUpdatedMessage(testConferenceId, testUpdateEndpointsDtoAdd);
                 testEndpointMessageUpdate = new EndpointsUpdatedMessage(testConferenceId, testUpdateEndpointsDtoUpdate);
             });
