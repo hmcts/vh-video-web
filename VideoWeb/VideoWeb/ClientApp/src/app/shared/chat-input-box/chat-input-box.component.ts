@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit, Input } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -11,6 +11,7 @@ export class ChatInputBoxComponent implements OnInit, AfterViewInit {
     maxInputLength = 256;
     newMessageBody: FormControl;
     screenReaderAlert: HTMLElement;
+    @Input() useLightText = false;
     @Output() submittedMessage = new EventEmitter<string>();
     @ViewChild('screenReaderInputLimitAlert') screenReaderInputLimitAlert: ElementRef;
     constructor(private translateService: TranslateService) {}
