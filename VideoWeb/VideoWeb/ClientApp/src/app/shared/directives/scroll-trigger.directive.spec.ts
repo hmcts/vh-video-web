@@ -14,6 +14,7 @@ describe('ScrollableDirective', () => {
     beforeEach(() => {
         windowScroll = jasmine.createSpyObj<WindowScrolling>(['getWindowHeight', 'getPosition', 'getScreenBottom']);
         windowScroll.getWindowHeight.and.returnValue(documentHeight);
+        windowScroll.getWindowHeight.and.returnValue(documentHeight);
         windowScroll.getScreenBottom.and.callFake(() => documentHeight + windowScroll.getPosition());
         nativeElement = {
             clientHeight: 300,

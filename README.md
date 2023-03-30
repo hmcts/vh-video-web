@@ -1,145 +1,31 @@
 # vh-video-web
 
-[![Build Status](https://dev.azure.com/hmctsreform/VirtualHearings/_apis/build/status/hmcts.vh-video-web?branchName=master)](https://dev.azure.com/hmctsreform/VirtualHearings/_build/latest?definitionId=120&branchName=master)
+Master Build Status:
+
+[![Build Status](https://dev.azure.com/hmcts/Video%20Hearings/_apis/build/status/vh-video-web/hmcts.vh-video-web.sds.master-release?repoName=hmcts%2Fvh-video-web&branchName=master)](https://dev.azure.com/hmcts/Video%20Hearings/_build/latest?definitionId=671&repoName=hmcts%2Fvh-video-web&branchName=master)
+
+PR Build Status:
+
+[![Build Status](https://dev.azure.com/hmcts/Video%20Hearings/_apis/build/status/vh-video-web/hmcts.vh-video-web.sds.pr-release?repoName=hmcts%2Fvh-video-web&branchName=refs%2Fpull%2F1979%2Fmerge)](https://dev.azure.com/hmcts/Video%20Hearings/_build/latest?definitionId=614)
+
+Release Status:
+
+[![Build Status](https://dev.azure.com/hmcts/Video%20Hearings/_apis/build/status/vh-video-web/hmcts.vh-video-web.sds.release?repoName=hmcts%2Fvh-video-web&branchName=release%2F1.43)](https://dev.azure.com/hmcts/Video%20Hearings/_build/latest?definitionId=618)
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=vh-video-web&metric=alert_status)](https://sonarcloud.io/dashboard?id=vh-video-web)
 
-## Updating client code via NSwag
+## Restore Tools
 
-The poject is utilising NSwag to auto-generate client code for the front-end.
+Run the following in a terminal at the root of the repository
 
-### Updating the front end Angular client code
-
-The configuration for the front end TypeScript can be found in 'VideoWeb/VideoWeb/ClientApp/api-ts.nswag'
-
-- Install the NSwag CLI (at least version 12)
-- Install Dotnet SDK 2.2
-- Ensure the MVC application is running. This can be managed by either:
-  - `dotnet run VideoWeb/VideoWeb/VideoWeb.csproj`
-  - or via an IDE
-- open a terminal at the folder containing the nswag file 'VideoWeb/VideoWeb/ClientApp'
-- execute `nswag run`
-
-The latest version of the client code can be found in 'src/app/services/clients/api-client.ts'
-
-## Running code coverage
-
-First ensure you are running a terminal in the VideoWeb directory of this repository and then run the following commands.
-
-```bash
-dotnet test --no-build VideoWeb.UnitTests/VideoWeb.UnitTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat="\"opencover,cobertura,json,lcov\"" /p:CoverletOutput=../Artifacts/Coverage/ /p:MergeWith='../Artifacts/Coverage/coverage.json' /p:Exclude="\"[VideoWeb]VideoWeb.ConfigureServicesExtensions,[VideoWeb]VideoWeb.Program,[VideoWeb]VideoWeb.Startup,[*]VideoWeb.Common.*,[*]VideoWeb.Extensions.*,[*]VideoWeb.Pages.*,[*]VideoWeb.Swagger.*,[*]VideoWeb.Views.*,[*]VideoWeb.UnitTests.*,[*]VideoWeb.Services.*,[*]Testing.Common.*\""
-
+``` shell
+dotnet tool restore
 ```
 
-## Generate HTML Report
+Open a terminal at the ClientApp folder and run the following command
 
-Under the unit test project directory
-
-```bash
-dotnet reportgenerator "-reports:../Artifacts/Coverage/coverage.opencover.xml" "-targetDir:../Artifacts/Coverage/Report" -reporttypes:HtmlInline_AzurePipelines
+``` shell
+nvm use
 ```
 
-## Linting
-
-Verify the source code passes linting. To quickly fix linting issues, execute the following command from the 'ClientApp' directory in a terminal
-
-```bash
-ng lint VideoWeb --fix
-```
-
-## Styling Client App
-
-Verify the source code passes linting. To quickly identify linting issues, execute the following command from the 'ClientApp' directory in a terminal
-
-```bash
-npm install
-npm run prettify
-```
-
-### Applying Client App Styles
-
-Use the command below to apply prettier after installation packages
-
-```bash
-npm run prettify-fix
-```
-
-## Running Tests with Code Coverage with VS Code
-
-### Install Coverage Gutters
-
-Install the extension : Coverage Gutters
-Id: ryanluker.vscode-coverage-gutters
-
-This extension will load covage files and display in real-time which lines are covered
-
-### Run the Test task
-
-Ensure you have a terminal with the current directory set to the same level as angular workspace.
-
-```bash
-npm run test
-```
-
-This will execute the angular tests files with the --code-coverage parameter. Once the coverage files have been produced, enable the watch command for Coverage Gutters.
-
-### Branch name git hook will run on pre commit and control the standard for new branch name.
-
-The branch name should start with: feature/VIH-XXXX-branchName (X - is digit).
-If git version is less than 2.9 the pre-commit file from the .githooks folder need copy to local .git/hooks folder.
-To change git hooks directory to directory under source control run (works only for git version 2.9 or greater) :
-\$ git config core.hooksPath .githooks
-
-## Commit message
-
-The commit message will be validated by prepare-commit-msg hook.
-The commit message format should start with : 'feature/VIH-XXXX : ' folowing by 8 or more characters description of commit, otherwise the warning message will be presented.
-
-## Run Zap scan locally
-
-To run Zap scan locally update the following settings and run acceptance tests
-
-User Secrets:
-
-- "VhServices:VideoWebUrl": "https://videoweb_ac/"
-- "VhServices:VideoWebApiUrl": "https://videoweb_ac/"
-
-Update following configuration under VideoWeb/VideoWeb/appsettings.json
-
-- "AzureAd:RedirectUri": "https://videoweb_ac/home"
-- "AzureAd:PostLogoutRedirectUri": "https://videoweb_ac/logout"
-- "ZapScan": true
-
-Update following configuration under VideoWeb/VideoWeb.AcceptanceTests/appsettings.json
-
-- "AzureAd:RedirectUri": "https://videoweb_ac/home"
-- "AzureAd:PostLogoutRedirectUri": "https://videoweb_ac/logout"
-- "ZapConfiguration:ZapScan": true
-
-## Run Stryker
-
-To run stryker mutation test, go to UnitTest folder under command prompt and run the following command
-
-```bash
-dotnet stryker
-```
-
-From the results look for line(s) of code highlighted with Survived\No Coverage and fix them.
-
-
-If in case you have not installed stryker previously, please use one of the following commands
-
-### Global
-```bash
-dotnet tool install -g dotnet-stryker
-```
-### Local
-```bash
-dotnet tool install dotnet-stryker
-```
-
-To update latest version of stryker please use the following command
-
-```bash
-dotnet tool update --global dotnet-stryker
-```
+> You will need Node Version Manager installed  to run the above command
