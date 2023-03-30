@@ -160,6 +160,17 @@ describe('JudgeParticipantStatusListComponent', () => {
         expect(videoWebService.updateParticipantDetails).toHaveBeenCalledTimes(1);
     });
 
+    it('should return name with alphanumeric characters', async () => {
+        // Given
+        const newName = 'new name%$*^^';
+
+        // When
+        const result = component.removeSpecialCharacters(newName);
+
+        // Then
+        expect(result).toBe('new name');
+    });
+
     it('should log error when unable to save new judge name', async () => {
         const error = { error: 'test failure' };
         const newName = 'new name';
