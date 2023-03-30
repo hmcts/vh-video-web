@@ -10,7 +10,8 @@ import { EventsHubService } from './events-hub.service';
 import { Heartbeat } from '../shared/models/heartbeat';
 import { TransferDirection } from './models/hearing-transfer';
 import { ParticipantMediaStatus } from '../shared/models/participant-media-status';
-import { ParticipantResponse } from './clients/api-client';
+import { ParticipantResponse, VideoEndpointResponse } from './clients/api-client';
+import { UpdateEndpointsDto } from '../shared/models/update-endpoints-dto';
 
 describe('EventsService', () => {
     function spyPropertyGetter<T, K extends keyof T>(spyObj: jasmine.SpyObj<T>, propName: K): jasmine.Spy<() => T[K]> {
@@ -64,6 +65,7 @@ describe('EventsService', () => {
         subscription$.add(serviceUnderTest.getServiceConnected().subscribe());
         subscription$.add(serviceUnderTest.getServiceDisconnected().subscribe());
         subscription$.add(serviceUnderTest.getParticipantsUpdated().subscribe());
+        subscription$.add(serviceUnderTest.getEndpointsUpdated().subscribe());
         subscription$.add(serviceUnderTest.getHearingLayoutChanged().subscribe());
 
         // Assert
@@ -242,7 +244,58 @@ describe('EventsService', () => {
                 serviceUnderTest.registerHandlers();
             });
         });
+
+        describe('EndpointAdded', () => {
+            const eventString = 'EndpointsUpdated';
+
+            it('should be registered', () => {
+                // Arrange
+
+                const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
+                spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
+
+                // Act
+                serviceUnderTest.registerHandlers();
+
+                // Assert
+
+                expect(serviceUnderTest.handlersRegistered).toBeTrue();
+                expect(hubConnectionSpy.on).toHaveBeenCalledWith(eventString, jasmine.any(Function));
+            });
+
+            it('should set the correct next value of endpointAddedSubject when function is called', doneCallback => {
+                const testConferenceId = 'TestConferenceId';
+
+                const testVideoEndpointResponse = new VideoEndpointResponse();
+                testVideoEndpointResponse.id = Guid.create().toString();
+                testVideoEndpointResponse.display_name = 'TestDisplayName';
+                testVideoEndpointResponse.defence_advocate_username = 'TestDefenceAdvocateUsername@gmail.com';
+
+                const testUpdateEndpointsDto = new UpdateEndpointsDto();
+                testUpdateEndpointsDto.ExistingEndpoints = [];
+                testUpdateEndpointsDto.NewEndpoints = [testVideoEndpointResponse];
+                testUpdateEndpointsDto.RemovedEndpoints = [];
+
+                const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
+                hubConnectionSpy.on.withArgs(jasmine.any(String), jasmine.any(Function)).and.callFake((eventType: string, func: any) => {
+                    if (eventType === eventString) {
+                        func(testConferenceId, testUpdateEndpointsDto);
+                    }
+                });
+
+                serviceUnderTest.getEndpointsUpdated().subscribe(message => {
+                    expect(message.conferenceId).toBe(testConferenceId);
+                    expect(message.endpoints).toEqual(testUpdateEndpointsDto);
+                    doneCallback();
+                });
+
+                spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
+                serviceUnderTest.registerHandlers();
+            });
+        });
+
     });
+
     describe('send message functions', () => {
         it('sendMessage (instant) - should call send on the hub connection', fakeAsync(() => {
             // Arrange

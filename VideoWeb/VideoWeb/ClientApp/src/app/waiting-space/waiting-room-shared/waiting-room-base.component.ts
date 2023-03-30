@@ -1105,8 +1105,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     private handleEndpointsUpdatedMessage(endpointsUpdatedMessage: EndpointsUpdatedMessage) {
-        this.logger.debug(`[WR] - Endpoints updated message recieved - new endpoints`, endpointsUpdatedMessage.endpoints.NewEndpoints);
-        this.logger.debug(`[WR] - Endpoints updated message recieved - existing endpoints`, endpointsUpdatedMessage.endpoints.ExistingEndpoints);
+        this.logger.debug(`[WR] - Endpoints updated message received`, { newEndpoints: endpointsUpdatedMessage.endpoints.NewEndpoints, updatedEndpoints: endpointsUpdatedMessage.endpoints.ExistingEndpoints });
 
         if (!this.validateIsForConference(endpointsUpdatedMessage.conferenceId)) {
             return;

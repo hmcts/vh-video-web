@@ -1,42 +1,33 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
-using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using VideoApi.Client;
-using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
-using VideoWeb.Contract.Responses;
+using VideoWeb.Contract.Request;
 using VideoWeb.Controllers;
-using VideoWeb.EventHub.Enums;
-using VideoWeb.EventHub.Handlers;
-using VideoWeb.EventHub.Handlers.Core;
-using VideoWeb.EventHub.Models;
 using VideoWeb.Helpers.Interfaces;
 using VideoWeb.Mappings;
 using VideoWeb.UnitTests.Builders;
-using Endpoint = VideoWeb.Common.Models.Endpoint;
 
 namespace VideoWeb.UnitTests.Controllers.InternalEventControllerTests
 {
-    public class ParticipantsUpdatedTests
+    public class EndpointsUpdatedTests
     {
         private AutoMock _mocker;
         protected InternalEventController _controller;
 
         private Guid testConferenceId;
-        private Guid existingParticipantId;
+        private Guid existingEndpointId;
 
-        Mock<Conference> mockConference;
-
+        private Mock<Conference> mockConference;
+        private Mock<UpdateConferenceEndpointsRequest> mockUpdateConferenceEndpointsRequest;
 
         [SetUp]
         public void Setup()
@@ -52,48 +43,47 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventControllerTests
             };
 
             var parameters = new ParameterBuilder(_mocker)
-                .AddTypedParameters<ParticipantResponseMapper>()
-                .AddTypedParameters<ParticipantForHostResponseMapper>()
-                .AddTypedParameters<ParticipantResponseForVhoMapper>()
-                .AddTypedParameters<ParticipantForUserResponseMapper>()
+                .AddTypedParameters<EndpointsResponseMapper>()
                 .Build();
-
 
             _controller = _mocker.Create<InternalEventController>();
             _controller.ControllerContext = context;
 
             testConferenceId = Guid.NewGuid();
-            existingParticipantId = Guid.NewGuid();
+            existingEndpointId = Guid.NewGuid();
 
             mockConference = _mocker.Mock<Conference>();
             mockConference.Object.Id = testConferenceId;
+
+            mockUpdateConferenceEndpointsRequest = _mocker.Mock<UpdateConferenceEndpointsRequest>();
+            mockUpdateConferenceEndpointsRequest.Object.NewEndpoints = new List<EndpointResponse> 
+            {
+                new EndpointResponse 
+                {
+                    Id = existingEndpointId,
+                    DisplayName = "TestDisplayName"
+                }
+            };
 
             _mocker.Mock<IConferenceCache>()
                 .Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(id => id == testConferenceId),
                     It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .ReturnsAsync(mockConference.Object);
-
-            _mocker.Mock<IParticipantsUpdatedEventNotifier>();
-
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantRequest, IEnumerable<Participant>, Participant>()).Returns(_mocker.Create<ParticipantRequestMapper>());
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<UpdateParticipantRequest, IEnumerable<Participant>, UpdateParticipant>()).Returns(_mocker.Create<UpdateParticipantRequestToUpdateParticipantMapper>());
-            
         }
-
 
         [Test]
         public async Task Should_send_event()
         {
             // Arrange
-            var updateParticipantsRequest = new UpdateConferenceParticipantsRequest();
+            var updateEndpointsRequest = mockUpdateConferenceEndpointsRequest.Object;
 
             // Act
-            var result = await _controller.ParticipantsUpdated(testConferenceId, updateParticipantsRequest);
+            var result = await _controller.EndpointsUpdated(testConferenceId, updateEndpointsRequest);
 
             // Assert
             result.Should().BeOfType<NoContentResult>();
 
-            _mocker.Mock<IParticipantsUpdatedEventNotifier>().Verify(x => x.PushParticipantsUpdatedEvent(mockConference.Object, mockConference.Object.Participants), Times.Once);
+            _mocker.Mock<IEndpointsUpdatedEventNotifier>().Verify(x => x.PushEndpointsUpdatedEvent(mockConference.Object, updateEndpointsRequest), Times.Once);
         }
-    }
+    }    
 }

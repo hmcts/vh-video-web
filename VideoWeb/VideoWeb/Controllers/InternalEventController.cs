@@ -127,7 +127,6 @@ namespace VideoWeb.Controllers
             }
         }
 
-        [AllowAnonymous]
         [HttpPost("EndpointsUpdated")]
         [SwaggerOperation(OperationId = "EndpointsUpdated")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]

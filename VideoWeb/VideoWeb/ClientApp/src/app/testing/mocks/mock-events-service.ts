@@ -14,10 +14,10 @@ import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-
 import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
 import { ParticipantRemoteMuteMessage } from 'src/app/shared/models/participant-remote-mute-message';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
+import { EndpointsUpdatedMessage } from 'src/app/shared/models/endpoints-updated-message';
 import { Room } from '../../shared/models/room';
 import { RoomTransfer } from '../../shared/models/room-transfer';
 import { NewAllocationMessage } from '../../services/models/new-allocation-message';
-import { EndpointsUpdatedMessage } from 'src/app/shared/models/endpoints-updated-message';
 
 export let eventsServiceSpy: jasmine.SpyObj<EventsService>;
 
@@ -43,7 +43,7 @@ export let eventHubIsConnectedMock: boolean;
 export const getParticipantsUpdatedSubjectMock = new Subject<ParticipantsUpdatedMessage>();
 export const hearingLayoutChangedSubjectMock = new Subject<HearingLayoutChanged>();
 export const newAllocationMessageSubjectMock = new Subject<NewAllocationMessage>();
-export const endpointsUpdatedMessageSubjectMock = new Subject<EndpointsUpdatedMessage>();
+export const getEndpointsUpdatedMessageSubjectMock = new Subject<EndpointsUpdatedMessage>();
 
 eventsServiceSpy = jasmine.createSpyObj<EventsService>(
     'EventsService',
@@ -75,9 +75,9 @@ eventsServiceSpy = jasmine.createSpyObj<EventsService>(
         'publishRemoteMuteStatus',
         'onEventsHubReady',
         'getParticipantsUpdated',
+        'getEndpointsUpdated',
         'getHearingLayoutChanged',
-        'getAllocationMessage',
-        'getEndpointsUpdated'
+        'getAllocationMessage'
     ],
     ['eventHubIsConnected']
 );
@@ -103,4 +103,4 @@ eventsServiceSpy.onEventsHubReady.and.returnValue(onEventsHubReadySubjectMock.as
 eventsServiceSpy.getParticipantsUpdated.and.returnValue(getParticipantsUpdatedSubjectMock.asObservable());
 eventsServiceSpy.getHearingLayoutChanged.and.returnValue(hearingLayoutChangedSubjectMock.asObservable());
 eventsServiceSpy.getAllocationMessage.and.returnValue(newAllocationMessageSubjectMock.asObservable());
-eventsServiceSpy.getEndpointsUpdated.and.returnValue(endpointsUpdatedMessageSubjectMock.asObservable());
+eventsServiceSpy.getEndpointsUpdated.and.returnValue(getEndpointsUpdatedMessageSubjectMock.asObservable());
