@@ -1105,14 +1105,16 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     private handleEndpointsUpdatedMessage(endpointsUpdatedMessage: EndpointsUpdatedMessage) {
-        this.logger.debug(`[WR] - Endpoints updated message received`, { newEndpoints: endpointsUpdatedMessage.endpoints.NewEndpoints, updatedEndpoints: endpointsUpdatedMessage.endpoints.ExistingEndpoints });
+        this.logger.debug(`[WR] - Endpoints updated message received`, {
+            newEndpoints: endpointsUpdatedMessage.endpoints.NewEndpoints,
+            updatedEndpoints: endpointsUpdatedMessage.endpoints.ExistingEndpoints
+        });
 
         if (!this.validateIsForConference(endpointsUpdatedMessage.conferenceId)) {
             return;
         }
 
         endpointsUpdatedMessage.endpoints.NewEndpoints.forEach(endpoint => {
-
             this.logger.debug(`[WR] - Endpoint added, showing notification`, endpoint);
             this.notificationToastrService.showEndpointAdded(
                 endpoint,
@@ -1130,7 +1132,7 @@ export abstract class WaitingRoomBaseDirective {
             );
 
             this.hearing.updateEndpoint(endpoint);
-        })
+        });
 
         this.conference = { ...this.conference, endpoints: [...this.hearing.getEndpoints()] } as ConferenceResponse;
     }

@@ -31,9 +31,7 @@ import {
     participantStatusSubjectMock,
     roomUpdateSubjectMock,
     roomTransferSubjectMock,
-    hearingCountdownCompleteSubjectMock,
     onEventsHubReadySubjectMock,
-    eventsServiceSpy,
     getParticipantsUpdatedSubjectMock,
     getEndpointsUpdatedMessageSubjectMock,
     hearingLayoutChangedSubjectMock
@@ -59,14 +57,12 @@ import {
     router,
     videoWebService,
     videoCallService,
-    globalJudge,
     titleService
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
 import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
 import { Room } from '../../../shared/models/room';
 import { RoomTransfer } from '../../../shared/models/room-transfer';
-import { ElementRef } from '@angular/core';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { ConsultationInvitation, ConsultationInvitationService } from '../../services/consultation-invitation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -81,8 +77,6 @@ import { NotificationSoundsService } from '../../services/notification-sounds.se
 import { NotificationToastrService } from '../../services/notification-toastr.service';
 import { RoomClosingToastrService } from '../../services/room-closing-toast.service';
 import { ClockService } from 'src/app/services/clock.service';
-import { Participant } from 'src/app/shared/models/participant';
-import { createTrue } from 'typescript';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { EndpointsUpdatedMessage } from 'src/app/shared/models/endpoints-updated-message';
 import { UpdateEndpointsDto } from 'src/app/shared/models/update-endpoints-dto';
@@ -99,10 +93,8 @@ describe('WaitingRoomComponent EventHub Call', () => {
     const consultationRequestResponseMessageSubject = consultationRequestResponseMessageSubjectMock;
     const requestedConsultationMessageSubject = requestedConsultationMessageSubjectMock;
     const eventHubDisconnectSubject = eventHubDisconnectSubjectMock;
-    const eventHubReconnectSubject = eventHubReconnectSubjectMock;
     const hearingTransferSubject = hearingTransferSubjectMock;
     const endpointStatusSubject = endpointStatusSubjectMock;
-    const hearingLayoutChangedSubject = hearingLayoutChangedSubjectMock;
     const invitationId = Guid.create().toString();
     let logged: LoggedParticipantResponse;
     let activatedRoute: ActivatedRoute;
@@ -208,7 +200,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
             component.participant.id
         );
 
-        // spyOn(logger, 'debug');
         requestedConsultationMessageSubject.next(payload);
         flushMicrotasks();
 
@@ -1671,7 +1662,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
         testUpdateEndpointsDtoUpdate.NewEndpoints = [];
         testUpdateEndpointsDtoUpdate.RemovedEndpoints = [];
 
-        const testConference = new ConferenceResponse();
+        const testConference = new ConferenceResponse(Object.assign({}, globalConference));
         testConference.id = testConferenceId;
         const testHearing = new Hearing(testConference);
 
@@ -1700,8 +1691,9 @@ describe('WaitingRoomComponent EventHub Call', () => {
             beforeEach(() => {
                 existingEndpoint = testExistingVideoEndpointResponse;
                 component.conference.endpoints = [existingEndpoint];
-                testEndpointMessageAdd = new EndpointsUpdatedMessage(testConferenceId, testUpdateEndpointsDtoAdd);
-                testEndpointMessageUpdate = new EndpointsUpdatedMessage(testConferenceId, testUpdateEndpointsDtoUpdate);
+                component.hearing = new Hearing(component.conference);
+                testEndpointMessageAdd = new EndpointsUpdatedMessage(component.conference.id, testUpdateEndpointsDtoAdd);
+                testEndpointMessageUpdate = new EndpointsUpdatedMessage(component.conference.id, testUpdateEndpointsDtoUpdate);
             });
 
             it('should show toast for in hearing', () => {
@@ -1739,6 +1731,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
             it('should add new endpoint', () => {
                 // Arrange
+                const existingEndpointCount = component.conference.endpoints.length;
                 component.participant.status = ParticipantStatus.Available;
 
                 // Act
@@ -1746,7 +1739,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
                 // Assert
                 const addedEndpoint = component.conference.endpoints.find(x => x.id === testAddVideoEndpointResponse.id);
-                expect(component.conference.endpoints.length).toEqual(2);
+                expect(component.conference.endpoints.length).toEqual(existingEndpointCount + 1);
                 expect(addedEndpoint.id).toBe(testAddVideoEndpointResponse.id);
                 expect(addedEndpoint.display_name).toBe(testAddVideoEndpointResponse.display_name);
             });

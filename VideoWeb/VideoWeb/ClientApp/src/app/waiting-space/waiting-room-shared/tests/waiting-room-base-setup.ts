@@ -123,6 +123,7 @@ export function initAllWRDependencies() {
         'showAudioRecordingError',
         'showParticipantAdded',
         'showEndpointAdded',
+        'showEndpointUpdated',
         'showHearingLayoutchanged',
         'showHearingStarted'
     ]);
