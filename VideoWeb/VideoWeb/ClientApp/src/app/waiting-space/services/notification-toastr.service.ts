@@ -348,54 +348,35 @@ export class NotificationToastrService {
         return toast.toastRef.componentInstance as VhToastComponent;
     }
 
-    showEndpointAdded(endpoint: VideoEndpointResponse, inHearing: boolean = false): VhToastComponent
-    {
-        const messageBody = this.translateService.instant('notification-toastr.endpoint-added.message');
-        let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${this.translateService.instant(
-            'notification-toastr.endpoint-added.title',
-            {
-                name: endpoint.display_name
-            }
-        )}</span>`;
-        message += `<span class="toast-content toast-body">${messageBody}</span>`;
-
-        const toast = this.toastr.show('', '', {
-            timeOut: 0,
-            extendedTimeOut: 0,
-            tapToDismiss: false,
-            toastComponent: VhToastComponent
+    showEndpointAdded(endpoint: VideoEndpointResponse, inHearing: boolean = false): VhToastComponent {
+        const toastTitle = this.translateService.instant('notification-toastr.endpoint-added.title', {
+            name: endpoint.display_name
         });
-        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
-            color: inHearing ? 'white' : 'black',
-            htmlBody: message,
-            onNoAction: async () => {
-                this.logger.info(`${this.loggerPrefix} No action called on endpoint added alert`);
-            },
-            buttons: [
-                {
-                    id: 'notification-toastr-endpoint-added-dismiss',
-                    label: this.translateService.instant('notification-toastr.endpoint-added.dismiss'),
-                    cssClass: 'green',
-                    action: async () => {
-                        this.toastr.remove(toast.toastId);
-                    }
-                }
-            ]
-        };
-
-        return toast.toastRef.componentInstance as VhToastComponent;
+        const toastBody = this.translateService.instant('notification-toastr.endpoint-added.message');
+        const buttonId = 'notification-toastr-endpoint-added-dismiss';
+        const buttonLabel = this.translateService.instant('notification-toastr.endpoint-added.dismiss');
+        return this.showEndpointToast(toastTitle, toastBody, inHearing, buttonId, buttonLabel);
     }
 
     showEndpointUpdated(endpoint: VideoEndpointResponse, inHearing: boolean = false): VhToastComponent {
+        const toastTitle = this.translateService.instant('notification-toastr.endpoint-updated.title', {
+            name: endpoint.display_name
+        });
+        const toastBody = this.translateService.instant('notification-toastr.endpoint-updated.message');
+        const buttonId = 'notification-toastr-endpoint-updated-dismiss';
+        const buttonLabel = this.translateService.instant('notification-toastr.endpoint-updated.dismiss');
+        return this.showEndpointToast(toastTitle, toastBody, inHearing, buttonId, buttonLabel);
+    }
 
-        const messageBody = this.translateService.instant('notification-toastr.endpoint-updated.message');
-        let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${this.translateService.instant(
-            'notification-toastr.endpoint-updated.title',
-            {
-                name: endpoint.display_name
-            }
-        )}</span>`;
-        message += `<span class="toast-content toast-body">${messageBody}</span>`;
+    private showEndpointToast(
+        toastTitle: string,
+        toastBody: string,
+        inHearing: boolean,
+        buttonId: string,
+        buttonLabel: string
+    ): VhToastComponent {
+        let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${toastTitle}</span>`;
+        message += `<span class="toast-content toast-body">${toastBody}</span>`;
 
         const toast = this.toastr.show('', '', {
             timeOut: 0,
@@ -411,8 +392,8 @@ export class NotificationToastrService {
             },
             buttons: [
                 {
-                    id: 'notification-toastr-endpoint-updated-dismiss',
-                    label: this.translateService.instant('notification-toastr.endpoint-updated.dismiss'),
+                    id: buttonId,
+                    label: buttonLabel,
                     cssClass: 'green',
                     action: async () => {
                         this.toastr.remove(toast.toastId);
