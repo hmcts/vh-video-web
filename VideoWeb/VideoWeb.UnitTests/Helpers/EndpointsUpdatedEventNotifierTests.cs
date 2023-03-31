@@ -8,12 +8,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
-using VideoWeb.EventHub.Enums;
-using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Helpers;
-using VideoWeb.Mappings.Interfaces;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.UnitTests.Builders;
@@ -23,104 +20,64 @@ namespace VideoWeb.UnitTests.Helpers
     public class EndpointsUpdatedEventNotifierTests
     {
         private EndpointsUpdatedEventNotifier _notifier;
-        private EndpointsResponseMapper _sut;
         private AutoMock _mocker;
         private Conference _conference;
-        private Endpoint _endpoint1;
-        private EndpointResponse _endpointResponse1;
-        private EndpointResponse _endpointResponse2;
-        private Mock<UpdateConferenceEndpointsRequest> _mockUpdateConferenceEndpointsRequest;
+        private EventComponentHelper _eventHelper;
 
         [SetUp]
         public void SetUp()
         {
+            _conference = new ConferenceCacheModelBuilder().Build();
+            _eventHelper = new EventComponentHelper
+            {
+                EventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>(),
+                EventHubClientMock = new Mock<IEventHubClient>()
+            };
+            // this will register all participants as connected to the hub
+            _eventHelper.RegisterUsersForHubContext(_conference.Participants);
+
             _mocker = AutoMock.GetLoose();
             var parameters = new ParameterBuilder(_mocker)
-                .AddTypedParameters<EndpointsResponseMapper>()
+                .AddTypedParameters<RoomSummaryResponseMapper>()
                 .Build();
 
-            _sut = _mocker.Create<EndpointsResponseMapper>(parameters);
-
-            _mocker.Mock<IHubClients<IEventHubClient>>()
-                .Setup(x => x.Group(It.IsAny<string>()))
-                .Returns(_mocker.Mock<IEventHubClient>().Object);
-
-            _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>()
-                .Setup(x => x.Clients)
-                .Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
-
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<EndpointResponse, int, VideoEndpointResponse>())
-                .Returns(_sut);
+                .Returns(_mocker.Create<EndpointsResponseMapper>(parameters));
 
-            _notifier = _mocker.Create<EndpointsUpdatedEventNotifier>(parameters);
+            _notifier = new EndpointsUpdatedEventNotifier(_eventHelper.EventHubContextMock.Object, _mocker.Create<IMapperFactory>());
         }
 
         [Test]
         public async Task Should_send_event()
         {
             // Arrange
-            _endpoint1 = new Endpoint
+            var newEndpoint = new Endpoint
             {
                 Id = Guid.NewGuid(),
-                DisplayName = "Endpoint1DisplayName",
+                DisplayName = "NewEndpoint",
                 DefenceAdvocateUsername = "Endpoint1DefenceAdvocateUsername@gmail.com"
             };
-
-            _conference = new Conference
+            
+            var request = new UpdateConferenceEndpointsRequest()
             {
-                Id = Guid.NewGuid(),
-                Participants = new List<Participant>
+                ExistingEndpoints = new List<EndpointResponse>(),
+                NewEndpoints = new List<EndpointResponse>()
                 {
-                    new Participant
+                    new()
                     {
-                        Id = Guid.NewGuid(),
-                        Username = "username@gmail.com",
-                        DisplayName = "displayname",
-                        ParticipantStatus = ParticipantStatus.Available,
-                        CaseTypeGroup = "casetypegroup1"
-                    },
-                    new Participant
-                    {
-                        Id = Guid.NewGuid(),
-                        Username = "username2@gmail.com",
-                        DisplayName = "displayname2",
-                        ParticipantStatus = ParticipantStatus.Available,
-                        CaseTypeGroup = "casetypegroup2"
+                        Id = newEndpoint.Id,
+                        DisplayName = newEndpoint.DisplayName,
+                        DefenceAdvocate = newEndpoint.DefenceAdvocateUsername
                     }
                 },
-                Endpoints = new List<Endpoint>
-                {
-                    _endpoint1
-                }
-            };
-
-            _endpointResponse1 = new EndpointResponse
-            {
-                Id = Guid.NewGuid(),
-                DisplayName = "TestDisplayName"
-            };
-
-            _endpointResponse2 = new EndpointResponse
-            {
-                Id = _endpoint1.Id,
-                DisplayName = "TestDisplayName"
-            };
-
-            _mockUpdateConferenceEndpointsRequest = _mocker.Mock<UpdateConferenceEndpointsRequest>();
-            _mockUpdateConferenceEndpointsRequest.Object.NewEndpoints = new List<EndpointResponse>
-            {
-                _endpointResponse1
-            };
-            _mockUpdateConferenceEndpointsRequest.Object.ExistingEndpoints = new List<EndpointResponse>
-            {
-                _endpointResponse2
+                RemovedEndpoints = new List<Guid>()
             };
 
             // Act
-            await _notifier.PushEndpointsUpdatedEvent(_conference, _mockUpdateConferenceEndpointsRequest.Object);
+            await _notifier.PushEndpointsUpdatedEvent(_conference, request);
 
             // Assert
-            _mocker.Mock<IEventHubClient>().Verify(
+            _eventHelper.EventHubClientMock.Verify(
                 x => x.EndpointsUpdated(_conference.Id, It.IsAny<UpdateEndpointsDto>()),
                 Times.Exactly(_conference.Participants.Count));
         }

@@ -1,14 +1,10 @@
-using VideoApi.Contract.Responses;
 using Microsoft.AspNetCore.SignalR;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.Helpers.Interfaces;
 using System.Linq;
-using Microsoft.Extensions.Logging;
 using VideoWeb.Contract.Request;
-using BookingsApi.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Models;
@@ -42,6 +38,8 @@ namespace VideoWeb.Helpers
                 await _hubContext.Clients.Group(participant.Username.ToLowerInvariant())
                     .EndpointsUpdated(conference.Id, endpoints);
             }
+            
+            // TODO: check with team with the VHO needs this event
         }
     }
 }
