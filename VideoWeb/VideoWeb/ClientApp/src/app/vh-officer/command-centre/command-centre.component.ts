@@ -218,7 +218,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         this.loadVenueSelection();
         this.loadCourtRoomsAccountFilters();
         this.loadCsoFilter();
-        this.queryService.startQuery(this.venueAllocations, this.csoFilter.allocatedCsoIds, this.csoFilter.includeUnallocated);
+        this.queryService.startQuery(this.venueAllocations, this.csoFilter?.allocatedCsoIds, this.csoFilter?.includeUnallocated);
         this.retrieveHearingsForVhOfficer(true);
     }
 

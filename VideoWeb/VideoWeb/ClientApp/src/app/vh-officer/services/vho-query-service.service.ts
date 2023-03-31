@@ -23,8 +23,8 @@ export class VhoQueryService {
     }
 
     startQuery(venueNames: string[], allocatedCsoIds: string[], includeUnallocated: boolean) {
-        this.venueNames = venueNames;
-        this.allocatedCsoIds = allocatedCsoIds;
+        this.venueNames = venueNames ?? [];
+        this.allocatedCsoIds = allocatedCsoIds ?? [];
         this.includeUnallocated = includeUnallocated;
         this.runQuery();
         this.interval = setInterval(async () => {

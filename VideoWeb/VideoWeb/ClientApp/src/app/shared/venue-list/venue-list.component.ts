@@ -66,8 +66,10 @@ export abstract class VenueListComponentDirective implements OnInit {
     updateVenueSelection() {
         this.selectedCsos = [];
         this.judgeAllocationStorage.set(this.selectedVenues);
+        this.csoAllocationStorage.clear();
     }
     clearVenue() {
+        // TODO change this to update this.csoAllocationStorage, for consistency with updateVenueSelection()
         this.selectedVenues = [];
     }
 }

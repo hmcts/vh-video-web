@@ -48,6 +48,10 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
                 })
             );
             this.csos = items;
+            const previousFilter = this.csoAllocationStorage.get();
+            if (previousFilter) {
+                this.updateCsoFilterSelection(previousFilter);
+            }
         });
     }
 
@@ -70,24 +74,23 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
                 allocatedCsoIds.splice(index, 1);
                 includeUnallocated = true;
             }
-
-            this.selectedVenues = await this.videoWebService.getVenuesForAllocatedCSOs(allocatedCsoIds, includeUnallocated).toPromise();
+            this.csoAllocationStorage.set(new CsoFilter(allocatedCsoIds, includeUnallocated));
+            this.judgeAllocationStorage.clear();
+        } else {
+            this.updateVenueSelection();
         }
-        this.updateVenueSelection();
-        this.csoAllocationStorage.set(new CsoFilter(allocatedCsoIds, includeUnallocated));
-
         const courtRoomAccounts = await this.vhoQueryService.getCourtRoomsAccounts(
             this.selectedVenues,
             allocatedCsoIds,
             includeUnallocated
         );
-        if (this.venuesSelected) {
-            this.getFiltersCourtRoomsAccounts(courtRoomAccounts);
-            await this.router.navigateByUrl(pageUrls.AdminHearingList);
-        } else {
-            this.logger.warn('[VenueList] - No venues selected');
-            this.errorMessage = 'Failed to find venues';
+        if (!this.venuesSelected && !this.csosSelected) {
+            this.logger.warn('[VenueList] - No venues or csos selected');
+            this.errorMessage = 'Failed to find venues or csos';
+            return;
         }
+        this.getFiltersCourtRoomsAccounts(courtRoomAccounts);
+        await this.router.navigateByUrl(pageUrls.AdminHearingList);
     }
 
     private getFiltersCourtRoomsAccounts(response: CourtRoomsAccountResponse[]) {
@@ -109,5 +112,23 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
 
     get showVhoSpecificContent(): boolean {
         return true;
+    }
+
+    async updateCsoFilterSelection(filter: CsoFilter) {
+        const selectCso = (csoId: string) => {
+            this.selectedCsos = [...this.selectedCsos, csoId];
+        };
+        const loggedInUser = await this.profileService.getUserProfile();
+        const loggedInCsoId = this.csos.find(c => c.username === loggedInUser.username).id;
+        filter.allocatedCsoIds.forEach(id => {
+            if (id === loggedInCsoId) {
+                selectCso(VhOfficerVenueListComponent.ALLOCATED_TO_ME);
+                return;
+            }
+            selectCso(id);
+        });
+        if (filter.includeUnallocated) {
+            selectCso(VhOfficerVenueListComponent.UNALLOCATED);
+        }
     }
 }
