@@ -39,20 +39,22 @@ describe('BetaBannerComponent', () => {
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
     videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(conference));
 
-    beforeEach(waitForAsync(() => {
-        TestBed.configureTestingModule({
-            declarations: [BetaBannerComponent, Mock1Component, Mock2Component],
-            imports: [RouterTestingModule.withRoutes(routes)],
-            providers: [
-                { provide: ProfileService, useValue: profileServiceSpy },
-                { provide: Logger, useClass: MockLogger },
-                { provide: VideoWebService, useValue: videoWebServiceSpy },
-                { provide: TranslateService, useValue: translateServiceSpy },
-                { provide: EventsService, useValue: eventsServiceSpy }
-            ],
-            schemas: [NO_ERRORS_SCHEMA]
-        }).compileComponents();
-    }));
+    beforeEach(
+        waitForAsync(() => {
+            TestBed.configureTestingModule({
+                declarations: [BetaBannerComponent, Mock1Component, Mock2Component],
+                imports: [RouterTestingModule.withRoutes(routes)],
+                providers: [
+                    { provide: ProfileService, useValue: profileServiceSpy },
+                    { provide: Logger, useClass: MockLogger },
+                    { provide: VideoWebService, useValue: videoWebServiceSpy },
+                    { provide: TranslateService, useValue: translateServiceSpy },
+                    { provide: EventsService, useValue: eventsServiceSpy }
+                ],
+                schemas: [NO_ERRORS_SCHEMA]
+            }).compileComponents();
+        })
+    );
 
     beforeEach(() => {
         router = TestBed.inject(Router);

@@ -1,5 +1,12 @@
 import { ActiveToast } from 'ngx-toastr';
-import { ConsultationAnswer, EndpointStatus, HearingDetailRequest, ParticipantResponse, Role, VideoEndpointResponse } from 'src/app/services/clients/api-client';
+import {
+    ConsultationAnswer,
+    EndpointStatus,
+    HearingDetailRequest,
+    ParticipantResponse,
+    Role,
+    VideoEndpointResponse
+} from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Participant } from 'src/app/shared/models/participant';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
@@ -899,7 +906,7 @@ describe('NotificationToastrService', () => {
                     componentInstance: {}
                 }
             } as ActiveToast<VhToastComponent>;
-            
+
             translateServiceSpy.instant
                 .withArgs('notification-toastr.endpoint-added.message', jasmine.any(Object))
                 .and.returnValue(translatedMessageAddedEndpoint);
