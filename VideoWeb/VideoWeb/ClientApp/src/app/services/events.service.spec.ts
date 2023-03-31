@@ -293,7 +293,6 @@ describe('EventsService', () => {
                 serviceUnderTest.registerHandlers();
             });
         });
-
     });
 
     describe('send message functions', () => {
