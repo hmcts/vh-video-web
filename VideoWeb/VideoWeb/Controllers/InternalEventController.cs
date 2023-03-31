@@ -133,7 +133,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> EndpointsUpdated(Guid conferenceId, UpdateConferenceEndpointsRequest request)
         {
-            _logger.LogDebug($"EndpointsUpdated called. ConferenceId: {conferenceId}, Request {JsonSerializer.Serialize(request)}");
+            _logger.LogDebug("EndpointsUpdated called. ConferenceId: {ConferenceId}, Request {Payload}", conferenceId, JsonSerializer.Serialize(request));
 
             try
             {
@@ -143,10 +143,10 @@ namespace VideoWeb.Controllers
                     return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
                 });
 
-                _logger.LogTrace($"Initial conference details: {conference}");
+                _logger.LogTrace("Initial conference details: {Conference}", conference);
 
                 await _endpointsUpdatedEventNotifier.PushEndpointsUpdatedEvent(conference, request);
-                _logger.LogDebug($"EndpointsUpdated finished. ConferenceId: {conferenceId}");
+                _logger.LogDebug("EndpointsUpdated finished. ConferenceId: {ConferenceId}", conferenceId);
                 return NoContent();
             }
             catch (VideoApiException e)
