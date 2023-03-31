@@ -15,7 +15,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
-using VideoWeb.Helpers.Interfaces;
+using VideoWeb.InternalEvents.Interfaces;
 using VideoWeb.Mappings;
 using VideoWeb.Mappings.Interfaces;
 

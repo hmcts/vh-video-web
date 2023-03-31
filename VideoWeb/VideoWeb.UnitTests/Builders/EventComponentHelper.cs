@@ -73,8 +73,6 @@ namespace VideoWeb.UnitTests.Builders
                 new EndpointDisconnectedEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object,
                     apiClientMock.Object),
                 new EndpointTransferEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object,
-                    apiClientMock.Object),
-                new AllocationHearingsEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object,
                     apiClientMock.Object)
             };
         }
@@ -96,6 +94,8 @@ namespace VideoWeb.UnitTests.Builders
             return new Conference
             {
                 Id = Guid.NewGuid(),
+                CaseName = $"Test Case {Guid.NewGuid()}",
+                ScheduledDateTime = DateTime.Today.AddHours(10).AddMinutes(45),
                 HearingId = Guid.NewGuid(),
                 Participants = new List<Participant>()
                 {

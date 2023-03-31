@@ -1,25 +1,20 @@
-using Autofac.Extras.Moq;
-using Microsoft.AspNetCore.Mvc;
-using Moq;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using VideoApi.Client;
-using VideoApi.Contract.Requests;
+using Autofac.Extras.Moq;
+using Moq;
+using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
-using VideoWeb.Controllers;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Helpers;
+using VideoWeb.InternalEvents;
 using VideoWeb.Mappings;
 using VideoWeb.Mappings.Interfaces;
 
-namespace VideoWeb.UnitTests.Helpers
+namespace VideoWeb.UnitTests.InternalEvents
 {
     class ParticipantsUpdatedEventNotifierTests
     {

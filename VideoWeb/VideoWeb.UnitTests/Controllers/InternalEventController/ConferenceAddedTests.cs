@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using VideoWeb.Controllers;
-using VideoWeb.Helpers.Interfaces;
+using VideoWeb.InternalEvents.Interfaces;
 using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Controllers.InternalEventControllerTests

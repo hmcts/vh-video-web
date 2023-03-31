@@ -1,15 +1,12 @@
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Helpers.Interfaces;
-using VideoWeb.Mappings;
+using VideoWeb.InternalEvents.Interfaces;
 
-namespace VideoWeb.Helpers
+namespace VideoWeb.InternalEvents
 {
     public class NewConferenceAddedEventNotifier : INewConferenceAddedEventNotifier
     {

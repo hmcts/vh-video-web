@@ -15,7 +15,6 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Polly;
 using Polly.Extensions.Http;
-using Swashbuckle.AspNetCore.Swagger;
 using VideoWeb.Common;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Configuration;
@@ -36,8 +35,9 @@ using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using UserApi.Client;
 using VideoApi.Client;
 using VideoWeb.EventHub.Services;
+using VideoWeb.InternalEvents;
+using VideoWeb.InternalEvents.Interfaces;
 using VideoWeb.Swagger;
-using VideoWeb.Helpers.Interfaces;
 using VideoWeb.Services;
 
 namespace VideoWeb.Extensions
@@ -141,7 +141,7 @@ namespace VideoWeb.Extensions
             services.AddScoped<IEventHandlerFactory, EventHandlerFactory>();
             services.AddScoped<IParticipantsUpdatedEventNotifier, ParticipantsUpdatedEventNotifier>();
             services.AddScoped<INewConferenceAddedEventNotifier, NewConferenceAddedEventNotifier>();
-            services.AddScoped<IAllocationHearingsEventNotifier, AllocationHearingsEventNotifier>();
+            services.AddScoped<IAllocationUpdatedEventNotifier, AllocationUpdatedEventNotifier>();
             RegisterEventHandlers(services);
 
             var contractResolver = new DefaultContractResolver

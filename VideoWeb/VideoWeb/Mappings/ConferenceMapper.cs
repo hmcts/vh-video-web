@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common.Models;
@@ -22,8 +21,10 @@ namespace VideoWeb.Mappings
             return new Conference
             {
                 Id = conference.Id,
+                ScheduledDateTime = conference.ScheduledDateTime,
                 Participants = conference.Participants.Select(_participantDetailsResponseMapper.Map).ToList(),
-                Endpoints = conference.Endpoints.Select(_endpointMapper.Map).ToList()
+                Endpoints = conference.Endpoints.Select(_endpointMapper.Map).ToList(),
+                CaseName = conference.CaseName
             };
         }
     }

@@ -15,7 +15,7 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Exceptions;
-using VideoWeb.Helpers.Interfaces;
+using VideoWeb.InternalEvents.Interfaces;
 using VideoWeb.Mappings;
 using VideoWeb.Mappings.Interfaces;
 using VideoWeb.Services;

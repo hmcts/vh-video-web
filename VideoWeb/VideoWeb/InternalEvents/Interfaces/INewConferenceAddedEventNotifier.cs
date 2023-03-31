@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace VideoWeb.Helpers.Interfaces
+namespace VideoWeb.InternalEvents.Interfaces
 {
     public interface INewConferenceAddedEventNotifier
     {

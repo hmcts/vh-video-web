@@ -1,13 +1,12 @@
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using FluentAssertions;
+using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
-using FluentAssertions;
 
-
-namespace VideoWeb.UnitTests.Helpers
+namespace VideoWeb.UnitTests.InternalEvents
 {
     [TestFixture]
     public class ParticipantTilePositionHelperTest

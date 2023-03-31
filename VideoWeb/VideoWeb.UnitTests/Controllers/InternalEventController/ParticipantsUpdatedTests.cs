@@ -20,7 +20,7 @@ using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Helpers.Interfaces;
+using VideoWeb.InternalEvents.Interfaces;
 using VideoWeb.Mappings;
 using VideoWeb.UnitTests.Builders;
 using Endpoint = VideoWeb.Common.Models.Endpoint;

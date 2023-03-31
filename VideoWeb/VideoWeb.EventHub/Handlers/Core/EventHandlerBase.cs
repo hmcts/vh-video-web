@@ -1,14 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using VideoApi.Client;
-using VideoApi.Contract.Requests;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
-using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
@@ -41,7 +38,7 @@ namespace VideoWeb.EventHub.Handlers.Core
 
         public abstract EventType EventType { get; }
 
-        public async virtual Task HandleAsync(CallbackEvent callbackEvent)
+        public async Task HandleAsync(CallbackEvent callbackEvent)
         {
             SourceConference = await GetConference(callbackEvent.ConferenceId);
             if (SourceConference == null) throw new ConferenceNotFoundException(callbackEvent.ConferenceId);

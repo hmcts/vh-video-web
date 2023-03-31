@@ -16,12 +16,14 @@ namespace VideoWeb.Common.Models
         }
 
         public Guid Id { get; set; }
+        public DateTime ScheduledDateTime { get; set; }
         public Guid HearingId { get; set; }
         public List<Participant> Participants { get; set; }
         public List<Endpoint> Endpoints { get; set; }
         public List<CivilianRoom> CivilianRooms { get; set; }
         public string HearingVenueName { get; set; }
         public ConferenceState CurrentStatus { get; set; }
+        public string CaseName { get; set; }
 
         public Participant GetJudge()
         {

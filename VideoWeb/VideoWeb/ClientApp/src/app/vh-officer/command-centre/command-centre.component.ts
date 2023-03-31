@@ -22,8 +22,8 @@ import { CourtRoomsAccounts } from '../services/models/court-rooms-accounts';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
-import { NewAllocationMessage } from '../../services/models/new-allocation-message';
 import { NotificationToastrService } from '../../waiting-space/services/notification-toastr.service';
+import { UpdatedAllocationMessage } from 'src/app/services/models/updated-allocation-message';
 
 @Component({
     selector: 'app-command-centre',
@@ -353,7 +353,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         }
     }
 
-    handleAllocationUpdate(allocationHearingMessage: NewAllocationMessage) {
-        this.notificationToastrService.createAllocationNotificationToast(allocationHearingMessage.hearingDetails);
+    handleAllocationUpdate(allocationHearingMessage: UpdatedAllocationMessage) {
+        this.notificationToastrService.createAllocationNotificationToast(allocationHearingMessage.allocations);
     }
 }

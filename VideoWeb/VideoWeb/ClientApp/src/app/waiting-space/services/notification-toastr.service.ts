@@ -4,13 +4,15 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ToastrService } from 'ngx-toastr';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { ConsultationAnswer, HearingDetailRequest, ParticipantResponse, VideoEndpointResponse } from 'src/app/services/clients/api-client';
+import { ConsultationAnswer, ParticipantResponse, VideoEndpointResponse } from 'src/app/services/clients/api-client';
 import { NotificationSoundsService } from './notification-sounds.service';
 import { Guid } from 'guid-typescript';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { TranslateService } from '@ngx-translate/core';
 import { ConsultationInvitation } from './consultation-invitation.service';
 import { VideoCallService } from './video-call.service';
+import { UpdatedAllocationDto } from 'src/app/services/models/updated-allocation';
+import * as moment from 'moment';
 
 @Injectable()
 export class NotificationToastrService {
@@ -432,7 +434,7 @@ export class NotificationToastrService {
         return toast.toastRef.componentInstance as VhToastComponent;
     }
 
-    createAllocationNotificationToast(hearings: HearingDetailRequest[]): VhToastComponent {
+    createAllocationNotificationToast(hearings: UpdatedAllocationDto[]): VhToastComponent {
         const toast = this.toastr.show('', '', {
             timeOut: 0,
             extendedTimeOut: 0,
@@ -448,8 +450,8 @@ export class NotificationToastrService {
         let messageBody = '';
 
         hearings.forEach(h => {
-            const judge = h.judge;
-            const time = h.time;
+            const judge = h.judge_display_name;
+            const time = moment(h.scheduled_date_time).format('HH:mm');
             const caseName = h.case_name;
 
             messageBody += '<div class="govuk-!-font-weight-bold">' + time + '</div>';

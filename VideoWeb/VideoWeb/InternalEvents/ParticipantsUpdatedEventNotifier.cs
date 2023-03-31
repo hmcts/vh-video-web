@@ -1,18 +1,18 @@
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Helpers.Interfaces;
+using VideoWeb.InternalEvents.Interfaces;
 using VideoWeb.Mappings;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 
-namespace VideoWeb.Helpers
+namespace VideoWeb.InternalEvents
 {
     public class ParticipantsUpdatedEventNotifier: IParticipantsUpdatedEventNotifier
     {     
