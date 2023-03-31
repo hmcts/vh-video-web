@@ -58,11 +58,13 @@ namespace VideoWeb.Controllers
         [HttpGet("allocated-cso", Name = "GetVenuesByAllocatedCso")]
         [ProducesResponseType(typeof(IList<string>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<IList<string>>> GetVenuesByCso([FromQuery] Guid[] csos)
+        public async Task<ActionResult<IList<string>>> GetVenuesByCso(
+            [FromQuery] Guid[] csos,
+            [FromQuery] bool includeUnallocated = false)
         {
             try
             {
-                return Ok(await _bookingsApiClient.GetHearingVenuesByAllocatedCsoAsync(csos));
+                return Ok(await _bookingsApiClient.GetHearingVenuesByAllocatedCsoAsync(csos, includeUnallocated));
             }
             catch (BookingsApiException e)
             {

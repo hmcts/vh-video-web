@@ -8,11 +8,13 @@ import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.s
 import { HearingVenueResponse, JusticeUserResponse } from '../../services/clients/api-client';
 import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
+import { CsoFilter } from 'src/app/vh-officer/services/models/cso-filter';
 
 @Directive()
 export abstract class VenueListComponentDirective implements OnInit {
     protected readonly judgeAllocationStorage: SessionStorage<string[]>;
     protected readonly courtAccountsAllocationStorage: SessionStorage<CourtRoomsAccounts[]>;
+    protected readonly csoAllocationStorage: SessionStorage<CsoFilter>;
     venues: HearingVenueResponse[];
     csos: JusticeUserResponse[];
     selectedVenues: string[];
@@ -32,6 +34,7 @@ export abstract class VenueListComponentDirective implements OnInit {
         this.errorMessage = null;
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
         this.courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
+        this.csoAllocationStorage = new SessionStorage<CsoFilter>(VhoStorageKeys.CSO_ALLOCATIONS_KEY);
     }
 
     ngOnInit() {

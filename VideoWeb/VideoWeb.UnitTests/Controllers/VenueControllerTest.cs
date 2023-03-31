@@ -63,7 +63,7 @@ namespace VideoWeb.UnitTests.Controllers
                 "Birmingham Crown and Civil",
                 "Camelot, The court of King Arthur"
             };
-            _bookingsApiClientMock.Setup(x => x.GetHearingVenuesByAllocatedCsoAsync(It.IsAny<Guid[]>())).ReturnsAsync(venueNames);
+            _bookingsApiClientMock.Setup(x => x.GetHearingVenuesByAllocatedCsoAsync(It.IsAny<Guid[]>(), false)).ReturnsAsync(venueNames);
             var result = await _controller.GetVenuesByCso(It.IsAny<Guid[]>());
             var objectResult = result.Result as OkObjectResult;
             objectResult.Should().NotBeNull();
@@ -74,7 +74,7 @@ namespace VideoWeb.UnitTests.Controllers
         [Test]
         public async Task GetVenuesByCso_should_catch_404_and_return_Ok_and_empty_list()
         {
-            _bookingsApiClientMock.Setup(x => x.GetHearingVenuesByAllocatedCsoAsync(It.IsAny<Guid[]>()))
+            _bookingsApiClientMock.Setup(x => x.GetHearingVenuesByAllocatedCsoAsync(It.IsAny<Guid[]>(), false))
                 .ThrowsAsync(new BookingsApiException("Not Found", 404, "", It.IsAny<IReadOnlyDictionary<string, IEnumerable<string>>>(), It.IsAny<Exception>()));
             var result = await _controller.GetVenuesByCso(It.IsAny<Guid[]>());
             var objectResult = result.Result as OkObjectResult;
@@ -87,7 +87,7 @@ namespace VideoWeb.UnitTests.Controllers
         [Test]
         public async Task GetVenuesByCso_should_catch_and_return_500()
         {
-            _bookingsApiClientMock.Setup(x => x.GetHearingVenuesByAllocatedCsoAsync(It.IsAny<Guid[]>()))
+            _bookingsApiClientMock.Setup(x => x.GetHearingVenuesByAllocatedCsoAsync(It.IsAny<Guid[]>(), false))
                 .ThrowsAsync(new BookingsApiException("Internal Server Error", 500, "", It.IsAny<IReadOnlyDictionary<string, IEnumerable<string>>>(), It.IsAny<Exception>()));
             var result = await _controller.GetVenuesByCso(It.IsAny<Guid[]>());
             var objectResult = result.Result as ObjectResult;

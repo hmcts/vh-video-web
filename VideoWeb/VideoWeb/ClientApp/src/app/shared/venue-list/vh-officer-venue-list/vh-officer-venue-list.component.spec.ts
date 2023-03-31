@@ -14,6 +14,7 @@ import { VhOfficerVenueListComponent } from './vh-officer-venue-list.component';
 import { By } from '@angular/platform-browser';
 import { LaunchDarklyService } from '../../../services/launch-darkly.service';
 import { TranslatePipeMock } from '../../../testing/mocks/mock-translation-pipe';
+import { ProfileService } from 'src/app/services/api/profile.service';
 
 describe('VHOfficerVenueListComponent', () => {
     let component: VhOfficerVenueListComponent;
@@ -22,6 +23,7 @@ describe('VHOfficerVenueListComponent', () => {
     let vhoQueryService: jasmine.SpyObj<VhoQueryService>;
     const logger: Logger = new MockLogger();
     let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
+    let profileServiceSpy: jasmine.SpyObj<ProfileService>;
 
     const venueSessionStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
     const roomSessionStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
@@ -68,10 +70,22 @@ describe('VHOfficerVenueListComponent', () => {
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
         vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getCourtRoomsAccounts']);
         launchDarklyServiceSpy = jasmine.createSpyObj('LaunchDarklyService', ['flagChange']);
+        profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', [
+            'checkCacheForProfileByUsername',
+            'getProfileByUsername',
+            'getUserProfile'
+        ]);
     });
 
     beforeEach(() => {
-        component = new VhOfficerVenueListComponent(videoWebServiceSpy, router, vhoQueryService, logger, launchDarklyServiceSpy);
+        component = new VhOfficerVenueListComponent(
+            videoWebServiceSpy,
+            router,
+            vhoQueryService,
+            logger,
+            launchDarklyServiceSpy,
+            profileServiceSpy
+        );
         videoWebServiceSpy.getVenues.and.returnValue(of(venueNames));
         videoWebServiceSpy.getVenuesForAllocatedCSOs.and.returnValue(of(venueNames.map(e => e.name)));
         videoWebServiceSpy.getCSOs.and.returnValue(of(csos));
@@ -85,7 +99,8 @@ describe('VHOfficerVenueListComponent', () => {
         component.csos = [];
         component.ngOnInit();
         expect(videoWebServiceSpy.getCSOs).toHaveBeenCalled();
-        expect(component.csos).toEqual(csos);
+        expect(component.csos[2]).toEqual(csos[0]);
+        expect(component.csos[3]).toEqual(csos[1]);
     });
 
     it('should update storage with selection', () => {
@@ -110,7 +125,7 @@ describe('VHOfficerVenueListComponent', () => {
         component.selectedCsos = selectedCsos;
         component.goToHearingList();
         tick();
-        expect(videoWebServiceSpy.getVenuesForAllocatedCSOs).toHaveBeenCalledWith(selectedCsos);
+        expect(videoWebServiceSpy.getVenuesForAllocatedCSOs).toHaveBeenCalledWith(selectedCsos, false);
         expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.AdminHearingList);
     }));
 
@@ -121,7 +136,7 @@ describe('VHOfficerVenueListComponent', () => {
         videoWebServiceSpy.getVenuesForAllocatedCSOs.and.returnValue(of([]));
         component.goToHearingList();
         tick();
-        expect(videoWebServiceSpy.getVenuesForAllocatedCSOs).toHaveBeenCalledWith(selectedCsos);
+        expect(videoWebServiceSpy.getVenuesForAllocatedCSOs).toHaveBeenCalledWith(selectedCsos, false);
         expect(loggerSpy).toHaveBeenCalled();
         expect(component.errorMessage).toBe('Failed to find venues');
     }));
@@ -189,7 +204,8 @@ describe('VHOfficerVenueListComponent', () => {
                     { provide: Router, useValue: router },
                     { provide: VhoQueryService, useValue: vhoQueryService },
                     { provide: Logger, useValue: logger },
-                    { provide: LaunchDarklyService, useValue: launchDarklyServiceSpy }
+                    { provide: LaunchDarklyService, useValue: launchDarklyServiceSpy },
+                    { provide: ProfileService, useValue: profileServiceSpy }
                 ]
             });
             fixture = TestBed.createComponent(VhOfficerVenueListComponent);

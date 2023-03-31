@@ -161,12 +161,17 @@ namespace VideoWeb.Controllers
                 var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, ConferenceForVhOfficerResponse>();
                 var responses = conferences
                     .Where(c => ConferenceHelper.HasNotPassed(c.Status, c.ClosedDateTime))
-                    .OrderBy(x => x.ClosedDateTime)
                     .Select(conferenceForVhOfficerResponseMapper.Map)
                     .ToList();
 
                 UpdateConferencesWithAllocatedCsos(allocatedHearings, responses);
-                
+
+                responses = responses
+                    .Where(r => (r.AllocatedCsoId.HasValue && query.AllocatedCsoIds.Contains(r.AllocatedCsoId.Value)) || !query.AllocatedCsoIds.Any())
+                    .Union(responses.Where(r => r.AllocatedCsoId == null && query.IncludeUnallocated))
+                    .OrderBy(x => x.ClosedDateTime)
+                    .ToList();
+
                 return Ok(responses);
             }
             catch (VideoApiException e)
@@ -188,6 +193,7 @@ namespace VideoWeb.Controllers
                 }
 
                 conference.AllocatedCso = hearings?.Cso?.FullName ?? "Unallocated";
+                conference.AllocatedCsoId = hearings?.Cso?.Id;
             }
         }
 

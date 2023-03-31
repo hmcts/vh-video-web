@@ -29,7 +29,7 @@ describe('VhoQueryService', () => {
         const data = testData.getTestData();
         apiClient.getConferencesForVhOfficer.and.returnValue(of(data));
         spyOn(window, 'setInterval');
-        service.startQuery(venueNames);
+        service.startQuery(venueNames, [], false);
         tick();
         expect(service.venueNames).toBe(venueNames);
         expect(setInterval).toHaveBeenCalled();
@@ -50,7 +50,7 @@ describe('VhoQueryService', () => {
         service.venueNames = venueNames;
         await service.runQuery();
 
-        expect(apiClient.getConferencesForVhOfficer).toHaveBeenCalledWith(venueNames);
+        expect(apiClient.getConferencesForVhOfficer).toHaveBeenCalledWith(venueNames, [], false);
     });
 
     it('should get observable object', () => {
@@ -108,8 +108,8 @@ describe('VhoQueryService', () => {
 
         apiClient.getCourtRoomAccounts.and.returnValue(of(courtAccounts));
         const usernames = ['Birmingham', 'Manchester'];
-        const result = await service.getCourtRoomsAccounts(usernames);
-        expect(apiClient.getCourtRoomAccounts).toHaveBeenCalledWith(usernames);
+        const result = await service.getCourtRoomsAccounts(usernames, [], false);
+        expect(apiClient.getCourtRoomAccounts).toHaveBeenCalledWith(usernames, [], false);
         expect(result).toBe(courtAccounts);
     });
 });

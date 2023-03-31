@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Client;
@@ -50,9 +51,23 @@ namespace VideoWeb.Controllers
             {
                 var conferences =
                     await _videoApiClient.GetConferencesTodayForAdminByHearingVenueNameAsync(query.HearingVenueNames);
+                var allocatedHearings =
+                    await _bookingApiClient.GetAllocationsForHearingsAsync(conferences.Select(e => e.HearingRefId));
+                var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, ConferenceForVhOfficerResponse>();
+                var responses = conferences
+                    .Select(conferenceForVhOfficerResponseMapper.Map)
+                    .ToList();
+
+                UpdateConferencesWithAllocatedCsos(allocatedHearings, responses);
+                
+                responses = responses
+                    .Where(r => (r.AllocatedCsoId.HasValue && query.AllocatedCsoIds.Contains(r.AllocatedCsoId.Value)) || !query.AllocatedCsoIds.Any())
+                    .Union(responses.Where(r => r.AllocatedCsoId == null && query.IncludeUnallocated))
+                    .ToList();
+                
                 var courtRoomsAccountResponsesMapper = _mapperFactory
-                    .Get<IEnumerable<ConferenceForAdminResponse>, List<CourtRoomsAccountResponse>>();
-                var accountList = courtRoomsAccountResponsesMapper.Map(conferences);
+                    .Get<IEnumerable<ConferenceForVhOfficerResponse>, List<CourtRoomsAccountResponse>>();
+                var accountList = courtRoomsAccountResponsesMapper.Map(responses);
 
                 return Ok(accountList);
             }
@@ -62,12 +77,28 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
+        
+        private void UpdateConferencesWithAllocatedCsos(ICollection<AllocatedCsoResponse> allocatedHearings, List<ConferenceForVhOfficerResponse> responses)
+        {
+            foreach (var hearings in allocatedHearings)
+            {
+                var conference = responses.FirstOrDefault(conference => hearings.HearingId == conference.HearingRefId);
+                if (conference == null)
+                {
+                    _logger.LogWarning("Allocated hearing id, not in list of conferences for response");
+                    continue;
+                }
+
+                conference.AllocatedCso = hearings?.Cso?.FullName ?? "Unallocated";
+                conference.AllocatedCsoId = hearings?.Cso?.Id;
+            }
+        }
 
         /// <summary>
         ///Get CSOS
         /// </summary>
         [HttpGet("csos", Name = "GetCSOs")]
         [ProducesResponseType(typeof(IList<JusticeUserResponse>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<IList<JusticeUserResponse>>> GetJusticeUsers() =>Ok(await _bookingApiClient.GetJusticeUserListAsync(null));
+        public async Task<ActionResult<IList<JusticeUserResponse>>> GetJusticeUsers() =>Ok(await _bookingApiClient.GetJusticeUserListAsync(null, false));
     }
 }

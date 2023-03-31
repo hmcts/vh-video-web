@@ -1,3 +1,4 @@
+using System;
 using Autofac.Extras.Moq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +31,18 @@ namespace VideoWeb.UnitTests.Controllers
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<IEnumerable<ConferenceForAdminResponse>, List<CourtRoomsAccountResponse>>()).Returns(_mocker.Create<CourtRoomsAccountResponseMapper>());
+            
+            var parameters = new ParameterBuilder(_mocker)
+                // .AddTypedParameters<ParticipantResponseMapper>()
+                // .AddTypedParameters<EndpointsResponseMapper>()
+                // .AddTypedParameters<ParticipantForHostResponseMapper>()
+                // .AddTypedParameters<ParticipantResponseForVhoMapper>()
+                .AddTypedParameters<ParticipantForUserResponseMapper>()
+                // .AddTypedParameters<ConferenceForHostResponseMapper>()
+                .Build();
+            
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceForAdminResponse, ConferenceForVhOfficerResponse>()).Returns(_mocker.Create<ConferenceForVhOfficerResponseMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<IEnumerable<ConferenceForVhOfficerResponse>, List<CourtRoomsAccountResponse>>()).Returns(_mocker.Create<CourtRoomsAccountResponseMapper>());
             _sut = _mocker.Create<UserDataController>();
             _query = new VhoConferenceFilterQuery { HearingVenueNames = new List<string> { "Venue Name 01", "Venue Name 02" } };
         }
@@ -41,6 +53,7 @@ namespace VideoWeb.UnitTests.Controllers
             var conferences = ConferenceForAdminResponseBuilder.BuildData();
 
             _mocker.Mock<IVideoApiClient>().Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(_query.HearingVenueNames)).ReturnsAsync(conferences);
+            _mocker.Mock<IBookingsApiClient>().Setup(x => x.GetAllocationsForHearingsAsync(It.IsAny<IEnumerable<Guid>>())).ReturnsAsync(new List<AllocatedCsoResponse>());
 
             var result = await _sut.GetCourtRoomsAccounts(_query);
 
@@ -88,7 +101,7 @@ namespace VideoWeb.UnitTests.Controllers
                 Mock.Of<JusticeUserResponse>(),
                 Mock.Of<JusticeUserResponse>(),
             };
-            _mocker.Mock<IBookingsApiClient>().Setup(x => x.GetJusticeUserListAsync(null)).ReturnsAsync(csos);
+            _mocker.Mock<IBookingsApiClient>().Setup(x => x.GetJusticeUserListAsync(null, false)).ReturnsAsync(csos);
             var result = await _sut.GetJusticeUsers();
             var objectResult = result.Result as OkObjectResult;
             objectResult.Should().NotBeNull();
