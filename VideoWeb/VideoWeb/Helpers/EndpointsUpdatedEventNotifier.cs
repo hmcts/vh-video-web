@@ -38,8 +38,6 @@ namespace VideoWeb.Helpers
                 await _hubContext.Clients.Group(participant.Username.ToLowerInvariant())
                     .EndpointsUpdated(conference.Id, endpoints);
             }
-            
-            // TODO: check with team with the VHO needs this event
         }
     }
 }
