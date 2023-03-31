@@ -10,11 +10,8 @@ namespace VideoWeb.EventHub.Models
 {
     public class UpdateEndpointsDto
     {
-        [JsonProperty("ExistingEndpoints")]
         public IList<VideoEndpointResponse> ExistingEndpoints { get; set; } = new List<VideoEndpointResponse>();
-        [JsonProperty("NewEndpoints")]
         public IList<VideoEndpointResponse> NewEndpoints { get; set; } = new List<VideoEndpointResponse>();
-        [JsonProperty("RemovedEndpoints")]
         public IList<Guid> RemovedEndpoints { get; set; } = new List<Guid>();
     }
 }

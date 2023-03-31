@@ -272,9 +272,9 @@ describe('EventsService', () => {
                 testVideoEndpointResponse.defence_advocate_username = 'TestDefenceAdvocateUsername@gmail.com';
 
                 const testUpdateEndpointsDto = new UpdateEndpointsDto();
-                testUpdateEndpointsDto.ExistingEndpoints = [];
-                testUpdateEndpointsDto.NewEndpoints = [testVideoEndpointResponse];
-                testUpdateEndpointsDto.RemovedEndpoints = [];
+                testUpdateEndpointsDto.existing_endpoints = [];
+                testUpdateEndpointsDto.new_endpoints = [testVideoEndpointResponse];
+                testUpdateEndpointsDto.removed_endpoints = [];
 
                 const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
                 hubConnectionSpy.on.withArgs(jasmine.any(String), jasmine.any(Function)).and.callFake((eventType: string, func: any) => {

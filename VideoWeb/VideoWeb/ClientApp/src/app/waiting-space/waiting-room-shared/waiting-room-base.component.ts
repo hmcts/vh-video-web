@@ -1106,15 +1106,15 @@ export abstract class WaitingRoomBaseDirective {
 
     private handleEndpointsUpdatedMessage(endpointsUpdatedMessage: EndpointsUpdatedMessage) {
         this.logger.debug(`[WR] - Endpoints updated message received`, {
-            newEndpoints: endpointsUpdatedMessage.endpoints.NewEndpoints,
-            updatedEndpoints: endpointsUpdatedMessage.endpoints.ExistingEndpoints
+            newEndpoints: endpointsUpdatedMessage.endpoints.new_endpoints,
+            updatedEndpoints: endpointsUpdatedMessage.endpoints.existing_endpoints
         });
 
         if (!this.validateIsForConference(endpointsUpdatedMessage.conferenceId)) {
             return;
         }
 
-        endpointsUpdatedMessage.endpoints.NewEndpoints.forEach(endpoint => {
+        endpointsUpdatedMessage.endpoints.new_endpoints.forEach(endpoint => {
             this.logger.debug(`[WR] - Endpoint added, showing notification`, endpoint);
             this.notificationToastrService.showEndpointAdded(
                 endpoint,
@@ -1124,7 +1124,7 @@ export abstract class WaitingRoomBaseDirective {
             this.hearing.addEndpoint(endpoint);
         });
 
-        endpointsUpdatedMessage.endpoints.ExistingEndpoints.forEach(endpoint => {
+        endpointsUpdatedMessage.endpoints.existing_endpoints.forEach(endpoint => {
             this.logger.debug(`[WR] - Endpoint updated, showing notification`, endpoint);
             this.notificationToastrService.showEndpointUpdated(
                 endpoint,

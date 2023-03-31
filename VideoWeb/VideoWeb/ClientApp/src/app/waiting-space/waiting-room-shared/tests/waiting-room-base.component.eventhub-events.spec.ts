@@ -1648,9 +1648,9 @@ describe('WaitingRoomComponent EventHub Call', () => {
         testAddVideoEndpointResponse.display_name = 'TestAddDisplayName';
 
         const testUpdateEndpointsDtoAdd = new UpdateEndpointsDto();
-        testUpdateEndpointsDtoAdd.ExistingEndpoints = [];
-        testUpdateEndpointsDtoAdd.NewEndpoints = [testAddVideoEndpointResponse];
-        testUpdateEndpointsDtoAdd.RemovedEndpoints = [];
+        testUpdateEndpointsDtoAdd.existing_endpoints = [];
+        testUpdateEndpointsDtoAdd.new_endpoints = [testAddVideoEndpointResponse];
+        testUpdateEndpointsDtoAdd.removed_endpoints = [];
 
         // To Test the Update functionality
         const testUpdateVideoEndpointResponse = new VideoEndpointResponse();
@@ -1658,9 +1658,9 @@ describe('WaitingRoomComponent EventHub Call', () => {
         testUpdateVideoEndpointResponse.display_name = 'TestUpdateDisplayName';
 
         const testUpdateEndpointsDtoUpdate = new UpdateEndpointsDto();
-        testUpdateEndpointsDtoUpdate.ExistingEndpoints = [testUpdateVideoEndpointResponse];
-        testUpdateEndpointsDtoUpdate.NewEndpoints = [];
-        testUpdateEndpointsDtoUpdate.RemovedEndpoints = [];
+        testUpdateEndpointsDtoUpdate.existing_endpoints = [testUpdateVideoEndpointResponse];
+        testUpdateEndpointsDtoUpdate.new_endpoints = [];
+        testUpdateEndpointsDtoUpdate.removed_endpoints = [];
 
         const testConference = new ConferenceResponse(Object.assign({}, globalConference));
         testConference.id = testConferenceId;

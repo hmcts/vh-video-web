@@ -53,7 +53,12 @@ namespace VideoWeb.UnitTests.Helpers
                 .Returns(_sut);
 
             _notifier = _mocker.Create<EndpointsUpdatedEventNotifier>(parameters);
+        }
 
+        [Test]
+        public async Task Should_send_event()
+        {
+            // Arrange
             _endpoint1 = new Endpoint
             {
                 Id = Guid.NewGuid(),
@@ -65,17 +70,25 @@ namespace VideoWeb.UnitTests.Helpers
             {
                 Id = Guid.NewGuid(),
                 Participants = new List<Participant>
-                { 
+                {
                     new Participant
                     {
                         Id = Guid.NewGuid(),
                         Username = "username@gmail.com",
                         DisplayName = "displayname",
                         ParticipantStatus = ParticipantStatus.Available,
-                        CaseTypeGroup = "Judge"
+                        CaseTypeGroup = "casetypegroup1"
+                    },
+                    new Participant
+                    {
+                        Id = Guid.NewGuid(),
+                        Username = "username2@gmail.com",
+                        DisplayName = "displayname2",
+                        ParticipantStatus = ParticipantStatus.Available,
+                        CaseTypeGroup = "casetypegroup2"
                     }
                 },
-                Endpoints = new List<Endpoint> 
+                Endpoints = new List<Endpoint>
                 {
                     _endpoint1
                 }
@@ -102,19 +115,14 @@ namespace VideoWeb.UnitTests.Helpers
             {
                 _endpointResponse2
             };
-        }
-
-        [Test]
-        public async Task Should_send_event()
-        {
-            // Arrange
 
             // Act
             await _notifier.PushEndpointsUpdatedEvent(_conference, _mockUpdateConferenceEndpointsRequest.Object);
 
+            // Assert
             _mocker.Mock<IEventHubClient>().Verify(
                 x => x.EndpointsUpdated(_conference.Id, It.IsAny<UpdateEndpointsDto>()),
-                Times.Once);
+                Times.Exactly(_conference.Participants.Count));
         }
     }
 }
