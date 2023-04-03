@@ -62,11 +62,7 @@ describe('VHOfficerVenueListComponent', () => {
     const selectedCsos = ['test-user-id1', 'test-user-id2'];
 
     beforeAll(() => {
-        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
-            'getVenues',
-            'getVenuesForAllocatedCSOs',
-            'getCSOs'
-        ]);
+        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getVenues', 'getCSOs']);
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
         vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getCourtRoomsAccounts']);
         launchDarklyServiceSpy = jasmine.createSpyObj('LaunchDarklyService', ['flagChange']);
@@ -87,7 +83,6 @@ describe('VHOfficerVenueListComponent', () => {
             profileServiceSpy
         );
         videoWebServiceSpy.getVenues.and.returnValue(of(venueNames));
-        videoWebServiceSpy.getVenuesForAllocatedCSOs.and.returnValue(of(venueNames.map(e => e.name)));
         videoWebServiceSpy.getCSOs.and.returnValue(of(csos));
         vhoQueryService.getCourtRoomsAccounts.and.returnValue(Promise.resolve(courtAccounts));
         launchDarklyServiceSpy.flagChange = new ReplaySubject();
@@ -125,20 +120,17 @@ describe('VHOfficerVenueListComponent', () => {
         component.selectedCsos = selectedCsos;
         component.goToHearingList();
         tick();
-        expect(videoWebServiceSpy.getVenuesForAllocatedCSOs).toHaveBeenCalledWith(selectedCsos, false);
         expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.AdminHearingList);
     }));
 
     it('should attempt to navigate to admin hearing list but log and display error when no venues returned', fakeAsync(() => {
         component.selectedVenues = [];
-        component.selectedCsos = selectedCsos;
+        component.selectedCsos = [];
         const loggerSpy = spyOn(logger, 'warn');
-        videoWebServiceSpy.getVenuesForAllocatedCSOs.and.returnValue(of([]));
         component.goToHearingList();
         tick();
-        expect(videoWebServiceSpy.getVenuesForAllocatedCSOs).toHaveBeenCalledWith(selectedCsos, false);
         expect(loggerSpy).toHaveBeenCalled();
-        expect(component.errorMessage).toBe('Failed to find venues');
+        expect(component.errorMessage).toBe('Failed to find venues or csos');
     }));
 
     it('should  create filter records with all options are selected and store in storage', fakeAsync(() => {

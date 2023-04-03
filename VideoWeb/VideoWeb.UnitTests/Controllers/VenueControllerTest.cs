@@ -53,46 +53,5 @@ namespace VideoWeb.UnitTests.Controllers
             typedResult.Should().NotBeNull();
             typedResult.StatusCode.Should().Be(apiException.StatusCode);
         }
-        
-        [Test]
-        public async Task GetVenuesByCso_should_return_list_of_venue_names()
-        {
-            var venueNames = new List<string>
-            {
-                "Woolwich Crown Court",
-                "Birmingham Crown and Civil",
-                "Camelot, The court of King Arthur"
-            };
-            _bookingsApiClientMock.Setup(x => x.GetHearingVenuesByAllocatedCsoAsync(It.IsAny<Guid[]>(), false)).ReturnsAsync(venueNames);
-            var result = await _controller.GetVenuesByCso(It.IsAny<Guid[]>());
-            var objectResult = result.Result as OkObjectResult;
-            objectResult.Should().NotBeNull();
-            objectResult?.StatusCode.Should().Be(200);
-            objectResult?.Value.Should().BeEquivalentTo(venueNames);
-        }        
-        
-        [Test]
-        public async Task GetVenuesByCso_should_catch_404_and_return_Ok_and_empty_list()
-        {
-            _bookingsApiClientMock.Setup(x => x.GetHearingVenuesByAllocatedCsoAsync(It.IsAny<Guid[]>(), false))
-                .ThrowsAsync(new BookingsApiException("Not Found", 404, "", It.IsAny<IReadOnlyDictionary<string, IEnumerable<string>>>(), It.IsAny<Exception>()));
-            var result = await _controller.GetVenuesByCso(It.IsAny<Guid[]>());
-            var objectResult = result.Result as OkObjectResult;
-            objectResult.Should().NotBeNull();
-            objectResult?.StatusCode.Should().Be(200);
-            objectResult?.Value.Should().NotBeNull();
-            objectResult?.Value.Should().BeEquivalentTo(new List<string>());
-        }       
-        
-        [Test]
-        public async Task GetVenuesByCso_should_catch_and_return_500()
-        {
-            _bookingsApiClientMock.Setup(x => x.GetHearingVenuesByAllocatedCsoAsync(It.IsAny<Guid[]>(), false))
-                .ThrowsAsync(new BookingsApiException("Internal Server Error", 500, "", It.IsAny<IReadOnlyDictionary<string, IEnumerable<string>>>(), It.IsAny<Exception>()));
-            var result = await _controller.GetVenuesByCso(It.IsAny<Guid[]>());
-            var objectResult = result.Result as ObjectResult;
-            objectResult.Should().NotBeNull();
-            objectResult?.StatusCode.Should().Be(500);
-        }
     }
 }

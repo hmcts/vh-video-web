@@ -99,6 +99,6 @@ namespace VideoWeb.Controllers
         /// </summary>
         [HttpGet("csos", Name = "GetCSOs")]
         [ProducesResponseType(typeof(IList<JusticeUserResponse>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<IList<JusticeUserResponse>>> GetJusticeUsers() =>Ok(await _bookingApiClient.GetJusticeUserListAsync(null, false));
+        public async Task<ActionResult<IList<JusticeUserResponse>>> GetJusticeUsers() =>Ok(await _bookingApiClient.GetJusticeUserListAsync(null));
     }
 }

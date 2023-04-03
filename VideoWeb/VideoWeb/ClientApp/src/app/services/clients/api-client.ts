@@ -5068,96 +5068,6 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * Get Hearing Venue Names By Cso
-     * @param csos (optional) 
-     * @param includeUnallocated (optional) 
-     * @return Success
-     */
-    getVenuesByAllocatedCso(csos: string[] | undefined, includeUnallocated: boolean | undefined): Observable<string[]> {
-        let url_ = this.baseUrl + "/hearing-venues/allocated-cso?";
-        if (csos === null)
-            throw new Error("The parameter 'csos' cannot be null.");
-        else if (csos !== undefined)
-            csos && csos.forEach(item => { url_ += "csos=" + encodeURIComponent("" + item) + "&"; });
-        if (includeUnallocated === null)
-            throw new Error("The parameter 'includeUnallocated' cannot be null.");
-        else if (includeUnallocated !== undefined)
-            url_ += "includeUnallocated=" + encodeURIComponent("" + includeUnallocated) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return _observableFrom(this.transformOptions(options_)).pipe(_observableMergeMap(transformedOptions_ => {
-            return this.http.request("get", url_, transformedOptions_);
-        })).pipe(_observableMergeMap((response_: any) => {
-            return this.processGetVenuesByAllocatedCso(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetVenuesByAllocatedCso(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<string[]>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<string[]>;
-        }));
-    }
-
-    protected processGetVenuesByAllocatedCso(response: HttpResponseBase): Observable<string[]> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 500) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result500: any = null;
-            let resultData500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result500 = resultData500 !== undefined ? resultData500 : <any>null;
-    
-            return throwException("Server Error", status, _responseText, _headers, result500);
-            }));
-        } else if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(item);
-            }
-            else {
-                result200 = <any>null;
-            }
-            return _observableOf(result200);
-            }));
-        } else if (status === 404) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result404: any = null;
-            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result404 = ProblemDetails.fromJS(resultData404);
-            return throwException("Not Found", status, _responseText, _headers, result404);
-            }));
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("Unauthorized", status, _responseText, _headers);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<string[]>(null as any);
-    }
-
-    /**
      * @param body (optional) 
      * @return No Content
      */
@@ -5368,7 +5278,6 @@ export class JusticeUserResponse implements IJusticeUserResponse {
     is_vh_team_leader?: boolean;
     created_by?: string | undefined;
     full_name?: string | undefined;
-    deleted?: boolean;
 
     constructor(data?: IJusticeUserResponse) {
         if (data) {
@@ -5392,7 +5301,6 @@ export class JusticeUserResponse implements IJusticeUserResponse {
             this.is_vh_team_leader = _data["is_vh_team_leader"];
             this.created_by = _data["created_by"];
             this.full_name = _data["full_name"];
-            this.deleted = _data["deleted"];
         }
     }
 
@@ -5416,7 +5324,6 @@ export class JusticeUserResponse implements IJusticeUserResponse {
         data["is_vh_team_leader"] = this.is_vh_team_leader;
         data["created_by"] = this.created_by;
         data["full_name"] = this.full_name;
-        data["deleted"] = this.deleted;
         return data;
     }
 }
@@ -5433,7 +5340,6 @@ export interface IJusticeUserResponse {
     is_vh_team_leader?: boolean;
     created_by?: string | undefined;
     full_name?: string | undefined;
-    deleted?: boolean;
 }
 
 export class ProblemDetails implements IProblemDetails {

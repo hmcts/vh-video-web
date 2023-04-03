@@ -104,10 +104,6 @@ export class VideoWebService implements IVideoWebApiService {
         return this.apiClient.getCSOs();
     }
 
-    getVenuesForAllocatedCSOs(csoIds, includeUnallocated): Observable<string[]> {
-        return this.apiClient.getVenuesByAllocatedCso(csoIds, includeUnallocated);
-    }
-
     staffMemberJoinConference(conferenceId: string, request: StaffMemberJoinConferenceRequest): Promise<ConferenceForHostResponse> {
         return this.apiClient.staffMemberJoinConference(conferenceId, request).toPromise();
     }
