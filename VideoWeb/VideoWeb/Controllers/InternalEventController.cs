@@ -13,6 +13,7 @@ using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using System.Text.Json;
+using VideoWeb.Contract.Request;
 using VideoWeb.Helpers.Interfaces;
 
 namespace VideoWeb.Controllers
@@ -30,6 +31,7 @@ namespace VideoWeb.Controllers
         private readonly ILogger<InternalEventController> _logger;
         private readonly IMapperFactory _mapperFactory;
         private readonly INewConferenceAddedEventNotifier _newConferenceAddedEventNotifier;
+        private readonly IEndpointsUpdatedEventNotifier _endpointsUpdatedEventNotifier;
 
         public InternalEventController(
             IVideoApiClient videoApiClient,
@@ -38,7 +40,8 @@ namespace VideoWeb.Controllers
             ILogger<InternalEventController> logger,
             IMapperFactory mapperFactory,
             INewConferenceAddedEventNotifier newConferenceAddedEventNotifier,
-            IAllocationHearingsEventNotifier allocationHearingsEventNotifier)
+            IAllocationHearingsEventNotifier allocationHearingsEventNotifier, 
+            IEndpointsUpdatedEventNotifier endpointsUpdatedEventNotifier)
         {
             _videoApiClient = videoApiClient;
             _participantsUpdatedEventNotifier = participantsUpdatedEventNotifier;
@@ -47,6 +50,7 @@ namespace VideoWeb.Controllers
             _mapperFactory = mapperFactory;
             _newConferenceAddedEventNotifier = newConferenceAddedEventNotifier;
             _allocationHearingsEventNotifier = allocationHearingsEventNotifier;
+            _endpointsUpdatedEventNotifier = endpointsUpdatedEventNotifier;
         }
 
         [HttpPost("ConferenceAdded")]
@@ -140,6 +144,36 @@ namespace VideoWeb.Controllers
             catch (VideoApiException e)
             {
                 _logger.LogError(e, $"HearingIds: {JsonSerializer.Serialize(request)}, ErrorCode: {e.StatusCode}");
+                return StatusCode(e.StatusCode, e.Response);
+            }
+        }
+        
+        [HttpPost("EndpointsUpdated")]
+        [SwaggerOperation(OperationId = "EndpointsUpdated")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> EndpointsUpdated(Guid conferenceId, UpdateConferenceEndpointsRequest request)
+        {
+            _logger.LogDebug("EndpointsUpdated called. ConferenceId: {ConferenceId}, Request {Payload}", conferenceId, JsonSerializer.Serialize(request));
+
+            try
+            {
+                var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
+                {
+                    _logger.LogTrace("Retrieving conference details for conference: {ConferenceId}", conferenceId);
+                    return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
+                });
+
+                _logger.LogTrace("Initial conference details: {Conference}", conference);
+
+                await _endpointsUpdatedEventNotifier.PushEndpointsUpdatedEvent(conference, request);
+                _logger.LogDebug("EndpointsUpdated finished. ConferenceId: {ConferenceId}", conferenceId);
+                return NoContent();
+            }
+            catch (VideoApiException e)
+            {
+                _logger.LogError(e, "ConferenceId: {ConferenceId}, ErrorCode: {StatusCode}", conferenceId,
+                    e.StatusCode);
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
