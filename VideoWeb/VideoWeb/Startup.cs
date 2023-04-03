@@ -64,6 +64,11 @@ namespace VideoWeb
             {
                 Configuration.Bind("EJudAd", options);
             });
+            
+            services.Configure<Dom1AdConfiguration>(options =>
+            {
+                Configuration.Bind(Dom1AdConfiguration.ConfigSectionKey, options);
+            });
 
             services.Configure<QuickLinksConfiguration>(options =>
             {

@@ -117,6 +117,7 @@ export class ApiClient extends ApiClientBase {
 
     /**
      * @return Success
+     * @deprecated
      */
     stopAudioRecording(hearingId: string): Observable<void> {
         let url_ = this.baseUrl + "/conferences/audiostreams/{hearingId}";
@@ -2445,6 +2446,7 @@ export class ApiClient extends ApiClientBase {
      * returns the FeatureToggles
      * @param featureName (optional) 
      * @return Success
+     * @deprecated
      */
     getFeatureFlag(featureName: string | undefined): Observable<boolean> {
         let url_ = this.baseUrl + "/feature-flag?";
@@ -7218,6 +7220,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
     /** The turn server password */
     kinly_turn_server_credential?: string | undefined;
     e_jud_idp_settings?: IdpSettingsResponse;
+    dom1_idp_settings?: IdpSettingsResponse;
     vh_idp_settings?: IdpSettingsResponse;
     /** Enable video filters */
     enable_video_filters?: boolean;
@@ -7252,6 +7255,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
             this.kinly_turn_server_user = _data["kinly_turn_server_user"];
             this.kinly_turn_server_credential = _data["kinly_turn_server_credential"];
             this.e_jud_idp_settings = _data["e_jud_idp_settings"] ? IdpSettingsResponse.fromJS(_data["e_jud_idp_settings"]) : <any>undefined;
+            this.dom1_idp_settings = _data["dom1_idp_settings"] ? IdpSettingsResponse.fromJS(_data["dom1_idp_settings"]) : <any>undefined;
             this.vh_idp_settings = _data["vh_idp_settings"] ? IdpSettingsResponse.fromJS(_data["vh_idp_settings"]) : <any>undefined;
             this.enable_video_filters = _data["enable_video_filters"];
             this.enable_android_support = _data["enable_android_support"];
@@ -7279,6 +7283,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
         data["kinly_turn_server_user"] = this.kinly_turn_server_user;
         data["kinly_turn_server_credential"] = this.kinly_turn_server_credential;
         data["e_jud_idp_settings"] = this.e_jud_idp_settings ? this.e_jud_idp_settings.toJSON() : <any>undefined;
+        data["dom1_idp_settings"] = this.dom1_idp_settings ? this.dom1_idp_settings.toJSON() : <any>undefined;
         data["vh_idp_settings"] = this.vh_idp_settings ? this.vh_idp_settings.toJSON() : <any>undefined;
         data["enable_video_filters"] = this.enable_video_filters;
         data["enable_android_support"] = this.enable_android_support;
@@ -7306,6 +7311,7 @@ export interface IClientSettingsResponse {
     /** The turn server password */
     kinly_turn_server_credential?: string | undefined;
     e_jud_idp_settings?: IdpSettingsResponse;
+    dom1_idp_settings?: IdpSettingsResponse;
     vh_idp_settings?: IdpSettingsResponse;
     /** Enable video filters */
     enable_video_filters?: boolean;

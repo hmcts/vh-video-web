@@ -9,19 +9,20 @@ import { MockLogger } from '../testing/mocks/mock-logger';
 import { SecurityServiceProvider } from './authentication/security-provider.service';
 import { ISecurityService } from './authentication/security-service.interface';
 import { ParticipantGuard } from './participant.guard';
+import { LaunchDarklyService } from '../services/launch-darkly.service';
 
 describe('ParticipantGuard', () => {
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
     let guard: ParticipantGuard;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
     let router: jasmine.SpyObj<Router>;
-    let featureFlagServiceSpy: jasmine.SpyObj<FeatureFlagService>;
+    let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
     let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
 
     beforeAll(() => {
         securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', [], ['isAuthenticated$']);
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
-        featureFlagServiceSpy = jasmine.createSpyObj<FeatureFlagService>('FeatureFlagService', ['getFeatureFlagByName']);
+        launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['flagChange']);
         securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
             [],
@@ -33,7 +34,13 @@ describe('ParticipantGuard', () => {
     });
 
     beforeEach(() => {
-        guard = new ParticipantGuard(featureFlagServiceSpy, securityServiceProviderServiceSpy, profileServiceSpy, router, new MockLogger());
+        guard = new ParticipantGuard(
+            launchDarklyServiceSpy,
+            securityServiceProviderServiceSpy,
+            profileServiceSpy,
+            router,
+            new MockLogger()
+        );
     });
 
     it('should not be able to activate component if role is VHOfficer', async () => {

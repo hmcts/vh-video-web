@@ -39,6 +39,7 @@ export const pageUrls = {
     Login: 'login',
     Logout: 'logout',
     EJudSignIn: 'ejud-signin',
+    Dom1SignIn: 'justice-signin',
     VHSignIn: 'vh-signin',
     IdpSelection: 'idp-selection',
     // Errors
