@@ -111,28 +111,44 @@ describe('VHOfficerVenueListComponent', () => {
         csoSessionStorage.clear();
     });
 
-    it('ngOnit should get csos and populate csos property for multi-select list', () => {
-        component.csos = [];
-        component.ngOnInit();
-        expect(videoWebServiceSpy.getCSOs).toHaveBeenCalled();
-        expect(component.csos[0]).toEqual(csoAllocatedToMe);
-        expect(component.csos[1]).toEqual(csoUnallocated);
-        expect(component.csos[2]).toEqual(csos[0]);
-        expect(component.csos[3]).toEqual(csos[1]);
-    });
+    describe('ngOnInit', () => {
+        beforeEach(() => {
+            component.csos = [];
+        });
 
-    it('ngOnIt should re-apply previous filter when it exists', fakeAsync(() => {
-        component.csos = [];
-        component.ngOnInit();
-        const selectedCsos = [csoAllocatedToMe.id, csoUnallocated.id];
-        component.selectedCsos = [...selectedCsos];
-        component.updateCsoSelection();
-        tick();
-        component.selectedCsos = [];
-        component.ngOnInit();
-        tick();
-        expect(component.selectedCsos).toEqual(selectedCsos);
-    }));
+        it('should get csos and populate csos property for multi-select list', () => {
+            component.ngOnInit();
+            expect(videoWebServiceSpy.getCSOs).toHaveBeenCalled();
+            expect(component.csos[0]).toEqual(csoAllocatedToMe);
+            expect(component.csos[1]).toEqual(csoUnallocated);
+            expect(component.csos[2]).toEqual(csos[0]);
+            expect(component.csos[3]).toEqual(csos[1]);
+        });
+
+        it('should re-apply previous filter when it exists, with unallocated hearings included', fakeAsync(() => {
+            component.ngOnInit();
+            const selectedCsos = [cso2.id, csoAllocatedToMe.id, csoUnallocated.id];
+            component.selectedCsos = [...selectedCsos];
+            component.updateCsoSelection();
+            tick();
+            component.selectedCsos = [];
+            component.ngOnInit();
+            tick();
+            expect(component.selectedCsos).toEqual(selectedCsos);
+        }));
+
+        it('should re-apply previous filter when it exists, with unallocated hearings excluded', fakeAsync(() => {
+            component.ngOnInit();
+            const selectedCsos = [cso2.id, csoAllocatedToMe.id];
+            component.selectedCsos = [...selectedCsos];
+            component.updateCsoSelection();
+            tick();
+            component.selectedCsos = [];
+            component.ngOnInit();
+            tick();
+            expect(component.selectedCsos).toEqual(selectedCsos);
+        }));
+    });
 
     it('should update storage with selection', () => {
         const selection = [venueNames[0].name];

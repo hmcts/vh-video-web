@@ -123,8 +123,21 @@ describe('VhoQueryService', () => {
 
         apiClient.getCourtRoomAccounts.and.returnValue(of(courtAccounts));
         const usernames = ['Birmingham', 'Manchester'];
-        const result = await service.getCourtRoomsAccounts(usernames, [], false);
+        const result = await service.getCourtRoomsAccounts(usernames, null, false);
         expect(apiClient.getCourtRoomAccounts).toHaveBeenCalledWith(usernames, [], false);
+        expect(result).toBe(courtAccounts);
+    });
+    it('should get court rooms filter when querying by csos', async () => {
+        const courtRoomsAccounts1 = new CourtRoomsAccountResponse({ first_name: 'Birmingham', last_names: ['Room 01', 'Room 02'] });
+        const courtRoomsAccounts2 = new CourtRoomsAccountResponse({ first_name: 'Manchester', last_names: ['Room 01', 'Room 02'] });
+        const courtAccounts: CourtRoomsAccountResponse[] = [];
+        courtAccounts.push(courtRoomsAccounts1);
+        courtAccounts.push(courtRoomsAccounts2);
+
+        apiClient.getCourtRoomAccounts.and.returnValue(of(courtAccounts));
+        const allocatedCsoIds = ['test-cso-1', 'test-cso-2'];
+        const result = await service.getCourtRoomsAccounts(null, allocatedCsoIds, true);
+        expect(apiClient.getCourtRoomAccounts).toHaveBeenCalledWith([], allocatedCsoIds, true);
         expect(result).toBe(courtAccounts);
     });
 });

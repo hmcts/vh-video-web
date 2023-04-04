@@ -55,7 +55,7 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
     async goToHearingList() {
         this.errorMessage = null;
         if (this.csosSelected) {
-            this.updateCsoSelection();
+            await this.updateCsoSelection();
         } else {
             this.updateVenueSelection();
         }
