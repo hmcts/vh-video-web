@@ -70,6 +70,6 @@ export class VhoQueryService {
         allocatedCsosIds: string[],
         includeUnallocated: boolean = false
     ): Promise<CourtRoomsAccountResponse[]> {
-        return this.apiClient.getCourtRoomAccounts(venueAllocation, allocatedCsosIds, includeUnallocated).toPromise();
+        return this.apiClient.getCourtRoomAccounts(venueAllocation ?? [], allocatedCsosIds ?? [], includeUnallocated).toPromise();
     }
 }

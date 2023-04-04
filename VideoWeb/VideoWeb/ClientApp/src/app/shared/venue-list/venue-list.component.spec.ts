@@ -10,6 +10,7 @@ import { CourtRoomsAccounts } from '../../vh-officer/services/models/court-rooms
 import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
 import { VenueListComponentDirective } from './venue-list.component';
 import { LaunchDarklyService } from '../../services/launch-darkly.service';
+import { ProfileService } from 'src/app/services/api/profile.service';
 
 class MockedVenueListComponent extends VenueListComponentDirective {
     goToHearingList() {}
@@ -25,6 +26,7 @@ describe('VenueListComponent', () => {
     let vhoQueryService: jasmine.SpyObj<VhoQueryService>;
     let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
     const logger: Logger = new MockLogger();
+    let profileServiceSpy: jasmine.SpyObj<ProfileService>;
 
     const venueSessionStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
 
@@ -58,10 +60,22 @@ describe('VenueListComponent', () => {
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
         vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getCourtRoomsAccounts']);
         launchDarklyServiceSpy = jasmine.createSpyObj('LaunchDarklyService', ['flagChange']);
+        profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', [
+            'checkCacheForProfileByUsername',
+            'getProfileByUsername',
+            'getUserProfile'
+        ]);
     });
 
     beforeEach(() => {
-        component = new MockedVenueListComponent(videoWebServiceSpy, router, vhoQueryService, logger, launchDarklyServiceSpy);
+        component = new MockedVenueListComponent(
+            videoWebServiceSpy,
+            router,
+            vhoQueryService,
+            logger,
+            launchDarklyServiceSpy,
+            profileServiceSpy
+        );
         videoWebServiceSpy.getVenues.and.returnValue(of(venueNames));
         vhoQueryService.getCourtRoomsAccounts.and.returnValue(Promise.resolve(courtAccounts));
         launchDarklyServiceSpy.flagChange = new ReplaySubject();

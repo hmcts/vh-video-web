@@ -25,7 +25,7 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
         protected ldService: LaunchDarklyService,
         protected profileService: ProfileService
     ) {
-        super(videoWebService, router, vhoQueryService, logger, ldService);
+        super(videoWebService, router, vhoQueryService, logger, ldService, profileService);
     }
 
     static ALLOCATED_TO_ME = 'AllocatedToMe';
@@ -57,32 +57,16 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
 
     async goToHearingList() {
         this.errorMessage = null;
-        let includeUnallocated = false;
-        const allocatedCsoIds = [...this.selectedCsos];
         if (this.csosSelected) {
-            if (allocatedCsoIds.find(c => c === VhOfficerVenueListComponent.ALLOCATED_TO_ME)) {
-                const loggedInUser = await this.profileService.getUserProfile();
-                const loggedInCsoId = this.csos.find(c => c.username === loggedInUser.username).id; // TODO error handling
-                if (!allocatedCsoIds.find(c => c === loggedInCsoId)) {
-                    allocatedCsoIds.push(loggedInCsoId);
-                }
-                const index = allocatedCsoIds.findIndex(c => c === VhOfficerVenueListComponent.ALLOCATED_TO_ME);
-                allocatedCsoIds.splice(index, 1);
-            }
-            if (allocatedCsoIds.find(c => c === VhOfficerVenueListComponent.UNALLOCATED)) {
-                const index = allocatedCsoIds.findIndex(c => c === VhOfficerVenueListComponent.UNALLOCATED);
-                allocatedCsoIds.splice(index, 1);
-                includeUnallocated = true;
-            }
-            this.csoAllocationStorage.set(new CsoFilter(allocatedCsoIds, includeUnallocated));
-            this.judgeAllocationStorage.clear();
+            this.updateCsoSelection();
         } else {
             this.updateVenueSelection();
         }
+        const csoFilter = this.csoAllocationStorage.get();
         const courtRoomAccounts = await this.vhoQueryService.getCourtRoomsAccounts(
             this.selectedVenues,
-            allocatedCsoIds,
-            includeUnallocated
+            csoFilter?.allocatedCsoIds ?? [],
+            csoFilter?.includeUnallocated ?? false
         );
         if (!this.venuesSelected && !this.csosSelected) {
             this.logger.warn('[VenueList] - No venues or csos selected');

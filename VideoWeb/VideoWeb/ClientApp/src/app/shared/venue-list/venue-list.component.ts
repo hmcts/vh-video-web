@@ -9,6 +9,7 @@ import { HearingVenueResponse, JusticeUserResponse } from '../../services/client
 import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 import { CsoFilter } from 'src/app/vh-officer/services/models/cso-filter';
+import { ProfileService } from 'src/app/services/api/profile.service';
 
 @Directive()
 export abstract class VenueListComponentDirective implements OnInit {
@@ -27,7 +28,8 @@ export abstract class VenueListComponentDirective implements OnInit {
         protected router: Router,
         protected vhoQueryService: VhoQueryService,
         protected logger: Logger,
-        protected ldService: LaunchDarklyService
+        protected ldService: LaunchDarklyService,
+        protected profileService: ProfileService
     ) {
         this.selectedVenues = [];
         this.selectedCsos = [];
@@ -36,6 +38,9 @@ export abstract class VenueListComponentDirective implements OnInit {
         this.courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
         this.csoAllocationStorage = new SessionStorage<CsoFilter>(VhoStorageKeys.CSO_ALLOCATIONS_KEY);
     }
+
+    static ALLOCATED_TO_ME = 'AllocatedToMe';
+    static UNALLOCATED = 'Unallocated';
 
     ngOnInit() {
         this.setupSubscribers();
@@ -68,8 +73,29 @@ export abstract class VenueListComponentDirective implements OnInit {
         this.judgeAllocationStorage.set(this.selectedVenues);
         this.csoAllocationStorage.clear();
     }
-    clearVenue() {
-        // TODO change this to update this.csoAllocationStorage, for consistency with updateVenueSelection()
+    async updateCsoSelection() {
         this.selectedVenues = [];
+        this.csoAllocationStorage.set(await this.getCsoFilter());
+        this.judgeAllocationStorage.clear();
+    }
+    async getCsoFilter(): Promise<CsoFilter> {
+        let includeUnallocated = false;
+        const allocatedCsoIds = [...this.selectedCsos];
+
+        if (allocatedCsoIds.find(c => c === VenueListComponentDirective.ALLOCATED_TO_ME)) {
+            const loggedInUser = await this.profileService.getUserProfile();
+            const loggedInCsoId = this.csos.find(c => c.username === loggedInUser.username).id; // TODO error handling
+            if (!allocatedCsoIds.find(c => c === loggedInCsoId)) {
+                allocatedCsoIds.push(loggedInCsoId);
+            }
+            const index = allocatedCsoIds.findIndex(c => c === VenueListComponentDirective.ALLOCATED_TO_ME);
+            allocatedCsoIds.splice(index, 1);
+        }
+        if (allocatedCsoIds.find(c => c === VenueListComponentDirective.UNALLOCATED)) {
+            const index = allocatedCsoIds.findIndex(c => c === VenueListComponentDirective.UNALLOCATED);
+            allocatedCsoIds.splice(index, 1);
+            includeUnallocated = true;
+        }
+        return new CsoFilter(allocatedCsoIds, includeUnallocated);
     }
 }
