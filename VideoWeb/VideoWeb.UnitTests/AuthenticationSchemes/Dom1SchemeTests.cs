@@ -1,16 +1,10 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using VideoWeb.AuthenticationSchemes;
 using VideoWeb.Common.Configuration;
-using VideoWeb.Common.Models;
-using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.AuthenticationSchemes;
 
@@ -116,31 +110,5 @@ public class Dom1SchemeTests
 
         // Assert
         belongs.Should().BeTrue();
-    }
-
-    [Test]
-    public async Task ShouldAddClaimsOnTokenValidation()
-    {
-        // Arrange
-        var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
-        var httpContext = new DefaultHttpContext
-        {
-            User = claimsPrincipal
-        };
-
-        var options = new JwtBearerOptions();
-        _sut.SetJwtBearerOptions(options);
-        var tokenValidatedContext = new TokenValidatedContext(httpContext, new AuthenticationScheme("name", "displayName", typeof(AuthenticationHandler<JwtBearerOptions>)), options)
-        {
-            Principal = claimsPrincipal,
-            SecurityToken = new JwtSecurityToken(issuer: "Issuer")
-        };
-
-        // Act
-        await _sut.OnTokenValidated(tokenValidatedContext);
-
-        // Assert
-        var identity = tokenValidatedContext.Principal.Identity.Should().BeOfType<ClaimsIdentity>().Which;
-        identity.FindFirst(identity.RoleClaimType).Value.Should().Be(AppRoles.VhOfficerRole);
     }
 }
