@@ -28,9 +28,6 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
         super(videoWebService, router, vhoQueryService, logger, ldService, profileService);
     }
 
-    static ALLOCATED_TO_ME = 'AllocatedToMe';
-    static UNALLOCATED = 'Unallocated';
-
     ngOnInit() {
         super.ngOnInit();
         this.videoWebService.getCSOs().subscribe(value => {
