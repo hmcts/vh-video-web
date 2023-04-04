@@ -116,6 +116,7 @@ namespace VideoWeb
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseMiddleware<UserClaimsMiddleware>();
             app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseEndpoints(endpoints =>
