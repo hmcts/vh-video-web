@@ -29,9 +29,24 @@ describe('VhoQueryService', () => {
         const data = testData.getTestData();
         apiClient.getConferencesForVhOfficer.and.returnValue(of(data));
         spyOn(window, 'setInterval');
-        service.startQuery(venueNames, [], false);
+        service.startQuery(venueNames, null, false);
         tick();
         expect(service.venueNames).toBe(venueNames);
+        expect(setInterval).toHaveBeenCalled();
+    }));
+
+    it('should init interval on start when querying by cso', fakeAsync(() => {
+        const venueNames = null;
+        const allocatedCsoIds = ['test-cso-1', 'test-cso-2'];
+        const includeUnallocated = true;
+        const data = testData.getTestData();
+        apiClient.getConferencesForVhOfficer.and.returnValue(of(data));
+        spyOn(window, 'setInterval');
+        service.startQuery(venueNames, allocatedCsoIds, includeUnallocated);
+        tick();
+        expect(service.venueNames.length).toBe(0);
+        expect(service.allocatedCsoIds).toBe(allocatedCsoIds);
+        expect(service.includeUnallocated).toBe(includeUnallocated);
         expect(setInterval).toHaveBeenCalled();
     }));
 

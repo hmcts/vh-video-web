@@ -279,4 +279,26 @@ describe('CommandCentreComponent - Core', () => {
         expect(dateFrom.getMonth()).toEqual(1);
         expect(dateFrom.getDay()).toEqual(2);
     });
+
+    describe('filtering by cso', () => {
+        beforeAll(() => {
+            TestFixtureHelper.clearVenues();
+            TestFixtureHelper.setupCsoAllocations();
+        });
+
+        it('should retrieve hearings filtered by cso', () => {
+            component.getConferenceForSelectedAllocations();
+            const csoFilter = TestFixtureHelper.getCsoAllocations();
+            const venues = null;
+            const allocatedCsoIds = csoFilter.allocatedCsoIds;
+            const includeUnallocated = csoFilter.includeUnallocated;
+            expect(vhoQueryService.startQuery).toHaveBeenCalledWith(venues, allocatedCsoIds, includeUnallocated);
+            expect(vhoQueryService.getConferencesForVHOfficer).toHaveBeenCalledWith(venues);
+        });
+
+        afterAll(() => {
+            TestFixtureHelper.setupVenues();
+            TestFixtureHelper.clearCsoAllocations();
+        });
+    });
 });

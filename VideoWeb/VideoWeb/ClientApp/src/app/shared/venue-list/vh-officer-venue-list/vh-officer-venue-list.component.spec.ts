@@ -2,7 +2,12 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { Router } from '@angular/router';
 import { of, ReplaySubject } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { CourtRoomsAccountResponse, HearingVenueResponse, JusticeUserResponse } from 'src/app/services/clients/api-client';
+import {
+    CourtRoomsAccountResponse,
+    HearingVenueResponse,
+    JusticeUserResponse,
+    UserProfileResponse
+} from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -15,6 +20,8 @@ import { By } from '@angular/platform-browser';
 import { LaunchDarklyService } from '../../../services/launch-darkly.service';
 import { TranslatePipeMock } from '../../../testing/mocks/mock-translation-pipe';
 import { ProfileService } from 'src/app/services/api/profile.service';
+import { VenueListComponentDirective } from '../venue-list.component';
+import { CsoFilter } from 'src/app/vh-officer/services/models/cso-filter';
 
 describe('VHOfficerVenueListComponent', () => {
     let component: VhOfficerVenueListComponent;
@@ -27,6 +34,7 @@ describe('VHOfficerVenueListComponent', () => {
 
     const venueSessionStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
     const roomSessionStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
+    const csoSessionStorage = new SessionStorage<CsoFilter>(VhoStorageKeys.CSO_ALLOCATIONS_KEY);
 
     const venueNames: HearingVenueResponse[] = [];
     const venueName1 = new HearingVenueResponse({ id: 1, name: 'Birmingham' });
@@ -53,11 +61,22 @@ describe('VHOfficerVenueListComponent', () => {
     venueAccounts.push(venueAccounts1);
     venueAccounts.push(venueAccounts2);
 
-    const cso1 = new JusticeUserResponse({ username: 'test-user1@hearings.reform.hmcts.net' });
-    const cso2 = new JusticeUserResponse({ username: 'test-user2@hearings.reform.hmcts.net' });
+    const loggedInUser = new UserProfileResponse({ username: 'test-user1@hearings.reform.hmcts.net' });
+    const cso1 = new JusticeUserResponse({ username: loggedInUser.username, id: 'test-user-1' });
+    const cso2 = new JusticeUserResponse({ username: 'test-user2@hearings.reform.hmcts.net', id: 'test-user-2' });
     const csos: JusticeUserResponse[] = [];
     csos.push(cso1);
     csos.push(cso2);
+    const csoAllocatedToMe = new JusticeUserResponse({
+        id: VenueListComponentDirective.ALLOCATED_TO_ME,
+        first_name: 'Allocated to me',
+        full_name: 'Allocated to me'
+    });
+    const csoUnallocated = new JusticeUserResponse({
+        id: VenueListComponentDirective.UNALLOCATED,
+        first_name: 'Unallocated',
+        full_name: 'Unallocated'
+    });
 
     const selectedCsos = ['test-user-id1', 'test-user-id2'];
 
@@ -87,16 +106,33 @@ describe('VHOfficerVenueListComponent', () => {
         vhoQueryService.getCourtRoomsAccounts.and.returnValue(Promise.resolve(courtAccounts));
         launchDarklyServiceSpy.flagChange = new ReplaySubject();
         launchDarklyServiceSpy.flagChange.next({ 'vho-work-allocation': true });
+        profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(loggedInUser));
         venueSessionStorage.clear();
+        csoSessionStorage.clear();
     });
 
     it('ngOnit should get csos and populate csos property for multi-select list', () => {
         component.csos = [];
         component.ngOnInit();
         expect(videoWebServiceSpy.getCSOs).toHaveBeenCalled();
+        expect(component.csos[0]).toEqual(csoAllocatedToMe);
+        expect(component.csos[1]).toEqual(csoUnallocated);
         expect(component.csos[2]).toEqual(csos[0]);
         expect(component.csos[3]).toEqual(csos[1]);
     });
+
+    it('ngOnIt should re-apply previous filter when it exists', fakeAsync(() => {
+        component.csos = [];
+        component.ngOnInit();
+        const selectedCsos = [csoAllocatedToMe.id, csoUnallocated.id];
+        component.selectedCsos = [...selectedCsos];
+        component.updateCsoSelection();
+        tick();
+        component.selectedCsos = [];
+        component.ngOnInit();
+        tick();
+        expect(component.selectedCsos).toEqual(selectedCsos);
+    }));
 
     it('should update storage with selection', () => {
         const selection = [venueNames[0].name];
