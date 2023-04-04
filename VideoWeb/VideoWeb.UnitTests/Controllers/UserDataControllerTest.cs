@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Client;
@@ -33,12 +34,7 @@ namespace VideoWeb.UnitTests.Controllers
             _mocker = AutoMock.GetLoose();
             
             var parameters = new ParameterBuilder(_mocker)
-                // .AddTypedParameters<ParticipantResponseMapper>()
-                // .AddTypedParameters<EndpointsResponseMapper>()
-                // .AddTypedParameters<ParticipantForHostResponseMapper>()
-                // .AddTypedParameters<ParticipantResponseForVhoMapper>()
                 .AddTypedParameters<ParticipantForUserResponseMapper>()
-                // .AddTypedParameters<ConferenceForHostResponseMapper>()
                 .Build();
             
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>()).Returns(_mocker.Create<ConferenceForVhOfficerResponseMapper>(parameters));
@@ -74,6 +70,66 @@ namespace VideoWeb.UnitTests.Controllers
 
             courtRoomsAccounts[1].LastNames[0].Should().Be("LastName4");
 
+        }
+        
+        [TestCase(false)]
+        [TestCase(true)]
+        public async Task Should_return_list_of_court_rooms_accounts_with_status_ok_when_querying_by_cso(bool includeUnallocated)
+        {
+            // Arrange
+            var conferences = ConferenceForAdminResponseBuilder.BuildData();
+
+            _mocker.Mock<IVideoApiClient>().Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(new List<string>())).ReturnsAsync(conferences);
+            
+            var allocatedCsoResponses = conferences.Select(conference => new AllocatedCsoResponse { HearingId = conference.HearingRefId}).ToList();
+            var allocatedCsoIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() };
+            // Allocate to a cso that is not in our list
+            allocatedCsoResponses[0].Cso = new JusticeUserResponse { FullName = $"TestUserFor{allocatedCsoResponses[0].HearingId}", Id = Guid.NewGuid() }; 
+            int i = 1;
+            // Allocate to csos in our list
+            foreach (var csoId in allocatedCsoIds)
+            {
+                allocatedCsoResponses[i].Cso = new JusticeUserResponse { FullName = $"TestUserFor{allocatedCsoResponses[i].HearingId}", Id = csoId };
+                i++;
+            }
+            
+            _mocker.Mock<IBookingsApiClient>().Setup(x => x.GetAllocationsForHearingsAsync(It.IsAny<IEnumerable<Guid>>())).ReturnsAsync(allocatedCsoResponses);
+            
+            // Act
+            var result = await _sut.GetCourtRoomsAccounts(new VhoConferenceFilterQuery
+            {
+                AllocatedCsoIds = allocatedCsoIds,
+                IncludeUnallocated = includeUnallocated
+            });
+            
+            // Assert
+            var typedResult = (OkObjectResult)result.Result;
+            typedResult.Should().NotBeNull();
+            var courtRoomsAccounts = typedResult.Value as List<CourtRoomsAccountResponse>;
+            courtRoomsAccounts.Should().NotBeNull();
+            if (!includeUnallocated)
+            {
+                courtRoomsAccounts.Count.Should().Be(1);
+                courtRoomsAccounts[0].LastNames.Count.Should().Be(2);
+
+                courtRoomsAccounts[0].FirstName.Should().Be("FirstName1");
+
+                courtRoomsAccounts[0].LastNames[0].Should().Be("LastName2");
+                courtRoomsAccounts[0].LastNames[1].Should().Be("LastName3");
+            }
+            else
+            {
+                courtRoomsAccounts.Count.Should().Be(2);
+                courtRoomsAccounts[0].LastNames.Count.Should().Be(2);
+                courtRoomsAccounts[1].LastNames.Count.Should().Be(1);
+
+                courtRoomsAccounts[0].FirstName.Should().Be("FirstName1");
+                courtRoomsAccounts[1].FirstName.Should().Be("FirstName4");
+
+                courtRoomsAccounts[0].LastNames[0].Should().Be("LastName2");
+                courtRoomsAccounts[0].LastNames[1].Should().Be("LastName3");
+                courtRoomsAccounts[1].LastNames[0].Should().Be("LastName4");
+            }
         }
 
         [Test]
