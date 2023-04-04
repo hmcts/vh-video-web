@@ -53,13 +53,11 @@ namespace VideoWeb.Controllers
                     await _videoApiClient.GetConferencesTodayForAdminByHearingVenueNameAsync(query.HearingVenueNames);
                 var allocatedHearings =
                     await _bookingApiClient.GetAllocationsForHearingsAsync(conferences.Select(e => e.HearingRefId));
-                var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, ConferenceForVhOfficerResponse>();
+                var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>();
                 var responses = conferences
-                    .Select(conferenceForVhOfficerResponseMapper.Map)
+                    .Select(x => conferenceForVhOfficerResponseMapper.Map(x, allocatedHearings?.FirstOrDefault(conference => conference.HearingId == x.HearingRefId)))
                     .ToList();
 
-                UpdateConferencesWithAllocatedCsos(allocatedHearings, responses);
-                
                 responses = responses
                     .Where(r => (r.AllocatedCsoId.HasValue && query.AllocatedCsoIds.Contains(r.AllocatedCsoId.Value)) || !query.AllocatedCsoIds.Any())
                     .Union(responses.Where(r => r.AllocatedCsoId == null && query.IncludeUnallocated))
@@ -75,22 +73,6 @@ namespace VideoWeb.Controllers
             {
                 _logger.LogError(e, "Unable to get list of court rooms accounts");
                 return StatusCode(e.StatusCode, e.Response);
-            }
-        }
-        
-        private void UpdateConferencesWithAllocatedCsos(ICollection<AllocatedCsoResponse> allocatedHearings, List<ConferenceForVhOfficerResponse> responses)
-        {
-            foreach (var hearings in allocatedHearings)
-            {
-                var conference = responses.FirstOrDefault(conference => hearings.HearingId == conference.HearingRefId);
-                if (conference == null)
-                {
-                    _logger.LogWarning("Allocated hearing id, not in list of conferences for response");
-                    continue;
-                }
-
-                conference.AllocatedCso = hearings?.Cso?.FullName ?? "Unallocated";
-                conference.AllocatedCsoId = hearings?.Cso?.Id;
             }
         }
 
