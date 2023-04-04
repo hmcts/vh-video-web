@@ -84,7 +84,7 @@ export abstract class VenueListComponentDirective implements OnInit {
 
         if (allocatedCsoIds.find(c => c === VenueListComponentDirective.ALLOCATED_TO_ME)) {
             const loggedInUser = await this.profileService.getUserProfile();
-            const loggedInCsoId = this.csos.find(c => c.username === loggedInUser.username).id; // TODO error handling
+            const loggedInCsoId = this.csos.find(c => c.username === loggedInUser.username).id;
             if (!allocatedCsoIds.find(c => c === loggedInCsoId)) {
                 allocatedCsoIds.push(loggedInCsoId);
             }
