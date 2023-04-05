@@ -14,6 +14,7 @@ using VideoWeb.Mappings;
 using UserApi.Client;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
+using VideoWeb.Extensions;
 
 namespace VideoWeb.Controllers
 {
@@ -55,26 +56,10 @@ namespace VideoWeb.Controllers
                     await _bookingApiClient.GetAllocationsForHearingsAsync(conferences.Select(e => e.HearingRefId));
                 var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>();
                 var responses = conferences
-                    .Select(x => conferenceForVhOfficerResponseMapper.Map(x, allocatedHearings?.FirstOrDefault(conference => conference.HearingId == x.HearingRefId)));
+                    .Select(x => conferenceForVhOfficerResponseMapper.Map(x, allocatedHearings?.FirstOrDefault(conference => conference.HearingId == x.HearingRefId)))
+                    .ApplyCsoFilter(query)
+                    .ToList();
 
-                var isQueryingByCso = query.AllocatedCsoIds.Any() || query.IncludeUnallocated;
-                if (isQueryingByCso)
-                {
-                    if (!query.AllocatedCsoIds.Any() && query.IncludeUnallocated)
-                    {
-                        responses = responses
-                            .Where(r => r.AllocatedCsoId == null);
-                    }
-                    else
-                    {
-                        responses = responses
-                            .Where(r => (r.AllocatedCsoId.HasValue && query.AllocatedCsoIds.Contains(r.AllocatedCsoId.Value)) || !query.AllocatedCsoIds.Any())
-                            .Union(responses.Where(r => r.AllocatedCsoId == null && query.IncludeUnallocated));
-                    }
-                }
-                
-                responses = responses.ToList();
-                
                 var courtRoomsAccountResponsesMapper = _mapperFactory
                     .Get<IEnumerable<ConferenceForVhOfficerResponse>, List<CourtRoomsAccountResponse>>();
                 var accountList = courtRoomsAccountResponsesMapper.Map(responses);
