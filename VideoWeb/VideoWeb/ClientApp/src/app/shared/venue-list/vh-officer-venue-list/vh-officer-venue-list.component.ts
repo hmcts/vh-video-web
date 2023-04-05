@@ -96,20 +96,17 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
     }
 
     async updateCsoFilterSelection(filter: CsoFilter) {
-        const selectCso = (csoId: string) => {
-            this.selectedCsos = [...this.selectedCsos, csoId];
-        };
         const loggedInUser = await this.profileService.getUserProfile();
         const loggedInCsoId = this.csos.find(c => c.username === loggedInUser.username).id;
         filter.allocatedCsoIds.forEach(id => {
             if (id === loggedInCsoId) {
-                selectCso(VhOfficerVenueListComponent.ALLOCATED_TO_ME);
+                this.selectedCsos.push(VhOfficerVenueListComponent.ALLOCATED_TO_ME);
                 return;
             }
-            selectCso(id);
+            this.selectedCsos.push(id);
         });
         if (filter.includeUnallocated) {
-            selectCso(VhOfficerVenueListComponent.UNALLOCATED);
+            this.selectedCsos.push(VhOfficerVenueListComponent.UNALLOCATED);
         }
     }
 }
