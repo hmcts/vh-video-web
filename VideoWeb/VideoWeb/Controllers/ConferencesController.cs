@@ -161,12 +161,25 @@ namespace VideoWeb.Controllers
                 var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>();
                 var responses = conferences
                     .Where(c => ConferenceHelper.HasNotPassed(c.Status, c.ClosedDateTime))
-                    .Select(x => conferenceForVhOfficerResponseMapper.Map(x, allocatedHearings?.FirstOrDefault(conference => conference.HearingId == x.HearingRefId)))
-                    .ToList();
+                    .Select(x => conferenceForVhOfficerResponseMapper.Map(x, allocatedHearings?.FirstOrDefault(conference => conference.HearingId == x.HearingRefId)));
 
+                var isQueryingByCso = query.AllocatedCsoIds.Any() || query.IncludeUnallocated;
+                if (isQueryingByCso)
+                {
+                    if (!query.AllocatedCsoIds.Any() && query.IncludeUnallocated)
+                    {
+                        responses = responses
+                            .Where(r => r.AllocatedCsoId == null);
+                    }
+                    else
+                    {
+                        responses = responses
+                            .Where(r => (r.AllocatedCsoId.HasValue && query.AllocatedCsoIds.Contains(r.AllocatedCsoId.Value)) || !query.AllocatedCsoIds.Any())
+                            .Union(responses.Where(r => r.AllocatedCsoId == null && query.IncludeUnallocated));
+                    }
+                }
+                
                 responses = responses
-                    .Where(r => (r.AllocatedCsoId.HasValue && query.AllocatedCsoIds.Contains(r.AllocatedCsoId.Value)) || !query.AllocatedCsoIds.Any())
-                    .Union(responses.Where(r => r.AllocatedCsoId == null && query.IncludeUnallocated))
                     .OrderBy(x => x.ClosedDateTime)
                     .ToList();
 

@@ -133,6 +133,39 @@ namespace VideoWeb.UnitTests.Controllers
         }
 
         [Test]
+        public async Task Should_return_list_of_court_room_accounts_with_status_ok_when_querying_by_cso_on_unallocated_hearings_only()
+        {
+            // Arrange
+            var conferences = ConferenceForAdminResponseBuilder.BuildData();
+
+            _mocker.Mock<IVideoApiClient>().Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(new List<string>())).ReturnsAsync(conferences);
+            
+            var allocatedCsoResponses = 
+                conferences.Select(conference => new AllocatedCsoResponse { HearingId = conference.HearingRefId, Cso = new JusticeUserResponse{FullName = $"TestUserFor{conference.HearingRefId}"}}).ToList();
+            var unallocatedHearing = allocatedCsoResponses.First();
+            unallocatedHearing.Cso = null;
+            
+            _mocker.Mock<IBookingsApiClient>().Setup(x => x.GetAllocationsForHearingsAsync(It.IsAny<IEnumerable<Guid>>())).ReturnsAsync(allocatedCsoResponses);
+            
+            // Act
+            var result = await _sut.GetCourtRoomsAccounts(new VhoConferenceFilterQuery
+            {
+                AllocatedCsoIds = new List<Guid>(),
+                IncludeUnallocated = true
+            });
+            
+            // Assert
+            var typedResult = (OkObjectResult)result.Result;
+            typedResult.Should().NotBeNull();
+            var courtRoomsAccounts = typedResult.Value as List<CourtRoomsAccountResponse>;
+            courtRoomsAccounts.Should().NotBeNull();
+
+            courtRoomsAccounts.Count.Should().Be(1);
+            courtRoomsAccounts[0].FirstName.Should().Be("FirstName1");
+            courtRoomsAccounts[0].LastNames[0].Should().Be("LastName1");
+        }
+
+        [Test]
         public async Task Should_return_error_when_unable_to_retrieve_court_rooms_accounts()
         {
 
