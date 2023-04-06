@@ -7,9 +7,9 @@ using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
-    public class CourtRoomsAccountResponseMapper : IMapTo<IEnumerable<ConferenceForAdminResponse>, List<CourtRoomsAccountResponse>>
+    public class CourtRoomsAccountResponseMapper : IMapTo<IEnumerable<ConferenceForVhOfficerResponse>, List<CourtRoomsAccountResponse>>
     {
-        public List<CourtRoomsAccountResponse> Map(IEnumerable<ConferenceForAdminResponse> userResponses)
+        public List<CourtRoomsAccountResponse> Map(IEnumerable<ConferenceForVhOfficerResponse> userResponses)
         {
 
             var accountList = userResponses

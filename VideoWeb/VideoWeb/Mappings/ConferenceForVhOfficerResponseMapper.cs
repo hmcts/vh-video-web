@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using BookingsApi.Contract.Responses;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
@@ -7,7 +8,7 @@ using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
-    public class ConferenceForVhOfficerResponseMapper : IMapTo<ConferenceForAdminResponse, ConferenceForVhOfficerResponse>
+    public class ConferenceForVhOfficerResponseMapper : IMapTo<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>
     {
         private readonly IMapTo<IEnumerable<ParticipantSummaryResponse>, List<ParticipantForUserResponse>> _participantForUserResponseMapper;
 
@@ -16,7 +17,7 @@ namespace VideoWeb.Mappings
             _participantForUserResponseMapper = participantForUserResponseMapper;
         }
 
-        public ConferenceForVhOfficerResponse Map(ConferenceForAdminResponse conference)
+        public ConferenceForVhOfficerResponse Map(ConferenceForAdminResponse conference, AllocatedCsoResponse allocatedCsoResponse)
         {
             var response = new ConferenceForVhOfficerResponse
             {
@@ -34,7 +35,9 @@ namespace VideoWeb.Mappings
                 TelephoneConferenceId = conference.TelephoneConferenceId,
                 TelephoneConferenceNumbers = conference.TelephoneConferenceNumbers,
                 CreatedDateTime = conference.CreatedDateTime,
-                HearingRefId = conference.HearingRefId
+                HearingRefId = conference.HearingRefId,
+                AllocatedCso = allocatedCsoResponse?.Cso?.FullName ?? "Unallocated",
+                AllocatedCsoId = allocatedCsoResponse?.Cso?.Id
             };
             return response;
         }

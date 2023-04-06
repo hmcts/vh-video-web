@@ -16,12 +16,16 @@ export class VhoQueryService {
 
     interval: NodeJS.Timer;
     venueNames: string[];
+    allocatedCsoIds: string[];
+    includeUnallocated: boolean = false;
     constructor(private apiClient: ApiClient) {
         this.vhoConferencesSubject = new BehaviorSubject(this.vhoConferences);
     }
 
-    startQuery(venueNames: string[]) {
-        this.venueNames = venueNames;
+    startQuery(venueNames: string[], allocatedCsoIds: string[], includeUnallocated: boolean) {
+        this.venueNames = venueNames ?? [];
+        this.allocatedCsoIds = allocatedCsoIds ?? [];
+        this.includeUnallocated = includeUnallocated;
         this.runQuery();
         this.interval = setInterval(async () => {
             this.runQuery();
@@ -33,7 +37,9 @@ export class VhoQueryService {
     }
 
     async runQuery() {
-        const conferences = await this.apiClient.getConferencesForVhOfficer(this.venueNames).toPromise();
+        const conferences = await this.apiClient
+            .getConferencesForVhOfficer(this.venueNames, this.allocatedCsoIds, this.includeUnallocated)
+            .toPromise();
         this.vhoConferences = conferences;
         this.vhoConferencesSubject.next(this.vhoConferences);
     }
@@ -59,7 +65,11 @@ export class VhoQueryService {
         return this.apiClient.getHeartbeatDataForParticipant(conferenceId, participantId).toPromise();
     }
 
-    getCourtRoomsAccounts(venueAllocation: string[]): Promise<CourtRoomsAccountResponse[]> {
-        return this.apiClient.getCourtRoomAccounts(venueAllocation).toPromise();
+    getCourtRoomsAccounts(
+        venueAllocation: string[],
+        allocatedCsosIds: string[],
+        includeUnallocated: boolean = false
+    ): Promise<CourtRoomsAccountResponse[]> {
+        return this.apiClient.getCourtRoomAccounts(venueAllocation ?? [], allocatedCsosIds ?? [], includeUnallocated).toPromise();
     }
 }

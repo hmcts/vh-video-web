@@ -29,9 +29,24 @@ describe('VhoQueryService', () => {
         const data = testData.getTestData();
         apiClient.getConferencesForVhOfficer.and.returnValue(of(data));
         spyOn(window, 'setInterval');
-        service.startQuery(venueNames);
+        service.startQuery(venueNames, null, false);
         tick();
         expect(service.venueNames).toBe(venueNames);
+        expect(setInterval).toHaveBeenCalled();
+    }));
+
+    it('should init interval on start when querying by cso', fakeAsync(() => {
+        const venueNames = null;
+        const allocatedCsoIds = ['test-cso-1', 'test-cso-2'];
+        const includeUnallocated = true;
+        const data = testData.getTestData();
+        apiClient.getConferencesForVhOfficer.and.returnValue(of(data));
+        spyOn(window, 'setInterval');
+        service.startQuery(venueNames, allocatedCsoIds, includeUnallocated);
+        tick();
+        expect(service.venueNames.length).toBe(0);
+        expect(service.allocatedCsoIds).toBe(allocatedCsoIds);
+        expect(service.includeUnallocated).toBe(includeUnallocated);
         expect(setInterval).toHaveBeenCalled();
     }));
 
@@ -50,7 +65,7 @@ describe('VhoQueryService', () => {
         service.venueNames = venueNames;
         await service.runQuery();
 
-        expect(apiClient.getConferencesForVhOfficer).toHaveBeenCalledWith(venueNames);
+        expect(apiClient.getConferencesForVhOfficer).toHaveBeenCalledWith(venueNames, [], false);
     });
 
     it('should get observable object', () => {
@@ -108,8 +123,21 @@ describe('VhoQueryService', () => {
 
         apiClient.getCourtRoomAccounts.and.returnValue(of(courtAccounts));
         const usernames = ['Birmingham', 'Manchester'];
-        const result = await service.getCourtRoomsAccounts(usernames);
-        expect(apiClient.getCourtRoomAccounts).toHaveBeenCalledWith(usernames);
+        const result = await service.getCourtRoomsAccounts(usernames, null, false);
+        expect(apiClient.getCourtRoomAccounts).toHaveBeenCalledWith(usernames, [], false);
+        expect(result).toBe(courtAccounts);
+    });
+    it('should get court rooms filter when querying by csos', async () => {
+        const courtRoomsAccounts1 = new CourtRoomsAccountResponse({ first_name: 'Birmingham', last_names: ['Room 01', 'Room 02'] });
+        const courtRoomsAccounts2 = new CourtRoomsAccountResponse({ first_name: 'Manchester', last_names: ['Room 01', 'Room 02'] });
+        const courtAccounts: CourtRoomsAccountResponse[] = [];
+        courtAccounts.push(courtRoomsAccounts1);
+        courtAccounts.push(courtRoomsAccounts2);
+
+        apiClient.getCourtRoomAccounts.and.returnValue(of(courtAccounts));
+        const allocatedCsoIds = ['test-cso-1', 'test-cso-2'];
+        const result = await service.getCourtRoomsAccounts(null, allocatedCsoIds, true);
+        expect(apiClient.getCourtRoomAccounts).toHaveBeenCalledWith([], allocatedCsoIds, true);
         expect(result).toBe(courtAccounts);
     });
 });
