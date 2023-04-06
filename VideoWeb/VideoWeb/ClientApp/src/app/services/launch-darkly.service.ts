@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import * as LDClient from 'launchdarkly-js-client-sdk';
-import { ReplaySubject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { ConfigService } from './api/config.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 
 export const FEATURE_FLAGS = {
-    vhoWorkAllocation: 'vho-work-allocation'
+    vhoWorkAllocation: 'vho-work-allocation',
+    ejudiciarySignIn: 'ejud-feature',
+    multiIdpSelection: 'multi-idp-selection'
 };
 
 @Injectable({
@@ -14,7 +16,7 @@ export const FEATURE_FLAGS = {
 export class LaunchDarklyService {
     private flags: any;
     ldClient: LDClient.LDClient;
-    flagChange = new ReplaySubject();
+    flagChange = new Subject();
 
     constructor(private configService: ConfigService, private logger: Logger) {
         this.initialize();

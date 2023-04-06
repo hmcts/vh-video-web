@@ -25,6 +25,7 @@ namespace VideoWeb.Extensions
             var azureAdConfiguration = configuration.GetSection("AzureAd").Get<AzureAdConfiguration>();
             var quickLinksConfiguration = configuration.GetSection("QuickLinks").Get<QuickLinksConfiguration>();
             var eJudAdConfiguration = configuration.GetSection("EJudAd").Get<EJudAdConfiguration>();
+            var dom1AdConfiguration = configuration.GetSection(Dom1AdConfiguration.ConfigSectionKey).Get<Dom1AdConfiguration>();
             var kinlyCallbackSecret = Convert.FromBase64String(kinlyConfiguration.CallbackSecret);
 
             var videoHearingServicesConfiguration = configuration.GetSection("VhServices").Get<HearingServicesConfiguration>();
@@ -47,6 +48,7 @@ namespace VideoWeb.Extensions
             {
                 new VhAadScheme(azureAdConfiguration, eventhubPath),
                 new EJudiciaryScheme(eventhubPath, eJudAdConfiguration),
+                new Dom1Scheme(eventhubPath, dom1AdConfiguration),
                 new QuickLinksScheme(quickLinksConfiguration, eventhubPath, serviceCollection)
             };
 

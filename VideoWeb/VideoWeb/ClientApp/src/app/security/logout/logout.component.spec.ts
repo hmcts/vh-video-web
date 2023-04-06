@@ -6,22 +6,21 @@ import { of, Subject } from 'rxjs';
 import { SecurityServiceProvider } from '../authentication/security-provider.service';
 import { ISecurityService } from '../authentication/security-service.interface';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
-import { fakeAsync, flush } from '@angular/core/testing';
-import { FeatureFlagService } from '../../services/feature-flag.service';
+import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { pageUrls } from '../../shared/page-url.constants';
+import { LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
 describe('LogoutComponent', () => {
     let component: LogoutComponent;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
-    let featureFlagServiceSpy: jasmine.SpyObj<FeatureFlagService>;
+    let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
     let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
     let isAuthenticatedSubject: Subject<boolean>;
 
     beforeAll(() => {
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['clearUserProfile']);
-        featureFlagServiceSpy = jasmine.createSpyObj<FeatureFlagService>('FeatureFlagService', ['getFeatureFlagByName']);
-        featureFlagServiceSpy.getFeatureFlagByName.and.returnValue(of(true));
+        launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['flagChange']);
     });
 
     beforeEach(() => {
@@ -31,13 +30,15 @@ describe('LogoutComponent', () => {
             ['currentSecurityService$']
         );
 
+        launchDarklyServiceSpy.flagChange = new Subject();
+        launchDarklyServiceSpy.flagChange.next({ 'multi-idp-selection': true });
         securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['logoffAndRevokeTokens'], ['isAuthenticated$']);
         isAuthenticatedSubject = new Subject<boolean>();
         getSpiedPropertyGetter(securityServiceSpy, 'isAuthenticated$').and.returnValue(isAuthenticatedSubject.asObservable());
 
         getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
 
-        component = new LogoutComponent(securityServiceProviderServiceSpy, profileServiceSpy, featureFlagServiceSpy);
+        component = new LogoutComponent(securityServiceProviderServiceSpy, profileServiceSpy, launchDarklyServiceSpy);
     });
 
     it('should call logout if authenticated', fakeAsync(() => {
@@ -73,9 +74,9 @@ describe('LogoutComponent', () => {
     it('should return false for "loggedIn" when not authenticated', fakeAsync(() => {
         let loggedIn = true;
         component.loggedIn.subscribe(isLoggedIn => (loggedIn = isLoggedIn));
-
+        launchDarklyServiceSpy.flagChange.next({ 'multi-idp-selection': true });
         isAuthenticatedSubject.next(false);
-        flush();
+        tick();
 
         expect(loggedIn).toBeFalsy();
         expect(component.loginPath).toBe(`../${pageUrls.IdpSelection}`);

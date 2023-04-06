@@ -64,6 +64,11 @@ namespace VideoWeb
             {
                 Configuration.Bind("EJudAd", options);
             });
+            
+            services.Configure<Dom1AdConfiguration>(options =>
+            {
+                Configuration.Bind(Dom1AdConfiguration.ConfigSectionKey, options);
+            });
 
             services.Configure<QuickLinksConfiguration>(options =>
             {
@@ -111,6 +116,7 @@ namespace VideoWeb
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseMiddleware<UserClaimsMiddleware>();
             app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseEndpoints(endpoints =>

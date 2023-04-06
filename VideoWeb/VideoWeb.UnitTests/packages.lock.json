@@ -121,15 +121,6 @@
           "System.Xml.XmlDocument": "4.3.0"
         }
       },
-      "VideoApi.Client": {
-        "type": "Direct",
-        "requested": "[1.41.20, )",
-        "resolved": "1.41.20",
-        "contentHash": "VYrfk9WH/lSBFW2rTdnJPS4IL3vqtWBfxLvGFT3zQJD6SezbZTwdSJVKIAM/XPIahkx5QjzmOnO6a+QyDSJv2Q==",
-        "dependencies": {
-          "Microsoft.AspNetCore.Mvc.Core": "2.2.5"
-        }
-      },
       "Autofac": {
         "type": "Transitive",
         "resolved": "6.0.0",
@@ -140,8 +131,8 @@
       },
       "BookingsApi.Client": {
         "type": "Transitive",
-        "resolved": "1.41.28",
-        "contentHash": "yUW2F3VJC520Ie/+qGRrLLlYWl3Mq7M9JuswWqNoGVPIuMXK5oKVOYVG5xiD80Q4UFwcAtN3R7rjUHeWAvhWRA==",
+        "resolved": "1.43.26",
+        "contentHash": "hu9rosp0OCIzLKD1R5nwhrV3Gdh9m0boAmO695ItepEjpoCa1vGtd1PdnuzUGXo8WaL2tZkspAFJAKK9U2rzQA==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5"
         }
@@ -2330,8 +2321,8 @@
       },
       "UserApi.Client": {
         "type": "Transitive",
-        "resolved": "1.41.8",
-        "contentHash": "06UBmrztqDI8Gtmh0ToEbvCkc13q/rtxj4QiSNTfGLDYqfq30v/t4JbDqG87WAcO/NChOx2gvTrboR/Ww1W46A==",
+        "resolved": "1.43.9",
+        "contentHash": "aQx+M8PVQBWtbNmUqmrRLlFBR17pL/q2VCG7XdfJbBPD/M96GdYChsmL8dcQNLTO++E2IuyiQ72glp3usgoHyw==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5"
         }
@@ -2348,10 +2339,18 @@
           "SonarAnalyzer.CSharp": "8.2.0.14119"
         }
       },
+      "VideoApi.Client": {
+        "type": "Transitive",
+        "resolved": "1.43.10",
+        "contentHash": "sk+PXQLD2J11hdvPjeXnW7kEwTwNI97R4WGO1KgzvQVvYQik3SLeJDg+HF3mwBpKwtt0apeoSozK1JipcbwHxA==",
+        "dependencies": {
+          "Microsoft.AspNetCore.Mvc.Core": "2.2.5"
+        }
+      },
       "videoweb": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Client": "[1.41.28, )",
+          "BookingsApi.Client": "[1.43.26, )",
           "Castle.Core": "[4.4.0, )",
           "FluentValidation.AspNetCore": "[10.4.0, )",
           "MicroElements.Swashbuckle.FluentValidation": "[5.7.0, )",
@@ -2373,9 +2372,9 @@
           "Swashbuckle.AspNetCore": "[6.5.0, )",
           "Swashbuckle.AspNetCore.Annotations": "[6.5.0, )",
           "Swashbuckle.AspNetCore.Newtonsoft": "[6.5.0, )",
-          "UserApi.Client": "[1.41.8, )",
+          "UserApi.Client": "[1.43.9, )",
           "VH.Core.Configuration": "[0.1.13, )",
-          "VideoApi.Client": "[1.41.20, )",
+          "VideoApi.Client": "[1.43.10, )",
           "VideoWeb.Common": "[1.0.0, )",
           "VideoWeb.Contract": "[1.0.0, )",
           "VideoWeb.EventHub": "[1.0.0, )"

@@ -9,6 +9,13 @@ export class MockConfigService {
         post_logout_redirect_uri: '/logout'
     });
 
+    dom1Settings = new IdpSettingsResponse({
+        client_id: 'dom1Client',
+        tenant_id: 'dom1Tenant',
+        redirect_uri: '/home',
+        post_logout_redirect_uri: '/logout'
+    });
+
     vhAdSettings = new IdpSettingsResponse({
         client_id: 'vhClient',
         tenant_id: 'vhTenant',
@@ -19,6 +26,7 @@ export class MockConfigService {
     clientSettings = new ClientSettingsResponse({
         e_jud_idp_settings: this.ejudSettings,
         vh_idp_settings: this.vhAdSettings,
+        dom1_idp_settings: this.dom1Settings,
         event_hub_path: 'evenhub',
         join_by_phone_from_date: '2020-09-01',
         app_insights_instrumentation_key: 'appinsights'

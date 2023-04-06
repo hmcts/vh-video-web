@@ -4,6 +4,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from '../../shared/page-url.constants';
 import { SecurityConfigSetupService } from '../security-config-setup.service';
 import { IdpProviders } from '../idp-providers';
+import { LaunchDarklyService, FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
 
 @Component({
     selector: 'app-idp-selection',
@@ -15,8 +16,21 @@ export class IdpSelectionComponent {
     selectedProvider: IdpProviders;
     submitted = false;
 
-    constructor(private router: Router, private logger: Logger, private securityConfigSetupService: SecurityConfigSetupService) {
-        this.identityProviders[IdpProviders.ejud] = {
+    constructor(
+        private router: Router,
+        private logger: Logger,
+        private securityConfigSetupService: SecurityConfigSetupService,
+        private ldService: LaunchDarklyService
+    ) {
+        this.ldService.flagChange.subscribe(value => {
+            if (value && value[FEATURE_FLAGS.ejudiciarySignIn]) {
+                this.identityProviders[IdpProviders.ejud] = {
+                    url: '/' + pageUrls.Login
+                };
+            }
+        });
+
+        this.identityProviders[IdpProviders.dom1] = {
             url: '/' + pageUrls.Login
         };
 
