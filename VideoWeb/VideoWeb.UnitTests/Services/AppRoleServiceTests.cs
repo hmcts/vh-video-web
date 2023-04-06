@@ -59,6 +59,31 @@ namespace VideoWeb.UnitTests.Services
             claims[0].Value.Should().Be(expectedAppRole);
             _cache.Get(uniqueId).Should().Be(claims);
         }
+        
+        [Test]
+        public async Task should_return_an_empty_list_of_claims_if_justice_user_has_no_app_role()
+        {
+            // arrange
+            var justiceUserRole = AppRoleService.JusticeUserRole.Individual;
+            var username = "random@claims.com";
+            var uniqueId = Guid.NewGuid().ToString();
+            var justiceUser = new JusticeUserResponse()
+            {
+                UserRoleId = (int) justiceUserRole,
+                Username = username,
+                Deleted = false,
+                Id = Guid.NewGuid(),
+                UserRoleName = justiceUserRole.ToString()
+            };
+            _mocker.Mock<IBookingsApiClient>().Setup(x => x.GetJusticeUserByUsernameAsync(username))
+                .ReturnsAsync(justiceUser);
+
+            // act
+            var claims = await _sut.GetClaimsForUserAsync(uniqueId, username);
+
+            // assert
+            claims.Should().BeEmpty();
+        }
 
         [Test]
         public async Task should_retrieve_claims_from_cache_if_key_is_present()
