@@ -38,7 +38,7 @@ export class VhoQueryService {
 
     async runQuery() {
         const conferences = await this.apiClient
-            .getConferencesForVhOfficer(this.venueNames, this.allocatedCsoIds, this.includeUnallocated)
+            .getConferencesForVhOfficer(this.venueNames ?? [], this.allocatedCsoIds ?? [], this.includeUnallocated)
             .toPromise();
         this.vhoConferences = conferences;
         this.vhoConferencesSubject.next(this.vhoConferences);
