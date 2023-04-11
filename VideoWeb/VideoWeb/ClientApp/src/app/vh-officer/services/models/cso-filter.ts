@@ -5,5 +5,5 @@ export class CsoFilter {
     }
 
     allocatedCsoIds: string[];
-    includeUnallocated: boolean = false;
+    includeUnallocated = false;
 }
