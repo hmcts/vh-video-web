@@ -5,7 +5,7 @@ resources:
         - repository: azTemplates
           type: github
           name: hmcts/azure-devops-templates
-          ref: vh-sonar-dotnet-fix
+          ref: master
           endpoint: hmcts
 
 trigger: none
@@ -58,7 +58,6 @@ stages:
                           sonar.issue.ignore.multicriteria.e1.resourceKey=**/*.ts
                           sonar.issue.ignore.multicriteria.e2.ruleKey=typescript:S1874
                           sonar.issue.ignore.multicriteria.e2.resourceKey=**/*.ts
-                          sonar.verbose=true
 
     #####################################################
     # Docker Build. #####################################
