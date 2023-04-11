@@ -148,6 +148,21 @@ describe('VHOfficerVenueListComponent', () => {
             tick();
             expect(component.selectedCsos).toEqual(testSelectedCsos);
         }));
+
+        it('should re-apply previous filter when it exists and ignore case of username', fakeAsync(() => {
+            component.ngOnInit();
+            const testSelectedCsos = [cso2.id, csoAllocatedToMe.id];
+            component.selectedCsos = [...testSelectedCsos];
+            const user = { ...loggedInUser } as UserProfileResponse;
+            user.username = loggedInUser.username.toUpperCase();
+            profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(user));
+            component.updateCsoSelection();
+            tick();
+            component.selectedCsos = [];
+            component.ngOnInit();
+            tick();
+            expect(component.selectedCsos).toEqual(testSelectedCsos);
+        }));
     });
 
     it('should update storage with selection', () => {

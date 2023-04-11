@@ -100,7 +100,7 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
             this.selectedCsos = [...this.selectedCsos, csoId];
         };
         const loggedInUser = await this.profileService.getUserProfile();
-        const loggedInCsoId = this.csos.find(c => c.username === loggedInUser.username).id;
+        const loggedInCsoId = this.csos.find(c => c.username?.toUpperCase() === loggedInUser.username.toUpperCase()).id;
         filter.allocatedCsoIds.forEach(id => {
             if (id === loggedInCsoId) {
                 selectCso(VhOfficerVenueListComponent.ALLOCATED_TO_ME);
