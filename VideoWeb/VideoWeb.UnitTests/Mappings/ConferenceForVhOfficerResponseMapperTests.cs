@@ -44,7 +44,7 @@ namespace VideoWeb.UnitTests.Mappings
 
             conference.Participants = participants;
 
-            var response = _sut.Map(conference);
+            var response = _sut.Map(conference, null);
 
             response.Id.Should().Be(conference.Id);
             response.CaseName.Should().Be(conference.CaseName);

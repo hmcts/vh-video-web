@@ -49,29 +49,5 @@ namespace VideoWeb.Controllers
                 return NotFound();
             }
         }
-        
-        /// <summary>
-        /// Get Hearing Venue Names By Cso
-        /// </summary>
-        /// <returns>Hearing Venue Names</returns>
-        [Authorize(AppRoles.VhOfficerRole)]
-        [HttpGet("allocated-cso", Name = "GetVenuesByAllocatedCso")]
-        [ProducesResponseType(typeof(IList<string>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<IList<string>>> GetVenuesByCso([FromQuery] Guid[] csos)
-        {
-            try
-            {
-                return Ok(await _bookingsApiClient.GetHearingVenuesByAllocatedCsoAsync(csos));
-            }
-            catch (BookingsApiException e)
-            {
-                _logger.LogError(e, "Unable to get venues with allocated csos");
-                if (e.StatusCode is (int)HttpStatusCode.NotFound)
-                    return Ok(new List<string>());
-                
-                return StatusCode(e.StatusCode, e.Message);
-            }
-        }
     }
 }

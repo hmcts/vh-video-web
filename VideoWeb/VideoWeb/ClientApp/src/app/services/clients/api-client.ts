@@ -141,6 +141,7 @@ export class ApiClient extends ApiClientBase {
 
     /**
      * @return Success
+     * @deprecated
      */
     stopAudioRecording(hearingId: string): Observable<void> {
         let url_ = this.baseUrl + '/conferences/audiostreams/{hearingId}';
@@ -1611,9 +1612,15 @@ export class ApiClient extends ApiClientBase {
     /**
      * Get conferences for user
      * @param hearingVenueNames (optional)
+     * @param allocatedCsoIds (optional)
+     * @param includeUnallocated (optional)
      * @return Success
      */
-    getConferencesForVhOfficer(hearingVenueNames: string[] | undefined): Observable<ConferenceForVhOfficerResponse[]> {
+    getConferencesForVhOfficer(
+        hearingVenueNames: string[] | undefined,
+        allocatedCsoIds: string[] | undefined,
+        includeUnallocated: boolean | undefined
+    ): Observable<ConferenceForVhOfficerResponse[]> {
         let url_ = this.baseUrl + '/conferences/vhofficer?';
         if (hearingVenueNames === null) throw new Error("The parameter 'hearingVenueNames' cannot be null.");
         else if (hearingVenueNames !== undefined)
@@ -1621,6 +1628,14 @@ export class ApiClient extends ApiClientBase {
                 hearingVenueNames.forEach(item => {
                     url_ += 'HearingVenueNames=' + encodeURIComponent('' + item) + '&';
                 });
+        if (allocatedCsoIds === null) throw new Error("The parameter 'allocatedCsoIds' cannot be null.");
+        else if (allocatedCsoIds !== undefined)
+            allocatedCsoIds &&
+                allocatedCsoIds.forEach(item => {
+                    url_ += 'AllocatedCsoIds=' + encodeURIComponent('' + item) + '&';
+                });
+        if (includeUnallocated === null) throw new Error("The parameter 'includeUnallocated' cannot be null.");
+        else if (includeUnallocated !== undefined) url_ += 'IncludeUnallocated=' + encodeURIComponent('' + includeUnallocated) + '&';
         url_ = url_.replace(/[?&]$/, '');
 
         let options_: any = {
@@ -6452,9 +6467,15 @@ export class ApiClient extends ApiClientBase {
     /**
      * Get Court rooms accounts (judges)
      * @param hearingVenueNames (optional)
+     * @param allocatedCsoIds (optional)
+     * @param includeUnallocated (optional)
      * @return Success
      */
-    getCourtRoomAccounts(hearingVenueNames: string[] | undefined): Observable<CourtRoomsAccountResponse[]> {
+    getCourtRoomAccounts(
+        hearingVenueNames: string[] | undefined,
+        allocatedCsoIds: string[] | undefined,
+        includeUnallocated: boolean | undefined
+    ): Observable<CourtRoomsAccountResponse[]> {
         let url_ = this.baseUrl + '/api/accounts/courtrooms?';
         if (hearingVenueNames === null) throw new Error("The parameter 'hearingVenueNames' cannot be null.");
         else if (hearingVenueNames !== undefined)
@@ -6462,6 +6483,14 @@ export class ApiClient extends ApiClientBase {
                 hearingVenueNames.forEach(item => {
                     url_ += 'HearingVenueNames=' + encodeURIComponent('' + item) + '&';
                 });
+        if (allocatedCsoIds === null) throw new Error("The parameter 'allocatedCsoIds' cannot be null.");
+        else if (allocatedCsoIds !== undefined)
+            allocatedCsoIds &&
+                allocatedCsoIds.forEach(item => {
+                    url_ += 'AllocatedCsoIds=' + encodeURIComponent('' + item) + '&';
+                });
+        if (includeUnallocated === null) throw new Error("The parameter 'includeUnallocated' cannot be null.");
+        else if (includeUnallocated !== undefined) url_ += 'IncludeUnallocated=' + encodeURIComponent('' + includeUnallocated) + '&';
         url_ = url_.replace(/[?&]$/, '');
 
         let options_: any = {
@@ -6757,117 +6786,6 @@ export class ApiClient extends ApiClientBase {
             );
         }
         return _observableOf<HearingVenueResponse[]>(null as any);
-    }
-
-    /**
-     * Get Hearing Venue Names By Cso
-     * @param csos (optional)
-     * @return Success
-     */
-    getVenuesByAllocatedCso(csos: string[] | undefined): Observable<string[]> {
-        let url_ = this.baseUrl + '/hearing-venues/allocated-cso?';
-        if (csos === null) throw new Error("The parameter 'csos' cannot be null.");
-        else if (csos !== undefined)
-            csos &&
-                csos.forEach(item => {
-                    url_ += 'csos=' + encodeURIComponent('' + item) + '&';
-                });
-        url_ = url_.replace(/[?&]$/, '');
-
-        let options_: any = {
-            observe: 'response',
-            responseType: 'blob',
-            headers: new HttpHeaders({
-                Accept: 'application/json'
-            })
-        };
-
-        return _observableFrom(this.transformOptions(options_))
-            .pipe(
-                _observableMergeMap(transformedOptions_ => {
-                    return this.http.request('get', url_, transformedOptions_);
-                })
-            )
-            .pipe(
-                _observableMergeMap((response_: any) => {
-                    return this.processGetVenuesByAllocatedCso(response_);
-                })
-            )
-            .pipe(
-                _observableCatch((response_: any) => {
-                    if (response_ instanceof HttpResponseBase) {
-                        try {
-                            return this.processGetVenuesByAllocatedCso(response_ as any);
-                        } catch (e) {
-                            return _observableThrow(e) as any as Observable<string[]>;
-                        }
-                    } else return _observableThrow(response_) as any as Observable<string[]>;
-                })
-            );
-    }
-
-    protected processGetVenuesByAllocatedCso(response: HttpResponseBase): Observable<string[]> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse
-                ? response.body
-                : (response as any).error instanceof Blob
-                ? (response as any).error
-                : undefined;
-
-        let _headers: any = {};
-        if (response.headers) {
-            for (let key of response.headers.keys()) {
-                _headers[key] = response.headers.get(key);
-            }
-        }
-        if (status === 500) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result500: any = null;
-                    let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result500 = resultData500 !== undefined ? resultData500 : <any>null;
-
-                    return throwException('Server Error', status, _responseText, _headers, result500);
-                })
-            );
-        } else if (status === 200) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result200: any = null;
-                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    if (Array.isArray(resultData200)) {
-                        result200 = [] as any;
-                        for (let item of resultData200) result200!.push(item);
-                    } else {
-                        result200 = <any>null;
-                    }
-                    return _observableOf(result200);
-                })
-            );
-        } else if (status === 404) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result404: any = null;
-                    let resultData404 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result404 = ProblemDetails.fromJS(resultData404);
-                    return throwException('Not Found', status, _responseText, _headers, result404);
-                })
-            );
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('Unauthorized', status, _responseText, _headers);
-                })
-            );
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
-                })
-            );
-        }
-        return _observableOf<string[]>(null as any);
     }
 
     /**
@@ -9517,6 +9435,8 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
     hearing_ref_id?: string;
     /** Allocated Cso Full name */
     allocated_cso?: string | undefined;
+    /** Allocated Cso Id */
+    allocated_cso_id?: string | undefined;
 
     constructor(data?: IConferenceForVhOfficerResponse) {
         if (data) {
@@ -9547,6 +9467,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
             this.created_date_time = _data['created_date_time'] ? new Date(_data['created_date_time'].toString()) : <any>undefined;
             this.hearing_ref_id = _data['hearing_ref_id'];
             this.allocated_cso = _data['allocated_cso'];
+            this.allocated_cso_id = _data['allocated_cso_id'];
         }
     }
 
@@ -9578,6 +9499,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
         data['created_date_time'] = this.created_date_time ? this.created_date_time.toISOString() : <any>undefined;
         data['hearing_ref_id'] = this.hearing_ref_id;
         data['allocated_cso'] = this.allocated_cso;
+        data['allocated_cso_id'] = this.allocated_cso_id;
         return data;
     }
 }
@@ -9614,6 +9536,8 @@ export interface IConferenceForVhOfficerResponse {
     hearing_ref_id?: string;
     /** Allocated Cso Full name */
     allocated_cso?: string | undefined;
+    /** Allocated Cso Id */
+    allocated_cso_id?: string | undefined;
 }
 
 /** Detailed information about a conference */
