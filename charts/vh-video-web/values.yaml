@@ -23,6 +23,8 @@ java:
         - connectionstrings--rediscache
         - name: launchdarkly-client-id
           alias: VHSERVICES--LAUNCHDARKLYCLIENTID
+        - dom1--videoweb--clientid
+        - dom1--tenantid
     vh-video-web:
       excludeEnvironmentSuffix: false
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
