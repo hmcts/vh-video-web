@@ -6948,6 +6948,7 @@ export class JusticeUserResponse implements IJusticeUserResponse {
     is_vh_team_leader?: boolean;
     created_by?: string | undefined;
     full_name?: string | undefined;
+    deleted?: boolean;
 
     constructor(data?: IJusticeUserResponse) {
         if (data) {
@@ -6970,6 +6971,7 @@ export class JusticeUserResponse implements IJusticeUserResponse {
             this.is_vh_team_leader = _data['is_vh_team_leader'];
             this.created_by = _data['created_by'];
             this.full_name = _data['full_name'];
+            this.deleted = _data['deleted'];
         }
     }
 
@@ -6993,6 +6995,7 @@ export class JusticeUserResponse implements IJusticeUserResponse {
         data['is_vh_team_leader'] = this.is_vh_team_leader;
         data['created_by'] = this.created_by;
         data['full_name'] = this.full_name;
+        data['deleted'] = this.deleted;
         return data;
     }
 }
@@ -7009,6 +7012,7 @@ export interface IJusticeUserResponse {
     is_vh_team_leader?: boolean;
     created_by?: string | undefined;
     full_name?: string | undefined;
+    deleted?: boolean;
 }
 
 export class ProblemDetails implements IProblemDetails {
