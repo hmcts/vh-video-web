@@ -127,26 +127,26 @@ describe('VHOfficerVenueListComponent', () => {
 
         it('should re-apply previous filter when it exists, with unallocated hearings included', fakeAsync(() => {
             component.ngOnInit();
-            const selectedCsos = [cso2.id, csoAllocatedToMe.id, csoUnallocated.id];
-            component.selectedCsos = [...selectedCsos];
+            const testSelectedCsos = [cso2.id, csoAllocatedToMe.id, csoUnallocated.id];
+            component.selectedCsos = [...testSelectedCsos];
             component.updateCsoSelection();
             tick();
             component.selectedCsos = [];
             component.ngOnInit();
             tick();
-            expect(component.selectedCsos).toEqual(selectedCsos);
+            expect(component.selectedCsos).toEqual(testSelectedCsos);
         }));
 
         it('should re-apply previous filter when it exists, with unallocated hearings excluded', fakeAsync(() => {
             component.ngOnInit();
-            const selectedCsos = [cso2.id, csoAllocatedToMe.id];
-            component.selectedCsos = [...selectedCsos];
+            const testSelectedCsos = [cso2.id, csoAllocatedToMe.id];
+            component.selectedCsos = [...testSelectedCsos];
             component.updateCsoSelection();
             tick();
             component.selectedCsos = [];
             component.ngOnInit();
             tick();
-            expect(component.selectedCsos).toEqual(selectedCsos);
+            expect(component.selectedCsos).toEqual(testSelectedCsos);
         }));
     });
 
