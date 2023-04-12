@@ -22,6 +22,7 @@ describe('VhoQueryService', () => {
 
     beforeEach(() => {
         service = new VhoQueryService(apiClient);
+        apiClient.getConferencesForVhOfficer.calls.reset();
     });
 
     it('should init interval on start', fakeAsync(() => {
@@ -63,9 +64,23 @@ describe('VhoQueryService', () => {
         apiClient.getConferencesForVhOfficer.and.returnValue(of(data));
         const venueNames = ['venue1', 'venue2'];
         service.venueNames = venueNames;
+        service.allocatedCsoIds = null;
+        service.includeUnallocated = false;
         await service.runQuery();
 
         expect(apiClient.getConferencesForVhOfficer).toHaveBeenCalledWith(venueNames, [], false);
+    });
+
+    it('should get conferences for vh officer when querying by cso', async () => {
+        const data = testData.getTestData();
+        apiClient.getConferencesForVhOfficer.and.returnValue(of(data));
+        const allocatedCsoIds = ['test-cso-1', 'test-cso-2'];
+        service.venueNames = null;
+        service.allocatedCsoIds = allocatedCsoIds;
+        service.includeUnallocated = false;
+        await service.runQuery();
+
+        expect(apiClient.getConferencesForVhOfficer).toHaveBeenCalledWith([], allocatedCsoIds, false);
     });
 
     it('should get observable object', () => {
