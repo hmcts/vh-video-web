@@ -128,6 +128,7 @@ describe('VHOfficerVenueListComponent', () => {
 
         it('should re-apply previous filter when it exists, with unallocated hearings included', fakeAsync(() => {
             component.ngOnInit();
+            tick();
             const testSelectedCsos = [cso2.id, csoAllocatedToMe.id, csoUnallocated.id];
             component.selectedCsos = [...testSelectedCsos];
             component.updateCsoSelection();
@@ -140,6 +141,7 @@ describe('VHOfficerVenueListComponent', () => {
 
         it('should re-apply previous filter when it exists, with unallocated hearings excluded', fakeAsync(() => {
             component.ngOnInit();
+            tick();
             const testSelectedCsos = [cso2.id, csoAllocatedToMe.id];
             component.selectedCsos = [...testSelectedCsos];
             component.updateCsoSelection();
@@ -152,6 +154,7 @@ describe('VHOfficerVenueListComponent', () => {
 
         it('should re-apply previous filter when it exists and ignore case of username', fakeAsync(() => {
             component.ngOnInit();
+            tick();
             const testSelectedCsos = [cso2.id, csoAllocatedToMe.id];
             component.selectedCsos = [...testSelectedCsos];
             const user = { ...loggedInUser } as UserProfileResponse;
@@ -179,6 +182,7 @@ describe('VHOfficerVenueListComponent', () => {
 
         it('should not re-select allocated to me if logged in user is no longer in cso list', fakeAsync(() => {
             component.ngOnInit();
+            tick();
             const testSelectedCsos = [cso2.id, csoAllocatedToMe.id];
             component.selectedCsos = [...testSelectedCsos];
             component.updateCsoSelection();

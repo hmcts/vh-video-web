@@ -39,8 +39,7 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
                     full_name: 'Unallocated'
                 })
             );
-            const loggedInUser = await this.profileService.getUserProfile();
-            const loggedInCso = items.find(c => c.username?.toUpperCase() === loggedInUser.username.toUpperCase());
+            const loggedInCso = await this.getLoggedInCso(items);
             if (loggedInCso !== undefined) {
                 items.unshift(
                     new JusticeUserResponse({
@@ -108,8 +107,8 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
             }
             this.selectedCsos = [...this.selectedCsos, csoId];
         };
-        const loggedInUser = await this.profileService.getUserProfile();
-        const loggedInCsoId = this.csos.find(c => c.username?.toUpperCase() === loggedInUser.username.toUpperCase())?.id;
+        const loggedInCso = await this.getLoggedInCso(this.csos);
+        const loggedInCsoId = loggedInCso?.id;
         filter.allocatedCsoIds.forEach(id => {
             if (id === loggedInCsoId) {
                 selectCso(VhOfficerVenueListComponent.ALLOCATED_TO_ME);
