@@ -587,6 +587,16 @@
       "message-with-party": "{{role}} ({{party}}) wedi cael ei (h)ychwanegu at y gwrandawiad.",
       "dismiss": "Gwrthod"
     },
+    "endpoint-added": {
+      "title": "{{name}}",
+      "message": "Pwynt mynediad fideo wedi cael ei ychwanegu at y gwrandawiad.",
+      "dismiss": "Gwrthod"
+    },
+    "endpoint-updated": {
+      "title": "{{name}}",
+      "message": "Pwynt mynediad fideo wedi cael ei ddiweddaru yn y gwrandawiad.",
+      "dismiss": "Gwrthod"
+    },
     "hearing-layout-changed": {
       "title": "Mae {{name}}",
       "message": "wedi newid cynllun y gwrandawiad.",

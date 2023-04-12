@@ -7,6 +7,7 @@ import { ParticipantMediaStatus } from '../shared/models/participant-media-statu
 import { ParticipantMediaStatusMessage } from '../shared/models/participant-media-status-message';
 import { ParticipantRemoteMuteMessage } from '../shared/models/participant-remote-mute-message';
 import { ParticipantsUpdatedMessage } from '../shared/models/participants-updated-message';
+import { EndpointsUpdatedMessage } from '../shared/models/endpoints-updated-message';
 import { Room } from '../shared/models/room';
 import { RoomTransfer } from '../shared/models/room-transfer';
 import {
@@ -31,6 +32,7 @@ import { HeartbeatHealth, ParticipantHeartbeat } from './models/participant-hear
 import { ParticipantStatusMessage } from './models/participant-status-message';
 import { RequestedConsultationMessage } from './models/requested-consultation-message';
 import { NewAllocationMessage } from './models/new-allocation-message';
+import { UpdateEndpointsDto } from '../shared/models/update-endpoints-dto';
 
 @Injectable({
     providedIn: 'root'
@@ -51,6 +53,7 @@ export class EventsService {
     private endpointStatusSubject = new Subject<EndpointStatusMessage>();
     private hearingStatusSubject = new Subject<ConferenceStatusMessage>();
     private participantsUpdatedSubject = new Subject<ParticipantsUpdatedMessage>();
+    private endpointsUpdatedSubject = new Subject<EndpointsUpdatedMessage>();
 
     private hearingCountdownCompleteSubject = new Subject<string>();
     private helpMessageSubject = new Subject<HelpMessage>();
@@ -107,6 +110,12 @@ export class EventsService {
             const message = new ParticipantsUpdatedMessage(conferenceId, participants);
             this.logger.debug('[EventsService] - ParticipantsUpdatedMessage received', message);
             this.participantsUpdatedSubject.next(message);
+        },
+
+        EndpointsUpdated: (conferenceId: string, endpoints: UpdateEndpointsDto) => {
+            const message = new EndpointsUpdatedMessage(conferenceId, endpoints);
+            this.logger.debug('[EventsService] - EndpointsUpdatedMessage received', message);
+            this.endpointsUpdatedSubject.next(message);
         },
 
         CountdownFinished: (conferenceId: string) => {
@@ -360,6 +369,10 @@ export class EventsService {
 
     getParticipantsUpdated(): Observable<ParticipantsUpdatedMessage> {
         return this.participantsUpdatedSubject.asObservable();
+    }
+
+    getEndpointsUpdated(): Observable<EndpointsUpdatedMessage> {
+        return this.endpointsUpdatedSubject.asObservable();
     }
 
     getHearingLayoutChanged(): Observable<HearingLayoutChanged> {

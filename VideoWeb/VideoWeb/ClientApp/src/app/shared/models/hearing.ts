@@ -65,6 +65,17 @@ export class Hearing extends HearingBase {
         }
     }
 
+    addEndpoint(ver: VideoEndpointResponse) {
+        const conference = this.conference as ConferenceResponse;
+        conference.endpoints.push(ver);
+    }
+
+    updateEndpoint(ver: VideoEndpointResponse) {
+        const conference = this.conference as ConferenceResponse;
+        const index = conference.endpoints.findIndex(x => x.id === ver.id);
+        conference.endpoints[index] = ver;
+    }
+
     get status(): ConferenceStatus {
         return this.conference.status;
     }
