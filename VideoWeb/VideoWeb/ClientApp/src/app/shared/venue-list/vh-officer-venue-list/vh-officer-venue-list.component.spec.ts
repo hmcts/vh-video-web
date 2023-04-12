@@ -116,14 +116,15 @@ describe('VHOfficerVenueListComponent', () => {
             component.csos = [];
         });
 
-        it('should get csos and populate csos property for multi-select list', () => {
+        it('should get csos and populate csos property for multi-select list', fakeAsync(() => {
             component.ngOnInit();
+            tick();
             expect(videoWebServiceSpy.getCSOs).toHaveBeenCalled();
             expect(component.csos[0]).toEqual(csoAllocatedToMe);
             expect(component.csos[1]).toEqual(csoUnallocated);
             expect(component.csos[2]).toEqual(csos[0]);
             expect(component.csos[3]).toEqual(csos[1]);
-        });
+        }));
 
         it('should re-apply previous filter when it exists, with unallocated hearings included', fakeAsync(() => {
             component.ngOnInit();
@@ -162,6 +163,35 @@ describe('VHOfficerVenueListComponent', () => {
             component.ngOnInit();
             tick();
             expect(component.selectedCsos).toEqual(testSelectedCsos);
+        }));
+
+        it('should not add allocated to me option if logged in user is not in cso list', fakeAsync(() => {
+            const user = { ...loggedInUser } as UserProfileResponse;
+            user.username = 'doesnotexist@email.com';
+            profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(user));
+            component.ngOnInit();
+            tick();
+            expect(component.csos.length).toBe(3);
+            expect(component.csos[0]).toEqual(csoUnallocated);
+            expect(component.csos[1]).toEqual(csos[0]);
+            expect(component.csos[2]).toEqual(csos[1]);
+        }));
+
+        it('should not re-select allocated to me if logged in user is no longer in cso list', fakeAsync(() => {
+            component.ngOnInit();
+            const testSelectedCsos = [cso2.id, csoAllocatedToMe.id];
+            component.selectedCsos = [...testSelectedCsos];
+            component.updateCsoSelection();
+            tick();
+            const updatedCsos = [...component.csos];
+            const loggedInUserToRemove = component.csos.find(c => c.username === loggedInUser.username);
+            updatedCsos.splice(component.csos.indexOf(loggedInUserToRemove), 1);
+            videoWebServiceSpy.getCSOs.and.returnValue(of(updatedCsos));
+            component.selectedCsos = [];
+            component.ngOnInit();
+            tick();
+            expect(component.selectedCsos.length).toBe(1);
+            expect(component.selectedCsos).toEqual([cso2.id]);
         }));
     });
 
