@@ -13,16 +13,6 @@ import { ProfileService } from 'src/app/services/api/profile.service';
 
 @Directive()
 export abstract class VenueListComponentDirective implements OnInit {
-    protected readonly judgeAllocationStorage: SessionStorage<string[]>;
-    protected readonly courtAccountsAllocationStorage: SessionStorage<CourtRoomsAccounts[]>;
-    protected readonly csoAllocationStorage: SessionStorage<CsoFilter>;
-    venues: HearingVenueResponse[];
-    csos: JusticeUserResponse[];
-    selectedVenues: string[];
-    selectedCsos: string[];
-    filterCourtRoomsAccounts: CourtRoomsAccounts[];
-    errorMessage: string | null;
-    vhoWorkAllocationFeatureFlag: boolean;
     constructor(
         protected videoWebService: VideoWebService,
         protected router: Router,
@@ -38,9 +28,27 @@ export abstract class VenueListComponentDirective implements OnInit {
         this.courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
         this.csoAllocationStorage = new SessionStorage<CsoFilter>(VhoStorageKeys.CSO_ALLOCATIONS_KEY);
     }
+    abstract get showVhoSpecificContent(): boolean;
+    get venuesSelected(): boolean {
+        return this.selectedVenues && this.selectedVenues.length > 0;
+    }
+
+    get csosSelected(): boolean {
+        return this.selectedCsos && this.selectedCsos.length > 0;
+    }
 
     static ALLOCATED_TO_ME = 'AllocatedToMe';
     static UNALLOCATED = 'Unallocated';
+    protected readonly judgeAllocationStorage: SessionStorage<string[]>;
+    protected readonly courtAccountsAllocationStorage: SessionStorage<CourtRoomsAccounts[]>;
+    protected readonly csoAllocationStorage: SessionStorage<CsoFilter>;
+    venues: HearingVenueResponse[];
+    csos: JusticeUserResponse[];
+    selectedVenues: string[];
+    selectedCsos: string[];
+    filterCourtRoomsAccounts: CourtRoomsAccounts[];
+    errorMessage: string | null;
+    vhoWorkAllocationFeatureFlag: boolean;
 
     ngOnInit() {
         this.setupSubscribers();
@@ -59,14 +67,6 @@ export abstract class VenueListComponentDirective implements OnInit {
         });
     }
     abstract goToHearingList();
-    abstract get showVhoSpecificContent(): boolean;
-    get venuesSelected(): boolean {
-        return this.selectedVenues && this.selectedVenues.length > 0;
-    }
-
-    get csosSelected(): boolean {
-        return this.selectedCsos && this.selectedCsos.length > 0;
-    }
 
     updateVenueSelection() {
         this.selectedCsos = [];

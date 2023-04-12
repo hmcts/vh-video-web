@@ -17,7 +17,7 @@ export class VhoQueryService {
     interval: NodeJS.Timer;
     venueNames: string[];
     allocatedCsoIds: string[];
-    includeUnallocated: boolean = false;
+    includeUnallocated = false;
     constructor(private apiClient: ApiClient) {
         this.vhoConferencesSubject = new BehaviorSubject(this.vhoConferences);
     }
