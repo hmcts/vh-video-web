@@ -4,33 +4,34 @@ using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using BookingsApi.Contract.Helper;
 
-namespace VideoWeb.Extensions;
-
-public static class ConferenceForVhOfficerResponseExtensions
+namespace VideoWeb.Extensions
 {
-    public static IEnumerable<ConferenceForVhOfficerResponse> ApplyCsoFilter(this IEnumerable<ConferenceForVhOfficerResponse> conferences, VhoConferenceFilterQuery query)
+    public static class ConferenceForVhOfficerResponseExtensions
     {
-        var isQueryingByCso = query.AllocatedCsoIds.Any() || query.IncludeUnallocated;
-        if (!isQueryingByCso)
+        public static IEnumerable<ConferenceForVhOfficerResponse> ApplyCsoFilter(this IEnumerable<ConferenceForVhOfficerResponse> conferences, VhoConferenceFilterQuery query)
         {
-            return conferences;
-        }
+            var isQueryingByCso = query.AllocatedCsoIds.Any() || query.IncludeUnallocated;
+            if (!isQueryingByCso)
+            {
+                return conferences;
+            }
 
-        IEnumerable<ConferenceForVhOfficerResponse> filteredConferences;
+            IEnumerable<ConferenceForVhOfficerResponse> filteredConferences;
         
-        if (!query.AllocatedCsoIds.Any() && query.IncludeUnallocated)
-        {
-            filteredConferences = conferences
-                .Where(r => r.AllocatedCsoId == null &&
-                           HearingAllocationExcludedVenueList.ExcludedHearingVenueNames.All(venueName => venueName != r.HearingVenueName));
-        }
-        else
-        {
-            filteredConferences = conferences
-                .Where(r => (r.AllocatedCsoId.HasValue && query.AllocatedCsoIds.Contains(r.AllocatedCsoId.Value)) || !query.AllocatedCsoIds.Any())
-                .Union(conferences.Where(r => r.AllocatedCsoId == null && query.IncludeUnallocated));
-        }
+            if (!query.AllocatedCsoIds.Any() && query.IncludeUnallocated)
+            {
+                filteredConferences = conferences
+                    .Where(r => r.AllocatedCsoId == null &&
+                                HearingAllocationExcludedVenueList.ExcludedHearingVenueNames.All(venueName => venueName != r.HearingVenueName));
+            }
+            else
+            {
+                filteredConferences = conferences
+                    .Where(r => (r.AllocatedCsoId.HasValue && query.AllocatedCsoIds.Contains(r.AllocatedCsoId.Value)) || !query.AllocatedCsoIds.Any())
+                    .Union(conferences.Where(r => r.AllocatedCsoId == null && query.IncludeUnallocated));
+            }
 
-        return filteredConferences;
+            return filteredConferences;
+        }
     }
 }
