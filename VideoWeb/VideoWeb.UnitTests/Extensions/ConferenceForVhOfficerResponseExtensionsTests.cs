@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
@@ -9,7 +10,7 @@ namespace VideoWeb.UnitTests.Extensions;
 
 public class ConferenceForVhOfficerResponseExtensionsTests
 {
-    private IEnumerable<ConferenceForVhOfficerResponse> unallocatedConferences;
+    private List<ConferenceForVhOfficerResponse> unallocatedConferences;
     
     [SetUp]
     public void Setup()
@@ -44,15 +45,47 @@ public class ConferenceForVhOfficerResponseExtensionsTests
             new ConferenceForVhOfficerResponse()
             {
                 AllocatedCsoId = null,
-                HearingVenueName = "Dundee Tribunal Hearing Centre"
-            }
+                HearingVenueName = "Dundee Tribunal Hearing Centre",
+            },
+            new ConferenceForVhOfficerResponse()
+            {
+                AllocatedCsoId = null,
+                HearingVenueName = "Birmingham Civil Justice Centre",
+                CaseType = "Generic"
+            },
         };
     }
     
     [Test]
-    public void should_filter_out_unallocated_conferences_with_excluded_venue_names()
+    public void should_filter_out_unallocated_conferences_when_no_allocated_csos()
     {
         var filteredConferences = unallocatedConferences.ApplyCsoFilter(new VhoConferenceFilterQuery{IncludeUnallocated = true});
         filteredConferences.Should().HaveCount(1);
+    }
+    
+    [Test]
+    public void should_filter_out_unallocated_conferences_and_allocated_cso_conference()
+    {
+        var allocatedCsoId = Guid.NewGuid();
+        unallocatedConferences.Add(
+            new ConferenceForVhOfficerResponse { AllocatedCsoId = allocatedCsoId,  HearingVenueName = "Birmingham Magistrates Court" });
+        var filteredConferences = unallocatedConferences.ApplyCsoFilter(new VhoConferenceFilterQuery{IncludeUnallocated = true, AllocatedCsoIds = new[] {allocatedCsoId}});
+        filteredConferences.Should().HaveCount(2);
+    }    
+    
+    [Test]
+    public void should_filter_out_only_allocated_cso_conference()
+    {
+        var allocatedCsoId = Guid.NewGuid();
+        unallocatedConferences.Add(
+            new ConferenceForVhOfficerResponse { AllocatedCsoId = allocatedCsoId,  HearingVenueName = "Birmingham Magistrates Court" });
+        var filteredConferences = unallocatedConferences.ApplyCsoFilter(new VhoConferenceFilterQuery{IncludeUnallocated = false, AllocatedCsoIds = new[] {allocatedCsoId}});
+        filteredConferences.Should().HaveCount(1);
+    }
+    
+    [TearDown]
+    public void TearDown()
+    {
+        unallocatedConferences = null;
     }
 }
