@@ -449,7 +449,8 @@ export class NotificationToastrService {
 
         hearings.forEach(h => {
             const judge = h.judge;
-            const time = h.time;
+            const time = h.time.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: true });
+            //const time = h.time.toLocaleTimeString('en-GB', { timeStyle: 'short' });
             const caseName = h.case_name;
 
             messageBody += '<div class="govuk-!-font-weight-bold">' + time + '</div>';

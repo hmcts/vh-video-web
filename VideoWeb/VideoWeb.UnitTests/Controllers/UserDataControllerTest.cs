@@ -88,7 +88,7 @@ namespace VideoWeb.UnitTests.Controllers
                 Mock.Of<JusticeUserResponse>(),
                 Mock.Of<JusticeUserResponse>(),
             };
-            _mocker.Mock<IBookingsApiClient>().Setup(x => x.GetJusticeUserListAsync(null)).ReturnsAsync(csos);
+            _mocker.Mock<IBookingsApiClient>().Setup(x => x.GetJusticeUserListAsync(string.Empty, null)).ReturnsAsync(csos);
             var result = await _sut.GetJusticeUsers();
             var objectResult = result.Result as OkObjectResult;
             objectResult.Should().NotBeNull();

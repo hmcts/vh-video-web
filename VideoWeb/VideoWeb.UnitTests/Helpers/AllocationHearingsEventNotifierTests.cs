@@ -1,3 +1,4 @@
+using System;
 using Autofac.Extras.Moq;
 using Moq;
 using NUnit.Framework;
@@ -28,7 +29,7 @@ namespace VideoWeb.UnitTests.Helpers
 
             HearingDetailRequest hearing = new HearingDetailRequest();
             hearing.Judge = "Judge Name 1";
-            hearing.Time = "10:00";
+            hearing.Time = new DateTimeOffset(new DateTime(2023,04,01,10,00,00));
             hearing.CaseName = "Case Name";
             
             _hearings.Add(hearing);
