@@ -22,6 +22,7 @@ namespace VideoWeb.Extensions
             {
                 filteredConferences = conferences
                     .Where(r => r.AllocatedCsoId == null &&
+                                r.CaseType != "Generic" &&
                                 HearingAllocationExcludedVenueList.ExcludedHearingVenueNames.All(venueName => venueName != r.HearingVenueName));
             }
             else
