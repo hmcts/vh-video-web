@@ -149,5 +149,18 @@ describe('VenueListComponent', () => {
             expect(csoFilter.allocatedCsoIds).toEqual([cso1.id]);
             expect(csoFilter.includeUnallocated).toBeTrue();
         }));
+
+        it('should ignore case of username when looking up the user', fakeAsync(() => {
+            const user = { ...loggedInUser } as UserProfileResponse;
+            user.username = loggedInUser.username.toUpperCase();
+            profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(user));
+            component.selectedCsos = [csoAllocatedToMe.id];
+            component.updateCsoSelection();
+            tick();
+
+            const csoFilter = csoSessionStorage.get();
+            expect(csoFilter.allocatedCsoIds.length).toBe(1);
+            expect(csoFilter.allocatedCsoIds).toEqual([cso1.id]);
+        }));
     });
 });
