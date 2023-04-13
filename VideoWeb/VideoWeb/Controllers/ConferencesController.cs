@@ -18,6 +18,7 @@ using VideoWeb.Helpers;
 using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
+using VideoWeb.Extensions;
 using HostConference = VideoApi.Contract.Responses.ConferenceForHostResponse;
 using IndividualConference = VideoApi.Contract.Responses.ConferenceForIndividualResponse;
 using ConferenceForIndividualResponse = VideoWeb.Contract.Responses.ConferenceForIndividualResponse;
@@ -158,36 +159,20 @@ namespace VideoWeb.Controllers
                 var conferences = await _videoApiClient.GetConferencesTodayForAdminByHearingVenueNameAsync(query.HearingVenueNames);
                 var allocatedHearings =
                     await _bookingApiClient.GetAllocationsForHearingsAsync(conferences.Select(e => e.HearingRefId));
-                var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, ConferenceForVhOfficerResponse>();
+                var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>();
                 var responses = conferences
                     .Where(c => ConferenceHelper.HasNotPassed(c.Status, c.ClosedDateTime))
+                    .Select(x => conferenceForVhOfficerResponseMapper.Map(x, allocatedHearings?.FirstOrDefault(conference => conference.HearingId == x.HearingRefId)))
+                    .ApplyCsoFilter(query)
                     .OrderBy(x => x.ClosedDateTime)
-                    .Select(conferenceForVhOfficerResponseMapper.Map)
                     .ToList();
 
-                UpdateConferencesWithAllocatedCsos(allocatedHearings, responses);
-                
                 return Ok(responses);
             }
             catch (VideoApiException e)
             {
                 _logger.LogError(e, "Unable to get conferences for vh officer");
                 return StatusCode(e.StatusCode, e.Response);
-            }
-        }
-
-        private void UpdateConferencesWithAllocatedCsos(ICollection<AllocatedCsoResponse> allocatedHearings, List<ConferenceForVhOfficerResponse> responses)
-        {
-            foreach (var hearings in allocatedHearings)
-            {
-                var conference = responses.FirstOrDefault(conference => hearings.HearingId == conference.HearingRefId);
-                if (conference == null)
-                {
-                    _logger.LogWarning("Allocated hearing id, not in list of conferences for response");
-                    continue;
-                }
-
-                conference.AllocatedCso = hearings?.Cso?.FullName ?? "Unallocated";
             }
         }
 

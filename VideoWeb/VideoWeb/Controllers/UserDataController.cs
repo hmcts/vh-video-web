@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Client;
@@ -13,6 +14,7 @@ using VideoWeb.Mappings;
 using UserApi.Client;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
+using VideoWeb.Extensions;
 
 namespace VideoWeb.Controllers
 {
@@ -50,9 +52,17 @@ namespace VideoWeb.Controllers
             {
                 var conferences =
                     await _videoApiClient.GetConferencesTodayForAdminByHearingVenueNameAsync(query.HearingVenueNames);
+                var allocatedHearings =
+                    await _bookingApiClient.GetAllocationsForHearingsAsync(conferences.Select(e => e.HearingRefId));
+                var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>();
+                var responses = conferences
+                    .Select(x => conferenceForVhOfficerResponseMapper.Map(x, allocatedHearings?.FirstOrDefault(conference => conference.HearingId == x.HearingRefId)))
+                    .ApplyCsoFilter(query)
+                    .ToList();
+
                 var courtRoomsAccountResponsesMapper = _mapperFactory
-                    .Get<IEnumerable<ConferenceForAdminResponse>, List<CourtRoomsAccountResponse>>();
-                var accountList = courtRoomsAccountResponsesMapper.Map(conferences);
+                    .Get<IEnumerable<ConferenceForVhOfficerResponse>, List<CourtRoomsAccountResponse>>();
+                var accountList = courtRoomsAccountResponsesMapper.Map(responses);
 
                 return Ok(accountList);
             }

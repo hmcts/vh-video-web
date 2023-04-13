@@ -20,7 +20,7 @@
         <div class="govuk-grid-column-three-quarters">
             <ng-select id="cso-allocation-list" class="selection-list" [attr.aria-label]="'Cso list'" [items]="csos" [multiple]="true"
                        bindLabel="first_name" bindValue="id" [placeholder]="'Select CSOs'" [(ngModel)]="selectedCsos" [closeOnSelect]="false"
-                       (change)="clearVenue()" [clearSearchOnAdd]="true" [selectOnTab]="true">
+                       (change)="updateCsoSelection()" [clearSearchOnAdd]="true" [selectOnTab]="true">
                 <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
                     <input id="cso-{{ index }}" type="checkbox" [ngModel]="item$.selected" [checked]="item$.selected" [attr.aria-label]="'CSO '+ item.first_name" />
                     {{ item.full_name }}

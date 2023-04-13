@@ -11,7 +11,7 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void Should_map_user_response_to_court_rooms_account()
         {
-            var conferences = ConferenceForAdminResponseBuilder.BuildData();
+            var conferences = ConferenceForVhOfficerResponseBuilder.BuildData();
             var result = _sut.Map(conferences);
 
             result.Should().NotBeNull();
