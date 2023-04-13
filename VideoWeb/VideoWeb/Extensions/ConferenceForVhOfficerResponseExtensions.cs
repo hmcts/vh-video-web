@@ -21,15 +21,19 @@ namespace VideoWeb.Extensions
             if (!query.AllocatedCsoIds.Any() && query.IncludeUnallocated)
             {
                 filteredConferences = conferences
-                    .Where(r => r.AllocatedCsoId == null &&
-                                r.CaseType != "Generic" &&
-                                HearingAllocationExcludedVenueList.ExcludedHearingVenueNames.All(venueName => venueName != r.HearingVenueName));
+                    .Where(r =>
+                        r.AllocatedCsoId == null &&
+                        r.CaseType != "Generic" &&
+                        HearingAllocationExcludedVenueList.ExcludedHearingVenueNames.All(venueName => venueName != r.HearingVenueName));
             }
             else
             {
                 filteredConferences = conferences
                     .Where(r => (r.AllocatedCsoId.HasValue && query.AllocatedCsoIds.Contains(r.AllocatedCsoId.Value)) || !query.AllocatedCsoIds.Any())
-                    .Union(conferences.Where(r => r.AllocatedCsoId == null && query.IncludeUnallocated));
+                    .Union(conferences.Where(r => 
+                        r.AllocatedCsoId == null && 
+                        r.CaseType != "Generic" &&
+                        query.IncludeUnallocated));
             }
 
             return filteredConferences;
