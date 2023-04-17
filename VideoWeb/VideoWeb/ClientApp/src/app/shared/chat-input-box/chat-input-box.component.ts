@@ -1,5 +1,5 @@
 import { Component, OnInit, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit, Input } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import { UntypedFormControl, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -9,7 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class ChatInputBoxComponent implements OnInit, AfterViewInit {
     maxInputLength = 256;
-    newMessageBody: FormControl;
+    newMessageBody: UntypedFormControl;
     screenReaderAlert: HTMLElement;
     @Input() useLightText = false;
     @Output() submittedMessage = new EventEmitter<string>();
@@ -25,7 +25,7 @@ export class ChatInputBoxComponent implements OnInit, AfterViewInit {
     }
 
     initForm() {
-        this.newMessageBody = new FormControl(null, [Validators.minLength(1), Validators.maxLength(this.maxInputLength)]);
+        this.newMessageBody = new UntypedFormControl(null, [Validators.minLength(1), Validators.maxLength(this.maxInputLength)]);
     }
 
     get currentInputLength(): number {

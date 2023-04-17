@@ -1,4 +1,4 @@
-import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { AddSelfTestFailureEventRequest, SelfTestFailureReason } from 'src/app/services/clients/api-client';
@@ -14,7 +14,7 @@ import { VhoStorageKeys } from 'src/app/vh-officer/services/models/session-keys'
 
 @Directive()
 export abstract class EquipmentCheckBaseComponentDirective extends ParticipantStatusBaseDirective {
-    form: FormGroup;
+    form: UntypedFormGroup;
     submitted = false;
 
     conferenceId: string;
@@ -26,7 +26,7 @@ export abstract class EquipmentCheckBaseComponentDirective extends ParticipantSt
     constructor(
         protected router: Router,
         protected route: ActivatedRoute,
-        protected fb: FormBuilder,
+        protected fb: UntypedFormBuilder,
         protected videoWebService: VideoWebService,
         protected errorService: ErrorService,
         protected logger: Logger,

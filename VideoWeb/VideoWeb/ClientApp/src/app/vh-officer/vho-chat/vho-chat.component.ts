@@ -10,7 +10,7 @@ import {
     Output,
     ViewChild
 } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import { UntypedFormControl, Validators } from '@angular/forms';
 import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
@@ -33,7 +33,7 @@ import { SecurityServiceProvider } from 'src/app/security/authentication/securit
     styleUrls: ['./vho-chat.component.scss', '../vho-global-styles.scss']
 })
 export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDestroy, AfterViewChecked {
-    newMessageBody: FormControl;
+    newMessageBody: UntypedFormControl;
     chatHubSubscription: Subscription;
     loading: boolean;
 
@@ -111,7 +111,7 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
     }
 
     initForm() {
-        this.newMessageBody = new FormControl(null, [Validators.required, Validators.minLength(1), Validators.maxLength(256)]);
+        this.newMessageBody = new UntypedFormControl(null, [Validators.required, Validators.minLength(1), Validators.maxLength(256)]);
     }
 
     async sendMessage(messageBody: string) {

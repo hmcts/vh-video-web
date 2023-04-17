@@ -1,5 +1,5 @@
 import { Directive, HostListener, OnDestroy, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
@@ -22,7 +22,7 @@ export abstract class HostHearingListBaseComponentDirective implements OnInit, O
 
     conferences: ConferenceForHostResponse[];
     conferencesSubscription = new Subscription();
-    hearingListForm: FormGroup;
+    hearingListForm: UntypedFormGroup;
     loadingData: boolean;
     interval: any;
     today = new Date();

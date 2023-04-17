@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import { catchError, first, map, takeUntil } from 'rxjs/operators';
@@ -27,10 +27,10 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
     };
 
     role = Role;
-    quickLinkForm: FormGroup;
+    quickLinkForm: UntypedFormGroup;
     hearingId: string;
-    quickLinkNameFormControl: FormControl;
-    quickLinkRoleFormControl: FormControl;
+    quickLinkNameFormControl: UntypedFormControl;
+    quickLinkRoleFormControl: UntypedFormControl;
     quickLinkParticipantRoles: Role[] = [];
     hearingValidated = false;
 
@@ -40,7 +40,7 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
     constructor(
         private logger: Logger,
         private router: Router,
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         private readonly quickLinksService: QuickLinksService,
         private route: ActivatedRoute,
         private errorService: ErrorService

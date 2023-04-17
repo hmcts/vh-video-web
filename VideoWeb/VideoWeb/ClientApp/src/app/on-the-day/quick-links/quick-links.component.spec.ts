@@ -1,5 +1,5 @@
 import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, ActivatedRouteSnapshot, Router } from '@angular/router';
 import { of, Subject } from 'rxjs';
 import { QuickLinksService } from 'src/app/services/api/quick-links.service';
@@ -84,7 +84,7 @@ describe('QuickLinksComponent', () => {
                     provide: ErrorService,
                     useValue: errorServiceSpy
                 },
-                FormBuilder,
+                UntypedFormBuilder,
                 {
                     provide: QuickLinksService,
                     useValue: quickLinksServiceSpy
