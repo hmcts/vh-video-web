@@ -20,7 +20,6 @@ import { JwtHelperService as Auth0JwtHelperService, JWT_OPTIONS } from '@auth0/a
         ConfigService,
         SecurityConfigSetupService,
         { provide: APP_INITIALIZER, useFactory: getSettings, deps: [ConfigService], multi: true },
-        // { provide: APP_INITIALIZER, useFactory: setupSecurity, deps: [SecurityConfigSetupService], multi: true },
         // {
         //     provide: APP_INITIALIZER,
         //     useFactory: restoreConfig,

@@ -42,6 +42,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     subscriptions = new Subscription();
     securityService: ISecurityService;
+    currentIdp: string;
     backLinkDetails$ = new BehaviorSubject<BackLinkDetails>(null);
 
     private destroyed$ = new Subject();
@@ -100,39 +101,38 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     private postConfigSetupOidc() {
-        this.checkAuth().subscribe({
-            next: async (loggedIn: boolean) => {
-                await this.postAuthSetup(loggedIn, false);
-            }
-        });
-        this.eventService
-            .registerForEvents()
-            .pipe(filter(notification => notification.type === EventTypes.NewAuthenticationResult))
-            .subscribe(async (value: OidcClientNotification<AuthStateResult>) => {
-                this.logger.info('[AppComponent] - OidcClientNotification event received with value ', value);
-                await this.postAuthSetup(true, value.value.isRenewProcess);
-            });
-
-        // old way, will remove before merge
-        // this.securityConfigSetupService.configRestored$
-        //     .pipe(
-        //         filter(configRestored => configRestored),
-        //         first()
-        //     )
-        //     .subscribe(() => {
-        //         this.checkAuth().subscribe({
-        //             next: async (loggedIn: boolean) => {
-        //                 await this.postAuthSetup(loggedIn, false);
-        //             }
-        //         });
-        //         this.eventService
-        //             .registerForEvents()
-        //             .pipe(filter(notification => notification.type === EventTypes.NewAuthenticationResult))
-        //             .subscribe(async (value: OidcClientNotification<AuthStateResult>) => {
-        //                 this.logger.info('[AppComponent] - OidcClientNotification event received with value ', value);
-        //                 await this.postAuthSetup(true, value.value.isRenewProcess);
-        //             });
+        // this.checkAuth().subscribe({
+        //     next: async (loggedIn: boolean) => {
+        //         await this.postAuthSetup(loggedIn, false);
+        //     }
+        // });
+        // this.eventService
+        //     .registerForEvents()
+        //     .pipe(filter(notification => notification.type === EventTypes.NewAuthenticationResult))
+        //     .subscribe(async (value: OidcClientNotification<AuthStateResult>) => {
+        //         this.logger.info('[AppComponent] - OidcClientNotification event received with value ', value);
+        //         await this.postAuthSetup(true, value.value.isRenewProcess);
         //     });
+        // old way, will remove before merge
+        this.securityConfigSetupService.configRestored$
+            .pipe(
+                filter(configRestored => configRestored),
+                first()
+            )
+            .subscribe(() => {
+                this.checkAuth().subscribe({
+                    next: async (loggedIn: boolean) => {
+                        await this.postAuthSetup(loggedIn, false);
+                    }
+                });
+                this.eventService
+                    .registerForEvents()
+                    .pipe(filter(notification => notification.type === EventTypes.NewAuthenticationResult))
+                    .subscribe(async (value: OidcClientNotification<AuthStateResult>) => {
+                        this.logger.info('[AppComponent] - OidcClientNotification event received with value ', value);
+                        await this.postAuthSetup(true, value.value.isRenewProcess);
+                    });
+            });
     }
 
     private postConfigSetupQuickLinks() {
@@ -189,6 +189,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private setupSecurityServiceProviderSubscription() {
         this.securityServiceProviderService.currentSecurityService$.pipe(takeUntil(this.destroyed$)).subscribe(service => {
             this.securityService = service;
+            this.currentIdp = this.securityServiceProviderService.currentIdp;
             this.serviceChanged$.next();
 
             service
@@ -212,7 +213,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     checkAuth(): Observable<boolean> {
-        return this.securityService.checkAuth().pipe(
+        return this.securityService.checkAuth(this.currentIdp).pipe(
             map(loginResponse => {
                 return loginResponse.isAuthenticated;
             }),
@@ -249,7 +250,7 @@ export class AppComponent implements OnInit, OnDestroy {
     logOut() {
         this.loggedIn = false;
         sessionStorage.clear();
-        this.securityService.logoffAndRevokeTokens();
+        this.securityService.logoffAndRevokeTokens(this.currentIdp);
     }
 
     skipToContent() {

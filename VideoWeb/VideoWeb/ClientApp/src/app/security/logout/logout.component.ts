@@ -40,7 +40,7 @@ export class LogoutComponent implements OnInit {
             if (authenticated) {
                 this.profileService.clearUserProfile();
                 this.judgeAllocationStorage.clear();
-                this.securityService.logoffAndRevokeTokens();
+                this.securityService.logoffAndRevokeTokens(this.currentIdp);
             }
         });
     }

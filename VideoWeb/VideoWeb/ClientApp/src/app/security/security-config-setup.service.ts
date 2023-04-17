@@ -17,14 +17,14 @@ export class SecurityConfigSetupService {
     private idpProvidersSessionStorageKey = 'IdpProviders';
     private defaultProvider = IdpProviders.vhaad;
     private _configSetupSubject = new BehaviorSubject(false);
-    // private _configRestoredSubject = new BehaviorSubject(false);
-    get configSetup$() {
-        return this._configSetupSubject.asObservable();
-    }
-
-    // get configRestored$() {
-    //     return this._configRestoredSubject.asObservable();
+    private _configRestoredSubject = new BehaviorSubject(false);
+    // get configSetup$() {
+    //     return this._configSetupSubject.asObservable();
     // }
+
+    get configRestored$() {
+        return this._configRestoredSubject.asObservable();
+    }
     private currentIdpSubject = new ReplaySubject<IdpProviders>(1);
 
     constructor(private configService: ConfigService) {}
@@ -35,18 +35,7 @@ export class SecurityConfigSetupService {
             map(clientSettings => {
                 this.config[IdpProviders.ejud] = this.initOidcConfig(clientSettings.e_jud_idp_settings);
                 this.config[IdpProviders.vhaad] = this.initOidcConfig(clientSettings.vh_idp_settings);
-
-                // Not needed since lib now supports multiple configs and id is the param to use
-                // const provider = this.getIdp();
-
-                // if (provider !== IdpProviders.quickLink) {
-                //     this.oidcConfigService.withConfig(this.config[provider]);
-                // } else {
-                //     this.oidcConfigService.withConfig(this.config[this.defaultProvider]);
-                // }
-
                 this._configSetupSubject.next(true);
-
                 return [this.config[IdpProviders.ejud], this.config[IdpProviders.vhaad]];
             })
         );
@@ -73,16 +62,16 @@ export class SecurityConfigSetupService {
         };
     }
 
-    // restoreConfig() {
-    //     const provider = this.getIdp();
-    //     if (provider !== IdpProviders.quickLink) {
-    //         this._configSetupSubject.pipe(filter(Boolean), first()).subscribe(() => {
-    //             this.oidcConfigService.withConfig(this.config[provider]);
-    //         });
-    //     }
-    //     this.currentIdpSubject.next(provider);
-    //     this._configRestoredSubject.next(true);
-    // }
+    restoreConfig() {
+        const provider = this.getIdp();
+        // if (provider !== IdpProviders.quickLink) {
+        //     this._configSetupSubject.pipe(filter(Boolean), first()).subscribe(() => {
+        //         this.oidcConfigService.withConfig(this.config[provider]);
+        //     });
+        // }
+        this.currentIdpSubject.next(provider);
+        this._configRestoredSubject.next(true);
+    }
 
     setIdp(provider: IdpProviders) {
         window.sessionStorage.setItem(this.idpProvidersSessionStorageKey, provider);
