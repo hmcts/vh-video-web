@@ -18,7 +18,7 @@ export class HomeComponent implements OnInit {
             .pipe(
                 filter(
                     notification =>
-                        notification.type === EventTypes.UserDataChanged || notification.type === EventTypes.NewAuthorizationResult
+                        notification.type === EventTypes.UserDataChanged || notification.type === EventTypes.NewAuthenticationResult
                 )
             )
             .subscribe(value => {

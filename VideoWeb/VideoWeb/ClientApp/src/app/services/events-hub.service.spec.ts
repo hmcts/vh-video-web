@@ -45,7 +45,7 @@ describe('EventsHubService', () => {
         connectionStatusServiceSpy.onConnectionStatusChange.and.returnValue(connectionStatusChanged$);
 
         securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['getToken'], ['isAuthenticated$']);
-        securityServiceSpy.getToken.and.returnValue(testToken);
+        securityServiceSpy.getAccessToken.and.returnValue(testToken);
         securityServiceSubject$ = new BehaviorSubject(securityServiceSpy);
 
         getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(
@@ -149,7 +149,7 @@ describe('EventsHubService', () => {
             spyOnProperty(serviceUnderTest, 'reconnectionTimes', 'get').and.returnValue(expectedReconnectionTimes);
             spyOn(serviceUnderTest, 'createConnectionBuilder').and.returnValue(hubConnectionBuilderSpy);
 
-            updatedSecurityServiceSpy.getToken.and.returnValue('updatedToken');
+            updatedSecurityServiceSpy.getAccessToken.and.returnValue('updatedToken');
         });
 
         it('should build and return SignalR connection.', () => {
@@ -174,7 +174,7 @@ describe('EventsHubService', () => {
             expect(hubConnectionBuilderSpy.withAutomaticReconnect).toHaveBeenCalledOnceWith(expectedReconnectionTimes);
             expect(hubConnectionBuilderSpy.withUrl).toHaveBeenCalledTimes(1);
             expect(hubConnectionBuilderSpy.withUrl).toHaveBeenCalledWith(expectedEventHubPath, jasmine.any(Object));
-            expect(expectedSecurityServiceSpy.getToken).toHaveBeenCalledTimes(1);
+            expect(expectedSecurityServiceSpy.getAccessToken).toHaveBeenCalledTimes(1);
             expect(hubConnectionBuilderSpy.build).toHaveBeenCalledTimes(1);
             expect(connection).toBe(connectionSpy);
         });

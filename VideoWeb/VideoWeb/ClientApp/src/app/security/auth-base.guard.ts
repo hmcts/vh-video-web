@@ -11,6 +11,7 @@ import { ISecurityService } from './authentication/security-service.interface';
 @Injectable()
 export class AuthBaseGuard {
     protected securityService: ISecurityService;
+    currentIdp: string;
     constructor(
         securityServiceProviderService: SecurityServiceProvider,
         protected router: Router,
@@ -19,11 +20,12 @@ export class AuthBaseGuard {
     ) {
         securityServiceProviderService.currentSecurityService$.subscribe(securityService => {
             this.securityService = securityService;
+            this.currentIdp = securityServiceProviderService.currentIdp;
         });
     }
 
     isUserAuthorized(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-        return this.securityService.isAuthenticated$.pipe(
+        return this.securityService.isAuthenticated(this.currentIdp).pipe(
             map((isAuthorized: boolean) => {
                 this.logger.debug('AuthorizationGuard, canActivate isAuthorized: ' + isAuthorized);
                 if (!isAuthorized) {

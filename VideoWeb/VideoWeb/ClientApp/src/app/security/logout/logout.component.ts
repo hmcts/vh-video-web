@@ -16,6 +16,7 @@ import { ISecurityService } from '../authentication/security-service.interface';
 @Injectable()
 export class LogoutComponent implements OnInit {
     private securityService: ISecurityService;
+    private currentIdp: string;
     private readonly judgeAllocationStorage: SessionStorage<string[]>;
     public loginPath: string;
     constructor(
@@ -23,7 +24,10 @@ export class LogoutComponent implements OnInit {
         private profileService: ProfileService,
         private featureFlagService: FeatureFlagService
     ) {
-        securityServiceProviderService.currentSecurityService$.subscribe(securityService => (this.securityService = securityService));
+        securityServiceProviderService.currentSecurityService$.subscribe(securityService => {
+            this.securityService = securityService;
+            this.currentIdp = securityServiceProviderService.currentIdp;
+        });
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
         this.featureFlagService
             .getFeatureFlagByName('EJudFeature')
@@ -32,7 +36,7 @@ export class LogoutComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.securityService.isAuthenticated$.subscribe(authenticated => {
+        this.securityService.isAuthenticated(this.currentIdp).subscribe(authenticated => {
             if (authenticated) {
                 this.profileService.clearUserProfile();
                 this.judgeAllocationStorage.clear();
@@ -42,6 +46,6 @@ export class LogoutComponent implements OnInit {
     }
 
     get loggedIn(): Observable<boolean> {
-        return this.securityService.isAuthenticated$;
+        return this.securityService.isAuthenticated(this.currentIdp);
     }
 }

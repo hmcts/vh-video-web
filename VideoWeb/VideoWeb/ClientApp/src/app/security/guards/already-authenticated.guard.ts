@@ -13,7 +13,8 @@ export class AlreadyAuthenticatedGuard implements CanActivate {
 
     canActivate(): Observable<boolean> {
         const securityService = this.securityServiceProvider.getSecurityService();
-        return securityService.isAuthenticated$.pipe(
+        const currentIdp = this.securityServiceProvider.currentIdp;
+        return securityService.isAuthenticated(currentIdp).pipe(
             timeout(30000),
             take(1),
             tap(authenticated => {

@@ -2,6 +2,7 @@ namespace VideoWeb.Common.Configuration
 {
     public abstract class IdpConfiguration
     {
+        public abstract string ConfigId { get; }
         public string ClientId { get; set; }
         public string Authority { get; set; }
         public string TenantId { get; set; }

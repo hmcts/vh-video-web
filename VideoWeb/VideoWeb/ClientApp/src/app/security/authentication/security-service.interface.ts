@@ -1,12 +1,14 @@
-import { AuthOptions, PublicConfiguration } from 'angular-auth-oidc-client';
+import { AuthOptions, LoginResponse, LogoutAuthOptions, OpenIdConfiguration } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
 
 export interface ISecurityService {
-    isAuthenticated$: Observable<boolean>;
-    userData$: Observable<any>;
-    configuration: PublicConfiguration;
-    authorize(authOptions?: AuthOptions, token?: string): void;
-    checkAuth(url?: string): Observable<boolean>;
-    getToken(): string;
-    logoffAndRevokeTokens(urlHandler?: (url: string) => any): Observable<any>;
+    // isAuthenticated$: Observable<AuthenticatedResult>;
+    // userData$: Observable<UserDataResult>;
+    isAuthenticated(configId?: string): Observable<boolean>;
+    getUserData(configId?: string): Observable<any>;
+    getConfiguration(configId?: string): Observable<OpenIdConfiguration>;
+    authorize(configId?: string, authOptions?: AuthOptions, token?: string): void;
+    checkAuth(url?: string, configId?: string): Observable<LoginResponse>;
+    getAccessToken(configId?: string): Observable<string>;
+    logoffAndRevokeTokens(configId?: string, logoutAuthOptions?: LogoutAuthOptions): Observable<any>;
 }

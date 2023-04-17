@@ -41,7 +41,7 @@ export class MockOidcSecurityService implements ISecurityService {
         this.userData = userData;
     }
 
-    getToken(): string {
+    getAccessToken(): string {
         return 'MockToken';
     }
 

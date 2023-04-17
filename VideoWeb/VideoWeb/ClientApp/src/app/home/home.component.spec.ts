@@ -1,12 +1,5 @@
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import {
-    AuthorizationResult,
-    AuthorizedState,
-    EventTypes,
-    OidcClientNotification,
-    PublicEventsService,
-    ValidationResult
-} from 'angular-auth-oidc-client';
+import { AuthStateResult, EventTypes, OidcClientNotification, PublicEventsService, ValidationResult } from 'angular-auth-oidc-client';
 import { of } from 'rxjs';
 import { pageUrls } from '../shared/page-url.constants';
 import { MockLogger } from '../testing/mocks/mock-logger';
@@ -34,9 +27,9 @@ describe('HomeComponent', () => {
     });
 
     it('should go to navigator if user log in', async () => {
-        const eventValue: OidcClientNotification<AuthorizationResult> = {
-            type: EventTypes.NewAuthorizationResult,
-            value: { isRenewProcess: false, authorizationState: AuthorizedState.Authorized, validationResult: ValidationResult.Ok }
+        const eventValue: OidcClientNotification<AuthStateResult> = {
+            type: EventTypes.NewAuthenticationResult,
+            value: { isRenewProcess: false, isAuthenticated: true, validationResult: ValidationResult.Ok }
         };
         oidcClientNotificationSpy = jasmine.createSpyObj('OidcClientNotification', {}, eventValue);
         eventServiceSpy.registerForEvents.and.returnValue(of(oidcClientNotificationSpy));
@@ -45,7 +38,7 @@ describe('HomeComponent', () => {
     });
 
     it('should navigate IdpSelection page when input home page url manually', async () => {
-        const eventValue: OidcClientNotification<AuthorizationResult> = {
+        const eventValue: OidcClientNotification<AuthStateResult> = {
             type: EventTypes.ConfigLoaded
         };
         oidcClientNotificationSpy = jasmine.createSpyObj('OidcClientNotification', {}, eventValue);

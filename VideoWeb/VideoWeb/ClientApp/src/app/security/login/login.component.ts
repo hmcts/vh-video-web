@@ -16,6 +16,7 @@ import { ISecurityService } from '../authentication/security-service.interface';
 @Injectable()
 export class LoginComponent implements OnInit {
     securityService: ISecurityService;
+    currentIdp: string;
 
     constructor(
         private router: Router,
@@ -24,12 +25,16 @@ export class LoginComponent implements OnInit {
         securityServiceProviderService: SecurityServiceProvider,
         private configService: ConfigService
     ) {
-        securityServiceProviderService.currentSecurityService$.subscribe(service => (this.securityService = service));
+        securityServiceProviderService.currentSecurityService$.subscribe(service => {
+            this.securityService = service;
+            this.currentIdp = securityServiceProviderService.currentIdp;
+        });
     }
 
     ngOnInit() {
         this.configService.getClientSettings().subscribe(() => {
-            this.securityService.isAuthenticated$
+            this.securityService
+                .isAuthenticated(this.currentIdp)
                 .pipe(
                     catchError(err => {
                         this.logger.error('[Login] - Check Auth Error', err);
@@ -56,7 +61,7 @@ export class LoginComponent implements OnInit {
                     } else {
                         this.logger.debug('[Login] - User not authenticated. Logging in');
                         try {
-                            this.securityService.authorize();
+                            this.securityService.authorize(this.currentIdp);
                         } catch (err) {
                             this.logger.error('[Login] - Authorize Failed', err);
                         }

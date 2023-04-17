@@ -13,6 +13,7 @@ import { Logger } from './logging/logger-base';
     providedIn: 'root'
 })
 export class EventsHubService implements OnDestroy {
+    private currentIdp: string;
     private securityService: ISecurityService;
     private eventHubDisconnectSubject = new Subject<number>();
     private eventHubConnectedSubject = new Subject();
@@ -70,9 +71,10 @@ export class EventsHubService implements OnDestroy {
         private logger: Logger,
         private errorService: ErrorService
     ) {
-        securityServiceProviderService.currentSecurityService$
-            .pipe(takeUntil(this.destroyed$))
-            .subscribe(securityService => (this.securityService = securityService));
+        securityServiceProviderService.currentSecurityService$.pipe(takeUntil(this.destroyed$)).subscribe(securityService => {
+            this.securityService = securityService;
+            this.currentIdp = securityServiceProviderService.currentIdp;
+        });
         configService.getClientSettings().subscribe(clientSettings => {
             this._connection = this.buildConnection(clientSettings.event_hub_path);
             this.configureConnection();
@@ -92,7 +94,7 @@ export class EventsHubService implements OnDestroy {
             .configureLogging(signalR.LogLevel.Debug)
             .withAutomaticReconnect(this.reconnectionTimes)
             .withUrl(eventHubPath, {
-                accessTokenFactory: () => this.securityService.getToken()
+                accessTokenFactory: () => this.securityService.getAccessToken(this.currentIdp).toPromise()
             })
             .build();
     }

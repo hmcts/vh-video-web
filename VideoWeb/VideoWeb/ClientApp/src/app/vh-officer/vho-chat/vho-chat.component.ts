@@ -87,7 +87,7 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         this.initForm();
         this.setupChatSubscription().then(sub => (this.chatHubSubscription = sub));
         this.updateChatWindow();
-        this.securityService.userData$.subscribe(ud => {
+        this.securityService.getUserData(this.currentIdp).subscribe(ud => {
             this.username = ud.preferred_username;
             this.setLoggedAdminUser();
         });

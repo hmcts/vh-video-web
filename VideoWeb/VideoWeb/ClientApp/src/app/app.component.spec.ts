@@ -16,9 +16,9 @@ import {
     PublicEventsService,
     OidcClientNotification,
     EventTypes,
-    AuthorizationResult,
-    AuthorizedState,
-    ValidationResult
+    AuthStateResult,
+    ValidationResult,
+    LoginResponse
 } from 'angular-auth-oidc-client';
 import { MockLogger } from './testing/mocks/mock-logger';
 import { SecurityServiceProvider } from './security/authentication/security-provider.service';
@@ -70,9 +70,9 @@ describe('AppComponent', () => {
     const eventsSubjects = new Subject<Event>();
     const dummyElement = document.createElement('div');
     const testTitle = 'test-title';
-    let eventValue: OidcClientNotification<AuthorizationResult> = {
-        type: EventTypes.NewAuthorizationResult,
-        value: { isRenewProcess: false, authorizationState: AuthorizedState.Authorized, validationResult: ValidationResult.Ok }
+    let eventValue: OidcClientNotification<AuthStateResult> = {
+        type: EventTypes.NewAuthenticationResult,
+        value: { isRenewProcess: false, isAuthenticated: true, validationResult: ValidationResult.Ok }
     };
     const configRestoredSubject = new BehaviorSubject(true);
 
@@ -98,11 +98,11 @@ describe('AppComponent', () => {
         pageTrackerServiceSpy = jasmine.createSpyObj('PageTrackerService', ['trackNavigation', 'trackPreviousPage']);
         testLanguageServiceSpy = jasmine.createSpyObj('TestLanguageService', ['setupSubscriptions']);
         publicEventsServiceSpy = jasmine.createSpyObj('PublicEventsService', ['registerForEvents']);
-        securityServiceSpy = jasmine.createSpyObj<ISecurityService>(
-            'ISecurityService',
-            ['checkAuth', 'logoffAndRevokeTokens'],
-            ['isAuthenticated$']
-        );
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', [
+            'checkAuth',
+            'logoffAndRevokeTokens',
+            'isAuthenticated'
+        ]);
     });
 
     afterAll(() => {
@@ -117,15 +117,15 @@ describe('AppComponent', () => {
             ['currentSecurityService$']
         );
 
-        spyOnProperty(securityServiceSpy, 'isAuthenticated$', 'get').and.returnValue(of(true));
+        spyOn(securityServiceSpy, 'isAuthenticated').and.returnValue(of(true));
         getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
 
         securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>(
             'SecurityConfigSetupService',
-            ['getIdp'],
-            ['configRestored$']
+            ['getIdp']
+            // ['configRestored$']
         );
-        spyOnProperty(securityConfigSetupServiceSpy, 'configRestored$').and.returnValue(configRestoredSubject.asObservable());
+        // spyOnProperty(securityConfigSetupServiceSpy, 'configRestored$').and.returnValue(configRestoredSubject.asObservable());
         locationSpy = jasmine.createSpyObj<Location>('Location', ['back']);
 
         TestBed.configureTestingModule({
@@ -178,7 +178,11 @@ describe('AppComponent', () => {
 
     it('should enable the no sleep service on init', fakeAsync(() => {
         // Arrange
-        securityServiceSpy.checkAuth.and.returnValue(of(true));
+        securityServiceSpy.checkAuth.and.returnValue(
+            of({
+                isAuthenticated: true
+            } as LoginResponse)
+        );
 
         // Act
         component.ngOnInit();
@@ -191,12 +195,12 @@ describe('AppComponent', () => {
 
     it('should start connection status service if authenticated oninit', fakeAsync(() => {
         // Arrange
-        const checkAuthSubject = new Subject<boolean>();
+        const checkAuthSubject = new Subject<LoginResponse>();
         securityServiceSpy.checkAuth.and.returnValue(checkAuthSubject.asObservable());
 
         eventValue = {
-            type: EventTypes.NewAuthorizationResult,
-            value: { isRenewProcess: false, authorizationState: AuthorizedState.Authorized, validationResult: ValidationResult.Ok }
+            type: EventTypes.NewAuthenticationResult,
+            value: { isRenewProcess: false, isAuthenticated: true, validationResult: ValidationResult.Ok }
         };
 
         publicEventsServiceSpy.registerForEvents.and.returnValue(of(eventValue));

@@ -51,7 +51,7 @@ export class QuickLinksInterceptor {
     }
 
     private attachQuickLinkUsersToken(request: HttpRequest<unknown>): HttpRequest<unknown> {
-        const token = this.securityServiceProviderService.getSecurityService().getToken();
+        const token = this.securityServiceProviderService.getSecurityService().getAccessToken();
 
         if (!token) {
             return request;

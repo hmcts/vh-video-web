@@ -45,7 +45,6 @@ import { LoggerService, LOG_ADAPTER } from '../services/logging/logger.service';
 import { AppInsightsLoggerService } from '../services/logging/loggers/app-insights-logger.service';
 import { ConsoleLogger } from '../services/logging/loggers/console-logger';
 import { Logger } from '../services/logging/logger-base';
-import { SecurityConfigSetupService } from '../security/security-config-setup.service';
 import { HeaderLogoSvgComponent } from './header-logo-svg/header-logo-svg.component';
 import { VideoFilterComponent } from './video-filter/video-filter.component';
 import { HyphenatePipe } from './pipes/hyphenate.pipe';
@@ -102,15 +101,15 @@ export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
 }
 
-export function setupSecurity(securityConfigService: SecurityConfigSetupService) {
-    return () => securityConfigService.setupConfig().toPromise();
-}
+// export function setupSecurity(securityConfigService: SecurityConfigSetupService) {
+//     return () => securityConfigService.setupConfig().toPromise();
+// }
 
-export function restoreConfig(securityConfigSetupService: SecurityConfigSetupService): Function {
-    return () => {
-        securityConfigSetupService.restoreConfig();
-    };
-}
+// export function restoreConfig(securityConfigSetupService: SecurityConfigSetupService): Function {
+//     return () => {
+//         securityConfigSetupService.restoreConfig();
+//     };
+// }
 @NgModule({
     imports: [
         CommonModule,

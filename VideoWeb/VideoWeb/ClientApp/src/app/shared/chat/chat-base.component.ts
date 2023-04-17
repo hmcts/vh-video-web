@@ -30,6 +30,7 @@ export abstract class ChatBaseComponent implements OnDestroy {
     emptyGuid = '00000000-0000-0000-0000-000000000000';
 
     DEFAULT_ADMIN_USERNAME = 'Admin';
+    currentIdp: string;
     protected constructor(
         protected videoWebService: VideoWebService,
         protected profileService: ProfileService,
@@ -39,9 +40,10 @@ export abstract class ChatBaseComponent implements OnDestroy {
         protected imHelper: ImHelper,
         protected translateService: TranslateService
     ) {
-        securityServiceProviderService.currentSecurityService$
-            .pipe(takeUntil(this.destroyed$))
-            .subscribe(securityService => (this.securityService = securityService));
+        securityServiceProviderService.currentSecurityService$.pipe(takeUntil(this.destroyed$)).subscribe(securityService => {
+            this.securityService = securityService;
+            this.currentIdp = securityServiceProviderService.currentIdp;
+        });
     }
 
     abstract content: ElementRef<HTMLElement>;
@@ -82,23 +84,26 @@ export abstract class ChatBaseComponent implements OnDestroy {
             return;
         }
 
-        this.securityService.userData$.pipe(takeUntil(this.destroyed$)).subscribe(async ud => {
-            const from = message.from.toUpperCase();
-            const username =
-                this.loggedInUser && this.loggedInUser.participant_id && this.loggedInUser.participant_id !== this.emptyGuid
-                    ? this.loggedInUser.participant_id
-                    : ud.preferred_username.toUpperCase();
-            if (from === username.toUpperCase()) {
-                message.from_display_name = this.translateService.instant('chat-base.you');
-                message.is_user = true;
-            } else {
-                message = await this.verifySender(message);
-                this.handleIncomingOtherMessage(message);
-            }
+        this.securityService
+            .getUserData(this.currentIdp)
+            .pipe(takeUntil(this.destroyed$))
+            .subscribe(async ud => {
+                const from = message.from.toUpperCase();
+                const username =
+                    this.loggedInUser && this.loggedInUser.participant_id && this.loggedInUser.participant_id !== this.emptyGuid
+                        ? this.loggedInUser.participant_id
+                        : ud.preferred_username.toUpperCase();
+                if (from === username.toUpperCase()) {
+                    message.from_display_name = this.translateService.instant('chat-base.you');
+                    message.is_user = true;
+                } else {
+                    message = await this.verifySender(message);
+                    this.handleIncomingOtherMessage(message);
+                }
 
-            this.removeMessageFromPending(message);
-            this.messages.push(message);
-        });
+                this.removeMessageFromPending(message);
+                this.messages.push(message);
+            });
     }
 
     addMessageToPending(message: InstantMessage) {

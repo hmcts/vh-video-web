@@ -10,6 +10,7 @@ namespace VideoWeb.Mappings
         {
             return new IdpSettingsResponse
             {
+                ConfigId = input.ConfigId,
                 ClientId = input.ClientId,
                 TenantId = input.TenantId,
                 RedirectUri = input.RedirectUri,

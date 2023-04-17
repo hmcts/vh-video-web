@@ -48,7 +48,7 @@ describe('QuickLinksInterceptor', () => {
             const expectedContentType = 'application/json';
 
             const securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['getToken']);
-            securityServiceSpy.getToken.and.returnValue(expectedToken);
+            securityServiceSpy.getAccessToken.and.returnValue(expectedToken);
             securityServiceProviderServiceSpy.getSecurityService.and.returnValue(securityServiceSpy);
 
             currentIdpSubject.next(IdpProviders.quickLink);

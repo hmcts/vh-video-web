@@ -2,9 +2,9 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/co
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { AuthorizationResult, EventTypes, OidcClientNotification, PublicEventsService } from 'angular-auth-oidc-client';
+import { AuthStateResult, EventTypes, OidcClientNotification, PublicEventsService } from 'angular-auth-oidc-client';
 import { BehaviorSubject, NEVER, Observable, Subject, Subscription } from 'rxjs';
-import { catchError, delay, filter, first, takeUntil } from 'rxjs/operators';
+import { catchError, delay, filter, first, map, takeUntil } from 'rxjs/operators';
 import { ConfigService } from './services/api/config.service';
 import { ProfileService } from './services/api/profile.service';
 import { Role } from './services/clients/api-client';
@@ -100,25 +100,39 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     private postConfigSetupOidc() {
-        this.securityConfigSetupService.configRestored$
-            .pipe(
-                filter(configRestored => configRestored),
-                first()
-            )
-            .subscribe(() => {
-                this.checkAuth().subscribe({
-                    next: async (loggedIn: boolean) => {
-                        await this.postAuthSetup(loggedIn, false);
-                    }
-                });
-                this.eventService
-                    .registerForEvents()
-                    .pipe(filter(notification => notification.type === EventTypes.NewAuthorizationResult))
-                    .subscribe(async (value: OidcClientNotification<AuthorizationResult>) => {
-                        this.logger.info('[AppComponent] - OidcClientNotification event received with value ', value);
-                        await this.postAuthSetup(true, value.value.isRenewProcess);
-                    });
+        this.checkAuth().subscribe({
+            next: async (loggedIn: boolean) => {
+                await this.postAuthSetup(loggedIn, false);
+            }
+        });
+        this.eventService
+            .registerForEvents()
+            .pipe(filter(notification => notification.type === EventTypes.NewAuthenticationResult))
+            .subscribe(async (value: OidcClientNotification<AuthStateResult>) => {
+                this.logger.info('[AppComponent] - OidcClientNotification event received with value ', value);
+                await this.postAuthSetup(true, value.value.isRenewProcess);
             });
+
+        // old way, will remove before merge
+        // this.securityConfigSetupService.configRestored$
+        //     .pipe(
+        //         filter(configRestored => configRestored),
+        //         first()
+        //     )
+        //     .subscribe(() => {
+        //         this.checkAuth().subscribe({
+        //             next: async (loggedIn: boolean) => {
+        //                 await this.postAuthSetup(loggedIn, false);
+        //             }
+        //         });
+        //         this.eventService
+        //             .registerForEvents()
+        //             .pipe(filter(notification => notification.type === EventTypes.NewAuthenticationResult))
+        //             .subscribe(async (value: OidcClientNotification<AuthStateResult>) => {
+        //                 this.logger.info('[AppComponent] - OidcClientNotification event received with value ', value);
+        //                 await this.postAuthSetup(true, value.value.isRenewProcess);
+        //             });
+        //     });
     }
 
     private postConfigSetupQuickLinks() {
@@ -177,7 +191,8 @@ export class AppComponent implements OnInit, OnDestroy {
             this.securityService = service;
             this.serviceChanged$.next();
 
-            service.isAuthenticated$
+            service
+                .isAuthenticated(this.securityServiceProviderService.currentIdp)
                 .pipe(takeUntil(this.serviceChanged$), takeUntil(this.destroyed$), delay(0)) // delay(0) pipe is to prevent angular ExpressionChangedAfterItHasBeenCheckedError
                 .subscribe(authenticated => {
                     this.loggedIn = authenticated;
@@ -198,6 +213,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
     checkAuth(): Observable<boolean> {
         return this.securityService.checkAuth().pipe(
+            map(loginResponse => {
+                return loginResponse.isAuthenticated;
+            }),
             catchError(err => {
                 this.logger.error('[AppComponent] - Check Auth Error', err);
                 if (!this.isSignInUrl) {

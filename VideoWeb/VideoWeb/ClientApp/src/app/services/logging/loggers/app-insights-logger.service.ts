@@ -20,6 +20,7 @@ export class AppInsightsLoggerService implements LogAdapter {
     appInsights: ApplicationInsights;
     isVHO: boolean;
     userData;
+    currentIdp: string;
 
     constructor(
         securityServiceProviderService: SecurityServiceProvider,
@@ -28,7 +29,10 @@ export class AppInsightsLoggerService implements LogAdapter {
         private profileService: ProfileService
     ) {
         this.router = router;
-        securityServiceProviderService.currentSecurityService$.subscribe(securityService => (this.securityService = securityService));
+        securityServiceProviderService.currentSecurityService$.subscribe(secService => {
+            this.securityService = secService;
+            this.currentIdp = securityServiceProviderService.currentIdp;
+        });
 
         this.setupAppInsights(configService, this.securityService).subscribe(() => {
             this.checkIfVho(this.securityService);
@@ -47,7 +51,7 @@ export class AppInsightsLoggerService implements LogAdapter {
                     }
                 });
                 this.appInsights.loadAppInsights();
-                securityService?.userData$.subscribe(ud => {
+                securityService?.getUserData(this.currentIdp).subscribe(ud => {
                     this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
                         envelope.tags['ai.cloud.role'] = 'vh-video-web';
                         envelope.tags['ai.user.id'] = ud.preferred_username.toLowerCase();
@@ -58,11 +62,14 @@ export class AppInsightsLoggerService implements LogAdapter {
     }
 
     private checkIfVho(securityService: ISecurityService) {
-        securityService?.isAuthenticated$.pipe(filter(Boolean)).subscribe(() => {
-            this.profileService.getUserProfile().then(profile => {
-                this.isVHO = profile.role === Role.VideoHearingsOfficer;
+        securityService
+            ?.isAuthenticated(this.currentIdp)
+            .pipe(filter(Boolean))
+            .subscribe(() => {
+                this.profileService.getUserProfile().then(profile => {
+                    this.isVHO = profile.role === Role.VideoHearingsOfficer;
+                });
             });
-        });
     }
 
     debug(message: string, properties: any = null): void {

@@ -75,9 +75,12 @@ export abstract class ChatWindowBaseComponent extends ChatBaseComponent implemen
             this.handleChatHistoryResponse(messages);
         });
 
-        this.securityService.userData$.pipe(takeUntil(this.destroyed$)).subscribe(ud => {
-            this._participantUsername = ud.preferred_username.toLowerCase();
-        });
+        this.securityService
+            .getUserData(this.currentIdp)
+            .pipe(takeUntil(this.destroyed$))
+            .subscribe(ud => {
+                this._participantUsername = ud.preferred_username.toLowerCase();
+            });
     }
 
     ngAfterViewChecked(): void {
