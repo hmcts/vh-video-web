@@ -1095,12 +1095,12 @@ describe('NotificationToastrService', () => {
         const hearingsPassed: HearingDetailRequest[] = [];
         let hearing = new HearingDetailRequest();
         hearing.judge = 'Judge1';
-        hearing.time = new Date(2023,1,1,10,0,0,0);
+        hearing.time = new Date(2023, 1, 1, 10, 0, 0, 0);
         hearing.case_name = 'case name 1';
         hearingsPassed.push(hearing);
         hearing = new HearingDetailRequest();
         hearing.judge = 'Judge2';
-        hearing.time = new Date(2023,1,1,11,0,0,0);
+        hearing.time = new Date(2023, 1, 1, 11, 0, 0, 0);
         hearing.case_name = 'case name 2';
         hearingsPassed.push(hearing);
 
