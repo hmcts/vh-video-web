@@ -87,30 +87,6 @@ describe('WaitingRoom ParticipantList Base', () => {
         component.ngOnDestroy();
     });
 
-    describe('DoCheck', () => {
-        const testParticipants = [new ParticipantResponse(), new ParticipantResponse()];
-        beforeEach(() => {
-            const spy = spyOn(component, 'initParticipants');
-            component.conference.participants = testParticipants;
-            component.ngDoCheck();
-            spy.calls.reset();
-        });
-
-        it('should not call initParticipants when there are no changes to list', () => {
-            component.ngDoCheck();
-
-            expect(component.initParticipants).not.toHaveBeenCalled();
-        });
-
-        it('should call initParticipants when there are changes to list', () => {
-            component.conference.participants = [new ParticipantResponse()];
-
-            component.ngDoCheck();
-
-            expect(component.initParticipants).toHaveBeenCalledTimes(1);
-        });
-    });
-
     it('should group type of participants', () => {
         expect(component.judge).toBeDefined();
         expect(component.nonJudgeParticipants).toBeDefined();

@@ -11,7 +11,8 @@ import {
     ParticipantStatus,
     RoomSummaryResponse,
     HearingLayout,
-    Role
+    Role,
+    VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
@@ -30,10 +31,9 @@ import {
     participantStatusSubjectMock,
     roomUpdateSubjectMock,
     roomTransferSubjectMock,
-    hearingCountdownCompleteSubjectMock,
     onEventsHubReadySubjectMock,
-    eventsServiceSpy,
     getParticipantsUpdatedSubjectMock,
+    getEndpointsUpdatedMessageSubjectMock,
     hearingLayoutChangedSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import {
@@ -57,14 +57,12 @@ import {
     router,
     videoWebService,
     videoCallService,
-    globalJudge,
     titleService
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
 import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
 import { Room } from '../../../shared/models/room';
 import { RoomTransfer } from '../../../shared/models/room-transfer';
-import { ElementRef } from '@angular/core';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { ConsultationInvitation, ConsultationInvitationService } from '../../services/consultation-invitation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -79,9 +77,9 @@ import { NotificationSoundsService } from '../../services/notification-sounds.se
 import { NotificationToastrService } from '../../services/notification-toastr.service';
 import { RoomClosingToastrService } from '../../services/room-closing-toast.service';
 import { ClockService } from 'src/app/services/clock.service';
-import { Participant } from 'src/app/shared/models/participant';
-import { createTrue } from 'typescript';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
+import { EndpointsUpdatedMessage } from 'src/app/shared/models/endpoints-updated-message';
+import { UpdateEndpointsDto } from 'src/app/shared/models/update-endpoints-dto';
 import { HearingLayoutChanged } from 'src/app/services/models/hearing-layout-changed';
 import { vhContactDetails } from 'src/app/shared/contact-information';
 import { Title } from '@angular/platform-browser';
@@ -95,10 +93,8 @@ describe('WaitingRoomComponent EventHub Call', () => {
     const consultationRequestResponseMessageSubject = consultationRequestResponseMessageSubjectMock;
     const requestedConsultationMessageSubject = requestedConsultationMessageSubjectMock;
     const eventHubDisconnectSubject = eventHubDisconnectSubjectMock;
-    const eventHubReconnectSubject = eventHubReconnectSubjectMock;
     const hearingTransferSubject = hearingTransferSubjectMock;
     const endpointStatusSubject = endpointStatusSubjectMock;
-    const hearingLayoutChangedSubject = hearingLayoutChangedSubjectMock;
     const invitationId = Guid.create().toString();
     let logged: LoggedParticipantResponse;
     let activatedRoute: ActivatedRoute;
@@ -204,7 +200,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
             component.participant.id
         );
 
-        // spyOn(logger, 'debug');
         requestedConsultationMessageSubject.next(payload);
         flushMicrotasks();
 
@@ -1636,6 +1631,130 @@ describe('WaitingRoomComponent EventHub Call', () => {
                     expect(updatedParticipant.display_name).toBe(testParticipant.display_name);
                     expect(updatedParticipant.status).toBe(ParticipantStatus.NotSignedIn);
                 });
+            });
+        });
+    });
+
+    describe('getEndpointsUpdated', () => {
+        const testConferenceId = 'TestConferenceId';
+
+        const testExistingVideoEndpointResponse = new VideoEndpointResponse();
+        testExistingVideoEndpointResponse.id = 'TestUpdateId';
+        testExistingVideoEndpointResponse.display_name = 'TestExistingDisplayName';
+
+        // To Test the Add functionality
+        const testAddVideoEndpointResponse = new VideoEndpointResponse();
+        testAddVideoEndpointResponse.id = 'TestAddId';
+        testAddVideoEndpointResponse.display_name = 'TestAddDisplayName';
+
+        const testUpdateEndpointsDtoAdd = new UpdateEndpointsDto();
+        testUpdateEndpointsDtoAdd.existing_endpoints = [];
+        testUpdateEndpointsDtoAdd.new_endpoints = [testAddVideoEndpointResponse];
+        testUpdateEndpointsDtoAdd.removed_endpoints = [];
+
+        // To Test the Update functionality
+        const testUpdateVideoEndpointResponse = new VideoEndpointResponse();
+        testUpdateVideoEndpointResponse.id = 'TestUpdateId';
+        testUpdateVideoEndpointResponse.display_name = 'TestUpdateDisplayName';
+
+        const testUpdateEndpointsDtoUpdate = new UpdateEndpointsDto();
+        testUpdateEndpointsDtoUpdate.existing_endpoints = [testUpdateVideoEndpointResponse];
+        testUpdateEndpointsDtoUpdate.new_endpoints = [];
+        testUpdateEndpointsDtoUpdate.removed_endpoints = [];
+
+        const testConference = new ConferenceResponse(Object.assign({}, globalConference));
+        testConference.id = testConferenceId;
+        const testHearing = new Hearing(testConference);
+
+        beforeEach(() => {
+            component.hearing = testHearing;
+            component.conference.endpoints = [testExistingVideoEndpointResponse];
+        });
+
+        describe('when is not correct conference', () => {
+            const differentConferenceId = 'DifferentConferenceId';
+            const testEndpointUpdatedMessage = new EndpointsUpdatedMessage(differentConferenceId, testUpdateEndpointsDtoAdd);
+
+            it('should not make any changes', () => {
+                getEndpointsUpdatedMessageSubjectMock.next(testEndpointUpdatedMessage);
+                expect(notificationToastrService.showEndpointAdded).not.toHaveBeenCalled();
+                expect(notificationToastrService.showEndpointUpdated).not.toHaveBeenCalled();
+                expect(component.conference.endpoints).toEqual([testExistingVideoEndpointResponse]);
+            });
+        });
+
+        describe('when is correct conference', () => {
+            let testEndpointMessageAdd: EndpointsUpdatedMessage;
+            let testEndpointMessageUpdate: EndpointsUpdatedMessage;
+            let existingEndpoint: VideoEndpointResponse;
+
+            beforeEach(() => {
+                existingEndpoint = testExistingVideoEndpointResponse;
+                component.conference.endpoints = [existingEndpoint];
+                component.hearing = new Hearing(component.conference);
+                testEndpointMessageAdd = new EndpointsUpdatedMessage(component.conference.id, testUpdateEndpointsDtoAdd);
+                testEndpointMessageUpdate = new EndpointsUpdatedMessage(component.conference.id, testUpdateEndpointsDtoUpdate);
+            });
+
+            it('should show toast for in hearing', () => {
+                // Arrange
+                component.participant.status = ParticipantStatus.InHearing;
+
+                // Act
+                getEndpointsUpdatedMessageSubjectMock.next(testEndpointMessageAdd);
+
+                // Assert
+                expect(notificationToastrService.showEndpointAdded).toHaveBeenCalledWith(testAddVideoEndpointResponse, true);
+            });
+
+            it('should show toast for in consultation', () => {
+                // Arrange
+                component.participant.status = ParticipantStatus.InConsultation;
+
+                // Act
+                getEndpointsUpdatedMessageSubjectMock.next(testEndpointMessageAdd);
+
+                // Assert
+                expect(notificationToastrService.showEndpointAdded).toHaveBeenCalledWith(testAddVideoEndpointResponse, true);
+            });
+
+            it('should show toast for not in hearing or consultation', () => {
+                // Arrange
+                component.participant.status = ParticipantStatus.Available;
+
+                // Act
+                getEndpointsUpdatedMessageSubjectMock.next(testEndpointMessageAdd);
+
+                // Assert
+                expect(notificationToastrService.showEndpointAdded).toHaveBeenCalledWith(testAddVideoEndpointResponse, false);
+            });
+
+            it('should add new endpoint', () => {
+                // Arrange
+                const existingEndpointCount = component.conference.endpoints.length;
+                component.participant.status = ParticipantStatus.Available;
+
+                // Act
+                getEndpointsUpdatedMessageSubjectMock.next(testEndpointMessageAdd);
+
+                // Assert
+                const addedEndpoint = component.conference.endpoints.find(x => x.id === testAddVideoEndpointResponse.id);
+                expect(component.conference.endpoints.length).toEqual(existingEndpointCount + 1);
+                expect(addedEndpoint.id).toBe(testAddVideoEndpointResponse.id);
+                expect(addedEndpoint.display_name).toBe(testAddVideoEndpointResponse.display_name);
+            });
+
+            it('should update existing endpoint', () => {
+                // Arrange
+                component.participant.status = ParticipantStatus.Available;
+
+                // Act
+                getEndpointsUpdatedMessageSubjectMock.next(testEndpointMessageUpdate);
+
+                // Assert
+                const updatedEndpoint = component.conference.endpoints.find(x => x.id === testUpdateVideoEndpointResponse.id);
+                expect(component.conference.endpoints.length).toEqual(1);
+                expect(updatedEndpoint.display_name).toBe(testUpdateVideoEndpointResponse.display_name);
             });
         });
     });
