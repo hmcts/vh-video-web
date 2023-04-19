@@ -21,10 +21,6 @@ java:
         - azuread--vhvideowebclientid
         - connectionstrings--signalr
         - connectionstrings--rediscache
-        - name: dom1--tenant--id
-          alias: DOM1--TenantId
-        - name: dom1--videoweb--clientid
-          alias: DOM1--ClientId
         - name: launchdarkly-client-id
           alias: VHSERVICES--LAUNCHDARKLYCLIENTID
     vh-video-web:
@@ -81,8 +77,6 @@ java:
     AZUREAD__REDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/home
     EJUDAD__POSTLOGOUTREDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/logout
     EJUDAD__REDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/home
-    DOM1__POSTLOGOUTREDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/logout
-    DOM1__REDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/home
     DISABLEHTTPSREDIRECTION: true
     Logging__LogLevel__Default: debug
     Logging__LogLevel__Microsoft: debug
