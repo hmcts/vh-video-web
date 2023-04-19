@@ -39,6 +39,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
 import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
+import { EndpointsUpdatedMessage } from 'src/app/shared/models/endpoints-updated-message';
 import { Room } from 'src/app/shared/models/room';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { HearingRole } from '../models/hearing-role-model';
@@ -505,6 +506,13 @@ export abstract class WaitingRoomBaseDirective {
             })
         );
 
+        this.logger.debug('[WR] - Subscribing to endpoints update complete message');
+        this.eventHubSubscription$.add(
+            this.eventService.getEndpointsUpdated().subscribe(endpointsUpdatedMessage => {
+                this.handleEndpointsUpdatedMessage(endpointsUpdatedMessage);
+            })
+        );
+
         this.logger.debug('[WR] - Subscribing to hearing layout update complete message');
         this.eventHubSubscription$.add(
             this.eventService.getHearingLayoutChanged().subscribe(async hearingLayout => {
@@ -763,6 +771,7 @@ export abstract class WaitingRoomBaseDirective {
         this.presentationStream = null;
         this.videoCallService.stopPresentation();
     }
+
     handlePresentationConnected(connectedPresentation: ConnectedPresentation): void {
         const logPayload = {
             conference: this.conferenceId,
@@ -1085,13 +1094,47 @@ export abstract class WaitingRoomBaseDirective {
             );
         });
 
-        this.conference.participants = [...participantsUpdatedMessage.participants].map(participant => {
+        const updatedParticipantsList = [...participantsUpdatedMessage.participants].map(participant => {
             const currentParticipant = this.conference.participants.find(x => x.id === participant.id);
             participant.current_room = currentParticipant ? currentParticipant.current_room : null;
             participant.status = currentParticipant ? currentParticipant.status : ParticipantStatus.NotSignedIn;
             return participant;
         });
+        this.conference = { ...this.conference, participants: updatedParticipantsList } as ConferenceResponse;
         this.participant = this.getLoggedParticipant();
+    }
+
+    private handleEndpointsUpdatedMessage(endpointsUpdatedMessage: EndpointsUpdatedMessage) {
+        this.logger.debug(`[WR] - Endpoints updated message received`, {
+            newEndpoints: endpointsUpdatedMessage.endpoints.new_endpoints,
+            updatedEndpoints: endpointsUpdatedMessage.endpoints.existing_endpoints
+        });
+
+        if (!this.validateIsForConference(endpointsUpdatedMessage.conferenceId)) {
+            return;
+        }
+
+        endpointsUpdatedMessage.endpoints.new_endpoints.forEach(endpoint => {
+            this.logger.debug(`[WR] - Endpoint added, showing notification`, endpoint);
+            this.notificationToastrService.showEndpointAdded(
+                endpoint,
+                this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
+            );
+
+            this.hearing.addEndpoint(endpoint);
+        });
+
+        endpointsUpdatedMessage.endpoints.existing_endpoints.forEach(endpoint => {
+            this.logger.debug(`[WR] - Endpoint updated, showing notification`, endpoint);
+            this.notificationToastrService.showEndpointUpdated(
+                endpoint,
+                this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
+            );
+
+            this.hearing.updateEndpoint(endpoint);
+        });
+
+        this.conference = { ...this.conference, endpoints: [...this.hearing.getEndpoints()] } as ConferenceResponse;
     }
 
     private handleHearingLayoutUpdatedMessage(hearingLayoutMessage: HearingLayoutChanged) {

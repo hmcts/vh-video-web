@@ -1161,6 +1161,16 @@
       "message-with-party": "{{role}} ({{party}}) has been added to the hearing.",
       "dismiss": "Dismiss"
     },
+    "endpoint-added": {
+      "title": "{{name}}",
+      "message": "Video Access Point has been added to the hearing",
+      "dismiss": "Dismiss"
+    },
+    "endpoint-updated": {
+      "title": "{{name}}",
+      "message": "Video Access Point has been updated in the hearing",
+      "dismiss": "Dismiss"
+    },
     "hearing-layout-changed": {
       "title": "{{name}}",
       "message": "has changed the hearing layout.",
