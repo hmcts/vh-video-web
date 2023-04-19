@@ -68,7 +68,7 @@ export const jwToken = new TokenResponse({
 });
 export let titleService: jasmine.SpyObj<Title>;
 
-export let hideComponentsService = jasmine.createSpyObj<HideComponentsService>('HideComponentsService', ['hideNonVideoComponents$']);
+export const hideComponentsService = jasmine.createSpyObj<HideComponentsService>('HideComponentsService', ['hideNonVideoComponents$']);
 hideComponentsService.hideNonVideoComponents$ = new BehaviorSubject(false);
 
 export function initAllWRDependencies() {

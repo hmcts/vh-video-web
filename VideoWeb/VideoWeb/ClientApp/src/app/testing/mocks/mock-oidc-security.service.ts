@@ -1,5 +1,5 @@
-import { AuthOptions, PublicConfiguration } from 'angular-auth-oidc-client';
-import { Observable, of, from } from 'rxjs';
+import { AuthOptions, LoginResponse, LogoutAuthOptions, OpenIdConfiguration } from 'angular-auth-oidc-client';
+import { Observable, of } from 'rxjs';
 import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
 interface UserData {
     preferred_username?: string;
@@ -12,13 +12,6 @@ interface UserData {
 }
 
 export class MockOidcSecurityService implements ISecurityService {
-    get userData$(): Observable<UserData> {
-        return of(this.userData);
-    }
-
-    get isAuthenticated$(): Observable<boolean> {
-        return from([false, this.authenticated]);
-    }
     userData: UserData;
     authenticated: boolean;
     configuration = {
@@ -26,11 +19,28 @@ export class MockOidcSecurityService implements ISecurityService {
             scope: 'openid profile offline_access',
             secureRoutes: ['.']
         }
-    } as PublicConfiguration;
-    authorize(authOptions?: AuthOptions, token?: string): void {
+    } as OpenIdConfiguration;
+
+    isAuthenticated(configId: string): Observable<boolean> {
+        return of(this.authenticated);
+    }
+    getUserData(configId: string): Observable<any> {
+        return of(this.userData);
+    }
+    getConfiguration(configId: string): Observable<OpenIdConfiguration> {
+        return of(this.configuration);
+    }
+    authorize(configId: string, authOptions?: AuthOptions, token?: string): void {
         throw new Error('Method not implemented.');
     }
-    logoffAndRevokeTokens(urlHandler?: (url: string) => any): Observable<any> {
+    checkAuth(url: string, configId?: string): Observable<LoginResponse> {
+        return of({ isAuthenticated: this.authenticated } as LoginResponse);
+    }
+
+    getAccessToken(configId: string): Observable<string> {
+        return of('MockToken');
+    }
+    logoffAndRevokeTokens(configId: string, logoutAuthOptions?: LogoutAuthOptions): Observable<any> {
         throw new Error('Method not implemented.');
     }
 
@@ -39,13 +49,5 @@ export class MockOidcSecurityService implements ISecurityService {
     }
     setUserData(userData: UserData) {
         this.userData = userData;
-    }
-
-    getAccessToken(): string {
-        return 'MockToken';
-    }
-
-    checkAuth(url?: string): Observable<boolean> {
-        return of(this.authenticated);
     }
 }

@@ -32,20 +32,6 @@ export class UnreadMessagesComponent extends UnreadMessagesComponentBase impleme
         super(eventsService, logger);
     }
 
-    ngOnInit() {
-        this.setupSubscribers();
-        this.logger.debug('[UnreadMessages] - Getting unread message count for conference', { conference: this.hearing.id });
-        this.videoWebService
-            .getUnreadMessageCountForConference(this.hearing.id)
-            .then(response => {
-                this.unreadMessages = this.mapper.mapUnreadMessageResponseArray(
-                    response.number_of_unread_messages_conference,
-                    this.hearing.id
-                );
-            })
-            .catch(err => this.logger.error(`[UnreadMessages] - Failed to get unread vho messages for ${this.hearing.id}`, err));
-    }
-
     get unreadCount(): number {
         if (!Array.isArray(this.unreadMessages) || this.unreadMessages.length < 1) {
             return 0;
@@ -58,6 +44,20 @@ export class UnreadMessagesComponent extends UnreadMessagesComponentBase impleme
             unreadTotal = unreadTotalList.map(m => m.number_of_unread_messages).reduce((a, b) => a + b);
         }
         return unreadTotal;
+    }
+
+    ngOnInit() {
+        this.setupSubscribers();
+        this.logger.debug('[UnreadMessages] - Getting unread message count for conference', { conference: this.hearing.id });
+        this.videoWebService
+            .getUnreadMessageCountForConference(this.hearing.id)
+            .then(response => {
+                this.unreadMessages = this.mapper.mapUnreadMessageResponseArray(
+                    response.number_of_unread_messages_conference,
+                    this.hearing.id
+                );
+            })
+            .catch(err => this.logger.error(`[UnreadMessages] - Failed to get unread vho messages for ${this.hearing.id}`, err));
     }
 
     getHearing(): Hearing {

@@ -10,14 +10,14 @@ import { Logger } from '../logging/logger-base';
 import { ConferenceService } from './conference.service';
 import { ParticipantService } from './participant.service';
 
-declare var HeartbeatFactory: any;
+declare let heartbeatFactory: any;
 
 @Injectable({
     providedIn: 'root'
 })
 export class KinlyHeartbeatService {
-    private loggerPrefix = '[KinlyHeartbeatService] -';
     heartbeat: any; // NO TS defined
+    private loggerPrefix = '[KinlyHeartbeatService] -';
     private currentParticipant: ParticipantModel;
     private currentConference: ConferenceResponse;
 
@@ -31,22 +31,6 @@ export class KinlyHeartbeatService {
         private logger: Logger
     ) {}
 
-    private getCurrentConferenceAndParticipant(): Observable<{ conference: ConferenceResponse; participant: ParticipantModel }> {
-        return combineLatest([this.conferenceService.currentConference$, this.participantService.loggedInParticipant$]).pipe(
-            map(value => {
-                return { conference: value[0], participant: value[1] };
-            }),
-            tap(details => {
-                this.logger.info(`${this.loggerPrefix} got current conference and participant details`, {
-                    conferenceId: details.conference?.id ?? null,
-                    participantId: details.participant?.id ?? null
-                });
-            }),
-            filter(details => !!details.conference && !!details.participant),
-            take(1)
-        );
-    }
-
     initialiseHeartbeat(pexipApi: PexipClient) {
         this.getCurrentConferenceAndParticipant().subscribe(details => {
             this.currentConference = details.conference;
@@ -59,7 +43,7 @@ export class KinlyHeartbeatService {
                         heartbeatToken: heartbeatConfiguration.heartbeat_jwt
                     });
 
-                    this.heartbeat = new HeartbeatFactory(
+                    this.heartbeat = new heartbeatFactory(
                         pexipApi,
                         `${heartbeatConfiguration.heartbeat_url_base}/${this.currentConference.id}`,
                         this.currentConference.id,
@@ -101,5 +85,19 @@ export class KinlyHeartbeatService {
         this.heartbeat.kill();
         this.heartbeat = null;
         this.logger.info(`${this.loggerPrefix} Should have stopped heartbeat`);
+    }
+
+    private getCurrentConferenceAndParticipant(): Observable<{ conference: ConferenceResponse; participant: ParticipantModel }> {
+        return combineLatest([this.conferenceService.currentConference$, this.participantService.loggedInParticipant$]).pipe(
+            map(value => ({ conference: value[0], participant: value[1] })),
+            tap(details => {
+                this.logger.info(`${this.loggerPrefix} got current conference and participant details`, {
+                    conferenceId: details.conference?.id ?? null,
+                    participantId: details.participant?.id ?? null
+                });
+            }),
+            filter(details => !!details.conference && !!details.participant),
+            take(1)
+        );
     }
 }

@@ -17,12 +17,11 @@ import { ModalTrapFocus } from '../modal/modal-trap-focus';
     styleUrls: ['./select-media-devices.component.scss']
 })
 export class SelectMediaDevicesComponent implements OnInit, OnDestroy, AfterViewInit {
-    private readonly loggerPrefix = '[SelectMediaDevices] -';
     @Output() shouldClose = new EventEmitter();
+
     @Input() showAudioOnlySetting = false;
 
     @ViewChild('availableMicsListRef') availableMicsList: ElementRef<HTMLDivElement>;
-    private readonly SELECT_MEDIA_DEVICES_MODAL = 'select-device-modal';
 
     availableCameraDevices: UserMediaDevice[] = [];
     availableMicrophoneDevices: UserMediaDevice[] = [];
@@ -35,6 +34,8 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, AfterView
     showBackgroundFilter: boolean;
 
     private destroyedSubject = new Subject<any>();
+    private readonly loggerPrefix = '[SelectMediaDevices] -';
+    private readonly SELECT_MEDIA_DEVICES_MODAL = 'select-device-modal';
 
     constructor(
         private userMediaService: UserMediaService,
@@ -44,6 +45,21 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, AfterView
         private profileService: ProfileService,
         private videoFilterService: VideoFilterService
     ) {}
+
+    get audioOnlyToggleText(): string {
+        const result: string = this.connectWithCameraOn
+            ? this.translateService.instant('select-media-devices.on')
+            : this.translateService.instant('select-media-devices.off');
+        return result.toUpperCase();
+    }
+
+    get hasOnlyOneAvailableCameraDevice(): boolean {
+        return this.availableCameraDevices.length === 1;
+    }
+
+    get hasOnlyOneAvailableMicrophoneDevice(): boolean {
+        return this.availableMicrophoneDevices.length === 1;
+    }
 
     ngAfterViewInit() {
         ModalTrapFocus.trap(this.SELECT_MEDIA_DEVICES_MODAL);
@@ -105,14 +121,6 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, AfterView
         this.userMediaService.updateActiveMicrophone(this.selectedMicrophoneDevice);
     }
 
-    private updateSelectedCamera(camera: UserMediaDevice) {
-        this.selectedCameraDevice = this.availableCameraDevices.find(device => device.deviceId === camera.deviceId);
-    }
-
-    private updateSelectedMicrophone(microphone: UserMediaDevice) {
-        this.selectedMicrophoneDevice = this.availableMicrophoneDevices.find(device => device.deviceId === microphone.deviceId);
-    }
-
     toggleSwitch() {
         this.connectWithCameraOn = !this.connectWithCameraOn;
         this.logger.debug(`${this.loggerPrefix} Toggled camera switch to ${this.connectWithCameraOn ? 'on' : 'off'}`);
@@ -131,25 +139,18 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, AfterView
         this.shouldClose.emit();
     }
 
-    get audioOnlyToggleText(): string {
-        const result: string = this.connectWithCameraOn
-            ? this.translateService.instant('select-media-devices.on')
-            : this.translateService.instant('select-media-devices.off');
-        return result.toUpperCase();
-    }
-
-    get hasOnlyOneAvailableCameraDevice(): boolean {
-        return this.availableCameraDevices.length === 1;
-    }
-
-    get hasOnlyOneAvailableMicrophoneDevice(): boolean {
-        return this.availableMicrophoneDevices.length === 1;
-    }
-
     ngOnDestroy() {
         this.logger.debug(`${this.loggerPrefix} Closing select media device change`);
 
         this.destroyedSubject.next();
         this.destroyedSubject.complete();
+    }
+
+    private updateSelectedCamera(camera: UserMediaDevice) {
+        this.selectedCameraDevice = this.availableCameraDevices.find(device => device.deviceId === camera.deviceId);
+    }
+
+    private updateSelectedMicrophone(microphone: UserMediaDevice) {
+        this.selectedMicrophoneDevice = this.availableMicrophoneDevices.find(device => device.deviceId === microphone.deviceId);
     }
 }

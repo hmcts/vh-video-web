@@ -14,7 +14,7 @@
  * Learn more in https://angular.io/guide/browser-support
  */
 
-/***************************************************************************************************
+/** *************************************************************************************************
  * BROWSER POLYFILLS
  */
 
@@ -56,12 +56,12 @@ import 'core-js/es/reflect';
  */
 (window as any).__Zone_enable_cross_context_check = true;
 
-/***************************************************************************************************
+/** *************************************************************************************************
  * Zone JS is required by default for Angular itself.
  */
 import 'zone.js'; // Included with Angular CLI.
 
-/***************************************************************************************************
+/** *************************************************************************************************
  * APPLICATION IMPORTS
  */
 
@@ -72,7 +72,7 @@ import 'zone.js/dist/zone-patch-user-media';
 
 window.AudioContext = window.AudioContext || (window as any).webkitAudioContext; // Default // Safari and old versions of Chrome
 
-/***************************************************************************************************
+/** *************************************************************************************************
  * Load `$localize` onto the global scope - used if i18n tags appear in Angular templates.
  */
 import '@angular/localize/init';

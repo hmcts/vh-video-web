@@ -14,11 +14,6 @@ import { vhContactDetails } from '../contact-information';
     templateUrl: './error.component.html'
 })
 export class ErrorComponent implements OnInit, OnDestroy {
-    private readonly loggerPrefix = '[ErrorPage] -';
-    subscription = new Subscription();
-
-    private browserRefresh: boolean;
-
     failedAttemptToReconnect = false;
     errorMessageTitle: string;
     errorMessageBody: string;
@@ -28,6 +23,10 @@ export class ErrorComponent implements OnInit, OnDestroy {
     isExtensionOrFirewallIssue = false;
     hasLostInternet = false;
     contactDetails = vhContactDetails;
+    subscription = new Subscription();
+
+    private readonly loggerPrefix = '[ErrorPage] -';
+    private browserRefresh: boolean;
 
     constructor(
         private router: Router,
@@ -50,45 +49,15 @@ export class ErrorComponent implements OnInit, OnDestroy {
         return this.connectionStatusService.status;
     }
 
-    ngOnInit(): void {
-        this.attemptingReconnect = false;
-        this.getErrorMessage();
-    }
-
-    private checkForRefresh() {
-        this.subscription.add(
-            this.router.events.subscribe(event => {
-                if (event instanceof NavigationEnd) {
-                    this.browserRefresh = event.id === 1 && event.url === event.urlAfterRedirects;
-
-                    if (this.browserRefresh) {
-                        this.logger.debug(`${this.loggerPrefix} Page refresh detected. Navigating back.`);
-                        this.reconnect();
-                    } else {
-                        this.logger.debug(`${this.loggerPrefix} No Page refresh detected.`);
-                    }
-                }
-            })
-        );
-    }
-
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
         this.subscription.unsubscribe();
         this.attemptingReconnect = false;
     }
 
-    private getErrorMessage(): void {
-        const defaultBodyMessage = this.translateService.instant('error.default-body-message');
-        const defaultTitle = this.translateService.instant('error.problem-with-connection');
-        const dto = this.hasInternetConnection
-            ? this.errorService.getErrorMessageFromStorage()
-            : new ErrorMessage(defaultTitle, defaultBodyMessage, true);
-        this.errorMessageTitle = dto?.title;
-        this.isExtensionOrFirewallIssue = this.errorMessageTitle === 'FirewallProblem';
-        this.errorMessageBody = dto?.body ? dto.body : defaultBodyMessage;
-        this.showReconnect = dto?.showReconnect;
-        this.connectionError = this.errorMessageTitle !== undefined;
+    ngOnInit(): void {
+        this.attemptingReconnect = false;
+        this.getErrorMessage();
     }
 
     reconnect(): void {
@@ -112,5 +81,35 @@ export class ErrorComponent implements OnInit, OnDestroy {
             this.connectionStatusService.userTriggeredReconnect();
             this.connectionStatusService.checkNow();
         }
+    }
+
+    private checkForRefresh() {
+        this.subscription.add(
+            this.router.events.subscribe(event => {
+                if (event instanceof NavigationEnd) {
+                    this.browserRefresh = event.id === 1 && event.url === event.urlAfterRedirects;
+
+                    if (this.browserRefresh) {
+                        this.logger.debug(`${this.loggerPrefix} Page refresh detected. Navigating back.`);
+                        this.reconnect();
+                    } else {
+                        this.logger.debug(`${this.loggerPrefix} No Page refresh detected.`);
+                    }
+                }
+            })
+        );
+    }
+
+    private getErrorMessage(): void {
+        const defaultBodyMessage = this.translateService.instant('error.default-body-message');
+        const defaultTitle = this.translateService.instant('error.problem-with-connection');
+        const dto = this.hasInternetConnection
+            ? this.errorService.getErrorMessageFromStorage()
+            : new ErrorMessage(defaultTitle, defaultBodyMessage, true);
+        this.errorMessageTitle = dto?.title;
+        this.isExtensionOrFirewallIssue = this.errorMessageTitle === 'FirewallProblem';
+        this.errorMessageBody = dto?.body ? dto.body : defaultBodyMessage;
+        this.showReconnect = dto?.showReconnect;
+        this.connectionError = this.errorMessageTitle !== undefined;
     }
 }

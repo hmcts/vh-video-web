@@ -10,8 +10,9 @@ import { HearingBase } from './hearing-base';
 import { Participant } from './participant';
 
 export class Hearing extends HearingBase {
-    private conference: ConferenceResponseVho;
     readonly participants: Participant[];
+
+    private conference: ConferenceResponseVho;
 
     constructor(conference: ConferenceResponseVho) {
         super();
@@ -48,6 +49,28 @@ export class Hearing extends HearingBase {
         return this.conference.case_name;
     }
 
+    get status(): ConferenceStatus {
+        return this.conference.status;
+    }
+
+    get scheduledStartTime(): Date {
+        return new Date(this.conference.scheduled_date_time.getTime());
+    }
+
+    get scheduledEndTime(): Date {
+        const endTime = new Date(this.conference.scheduled_date_time.getTime());
+        endTime.setUTCMinutes(endTime.getUTCMinutes() + this.conference.scheduled_duration);
+        return endTime;
+    }
+
+    get actualCloseTime(): Date | null {
+        return this.conference.closed_date_time;
+    }
+
+    get hearingVenueName(): string {
+        return this.conference.hearing_venue_name;
+    }
+
     getConference(): ConferenceResponseVho {
         return this.conference;
     }
@@ -76,24 +99,6 @@ export class Hearing extends HearingBase {
         conference.endpoints[index] = ver;
     }
 
-    get status(): ConferenceStatus {
-        return this.conference.status;
-    }
-
-    get scheduledStartTime(): Date {
-        return new Date(this.conference.scheduled_date_time.getTime());
-    }
-
-    get scheduledEndTime(): Date {
-        const endTime = new Date(this.conference.scheduled_date_time.getTime());
-        endTime.setUTCMinutes(endTime.getUTCMinutes() + this.conference.scheduled_duration);
-        return endTime;
-    }
-
-    get actualCloseTime(): Date | null {
-        return this.conference.closed_date_time;
-    }
-
     retrieveHearingExpiryTime(): moment.Moment {
         return this.timeReader.retrieveHearingExpiryTime(this.conference.closed_date_time, this.conference.status);
     }
@@ -104,9 +109,5 @@ export class Hearing extends HearingBase {
 
     getParticipantById(participantId: string) {
         return this.participants.find(p => p.id === participantId);
-    }
-
-    get hearingVenueName(): string {
-        return this.conference.hearing_venue_name;
     }
 }

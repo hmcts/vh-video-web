@@ -24,14 +24,6 @@ export class LoggerService implements Logger {
             });
     }
 
-    private getConferenceIdFromRoute(route: ActivatedRouteSnapshot): ParamMap {
-        while (route && !route.paramMap?.has('conferenceId')) {
-            route = route?.firstChild;
-        }
-
-        return route?.paramMap;
-    }
-
     addConferenceIdToProperties(properties?: any, conferenceIdKey: string = LoggerService.currentConferenceIdPropertyKey) {
         properties = properties ?? {};
         if (typeof properties === 'object') {
@@ -70,5 +62,13 @@ export class LoggerService implements Logger {
     event(event: string, properties?: any) {
         properties = this.addConferenceIdToProperties(properties);
         this.adapters.forEach(logger => logger.trackEvent(event, properties));
+    }
+
+    private getConferenceIdFromRoute(route: ActivatedRouteSnapshot): ParamMap {
+        while (route && !route.paramMap?.has('conferenceId')) {
+            route = route?.firstChild;
+        }
+
+        return route?.paramMap;
     }
 }

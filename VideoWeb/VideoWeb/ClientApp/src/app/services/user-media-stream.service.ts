@@ -14,47 +14,15 @@ import { AudioOnlyImageService } from './audio-only-image.service';
 })
 export class UserMediaStreamService {
     private readonly loggerPrefix = '[UserMediaStreamService] -';
-
     private currentStream: MediaStream;
     private audioOnlyImageStream: MediaStream;
-
-    private isAudioOnly = false;
-
     private _activeCameraStream: MediaStream | null;
-    private get activeCameraStream(): MediaStream | null {
-        return this._activeCameraStream;
-    }
-    private set activeCameraStream(stream: MediaStream | null) {
-        this._activeCameraStream = stream;
-        this.activeCameraStreamSubject.next(stream);
-    }
-    private activeCameraStreamSubject = new ReplaySubject<MediaStream | null>(1);
-    get activeCameraStream$(): Observable<MediaStream | null> {
-        return this.activeCameraStreamSubject.asObservable();
-    }
-
     private _activeMicrophoneStream: MediaStream | null;
-    private get activeMicrophoneStream(): MediaStream | null {
-        return this._activeMicrophoneStream;
-    }
-    private set activeMicrophoneStream(stream: MediaStream | null) {
-        this._activeMicrophoneStream = stream;
-        this.activeMicrophoneStreamSubject.next(stream);
-    }
+    private isAudioOnly = false;
+    private activeCameraStreamSubject = new ReplaySubject<MediaStream | null>(1);
     private activeMicrophoneStreamSubject = new ReplaySubject<MediaStream | null>(1);
-    get activeMicrophoneStream$(): Observable<MediaStream | null> {
-        return this.activeMicrophoneStreamSubject.asObservable();
-    }
-
     private currentStreamSubject = new ReplaySubject<MediaStream>(1);
-    get currentStream$() {
-        return this.currentStreamSubject.asObservable();
-    }
-
     private streamModifiedSubject = new Subject<void>();
-    get streamModified$() {
-        return this.streamModifiedSubject.asObservable();
-    }
 
     constructor(
         private logger: Logger,
@@ -81,6 +49,40 @@ export class UserMediaStreamService {
         this.userMediaService.isAudioOnly$.subscribe(audioOnly => {
             this.onIsAudioOnlyChanged(audioOnly);
         });
+    }
+
+    get activeCameraStream$(): Observable<MediaStream | null> {
+        return this.activeCameraStreamSubject.asObservable();
+    }
+
+    get activeMicrophoneStream$(): Observable<MediaStream | null> {
+        return this.activeMicrophoneStreamSubject.asObservable();
+    }
+
+    get currentStream$() {
+        return this.currentStreamSubject.asObservable();
+    }
+
+    get streamModified$() {
+        return this.streamModifiedSubject.asObservable();
+    }
+
+    private get activeCameraStream(): MediaStream | null {
+        return this._activeCameraStream;
+    }
+
+    private get activeMicrophoneStream(): MediaStream | null {
+        return this._activeMicrophoneStream;
+    }
+
+    private set activeCameraStream(stream: MediaStream | null) {
+        this._activeCameraStream = stream;
+        this.activeCameraStreamSubject.next(stream);
+    }
+
+    private set activeMicrophoneStream(stream: MediaStream | null) {
+        this._activeMicrophoneStream = stream;
+        this.activeMicrophoneStreamSubject.next(stream);
     }
 
     private initialiseCurrentStream() {

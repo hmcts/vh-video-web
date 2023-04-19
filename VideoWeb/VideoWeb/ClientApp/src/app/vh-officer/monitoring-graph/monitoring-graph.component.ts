@@ -12,11 +12,6 @@ import { MonitorGraphService } from '../services/monitor-graph.service';
     styleUrls: ['./monitoring-graph.component.scss', '../vho-global-styles.scss']
 })
 export class MonitoringGraphComponent implements OnInit {
-    @Input('pakagesLostData')
-    set packagesLostData(packagesLost: PackageLost[]) {
-        this.transferPackagesLost(packagesLost);
-    }
-
     @Input()
     participantGraphInfo: ParticipantGraphInfo;
 
@@ -27,20 +22,37 @@ export class MonitoringGraphComponent implements OnInit {
     lineChartType: ChartType = 'line';
     lineChartPlugins = [];
     lineChartColors: Color[] = GraphSettings.getlineChartColors();
-
     lastPoint: number;
-
-    POOR_SIGNAL = 10;
-    BAD_SIGNAL = 5;
-
     lineChartOptions = GraphSettings.getLineChartOptions();
     showUnsupportedBrowser = false;
     participantName: string;
 
     browserInfoString: string;
     osInfoString: string;
+    POOR_SIGNAL = 10;
+    BAD_SIGNAL = 5;
 
     constructor(private monitorGraphService: MonitorGraphService) {}
+
+    get lastPackageLostValue() {
+        if (this.showUnsupportedBrowser && !this.lastPoint) {
+            return graphLabel.Unsupported;
+        }
+        if (!this.lastPoint || this.lastPoint === -1) {
+            return graphLabel.Disconnected;
+        }
+        if (this.lastPoint <= this.POOR_SIGNAL && this.lastPoint > this.BAD_SIGNAL) {
+            return graphLabel.Poor;
+        } else if (this.lastPoint <= this.BAD_SIGNAL && this.lastPoint >= 0) {
+            return graphLabel.Bad;
+        }
+        return graphLabel.Good;
+    }
+
+    @Input()
+    set pakagesLostData(packagesLost: PackageLost[]) {
+        this.transferPackagesLost(packagesLost);
+    }
 
     ngOnInit() {
         this.lineChartData.push({ data: Array.from(Array(GraphSettings.MAX_RECORDS), () => this.POOR_SIGNAL), label: graphLabel.Poor });
@@ -80,21 +92,6 @@ export class MonitoringGraphComponent implements OnInit {
 
     isUnsupportedBrowser(packages: PackageLost[]): boolean {
         return packages && packages.length > 0 && this.monitorGraphService.isUnsupportedBrowser(packages[packages.length - 1]);
-    }
-
-    get lastPackageLostValue() {
-        if (this.showUnsupportedBrowser && !this.lastPoint) {
-            return graphLabel.Unsupported;
-        }
-        if (!this.lastPoint || this.lastPoint === -1) {
-            return graphLabel.Disconnected;
-        }
-        if (this.lastPoint <= this.POOR_SIGNAL && this.lastPoint > this.BAD_SIGNAL) {
-            return graphLabel.Poor;
-        } else if (this.lastPoint <= this.BAD_SIGNAL && this.lastPoint >= 0) {
-            return graphLabel.Bad;
-        }
-        return graphLabel.Good;
     }
 
     getBrowserInfoString(packages: PackageLost[]) {

@@ -1,6 +1,6 @@
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { ParticipantForUserResponse, ParticipantStatus, Role, RoomSummaryResponse } from '../../services/clients/api-client';
+import { ParticipantStatus, Role } from '../../services/clients/api-client';
 import { ParticipantPanelModel } from '../models/participant-panel-model';
 import { JudgeContextMenuComponent } from './judge-context-menu.component';
 import {
@@ -17,13 +17,11 @@ import { HearingRole } from '../models/hearing-role-model';
 import { CaseTypeGroup } from '../models/case-type-group';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { ComponentFixture, TestBed, tick } from '@angular/core/testing';
-import { MockBuilder, MockPipe } from 'ng-mocks';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MockPipe } from 'ng-mocks';
 import { HyphenatePipe } from 'src/app/shared/pipes/hyphenate.pipe';
 import { LowerCasePipe } from '@angular/common';
 import { By } from '@angular/platform-browser';
-import { finalize } from 'rxjs/operators';
-import { PanelModel } from '../models/panel-model-base';
 import { HearingRoleHelper } from 'src/app/shared/helpers/hearing-role-helper';
 import { RandomPipe } from 'src/app/shared/pipes/random.pipe';
 
@@ -36,11 +34,9 @@ export class MockElementRef extends ElementRef {
 describe('JudgeContextMenuComponent', () => {
     const participants = new ConferenceTestData().getListOfParticipants();
     const logger = new MockLogger();
-    // const nativeElementSpy = jasmine.createSpyObj<any>(['contains']);
-    let elementRef: MockElementRef;
-    elementRef = new MockElementRef();
+
+    const elementRef = new MockElementRef();
     elementRef.nativeElement = jasmine.createSpyObj('nativeElement', ['contains']);
-    // let nativeElement: HTMLDivElement;
 
     let component: JudgeContextMenuComponent;
     let fixture: ComponentFixture<JudgeContextMenuComponent>;
@@ -117,7 +113,7 @@ describe('JudgeContextMenuComponent', () => {
         const dontShowForCaseTypeGroup = [CaseTypeGroup.NONE, CaseTypeGroup.JUDGE, CaseTypeGroup.OBSERVER, CaseTypeGroup.ENDPOINT];
         const caseTypeGroups = Object.keys(CaseTypeGroup);
 
-        it(`should return false when case type group is null`, () => {
+        it('should return false when case type group is null', () => {
             component.participant.caseTypeGroup = null;
             expect(component.showCaseTypeGroup()).toBe(false);
         });
@@ -131,7 +127,7 @@ describe('JudgeContextMenuComponent', () => {
             });
         });
 
-        it(`should return true when case type group is any other value`, () => {
+        it('should return true when case type group is any other value', () => {
             const caseTypeGroup = 'AnyOtherValue';
             component.participant.caseTypeGroup = caseTypeGroup;
             expect(caseTypeGroups).not.toContain(caseTypeGroup);
@@ -152,7 +148,7 @@ describe('JudgeContextMenuComponent', () => {
             });
         });
 
-        it(`should return true when hearing role is any other value`, () => {
+        it('should return true when hearing role is any other value', () => {
             const hearingRole = 'AnyOtherValue';
             component.participant.hearingRole = hearingRole;
             expect(hearingRoles).not.toContain(hearingRole);

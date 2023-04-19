@@ -8,25 +8,15 @@ import { TranslateService } from '@ngx-translate/core';
     styleUrls: ['./chat-input-box.component.scss']
 })
 export class ChatInputBoxComponent implements OnInit, AfterViewInit {
+    @ViewChild('screenReaderInputLimitAlert') screenReaderInputLimitAlert: ElementRef;
+    @Input() useLightText = false;
+    @Output() submittedMessage = new EventEmitter<string>();
+
     maxInputLength = 256;
     newMessageBody: UntypedFormControl;
     screenReaderAlert: HTMLElement;
-    @Input() useLightText = false;
-    @Output() submittedMessage = new EventEmitter<string>();
-    @ViewChild('screenReaderInputLimitAlert') screenReaderInputLimitAlert: ElementRef;
+
     constructor(private translateService: TranslateService) {}
-
-    ngOnInit() {
-        this.initForm();
-    }
-
-    ngAfterViewInit() {
-        this.screenReaderAlert = this.screenReaderInputLimitAlert.nativeElement;
-    }
-
-    initForm() {
-        this.newMessageBody = new UntypedFormControl(null, [Validators.minLength(1), Validators.maxLength(this.maxInputLength)]);
-    }
 
     get currentInputLength(): number {
         if (this.newMessageBody.value) {
@@ -42,6 +32,18 @@ export class ChatInputBoxComponent implements OnInit, AfterViewInit {
 
     get isInputInvalid(): boolean {
         return this.newMessageBody.dirty && this.newMessageBody.hasError('maxlength');
+    }
+
+    ngOnInit() {
+        this.initForm();
+    }
+
+    ngAfterViewInit() {
+        this.screenReaderAlert = this.screenReaderInputLimitAlert.nativeElement;
+    }
+
+    initForm() {
+        this.newMessageBody = new UntypedFormControl(null, [Validators.minLength(1), Validators.maxLength(this.maxInputLength)]);
     }
 
     sendMessage() {

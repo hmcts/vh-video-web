@@ -173,7 +173,6 @@ describe('LinkedParticipantPanelModel', () => {
 
     describe('callable', () => {
         let testModel: LinkedParticipantPanelModel;
-        let particpantPanelModel1: ParticipantPanelModel;
         const id1 = 'id1';
         const displayName1 = 'displayName1';
         const role1 = Role.None;
@@ -183,7 +182,6 @@ describe('LinkedParticipantPanelModel', () => {
         const representee1 = 'representsee1';
         const status1 = ParticipantStatus.None;
 
-        let particpantPanelModel2: ParticipantPanelModel;
         const id2 = 'id2';
         const displayName2 = 'displayName2';
         const role2 = Role.None;
@@ -193,7 +191,7 @@ describe('LinkedParticipantPanelModel', () => {
         const representee2 = 'representsee2';
         const status2 = ParticipantStatus.None;
 
-        particpantPanelModel1 = new ParticipantPanelModel(
+        const particpantPanelModel1 = new ParticipantPanelModel(
             id1,
             displayName1,
             role1,
@@ -203,7 +201,7 @@ describe('LinkedParticipantPanelModel', () => {
             representee1,
             status1
         );
-        particpantPanelModel2 = new ParticipantPanelModel(
+        const particpantPanelModel2 = new ParticipantPanelModel(
             id2,
             displayName2,
             role2,

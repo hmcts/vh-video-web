@@ -38,17 +38,6 @@ import { UpdateEndpointsDto } from '../shared/models/update-endpoints-dto';
     providedIn: 'root'
 })
 export class EventsService {
-    get handlersRegistered() {
-        return this._handlersRegistered;
-    }
-
-    private get eventsHubConnection() {
-        return this.eventsHubService.connection;
-    }
-
-    constructor(private logger: Logger, private eventsHubService: EventsHubService) {
-        eventsHubService.onEventsHubReady.subscribe(() => this.start());
-    }
     private participantStatusSubject = new Subject<ParticipantStatusMessage>();
     private endpointStatusSubject = new Subject<EndpointStatusMessage>();
     private hearingStatusSubject = new Subject<ConferenceStatusMessage>();
@@ -89,7 +78,7 @@ export class EventsService {
         AllocationHearings: (csoUserName: string, hearingDetails: HearingDetailRequest[]) => {
             this.eventsHubConnection.invoke('AddToGroup', csoUserName);
             const message = new NewAllocationMessage(hearingDetails);
-            this.logger.debug(`[EventsService] - ReceiveMessage allocation for {csoUserName} for hearings`);
+            this.logger.debug('[EventsService] - ReceiveMessage allocation for {csoUserName} for hearings');
             this.messageAllocationSubject.next(message);
         },
 
@@ -248,6 +237,22 @@ export class EventsService {
         }
     };
 
+    constructor(private logger: Logger, private eventsHubService: EventsHubService) {
+        eventsHubService.onEventsHubReady.subscribe(() => this.start());
+    }
+
+    get handlersRegistered() {
+        return this._handlersRegistered;
+    }
+
+    get eventHubIsConnected(): boolean {
+        return this.eventsHubService.isConnectedToHub;
+    }
+
+    private get eventsHubConnection() {
+        return this.eventsHubService.connection;
+    }
+
     start() {
         this.logger.info('[EventsService] - Start.');
 
@@ -286,10 +291,6 @@ export class EventsService {
         }
 
         this._handlersRegistered = false;
-    }
-
-    get eventHubIsConnected(): boolean {
-        return this.eventsHubService.isConnectedToHub;
     }
 
     onEventsHubReady(): Observable<any> {

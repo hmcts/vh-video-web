@@ -14,6 +14,11 @@ export class AudioOnlyImageService {
 
     constructor(private logger: Logger) {}
 
+    getAudioOnlyImageStream(): Observable<MediaStream> {
+        const canvas$ = this.createAudioOnlyImageCanvas(this.getAudioOnlyImage(this.audioOnlyImagePath));
+        return canvas$.pipe(map(canvas => canvas.captureStream(this.audioOnlyImageStreamFps)));
+    }
+
     private createAudioOnlyImageCanvas(image$: Observable<HTMLImageElement>): Observable<HTMLCanvasElement> {
         return image$.pipe(
             map(image => {
@@ -58,10 +63,5 @@ export class AudioOnlyImageService {
 
         this.logger.debug(`${this.loggerPrefix} image was cached.`);
         return of(existingImage);
-    }
-
-    getAudioOnlyImageStream(): Observable<MediaStream> {
-        const canvas$ = this.createAudioOnlyImageCanvas(this.getAudioOnlyImage(this.audioOnlyImagePath));
-        return canvas$.pipe(map(canvas => canvas.captureStream(this.audioOnlyImageStreamFps)));
     }
 }

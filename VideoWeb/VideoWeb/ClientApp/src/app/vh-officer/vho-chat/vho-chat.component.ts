@@ -33,30 +33,18 @@ import { SecurityServiceProvider } from 'src/app/security/authentication/securit
     styleUrls: ['./vho-chat.component.scss', '../vho-global-styles.scss']
 })
 export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDestroy, AfterViewChecked {
+    @ViewChild('content', { static: false }) content: ElementRef;
+
+    @Input() hearing: Hearing;
+
+    @Output() unreadMessageCount = new EventEmitter<ConferenceUnreadMessageCount>();
+
     newMessageBody: UntypedFormControl;
     chatHubSubscription: Subscription;
     loading: boolean;
-
-    private _participant: Participant;
-    @ViewChild('content', { static: false }) content: ElementRef;
-
-    @Input() set participant(value: Participant) {
-        if (!this._participant) {
-            this._participant = value;
-        } else {
-            this._participant = value;
-            this.updateChatWindow();
-        }
-    }
-
-    get participant(): Participant {
-        return this._participant;
-    }
-
     username: string;
 
-    @Input() hearing: Hearing;
-    @Output() unreadMessageCount = new EventEmitter<ConferenceUnreadMessageCount>();
+    private _participant: Participant;
 
     constructor(
         protected videoWebService: VideoWebService,
@@ -70,12 +58,34 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         super(videoWebService, profileService, eventService, logger, securityServiceProviderService, imHelper, translateService);
     }
 
+    get participant(): Participant {
+        return this._participant;
+    }
+
     get participantUsername() {
         return this._participant.id;
     }
 
     get participantId() {
         return this._participant.id;
+    }
+
+    @Input() set participant(value: Participant) {
+        if (!this._participant) {
+            this._participant = value;
+        } else {
+            this._participant = value;
+            this.updateChatWindow();
+        }
+    }
+
+    @HostListener('window:beforeunload')
+    ngOnDestroy(): void {
+        this.logger.debug(`[ChatHub VHO] closing chat for ${this.hearing.id}`);
+        if (this.chatHubSubscription) {
+            this.chatHubSubscription.unsubscribe();
+        }
+        super.ngOnDestroy();
     }
 
     ngAfterViewChecked(): void {
@@ -132,14 +142,5 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         // no special changes here
         this.disableScrollDown = false;
         this.scrollToBottom();
-    }
-
-    @HostListener('window:beforeunload')
-    ngOnDestroy(): void {
-        this.logger.debug(`[ChatHub VHO] closing chat for ${this.hearing.id}`);
-        if (this.chatHubSubscription) {
-            this.chatHubSubscription.unsubscribe();
-        }
-        super.ngOnDestroy();
     }
 }

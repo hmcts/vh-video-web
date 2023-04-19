@@ -17,12 +17,8 @@ export class EventBusService {
     on<T>(eventType: VHEventType, action: CallbackFunction<T>): Subscription {
         return this.eventStream
             .pipe(
-                filter((e: EmitEvent<T>) => {
-                    return e.eventType === eventType;
-                }),
-                map((event: EmitEvent<T>) => {
-                    return event.value;
-                })
+                filter((e: EmitEvent<T>) => e.eventType === eventType),
+                map((event: EmitEvent<T>) => event.value)
             )
             .subscribe(action);
     }

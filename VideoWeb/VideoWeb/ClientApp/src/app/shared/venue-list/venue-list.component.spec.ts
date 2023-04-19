@@ -20,10 +20,11 @@ import { CsoFilter } from 'src/app/vh-officer/services/models/cso-filter';
 import { fakeAsync, tick } from '@angular/core/testing';
 
 class MockedVenueListComponent extends VenueListComponentDirective {
-    goToHearingList() {}
     get showVhoSpecificContent() {
         return true;
     }
+
+    goToHearingList() {}
 }
 
 describe('VenueListComponent', () => {

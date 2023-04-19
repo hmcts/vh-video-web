@@ -32,19 +32,19 @@ export class JudgeGuard extends AuthBaseGuard implements CanActivate {
                     return false;
                 }
 
-                this.logger.debug(`[JudgeGuard] Checking if user is a judge or JOH`);
+                this.logger.debug('[JudgeGuard] Checking if user is a judge or JOH');
                 try {
                     const profile = await this.userProfileService.getUserProfile();
                     if (profile.role === Role.Judge || profile.role === Role.JudicialOfficeHolder) {
-                        this.logger.debug(`[JudgeGuard] User is a judge or JOH.`);
+                        this.logger.debug('[JudgeGuard] User is a judge or JOH.');
                         return true;
                     } else {
-                        this.logger.debug(`[JudgeGuard] User is not a judge. Going back home`);
+                        this.logger.debug('[JudgeGuard] User is not a judge. Going back home');
                         this.router.navigate(['/home']);
                         return false;
                     }
                 } catch (err) {
-                    this.logger.error(`[JudgeGuard] Failed to get user profile. Logging out.`, err);
+                    this.logger.error('[JudgeGuard] Failed to get user profile. Logging out.', err);
                     this.router.navigate(['/logout']);
                     return false;
                 }

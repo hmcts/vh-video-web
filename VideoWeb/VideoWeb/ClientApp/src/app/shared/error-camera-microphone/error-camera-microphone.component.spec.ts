@@ -5,13 +5,10 @@ import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { ErrorService } from 'src/app/services/error.service';
 
 describe('ErrorComeraMicrophoneComponent', () => {
-    let routerSpy: jasmine.SpyObj<Router>;
-    let pageTrackerSpy: jasmine.SpyObj<PageTrackerService>;
-    let errorServiceSpy: jasmine.SpyObj<ErrorService>;
-    pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackPreviousPage', 'getPreviousUrl']);
+    const pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackPreviousPage', 'getPreviousUrl']);
     pageTrackerSpy.getPreviousUrl.and.returnValue('previous-page-url');
-    errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['getMediaDeviceErrorMessageTypeFromStorage']);
-    routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate']);
+    const errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['getMediaDeviceErrorMessageTypeFromStorage']);
+    const routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate']);
 
     const component = new ErrorCameraMicrophoneComponent(routerSpy, pageTrackerSpy, new MockLogger(), errorServiceSpy);
 

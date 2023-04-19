@@ -19,25 +19,35 @@ import { HearingRoleHelper } from 'src/app/shared/helpers/hearing-role-helper';
     styleUrls: ['./judge-context-menu.component.scss']
 })
 export class JudgeContextMenuComponent implements OnInit {
-    private readonly loggerPrefix = '[JudgeContextMenu] -';
-    private readonly initialPrefix = 'judge-context-menu';
-    idPrefix: string;
-    isDroppedDown = false;
-    participant: PanelModel;
-
-    @Input() set participantInput(participant: PanelModel) {
-        this.participant = participant;
-    }
-
     @Output() toggleMuteParticipantEvent = new EventEmitter<ToggleMuteParticipantEvent>();
     @Output() toggleSpotlightParticipantEvent = new EventEmitter<ToggleSpotlightParticipantEvent>();
     @Output() lowerParticipantHandEvent = new EventEmitter<LowerParticipantHandEvent>();
     @Output() callParticipantIntoHearingEvent = new EventEmitter<CallParticipantIntoHearingEvent>();
     @Output() dismissParticipantFromHearingEvent = new EventEmitter<DismissParticipantFromHearingEvent>();
 
+    idPrefix: string;
+    isDroppedDown = false;
+    participant: PanelModel;
+
+    private readonly loggerPrefix = '[JudgeContextMenu] -';
+    private readonly initialPrefix = 'judge-context-menu';
+
     constructor(private logger: Logger, private elementRef: ElementRef, protected translateService: TranslateService) {}
-    ngOnInit(): void {
-        this.idPrefix = this.participant?.id ? `${this.initialPrefix}-participant-${this.participant.id}` : this.initialPrefix;
+
+    get isJudge(): boolean {
+        return this.participant.hearingRole === HearingRole.JUDGE;
+    }
+
+    get isWitness(): boolean {
+        return this.participant.hearingRole === HearingRole.WITNESS;
+    }
+
+    get isPanelMember(): boolean {
+        return HearingRoleHelper.isPanelMember(this.participant.hearingRole);
+    }
+
+    @Input() set participantInput(participant: PanelModel) {
+        this.participant = participant;
     }
 
     @HostListener('document:click', ['$event'])
@@ -48,6 +58,9 @@ export class JudgeContextMenuComponent implements OnInit {
             });
             this.isDroppedDown = false;
         }
+    }
+    ngOnInit(): void {
+        this.idPrefix = this.participant?.id ? `${this.initialPrefix}-participant-${this.participant.id}` : this.initialPrefix;
     }
 
     isClickedOutsideOfOpenMenu(event: Event) {
@@ -89,18 +102,6 @@ export class JudgeContextMenuComponent implements OnInit {
             participant: this.participant.id
         });
         this.isDroppedDown = !this.isDroppedDown;
-    }
-
-    get isJudge(): boolean {
-        return this.participant.hearingRole === HearingRole.JUDGE;
-    }
-
-    get isWitness(): boolean {
-        return this.participant.hearingRole === HearingRole.WITNESS;
-    }
-
-    get isPanelMember(): boolean {
-        return HearingRoleHelper.isPanelMember(this.participant.hearingRole);
     }
 
     showCaseTypeGroup(): boolean {

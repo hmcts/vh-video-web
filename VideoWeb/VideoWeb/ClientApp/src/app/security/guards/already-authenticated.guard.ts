@@ -22,9 +22,7 @@ export class AlreadyAuthenticatedGuard implements CanActivate {
                     this.router.navigate([pageUrls.Logout]);
                 }
             }),
-            map(authenticated => {
-                return !authenticated;
-            })
+            map(authenticated => !authenticated)
         );
     }
 }

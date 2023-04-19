@@ -34,10 +34,6 @@ import { CsoFilter } from '../services/models/cso-filter';
 export class CommandCentreComponent implements OnInit, OnDestroy {
     public menuOption = MenuOption;
 
-    private readonly judgeAllocationStorage: SessionStorage<string[]>;
-    private readonly courtAccountsAllocationStorage: SessionStorage<CourtRoomsAccounts[]>;
-    private readonly csoAllocationStorage: SessionStorage<CsoFilter>;
-
     venueAllocations: string[] = [];
     courtRoomsAccountsFilters: CourtRoomsAccounts[] = [];
     csoFilter: CsoFilter;
@@ -57,10 +53,13 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
     loadingData: boolean;
     configSettings: ClientSettingsResponse;
-
     displayFilters = false;
-    private readonly loggerPrefix = '[CommandCentre] -';
     vhoWorkAllocationFeatureFlag: boolean;
+
+    private readonly loggerPrefix = '[CommandCentre] -';
+    private readonly judgeAllocationStorage: SessionStorage<string[]>;
+    private readonly courtAccountsAllocationStorage: SessionStorage<CourtRoomsAccounts[]>;
+    private readonly csoAllocationStorage: SessionStorage<CsoFilter>;
 
     constructor(
         private queryService: VhoQueryService,

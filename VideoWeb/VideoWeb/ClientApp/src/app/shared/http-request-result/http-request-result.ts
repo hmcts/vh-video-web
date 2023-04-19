@@ -8,8 +8,7 @@ export interface IHttpRequestResult<TResult> {
 
 export function toHttpRequestResult<TResult>() {
     return function (source: Observable<TResult>): Observable<IHttpRequestResult<TResult>> {
-        return new Observable<IHttpRequestResult<TResult>>(subscriber => {
-            return source.subscribe({
+        return new Observable<IHttpRequestResult<TResult>>(subscriber => source.subscribe({
                 next(value) {
                     subscriber.next({ status: 200, result: value, error: null });
                 },
@@ -19,7 +18,6 @@ export function toHttpRequestResult<TResult>() {
                 complete() {
                     subscriber.complete();
                 }
-            });
-        });
+            }));
     };
 }

@@ -10,8 +10,10 @@ import { ISecurityService } from './authentication/security-service.interface';
 
 @Injectable()
 export class AuthBaseGuard {
-    protected securityService: ISecurityService;
     currentIdp: string;
+
+    protected securityService: ISecurityService;
+
     constructor(
         securityServiceProviderService: SecurityServiceProvider,
         protected router: Router,

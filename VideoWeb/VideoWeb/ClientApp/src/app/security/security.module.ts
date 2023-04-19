@@ -12,6 +12,12 @@ import { SecurityRoutingModule } from './security-routing.module';
 import { UnauthorisedComponent } from './unauthorised/unauthorised.component';
 import { JwtHelperService as Auth0JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 
+export function restoreConfig(securityConfigSetupService: SecurityConfigSetupService): Function {
+    return () => {
+        securityConfigSetupService.restoreConfig();
+    };
+}
+
 @NgModule({
     imports: [CommonModule, SharedModule, SecurityRoutingModule],
     declarations: [LoginComponent, LogoutComponent, UnauthorisedComponent, IdpSelectionComponent, EjudSignInComponent, VhSignInComponent],
@@ -20,12 +26,12 @@ import { JwtHelperService as Auth0JwtHelperService, JWT_OPTIONS } from '@auth0/a
         ConfigService,
         SecurityConfigSetupService,
         { provide: APP_INITIALIZER, useFactory: getSettings, deps: [ConfigService], multi: true },
-        // {
-        //     provide: APP_INITIALIZER,
-        //     useFactory: restoreConfig,
-        //     deps: [SecurityConfigSetupService],
-        //     multi: true
-        // },
+        {
+            provide: APP_INITIALIZER,
+            useFactory: restoreConfig,
+            deps: [SecurityConfigSetupService],
+            multi: true
+        },
         { provide: JWT_OPTIONS, useValue: JWT_OPTIONS },
         Auth0JwtHelperService
     ]

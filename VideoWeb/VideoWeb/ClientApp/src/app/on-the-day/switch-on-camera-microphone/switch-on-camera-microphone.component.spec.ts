@@ -166,9 +166,7 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
     }));
 
     it('should update mediaAccepted and userPrompted to false when request media throw an error', fakeAsync(() => {
-        getSpiedPropertyGetter(userMediaStreamService, 'currentStream$').and.callFake(() => {
-            return throwError(new Error('Fake error'));
-        });
+        getSpiedPropertyGetter(userMediaStreamService, 'currentStream$').and.callFake(() => throwError(new Error('Fake error')));
         spyOn(component, 'postPermissionDeniedAlert');
 
         component.requestMedia();

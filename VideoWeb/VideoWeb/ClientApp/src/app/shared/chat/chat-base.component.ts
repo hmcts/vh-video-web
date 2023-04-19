@@ -18,10 +18,6 @@ import { takeUntil } from 'rxjs/operators';
     template: ''
 })
 export abstract class ChatBaseComponent implements OnDestroy {
-    protected hearing: Hearing;
-    protected securityService: ISecurityService;
-    protected destroyed$ = new Subject();
-
     messages: InstantMessage[] = [];
     pendingMessages: Map<string, InstantMessage[]> = new Map<string, InstantMessage[]>();
     loggedInUserProfile: UserProfileResponse;
@@ -31,6 +27,13 @@ export abstract class ChatBaseComponent implements OnDestroy {
 
     DEFAULT_ADMIN_USERNAME = 'Admin';
     currentIdp: string;
+
+    protected hearing: Hearing;
+    protected securityService: ISecurityService;
+    protected destroyed$ = new Subject();
+
+    abstract content: ElementRef<HTMLElement>;
+
     protected constructor(
         protected videoWebService: VideoWebService,
         protected profileService: ProfileService,
@@ -46,10 +49,6 @@ export abstract class ChatBaseComponent implements OnDestroy {
         });
     }
 
-    abstract content: ElementRef<HTMLElement>;
-    abstract sendMessage(messageBody: string): void;
-    abstract get participantUsername(): string;
-    abstract get participantId(): string;
     get pendingMessagesForConversation(): InstantMessage[] {
         if (this.pendingMessages.has(this.participantUsername)) {
             return this.pendingMessages.get(this.participantUsername);
@@ -57,6 +56,9 @@ export abstract class ChatBaseComponent implements OnDestroy {
             return [];
         }
     }
+
+    abstract get participantUsername(): string;
+    abstract get participantId(): string;
 
     ngOnDestroy(): void {
         this.destroyed$.next();
@@ -157,16 +159,6 @@ export abstract class ChatBaseComponent implements OnDestroy {
         }
     }
 
-    private async getProfileForUser(username: string): Promise<UserProfileResponse> {
-        const profile = this.profileService.checkCacheForProfileByUsername(username);
-        if (profile) {
-            return Promise.resolve(profile);
-        }
-        return this.profileService.getProfileByUsername(username);
-    }
-
-    abstract handleIncomingOtherMessage(messsage: InstantMessage);
-
     async retrieveChatForConference(participantId: string): Promise<InstantMessage[]> {
         this.messages = (await this.videoWebService.getConferenceChatHistory(this.hearing.id, participantId)).map(m => {
             const im = new InstantMessage(m);
@@ -216,4 +208,15 @@ export abstract class ChatBaseComponent implements OnDestroy {
             }
         }
     }
+
+    private async getProfileForUser(username: string): Promise<UserProfileResponse> {
+        const profile = this.profileService.checkCacheForProfileByUsername(username);
+        if (profile) {
+            return Promise.resolve(profile);
+        }
+        return this.profileService.getProfileByUsername(username);
+    }
+
+    abstract sendMessage(messageBody: string): void;
+    abstract handleIncomingOtherMessage(messsage: InstantMessage);
 }

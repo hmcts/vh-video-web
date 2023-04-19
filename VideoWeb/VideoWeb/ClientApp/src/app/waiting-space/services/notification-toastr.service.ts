@@ -14,7 +14,12 @@ import { VideoCallService } from './video-call.service';
 
 @Injectable()
 export class NotificationToastrService {
+    activeRoomInviteRequests = [];
+    activeHeartbeatReport = [];
+    activeLinkedParticipantRejectionToasts: { [inviteKey: string]: VhToastComponent } = {};
+
     private readonly loggerPrefix = '[NotificationToastService] -';
+
     constructor(
         private logger: Logger,
         private toastr: ToastrService,
@@ -25,10 +30,6 @@ export class NotificationToastrService {
     ) {
         this.notificationSoundService.initConsultationRequestRingtone();
     }
-
-    activeRoomInviteRequests = [];
-    activeHeartbeatReport = [];
-    activeLinkedParticipantRejectionToasts: { [inviteKey: string]: VhToastComponent } = {};
 
     getInviteKey(conferenceId: string, roomLabel: string): string {
         return `${conferenceId}_${roomLabel}`;
@@ -368,43 +369,6 @@ export class NotificationToastrService {
         return this.showEndpointToast(toastTitle, toastBody, inHearing, buttonId, buttonLabel);
     }
 
-    private showEndpointToast(
-        toastTitle: string,
-        toastBody: string,
-        inHearing: boolean,
-        buttonId: string,
-        buttonLabel: string
-    ): VhToastComponent {
-        let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${toastTitle}</span>`;
-        message += `<span class="toast-content toast-body">${toastBody}</span>`;
-
-        const toast = this.toastr.show('', '', {
-            timeOut: 0,
-            extendedTimeOut: 0,
-            tapToDismiss: false,
-            toastComponent: VhToastComponent
-        });
-        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
-            color: inHearing ? 'white' : 'black',
-            htmlBody: message,
-            onNoAction: async () => {
-                this.logger.info(`${this.loggerPrefix} No action called on endpoint added alert`);
-            },
-            buttons: [
-                {
-                    id: buttonId,
-                    label: buttonLabel,
-                    cssClass: 'green',
-                    action: async () => {
-                        this.toastr.remove(toast.toastId);
-                    }
-                }
-            ]
-        };
-
-        return toast.toastRef.componentInstance as VhToastComponent;
-    }
-
     showHearingLayoutchanged(participant: ParticipantResponse, inHearing: boolean = false): VhToastComponent {
         const messageBody = this.translateService.instant('notification-toastr.hearing-layout-changed.message');
         let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${this.translateService.instant(
@@ -528,6 +492,43 @@ export class NotificationToastrService {
                     id: 'notification-toastr-create-consultation-notification-close',
                     label: this.translateService.instant('notification-toastr.linked-participants.button-close'),
                     cssClass: 'red',
+                    action: async () => {
+                        this.toastr.remove(toast.toastId);
+                    }
+                }
+            ]
+        };
+
+        return toast.toastRef.componentInstance as VhToastComponent;
+    }
+
+    private showEndpointToast(
+        toastTitle: string,
+        toastBody: string,
+        inHearing: boolean,
+        buttonId: string,
+        buttonLabel: string
+    ): VhToastComponent {
+        let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${toastTitle}</span>`;
+        message += `<span class="toast-content toast-body">${toastBody}</span>`;
+
+        const toast = this.toastr.show('', '', {
+            timeOut: 0,
+            extendedTimeOut: 0,
+            tapToDismiss: false,
+            toastComponent: VhToastComponent
+        });
+        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
+            color: inHearing ? 'white' : 'black',
+            htmlBody: message,
+            onNoAction: async () => {
+                this.logger.info(`${this.loggerPrefix} No action called on endpoint added alert`);
+            },
+            buttons: [
+                {
+                    id: buttonId,
+                    label: buttonLabel,
+                    cssClass: 'green',
                     action: async () => {
                         this.toastr.remove(toast.toastId);
                     }

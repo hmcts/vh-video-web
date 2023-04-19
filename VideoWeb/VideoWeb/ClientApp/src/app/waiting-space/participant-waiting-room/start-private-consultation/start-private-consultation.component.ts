@@ -18,16 +18,17 @@ import { ParticipantListItem } from '../participant-list-item';
     styleUrls: ['./start-private-consultation.component.scss']
 })
 export class StartPrivateConsultationComponent implements OnChanges {
-    selectedParticipants = Array<string>();
-    selectedEndpoints = Array<string>();
     @Input() participants: ParticipantResponse[];
-
-    filteredParticipants: ParticipantListItem[] = [];
-
     @Input() allowedEndpoints: AllowedEndpointResponse[];
     @Input() endpoints: VideoEndpointResponse[];
     @Output() continue = new EventEmitter<{ participants: string[]; endpoints: string[] }>();
     @Output() cancel = new EventEmitter();
+
+    selectedParticipants = Array<string>();
+    selectedEndpoints = Array<string>();
+
+    filteredParticipants: ParticipantListItem[] = [];
+
     constructor(private translateService: TranslateService) {}
 
     ngOnChanges(changes: SimpleChanges) {

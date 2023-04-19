@@ -110,7 +110,7 @@ describe('JudgeHearingListComponent', () => {
     it('should return a blank court name if no profile is loaded', async () => {
         const profile = null;
         component.profile = profile;
-        expect(component.courtName).toBe(``);
+        expect(component.courtName).toBe('');
     });
 
     it('should navigate to judge waiting room when conference is selected for user as a judge in the conference', fakeAsync(() => {

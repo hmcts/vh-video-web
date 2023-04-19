@@ -24,16 +24,16 @@ export class ErrorCameraMicrophoneComponent implements OnInit {
         this.deviceIsInUse = this.getErrorMessage();
     }
 
-    private getErrorMessage(): boolean {
-        const errorType = this.errorService.getMediaDeviceErrorMessageTypeFromStorage();
-        return errorType === 'DevicesInUse';
-    }
-
     continue() {
         const previousPage = this.pageTracker.getPreviousUrl();
         this.logger.debug(`${this.loggerPrefix} Navigating to previous page`, {
             returnUrl: previousPage
         });
         this.router.navigate([previousPage]);
+    }
+
+    private getErrorMessage(): boolean {
+        const errorType = this.errorService.getMediaDeviceErrorMessageTypeFromStorage();
+        return errorType === 'DevicesInUse';
     }
 }

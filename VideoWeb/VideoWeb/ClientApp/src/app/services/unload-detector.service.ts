@@ -22,6 +22,40 @@ export class UnloadDetectorService {
         this.initialise(deviceDetectorService.isDesktop());
     }
 
+    get shouldUnload(): Observable<void> {
+        return this.shouldUnloadSubject.asObservable();
+    }
+
+    get shouldReload(): Observable<void> {
+        return this.shouldReloadSubject.asObservable();
+    }
+
+    private get beforeUnload(): Observable<void> {
+        return this.beforeUnloadSubject.asObservable();
+    }
+
+    private get visibilityChange(): Observable<boolean> {
+        return this.visibilityChangeSubject.asObservable();
+    }
+
+    private get pageHidden(): Observable<void> {
+        return this.pageHiddenSubject.asObservable();
+    }
+
+    private get visibilityChangedToHidden(): Observable<void> {
+        return this.visibilityChange.pipe(
+            filter(value => value === true),
+            map(() => void 0)
+        );
+    }
+
+    private get visibilityChangedToVisible(): Observable<void> {
+        return this.visibilityChange.pipe(
+            filter(value => value === false),
+            map(() => void 0)
+        );
+    }
+
     private initialise(isDesktop: boolean) {
         if (isDesktop) {
             this.initialiseEventHandlersForDesktopDevices();
@@ -66,43 +100,5 @@ export class UnloadDetectorService {
             this.shouldReloadSubject.next();
             this.hasEmittedUnload = false;
         });
-    }
-
-    get shouldUnload(): Observable<void> {
-        return this.shouldUnloadSubject.asObservable();
-    }
-
-    get shouldReload(): Observable<void> {
-        return this.shouldReloadSubject.asObservable();
-    }
-
-    private get beforeUnload(): Observable<void> {
-        return this.beforeUnloadSubject.asObservable();
-    }
-
-    private get visibilityChange(): Observable<boolean> {
-        return this.visibilityChangeSubject.asObservable();
-    }
-
-    private get pageHidden(): Observable<void> {
-        return this.pageHiddenSubject.asObservable();
-    }
-
-    private get visibilityChangedToHidden(): Observable<void> {
-        return this.visibilityChange.pipe(
-            filter(value => value === true),
-            map(() => {
-                return;
-            })
-        );
-    }
-
-    private get visibilityChangedToVisible(): Observable<void> {
-        return this.visibilityChange.pipe(
-            filter(value => value === false),
-            map(() => {
-                return;
-            })
-        );
     }
 }

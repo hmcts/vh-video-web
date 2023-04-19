@@ -15,8 +15,6 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
     templateUrl: './quick-links.component.html'
 })
 export class QuickLinksComponent implements OnInit, OnDestroy {
-    private loggerPrefix = '[QuickLinksComponent] -';
-
     @ViewChild('fullName', { static: false }) inputFullName: ElementRef;
 
     error: {
@@ -33,9 +31,10 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
     quickLinkRoleFormControl: UntypedFormControl;
     quickLinkParticipantRoles: Role[] = [];
     hearingValidated = false;
-
     pending$ = new BehaviorSubject(false);
+
     private destroyed$ = new Subject();
+    private loggerPrefix = '[QuickLinksComponent] -';
 
     constructor(
         private logger: Logger,

@@ -19,8 +19,6 @@ import { Room } from '../../shared/models/room';
 import { RoomTransfer } from '../../shared/models/room-transfer';
 import { NewAllocationMessage } from '../../services/models/new-allocation-message';
 
-export let eventsServiceSpy: jasmine.SpyObj<EventsService>;
-
 export const hearingStatusSubjectMock = new Subject<ConferenceStatusMessage>();
 export const participantStatusSubjectMock = new Subject<ParticipantStatusMessage>();
 export const endpointStatusSubjectMock = new Subject<EndpointStatusMessage>();
@@ -45,7 +43,7 @@ export const hearingLayoutChangedSubjectMock = new Subject<HearingLayoutChanged>
 export const newAllocationMessageSubjectMock = new Subject<NewAllocationMessage>();
 export const getEndpointsUpdatedMessageSubjectMock = new Subject<EndpointsUpdatedMessage>();
 
-eventsServiceSpy = jasmine.createSpyObj<EventsService>(
+export const eventsServiceSpy = jasmine.createSpyObj<EventsService>(
     'EventsService',
     [
         'start',

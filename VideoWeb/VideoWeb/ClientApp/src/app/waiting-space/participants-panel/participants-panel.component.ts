@@ -38,6 +38,23 @@ import { IndividualPanelModel } from '../models/individual-panel-model';
     styleUrls: ['./participants-panel.component.scss']
 })
 export class ParticipantsPanelComponent implements OnInit, OnDestroy {
+    @Input() isCountdownCompleted: boolean;
+
+    participants: PanelModel[] = [];
+    nonEndpointParticipants: PanelModel[] = [];
+    endpointParticipants: PanelModel[] = [];
+    isMuteAll = false;
+    conferenceId: string;
+
+    videoCallSubscription$ = new Subscription();
+    eventhubSubscription$ = new Subscription();
+    participantsSubscription$ = new Subscription();
+
+    transferTimeout: { [id: string]: NodeJS.Timeout } = {};
+
+    readonly idPrefix = 'participants-panel';
+
+    private readonly loggerPrefix = '[ParticipantsPanel] -';
     constructor(
         private videoWebService: VideoWebService,
         private route: ActivatedRoute,
@@ -49,20 +66,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private mapper: ParticipantPanelModelMapper,
         private participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService
     ) {}
-    private readonly loggerPrefix = '[ParticipantsPanel] -';
-    participants: PanelModel[] = [];
-    nonEndpointParticipants: PanelModel[] = [];
-    endpointParticipants: PanelModel[] = [];
-    isMuteAll = false;
-    conferenceId: string;
-    readonly idPrefix = 'participants-panel';
-
-    videoCallSubscription$ = new Subscription();
-    eventhubSubscription$ = new Subscription();
-    participantsSubscription$ = new Subscription();
-
-    transferTimeout: { [id: string]: NodeJS.Timeout } = {};
-    @Input() isCountdownCompleted: boolean;
 
     private static showCaseRole(participant: PanelModel) {
         return !(
@@ -551,17 +554,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         }, 10000);
     }
 
-    private async sendTransferDirection(participant: PanelModel, direction: TransferDirection) {
-        if (participant instanceof LinkedParticipantPanelModel) {
-            participant.participants.forEach(async linkedParticipant => {
-                this.updateLocalAudioMutedForWitnessInterpreterVmr(linkedParticipant, participant.id, true);
-                await this.eventService.sendTransferRequest(this.conferenceId, linkedParticipant.id, direction);
-            });
-        } else {
-            await this.eventService.sendTransferRequest(this.conferenceId, participant.id, direction);
-        }
-    }
-
     async initiateTransfer(participant: PanelModel) {
         try {
             this.resetWitnessTransferTimeout(participant.id);
@@ -682,6 +674,17 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     isWitness(participant: PanelModel) {
         return participant.isWitness;
+    }
+
+    private async sendTransferDirection(participant: PanelModel, direction: TransferDirection) {
+        if (participant instanceof LinkedParticipantPanelModel) {
+            participant.participants.forEach(async linkedParticipant => {
+                this.updateLocalAudioMutedForWitnessInterpreterVmr(linkedParticipant, participant.id, true);
+                await this.eventService.sendTransferRequest(this.conferenceId, linkedParticipant.id, direction);
+            });
+        } else {
+            await this.eventService.sendTransferRequest(this.conferenceId, participant.id, direction);
+        }
     }
 
     private getHearingRole(participant: PanelModel): string {

@@ -729,19 +729,19 @@ describe('HearingControlsBaseComponent', () => {
     });
 
     describe('canShowScreenShareButton()', () => {
-        it(`returns "false" when device is not desktop`, () => {
+        it('returns "false" when device is not desktop', () => {
             deviceTypeService.isDesktop.and.returnValue(false);
             component.ngOnInit();
             expect(component.canShowScreenShareButton).toBe(false);
         });
 
-        it(`returns "true" when it is a desktop device`, () => {
+        it('returns "true" when it is a desktop device', () => {
             deviceTypeService.isDesktop.and.returnValue(true);
             component.ngOnInit();
             expect(component.canShowScreenShareButton).toBe(true);
         });
 
-        it(`covers all HearingRole's when showing/hiding the "share screen" button`, () => {
+        it('covers all HearingRole\'s when showing/hiding the "share screen" button', () => {
             const enumCount = Object.keys(HearingRole).length;
             const numberBeingTested = allowedHearingRoles.length + nonAllowedHearingRoles.length + nonAllowedRoles.length;
             expect(numberBeingTested).toBe(enumCount);
@@ -800,7 +800,7 @@ describe('HearingControlsBaseComponent', () => {
             });
         });
 
-        it(`returns "false" if user has Observer Case Type Group`, () => {
+        it('returns "false" if user has Observer Case Type Group', () => {
             deviceTypeService.isDesktop.and.returnValue(true);
             component.participant.case_type_group = CaseTypeGroup.OBSERVER;
             component.ngOnInit();
@@ -882,7 +882,7 @@ describe('HearingControlsBaseComponent', () => {
                     '7879c48a-f513-4d3b-bb1b-151831427507',
                     'Participant Name',
                     'DisplayName',
-                    `Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507`,
+                    'Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507',
                     CaseTypeGroup.NONE,
                     Role.Individual,
                     HearingRole.LITIGANT_IN_PERSON,
@@ -905,7 +905,7 @@ describe('HearingControlsBaseComponent', () => {
                     '7879c48a-f513-4d3b-bb1b-151831427507',
                     'Participant Name',
                     'DisplayName',
-                    `Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507`,
+                    'Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507',
                     CaseTypeGroup.JUDGE,
                     Role.Judge,
                     HearingRole.JUDGE,
@@ -928,7 +928,7 @@ describe('HearingControlsBaseComponent', () => {
                     '7879c48a-f513-4d3b-bb1b-151831427507',
                     'Participant Name',
                     'DisplayName',
-                    `Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507`,
+                    'Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507',
                     CaseTypeGroup.JUDGE,
                     Role.Judge,
                     HearingRole.JUDGE,
@@ -942,7 +942,7 @@ describe('HearingControlsBaseComponent', () => {
                     '240e3ffb-65e6-45a7-a491-0e60b9524831',
                     'Participant Name',
                     'DisplayName',
-                    `Role;DisplayName;240e3ffb-65e6-45a7-a491-0e60b9524831`,
+                    'Role;DisplayName;240e3ffb-65e6-45a7-a491-0e60b9524831',
                     CaseTypeGroup.STAFF_MEMBER,
                     Role.StaffMember,
                     HearingRole.STAFF_MEMBER,

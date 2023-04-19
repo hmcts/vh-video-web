@@ -37,16 +37,16 @@ class ChatBaseTest extends ChatBaseComponent {
         super(videoWebService, profileService, eventService, logger, securityServiceProviderService, imHelper, translateService);
     }
 
-    sendMessage(messageBody: string): void {
-        this.messagesSent.push(messageBody);
-    }
-
     get participantUsername(): string {
         return 'participant.unit@hmcts.net';
     }
 
     get participantId(): string {
         return '1111-1111';
+    }
+
+    sendMessage(messageBody: string): void {
+        this.messagesSent.push(messageBody);
     }
 
     handleIncomingOtherMessage(messsage: InstantMessage) {

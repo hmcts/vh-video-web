@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveEnd, Router, RouterEvent } from '@angular/router';
 import { ApplicationInsights, ITelemetryItem, SeverityLevel } from '@microsoft/applicationinsights-web';
 import { Observable } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { filter, map, switchMap } from 'rxjs/operators';
 import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
 import { ConfigService } from '../../api/config.service';
@@ -14,7 +14,6 @@ import { LogAdapter } from '../log-adapter';
     providedIn: 'root'
 })
 export class AppInsightsLoggerService implements LogAdapter {
-    private securityService: ISecurityService;
     errorInfo: any;
     router: Router;
     appInsights: ApplicationInsights;
@@ -29,47 +28,13 @@ export class AppInsightsLoggerService implements LogAdapter {
         private profileService: ProfileService
     ) {
         this.router = router;
-        securityServiceProviderService.currentSecurityService$.subscribe(secService => {
-            this.securityService = secService;
-            this.currentIdp = securityServiceProviderService.currentIdp;
-        });
 
-        this.setupAppInsights(configService, this.securityService).subscribe(() => {
-            this.checkIfVho(this.securityService);
-            this.trackNavigation();
-        });
-    }
-
-    private setupAppInsights(configService: ConfigService, securityService: ISecurityService): Observable<void> {
-        configService.loadConfig();
-        return configService.getClientSettings().pipe(
-            map(configSettings => {
-                this.appInsights = new ApplicationInsights({
-                    config: {
-                        instrumentationKey: configSettings.app_insights_instrumentation_key,
-                        isCookieUseDisabled: true
-                    }
-                });
-                this.appInsights.loadAppInsights();
-                securityService?.getUserData(this.currentIdp).subscribe(ud => {
-                    this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
-                        envelope.tags['ai.cloud.role'] = 'vh-video-web';
-                        envelope.tags['ai.user.id'] = ud.preferred_username.toLowerCase();
-                    });
-                });
+        securityServiceProviderService.currentSecurityService$.pipe(
+            switchMap(secService => {
+                this.currentIdp = securityServiceProviderService.currentIdp;
+                return this.setupAppInsights(configService, secService);
             })
         );
-    }
-
-    private checkIfVho(securityService: ISecurityService) {
-        securityService
-            ?.isAuthenticated(this.currentIdp)
-            .pipe(filter(Boolean))
-            .subscribe(() => {
-                this.profileService.getUserProfile().then(profile => {
-                    this.isVHO = profile.role === Role.VideoHearingsOfficer;
-                });
-            });
     }
 
     debug(message: string, properties: any = null): void {
@@ -103,7 +68,7 @@ export class AppInsightsLoggerService implements LogAdapter {
         properties.errorInformation = this.errorInfo
             ? `${this.errorInfo.error} : ${this.errorInfo.status}
        : ${this.errorInfo.statusText} : ${this.errorInfo.url} : ${this.errorInfo.message}`
-            : ``;
+            : '';
 
         this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Error }, properties);
         this.appInsights.trackException({
@@ -114,6 +79,38 @@ export class AppInsightsLoggerService implements LogAdapter {
 
     updateUserId(userId: string) {
         this.appInsights.context.user.id = userId;
+    }
+
+    private setupAppInsights(configService: ConfigService, securityService: ISecurityService): Observable<void> {
+        configService.loadConfig();
+        return configService.getClientSettings().pipe(
+            map(configSettings => {
+                this.appInsights = new ApplicationInsights({
+                    config: {
+                        instrumentationKey: configSettings.app_insights_instrumentation_key,
+                        isCookieUseDisabled: true
+                    }
+                });
+                this.appInsights.loadAppInsights();
+                securityService?.getUserData(this.currentIdp).subscribe(ud => {
+                    this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
+                        envelope.tags['ai.cloud.role'] = 'vh-video-web';
+                        envelope.tags['ai.user.id'] = ud.preferred_username.toLowerCase();
+                    });
+                });
+            })
+        );
+    }
+
+    private checkIfVho(securityService: ISecurityService) {
+        securityService
+            ?.isAuthenticated(this.currentIdp)
+            .pipe(filter(Boolean))
+            .subscribe(() => {
+                this.profileService.getUserProfile().then(profile => {
+                    this.isVHO = profile.role === Role.VideoHearingsOfficer;
+                });
+            });
     }
 
     private trackNavigation() {

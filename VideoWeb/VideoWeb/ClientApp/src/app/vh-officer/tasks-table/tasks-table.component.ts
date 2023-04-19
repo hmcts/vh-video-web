@@ -14,9 +14,9 @@ import { VhoStorageKeys } from '../services/models/session-keys';
     styleUrls: ['./tasks-table.component.scss', '../vho-global-styles.scss']
 })
 export class TasksTableComponent implements OnInit, OnDestroy {
-    loading: boolean;
-
     @Input() conferenceId: string;
+
+    loading: boolean;
     tasks: TaskResponse[];
     conference: ConferenceResponse;
     taskSubscription$: Subscription;

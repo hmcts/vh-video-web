@@ -12,9 +12,9 @@ export const FEATURE_FLAGS = {
     providedIn: 'root'
 })
 export class LaunchDarklyService {
-    private flags: any;
     ldClient: LDClient.LDClient;
     flagChange = new ReplaySubject();
+    private flags: any;
 
     constructor(private configService: ConfigService, private logger: Logger) {
         this.initialize();

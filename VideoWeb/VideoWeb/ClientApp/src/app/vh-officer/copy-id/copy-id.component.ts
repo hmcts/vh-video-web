@@ -9,10 +9,10 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class CopyIdComponent implements OnInit {
     @Input() conference: HearingSummary;
-    tooltip: string;
-    propertyIdName = 'copy-conference-id';
     @ViewChild('copyID', { static: false }) copyID: ElementRef;
 
+    tooltip: string;
+    propertyIdName = 'copy-conference-id';
     constructor(private clipboardService: ClipboardService, private translateService: TranslateService) {}
 
     ngOnInit(): void {

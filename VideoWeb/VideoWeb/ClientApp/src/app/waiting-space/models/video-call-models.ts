@@ -24,18 +24,6 @@ export class ParticipantUpdated {
     public isVideoCall: boolean;
     public protocol: string;
 
-    static fromPexipParticipant(pexipParticipant: PexipParticipant) {
-        return new ParticipantUpdated(
-            pexipParticipant.is_muted,
-            pexipParticipant.buzz_time,
-            pexipParticipant.display_name,
-            pexipParticipant.uuid,
-            pexipParticipant.spotlight,
-            pexipParticipant.is_audio_only_call,
-            pexipParticipant.is_video_call,
-            pexipParticipant.protocol
-        );
-    }
     private constructor(
         isRemoteMuted: string,
         buzzTime: number,
@@ -54,6 +42,19 @@ export class ParticipantUpdated {
         this.isAudioOnlyCall = isAudioOnlyCall.toUpperCase() === 'YES';
         this.isVideoCall = isVideoCall.toUpperCase() === 'YES';
         this.protocol = protocol;
+    }
+
+    static fromPexipParticipant(pexipParticipant: PexipParticipant) {
+        return new ParticipantUpdated(
+            pexipParticipant.is_muted,
+            pexipParticipant.buzz_time,
+            pexipParticipant.display_name,
+            pexipParticipant.uuid,
+            pexipParticipant.spotlight,
+            pexipParticipant.is_audio_only_call,
+            pexipParticipant.is_video_call,
+            pexipParticipant.protocol
+        );
     }
 }
 

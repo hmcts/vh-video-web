@@ -15,10 +15,12 @@ import { ISecurityService } from '../authentication/security-service.interface';
 })
 @Injectable()
 export class LogoutComponent implements OnInit {
+    public loginPath: string;
+
     private securityService: ISecurityService;
     private currentIdp: string;
     private readonly judgeAllocationStorage: SessionStorage<string[]>;
-    public loginPath: string;
+
     constructor(
         securityServiceProviderService: SecurityServiceProvider,
         private profileService: ProfileService,
@@ -35,6 +37,10 @@ export class LogoutComponent implements OnInit {
             .subscribe(flag => (this.loginPath = flag ? '../' + pageUrls.IdpSelection : '../' + pageUrls.Login));
     }
 
+    get loggedIn(): Observable<boolean> {
+        return this.securityService.isAuthenticated(this.currentIdp);
+    }
+
     ngOnInit() {
         this.securityService.isAuthenticated(this.currentIdp).subscribe(authenticated => {
             if (authenticated) {
@@ -43,9 +49,5 @@ export class LogoutComponent implements OnInit {
                 this.securityService.logoffAndRevokeTokens(this.currentIdp);
             }
         });
-    }
-
-    get loggedIn(): Observable<boolean> {
-        return this.securityService.isAuthenticated(this.currentIdp);
     }
 }

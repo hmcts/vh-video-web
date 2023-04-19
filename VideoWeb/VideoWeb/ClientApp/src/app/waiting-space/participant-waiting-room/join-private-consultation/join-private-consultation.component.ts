@@ -9,12 +9,13 @@ import { Logger } from 'src/app/services/logging/logger-base';
     styleUrls: ['./join-private-consultation.component.scss']
 })
 export class JoinPrivateConsultationComponent {
-    selectedRoomLabel: string;
-    roomDetails = [];
     @Input() participants: ParticipantResponse[];
     @Input() endpoints: VideoEndpointResponse[];
     @Output() continue = new EventEmitter<string>();
     @Output() cancel = new EventEmitter();
+
+    selectedRoomLabel: string;
+    roomDetails = [];
 
     constructor(protected logger: Logger, protected translateService: TranslateService) {}
 

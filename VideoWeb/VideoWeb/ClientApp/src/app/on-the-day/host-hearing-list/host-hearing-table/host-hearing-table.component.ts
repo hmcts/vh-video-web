@@ -10,17 +10,17 @@ import { ParticipantSummary } from 'src/app/shared/models/participant-summary';
     styleUrls: ['./host-hearing-table.component.scss']
 })
 export class HostHearingTableComponent implements OnInit {
-    private conferenceForHostResponse: ConferenceForHostResponse[];
+    @Output() selectedConference = new EventEmitter<ConferenceForHostResponse>();
     hearings: JudgeHearingSummary[];
+
+    private conferenceForHostResponse: ConferenceForHostResponse[];
+
+    constructor(private logger: Logger) {}
 
     @Input() set conferences(conferences: ConferenceForHostResponse[]) {
         this.conferenceForHostResponse = conferences;
         this.hearings = conferences.map(c => new JudgeHearingSummary(c));
     }
-
-    @Output() selectedConference = new EventEmitter<ConferenceForHostResponse>();
-
-    constructor(private logger: Logger) {}
 
     ngOnInit() {
         this.hearings = this.conferenceForHostResponse.map(c => new JudgeHearingSummary(c));

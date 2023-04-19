@@ -35,18 +35,14 @@ export abstract class EquipmentCheckBaseComponentDirective extends ParticipantSt
         super(participantStatusUpdateService, logger);
     }
 
-    abstract getEquipmentCheck(): string;
-    abstract getFailureReason(): SelfTestFailureReason;
-    abstract navigateToNextPage(): void;
+    get equipmentCheck(): AbstractControl {
+        return this.form.get('equipmentCheck');
+    }
 
     initForm() {
         this.form = this.fb.group({
             equipmentCheck: [false, Validators.pattern('Yes')]
         });
-    }
-
-    get equipmentCheck(): AbstractControl {
-        return this.form.get('equipmentCheck');
     }
 
     getConference(): void {
@@ -97,4 +93,8 @@ export abstract class EquipmentCheckBaseComponentDirective extends ParticipantSt
             this.logger.error(`[${this.getEquipmentCheck()} check] - Failed to raise "SelfTestFailureEvent"`, error, logPayload);
         }
     }
+
+    abstract getEquipmentCheck(): string;
+    abstract getFailureReason(): SelfTestFailureReason;
+    abstract navigateToNextPage(): void;
 }

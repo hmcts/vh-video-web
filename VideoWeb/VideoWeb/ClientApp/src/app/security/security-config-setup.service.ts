@@ -18,16 +18,18 @@ export class SecurityConfigSetupService {
     private defaultProvider = IdpProviders.vhaad;
     private _configSetupSubject = new BehaviorSubject(false);
     private _configRestoredSubject = new BehaviorSubject(false);
-    // get configSetup$() {
-    //     return this._configSetupSubject.asObservable();
-    // }
+
+    private currentIdpSubject = new ReplaySubject<IdpProviders>(1);
+
+    constructor(private configService: ConfigService) {}
 
     get configRestored$() {
         return this._configRestoredSubject.asObservable();
     }
-    private currentIdpSubject = new ReplaySubject<IdpProviders>(1);
 
-    constructor(private configService: ConfigService) {}
+    get currentIdp$(): Observable<IdpProviders> {
+        return this.currentIdpSubject.asObservable();
+    }
 
     setupConfig(): Observable<OpenIdConfiguration[]> {
         return this.configService.getClientSettings().pipe(
@@ -64,11 +66,6 @@ export class SecurityConfigSetupService {
 
     restoreConfig() {
         const provider = this.getIdp();
-        // if (provider !== IdpProviders.quickLink) {
-        //     this._configSetupSubject.pipe(filter(Boolean), first()).subscribe(() => {
-        //         this.oidcConfigService.withConfig(this.config[provider]);
-        //     });
-        // }
         this.currentIdpSubject.next(provider);
         this._configRestoredSubject.next(true);
     }
@@ -76,18 +73,9 @@ export class SecurityConfigSetupService {
     setIdp(provider: IdpProviders) {
         window.sessionStorage.setItem(this.idpProvidersSessionStorageKey, provider);
         this.currentIdpSubject.next(provider);
-        // this._configSetupSubject.pipe(filter(Boolean)).subscribe(() => {
-        //     if (provider !== IdpProviders.quickLink) {
-        //         this.oidcConfigService.withConfig(this.config[provider]);
-        //     }
-        // });
     }
 
     getIdp(): IdpProviders {
         return (window.sessionStorage.getItem(this.idpProvidersSessionStorageKey) as IdpProviders) ?? this.defaultProvider;
-    }
-
-    get currentIdp$(): Observable<IdpProviders> {
-        return this.currentIdpSubject.asObservable();
     }
 }

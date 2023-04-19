@@ -42,16 +42,8 @@ export abstract class HostHearingListBaseComponentDirective implements OnInit, O
         this.loadingData = true;
     }
 
-    ngOnInit() {
-        this.profileService.getUserProfile().then(profile => {
-            this.profile = profile;
-        });
-        this.retrieveHearingsForUser();
-        this.setupSubscribers();
-        this.hearingVenueFlagsService.setHearingVenueIsScottish(false);
-        this.interval = setInterval(() => {
-            this.retrieveHearingsForUser();
-        }, 30000);
+    get courtName(): string {
+        return this.profile ? `${this.profile.first_name}, ${this.profile.last_name}` : '';
     }
 
     @HostListener('window:beforeunload')
@@ -63,10 +55,16 @@ export abstract class HostHearingListBaseComponentDirective implements OnInit, O
         this.eventHubSubscriptions.unsubscribe();
     }
 
-    abstract retrieveHearingsForUser();
-
-    get courtName(): string {
-        return this.profile ? `${this.profile.first_name}, ${this.profile.last_name}` : '';
+    ngOnInit() {
+        this.profileService.getUserProfile().then(profile => {
+            this.profile = profile;
+        });
+        this.retrieveHearingsForUser();
+        this.setupSubscribers();
+        this.hearingVenueFlagsService.setHearingVenueIsScottish(false);
+        this.interval = setInterval(() => {
+            this.retrieveHearingsForUser();
+        }, 30000);
     }
 
     hasHearings() {
@@ -111,4 +109,6 @@ export abstract class HostHearingListBaseComponentDirective implements OnInit, O
         const conference = this.conferences.find(c => c.id === message.conferenceId);
         conference.status = message.status;
     }
+
+    abstract retrieveHearingsForUser();
 }

@@ -6,7 +6,7 @@ import { IdpProviders } from '../idp-providers';
 
 @Component({
     selector: 'app-ejud-sign-in',
-    template: ``,
+    template: '',
     styles: []
 })
 export class EjudSignInComponent implements OnInit {

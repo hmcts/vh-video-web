@@ -30,6 +30,8 @@ export class QuickLinkJwtBody extends JWTBody {
     providedIn: 'root'
 })
 export class QuickLinkSecurityService implements ISecurityService {
+    decodedTokenBody: QuickLinkJwtBody;
+
     private loggerPrefix = '[QuickLinkSecurityService] -';
     private token: string;
     private tokenSessionStorageKey = 'QUICK_LINKS_JWT';
@@ -37,8 +39,6 @@ export class QuickLinkSecurityService implements ISecurityService {
     private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
     private userDataSubject = new ReplaySubject<any>(1);
     private checkAuthSubscription = new Subscription();
-
-    decodedTokenBody: QuickLinkJwtBody;
 
     constructor(
         private apiClient: ApiClient,
@@ -54,35 +54,38 @@ export class QuickLinkSecurityService implements ISecurityService {
         }
     }
 
+    isAuthenticated(configId?: string): Observable<boolean> {
+        return this.isAuthenticatedSubject.asObservable().pipe(
+            map(isAuthenticated => {
+                if (!isAuthenticated) {
+                    return false;
+                }
+                const isValid = this.isTokenValid(this.token);
+                if (!isValid) {
+                    this.clearToken();
+                }
+                return isValid;
+            })
+        );
+    }
+
+    getUserData(configId?: string): Observable<UserDataResult> {
+        return this.userDataSubject.asObservable();
+    }
+
+    getConfiguration(configId?: string): Observable<OpenIdConfiguration> {
+        return EMPTY;
+    }
+
     authorize(configId?: string, authOptions?: AuthOptions, token?: string): void {
         this.setToken(token);
         this.checkAuthSubscription.add(this.checkAuth().pipe(take(1)).subscribe());
     }
 
-    private clearToken() {
-        this.setToken(null);
-        this.checkAuthSubscription.unsubscribe();
-        this.securityConfigSetupService.setIdp(IdpProviders.vhaad);
-        this.router.navigate([`/${pageUrls.Logout}`]);
-    }
-
-    private setToken(token: string | null) {
-        if (token === null) {
-            this.token = null;
-            this.decodedTokenBody = null;
-            this.tokenSessionStorage.clear();
-            this.isAuthenticatedSubject.next(false);
-        } else {
-            this.token = token;
-            this.decodedTokenBody = this.decodeTokenBody(this.token);
-            this.tokenSessionStorage.set(token);
-        }
-    }
-
     checkAuth(): Observable<LoginResponse> {
         const tokenIsAuthorisedResult = source =>
-            new Observable<LoginResponse>(subscriber => {
-                return source.subscribe({
+            new Observable<LoginResponse>(subscriber =>
+                source.subscribe({
                     next() {
                         const result: LoginResponse = {
                             isAuthenticated: true,
@@ -106,8 +109,8 @@ export class QuickLinkSecurityService implements ISecurityService {
                     complete() {
                         subscriber.complete();
                     }
-                });
-            });
+                })
+            );
         return this.apiClient.isQuickLinkParticipantAuthorised().pipe(
             tokenIsAuthorisedResult,
             tap(authenticated => {
@@ -135,6 +138,26 @@ export class QuickLinkSecurityService implements ISecurityService {
         return EMPTY;
     }
 
+    private clearToken() {
+        this.setToken(null);
+        this.checkAuthSubscription.unsubscribe();
+        this.securityConfigSetupService.setIdp(IdpProviders.vhaad);
+        this.router.navigate([`/${pageUrls.Logout}`]);
+    }
+
+    private setToken(token: string | null) {
+        if (token === null) {
+            this.token = null;
+            this.decodedTokenBody = null;
+            this.tokenSessionStorage.clear();
+            this.isAuthenticatedSubject.next(false);
+        } else {
+            this.token = token;
+            this.decodedTokenBody = this.decodeTokenBody(this.token);
+            this.tokenSessionStorage.set(token);
+        }
+    }
+
     private isTokenValid(token: string): boolean {
         return !this.hasTokenExpired(token);
     }
@@ -146,44 +169,4 @@ export class QuickLinkSecurityService implements ISecurityService {
     private decodeTokenBody(token: string): QuickLinkJwtBody {
         return new QuickLinkJwtBody(this.jwtHelper.decodeToken(token));
     }
-
-    // get isAuthenticated$(): Observable<AuthenticatedResult> {
-    //     return this.isAuthenticatedSubject.asObservable().pipe(
-    //         map(isAuthenticated => {
-    //             if (!isAuthenticated) {
-    //                 return { isAuthenticated: true, allConfigsAuthenticated: [] };
-    //             }
-    //             const isValid = this.isTokenValid(this.token);
-    //             if (!isValid) {
-    //                 this.clearToken();
-    //             }
-    //             return { isAuthenticated: isValid, allConfigsAuthenticated: [] };
-    //         })
-    //     );
-    // }
-    isAuthenticated(configId?: string): Observable<boolean> {
-        return this.isAuthenticatedSubject.asObservable().pipe(
-            map(isAuthenticated => {
-                if (!isAuthenticated) {
-                    return false;
-                }
-                const isValid = this.isTokenValid(this.token);
-                if (!isValid) {
-                    this.clearToken();
-                }
-                return isValid;
-            })
-        );
-    }
-
-    getUserData(configId?: string): Observable<UserDataResult> {
-        return this.userDataSubject.asObservable();
-    }
-
-    getConfiguration(configId?: string): Observable<OpenIdConfiguration> {
-        return EMPTY;
-    }
-    // get configuration(): PublicConfiguration {
-    //     return null;
-    // }
 }

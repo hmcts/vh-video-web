@@ -31,15 +31,15 @@ import { VideoControlCacheService } from '../../services/conference/video-contro
     outputs: ['leaveConsultation', 'lockConsultation', 'togglePanel', 'changeDeviceToggle', 'leaveHearing']
 })
 export class PrivateConsultationRoomControlsComponent extends HearingControlsBaseComponent {
-    showContextMenu = false;
-
     @Input() public canToggleParticipantsPanel: boolean;
     @Input() public isChatVisible: boolean;
     @Input() public areParticipantsVisible: boolean;
 
-    private conferenceStatus: ConferenceStatusChanged;
+    showContextMenu = false;
     enableDynamicEvidenceSharing = false;
     isStaffMemberFeatureEnabled = false;
+
+    private conferenceStatus: ConferenceStatusChanged;
 
     constructor(
         protected videoCallService: VideoCallService,

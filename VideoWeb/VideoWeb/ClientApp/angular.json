@@ -52,8 +52,7 @@
             "namedChunks": true
           },
           "configurations": {
-            "development": {
-            },
+            "development": {},
             "production": {
               "fileReplacements": [
                 {
@@ -153,11 +152,18 @@
             }
           },
           "defaultConfiguration": ""
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
+          }
         }
       }
     }
   },
   "cli": {
-    "analytics": "d98edcd7-fbf7-457b-8b1a-674a89b98183"
+    "analytics": "d98edcd7-fbf7-457b-8b1a-674a89b98183",
+    "schematicCollections": ["@angular-eslint/schematics"]
   }
 }

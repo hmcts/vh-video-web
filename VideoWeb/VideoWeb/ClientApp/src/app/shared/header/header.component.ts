@@ -11,11 +11,11 @@ import { topMenuItems } from './topMenuItems';
     styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
+    @Input() loggedIn: boolean;
+
     topMenuItems = [];
     logoutRoute = pageUrls.Logout;
     hearingVenueIsScottish$: Observable<boolean>;
-
-    @Input() loggedIn: boolean;
 
     constructor(private router: Router, private hearingVenueFlagsService: HearingVenueFlagsService) {}
 

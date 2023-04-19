@@ -31,7 +31,7 @@ export class ConferenceGuard implements CanActivate {
     }
 
     private handleError(error) {
-        this.logger.error(`[ConferenceGuard] Could not get conference data. Returning home.`, error);
+        this.logger.error('[ConferenceGuard] Could not get conference data. Returning home.', error);
         this.router.navigate([pageUrls.Home]);
 
         return false;

@@ -5,6 +5,8 @@ import { DeviceTypeService } from 'src/app/services/device-type.service';
     selector: '[appTooltip]'
 })
 export class TooltipDirective implements OnDestroy {
+    @Output() tooltipShown = new EventEmitter();
+
     _text: string;
     _colour = 'blue';
     _isDesktopOnly = true;
@@ -12,6 +14,11 @@ export class TooltipDirective implements OnDestroy {
     _OPACITY_ZERO_FIVE = '0.5';
     _POSITION_RELATIVE = 'relative';
     _tooltipElements = undefined;
+
+    tooltip: HTMLElement;
+    tooltipKeyTab: HTMLElement;
+
+    constructor(private el: ElementRef, private renderer: Renderer2, private deviceTypeService: DeviceTypeService) {}
 
     @Input() set text(value: string) {
         this._text = value;
@@ -29,16 +36,6 @@ export class TooltipDirective implements OnDestroy {
     }
     @Input() set isDesktopOnly(value: boolean) {
         this._isDesktopOnly = value;
-    }
-    @Output() tooltipShown = new EventEmitter();
-
-    tooltip: HTMLElement;
-    tooltipKeyTab: HTMLElement;
-
-    constructor(private el: ElementRef, private renderer: Renderer2, private deviceTypeService: DeviceTypeService) {}
-    ngOnDestroy(): void {
-        this.hide();
-        this.hideTooltipKeyEvent();
     }
 
     @HostListener('focus', ['$event']) onKeyDown($event: FocusEvent) {
@@ -87,6 +84,11 @@ export class TooltipDirective implements OnDestroy {
         if (this.tooltip) {
             this.hide();
         }
+    }
+
+    ngOnDestroy(): void {
+        this.hide();
+        this.hideTooltipKeyEvent();
     }
 
     removeTooltips(className: string) {

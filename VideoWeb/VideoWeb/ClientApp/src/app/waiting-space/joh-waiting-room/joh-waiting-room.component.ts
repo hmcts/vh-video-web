@@ -32,9 +32,10 @@ import { HideComponentsService } from '../services/hide-components.service';
     styleUrls: ['../waiting-room-global-styles.scss', './joh-waiting-room.component.scss']
 })
 export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
+    isParticipantsPanelHidden = false;
+
     private readonly loggerPrefixJOH = '[JOH WR] -';
     private destroyedSubject = new Subject();
-    isParticipantsPanelHidden = false;
     private title = 'JOH waiting room';
     private readonly MODAL_WINDOW = 'video-hearing-container';
 
@@ -84,39 +85,6 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         );
     }
 
-    ngOnInit(): void {
-        this.titleService.setTitle(this.title);
-        this.init();
-    }
-
-    private onShouldReload(): void {
-        window.location.reload();
-    }
-
-    private onShouldUnload(): void {
-        this.cleanUp();
-    }
-
-    private init() {
-        this.destroyedSubject = new Subject();
-
-        this.audioOnly = false;
-        this.errorCount = 0;
-        this.logger.debug(`${this.loggerPrefixJOH} Loading JOH waiting room`);
-        this.connected = false;
-        this.loggedInUser = this.route.snapshot.data['loggedUser'];
-
-        this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.destroyedSubject)).subscribe(() => this.onShouldUnload());
-        this.unloadDetectorService.shouldReload.pipe(take(1)).subscribe(() => this.onShouldReload());
-
-        this.notificationSoundsService.initHearingAlertSound();
-        this.getConference().then(() => {
-            this.subscribeToClock();
-            this.startEventHubSubscribers();
-            this.connectToPexip();
-        });
-    }
-
     get allowAudioOnlyToggle(): boolean {
         return (
             !!this.conference &&
@@ -124,6 +92,11 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
             this.participant?.status !== ParticipantStatus.InConsultation &&
             this.participant?.status !== ParticipantStatus.InHearing
         );
+    }
+
+    ngOnInit(): void {
+        this.titleService.setTitle(this.title);
+        this.init();
     }
 
     getConferenceStatusText(): string {
@@ -162,6 +135,38 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         this.cleanUp();
     }
 
+    setTrapFocus() {
+        ModalTrapFocus.trap(this.MODAL_WINDOW);
+    }
+
+    private onShouldReload(): void {
+        window.location.reload();
+    }
+
+    private onShouldUnload(): void {
+        this.cleanUp();
+    }
+
+    private init() {
+        this.destroyedSubject = new Subject();
+
+        this.audioOnly = false;
+        this.errorCount = 0;
+        this.logger.debug(`${this.loggerPrefixJOH} Loading JOH waiting room`);
+        this.connected = false;
+        this.loggedInUser = this.route.snapshot.data['loggedUser'];
+
+        this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.destroyedSubject)).subscribe(() => this.onShouldUnload());
+        this.unloadDetectorService.shouldReload.pipe(take(1)).subscribe(() => this.onShouldReload());
+
+        this.notificationSoundsService.initHearingAlertSound();
+        this.getConference().then(() => {
+            this.subscribeToClock();
+            this.startEventHubSubscribers();
+            this.connectToPexip();
+        });
+    }
+
     private cleanUp() {
         this.logger.debug(`${this.loggerPrefixJOH} Clearing intervals and subscriptions for JOH waiting room`, {
             conference: this.conference?.id
@@ -171,9 +176,5 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
 
         this.destroyedSubject.next();
         this.destroyedSubject.complete();
-    }
-
-    setTrapFocus() {
-        ModalTrapFocus.trap(this.MODAL_WINDOW);
     }
 }
