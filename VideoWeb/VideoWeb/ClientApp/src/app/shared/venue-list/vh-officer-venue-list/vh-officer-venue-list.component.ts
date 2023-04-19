@@ -30,20 +30,25 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
 
     ngOnInit() {
         super.ngOnInit();
-        this.videoWebService.getCSOs().subscribe(value => {
+        this.videoWebService.getCSOs().subscribe(async value => {
             const items = [...value];
             items.unshift(
-                new JusticeUserResponse({
-                    id: VhOfficerVenueListComponent.ALLOCATED_TO_ME,
-                    first_name: 'Allocated to me',
-                    full_name: 'Allocated to me'
-                }),
                 new JusticeUserResponse({
                     id: VhOfficerVenueListComponent.UNALLOCATED,
                     first_name: 'Unallocated',
                     full_name: 'Unallocated'
                 })
             );
+            const loggedInCso = await this.getLoggedInCso(items);
+            if (loggedInCso !== undefined) {
+                items.unshift(
+                    new JusticeUserResponse({
+                        id: VhOfficerVenueListComponent.ALLOCATED_TO_ME,
+                        first_name: 'Allocated to me',
+                        full_name: 'Allocated to me'
+                    })
+                );
+            }
             this.csos = items;
             const previousFilter = this.csoAllocationStorage.get();
             if (previousFilter) {
@@ -97,10 +102,13 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
 
     async updateCsoFilterSelection(filter: CsoFilter) {
         const selectCso = (csoId: string) => {
+            if (!this.csos.find(c => c.id === csoId)) {
+                return;
+            }
             this.selectedCsos = [...this.selectedCsos, csoId];
         };
-        const loggedInUser = await this.profileService.getUserProfile();
-        const loggedInCsoId = this.csos.find(c => c.username === loggedInUser.username).id;
+        const loggedInCso = await this.getLoggedInCso(this.csos);
+        const loggedInCsoId = loggedInCso?.id;
         filter.allocatedCsoIds.forEach(id => {
             if (id === loggedInCsoId) {
                 selectCso(VhOfficerVenueListComponent.ALLOCATED_TO_ME);

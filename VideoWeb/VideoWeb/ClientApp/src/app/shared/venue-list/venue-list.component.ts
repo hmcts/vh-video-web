@@ -83,8 +83,8 @@ export abstract class VenueListComponentDirective implements OnInit {
         const allocatedCsoIds = [...this.selectedCsos];
 
         if (allocatedCsoIds.find(c => c === VenueListComponentDirective.ALLOCATED_TO_ME)) {
-            const loggedInUser = await this.profileService.getUserProfile();
-            const loggedInCsoId = this.csos.find(c => c.username === loggedInUser.username).id;
+            const loggedInCso = await this.getLoggedInCso(this.csos);
+            const loggedInCsoId = loggedInCso.id;
             if (!allocatedCsoIds.find(c => c === loggedInCsoId)) {
                 allocatedCsoIds.push(loggedInCsoId);
             }
@@ -97,5 +97,10 @@ export abstract class VenueListComponentDirective implements OnInit {
             includeUnallocated = true;
         }
         return new CsoFilter(allocatedCsoIds, includeUnallocated);
+    }
+    async getLoggedInCso(users: JusticeUserResponse[]): Promise<JusticeUserResponse> {
+        const loggedInUser = await this.profileService.getUserProfile();
+        const loggedInCso = users.find(c => c.username?.toUpperCase() === loggedInUser.username.toUpperCase());
+        return loggedInCso;
     }
 }
