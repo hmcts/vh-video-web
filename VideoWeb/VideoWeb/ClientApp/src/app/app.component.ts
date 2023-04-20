@@ -2,22 +2,19 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/co
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { AuthStateResult, EventTypes, OidcClientNotification, PublicEventsService } from 'angular-auth-oidc-client';
-import { BehaviorSubject, NEVER, Observable, Subject, Subscription } from 'rxjs';
-import { catchError, delay, filter, first, map, takeUntil } from 'rxjs/operators';
-import { ConfigService } from './services/api/config.service';
+import { OidcClientNotification, PublicEventsService } from 'angular-auth-oidc-client';
+import { BehaviorSubject, NEVER, Observable, Subject, Subscription, combineLatest } from 'rxjs';
+import { catchError, delay, filter, map, takeUntil } from 'rxjs/operators';
 import { ProfileService } from './services/api/profile.service';
 import { Role } from './services/clients/api-client';
-import { ConnectionStatusService } from './services/connection-status.service';
+// import { ConnectionStatusService } from './services/connection-status.service';
 import { DeviceTypeService } from './services/device-type.service';
 import { ErrorService } from './services/error.service';
 import { PageTrackerService } from './services/page-tracker.service';
 import { pageUrls } from './shared/page-url.constants';
 import { TestLanguageService } from './shared/test-language.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { IdpProviders } from './security/idp-providers';
 import { SecurityServiceProvider } from './security/authentication/security-provider.service';
-import { SecurityConfigSetupService } from './security/security-config-setup.service';
 import { ISecurityService } from './security/authentication/security-service.interface';
 import { BackLinkDetails } from './shared/models/back-link-details';
 import { Location } from '@angular/common';
@@ -57,14 +54,12 @@ export class AppComponent implements OnInit, OnDestroy {
         private errorService: ErrorService,
         private titleService: Title,
         private activatedRoute: ActivatedRoute,
-        private connectionStatusService: ConnectionStatusService,
+        // private connectionStatusService: ConnectionStatusService,
         pageTracker: PageTrackerService,
         testLanguageService: TestLanguageService,
         translate: TranslateService,
-        private configService: ConfigService,
         private eventService: PublicEventsService,
         private securityServiceProviderService: SecurityServiceProvider,
-        private securityConfigSetupService: SecurityConfigSetupService,
         private location: Location,
         private noSleepService: NoSleepService,
         private logger: Logger,
@@ -87,21 +82,37 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        this.eventService.registerForEvents().subscribe((event: OidcClientNotification<any>) => {
+            console.info(event);
+        });
+
         this.checkBrowser();
         this.setupSecurityServiceProviderSubscription();
         this.noSleepService.enable();
-        this.configService
-            .getClientSettings()
-            .pipe(first())
-            .subscribe({
-                next: async () => {
-                    if (this.securityConfigSetupService.getIdp() === IdpProviders.quickLink) {
-                        this.postConfigSetupQuickLinks();
-                    } else {
-                        this.postConfigSetupOidc();
-                    }
+        combineLatest([
+            this.securityServiceProviderService.currentSecurityService$,
+            this.securityServiceProviderService.currentIdp$
+        ]).subscribe(([securityService, idp]) => {
+            this.currentIdp = idp;
+            this.securityService = securityService;
+            this.securityService.checkAuth(undefined, this.currentIdp).subscribe(({ isAuthenticated }) => {
+                if (isAuthenticated) {
+                    console.warn('app component: isAuthenticated: ', isAuthenticated);
                 }
             });
+        });
+        // this.configService
+        //     .getClientSettings()
+        //     .pipe(first())
+        //     .subscribe({
+        //         next: async () => {
+        //             if (this.securityConfigSetupService.getIdp() === IdpProviders.quickLink) {
+        //                 this.postConfigSetupQuickLinks();
+        //             } else {
+        //                 this.postConfigSetupOidc();
+        //             }
+        //         }
+        //     });
     }
 
     setupNavigationSubscriptions() {
@@ -200,49 +211,50 @@ export class AppComponent implements OnInit, OnDestroy {
         this.titleService.setTitle(title);
     }
 
-    private postConfigSetupOidc() {
-        this.securityConfigSetupService.configRestored$
-            .pipe(
-                filter(configRestored => configRestored),
-                first()
-            )
-            .subscribe(() => {
-                this.checkAuth().subscribe({
-                    next: async (loggedIn: boolean) => {
-                        await this.postAuthSetup(loggedIn, false);
-                    }
-                });
-                this.eventService
-                    .registerForEvents()
-                    .pipe(filter(notification => notification.type === EventTypes.NewAuthenticationResult))
-                    .subscribe(async (value: OidcClientNotification<AuthStateResult>) => {
-                        this.logger.info('[AppComponent] - OidcClientNotification event received with value ', value);
-                        await this.postAuthSetup(true, value.value.isRenewProcess);
-                    });
-            });
-    }
+    // private postConfigSetupOidc() {
+    //     return;
+    //     this.securityConfigSetupService.configRestored$
+    //         .pipe(
+    //             filter(configRestored => configRestored),
+    //             first()
+    //         )
+    //         .subscribe(() => {
+    //             this.checkAuth().subscribe({
+    //                 next: async (loggedIn: boolean) => {
+    //                     await this.postAuthSetup(loggedIn, false);
+    //                 }
+    //             });
+    //             this.eventService
+    //                 .registerForEvents()
+    //                 .pipe(filter(notification => notification.type === EventTypes.NewAuthenticationResult))
+    //                 .subscribe(async (value: OidcClientNotification<AuthStateResult>) => {
+    //                     this.logger.info('[AppComponent] - OidcClientNotification event received with value ', value);
+    //                     await this.postAuthSetup(true, value.value.isRenewProcess);
+    //                 });
+    //         });
+    // }
 
-    private postConfigSetupQuickLinks() {
-        this.checkAuth().subscribe({
-            next: async (loggedIn: boolean) => {
-                await this.postAuthSetup(loggedIn, false);
-            }
-        });
-    }
+    // private postConfigSetupQuickLinks() {
+    //     this.checkAuth().subscribe({
+    //         next: async (loggedIn: boolean) => {
+    //             await this.postAuthSetup(loggedIn, false);
+    //         }
+    //     });
+    // }
 
-    private async postAuthSetup(loggedIn: boolean, skip: boolean) {
-        if (skip) {
-            return;
-        }
-        this.loggedIn = loggedIn;
+    // private async postAuthSetup(loggedIn: boolean, skip: boolean) {
+    //     if (skip) {
+    //         return;
+    //     }
+    //     this.loggedIn = loggedIn;
 
-        if (loggedIn) {
-            await this.retrieveProfileRole();
-        }
+    //     if (loggedIn) {
+    //         await this.retrieveProfileRole();
+    //     }
 
-        this.setupNavigationSubscriptions();
-        this.connectionStatusService.start();
-    }
+    //     this.setupNavigationSubscriptions();
+    //     this.connectionStatusService.start();
+    // }
 
     private setupSecurityServiceProviderSubscription() {
         this.securityServiceProviderService.currentSecurityService$.pipe(takeUntil(this.destroyed$)).subscribe(service => {

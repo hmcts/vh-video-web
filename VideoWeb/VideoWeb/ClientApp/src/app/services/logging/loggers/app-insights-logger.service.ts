@@ -1,13 +1,11 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, ResolveEnd, Router, RouterEvent } from '@angular/router';
+import { Router } from '@angular/router';
 import { ApplicationInsights, ITelemetryItem, SeverityLevel } from '@microsoft/applicationinsights-web';
 import { Observable } from 'rxjs';
-import { filter, map, switchMap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
 import { ConfigService } from '../../api/config.service';
-import { ProfileService } from '../../api/profile.service';
-import { Role } from '../../clients/api-client';
 import { LogAdapter } from '../log-adapter';
 
 @Injectable({
@@ -21,12 +19,7 @@ export class AppInsightsLoggerService implements LogAdapter {
     userData;
     currentIdp: string;
 
-    constructor(
-        securityServiceProviderService: SecurityServiceProvider,
-        configService: ConfigService,
-        router: Router,
-        private profileService: ProfileService
-    ) {
+    constructor(securityServiceProviderService: SecurityServiceProvider, configService: ConfigService, router: Router) {
         this.router = router;
 
         securityServiceProviderService.currentSecurityService$.pipe(
@@ -102,51 +95,51 @@ export class AppInsightsLoggerService implements LogAdapter {
         );
     }
 
-    private checkIfVho(securityService: ISecurityService) {
-        securityService
-            ?.isAuthenticated(this.currentIdp)
-            .pipe(filter(Boolean))
-            .subscribe(() => {
-                this.profileService.getUserProfile().then(profile => {
-                    this.isVHO = profile.role === Role.VideoHearingsOfficer;
-                });
-            });
-    }
+    // private checkIfVho(securityService: ISecurityService) {
+    //     securityService
+    //         ?.isAuthenticated(this.currentIdp)
+    //         .pipe(filter(Boolean))
+    //         .subscribe(() => {
+    //             this.profileService.getUserProfile().then(profile => {
+    //                 this.isVHO = profile.role === Role.VideoHearingsOfficer;
+    //             });
+    //         });
+    // }
 
-    private trackNavigation() {
-        this.router.events
-            .pipe(filter((event: RouterEvent) => event instanceof ResolveEnd))
-            .subscribe((event: ResolveEnd) => this.logPageResolved(event));
-    }
+    // private trackNavigation() {
+    //     this.router.events
+    //         .pipe(filter((event: RouterEvent) => event instanceof ResolveEnd))
+    //         .subscribe((event: ResolveEnd) => this.logPageResolved(event));
+    // }
 
-    private logPageResolved(event: ResolveEnd): void {
-        const activatedComponent = this.getActivatedComponent(event.state.root);
-        if (activatedComponent) {
-            this.trackPage(`${activatedComponent.name} ${this.getRouteTemplate(event.state.root)}`, event.urlAfterRedirects);
-        }
-    }
+    // private logPageResolved(event: ResolveEnd): void {
+    //     const activatedComponent = this.getActivatedComponent(event.state.root);
+    //     if (activatedComponent) {
+    //         this.trackPage(`${activatedComponent.name} ${this.getRouteTemplate(event.state.root)}`, event.urlAfterRedirects);
+    //     }
+    // }
 
-    private trackPage(pageName: string, url: string) {
-        this.appInsights.trackPageView({ name: pageName, uri: url });
-    }
+    // private trackPage(pageName: string, url: string) {
+    //     this.appInsights.trackPageView({ name: pageName, uri: url });
+    // }
 
-    private getActivatedComponent(snapshot: ActivatedRouteSnapshot): any {
-        if (snapshot.firstChild) {
-            return this.getActivatedComponent(snapshot.firstChild);
-        }
+    // private getActivatedComponent(snapshot: ActivatedRouteSnapshot): any {
+    //     if (snapshot.firstChild) {
+    //         return this.getActivatedComponent(snapshot.firstChild);
+    //     }
 
-        return snapshot.component;
-    }
+    //     return snapshot.component;
+    // }
 
-    private getRouteTemplate(snapshot: ActivatedRouteSnapshot): string {
-        const path = snapshot.routeConfig ? snapshot.routeConfig.path : '';
+    // private getRouteTemplate(snapshot: ActivatedRouteSnapshot): string {
+    //     const path = snapshot.routeConfig ? snapshot.routeConfig.path : '';
 
-        if (snapshot.firstChild) {
-            return path + '/' + this.getRouteTemplate(snapshot.firstChild);
-        }
+    //     if (snapshot.firstChild) {
+    //         return path + '/' + this.getRouteTemplate(snapshot.firstChild);
+    //     }
 
-        return path;
-    }
+    //     return path;
+    // }
 
     private updatePropertiesIfVho(properties: any) {
         if (properties && this.isVHO) {

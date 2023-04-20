@@ -35,7 +35,7 @@ export class SecurityConfigSetupService {
         return this.configService.getClientSettings().pipe(
             first(),
             map(clientSettings => {
-                this.config[IdpProviders.ejud] = this.initOidcConfig(clientSettings.e_jud_idp_settings);
+                // this.config[IdpProviders.ejud] = this.initOidcConfig(clientSettings.e_jud_idp_settings);
                 this.config[IdpProviders.vhaad] = this.initOidcConfig(clientSettings.vh_idp_settings);
                 this._configSetupSubject.next(true);
                 return [this.config[IdpProviders.ejud], this.config[IdpProviders.vhaad]];

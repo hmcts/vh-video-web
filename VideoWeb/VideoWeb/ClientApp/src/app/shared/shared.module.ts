@@ -37,12 +37,8 @@ import { MultilinePipe } from './pipes/multiline.pipe';
 import { NgxDatePipe } from './pipes/ngx-date.pipe';
 import { ParticipantPanelModelMapper } from './mappers/participant-panel-model-mapper';
 import { LoadingComponent } from './loading/loading.component';
-import { Router } from '@angular/router';
-import { SecurityServiceProvider } from '../security/authentication/security-provider.service';
 import { ConfigService } from '../services/api/config.service';
-import { ProfileService } from '../services/api/profile.service';
 import { LoggerService, LOG_ADAPTER } from '../services/logging/logger.service';
-import { AppInsightsLoggerService } from '../services/logging/loggers/app-insights-logger.service';
 import { ConsoleLogger } from '../services/logging/loggers/console-logger';
 import { Logger } from '../services/logging/logger-base';
 import { HeaderLogoSvgComponent } from './header-logo-svg/header-logo-svg.component';
@@ -170,12 +166,12 @@ export function getSettings(configService: ConfigService) {
     providers: [
         { provide: Logger, useClass: LoggerService },
         { provide: LOG_ADAPTER, useClass: ConsoleLogger, multi: true },
-        {
-            provide: LOG_ADAPTER,
-            useClass: AppInsightsLoggerService,
-            multi: true,
-            deps: [SecurityServiceProvider, ConfigService, Router, ProfileService]
-        },
+        // {
+        //     provide: LOG_ADAPTER,
+        //     useClass: AppInsightsLoggerService,
+        //     multi: true,
+        //     deps: [SecurityServiceProvider, ConfigService, Router, ProfileService]
+        // },
         ConfigService,
         WindowScrolling,
         ScreenHelper,
