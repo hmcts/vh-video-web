@@ -55,6 +55,7 @@ namespace VideoWeb.Controllers
                 var allocatedHearings =
                     await _bookingApiClient.GetAllocationsForHearingsAsync(conferences.Select(e => e.HearingRefId));
                 var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>();
+     
                 var responses = conferences
                     .Select(x => conferenceForVhOfficerResponseMapper.Map(x, allocatedHearings?.FirstOrDefault(conference => conference.HearingId == x.HearingRefId)))
                     .ApplyCsoFilter(query)

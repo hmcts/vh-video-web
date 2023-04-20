@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
-using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,26 +8,15 @@ using Moq;
 using NUnit.Framework;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
-using VideoApi.Contract.Responses;
-using VideoWeb.Common.Caching;
-using VideoWeb.Common.Models;
-using VideoWeb.Contract.Responses;
-using VideoWeb.Controllers;
-using VideoWeb.EventHub.Enums;
-using VideoWeb.EventHub.Handlers;
-using VideoWeb.EventHub.Handlers.Core;
-using VideoWeb.EventHub.Models;
 using VideoWeb.Helpers.Interfaces;
-using VideoWeb.Mappings;
 using VideoWeb.UnitTests.Builders;
-using Endpoint = VideoWeb.Common.Models.Endpoint;
 
-namespace VideoWeb.UnitTests.Controllers.InternalEventControllerTests
+namespace VideoWeb.UnitTests.Controllers.InternalEventController
 {
     public class AllocationHearingsTests
     {
         private AutoMock _mocker;
-        protected InternalEventController _controller;
+        protected VideoWeb.Controllers.InternalEventController _controller;
 
         [SetUp]
         public void Setup()
@@ -45,7 +31,7 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventControllerTests
                 }
             };
 
-            _controller = _mocker.Create<InternalEventController>();
+            _controller = _mocker.Create<VideoWeb.Controllers.InternalEventController>();
             _controller.ControllerContext = context;
 
             _mocker.Mock<IAllocationHearingsEventNotifier>();

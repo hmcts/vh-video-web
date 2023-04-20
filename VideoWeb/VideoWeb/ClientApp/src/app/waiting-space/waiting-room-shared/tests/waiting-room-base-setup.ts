@@ -122,6 +122,8 @@ export function initAllWRDependencies() {
         'reportPoorConnection',
         'showAudioRecordingError',
         'showParticipantAdded',
+        'showEndpointAdded',
+        'showEndpointUpdated',
         'showHearingLayoutchanged',
         'showHearingStarted'
     ]);
