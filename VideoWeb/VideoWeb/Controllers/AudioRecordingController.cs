@@ -53,6 +53,9 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(AppRoles.VhOfficerRole)]
+#pragma warning disable S1133
+        [Obsolete("This method is no longer used and will be removed in a future release")]
+#pragma warning restore S1133
         public async Task<ActionResult> StopAudioRecordingAsync(Guid hearingId)
         {
             try
@@ -66,6 +69,5 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
-
     }
 }

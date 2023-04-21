@@ -15,7 +15,7 @@
                   (keydown)="onKeydown($event)"
                   (keyup)="onKeyup($event)"
                   attr.aria-label="{{'chat-input-box.type-a-message' | translate}}"
-                  aria-describedby="screen-reader-input-limit-hint">
+                  aria-labelledby="screen-reader-input-limit-hint">
         </textarea>
         <button [disabled]="isSendingBlocked"
                 (click)="sendMessage()"
@@ -25,10 +25,10 @@
             {{'chat-input-box.send' | translate}}
         </button>
     </div>
-    <div *ngIf="newMessageBody.pristine || !isInputInvalid" class="govuk-hint govuk-!-margin-left-2 length-hint govuk-!-margin-padding-2 text-white">
+    <div *ngIf="newMessageBody.pristine || !isInputInvalid" class="govuk-hint govuk-!-margin-left-2 length-hint govuk-!-margin-padding-2" [class.text-white]="useLightText">
         {{'chat-input-box.char-count' | translate}} {{ currentInputLength }} ({{'chat-input-box.maximum' | translate}} {{ maxInputLength }}).
     </div>
-    <div id="screen-reader-input-limit-hint" hidden>{{'chat-input-box.you-can-enter-up-to' | translate}} {{ maxInputLength }} {{'chat-input-box.characters-in-this-field' | translate}} </div>
+    <div id="screen-reader-input-limit-hint" hidden>{{'chat-input-box.type-a-message'| translate}}{{'chat-input-box.text-area'| translate}}{{'chat-input-box.you-can-enter-up-to' | translate }} {{ maxInputLength }} {{'chat-input-box.characters-in-this-field' | translate}} </div>
     <div id="screen-reader-input-limit-alert" aria-live="polite" class="visually-hidden" #screenReaderInputLimitAlert>
     </div>
     <div id="input-errors"

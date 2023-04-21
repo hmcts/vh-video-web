@@ -37,7 +37,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BookingsApi.Client" Version="1.43.26" />
+    <PackageReference Include="BookingsApi.Client" Version="1.43.27-pullrequest0628-0003" />
     <PackageReference Include="Castle.Core" Version="4.4.0" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="10.4.0" />
     <PackageReference Include="MicroElements.Swashbuckle.FluentValidation" Version="5.7.0" />
@@ -56,7 +56,7 @@
     <PackageReference Include="Microsoft.OpenApi" Version="1.4.5" />
     <PackageReference Include="Polly" Version="7.2.1" />
     <PackageReference Include="Scrutor" Version="3.3.0" />
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.52.0.60960">
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.55.0.65544">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -65,7 +65,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.5.0" />
     <PackageReference Include="UserApi.Client" Version="1.41.8" />
     <PackageReference Include="VH.Core.Configuration" Version="0.1.13" />
-    <PackageReference Include="VideoApi.Client" Version="1.43.10-pullrequest0564-0012" />
+    <PackageReference Include="VideoApi.Client" Version="1.41.20" />
   </ItemGroup>
 
   <ItemGroup>

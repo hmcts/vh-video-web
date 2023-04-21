@@ -4,6 +4,7 @@ EXPOSE 80
 EXPOSE 443
 
 FROM node:14.15-alpine AS client
+ENV PUPPETEER_SKIP_DOWNLOAD=true
 ARG skip_client_build=false
 WORKDIR /app
 COPY VideoWeb/VideoWeb/ClientApp .

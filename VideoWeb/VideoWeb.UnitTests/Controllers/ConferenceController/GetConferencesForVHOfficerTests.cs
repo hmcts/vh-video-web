@@ -148,6 +148,203 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             // paused hearings in sessions cannot chat, no need to get history
             _mocker.Mock<IVideoApiClient>().Verify(x => x.GetInstantMessageHistoryAsync(conferences.Last().Id), Times.Never);
         }
+        
+        [TestCase(false)]
+        [TestCase(true)]
+        public async Task Should_return_ok_with_list_of_conferences_when_querying_by_cso(bool includeUnallocated)
+        {
+            // Arrange
+            var participants = Builder<ParticipantSummaryResponse>.CreateListOfSize(4)
+                .All()
+                .With(x => x.Username = Internet.Email())
+                .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>())
+                .TheFirst(1).With(x => x.UserRole = UserRole.Judge)
+                .TheRest().With(x => x.UserRole = UserRole.Individual).Build().ToList();
+
+
+            var conferences = Builder<ConferenceForAdminResponse>.CreateListOfSize(10).All()
+                .With(x => x.Participants = participants)
+                .With(x => x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-60))
+                .With(x => x.ScheduledDuration = 20)
+                .With(x => x.Status = ConferenceState.NotStarted)
+                .With(x => x.ClosedDateTime = null)
+                .Build().ToList();
+
+            var allocatedCsoResponses = 
+                conferences.Select(conference => new AllocatedCsoResponse { HearingId = conference.HearingRefId}).ToList();
+            var allocatedCsoIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() };
+            // Allocate to a cso that is not in our list
+            allocatedCsoResponses[0].Cso = new JusticeUserResponse { FullName = $"TestUserFor{allocatedCsoResponses[0].HearingId}", Id = Guid.NewGuid() }; 
+            int j = 1;
+            // Allocate to csos in our list
+            foreach (var csoId in allocatedCsoIds)
+            {
+                allocatedCsoResponses[j].Cso = new JusticeUserResponse { FullName = $"TestUserFor{allocatedCsoResponses[j].HearingId}", Id = csoId };
+                j++;
+            }
+
+            conferences.Last().Status = ConferenceState.InSession;
+
+            var minutes = -60;
+            foreach (var conference in conferences)
+            {
+                conference.ClosedDateTime = DateTime.UtcNow.AddMinutes(minutes);
+                minutes += 30;
+            }
+
+            _mocker.Mock<IVideoApiClient>()
+                .Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(It.IsAny<IEnumerable<string>>()))
+                .ReturnsAsync(conferences);
+
+            _mocker.Mock<IBookingsApiClient>()
+                .Setup(x => x.GetAllocationsForHearingsAsync(It.IsAny<IEnumerable<Guid>>()))
+                .ReturnsAsync(allocatedCsoResponses);
+            
+            var conferenceWithMessages = conferences.First();
+            var judge = conferenceWithMessages.Participants.Single(x => x.UserRole == UserRole.Judge);
+            var messages = new List<InstantMessageResponse>
+            {
+                new InstantMessageResponse
+                    {From = judge.Username, MessageText = "judge - 5", TimeStamp = DateTime.UtcNow.AddMinutes(-1)},
+                new InstantMessageResponse
+                    {From = judge.Username, MessageText = "judge - 4", TimeStamp = DateTime.UtcNow.AddMinutes(-2)},
+                new InstantMessageResponse
+                    {From = judge.Username, MessageText = "judge - 3", TimeStamp = DateTime.UtcNow.AddMinutes(-4)},
+                new InstantMessageResponse
+                    {From = judge.Username, MessageText = "judge - 2", TimeStamp = DateTime.UtcNow.AddMinutes(-6)},
+                new InstantMessageResponse
+                    {From = judge.Username, MessageText = "judge - 1", TimeStamp = DateTime.UtcNow.AddMinutes(-7)},
+            };
+
+            foreach (var conference in conferences)
+            {
+                _mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryAsync(conference.Id))
+                    .ReturnsAsync(new List<InstantMessageResponse>());
+            }
+
+            _mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryAsync(conferenceWithMessages.Id))
+                .ReturnsAsync(messages);
+            
+            // Act
+            var result = await _controller.GetConferencesForVhOfficerAsync(new VhoConferenceFilterQuery
+            {
+                AllocatedCsoIds = allocatedCsoIds,
+                IncludeUnallocated = includeUnallocated
+            });
+            
+            // Assert
+            var typedResult = (OkObjectResult) result.Result;
+            typedResult.Should().NotBeNull();
+
+            var conferencesForUser = (List<ConferenceForVhOfficerResponse>) typedResult.Value;
+            conferencesForUser.Should().NotBeNullOrEmpty();
+
+            var expectedHearingIds = allocatedCsoResponses
+                .Where(r => r.Cso != null)
+                .Where(r => allocatedCsoIds.Contains(r.Cso.Id))
+                .Select(r => r.HearingId)
+                .ToList();
+
+            if (includeUnallocated)
+            {
+                var unallocatedHearings = allocatedCsoResponses.Where(r => r.Cso == null)
+                    .ToList();
+
+                expectedHearingIds = expectedHearingIds
+                    .Union(unallocatedHearings.Select(h => h.HearingId))
+                    .ToList();
+            }
+
+            var actualHearingIds = conferencesForUser.Select(c => c.HearingRefId).ToList();
+            
+            CollectionAssert.AreEquivalent(expectedHearingIds, actualHearingIds);
+        }
+        
+        [Test]
+        public async Task Should_return_ok_with_list_of_conferences_when_querying_by_cso_on_unallocated_hearings_only()
+        {
+            // Arrange
+            var participants = Builder<ParticipantSummaryResponse>.CreateListOfSize(4)
+                .All()
+                .With(x => x.Username = Internet.Email())
+                .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>())
+                .TheFirst(1).With(x => x.UserRole = UserRole.Judge)
+                .TheRest().With(x => x.UserRole = UserRole.Individual).Build().ToList();
+
+
+            var conferences = Builder<ConferenceForAdminResponse>.CreateListOfSize(10).All()
+                .With(x => x.Participants = participants)
+                .With(x => x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-60))
+                .With(x => x.ScheduledDuration = 20)
+                .With(x => x.Status = ConferenceState.NotStarted)
+                .With(x => x.ClosedDateTime = null)
+                .Build().ToList();
+
+            var allocatedCsoResponses = 
+                conferences.Select(conference => new AllocatedCsoResponse { HearingId = conference.HearingRefId, Cso = new JusticeUserResponse{FullName = $"TestUserFor{conference.HearingRefId}"}}).ToList();
+            allocatedCsoResponses.Add(new AllocatedCsoResponse{ HearingId = Guid.NewGuid() }); //add one non existing hearing
+            var unallocatedHearing = allocatedCsoResponses.First();
+            unallocatedHearing.Cso = null;
+
+            conferences.Last().Status = ConferenceState.InSession;
+
+            var minutes = -60;
+            foreach (var conference in conferences)
+            {
+                conference.ClosedDateTime = DateTime.UtcNow.AddMinutes(minutes);
+                minutes += 30;
+            }
+
+            _mocker.Mock<IVideoApiClient>()
+                .Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(It.IsAny<IEnumerable<string>>()))
+                .ReturnsAsync(conferences);
+
+            _mocker.Mock<IBookingsApiClient>()
+                .Setup(x => x.GetAllocationsForHearingsAsync(It.IsAny<IEnumerable<Guid>>()))
+                .ReturnsAsync(allocatedCsoResponses);
+            
+            var conferenceWithMessages = conferences.First();
+            var judge = conferenceWithMessages.Participants.Single(x => x.UserRole == UserRole.Judge);
+            var messages = new List<InstantMessageResponse>
+            {
+                new InstantMessageResponse
+                    {From = judge.Username, MessageText = "judge - 5", TimeStamp = DateTime.UtcNow.AddMinutes(-1)},
+                new InstantMessageResponse
+                    {From = judge.Username, MessageText = "judge - 4", TimeStamp = DateTime.UtcNow.AddMinutes(-2)},
+                new InstantMessageResponse
+                    {From = judge.Username, MessageText = "judge - 3", TimeStamp = DateTime.UtcNow.AddMinutes(-4)},
+                new InstantMessageResponse
+                    {From = judge.Username, MessageText = "judge - 2", TimeStamp = DateTime.UtcNow.AddMinutes(-6)},
+                new InstantMessageResponse
+                    {From = judge.Username, MessageText = "judge - 1", TimeStamp = DateTime.UtcNow.AddMinutes(-7)},
+            };
+
+            foreach (var conference in conferences)
+            {
+                _mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryAsync(conference.Id))
+                    .ReturnsAsync(new List<InstantMessageResponse>());
+            }
+
+            _mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryAsync(conferenceWithMessages.Id))
+                .ReturnsAsync(messages);
+            
+            // Act
+            var result = await _controller.GetConferencesForVhOfficerAsync(new VhoConferenceFilterQuery
+            {
+                AllocatedCsoIds = new List<Guid>(),
+                IncludeUnallocated = true
+            });
+            
+            // Assert
+            var typedResult = (OkObjectResult) result.Result;
+            typedResult.Should().NotBeNull();
+
+            var conferencesForUser = (List<ConferenceForVhOfficerResponse>) typedResult.Value;
+            conferencesForUser.Should().NotBeNullOrEmpty();
+
+            conferencesForUser.Count.Should().Be(1);
+            conferencesForUser.First().HearingRefId.Should().Be(unallocatedHearing.HearingId);
+        }
 
         private ConferencesController SetupControllerWithClaims(ClaimsPrincipal claimsPrincipal)
         {
@@ -170,7 +367,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoApi.Contract.Responses.ConferenceForHostResponse, VideoWeb.Contract.Responses.ConferenceForHostResponse>()).Returns(_mocker.Create<ConferenceForHostResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoApi.Contract.Responses.ConferenceForIndividualResponse, VideoWeb.Contract.Responses.ConferenceForIndividualResponse>()).Returns(_mocker.Create<ConferenceForIndividualResponseMapper>(parameters));
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceForAdminResponse, ConferenceForVhOfficerResponse>()).Returns(_mocker.Create<ConferenceForVhOfficerResponseMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>()).Returns(_mocker.Create<ConferenceForVhOfficerResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDetailsResponse, ConferenceResponseVho>()).Returns(_mocker.Create<ConferenceResponseVhoMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDetailsResponse, ConferenceResponse>()).Returns(_mocker.Create<ConferenceResponseMapper>(parameters));
 

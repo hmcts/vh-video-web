@@ -84,5 +84,10 @@ namespace VideoWeb.Contract.Responses
         /// Allocated Cso Full name
         /// </summary>
         public string AllocatedCso { get; set; }
+
+        /// <summary>
+        /// Allocated Cso Id
+        /// </summary>
+        public Guid? AllocatedCsoId { get; set; }
     }
 }
