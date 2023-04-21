@@ -21,6 +21,10 @@ import { EventBusService, EmitEvent, VHEventType } from 'src/app/services/event-
 import { CourtRoomsAccounts } from '../services/models/court-rooms-accounts';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
 import { ConfigService } from 'src/app/services/api/config.service';
+import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
+import { NewAllocationMessage } from '../../services/models/new-allocation-message';
+import { NotificationToastrService } from '../../waiting-space/services/notification-toastr.service';
+import { CsoFilter } from '../services/models/cso-filter';
 
 @Component({
     selector: 'app-command-centre',
@@ -32,9 +36,11 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
     private readonly judgeAllocationStorage: SessionStorage<string[]>;
     private readonly courtAccountsAllocationStorage: SessionStorage<CourtRoomsAccounts[]>;
+    private readonly csoAllocationStorage: SessionStorage<CsoFilter>;
 
     venueAllocations: string[] = [];
     courtRoomsAccountsFilters: CourtRoomsAccounts[] = [];
+    csoFilter: CsoFilter;
 
     selectedMenu: MenuOption;
 
@@ -54,6 +60,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
     displayFilters = false;
     private readonly loggerPrefix = '[CommandCentre] -';
+    vhoWorkAllocationFeatureFlag: boolean;
 
     constructor(
         private queryService: VhoQueryService,
@@ -63,11 +70,17 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         private router: Router,
         private screenHelper: ScreenHelper,
         private eventbus: EventBusService,
-        private configService: ConfigService
+        private configService: ConfigService,
+        private ldService: LaunchDarklyService,
+        protected notificationToastrService: NotificationToastrService
     ) {
         this.loadingData = false;
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
         this.courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
+        this.csoAllocationStorage = new SessionStorage<CsoFilter>(VhoStorageKeys.CSO_ALLOCATIONS_KEY);
+        this.ldService.flagChange.subscribe(value => {
+            this.vhoWorkAllocationFeatureFlag = value[FEATURE_FLAGS.vhoWorkAllocation];
+        });
     }
 
     ngOnInit(): void {
@@ -136,6 +149,12 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
                 this.handleHeartbeat(heartbeat);
             })
         );
+
+        this.eventHubSubscriptions.add(
+            this.eventService
+                .getAllocationMessage()
+                .subscribe(allocationHearingMessage => this.handleAllocationUpdate(allocationHearingMessage))
+        );
     }
 
     onConferenceSelected(conference: ConferenceForVhOfficerResponse) {
@@ -198,7 +217,8 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     getConferenceForSelectedAllocations() {
         this.loadVenueSelection();
         this.loadCourtRoomsAccountFilters();
-        this.queryService.startQuery(this.venueAllocations);
+        this.loadCsoFilter();
+        this.queryService.startQuery(this.venueAllocations, this.csoFilter?.allocatedCsoIds, this.csoFilter?.includeUnallocated);
         this.retrieveHearingsForVhOfficer(true);
     }
 
@@ -209,6 +229,10 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
     loadCourtRoomsAccountFilters(): void {
         this.courtRoomsAccountsFilters = this.courtAccountsAllocationStorage.get();
+    }
+
+    loadCsoFilter(): void {
+        this.csoFilter = this.csoAllocationStorage.get();
     }
 
     retrieveHearingsForVhOfficer(reload: boolean) {
@@ -336,5 +360,9 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             );
             return false;
         }
+    }
+
+    handleAllocationUpdate(allocationHearingMessage: NewAllocationMessage) {
+        this.notificationToastrService.createAllocationNotificationToast(allocationHearingMessage.hearingDetails);
     }
 }

@@ -33,9 +33,45 @@ export class TasksTestData {
             updated_by: 'admin.kinly@hearings.reform.hmcts.net'
         });
 
+        const task4 = new TaskResponse({
+            id: 3,
+            origin_id: 'ad83a3e0-65d0-429d-aa24-94ee7a8befd6',
+            status: TaskStatus.Done,
+            type: TaskType.Participant,
+            body: 'Failed self-test (Incomplete Test)',
+            created: new Date(),
+            updated: new Date(),
+            updated_by: 'admin.kinly@hearings.reform.hmcts.net'
+        });
+
+        const task5 = new TaskResponse({
+            id: 3,
+            origin_id: 'ad83a3e0-65d0-429d-aa24-94ee7a8befd6',
+            status: TaskStatus.Done,
+            type: TaskType.Participant,
+            body: 'Failed self-test (Bad Score)',
+            created: new Date(),
+            updated: new Date(),
+            updated_by: 'admin.kinly@hearings.reform.hmcts.net'
+        });
+
+        const task6 = new TaskResponse({
+            id: 3,
+            origin_id: 'ad83a3e0-65d0-429d-aa24-94ee7a8befd6',
+            status: TaskStatus.Done,
+            type: TaskType.Participant,
+            body: 'Disconnected',
+            created: new Date(),
+            updated: new Date(),
+            updated_by: 'admin.kinly@hearings.reform.hmcts.net'
+        });
+
         testData.push(task1);
         testData.push(task2);
         testData.push(task3);
+        testData.push(task4);
+        testData.push(task5);
+        testData.push(task6);
         return testData;
     }
 

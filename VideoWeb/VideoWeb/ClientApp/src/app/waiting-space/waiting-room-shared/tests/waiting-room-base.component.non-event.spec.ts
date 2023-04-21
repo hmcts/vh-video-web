@@ -32,6 +32,7 @@ import {
     globalConference,
     globalParticipant,
     heartbeatModelMapper,
+    hideComponentsService,
     initAllWRDependencies,
     logger,
     mockedHearingVenueFlagsService,
@@ -90,7 +91,8 @@ describe('WaitingRoomComponent message and clock', () => {
             consultationInvitiationService,
             participantRemoteMuteStoreServiceSpy,
             mockedHearingVenueFlagsService,
-            titleService
+            titleService,
+            hideComponentsService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));

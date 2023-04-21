@@ -8,10 +8,18 @@ export class TooltipDirective implements OnDestroy {
     _text: string;
     _colour = 'blue';
     _isDesktopOnly = true;
+    _OPACITY_ONE = '1';
+    _OPACITY_ZERO_FIVE = '0.5';
+    _POSITION_RELATIVE = 'relative';
+    _tooltipElements = undefined;
+
     @Input() set text(value: string) {
         this._text = value;
         if (this.tooltip) {
             this.setTooltipText();
+        }
+        if (this.tooltipKeyTab) {
+            this.setTooltipTextKeyTab();
         }
     }
     @Input() set colour(value: string) {
@@ -25,22 +33,35 @@ export class TooltipDirective implements OnDestroy {
     @Output() tooltipShown = new EventEmitter();
 
     tooltip: HTMLElement;
+    tooltipKeyTab: HTMLElement;
 
     constructor(private el: ElementRef, private renderer: Renderer2, private deviceTypeService: DeviceTypeService) {}
     ngOnDestroy(): void {
         this.hide();
+        this.hideTooltipKeyEvent();
+    }
+
+    @HostListener('focus', ['$event']) onKeyDown($event: FocusEvent) {
+        if (!this.tooltipKeyTab) {
+            this.createTooltipKeyEvent($event);
+        }
+        this.showTooltipKeyEvent();
+    }
+
+    @HostListener('blur') onKeyUp() {
+        if (this.tooltipKeyTab) {
+            this.hideTooltipKeyEvent();
+        }
     }
 
     @HostListener('mouseenter', ['$event']) onMouseEnter($event: MouseEvent) {
         if (this._isDesktopOnly && !this.deviceTypeService.isDesktop()) {
             return;
         }
-        if (this.tooltip) {
-            this.show();
-            this.updatePosition($event);
-        } else {
-            this.createAndDisplay($event);
-        }
+
+        this.hideTooltipKeyEvent();
+        this.removeTooltips('vh-tooltip');
+        this.createAndDisplay($event);
     }
 
     @HostListener('mousemove', ['$event']) onMouseMove($event: MouseEvent) {
@@ -54,6 +75,8 @@ export class TooltipDirective implements OnDestroy {
             return;
         }
 
+        this.hideTooltipKeyEvent();
+
         if (this.tooltip) {
             this.show();
             this.updatePosition($event);
@@ -63,6 +86,13 @@ export class TooltipDirective implements OnDestroy {
     @HostListener('mouseleave', ['$event']) onMouseLeave($event: MouseEvent) {
         if (this.tooltip) {
             this.hide();
+        }
+    }
+
+    removeTooltips(className: string) {
+        this._tooltipElements = document.getElementsByClassName(className);
+        while (this._tooltipElements.length > 0) {
+            this._tooltipElements[0].parentNode.removeChild(this._tooltipElements[0]);
         }
     }
 
@@ -96,6 +126,15 @@ export class TooltipDirective implements OnDestroy {
                 }, 5000);
             }
             this.renderer.addClass(this.tooltip, 'vh-tooltip-show');
+            this.setParentStyles(this._POSITION_RELATIVE);
+            this.tooltipShown.emit();
+        }
+    }
+
+    showTooltipKeyEvent() {
+        if (this.tooltipKeyTab) {
+            this.renderer.addClass(this.tooltipKeyTab, 'vh-tooltip-show');
+            this.setParentStyles(this._POSITION_RELATIVE, this._OPACITY_ONE);
             this.tooltipShown.emit();
         }
     }
@@ -103,6 +142,13 @@ export class TooltipDirective implements OnDestroy {
     hide() {
         if (this.tooltip) {
             this.renderer.removeClass(this.tooltip, 'vh-tooltip-show');
+        }
+    }
+
+    hideTooltipKeyEvent() {
+        if (this.tooltipKeyTab) {
+            this.renderer.removeClass(this.tooltipKeyTab, 'vh-tooltip-show');
+            this.setParentStyles(this._POSITION_RELATIVE, this._OPACITY_ZERO_FIVE);
         }
     }
 
@@ -114,8 +160,34 @@ export class TooltipDirective implements OnDestroy {
         this.setTooltipColour(null);
     }
 
+    createTooltipKeyEvent(event: FocusEvent) {
+        this.tooltipKeyTab = this.renderer.createElement('div');
+        this.tooltipKeyTab.innerHTML = this._text;
+        const parentId = (<HTMLElement>event.target).id;
+        const parent = document.getElementById(parentId);
+        this.renderer.appendChild(parent, this.tooltipKeyTab);
+        this.renderer.addClass(this.tooltipKeyTab, 'vh-tooltip');
+        this.setTooltipPosition();
+        this.setTooltipColour(null);
+    }
+
+    setTooltipPosition() {
+        this.setParentStyles(this._POSITION_RELATIVE, this._OPACITY_ONE);
+        this.tooltipKeyTab.style.top = 35 + 'px';
+        this.tooltipKeyTab.style.left = '0';
+        this.tooltipKeyTab.style.opacity = this._OPACITY_ONE;
+    }
+
+    setParentStyles(positionVal: string, opacityVal?: string) {
+        (<HTMLElement>this.tooltipKeyTab.parentNode).setAttribute('style', `position:${positionVal};opacity:${opacityVal}`);
+    }
+
     setTooltipText() {
         this.tooltip.innerHTML = this._text;
+    }
+
+    setTooltipTextKeyTab() {
+        this.tooltipKeyTab.innerHTML = this._text;
     }
 
     setTooltipColour(oldColour: string) {

@@ -1,0 +1,22 @@
+version: '3.4'
+
+networks:
+  integration-tests:
+    driver: bridge
+
+services:
+
+  vh-video-web-tests:
+    image: video-web-tests
+    build:
+      context: ./
+      dockerfile: tests/Dockerfile
+    entrypoint: /run-tests.sh
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      - ./TestResults:/TestResults:rw
+      - ./Coverage:/Coverage:rw
+      - ./:/app:rw
+    networks:
+      - integration-tests

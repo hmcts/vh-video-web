@@ -109,74 +109,72 @@ describe('AppComponent', () => {
         jasmine.getEnv().allowRespy(false);
     });
 
-    beforeEach(
-        waitForAsync(() => {
-            noSleepServiceSpy = jasmine.createSpyObj<NoSleepService>(['enable']);
-            securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
-                'SecurityServiceProviderService',
-                [],
-                ['currentSecurityService$']
-            );
+    beforeEach(waitForAsync(() => {
+        noSleepServiceSpy = jasmine.createSpyObj<NoSleepService>(['enable']);
+        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
+            'SecurityServiceProviderService',
+            [],
+            ['currentSecurityService$']
+        );
 
-            spyOnProperty(securityServiceSpy, 'isAuthenticated$', 'get').and.returnValue(of(true));
-            getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
+        spyOnProperty(securityServiceSpy, 'isAuthenticated$', 'get').and.returnValue(of(true));
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
 
-            securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>(
-                'SecurityConfigSetupService',
-                ['getIdp'],
-                ['configRestored$']
-            );
-            spyOnProperty(securityConfigSetupServiceSpy, 'configRestored$').and.returnValue(configRestoredSubject.asObservable());
-            locationSpy = jasmine.createSpyObj<Location>('Location', ['back']);
+        securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>(
+            'SecurityConfigSetupService',
+            ['getIdp'],
+            ['configRestored$']
+        );
+        spyOnProperty(securityConfigSetupServiceSpy, 'configRestored$').and.returnValue(configRestoredSubject.asObservable());
+        locationSpy = jasmine.createSpyObj<Location>('Location', ['back']);
 
-            TestBed.configureTestingModule({
-                providers: [
-                    { provide: DeviceTypeService, useValue: deviceTypeServiceSpy },
-                    { provide: ProfileService, useValue: profileServiceSpy },
-                    { provide: ErrorService, useValue: errorServiceSpy },
-                    { provide: Title, useValue: titleServiceSpy },
-                    { provide: ConnectionStatusService, useValue: connectionStatusServiceSpy },
-                    { provide: PageTrackerService, useValue: pageTrackerServiceSpy },
-                    { provide: TestLanguageService, useValue: testLanguageServiceSpy },
-                    { provide: SecurityServiceProvider, useValue: securityServiceProviderServiceSpy },
-                    { provide: SecurityConfigSetupService, useValue: securityConfigSetupServiceSpy },
-                    { provide: ConfigService, useValue: configServiceSpy },
-                    { provide: PublicEventsService, useValue: publicEventsServiceSpy },
-                    { provide: Location, useValue: locationSpy },
-                    { provide: Logger, useValue: new MockLogger() },
-                    { provide: TranslateService, useValue: translateServiceSpy },
-                    { provide: Router, useValue: routerSpy },
-                    {
-                        provide: ActivatedRoute,
-                        useValue: activatedRouteMock
-                    },
-                    { provide: NoSleepService, useValue: noSleepServiceSpy }
-                ],
-                declarations: [
-                    AppComponent,
-                    TranslatePipeMock,
-                    MockComponent(BackNavigationComponent),
-                    MockComponent(HeaderComponent),
-                    MockComponent(FooterComponent),
-                    MockComponent(BetaBannerComponent)
-                ],
-                imports: [RouterTestingModule]
-            }).compileComponents();
+        TestBed.configureTestingModule({
+            providers: [
+                { provide: DeviceTypeService, useValue: deviceTypeServiceSpy },
+                { provide: ProfileService, useValue: profileServiceSpy },
+                { provide: ErrorService, useValue: errorServiceSpy },
+                { provide: Title, useValue: titleServiceSpy },
+                { provide: ConnectionStatusService, useValue: connectionStatusServiceSpy },
+                { provide: PageTrackerService, useValue: pageTrackerServiceSpy },
+                { provide: TestLanguageService, useValue: testLanguageServiceSpy },
+                { provide: SecurityServiceProvider, useValue: securityServiceProviderServiceSpy },
+                { provide: SecurityConfigSetupService, useValue: securityConfigSetupServiceSpy },
+                { provide: ConfigService, useValue: configServiceSpy },
+                { provide: PublicEventsService, useValue: publicEventsServiceSpy },
+                { provide: Location, useValue: locationSpy },
+                { provide: Logger, useValue: new MockLogger() },
+                { provide: TranslateService, useValue: translateServiceSpy },
+                { provide: Router, useValue: routerSpy },
+                {
+                    provide: ActivatedRoute,
+                    useValue: activatedRouteMock
+                },
+                { provide: NoSleepService, useValue: noSleepServiceSpy }
+            ],
+            declarations: [
+                AppComponent,
+                TranslatePipeMock,
+                MockComponent(BackNavigationComponent),
+                MockComponent(HeaderComponent),
+                MockComponent(FooterComponent),
+                MockComponent(BetaBannerComponent)
+            ],
+            imports: [RouterTestingModule]
+        }).compileComponents();
 
-            fixture = TestBed.createComponent(AppComponent);
-            component = fixture.componentInstance;
-            document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(dummyElement);
-            component.main = new ElementRef(dummyElement);
-            component.skipLinkDiv = new ElementRef(dummyElement);
-            deviceTypeServiceSpy.isSupportedBrowser.and.returnValue(true);
-            routerSpy.navigate.and.returnValue(Promise.resolve(true));
-            routerSpy.navigateByUrl.and.returnValue(Promise.resolve(true));
-            routerSpy.navigate.calls.reset();
-            routerSpy.navigateByUrl.calls.reset();
-            profileServiceSpy.getUserProfile.calls.reset();
-            publicEventsServiceSpy.registerForEvents.and.returnValue(of(eventValue));
-        })
-    );
+        fixture = TestBed.createComponent(AppComponent);
+        component = fixture.componentInstance;
+        document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(dummyElement);
+        component.main = new ElementRef(dummyElement);
+        component.skipLinkDiv = new ElementRef(dummyElement);
+        deviceTypeServiceSpy.isSupportedBrowser.and.returnValue(true);
+        routerSpy.navigate.and.returnValue(Promise.resolve(true));
+        routerSpy.navigateByUrl.and.returnValue(Promise.resolve(true));
+        routerSpy.navigate.calls.reset();
+        routerSpy.navigateByUrl.calls.reset();
+        profileServiceSpy.getUserProfile.calls.reset();
+        publicEventsServiceSpy.registerForEvents.and.returnValue(of(eventValue));
+    }));
 
     it('should enable the no sleep service on init', fakeAsync(() => {
         // Arrange

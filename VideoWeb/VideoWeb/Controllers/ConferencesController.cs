@@ -4,6 +4,8 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using BookingsApi.Client;
+using BookingsApi.Contract.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -16,6 +18,7 @@ using VideoWeb.Helpers;
 using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
+using VideoWeb.Extensions;
 using HostConference = VideoApi.Contract.Responses.ConferenceForHostResponse;
 using IndividualConference = VideoApi.Contract.Responses.ConferenceForIndividualResponse;
 using ConferenceForIndividualResponse = VideoWeb.Contract.Responses.ConferenceForIndividualResponse;
@@ -33,17 +36,20 @@ namespace VideoWeb.Controllers
         private readonly ILogger<ConferencesController> _logger;
         private readonly IConferenceCache _conferenceCache;
         private readonly IMapperFactory _mapperFactory;
+        private readonly IBookingsApiClient _bookingApiClient;
 
         public ConferencesController(
             IVideoApiClient videoApiClient,
             ILogger<ConferencesController> logger,
             IConferenceCache conferenceCache,
-            IMapperFactory mapperFactory)
+            IMapperFactory mapperFactory,
+            IBookingsApiClient bookingApiClient)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
             _conferenceCache = conferenceCache;
             _mapperFactory = mapperFactory;
+            _bookingApiClient = bookingApiClient;
         }
 
         /// <summary>
@@ -151,12 +157,14 @@ namespace VideoWeb.Controllers
             try
             {
                 var conferences = await _videoApiClient.GetConferencesTodayForAdminByHearingVenueNameAsync(query.HearingVenueNames);
-
-                var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, ConferenceForVhOfficerResponse>();
+                var allocatedHearings =
+                    await _bookingApiClient.GetAllocationsForHearingsAsync(conferences.Select(e => e.HearingRefId));
+                var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>();
                 var responses = conferences
                     .Where(c => ConferenceHelper.HasNotPassed(c.Status, c.ClosedDateTime))
+                    .Select(x => conferenceForVhOfficerResponseMapper.Map(x, allocatedHearings?.FirstOrDefault(conference => conference.HearingId == x.HearingRefId)))
+                    .ApplyCsoFilter(query)
                     .OrderBy(x => x.ClosedDateTime)
-                    .Select(conferenceForVhOfficerResponseMapper.Map)
                     .ToList();
 
                 return Ok(responses);

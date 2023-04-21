@@ -12,7 +12,6 @@ using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
 using VideoApi.Client;
 using VideoWeb.EventHub.Services;
-using VideoWeb.Helpers;
 
 namespace VideoWeb.UnitTests.Builders
 {
@@ -75,6 +74,8 @@ namespace VideoWeb.UnitTests.Builders
                     apiClientMock.Object),
                 new EndpointTransferEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object,
                     apiClientMock.Object),
+                new AllocationHearingsEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object,
+                    apiClientMock.Object)
             };
         }
 

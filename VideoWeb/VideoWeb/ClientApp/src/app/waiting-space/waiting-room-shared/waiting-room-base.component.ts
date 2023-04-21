@@ -39,6 +39,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
 import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
+import { EndpointsUpdatedMessage } from 'src/app/shared/models/endpoints-updated-message';
 import { Room } from 'src/app/shared/models/room';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { HearingRole } from '../models/hearing-role-model';
@@ -60,6 +61,7 @@ import { RoomClosingToastrService } from '../services/room-closing-toast.service
 import { VideoCallService } from '../services/video-call.service';
 import { Title } from '@angular/platform-browser';
 import { RoomTransfer } from '../../shared/models/room-transfer';
+import { HideComponentsService } from '../services/hide-components.service';
 
 @Directive()
 export abstract class WaitingRoomBaseDirective {
@@ -141,11 +143,12 @@ export abstract class WaitingRoomBaseDirective {
         protected consultationInvitiationService: ConsultationInvitationService,
         protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
         protected hearingVenueFlagsService: HearingVenueFlagsService,
-        protected titleService: Title
+        protected titleService: Title,
+        protected hideComponentsService: HideComponentsService
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;
-        this.showVideo = false;
+        this.setShowVideo(false);
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
         this.errorCount = 0;
@@ -503,6 +506,13 @@ export abstract class WaitingRoomBaseDirective {
             })
         );
 
+        this.logger.debug('[WR] - Subscribing to endpoints update complete message');
+        this.eventHubSubscription$.add(
+            this.eventService.getEndpointsUpdated().subscribe(endpointsUpdatedMessage => {
+                this.handleEndpointsUpdatedMessage(endpointsUpdatedMessage);
+            })
+        );
+
         this.logger.debug('[WR] - Subscribing to hearing layout update complete message');
         this.eventHubSubscription$.add(
             this.eventService.getHearingLayoutChanged().subscribe(async hearingLayout => {
@@ -761,6 +771,7 @@ export abstract class WaitingRoomBaseDirective {
         this.presentationStream = null;
         this.videoCallService.stopPresentation();
     }
+
     handlePresentationConnected(connectedPresentation: ConnectedPresentation): void {
         const logPayload = {
             conference: this.conferenceId,
@@ -869,7 +880,7 @@ export abstract class WaitingRoomBaseDirective {
         this.callStream = null;
         this.outgoingStream = null;
         this.connected = false;
-        this.showVideo = false;
+        this.setShowVideo(false);
     }
 
     handleCallSetup(callSetup: CallSetup) {
@@ -1083,13 +1094,47 @@ export abstract class WaitingRoomBaseDirective {
             );
         });
 
-        this.conference.participants = [...participantsUpdatedMessage.participants].map(participant => {
+        const updatedParticipantsList = [...participantsUpdatedMessage.participants].map(participant => {
             const currentParticipant = this.conference.participants.find(x => x.id === participant.id);
             participant.current_room = currentParticipant ? currentParticipant.current_room : null;
             participant.status = currentParticipant ? currentParticipant.status : ParticipantStatus.NotSignedIn;
             return participant;
         });
+        this.conference = { ...this.conference, participants: updatedParticipantsList } as ConferenceResponse;
         this.participant = this.getLoggedParticipant();
+    }
+
+    private handleEndpointsUpdatedMessage(endpointsUpdatedMessage: EndpointsUpdatedMessage) {
+        this.logger.debug(`[WR] - Endpoints updated message received`, {
+            newEndpoints: endpointsUpdatedMessage.endpoints.new_endpoints,
+            updatedEndpoints: endpointsUpdatedMessage.endpoints.existing_endpoints
+        });
+
+        if (!this.validateIsForConference(endpointsUpdatedMessage.conferenceId)) {
+            return;
+        }
+
+        endpointsUpdatedMessage.endpoints.new_endpoints.forEach(endpoint => {
+            this.logger.debug(`[WR] - Endpoint added, showing notification`, endpoint);
+            this.notificationToastrService.showEndpointAdded(
+                endpoint,
+                this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
+            );
+
+            this.hearing.addEndpoint(endpoint);
+        });
+
+        endpointsUpdatedMessage.endpoints.existing_endpoints.forEach(endpoint => {
+            this.logger.debug(`[WR] - Endpoint updated, showing notification`, endpoint);
+            this.notificationToastrService.showEndpointUpdated(
+                endpoint,
+                this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
+            );
+
+            this.hearing.updateEndpoint(endpoint);
+        });
+
+        this.conference = { ...this.conference, endpoints: [...this.hearing.getEndpoints()] } as ConferenceResponse;
     }
 
     private handleHearingLayoutUpdatedMessage(hearingLayoutMessage: HearingLayoutChanged) {
@@ -1155,7 +1200,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     resetVideoFlags() {
-        this.showVideo = false;
+        this.setShowVideo(false);
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
     }
@@ -1163,7 +1208,7 @@ export abstract class WaitingRoomBaseDirective {
     willShowHearing() {
         if (this.hearing.isInSession() && this.shouldCurrentUserJoinHearing()) {
             this.displayDeviceChangeModal = false;
-            this.showVideo = true;
+            this.setShowVideo(true);
             this.showConsultationControls = false;
             this.isPrivateConsultation = false;
             return true;
@@ -1174,7 +1219,7 @@ export abstract class WaitingRoomBaseDirective {
     willShowConsultation(): boolean {
         if (this.participant.status === ParticipantStatus.InConsultation) {
             this.displayDeviceChangeModal = false;
-            this.showVideo = true;
+            this.setShowVideo(true);
             this.isPrivateConsultation = true;
             this.showConsultationControls = !this.isAdminConsultation;
 
@@ -1211,7 +1256,7 @@ export abstract class WaitingRoomBaseDirective {
             logPayload.reason = 'Showing video because witness is in hearing';
             this.logger.debug(`${this.loggerPrefix} ${logPayload.reason}`, logPayload);
             this.displayDeviceChangeModal = false;
-            this.showVideo = true;
+            this.setShowVideo(true);
             this.showConsultationControls = false;
             this.isPrivateConsultation = false;
             return;
@@ -1338,5 +1383,10 @@ export abstract class WaitingRoomBaseDirective {
     async callAndUpdateShowVideo(): Promise<void> {
         await this.call();
         this.getConference().then(() => this.updateShowVideo());
+    }
+
+    private setShowVideo(showVideo: boolean) {
+        this.showVideo = showVideo;
+        this.hideComponentsService.hideNonVideoComponents$.next(showVideo);
     }
 }

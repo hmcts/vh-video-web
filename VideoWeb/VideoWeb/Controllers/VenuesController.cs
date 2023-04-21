@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -8,9 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Models;
-using VideoApi.Client;
-using VideoApi.Contract.Responses;
-
 namespace VideoWeb.Controllers
 {
     [Produces("application/json")]
@@ -23,7 +21,7 @@ namespace VideoWeb.Controllers
         private readonly IBookingsApiClient _bookingsApiClient;
 
 
-        public VenuesController(IVideoApiClient videoApiClient, ILogger<VenuesController> logger, IBookingsApiClient bookingsApiClient)
+        public VenuesController(ILogger<VenuesController> logger, IBookingsApiClient bookingsApiClient)
         {
             _logger = logger;
             _bookingsApiClient = bookingsApiClient;

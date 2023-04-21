@@ -66,6 +66,7 @@
     "maximum": "maximum allowed",
     "unable-send": "Unable to send message.",
     "type-a-message": "Type a message",
+      "text-area": "Text area",
     "you-can-enter-up-to": "You can enter up to",
     "characters-in-this-field": "characters in this field",
     "maximum-characters-entered": "You have entered the maximum number of characters"
@@ -1160,6 +1161,16 @@
       "message-with-party": "{{role}} ({{party}}) has been added to the hearing.",
       "dismiss": "Dismiss"
     },
+    "endpoint-added": {
+      "title": "{{name}}",
+      "message": "Video Access Point has been added to the hearing",
+      "dismiss": "Dismiss"
+    },
+    "endpoint-updated": {
+      "title": "{{name}}",
+      "message": "Video Access Point has been updated in the hearing",
+      "dismiss": "Dismiss"
+    },
     "hearing-layout-changed": {
       "title": "{{name}}",
       "message": "has changed the hearing layout.",
@@ -1238,5 +1249,8 @@
     "link-text": "Complete our short survey here"
   },
   "true": "Yes",
-  "false": "No"
+  "false": "No",
+    "allocations-toastr": {
+        "header" : "New hearing(s) allocated"
+    }
 }

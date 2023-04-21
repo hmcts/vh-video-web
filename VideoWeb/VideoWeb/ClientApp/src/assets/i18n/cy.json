@@ -535,6 +535,7 @@
     "char-count": "Nifer o nodau",
     "maximum": "caniateir hyd at",
     "unable-send": "Methu anfon y neges",
+      "text-area": "ardal destun",
     "type-a-message": "Teipiwch neges",
     "you-can-enter-up-to": "gallwch ddefnyddio hyd a",
     "characters-in-this-field": "o nodau yn y blwch hwn",
@@ -584,6 +585,16 @@
       "title": "Mae {{name}}",
       "message-without-party": "{{role}} wedi cael ei (h)ychwanegu at y gwrandawiad.",
       "message-with-party": "{{role}} ({{party}}) wedi cael ei (h)ychwanegu at y gwrandawiad.",
+      "dismiss": "Gwrthod"
+    },
+    "endpoint-added": {
+      "title": "{{name}}",
+      "message": "Pwynt mynediad fideo wedi cael ei ychwanegu at y gwrandawiad.",
+      "dismiss": "Gwrthod"
+    },
+    "endpoint-updated": {
+      "title": "{{name}}",
+      "message": "Pwynt mynediad fideo wedi cael ei ddiweddaru yn y gwrandawiad.",
       "dismiss": "Gwrthod"
     },
     "hearing-layout-changed": {
@@ -1240,5 +1251,8 @@
     "link-text": "Cwblhewch ein harolwg byr yma"
   },
   "true": "Do",
-  "false": "Naddo"
+  "false": "Naddo",
+    "allocations-toastr": {
+        "header" : "Gwrandawiad newydd wedi'i ddyrannu"
+    }
 }

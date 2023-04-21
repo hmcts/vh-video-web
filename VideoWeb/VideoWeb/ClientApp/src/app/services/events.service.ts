@@ -7,12 +7,14 @@ import { ParticipantMediaStatus } from '../shared/models/participant-media-statu
 import { ParticipantMediaStatusMessage } from '../shared/models/participant-media-status-message';
 import { ParticipantRemoteMuteMessage } from '../shared/models/participant-remote-mute-message';
 import { ParticipantsUpdatedMessage } from '../shared/models/participants-updated-message';
+import { EndpointsUpdatedMessage } from '../shared/models/endpoints-updated-message';
 import { Room } from '../shared/models/room';
 import { RoomTransfer } from '../shared/models/room-transfer';
 import {
     ConferenceStatus,
     ConsultationAnswer,
     EndpointStatus,
+    HearingDetailRequest,
     HearingLayout,
     ParticipantResponse,
     ParticipantStatus
@@ -29,6 +31,8 @@ import { InstantMessage } from './models/instant-message';
 import { HeartbeatHealth, ParticipantHeartbeat } from './models/participant-heartbeat';
 import { ParticipantStatusMessage } from './models/participant-status-message';
 import { RequestedConsultationMessage } from './models/requested-consultation-message';
+import { NewAllocationMessage } from './models/new-allocation-message';
+import { UpdateEndpointsDto } from '../shared/models/update-endpoints-dto';
 
 @Injectable({
     providedIn: 'root'
@@ -49,6 +53,7 @@ export class EventsService {
     private endpointStatusSubject = new Subject<EndpointStatusMessage>();
     private hearingStatusSubject = new Subject<ConferenceStatusMessage>();
     private participantsUpdatedSubject = new Subject<ParticipantsUpdatedMessage>();
+    private endpointsUpdatedSubject = new Subject<EndpointsUpdatedMessage>();
 
     private hearingCountdownCompleteSubject = new Subject<string>();
     private helpMessageSubject = new Subject<HelpMessage>();
@@ -66,6 +71,7 @@ export class EventsService {
     private roomUpdateSubject = new Subject<Room>();
     private roomTransferSubject = new Subject<RoomTransfer>();
     private hearingLayoutChangedSubject = new Subject<HearingLayoutChanged>();
+    private messageAllocationSubject = new Subject<NewAllocationMessage>();
 
     private _handlersRegistered = false;
 
@@ -78,6 +84,13 @@ export class EventsService {
 
         NewConferenceAddedMessage: (conferenceId: string) => {
             this.eventsHubConnection.invoke('AddToGroup', conferenceId);
+        },
+
+        AllocationHearings: (csoUserName: string, hearingDetails: HearingDetailRequest[]) => {
+            this.eventsHubConnection.invoke('AddToGroup', csoUserName);
+            const message = new NewAllocationMessage(hearingDetails);
+            this.logger.debug(`[EventsService] - ReceiveMessage allocation for {csoUserName} for hearings`);
+            this.messageAllocationSubject.next(message);
         },
 
         EndpointStatusMessage: (endpointId: string, conferenceId: string, status: EndpointStatus) => {
@@ -97,6 +110,12 @@ export class EventsService {
             const message = new ParticipantsUpdatedMessage(conferenceId, participants);
             this.logger.debug('[EventsService] - ParticipantsUpdatedMessage received', message);
             this.participantsUpdatedSubject.next(message);
+        },
+
+        EndpointsUpdated: (conferenceId: string, endpoints: UpdateEndpointsDto) => {
+            const message = new EndpointsUpdatedMessage(conferenceId, endpoints);
+            this.logger.debug('[EventsService] - EndpointsUpdatedMessage received', message);
+            this.endpointsUpdatedSubject.next(message);
         },
 
         CountdownFinished: (conferenceId: string) => {
@@ -289,6 +308,10 @@ export class EventsService {
         return this.participantStatusSubject.asObservable();
     }
 
+    getAllocationMessage(): Observable<NewAllocationMessage> {
+        return this.messageAllocationSubject.asObservable();
+    }
+
     getHearingStatusMessage(): Observable<ConferenceStatusMessage> {
         return this.hearingStatusSubject.asObservable();
     }
@@ -346,6 +369,10 @@ export class EventsService {
 
     getParticipantsUpdated(): Observable<ParticipantsUpdatedMessage> {
         return this.participantsUpdatedSubject.asObservable();
+    }
+
+    getEndpointsUpdated(): Observable<EndpointsUpdatedMessage> {
+        return this.endpointsUpdatedSubject.asObservable();
     }
 
     getHearingLayoutChanged(): Observable<HearingLayoutChanged> {

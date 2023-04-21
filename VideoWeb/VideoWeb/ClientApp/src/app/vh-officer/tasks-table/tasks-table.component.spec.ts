@@ -3,9 +3,11 @@ import { Guid } from 'guid-typescript';
 import { TaskCompleted } from 'src/app/on-the-day/models/task-completed';
 import { Role, TaskResponse, TaskStatus, TaskType } from 'src/app/services/clients/api-client';
 import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
+import { SessionStorage } from 'src/app/services/session-storage';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { TasksTestData } from 'src/app/testing/mocks/data/tasks-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
+import { VhoStorageKeys } from '../services/models/session-keys';
 import { VhoQueryService } from '../services/vho-query-service.service';
 import { TasksTableComponent } from './tasks-table.component';
 
@@ -174,5 +176,45 @@ describe('TasksTableComponent', () => {
         component.setupSubscribers();
         eventbus.emit(new EmitEvent<TaskCompleted>(VHEventType.PageRefreshed, null));
         expect(vhoQueryService.getTasksForConference).toHaveBeenCalledWith(conference.id);
+    });
+
+    describe('Self Test Response', () => {
+        beforeAll(() => {
+            component.sessionStorage = new SessionStorage<boolean>(VhoStorageKeys.EQUIPMENT_SELF_TEST_KEY);
+        });
+        afterAll(() => {
+            component.sessionStorage.clear();
+        });
+        it('should not display self test error message "Failed self-test (Incomplete Test)" when self test is successfull', () => {
+            component.sessionStorage.set(true);
+            component.tasks = new TasksTestData().getTestData();
+            const task = component.tasks.find(x => x.body !== 'Failed self-test (Incomplete Test)');
+            const res = component.getSelfTestResponse(task);
+            expect(res).toEqual(true);
+        });
+
+        it('should not display self test error message "Failed self-test (Bad Score)" when self test is successfull', () => {
+            component.sessionStorage.set(true);
+            component.tasks = new TasksTestData().getTestData();
+            const task = component.tasks.find(x => x.body !== 'Failed self-test (Bad Score)');
+            const res = component.getSelfTestResponse(task);
+            expect(res).toEqual(true);
+        });
+
+        it('should display rest of the tasks when self test not done', () => {
+            component.sessionStorage.set(null);
+            component.tasks = new TasksTestData().getTestData();
+            const task = component.tasks.find(x => x.body === 'Disconnected');
+            const res = component.getSelfTestResponse(task);
+            expect(res).toEqual(true);
+        });
+
+        it('should display all the tasks when self test not done and session is cleaed', () => {
+            component.sessionStorage.clear();
+            component.tasks = new TasksTestData().getTestData();
+            const task = component.tasks.find(x => x.body === 'Disconnected');
+            const res = component.getSelfTestResponse(task);
+            expect(res).toEqual(true);
+        });
     });
 });
