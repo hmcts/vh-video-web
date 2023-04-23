@@ -92,6 +92,10 @@ import {
 import { RoomNamePipe } from './pipes/room-name.pipe';
 import { HookElementDirective } from './directives/hook-element.directive';
 import { RandomPipe } from './pipes/random.pipe';
+import { Router } from '@angular/router';
+import { SecurityServiceProvider } from '../security/authentication/security-provider.service';
+import { ProfileService } from '../services/api/profile.service';
+import { AppInsightsLoggerService } from '../services/logging/loggers/app-insights-logger.service';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -166,12 +170,12 @@ export function getSettings(configService: ConfigService) {
     providers: [
         { provide: Logger, useClass: LoggerService },
         { provide: LOG_ADAPTER, useClass: ConsoleLogger, multi: true },
-        // {
-        //     provide: LOG_ADAPTER,
-        //     useClass: AppInsightsLoggerService,
-        //     multi: true,
-        //     deps: [SecurityServiceProvider, ConfigService, Router, ProfileService]
-        // },
+        {
+            provide: LOG_ADAPTER,
+            useClass: AppInsightsLoggerService,
+            multi: true,
+            deps: [SecurityServiceProvider, ConfigService, Router, ProfileService]
+        },
         ConfigService,
         WindowScrolling,
         ScreenHelper,
