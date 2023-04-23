@@ -101,15 +101,6 @@ export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
 }
 
-// export function setupSecurity(securityConfigService: SecurityConfigSetupService) {
-//     return () => securityConfigService.setupConfig().toPromise();
-// }
-
-// export function restoreConfig(securityConfigSetupService: SecurityConfigSetupService): Function {
-//     return () => {
-//         securityConfigSetupService.restoreConfig();
-//     };
-// }
 @NgModule({
     imports: [
         CommonModule,

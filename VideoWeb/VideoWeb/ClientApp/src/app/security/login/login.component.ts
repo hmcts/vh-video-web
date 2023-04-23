@@ -3,7 +3,7 @@ import { OnInit, Component, Injectable } from '@angular/core';
 import { ReturnUrlService } from '../../services/return-url.service';
 import { Logger } from '../../services/logging/logger-base';
 import { catchError } from 'rxjs/operators';
-import { NEVER } from 'rxjs';
+import { NEVER, combineLatest } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { SecurityServiceProvider } from '../authentication/security-provider.service';
@@ -25,10 +25,12 @@ export class LoginComponent implements OnInit {
         securityServiceProviderService: SecurityServiceProvider,
         private configService: ConfigService
     ) {
-        securityServiceProviderService.currentSecurityService$.subscribe(service => {
-            this.securityService = service;
-            this.currentIdp = securityServiceProviderService.currentIdp;
-        });
+        combineLatest([securityServiceProviderService.currentSecurityService$, securityServiceProviderService.currentIdp$]).subscribe(
+            ([service, idp]) => {
+                this.securityService = service;
+                this.currentIdp = idp;
+            }
+        );
     }
 
     ngOnInit() {

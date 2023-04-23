@@ -1,36 +1,38 @@
-import { HttpClientModule, HttpEvent, HttpEventType, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
-import { fakeAsync, flush, TestBed } from '@angular/core/testing';
+import { HttpClientModule, HttpEvent, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
+import { fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { Observable, of, Subject } from 'rxjs';
 import { Logger } from '../services/logging/logger-base';
-import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
 
 import { QuickLinksInterceptor } from './quick-links.interceptor';
 import { SecurityServiceProvider } from './authentication/security-provider.service';
 import { ISecurityService } from './authentication/security-service.interface';
 import { IdpProviders } from './idp-providers';
-import { SecurityConfigSetupService } from './security-config-setup.service';
+import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
 
 describe('QuickLinksInterceptor', () => {
     let sut: QuickLinksInterceptor;
-    let securityConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
     let currentIdpSubject: Subject<IdpProviders>;
     let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
+    let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
     let loggerSpy: jasmine.SpyObj<Logger>;
 
     beforeEach(() => {
-        securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>('SecurityConfigSetupService', [], ['currentIdp$']);
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['getAccessToken']);
         currentIdpSubject = new Subject<IdpProviders>();
-        getSpiedPropertyGetter(securityConfigSetupServiceSpy, 'currentIdp$').and.returnValue(currentIdpSubject);
 
-        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>('SecurityServiceProviderService', [
-            'getSecurityService'
-        ]);
+        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
+            'SecurityServiceProviderService',
+            [],
+            [, 'currentSecurityService$', 'currentIdp$']
+        );
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentIdp$').and.returnValue(currentIdpSubject.asObservable());
         loggerSpy = jasmine.createSpyObj<Logger>('Logger', ['warn', 'debug']);
 
         TestBed.configureTestingModule({
             providers: [
                 QuickLinksInterceptor,
-                { provide: SecurityConfigSetupService, useValue: securityConfigSetupServiceSpy },
+
                 { provide: SecurityServiceProvider, useValue: securityServiceProviderServiceSpy },
                 { provide: Logger, useValue: loggerSpy }
             ],
@@ -47,9 +49,7 @@ describe('QuickLinksInterceptor', () => {
             const expectedBearerToken = `Bearer ${expectedToken}`;
             const expectedContentType = 'application/json';
 
-            const securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['getToken']);
-            securityServiceSpy.getAccessToken.and.returnValue(expectedToken);
-            securityServiceProviderServiceSpy.getSecurityService.and.returnValue(securityServiceSpy);
+            securityServiceSpy.getAccessToken.and.returnValue(of(expectedToken));
 
             currentIdpSubject.next(IdpProviders.quickLink);
             flush();
@@ -65,7 +65,8 @@ describe('QuickLinksInterceptor', () => {
             };
 
             // Act
-            sut.intercept(request, nextHandler);
+            sut.intercept(request, nextHandler).subscribe();
+            tick();
 
             // Assert
             expect(sentRequest).not.toBeNull();
@@ -91,7 +92,8 @@ describe('QuickLinksInterceptor', () => {
             };
 
             // Act
-            sut.intercept(request, nextHandler);
+            sut.intercept(request, nextHandler).subscribe();
+            tick();
 
             // Assert
             expect(sentRequest).toBe(request);
@@ -113,7 +115,8 @@ describe('QuickLinksInterceptor', () => {
             };
 
             // Act
-            sut.intercept(request, nextHandler);
+            sut.intercept(request, nextHandler).subscribe();
+            tick();
 
             // Assert
             expect(sentRequest).toBe(request);
@@ -132,7 +135,8 @@ describe('QuickLinksInterceptor', () => {
             };
 
             // Act
-            sut.intercept(request, nextHandler);
+            sut.intercept(request, nextHandler).subscribe();
+            tick();
 
             // Assert
             expect(sentRequest).toBe(request);

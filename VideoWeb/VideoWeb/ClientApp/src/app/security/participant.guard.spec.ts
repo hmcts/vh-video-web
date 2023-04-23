@@ -19,7 +19,7 @@ describe('ParticipantGuard', () => {
     let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
 
     beforeAll(() => {
-        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', [], ['isAuthenticated$']);
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['isAuthenticated']);
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
         featureFlagServiceSpy = jasmine.createSpyObj<FeatureFlagService>('FeatureFlagService', ['getFeatureFlagByName']);
         securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(

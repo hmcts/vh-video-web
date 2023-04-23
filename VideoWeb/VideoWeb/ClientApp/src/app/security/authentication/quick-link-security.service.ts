@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AuthOptions, LoginResponse, OpenIdConfiguration, UserDataResult } from 'angular-auth-oidc-client';
+import { AuthOptions, LoginResponse, OpenIdConfiguration } from 'angular-auth-oidc-client';
 import { ReplaySubject, Observable, EMPTY, BehaviorSubject, Subscription, of } from 'rxjs';
 import { map, take, tap } from 'rxjs/operators';
 import { ApiClient } from 'src/app/services/clients/api-client';
@@ -69,7 +69,7 @@ export class QuickLinkSecurityService implements ISecurityService {
         );
     }
 
-    getUserData(configId?: string): Observable<UserDataResult> {
+    getUserData(configId?: string): Observable<any> {
         return this.userDataSubject.asObservable();
     }
 
@@ -117,7 +117,7 @@ export class QuickLinkSecurityService implements ISecurityService {
                 this.isAuthenticatedSubject.next(authenticated.isAuthenticated);
 
                 // TODO: Due to AppInsightsLoggerService provided in app.module injecting Logger causes a circular dependency. This should be refactored
-                if (authenticated) {
+                if (authenticated.isAuthenticated) {
                     console.debug(`${this.loggerPrefix} Check auth passed. User is authenticated.`);
                     this.userDataSubject.next(this.decodedTokenBody);
                 } else {

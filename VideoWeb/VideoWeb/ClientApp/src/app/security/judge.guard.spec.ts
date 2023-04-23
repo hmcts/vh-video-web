@@ -1,4 +1,3 @@
-import { async } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { ProfileService } from '../services/api/profile.service';
@@ -19,7 +18,7 @@ describe('JudgeGuard', () => {
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
 
     beforeAll(() => {
-        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', [], ['isAuthenticated$']);
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['isAuthenticated']);
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
         featureFlagServiceSpy = jasmine.createSpyObj<FeatureFlagService>('FeatureFlagService', ['getFeatureFlagByName']);

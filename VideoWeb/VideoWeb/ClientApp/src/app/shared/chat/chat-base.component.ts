@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnDestroy } from '@angular/core';
-import { Subject, Subscription } from 'rxjs';
+import { Subject, Subscription, combineLatest } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { LoggedParticipantResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
@@ -12,6 +12,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
 import { takeUntil } from 'rxjs/operators';
+import { IdpProviders } from 'src/app/security/idp-providers';
 
 @Component({
     selector: 'app-chat-base-component',
@@ -26,7 +27,7 @@ export abstract class ChatBaseComponent implements OnDestroy {
     emptyGuid = '00000000-0000-0000-0000-000000000000';
 
     DEFAULT_ADMIN_USERNAME = 'Admin';
-    currentIdp: string;
+    currentIdp: IdpProviders;
 
     protected hearing: Hearing;
     protected securityService: ISecurityService;
@@ -43,10 +44,12 @@ export abstract class ChatBaseComponent implements OnDestroy {
         protected imHelper: ImHelper,
         protected translateService: TranslateService
     ) {
-        securityServiceProviderService.currentSecurityService$.pipe(takeUntil(this.destroyed$)).subscribe(securityService => {
-            this.securityService = securityService;
-            this.currentIdp = securityServiceProviderService.currentIdp;
-        });
+        combineLatest([securityServiceProviderService.currentSecurityService$, securityServiceProviderService.currentIdp$])
+            .pipe(takeUntil(this.destroyed$))
+            .subscribe(([service, idp]) => {
+                this.securityService = service;
+                this.currentIdp = idp;
+            });
     }
 
     get pendingMessagesForConversation(): InstantMessage[] {

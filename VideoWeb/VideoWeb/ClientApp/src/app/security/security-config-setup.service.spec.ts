@@ -1,17 +1,15 @@
-import { OidcConfigService } from 'angular-auth-oidc-client';
 import { MockConfigService } from '../testing/mocks/mock-config.service';
 import { SecurityConfigSetupService } from './security-config-setup.service';
 import { IdpProviders } from './idp-providers';
 
 describe('SecurityConfigSetupService', () => {
     let sut: SecurityConfigSetupService;
-    let oidcConfigServiceSpy: jasmine.SpyObj<OidcConfigService>;
     const configService = new MockConfigService();
 
     beforeEach(() => {
         window.sessionStorage.clear();
-        oidcConfigServiceSpy = jasmine.createSpyObj<OidcConfigService>('OidcConfigService', ['withConfig']);
-        sut = new SecurityConfigSetupService(oidcConfigServiceSpy, configService as any);
+
+        sut = new SecurityConfigSetupService(configService as any);
         sut.setupConfig().subscribe();
     });
 
@@ -23,21 +21,6 @@ describe('SecurityConfigSetupService', () => {
 
         // Assert
         expect(result).toBe(IdpProviders.vhaad);
-    });
-
-    it('should set config associated to provider when idp has been set', async () => {
-        // Arrange
-        const provider = IdpProviders.ejud;
-        window.sessionStorage.clear();
-        oidcConfigServiceSpy = jasmine.createSpyObj<OidcConfigService>('OidcConfigService', ['withConfig']);
-        sut = new SecurityConfigSetupService(oidcConfigServiceSpy, configService as any);
-        window.sessionStorage.setItem('IdpProviders', provider);
-
-        // Act
-        sut.setupConfig().subscribe();
-
-        // Assert
-        expect(oidcConfigServiceSpy.withConfig).toHaveBeenCalledWith(sut.config[provider]);
     });
 
     it('should set store when setting idp', async () => {
@@ -52,28 +35,17 @@ describe('SecurityConfigSetupService', () => {
         expect(result).toBe(testProvider);
     });
 
-    it('should set oidc config on setIdp', async () => {
-        // Arrange
-        const testProvider = IdpProviders.ejud;
-
-        // Act
-        sut.setIdp(testProvider);
-
-        // Assert
-        expect(oidcConfigServiceSpy.withConfig).toHaveBeenCalledWith(sut.config[testProvider]);
-    });
-
     it('should set config when config loads', async () => {
         // Arrange
 
         // Act
 
         // Assert
-        expect(sut.config.vhaad.stsServer).toBe(`https://login.microsoftonline.com/${configService.vhAdSettings.tenant_id}/v2.0`);
+        expect(sut.config.vhaad.authority).toBe(`https://login.microsoftonline.com/${configService.vhAdSettings.tenant_id}/v2.0`);
         expect(sut.config.vhaad.clientId).toBe(configService.vhAdSettings.client_id);
         expect(sut.config.vhaad.redirectUrl).toBe(configService.vhAdSettings.redirect_uri);
 
-        expect(sut.config.ejud.stsServer).toBe(`https://login.microsoftonline.com/${configService.ejudSettings.tenant_id}/v2.0`);
+        expect(sut.config.ejud.authority).toBe(`https://login.microsoftonline.com/${configService.ejudSettings.tenant_id}/v2.0`);
         expect(sut.config.ejud.clientId).toBe(configService.ejudSettings.client_id);
         expect(sut.config.ejud.redirectUrl).toBe(configService.ejudSettings.redirect_uri);
     });
@@ -85,7 +57,7 @@ describe('SecurityConfigSetupService', () => {
         const vhResourceId = '234';
         mockConfigService.ejudSettings.resource_id = ejudResourceId;
         mockConfigService.vhAdSettings.resource_id = vhResourceId;
-        sut = new SecurityConfigSetupService(oidcConfigServiceSpy, mockConfigService as any);
+        sut = new SecurityConfigSetupService(mockConfigService as any);
 
         // Act
         sut.setupConfig().subscribe();
@@ -100,7 +72,7 @@ describe('SecurityConfigSetupService', () => {
         const mockConfigService = new MockConfigService();
         const ejudClientId = mockConfigService.ejudSettings.client_id;
         const vhClientId = mockConfigService.vhAdSettings.client_id;
-        sut = new SecurityConfigSetupService(oidcConfigServiceSpy, mockConfigService as any);
+        sut = new SecurityConfigSetupService(mockConfigService as any);
 
         // Act
         sut.setupConfig().subscribe();

@@ -30,7 +30,7 @@ declare interface PexipClient {
     call_tag: string;
     call: PexRTCCall;
     protocol: string;
-    turn_server: object;
+    turn_server: TurnServer;
 
     /**
      * The WebRTC incoming full-frame rate presentation stream has been set up successfully.
@@ -114,6 +114,12 @@ declare interface PexipClient {
      * Although this method can be used at any time, it only makes sense to do this after onPresentation callback has said that a presentation is available.
      */
     getPresentation();
+}
+
+declare interface TurnServer {
+    urls: string[] | string;
+    username: string;
+    credential: string;
 }
 
 declare interface PexipParticipant {

@@ -9,6 +9,7 @@ import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-
 import { fakeAsync, flush } from '@angular/core/testing';
 import { FeatureFlagService } from '../../services/feature-flag.service';
 import { pageUrls } from '../../shared/page-url.constants';
+import { IdpProviders } from '../idp-providers';
 
 describe('LogoutComponent', () => {
     let component: LogoutComponent;
@@ -28,14 +29,15 @@ describe('LogoutComponent', () => {
         securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
             [],
-            ['currentSecurityService$']
+            ['currentSecurityService$', 'currentIdp$']
         );
 
-        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['logoffAndRevokeTokens'], ['isAuthenticated$']);
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['logoffAndRevokeTokens', 'isAuthenticated']);
         isAuthenticatedSubject = new Subject<boolean>();
-        getSpiedPropertyGetter(securityServiceSpy, 'isAuthenticated$').and.returnValue(isAuthenticatedSubject.asObservable());
+        securityServiceSpy.isAuthenticated.and.returnValue(isAuthenticatedSubject.asObservable());
 
         getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentIdp$').and.returnValue(of(IdpProviders.vhaad));
 
         component = new LogoutComponent(securityServiceProviderServiceSpy, profileServiceSpy, featureFlagServiceSpy);
     });

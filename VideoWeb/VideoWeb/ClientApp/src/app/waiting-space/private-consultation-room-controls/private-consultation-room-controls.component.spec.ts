@@ -162,7 +162,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
     describe('canJoinHearingFromConsultation', () => {
         const testCases: {
-            isHost: Boolean;
+            isHost: boolean;
             shouldShow: boolean;
             newConferenceStatus: ConferenceStatus;
             participantStatus: ParticipantStatus;

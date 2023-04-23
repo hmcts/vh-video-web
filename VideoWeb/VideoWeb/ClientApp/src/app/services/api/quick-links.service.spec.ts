@@ -27,20 +27,22 @@ describe('QuickLinksService', () => {
 
         securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>('SecurityConfigSetupService', ['setIdp']);
 
-        quickLinkSecurityServiceSpy = jasmine.createSpyObj<QuickLinkSecurityService>(
-            'QuickLinkSecurityService',
-            ['authorize'],
-            ['isAuthenticated$']
-        );
-
-        isAuthenticatedSubject = new Subject<boolean>();
-        getSpiedPropertyGetter(quickLinkSecurityServiceSpy, 'isAuthenticated$').and.returnValue(isAuthenticatedSubject.asObservable());
-
-        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>('SecurityServiceProviderService', [
-            'getSecurityService'
+        quickLinkSecurityServiceSpy = jasmine.createSpyObj<QuickLinkSecurityService>('QuickLinkSecurityService', [
+            'authorize',
+            'isAuthenticated'
         ]);
 
+        isAuthenticatedSubject = new Subject<boolean>();
+        quickLinkSecurityServiceSpy.isAuthenticated.and.returnValue(isAuthenticatedSubject.asObservable());
+
+        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
+            'SecurityServiceProviderService',
+            ['getSecurityService'],
+            ['currentIdp']
+        );
+
         securityServiceProviderServiceSpy.getSecurityService.and.returnValue(quickLinkSecurityServiceSpy);
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentIdp').and.returnValue(IdpProviders.quickLink);
 
         service = new QuickLinksService(apiClientSpy, securityConfigSetupServiceSpy, securityServiceProviderServiceSpy);
     });
@@ -120,7 +122,7 @@ describe('QuickLinksService', () => {
             expect(apiClientSpy.joinConferenceAsAQuickLinkUser).toHaveBeenCalledOnceWith(hearingId, expectedRequest);
             expect(securityConfigSetupServiceSpy.setIdp).toHaveBeenCalledOnceWith(IdpProviders.quickLink);
             expect(securityServiceProviderServiceSpy.getSecurityService).toHaveBeenCalledTimes(2);
-            expect(quickLinkSecurityServiceSpy.authorize).toHaveBeenCalledOnceWith(null, expectedResponse.jwt);
+            expect(quickLinkSecurityServiceSpy.authorize).toHaveBeenCalledOnceWith(IdpProviders.quickLink, null, expectedResponse.jwt);
         }));
 
         it('should return the is authenticated observable and filter false', fakeAsync(() => {
@@ -154,7 +156,7 @@ describe('QuickLinksService', () => {
             expect(apiClientSpy.joinConferenceAsAQuickLinkUser).toHaveBeenCalledOnceWith(hearingId, expectedRequest);
             expect(securityConfigSetupServiceSpy.setIdp).toHaveBeenCalledOnceWith(IdpProviders.quickLink);
             expect(securityServiceProviderServiceSpy.getSecurityService).toHaveBeenCalledTimes(2);
-            expect(quickLinkSecurityServiceSpy.authorize).toHaveBeenCalledOnceWith(null, expectedResponse.jwt);
+            expect(quickLinkSecurityServiceSpy.authorize).toHaveBeenCalledOnceWith('quickLink', null, expectedResponse.jwt);
         }));
 
         it('should return the is authenticated observable and emit true', fakeAsync(() => {
@@ -188,7 +190,7 @@ describe('QuickLinksService', () => {
             expect(apiClientSpy.joinConferenceAsAQuickLinkUser).toHaveBeenCalledOnceWith(hearingId, expectedRequest);
             expect(securityConfigSetupServiceSpy.setIdp).toHaveBeenCalledOnceWith(IdpProviders.quickLink);
             expect(securityServiceProviderServiceSpy.getSecurityService).toHaveBeenCalledTimes(2);
-            expect(quickLinkSecurityServiceSpy.authorize).toHaveBeenCalledOnceWith(null, expectedResponse.jwt);
+            expect(quickLinkSecurityServiceSpy.authorize).toHaveBeenCalledOnceWith('quickLink', null, expectedResponse.jwt);
         }));
     });
 });

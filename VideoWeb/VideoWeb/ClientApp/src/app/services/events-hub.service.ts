@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
-import { ReplaySubject, Subject, Observable } from 'rxjs';
+import { ReplaySubject, Subject, Observable, combineLatest } from 'rxjs';
 import { filter, take, takeUntil } from 'rxjs/operators';
 import { SecurityServiceProvider } from '../security/authentication/security-provider.service';
 import { ISecurityService } from '../security/authentication/security-service.interface';
@@ -33,10 +33,12 @@ export class EventsHubService implements OnDestroy {
         private logger: Logger,
         private errorService: ErrorService
     ) {
-        securityServiceProviderService.currentSecurityService$.pipe(takeUntil(this.destroyed$)).subscribe(securityService => {
-            this.securityService = securityService;
-            this.currentIdp = securityServiceProviderService.currentIdp;
-        });
+        combineLatest([securityServiceProviderService.currentSecurityService$, securityServiceProviderService.currentIdp$])
+            .pipe(takeUntil(this.destroyed$))
+            .subscribe(([service, idp]) => {
+                this.securityService = service;
+                this.currentIdp = idp;
+            });
         configService.getClientSettings().subscribe(clientSettings => {
             this._connection = this.buildConnection(clientSettings.event_hub_path);
             this.configureConnection();

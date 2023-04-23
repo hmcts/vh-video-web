@@ -82,10 +82,6 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.eventService.registerForEvents().subscribe((event: OidcClientNotification<any>) => {
-            console.info(event);
-        });
-
         this.checkBrowser();
         this.setupSecurityServiceProviderSubscription();
         this.noSleepService.enable();
@@ -99,7 +95,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 if (isAuthenticated) {
                     await this.postAuthSetup(isAuthenticated, false);
 
-                    if (this.currentIdp !== 'quicklink') {
+                    if (this.currentIdp !== 'quickLink') {
                         this.eventService
                             .registerForEvents()
                             .pipe(filter(notification => notification.type === EventTypes.NewAuthenticationResult))
@@ -224,17 +220,32 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     private setupSecurityServiceProviderSubscription() {
-        this.securityServiceProviderService.currentSecurityService$.pipe(takeUntil(this.destroyed$)).subscribe(service => {
-            this.securityService = service;
-            this.currentIdp = this.securityServiceProviderService.currentIdp;
-            this.serviceChanged$.next();
+        combineLatest([this.securityServiceProviderService.currentSecurityService$, this.securityServiceProviderService.currentIdp$])
+            .pipe(takeUntil(this.destroyed$))
+            .subscribe(([service, idp]) => {
+                this.securityService = service;
+                this.currentIdp = idp;
 
-            service
-                .isAuthenticated(this.securityServiceProviderService.currentIdp)
-                .pipe(takeUntil(this.serviceChanged$), takeUntil(this.destroyed$), delay(0)) // delay(0) pipe is to prevent angular ExpressionChangedAfterItHasBeenCheckedError
-                .subscribe(authenticated => {
-                    this.loggedIn = authenticated;
-                });
-        });
+                this.serviceChanged$.next();
+
+                service
+                    .isAuthenticated(this.securityServiceProviderService.currentIdp)
+                    .pipe(takeUntil(this.serviceChanged$), takeUntil(this.destroyed$), delay(0)) // delay(0) pipe is to prevent angular ExpressionChangedAfterItHasBeenCheckedError
+                    .subscribe(authenticated => {
+                        this.loggedIn = authenticated;
+                    });
+            });
+        // this.securityServiceProviderService.currentSecurityService$.pipe(takeUntil(this.destroyed$)).subscribe(service => {
+        //     this.securityService = service;
+        //     this.currentIdp = this.securityServiceProviderService.currentIdp;
+        //     this.serviceChanged$.next();
+
+        //     service
+        //         .isAuthenticated(this.securityServiceProviderService.currentIdp)
+        //         .pipe(takeUntil(this.serviceChanged$), takeUntil(this.destroyed$), delay(0)) // delay(0) pipe is to prevent angular ExpressionChangedAfterItHasBeenCheckedError
+        //         .subscribe(authenticated => {
+        //             this.loggedIn = authenticated;
+        //         });
+        // });
     }
 }

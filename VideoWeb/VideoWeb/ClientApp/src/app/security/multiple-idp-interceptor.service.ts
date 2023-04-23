@@ -1,30 +1,36 @@
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 import { SecurityServiceProvider } from './authentication/security-provider.service';
 import { ISecurityService } from './authentication/security-service.interface';
 import { mergeMap } from 'rxjs/operators';
+import { IdpProviders } from './idp-providers';
 
 @Injectable({
     providedIn: 'root'
 })
 export class MultipleIdpInterceptorService implements HttpInterceptor {
-    currentIdp: string;
+    currentIdp: IdpProviders;
     securityService: ISecurityService;
 
     constructor(private securityServiceProviderService: SecurityServiceProvider) {
-        this.securityServiceProviderService.currentSecurityService$.subscribe(securityService => {
-            this.securityService = securityService;
-            this.currentIdp = securityServiceProviderService.currentIdp;
+        combineLatest([
+            this.securityServiceProviderService.currentSecurityService$,
+            this.securityServiceProviderService.currentIdp$
+        ]).subscribe(([service, idp]) => {
+            this.securityService = service;
+            this.currentIdp = idp;
         });
     }
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        if (this.currentIdp === 'quickLink') {
+        if (this.currentIdp === IdpProviders.quickLink) {
             return next.handle(req);
         }
+
         // TODO: use a single interceptor to handle IDP configurations
         return this.securityService.getAccessToken(this.currentIdp).pipe(
             mergeMap(token => {
+                console.log('token', token);
                 const authReq = req.clone({
                     headers: req.headers.set('Authorization', 'Bearer ' + token)
                 });

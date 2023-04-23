@@ -25,8 +25,8 @@ describe('SecurityServiceProviderService', () => {
         currentIdpSubject = new Subject<IdpProviders>();
         getSpiedPropertyGetter(securityConfigSetupServiceSpy, 'currentIdp$').and.returnValue(currentIdpSubject.asObservable());
 
-        oidcSecurityServiceSpy = jasmine.createSpyObj<ISecurityService>('OidcSecurityService', ['getToken']);
-        quickLinkSecurityServiceSpy = jasmine.createSpyObj<ISecurityService>('QuickLinkSecurityService', ['getToken']);
+        oidcSecurityServiceSpy = jasmine.createSpyObj<ISecurityService>('OidcSecurityService', ['getAccessToken']);
+        quickLinkSecurityServiceSpy = jasmine.createSpyObj<ISecurityService>('QuickLinkSecurityService', ['getAccessToken']);
 
         service = new SecurityServiceProvider(
             securityConfigSetupServiceSpy,

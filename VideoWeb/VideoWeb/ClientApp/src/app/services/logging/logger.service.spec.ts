@@ -1,7 +1,6 @@
 import { fakeAsync, flush } from '@angular/core/testing';
 import { LoggerService } from './logger.service';
 import { LogAdapter } from './log-adapter';
-import { ConferenceService } from '../conference/conference.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { ActivatedRoute, ActivatedRouteSnapshot, convertToParamMap, Event, NavigationEnd, Router } from '@angular/router';
 import { Subject } from 'rxjs';

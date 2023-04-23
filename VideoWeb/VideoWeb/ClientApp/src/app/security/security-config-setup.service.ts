@@ -17,15 +17,10 @@ export class SecurityConfigSetupService {
     private idpProvidersSessionStorageKey = 'IdpProviders';
     private defaultProvider = IdpProviders.vhaad;
     private _configSetupSubject = new BehaviorSubject(false);
-    // private _configRestoredSubject = new BehaviorSubject(false);
 
     private currentIdpSubject = new ReplaySubject<IdpProviders>(1);
 
     constructor(private configService: ConfigService) {}
-
-    // get configRestored$() {
-    //     return this._configRestoredSubject.asObservable();
-    // }
 
     get currentIdp$(): Observable<IdpProviders> {
         return this.currentIdpSubject.asObservable();

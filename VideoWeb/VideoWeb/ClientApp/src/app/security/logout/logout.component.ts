@@ -1,5 +1,5 @@
 import { Component, Injectable, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { FeatureFlagService } from 'src/app/services/feature-flag.service';
@@ -26,10 +26,12 @@ export class LogoutComponent implements OnInit {
         private profileService: ProfileService,
         private featureFlagService: FeatureFlagService
     ) {
-        securityServiceProviderService.currentSecurityService$.subscribe(securityService => {
-            this.securityService = securityService;
-            this.currentIdp = securityServiceProviderService.currentIdp;
-        });
+        combineLatest([securityServiceProviderService.currentSecurityService$, securityServiceProviderService.currentIdp$]).subscribe(
+            ([service, idp]) => {
+                this.securityService = service;
+                this.currentIdp = idp;
+            }
+        );
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
         this.featureFlagService
             .getFeatureFlagByName('EJudFeature')

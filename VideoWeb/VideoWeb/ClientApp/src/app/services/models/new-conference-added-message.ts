@@ -1,3 +1,3 @@
 export class NewConferenceAddedMessage {
-    constructor(public onferenceId: string) {}
+    constructor(public conferenceId: string) {}
 }

@@ -722,7 +722,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         const hearingLayout = HearingLayout.Dynamic;
         getSpiedPropertyGetter(hearingLayoutServiceSpy, 'currentLayout$').and.returnValue(of(hearingLayout));
 
-        const hearingId = Guid.create();
+        const hearingId = Guid.create().toString();
         spyOnProperty(component.hearing, 'id', 'get').and.returnValue(hearingId);
 
         // Act

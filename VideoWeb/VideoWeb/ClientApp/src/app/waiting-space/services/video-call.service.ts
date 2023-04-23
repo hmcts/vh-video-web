@@ -25,7 +25,7 @@ import {
 } from '../models/video-call-models';
 import { VideoCallEventsService } from './video-call-events.service';
 
-declare let PEX_RTC: any;
+declare let PexRTC: any;
 
 @Injectable()
 export class VideoCallService {
@@ -89,7 +89,7 @@ export class VideoCallService {
         this.hasDisconnected$ = new Subject();
 
         const self = this;
-        this.pexipAPI = new PEX_RTC();
+        this.pexipAPI = new PexRTC();
         this.initCallTag();
         this.initTurnServer();
         this.pexipAPI.screenshare_fps = 30;

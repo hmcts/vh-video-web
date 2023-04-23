@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 import { first, map } from 'rxjs/operators';
 import { FeatureFlagService } from '../services/feature-flag.service';
 import { Logger } from '../services/logging/logger-base';
@@ -20,10 +20,12 @@ export class AuthBaseGuard {
         protected logger: Logger,
         protected featureFlagService: FeatureFlagService
     ) {
-        securityServiceProviderService.currentSecurityService$.subscribe(securityService => {
-            this.securityService = securityService;
-            this.currentIdp = securityServiceProviderService.currentIdp;
-        });
+        combineLatest([securityServiceProviderService.currentSecurityService$, securityServiceProviderService.currentIdp$]).subscribe(
+            ([service, idp]) => {
+                this.securityService = service;
+                this.currentIdp = idp;
+            }
+        );
     }
 
     isUserAuthorized(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {

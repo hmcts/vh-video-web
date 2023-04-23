@@ -67,11 +67,11 @@ describe('VhoChatComponent', () => {
 
         profileServiceSpy.getUserProfile.and.resolveTo(adminProfile);
 
-        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', [], ['isAuthenticated$', 'userData$']);
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['isAuthenticated', 'getUserData']);
         isAuthenticatedSubject = new Subject<boolean>();
         userDataSubject = new Subject<any>();
-        getSpiedPropertyGetter(securityServiceSpy, 'isAuthenticated$').and.returnValue(isAuthenticatedSubject.asObservable());
-        getSpiedPropertyGetter(securityServiceSpy, 'userData$').and.returnValue(userDataSubject.asObservable());
+        spyOn(securityServiceSpy, 'isAuthenticated').and.returnValue(isAuthenticatedSubject.asObservable());
+        spyOn(securityServiceSpy, 'getUserData').and.returnValue(userDataSubject.asObservable());
 
         securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',

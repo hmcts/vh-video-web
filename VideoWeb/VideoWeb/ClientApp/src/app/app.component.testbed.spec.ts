@@ -28,7 +28,9 @@ import { ISecurityService } from './security/authentication/security-service.int
 import { SecurityConfigSetupService } from './security/security-config-setup.service';
 import { getSpiedPropertyGetter } from './shared/jasmine-helpers/property-helpers';
 import { NoSleepService } from './services/no-sleep.service';
+import { IdpProviders } from './security/idp-providers';
 
+// TODO: do we even need this anymore?
 describe('AppComponent - Testbed', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
     let deviceTypeServiceSpy: jasmine.SpyObj<DeviceTypeService>;
@@ -73,11 +75,12 @@ describe('AppComponent - Testbed', () => {
         securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
             [],
-            ['currentSecurityService$']
+            ['currentSecurityService$', 'currentIdp$']
         );
 
         securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['authorize']);
         getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentIdp$').and.returnValue(of(IdpProviders.vhaad));
 
         securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>('SecurityConfigSetupService', ['getIdp']);
 
@@ -112,6 +115,7 @@ describe('AppComponent - Testbed', () => {
         spyOn(router, 'navigateByUrl').and.returnValue(Promise.resolve(true));
     });
 
+    // TODO: fix this before merge
     it('should have a tag Skip to main content', () => {
         const compiled = fixture.debugElement.nativeElement;
         expect(compiled.querySelector('.govuk-skip-link').innerHTML).toBe('');

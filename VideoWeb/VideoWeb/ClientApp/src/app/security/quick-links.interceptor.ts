@@ -1,26 +1,30 @@
 import { Injectable, Injector } from '@angular/core';
-import { HttpRequest, HttpHandler, HttpEvent, HttpHeaders } from '@angular/common/http';
+import { HttpRequest, HttpHandler, HttpEvent, HttpHeaders, HttpInterceptor } from '@angular/common/http';
 import { SecurityServiceProvider } from './authentication/security-provider.service';
 import { Logger } from '../services/logging/logger-base';
-import { Observable, of } from 'rxjs';
+import { Observable, combineLatest, of } from 'rxjs';
 import { ISecurityService } from './authentication/security-service.interface';
 import { mergeMap, switchMap } from 'rxjs/operators';
 
 @Injectable()
-export class QuickLinksInterceptor {
+export class QuickLinksInterceptor implements HttpInterceptor {
     private loggerPrefix = '[AuthenticationInterceptor] -';
     private currentIdp: string;
     private securityService: ISecurityService;
 
     constructor(private securityServiceProviderService: SecurityServiceProvider, private injector: Injector) {
-        this.securityServiceProviderService.currentSecurityService$.subscribe(securityService => {
-            this.securityService = securityService;
-            this.currentIdp = securityServiceProviderService.currentIdp;
+        combineLatest([
+            this.securityServiceProviderService.currentSecurityService$,
+            this.securityServiceProviderService.currentIdp$
+        ]).subscribe(([service, idp]) => {
+            this.securityService = service;
+            this.currentIdp = idp;
         });
     }
 
     intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
         const logger = this.injector.get(Logger);
+
         if (this.currentIdp !== 'quickLink') {
             return next.handle(request);
         }
