@@ -23,9 +23,9 @@ export class SecurityConfigSetupService {
 
     constructor(private configService: ConfigService) {}
 
-    get configRestored$() {
-        return this._configRestoredSubject.asObservable();
-    }
+    // get configRestored$() {
+    //     return this._configRestoredSubject.asObservable();
+    // }
 
     get currentIdp$(): Observable<IdpProviders> {
         return this.currentIdpSubject.asObservable();
@@ -35,8 +35,8 @@ export class SecurityConfigSetupService {
         return this.configService.getClientSettings().pipe(
             first(),
             map(clientSettings => {
-                // this.config[IdpProviders.ejud] = this.initOidcConfig(clientSettings.e_jud_idp_settings);
                 this.config[IdpProviders.vhaad] = this.initOidcConfig(clientSettings.vh_idp_settings);
+                this.config[IdpProviders.ejud] = this.initOidcConfig(clientSettings.e_jud_idp_settings);
                 this._configSetupSubject.next(true);
                 return [this.config[IdpProviders.ejud], this.config[IdpProviders.vhaad]];
             })
@@ -61,7 +61,7 @@ export class SecurityConfigSetupService {
             tokenRefreshInSeconds: 5,
             silentRenew: true,
             useRefreshToken: true
-        };
+        } as OpenIdConfiguration;
     }
 
     restoreConfig() {

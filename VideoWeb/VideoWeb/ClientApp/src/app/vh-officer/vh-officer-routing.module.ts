@@ -5,7 +5,7 @@ import { VhOfficerVenueListComponent } from '../shared/venue-list/vh-officer-ven
 import { CommandCentreComponent } from './command-centre/command-centre.component';
 
 const routes: Routes = [
-    { path: '', redirectTo: pageUrls.AdminVenueList },
+    { path: '', redirectTo: pageUrls.AdminVenueList, pathMatch: 'full' },
     { path: 'venue-list', component: VhOfficerVenueListComponent, data: { title: 'VHO Admin dashboard' } },
     {
         path: 'hearing-list',
