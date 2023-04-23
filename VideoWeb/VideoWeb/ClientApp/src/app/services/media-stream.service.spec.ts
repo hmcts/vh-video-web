@@ -10,7 +10,8 @@ import { VideoFilterService } from './video-filter.service';
 
 describe('MediaStreamService', () => {
     const cameraDevice = new UserMediaDevice('Camera 1', Guid.create().toString(), 'videoinput', '');
-    const cameraConstraintBuilder = (device: UserMediaDevice) => ({
+    const cameraConstraintBuilder = (device: UserMediaDevice) =>
+        ({
             video: {
                 deviceId: {
                     exact: device.deviceId
@@ -21,7 +22,8 @@ describe('MediaStreamService', () => {
         } as MediaStreamConstraints);
 
     const microphoneDevice = new UserMediaDevice('Microphone 1', Guid.create().toString(), 'audioinput', '');
-    const microphoneConstraintBuilder = (device: UserMediaDevice) => ({
+    const microphoneConstraintBuilder = (device: UserMediaDevice) =>
+        ({
             audio: {
                 deviceId: {
                     exact: device.deviceId
