@@ -96,6 +96,7 @@ export class AppComponent implements OnInit, OnDestroy {
             this.currentIdp = idp;
             this.securityService = securityService;
             this.securityService.checkAuth(undefined, this.currentIdp).subscribe(async ({ isAuthenticated }) => {
+                console.warn(`========== APP Component Current IDP: ${this.currentIdp}`);
                 if (isAuthenticated) {
                     await this.postAuthSetup(isAuthenticated, false);
 

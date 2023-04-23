@@ -71,6 +71,7 @@ export class SecurityConfigSetupService {
     }
 
     setIdp(provider: IdpProviders) {
+        console.warn(`Setting Idp to ${provider} (was ${this.getIdp()})`);
         window.sessionStorage.setItem(this.idpProvidersSessionStorageKey, provider);
         this.currentIdpSubject.next(provider);
     }

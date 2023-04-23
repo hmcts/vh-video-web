@@ -19,6 +19,10 @@ export class MultipleIdpInterceptorService implements HttpInterceptor {
         });
     }
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+        if (this.currentIdp === 'quickLink') {
+            return next.handle(req);
+        }
+        // TODO: use a single interceptor to handle IDP configurations
         return this.securityService.getAccessToken(this.currentIdp).pipe(
             mergeMap(token => {
                 const authReq = req.clone({

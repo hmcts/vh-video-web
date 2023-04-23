@@ -3,6 +3,8 @@ import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } 
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import { catchError, first, map, takeUntil } from 'rxjs/operators';
+import { IdpProviders } from 'src/app/security/idp-providers';
+import { SecurityConfigSetupService } from 'src/app/security/security-config-setup.service';
 import { QuickLinksService } from 'src/app/services/api/quick-links.service';
 import { Role } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
@@ -42,8 +44,11 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
         private formBuilder: UntypedFormBuilder,
         private readonly quickLinksService: QuickLinksService,
         private route: ActivatedRoute,
-        private errorService: ErrorService
-    ) {}
+        private errorService: ErrorService,
+        private securityConfigService: SecurityConfigSetupService
+    ) {
+        this.securityConfigService.setIdp(IdpProviders.quickLink);
+    }
 
     ngOnInit(): void {
         this.hearingId = this.route.snapshot.paramMap.get('hearingId');
