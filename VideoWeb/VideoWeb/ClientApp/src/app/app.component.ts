@@ -96,7 +96,6 @@ export class AppComponent implements OnInit, OnDestroy {
             this.currentIdp = idp;
             this.securityService = securityService;
             this.securityService.checkAuth(undefined, this.currentIdp).subscribe(async ({ isAuthenticated }) => {
-                console.warn(`========== APP Component Current IDP: ${this.currentIdp}`);
                 if (isAuthenticated) {
                     await this.postAuthSetup(isAuthenticated, false);
 
@@ -112,18 +111,6 @@ export class AppComponent implements OnInit, OnDestroy {
                 }
             });
         });
-        // this.configService
-        //     .getClientSettings()
-        //     .pipe(first())
-        //     .subscribe({
-        //         next: async () => {
-        //             if (this.securityConfigSetupService.getIdp() === IdpProviders.quickLink) {
-        //                 this.postConfigSetupQuickLinks();
-        //             } else {
-        //                 this.postConfigSetupOidc();
-        //             }
-        //         }
-        //     });
     }
 
     setupNavigationSubscriptions() {
@@ -221,37 +208,6 @@ export class AppComponent implements OnInit, OnDestroy {
     private setPageTitle(title: string) {
         this.titleService.setTitle(title);
     }
-
-    // private postConfigSetupOidc() {
-    //     return;
-    //     this.securityConfigSetupService.configRestored$
-    //         .pipe(
-    //             filter(configRestored => configRestored),
-    //             first()
-    //         )
-    //         .subscribe(() => {
-    //             this.checkAuth().subscribe({
-    //                 next: async (loggedIn: boolean) => {
-    //                     await this.postAuthSetup(loggedIn, false);
-    //                 }
-    //             });
-    //             this.eventService
-    //                 .registerForEvents()
-    //                 .pipe(filter(notification => notification.type === EventTypes.NewAuthenticationResult))
-    //                 .subscribe(async (value: OidcClientNotification<AuthStateResult>) => {
-    //                     this.logger.info('[AppComponent] - OidcClientNotification event received with value ', value);
-    //                     await this.postAuthSetup(true, value.value.isRenewProcess);
-    //                 });
-    //         });
-    // }
-
-    // private postConfigSetupQuickLinks() {
-    //     this.checkAuth().subscribe({
-    //         next: async (loggedIn: boolean) => {
-    //             await this.postAuthSetup(loggedIn, false);
-    //         }
-    //     });
-    // }
 
     private async postAuthSetup(loggedIn: boolean, skip: boolean) {
         if (skip) {

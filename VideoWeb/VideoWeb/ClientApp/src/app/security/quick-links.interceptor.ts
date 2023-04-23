@@ -9,18 +9,8 @@ import { mergeMap, switchMap } from 'rxjs/operators';
 @Injectable()
 export class QuickLinksInterceptor {
     private loggerPrefix = '[AuthenticationInterceptor] -';
-    // private currentIdp: IdpProviders;
-
-    // constructor(
-    //     private securityConfigSetupService: SecurityConfigSetupService,
-    //     private securityServiceProviderService: SecurityServiceProvider,
-    //     private injector: Injector
-    // ) {
-    //     this.securityConfigSetupService.currentIdp$.subscribe(newIdp => (this.currentIdp = newIdp));
-    // }
-
-    currentIdp: string;
-    securityService: ISecurityService;
+    private currentIdp: string;
+    private securityService: ISecurityService;
 
     constructor(private securityServiceProviderService: SecurityServiceProvider, private injector: Injector) {
         this.securityServiceProviderService.currentSecurityService$.subscribe(securityService => {
@@ -37,17 +27,6 @@ export class QuickLinksInterceptor {
 
         logger.debug(`${this.loggerPrefix} IDP is ${this.currentIdp}. Using Quick Links intercepter.`);
         return this.attachQuickLinkUsersToken(request).pipe(switchMap(req => next.handle(req)));
-        // return next.handle(this.attachQuickLinkUsersToken(request));
-        // if (this.currentIdp) {
-        //     if (this.currentIdp === IdpProviders.quickLink) {
-        //         logger.debug(`${this.loggerPrefix} IDP is ${this.currentIdp}. Using Quick Links intercepter.`);
-        //         return next.handle(this.attachQuickLinkUsersToken(request));
-        //     }
-        // } else {
-        //     logger.warn(`${this.loggerPrefix} Current IDP is not defined. Cannot intercept request.`);
-        // }
-
-        // return next.handle(request);
     }
 
     private cloneOldRequestAndAddNewHeaders(
@@ -87,24 +66,5 @@ export class QuickLinksInterceptor {
                 }
             })
         );
-
-        // const token = this.securityServiceProviderService.getSecurityService().getAccessToken(this.currentIdp);
-
-        // if (!token) {
-        //     return request;
-        // }
-
-        // const newRequest = this.cloneOldRequestAndAddNewHeaders(request, headers => {
-        //     headers['Authorization'] = `Bearer ${token}`;
-        //     headers['Content-Type'] = 'application/json';
-        // });
-        // const logger = this.injector.get(Logger);
-        // logger.debug(`${this.loggerPrefix} Attached quick links token.`, {
-        //     token: token,
-        //     requestUrl: newRequest.url,
-        //     requestHeaders: newRequest.headers
-        // });
-
-        // return newRequest;
     }
 }

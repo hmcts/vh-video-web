@@ -17,7 +17,7 @@ export class SecurityConfigSetupService {
     private idpProvidersSessionStorageKey = 'IdpProviders';
     private defaultProvider = IdpProviders.vhaad;
     private _configSetupSubject = new BehaviorSubject(false);
-    private _configRestoredSubject = new BehaviorSubject(false);
+    // private _configRestoredSubject = new BehaviorSubject(false);
 
     private currentIdpSubject = new ReplaySubject<IdpProviders>(1);
 
@@ -67,11 +67,9 @@ export class SecurityConfigSetupService {
     restoreConfig() {
         const provider = this.getIdp();
         this.currentIdpSubject.next(provider);
-        this._configRestoredSubject.next(true);
     }
 
     setIdp(provider: IdpProviders) {
-        console.warn(`Setting Idp to ${provider} (was ${this.getIdp()})`);
         window.sessionStorage.setItem(this.idpProvidersSessionStorageKey, provider);
         this.currentIdpSubject.next(provider);
     }
