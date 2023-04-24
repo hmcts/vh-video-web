@@ -118,7 +118,7 @@ describe('AppComponent', () => {
             ['currentSecurityService$', 'currentIdp$']
         );
 
-        spyOn(securityServiceSpy, 'isAuthenticated').and.returnValue(of(true));
+        securityServiceSpy.isAuthenticated.and.returnValue(of(true));
         getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
         getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentIdp$').and.returnValue(of(IdpProviders.vhaad));
 

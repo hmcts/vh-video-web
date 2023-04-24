@@ -16,6 +16,7 @@ import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.serv
 import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
+import { IdpProviders } from 'src/app/security/idp-providers';
 
 describe('VhoChatComponent', () => {
     let component: VhoChatComponent;
@@ -70,15 +71,19 @@ describe('VhoChatComponent', () => {
         securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['isAuthenticated', 'getUserData']);
         isAuthenticatedSubject = new Subject<boolean>();
         userDataSubject = new Subject<any>();
-        spyOn(securityServiceSpy, 'isAuthenticated').and.returnValue(isAuthenticatedSubject.asObservable());
-        spyOn(securityServiceSpy, 'getUserData').and.returnValue(userDataSubject.asObservable());
+        securityServiceSpy.isAuthenticated.and.returnValue(isAuthenticatedSubject.asObservable());
+        securityServiceSpy.getUserData.and.returnValue(userDataSubject.asObservable());
+
+        isAuthenticatedSubject.next(true);
+        userDataSubject.next({ preferred_username: adminProfile.username });
 
         securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
             [],
-            ['currentSecurityService$']
+            ['currentSecurityService$', 'currentIdp$']
         );
         getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentIdp$').and.returnValue(of(IdpProviders.vhaad));
 
         component = new VhoChatComponent(
             videoWebServiceSpy,
