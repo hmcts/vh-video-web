@@ -96,6 +96,7 @@ import { Router } from '@angular/router';
 import { SecurityServiceProvider } from '../security/authentication/security-provider.service';
 import { ProfileService } from '../services/api/profile.service';
 import { AppInsightsLoggerService } from '../services/logging/loggers/app-insights-logger.service';
+import { SecurityConfigSetupService } from '../security/security-config-setup.service';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -165,7 +166,7 @@ export function getSettings(configService: ConfigService) {
             provide: LOG_ADAPTER,
             useClass: AppInsightsLoggerService,
             multi: true,
-            deps: [SecurityServiceProvider, ConfigService, Router, ProfileService]
+            deps: [SecurityServiceProvider, ConfigService, Router, ProfileService, SecurityConfigSetupService]
         },
         ConfigService,
         WindowScrolling,

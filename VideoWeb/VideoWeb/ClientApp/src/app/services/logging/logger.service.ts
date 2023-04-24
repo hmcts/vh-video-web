@@ -41,7 +41,9 @@ export class LoggerService implements Logger {
 
     debug(message: string, properties?: any): void {
         properties = this.addConferenceIdToProperties(properties);
-        this.adapters.forEach(logger => logger.debug(message, properties));
+        this.adapters.forEach(logger => {
+            logger.debug(message, properties);
+        });
     }
 
     info(message: string, properties?: any): void {
