@@ -30,11 +30,13 @@ export class MultipleIdpInterceptorService implements HttpInterceptor {
         // TODO: use a single interceptor to handle IDP configurations
         return this.securityService.getAccessToken(this.currentIdp).pipe(
             mergeMap(token => {
-                console.log('token', token);
-                const authReq = req.clone({
-                    headers: req.headers.set('Authorization', 'Bearer ' + token)
-                });
-                return next.handle(authReq);
+                if (token !== null) {
+                    const authReq = req.clone({
+                        headers: req.headers.set('Authorization', 'Bearer ' + token)
+                    });
+                    return next.handle(authReq);
+                }
+                return next.handle(req);
             })
         );
     }
