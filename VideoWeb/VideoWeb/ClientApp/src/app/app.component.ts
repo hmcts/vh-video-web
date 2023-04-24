@@ -235,17 +235,5 @@ export class AppComponent implements OnInit, OnDestroy {
                         this.loggedIn = authenticated;
                     });
             });
-        // this.securityServiceProviderService.currentSecurityService$.pipe(takeUntil(this.destroyed$)).subscribe(service => {
-        //     this.securityService = service;
-        //     this.currentIdp = this.securityServiceProviderService.currentIdp;
-        //     this.serviceChanged$.next();
-
-        //     service
-        //         .isAuthenticated(this.securityServiceProviderService.currentIdp)
-        //         .pipe(takeUntil(this.serviceChanged$), takeUntil(this.destroyed$), delay(0)) // delay(0) pipe is to prevent angular ExpressionChangedAfterItHasBeenCheckedError
-        //         .subscribe(authenticated => {
-        //             this.loggedIn = authenticated;
-        //         });
-        // });
     }
 }

@@ -27,7 +27,6 @@ export class MultipleIdpInterceptorService implements HttpInterceptor {
             return next.handle(req);
         }
 
-        // TODO: use a single interceptor to handle IDP configurations
         return this.securityService.getAccessToken(this.currentIdp).pipe(
             mergeMap(token => {
                 if (token) {
