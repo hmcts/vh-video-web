@@ -2,7 +2,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { configureTestSuite } from 'ng-bullet';
 import { AppComponent } from './app.component';
 import { ConfigService } from './services/api/config.service';
 import { ProfileService } from './services/api/profile.service';
@@ -30,7 +29,6 @@ import { getSpiedPropertyGetter } from './shared/jasmine-helpers/property-helper
 import { NoSleepService } from './services/no-sleep.service';
 import { IdpProviders } from './security/idp-providers';
 
-// TODO: do we even need this anymore?
 describe('AppComponent - Testbed', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
     let deviceTypeServiceSpy: jasmine.SpyObj<DeviceTypeService>;
@@ -54,7 +52,7 @@ describe('AppComponent - Testbed', () => {
     let securityConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
 
-    configureTestSuite(() => {
+    beforeEach(() => {
         noSleepServiceSpy = jasmine.createSpyObj<NoSleepService>(['enable']);
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings', 'loadConfig']);
         configServiceSpy.getClientSettings.and.returnValue(of(clientSettings));
@@ -104,9 +102,7 @@ describe('AppComponent - Testbed', () => {
                 { provide: NoSleepService, useValue: noSleepServiceSpy }
             ]
         });
-    });
 
-    beforeEach(() => {
         fixture = TestBed.createComponent(AppComponent);
         component = fixture.componentInstance;
         deviceTypeServiceSpy.isSupportedBrowser.and.returnValue(true);
