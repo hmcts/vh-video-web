@@ -10,7 +10,7 @@ import { Logger } from '../logging/logger-base';
 import { ConferenceService } from './conference.service';
 import { ParticipantService } from './participant.service';
 
-declare let heartbeatFactory: any;
+declare let HeartbeatFactory: any;
 
 @Injectable({
     providedIn: 'root'
@@ -43,7 +43,7 @@ export class KinlyHeartbeatService {
                         heartbeatToken: heartbeatConfiguration.heartbeat_jwt
                     });
 
-                    this.heartbeat = new heartbeatFactory(
+                    this.heartbeat = new HeartbeatFactory(
                         pexipApi,
                         `${heartbeatConfiguration.heartbeat_url_base}/${this.currentConference.id}`,
                         this.currentConference.id,
