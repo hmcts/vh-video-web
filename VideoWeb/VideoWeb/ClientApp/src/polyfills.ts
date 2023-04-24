@@ -76,3 +76,6 @@ window.AudioContext = window.AudioContext || (window as any).webkitAudioContext;
  * Load `$localize` onto the global scope - used if i18n tags appear in Angular templates.
  */
 import '@angular/localize/init';
+
+// fix for ReferenceError: global is not defined
+(window as any).global = window;
