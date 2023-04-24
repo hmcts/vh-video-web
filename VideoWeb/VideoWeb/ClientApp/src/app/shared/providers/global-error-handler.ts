@@ -23,6 +23,11 @@ export class GlobalErrorHandler implements ErrorHandler {
         }
     }
 
+    public redirectTo(router: Router, page: string): any {
+        // handle error executes outside of the angular zone so we need to force it back in to do the redirection correctly
+        this.zone.run(() => router.navigate([page]));
+    }
+
     private unboxRejection(err: any): any {
         // if the error is thrown through a promise, we can unbox the actual error this way
         return err.rejection || err;
@@ -30,10 +35,5 @@ export class GlobalErrorHandler implements ErrorHandler {
 
     private isUnauthorized(err) {
         return err.status && (err.status === 401 || err.status === 403);
-    }
-
-    public redirectTo(router: Router, page: string): any {
-        // handle error executes outside of the angular zone so we need to force it back in to do the redirection correctly
-        this.zone.run(() => router.navigate([page]));
     }
 }
