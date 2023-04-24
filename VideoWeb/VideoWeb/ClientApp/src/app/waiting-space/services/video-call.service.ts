@@ -25,6 +25,7 @@ import {
 } from '../models/video-call-models';
 import { VideoCallEventsService } from './video-call-events.service';
 
+/* eslint-disable @typescript-eslint/naming-convention */
 declare let PexRTC: any;
 
 @Injectable()

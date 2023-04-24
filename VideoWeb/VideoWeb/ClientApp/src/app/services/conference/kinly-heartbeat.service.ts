@@ -10,6 +10,7 @@ import { Logger } from '../logging/logger-base';
 import { ConferenceService } from './conference.service';
 import { ParticipantService } from './participant.service';
 
+/* eslint-disable @typescript-eslint/naming-convention */
 declare let HeartbeatFactory: any;
 
 @Injectable({
