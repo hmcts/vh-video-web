@@ -15,7 +15,6 @@ namespace VideoWeb.UnitTests.Mappings
             
             var response = _sut.Map(ejudAdConfiguration);
 
-            response.ClientId.Should().Be("ejud");
             response.ClientId.Should().Be(ejudAdConfiguration.ClientId);
             response.TenantId.Should().Be(ejudAdConfiguration.TenantId);
             response.RedirectUri.Should().Be(ejudAdConfiguration.RedirectUri);
@@ -32,7 +31,6 @@ namespace VideoWeb.UnitTests.Mappings
             
             var response = _sut.Map(azureAdConfiguration);
             
-            response.ClientId.Should().Be("vhaad");
             response.ClientId.Should().Be(azureAdConfiguration.ClientId);
             response.TenantId.Should().Be(azureAdConfiguration.TenantId);
             response.RedirectUri.Should().Be(azureAdConfiguration.RedirectUri);
