@@ -311,6 +311,7 @@ extends:
     template: stages\dotnet-package.yml@templates
     parameters:
         netVersion: 6.x
+        nodeVersion: '18.15.0'
         coreProjectPath: VideoWeb/VideoWeb
         nodeProjectPath: VideoWeb/VideoWeb/ClientApp
         PackageApp: ${{ parameters.PackageApp }}
