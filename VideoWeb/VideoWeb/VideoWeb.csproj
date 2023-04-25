@@ -17,13 +17,13 @@
     <ProjectGuid>8FA72ADD-8CB7-4BC5-B99B-AF2871B31E09</ProjectGuid>
   </PropertyGroup>
 
-    <Target Name="AssemblyVersionAttributes" BeforeTargets="BeforeBuild">
-        <PropertyGroup>
-            <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-            <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-            <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
-        </PropertyGroup>
-    </Target>
+  <Target Name="AssemblyVersionAttributes" BeforeTargets="BeforeBuild">
+    <PropertyGroup>
+      <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+      <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+      <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+    </PropertyGroup>
+  </Target>
 
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -108,8 +108,8 @@
   <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish" Condition=" '$(PublishRunWebpack)' == 'true' ">
     <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
     <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build -- --prod" />
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build:ssr -- --prod" Condition=" '$(BuildServerSideRenderer)' == 'true' " />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build-prod" />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build:ssr --prod" Condition=" '$(BuildServerSideRenderer)' == 'true' " />
 
     <!-- Include the newly-built files in the publish output -->
     <ItemGroup>
