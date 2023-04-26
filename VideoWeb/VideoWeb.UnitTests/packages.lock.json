@@ -2375,7 +2375,7 @@
           "Swashbuckle.AspNetCore.Newtonsoft": "6.5.0",
           "UserApi.Client": "1.41.8",
           "VH.Core.Configuration": "0.1.13",
-          "VideoApi.Client": "1.41.20",
+          "VideoApi.Client": "1.43.12",
           "VideoWeb.Common": "1.0.0",
           "VideoWeb.Contract": "1.0.0",
           "VideoWeb.EventHub": "1.0.0"
