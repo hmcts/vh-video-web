@@ -7050,6 +7050,7 @@ export class JusticeUserResponse implements IJusticeUserResponse {
     is_vh_team_leader?: boolean;
     created_by?: string | undefined;
     full_name?: string | undefined;
+    deleted?: boolean;
 
     constructor(data?: IJusticeUserResponse) {
         if (data) {
@@ -7072,6 +7073,7 @@ export class JusticeUserResponse implements IJusticeUserResponse {
             this.is_vh_team_leader = _data['is_vh_team_leader'];
             this.created_by = _data['created_by'];
             this.full_name = _data['full_name'];
+            this.deleted = _data['deleted'];
         }
     }
 
@@ -7095,6 +7097,7 @@ export class JusticeUserResponse implements IJusticeUserResponse {
         data['is_vh_team_leader'] = this.is_vh_team_leader;
         data['created_by'] = this.created_by;
         data['full_name'] = this.full_name;
+        data['deleted'] = this.deleted;
         return data;
     }
 }
@@ -7111,6 +7114,7 @@ export interface IJusticeUserResponse {
     is_vh_team_leader?: boolean;
     created_by?: string | undefined;
     full_name?: string | undefined;
+    deleted?: boolean;
 }
 
 export class ProblemDetails implements IProblemDetails {
@@ -7362,7 +7366,7 @@ export interface IConferenceEventRequest {
 }
 
 export class HearingDetailRequest implements IHearingDetailRequest {
-    time?: string | undefined;
+    time?: Date;
     judge?: string | undefined;
     case_name?: string | undefined;
 
@@ -7376,7 +7380,7 @@ export class HearingDetailRequest implements IHearingDetailRequest {
 
     init(_data?: any) {
         if (_data) {
-            this.time = _data['time'];
+            this.time = _data['time'] ? new Date(_data['time'].toString()) : <any>undefined;
             this.judge = _data['judge'];
             this.case_name = _data['case_name'];
         }
@@ -7391,7 +7395,7 @@ export class HearingDetailRequest implements IHearingDetailRequest {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data['time'] = this.time;
+        data['time'] = this.time ? this.time.toISOString() : <any>undefined;
         data['judge'] = this.judge;
         data['case_name'] = this.case_name;
         return data;
@@ -7399,7 +7403,7 @@ export class HearingDetailRequest implements IHearingDetailRequest {
 }
 
 export interface IHearingDetailRequest {
-    time?: string | undefined;
+    time?: Date;
     judge?: string | undefined;
     case_name?: string | undefined;
 }
