@@ -7,6 +7,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 export const FEATURE_FLAGS = {
     vhoWorkAllocation: 'vho-work-allocation',
     ejudiciarySignIn: 'ejud-feature',
+    dom1SignIn: 'dom1',
     multiIdpSelection: 'multi-idp-selection'
 };
 
@@ -29,7 +30,8 @@ export class LaunchDarklyService {
     initialize(): void {
         this.flags = {};
         const ldClientId = this.configService.getConfig().launch_darkly_client_id;
-        const user: LDClient.LDUser = { key: 'VideoWeb', anonymous: true };
+        const envName = this.configService.getConfig().vh_idp_settings.resource_id;
+        const user: LDClient.LDUser = { key: 'VideoWeb', anonymous: true, name: envName };
         this.ldClient = LDClient.initialize(ldClientId, user);
     }
 

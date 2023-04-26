@@ -28,11 +28,13 @@ export class IdpSelectionComponent {
                     url: '/' + pageUrls.Login
                 };
             }
-        });
 
-        this.identityProviders[IdpProviders.dom1] = {
-            url: '/' + pageUrls.Login
-        };
+            if (value && value[FEATURE_FLAGS.dom1SignIn]) {
+                this.identityProviders[IdpProviders.dom1] = {
+                    url: '/' + pageUrls.Login
+                };
+            }
+        });
 
         this.identityProviders[IdpProviders.vhaad] = {
             url: '/' + pageUrls.Login
