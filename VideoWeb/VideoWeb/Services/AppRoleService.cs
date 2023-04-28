@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using BookingsApi.Client;
+using BookingsApi.Contract.Responses;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using VideoWeb.Common.Models;
 
 namespace VideoWeb.Services
@@ -17,11 +20,13 @@ namespace VideoWeb.Services
     {
         private readonly IMemoryCache _cache;
         private readonly IBookingsApiClient _bookingsApiClient;
+        private readonly ILogger<AppRoleService> _logger;
 
-        public AppRoleService(IMemoryCache cache, IBookingsApiClient bookingsApiClient)
+        public AppRoleService(IMemoryCache cache, IBookingsApiClient bookingsApiClient, ILogger<AppRoleService> logger)
         {
             _cache = cache;
             _bookingsApiClient = bookingsApiClient;
+            _logger = logger;
         }
         
         public async Task<List<Claim>> GetClaimsForUserAsync(string uniqueId, string username)
@@ -32,7 +37,21 @@ namespace VideoWeb.Services
                 return claims;
             }
             
-            var user = await _bookingsApiClient!.GetJusticeUserByUsernameAsync(username);
+            JusticeUserResponse user;
+            try
+            {
+                user = await _bookingsApiClient!.GetJusticeUserByUsernameAsync(username);
+            }
+            catch (BookingsApiException ex )
+            {
+                if (ex.StatusCode == (int) System.Net.HttpStatusCode.NotFound)
+                {
+                    var typedException = ex as BookingsApiException<ProblemDetails>;
+                    _logger.LogWarning(typedException, "User {Username} not found as a JusticeUser in BookingsApi", username);
+                }
+                return new List<Claim>();
+            }
+
             if (user == null) return new List<Claim>();
             claims = MapUserRoleToAppRole(user.UserRoleId);
             _cache.Set(uniqueId, claims, new MemoryCacheEntryOptions()

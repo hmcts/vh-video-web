@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Autofac;
@@ -111,9 +112,11 @@ namespace VideoWeb.UnitTests.Services
             // arrange
             var username = "random@claims.com";
             var uniqueId = Guid.NewGuid().ToString();
+            var apiException = new BookingsApiException<string>("Conflict", (int) HttpStatusCode.NotFound,
+                "Conflict", null, null, null);
             _mocker.Mock<IBookingsApiClient>().Setup(x => x.GetJusticeUserByUsernameAsync(username))
-                .ReturnsAsync((JusticeUserResponse) null);
-        
+                .ThrowsAsync(apiException);
+
             // act
             var claims = await _sut.GetClaimsForUserAsync(uniqueId, username);
 
