@@ -12,6 +12,7 @@ import { LaunchDarklyService, FEATURE_FLAGS } from 'src/app/services/launch-dark
 })
 export class IdpSelectionComponent {
     identityProviders = {};
+    identityProvidernames = [];
 
     selectedProvider: IdpProviders;
     submitted = false;
@@ -28,24 +29,31 @@ export class IdpSelectionComponent {
                     url: '/' + pageUrls.Login
                 };
             }
-
             if (value && value[FEATURE_FLAGS.dom1SignIn]) {
                 this.identityProviders[IdpProviders.dom1] = {
                     url: '/' + pageUrls.Login
                 };
             }
+            this.updateProviderNames();
         });
 
         this.identityProviders[IdpProviders.vhaad] = {
             url: '/' + pageUrls.Login
         };
+        this.updateProviderNames();
     }
 
     showError(): boolean {
         return this.submitted && !this.selectedProvider;
     }
 
+    updateProviderNames(): void {
+        this.identityProvidernames = Object.keys(this.identityProviders).reverse();
+        // return Object.keys(this.identityProviders).reverse();
+    }
+
     getProviders(): string[] {
+        this.identityProvidernames = Object.keys(this.identityProviders).reverse();
         return Object.keys(this.identityProviders).reverse();
     }
 

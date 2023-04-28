@@ -31,8 +31,14 @@ export class LaunchDarklyService {
         this.flags = {};
         const ldClientId = this.configService.getConfig().launch_darkly_client_id;
         const envName = this.configService.getConfig().vh_idp_settings.redirect_uri;
-        const user: LDClient.LDUser = { key: 'VideoWeb', anonymous: true, name: envName };
-        this.ldClient = LDClient.initialize(ldClientId, user);
+
+        const context: LDClient.LDContext = {
+            kind: 'user',
+            key: 'VideoWeb',
+            name: envName
+        };
+
+        this.ldClient = LDClient.initialize(ldClientId, context);
     }
 
     onReady(): void {
