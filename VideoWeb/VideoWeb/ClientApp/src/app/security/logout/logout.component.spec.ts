@@ -34,6 +34,7 @@ describe('LogoutComponent', () => {
 
         securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['logoffAndRevokeTokens', 'isAuthenticated']);
         isAuthenticatedSubject = new Subject<boolean>();
+        securityServiceSpy.logoffAndRevokeTokens.and.returnValue(of(null));
         securityServiceSpy.isAuthenticated.and.returnValue(isAuthenticatedSubject.asObservable());
 
         getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
