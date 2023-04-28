@@ -23,19 +23,36 @@ export class IdpSelectionComponent {
         private securityConfigSetupService: SecurityConfigSetupService,
         private ldService: LaunchDarklyService
     ) {
-        this.ldService.flagChange.subscribe(value => {
-            if (value && value[FEATURE_FLAGS.ejudiciarySignIn]) {
+        this.ldService.getFlag(FEATURE_FLAGS.ejudiciarySignIn).subscribe(featureEnabled => {
+            if (featureEnabled) {
                 this.identityProviders[IdpProviders.ejud] = {
                     url: '/' + pageUrls.Login
                 };
+                this.updateProviderNames();
             }
-            if (value && value[FEATURE_FLAGS.dom1SignIn]) {
+        });
+
+        this.ldService.getFlag(FEATURE_FLAGS.dom1SignIn).subscribe(featureEnabled => {
+            if (featureEnabled) {
                 this.identityProviders[IdpProviders.dom1] = {
                     url: '/' + pageUrls.Login
                 };
+                this.updateProviderNames();
             }
-            this.updateProviderNames();
         });
+        // this.ldService.flagChange.subscribe(value => {
+        //     if (value && value[FEATURE_FLAGS.ejudiciarySignIn]) {
+        //         this.identityProviders[IdpProviders.ejud] = {
+        //             url: '/' + pageUrls.Login
+        //         };
+        //     }
+        //     if (value && value[FEATURE_FLAGS.dom1SignIn]) {
+        //         this.identityProviders[IdpProviders.dom1] = {
+        //             url: '/' + pageUrls.Login
+        //         };
+        //     }
+        //     this.updateProviderNames();
+        // });
 
         this.identityProviders[IdpProviders.vhaad] = {
             url: '/' + pageUrls.Login
