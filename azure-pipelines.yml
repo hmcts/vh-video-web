@@ -7,7 +7,7 @@ parameters:
     - name: PackageACTests
       displayName: Package Acceptance Tests
       type: boolean
-      default: false
+      default: true
 
     - name: RunUnitTests
       displayName: Run Unit Tests
@@ -32,7 +32,7 @@ parameters:
     - name: RunACTests
       displayName: Run Acceptance Tests
       type: boolean
-      default: false
+      default: true
 
     - name: RunNodeTests
       displayName: Run Node Tests
