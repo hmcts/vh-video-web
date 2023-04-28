@@ -470,7 +470,7 @@ export class NotificationToastrService {
 
         hearings.forEach(h => {
             const judge = h.judge;
-            const options = { hour: '2-digit', minute: '2-digit', hour12: false };
+            const options = { hour: '2-digit', minute: '2-digit', hour12: false } as Intl.DateTimeFormatOptions;
             const time = new Date(h.time).toLocaleTimeString('en-GB', options);
             const caseName = h.case_name;
 
