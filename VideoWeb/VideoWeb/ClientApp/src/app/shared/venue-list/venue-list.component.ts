@@ -55,10 +55,8 @@ export abstract class VenueListComponentDirective implements OnInit {
     }
 
     private setupSubscribers() {
-        this.ldService.flagChange.subscribe(value => {
-            if (value) {
-                this.vhoWorkAllocationFeatureFlag = value[FEATURE_FLAGS.vhoWorkAllocation];
-            }
+        this.ldService.getFlag(FEATURE_FLAGS.vhoWorkAllocation).subscribe(value => {
+            this.vhoWorkAllocationFeatureFlag = value;
         });
 
         this.videoWebService.getVenues().subscribe(venues => {

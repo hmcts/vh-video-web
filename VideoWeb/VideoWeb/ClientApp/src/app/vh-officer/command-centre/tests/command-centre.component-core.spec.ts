@@ -1,6 +1,6 @@
 import { discardPeriodicTasks, fakeAsync, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { of, ReplaySubject, throwError } from 'rxjs';
+import { of, ReplaySubject, Subject, throwError } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ClientSettingsResponse, ConferenceResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
@@ -22,6 +22,8 @@ import { VhoQueryService } from '../../services/vho-query-service.service';
 import { CommandCentreComponent } from '../command-centre.component';
 import { LaunchDarklyService } from '../../../services/launch-darkly.service';
 import { NotificationToastrService } from '../../../waiting-space/services/notification-toastr.service';
+import { LDFlagSet } from 'launchdarkly-js-client-sdk';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 
 describe('CommandCentreComponent - Core', () => {
     let component: CommandCentreComponent;
@@ -37,6 +39,7 @@ describe('CommandCentreComponent - Core', () => {
     let eventBusServiceSpy: jasmine.SpyObj<EventBusService>;
     let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
     let notificationToastrServiceSpy: jasmine.SpyObj<NotificationToastrService>;
+    let flagChangeSpy: Subject<LDFlagSet>;
 
     const conferenceDetail = new ConferenceTestData().getConferenceDetailFuture();
 
@@ -61,7 +64,7 @@ describe('CommandCentreComponent - Core', () => {
         ]);
 
         eventBusServiceSpy = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit', 'on']);
-        launchDarklyServiceSpy = jasmine.createSpyObj('LaunchDarklyService', ['flagChange']);
+        launchDarklyServiceSpy = jasmine.createSpyObj('LaunchDarklyService', [], ['flagChange']);
         notificationToastrServiceSpy = jasmine.createSpyObj('NotificationToastrService', ['createAllocationNotificationToast']);
         const config = new ClientSettingsResponse({ join_by_phone_from_date: '2021-02-09' });
         configService.getClientSettings.and.returnValue(of(config));
@@ -79,8 +82,9 @@ describe('CommandCentreComponent - Core', () => {
         vhoQueryService.getConferencesForVHOfficer.and.returnValue(of(conferences));
         vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceDetail));
 
-        launchDarklyServiceSpy.flagChange = new ReplaySubject();
-        launchDarklyServiceSpy.flagChange.next({ 'vho-work-allocation': true });
+        flagChangeSpy = new Subject<LDFlagSet>();
+        getSpiedPropertyGetter(launchDarklyServiceSpy, 'flagChange').and.returnValue(flagChangeSpy.asObservable());
+        flagChangeSpy.next({ 'vho-work-allocation': true });
 
         component = new CommandCentreComponent(
             vhoQueryService,

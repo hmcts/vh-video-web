@@ -16,11 +16,12 @@ describe('authguard', () => {
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
     let router: jasmine.SpyObj<Router>;
     let loggerSpy: jasmine.SpyObj<Logger>;
+    const flagValueSubject = new Subject();
 
     beforeAll(() => {
         securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', [], ['isAuthenticated$']);
-        launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['flagChange']);
-        launchDarklyServiceSpy.flagChange = new Subject();
+        launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
+        launchDarklyServiceSpy.getFlag.and.returnValue(flagValueSubject.asObservable());
         securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
             [],
@@ -44,7 +45,7 @@ describe('authguard', () => {
             // Act
             let result = false;
             authGuard.canActivate(null, null).subscribe(canActivate => (result = canActivate));
-            launchDarklyServiceSpy.flagChange.next({ 'multi-idp-selection': false });
+            flagValueSubject.next(false);
             isAuthenticatedSubject.next(true);
             tick();
 
@@ -70,7 +71,7 @@ describe('authguard', () => {
                 let result = true;
                 authGuard.canActivate(null, null).subscribe(canActivate => (result = canActivate));
                 isAuthenticatedSubject.next(false);
-                launchDarklyServiceSpy.flagChange.next({ 'multi-idp-selection': test.flag });
+                flagValueSubject.next(test.flag);
                 tick();
 
                 // Assert

@@ -8,6 +8,7 @@ import { SecurityServiceProvider } from './authentication/security-provider.serv
 import { ISecurityService } from './authentication/security-service.interface';
 import { JudgeGuard } from './judge.guard';
 import { LaunchDarklyService } from '../services/launch-darkly.service';
+import { LDFlagSet } from 'launchdarkly-js-client-sdk';
 
 describe('JudgeGuard', () => {
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
@@ -16,12 +17,13 @@ describe('JudgeGuard', () => {
     let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
     let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
+    let flagChangeSpy = new Subject<LDFlagSet>();
 
     beforeAll(() => {
         securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', [], ['isAuthenticated$']);
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
-        launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['flagChange']);
+        launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', [], ['flagChange']);
         securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
             [],
@@ -33,8 +35,9 @@ describe('JudgeGuard', () => {
     });
 
     beforeEach(() => {
-        launchDarklyServiceSpy.flagChange = new Subject();
-        launchDarklyServiceSpy.flagChange.next({ 'multi-idp-selection': true });
+        flagChangeSpy = new Subject<LDFlagSet>();
+        getSpiedPropertyGetter(launchDarklyServiceSpy, 'flagChange').and.returnValue(flagChangeSpy.asObservable());
+        flagChangeSpy.next({ 'multi-idp-selection': true });
         guard = new JudgeGuard(securityServiceProviderServiceSpy, profileServiceSpy, router, new MockLogger(), launchDarklyServiceSpy);
     });
 

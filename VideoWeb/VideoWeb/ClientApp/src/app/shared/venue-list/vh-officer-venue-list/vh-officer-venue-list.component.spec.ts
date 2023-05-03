@@ -1,6 +1,6 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { of, ReplaySubject } from 'rxjs';
+import { of } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     CourtRoomsAccountResponse,
@@ -17,7 +17,7 @@ import { CourtRoomsAccounts } from '../../../vh-officer/services/models/court-ro
 import { VhoStorageKeys } from '../../../vh-officer/services/models/session-keys';
 import { VhOfficerVenueListComponent } from './vh-officer-venue-list.component';
 import { By } from '@angular/platform-browser';
-import { LaunchDarklyService } from '../../../services/launch-darkly.service';
+import { FEATURE_FLAGS, LaunchDarklyService } from '../../../services/launch-darkly.service';
 import { TranslatePipeMock } from '../../../testing/mocks/mock-translation-pipe';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VenueListComponentDirective } from '../venue-list.component';
@@ -84,7 +84,7 @@ describe('VHOfficerVenueListComponent', () => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getVenues', 'getCSOs']);
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
         vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getCourtRoomsAccounts']);
-        launchDarklyServiceSpy = jasmine.createSpyObj('LaunchDarklyService', ['flagChange']);
+        launchDarklyServiceSpy = jasmine.createSpyObj('LaunchDarklyService', ['getFlag'], ['flagChange']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', [
             'checkCacheForProfileByUsername',
             'getProfileByUsername',
@@ -104,8 +104,9 @@ describe('VHOfficerVenueListComponent', () => {
         videoWebServiceSpy.getVenues.and.returnValue(of(venueNames));
         videoWebServiceSpy.getCSOs.and.returnValue(of(csos));
         vhoQueryService.getCourtRoomsAccounts.and.returnValue(Promise.resolve(courtAccounts));
-        launchDarklyServiceSpy.flagChange = new ReplaySubject();
-        launchDarklyServiceSpy.flagChange.next({ 'vho-work-allocation': true });
+
+        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.vhoWorkAllocation).and.returnValue(of(true));
+
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(loggedInUser));
         venueSessionStorage.clear();
         csoSessionStorage.clear();
@@ -305,15 +306,18 @@ describe('VHOfficerVenueListComponent', () => {
             fixtureComponent = fixture.componentInstance;
         });
 
-        it('Should show cso list, when implemented by vh-officer-venue-list', () => {
+        it('Should show cso list, when implemented by vh-officer-venue-list', fakeAsync(() => {
+            launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.vhoWorkAllocation).and.returnValue(of(true));
             fixture.detectChanges();
+            tick();
             expect(fixture.debugElement.query(By.css('#cso-list'))).toBeTruthy();
-        });
+        }));
 
-        it('Should not show cso list, when implemented by vh-officer-venue-list and feature flag off', () => {
-            launchDarklyServiceSpy.flagChange.next({ 'vho-work-allocation': false });
+        it('Should not show cso list, when implemented by vh-officer-venue-list and feature flag off', fakeAsync(() => {
+            launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.vhoWorkAllocation).and.returnValue(of(false));
             fixture.detectChanges();
+            tick();
             expect(fixture.debugElement.query(By.css('#cso-list'))).toBeFalsy();
-        });
+        }));
     });
 });
