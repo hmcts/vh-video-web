@@ -9157,7 +9157,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
             this.e_jud_idp_settings = _data['e_jud_idp_settings']
                 ? IdpSettingsResponse.fromJS(_data['e_jud_idp_settings'])
                 : <any>undefined;
-            this.dom1_idp_settings = _data["dom1_idp_settings"] ? IdpSettingsResponse.fromJS(_data["dom1_idp_settings"]) : <any>undefined;
+            this.dom1_idp_settings = _data['dom1_idp_settings'] ? IdpSettingsResponse.fromJS(_data['dom1_idp_settings']) : <any>undefined;
             this.vh_idp_settings = _data['vh_idp_settings'] ? IdpSettingsResponse.fromJS(_data['vh_idp_settings']) : <any>undefined;
             this.enable_video_filters = _data['enable_video_filters'];
             this.enable_android_support = _data['enable_android_support'];
@@ -9185,7 +9185,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
         data['kinly_turn_server_user'] = this.kinly_turn_server_user;
         data['kinly_turn_server_credential'] = this.kinly_turn_server_credential;
         data['e_jud_idp_settings'] = this.e_jud_idp_settings ? this.e_jud_idp_settings.toJSON() : <any>undefined;
-        data["dom1_idp_settings"] = this.dom1_idp_settings ? this.dom1_idp_settings.toJSON() : <any>undefined;
+        data['dom1_idp_settings'] = this.dom1_idp_settings ? this.dom1_idp_settings.toJSON() : <any>undefined;
         data['vh_idp_settings'] = this.vh_idp_settings ? this.vh_idp_settings.toJSON() : <any>undefined;
         data['enable_video_filters'] = this.enable_video_filters;
         data['enable_android_support'] = this.enable_android_support;
