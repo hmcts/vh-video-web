@@ -1149,7 +1149,7 @@ export abstract class WaitingRoomBaseDirective {
         this.displayDeviceChangeModal = false;
         // focusing on the div using scrolling method
         const elm = document.getElementById(this.SELECT_MEDIA_DEVICES_MODAL_DEFAULT_ELEMENT);
-        elm.scrollIntoView();
+        elm?.scrollIntoView();
     }
 
     async publishMediaDeviceStatus() {
