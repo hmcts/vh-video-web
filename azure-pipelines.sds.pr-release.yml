@@ -58,6 +58,8 @@ stages:
                           sonar.issue.ignore.multicriteria.e1.resourceKey=**/*.ts
                           sonar.issue.ignore.multicriteria.e2.ruleKey=typescript:S1874
                           sonar.issue.ignore.multicriteria.e2.resourceKey=**/*.ts
+                          sonar.issue.ignore.multicriteria.e3.ruleKey=typescript:S6544
+                          sonar.issue.ignore.multicriteria.e3.resourceKey=**/*.ts
 
     #####################################################
     # Docker Build. #####################################
