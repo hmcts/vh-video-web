@@ -259,6 +259,7 @@ export abstract class WaitingRoomBaseDirective {
             this.conference = await this.videoWebService.getConferenceById(conferenceId);
             this.hearingVenueFlagsService.setHearingVenueIsScottish(this.conference.hearing_venue_is_scottish);
             this.hearing = new Hearing(this.conference);
+
             this.participant = this.getLoggedParticipant();
 
             this.logger.info(`${this.loggerPrefix} Conference closed.`, {
@@ -1334,6 +1335,7 @@ export abstract class WaitingRoomBaseDirective {
             return participant;
         });
         this.conference = { ...this.conference, participants: updatedParticipantsList } as ConferenceResponse;
+
         this.participant = this.getLoggedParticipant();
     }
 
