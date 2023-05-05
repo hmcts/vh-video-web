@@ -64,6 +64,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     conferenceStatusChangedSubscription: Subscription;
     participantStatusChangedSubscription: Subscription;
     onConferenceStatusChangedSubscription: Subscription;
+    wowzaListener: ParticipantUpdated;
+    participants: ParticipantUpdated[] = [];
+
+    private wowzaName = 'vh-wowza';
 
     get isChatVisible() {
         return this.panelStates['Chat'];
@@ -151,7 +155,17 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                     });
                 })
             )
-            .subscribe(createdParticipant => this.assignPexipIdToRemoteStore(createdParticipant));
+            .subscribe(createdParticipant => {
+                this.assignPexipIdToRemoteStore(createdParticipant);
+                if (createdParticipant.pexipDisplayName.includes(this.wowzaName)) {
+                    this.wowzaListener = createdParticipant;
+                    this.participants.push(createdParticipant);
+                    this.logger.debug(`${this.loggerPrefixJudge} WowzaListener added`, {
+                        pexipId: createdParticipant.uuid,
+                        dispayName: createdParticipant.pexipDisplayName
+                    });
+                }
+            });
 
         this.videoCallService
             .onParticipantUpdated()
@@ -165,6 +179,21 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 })
             )
             .subscribe(updatedParticipant => this.assignPexipIdToRemoteStore(updatedParticipant));
+
+        this.videoCallService.onParticipantDeleted().subscribe(deletedParticipant => {
+            if (this.wowzaListener) {
+                if (deletedParticipant.uuid === this.wowzaListener.uuid && this.conference.audio_recording_required) {
+                    this.logger.warn(
+                        `${this.loggerPrefixJudge} WowzaListener removed: ParticipantDeleted callback received for participant from Pexip`,
+                        {
+                            pexipId: deletedParticipant.uuid,
+                            dispayName: deletedParticipant.pexipDisplayName
+                        }
+                    );
+                    this.showAudioRecordingAlert();
+                }
+            }
+        });
 
         this.eventService
             .getParticipantMediaStatusMessage()
@@ -510,23 +539,19 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         }
 
         if (this.conferenceRecordingInSessionForSeconds > 20 && !this.continueWithNoRecording) {
-            this.logger.debug(`${this.loggerPrefixJudge} Attempting to retrieve audio stream info for ${hearingId}`);
+            this.logger.info(`${this.loggerPrefixJudge} Attempting to retrieve audio stream info for ${hearingId}`);
             try {
                 const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId, this.conference.wowza_single_app);
-                this.logger.debug(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
-                if (!audioStreamWorking && !this.continueWithNoRecording && this.showVideo) {
-                    this.logger.debug(`${this.loggerPrefixJudge} not recording when expected, show alert`);
-                    this.showAudioRecordingAlert();
-                }
-            } catch (error) {
-                this.logger.error(`${this.loggerPrefixJudge} Failed to get audio stream info`, error, { conference: this.conferenceId });
-
-                if (!this.continueWithNoRecording) {
-                    this.logger.info(`${this.loggerPrefixJudge} Should not continue without a recording. Show alert.`, {
+                this.logger.info(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
+                // if recorder not found on a wowza vm and returns false OR wowzaListener participant is not present in conference
+                if ((!audioStreamWorking || !this.wowzaListener) && !this.continueWithNoRecording && this.showVideo) {
+                    this.logger.warn(`${this.loggerPrefixJudge} not recording when expected, show alert`, {
                         conference: this.conferenceId
                     });
                     this.showAudioRecordingAlert();
                 }
+            } catch (error) {
+                this.logger.error(`${this.loggerPrefixJudge} Failed to get audio stream info.`, error, { conference: this.conferenceId });
             }
         }
     }
