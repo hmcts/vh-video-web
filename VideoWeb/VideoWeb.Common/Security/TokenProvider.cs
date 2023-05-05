@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Microsoft.Identity.Client;
 using VideoWeb.Common.Configuration;
 
 namespace VideoWeb.Common.Security
@@ -29,16 +29,21 @@ namespace VideoWeb.Common.Security
 
         public async Task<AuthenticationResult> GetAuthorisationResult(string clientId, string clientSecret, string clientResource)
         {
-            var credential = new ClientCredential(clientId, clientSecret);
-            var authContext = new AuthenticationContext($"{_azureAdConfiguration.Authority}{_azureAdConfiguration.TenantId}");
+            AuthenticationResult result;
+            var authority = $"{_azureAdConfiguration.Authority}{_azureAdConfiguration.TenantId}";
+            var app =ConfidentialClientApplicationBuilder.Create(clientId).WithClientSecret(clientSecret)
+                .WithAuthority(authority).Build();
+            
             try
             {
-                return await authContext.AcquireTokenAsync(clientResource, credential);
+                result = await app.AcquireTokenForClient(new[] {$"{clientResource}/.default"}).ExecuteAsync();
             }
-            catch (AdalException)
+            catch (MsalServiceException)
             {
-                throw new UnauthorizedAccessException("Failed to acquire token");
+                throw new UnauthorizedAccessException();
             }
+
+            return result;
         }
     }
 }
