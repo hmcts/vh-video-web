@@ -182,6 +182,11 @@ export class TooltipDirective implements OnDestroy {
         if (!this.tooltipKeyTab) {
             return;
         }
+        if (this.tooltipKeyTab.parentNode && this.tooltipKeyTab.parentNode instanceof HTMLElement) {
+            this.tooltipKeyTab.parentNode.setAttribute('style', `position:${positionVal};opacity:${opacityVal}`);
+        } else {
+            console.warn('Tooltip parent node is not an HTMLElement. It is a ' + typeof this.tooltipKeyTab.parentNode + ' instead.');
+        }
         (<HTMLElement>this.tooltipKeyTab.parentNode).setAttribute('style', `position:${positionVal};opacity:${opacityVal}`);
     }
 
