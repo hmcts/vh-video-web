@@ -99,12 +99,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         this.titleService.setTitle(this.title);
         this.divTrapId = 'video-container';
         this.init();
-        this.userMediaService.isAudioOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(async audioOnly => {
-            this.audioOnly = audioOnly;
-
-            const mediaStatus = new ParticipantMediaStatus(false, audioOnly);
-            await this.eventService.sendMediaStatus(this.conferenceId, this.participant.id, mediaStatus);
-        });
     }
 
     get allowAudioOnlyToggle(): boolean {
@@ -144,6 +138,16 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             this.subscribeToClock();
             this.startEventHubSubscribers();
             this.connectToPexip();
+            this.registerMediaStatusPublisher();
+        });
+    }
+
+    private registerMediaStatusPublisher() {
+        this.userMediaService.isAudioOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(async audioOnly => {
+            this.audioOnly = audioOnly;
+
+            const mediaStatus = new ParticipantMediaStatus(false, audioOnly);
+            await this.eventService.sendMediaStatus(this.conferenceId, this.participant.id, mediaStatus);
         });
     }
 
