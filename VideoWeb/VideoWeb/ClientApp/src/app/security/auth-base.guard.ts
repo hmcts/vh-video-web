@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
-import { Observable } from 'rxjs';
-import { first, map } from 'rxjs/operators';
-import { FeatureFlagService } from '../services/feature-flag.service';
+import { Observable, of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { Logger } from '../services/logging/logger-base';
 import { pageUrls } from '../shared/page-url.constants';
 import { SecurityServiceProvider } from './authentication/security-provider.service';
 import { ISecurityService } from './authentication/security-service.interface';
+import { FEATURE_FLAGS, LaunchDarklyService } from '../services/launch-darkly.service';
 
 @Injectable()
 export class AuthBaseGuard {
@@ -15,7 +15,7 @@ export class AuthBaseGuard {
         securityServiceProviderService: SecurityServiceProvider,
         protected router: Router,
         protected logger: Logger,
-        protected featureFlagService: FeatureFlagService
+        protected ldService: LaunchDarklyService
     ) {
         securityServiceProviderService.currentSecurityService$.subscribe(securityService => {
             this.securityService = securityService;
@@ -24,19 +24,20 @@ export class AuthBaseGuard {
 
     isUserAuthorized(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
         return this.securityService.isAuthenticated$.pipe(
-            map((isAuthorized: boolean) => {
-                this.logger.debug('AuthorizationGuard, canActivate isAuthorized: ' + isAuthorized);
-                if (!isAuthorized) {
-                    this.featureFlagService
-                        .getFeatureFlagByName('EJudFeature')
-                        .pipe(first())
-                        .subscribe(result => {
-                            const routePath = result ? `/${pageUrls.IdpSelection}` : `/${pageUrls.Login}`;
-                            this.router.navigate([routePath]);
-                        });
-                    return false;
+            switchMap(isAuthenticated => {
+                if (!isAuthenticated) {
+                    this.logger.debug(`${this.constructor.name} - User is not authenticated, redirecting to login page`);
+                    this.ldService.getFlag<boolean>(FEATURE_FLAGS.multiIdpSelection).subscribe(featureEnabled => {
+                        this.logger.debug(
+                            `${this.constructor.name} - LaunchDarkly flag value: ${FEATURE_FLAGS.multiIdpSelection} = ${featureEnabled}`
+                        );
+                        const routePath = featureEnabled ? `/${pageUrls.IdpSelection}` : `/${pageUrls.Login}`;
+                        this.router.navigate([routePath]);
+                    });
+                    return of(false);
                 }
-                return true;
+                this.logger.debug(`${this.constructor.name} - User is authenticated, allowing access`);
+                return of(true);
             })
         );
     }

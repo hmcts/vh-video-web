@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
-import { of, ReplaySubject } from 'rxjs';
+import { of } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ClientSettingsResponse, ConferenceResponseVho, ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
@@ -26,7 +26,7 @@ import {
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { VhoQueryService } from '../../services/vho-query-service.service';
 import { CommandCentreComponent } from '../command-centre.component';
-import { LaunchDarklyService } from '../../../services/launch-darkly.service';
+import { FEATURE_FLAGS, LaunchDarklyService } from '../../../services/launch-darkly.service';
 import { NotificationToastrService } from '../../../waiting-space/services/notification-toastr.service';
 import { NewAllocationMessage } from '../../../services/models/new-allocation-message';
 
@@ -72,7 +72,7 @@ describe('CommandCentreComponent - Events', () => {
         ]);
 
         eventBusServiceSpy = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit', 'on']);
-        launchDarklyServiceSpy = jasmine.createSpyObj('LaunchDarklyService', ['flagChange']);
+        launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
         notificationToastrServiceSpy = jasmine.createSpyObj('NotificationToastrService', ['createAllocationNotificationToast']);
 
         const config = new ClientSettingsResponse({ join_by_phone_from_date: '' });
@@ -87,8 +87,7 @@ describe('CommandCentreComponent - Events', () => {
     beforeEach(() => {
         vhoQueryService.getConferencesForVHOfficer.and.returnValue(of(conferences));
         vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceDetail));
-        launchDarklyServiceSpy.flagChange = new ReplaySubject();
-        launchDarklyServiceSpy.flagChange.next({ 'vho-work-allocation': true });
+        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.vhoWorkAllocation, jasmine.any(Boolean)).and.returnValue(of(true));
 
         component = new CommandCentreComponent(
             vhoQueryService,
