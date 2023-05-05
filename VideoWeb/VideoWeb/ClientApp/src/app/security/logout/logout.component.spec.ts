@@ -9,19 +9,20 @@ import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-
 import { fakeAsync, flush } from '@angular/core/testing';
 import { FeatureFlagService } from '../../services/feature-flag.service';
 import { pageUrls } from '../../shared/page-url.constants';
+import { LaunchDarklyService, FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
 
 describe('LogoutComponent', () => {
     let component: LogoutComponent;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
-    let featureFlagServiceSpy: jasmine.SpyObj<FeatureFlagService>;
+    let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
     let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
     let isAuthenticatedSubject: Subject<boolean>;
 
     beforeAll(() => {
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['clearUserProfile']);
-        featureFlagServiceSpy = jasmine.createSpyObj<FeatureFlagService>('FeatureFlagService', ['getFeatureFlagByName']);
-        featureFlagServiceSpy.getFeatureFlagByName.and.returnValue(of(true));
+        launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
+        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.multiIdpSelection).and.returnValue(of(true));
     });
 
     beforeEach(() => {
@@ -37,7 +38,7 @@ describe('LogoutComponent', () => {
 
         getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
 
-        component = new LogoutComponent(securityServiceProviderServiceSpy, profileServiceSpy, featureFlagServiceSpy);
+        component = new LogoutComponent(securityServiceProviderServiceSpy, profileServiceSpy, launchDarklyServiceSpy);
     });
 
     it('should call logout if authenticated', fakeAsync(() => {
