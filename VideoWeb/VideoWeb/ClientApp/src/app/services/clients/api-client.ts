@@ -3222,6 +3222,7 @@ export class ApiClient extends ApiClientBase {
      * returns the FeatureToggles
      * @param featureName (optional)
      * @return Success
+     * @deprecated
      */
     getFeatureFlag(featureName: string | undefined): Observable<boolean> {
         let url_ = this.baseUrl + '/feature-flag?';
