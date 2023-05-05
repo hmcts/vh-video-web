@@ -187,7 +187,6 @@ export class TooltipDirective implements OnDestroy {
         } else {
             console.warn('Tooltip parent node is not an HTMLElement. It is a ' + typeof this.tooltipKeyTab.parentNode + ' instead.');
         }
-        (<HTMLElement>this.tooltipKeyTab.parentNode).setAttribute('style', `position:${positionVal};opacity:${opacityVal}`);
     }
 
     setTooltipText() {
