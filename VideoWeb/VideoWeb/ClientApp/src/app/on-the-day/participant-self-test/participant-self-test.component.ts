@@ -54,9 +54,9 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective
         this.continueClicked = true;
         if (!this.selfTestCompleted) {
             this.logger.warn('[ParticipantSelfTest] - Self test not completed.');
-            this.selfTestComponent.disconnect();
+            this.selfTestComponent?.disconnect();
             const reason = new DisconnectedCall('Conference terminated by another participant');
-            await this.selfTestComponent.handleCallDisconnect(reason);
+            await this.selfTestComponent?.handleCallDisconnect(reason);
             await this.raisedSelfTestIncompleted();
         }
         const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
