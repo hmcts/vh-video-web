@@ -9,4 +9,3 @@ java:
         AZUREAD__REDIRECTURI: https://${SERVICE_FQDN}/home
         EJUDAD__POSTLOGOUTREDIRECTURI: https://${SERVICE_FQDN}/logout
         EJUDAD__REDIRECTURI: https://${SERVICE_FQDN}/home
-        VHSERVICES__VIDEOAPIURL: https://vh-video-api-pr-575.dev.platform.hmcts.net/
