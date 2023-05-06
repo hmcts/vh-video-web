@@ -2,26 +2,26 @@ import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { ProfileService } from '../services/api/profile.service';
 import { Role, UserProfileResponse } from '../services/clients/api-client';
-import { FeatureFlagService } from '../services/feature-flag.service';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
 import { MockLogger } from '../testing/mocks/mock-logger';
 import { SecurityServiceProvider } from './authentication/security-provider.service';
 import { ISecurityService } from './authentication/security-service.interface';
 import { JudgeGuard } from './judge.guard';
+import { FEATURE_FLAGS, LaunchDarklyService } from '../services/launch-darkly.service';
 
 describe('JudgeGuard', () => {
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
     let guard: JudgeGuard;
     let router: jasmine.SpyObj<Router>;
     let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
-    let featureFlagServiceSpy: jasmine.SpyObj<FeatureFlagService>;
+    let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
 
     beforeAll(() => {
         securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['isAuthenticated']);
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
-        featureFlagServiceSpy = jasmine.createSpyObj<FeatureFlagService>('FeatureFlagService', ['getFeatureFlagByName']);
+        launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
         securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
             [],
@@ -33,7 +33,8 @@ describe('JudgeGuard', () => {
     });
 
     beforeEach(() => {
-        guard = new JudgeGuard(securityServiceProviderServiceSpy, profileServiceSpy, router, new MockLogger(), featureFlagServiceSpy);
+        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.multiIdpSelection).and.returnValue(of(true));
+        guard = new JudgeGuard(securityServiceProviderServiceSpy, profileServiceSpy, router, new MockLogger(), launchDarklyServiceSpy);
     });
 
     it('should not be able to activate component if role is not Judge', async () => {

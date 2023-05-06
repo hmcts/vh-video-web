@@ -77,8 +77,8 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
         this.courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
         this.csoAllocationStorage = new SessionStorage<CsoFilter>(VhoStorageKeys.CSO_ALLOCATIONS_KEY);
-        this.ldService.flagChange.subscribe(value => {
-            this.vhoWorkAllocationFeatureFlag = value[FEATURE_FLAGS.vhoWorkAllocation];
+        this.ldService.getFlag<boolean>(FEATURE_FLAGS.vhoWorkAllocation, false).subscribe(value => {
+            this.vhoWorkAllocationFeatureFlag = value;
         });
     }
 

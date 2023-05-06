@@ -114,15 +114,6 @@ export class ApiClient extends ApiClientBase {
                     return _observableOf(result200);
                 })
             );
-        } else if (status === 404) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result404: any = null;
-                    let resultData404 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result404 = ProblemDetails.fromJS(resultData404);
-                    return throwException('Not Found', status, _responseText, _headers, result404);
-                })
-            );
         } else if (status === 401) {
             return blobToText(responseBlob).pipe(
                 _observableMergeMap(_responseText => {
@@ -3222,6 +3213,7 @@ export class ApiClient extends ApiClientBase {
      * returns the FeatureToggles
      * @param featureName (optional)
      * @return Success
+     * @deprecated
      */
     getFeatureFlag(featureName: string | undefined): Observable<boolean> {
         let url_ = this.baseUrl + '/feature-flag?';

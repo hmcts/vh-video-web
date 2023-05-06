@@ -2,6 +2,7 @@ using BookingsApi.Client;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -31,9 +32,10 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "GetFeatureFlag")]
         [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [Obsolete("Please use LaunchDarkly instead")]
         public async Task<ActionResult<bool>> GetFeatureFlag([FromQuery] string featureName)
         {
-            return  await _bookingsApiClient.GetFeatureFlagAsync(featureName);
+            return await _bookingsApiClient.GetFeatureFlagAsync(featureName);
         }
     }
 }
