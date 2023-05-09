@@ -36,6 +36,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     @Input() public canToggleParticipantsPanel: boolean;
     @Input() public isChatVisible: boolean;
     @Input() public areParticipantsVisible: boolean;
+    @Input() public wowzaUUID: string;
 
     private conferenceStatus: ConferenceStatusChanged;
     enableDynamicEvidenceSharing = false;
@@ -111,5 +112,13 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
 
     leave(confirmation: boolean) {
         super.leave(confirmation, this.participantService.participants);
+    }
+
+    killWowza() {
+        this.videoCallService.disconnectWowzaListener(this.wowzaUUID)
+
+    }
+    reconnectWowza() {
+        this.videoCallService.ConnectWowzaListener();
     }
 }

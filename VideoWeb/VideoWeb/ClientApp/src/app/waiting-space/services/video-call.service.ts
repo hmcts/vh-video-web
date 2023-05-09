@@ -544,4 +544,27 @@ export class VideoCallService {
 
         return this.apiClient.getParticipantRoomForParticipant(conferenceId, participantId, 'Judicial').toPromise();
     }
+
+    ConnectWowzaListener() {
+        const destination = 'rtmps://vh-wowza.dev.platform.hmcts.net:443/vh-recording-app/882048a4-d84a-4a05-8f99-8bc96f0a5b56'
+        const protocol = 'auto'; //'rtmp'
+        //const role = 'GUEST';
+        const params = {
+            streaming: true,
+            call_type: 'audio',
+        }
+        function callbackFromDialOut(msg){
+            if(msg.status === 'failed')
+                alert('Failed to dial out to wowza');
+            else
+                alert('New wowza UUID: ' + msg.result[0])
+        }
+
+        this.pexipAPI.dialOut(destination, protocol, '', callbackFromDialOut, params)
+    }
+
+    //For test purposes only
+    disconnectWowzaListener(wowzaUUID: string) {
+        this.pexipAPI.disconnectParticipant(wowzaUUID);
+    }
 }
