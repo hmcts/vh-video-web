@@ -25,6 +25,11 @@ namespace VideoWeb.Helpers
         
         public Task PushAllocationHearingsEvent(string csoUserName, IList<HearingDetailRequest> hearings)
         {
+            if (!hearings.Any())
+            {
+                return Task.CompletedTask;
+            }
+            
             CallbackEvent callbackEvent = new CallbackEvent()
             {
                 EventType = EventType.AllocationHearings,
