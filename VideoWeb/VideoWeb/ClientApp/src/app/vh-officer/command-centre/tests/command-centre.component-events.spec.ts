@@ -29,6 +29,7 @@ import { CommandCentreComponent } from '../command-centre.component';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../../services/launch-darkly.service';
 import { NotificationToastrService } from '../../../waiting-space/services/notification-toastr.service';
 import { NewAllocationMessage } from '../../../services/models/new-allocation-message';
+import { HearingDetailRequest } from 'src/app/services/clients/api-client';
 
 describe('CommandCentreComponent - Events', () => {
     let component: CommandCentreComponent;
@@ -234,10 +235,28 @@ describe('CommandCentreComponent - Events', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should update when allocation hearings message is received', () => {
+    it('should not create an allocation toast when allocation hearings message is received and is an empty list', () => {
+        notificationToastrServiceSpy.createAllocationNotificationToast.calls.reset();
         component.setupEventHubSubscribers();
 
         const message = new NewAllocationMessage([]);
+
+        newAllocationMessageSubjectMock.next(message);
+
+        expect(component).toBeTruthy();
+        expect(notificationToastrServiceSpy.createAllocationNotificationToast).toHaveBeenCalledTimes(0);
+    });
+
+    it('should create an allocation toast when allocation hearings message is received and not an empty list', () => {
+        notificationToastrServiceSpy.createAllocationNotificationToast.calls.reset();
+        component.setupEventHubSubscribers();
+
+        const hearingDetails = new HearingDetailRequest({
+            case_name: 'case name',
+            judge: 'judge fudge',
+            time: new Date()
+        });
+        const message = new NewAllocationMessage([hearingDetails]);
 
         newAllocationMessageSubjectMock.next(message);
 
