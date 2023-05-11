@@ -49,5 +49,18 @@ namespace VideoWeb.UnitTests.Helpers
 
             _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == EventType.AllocationHearings)), Times.Once);
         }
+
+        [Test]
+        public async Task Should_not_send_event_when_hearings_is_empty()
+        {
+            // arrange
+            _hearings = new List<HearingDetailRequest>();
+
+            // act
+            await _notifier.PushAllocationHearingsEvent(CsoUserName, _hearings);
+
+            // assert
+            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == EventType.AllocationHearings)), Times.Never);
+        }
     }
 }

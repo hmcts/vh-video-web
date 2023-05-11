@@ -181,10 +181,9 @@ export class TooltipDirective implements OnDestroy {
     }
 
     setParentStyles(positionVal: string, opacityVal?: string) {
-        if (!this.tooltipKeyTab || !this.tooltipKeyTab.parentNode) {
-            return;
+        if (this.tooltipKeyTab?.parentNode && this.tooltipKeyTab?.parentNode instanceof HTMLElement) {
+            this.tooltipKeyTab.parentNode.setAttribute('style', `position:${positionVal};opacity:${opacityVal}`);
         }
-        (<HTMLElement>this.tooltipKeyTab.parentNode).setAttribute('style', `position:${positionVal};opacity:${opacityVal}`);
     }
 
     setTooltipText() {
