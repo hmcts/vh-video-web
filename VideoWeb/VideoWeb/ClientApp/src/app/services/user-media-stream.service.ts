@@ -118,8 +118,8 @@ export class UserMediaStreamService {
 
         this.isAudioOnly = audioOnly;
         if (this.isAudioOnly) {
-            this.logger.debug(`${this.loggerPrefix} audio only is true.`);
-            this.logger.debug(`${this.loggerPrefix} removing active camera tracks.`, {
+            this.logger.warn(`${this.loggerPrefix} audio only is true.`);
+            this.logger.warn(`${this.loggerPrefix} removing active camera tracks.`, {
                 audioOnly: this.isAudioOnly,
                 activeCamera: this.activeCameraStream,
                 currentStream: this.currentStream
@@ -132,14 +132,14 @@ export class UserMediaStreamService {
                 });
             });
 
-            this.logger.debug(`${this.loggerPrefix} audio only image service called.`);
+            this.logger.warn(`${this.loggerPrefix} audio only image service called.`);
             this.audioOnlyImageService
                 .getAudioOnlyImageStream()
                 .pipe(take(1))
                 .subscribe(stream => {
                     this.audioOnlyImageStream = stream;
 
-                    this.logger.debug(`${this.loggerPrefix} adding audio only image tracks.`, {
+                    this.logger.warn(`${this.loggerPrefix} adding audio only image tracks.`, {
                         audioOnly: this.isAudioOnly,
                         activeCamera: this.activeCameraStream,
                         audioOnlyImage: this.audioOnlyImageStream,

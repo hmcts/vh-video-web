@@ -154,7 +154,7 @@ export class VideoCallService {
         this.userMediaStreamService.currentStream$.pipe(skip(1)).subscribe(currentStream => {
             this.pexipAPI.user_media_stream = currentStream;
             this.renegotiateCall();
-            self.logger.info(`${self.loggerPrefix} calling renegotiateCall`);
+            self.logger.warn(`${self.loggerPrefix} calling renegotiateCall`);
         });
     }
 
@@ -448,12 +448,12 @@ export class VideoCallService {
     }
 
     renegotiateCall(sendUpdate: boolean = false) {
-        this.logger.info(`${this.loggerPrefix} renegotiating`);
+        this.logger.warn(`${this.loggerPrefix} renegotiating`);
         this.renegotiating = true;
         this.pexipAPI.renegotiate(sendUpdate);
         this.renegotiating = false;
         this.justRenegotiated = true;
-        this.logger.info(`${this.loggerPrefix} renegotiated`);
+        this.logger.warn(`${this.loggerPrefix} renegotiated`);
     }
 
     async selectScreenWithMicrophone() {
