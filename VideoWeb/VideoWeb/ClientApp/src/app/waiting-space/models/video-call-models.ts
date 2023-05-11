@@ -46,13 +46,13 @@ export class ParticipantUpdated {
         isVideoCall: string,
         protocol: string
     ) {
-        this.isRemoteMuted = isRemoteMuted.toUpperCase() === 'YES';
+        this.isRemoteMuted = isRemoteMuted?.toUpperCase() === 'YES';
         this.isSpotlighted = spotlightTime !== 0;
         this.handRaised = buzzTime !== 0;
         this.pexipDisplayName = pexipName;
         this.uuid = uuid;
-        this.isAudioOnlyCall = isAudioOnlyCall.toUpperCase() === 'YES';
-        this.isVideoCall = isVideoCall.toUpperCase() === 'YES';
+        this.isAudioOnlyCall = isAudioOnlyCall?.toUpperCase() === 'YES';
+        this.isVideoCall = isVideoCall?.toUpperCase() === 'YES';
         this.protocol = protocol;
     }
 }
