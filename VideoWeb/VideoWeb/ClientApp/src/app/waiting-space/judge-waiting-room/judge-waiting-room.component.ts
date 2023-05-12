@@ -478,8 +478,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                     this.logger.warn(
                         `${this.loggerPrefixJudge} WowzaListener removed: ParticipantDeleted callback received for participant from Pexip`,
                         {
-                            pexipId: deletedParticipant.uuid,
-                            dispayName: deletedParticipant.pexipDisplayName
+                            pexipId: deletedParticipant.uuid
                         }
                     );
                     this.showAudioRecordingAlert();
