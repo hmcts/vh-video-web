@@ -6,6 +6,7 @@ import {
     DisconnectedCall,
     CallError,
     ParticipantUpdated,
+    ParticipantDeleted,
     ConferenceUpdated,
     ConnectedPresentation,
     ConnectedScreenshare,
@@ -21,7 +22,7 @@ export const onConnectedSubjectMock = new Subject<ConnectedCall>();
 export const onDisconnectedSubjectMock = new Subject<DisconnectedCall>();
 export const onErrorSubjectMock = new Subject<CallError>();
 export const onParticipantUpdatedMock = new Subject<ParticipantUpdated>();
-export const onParticipantDeleteMock = new Subject<string>();
+export const onParticipantDeleteMock = new Subject<ParticipantDeleted>();
 export const onConferenceUpdatedMock = new Subject<ConferenceUpdated>();
 export const onCallTransferredMock = new Subject<any>();
 export const onScreenshareConnectedMock = new Subject<ConnectedScreenshare>();

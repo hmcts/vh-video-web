@@ -17,7 +17,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { ParticipantUpdated } from '../models/video-call-models';
+import { ParticipantDeleted, ParticipantUpdated } from '../models/video-call-models';
 import { mockCamStream, mockMicStream } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { VideoCallEventsService } from './video-call-events.service';
 import { VideoCallService } from './video-call.service';
@@ -495,17 +495,17 @@ describe('VideoCallService', () => {
     describe('handleParticipantDelete', () => {
         it('should push the deleted participant subject from pexip into the service onParticipantDeleted observable', fakeAsync(() => {
             // Arrange
-            const uuid = 'uuid';
+            const participant = { uuid: 'uuid' };
             // Act
-            let result: string | null = null;
+            let result: ParticipantDeleted | null = null;
             service.onParticipantDeleted().subscribe(update => (result = update));
 
-            service.pexipAPI.onParticipantDelete(uuid);
+            service.pexipAPI.onParticipantDelete(participant);
             flush();
 
             // Assert
             expect(result).toBeTruthy();
-            expect(result).toEqual(uuid);
+            expect(result.uuid).toEqual(participant.uuid);
         }));
     });
 

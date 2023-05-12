@@ -520,7 +520,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         });
 
         it('Should display audio alert if wowza listener is deleted', () => {
-            videoCallService.onParticipantDeleted.and.returnValue(of(wowzaParticipant.uuid));
+            videoCallService.onParticipantDeleted.and.returnValue(of({ uuid: wowzaParticipant.uuid }));
             component.conference.audio_recording_required = true;
 
             component.ngOnInit();
