@@ -85,7 +85,7 @@ describe('IdpSelectionComponent', () => {
         component.selectedProvider = IdpProviders.vhaad;
         const result = component.onSubmit();
         expect(result).toBeTrue();
-        expect(router.navigate).toHaveBeenCalledWith([component.identityProviders[IdpProviders.vhaad].url]);
+        expect(router.navigate).toHaveBeenCalledWith([component.idpSelectorModel[IdpProviders.vhaad].url]);
     });
 
     it('should not navigate on next if doesnt exists', () => {

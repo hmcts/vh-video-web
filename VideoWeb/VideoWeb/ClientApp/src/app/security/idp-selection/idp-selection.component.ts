@@ -5,13 +5,14 @@ import { pageUrls } from '../../shared/page-url.constants';
 import { SecurityConfigSetupService } from '../security-config-setup.service';
 import { IdpProviders } from '../idp-providers';
 import { LaunchDarklyService, FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
+import { IdpSelector } from './models/idp-selection.model';
 
 @Component({
     selector: 'app-idp-selection',
     templateUrl: './idp-selection.component.html'
 })
 export class IdpSelectionComponent {
-    identityProviders = {};
+    idpSelectorModel = new IdpSelector();
     identityProvidernames = [];
 
     selectedProvider: IdpProviders;
@@ -22,41 +23,28 @@ export class IdpSelectionComponent {
         private logger: Logger,
         private securityConfigSetupService: SecurityConfigSetupService,
         private ldService: LaunchDarklyService
-    ) {
-        this.ldService.getFlag<boolean>(FEATURE_FLAGS.ejudiciarySignIn).subscribe(value => {
-            if (value) {
-                this.identityProviders[IdpProviders.ejud] = {
-                    url: '/' + pageUrls.Login
-                };
-                this.updateProviderNames();
+    ) {}
+
+    ngOnInit(): void {
+        this.ldService.getFlag(FEATURE_FLAGS.ejudiciarySignIn).subscribe(featureEnabled => {
+            if (featureEnabled) {
+                this.idpSelectorModel.addIdp(IdpProviders.ejud, '/' + pageUrls.Login);
+            } else {
+                this.idpSelectorModel.removeIdp(IdpProviders.ejud);
             }
+
+            this.updateProviderNames();
         });
 
         this.ldService.getFlag(FEATURE_FLAGS.dom1SignIn).subscribe(featureEnabled => {
             if (featureEnabled) {
-                this.identityProviders[IdpProviders.dom1] = {
-                    url: '/' + pageUrls.Login
-                };
-                this.updateProviderNames();
+                this.idpSelectorModel.addIdp(IdpProviders.dom1, '/' + pageUrls.Login);
+            } else {
+                this.idpSelectorModel.removeIdp(IdpProviders.dom1);
             }
+            this.updateProviderNames();
         });
-        // this.ldService.flagChange.subscribe(value => {
-        //     if (value && value[FEATURE_FLAGS.ejudiciarySignIn]) {
-        //         this.identityProviders[IdpProviders.ejud] = {
-        //             url: '/' + pageUrls.Login
-        //         };
-        //     }
-        //     if (value && value[FEATURE_FLAGS.dom1SignIn]) {
-        //         this.identityProviders[IdpProviders.dom1] = {
-        //             url: '/' + pageUrls.Login
-        //         };
-        //     }
-        //     this.updateProviderNames();
-        // });
-
-        this.identityProviders[IdpProviders.vhaad] = {
-            url: '/' + pageUrls.Login
-        };
+        this.idpSelectorModel.addIdp(IdpProviders.vhaad, '/' + pageUrls.Login);
         this.updateProviderNames();
     }
 
@@ -65,13 +53,12 @@ export class IdpSelectionComponent {
     }
 
     updateProviderNames(): void {
-        this.identityProvidernames = Object.keys(this.identityProviders).reverse();
-        // return Object.keys(this.identityProviders).reverse();
+        this.identityProvidernames = this.idpSelectorModel.getProviderNames();
     }
 
     getProviders(): string[] {
-        this.identityProvidernames = Object.keys(this.identityProviders).reverse();
-        return Object.keys(this.identityProviders).reverse();
+        this.identityProvidernames = this.idpSelectorModel.getProviderNames();
+        return this.identityProvidernames;
     }
 
     selectProvider(provider: IdpProviders) {
@@ -84,13 +71,13 @@ export class IdpSelectionComponent {
     }
 
     redirectToLogin(provider: IdpProviders): boolean {
-        if (!this.identityProviders[provider]) {
+        if (!this.idpSelectorModel.hasProvider(provider)) {
             return false;
         }
 
         this.logger.info(`Sending to idp: ${provider}`);
         this.securityConfigSetupService.setIdp(provider);
-        this.router.navigate([this.identityProviders[provider].url]);
+        this.router.navigate([this.idpSelectorModel.getProviderLogin(provider)]);
         return true;
     }
 }
