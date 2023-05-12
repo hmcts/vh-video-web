@@ -14,6 +14,10 @@ export class CallError {
     constructor(public reason: string) {}
 }
 
+export class ParticipantDeleted {
+    constructor(public uuid: string) {}
+}
+
 export class ParticipantUpdated {
     public isRemoteMuted: boolean;
     public isSpotlighted: boolean;
@@ -34,9 +38,6 @@ export class ParticipantUpdated {
         isVideoCall: string,
         protocol: string
     ) {
-        if (isRemoteMuted === undefined) {
-            debugger;
-        }
         this.isRemoteMuted = isRemoteMuted?.toUpperCase() === 'YES';
         this.isSpotlighted = spotlightTime !== 0;
         this.handRaised = buzzTime !== 0;

@@ -19,6 +19,7 @@ import {
     ConnectedScreenshare,
     DisconnectedCall,
     DisconnectedPresentation,
+    ParticipantDeleted,
     ParticipantUpdated,
     Presentation,
     StoppedScreenshare
@@ -48,7 +49,7 @@ export class VideoCallService {
     private onParticipantUpdatedSubject = new Subject<ParticipantUpdated>();
     private onConferenceUpdatedSubject = new Subject<ConferenceUpdated>();
     private onParticipantCreatedSubject = new Subject<ParticipantUpdated>();
-    private onParticipantDeletedSubject = new Subject<PexipParticipantDeleted>();
+    private onParticipantDeletedSubject = new Subject<ParticipantDeleted>();
 
     private onConnectedScreenshareSubject = new Subject<ConnectedScreenshare>();
     private onStoppedScreenshareSubject = new Subject<StoppedScreenshare>();
@@ -222,7 +223,7 @@ export class VideoCallService {
         return this.onParticipantCreatedSubject.asObservable();
     }
 
-    onParticipantDeleted(): Observable<PexipParticipantDeleted> {
+    onParticipantDeleted(): Observable<ParticipantDeleted> {
         return this.onParticipantDeletedSubject.asObservable();
     }
 

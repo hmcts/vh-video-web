@@ -2,12 +2,15 @@ import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ConfigService } from './api/config.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { FEATURE_FLAGS, LaunchDarklyService } from './launch-darkly.service';
-import { LDClient, LDFlagSet } from 'launchdarkly-js-client-sdk';
+import { LDClient } from 'launchdarkly-js-client-sdk';
+import { of } from 'rxjs';
 
 describe('LaunchDarklyService', () => {
     let service: LaunchDarklyService;
-    const configServiceSpy = jasmine.createSpyObj('ConfigService', ['getConfig']);
-    configServiceSpy.getConfig.and.returnValue({ launch_darkly_client_id: 'client_id', vh_idp_settings: { redirect_uri: 'unittest' } });
+    const configServiceSpy = jasmine.createSpyObj('ConfigService', ['getClientSettings']);
+    configServiceSpy.getClientSettings.and.returnValue(
+        of({ launch_darkly_client_id: 'client_id', vh_idp_settings: { redirect_uri: 'unittest' } })
+    );
     const ldClientSpy = jasmine.createSpyObj<LDClient>('LDClient', ['waitUntilReady', 'allFlags', 'on', 'variation', 'close']);
 
     beforeEach(() => {

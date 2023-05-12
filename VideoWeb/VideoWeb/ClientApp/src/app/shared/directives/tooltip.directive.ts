@@ -166,6 +166,10 @@ export class TooltipDirective implements OnDestroy {
         this.tooltipKeyTab = this.renderer.createElement('div');
         this.tooltipKeyTab.innerHTML = this._text;
         const parentId = (<HTMLElement>event.target).id;
+        if (parentId === '') {
+            this.tooltipKeyTab = null;
+            return;
+        }
         const parent = document.getElementById(parentId);
         this.renderer.appendChild(parent, this.tooltipKeyTab);
         this.renderer.addClass(this.tooltipKeyTab, 'vh-tooltip');

@@ -17,7 +17,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { ParticipantUpdated } from '../models/video-call-models';
+import { ParticipantDeleted, ParticipantUpdated } from '../models/video-call-models';
 import { mockCamStream, mockMicStream } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { VideoCallEventsService } from './video-call-events.service';
 import { VideoCallService } from './video-call.service';
@@ -495,28 +495,14 @@ describe('VideoCallService', () => {
     describe('handleParticipantDelete', () => {
         it('should push the deleted participant subject from pexip into the service onParticipantDeleted observable', fakeAsync(() => {
             // Arrange
-            const pexipParticipant: PexipParticipant = {
-                buzz_time: 0,
-                is_muted: 'is_muted',
-                display_name: 'display_name',
-                local_alias: 'local_alias',
-                start_time: 0,
-                uuid: 'uuid',
-                spotlight: 0,
-                mute_supported: 'mute_supported',
-                is_external: false,
-                external_node_uuid: 'external_node_uuid',
-                has_media: false,
-                call_tag: 'call_tag',
-                is_audio_only_call: 'is_audio_only_call',
-                is_video_call: 'is_video_call',
-                protocol: 'protocol'
+            const pexipParticipant: PexipParticipantDeleted = {
+                uuid: 'uuid'
             };
 
-            const expectedUpdate = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+            const expectedUpdate = pexipParticipant;
 
             // Act
-            let result: ParticipantUpdated | null = null;
+            let result: ParticipantDeleted | null = null;
             service.onParticipantDeleted().subscribe(update => (result = update));
 
             service.pexipAPI.onParticipantDelete(pexipParticipant);
