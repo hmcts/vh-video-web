@@ -11,6 +11,7 @@ export class SecurityConfigSetupService {
     config = {
         ejud: {} as OpenIdConfiguration,
         vhaad: {} as OpenIdConfiguration,
+        dom1: {} as OpenIdConfiguration,
         quickLink: {}
     };
 
@@ -35,6 +36,7 @@ export class SecurityConfigSetupService {
             map(clientSettings => {
                 this.config[IdpProviders.ejud] = this.initOidcConfig(clientSettings.e_jud_idp_settings);
                 this.config[IdpProviders.vhaad] = this.initOidcConfig(clientSettings.vh_idp_settings);
+                this.config[IdpProviders.dom1] = this.initOidcConfig(clientSettings.dom1_idp_settings);
 
                 const provider = this.getIdp();
 
@@ -46,7 +48,7 @@ export class SecurityConfigSetupService {
 
                 this._configSetupSubject.next(true);
 
-                return [this.config[IdpProviders.ejud], this.config[IdpProviders.vhaad]];
+                return [this.config[IdpProviders.ejud], this.config[IdpProviders.vhaad], this.config[IdpProviders.dom1]];
             })
         );
     }
