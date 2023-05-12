@@ -44,7 +44,7 @@ export class VideoCallService {
     private onParticipantUpdatedSubject = new Subject<ParticipantUpdated>();
     private onConferenceUpdatedSubject = new Subject<ConferenceUpdated>();
     private onParticipantCreatedSubject = new Subject<ParticipantUpdated>();
-    private onParticipantDeletedSubject = new Subject<ParticipantUpdated>();
+    private onParticipantDeletedSubject = new Subject<string>();
 
     private onConnectedScreenshareSubject = new Subject<ConnectedScreenshare>();
     private onStoppedScreenshareSubject = new Subject<StoppedScreenshare>();
@@ -201,9 +201,9 @@ export class VideoCallService {
         this.onParticipantCreatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
     }
 
-    private handleParticipantDeleted(participantUpdate: PexipParticipant) {
+    private handleParticipantDeleted(participantUUID: string) {
         this.logger.debug(`${this.loggerPrefix} handling participant Delete`);
-        this.onParticipantDeletedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
+        this.onParticipantDeletedSubject.next(participantUUID);
     }
 
     private handleParticipantUpdate(participantUpdate: PexipParticipant) {
@@ -282,7 +282,7 @@ export class VideoCallService {
         return this.onParticipantCreatedSubject.asObservable();
     }
 
-    onParticipantDeleted(): Observable<ParticipantUpdated> {
+    onParticipantDeleted(): Observable<string> {
         return this.onParticipantDeletedSubject.asObservable();
     }
 

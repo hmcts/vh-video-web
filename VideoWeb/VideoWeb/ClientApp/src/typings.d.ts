@@ -39,7 +39,7 @@ declare interface PexipClient {
     onDisconnect: (reason: any) => void;
     onParticipantCreate: (participantUpdate: PexipParticipant) => void;
     onParticipantUpdate: (participantUpdate: PexipParticipant) => void;
-    onParticipantDelete: (participantUpdate: PexipParticipant) => void;
+    onParticipantDelete: (uuid: string) => void;
     onConferenceUpdate: (conferenceUpdate: PexipConference) => void;
     onCallTransfer: (reason: any) => void;
     renegotiate: (sendUpdate: boolean) => void;
