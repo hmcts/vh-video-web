@@ -252,9 +252,9 @@
       },
       "UserApi.Client": {
         "type": "Direct",
-        "requested": "[1.44.1, )",
-        "resolved": "1.44.1",
-        "contentHash": "oUtEvLAM9q7jeyXsHmgFoaO+tE48ozd42d1g21niMiqeE4A7ELTpMcOs44kV6BluPDVJFIHqV+Wk2ShZNxv4cA==",
+        "requested": "[1.43.9, )",
+        "resolved": "1.43.9",
+        "contentHash": "aQx+M8PVQBWtbNmUqmrRLlFBR17pL/q2VCG7XdfJbBPD/M96GdYChsmL8dcQNLTO++E2IuyiQ72glp3usgoHyw==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5"
         }
