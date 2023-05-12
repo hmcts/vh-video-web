@@ -2330,8 +2330,8 @@
       },
       "UserApi.Client": {
         "type": "Transitive",
-        "resolved": "1.41.8",
-        "contentHash": "06UBmrztqDI8Gtmh0ToEbvCkc13q/rtxj4QiSNTfGLDYqfq30v/t4JbDqG87WAcO/NChOx2gvTrboR/Ww1W46A==",
+        "resolved": "1.44.1",
+        "contentHash": "oUtEvLAM9q7jeyXsHmgFoaO+tE48ozd42d1g21niMiqeE4A7ELTpMcOs44kV6BluPDVJFIHqV+Wk2ShZNxv4cA==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5"
         }
@@ -2373,7 +2373,7 @@
           "Swashbuckle.AspNetCore": "[6.5.0, )",
           "Swashbuckle.AspNetCore.Annotations": "[6.5.0, )",
           "Swashbuckle.AspNetCore.Newtonsoft": "[6.5.0, )",
-          "UserApi.Client": "[1.41.8, )",
+          "UserApi.Client": "[1.44.1, )",
           "VH.Core.Configuration": "[0.1.13, )",
           "VideoApi.Client": "[1.44.1, )",
           "VideoWeb.Common": "[1.0.0, )",
