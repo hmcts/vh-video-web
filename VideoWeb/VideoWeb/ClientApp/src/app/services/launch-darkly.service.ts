@@ -26,7 +26,6 @@ export class LaunchDarklyService implements OnDestroy {
     }
 
     initialize(): void {
-        console.log('Initializing LaunchDarkly');
         this.configService.getClientSettings().subscribe(config => {
             const ldClientId = config.launch_darkly_client_id;
             const envName = config.vh_idp_settings.redirect_uri;
@@ -37,7 +36,6 @@ export class LaunchDarklyService implements OnDestroy {
                 name: envName
             };
 
-            console.log('Initializing LaunchDarkly with settings');
             this.client = initialize(ldClientId, context);
         });
     }

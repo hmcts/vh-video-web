@@ -28,7 +28,6 @@ export class AuthBaseGuard {
             switchMap(isAuthenticated => {
                 console.log('I am in the auth guard switch map. IsAuthenticated: ' + isAuthenticated);
                 if (!isAuthenticated) {
-                    console.log('User is not authenticated, redirecting to login page');
                     this.logger.debug(`${this.constructor.name} - User is not authenticated, redirecting to login page`);
                     this.ldService.getFlag<boolean>(FEATURE_FLAGS.multiIdpSelection).subscribe(featureEnabled => {
                         this.logger.debug(
@@ -40,7 +39,6 @@ export class AuthBaseGuard {
                     });
                     return of(false);
                 }
-                console.log('User is authenticated, allowing access');
                 this.logger.debug(`${this.constructor.name} - User is authenticated, allowing access`);
                 return of(true);
             })
