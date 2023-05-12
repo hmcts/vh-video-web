@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from '../../shared/page-url.constants';
@@ -11,7 +11,7 @@ import { IdpSelector } from './models/idp-selection.model';
     selector: 'app-idp-selection',
     templateUrl: './idp-selection.component.html'
 })
-export class IdpSelectionComponent {
+export class IdpSelectionComponent implements OnInit {
     idpSelectorModel = new IdpSelector();
     identityProvidernames = [];
 
@@ -72,6 +72,7 @@ export class IdpSelectionComponent {
 
     redirectToLogin(provider: IdpProviders): boolean {
         if (!this.idpSelectorModel.hasProvider(provider)) {
+            this.logger.warn(`Provider not found: ${provider}`);
             return false;
         }
 
