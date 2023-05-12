@@ -21,6 +21,7 @@ export const onConnectedSubjectMock = new Subject<ConnectedCall>();
 export const onDisconnectedSubjectMock = new Subject<DisconnectedCall>();
 export const onErrorSubjectMock = new Subject<CallError>();
 export const onParticipantUpdatedMock = new Subject<ParticipantUpdated>();
+export const onParticipantDeleteMock = new Subject<string>();
 export const onConferenceUpdatedMock = new Subject<ConferenceUpdated>();
 export const onCallTransferredMock = new Subject<any>();
 export const onScreenshareConnectedMock = new Subject<ConnectedScreenshare>();
@@ -99,7 +100,7 @@ videoCallServiceSpy.onError.and.returnValue(onErrorSubjectMock.asObservable());
 videoCallServiceSpy.onParticipantUpdated.and.returnValue(onParticipantUpdatedMock.asObservable());
 videoCallServiceSpy.onConferenceUpdated.and.returnValue(onConferenceUpdatedMock.asObservable());
 videoCallServiceSpy.onParticipantCreated.and.returnValue(onParticipantUpdatedMock.asObservable());
-videoCallServiceSpy.onParticipantDeleted.and.returnValue(onParticipantUpdatedMock.asObservable());
+videoCallServiceSpy.onParticipantDeleted.and.returnValue(onParticipantDeleteMock.asObservable());
 videoCallServiceSpy.onCallTransferred.and.returnValue(onCallTransferredMock.asObservable());
 
 videoCallServiceSpy.onScreenshareConnected.and.returnValue(onScreenshareConnectedMock.asObservable());
