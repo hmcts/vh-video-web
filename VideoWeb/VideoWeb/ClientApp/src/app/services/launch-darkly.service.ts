@@ -26,19 +26,24 @@ export class LaunchDarklyService implements OnDestroy {
     }
 
     initialize(): void {
-        const ldClientId = this.configService.getConfig().launch_darkly_client_id;
-        const envName = this.configService.getConfig().vh_idp_settings.redirect_uri;
+        console.log('Initializing LaunchDarkly');
+        this.configService.getClientSettings().subscribe(config => {
+            const ldClientId = config.launch_darkly_client_id;
+            const envName = config.vh_idp_settings.redirect_uri;
 
-        const context: LDContext = {
-            kind: 'user',
-            key: 'VideoWeb',
-            name: envName
-        };
+            const context: LDContext = {
+                kind: 'user',
+                key: 'VideoWeb',
+                name: envName
+            };
 
-        this.client = initialize(ldClientId, context);
+            console.log('Initializing LaunchDarkly with settings');
+            this.client = initialize(ldClientId, context);
+        });
     }
 
     getFlag<T>(flagKey: string, defaultValue: LDFlagValue = false): Observable<T> {
+        console.log(`Getting LaunchDarkly flag: ${flagKey}`);
         const fetchFlag = new Subject<void>();
         this.client.on(`change:${flagKey}`, () => {
             fetchFlag.next();
