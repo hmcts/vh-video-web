@@ -495,7 +495,7 @@ describe('VideoCallService', () => {
     describe('handleParticipantDelete', () => {
         it('should push the deleted participant subject from pexip into the service onParticipantDeleted observable', fakeAsync(() => {
             // Arrange
-            const uuid = "uuid";
+            const uuid = 'uuid';
             // Act
             let result: string | null = null;
             service.onParticipantDeleted().subscribe(update => (result = update));
