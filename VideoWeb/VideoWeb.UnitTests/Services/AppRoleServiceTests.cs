@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extras.Moq;
 using BookingsApi.Client;
+using BookingsApi.Contract.Requests.Enums;
 using BookingsApi.Contract.Responses;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Memory;
@@ -41,14 +43,18 @@ namespace VideoWeb.UnitTests.Services
             // arrange
             var username = "random@claims.com";
             var uniqueId = Guid.NewGuid().ToString();
-            var justiceUser = new JusticeUserResponse()
-            {
-                UserRoleId = (int) justiceUserRole,
-                Username = username,
-                Deleted = false,
-                Id = Guid.NewGuid(),
-                UserRoleName = justiceUserRole.ToString()
-            };
+            var justiceUser = InitJusticeUser(justiceUserRole, username);
+            // var justiceUser = new JusticeUserResponse()
+            // {
+            //     UserRoleId = (int) justiceUserRole,
+            //     Username = username,
+            //     Deleted = false,
+            //     Id = Guid.NewGuid(),
+            //     UserRoleName = justiceUserRole.ToString(),
+            //     FirstName = "John",
+            //     Lastname = "Doe",
+            //     FullName = "John Doe"
+            // };
             _mocker.Mock<IBookingsApiClient>().Setup(x => x.GetJusticeUserByUsernameAsync(username))
                 .ReturnsAsync(justiceUser);
 
@@ -56,26 +62,30 @@ namespace VideoWeb.UnitTests.Services
             var claims = await _sut.GetClaimsForUserAsync(uniqueId, username);
 
             // assert
-            claims.Count.Should().Be(1);
-            claims[0].Value.Should().Be(expectedAppRole);
+            claims.Count.Should().Be(4); // name, given name, surname and role
+            claims.First(x=>x.Type == ClaimTypes.Role).Value.Should().Be(expectedAppRole);
+            claims.First(x=>x.Type == ClaimTypes.GivenName).Value.Should().Be(justiceUser.FirstName);
+            claims.First(x=>x.Type == ClaimTypes.Surname).Value.Should().Be(justiceUser.Lastname);
+            claims.First(x=>x.Type == ClaimTypes.Name).Value.Should().Be(justiceUser.FullName);
             _cache.Get(uniqueId).Should().Be(claims);
         }
         
         [Test]
-        public async Task should_return_an_empty_list_of_claims_if_justice_user_has_no_app_role()
+        public async Task should_return_list_of_claims_without_role_if_justice_user_has_no_app_role()
         {
             // arrange
             var justiceUserRole = AppRoleService.JusticeUserRole.Individual;
             var username = "random@claims.com";
             var uniqueId = Guid.NewGuid().ToString();
-            var justiceUser = new JusticeUserResponse()
-            {
-                UserRoleId = (int) justiceUserRole,
-                Username = username,
-                Deleted = false,
-                Id = Guid.NewGuid(),
-                UserRoleName = justiceUserRole.ToString()
-            };
+            var justiceUser = InitJusticeUser(justiceUserRole, username);
+            // var justiceUser = new JusticeUserResponse()
+            // {
+            //     UserRoleId = (int) justiceUserRole,
+            //     Username = username,
+            //     Deleted = false,
+            //     Id = Guid.NewGuid(),
+            //     UserRoleName = justiceUserRole.ToString()
+            // };
             _mocker.Mock<IBookingsApiClient>().Setup(x => x.GetJusticeUserByUsernameAsync(username))
                 .ReturnsAsync(justiceUser);
 
@@ -83,7 +93,10 @@ namespace VideoWeb.UnitTests.Services
             var claims = await _sut.GetClaimsForUserAsync(uniqueId, username);
 
             // assert
-            claims.Should().BeEmpty();
+            claims.Count.Should().Be(3); // name, given name and surname
+            claims.First(x=>x.Type == ClaimTypes.GivenName).Value.Should().Be(justiceUser.FirstName);
+            claims.First(x=>x.Type == ClaimTypes.Surname).Value.Should().Be(justiceUser.Lastname);
+            claims.First(x=>x.Type == ClaimTypes.Name).Value.Should().Be(justiceUser.FullName);
         }
 
         [Test]
@@ -123,6 +136,20 @@ namespace VideoWeb.UnitTests.Services
             // assert
             claims.Should().BeEmpty();
         }
-    
+
+        private JusticeUserResponse InitJusticeUser(AppRoleService.JusticeUserRole justiceUserRole, string username)
+        {
+            return new JusticeUserResponse()
+            {
+                UserRoleId = (int) justiceUserRole,
+                Username = username,
+                Deleted = false,
+                Id = Guid.NewGuid(),
+                UserRoleName = justiceUserRole.ToString(),
+                FirstName = "John",
+                Lastname = "Doe",
+                FullName = "John Doe"
+            };
+        }
     }
 }
