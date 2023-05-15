@@ -37,7 +37,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BookingsApi.Client" Version="1.43.32" />
+    <PackageReference Include="BookingsApi.Client" Version="1.44.1" />
     <PackageReference Include="Castle.Core" Version="4.4.0" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="10.4.0" />
     <PackageReference Include="MicroElements.Swashbuckle.FluentValidation" Version="5.7.0" />
@@ -65,7 +65,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.5.0" />
     <PackageReference Include="UserApi.Client" Version="1.41.8" />
     <PackageReference Include="VH.Core.Configuration" Version="0.1.13" />
-    <PackageReference Include="VideoApi.Client" Version="1.44.1" />
+    <PackageReference Include="VideoApi.Client" Version="1.44.2" />
   </ItemGroup>
 
   <ItemGroup>
