@@ -44,17 +44,6 @@ namespace VideoWeb.UnitTests.Services
             var username = "random@claims.com";
             var uniqueId = Guid.NewGuid().ToString();
             var justiceUser = InitJusticeUser(justiceUserRole, username);
-            // var justiceUser = new JusticeUserResponse()
-            // {
-            //     UserRoleId = (int) justiceUserRole,
-            //     Username = username,
-            //     Deleted = false,
-            //     Id = Guid.NewGuid(),
-            //     UserRoleName = justiceUserRole.ToString(),
-            //     FirstName = "John",
-            //     Lastname = "Doe",
-            //     FullName = "John Doe"
-            // };
             _mocker.Mock<IBookingsApiClient>().Setup(x => x.GetJusticeUserByUsernameAsync(username))
                 .ReturnsAsync(justiceUser);
 
@@ -78,14 +67,6 @@ namespace VideoWeb.UnitTests.Services
             var username = "random@claims.com";
             var uniqueId = Guid.NewGuid().ToString();
             var justiceUser = InitJusticeUser(justiceUserRole, username);
-            // var justiceUser = new JusticeUserResponse()
-            // {
-            //     UserRoleId = (int) justiceUserRole,
-            //     Username = username,
-            //     Deleted = false,
-            //     Id = Guid.NewGuid(),
-            //     UserRoleName = justiceUserRole.ToString()
-            // };
             _mocker.Mock<IBookingsApiClient>().Setup(x => x.GetJusticeUserByUsernameAsync(username))
                 .ReturnsAsync(justiceUser);
 
@@ -137,7 +118,7 @@ namespace VideoWeb.UnitTests.Services
             claims.Should().BeEmpty();
         }
 
-        private JusticeUserResponse InitJusticeUser(AppRoleService.JusticeUserRole justiceUserRole, string username)
+        private static JusticeUserResponse InitJusticeUser(AppRoleService.JusticeUserRole justiceUserRole, string username)
         {
             return new JusticeUserResponse()
             {
