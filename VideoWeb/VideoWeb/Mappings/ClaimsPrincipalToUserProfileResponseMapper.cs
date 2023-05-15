@@ -16,9 +16,9 @@ namespace VideoWeb.Mappings
                 Role = DetermineRoleFromClaims(user),
                 FirstName = user.Claims.First(c => c.Type == ClaimTypes.GivenName).Value,
                 LastName = user.Claims.First(c => c.Type == ClaimTypes.Surname).Value,
-                DisplayName = user.Claims.First(c => c.Type == ClaimTypes.Name).Value,
+                DisplayName = user.Claims.Last(c => c.Type == ClaimTypes.Name).Value,
                 Username = user.Identity.Name.ToLower().Trim(),
-                Name =  user.Claims.First(c => c.Type == ClaimTypes.Name).Value
+                Name =  user.Claims.Last(c => c.Type == ClaimTypes.Name).Value
             };
             return response;
         }

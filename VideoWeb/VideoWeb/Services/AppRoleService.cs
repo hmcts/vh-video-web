@@ -54,6 +54,9 @@ namespace VideoWeb.Services
 
             if (user == null) return new List<Claim>();
             claims = MapUserRoleToAppRole(user.UserRoleId);
+            claims.Add(new Claim(ClaimTypes.GivenName, user.FirstName));
+            claims.Add(new Claim(ClaimTypes.Surname, user.Lastname));
+            claims.Add(new Claim(ClaimTypes.Name, user.FullName));
             _cache.Set(uniqueId, claims, new MemoryCacheEntryOptions()
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60),
