@@ -44,31 +44,29 @@ describe('ErrorComponent', () => {
     let pageTrackerSpy: jasmine.SpyObj<PageTrackerService>;
     let errorServiceSpy: jasmine.SpyObj<ErrorService>;
     let connectionStatusServiceSpy: jasmine.SpyObj<ConnectionStatusService>;
-    beforeEach(
-        waitForAsync(() => {
-            pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackPreviousPage', 'getPreviousUrl']);
-            pageTrackerSpy.getPreviousUrl.and.returnValue('testUrl-test-error1');
-            errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['getErrorMessageFromStorage']);
-            connectionStatusServiceSpy = connectionStatusServiceSpyFactory();
+    beforeEach(waitForAsync(() => {
+        pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackPreviousPage', 'getPreviousUrl']);
+        pageTrackerSpy.getPreviousUrl.and.returnValue('testUrl-test-error1');
+        errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['getErrorMessageFromStorage']);
+        connectionStatusServiceSpy = connectionStatusServiceSpyFactory();
 
-            TestBed.configureTestingModule({
-                declarations: [ErrorComponent, ContactUsFoldingComponent, Mock1Component, Mock2Component, TranslatePipeMock],
-                imports: [
-                    RouterTestingModule.withRoutes([
-                        { path: 'testUrl-test-error1', component: Mock1Component },
-                        { path: 'testUrl-test-error2', component: Mock2Component }
-                    ])
-                ],
-                providers: [
-                    { provide: PageTrackerService, useValue: pageTrackerSpy },
-                    { provide: Logger, useClass: MockLogger },
-                    { provide: ErrorService, useValue: errorServiceSpy },
-                    { provide: ConnectionStatusService, useValue: connectionStatusServiceSpy },
-                    { provide: TranslateService, useValue: translateServiceSpy }
-                ]
-            }).compileComponents();
-        })
-    );
+        TestBed.configureTestingModule({
+            declarations: [ErrorComponent, ContactUsFoldingComponent, Mock1Component, Mock2Component, TranslatePipeMock],
+            imports: [
+                RouterTestingModule.withRoutes([
+                    { path: 'testUrl-test-error1', component: Mock1Component },
+                    { path: 'testUrl-test-error2', component: Mock2Component }
+                ])
+            ],
+            providers: [
+                { provide: PageTrackerService, useValue: pageTrackerSpy },
+                { provide: Logger, useClass: MockLogger },
+                { provide: ErrorService, useValue: errorServiceSpy },
+                { provide: ConnectionStatusService, useValue: connectionStatusServiceSpy },
+                { provide: TranslateService, useValue: translateServiceSpy }
+            ]
+        }).compileComponents();
+    }));
 
     beforeEach(() => {
         router = TestBed.inject(Router);

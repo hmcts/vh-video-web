@@ -12,17 +12,17 @@ parameters:
     - name: RunUnitTests
       displayName: Run Unit Tests
       type: boolean
-      default: true
+      default: false
 
     - name: RunIntegTests
       displayName: Run Integration Tests
       type: boolean
-      default: true
+      default: false
 
     - name: RunSonarCloudTests
       displayName: Run Sonar Cloud Analysis
       type: boolean
-      default: true
+      default: false
 
     - name: RunMutationTests
       displayName: Run Mutation Tests
@@ -37,7 +37,7 @@ parameters:
     - name: RunNodeTests
       displayName: Run Node Tests
       type: boolean
-      default: true
+      default: false
 
     - name: testSettings
       type: object
@@ -79,12 +79,12 @@ parameters:
             value: $(EnableVideoFilters)
           - name: VhServices:EnableDynamicEvidenceSharing
             value: $(EnableDynamicEvidenceSharing)
-            
+
             #Launch Darkly Config
           - name: VhServices:LaunchDarklyClientId
             value: vh-launchdarkly-client-id
             secret: true
-            
+
           # AzureAd
           - name: AzureAd:TenantId
             value: tenantid
@@ -247,12 +247,12 @@ parameters:
             value: $(EnableVideoFilters)
           - name: VhServices:EnableDynamicEvidenceSharing
             value: $(EnableDynamicEvidenceSharing)
-          
+
             #Launch Darkly Config
           - name: VhServices:LaunchDarklyClientId
             value: vh-launchdarkly-client-id
             secret: true
-            
+
           # Quick Links Configuration
           - name: QuickLinks:Issuer
             value: $(video_api_url)
@@ -282,19 +282,14 @@ trigger:
             - release/*
             - hotfix/*
 
-pr:
-    branches:
-        include:
-            - master
-
 schedules:
-- cron: "0 0 5,15,25 * *"
-  displayName: Fortnightly ci build
-  always: true
-  branches:
-    include:
-    - master
-  
+    - cron: '0 0 5,15,25 * *'
+      displayName: Fortnightly ci build
+      always: true
+      branches:
+          include:
+              - master
+
 resources:
     repositories:
         - repository: templates

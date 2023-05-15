@@ -397,6 +397,7 @@ describe('VideoCallService', () => {
             expect(service.onError()).toBeDefined();
             expect(service.onParticipantUpdated()).toBeDefined();
             expect(service.onConferenceUpdated()).toBeDefined();
+            expect(service.onParticipantDeleted()).toBeDefined();
             expect(service.onCallTransferred()).toBeDefined();
             expect(service.onPresentation()).toBeDefined();
             expect(service.onPresentationConnected()).toBeDefined();
@@ -488,6 +489,42 @@ describe('VideoCallService', () => {
             expect(result).toBeTruthy();
             expect(result).toEqual(expectedUpdate);
             expect(videoCallEventsServiceSpy.handleParticipantUpdated).toHaveBeenCalledOnceWith(expectedUpdate);
+        }));
+    });
+
+    describe('handleParticipantDelete', () => {
+        it('should push the deleted participant subject from pexip into the service onParticipantDeleted observable', fakeAsync(() => {
+            // Arrange
+            const pexipParticipant: PexipParticipant = {
+                buzz_time: 0,
+                is_muted: 'is_muted',
+                display_name: 'display_name',
+                local_alias: 'local_alias',
+                start_time: 0,
+                uuid: 'uuid',
+                spotlight: 0,
+                mute_supported: 'mute_supported',
+                is_external: false,
+                external_node_uuid: 'external_node_uuid',
+                has_media: false,
+                call_tag: 'call_tag',
+                is_audio_only_call: 'is_audio_only_call',
+                is_video_call: 'is_video_call',
+                protocol: 'protocol'
+            };
+
+            const expectedUpdate = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+
+            // Act
+            let result: ParticipantUpdated | null = null;
+            service.onParticipantDeleted().subscribe(update => (result = update));
+
+            service.pexipAPI.onParticipantDelete(pexipParticipant);
+            flush();
+
+            // Assert
+            expect(result).toBeTruthy();
+            expect(result).toEqual(expectedUpdate);
         }));
     });
 

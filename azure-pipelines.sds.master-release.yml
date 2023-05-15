@@ -22,7 +22,7 @@ stages:
   - stage: Docker_Build_Push
     displayName: Docker Build & Push Image
     variables:
-      - template: variables/staging.yaml
+      - template: variables/dev.yaml
       - template: variables/shared.yaml
     jobs:
       - job: Docker_Build
@@ -48,7 +48,7 @@ stages:
               repositoryName: ${{ variables.repositoryName }}
               imageName: "${{ variables.imageName }}"
               imageTags:
-                - "${{ variables.stagingTagName }}"
+                - "${{ variables.devTagName }}"
 
   #########################################
   # Push Helm Charts to Repo. #############
@@ -56,7 +56,7 @@ stages:
     displayName: Push Helm Charts
     dependsOn: Docker_Build_Push
     variables:
-      - template: variables/staging.yaml
+      - template: variables/dev.yaml
       - template: variables/shared.yaml
       - group: vh-github-app-credentials
     jobs:

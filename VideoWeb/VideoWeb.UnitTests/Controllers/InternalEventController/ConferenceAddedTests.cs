@@ -1,23 +1,20 @@
+using System;
+using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using VideoWeb.Controllers;
 using VideoWeb.Helpers.Interfaces;
 using VideoWeb.UnitTests.Builders;
 
-namespace VideoWeb.UnitTests.Controllers.InternalEventControllerTests
+namespace VideoWeb.UnitTests.Controllers.InternalEventController
 {
     public class ConferenceAddedTests
     {
         private AutoMock _mocker;
-        protected InternalEventController _controller;
+        protected VideoWeb.Controllers.InternalEventController _controller;
 
         [SetUp]
         public void Setup()
@@ -32,7 +29,7 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventControllerTests
                 }
             };
 
-            _controller = _mocker.Create<InternalEventController>();
+            _controller = _mocker.Create<VideoWeb.Controllers.InternalEventController>();
             _controller.ControllerContext = context;
 
             _mocker.Mock<INewConferenceAddedEventNotifier>();

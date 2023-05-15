@@ -261,6 +261,48 @@ describe('TooltipDirective', () => {
             });
         });
 
+        describe('removeTooltips', () => {
+            it('should remove tooltips when exist', () => {
+                // Given
+                directive.create();
+
+                // When
+                directive.removeTooltips('vh-tooltip');
+
+                // Then
+                expect(directive._tooltipElements).toBeDefined();
+                expect(directive._tooltipElements.length).toBeGreaterThanOrEqual(0);
+                expect(directive._tooltipElements[0]).toBeUndefined();
+                expect(directive._tooltipElements[0]?.parentNode).toBeUndefined();
+                expect(directive._tooltipElements[0]?.innerHTML).toBeUndefined();
+            });
+
+            it('should not remove tooltips if not exist', () => {
+                // Given
+                directive.tooltip = undefined;
+
+                // When
+                directive.removeTooltips('vh-tooltip');
+
+                // Then
+                expect(directive.tooltip).toBeUndefined();
+            });
+
+            it('should remove all the elements with vh-tooltip class from body', () => {
+                // Given
+                directive.tooltip = document.createElement('div');
+                directive.tooltip.setAttribute('class', 'vh-tooltip');
+                document.body.appendChild(directive.tooltip);
+
+                // When
+                directive.removeTooltips('vh-tooltip');
+
+                // Then
+                expect(document.getElementsByClassName('vh-tooltip')[0]).toBeUndefined();
+                expect(document.getElementsByClassName('vh-tooltip')[0]?.innerHTML).toBeUndefined();
+            });
+        });
+
         describe('Keyboard Event', () => {
             const mockHTMLElement = (): FocusEvent => {
                 const otherElement = document.createElement('div');

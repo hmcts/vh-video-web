@@ -121,8 +121,13 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         this.newStaffMemberDisplayName = value;
     }
 
+    removeSpecialCharacters(value: string): string {
+        return value.replace(/[^a-zA-Z0-9_ ]/g, '');
+    }
+
     async saveJudgeDisplayName() {
         this.judge.display_name = this.newJudgeDisplayName;
+        this.judge.display_name = this.removeSpecialCharacters(this.judge.display_name);
         this.showChangeJudgeDisplayName = false;
         await this.updateJudgeDisplayName();
     }

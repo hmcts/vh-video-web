@@ -1,6 +1,6 @@
-import { discardPeriodicTasks, fakeAsync, tick } from '@angular/core/testing';
+import { fakeAsync, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { of, ReplaySubject, throwError } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ClientSettingsResponse, ConferenceResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
@@ -20,7 +20,7 @@ import { CourtRoomsAccounts } from '../../services/models/court-rooms-accounts';
 import { VhoStorageKeys } from '../../services/models/session-keys';
 import { VhoQueryService } from '../../services/vho-query-service.service';
 import { CommandCentreComponent } from '../command-centre.component';
-import { LaunchDarklyService } from '../../../services/launch-darkly.service';
+import { FEATURE_FLAGS, LaunchDarklyService } from '../../../services/launch-darkly.service';
 import { NotificationToastrService } from '../../../waiting-space/services/notification-toastr.service';
 
 describe('CommandCentreComponent - Core', () => {
@@ -61,7 +61,7 @@ describe('CommandCentreComponent - Core', () => {
         ]);
 
         eventBusServiceSpy = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit', 'on']);
-        launchDarklyServiceSpy = jasmine.createSpyObj('LaunchDarklyService', ['flagChange']);
+        launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
         notificationToastrServiceSpy = jasmine.createSpyObj('NotificationToastrService', ['createAllocationNotificationToast']);
         const config = new ClientSettingsResponse({ join_by_phone_from_date: '2021-02-09' });
         configService.getClientSettings.and.returnValue(of(config));
@@ -79,8 +79,7 @@ describe('CommandCentreComponent - Core', () => {
         vhoQueryService.getConferencesForVHOfficer.and.returnValue(of(conferences));
         vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceDetail));
 
-        launchDarklyServiceSpy.flagChange = new ReplaySubject();
-        launchDarklyServiceSpy.flagChange.next({ 'vho-work-allocation': true });
+        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.vhoWorkAllocation, jasmine.any(Boolean)).and.returnValue(of(true));
 
         component = new CommandCentreComponent(
             vhoQueryService,
@@ -278,5 +277,27 @@ describe('CommandCentreComponent - Core', () => {
         expect(dateFrom.getFullYear()).toEqual(2021);
         expect(dateFrom.getMonth()).toEqual(1);
         expect(dateFrom.getDay()).toEqual(2);
+    });
+
+    describe('filtering by cso', () => {
+        beforeAll(() => {
+            TestFixtureHelper.clearVenues();
+            TestFixtureHelper.setupCsoAllocations();
+        });
+
+        it('should retrieve hearings filtered by cso', () => {
+            component.getConferenceForSelectedAllocations();
+            const csoFilter = TestFixtureHelper.getCsoAllocations();
+            const venues = null;
+            const allocatedCsoIds = csoFilter.allocatedCsoIds;
+            const includeUnallocated = csoFilter.includeUnallocated;
+            expect(vhoQueryService.startQuery).toHaveBeenCalledWith(venues, allocatedCsoIds, includeUnallocated);
+            expect(vhoQueryService.getConferencesForVHOfficer).toHaveBeenCalledWith(venues);
+        });
+
+        afterAll(() => {
+            TestFixtureHelper.setupVenues();
+            TestFixtureHelper.clearCsoAllocations();
+        });
     });
 });

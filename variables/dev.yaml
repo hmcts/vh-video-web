@@ -1,3 +1,7 @@
 variables:
   - name: env
     value: "dev"
+  - name: devTagName
+    value: "dev-#{SHORTCOMMITID}#-#{DATETIME}#"
+  - name: subDirectory
+    value: "/non-prod"

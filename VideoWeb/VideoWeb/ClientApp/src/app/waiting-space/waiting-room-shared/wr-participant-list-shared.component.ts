@@ -1,4 +1,4 @@
-import { Directive, DoCheck, Input } from '@angular/core';
+import { Directive, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
@@ -23,8 +23,17 @@ import { CaseTypeGroup } from '../models/case-type-group';
 import { HearingRole } from '../models/hearing-role-model';
 
 @Directive()
-export abstract class WRParticipantStatusListDirective implements DoCheck {
-    @Input() conference: ConferenceResponse;
+export abstract class WRParticipantStatusListDirective {
+    @Input() set conference(conference: ConferenceResponse) {
+        this._conference = conference;
+        this.initParticipants();
+    }
+
+    get conference(): ConferenceResponse {
+        return this._conference;
+    }
+
+    private _conference: ConferenceResponse;
     @Input() participantEndpoints: AllowedEndpointResponse[];
 
     nonJudgeParticipants: ParticipantResponse[];
@@ -39,8 +48,6 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     loggedInUser: LoggedParticipantResponse;
     loggerPrefix = '[WRParticipantStatusListDirective] -';
 
-    private displayedParticipants: ParticipantResponse[] = null;
-
     protected constructor(
         protected consultationService: ConsultationService,
         protected eventService: EventsService,
@@ -48,13 +55,6 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
         protected logger: Logger,
         protected translateService: TranslateService
     ) {}
-
-    ngDoCheck(): void {
-        if (this.displayedParticipants !== this.conference.participants) {
-            this.initParticipants();
-            this.displayedParticipants = this.conference.participants;
-        }
-    }
 
     initParticipants() {
         this.filterNonJudgeParticipants();
@@ -118,7 +118,7 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     }
 
     protected filterNonJudgeParticipants(): void {
-        let nonJudgeParts = this.conference.participants
+        let nonJudgeParts = this._conference.participants
             .filter(
                 x =>
                     x.role !== Role.Judge &&
@@ -136,7 +136,7 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
 
         nonJudgeParts = [
             ...nonJudgeParts,
-            ...this.conference.participants
+            ...this._conference.participants
                 .filter(x => x.role === Role.QuickLinkParticipant)
                 .sort((a, b) => a.display_name.localeCompare(b.display_name))
         ];
@@ -209,7 +209,7 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     }
 
     protected filterObservers(): void {
-        let observers = this.conference.participants
+        let observers = this._conference.participants
             .filter(
                 x =>
                     x.case_type_group === CaseTypeGroup.OBSERVER ||
@@ -219,7 +219,7 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
 
         observers = [
             ...observers,
-            ...this.conference.participants
+            ...this._conference.participants
                 .filter(x => x.role === Role.QuickLinkObserver)
                 .sort((a, b) => a.display_name.localeCompare(b.display_name))
         ];
@@ -228,13 +228,13 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     }
 
     private filterWingers(): void {
-        this.wingers = this.conference.participants
+        this.wingers = this._conference.participants
             .filter(x => x.hearing_role === HearingRole.WINGER)
             .sort((a, b) => a.name.localeCompare(b.name));
     }
 
     protected filterPanelMembers(): void {
-        this.panelMembers = this.conference.participants
+        this.panelMembers = this._conference.participants
             .filter(x => this.isParticipantPanelMember(x.hearing_role))
             .sort((a, b) => a.display_name.localeCompare(b.display_name));
     }
@@ -243,17 +243,17 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     }
 
     protected filterJudge(): void {
-        this.judge = this.conference.participants.find(x => x.role === Role.Judge);
+        this.judge = this._conference.participants.find(x => x.role === Role.Judge);
     }
 
     protected filterStaffMember(): void {
-        this.staffMembers = this.conference.participants
+        this.staffMembers = this._conference.participants
             .filter(x => x.role === Role.StaffMember)
             .sort((a, b) => a.display_name.localeCompare(b.display_name));
     }
 
     private sortEndpoints(): void {
-        this.endpoints = [...this.conference.endpoints].sort((a, b) => a.display_name.localeCompare(b.display_name));
+        this.endpoints = [...this._conference.endpoints].sort((a, b) => a.display_name.localeCompare(b.display_name));
     }
 
     get canInvite(): boolean {
@@ -263,7 +263,7 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
         if (isJudicialUser || isStaffMember) {
             return true;
         } else {
-            const loggedInParticipant = this.conference.participants.find(x => x.id === this.loggedInUser.participant_id);
+            const loggedInParticipant = this._conference.participants.find(x => x.id === this.loggedInUser.participant_id);
             const hasLinkedParticipants = loggedInParticipant.linked_participants.length;
             const currentRoomIsJudicial = loggedInParticipant.current_room?.label.startsWith('JudgeJOH');
 
