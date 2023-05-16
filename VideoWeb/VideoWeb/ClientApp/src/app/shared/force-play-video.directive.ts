@@ -42,14 +42,18 @@ export class ForcePlayVideoDirective implements OnInit, OnDestroy {
 
             if (!this.destroyed) {
                 this.logger.info(`${this.loggerPrefix} - videoElement.oncanplay - playing video`);
-                this.videoElement.play();
+                this.videoElement.play().catch(error => {
+                    this.logger.error(`${this.loggerPrefix} - videoElement.oncanplay - error playing video.`, error);
+                });
             }
         };
     }
 
     private onMouseDownOrTouchStart() {
         this.logger.info(`${this.loggerPrefix} - onMouseDownOrTouchStart - playing video.`);
-        this.videoElement.play();
+        this.videoElement.play().catch(error => {
+            this.logger.error(`${this.loggerPrefix} - onMouseDownOrTouchStart - error playing video.`, error);
+        });
 
         this.logger.info(`${this.loggerPrefix} - onMouseDownOrTouchStart - unsubscribing from mouse down callback.`);
         this.unsubscribeFromMouseDownCallback();
