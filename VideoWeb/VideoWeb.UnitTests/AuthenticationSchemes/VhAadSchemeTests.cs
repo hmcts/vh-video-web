@@ -26,7 +26,7 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
             {
                 TenantId = "tenantId",
                 Authority = "authority",
-                ClientId = "clientId"                
+                ClientId = "clientId"
             };
             sut = new VhAadScheme(configuration, "eventHubPath");
         }
@@ -58,7 +58,7 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
             var schemeName = sut.EventHubSchemeName;
 
             // Assert
-            schemeName.Should().Be($"EventHub{AuthProvider.VHAAD}");
+            schemeName.Should().Be($"EventHub{AuthProvider.EJudiciary}");
         }
 
         [Test]

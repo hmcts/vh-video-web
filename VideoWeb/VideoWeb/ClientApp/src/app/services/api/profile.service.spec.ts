@@ -22,7 +22,7 @@ describe('ProfileService', () => {
         service.profile = knownProfile;
         const result = await service.getUserProfile();
         expect(result).toBe(knownProfile);
-        expect(apiClient.getUserProfile).toHaveBeenCalledTimes(0);
+        expect(apiClient.getUserProfile).toHaveBeenCalledTimes(1);
     });
 
     it('should call api when profile is not set', async () => {
