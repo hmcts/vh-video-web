@@ -1,5 +1,4 @@
-import { ElementRef, Renderer2, RendererFactory2, SimpleChange } from '@angular/core';
-import { fakeAsync, tick } from '@angular/core/testing';
+import { ElementRef, Renderer2, RendererFactory2 } from '@angular/core';
 import { Logger } from '../services/logging/logger-base';
 import { ForcePlayVideoDirective } from './force-play-video.directive';
 import { getSpiedPropertyGetter, getSpiedPropertySetter } from './jasmine-helpers/property-helpers';
@@ -18,7 +17,7 @@ describe('ForcePlayVideoDirective', () => {
     beforeEach(() => {
         elementRefSpy = jasmine.createSpyObj<ElementRef>([], ['nativeElement']);
         nativeElementSpy = jasmine.createSpyObj<HTMLVideoElement>(['play', 'pause'], ['oncanplay']);
-
+        nativeElementSpy.play.and.callFake(() => Promise.resolve());
         getSpiedPropertyGetter(elementRefSpy, 'nativeElement').and.returnValue(nativeElementSpy);
         getSpiedPropertySetter(nativeElementSpy, 'oncanplay').and.callFake((callback: (event: any) => void) => {
             onCanPlayCallback = callback;
