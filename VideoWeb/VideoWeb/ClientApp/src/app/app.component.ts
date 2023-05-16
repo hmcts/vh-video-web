@@ -38,7 +38,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     loggedIn = false;
     isRepresentativeOrIndividual: boolean;
-    pageTitle = "Video Hearings - ";
+    pageTitle = 'Video Hearings - ';
 
     subscriptions = new Subscription();
     securityService: ISecurityService;
