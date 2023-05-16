@@ -71,9 +71,10 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective
     }
 
     async raisedSelfTestIncompleted() {
+        // conference and participan are not always set if the user clicks next very quickly
         const logPayload = {
-            conference: this.conference.id,
-            participant: this.participant.id,
+            conference: this.conference?.id,
+            participant: this.participant?.id,
             failureReason: SelfTestFailureReason.IncompleteTest
         };
         this.logger.debug('[ParticipantSelfTest] - Raising incomplete self-test failure', logPayload);
