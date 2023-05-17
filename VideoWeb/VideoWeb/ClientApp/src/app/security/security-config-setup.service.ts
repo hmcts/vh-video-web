@@ -55,7 +55,8 @@ export class SecurityConfigSetupService {
             postLogoutRedirectUri: idpSettings.post_logout_redirect_uri,
             tokenRefreshInSeconds: 5,
             silentRenew: true,
-            useRefreshToken: true
+            useRefreshToken: true,
+            historyCleanupOff: false
         } as OpenIdConfiguration;
     }
 
