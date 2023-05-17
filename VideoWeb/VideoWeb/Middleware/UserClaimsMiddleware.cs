@@ -19,11 +19,12 @@ namespace VideoWeb.Middleware
         {
             if (httpContext.User.Identity is {IsAuthenticated: true})
             {
-                var appRoleService = httpContext.RequestServices.GetService(typeof(IAppRoleService)) as IAppRoleService;
-                //Get user's immutable object id from claims that came from Azure AD
-                var oid = httpContext.User.FindFirstValue(OidClaimType);
+                // get bearer token from httpContext
+                httpContext.Request.Headers.TryGetValue("Authorization", out var bearerToken);
                 
-                var claims = await appRoleService!.GetClaimsForUserAsync(oid, httpContext.User.Identity.Name);
+                var appRoleService = httpContext.RequestServices.GetService(typeof(IAppRoleService)) as IAppRoleService;
+                var claims = await appRoleService!.GetClaimsForUserAsync(bearerToken, httpContext.User.Identity.Name);
+                
                 httpContext.User.AddIdentity(new ClaimsIdentity(claims));
             }
             await _next(httpContext);
