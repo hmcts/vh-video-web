@@ -125,7 +125,7 @@
         "type": "Direct",
         "requested": "[1.44.2, )",
         "resolved": "1.44.2",
-        "contentHash": "0qEFVEAkUtVe2clT/gKgN/emQ069LkSlohZl47u5DtJw6Lb1ce44pfU/Rwlbdo3WPI75UX3+7kkwLfl1N2wfFw==",
+        "contentHash": "V5A3SazBr7G7lvw5R5iFNwB+4MdM1pCBfdtbXw5r+L/4TDdaXPpr9HWmDbf9kbJ0Rbd8taEyOTbUnGAllqS+lg==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5"
         }
@@ -141,7 +141,7 @@
       "BookingsApi.Client": {
         "type": "Transitive",
         "resolved": "1.44.1",
-        "contentHash": "F84Y6EnY0yUwmRholTBrenZZRvx3x52x9NB24OQqM3D+cJZOzMIlY92+rGn5TjRP9OejiKcfUovXBaajLqyVRg==",
+        "contentHash": "9dlv0hWSOs7NHiTDJGE7oWrbsYXBUTInpK2ZckTA8pqicDoIkJmZtSb9l41BHNKoWM9wcuSvnJJxtNaKyhkqAA==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5"
         }
@@ -2331,7 +2331,7 @@
       "UserApi.Client": {
         "type": "Transitive",
         "resolved": "1.44.1",
-        "contentHash": "nmt5ZsHwxUbSL46uihtSGJTP4tTrSsyZNVhqIbaEL4zdaL+ybUAhE9we+Ye/DWyiKfMLddUg14bnUosQdyUQAA==",
+        "contentHash": "oUtEvLAM9q7jeyXsHmgFoaO+tE48ozd42d1g21niMiqeE4A7ELTpMcOs44kV6BluPDVJFIHqV+Wk2ShZNxv4cA==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5"
         }

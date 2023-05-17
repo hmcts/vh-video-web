@@ -11,6 +11,7 @@ export class ForcePlayVideoDirective implements OnInit, OnDestroy {
     private unsubscribeFromTouchStartCallback: () => void | null = null;
 
     private destroyed = false;
+    private isPlaying = false;
 
     public get videoElement(): HTMLVideoElement {
         return this.elementRef.nativeElement as HTMLVideoElement;
@@ -31,29 +32,54 @@ export class ForcePlayVideoDirective implements OnInit, OnDestroy {
         this.renderer.setAttribute(this.videoElement, 'autoplay', 'true');
     }
 
+    private playVideo() {
+        if (!this.isPlaying) {
+            const isPlayingElem =
+                this.videoElement.currentTime > 0 &&
+                !this.videoElement.paused &&
+                !this.videoElement.ended &&
+                this.videoElement.readyState > this.videoElement.HAVE_CURRENT_DATA;
+            if (isPlayingElem) {
+                return;
+            }
+            this.videoElement.play().catch(error => {
+                this.logger.error(`${this.loggerPrefix} - error playing video.`, error);
+            });
+        }
+    }
+
     private addEventListeners() {
         this.logger.info(`${this.loggerPrefix} - addEventListeners - adding mousedown handler.`);
         this.unsubscribeFromMouseDownCallback = this.renderer.listen('window', 'mousedown', this.onMouseDownOrTouchStart.bind(this));
         this.logger.info(`${this.loggerPrefix} - addEventListeners - adding touchstart handler.`);
         this.unsubscribeFromTouchStartCallback = this.renderer.listen('window', 'touchstart', this.onMouseDownOrTouchStart.bind(this));
 
+        this.videoElement.onerror = event => {
+            debugger;
+            this.logger.warn(`${this.loggerPrefix} - videoElement.onError - event triggered`, event);
+            this.isPlaying = false;
+        };
+        this.videoElement.onplaying = event => {
+            this.logger.info(`${this.loggerPrefix} - videoElement.onplaying - event triggered`);
+            this.isPlaying = true;
+        };
+        this.videoElement.onpause = event => {
+            this.logger.info(`${this.loggerPrefix} - videoElement.onpause - event triggered`);
+            this.isPlaying = false;
+        };
         this.videoElement.oncanplay = event => {
             this.logger.info(`${this.loggerPrefix} - videoElement.oncanplay - event triggered`);
 
             if (!this.destroyed) {
                 this.logger.info(`${this.loggerPrefix} - videoElement.oncanplay - playing video`);
-                this.videoElement.play().catch(error => {
-                    this.logger.error(`${this.loggerPrefix} - videoElement.oncanplay - error playing video.`, error);
-                });
+                this.playVideo();
             }
         };
     }
 
     private onMouseDownOrTouchStart() {
         this.logger.info(`${this.loggerPrefix} - onMouseDownOrTouchStart - playing video.`);
-        this.videoElement.play().catch(error => {
-            this.logger.error(`${this.loggerPrefix} - onMouseDownOrTouchStart - error playing video.`, error);
-        });
+        this.playVideo();
 
         this.logger.info(`${this.loggerPrefix} - onMouseDownOrTouchStart - unsubscribing from mouse down callback.`);
         this.unsubscribeFromMouseDownCallback();
@@ -77,7 +103,10 @@ export class ForcePlayVideoDirective implements OnInit, OnDestroy {
             this.unsubscribeFromTouchStartCallback();
             this.unsubscribeFromTouchStartCallback = null;
         }
-        this.videoElement.pause();
+        if (this.isPlaying) {
+            this.videoElement.pause();
+            this.isPlaying = false;
+        }
         this.destroyed = true;
     }
 }

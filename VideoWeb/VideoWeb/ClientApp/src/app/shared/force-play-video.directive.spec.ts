@@ -2,6 +2,7 @@ import { ElementRef, Renderer2, RendererFactory2 } from '@angular/core';
 import { Logger } from '../services/logging/logger-base';
 import { ForcePlayVideoDirective } from './force-play-video.directive';
 import { getSpiedPropertyGetter, getSpiedPropertySetter } from './jasmine-helpers/property-helpers';
+import { fakeAsync, tick } from '@angular/core/testing';
 
 describe('ForcePlayVideoDirective', () => {
     let elementRefSpy: jasmine.SpyObj<ElementRef>;
@@ -80,6 +81,34 @@ describe('ForcePlayVideoDirective', () => {
             expect(nativeElementSpy.play).toHaveBeenCalledTimes(1);
         });
 
+        it('should not try to play if already playing', () => {
+            // Arrange
+            directive.ngOnInit();
+            directive['isPlaying'] = true;
+
+            // Act
+            onCanPlayCallback(null);
+
+            // Assert
+            expect(nativeElementSpy.play).not.toHaveBeenCalled();
+        });
+
+        it('should capture error when play fails', fakeAsync(() => {
+            // Arrange
+            directive.ngOnInit();
+
+            nativeElementSpy.play.and.callFake(() => Promise.reject('test error'));
+
+            // Act
+            onCanPlayCallback(null);
+            tick();
+
+            // Assert
+            expect(nativeElementSpy.play).toHaveBeenCalledTimes(1);
+            expect(loggerSpy.error).toHaveBeenCalledTimes(1);
+            expect(loggerSpy.error).toHaveBeenCalledWith('[ForcePlayVideoDirective] - - error playing video.', jasmine.anything());
+        }));
+
         it('should not try to play after destroyed', () => {
             // Arrange
             directive.ngOnInit();
@@ -131,6 +160,85 @@ describe('ForcePlayVideoDirective', () => {
             expect(unsubscribedFromMouseDown).toBeTrue();
             expect(unsubscribedFromTouchStart).toBeTrue();
         });
+
+        it('should not play the video if already playing', () => {
+            // Arrange
+            let mouseDownCallback: (event: any) => void;
+            let unsubscribedFromMouseDown = false;
+
+            const unsubscribeFromMouseDown = () => {
+                unsubscribedFromMouseDown = true;
+            };
+
+            let unsubscribedFromTouchStart = false;
+            const unsubscribeFromTouchStart = () => {
+                unsubscribedFromTouchStart = true;
+            };
+
+            renderer2Spy.listen.and.callFake((target: any, eventName: string, callback: (event: any) => boolean | void) => {
+                if (eventName === 'mousedown') {
+                    mouseDownCallback = callback;
+                    return unsubscribeFromMouseDown;
+                } else if (eventName === 'touchstart') {
+                    return unsubscribeFromTouchStart;
+                }
+
+                return () => {};
+            });
+
+            directive.ngOnInit();
+
+            nativeElementSpy.play.calls.reset();
+            directive['isPlaying'] = true;
+
+            // Act
+            mouseDownCallback(null);
+
+            // Assert
+            expect(nativeElementSpy.play).not.toHaveBeenCalled();
+            expect(unsubscribedFromMouseDown).toBeTrue();
+            expect(unsubscribedFromTouchStart).toBeTrue();
+        });
+
+        it('should capture error when play fails', fakeAsync(() => {
+            // Arrange
+            let mouseDownCallback: (event: any) => void;
+            let unsubscribedFromMouseDown = false;
+
+            const unsubscribeFromMouseDown = () => {
+                unsubscribedFromMouseDown = true;
+            };
+
+            let unsubscribedFromTouchStart = false;
+            const unsubscribeFromTouchStart = () => {
+                unsubscribedFromTouchStart = true;
+            };
+
+            renderer2Spy.listen.and.callFake((target: any, eventName: string, callback: (event: any) => boolean | void) => {
+                if (eventName === 'mousedown') {
+                    mouseDownCallback = callback;
+                    return unsubscribeFromMouseDown;
+                } else if (eventName === 'touchstart') {
+                    return unsubscribeFromTouchStart;
+                }
+
+                return () => {};
+            });
+
+            directive.ngOnInit();
+
+            nativeElementSpy.play.calls.reset();
+            nativeElementSpy.play.and.callFake(() => Promise.reject('test error'));
+
+            // Act
+            mouseDownCallback(null);
+            tick();
+
+            // Assert
+            expect(nativeElementSpy.play).toHaveBeenCalledTimes(1);
+            expect(loggerSpy.error).toHaveBeenCalledTimes(1);
+            expect(loggerSpy.error).toHaveBeenCalledWith('[ForcePlayVideoDirective] - - error playing video.', jasmine.anything());
+        }));
     });
 
     describe('when touch start', () => {
@@ -202,6 +310,7 @@ describe('ForcePlayVideoDirective', () => {
             directive.ngOnInit();
 
             nativeElementSpy.play.calls.reset();
+            directive['isPlaying'] = true;
 
             // Act
             directive.ngOnDestroy();
@@ -210,6 +319,45 @@ describe('ForcePlayVideoDirective', () => {
             expect(unsubscribedFromMouseDown).toBeTrue();
             expect(unsubscribedFromTouchStart).toBeTrue();
             expect(nativeElementSpy.pause).toHaveBeenCalledTimes(1);
+        });
+
+        it('should not attempt to pause when video is not playing', () => {
+            // Arrange
+            let touchStartCallback: (event: any) => void;
+            let unsubscribedFromMouseDown = false;
+
+            const unsubscribeFromMouseDown = () => {
+                unsubscribedFromMouseDown = true;
+            };
+
+            let unsubscribedFromTouchStart = false;
+            const unsubscribeFromTouchStart = () => {
+                unsubscribedFromTouchStart = true;
+            };
+
+            renderer2Spy.listen.and.callFake((target: any, eventName: string, callback: (event: any) => boolean | void) => {
+                if (eventName === 'mousedown') {
+                    return unsubscribeFromMouseDown;
+                } else if (eventName === 'touchstart') {
+                    touchStartCallback = callback;
+                    return unsubscribeFromTouchStart;
+                }
+
+                return () => {};
+            });
+
+            directive.ngOnInit();
+
+            nativeElementSpy.play.calls.reset();
+            directive['isPlaying'] = false;
+
+            // Act
+            directive.ngOnDestroy();
+
+            // Assert
+            expect(unsubscribedFromMouseDown).toBeTrue();
+            expect(unsubscribedFromTouchStart).toBeTrue();
+            expect(nativeElementSpy.pause).toHaveBeenCalledTimes(0);
         });
     });
 });
