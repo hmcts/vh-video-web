@@ -7,7 +7,6 @@ namespace VideoWeb.Middleware
 {
     public class UserClaimsMiddleware
     {
-        public const string OidClaimType = "http://schemas.microsoft.com/identity/claims/objectidentifier";
         private readonly RequestDelegate _next;
 
         public UserClaimsMiddleware(RequestDelegate next)

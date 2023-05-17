@@ -32,8 +32,7 @@ namespace VideoWeb.UnitTests.Middleware
         public async Task should_invoke_app_role_service_when_user_is_authenticated()
         {
             // arrange
-            var claimsPrincipal = new ClaimsPrincipalBuilder()
-                .WithClaim(UserClaimsMiddleware.OidClaimType, Guid.NewGuid().ToString()).Build();
+            var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
 
             _mocker.Mock<IServiceProvider>()
                 .Setup(x => x.GetService(typeof(IAppRoleService)))
