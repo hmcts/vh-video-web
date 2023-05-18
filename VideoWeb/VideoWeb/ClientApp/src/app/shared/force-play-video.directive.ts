@@ -55,7 +55,6 @@ export class ForcePlayVideoDirective implements OnInit, OnDestroy {
         this.unsubscribeFromTouchStartCallback = this.renderer.listen('window', 'touchstart', this.onMouseDownOrTouchStart.bind(this));
 
         this.videoElement.onerror = event => {
-            debugger;
             this.logger.warn(`${this.loggerPrefix} - videoElement.onError - event triggered`, event);
             this.isPlaying = false;
         };
