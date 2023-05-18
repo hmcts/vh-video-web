@@ -1335,6 +1335,7 @@ export abstract class WaitingRoomBaseDirective {
             return participant;
         });
         this.conference = { ...this.conference, participants: updatedParticipantsList } as ConferenceResponse;
+        this.hearing.getConference().participants = updatedParticipantsList;
 
         this.participant = this.getLoggedParticipant();
     }
