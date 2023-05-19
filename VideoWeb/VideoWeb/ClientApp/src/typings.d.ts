@@ -11,6 +11,27 @@ interface Console {
     defaultWarn;
 }
 
+declare interface HeartbeatFactory {
+    HeartbeatFactory(): HeartbeatClient;
+}
+
+declare interface HeartbeatClient {
+    logHeartbeat: boolean;
+    constructor(
+        pexipApi: PexipClient,
+        url: string,
+        conferenceId: string,
+        participantId: string,
+        /**
+         * The JWT token to use for authentication.
+         * Must be `Bearer ${token}`.
+         */
+        token: string,
+        callback: (data: any) => void
+    );
+    kill();
+}
+
 declare interface PexRTC {
     PexRTC(): PexipClient;
 }
