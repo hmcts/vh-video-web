@@ -29,7 +29,7 @@ declare interface HeartbeatClient {
         token: string,
         callback: (data: any) => void
     );
-    kill();
+    kill(): void;
 }
 
 declare interface PexRTC {
