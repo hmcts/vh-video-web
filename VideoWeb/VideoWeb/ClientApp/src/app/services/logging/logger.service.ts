@@ -3,6 +3,7 @@ import { ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, ParamMap, Router
 import { filter, map } from 'rxjs/operators';
 import { LogAdapter } from './log-adapter';
 import { Logger } from './logger-base';
+import { environment } from 'src/environments/environment';
 
 export const LOG_ADAPTER = new InjectionToken<LogAdapter>('LogAdapter');
 
@@ -48,11 +49,13 @@ export class LoggerService implements Logger {
     }
 
     debug(message: string, properties?: any): void {
+        if (environment.production) return;
         properties = this.addConferenceIdToProperties(properties);
         this.adapters.forEach(logger => logger.debug(message, properties));
     }
 
     info(message: string, properties?: any): void {
+        if (environment.production) return;
         properties = this.addConferenceIdToProperties(properties);
         this.adapters.forEach(logger => logger.info(message, properties));
     }

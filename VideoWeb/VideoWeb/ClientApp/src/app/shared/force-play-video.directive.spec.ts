@@ -14,14 +14,29 @@ describe('ForcePlayVideoDirective', () => {
     let directive: ForcePlayVideoDirective;
 
     let onCanPlayCallback: (event: any) => void = null;
+    let onPlayingCallback: (event: any) => void = null;
+    let onPauseCallback: (event: any) => void = null;
+    let onErrorCallback: (event: any) => void = null;
 
     beforeEach(() => {
         elementRefSpy = jasmine.createSpyObj<ElementRef>([], ['nativeElement']);
-        nativeElementSpy = jasmine.createSpyObj<HTMLVideoElement>(['play', 'pause'], ['oncanplay']);
+        nativeElementSpy = jasmine.createSpyObj<HTMLVideoElement>(['play', 'pause'], ['oncanplay', 'onerror', 'onplaying', 'onpause']);
         nativeElementSpy.play.and.callFake(() => Promise.resolve());
         getSpiedPropertyGetter(elementRefSpy, 'nativeElement').and.returnValue(nativeElementSpy);
         getSpiedPropertySetter(nativeElementSpy, 'oncanplay').and.callFake((callback: (event: any) => void) => {
             onCanPlayCallback = callback;
+        });
+
+        getSpiedPropertySetter(nativeElementSpy, 'onplaying').and.callFake((callback: (event: any) => void) => {
+            onPlayingCallback = callback;
+        });
+
+        getSpiedPropertySetter(nativeElementSpy, 'onpause').and.callFake((callback: (event: any) => void) => {
+            onPauseCallback = callback;
+        });
+
+        getSpiedPropertySetter(nativeElementSpy, 'onerror').and.callFake((callback: (event: any) => void) => {
+            onErrorCallback = callback;
         });
 
         renderer2FactorySpy = jasmine.createSpyObj<RendererFactory2>(['createRenderer']);
@@ -66,6 +81,50 @@ describe('ForcePlayVideoDirective', () => {
             // Assert
             expect(getSpiedPropertySetter(nativeElementSpy, 'oncanplay')).toHaveBeenCalledOnceWith(jasmine.anything());
             expect(onCanPlayCallback).toBeTruthy();
+        });
+    });
+
+    describe('when video playback fails', () => {
+        it('should log a warning and set isPlaying to false', () => {
+            // Arrange
+            directive.ngOnInit();
+            directive['isPlaying'] = true;
+            const error = 'something went wrong';
+            // Act
+            onErrorCallback(error);
+
+            // Assert
+            expect(loggerSpy.warn).toHaveBeenCalledTimes(1);
+            expect(loggerSpy.warn).toHaveBeenCalledWith('[ForcePlayVideoDirective] - - videoElement.onError - event triggered', error);
+            expect(directive['isPlaying']).toBeFalse();
+        });
+    });
+
+    describe('when video playback pauses', () => {
+        it('should set isPlaying to false', () => {
+            // Arrange
+            directive.ngOnInit();
+            directive['isPlaying'] = true;
+            // Act
+            onPauseCallback(null);
+
+            // Assert
+            expect(loggerSpy.debug).toHaveBeenCalledWith('[ForcePlayVideoDirective] - - videoElement.onpause - event triggered');
+            expect(directive['isPlaying']).toBeFalse();
+        });
+    });
+
+    describe('when video onPlaying', () => {
+        it('should set isPlaying to true', () => {
+            // Arrange
+            directive.ngOnInit();
+            directive['isPlaying'] = false;
+            // Act
+            onPlayingCallback(null);
+
+            // Assert
+            expect(loggerSpy.debug).toHaveBeenCalledWith('[ForcePlayVideoDirective] - - videoElement.onplaying - event triggered');
+            expect(directive['isPlaying']).toBeTrue();
         });
     });
 
