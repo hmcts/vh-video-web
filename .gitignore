@@ -348,4 +348,4 @@ TESTS.xml
 .env
 Coverage/
 **/SpecFlow/userid
-.angular
+.angular/
