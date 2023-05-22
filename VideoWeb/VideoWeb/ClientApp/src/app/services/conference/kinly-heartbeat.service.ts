@@ -9,6 +9,7 @@ import { EventsService } from '../events.service';
 import { Logger } from '../logging/logger-base';
 import { ConferenceService } from './conference.service';
 import { ParticipantService } from './participant.service';
+import { environment } from 'src/environments/environment';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 declare let HeartbeatFactory: any;
@@ -17,7 +18,7 @@ declare let HeartbeatFactory: any;
     providedIn: 'root'
 })
 export class KinlyHeartbeatService {
-    heartbeat: any; // NO TS defined
+    heartbeat: HeartbeatClient;
     private loggerPrefix = '[KinlyHeartbeatService] -';
     private currentParticipant: ParticipantModel;
     private currentConference: ConferenceResponse;
@@ -52,6 +53,7 @@ export class KinlyHeartbeatService {
                         `Bearer ${heartbeatConfiguration.heartbeat_jwt}`,
                         this.handleHeartbeat.bind(this)
                     );
+                    this.heartbeat.logHeartbeat = environment.logHeartbeat;
                 },
                 error: error => {
                     this.logger.error(`${this.loggerPrefix} failed to get heartbeat config`, error, {

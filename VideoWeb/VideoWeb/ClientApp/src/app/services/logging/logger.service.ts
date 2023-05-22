@@ -3,6 +3,7 @@ import { ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, ParamMap, Router
 import { filter, map } from 'rxjs/operators';
 import { LogAdapter } from './log-adapter';
 import { Logger } from './logger-base';
+import { environment } from 'src/environments/environment';
 
 export const LOG_ADAPTER = new InjectionToken<LogAdapter>('LogAdapter');
 
@@ -12,6 +13,7 @@ export const LOG_ADAPTER = new InjectionToken<LogAdapter>('LogAdapter');
 export class LoggerService implements Logger {
     static currentConferenceIdPropertyKey = 'currentConferenceId';
     currentConferenceId: string | null = null;
+    private higherLevelLogsOnly = false;
     constructor(@Inject(LOG_ADAPTER) private adapters: LogAdapter[], router: Router, activatedRoute: ActivatedRoute) {
         router.events
             .pipe(
@@ -22,6 +24,7 @@ export class LoggerService implements Logger {
             .subscribe(paramMap => {
                 this.currentConferenceId = paramMap?.get('conferenceId') ?? null;
             });
+        this.higherLevelLogsOnly = environment.production;
     }
 
     addConferenceIdToProperties(properties?: any, conferenceIdKey: string = LoggerService.currentConferenceIdPropertyKey) {
@@ -40,6 +43,9 @@ export class LoggerService implements Logger {
     }
 
     debug(message: string, properties?: any): void {
+        if (this.higherLevelLogsOnly) {
+            return;
+        }
         properties = this.addConferenceIdToProperties(properties);
         this.adapters.forEach(logger => {
             logger.debug(message, properties);
@@ -47,6 +53,9 @@ export class LoggerService implements Logger {
     }
 
     info(message: string, properties?: any): void {
+        if (this.higherLevelLogsOnly) {
+            return;
+        }
         properties = this.addConferenceIdToProperties(properties);
         this.adapters.forEach(logger => logger.info(message, properties));
     }

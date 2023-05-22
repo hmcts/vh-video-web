@@ -242,17 +242,14 @@ describe('KinlyHeartbeatService', () => {
     describe('stopHeartbeat', () => {
         it('should call kill and set the heartbeat to null', () => {
             // Arrange
-            sut.heartbeat = {
-                kill: () => {}
-            };
-
-            const killSpy = spyOn(sut.heartbeat, 'kill');
+            const heartbeatSpy = jasmine.createSpyObj<HeartbeatClient>(['kill'], []);
+            sut.heartbeat = heartbeatSpy;
 
             // Act
             sut.stopHeartbeat();
 
             // Assert
-            expect(killSpy).toHaveBeenCalledTimes(1);
+            expect(heartbeatSpy.kill).toHaveBeenCalledTimes(1);
             expect(sut.heartbeat).toBeFalsy();
         });
     });
