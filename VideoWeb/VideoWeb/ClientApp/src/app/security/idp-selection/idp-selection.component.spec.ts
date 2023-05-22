@@ -8,6 +8,7 @@ import { IdpProviders } from '../idp-providers';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
+import { DeviceTypeService } from 'src/app/services/device-type.service';
 
 describe('IdpSelectionComponent', () => {
     let component: IdpSelectionComponent;
@@ -16,17 +17,25 @@ describe('IdpSelectionComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
     let oidcConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
     let launchDarklyServiceSpy: jasmine.SpyObj<LaunchDarklyService>;
+    let deviceTypeServiceSpy: jasmine.SpyObj<DeviceTypeService>;
 
     beforeAll(() => {
         router = jasmine.createSpyObj<Router>('Router', ['navigate', 'navigateByUrl']);
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings']);
         oidcConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>('OidcConfigSetupService', ['setIdp']);
         launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
+        deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', ['getOSName', 'getOSVersion', 'getDevice']);
     });
 
     beforeEach(() => {
         router.navigate.calls.reset();
-        component = new IdpSelectionComponent(router, new MockLogger(), oidcConfigSetupServiceSpy, launchDarklyServiceSpy);
+        component = new IdpSelectionComponent(
+            router,
+            new MockLogger(),
+            oidcConfigSetupServiceSpy,
+            launchDarklyServiceSpy,
+            deviceTypeServiceSpy
+        );
         configServiceSpy.getClientSettings.and.returnValue(of(null));
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.ejudiciarySignIn).and.returnValue(of(false));
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.dom1SignIn).and.returnValue(of(false));
