@@ -60,7 +60,7 @@ declare interface PexipClient {
     onDisconnect: (reason: any) => void;
     onParticipantCreate: (participantUpdate: PexipParticipant) => void;
     onParticipantUpdate: (participantUpdate: PexipParticipant) => void;
-    onParticipantDelete: (participantUpdate: PexipParticipant) => void;
+    onParticipantDelete: (participantDeleted: PexipParticipantDeleted) => void;
     onConferenceUpdate: (conferenceUpdate: PexipConference) => void;
     onCallTransfer: (reason: any) => void;
     renegotiate: (sendUpdate: boolean) => void;
@@ -137,7 +137,12 @@ declare interface PexipClient {
      */
     getPresentation();
 }
+declare interface PexipParticipantDeleted {
 
+    /** The UUID of this participant, to use with other operations. */
+    uuid: string;
+
+}
 declare interface PexipParticipant {
     /** A Unix timestamp of when this participant raised their hand, otherwise zero. */
     buzz_time: number;

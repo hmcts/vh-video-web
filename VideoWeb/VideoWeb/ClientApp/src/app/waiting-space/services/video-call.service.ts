@@ -19,6 +19,7 @@ import {
     ConnectedScreenshare,
     DisconnectedCall,
     DisconnectedPresentation,
+    ParticipantDeleted,
     ParticipantUpdated,
     Presentation,
     StoppedScreenshare
@@ -44,7 +45,7 @@ export class VideoCallService {
     private onParticipantUpdatedSubject = new Subject<ParticipantUpdated>();
     private onConferenceUpdatedSubject = new Subject<ConferenceUpdated>();
     private onParticipantCreatedSubject = new Subject<ParticipantUpdated>();
-    private onParticipantDeletedSubject = new Subject<ParticipantUpdated>();
+    private onParticipantDeletedSubject = new Subject<ParticipantDeleted>();
 
     private onConnectedScreenshareSubject = new Subject<ConnectedScreenshare>();
     private onStoppedScreenshareSubject = new Subject<StoppedScreenshare>();
@@ -201,9 +202,9 @@ export class VideoCallService {
         this.onParticipantCreatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
     }
 
-    private handleParticipantDeleted(participantUpdate: PexipParticipant) {
+    private handleParticipantDeleted(participantDeleted: PexipParticipantDeleted) {
         this.logger.debug(`${this.loggerPrefix} handling participant Delete`);
-        this.onParticipantDeletedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
+        this.onParticipantDeletedSubject.next(new ParticipantDeleted(participantDeleted.uuid));
     }
 
     private handleParticipantUpdate(participantUpdate: PexipParticipant) {
@@ -282,7 +283,7 @@ export class VideoCallService {
         return this.onParticipantCreatedSubject.asObservable();
     }
 
-    onParticipantDeleted(): Observable<ParticipantUpdated> {
+    onParticipantDeleted(): Observable<ParticipantDeleted> {
         return this.onParticipantDeletedSubject.asObservable();
     }
 
