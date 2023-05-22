@@ -14,6 +14,12 @@ export class CallError {
     constructor(public reason: string) {}
 }
 
+export class ParticipantDeleted {
+    uuid: string;
+    constructor(uuid: string) {
+        this.uuid = uuid;
+    }
+}
 export class ParticipantUpdated {
     public isRemoteMuted: boolean;
     public isSpotlighted: boolean;
