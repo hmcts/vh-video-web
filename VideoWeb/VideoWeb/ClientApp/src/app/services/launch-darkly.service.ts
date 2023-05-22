@@ -48,7 +48,18 @@ export class LaunchDarklyService implements OnDestroy {
         });
         return fetchFlag.pipe(
             map(() => {
-                return this.client.variation(flagKey, defaultValue) as T;
+                let flag = this.client.variation(flagKey, defaultValue);
+                switch (flagKey) {
+                    case FEATURE_FLAGS.multiIdpSelection:
+                        flag = true;
+                        break;
+                    case FEATURE_FLAGS.dom1SignIn:
+                        flag = true;
+                        break;
+                    default:
+                        break;
+                }
+                return flag as T;
             })
         );
     }
