@@ -11,6 +11,7 @@ import { SecurityConfigSetupService } from './security-config-setup.service';
 import { SecurityRoutingModule } from './security-routing.module';
 import { UnauthorisedComponent } from './unauthorised/unauthorised.component';
 import { JwtHelperService as Auth0JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
+import { Dom1SignInComponent } from './idp-selection/dom1-sign-in.component';
 
 export function restoreConfig(securityConfigSetupService: SecurityConfigSetupService): Function {
     return () => {
@@ -20,7 +21,15 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
 
 @NgModule({
     imports: [CommonModule, SharedModule, SecurityRoutingModule],
-    declarations: [LoginComponent, LogoutComponent, UnauthorisedComponent, IdpSelectionComponent, EjudSignInComponent, VhSignInComponent],
+    declarations: [
+        LoginComponent,
+        LogoutComponent,
+        UnauthorisedComponent,
+        IdpSelectionComponent,
+        EjudSignInComponent,
+        VhSignInComponent,
+        Dom1SignInComponent
+    ],
     exports: [LoginComponent, LogoutComponent, IdpSelectionComponent],
     providers: [
         ConfigService,

@@ -517,7 +517,7 @@ export class VideoCallService {
 
     private handleParticipantDeleted(participantDeleted: PexipParticipantDeleted) {
         this.logger.debug(`${this.loggerPrefix} handling participant Delete`);
-        this.onParticipantDeletedSubject.next(participantDeleted);
+        this.onParticipantDeletedSubject.next(new ParticipantDeleted(participantDeleted.uuid));
     }
 
     private handleParticipantUpdate(participantUpdate: PexipParticipant) {

@@ -38,7 +38,7 @@ describe('RefreshTokenParameterInterceptor', () => {
         sut = new RefreshTokenParameterInterceptor(securityServiceProviderServiceSpy, injectorSpy);
     });
 
-    for (const provider of [IdpProviders.ejud, IdpProviders.vhaad]) {
+    for (const provider of [IdpProviders.ejud, IdpProviders.vhaad, IdpProviders.dom1]) {
         describe(`when provider is ${provider.toString()}`, () => {
             it('should call next with updated body if token request post', fakeAsync(() => {
                 // Arrange

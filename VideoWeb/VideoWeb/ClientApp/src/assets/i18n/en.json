@@ -66,7 +66,7 @@
     "maximum": "maximum allowed",
     "unable-send": "Unable to send message.",
     "type-a-message": "Type a message",
-      "text-area": "Text area",
+    "text-area": "Text area",
     "you-can-enter-up-to": "You can enter up to",
     "characters-in-this-field": "characters in this field",
     "maximum-characters-entered": "You have entered the maximum number of characters"
@@ -1195,6 +1195,9 @@
     "ejud": {
       "description": "My user name ends with @ejudiciary.net"
     },
+    "dom1": {
+      "description": "My user name ends with @justice.gov.uk"
+    },
     "vhaad": {
       "description": "My user name ends with @hearings.reform.hmcts.net"
     },
@@ -1250,7 +1253,7 @@
   },
   "true": "Yes",
   "false": "No",
-    "allocations-toastr": {
-        "header" : "New hearing(s) allocated"
-    }
+  "allocations-toastr": {
+    "header": "New hearing(s) allocated"
+  }
 }

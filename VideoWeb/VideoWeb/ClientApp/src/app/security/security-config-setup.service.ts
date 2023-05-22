@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { LogLevel, OpenIdConfiguration } from 'angular-auth-oidc-client';
-import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
+import { Observable, ReplaySubject } from 'rxjs';
 import { first, map } from 'rxjs/operators';
 import { ConfigService } from '../services/api/config.service';
 import { IdpSettingsResponse } from '../services/clients/api-client';
@@ -11,12 +11,12 @@ export class SecurityConfigSetupService {
     config = {
         ejud: {} as OpenIdConfiguration,
         vhaad: {} as OpenIdConfiguration,
+        dom1: {} as OpenIdConfiguration,
         quickLink: {}
     };
 
     private idpProvidersSessionStorageKey = 'IdpProviders';
     private defaultProvider = IdpProviders.vhaad;
-    private _configSetupSubject = new BehaviorSubject(false);
 
     private currentIdpSubject = new ReplaySubject<IdpProviders>(1);
 
@@ -32,8 +32,8 @@ export class SecurityConfigSetupService {
             map(clientSettings => {
                 this.config[IdpProviders.vhaad] = this.initOidcConfig(clientSettings.vh_idp_settings);
                 this.config[IdpProviders.ejud] = this.initOidcConfig(clientSettings.e_jud_idp_settings);
-                this._configSetupSubject.next(true);
-                return [this.config[IdpProviders.ejud], this.config[IdpProviders.vhaad]];
+                this.config[IdpProviders.dom1] = this.initOidcConfig(clientSettings.dom1_idp_settings);
+                return [this.config[IdpProviders.ejud], this.config[IdpProviders.vhaad], this.config[IdpProviders.dom1]];
             })
         );
     }

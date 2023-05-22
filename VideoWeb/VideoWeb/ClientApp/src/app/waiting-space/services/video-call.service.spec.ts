@@ -495,22 +495,17 @@ describe('VideoCallService', () => {
     describe('handleParticipantDelete', () => {
         it('should push the deleted participant subject from pexip into the service onParticipantDeleted observable', fakeAsync(() => {
             // Arrange
-            const pexipParticipant: PexipParticipantDeleted = {
-                uuid: 'uuid'
-            };
-
-            const expectedUpdate = pexipParticipant;
-
+            const participant = { uuid: 'uuid' };
             // Act
             let result: ParticipantDeleted | null = null;
             service.onParticipantDeleted().subscribe(update => (result = update));
 
-            service.pexipAPI.onParticipantDelete(pexipParticipant);
+            service.pexipAPI.onParticipantDelete(participant);
             flush();
 
             // Assert
             expect(result).toBeTruthy();
-            expect(result).toEqual(expectedUpdate);
+            expect(result.uuid).toEqual(participant.uuid);
         }));
     });
 

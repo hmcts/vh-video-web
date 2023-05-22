@@ -535,7 +535,7 @@
     "char-count": "Nifer o nodau",
     "maximum": "caniateir hyd at",
     "unable-send": "Methu anfon y neges",
-      "text-area": "ardal destun",
+    "text-area": "ardal destun",
     "type-a-message": "Teipiwch neges",
     "you-can-enter-up-to": "gallwch ddefnyddio hyd a",
     "characters-in-this-field": "o nodau yn y blwch hwn",
@@ -936,6 +936,9 @@
     "ejud": {
       "description": "Mae fy enw defnyddiwr yn gorffen gyda @ejudiciary.net"
     },
+    "dom1": {
+      "description": "Mae fy enw defnyddiwr yn gorffen gyda @justice.gov.uk"
+    },
     "vhaad": {
       "description": "Mae fy enw defnyddiwr yn gorffen gyda @hearings.reform.hmcts.net"
     },
@@ -1252,7 +1255,7 @@
   },
   "true": "Do",
   "false": "Naddo",
-    "allocations-toastr": {
-        "header" : "Gwrandawiad newydd wedi'i ddyrannu"
-    }
+  "allocations-toastr": {
+    "header": "Gwrandawiad newydd wedi'i ddyrannu"
+  }
 }

@@ -64,6 +64,11 @@ namespace VideoWeb
             {
                 Configuration.Bind("EJudAd", options);
             });
+            
+            services.Configure<Dom1AdConfiguration>(options =>
+            {
+                Configuration.Bind(Dom1AdConfiguration.ConfigSectionKey, options);
+            });
 
             services.Configure<QuickLinksConfiguration>(options =>
             {
@@ -110,6 +115,7 @@ namespace VideoWeb
             IdentityModelEventSource.ShowPII = true;
             app.UseRouting();
             app.UseAuthentication();
+            app.UseMiddleware<UserClaimsMiddleware>(); // this must be before authorization so that the claims can added before the authorization middleware runs
             app.UseAuthorization();
             app.UseMiddleware<ExceptionMiddleware>();
 

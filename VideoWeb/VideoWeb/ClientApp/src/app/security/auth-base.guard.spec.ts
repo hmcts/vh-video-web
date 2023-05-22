@@ -1,4 +1,4 @@
-import { fakeAsync, flush } from '@angular/core/testing';
+import { fakeAsync, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { of, Subject } from 'rxjs';
 import { Logger } from '../services/logging/logger-base';
@@ -47,8 +47,9 @@ describe('authguard', () => {
             // Act
             let result = false;
             authGuard.canActivate(null, null).subscribe(canActivate => (result = canActivate));
+            launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.multiIdpSelection).and.returnValue(of(false));
             isAuthenticatedSubject.next(true);
-            flush();
+            tick();
 
             // Assert
             expect(result).toBeTruthy();
@@ -61,7 +62,9 @@ describe('authguard', () => {
             { flag: false, routePath: `/${pageUrls.Login}` }
         ];
         testcases.forEach(test => {
-            it('canActivate should return false navigate to idp-selection when EJud Feature On and login page when EJud Feature OFF', fakeAsync(() => {
+            it(`canActivate should return false and navigate to ${test.routePath} when multi-idp-selection feature flag set to ${
+                test.flag ? 'on' : 'off'
+            }`, fakeAsync(() => {
                 // Arrange
                 launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.multiIdpSelection).and.returnValue(of(test.flag));
                 const isAuthenticatedSubject = new Subject<boolean>();
@@ -71,7 +74,8 @@ describe('authguard', () => {
                 let result = true;
                 authGuard.canActivate(null, null).subscribe(canActivate => (result = canActivate));
                 isAuthenticatedSubject.next(false);
-                flush();
+                launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.multiIdpSelection).and.returnValue(of(test.flag));
+                tick();
 
                 // Assert
                 expect(result).toBeFalsy();

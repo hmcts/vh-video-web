@@ -8,7 +8,6 @@ import { AuthGuard } from './security/auth.guard';
 import { NavigatorComponent } from './home/navigator/navigator.component';
 import { QuickLinksComponent } from './on-the-day/quick-links/quick-links.component';
 import { AlreadyAuthenticatedGuard } from './security/guards/already-authenticated.guard';
-import { AutoLoginAllRoutesGuard } from 'angular-auth-oidc-client';
 
 export const routes: Routes = [
     { path: '', redirectTo: `${pageUrls.Navigator}`, pathMatch: 'full' },
@@ -17,7 +16,7 @@ export const routes: Routes = [
         path: 'admin',
         loadChildren: () => import('./vh-officer/vh-officer.module').then(m => m.VhOfficerModule)
     },
-    { path: `${pageUrls.Home}`, component: HomeComponent, canActivate: [AutoLoginAllRoutesGuard] },
+    { path: `${pageUrls.Home}`, component: HomeComponent },
     {
         path: `${pageUrls.QuickLinks}`,
         component: QuickLinksComponent,

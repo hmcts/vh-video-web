@@ -15,7 +15,6 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Polly;
 using Polly.Extensions.Http;
-using Swashbuckle.AspNetCore.Swagger;
 using VideoWeb.Common;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Configuration;
@@ -103,6 +102,7 @@ namespace VideoWeb.Extensions
             services.AddScoped<IKinlyJwtTokenProvider, KinlyJwtTokenProvider>();
             services.AddScoped<IHashGenerator, HashGenerator>();
             services.AddScoped<AdUserProfileService>();
+            services.AddScoped<IAppRoleService, AppRoleService>();
             services.AddScoped<IUserProfileService, CachedProfileService>();
             services.AddScoped<IConferenceCache, DistributedConferenceCache>();
             services.AddScoped<IMessageDecoder, MessageFromDecoder>();

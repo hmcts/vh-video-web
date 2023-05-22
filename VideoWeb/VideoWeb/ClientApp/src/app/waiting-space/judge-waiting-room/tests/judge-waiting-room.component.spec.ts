@@ -53,7 +53,7 @@ import { HearingRole } from '../../models/hearing-role-model';
 import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
 import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-participant-remote-mute-store.service';
-import { ParticipantUpdated } from '../../models/video-call-models';
+import { ParticipantDeleted, ParticipantUpdated } from '../../models/video-call-models';
 import { PexipDisplayNameModel } from '../../../services/conference/models/pexip-display-name.model';
 import { WaitingRoomBaseDirective } from '../../waiting-room-shared/waiting-room-base.component';
 
@@ -518,7 +518,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         });
 
         it('Should display audio alert if wowza listener is deleted', () => {
-            videoCallService.onParticipantDeleted.and.returnValue(of(ParticipantUpdated.fromPexipParticipant(wowzaParticipant)));
+            videoCallService.onParticipantDeleted.and.returnValue(of(new ParticipantDeleted(wowzaParticipant.uuid)));
             component.conference.audio_recording_required = true;
 
             component.ngOnInit();
