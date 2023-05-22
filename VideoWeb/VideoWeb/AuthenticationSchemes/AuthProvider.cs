@@ -4,6 +4,7 @@ namespace VideoWeb.AuthenticationSchemes
     {
         VHAAD,
         EJudiciary,
+        Dom1,
         QuickLinks
     }
 }

@@ -11,7 +11,7 @@
                 <div class="govuk-hint">
                     {{ 'idp-selection.description' | translate }}
                 </div>
-                <div *ngFor="let provider of getProviders()" class="govuk-radios__item" (click)="selectProvider(provider);">
+                <div *ngFor="let provider of identityProvidernames" class="govuk-radios__item" (click)="selectProvider(provider);">
                     <input [id]="provider" class="govuk-radios__input" name="provider" type="radio" value="government-gateway" [attr.aria-describedby]="provider + '-item-hint'">
                     <label class="govuk-label govuk-radios__label" [attr.for]="provider">
                         {{ 'idp-selection.' + provider + '.description' | translate }}
