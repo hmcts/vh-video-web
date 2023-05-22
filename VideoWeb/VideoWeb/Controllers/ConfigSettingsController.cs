@@ -21,6 +21,7 @@ namespace VideoWeb.Controllers
     {
         private readonly AzureAdConfiguration _azureAdConfiguration;
         private readonly EJudAdConfiguration _ejudAdConfiguration;
+        private readonly Dom1AdConfiguration _dom1AdConfiguration;
         private readonly HearingServicesConfiguration _servicesConfiguration;
         private readonly ILogger<ConfigSettingsController> _logger;
         private readonly IMapperFactory _mapperFactory;
@@ -28,7 +29,9 @@ namespace VideoWeb.Controllers
 
         public ConfigSettingsController(IOptions<AzureAdConfiguration> azureAdConfiguration,
             IOptions<EJudAdConfiguration> ejudAdConfiguration,
-            IOptions<HearingServicesConfiguration> servicesConfiguration, KinlyConfiguration kinlyConfiguration,
+            IOptions<HearingServicesConfiguration> servicesConfiguration,
+            IOptions<Dom1AdConfiguration> dom1AdConfiguration,
+            KinlyConfiguration kinlyConfiguration,
             ILogger<ConfigSettingsController> logger,
             IMapperFactory mapperFactory)
         {
@@ -37,6 +40,7 @@ namespace VideoWeb.Controllers
             _servicesConfiguration = servicesConfiguration.Value;
             _logger = logger;
             _mapperFactory = mapperFactory;
+            _dom1AdConfiguration = dom1AdConfiguration.Value;
             _kinlyConfiguration = kinlyConfiguration;
         }
 
@@ -55,10 +59,10 @@ namespace VideoWeb.Controllers
             try
             {
                 var clientSettingsResponseMapper = _mapperFactory
-                    .Get<AzureAdConfiguration, EJudAdConfiguration, HearingServicesConfiguration, KinlyConfiguration, ClientSettingsResponse
-                    >();
-                var response = clientSettingsResponseMapper.Map(_azureAdConfiguration, _ejudAdConfiguration, _servicesConfiguration,
-                    _kinlyConfiguration);
+                    .Get<AzureAdConfiguration, EJudAdConfiguration, Dom1AdConfiguration, HearingServicesConfiguration,
+                        KinlyConfiguration, ClientSettingsResponse>();
+                var response = clientSettingsResponseMapper.Map(_azureAdConfiguration, _ejudAdConfiguration,
+                    _dom1AdConfiguration, _servicesConfiguration, _kinlyConfiguration);
                 return Ok(response);
             }
             catch (Exception e)

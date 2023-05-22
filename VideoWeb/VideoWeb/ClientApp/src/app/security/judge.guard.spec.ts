@@ -1,5 +1,5 @@
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
+import { Subject, of } from 'rxjs';
 import { ProfileService } from '../services/api/profile.service';
 import { Role, UserProfileResponse } from '../services/clients/api-client';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';

@@ -8,11 +8,13 @@ import { VhSignInComponent } from './idp-selection/vh-sign-in.component';
 import { LoginComponent } from './login/login.component';
 import { LogoutComponent } from './logout/logout.component';
 import { UnauthorisedComponent } from './unauthorised/unauthorised.component';
+import { Dom1SignInComponent } from './idp-selection/dom1-sign-in.component';
 
 export const routes: Routes = [
     { path: `${pageUrls.Login}`, component: LoginComponent },
     { path: `${pageUrls.Logout}`, component: LogoutComponent },
     { path: `${pageUrls.EJudSignIn}`, component: EjudSignInComponent, canActivate: [AlreadyAuthenticatedGuard] },
+    { path: `${pageUrls.Dom1SignIn}`, component: Dom1SignInComponent, canActivate: [AlreadyAuthenticatedGuard] },
     { path: `${pageUrls.VHSignIn}`, component: VhSignInComponent, canActivate: [AlreadyAuthenticatedGuard] },
     { path: `${pageUrls.IdpSelection}`, component: IdpSelectionComponent },
     { path: `${pageUrls.Unauthorised}`, component: UnauthorisedComponent }

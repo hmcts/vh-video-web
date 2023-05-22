@@ -33,6 +33,7 @@ export class SecurityServiceProvider {
                 return this.quickLinkSecurityService;
             case IdpProviders.vhaad:
             case IdpProviders.ejud:
+            case IdpProviders.dom1:
                 return this.oidcSecurityService;
             default:
                 return null;

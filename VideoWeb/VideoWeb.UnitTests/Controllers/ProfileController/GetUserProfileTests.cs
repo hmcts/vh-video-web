@@ -46,11 +46,11 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
 
             var userProfile = (UserProfileResponse) typedResult.Value;
             userProfile.FirstName.Should()
-                .Be(_claimsPrincipal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.GivenName)?.Value);
+                .Be(_claimsPrincipal.Claims.LastOrDefault(x => x.Type == ClaimTypes.GivenName)?.Value);
             userProfile.LastName.Should()
-                .Be(_claimsPrincipal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Surname)?.Value);
+                .Be(_claimsPrincipal.Claims.LastOrDefault(x => x.Type == ClaimTypes.Surname)?.Value);
             userProfile.DisplayName.Should()
-                .Be(_claimsPrincipal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value);
+                .Be(_claimsPrincipal.Claims.LastOrDefault(x => x.Type == ClaimTypes.Name)?.Value);
         }
 
         [Test]
