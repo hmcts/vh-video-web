@@ -60,10 +60,10 @@ export class IdpSelectionComponent implements OnInit {
         const osName = this.deviceTypeService.getOSName();
         const osVersion = this.deviceTypeService.getOSVersion();
         const deviceInfo = this.deviceTypeService.getDeviceInfo();
-        console.log(`[IdpSelectionComponent] - Device: ${device}`);
-        console.log(`[IdpSelectionComponent] - OsName: ${osName}`);
-        console.log(`[IdpSelectionComponent] - OsVersion: ${osVersion}`);
-        console.log(`[IdpSelectionComponent] - DeviceInfo: ${JSON.stringify(deviceInfo)}`);
+        this.logger.info(`[IdpSelectionComponent] - Device: ${device}`);
+        this.logger.info(`[IdpSelectionComponent] - OsName: ${osName}`);
+        this.logger.info(`[IdpSelectionComponent] - OsVersion: ${osVersion}`);
+        this.logger.info(`[IdpSelectionComponent] - DeviceInfo: ${JSON.stringify(deviceInfo)}`);
         return true;
     }
 
