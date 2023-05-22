@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BROWSERS, DeviceDetectorService, OS } from 'ngx-device-detector';
+import { BROWSERS, DeviceDetectorService, DeviceInfo, OS } from 'ngx-device-detector';
 import { browsers } from '../shared/browser.constants';
 
 @Injectable({
@@ -74,5 +74,9 @@ export class DeviceTypeService {
     }
     getDevice(): string {
         return this.deviceDetectorService.device;
+    }
+
+    getDeviceInfo(): DeviceInfo {
+        return this.deviceDetectorService.getDeviceInfo();
     }
 }

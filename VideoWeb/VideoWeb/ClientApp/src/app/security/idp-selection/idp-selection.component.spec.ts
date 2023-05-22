@@ -24,7 +24,12 @@ describe('IdpSelectionComponent', () => {
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings']);
         oidcConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>('OidcConfigSetupService', ['setIdp']);
         launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
-        deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', ['getOSName', 'getOSVersion', 'getDevice']);
+        deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', [
+            'getOSName',
+            'getOSVersion',
+            'getDevice',
+            'getDeviceInfo'
+        ]);
     });
 
     beforeEach(() => {
