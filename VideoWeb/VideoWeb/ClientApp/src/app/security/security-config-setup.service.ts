@@ -5,6 +5,7 @@ import { first, map } from 'rxjs/operators';
 import { ConfigService } from '../services/api/config.service';
 import { IdpSettingsResponse } from '../services/clients/api-client';
 import { IdpProviders } from './idp-providers';
+import { environment } from 'src/environments/environment';
 
 @Injectable()
 export class SecurityConfigSetupService {
@@ -49,7 +50,7 @@ export class SecurityConfigSetupService {
             responseType: 'code',
             maxIdTokenIatOffsetAllowedInSeconds: 600,
             autoUserInfo: false,
-            logLevel: LogLevel.Debug,
+            logLevel: environment.production ? LogLevel.Warn : LogLevel.Debug,
             secureRoutes: ['.'],
             ignoreNonceAfterRefresh: true,
             postLogoutRedirectUri: idpSettings.post_logout_redirect_uri,
