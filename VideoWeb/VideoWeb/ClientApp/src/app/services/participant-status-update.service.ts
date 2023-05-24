@@ -25,7 +25,7 @@ export class ParticipantStatusUpdateService {
         try {
             const forEventConferenceId = conferenceId || this.checkRouter();
             if (forEventConferenceId) {
-                this.logger.debug(`[ParticipantStatusUpdateService] - Updating participant status`, {
+                this.logger.debug('[ParticipantStatusUpdateService] - Updating participant status', {
                     conferenceId: forEventConferenceId,
                     eventType
                 });

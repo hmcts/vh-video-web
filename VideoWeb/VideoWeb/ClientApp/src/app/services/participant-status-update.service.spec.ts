@@ -5,12 +5,10 @@ import { ApiClient, EventType } from 'src/app/services/clients/api-client';
 import { of } from 'rxjs';
 
 describe('ParticipantStatusUpdateService', () => {
-    let apiClientSpy: jasmine.SpyObj<ApiClient>;
-    apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', ['updateParticipantStatus']);
+    const apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', ['updateParticipantStatus']);
     apiClientSpy.updateParticipantStatus.and.returnValue(of());
 
-    let routerSpy: jasmine.SpyObj<Router>;
-    routerSpy = jasmine.createSpyObj<Router>('Router', [], { url: '/introduction/1234-1234-1234' });
+    const routerSpy = jasmine.createSpyObj<Router>('Router', [], { url: '/introduction/1234-1234-1234' });
     const logger = new MockLogger();
     const service = new ParticipantStatusUpdateService(apiClientSpy, logger, routerSpy);
 
@@ -31,12 +29,10 @@ describe('ParticipantStatusUpdateService', () => {
 });
 
 describe('ParticipantStatusUpdateService for not participant page', () => {
-    let apiClientSpy: jasmine.SpyObj<ApiClient>;
-    apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', ['updateParticipantStatus']);
+    const apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', ['updateParticipantStatus']);
     apiClientSpy.updateParticipantStatus.and.returnValue(of());
 
-    let routerSpy: jasmine.SpyObj<Router>;
-    routerSpy = jasmine.createSpyObj<Router>('Router', [], { url: '/notparticipantpage/1234-1234-1234' });
+    const routerSpy = jasmine.createSpyObj<Router>('Router', [], { url: '/notparticipantpage/1234-1234-1234' });
     const logger = new MockLogger();
     const service = new ParticipantStatusUpdateService(apiClientSpy, logger, routerSpy);
 
@@ -50,12 +46,10 @@ describe('ParticipantStatusUpdateService for not participant page', () => {
 });
 
 describe('ParticipantStatusUpdateService failure', () => {
-    let apiClientSpy: jasmine.SpyObj<ApiClient>;
-    apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', ['updateParticipantStatus']);
+    const apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', ['updateParticipantStatus']);
     apiClientSpy.updateParticipantStatus.and.throwError('Error');
 
-    let routerSpy: jasmine.SpyObj<Router>;
-    routerSpy = jasmine.createSpyObj<Router>('Router', [], { url: '/introduction/1234-1234-1234' });
+    const routerSpy = jasmine.createSpyObj<Router>('Router', [], { url: '/introduction/1234-1234-1234' });
 
     const logger = new MockLogger();
     const service = new ParticipantStatusUpdateService(apiClientSpy, logger, routerSpy);

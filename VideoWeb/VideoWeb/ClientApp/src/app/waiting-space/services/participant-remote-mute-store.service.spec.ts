@@ -1,8 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { Subject } from 'rxjs';
 import { IConferenceParticipantsStatus, IParticipatRemoteMuteStatus } from '../models/conference-participants-status';
-import { testDataDevice } from '../waiting-room-shared/tests/waiting-room-base-setup';
 
 import { ParticipantRemoteMuteStoreService } from './participant-remote-mute-store.service';
 
@@ -41,7 +39,7 @@ describe('ParticipantRemoteMuteStoreService', () => {
                 isLocalAudioMuted: false,
                 isLocalVideoMuted: false,
                 pexipId: expectedPexipId
-            } as IConferenceParticipantsStatus;
+            } as unknown as IConferenceParticipantsStatus;
 
             const updatedState = service.updateRemoteMutePatchCallBack(participantId, true, currentState);
 
@@ -108,7 +106,7 @@ describe('ParticipantRemoteMuteStoreService', () => {
                 isLocalAudioMuted: false,
                 isLocalVideoMuted: false,
                 pexipId: expectedPexipId
-            } as IConferenceParticipantsStatus;
+            } as unknown as IConferenceParticipantsStatus;
 
             // Act
             const updatedState = service.updateLocalMutePatchCallBack(participantId, isLocalAudioMuted, isLocalVideoMuted, currentState);

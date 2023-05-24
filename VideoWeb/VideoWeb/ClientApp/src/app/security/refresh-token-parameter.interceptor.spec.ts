@@ -1,7 +1,6 @@
 import { HttpEvent, HttpHandler, HttpRequest } from '@angular/common/http';
 import { Injector } from '@angular/core';
 import { fakeAsync, flush } from '@angular/core/testing';
-import { PublicConfiguration } from 'angular-auth-oidc-client';
 import { of, Subject } from 'rxjs';
 import { Logger } from '../services/logging/logger-base';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
@@ -26,14 +25,8 @@ describe('RefreshTokenParameterInterceptor', () => {
         );
 
         currentIdpSubject = new Subject<IdpProviders>();
-        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', [], ['configuration']);
-
-        getSpiedPropertyGetter(securityServiceSpy, 'configuration').and.returnValue({
-            configuration: {
-                scope: 'openid profile offline_access',
-                secureRoutes: ['.']
-            }
-        } as PublicConfiguration);
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['getConfiguration']);
+        securityServiceSpy.getConfiguration.and.returnValue(of({ scope: 'openid profile offline_access', secureRoutes: ['.'] }));
 
         getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentIdp$').and.returnValue(currentIdpSubject.asObservable());
         securityServiceProviderServiceSpy.getSecurityService.and.returnValue(securityServiceSpy);
@@ -122,11 +115,7 @@ describe('RefreshTokenParameterInterceptor', () => {
                     return of({} as HttpEvent<any>);
                 });
                 const request = new HttpRequest<any>('POST', '/oauth2/v2.0/token', 'params1');
-                getSpiedPropertyGetter(securityServiceSpy, 'configuration').and.returnValue({
-                    configuration: {
-                        scope: null
-                    }
-                } as PublicConfiguration);
+                securityServiceSpy.getConfiguration.and.returnValue(of({ scope: null, secureRoutes: ['.'] }));
 
                 currentIdpSubject.next(provider);
                 flush();

@@ -18,10 +18,7 @@ export class MediaStreamService {
         private errorService: ErrorService,
         private navigator: Navigator,
         private videoFilterService: VideoFilterService
-    ) {
-        this.navigator.getUserMedia =
-            this.navigator.getUserMedia || (this.navigator as any).webkitGetUserMedia || (this.navigator as any).msGetUserMedia;
-    }
+    ) {}
 
     initialiseNewStream(tracks?: MediaStreamTrack[]) {
         this.logger.info(`[MediaStreamTrack] - Returning audio or video tracks: ${tracks}`);

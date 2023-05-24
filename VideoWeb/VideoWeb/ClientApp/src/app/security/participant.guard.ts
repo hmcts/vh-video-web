@@ -39,15 +39,15 @@ export class ParticipantGuard extends AuthBaseGuard implements CanActivate {
                         profile.role === Role.QuickLinkParticipant ||
                         profile.role === Role.QuickLinkObserver
                     ) {
-                        this.logger.debug(`[ParticipantGuard] User is a representative or individual.`);
+                        this.logger.debug('[ParticipantGuard] User is a representative or individual.');
                         return true;
                     } else {
-                        this.logger.debug(`[ParticipantGuard] User is not a representative or individual. Going home.`);
+                        this.logger.debug('[ParticipantGuard] User is not a representative or individual. Going home.');
                         this.router.navigate(['/home']);
                         return false;
                     }
                 } catch (err) {
-                    this.logger.error(`[ParticipantGuard] Failed to get user profile. Logging out.`, err);
+                    this.logger.error('[ParticipantGuard] Failed to get user profile. Logging out.', err);
                     this.router.navigate(['/logout']);
                     return false;
                 }

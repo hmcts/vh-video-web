@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { AuthOptions, PublicConfiguration } from 'angular-auth-oidc-client';
-import { ReplaySubject, Observable, EMPTY, BehaviorSubject, Subscription } from 'rxjs';
+import { AuthOptions, LoginResponse, OpenIdConfiguration } from 'angular-auth-oidc-client';
+import { ReplaySubject, Observable, EMPTY, BehaviorSubject, Subscription, of } from 'rxjs';
 import { map, take, tap } from 'rxjs/operators';
 import { ApiClient } from 'src/app/services/clients/api-client';
 import { SessionStorage } from 'src/app/services/session-storage';
@@ -30,6 +30,8 @@ export class QuickLinkJwtBody extends JWTBody {
     providedIn: 'root'
 })
 export class QuickLinkSecurityService implements ISecurityService {
+    decodedTokenBody: QuickLinkJwtBody;
+
     private loggerPrefix = '[QuickLinkSecurityService] -';
     private token: string;
     private tokenSessionStorageKey = 'QUICK_LINKS_JWT';
@@ -37,8 +39,6 @@ export class QuickLinkSecurityService implements ISecurityService {
     private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
     private userDataSubject = new ReplaySubject<any>(1);
     private checkAuthSubscription = new Subscription();
-
-    decodedTokenBody: QuickLinkJwtBody;
 
     constructor(
         private apiClient: ApiClient,
@@ -54,9 +54,88 @@ export class QuickLinkSecurityService implements ISecurityService {
         }
     }
 
-    authorize(authOptions?: AuthOptions, token?: string): void {
+    isAuthenticated(configId?: string): Observable<boolean> {
+        return this.isAuthenticatedSubject.asObservable().pipe(
+            map(isAuthenticated => {
+                if (!isAuthenticated) {
+                    return false;
+                }
+                const isValid = this.isTokenValid(this.token);
+                if (!isValid) {
+                    this.clearToken();
+                }
+                return isValid;
+            })
+        );
+    }
+
+    getUserData(configId?: string): Observable<any> {
+        return this.userDataSubject.asObservable();
+    }
+
+    getConfiguration(configId?: string): Observable<OpenIdConfiguration> {
+        return EMPTY;
+    }
+
+    authorize(configId?: string, authOptions?: AuthOptions, token?: string): void {
         this.setToken(token);
         this.checkAuthSubscription.add(this.checkAuth().pipe(take(1)).subscribe());
+    }
+
+    checkAuth(): Observable<LoginResponse> {
+        const tokenIsAuthorisedResult = source =>
+            new Observable<LoginResponse>(subscriber =>
+                source.subscribe({
+                    next() {
+                        const result: LoginResponse = {
+                            isAuthenticated: true,
+                            accessToken: this.token,
+                            configId: IdpProviders.quickLink,
+                            userData: this.decodedTokenBody,
+                            idToken: this.token
+                        };
+                        subscriber.next(result);
+                    },
+                    error() {
+                        const result: LoginResponse = {
+                            isAuthenticated: false,
+                            accessToken: null,
+                            configId: IdpProviders.quickLink,
+                            userData: null,
+                            idToken: null
+                        };
+                        subscriber.next(result);
+                    },
+                    complete() {
+                        subscriber.complete();
+                    }
+                })
+            );
+        return this.apiClient.isQuickLinkParticipantAuthorised().pipe(
+            tokenIsAuthorisedResult,
+            tap(authenticated => {
+                this.isAuthenticatedSubject.next(authenticated.isAuthenticated);
+
+                // TODO: Due to AppInsightsLoggerService provided in app.module injecting Logger causes a circular dependency. This should be refactored
+                if (authenticated.isAuthenticated) {
+                    console.debug(`${this.loggerPrefix} Check auth passed. User is authenticated.`);
+                    this.userDataSubject.next(this.decodedTokenBody);
+                } else {
+                    console.warn(`${this.loggerPrefix} Check auth FAILED. User is NOT authenticated. Clearing token.`);
+                    this.clearToken();
+                }
+            })
+        );
+    }
+
+    getAccessToken(): Observable<string> {
+        return of(this.token);
+    }
+
+    logoffAndRevokeTokens(): Observable<any> {
+        this.clearToken();
+        this.isAuthenticatedSubject.next(false);
+        return EMPTY;
     }
 
     private clearToken() {
@@ -79,48 +158,6 @@ export class QuickLinkSecurityService implements ISecurityService {
         }
     }
 
-    checkAuth(): Observable<boolean> {
-        const tokenIsAuthorisedResult = source =>
-            new Observable<boolean>(subscriber => {
-                return source.subscribe({
-                    next() {
-                        subscriber.next(true);
-                    },
-                    error() {
-                        subscriber.next(false);
-                    },
-                    complete() {
-                        subscriber.complete();
-                    }
-                });
-            });
-        return this.apiClient.isQuickLinkParticipantAuthorised().pipe(
-            tokenIsAuthorisedResult,
-            tap(authenticated => {
-                this.isAuthenticatedSubject.next(authenticated);
-
-                // TODO: Due to AppInsightsLoggerService provided in app.module injecting Logger causes a circular dependency. This should be refactored
-                if (authenticated) {
-                    console.debug(`${this.loggerPrefix} Check auth passed. User is authenticated.`);
-                    this.userDataSubject.next(this.decodedTokenBody);
-                } else {
-                    console.warn(`${this.loggerPrefix} Check auth FAILED. User is NOT authenticated. Clearing token.`);
-                    this.clearToken();
-                }
-            })
-        );
-    }
-
-    getToken(): string {
-        return this.token;
-    }
-
-    logoffAndRevokeTokens(): Observable<any> {
-        this.clearToken();
-        this.isAuthenticatedSubject.next(false);
-        return EMPTY;
-    }
-
     private isTokenValid(token: string): boolean {
         return !this.hasTokenExpired(token);
     }
@@ -131,28 +168,5 @@ export class QuickLinkSecurityService implements ISecurityService {
 
     private decodeTokenBody(token: string): QuickLinkJwtBody {
         return new QuickLinkJwtBody(this.jwtHelper.decodeToken(token));
-    }
-
-    get isAuthenticated$(): Observable<boolean> {
-        return this.isAuthenticatedSubject.asObservable().pipe(
-            map(isAuthenticated => {
-                if (!isAuthenticated) {
-                    return false;
-                }
-                const isValid = this.isTokenValid(this.token);
-                if (!isValid) {
-                    this.clearToken();
-                }
-                return isValid;
-            })
-        );
-    }
-
-    get userData$(): Observable<any> {
-        return this.userDataSubject.asObservable();
-    }
-
-    get configuration(): PublicConfiguration {
-        return null;
     }
 }

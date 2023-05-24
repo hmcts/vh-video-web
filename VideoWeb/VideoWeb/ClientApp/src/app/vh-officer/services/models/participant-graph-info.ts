@@ -1,13 +1,13 @@
 export class ParticipantGraphInfo {
+    name: string;
+    status: string;
+    representee: string;
+
     constructor(name: string, status: string, representee: string) {
         this.name = name;
         this.status = this.getStatusAsText(status);
         this.representee = representee;
     }
-
-    name: string;
-    status: string;
-    representee: string;
 
     getStatusAsText(status): string {
         switch (status) {

@@ -23,9 +23,7 @@ export class RoomClosingToastComponent extends Toast implements OnInit {
     ngOnInit(): void {
         this.alertMessage$ = this.clockService.getClock().pipe(
             startWith(new Date()),
-            map(date => {
-                return this.calcTimeLeft(date);
-            })
+            map(date => this.calcTimeLeft(date))
         );
     }
 

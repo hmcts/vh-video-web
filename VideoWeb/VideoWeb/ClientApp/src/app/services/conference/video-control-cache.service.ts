@@ -13,6 +13,14 @@ export class VideoControlCacheService {
     private hearingControlStates: IHearingControlsState | null = { participantStates: {} };
     private conferenceId: string;
 
+    constructor(
+        private conferenceService: ConferenceService,
+        private storageService: DistributedVideoControlCacheService,
+        private logger: LoggerService
+    ) {
+        this.initHearingState();
+    }
+
     initHearingState() {
         this.conferenceService.currentConference$.subscribe(conference => {
             if (!conference) {
@@ -30,38 +38,6 @@ export class VideoControlCacheService {
                     });
                 });
         });
-    }
-
-    constructor(
-        private conferenceService: ConferenceService,
-        private storageService: DistributedVideoControlCacheService,
-        private logger: LoggerService
-    ) {
-        this.initHearingState();
-    }
-
-    private reinitialiseHearingStatesBeforeUpdate(callback: Function) {
-        const self = this;
-        this.storageService
-            .loadHearingStateForConference(self.conferenceId)
-            .pipe(take(1))
-            .toPromise()
-            .then(state => {
-                self.hearingControlStates = state;
-                self.logger.info(`${self.loggerPrefix} re-initialised state for ${self.conferenceId}.`, {
-                    hearingControlStates: self.hearingControlStates
-                });
-                callback();
-            })
-            .catch(() => {
-                self.logger.info(
-                    `${self.loggerPrefix} failed to re-initialised state for ${self.conferenceId}. Control States may be out of sync`,
-                    {
-                        hearingControlStates: self.hearingControlStates
-                    }
-                );
-                callback();
-            });
     }
 
     async setSpotlightStatus(participantId: string, spotlightValue: boolean, syncChanges: boolean = true) {
@@ -243,6 +219,30 @@ export class VideoControlCacheService {
             value: this.hearingControlStates?.participantStates[participantId]?.isLocalVideoMuted ?? null
         });
         return this.hearingControlStates?.participantStates[participantId]?.isLocalVideoMuted ?? false;
+    }
+
+    private reinitialiseHearingStatesBeforeUpdate(callback: Function) {
+        const self = this;
+        this.storageService
+            .loadHearingStateForConference(self.conferenceId)
+            .pipe(take(1))
+            .toPromise()
+            .then(state => {
+                self.hearingControlStates = state;
+                self.logger.info(`${self.loggerPrefix} re-initialised state for ${self.conferenceId}.`, {
+                    hearingControlStates: self.hearingControlStates
+                });
+                callback();
+            })
+            .catch(() => {
+                self.logger.info(
+                    `${self.loggerPrefix} failed to re-initialised state for ${self.conferenceId}. Control States may be out of sync`,
+                    {
+                        hearingControlStates: self.hearingControlStates
+                    }
+                );
+                callback();
+            });
     }
 
     private savingHearingState() {

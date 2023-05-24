@@ -36,13 +36,18 @@ export class QuickLinksService {
             .pipe(
                 tap((response: QuickLinkParticipantJoinResponse) => {
                     this.securityConfigSetupService.setIdp(IdpProviders.quickLink);
-                    this.securityServiceProviderService.getSecurityService().authorize(null, response.jwt);
+                    this.securityServiceProviderService
+                        .getSecurityService()
+                        .authorize(this.securityServiceProviderService.currentIdp, null, response.jwt);
                 }),
                 mergeMap(() =>
-                    this.securityServiceProviderService.getSecurityService().isAuthenticated$.pipe(
-                        filter(authenticated => authenticated),
-                        take(1)
-                    )
+                    this.securityServiceProviderService
+                        .getSecurityService()
+                        .isAuthenticated(this.securityServiceProviderService.currentIdp)
+                        .pipe(
+                            filter(authenticated => authenticated),
+                            take(1)
+                        )
                 )
             );
     }

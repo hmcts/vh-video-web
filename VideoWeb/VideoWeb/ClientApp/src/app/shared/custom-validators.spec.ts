@@ -1,12 +1,12 @@
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { CustomValidators } from './custom-validators';
 
 describe('CustomValidators', () => {
-    let control: FormControl;
+    let control: UntypedFormControl;
 
     describe('notEmptyOrWhitespaceValidator', () => {
         beforeEach(() => {
-            control = new FormControl('', CustomValidators.notEmptyOrWhitespaceValidator);
+            control = new UntypedFormControl('', CustomValidators.notEmptyOrWhitespaceValidator);
         });
 
         it('should return error if the value is empty/whitespace', () => {

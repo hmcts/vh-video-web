@@ -13,17 +13,37 @@ export class ForcePlayVideoDirective implements OnInit, OnDestroy {
     private destroyed = false;
     private isPlaying = false;
 
-    public get videoElement(): HTMLVideoElement {
-        return this.elementRef.nativeElement as HTMLVideoElement;
-    }
-
     constructor(private elementRef: ElementRef, renderer2Factory: RendererFactory2, private logger: Logger) {
         this.renderer = renderer2Factory.createRenderer(null, null);
+    }
+
+    public get videoElement(): HTMLVideoElement {
+        return this.elementRef.nativeElement as HTMLVideoElement;
     }
 
     ngOnInit(): void {
         this.configureVideoElement();
         this.addEventListeners();
+    }
+
+    ngOnDestroy(): void {
+        this.logger.debug(`${this.loggerPrefix} - ngOnDestroy - unsubscribing from remaining listeners.`);
+        if (this.unsubscribeFromMouseDownCallback) {
+            this.logger.debug(`${this.loggerPrefix} - ngOnDestroy - unsubscribing from mouse down callback.`);
+            this.unsubscribeFromMouseDownCallback();
+            this.unsubscribeFromMouseDownCallback = null;
+        }
+
+        if (this.unsubscribeFromTouchStartCallback) {
+            this.logger.debug(`${this.loggerPrefix} - ngOnDestroy - unsubscribing from touch start callback.`);
+            this.unsubscribeFromTouchStartCallback();
+            this.unsubscribeFromTouchStartCallback = null;
+        }
+        if (this.isPlaying) {
+            this.videoElement.pause();
+            this.isPlaying = false;
+        }
+        this.destroyed = true;
     }
 
     private configureVideoElement() {
@@ -87,25 +107,5 @@ export class ForcePlayVideoDirective implements OnInit, OnDestroy {
         this.logger.debug(`${this.loggerPrefix} - onMouseDownOrTouchStart - unsubscribing from touch start callback.`);
         this.unsubscribeFromTouchStartCallback();
         this.unsubscribeFromTouchStartCallback = null;
-    }
-
-    ngOnDestroy(): void {
-        this.logger.debug(`${this.loggerPrefix} - ngOnDestroy - unsubscribing from remaining listeners.`);
-        if (this.unsubscribeFromMouseDownCallback) {
-            this.logger.debug(`${this.loggerPrefix} - ngOnDestroy - unsubscribing from mouse down callback.`);
-            this.unsubscribeFromMouseDownCallback();
-            this.unsubscribeFromMouseDownCallback = null;
-        }
-
-        if (this.unsubscribeFromTouchStartCallback) {
-            this.logger.debug(`${this.loggerPrefix} - ngOnDestroy - unsubscribing from touch start callback.`);
-            this.unsubscribeFromTouchStartCallback();
-            this.unsubscribeFromTouchStartCallback = null;
-        }
-        if (this.isPlaying) {
-            this.videoElement.pause();
-            this.isPlaying = false;
-        }
-        this.destroyed = true;
     }
 }

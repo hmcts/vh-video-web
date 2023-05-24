@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { ConfigService } from '../services/api/config.service';
-import { getSettings, restoreConfig, setupSecurity, SharedModule } from '../shared/shared.module';
+import { getSettings, SharedModule } from '../shared/shared.module';
 import { EjudSignInComponent } from './idp-selection/ejud-sign-in.component';
 import { IdpSelectionComponent } from './idp-selection/idp-selection.component';
 import { VhSignInComponent } from './idp-selection/vh-sign-in.component';
@@ -12,6 +12,12 @@ import { SecurityRoutingModule } from './security-routing.module';
 import { UnauthorisedComponent } from './unauthorised/unauthorised.component';
 import { JwtHelperService as Auth0JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { Dom1SignInComponent } from './idp-selection/dom1-sign-in.component';
+
+export function restoreConfig(securityConfigSetupService: SecurityConfigSetupService): Function {
+    return () => {
+        securityConfigSetupService.restoreConfig();
+    };
+}
 
 @NgModule({
     imports: [CommonModule, SharedModule, SecurityRoutingModule],
@@ -29,7 +35,6 @@ import { Dom1SignInComponent } from './idp-selection/dom1-sign-in.component';
         ConfigService,
         SecurityConfigSetupService,
         { provide: APP_INITIALIZER, useFactory: getSettings, deps: [ConfigService], multi: true },
-        { provide: APP_INITIALIZER, useFactory: setupSecurity, deps: [SecurityConfigSetupService], multi: true },
         {
             provide: APP_INITIALIZER,
             useFactory: restoreConfig,

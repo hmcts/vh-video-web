@@ -11,14 +11,15 @@ import { ConferenceService } from './conference.service';
 import { ParticipantService } from './participant.service';
 import { environment } from 'src/environments/environment';
 
-declare var HeartbeatFactory: any;
+/* eslint-disable @typescript-eslint/naming-convention */
+declare let HeartbeatFactory: any;
 
 @Injectable({
     providedIn: 'root'
 })
 export class KinlyHeartbeatService {
+    heartbeat: HeartbeatClient;
     private loggerPrefix = '[KinlyHeartbeatService] -';
-    heartbeat: HeartbeatClient; // NO TS defined
     private currentParticipant: ParticipantModel;
     private currentConference: ConferenceResponse;
 
@@ -31,22 +32,6 @@ export class KinlyHeartbeatService {
         private eventService: EventsService,
         private logger: Logger
     ) {}
-
-    private getCurrentConferenceAndParticipant(): Observable<{ conference: ConferenceResponse; participant: ParticipantModel }> {
-        return combineLatest([this.conferenceService.currentConference$, this.participantService.loggedInParticipant$]).pipe(
-            map(value => {
-                return { conference: value[0], participant: value[1] };
-            }),
-            tap(details => {
-                this.logger.info(`${this.loggerPrefix} got current conference and participant details`, {
-                    conferenceId: details.conference?.id ?? null,
-                    participantId: details.participant?.id ?? null
-                });
-            }),
-            filter(details => !!details.conference && !!details.participant),
-            take(1)
-        );
-    }
 
     initialiseHeartbeat(pexipApi: PexipClient) {
         this.getCurrentConferenceAndParticipant().subscribe(details => {
@@ -103,5 +88,19 @@ export class KinlyHeartbeatService {
         this.heartbeat.kill();
         this.heartbeat = null;
         this.logger.info(`${this.loggerPrefix} Should have stopped heartbeat`);
+    }
+
+    private getCurrentConferenceAndParticipant(): Observable<{ conference: ConferenceResponse; participant: ParticipantModel }> {
+        return combineLatest([this.conferenceService.currentConference$, this.participantService.loggedInParticipant$]).pipe(
+            map(value => ({ conference: value[0], participant: value[1] })),
+            tap(details => {
+                this.logger.info(`${this.loggerPrefix} got current conference and participant details`, {
+                    conferenceId: details.conference?.id ?? null,
+                    participantId: details.participant?.id ?? null
+                });
+            }),
+            filter(details => !!details.conference && !!details.participant),
+            take(1)
+        );
     }
 }

@@ -76,7 +76,7 @@ describe('ParticipantNetworkStatusComponent', () => {
         tick();
         expect(component.loading).toBeFalsy();
         expect(component.displayGraph).toBeFalsy();
-        expect(spy.calls.mostRecent().args[0]).toMatch(`Failed to get heartbeat history for particpant`);
+        expect(spy.calls.mostRecent().args[0]).toMatch('Failed to get heartbeat history for particpant');
         expect(spy.calls.mostRecent().args[1]).toBe(error);
         expect(component.packageLostArray).toBeUndefined();
     }));

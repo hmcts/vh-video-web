@@ -50,7 +50,7 @@ export class ConsultationService {
         answer: ConsultationAnswer,
         roomLabel: string
     ): Promise<void> {
-        this.logger.info(`[ConsultationService] - Responding to consultation request`, {
+        this.logger.info('[ConsultationService] - Responding to consultation request', {
             conference: conferenceId,
             requester: requesterId,
             requestee: requesteeId,
@@ -74,7 +74,7 @@ export class ConsultationService {
                 .toPromise();
         } catch (error) {
             this.displayConsultationErrorModal();
-            this.logger.error(`Failed to response to consultation request`, error);
+            this.logger.error('Failed to response to consultation request', error);
         }
     }
 
@@ -92,12 +92,12 @@ export class ConsultationService {
                 .toPromise();
         } catch (error) {
             this.displayConsultationErrorModal();
-            this.logger.error(`Failed to join to consultation`, error);
+            this.logger.error('Failed to join to consultation', error);
         }
     }
 
     async inviteToConsultation(conferenceId: string, roomLabel: string, requestParticipantId: string) {
-        this.logger.info(`[ConsultationService] - Inviting participant to this private consultation`, {
+        this.logger.info('[ConsultationService] - Inviting participant to this private consultation', {
             conferenceId: conferenceId,
             requestParticipantId: requestParticipantId,
             roomLabel: roomLabel
@@ -119,7 +119,7 @@ export class ConsultationService {
     }
 
     async addEndpointToConsultation(conferenceId: string, roomLabel: string, endpointId: string) {
-        this.logger.info(`[ConsultationService] - Adding endpoint to this private consultation`, {
+        this.logger.info('[ConsultationService] - Adding endpoint to this private consultation', {
             conferenceId: conferenceId,
             endpointId: endpointId,
             roomLabel: roomLabel
@@ -141,7 +141,7 @@ export class ConsultationService {
     }
 
     async joinJudicialConsultationRoom(conference: ConferenceResponse, participant: ParticipantResponse): Promise<void> {
-        this.logger.info(`[ConsultationService] - Attempting to join a private judicial consultation`, {
+        this.logger.info('[ConsultationService] - Attempting to join a private judicial consultation', {
             conference: conference.id,
             participant: participant.id
         });
@@ -167,7 +167,7 @@ export class ConsultationService {
         inviteParticipants: Array<string>,
         inviteEndpoints: Array<string>
     ): Promise<void> {
-        this.logger.info(`[ConsultationService] - Attempting to create a private consultation`, {
+        this.logger.info('[ConsultationService] - Attempting to create a private consultation', {
             conference: conference.id,
             participant: participant.id
         });
@@ -190,7 +190,7 @@ export class ConsultationService {
     }
 
     async leaveConsultation(conference: ConferenceResponse, participant: ParticipantResponse): Promise<void> {
-        this.logger.info(`[ConsultationService] - Leaving a consultation`, {
+        this.logger.info('[ConsultationService] - Leaving a consultation', {
             conference: conference.id,
             participant: participant.id
         });
@@ -205,7 +205,7 @@ export class ConsultationService {
     }
 
     async lockConsultation(conferenceId: string, roomLabel: string, lock: boolean): Promise<void> {
-        this.logger.info(`[ConsultationService] - Setting consultation room lock state`, {
+        this.logger.info('[ConsultationService] - Setting consultation room lock state', {
             conference: conferenceId,
             roomLabel: roomLabel,
             lock: lock

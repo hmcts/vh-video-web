@@ -32,6 +32,13 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
         this.loadingData = true;
     }
 
+    @HostListener('window:beforeunload')
+    ngOnDestroy(): void {
+        this.logger.debug('[ParticipantHearings] - Clearing intervals and subscriptions for individual');
+        clearInterval(this.interval);
+        this.conferencesSubscription.unsubscribe();
+    }
+
     getTranslation(key: string) {
         return this.translate.instant(`participant-hearings.${key}`);
     }
@@ -42,13 +49,6 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
         this.interval = setInterval(() => {
             this.retrieveHearingsForUser();
         }, 30000);
-    }
-
-    @HostListener('window:beforeunload')
-    ngOnDestroy(): void {
-        this.logger.debug('[ParticipantHearings] - Clearing intervals and subscriptions for individual');
-        clearInterval(this.interval);
-        this.conferencesSubscription.unsubscribe();
     }
 
     retrieveHearingsForUser() {

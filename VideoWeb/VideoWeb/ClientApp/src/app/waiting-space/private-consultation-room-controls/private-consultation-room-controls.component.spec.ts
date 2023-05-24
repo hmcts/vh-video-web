@@ -162,7 +162,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
     describe('canJoinHearingFromConsultation', () => {
         const testCases: {
-            isHost: Boolean;
+            isHost: boolean;
             shouldShow: boolean;
             newConferenceStatus: ConferenceStatus;
             participantStatus: ParticipantStatus;
@@ -768,7 +768,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
                     '7879c48a-f513-4d3b-bb1b-151831427507',
                     'Participant Name',
                     'DisplayName',
-                    `Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507`,
+                    'Role;DisplayName;7879c48a-f513-4d3b-bb1b-151831427507',
                     CaseTypeGroup.NONE,
                     Role.Individual,
                     HearingRole.LITIGANT_IN_PERSON,

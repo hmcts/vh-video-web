@@ -27,14 +27,6 @@ export class LoggerService implements Logger {
         this.higherLevelLogsOnly = environment.production;
     }
 
-    private getConferenceIdFromRoute(route: ActivatedRouteSnapshot): ParamMap {
-        while (route && !route.paramMap?.has('conferenceId')) {
-            route = route?.firstChild;
-        }
-
-        return route?.paramMap;
-    }
-
     addConferenceIdToProperties(properties?: any, conferenceIdKey: string = LoggerService.currentConferenceIdPropertyKey) {
         properties = properties ?? {};
         if (typeof properties === 'object') {
@@ -55,7 +47,9 @@ export class LoggerService implements Logger {
             return;
         }
         properties = this.addConferenceIdToProperties(properties);
-        this.adapters.forEach(logger => logger.debug(message, properties));
+        this.adapters.forEach(logger => {
+            logger.debug(message, properties);
+        });
     }
 
     info(message: string, properties?: any): void {
@@ -79,5 +73,13 @@ export class LoggerService implements Logger {
     event(event: string, properties?: any) {
         properties = this.addConferenceIdToProperties(properties);
         this.adapters.forEach(logger => logger.trackEvent(event, properties));
+    }
+
+    private getConferenceIdFromRoute(route: ActivatedRouteSnapshot): ParamMap {
+        while (route && !route.paramMap?.has('conferenceId')) {
+            route = route?.firstChild;
+        }
+
+        return route?.paramMap;
     }
 }

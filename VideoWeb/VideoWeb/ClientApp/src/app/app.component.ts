@@ -2,10 +2,9 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/co
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { AuthorizationResult, EventTypes, OidcClientNotification, PublicEventsService } from 'angular-auth-oidc-client';
-import { BehaviorSubject, NEVER, Observable, Subject, Subscription } from 'rxjs';
-import { catchError, delay, filter, first, takeUntil } from 'rxjs/operators';
-import { ConfigService } from './services/api/config.service';
+import { AuthStateResult, EventTypes, OidcClientNotification, PublicEventsService } from 'angular-auth-oidc-client';
+import { BehaviorSubject, NEVER, Observable, Subject, Subscription, combineLatest } from 'rxjs';
+import { catchError, delay, filter, map, takeUntil } from 'rxjs/operators';
 import { ProfileService } from './services/api/profile.service';
 import { Role } from './services/clients/api-client';
 import { ConnectionStatusService } from './services/connection-status.service';
@@ -15,9 +14,7 @@ import { PageTrackerService } from './services/page-tracker.service';
 import { pageUrls } from './shared/page-url.constants';
 import { TestLanguageService } from './shared/test-language.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { IdpProviders } from './security/idp-providers';
 import { SecurityServiceProvider } from './security/authentication/security-provider.service';
-import { SecurityConfigSetupService } from './security/security-config-setup.service';
 import { ISecurityService } from './security/authentication/security-service.interface';
 import { BackLinkDetails } from './shared/models/back-link-details';
 import { Location } from '@angular/common';
@@ -42,12 +39,13 @@ export class AppComponent implements OnInit, OnDestroy {
 
     subscriptions = new Subscription();
     securityService: ISecurityService;
+    currentIdp: string;
     backLinkDetails$ = new BehaviorSubject<BackLinkDetails>(null);
+
+    hideNonVideoComponents$ = new Observable<boolean>();
 
     private destroyed$ = new Subject();
     private serviceChanged$ = new Subject();
-
-    hideNonVideoComponents$ = new Observable<boolean>();
 
     constructor(
         private router: Router,
@@ -60,10 +58,8 @@ export class AppComponent implements OnInit, OnDestroy {
         pageTracker: PageTrackerService,
         testLanguageService: TestLanguageService,
         translate: TranslateService,
-        private configService: ConfigService,
         private eventService: PublicEventsService,
         private securityServiceProviderService: SecurityServiceProvider,
-        private securityConfigSetupService: SecurityConfigSetupService,
         private location: Location,
         private noSleepService: NoSleepService,
         private logger: Logger,
@@ -81,66 +77,36 @@ export class AppComponent implements OnInit, OnDestroy {
         this.hideNonVideoComponents$ = this.hideBackgroundService.hideNonVideoComponents$;
     }
 
+    get isSignInUrl(): boolean {
+        return window.location.pathname.includes(pageUrls.EJudSignIn) || window.location.pathname.includes(pageUrls.VHSignIn);
+    }
+
     ngOnInit() {
         this.checkBrowser();
         this.setupSecurityServiceProviderSubscription();
         this.noSleepService.enable();
-        this.configService
-            .getClientSettings()
-            .pipe(first())
-            .subscribe({
-                next: async () => {
-                    if (this.securityConfigSetupService.getIdp() === IdpProviders.quickLink) {
-                        this.postConfigSetupQuickLinks();
-                    } else {
-                        this.postConfigSetupOidc();
+        combineLatest([
+            this.securityServiceProviderService.currentSecurityService$,
+            this.securityServiceProviderService.currentIdp$
+        ]).subscribe(([securityService, idp]) => {
+            this.currentIdp = idp;
+            this.securityService = securityService;
+            this.securityService.checkAuth(undefined, this.currentIdp).subscribe(async ({ isAuthenticated }) => {
+                if (isAuthenticated) {
+                    await this.postAuthSetup(isAuthenticated, false);
+
+                    if (this.currentIdp !== 'quickLink') {
+                        this.eventService
+                            .registerForEvents()
+                            .pipe(filter(notification => notification.type === EventTypes.NewAuthenticationResult))
+                            .subscribe(async (value: OidcClientNotification<AuthStateResult>) => {
+                                this.logger.info('[AppComponent] - OidcClientNotification event received with value ', value);
+                                await this.postAuthSetup(true, value.value.isRenewProcess);
+                            });
                     }
                 }
             });
-    }
-
-    private postConfigSetupOidc() {
-        this.securityConfigSetupService.configRestored$
-            .pipe(
-                filter(configRestored => configRestored),
-                first()
-            )
-            .subscribe(() => {
-                this.checkAuth().subscribe({
-                    next: async (loggedIn: boolean) => {
-                        await this.postAuthSetup(loggedIn, false);
-                    }
-                });
-                this.eventService
-                    .registerForEvents()
-                    .pipe(filter(notification => notification.type === EventTypes.NewAuthorizationResult))
-                    .subscribe(async (value: OidcClientNotification<AuthorizationResult>) => {
-                        this.logger.info('[AppComponent] - OidcClientNotification event received with value ', value);
-                        await this.postAuthSetup(true, value.value.isRenewProcess);
-                    });
-            });
-    }
-
-    private postConfigSetupQuickLinks() {
-        this.checkAuth().subscribe({
-            next: async (loggedIn: boolean) => {
-                await this.postAuthSetup(loggedIn, false);
-            }
         });
-    }
-
-    private async postAuthSetup(loggedIn: boolean, skip: boolean) {
-        if (skip) {
-            return;
-        }
-        this.loggedIn = loggedIn;
-
-        if (loggedIn) {
-            await this.retrieveProfileRole();
-        }
-
-        this.setupNavigationSubscriptions();
-        this.connectionStatusService.start();
     }
 
     setupNavigationSubscriptions() {
@@ -172,19 +138,6 @@ export class AppComponent implements OnInit, OnDestroy {
         );
     }
 
-    private setupSecurityServiceProviderSubscription() {
-        this.securityServiceProviderService.currentSecurityService$.pipe(takeUntil(this.destroyed$)).subscribe(service => {
-            this.securityService = service;
-            this.serviceChanged$.next();
-
-            service.isAuthenticated$
-                .pipe(takeUntil(this.serviceChanged$), takeUntil(this.destroyed$), delay(0)) // delay(0) pipe is to prevent angular ExpressionChangedAfterItHasBeenCheckedError
-                .subscribe(authenticated => {
-                    this.loggedIn = authenticated;
-                });
-        });
-    }
-
     ngOnDestroy(): void {
         this.subscriptions.unsubscribe();
         this.destroyed$.next();
@@ -197,7 +150,8 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     checkAuth(): Observable<boolean> {
-        return this.securityService.checkAuth().pipe(
+        return this.securityService.checkAuth(this.currentIdp).pipe(
+            map(loginResponse => loginResponse.isAuthenticated),
             catchError(err => {
                 this.logger.error('[AppComponent] - Check Auth Error', err);
                 if (!this.isSignInUrl) {
@@ -206,10 +160,6 @@ export class AppComponent implements OnInit, OnDestroy {
                 return NEVER;
             })
         );
-    }
-
-    get isSignInUrl(): boolean {
-        return window.location.pathname.includes(pageUrls.EJudSignIn) || window.location.pathname.includes(pageUrls.VHSignIn);
     }
 
     async retrieveProfileRole(): Promise<void> {
@@ -231,15 +181,11 @@ export class AppComponent implements OnInit, OnDestroy {
     logOut() {
         this.loggedIn = false;
         sessionStorage.clear();
-        this.securityService.logoffAndRevokeTokens();
+        this.securityService.logoffAndRevokeTokens(this.currentIdp);
     }
 
     skipToContent() {
         this.main.nativeElement.focus();
-    }
-
-    private setPageTitle(title: string) {
-        this.titleService.setTitle(title);
     }
 
     scrollToTop() {
@@ -253,5 +199,41 @@ export class AppComponent implements OnInit, OnDestroy {
         } else {
             this.router.navigate([path]);
         }
+    }
+
+    private setPageTitle(title: string) {
+        this.titleService.setTitle(title);
+    }
+
+    private async postAuthSetup(loggedIn: boolean, skip: boolean) {
+        if (skip) {
+            return;
+        }
+        this.loggedIn = loggedIn;
+
+        if (loggedIn) {
+            await this.retrieveProfileRole();
+        }
+
+        this.setupNavigationSubscriptions();
+        this.connectionStatusService.start();
+    }
+
+    private setupSecurityServiceProviderSubscription() {
+        combineLatest([this.securityServiceProviderService.currentSecurityService$, this.securityServiceProviderService.currentIdp$])
+            .pipe(takeUntil(this.destroyed$))
+            .subscribe(([service, idp]) => {
+                this.securityService = service;
+                this.currentIdp = idp;
+
+                this.serviceChanged$.next();
+
+                service
+                    .isAuthenticated(this.securityServiceProviderService.currentIdp)
+                    .pipe(takeUntil(this.serviceChanged$), takeUntil(this.destroyed$), delay(0)) // delay(0) pipe is to prevent angular ExpressionChangedAfterItHasBeenCheckedError
+                    .subscribe(authenticated => {
+                        this.loggedIn = authenticated;
+                    });
+            });
     }
 }

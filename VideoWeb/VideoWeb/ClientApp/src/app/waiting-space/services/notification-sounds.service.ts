@@ -3,14 +3,15 @@ import { Logger } from 'src/app/services/logging/logger-base';
 
 @Injectable()
 export class NotificationSoundsService {
-    private readonly loggerPrefix = '[NotificationSoundsService] -';
-    constructor(private logger: Logger) {}
-
     consultationRequestSound: HTMLAudioElement;
     hearingStartingAnnounced: boolean;
     currentPlayCount: number;
     hearingAlertSound: HTMLAudioElement;
     hearingAlertPlayCount: number;
+
+    private readonly loggerPrefix = '[NotificationSoundsService] -';
+
+    constructor(private logger: Logger) {}
 
     async initConsultationRequestRingtone() {
         this.consultationRequestSound = new Audio();

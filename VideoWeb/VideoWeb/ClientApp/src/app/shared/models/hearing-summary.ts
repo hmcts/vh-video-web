@@ -10,9 +10,10 @@ import { HearingBase } from './hearing-base';
 import { ParticipantSummary } from './participant-summary';
 
 export class HearingSummary extends HearingBase {
+    isJoinByPhone: boolean;
+
     protected conference: ConferenceForVhOfficerResponse;
     protected participants: ParticipantSummary[];
-    isJoinByPhone: boolean;
 
     constructor(conference: ConferenceForVhOfficerResponse) {
         super();
@@ -41,10 +42,6 @@ export class HearingSummary extends HearingBase {
 
     get status(): ConferenceStatus {
         return this.conference.status;
-    }
-
-    set status(status: ConferenceStatus) {
-        this.conference.status = status;
     }
 
     get scheduledDuration(): number {
@@ -101,18 +98,6 @@ export class HearingSummary extends HearingBase {
         return this.conference.case_type;
     }
 
-    getConference() {
-        return this.conference;
-    }
-
-    getParticipants(): ParticipantSummary[] {
-        return this.participants;
-    }
-
-    getDurationAsText(): string {
-        return this.timeReader.getDurationAsText(this.conference.scheduled_duration);
-    }
-
     get startedDateTime(): Date {
         return this.conference.started_date_time;
     }
@@ -143,5 +128,21 @@ export class HearingSummary extends HearingBase {
 
     get allocatedCso(): string {
         return this.conference.allocated_cso;
+    }
+
+    set status(status: ConferenceStatus) {
+        this.conference.status = status;
+    }
+
+    getConference() {
+        return this.conference;
+    }
+
+    getParticipants(): ParticipantSummary[] {
+        return this.participants;
+    }
+
+    getDurationAsText(): string {
+        return this.timeReader.getDurationAsText(this.conference.scheduled_duration);
     }
 }

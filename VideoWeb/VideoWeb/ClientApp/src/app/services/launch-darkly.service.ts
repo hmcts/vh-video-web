@@ -2,7 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { LDFlagValue, LDClient, LDContext, initialize } from 'launchdarkly-js-client-sdk';
 import { Observable, Subject } from 'rxjs';
 import { ConfigService } from './api/config.service';
-import { map } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
 
 export const FEATURE_FLAGS = {
     vhoWorkAllocation: 'vho-work-allocation',
@@ -26,16 +26,21 @@ export class LaunchDarklyService implements OnDestroy {
     }
 
     initialize(): void {
-        const ldClientId = this.configService.getConfig().launch_darkly_client_id;
-        const envName = this.configService.getConfig().vh_idp_settings.redirect_uri;
+        this.configService
+            .getClientSettings()
+            .pipe(first())
+            .subscribe(config => {
+                const ldClientId = config.launch_darkly_client_id;
+                const envName = config.vh_idp_settings.redirect_uri;
 
-        const context: LDContext = {
-            kind: 'user',
-            key: 'VideoWeb',
-            name: envName
-        };
+                const context: LDContext = {
+                    kind: 'user',
+                    key: 'VideoWeb',
+                    name: envName
+                };
 
-        this.client = initialize(ldClientId, context);
+                this.client = initialize(ldClientId, context);
+            });
     }
 
     getFlag<T>(flagKey: string, defaultValue: LDFlagValue = false): Observable<T> {
@@ -46,10 +51,6 @@ export class LaunchDarklyService implements OnDestroy {
         this.client.waitUntilReady().then(() => {
             fetchFlag.next();
         });
-        return fetchFlag.pipe(
-            map(() => {
-                return this.client.variation(flagKey, defaultValue) as T;
-            })
-        );
+        return fetchFlag.pipe(map(() => this.client.variation(flagKey, defaultValue) as T));
     }
 }

@@ -11,13 +11,14 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class VhoQueryService {
-    private vhoConferencesSubject: BehaviorSubject<ConferenceForVhOfficerResponse[]>;
-    private vhoConferences: ConferenceForVhOfficerResponse[] = [];
-
     interval: NodeJS.Timer;
     venueNames: string[];
     allocatedCsoIds: string[];
     includeUnallocated = false;
+
+    private vhoConferencesSubject: BehaviorSubject<ConferenceForVhOfficerResponse[]>;
+    private vhoConferences: ConferenceForVhOfficerResponse[] = [];
+
     constructor(private apiClient: ApiClient) {
         this.vhoConferencesSubject = new BehaviorSubject(this.vhoConferences);
     }

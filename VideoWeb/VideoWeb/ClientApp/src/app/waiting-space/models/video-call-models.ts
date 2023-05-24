@@ -15,11 +15,9 @@ export class CallError {
 }
 
 export class ParticipantDeleted {
-    uuid: string;
-    constructor(uuid: string) {
-        this.uuid = uuid;
-    }
+    constructor(public uuid: string) {}
 }
+
 export class ParticipantUpdated {
     public isRemoteMuted: boolean;
     public isSpotlighted: boolean;
@@ -29,6 +27,26 @@ export class ParticipantUpdated {
     public isAudioOnlyCall: boolean;
     public isVideoCall: boolean;
     public protocol: string;
+
+    private constructor(
+        isRemoteMuted: string,
+        buzzTime: number,
+        pexipName: string,
+        uuid: string,
+        spotlightTime: number,
+        isAudioOnlyCall: string,
+        isVideoCall: string,
+        protocol: string
+    ) {
+        this.isRemoteMuted = isRemoteMuted?.toUpperCase() === 'YES';
+        this.isSpotlighted = spotlightTime !== 0;
+        this.handRaised = buzzTime !== 0;
+        this.pexipDisplayName = pexipName;
+        this.uuid = uuid;
+        this.isAudioOnlyCall = isAudioOnlyCall.toUpperCase() === 'YES';
+        this.isVideoCall = isVideoCall?.toUpperCase() === 'YES';
+        this.protocol = protocol;
+    }
 
     static fromPexipParticipant(pexipParticipant: PexipParticipant) {
         return new ParticipantUpdated(
@@ -41,25 +59,6 @@ export class ParticipantUpdated {
             pexipParticipant.is_video_call,
             pexipParticipant.protocol
         );
-    }
-    private constructor(
-        isRemoteMuted: string,
-        buzzTime: number,
-        pexipName: string,
-        uuid: string,
-        spotlightTime: number,
-        isAudioOnlyCall: string,
-        isVideoCall: string,
-        protocol: string
-    ) {
-        this.isRemoteMuted = isRemoteMuted.toUpperCase() === 'YES';
-        this.isSpotlighted = spotlightTime !== 0;
-        this.handRaised = buzzTime !== 0;
-        this.pexipDisplayName = pexipName;
-        this.uuid = uuid;
-        this.isAudioOnlyCall = isAudioOnlyCall.toUpperCase() === 'YES';
-        this.isVideoCall = isVideoCall.toUpperCase() === 'YES';
-        this.protocol = protocol;
     }
 }
 

@@ -23,18 +23,19 @@ export interface VhToastButton {
     styleUrls: ['./vh-toast.component.scss']
 })
 export class VhToastComponent extends Toast {
-    @HostBinding('class.black') get black() {
-        return this.vhToastOptions.color === 'black';
-    }
-    @HostBinding('class.white') get white() {
-        return this.vhToastOptions.color === 'white';
-    }
     vhToastOptions: VhToastOptions;
     actioned = false;
     declinedByThirdParty = false;
 
     constructor(protected toastrService: ToastrService, public toastPackage: ToastPackage) {
         super(toastrService, toastPackage);
+    }
+
+    @HostBinding('class.black') get black() {
+        return this.vhToastOptions.color === 'black';
+    }
+    @HostBinding('class.white') get white() {
+        return this.vhToastOptions.color === 'white';
     }
 
     remove() {

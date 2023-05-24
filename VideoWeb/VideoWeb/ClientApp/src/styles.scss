@@ -1,10 +1,10 @@
 $govuk-global-styles: true;
 
-@import '~govuk-frontend/govuk/base';
-@import '~govuk-frontend/govuk/all';
-@import '~@hmcts/frontend/all';
-@import '~@ng-select/ng-select/themes/default.theme.css';
-@import '~@ministryofjustice/frontend/moj/all';
+@import 'govuk-frontend/govuk/base';
+@import 'govuk-frontend/govuk/all';
+@import '@hmcts/frontend/all';
+@import '@ng-select/ng-select/themes/default.theme.css';
+@import '@ministryofjustice/frontend/moj/all';
 @import 'main';
 
 .grey-btn {

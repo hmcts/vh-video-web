@@ -27,6 +27,18 @@ export class SecurityServiceProvider {
         });
     }
 
+    get currentSecurityService$(): Observable<ISecurityService> {
+        return this.securityServiceSubject.asObservable();
+    }
+
+    get currentIdp$(): Observable<IdpProviders> {
+        return this.idpSubject.asObservable();
+    }
+
+    get currentIdp(): IdpProviders {
+        return this.idpSubject.value;
+    }
+
     getSecurityService(idp: IdpProviders = null): ISecurityService {
         switch (idp ?? this.securityConfigSetupService.getIdp()) {
             case IdpProviders.quickLink:
@@ -38,17 +50,5 @@ export class SecurityServiceProvider {
             default:
                 return null;
         }
-    }
-
-    get currentSecurityService$(): Observable<ISecurityService> {
-        return this.securityServiceSubject.asObservable();
-    }
-
-    get currentIdp$(): Observable<IdpProviders> {
-        return this.idpSubject.asObservable();
-    }
-
-    get currentIdp(): IdpProviders {
-        return this.idpSubject.value;
     }
 }

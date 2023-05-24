@@ -8,6 +8,7 @@ import { SecurityServiceProvider } from './authentication/security-provider.serv
 import { ISecurityService } from './authentication/security-service.interface';
 import { pageUrls } from '../shared/page-url.constants';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../services/launch-darkly.service';
+import { IdpProviders } from './idp-providers';
 
 describe('authguard', () => {
     let authGuard: AuthGuard;
@@ -18,16 +19,16 @@ describe('authguard', () => {
     let loggerSpy: jasmine.SpyObj<Logger>;
 
     beforeAll(() => {
-        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', [], ['isAuthenticated$']);
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['isAuthenticated']);
 
         launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
-
         securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
             [],
-            ['currentSecurityService$']
+            ['currentSecurityService$', 'currentIdp$']
         );
         getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentIdp$').and.returnValue(of(IdpProviders.vhaad));
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
         loggerSpy = jasmine.createSpyObj<Logger>('Logger', ['debug']);
     });
@@ -41,7 +42,7 @@ describe('authguard', () => {
         it('canActivate should return true', fakeAsync(() => {
             // Arrange
             const isAuthenticatedSubject = new Subject<boolean>();
-            getSpiedPropertyGetter(securityServiceSpy, 'isAuthenticated$').and.returnValue(isAuthenticatedSubject.asObservable());
+            securityServiceSpy.isAuthenticated.and.returnValue(isAuthenticatedSubject.asObservable());
 
             // Act
             let result = false;
@@ -67,7 +68,7 @@ describe('authguard', () => {
                 // Arrange
                 launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.multiIdpSelection).and.returnValue(of(test.flag));
                 const isAuthenticatedSubject = new Subject<boolean>();
-                getSpiedPropertyGetter(securityServiceSpy, 'isAuthenticated$').and.returnValue(isAuthenticatedSubject.asObservable());
+                securityServiceSpy.isAuthenticated.and.returnValue(isAuthenticatedSubject.asObservable());
 
                 // Act
                 let result = true;

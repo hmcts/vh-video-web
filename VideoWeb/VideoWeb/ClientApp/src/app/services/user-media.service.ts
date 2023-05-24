@@ -11,7 +11,6 @@ import { ErrorService } from './error.service';
     providedIn: 'root'
 })
 export class UserMediaService {
-    private readonly loggerPrefix = '[UserMediaService] -';
     readonly defaultStreamConstraints = {
         audio: true,
         video: {
@@ -19,53 +18,47 @@ export class UserMediaService {
             height: { ideal: 720 }
         }
     };
-    navigator: Navigator = navigator;
-
     readonly PREFERRED_CAMERA_KEY = 'vh.preferred.camera';
     readonly PREFERRED_MICROPHONE_KEY = 'vh.preferred.microphone';
+    navigator: Navigator = navigator;
 
+    private initialised = false;
+
+    private readonly loggerPrefix = '[UserMediaService] -';
+    private activeVideoDevice: UserMediaDevice;
+    private activeMicrophoneDevice: UserMediaDevice;
+    private isAudioOnly = true;
     private connectedDevicesSubject: ReplaySubject<UserMediaDevice[]> = new ReplaySubject(1);
+    private activeVideoDeviceSubject = new ReplaySubject<UserMediaDevice>(1);
+    private activeMicrophoneDeviceSubject = new ReplaySubject<UserMediaDevice>(1);
+    private isAudioOnlySubject = new ReplaySubject<boolean>(1);
+
+    constructor(private errorService: ErrorService, private logger: Logger, private localStorageService: LocalStorageService) {}
+
+    get isAudioOnly$(): Observable<boolean> {
+        return this.isAudioOnlySubject.asObservable();
+    }
+
+    get activeVideoDevice$(): Observable<UserMediaDevice> {
+        return this.activeVideoDeviceSubject.asObservable();
+    }
+
+    get activeMicrophoneDevice$(): Observable<UserMediaDevice> {
+        return this.activeMicrophoneDeviceSubject.asObservable();
+    }
+
     get connectedDevices$(): Observable<UserMediaDevice[]> {
         return this.connectedDevicesSubject.asObservable();
     }
 
     get connectedVideoDevices$(): Observable<UserMediaDevice[]> {
-        return this.connectedDevicesSubject.pipe(
-            map(devices => {
-                return devices.filter(x => x.kind === 'videoinput');
-            })
-        );
+        return this.connectedDevicesSubject.pipe(map(devices => devices.filter(x => x.kind === 'videoinput')));
     }
 
     get connectedMicrophoneDevices$(): Observable<UserMediaDevice[]> {
-        return this.connectedDevicesSubject.pipe(
-            map(devices => {
-                return devices.filter(x => x.kind === 'audioinput');
-            })
-        );
+        return this.connectedDevicesSubject.pipe(map(devices => devices.filter(x => x.kind === 'audioinput')));
     }
 
-    private activeVideoDevice: UserMediaDevice;
-    private activeVideoDeviceSubject = new ReplaySubject<UserMediaDevice>(1);
-    get activeVideoDevice$(): Observable<UserMediaDevice> {
-        return this.activeVideoDeviceSubject.asObservable();
-    }
-
-    private activeMicrophoneDevice: UserMediaDevice;
-    private activeMicrophoneDeviceSubject = new ReplaySubject<UserMediaDevice>(1);
-    get activeMicrophoneDevice$(): Observable<UserMediaDevice> {
-        return this.activeMicrophoneDeviceSubject.asObservable();
-    }
-
-    private isAudioOnly = true;
-    private isAudioOnlySubject = new ReplaySubject<boolean>(1);
-    get isAudioOnly$(): Observable<boolean> {
-        return this.isAudioOnlySubject.asObservable();
-    }
-
-    constructor(private errorService: ErrorService, private logger: Logger, private localStorageService: LocalStorageService) {}
-
-    private initialised = false;
     initialise() {
         if (!this.initialised) {
             this.logger.debug(`${this.loggerPrefix} Initialising user media service.`);
@@ -77,6 +70,93 @@ export class UserMediaService {
 
             this.initialised = true;
         }
+    }
+
+    getCameraAndMicrophoneDevices(): Observable<UserMediaDevice[]> {
+        return from(this.navigator.mediaDevices.enumerateDevices()).pipe(
+            take(1),
+            map(devices => {
+                const filteredDevices = devices.filter(
+                    x => x.deviceId !== 'default' && x.deviceId !== 'communications' && (x.kind === 'videoinput' || x.kind === 'audioinput')
+                );
+
+                return filteredDevices.length > 0 ? filteredDevices : devices;
+            }),
+            map(devices => devices.map(device => new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)))
+        );
+    }
+
+    hasValidCameraAndMicAvailable(): Observable<boolean> {
+        return from(this.navigator.mediaDevices.getUserMedia(this.defaultStreamConstraints)).pipe(
+            retry(3),
+            take(1),
+            map(stream => !!stream && stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0),
+            catchError(error => {
+                this.logger.error(`${this.loggerPrefix} couldn't get a valid camera and microphone`, error);
+                if (error.message.includes('Permission denied') || error.message.includes('Permission dismissed')) {
+                    this.errorService.goToServiceError(
+                        'switch-on-camera-microphone.your-camera-and-microphone-are-blocked',
+                        'switch-on-camera-microphone.please-unblock-camera-and-mic-or-call-us-if-any-problems',
+                        false
+                    );
+                } else {
+                    this.errorService.goToServiceError(
+                        'error-camera-microphone.problem-with-camera-mic',
+                        'error-camera-microphone.camera-mic-in-use',
+                        false
+                    );
+                }
+                return of(false);
+            })
+        );
+    }
+
+    updateActiveMicrophone(microhoneDevice: UserMediaDevice) {
+        this.logger.debug(`${this.loggerPrefix} Attempting to update available active microphone.`);
+
+        this.activeMicrophoneDevice$.pipe(take(1)).subscribe(mic => {
+            if (mic.deviceId !== microhoneDevice.deviceId) {
+                this.setActiveMicrophone(microhoneDevice);
+            }
+        });
+    }
+
+    updateActiveCamera(cameraDevice: UserMediaDevice) {
+        this.logger.debug(`${this.loggerPrefix} Attempting to update available active camera.`);
+
+        this.activeVideoDevice$.pipe(take(1)).subscribe(cam => {
+            if (cam.deviceId !== cameraDevice.deviceId) {
+                this.setActiveCamera(cameraDevice);
+            }
+        });
+    }
+
+    updateIsAudioOnly(audioOnly: boolean) {
+        if (this.isAudioOnly !== audioOnly) {
+            this.setIsAudioOnly(audioOnly);
+        }
+    }
+
+    hasMultipleDevices(): Observable<boolean> {
+        return zip(this.connectedVideoDevices$, this.connectedMicrophoneDevices$).pipe(
+            map(deviceList => deviceList[0].length > 1 || deviceList[1].length > 1)
+        );
+    }
+
+    isDeviceStillConnected(device: UserMediaDevice): Observable<boolean> {
+        return this.connectedDevices$.pipe(map(connectedDevices => !!connectedDevices.find(x => x.deviceId === device.deviceId)));
+    }
+
+    async selectScreenToShare(): Promise<MediaStream> {
+        let captureStream = null;
+        try {
+            const displayOptions = { video: true, audio: true };
+            const mediaDevices = navigator.mediaDevices as any;
+            captureStream = await mediaDevices.getDisplayMedia(displayOptions);
+        } catch (err) {
+            this.logger.error(`${this.loggerPrefix} Failed to get a stream for display media`, err);
+        }
+        return captureStream;
     }
 
     private handleDeviceChange() {
@@ -180,55 +260,6 @@ export class UserMediaService {
         );
     }
 
-    getCameraAndMicrophoneDevices(): Observable<UserMediaDevice[]> {
-        return from(this.navigator.mediaDevices.enumerateDevices()).pipe(
-            take(1),
-            map(devices => {
-                const filteredDevices = devices.filter(
-                    x => x.deviceId !== 'default' && x.deviceId !== 'communications' && (x.kind === 'videoinput' || x.kind === 'audioinput')
-                );
-
-                return filteredDevices.length > 0 ? filteredDevices : devices;
-            }),
-            map(devices => devices.map(device => new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)))
-        );
-    }
-
-    hasValidCameraAndMicAvailable(): Observable<boolean> {
-        return from(this.navigator.mediaDevices.getUserMedia(this.defaultStreamConstraints)).pipe(
-            retry(3),
-            take(1),
-            map(stream => !!stream && stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0),
-            catchError(error => {
-                this.logger.error(`${this.loggerPrefix} couldn't get a valid camera and microphone`, error);
-                if (error.message.includes('Permission denied') || error.message.includes('Permission dismissed')) {
-                    this.errorService.goToServiceError(
-                        'switch-on-camera-microphone.your-camera-and-microphone-are-blocked',
-                        'switch-on-camera-microphone.please-unblock-camera-and-mic-or-call-us-if-any-problems',
-                        false
-                    );
-                } else {
-                    this.errorService.goToServiceError(
-                        'error-camera-microphone.problem-with-camera-mic',
-                        'error-camera-microphone.camera-mic-in-use',
-                        false
-                    );
-                }
-                return of(false);
-            })
-        );
-    }
-
-    updateActiveMicrophone(microhoneDevice: UserMediaDevice) {
-        this.logger.debug(`${this.loggerPrefix} Attempting to update available active microphone.`);
-
-        this.activeMicrophoneDevice$.pipe(take(1)).subscribe(mic => {
-            if (mic.deviceId !== microhoneDevice.deviceId) {
-                this.setActiveMicrophone(microhoneDevice);
-            }
-        });
-    }
-
     private setActiveMicrophone(microhoneDevice: UserMediaDevice) {
         this.logger.debug(`${this.loggerPrefix} Attempting to set active microhone.`, { microhoneDevice });
 
@@ -238,16 +269,6 @@ export class UserMediaService {
 
             this.localStorageService.save(this.PREFERRED_MICROPHONE_KEY, microhoneDevice);
         }
-    }
-
-    updateActiveCamera(cameraDevice: UserMediaDevice) {
-        this.logger.debug(`${this.loggerPrefix} Attempting to update available active camera.`);
-
-        this.activeVideoDevice$.pipe(take(1)).subscribe(cam => {
-            if (cam.deviceId !== cameraDevice.deviceId) {
-                this.setActiveCamera(cameraDevice);
-            }
-        });
     }
 
     private setActiveCamera(cameraDevice: UserMediaDevice) {
@@ -261,44 +282,10 @@ export class UserMediaService {
         }
     }
 
-    updateIsAudioOnly(audioOnly: boolean) {
-        if (this.isAudioOnly !== audioOnly) {
-            this.setIsAudioOnly(audioOnly);
-        }
-    }
-
     private setIsAudioOnly(audioOnly: boolean) {
         this.logger.debug(`${this.loggerPrefix} Attempting to set audioOnly.`, { audioOnly });
 
         this.isAudioOnly = audioOnly;
         this.isAudioOnlySubject.next(this.isAudioOnly);
-    }
-
-    hasMultipleDevices(): Observable<boolean> {
-        return zip(this.connectedVideoDevices$, this.connectedMicrophoneDevices$).pipe(
-            map(deviceList => {
-                return deviceList[0].length > 1 || deviceList[1].length > 1;
-            })
-        );
-    }
-
-    isDeviceStillConnected(device: UserMediaDevice): Observable<boolean> {
-        return this.connectedDevices$.pipe(
-            map(connectedDevices => {
-                return !!connectedDevices.find(x => x.deviceId === device.deviceId);
-            })
-        );
-    }
-
-    async selectScreenToShare(): Promise<MediaStream> {
-        let captureStream = null;
-        try {
-            const displayOptions = { video: true, audio: true };
-            const mediaDevices = navigator.mediaDevices as any;
-            captureStream = await mediaDevices.getDisplayMedia(displayOptions);
-        } catch (err) {
-            this.logger.error(`${this.loggerPrefix} Failed to get a stream for display media`, err);
-        }
-        return captureStream;
     }
 }

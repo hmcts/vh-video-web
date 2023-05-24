@@ -1,56 +1,47 @@
-import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import {
-    AuthorizationResult,
-    AuthorizedState,
-    EventTypes,
-    OidcClientNotification,
-    PublicEventsService,
-    ValidationResult
-} from 'angular-auth-oidc-client';
+import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { pageUrls } from '../shared/page-url.constants';
-import { MockLogger } from '../testing/mocks/mock-logger';
 import { HomeComponent } from './home.component';
+import { SecurityServiceProvider } from '../security/authentication/security-provider.service';
+import { ISecurityService } from '../security/authentication/security-service.interface';
+import { IdpProviders } from '../security/idp-providers';
+import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
 
 describe('HomeComponent', () => {
     let component: HomeComponent;
     let routerSpy: jasmine.SpyObj<Router>;
-    let eventServiceSpy: jasmine.SpyObj<PublicEventsService>;
-    let oidcClientNotificationSpy: jasmine.SpyObj<OidcClientNotification<any>>;
-    let routeSpy: jasmine.SpyObj<ActivatedRoute>;
+    let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
+    let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
 
     beforeAll(() => {
         routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate']);
-        eventServiceSpy = jasmine.createSpyObj('PublicEventsService', ['registerForEvents']);
-        const snapshotSpy = jasmine.createSpyObj('ActivatedRouteSnapshot', [], { queryParamMap: convertToParamMap({}) });
-        routeSpy = jasmine.createSpyObj('ActivatedRoute', [], {
-            snapshot: snapshotSpy
-        });
+        securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
+            'SecurityServiceProviderService',
+            [],
+            ['currentSecurityService$', 'currentIdp$']
+        );
+
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['isAuthenticated']);
     });
 
     beforeEach(() => {
-        component = new HomeComponent(routerSpy, eventServiceSpy, new MockLogger(), routeSpy);
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentIdp$').and.returnValue(of(IdpProviders.vhaad));
+
+        component = new HomeComponent(securityServiceProviderServiceSpy, routerSpy);
         routerSpy.navigate.and.callFake(() => Promise.resolve(true));
+        routerSpy.navigate.calls.reset();
     });
 
-    it('should go to navigator if user log in', async () => {
-        const eventValue: OidcClientNotification<AuthorizationResult> = {
-            type: EventTypes.NewAuthorizationResult,
-            value: { isRenewProcess: false, authorizationState: AuthorizedState.Authorized, validationResult: ValidationResult.Ok }
-        };
-        oidcClientNotificationSpy = jasmine.createSpyObj('OidcClientNotification', {}, eventValue);
-        eventServiceSpy.registerForEvents.and.returnValue(of(oidcClientNotificationSpy));
+    it('should go to navigator when user is authenticated', async () => {
+        securityServiceSpy.isAuthenticated.and.returnValue(of(true));
         component.ngOnInit();
         expect(routerSpy.navigate).toHaveBeenCalledWith([`/${pageUrls.Navigator}`]);
     });
 
-    it('should navigate IdpSelection page when input home page url manually', async () => {
-        const eventValue: OidcClientNotification<AuthorizationResult> = {
-            type: EventTypes.ConfigLoaded
-        };
-        oidcClientNotificationSpy = jasmine.createSpyObj('OidcClientNotification', {}, eventValue);
-        eventServiceSpy.registerForEvents.and.returnValue(of(oidcClientNotificationSpy));
+    it('should not go to navigator when user is not authenticated', async () => {
+        securityServiceSpy.isAuthenticated.and.returnValue(of(false));
         component.ngOnInit();
-        expect(routerSpy.navigate).toHaveBeenCalledWith([`/${pageUrls.Login}`]);
+        expect(routerSpy.navigate).not.toHaveBeenCalledWith([`/${pageUrls.Navigator}`]);
     });
 });

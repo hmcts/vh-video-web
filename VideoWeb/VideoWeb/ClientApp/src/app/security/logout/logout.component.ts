@@ -1,5 +1,5 @@
 import { Component, Injectable, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { SessionStorage } from 'src/app/services/session-storage';
@@ -15,15 +15,23 @@ import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-dark
 })
 @Injectable()
 export class LogoutComponent implements OnInit {
-    private securityService: ISecurityService;
-    private readonly judgeAllocationStorage: SessionStorage<string[]>;
     public loginPath: string;
+
+    private securityService: ISecurityService;
+    private currentIdp: string;
+    private readonly judgeAllocationStorage: SessionStorage<string[]>;
+
     constructor(
         securityServiceProviderService: SecurityServiceProvider,
         private profileService: ProfileService,
         private ldService: LaunchDarklyService
     ) {
-        securityServiceProviderService.currentSecurityService$.subscribe(securityService => (this.securityService = securityService));
+        combineLatest([securityServiceProviderService.currentSecurityService$, securityServiceProviderService.currentIdp$]).subscribe(
+            ([service, idp]) => {
+                this.securityService = service;
+                this.currentIdp = idp;
+            }
+        );
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
 
         this.ldService
@@ -32,17 +40,17 @@ export class LogoutComponent implements OnInit {
             .subscribe(flag => (this.loginPath = flag ? '../' + pageUrls.IdpSelection : '../' + pageUrls.Login));
     }
 
+    get loggedIn(): Observable<boolean> {
+        return this.securityService.isAuthenticated(this.currentIdp);
+    }
+
     ngOnInit() {
-        this.securityService.isAuthenticated$.subscribe(authenticated => {
+        this.securityService.isAuthenticated(this.currentIdp).subscribe(authenticated => {
             if (authenticated) {
                 this.profileService.clearUserProfile();
                 this.judgeAllocationStorage.clear();
-                this.securityService.logoffAndRevokeTokens();
+                this.securityService.logoffAndRevokeTokens(this.currentIdp).subscribe();
             }
         });
-    }
-
-    get loggedIn(): Observable<boolean> {
-        return this.securityService.isAuthenticated$;
     }
 }

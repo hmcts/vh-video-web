@@ -9,10 +9,12 @@ import { HearingLayoutService } from 'src/app/services/hearing-layout.service';
     templateUrl: './select-hearing-layout.component.html'
 })
 export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
+    @Input() conference: ConferenceResponse;
+
     availableLayouts = [HearingLayout.OnePlus7, HearingLayout.TwoPlus21, HearingLayout.Dynamic];
     accordionOpenAllElement: HTMLButtonElement;
     currentButtonContentKey: string;
-    @Input() conference: ConferenceResponse;
+
     subscriptions = new Subscription();
 
     constructor(private hearingLayoutService: HearingLayoutService, protected translateService: TranslateService) {}
@@ -23,6 +25,10 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
 
     get recommendedLayout$(): Observable<HearingLayout> {
         return this.hearingLayoutService.recommendedLayout$;
+    }
+
+    get isAccordianOpen(): boolean {
+        return document.getElementById('accordian-container').classList.contains('govuk-accordion__section--expanded');
     }
 
     ngOnInit(): void {
@@ -72,10 +78,6 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
             const translated = `<span>${translatedText}</span>`;
             this.accordionOpenAllElement.innerHTML = this.accordionOpenAllElement.innerHTML.replace(originalText, translated);
         }
-    }
-
-    get isAccordianOpen(): boolean {
-        return document.getElementById('accordian-container').classList.contains('govuk-accordion__section--expanded');
     }
 
     updateSelectedLayout(layout: HearingLayout) {

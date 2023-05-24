@@ -6,8 +6,6 @@ import { RoomClosingToastComponent } from 'src/app/shared/toast/room-closing/roo
 
 @Injectable()
 export class RoomClosingToastrService {
-    private readonly loggerPrefix = '[RoomClosingToastrService] -';
-
     currentToast: ActiveToast<RoomClosingToastComponent> = null;
     expiresAt: Date;
 
@@ -15,6 +13,8 @@ export class RoomClosingToastrService {
 
     showFirstToastAtMins = 5;
     showSecondToastAtMins = 0.5;
+
+    private readonly loggerPrefix = '[RoomClosingToastrService] -';
 
     constructor(private logger: Logger, private toastr: ToastrService) {}
 
@@ -44,6 +44,21 @@ export class RoomClosingToastrService {
         }
     }
 
+    onToastClosed(): void {
+        if (this.currentToast) {
+            this.toastr.remove(this.currentToast.toastId);
+            this.currentToast = null;
+            this.toastsDismissed++;
+        }
+    }
+
+    /**
+     * Close any/all open toasts (i.e. when user exits consultation room)
+     */
+    clearToasts() {
+        this.onToastClosed();
+    }
+
     protected showToast(expiryDate: Date) {
         this.logger.debug(`${this.loggerPrefix} creating 'showRoomClosingAlert' toastr notification`);
 
@@ -58,23 +73,8 @@ export class RoomClosingToastrService {
         roomClosingToast.dismiss.subscribe(() => this.onToastClosed());
     }
 
-    onToastClosed(): void {
-        if (this.currentToast) {
-            this.toastr.remove(this.currentToast.toastId);
-            this.currentToast = null;
-            this.toastsDismissed++;
-        }
-    }
-
     // just for convenience
     private minsToMs(minutes: number) {
         return minutes * 60 * 1000;
-    }
-
-    /**
-     * Close any/all open toasts (i.e. when user exits consultation room)
-     */
-    clearToasts() {
-        this.onToastClosed();
     }
 }

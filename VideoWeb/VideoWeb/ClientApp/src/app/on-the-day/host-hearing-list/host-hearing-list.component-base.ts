@@ -1,5 +1,5 @@
 import { Directive, HostListener, OnDestroy, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
@@ -22,7 +22,7 @@ export abstract class HostHearingListBaseComponentDirective implements OnInit, O
 
     conferences: ConferenceForHostResponse[];
     conferencesSubscription = new Subscription();
-    hearingListForm: FormGroup;
+    hearingListForm: UntypedFormGroup;
     loadingData: boolean;
     interval: any;
     today = new Date();
@@ -42,16 +42,8 @@ export abstract class HostHearingListBaseComponentDirective implements OnInit, O
         this.loadingData = true;
     }
 
-    ngOnInit() {
-        this.profileService.getUserProfile().then(profile => {
-            this.profile = profile;
-        });
-        this.retrieveHearingsForUser();
-        this.setupSubscribers();
-        this.hearingVenueFlagsService.setHearingVenueIsScottish(false);
-        this.interval = setInterval(() => {
-            this.retrieveHearingsForUser();
-        }, 30000);
+    get courtName(): string {
+        return this.profile ? `${this.profile.first_name}, ${this.profile.last_name}` : '';
     }
 
     @HostListener('window:beforeunload')
@@ -63,10 +55,16 @@ export abstract class HostHearingListBaseComponentDirective implements OnInit, O
         this.eventHubSubscriptions.unsubscribe();
     }
 
-    abstract retrieveHearingsForUser();
-
-    get courtName(): string {
-        return this.profile ? `${this.profile.first_name}, ${this.profile.last_name}` : '';
+    ngOnInit() {
+        this.profileService.getUserProfile().then(profile => {
+            this.profile = profile;
+        });
+        this.retrieveHearingsForUser();
+        this.setupSubscribers();
+        this.hearingVenueFlagsService.setHearingVenueIsScottish(false);
+        this.interval = setInterval(() => {
+            this.retrieveHearingsForUser();
+        }, 30000);
     }
 
     hasHearings() {
@@ -111,4 +109,6 @@ export abstract class HostHearingListBaseComponentDirective implements OnInit, O
         const conference = this.conferences.find(c => c.id === message.conferenceId);
         conference.status = message.status;
     }
+
+    abstract retrieveHearingsForUser();
 }

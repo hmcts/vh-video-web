@@ -28,6 +28,10 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
         super(videoWebService, router, vhoQueryService, logger, ldService, profileService);
     }
 
+    get showVhoSpecificContent(): boolean {
+        return true;
+    }
+
     ngOnInit() {
         super.ngOnInit();
         this.videoWebService.getCSOs().subscribe(async value => {
@@ -79,27 +83,6 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
         await this.router.navigateByUrl(pageUrls.AdminHearingList);
     }
 
-    private getFiltersCourtRoomsAccounts(response: CourtRoomsAccountResponse[]) {
-        const updateFilterSelection = (filterVenue: CourtRoomsAccounts) => {
-            const courtroomAccount = this.filterCourtRoomsAccounts.find(x => x.venue === filterVenue.venue);
-            if (courtroomAccount) {
-                courtroomAccount.selected = filterVenue.selected;
-                courtroomAccount.updateRoomSelection(filterVenue.courtsRooms);
-            }
-        };
-        this.filterCourtRoomsAccounts = response.map(x => new CourtRoomsAccounts(x.first_name, x.last_names, true));
-        const previousFilter = this.courtAccountsAllocationStorage.get();
-        if (previousFilter) {
-            previousFilter.forEach(x => updateFilterSelection(x));
-        }
-        this.courtAccountsAllocationStorage.set(this.filterCourtRoomsAccounts);
-        this.logger.info('[VenueList] - Venue selection is changed');
-    }
-
-    get showVhoSpecificContent(): boolean {
-        return true;
-    }
-
     async updateCsoFilterSelection(filter: CsoFilter) {
         const selectCso = (csoId: string) => {
             if (!this.csos.find(c => c.id === csoId)) {
@@ -119,5 +102,22 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
         if (filter.includeUnallocated) {
             selectCso(VhOfficerVenueListComponent.UNALLOCATED);
         }
+    }
+
+    private getFiltersCourtRoomsAccounts(response: CourtRoomsAccountResponse[]) {
+        const updateFilterSelection = (filterVenue: CourtRoomsAccounts) => {
+            const courtroomAccount = this.filterCourtRoomsAccounts.find(x => x.venue === filterVenue.venue);
+            if (courtroomAccount) {
+                courtroomAccount.selected = filterVenue.selected;
+                courtroomAccount.updateRoomSelection(filterVenue.courtsRooms);
+            }
+        };
+        this.filterCourtRoomsAccounts = response.map(x => new CourtRoomsAccounts(x.first_name, x.last_names, true));
+        const previousFilter = this.courtAccountsAllocationStorage.get();
+        if (previousFilter) {
+            previousFilter.forEach(x => updateFilterSelection(x));
+        }
+        this.courtAccountsAllocationStorage.set(this.filterCourtRoomsAccounts);
+        this.logger.info('[VenueList] - Venue selection is changed');
     }
 }

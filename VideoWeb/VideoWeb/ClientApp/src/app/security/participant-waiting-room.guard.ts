@@ -35,7 +35,7 @@ export class ParticipantWaitingRoomGuard implements CanActivate {
     }
 
     private handleError(error) {
-        this.logger.error(`[ParticipantWaitingRoomGuard] Could not get conference data. Returning home.`, error);
+        this.logger.error('[ParticipantWaitingRoomGuard] Could not get conference data. Returning home.', error);
         this.router.navigate([pageUrls.Home]);
 
         return false;

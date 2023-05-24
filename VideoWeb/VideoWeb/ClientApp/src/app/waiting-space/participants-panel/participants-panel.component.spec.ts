@@ -39,8 +39,7 @@ import {
     hearingTransferSubjectMock,
     participantHandRaisedStatusSubjectMock,
     participantMediaStatusSubjectMock,
-    participantStatusSubjectMock,
-    participantRemoteMuteStatusSubjectMock
+    participantStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
@@ -82,8 +81,7 @@ describe('ParticipantsPanelComponent', () => {
     participants = participants.concat(testData.getListOfLinkedParticipants().concat(testData.getListOfLinkedParticipants(true)));
     const endpoints = testData.getListOfEndpoints();
     const videoCallTestData = new VideoCallTestData();
-    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    videoWebServiceSpy = jasmine.createSpyObj('VideoWebService', [
+    const videoWebServiceSpy = jasmine.createSpyObj('VideoWebService', [
         'getParticipantsByConferenceId',
         'getEndpointsForConference',
         'getConferenceById'

@@ -13,12 +13,12 @@
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.0" />
-    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.8" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.53.0" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="8.55.0.65544">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="StackExchange.Redis" Version="2.1.28" />
+    <PackageReference Include="StackExchange.Redis" Version="2.6.111" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
     <PackageReference Include="UserApi.Client" Version="1.44.2" />
     <PackageReference Include="VideoApi.Client" Version="1.44.3" />

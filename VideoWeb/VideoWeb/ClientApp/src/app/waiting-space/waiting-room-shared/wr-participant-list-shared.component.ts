@@ -24,16 +24,6 @@ import { HearingRole } from '../models/hearing-role-model';
 
 @Directive()
 export abstract class WRParticipantStatusListDirective {
-    @Input() set conference(conference: ConferenceResponse) {
-        this._conference = conference;
-        this.initParticipants();
-    }
-
-    get conference(): ConferenceResponse {
-        return this._conference;
-    }
-
-    private _conference: ConferenceResponse;
     @Input() participantEndpoints: AllowedEndpointResponse[];
 
     nonJudgeParticipants: ParticipantResponse[];
@@ -48,6 +38,8 @@ export abstract class WRParticipantStatusListDirective {
     loggedInUser: LoggedParticipantResponse;
     loggerPrefix = '[WRParticipantStatusListDirective] -';
 
+    private _conference: ConferenceResponse;
+
     protected constructor(
         protected consultationService: ConsultationService,
         protected eventService: EventsService,
@@ -56,14 +48,23 @@ export abstract class WRParticipantStatusListDirective {
         protected translateService: TranslateService
     ) {}
 
-    initParticipants() {
-        this.filterNonJudgeParticipants();
-        this.filterJudge();
-        this.filterStaffMember();
-        this.filterPanelMembers();
-        this.filterObservers();
-        this.filterWingers();
-        this.sortEndpoints();
+    get canInvite(): boolean {
+        const isJudicialUser = this.loggedInUser.role === Role.Judge || this.loggedInUser.role === Role.JudicialOfficeHolder;
+        const isStaffMember = this.loggedInUser.role === Role.StaffMember;
+
+        if (isJudicialUser || isStaffMember) {
+            return true;
+        } else {
+            const loggedInParticipant = this._conference.participants.find(x => x.id === this.loggedInUser.participant_id);
+            const hasLinkedParticipants = loggedInParticipant.linked_participants.length;
+            const currentRoomIsJudicial = loggedInParticipant.current_room?.label.startsWith('JudgeJOH');
+
+            return !currentRoomIsJudicial && !hasLinkedParticipants;
+        }
+    }
+
+    get conference(): ConferenceResponse {
+        return this._conference;
     }
 
     get participantCount(): number {
@@ -74,6 +75,21 @@ export abstract class WRParticipantStatusListDirective {
             this.wingers.length +
             this.staffMembers.length
         );
+    }
+
+    @Input() set conference(conference: ConferenceResponse) {
+        this._conference = conference;
+        this.initParticipants();
+    }
+
+    initParticipants() {
+        this.filterNonJudgeParticipants();
+        this.filterJudge();
+        this.filterStaffMember();
+        this.filterPanelMembers();
+        this.filterObservers();
+        this.filterWingers();
+        this.sortEndpoints();
     }
 
     isCaseTypeNone(participant: ParticipantResponse): boolean {
@@ -117,6 +133,34 @@ export abstract class WRParticipantStatusListDirective {
         return participant.hearing_role === HearingRole.WITNESS;
     }
 
+    hasInterpreterLink(participant: ParticipantResponse) {
+        return participant?.linked_participants.some(x => x.link_type === LinkType.Interpreter);
+    }
+
+    getHearingRole(participant: ParticipantResponse) {
+        const translatedHearingRole = this.translateService.instant('hearing-role.' + this.stringToTranslateId(participant.hearing_role));
+        const translatedFor = this.translateService.instant('wr-participant-list-shared.for');
+        if (participant.hearing_role === HearingRole.INTERPRETER) {
+            const interpreteeName = this.getInterpreteeName(participant.id);
+            return `${translatedHearingRole} ${translatedFor} <br><strong>${interpreteeName}</strong>`;
+        }
+        if (participant.representee) {
+            const translatedRepresentative = this.translateService.instant('wr-participant-list-shared.representative');
+            const hearingRoleText = this.isCaseTypeNone(participant) ? translatedHearingRole : translatedRepresentative;
+            return `${hearingRoleText} ${translatedFor} <br><strong>${participant.representee}</strong>`;
+        }
+        return `${translatedHearingRole}`;
+    }
+
+    stringToTranslateId(str: string) {
+        return str?.replace(/\s/g, '-').toLowerCase();
+    }
+
+    getInterpreteeName(interpreterId: string) {
+        const interpreter = this.nonJudgeParticipants.find(x => x.id === interpreterId);
+        return this.nonJudgeParticipants.find(x => x.id === interpreter.linked_participants[0].linked_id).name;
+    }
+
     protected filterNonJudgeParticipants(): void {
         let nonJudgeParts = this._conference.participants
             .filter(
@@ -155,32 +199,61 @@ export abstract class WRParticipantStatusListDirective {
         }
     }
 
-    hasInterpreterLink(participant: ParticipantResponse) {
-        return participant?.linked_participants.some(x => x.link_type === LinkType.Interpreter);
+    protected filterObservers(): void {
+        let observers = this._conference.participants
+            .filter(
+                x =>
+                    x.case_type_group === CaseTypeGroup.OBSERVER ||
+                    (x.hearing_role === HearingRole.OBSERVER && x.role !== Role.QuickLinkObserver)
+            )
+            .sort((a, b) => a.display_name.localeCompare(b.display_name));
+
+        observers = [
+            ...observers,
+            ...this._conference.participants
+                .filter(x => x.role === Role.QuickLinkObserver)
+                .sort((a, b) => a.display_name.localeCompare(b.display_name))
+        ];
+
+        this.observers = observers;
     }
 
-    getHearingRole(participant: ParticipantResponse) {
-        const translatedHearingRole = this.translateService.instant('hearing-role.' + this.stringToTranslateId(participant.hearing_role));
-        const translatedFor = this.translateService.instant('wr-participant-list-shared.for');
-        if (participant.hearing_role === HearingRole.INTERPRETER) {
-            const interpreteeName = this.getInterpreteeName(participant.id);
-            return `${translatedHearingRole} ${translatedFor} <br><strong>${interpreteeName}</strong>`;
-        }
-        if (participant.representee) {
-            const translatedRepresentative = this.translateService.instant('wr-participant-list-shared.representative');
-            const hearingRoleText = this.isCaseTypeNone(participant) ? translatedHearingRole : translatedRepresentative;
-            return `${hearingRoleText} ${translatedFor} <br><strong>${participant.representee}</strong>`;
-        }
-        return `${translatedHearingRole}`;
+    protected filterPanelMembers(): void {
+        this.panelMembers = this._conference.participants
+            .filter(x => this.isParticipantPanelMember(x.hearing_role))
+            .sort((a, b) => a.display_name.localeCompare(b.display_name));
+    }
+    protected isParticipantPanelMember(hearingRole: string): boolean {
+        return HearingRoleHelper.isPanelMember(hearingRole);
     }
 
-    stringToTranslateId(str: string) {
-        return str?.replace(/\s/g, '-').toLowerCase();
+    protected filterJudge(): void {
+        this.judge = this._conference.participants.find(x => x.role === Role.Judge);
     }
 
-    getInterpreteeName(interpreterId: string) {
-        const interpreter = this.nonJudgeParticipants.find(x => x.id === interpreterId);
-        return this.nonJudgeParticipants.find(x => x.id === interpreter.linked_participants[0].linked_id).name;
+    protected filterStaffMember(): void {
+        this.staffMembers = this._conference.participants
+            .filter(x => x.role === Role.StaffMember)
+            .sort((a, b) => a.display_name.localeCompare(b.display_name));
+    }
+
+    protected camelToSpaced(word: string) {
+        const splitWord = word
+            .match(/[a-z]+|[^a-z]+/gi)
+            .join(' ')
+            .split(/(?=[A-Z])/)
+            .join(' ');
+        const lowcaseWord = splitWord.toLowerCase();
+        return lowcaseWord.charAt(0).toUpperCase() + lowcaseWord.slice(1);
+    }
+
+    protected camelToSnake(word: string) {
+        return word
+            .match(/[a-z]+|[^a-z]+/gi)
+            .join('_')
+            .split(/(?=[A-Z])/)
+            .join('_')
+            .toLowerCase();
     }
 
     private orderForInterpreter(
@@ -208,85 +281,13 @@ export abstract class WRParticipantStatusListDirective {
         return sortedNonJudgeParticipants;
     }
 
-    protected filterObservers(): void {
-        let observers = this._conference.participants
-            .filter(
-                x =>
-                    x.case_type_group === CaseTypeGroup.OBSERVER ||
-                    (x.hearing_role === HearingRole.OBSERVER && x.role !== Role.QuickLinkObserver)
-            )
-            .sort((a, b) => a.display_name.localeCompare(b.display_name));
-
-        observers = [
-            ...observers,
-            ...this._conference.participants
-                .filter(x => x.role === Role.QuickLinkObserver)
-                .sort((a, b) => a.display_name.localeCompare(b.display_name))
-        ];
-
-        this.observers = observers;
-    }
-
     private filterWingers(): void {
         this.wingers = this._conference.participants
             .filter(x => x.hearing_role === HearingRole.WINGER)
             .sort((a, b) => a.name.localeCompare(b.name));
     }
 
-    protected filterPanelMembers(): void {
-        this.panelMembers = this._conference.participants
-            .filter(x => this.isParticipantPanelMember(x.hearing_role))
-            .sort((a, b) => a.display_name.localeCompare(b.display_name));
-    }
-    protected isParticipantPanelMember(hearingRole: string): boolean {
-        return HearingRoleHelper.isPanelMember(hearingRole);
-    }
-
-    protected filterJudge(): void {
-        this.judge = this._conference.participants.find(x => x.role === Role.Judge);
-    }
-
-    protected filterStaffMember(): void {
-        this.staffMembers = this._conference.participants
-            .filter(x => x.role === Role.StaffMember)
-            .sort((a, b) => a.display_name.localeCompare(b.display_name));
-    }
-
     private sortEndpoints(): void {
         this.endpoints = [...this._conference.endpoints].sort((a, b) => a.display_name.localeCompare(b.display_name));
-    }
-
-    get canInvite(): boolean {
-        const isJudicialUser = this.loggedInUser.role === Role.Judge || this.loggedInUser.role === Role.JudicialOfficeHolder;
-        const isStaffMember = this.loggedInUser.role === Role.StaffMember;
-
-        if (isJudicialUser || isStaffMember) {
-            return true;
-        } else {
-            const loggedInParticipant = this._conference.participants.find(x => x.id === this.loggedInUser.participant_id);
-            const hasLinkedParticipants = loggedInParticipant.linked_participants.length;
-            const currentRoomIsJudicial = loggedInParticipant.current_room?.label.startsWith('JudgeJOH');
-
-            return !currentRoomIsJudicial && !hasLinkedParticipants;
-        }
-    }
-
-    protected camelToSpaced(word: string) {
-        const splitWord = word
-            .match(/[a-z]+|[^a-z]+/gi)
-            .join(' ')
-            .split(/(?=[A-Z])/)
-            .join(' ');
-        const lowcaseWord = splitWord.toLowerCase();
-        return lowcaseWord.charAt(0).toUpperCase() + lowcaseWord.slice(1);
-    }
-
-    protected camelToSnake(word: string) {
-        return word
-            .match(/[a-z]+|[^a-z]+/gi)
-            .join('_')
-            .split(/(?=[A-Z])/)
-            .join('_')
-            .toLowerCase();
     }
 }

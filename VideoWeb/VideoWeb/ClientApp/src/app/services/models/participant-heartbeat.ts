@@ -1,29 +1,13 @@
 export class ParticipantHeartbeat {
     constructor(
-        conferenceId: string,
-        participantId: string,
-        heartbeatHealth: HeartbeatHealth,
-        browserName: string,
-        browserVersion: string,
-        osName: string,
-        osVersion: string
-    ) {
-        this.conferenceId = conferenceId;
-        this.participantId = participantId;
-        this.heartbeatHealth = heartbeatHealth;
-        this.browserName = browserName;
-        this.browserVersion = browserVersion;
-        this.osName = osName;
-        this.osVersion = osVersion;
-    }
-
-    conferenceId: string;
-    participantId: string;
-    heartbeatHealth: HeartbeatHealth;
-    browserName: string;
-    browserVersion: string;
-    osName: string;
-    osVersion: string;
+        public conferenceId: string,
+        public participantId: string,
+        public heartbeatHealth: HeartbeatHealth,
+        public browserName: string,
+        public browserVersion: string,
+        public osName: string,
+        public osVersion: string
+    ) {}
 }
 
 export enum HeartbeatHealth {

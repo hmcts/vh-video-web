@@ -6,7 +6,7 @@ import { SecurityConfigSetupService } from '../security-config-setup.service';
 
 @Component({
     selector: 'app-dom1-sign-in',
-    template: ``
+    template: ''
 })
 export class Dom1SignInComponent implements OnInit {
     constructor(private router: Router, private securityConfigSetupService: SecurityConfigSetupService) {}

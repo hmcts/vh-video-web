@@ -20,7 +20,7 @@ export class ParticipantStatusGuard implements CanActivate {
     ) {}
 
     async canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
-        this.logger.debug(`[ParticipantStatusGuard] Determining participant status`);
+        this.logger.debug('[ParticipantStatusGuard] Determining participant status');
         try {
             const profile = await this.userProfileService.getUserProfile();
 
@@ -40,11 +40,11 @@ export class ParticipantStatusGuard implements CanActivate {
                     profile.role === Role.QuickLinkObserver ||
                     profile.role === Role.QuickLinkParticipant)
             ) {
-                this.logger.debug(`[ParticipantStatusGuard] Refresh detected. Resetting participant status to joining`);
+                this.logger.debug('[ParticipantStatusGuard] Refresh detected. Resetting participant status to joining');
                 this.participantStatusUpdateService.postParticipantStatus(EventType.ParticipantJoining, conferenceId).then(() => {});
             }
         } catch (err) {
-            this.logger.error(`[ParticipantStatusGuard] Could not reset participant status to Joining.`, err);
+            this.logger.error('[ParticipantStatusGuard] Could not reset participant status to Joining.', err);
             this.errorService.handleApiError(err);
         }
 

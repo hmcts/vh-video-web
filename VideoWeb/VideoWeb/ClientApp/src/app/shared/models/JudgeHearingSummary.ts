@@ -5,6 +5,8 @@ import { HearingSummary } from './hearing-summary';
 import { ParticipantSummary } from './participant-summary';
 
 export class JudgeHearingSummary extends HearingSummary {
+    numberOfEndpoints: number;
+
     constructor(conference: ConferenceForHostResponse) {
         super(conference);
         this.numberOfEndpoints = conference.number_of_endpoints;
@@ -37,8 +39,6 @@ export class JudgeHearingSummary extends HearingSummary {
     get staffMembers(): ParticipantSummary[] {
         return this.participants.filter(x => x.hearingRole === HearingRole.STAFF_MEMBER);
     }
-
-    numberOfEndpoints: number;
 
     isExpired() {
         return super.isExpired(this.conference.closed_date_time);

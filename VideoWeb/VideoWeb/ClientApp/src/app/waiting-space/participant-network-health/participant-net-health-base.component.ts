@@ -6,10 +6,11 @@ import { HeartbeatHealth, ParticipantHeartbeat } from 'src/app/services/models/p
 
 @Directive()
 export abstract class ParticipantNetworkHealthBaseDirective implements OnInit, OnDestroy {
-    eventSubscriptions$ = new Subscription();
-    networkHealth?: HeartbeatHealth;
     @Input() participant: ParticipantResponse;
     @Input() showDetail = true;
+
+    eventSubscriptions$ = new Subscription();
+    networkHealth?: HeartbeatHealth;
 
     constructor(protected eventsService: EventsService) {}
 

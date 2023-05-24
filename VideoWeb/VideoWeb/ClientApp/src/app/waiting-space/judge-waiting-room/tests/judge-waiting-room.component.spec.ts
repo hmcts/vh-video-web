@@ -136,7 +136,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     const wowzaParticipant = {
         buzz_time: 0,
         call_tag: null,
-        display_name: `vh-wowza-dev`,
+        display_name: 'vh-wowza-dev',
         external_node_uuid: '',
         has_media: true,
         is_audio_only_call: '',
@@ -773,7 +773,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         const hearingLayout = HearingLayout.Dynamic;
         getSpiedPropertyGetter(hearingLayoutServiceSpy, 'currentLayout$').and.returnValue(of(hearingLayout));
 
-        const hearingId = Guid.create();
+        const hearingId = Guid.create().toString();
         spyOnProperty(component.hearing, 'id', 'get').and.returnValue(hearingId);
 
         // Act

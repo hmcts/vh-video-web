@@ -26,16 +26,20 @@ import {
 } from '../models/video-call-models';
 import { VideoCallEventsService } from './video-call-events.service';
 
-declare var PexRTC: any;
+/* eslint-disable @typescript-eslint/naming-convention */
+declare let PexRTC: any;
 
 @Injectable()
 export class VideoCallService {
-    private readonly loggerPrefix = '[VideoCallService] -';
-    private readonly preferredLayoutCache: SessionStorage<Record<string, HearingLayout>>;
     readonly VIDEO_CALL_PREFERENCE_KEY = 'vh.videocall.preferences';
     readonly PREFERRED_LAYOUT_KEY = 'vh.preferred.layout';
-
     readonly callTypeAudioOnly = 'audioonly';
+
+    pexipAPI: PexipClient;
+    streamModifiedSubscription: Subscription;
+
+    private readonly loggerPrefix = '[VideoCallService] -';
+    private readonly preferredLayoutCache: SessionStorage<Record<string, HearingLayout>>;
 
     private onSetupSubject = new Subject<CallSetup>();
     private onConnectedSubject = new Subject<ConnectedCall>();
@@ -60,8 +64,6 @@ export class VideoCallService {
     private renegotiating = false;
     private justRenegotiated = false;
 
-    pexipAPI: PexipClient;
-    streamModifiedSubscription: Subscription;
     private _displayStream: MediaStream;
 
     constructor(
@@ -173,60 +175,6 @@ export class VideoCallService {
         this.pexipAPI.call_tag = Guid.create().toString();
     }
 
-    private handleSetup(stream: MediaStream | URL) {
-        this.onSetupSubject.next(new CallSetup(stream));
-    }
-
-    private handleConnect(stream: MediaStream | URL) {
-        if (this.renegotiating || this.justRenegotiated) {
-            this.logger.warn(
-                `${this.loggerPrefix} Not initialising heartbeat or subscribing to stream modified as it was during a renegotation`
-            );
-            this.justRenegotiated = false;
-        } else {
-            this.kinlyHeartbeatService.initialiseHeartbeat(this.pexipAPI);
-
-            if (!this.streamModifiedSubscription) {
-                this.streamModifiedSubscription = this.userMediaStreamService.streamModified$
-                    .pipe(takeUntil(this.hasDisconnected$))
-                    .subscribe(() => this.renegotiateCall());
-            }
-        }
-
-        this.onConnectedSubject.next(new ConnectedCall(stream));
-    }
-
-    private handleParticipantCreated(participantUpdate: PexipParticipant) {
-        this.logger.debug(`${this.loggerPrefix} handling participant created`);
-
-        this.onParticipantCreatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
-    }
-
-    private handleParticipantDeleted(participantDeleted: PexipParticipantDeleted) {
-        this.logger.debug(`${this.loggerPrefix} handling participant Delete`);
-        this.onParticipantDeletedSubject.next(new ParticipantDeleted(participantDeleted.uuid));
-    }
-
-    private handleParticipantUpdate(participantUpdate: PexipParticipant) {
-        this.videoCallEventsService.handleParticipantUpdated(ParticipantUpdated.fromPexipParticipant(participantUpdate));
-        this.onParticipantUpdatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
-    }
-
-    private handleError(error: string) {
-        this.cleanUpConnection();
-
-        this.onErrorSubject.next(new CallError(error));
-    }
-
-    // Handles server issued disconections - NOT CLIENT
-    // https://docs.pexip.com/api_client/api_pexrtc.htm#onDisconnect
-    private handleServerDisconnect(reason: string) {
-        this.logger.debug(`${this.loggerPrefix} handling server disconnection`);
-
-        this.cleanUpConnection();
-        this.onDisconnected.next(new DisconnectedCall(reason));
-    }
-
     makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number) {
         this.logger.info(`${this.loggerPrefix} make pexip call`, {
             pexipNode: pexipNode
@@ -245,14 +193,6 @@ export class VideoCallService {
         } else {
             throw new Error(`${this.loggerPrefix} Pexip Client has not been initialised.`);
         }
-    }
-
-    private cleanUpConnection() {
-        this.logger.warn(`${this.loggerPrefix} Cleaning up connection.`);
-        this.hasDisconnected$.next();
-        this.hasDisconnected$.complete();
-        this.kinlyHeartbeatService.stopHeartbeat();
-        this.setupClient();
     }
 
     connect(pin: string, extension: string) {
@@ -544,5 +484,67 @@ export class VideoCallService {
         });
 
         return this.apiClient.getParticipantRoomForParticipant(conferenceId, participantId, 'Judicial').toPromise();
+    }
+
+    private handleSetup(stream: MediaStream | URL) {
+        this.onSetupSubject.next(new CallSetup(stream));
+    }
+
+    private handleConnect(stream: MediaStream | URL) {
+        if (this.renegotiating || this.justRenegotiated) {
+            this.logger.warn(
+                `${this.loggerPrefix} Not initialising heartbeat or subscribing to stream modified as it was during a renegotation`
+            );
+            this.justRenegotiated = false;
+        } else {
+            this.kinlyHeartbeatService.initialiseHeartbeat(this.pexipAPI);
+
+            if (!this.streamModifiedSubscription) {
+                this.streamModifiedSubscription = this.userMediaStreamService.streamModified$
+                    .pipe(takeUntil(this.hasDisconnected$))
+                    .subscribe(() => this.renegotiateCall());
+            }
+        }
+
+        this.onConnectedSubject.next(new ConnectedCall(stream));
+    }
+
+    private handleParticipantCreated(participantUpdate: PexipParticipant) {
+        this.logger.debug(`${this.loggerPrefix} handling participant created`);
+
+        this.onParticipantCreatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
+    }
+
+    private handleParticipantDeleted(participantDeleted: PexipParticipantDeleted) {
+        this.logger.debug(`${this.loggerPrefix} handling participant Delete`);
+        this.onParticipantDeletedSubject.next(new ParticipantDeleted(participantDeleted.uuid));
+    }
+
+    private handleParticipantUpdate(participantUpdate: PexipParticipant) {
+        this.videoCallEventsService.handleParticipantUpdated(ParticipantUpdated.fromPexipParticipant(participantUpdate));
+        this.onParticipantUpdatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
+    }
+
+    private handleError(error: string) {
+        this.cleanUpConnection();
+
+        this.onErrorSubject.next(new CallError(error));
+    }
+
+    // Handles server issued disconections - NOT CLIENT
+    // https://docs.pexip.com/api_client/api_pexrtc.htm#onDisconnect
+    private handleServerDisconnect(reason: string) {
+        this.logger.debug(`${this.loggerPrefix} handling server disconnection`);
+
+        this.cleanUpConnection();
+        this.onDisconnected.next(new DisconnectedCall(reason));
+    }
+
+    private cleanUpConnection() {
+        this.logger.warn(`${this.loggerPrefix} Cleaning up connection.`);
+        this.hasDisconnected$.next();
+        this.hasDisconnected$.complete();
+        this.kinlyHeartbeatService.stopHeartbeat();
+        this.setupClient();
     }
 }

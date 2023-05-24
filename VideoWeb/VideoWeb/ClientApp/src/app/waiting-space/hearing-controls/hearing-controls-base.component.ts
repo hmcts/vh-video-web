@@ -24,8 +24,6 @@ import { VhoStorageKeys } from 'src/app/vh-officer/services/models/session-keys'
 
 @Injectable()
 export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy {
-    protected readonly loggerPrefix = '[HearingControlsBase] -';
-
     @Input() public participant: ParticipantResponse;
     @Input() public isPrivateConsultation: boolean;
     @Input() public outgoingStream: MediaStream | URL;
@@ -55,9 +53,11 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     isSpotlighted: boolean;
     showEvidenceContextMenu: boolean;
 
-    protected destroyedSubject = new Subject<void>();
     sharingDynamicEvidence: boolean;
     sessionStorage = new SessionStorage<boolean>(VhoStorageKeys.EQUIPMENT_SELF_TEST_KEY);
+
+    protected readonly loggerPrefix = '[HearingControlsBase] -';
+    protected destroyedSubject = new Subject<void>();
 
     protected constructor(
         protected videoCallService: VideoCallService,
@@ -109,6 +109,24 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     get logPayload() {
         return { conference: this.conferenceId, participant: this.participant.id };
+    }
+
+    get handToggleText(): string {
+        if (this.handRaised) {
+            return this.translateService.instant('hearing-controls.lower-my-hand');
+        } else {
+            return this.translateService.instant('hearing-controls.raise-my-hand');
+        }
+    }
+
+    get videoMutedText(): string {
+        return this.videoMuted
+            ? this.translateService.instant('hearing-controls.switch-camera-on')
+            : this.translateService.instant('hearing-controls.switch-camera-off');
+    }
+
+    get roomLocked(): boolean {
+        return this.participant?.current_room?.locked ?? false;
     }
 
     ngOnInit(): void {
@@ -197,24 +215,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         }
     }
 
-    get handToggleText(): string {
-        if (this.handRaised) {
-            return this.translateService.instant('hearing-controls.lower-my-hand');
-        } else {
-            return this.translateService.instant('hearing-controls.raise-my-hand');
-        }
-    }
-
-    get videoMutedText(): string {
-        return this.videoMuted
-            ? this.translateService.instant('hearing-controls.switch-camera-on')
-            : this.translateService.instant('hearing-controls.switch-camera-off');
-    }
-
-    get roomLocked(): boolean {
-        return this.participant?.current_room?.locked ?? false;
-    }
-
     setupVideoCallSubscribers() {
         this.videoCallService
             .onParticipantUpdated()
@@ -266,17 +266,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             this.toggleMute();
         }
         return true;
-    }
-
-    private newParticipantEnteredHandshake(newParticipantEntered) {
-        this.logger.info(`${this.loggerPrefix} Waiting 3 seconds before sending handshake`);
-        if (this.participant.hearing_role !== HearingRole.JUDGE && this.participant.hearing_role !== HearingRole.STAFF_MEMBER) {
-            setTimeout(() => {
-                this.logger.info(`${this.loggerPrefix} Sending handshake for entry of: ${newParticipantEntered}`);
-                this.publishMediaDeviceStatus();
-                this.eventService.publishParticipantHandRaisedStatus(this.conferenceId, this.participant.id, this.handRaised);
-            }, 3000); // 3Seconds: Give 2nd host time initialise participants, before receiving status updates
-        }
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage) {
@@ -469,5 +458,16 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         }
 
         return false;
+    }
+
+    private newParticipantEnteredHandshake(newParticipantEntered) {
+        this.logger.info(`${this.loggerPrefix} Waiting 3 seconds before sending handshake`);
+        if (this.participant.hearing_role !== HearingRole.JUDGE && this.participant.hearing_role !== HearingRole.STAFF_MEMBER) {
+            setTimeout(() => {
+                this.logger.info(`${this.loggerPrefix} Sending handshake for entry of: ${newParticipantEntered}`);
+                this.publishMediaDeviceStatus();
+                this.eventService.publishParticipantHandRaisedStatus(this.conferenceId, this.participant.id, this.handRaised);
+            }, 3000); // 3Seconds: Give 2nd host time initialise participants, before receiving status updates
+        }
     }
 }

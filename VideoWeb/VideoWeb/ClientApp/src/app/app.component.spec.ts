@@ -16,9 +16,9 @@ import {
     PublicEventsService,
     OidcClientNotification,
     EventTypes,
-    AuthorizationResult,
-    AuthorizedState,
-    ValidationResult
+    AuthStateResult,
+    ValidationResult,
+    LoginResponse
 } from 'angular-auth-oidc-client';
 import { MockLogger } from './testing/mocks/mock-logger';
 import { SecurityServiceProvider } from './security/authentication/security-provider.service';
@@ -39,6 +39,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { RouterTestingModule } from '@angular/router/testing';
 import { translateServiceSpy } from './testing/mocks/mock-translation.service';
 import { NoSleepService } from './services/no-sleep.service';
+import { IdpProviders } from './security/idp-providers';
 
 describe('AppComponent', () => {
     let fixture: ComponentFixture<AppComponent>;
@@ -70,9 +71,9 @@ describe('AppComponent', () => {
     const eventsSubjects = new Subject<Event>();
     const dummyElement = document.createElement('div');
     const testTitle = 'test-title';
-    let eventValue: OidcClientNotification<AuthorizationResult> = {
-        type: EventTypes.NewAuthorizationResult,
-        value: { isRenewProcess: false, authorizationState: AuthorizedState.Authorized, validationResult: ValidationResult.Ok }
+    let eventValue: OidcClientNotification<AuthStateResult> = {
+        type: EventTypes.NewAuthenticationResult,
+        value: { isRenewProcess: false, isAuthenticated: true, validationResult: ValidationResult.Ok }
     };
     const configRestoredSubject = new BehaviorSubject(true);
 
@@ -98,11 +99,11 @@ describe('AppComponent', () => {
         pageTrackerServiceSpy = jasmine.createSpyObj('PageTrackerService', ['trackNavigation', 'trackPreviousPage']);
         testLanguageServiceSpy = jasmine.createSpyObj('TestLanguageService', ['setupSubscriptions']);
         publicEventsServiceSpy = jasmine.createSpyObj('PublicEventsService', ['registerForEvents']);
-        securityServiceSpy = jasmine.createSpyObj<ISecurityService>(
-            'ISecurityService',
-            ['checkAuth', 'logoffAndRevokeTokens'],
-            ['isAuthenticated$']
-        );
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', [
+            'checkAuth',
+            'logoffAndRevokeTokens',
+            'isAuthenticated'
+        ]);
     });
 
     afterAll(() => {
@@ -114,18 +115,14 @@ describe('AppComponent', () => {
         securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
             [],
-            ['currentSecurityService$']
+            ['currentSecurityService$', 'currentIdp$']
         );
 
-        spyOnProperty(securityServiceSpy, 'isAuthenticated$', 'get').and.returnValue(of(true));
+        securityServiceSpy.isAuthenticated.and.returnValue(of(true));
         getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentIdp$').and.returnValue(of(IdpProviders.vhaad));
 
-        securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>(
-            'SecurityConfigSetupService',
-            ['getIdp'],
-            ['configRestored$']
-        );
-        spyOnProperty(securityConfigSetupServiceSpy, 'configRestored$').and.returnValue(configRestoredSubject.asObservable());
+        securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>('SecurityConfigSetupService', ['getIdp']);
         locationSpy = jasmine.createSpyObj<Location>('Location', ['back']);
 
         TestBed.configureTestingModule({
@@ -178,7 +175,11 @@ describe('AppComponent', () => {
 
     it('should enable the no sleep service on init', fakeAsync(() => {
         // Arrange
-        securityServiceSpy.checkAuth.and.returnValue(of(true));
+        securityServiceSpy.checkAuth.and.returnValue(
+            of({
+                isAuthenticated: true
+            } as LoginResponse)
+        );
 
         // Act
         component.ngOnInit();
@@ -189,25 +190,29 @@ describe('AppComponent', () => {
         expect(noSleepServiceSpy.enable).toHaveBeenCalledTimes(1);
     }));
 
-    it('should start connection status service if authenticated oninit', fakeAsync(() => {
+    it('should start connection status service and get userprfile if authenticated oninit', fakeAsync(() => {
         // Arrange
-        const checkAuthSubject = new Subject<boolean>();
+        const checkAuthSubject = new Subject<LoginResponse>();
         securityServiceSpy.checkAuth.and.returnValue(checkAuthSubject.asObservable());
+        checkAuthSubject.next({ isAuthenticated: true } as LoginResponse);
 
         eventValue = {
-            type: EventTypes.NewAuthorizationResult,
-            value: { isRenewProcess: false, authorizationState: AuthorizedState.Authorized, validationResult: ValidationResult.Ok }
+            type: EventTypes.NewAuthenticationResult,
+            value: { isRenewProcess: false, isAuthenticated: true, validationResult: ValidationResult.Ok }
         };
-
-        publicEventsServiceSpy.registerForEvents.and.returnValue(of(eventValue));
 
         // Act
         component.ngOnInit();
+
+        checkAuthSubject.next({ isAuthenticated: true } as LoginResponse);
+        publicEventsServiceSpy.registerForEvents.and.returnValue(of(eventValue));
+
         tick();
         flush();
 
         // Assert
         expect(connectionStatusServiceSpy.start).toHaveBeenCalled();
+        expect(profileServiceSpy.getUserProfile).toHaveBeenCalled();
     }));
 
     it('should navigate to unsupported browser page if browser is not compatible', () => {
@@ -255,11 +260,6 @@ describe('AppComponent', () => {
         profileServiceSpy.getUserProfile.and.returnValue(Promise.reject(error));
         await component.retrieveProfileRole();
         expect(errorServiceSpy.goToUnauthorised).toHaveBeenCalled();
-    });
-
-    it('should retrieve profile when on not on logout and authenticated', async () => {
-        await component.ngOnInit();
-        expect(profileServiceSpy.getUserProfile).toHaveBeenCalled();
     });
 
     it('should not check auth or get profile on logout', async () => {

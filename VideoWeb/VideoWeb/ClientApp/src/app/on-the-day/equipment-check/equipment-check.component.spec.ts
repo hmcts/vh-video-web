@@ -2,7 +2,6 @@ import { convertToParamMap, Router } from '@angular/router';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { EquipmentCheckComponent } from './equipment-check.component';
-import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 
 describe('EquipmentCheckComponent', () => {
@@ -12,8 +11,7 @@ describe('EquipmentCheckComponent', () => {
     let router: jasmine.SpyObj<Router>;
     const activatedRoute: any = { snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
 
-    let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
-    participantStatusUpdateService = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
+    const participantStatusUpdateService = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
 
     beforeAll(() => {
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);

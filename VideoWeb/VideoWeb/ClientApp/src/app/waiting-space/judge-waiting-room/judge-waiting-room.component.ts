@@ -44,9 +44,6 @@ import { HideComponentsService } from '../services/hide-components.service';
     styleUrls: ['./judge-waiting-room.component.scss', '../waiting-room-global-styles.scss']
 })
 export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implements OnDestroy, OnInit {
-    private readonly loggerPrefixJudge = '[Judge WR] -';
-    private destroyedSubject = new Subject();
-
     audioRecordingInterval: NodeJS.Timer;
     isRecording: boolean;
     continueWithNoRecording = false;
@@ -68,10 +65,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     participants: ParticipantUpdated[] = [];
 
     private wowzaName = 'vh-wowza';
-
-    get isChatVisible() {
-        return this.panelStates['Chat'];
-    }
+    private readonly loggerPrefixJudge = '[Judge WR] -';
+    private destroyedSubject = new Subject();
 
     constructor(
         protected route: ActivatedRoute,
@@ -127,9 +122,306 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.hearingStartingAnnounced = true; // no need to play announcements for a judge
     }
 
+    get isChatVisible() {
+        return this.panelStates['Chat'];
+    }
+
+    get canShowHearingLayoutSelection() {
+        return !this.hearing.isClosed() && !this.hearing.isInSession();
+    }
+
     ngOnInit() {
         this.init();
         this.divTrapId = 'video-container';
+    }
+
+    assignPexipIdToRemoteStore(participant: ParticipantUpdated): void {
+        const participantDisplayName = PexipDisplayNameModel.fromString(participant.pexipDisplayName);
+        if (participant.uuid && participantDisplayName !== null) {
+            this.participantRemoteMuteStoreService.assignPexipId(participantDisplayName.participantOrVmrId, participant.uuid);
+        }
+        this.logger.debug(`${this.loggerPrefixJudge} stored pexip ID updated`, {
+            pexipId: participant.uuid,
+            participantId: participantDisplayName?.participantOrVmrId
+        });
+    }
+
+    isStaffMember(): boolean {
+        return this.loggedInUser.role === Role.StaffMember;
+    }
+
+    onConferenceStatusChanged(conferenceStatus: ConferenceStatusChanged): void {
+        if (conferenceStatus.newStatus === ConferenceStatus.InSession) {
+            this.logger.info(`${this.loggerPrefixJudge} spotlighting judge as it is the start of the hearing`);
+
+            const participants = this.participantService.participants;
+
+            if (conferenceStatus.oldStatus === ConferenceStatus.NotStarted) {
+                this.videoControlCacheService.setSpotlightStatus(participants.find(p => p.role === Role.Judge).id, true);
+            }
+
+            participants.forEach(participant => {
+                this.restoreSpotlightIfParticipantIsNotInAVMR(participant);
+            });
+
+            this.participantService.virtualMeetingRooms.forEach(vmr => {
+                this.videoControlService.restoreParticipantsSpotlight(vmr);
+            });
+        }
+    }
+
+    restoreSpotlightState(): void {
+        this.participantService.participants.forEach(participant => {
+            this.restoreSpotlightIfParticipantIsNotInAVMR(participant);
+        });
+
+        this.participantService.virtualMeetingRooms.forEach(vmr => {
+            this.videoControlService.restoreParticipantsSpotlight(vmr);
+        });
+    }
+
+    onConferenceInSessionCheckForDisconnectedParticipants(update: { oldStatus: ConferenceStatus; newStatus: ConferenceStatus }): void {
+        if (update.newStatus === ConferenceStatus.InSession) {
+            this.participantService.participants
+                .filter(x => !x.virtualMeetingRoomSummary)
+                .forEach(participant => {
+                    if (participant.status === ParticipantStatus.Disconnected) {
+                        this.videoControlCacheService.setSpotlightStatus(participant.id, false);
+                    }
+                });
+
+            this.participantService.virtualMeetingRooms.forEach(vmr => {
+                if (vmr.participants.every(x => x.status === ParticipantStatus.Disconnected)) {
+                    this.videoControlCacheService.setSpotlightStatus(vmr.id, false);
+                }
+            });
+        }
+    }
+
+    updateSpotlightStateOnParticipantDisconnectDuringConference(participant: ParticipantModel) {
+        if (
+            participant.status === ParticipantStatus.Disconnected &&
+            this.conferenceService.currentConference.status === ConferenceStatus.InSession
+        ) {
+            this.logger.info(`${this.loggerPrefixJudge} Participant disconnected while conference is in session`, {
+                message: participant
+            });
+
+            let participantOrVmr: ParticipantModel | VirtualMeetingRoomModel = participant;
+            if (participant.virtualMeetingRoomSummary) {
+                const vmr = this.participantService.virtualMeetingRooms.find(
+                    x => x.id === (participantOrVmr as ParticipantModel).virtualMeetingRoomSummary.id
+                );
+
+                this.logger.info(`${this.loggerPrefixJudge} Participant belongs to a VMR`, {
+                    vmr: vmr
+                });
+
+                if (vmr.participants.some(x => x.status === ParticipantStatus.InHearing)) {
+                    this.logger.info(
+                        `${this.loggerPrefixJudge} Some participants are still in hearing. Not going to unspotlight the VMR.`,
+                        {
+                            vmr: vmr
+                        }
+                    );
+                    return;
+                }
+
+                participantOrVmr = vmr;
+            }
+
+            this.logger.info(`${this.loggerPrefixJudge} Unspotlighting the participant or VMR.`, {
+                participantOrVmr: participantOrVmr
+            });
+
+            this.videoControlCacheService.setSpotlightStatus(participantOrVmr.id, false);
+        }
+    }
+
+    ngOnDestroy(): void {
+        this.cleanUp();
+    }
+
+    getConferenceStatusText() {
+        switch (this.conference.status) {
+            case ConferenceStatus.NotStarted:
+                return this.translateService.instant('judge-waiting-room.start-this-hearing');
+            case ConferenceStatus.Suspended:
+                return this.translateService.instant('judge-waiting-room.hearing-suspended');
+            case ConferenceStatus.Paused:
+                return this.translateService.instant('judge-waiting-room.hearing-paused');
+            case ConferenceStatus.Closed:
+                return this.translateService.instant('judge-waiting-room.hearing-is-closed');
+            default:
+                return this.translateService.instant('judge-waiting-room.hearing-is-in-session');
+        }
+    }
+
+    isNotStarted(): boolean {
+        return this.hearing.isNotStarted();
+    }
+
+    isPaused(): boolean {
+        return this.hearing.isPaused() || this.hearing.isSuspended();
+    }
+
+    displayConfirmStartPopup() {
+        this.logger.debug(`${this.loggerPrefixJudge} Display start hearing confirmation popup`, {
+            conference: this.conferenceId,
+            status: this.conference.status
+        });
+        this.displayConfirmStartHearingPopup = true;
+    }
+
+    onStartConfirmAnswered(actionConfirmed: boolean) {
+        this.logger.debug(`${this.loggerPrefixJudge} Judge responded to start hearing confirmation`, {
+            conference: this.conferenceId,
+            status: this.conference.status,
+            confirmStart: actionConfirmed
+        });
+        this.displayConfirmStartHearingPopup = false;
+        if (actionConfirmed) {
+            this.startHearing();
+        }
+    }
+
+    async startHearing() {
+        const action = this.isNotStarted() ? 'start' : 'resume';
+
+        this.logger.debug(`${this.loggerPrefixJudge} Judge clicked ${action} hearing`, {
+            conference: this.conferenceId,
+            status: this.conference.status
+        });
+
+        this.hearingLayoutService.currentLayout$.pipe(take(1)).subscribe(async layout => {
+            try {
+                this.hostWantsToJoinHearing = true;
+                await this.videoCallService.startHearing(this.hearing.id, layout);
+            } catch (err) {
+                this.logger.error(`${this.loggerPrefixJudge} Failed to ${action} a hearing for conference`, err, {
+                    conference: this.conferenceId,
+                    status: this.conference.status
+                });
+                this.errorService.handleApiError(err);
+            }
+        });
+    }
+
+    goToJudgeHearingList(): void {
+        this.logger.debug(`${this.loggerPrefixJudge} Judge is leaving conference and returning to hearing list`, {
+            conference: this.conferenceId
+        });
+        this.router.navigate([pageUrls.JudgeHearingList]);
+    }
+
+    checkEquipment() {
+        this.logger.debug(`${this.loggerPrefixJudge} Judge is leaving conference and checking equipment`, {
+            conference: this.conferenceId
+        });
+        this.router.navigate([pageUrls.EquipmentCheck, this.conferenceId]);
+    }
+
+    hearingSuspended(): boolean {
+        return this.conference.status === ConferenceStatus.Suspended;
+    }
+
+    hearingPaused(): boolean {
+        return this.conference.status === ConferenceStatus.Paused;
+    }
+
+    isHearingInSession(): boolean {
+        return this.conference.status === ConferenceStatus.InSession;
+    }
+
+    async joinHearingInSession() {
+        this.hostWantsToJoinHearing = true;
+        await this.videoCallService.joinHearingInSession(this.conferenceId, this.participant.id);
+    }
+
+    shouldCurrentUserJoinHearing(): boolean {
+        return this.participant.status === ParticipantStatus.InHearing || this.hostWantsToJoinHearing;
+    }
+
+    resetVideoFlags() {
+        super.resetVideoFlags();
+        this.hostWantsToJoinHearing = false;
+    }
+
+    initAudioRecordingInterval() {
+        this.audioRecordingInterval = setInterval(async () => {
+            await this.retrieveAudioStreamInfo(this.conference.hearing_ref_id);
+        }, this.audioRecordingStreamCheckIntervalSeconds * 1000);
+    }
+
+    continueWithNoRecordingCallback() {
+        if (this.audioErrorToast.actioned) {
+            this.continueWithNoRecording = true;
+        }
+        this.audioErrorToastOpen = false;
+        this.audioErrorToast = null;
+    }
+
+    async retrieveAudioStreamInfo(hearingId): Promise<void> {
+        if (this.conference.status === ConferenceStatus.InSession) {
+            this.conferenceRecordingInSessionForSeconds += this.audioRecordingStreamCheckIntervalSeconds;
+        } else {
+            this.conferenceRecordingInSessionForSeconds = 0;
+            this.continueWithNoRecording = false;
+        }
+
+        if (this.conferenceRecordingInSessionForSeconds > 20 && !this.continueWithNoRecording) {
+            this.logger.info(`${this.loggerPrefixJudge} Attempting to retrieve audio stream info for ${hearingId}`);
+            try {
+                const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId, this.conference.wowza_single_app);
+                this.logger.info(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
+                // if recorder not found on a wowza vm and returns false OR wowzaListener participant is not present in conference
+                if ((!audioStreamWorking || !this.wowzaListener) && !this.continueWithNoRecording && this.showVideo) {
+                    this.logger.warn(`${this.loggerPrefixJudge} not recording when expected, show alert`, {
+                        conference: this.conferenceId
+                    });
+                    this.showAudioRecordingAlert();
+                }
+            } catch (error) {
+                this.logger.error(`${this.loggerPrefixJudge} Failed to get audio stream info.`, error, { conference: this.conferenceId });
+            }
+        }
+    }
+
+    defineIsIMEnabled(): boolean {
+        if (!this.hearing) {
+            return false;
+        }
+        if (this.participant.status === ParticipantStatus.InConsultation) {
+            return false;
+        }
+        if (this.deviceTypeService.isIpad()) {
+            return !this.showVideo;
+        }
+        return true;
+    }
+
+    unreadMessageCounterUpdate(count: number) {
+        this.unreadMessageCount = count;
+    }
+
+    leaveConsultation() {
+        if (this.isPrivateConsultation) {
+            this.showLeaveConsultationModal();
+        } else {
+            this.leaveJudicialConsultation();
+        }
+    }
+
+    leaveHearing() {
+        this.hostWantsToJoinHearing = false;
+    }
+
+    shouldUnmuteForHearing(): boolean {
+        return super.shouldUnmuteForHearing() && this.hostWantsToJoinHearing;
+    }
+
+    setTrapFocus() {
+        ModalTrapFocus.trap('video-container');
     }
 
     private init() {
@@ -225,16 +517,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             this.errorService.handlePexipError(new CallError(error.name), conferenceId);
         }
     }
-    assignPexipIdToRemoteStore(participant: ParticipantUpdated): void {
-        const participantDisplayName = PexipDisplayNameModel.fromString(participant.pexipDisplayName);
-        if (participant.uuid && participantDisplayName !== null) {
-            this.participantRemoteMuteStoreService.assignPexipId(participantDisplayName.participantOrVmrId, participant.uuid);
-        }
-        this.logger.debug(`${this.loggerPrefixJudge} stored pexip ID updated`, {
-            pexipId: participant.uuid,
-            participantId: participantDisplayName?.participantOrVmrId
-        });
-    }
 
     private onShouldReload(): void {
         window.location.reload();
@@ -242,10 +524,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     private onShouldUnload(): void {
         this.cleanUp();
-    }
-
-    isStaffMember(): boolean {
-        return this.loggedInUser.role === Role.StaffMember;
     }
 
     private initConferenceStatusLogic() {
@@ -272,96 +550,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         );
     }
 
-    onConferenceStatusChanged(conferenceStatus: ConferenceStatusChanged): void {
-        if (conferenceStatus.newStatus === ConferenceStatus.InSession) {
-            this.logger.info(`${this.loggerPrefixJudge} spotlighting judge as it is the start of the hearing`);
-
-            const participants = this.participantService.participants;
-
-            if (conferenceStatus.oldStatus === ConferenceStatus.NotStarted) {
-                this.videoControlCacheService.setSpotlightStatus(participants.find(p => p.role === Role.Judge).id, true);
-            }
-
-            participants.forEach(participant => {
-                this.restoreSpotlightIfParticipantIsNotInAVMR(participant);
-            });
-
-            this.participantService.virtualMeetingRooms.forEach(vmr => {
-                this.videoControlService.restoreParticipantsSpotlight(vmr);
-            });
-        }
-    }
-    restoreSpotlightState(): void {
-        this.participantService.participants.forEach(participant => {
-            this.restoreSpotlightIfParticipantIsNotInAVMR(participant);
-        });
-
-        this.participantService.virtualMeetingRooms.forEach(vmr => {
-            this.videoControlService.restoreParticipantsSpotlight(vmr);
-        });
-    }
-
     private restoreSpotlightIfParticipantIsNotInAVMR(participant: ParticipantModel) {
         if (!participant.virtualMeetingRoomSummary) {
             this.videoControlService.restoreParticipantsSpotlight(participant);
-        }
-    }
-
-    onConferenceInSessionCheckForDisconnectedParticipants(update: { oldStatus: ConferenceStatus; newStatus: ConferenceStatus }): void {
-        if (update.newStatus === ConferenceStatus.InSession) {
-            this.participantService.participants
-                .filter(x => !x.virtualMeetingRoomSummary)
-                .forEach(participant => {
-                    if (participant.status === ParticipantStatus.Disconnected) {
-                        this.videoControlCacheService.setSpotlightStatus(participant.id, false);
-                    }
-                });
-
-            this.participantService.virtualMeetingRooms.forEach(vmr => {
-                if (vmr.participants.every(x => x.status === ParticipantStatus.Disconnected)) {
-                    this.videoControlCacheService.setSpotlightStatus(vmr.id, false);
-                }
-            });
-        }
-    }
-
-    updateSpotlightStateOnParticipantDisconnectDuringConference(participant: ParticipantModel) {
-        if (
-            participant.status === ParticipantStatus.Disconnected &&
-            this.conferenceService.currentConference.status === ConferenceStatus.InSession
-        ) {
-            this.logger.info(`${this.loggerPrefixJudge} Participant disconnected while conference is in session`, {
-                message: participant
-            });
-
-            let participantOrVmr: ParticipantModel | VirtualMeetingRoomModel = participant;
-            if (participant.virtualMeetingRoomSummary) {
-                const vmr = this.participantService.virtualMeetingRooms.find(
-                    x => x.id === (participantOrVmr as ParticipantModel).virtualMeetingRoomSummary.id
-                );
-
-                this.logger.info(`${this.loggerPrefixJudge} Participant belongs to a VMR`, {
-                    vmr: vmr
-                });
-
-                if (vmr.participants.some(x => x.status === ParticipantStatus.InHearing)) {
-                    this.logger.info(
-                        `${this.loggerPrefixJudge} Some participants are still in hearing. Not going to unspotlight the VMR.`,
-                        {
-                            vmr: vmr
-                        }
-                    );
-                    return;
-                }
-
-                participantOrVmr = vmr;
-            }
-
-            this.logger.info(`${this.loggerPrefixJudge} Unspotlighting the participant or VMR.`, {
-                participantOrVmr: participantOrVmr
-            });
-
-            this.videoControlCacheService.setSpotlightStatus(participantOrVmr.id, false);
         }
     }
 
@@ -382,10 +573,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.onConferenceStatusChangedSubscription = null;
     }
 
-    ngOnDestroy(): void {
-        this.cleanUp();
-    }
-
     private cleanUp() {
         this.logger.debug(`${this.loggerPrefixJudge} Clearing intervals and subscriptions for JOH waiting room`, {
             conference: this.conference?.id
@@ -399,197 +586,11 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.destroyedSubject.complete();
     }
 
-    getConferenceStatusText() {
-        switch (this.conference.status) {
-            case ConferenceStatus.NotStarted:
-                return this.translateService.instant('judge-waiting-room.start-this-hearing');
-            case ConferenceStatus.Suspended:
-                return this.translateService.instant('judge-waiting-room.hearing-suspended');
-            case ConferenceStatus.Paused:
-                return this.translateService.instant('judge-waiting-room.hearing-paused');
-            case ConferenceStatus.Closed:
-                return this.translateService.instant('judge-waiting-room.hearing-is-closed');
-            default:
-                return this.translateService.instant('judge-waiting-room.hearing-is-in-session');
-        }
-    }
-
-    isNotStarted(): boolean {
-        return this.hearing.isNotStarted();
-    }
-
-    isPaused(): boolean {
-        return this.hearing.isPaused() || this.hearing.isSuspended();
-    }
-
-    get canShowHearingLayoutSelection() {
-        return !this.hearing.isClosed() && !this.hearing.isInSession();
-    }
-
-    displayConfirmStartPopup() {
-        this.logger.debug(`${this.loggerPrefixJudge} Display start hearing confirmation popup`, {
-            conference: this.conferenceId,
-            status: this.conference.status
-        });
-        this.displayConfirmStartHearingPopup = true;
-    }
-
-    onStartConfirmAnswered(actionConfirmed: boolean) {
-        this.logger.debug(`${this.loggerPrefixJudge} Judge responded to start hearing confirmation`, {
-            conference: this.conferenceId,
-            status: this.conference.status,
-            confirmStart: actionConfirmed
-        });
-        this.displayConfirmStartHearingPopup = false;
-        if (actionConfirmed) {
-            this.startHearing();
-        }
-    }
-
-    async startHearing() {
-        const action = this.isNotStarted() ? 'start' : 'resume';
-
-        this.logger.debug(`${this.loggerPrefixJudge} Judge clicked ${action} hearing`, {
-            conference: this.conferenceId,
-            status: this.conference.status
-        });
-
-        this.hearingLayoutService.currentLayout$.pipe(take(1)).subscribe(async layout => {
-            try {
-                this.hostWantsToJoinHearing = true;
-                await this.videoCallService.startHearing(this.hearing.id, layout);
-            } catch (err) {
-                this.logger.error(`${this.loggerPrefixJudge} Failed to ${action} a hearing for conference`, err, {
-                    conference: this.conferenceId,
-                    status: this.conference.status
-                });
-                this.errorService.handleApiError(err);
-            }
-        });
-    }
-
-    goToJudgeHearingList(): void {
-        this.logger.debug(`${this.loggerPrefixJudge} Judge is leaving conference and returning to hearing list`, {
-            conference: this.conferenceId
-        });
-        this.router.navigate([pageUrls.JudgeHearingList]);
-    }
-
-    checkEquipment() {
-        this.logger.debug(`${this.loggerPrefixJudge} Judge is leaving conference and checking equipment`, {
-            conference: this.conferenceId
-        });
-        this.router.navigate([pageUrls.EquipmentCheck, this.conferenceId]);
-    }
-
-    hearingSuspended(): boolean {
-        return this.conference.status === ConferenceStatus.Suspended;
-    }
-
-    hearingPaused(): boolean {
-        return this.conference.status === ConferenceStatus.Paused;
-    }
-
-    isHearingInSession(): boolean {
-        return this.conference.status === ConferenceStatus.InSession;
-    }
-
-    async joinHearingInSession() {
-        this.hostWantsToJoinHearing = true;
-        await this.videoCallService.joinHearingInSession(this.conferenceId, this.participant.id);
-    }
-
-    shouldCurrentUserJoinHearing(): boolean {
-        return this.participant.status === ParticipantStatus.InHearing || this.hostWantsToJoinHearing;
-    }
-
-    resetVideoFlags() {
-        super.resetVideoFlags();
-        this.hostWantsToJoinHearing = false;
-    }
-
-    initAudioRecordingInterval() {
-        this.audioRecordingInterval = setInterval(async () => {
-            await this.retrieveAudioStreamInfo(this.conference.hearing_ref_id);
-        }, this.audioRecordingStreamCheckIntervalSeconds * 1000);
-    }
-
     private showAudioRecordingAlert() {
         if (this.audioErrorToastOpen) {
             return;
         }
         this.audioErrorToastOpen = true;
         this.audioErrorToast = this.notificationToastrService.showAudioRecordingError(this.continueWithNoRecordingCallback.bind(this));
-    }
-
-    continueWithNoRecordingCallback() {
-        if (this.audioErrorToast.actioned) {
-            this.continueWithNoRecording = true;
-        }
-        this.audioErrorToastOpen = false;
-        this.audioErrorToast = null;
-    }
-
-    async retrieveAudioStreamInfo(hearingId): Promise<void> {
-        if (this.conference.status === ConferenceStatus.InSession) {
-            this.conferenceRecordingInSessionForSeconds += this.audioRecordingStreamCheckIntervalSeconds;
-        } else {
-            this.conferenceRecordingInSessionForSeconds = 0;
-            this.continueWithNoRecording = false;
-        }
-
-        if (this.conferenceRecordingInSessionForSeconds > 20 && !this.continueWithNoRecording) {
-            this.logger.info(`${this.loggerPrefixJudge} Attempting to retrieve audio stream info for ${hearingId}`);
-            try {
-                const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId, this.conference.wowza_single_app);
-                this.logger.info(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
-                // if recorder not found on a wowza vm and returns false OR wowzaListener participant is not present in conference
-                if ((!audioStreamWorking || !this.wowzaListener) && !this.continueWithNoRecording && this.showVideo) {
-                    this.logger.warn(`${this.loggerPrefixJudge} not recording when expected, show alert`, {
-                        conference: this.conferenceId
-                    });
-                    this.showAudioRecordingAlert();
-                }
-            } catch (error) {
-                this.logger.error(`${this.loggerPrefixJudge} Failed to get audio stream info.`, error, { conference: this.conferenceId });
-            }
-        }
-    }
-
-    defineIsIMEnabled(): boolean {
-        if (!this.hearing) {
-            return false;
-        }
-        if (this.participant.status === ParticipantStatus.InConsultation) {
-            return false;
-        }
-        if (this.deviceTypeService.isIpad()) {
-            return !this.showVideo;
-        }
-        return true;
-    }
-
-    unreadMessageCounterUpdate(count: number) {
-        this.unreadMessageCount = count;
-    }
-
-    leaveConsultation() {
-        if (this.isPrivateConsultation) {
-            this.showLeaveConsultationModal();
-        } else {
-            this.leaveJudicialConsultation();
-        }
-    }
-
-    leaveHearing() {
-        this.hostWantsToJoinHearing = false;
-    }
-
-    shouldUnmuteForHearing(): boolean {
-        return super.shouldUnmuteForHearing() && this.hostWantsToJoinHearing;
-    }
-
-    setTrapFocus() {
-        ModalTrapFocus.trap('video-container');
     }
 }

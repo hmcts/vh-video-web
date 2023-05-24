@@ -22,82 +22,20 @@ export const invalidNumberOfNonEndpointParticipantsError = () => new Error('Inva
 export class ParticipantService {
     private loggerPrefix = '[ParticipantService] -';
     private conferenceSubscriptions: Subscription[] = [];
-
-    //#region Getters and Event Observables
-    public get participants(): ParticipantModel[] {
-        return [...this.nonEndpointParticipants, ...this.endpointParticipants];
-    }
-
     private _loggedInParticipant: ReplaySubject<ParticipantModel> = new ReplaySubject<ParticipantModel>(1);
-    get loggedInParticipant$(): Observable<ParticipantModel> {
-        return this._loggedInParticipant.asObservable();
-    }
-
     private _nonEndpointParticipants: ParticipantModel[] = [];
-    public get nonEndpointParticipants(): ParticipantModel[] {
-        return this._nonEndpointParticipants;
-    }
-
     private _endpointParticipants: ParticipantModel[] = [];
-    public get endpointParticipants(): ParticipantModel[] {
-        return this._endpointParticipants;
-    }
-
     private _virtualMeetingRooms: VirtualMeetingRoomModel[] = [];
-    public get virtualMeetingRooms(): VirtualMeetingRoomModel[] {
-        return this._virtualMeetingRooms;
-    }
-
     private participantsLoadedSubject = new Subject<ParticipantModel[]>();
-    get onParticipantsLoaded$(): Observable<ParticipantModel[]> {
-        return this.participantsLoadedSubject.asObservable();
-    }
-
     private participantConnectedToPexipSubject = new Subject<ParticipantModel>();
-    get onParticipantConnectedToPexip$(): Observable<ParticipantModel> {
-        return this.participantConnectedToPexipSubject.asObservable();
-    }
-
     private participantPexipIdChangedSubject = new Subject<ParticipantModel>();
-    get onParticipantPexipIdChanged$(): Observable<ParticipantModel> {
-        return this.participantPexipIdChangedSubject.asObservable();
-    }
-
     private vmrConnectedToPexipSubject = new Subject<VirtualMeetingRoomModel>();
-    get onVmrConnectedToPexip$(): Observable<VirtualMeetingRoomModel> {
-        return this.vmrConnectedToPexipSubject.asObservable();
-    }
-
     private vmrPexipIdChangedSubject = new Subject<VirtualMeetingRoomModel>();
-    get onVmrPexipIdChanged$(): Observable<VirtualMeetingRoomModel> {
-        return this.vmrPexipIdChangedSubject.asObservable();
-    }
-
     private participantStatusChangedSubject: Subject<ParticipantModel> = new Subject<ParticipantModel>();
-    get onParticipantStatusChanged$(): Observable<ParticipantModel> {
-        return this.participantStatusChangedSubject.asObservable();
-    }
-
     private participantSpotlightStatusChangedSubject = new Subject<ParticipantModel>();
-    get onParticipantSpotlightStatusChanged$(): Observable<ParticipantModel> {
-        return this.participantSpotlightStatusChangedSubject.asObservable();
-    }
-
     private participantRemoteMuteStatusChangedSubject = new Subject<ParticipantModel>();
-    get onParticipantRemoteMuteStatusChanged$(): Observable<ParticipantModel> {
-        return this.participantRemoteMuteStatusChangedSubject.asObservable();
-    }
-
     private participantHandRaisedStatusChangedSubject = new Subject<ParticipantModel>();
-    get onParticipantHandRaisedStatusChanged$(): Observable<ParticipantModel> {
-        return this.participantHandRaisedStatusChangedSubject.asObservable();
-    }
-
     private participantsUpdatedSubject = new Subject<boolean>();
-    get onParticipantsUpdated$(): Observable<boolean> {
-        return this.participantsUpdatedSubject.asObservable();
-    }
-    //#endregion
 
     constructor(
         private conferenceService: ConferenceService,
@@ -110,8 +48,107 @@ export class ParticipantService {
         this.initialise();
     }
 
+    public get participants(): ParticipantModel[] {
+        return [...this.nonEndpointParticipants, ...this.endpointParticipants];
+    }
+
+    get loggedInParticipant$(): Observable<ParticipantModel> {
+        return this._loggedInParticipant.asObservable();
+    }
+
+    public get nonEndpointParticipants(): ParticipantModel[] {
+        return this._nonEndpointParticipants;
+    }
+
+    public get endpointParticipants(): ParticipantModel[] {
+        return this._endpointParticipants;
+    }
+
+    public get virtualMeetingRooms(): VirtualMeetingRoomModel[] {
+        return this._virtualMeetingRooms;
+    }
+
+    get onParticipantsLoaded$(): Observable<ParticipantModel[]> {
+        return this.participantsLoadedSubject.asObservable();
+    }
+
+    get onParticipantConnectedToPexip$(): Observable<ParticipantModel> {
+        return this.participantConnectedToPexipSubject.asObservable();
+    }
+
+    get onParticipantPexipIdChanged$(): Observable<ParticipantModel> {
+        return this.participantPexipIdChangedSubject.asObservable();
+    }
+
+    get onVmrConnectedToPexip$(): Observable<VirtualMeetingRoomModel> {
+        return this.vmrConnectedToPexipSubject.asObservable();
+    }
+
+    get onVmrPexipIdChanged$(): Observable<VirtualMeetingRoomModel> {
+        return this.vmrPexipIdChangedSubject.asObservable();
+    }
+
+    get onParticipantStatusChanged$(): Observable<ParticipantModel> {
+        return this.participantStatusChangedSubject.asObservable();
+    }
+    get onParticipantSpotlightStatusChanged$(): Observable<ParticipantModel> {
+        return this.participantSpotlightStatusChangedSubject.asObservable();
+    }
+    get onParticipantRemoteMuteStatusChanged$(): Observable<ParticipantModel> {
+        return this.participantRemoteMuteStatusChangedSubject.asObservable();
+    }
+    get onParticipantHandRaisedStatusChanged$(): Observable<ParticipantModel> {
+        return this.participantHandRaisedStatusChangedSubject.asObservable();
+    }
+
+    get onParticipantsUpdated$(): Observable<boolean> {
+        return this.participantsUpdatedSubject.asObservable();
+    }
+
     getPexipIdForParticipant(participantId: Guid | string): string {
         return this.participants.find(p => p.id === participantId?.toString())?.pexipId ?? null;
+    }
+
+    handlePexipUpdate(update: ParticipantUpdated): void {
+        this.logger.info(`${this.loggerPrefix} handling pexip update`, {
+            participantUpdate: update
+        });
+
+        const participantOrVmr = this.getParticipantOrVirtualMeetingRoomByPexipDisplayName(update.pexipDisplayName);
+        if (participantOrVmr instanceof VirtualMeetingRoomModel) {
+            this.handlePexipVmrUpdate(participantOrVmr, update);
+        } else if (participantOrVmr) {
+            this.handlePexipParticipantUpdate(participantOrVmr, update);
+        }
+    }
+
+    handleParticipantStatusUpdate(participantStatusMessage: ParticipantStatusMessage) {
+        this.logger.info(`${this.loggerPrefix} handling participant status update`);
+
+        const participant = this.participants.find(x => x.id === participantStatusMessage.participantId);
+
+        if (!participant) {
+            this.logger.warn(`${this.loggerPrefix} Cannot find participant in conference. Failed to updated status.`, {
+                conferenceId: participantStatusMessage.conferenceId,
+                participantId: participantStatusMessage.participantId,
+                status: participantStatusMessage.status
+            });
+
+            return;
+        }
+
+        const oldValue = participant.status;
+
+        if (oldValue !== participantStatusMessage.status) {
+            this.logger.info(`${this.loggerPrefix} updating participants status`, {
+                participantId: participant.id,
+                oldValue: oldValue,
+                newValue: participantStatusMessage.status
+            });
+
+            participant.status = participantStatusMessage.status;
+            this.participantStatusChangedSubject.next(participant);
+        }
     }
 
     private getParticipantOrVirtualMeetingRoomByPexipDisplayName(pexipDisplayName: string): ParticipantModel | VirtualMeetingRoomModel {
@@ -213,13 +250,11 @@ export class ParticipantService {
 
         this.logger.info(`${this.loggerPrefix} populated VMRs`, {
             newValue:
-                this.virtualMeetingRooms.map(x => {
-                    return {
-                        id: x.id,
-                        displayName: x.displayName,
-                        locked: x.locked
-                    };
-                }) ?? null
+                this.virtualMeetingRooms.map(x => ({
+                    id: x.id,
+                    displayName: x.displayName,
+                    locked: x.locked
+                })) ?? null
         });
     }
 
@@ -255,19 +290,6 @@ export class ParticipantService {
                     this.participantsUpdatedSubject.next(true);
                 })
         );
-    }
-
-    handlePexipUpdate(update: ParticipantUpdated): void {
-        this.logger.info(`${this.loggerPrefix} handling pexip update`, {
-            participantUpdate: update
-        });
-
-        const participantOrVmr = this.getParticipantOrVirtualMeetingRoomByPexipDisplayName(update.pexipDisplayName);
-        if (participantOrVmr instanceof VirtualMeetingRoomModel) {
-            this.handlePexipVmrUpdate(participantOrVmr, update);
-        } else if (participantOrVmr) {
-            this.handlePexipParticipantUpdate(participantOrVmr, update);
-        }
     }
 
     private handlePexipVmrUpdate(vmr: VirtualMeetingRoomModel, update: ParticipantUpdated) {
@@ -359,35 +381,6 @@ export class ParticipantService {
                 participant.isHandRaised = update.handRaised;
                 this.participantHandRaisedStatusChangedSubject.next(participant);
             }
-        }
-    }
-
-    handleParticipantStatusUpdate(participantStatusMessage: ParticipantStatusMessage) {
-        this.logger.info(`${this.loggerPrefix} handling participant status update`);
-
-        const participant = this.participants.find(x => x.id === participantStatusMessage.participantId);
-
-        if (!participant) {
-            this.logger.warn(`${this.loggerPrefix} Cannot find participant in conference. Failed to updated status.`, {
-                conferenceId: participantStatusMessage.conferenceId,
-                participantId: participantStatusMessage.participantId,
-                status: participantStatusMessage.status
-            });
-
-            return;
-        }
-
-        const oldValue = participant.status;
-
-        if (oldValue !== participantStatusMessage.status) {
-            this.logger.info(`${this.loggerPrefix} updating participants status`, {
-                participantId: participant.id,
-                oldValue: oldValue,
-                newValue: participantStatusMessage.status
-            });
-
-            participant.status = participantStatusMessage.status;
-            this.participantStatusChangedSubject.next(participant);
         }
     }
 

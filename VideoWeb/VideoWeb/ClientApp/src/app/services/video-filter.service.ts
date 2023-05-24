@@ -13,56 +13,26 @@ import { BackgroundFilter } from './models/background-filter';
     providedIn: 'root'
 })
 export class VideoFilterService {
-    private readonly loggerPrefix = '[VideoFilterService] -';
+    videoElement: HTMLVideoElement;
+    canvasElement: HTMLCanvasElement;
+    canvasStream: MediaStream;
+    canvasCtx: CanvasRenderingContext2D;
 
+    selfieSegmentation: SelfieSegmentation;
+    activeFilter: BackgroundFilter;
+    imgs: Map<string, HTMLImageElement> = new Map();
+
+    private readonly loggerPrefix = '[VideoFilterService] -';
     private _canvasWidth = 1280;
     private _canvasHeight = 720;
     private _enableVideoFilters: boolean;
     private _failCount = 0;
     private _isPillarBox = true;
+    private _blurRadius = 20;
+    private _filterOn = false;
 
     private _onFilterChanged = new Subject<BackgroundFilter | null>();
-    get onFilterChanged$(): Observable<BackgroundFilter | null> {
-        return this._onFilterChanged.asObservable();
-    }
-
-    videoElement: HTMLVideoElement;
-    canvasElement: HTMLCanvasElement;
-    canvasStream: MediaStream;
-
-    canvasCtx: CanvasRenderingContext2D;
-
-    private _filterOn = false;
-    set filterOn(on: boolean) {
-        if (this._filterOn === on) {
-            return;
-        }
-
-        this._filterOn = on;
-        this.filterOnSubject.next(this._filterOn);
-    }
-
-    get filterOn(): boolean {
-        return this._filterOn;
-    }
-
     private filterOnSubject = new ReplaySubject<boolean>(1);
-    get filterOn$(): Observable<boolean> {
-        return this.filterOnSubject.asObservable();
-    }
-
-    private _blurRadius = 20;
-    get blurRadius(): number {
-        return this._blurRadius;
-    }
-
-    set blurRadius(str: number) {
-        this._blurRadius = str;
-    }
-
-    selfieSegmentation: SelfieSegmentation;
-    activeFilter: BackgroundFilter;
-    imgs: Map<string, HTMLImageElement> = new Map();
 
     constructor(private logger: Logger, private configService: ConfigService, private deviceTypeService: DeviceTypeService) {
         this.configService.getClientSettings().subscribe(settings => {
@@ -78,15 +48,42 @@ export class VideoFilterService {
         this.filterOnSubject.next(this.filterOn);
 
         this.selfieSegmentation = new SelfieSegmentation({
-            locateFile: file => {
-                return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1.1632777926/${file}`;
-            }
+            locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1.1632777926/${file}`
         });
         this.selfieSegmentation.setOptions({
             modelSelection: 1,
             selfieMode: false
         });
         this.selfieSegmentation.onResults(results => this.onSelfieSegmentationResults(results));
+    }
+
+    get blurRadius(): number {
+        return this._blurRadius;
+    }
+
+    get filterOn(): boolean {
+        return this._filterOn;
+    }
+
+    get onFilterChanged$(): Observable<BackgroundFilter | null> {
+        return this._onFilterChanged.asObservable();
+    }
+
+    get filterOn$(): Observable<boolean> {
+        return this.filterOnSubject.asObservable();
+    }
+
+    set blurRadius(str: number) {
+        this._blurRadius = str;
+    }
+
+    set filterOn(on: boolean) {
+        if (this._filterOn === on) {
+            return;
+        }
+
+        this._filterOn = on;
+        this.filterOnSubject.next(this._filterOn);
     }
 
     initFilterFromMediaStream(stream: MediaStream): Observable<void> {
@@ -217,6 +214,30 @@ export class VideoFilterService {
         this.logger.info(`${this.loggerPrefix} Custom backgrounds supported`);
         return true;
     }
+    /* eslint-disable no-console */
+    startMonitoringLostGlContext() {
+        if (console.defaultWarn) {
+            return;
+        }
+        const self = this;
+        console.defaultWarn = console.warn.bind(console);
+        console.warn = function () {
+            // default &  console.warn()
+            console.defaultWarn.apply(console, arguments);
+            // new & array data
+            const args = Array.from(arguments);
+            if (args.find(a => a.includes('CONTEXT_LOST_WEBGL')) && self.selfieSegmentation) {
+                self.logger.info(`${this.loggerPrefix} WEBGL context lost, resetting segmentation`);
+                self.selfieSegmentation.reset();
+            }
+        };
+    }
+
+    stopMonitoringLostGlContext() {
+        console.warn = console.defaultWarn;
+        console.defaultWarn = null;
+    }
+    /* eslint-enable no-console */
 
     private isWebGL2Supported = () => !!document.createElement('canvas').getContext('webgl2');
 
@@ -300,28 +321,5 @@ export class VideoFilterService {
         imageObject.src = imagePath;
         this.imgs.set(imageName, imageObject);
         return imageObject;
-    }
-
-    startMonitoringLostGlContext() {
-        if (console.defaultWarn) {
-            return;
-        }
-        const self = this;
-        console.defaultWarn = console.warn.bind(console);
-        console.warn = function () {
-            // default &  console.warn()
-            console.defaultWarn.apply(console, arguments);
-            // new & array data
-            const args = Array.from(arguments);
-            if (args.find(a => a.includes('CONTEXT_LOST_WEBGL')) && self.selfieSegmentation) {
-                self.logger.info(`${this.loggerPrefix} WEBGL context lost, resetting segmentation`);
-                self.selfieSegmentation.reset();
-            }
-        };
-    }
-
-    stopMonitoringLostGlContext() {
-        console.warn = console.defaultWarn;
-        console.defaultWarn = null;
     }
 }

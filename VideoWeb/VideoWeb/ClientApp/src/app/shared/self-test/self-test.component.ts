@@ -28,7 +28,6 @@ import { VideoCallService } from 'src/app/waiting-space/services/video-call.serv
     styleUrls: ['./self-test.component.scss']
 })
 export class SelfTestComponent implements OnInit, OnDestroy {
-    private readonly loggerPrefix = '[SelfTest] -';
     @Input() conference: ConferenceResponse;
     @Input() participant: ParticipantResponse;
     @Input() selfTestPexipConfig: SelfTestPexipResponse;
@@ -57,7 +56,9 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     maxBandwidth = 1280;
     subscription: Subscription = new Subscription();
     videoCallSubscription$ = new Subscription();
+
     private destroyedSubject = new Subject();
+    private readonly loggerPrefix = '[SelfTest] -';
 
     constructor(
         private logger: Logger,
@@ -68,6 +69,35 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         private videoFilterService: VideoFilterService,
         private videoCallService: VideoCallService
     ) {}
+
+    get streamsActive() {
+        let outgoingActive = true;
+        if (this.outgoingStream instanceof MediaStream) {
+            outgoingActive = this.outgoingStream.active;
+        }
+        let incomingActive = true;
+        if (this.incomingStream instanceof MediaStream) {
+            incomingActive = this.incomingStream.active;
+        }
+        return this.outgoingStream && outgoingActive && this.incomingStream && incomingActive;
+    }
+
+    @HostListener('window:beforeunload')
+    async ngOnDestroy() {
+        this.subscription.unsubscribe();
+        this.videoCallSubscription$.unsubscribe();
+        this.disconnect();
+
+        this.destroyedSubject.next();
+        this.destroyedSubject.complete();
+        if (this.conference) {
+            let reason: SelfTestFailureReason;
+            if (this.testCallResult && this.testCallResult.score === TestScore.Bad) {
+                reason = SelfTestFailureReason.BadScore;
+                await this.raiseFailedSelfTest(reason);
+            }
+        }
+    }
 
     ngOnInit() {
         this.logger.debug(`${this.loggerPrefix} Loading self test`);
@@ -109,18 +139,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         } else {
             this.selfTestPexipNode = this.selfTestPexipConfig.pexip_self_test_node;
         }
-    }
-
-    get streamsActive() {
-        let outgoingActive = true;
-        if (this.outgoingStream instanceof MediaStream) {
-            outgoingActive = this.outgoingStream.active;
-        }
-        let incomingActive = true;
-        if (this.incomingStream instanceof MediaStream) {
-            incomingActive = this.incomingStream.active;
-        }
-        return this.outgoingStream && outgoingActive && this.incomingStream && incomingActive;
     }
 
     async setupTestAndCall(): Promise<void> {
@@ -327,23 +345,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             participant: this.selfTestParticipantId
         });
         this.testCompleted.emit(this.testCallResult);
-    }
-
-    @HostListener('window:beforeunload')
-    async ngOnDestroy() {
-        this.subscription.unsubscribe();
-        this.videoCallSubscription$.unsubscribe();
-        this.disconnect();
-
-        this.destroyedSubject.next();
-        this.destroyedSubject.complete();
-        if (this.conference) {
-            let reason: SelfTestFailureReason;
-            if (this.testCallResult && this.testCallResult.score === TestScore.Bad) {
-                reason = SelfTestFailureReason.BadScore;
-                await this.raiseFailedSelfTest(reason);
-            }
-        }
     }
 
     async raiseFailedSelfTest(reason: SelfTestFailureReason) {
