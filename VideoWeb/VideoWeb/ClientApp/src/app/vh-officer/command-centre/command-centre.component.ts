@@ -25,6 +25,7 @@ import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly
 import { NewAllocationMessage } from '../../services/models/new-allocation-message';
 import { NotificationToastrService } from '../../waiting-space/services/notification-toastr.service';
 import { CsoFilter } from '../services/models/cso-filter';
+import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 
 @Component({
     selector: 'app-command-centre',
@@ -149,6 +150,13 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             })
         );
 
+        this.logger.debug('[WR] - Subscribing to participants update complete message');
+        this.eventHubSubscriptions.add(
+            this.eventService.getParticipantsUpdated().subscribe(async participantsUpdatedMessage => {
+                this.handleParticipantsUpdatedMessage(participantsUpdatedMessage);
+            })
+        );
+
         this.eventHubSubscriptions.add(
             this.eventService
                 .getAllocationMessage()
@@ -172,6 +180,17 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         conference.status = message.status;
         if (this.isCurrentConference(message.conferenceId)) {
             this.selectedHearing.getConference().status = message.status;
+        }
+    }
+
+    handleParticipantsUpdatedMessage(participantsUpdatedMessage: ParticipantsUpdatedMessage) {
+        this.logger.debug(`${this.loggerPrefix} - Participants updated message recieved`, {
+            conference: participantsUpdatedMessage.conferenceId,
+            participants: participantsUpdatedMessage.participants
+        });
+
+        if (this.isCurrentConference(participantsUpdatedMessage.conferenceId)) {
+            this.selectedHearing.updateParticipants(participantsUpdatedMessage.participants);
         }
     }
 

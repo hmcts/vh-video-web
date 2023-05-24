@@ -10,7 +10,8 @@ import { HearingBase } from './hearing-base';
 import { Participant } from './participant';
 
 export class Hearing extends HearingBase {
-    readonly participants: Participant[];
+    _participants: Participant[];
+    participants: ReadonlyArray<Participant>;
 
     private conference: ConferenceResponseVho;
 
@@ -25,7 +26,8 @@ export class Hearing extends HearingBase {
 
         this.conference = conference;
         if (conference.participants) {
-            this.participants = this.conference.participants.map(p => new Participant(p));
+            this._participants = this.conference.participants.map(p => new Participant(p));
+            this.participants = this._participants;
         }
     }
 
@@ -34,7 +36,7 @@ export class Hearing extends HearingBase {
     }
 
     get judge(): Participant {
-        return this.participants.find(x => x.role === Role.Judge);
+        return this._participants.find(x => x.role === Role.Judge);
     }
 
     get caseType(): string {
@@ -88,6 +90,10 @@ export class Hearing extends HearingBase {
         }
     }
 
+    updateParticipants(participants: ParticipantResponseVho[]) {
+        this.updateParticipantList(participants);
+    }
+
     addEndpoint(ver: VideoEndpointResponse) {
         const conference = this.conference as ConferenceResponse;
         conference.endpoints.push(ver);
@@ -108,6 +114,12 @@ export class Hearing extends HearingBase {
     }
 
     getParticipantById(participantId: string) {
-        return this.participants.find(p => p.id === participantId);
+        return this._participants.find(p => p.id === participantId);
+    }
+
+    private updateParticipantList(participants: ParticipantResponseVho[]) {
+        this.conference.participants = participants;
+        this._participants = this.conference.participants.map(p => new Participant(p));
+        this.participants = this._participants;
     }
 }
