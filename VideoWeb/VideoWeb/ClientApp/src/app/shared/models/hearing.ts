@@ -10,9 +10,9 @@ import { HearingBase } from './hearing-base';
 import { Participant } from './participant';
 
 export class Hearing extends HearingBase {
-    _participants: Participant[];
     participants: ReadonlyArray<Participant>;
 
+    private _participants: Participant[];
     private conference: ConferenceResponseVho;
 
     constructor(conference: ConferenceResponseVho) {
