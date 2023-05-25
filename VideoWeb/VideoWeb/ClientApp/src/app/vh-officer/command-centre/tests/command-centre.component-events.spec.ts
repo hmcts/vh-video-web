@@ -248,6 +248,26 @@ describe('CommandCentreComponent - Events', () => {
         expect(component.hearings[0].getParticipants()[0].participantHertBeatHealth).toBe(heartBeat);
     });
 
+    it('should update participant list when participants updates message is received', () => {
+        component.setupEventHubSubscribers();
+        const conferenceId = hearing.id;
+        const newList = hearing.getParticipants();
+        newList.push(
+            new ParticipantResponseVho({
+                id: '123New',
+                name: 'new participant',
+                role: Role.JudicialOfficeHolder,
+                status: undefined
+            })
+        );
+
+        const message = new ParticipantsUpdatedMessage(conferenceId, newList);
+
+        getParticipantsUpdatedSubjectMock.next(message);
+
+        expect(component.selectedHearing.getParticipants()).toEqual(newList);
+    });
+
     it('should gracefully handle participant heartbeat not in list', () => {
         const testHearing = component.hearings[0];
         const heartBeat = new ParticipantHeartbeat(
