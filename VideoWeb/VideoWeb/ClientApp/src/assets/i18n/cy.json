@@ -846,7 +846,8 @@
     "unpin": "Peidio amlygu",
     "unmute": "Dadfudo",
     "admit-participant": "Gadael {{role}} i mewn",
-    "dismiss-participant": "Gwrthod {{role}}"
+    "dismiss-participant": "Gwrthod {{role}}",
+    "unmute-lock": "Datgloi mudo"
   },
   "confirm-close-hearing-popup": {
     "title": "Rydych ar fin cau'r gwrandawiad hwn",

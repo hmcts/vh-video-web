@@ -16,6 +16,7 @@ import {
     CallParticipantIntoHearingEvent,
     DismissParticipantFromHearingEvent,
     LowerParticipantHandEvent,
+    ToggleLocalMuteParticipantEvent,
     ToggleMuteParticipantEvent,
     ToggleSpotlightParticipantEvent
 } from 'src/app/shared/models/participant-event';
@@ -120,6 +121,12 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     toggleMuteParticipantEventHandler(e: ToggleMuteParticipantEvent) {
         this.toggleMuteParticipant(e.participant);
+    }
+
+    toggleLocalMuteParticipantEventHandler(e: ToggleLocalMuteParticipantEvent) {
+        const p = this.participants.find(x => x.id === e.participant.id);
+        // const newMuteStatus = !p.isLocalMicMuted();
+        this.videoControlService.setRemoteMuteStatusById(p.id, p.pexipId, false);
     }
 
     toggleSpotlightParticipantEventHandler(e: ToggleSpotlightParticipantEvent) {

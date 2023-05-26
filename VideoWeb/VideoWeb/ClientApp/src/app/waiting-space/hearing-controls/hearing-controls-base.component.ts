@@ -21,6 +21,7 @@ import { VideoControlService } from '../../services/conference/video-control.ser
 import { CaseTypeGroup } from '../models/case-type-group';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { VhoStorageKeys } from 'src/app/vh-officer/services/models/session-keys';
+import { ParticipantToggleLocalMuteMessage } from 'src/app/shared/models/participant-toggle-local-mute-message';
 
 @Injectable()
 export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy {
@@ -191,15 +192,22 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.eventService
             .getParticipantHandRaisedMessage()
             .pipe(takeUntil(this.destroyedSubject))
-            .subscribe(async message => {
+            .subscribe(message => {
                 this.handleParticipantHandRaiseChange(message);
             });
 
         this.eventService
             .getParticipantRemoteMuteStatusMessage()
             .pipe(takeUntil(this.destroyedSubject))
-            .subscribe(async message => {
+            .subscribe(message => {
                 this.handleParticipantRemoteMuteChange(message);
+            });
+
+        this.eventService
+            .getParticipantToggleLocalMuteMessage()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(async message => {
+                this.handleParticipantToggleLocalMuteChange(message);
             });
     }
 
@@ -282,6 +290,41 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         }
 
         this.participant.status = message.status;
+    }
+
+    handleParticipantToggleLocalMuteChange(message: ParticipantToggleLocalMuteMessage) {
+        console.log('handleParticipantToggleLocalMuteChange');
+        if (message.participantId !== this.participant.id || message.conferenceId !== this.conferenceId) {
+            console.warn(`${this.loggerPrefix} Participant received a toggle local mute message for another conference/participant`);
+            this.logger.debug(`${this.loggerPrefix} Participant received a toggle local mute message for another conference/participant`, {
+                messageParticipantId: message.participantId,
+                messageConferenceId: message.conferenceId,
+                currentParticipantId: this.participant.id,
+                currentConferenceId: this.conferenceId
+            });
+            return;
+        }
+
+        console.warn(`${this.loggerPrefix} validation passed`);
+        console.log(this.remoteMuted);
+        console.log(this.audioMuted);
+        console.log(message);
+
+        if (this.remoteMuted) {
+            return;
+        }
+
+        if (this.audioMuted && !message.muted) {
+            console.log('attempting to unmute');
+            this.toggleMute();
+            return;
+        }
+
+        if (!this.audioMuted && message.muted) {
+            console.log('attempting to mute');
+            this.toggleMute();
+            return;
+        }
     }
 
     handleParticipantRemoteMuteChange(message: ParticipantRemoteMuteMessage) {
