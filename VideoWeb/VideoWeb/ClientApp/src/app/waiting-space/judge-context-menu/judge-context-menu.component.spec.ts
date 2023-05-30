@@ -214,7 +214,7 @@ describe('JudgeContextMenuComponent', () => {
         spyOn(component.toggleLocalMuteParticipantEvent, 'emit');
 
         // Act
-        component.toggleLocalMuteParticipant();
+        component.toggleLocalMuteParticipant(model);
 
         // Assert
         expect(component.toggleLocalMuteParticipantEvent.emit).toHaveBeenCalled();
@@ -468,13 +468,13 @@ describe('JudgeContextMenuComponent', () => {
     describe('text for buttons', () => {
         it('should return unmute local translation when participant is muted', () => {
             component.participant.isLocalMicMuted = () => true;
-            component.getLocalMuteAStatusText();
+            component.getLocalMuteAStatusText(component.participant);
             expect(translateServiceSpy.instant).toHaveBeenCalledWith('judge-context-menu.unmute');
         });
 
         it('should return mute local translation when participant is unmuted', () => {
             component.participant.isLocalMicMuted = () => false;
-            component.getLocalMuteAStatusText();
+            component.getLocalMuteAStatusText(component.participant);
             expect(translateServiceSpy.instant).toHaveBeenCalledWith('judge-context-menu.mute');
         });
 

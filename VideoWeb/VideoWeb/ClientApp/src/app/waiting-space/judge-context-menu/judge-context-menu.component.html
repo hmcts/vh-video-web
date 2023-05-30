@@ -37,15 +37,18 @@
     [id]="idPrefix + '-toggle-mute-and-lock-' + (1 | random)"
     >{{ getMuteAndLockStatusText() }}</a
   >
+  <!-- Use participantsList because individual persons will need to have their mic mute toggled rather than the rooms or linked particpants -->
+  <ng-container *ngFor="let pInList of participant.participantsList()">
+    <a
+      *ngIf="pInList.isInHearing() && !pInList.isMicRemoteMuted()"
+      (click)="toggleLocalMuteParticipant(pInList)"
+      (keyup.enter)="toggleLocalMuteParticipant(pInList)"
+      tabindex="0"
+      [id]="idPrefix + '-toggle-mute-' + (1 | random)"
+      >{{ getLocalMuteAStatusText(pInList) }}</a
+    >
+  </ng-container>
 
-  <a
-    *ngIf="participant.isInHearing() && !participant.isMicRemoteMuted()"
-    (click)="toggleLocalMuteParticipant()"
-    (keyup.enter)="toggleLocalMuteParticipant()"
-    tabindex="0"
-    [id]="idPrefix + '-toggle-mute-' + (1 | random)"
-    >{{ getLocalMuteAStatusText() }}</a
-  >
   <a
     *ngIf="canCallParticipantIntoHearing()"
     (keyup.enter)="callParticipantIntoHearing()"

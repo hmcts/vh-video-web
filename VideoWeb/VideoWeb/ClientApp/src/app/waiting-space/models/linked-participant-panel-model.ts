@@ -151,4 +151,8 @@ export class LinkedParticipantPanelModel extends PanelModel {
             this.handRaised = handRaised;
         }
     }
+
+    participantsList(): PanelModel[] {
+        return this.participants.map(p => p as PanelModel);
+    }
 }

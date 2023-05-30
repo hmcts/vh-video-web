@@ -87,9 +87,9 @@ export class JudgeContextMenuComponent implements OnInit {
         this.toggleDropdown();
     }
 
-    toggleLocalMuteParticipant() {
-        this.logger.debug(`${this.loggerPrefix} Attempting to toggle local mute`, { participant: this.participant.id });
-        this.toggleLocalMuteParticipantEvent.emit(new ToggleLocalMuteParticipantEvent(this.participant));
+    toggleLocalMuteParticipant(participant: PanelModel) {
+        this.logger.debug(`${this.loggerPrefix} Attempting to toggle local mute`, { participant: participant.id });
+        this.toggleLocalMuteParticipantEvent.emit(new ToggleLocalMuteParticipantEvent(participant));
         this.toggleDropdown();
     }
 
@@ -132,10 +132,10 @@ export class JudgeContextMenuComponent implements OnInit {
             : this.translateService.instant('judge-context-menu.mute-lock');
     }
 
-    getLocalMuteAStatusText(): string {
-        return this.participant.isLocalMicMuted()
-            ? this.translateService.instant('judge-context-menu.unmute')
-            : this.translateService.instant('judge-context-menu.mute');
+    getLocalMuteAStatusText(participant: PanelModel): string {
+        return participant.isLocalMicMuted()
+            ? `${this.translateService.instant('judge-context-menu.unmute')} ${participant.displayName}`
+            : `${this.translateService.instant('judge-context-menu.mute')} ${participant.displayName}`;
     }
 
     getPinStatusText(): string {
