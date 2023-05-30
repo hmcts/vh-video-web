@@ -5,12 +5,12 @@
     <div
       class="small-button row1"
       data-prevent-double-click="true"
-      (click)="updateAllParticipantsLocalMuteStatus(conferenceId, true)"
+      (click)="updateAllParticipantsLocalMuteStatus(true)"
       appTooltip
       [text]="'participants-panel.mute-all' | translate"
       colour="grey"
       tabindex="0"
-      (keyup.enter)="updateAllParticipantsLocalMuteStatus(conferenceId, true)"
+      (keyup.enter)="updateAllParticipantsLocalMuteStatus(true)"
     >
       {{ 'participants-panel.mute-all' | translate }}
     </div>
@@ -18,12 +18,12 @@
     <div
       class="small-button row1"
       data-prevent-double-click="true"
-      (click)="updateAllParticipantsLocalMuteStatus(conferenceId, false)"
+      (click)="updateAllParticipantsLocalMuteStatus(false)"
       appTooltip
       [text]="'participants-panel.unmute-all' | translate"
       colour="grey"
       tabindex="0"
-      (keyup.enter)="updateAllParticipantsLocalMuteStatus(conferenceId, false)"
+      (keyup.enter)="updateAllParticipantsLocalMuteStatus(false)"
     >
       {{ 'participants-panel.unmute-all' | translate }}
     </div>

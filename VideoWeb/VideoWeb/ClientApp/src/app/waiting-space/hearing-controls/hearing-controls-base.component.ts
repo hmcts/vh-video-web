@@ -293,9 +293,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     handleParticipantToggleLocalMuteChange(message: ParticipantToggleLocalMuteMessage) {
-        console.log('handleParticipantToggleLocalMuteChange');
         if (message.participantId !== this.participant.id || message.conferenceId !== this.conferenceId) {
-            console.warn(`${this.loggerPrefix} Participant received a toggle local mute message for another conference/participant`);
             this.logger.debug(`${this.loggerPrefix} Participant received a toggle local mute message for another conference/participant`, {
                 messageParticipantId: message.participantId,
                 messageConferenceId: message.conferenceId,
@@ -305,25 +303,19 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             return;
         }
 
-        console.warn(`${this.loggerPrefix} validation passed`);
-        console.log(this.remoteMuted);
-        console.log(this.audioMuted);
-        console.log(message);
-
         if (this.remoteMuted) {
             return;
         }
 
         if (this.audioMuted && !message.muted) {
-            console.log('attempting to unmute');
             this.toggleMute();
+            this.logger.info(`${this.loggerPrefix} Participant has been locally unmuted by the judge`, this.logPayload);
             return;
         }
 
         if (!this.audioMuted && message.muted) {
-            console.log('attempting to mute');
             this.toggleMute();
-            return;
+            this.logger.info(`${this.loggerPrefix} Participant has been locally muted by the judge`, this.logPayload);
         }
     }
 

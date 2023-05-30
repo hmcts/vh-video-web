@@ -128,8 +128,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         await this.eventService.updateParticipantLocalMuteStatus(this.conferenceId, e.participant.id, !p.isLocalMicMuted());
     }
 
-    async updateAllParticipantsLocalMuteStatus(conferenceId: string, muteStatus: boolean) {
-        await this.eventService.updateAllParticipantLocalMuteStatus(conferenceId, muteStatus);
+    async updateAllParticipantsLocalMuteStatus(muteStatus: boolean) {
+        await this.eventService.updateAllParticipantLocalMuteStatus(this.conferenceId, muteStatus);
     }
 
     toggleSpotlightParticipantEventHandler(e: ToggleSpotlightParticipantEvent) {

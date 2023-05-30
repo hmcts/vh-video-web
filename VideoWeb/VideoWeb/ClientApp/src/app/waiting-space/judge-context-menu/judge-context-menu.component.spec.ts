@@ -8,7 +8,8 @@ import {
     ToggleSpotlightParticipantEvent,
     LowerParticipantHandEvent,
     CallParticipantIntoHearingEvent,
-    DismissParticipantFromHearingEvent
+    DismissParticipantFromHearingEvent,
+    ToggleLocalMuteParticipantEvent
 } from 'src/app/shared/models/participant-event';
 import { DebugElement, ElementRef } from '@angular/core';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
@@ -202,6 +203,22 @@ describe('JudgeContextMenuComponent', () => {
         // Assert
         expect(component.toggleMuteParticipantEvent.emit).toHaveBeenCalled();
         expect(component.toggleMuteParticipantEvent.emit).toHaveBeenCalledWith(new ToggleMuteParticipantEvent(model));
+    });
+
+    it('should emit event when toggling local mute participant', () => {
+        // Arrange
+        const p = participants[0];
+        p.status = ParticipantStatus.InHearing;
+        const model = mapper.mapFromParticipantUserResponse(p);
+        component.participant = model;
+        spyOn(component.toggleLocalMuteParticipantEvent, 'emit');
+
+        // Act
+        component.toggleLocalMuteParticipant();
+
+        // Assert
+        expect(component.toggleLocalMuteParticipantEvent.emit).toHaveBeenCalled();
+        expect(component.toggleLocalMuteParticipantEvent.emit).toHaveBeenCalledWith(new ToggleLocalMuteParticipantEvent(model));
     });
 
     it('should emit event when calling participant', () => {
