@@ -398,13 +398,15 @@
     "context-menu-icon": "Context menu icon",
     "call-witness": "Call witness",
     "admit-participant": "Admit {{ role }}",
+    "dismiss-witness": "Dismiss witness",
     "dismiss-participant": "Dismiss {{ role }}",
     "lower-hand": "Lower hand",
     "unmute": "Unmute",
     "mute": "Mute",
+    "mute-lock": "Mute & lock",
+    "unmute-lock": "Unlock mute",
     "unpin": "Unpin",
-    "pin": "Pin",
-    "unmute-lock": "Unlock mute"
+    "pin": "Pin"
   },
   "judge-participant-status-list": {
     "crest-alt": "HM Courts &amp; Tribunals Service crest",
