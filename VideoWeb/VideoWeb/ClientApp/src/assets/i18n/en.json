@@ -611,7 +611,11 @@
     "mute-participant": "Mute participant",
     "microphone-muted-icon": "Microphone muted icon",
     "microphone-on-icon": "Microphone on icon",
-    "participant-muted": "Participant muted"
+    "participant-muted": "Participant muted",
+    "mute-all": "Mute all",
+    "unmute-all": "Unmute all",
+    "mute-all-parties": "Mute all parties",
+    "unmute-all-parties": "Unmute all parties"
   },
   "private-consultation-room-controls": {
     "join-hearing-from-consultation": "Join hearing",

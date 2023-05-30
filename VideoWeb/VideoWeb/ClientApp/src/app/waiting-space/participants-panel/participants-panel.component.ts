@@ -123,10 +123,13 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.toggleMuteParticipant(e.participant);
     }
 
-    toggleLocalMuteParticipantEventHandler(e: ToggleLocalMuteParticipantEvent) {
+    async toggleLocalMuteParticipantEventHandler(e: ToggleLocalMuteParticipantEvent) {
         const p = this.participants.find(x => x.id === e.participant.id);
-        // const newMuteStatus = !p.isLocalMicMuted();
-        this.videoControlService.setRemoteMuteStatusById(p.id, p.pexipId, false);
+        await this.eventService.updateParticipantLocalMuteStatus(this.conferenceId, e.participant.id, !p.isLocalMicMuted());
+    }
+
+    async updateAllParticipantsLocalMuteStatus(conferenceId: string, muteStatus: boolean) {
+        await this.eventService.updateAllParticipantLocalMuteStatus(conferenceId, muteStatus);
     }
 
     toggleSpotlightParticipantEventHandler(e: ToggleSpotlightParticipantEvent) {

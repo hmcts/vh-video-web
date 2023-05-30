@@ -834,7 +834,11 @@
     "admit-participant": "Gadael {{role}} i mewn",
     "participant-available": "As gael",
     "joining1": "Yn ymuno...",
-    "for": ""
+    "for": "",
+    "mute-all": "Tewi pawb",
+    "unmute-all": "Clywed pawb",
+    "mute-all-parties": "Tewi pob parti",
+    "unmute-all-parties": "Clywed pob part"
   },
   "judge-context-menu": {
     "context-menu-icon": "Eicon dewislen cyd-destun",

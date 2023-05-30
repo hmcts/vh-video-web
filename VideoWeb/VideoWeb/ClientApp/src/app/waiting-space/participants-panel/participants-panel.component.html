@@ -3,7 +3,33 @@
 
   <div class="button-row">
     <div
-      class="small-button"
+      class="small-button row1"
+      data-prevent-double-click="true"
+      (click)="updateAllParticipantsLocalMuteStatus(conferenceId, true)"
+      appTooltip
+      [text]="'participants-panel.mute-all' | translate"
+      colour="grey"
+      tabindex="0"
+      (keyup.enter)="updateAllParticipantsLocalMuteStatus(conferenceId, true)"
+    >
+      {{ 'participants-panel.mute-all' | translate }}
+    </div>
+
+    <div
+      class="small-button row1"
+      data-prevent-double-click="true"
+      (click)="updateAllParticipantsLocalMuteStatus(conferenceId, false)"
+      appTooltip
+      [text]="'participants-panel.unmute-all' | translate"
+      colour="grey"
+      tabindex="0"
+      (keyup.enter)="updateAllParticipantsLocalMuteStatus(conferenceId, false)"
+    >
+      {{ 'participants-panel.unmute-all' | translate }}
+    </div>
+
+    <div
+      class="small-button row2"
       data-prevent-double-click="true"
       (click)="muteAndLockAll()"
       appTooltip
@@ -15,7 +41,7 @@
       {{ 'participants-panel.mute-lock' | translate }}
     </div>
     <div
-      class="small-button"
+      class="small-button row2"
       data-prevent-double-click="true"
       (click)="unlockAll()"
       appTooltip
@@ -27,7 +53,7 @@
       {{ 'participants-panel.unmute-lock' | translate }}
     </div>
     <div
-      class="small-button"
+      class="small-button row2"
       (click)="lowerAllHands()"
       appTooltip
       [text]="'participants-panel.lower-hands-tooltip' | translate"

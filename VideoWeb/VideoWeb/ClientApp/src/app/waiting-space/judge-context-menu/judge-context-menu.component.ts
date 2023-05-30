@@ -6,7 +6,8 @@ import {
     ToggleSpotlightParticipantEvent,
     LowerParticipantHandEvent,
     CallParticipantIntoHearingEvent,
-    DismissParticipantFromHearingEvent
+    DismissParticipantFromHearingEvent,
+    ToggleLocalMuteParticipantEvent
 } from 'src/app/shared/models/participant-event';
 import { HearingRole } from '../models/hearing-role-model';
 import { CaseTypeGroup } from '../models/case-type-group';
@@ -24,6 +25,7 @@ export class JudgeContextMenuComponent implements OnInit {
     @Output() lowerParticipantHandEvent = new EventEmitter<LowerParticipantHandEvent>();
     @Output() callParticipantIntoHearingEvent = new EventEmitter<CallParticipantIntoHearingEvent>();
     @Output() dismissParticipantFromHearingEvent = new EventEmitter<DismissParticipantFromHearingEvent>();
+    @Output() toggleLocalMuteParticipantEvent = new EventEmitter<ToggleLocalMuteParticipantEvent>();
 
     idPrefix: string;
     isDroppedDown = false;
@@ -85,6 +87,12 @@ export class JudgeContextMenuComponent implements OnInit {
         this.toggleDropdown();
     }
 
+    toggleLocalMuteParticipant() {
+        this.logger.debug(`${this.loggerPrefix} Attempting to toggle local mute`, { participant: this.participant.id });
+        this.toggleLocalMuteParticipantEvent.emit(new ToggleLocalMuteParticipantEvent(this.participant));
+        this.toggleDropdown();
+    }
+
     callParticipantIntoHearing() {
         this.logger.debug(`${this.loggerPrefix} Attempting to call witness`, { participant: this.participant.id });
         this.callParticipantIntoHearingEvent.emit(new CallParticipantIntoHearingEvent(this.participant));
@@ -118,8 +126,14 @@ export class JudgeContextMenuComponent implements OnInit {
         return !(this.isJudge || this.isPanelMember);
     }
 
-    getMutedStatusText(): string {
+    getMuteAndLockStatusText(): string {
         return this.participant.isMicRemoteMuted()
+            ? this.translateService.instant('judge-context-menu.unmute-lock')
+            : this.translateService.instant('judge-context-menu.mute-lock');
+    }
+
+    getLocalMuteAStatusText(): string {
+        return this.participant.isLocalMicMuted()
             ? this.translateService.instant('judge-context-menu.unmute')
             : this.translateService.instant('judge-context-menu.mute');
     }

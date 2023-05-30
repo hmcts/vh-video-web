@@ -34,8 +34,17 @@
     (click)="toggleMuteParticipant()"
     (keyup.enter)="toggleMuteParticipant()"
     tabindex="0"
+    [id]="idPrefix + '-toggle-mute-and-lock-' + (1 | random)"
+    >{{ getMuteAndLockStatusText() }}</a
+  >
+
+  <a
+    *ngIf="participant.isInHearing() && !participant.isMicRemoteMuted()"
+    (click)="toggleLocalMuteParticipant()"
+    (keyup.enter)="toggleLocalMuteParticipant()"
+    tabindex="0"
     [id]="idPrefix + '-toggle-mute-' + (1 | random)"
-    >{{ getMutedStatusText() }}</a
+    >{{ getLocalMuteAStatusText() }}</a
   >
   <a
     *ngIf="canCallParticipantIntoHearing()"
@@ -55,7 +64,7 @@
   >
     {{
       'judge-context-menu.dismiss-participant'
-        | translate: { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase }
+        | translate : { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase }
     }}
   </a>
   <a
@@ -82,6 +91,6 @@
 <ng-template #isNotWitnessCallContent>
   {{
     'judge-context-menu.admit-participant'
-      | translate: { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase }
+      | translate : { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase }
   }}
 </ng-template>
