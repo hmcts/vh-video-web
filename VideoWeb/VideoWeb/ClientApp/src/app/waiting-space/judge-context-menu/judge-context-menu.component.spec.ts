@@ -465,6 +465,32 @@ describe('JudgeContextMenuComponent', () => {
         expect(component.canDismissParticipantFromHearing()).toBeTruthy();
     });
 
+    describe('text for buttons', () => {
+        it('should return unmute local translation when participant is muted', () => {
+            component.participant.isLocalMicMuted = () => true;
+            component.getLocalMuteAStatusText();
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith('judge-context-menu.unmute');
+        });
+
+        it('should return mute local translation when participant is unmuted', () => {
+            component.participant.isLocalMicMuted = () => false;
+            component.getLocalMuteAStatusText();
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith('judge-context-menu.mute');
+        });
+
+        it('should return unmute remote translation when participant is remote muted', () => {
+            component.participant.isMicRemoteMuted = () => true;
+            component.getMuteAndLockStatusText();
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith('judge-context-menu.unmute-lock');
+        });
+
+        it('should return mute remote translation when participant is remote unmuted', () => {
+            component.participant.isMicRemoteMuted = () => false;
+            component.getMuteAndLockStatusText();
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith('judge-context-menu.mute-lock');
+        });
+    });
+
     describe('UI tests', () => {
         let dropdownElement;
         function fakeGetElementId(section: string) {
