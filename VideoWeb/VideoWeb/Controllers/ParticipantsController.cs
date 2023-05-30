@@ -225,15 +225,12 @@ namespace VideoWeb.Controllers
 
             try
             {
-                var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
-                    () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
+                var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
 
                 _logger.LogTrace($"Retrieving booking participants for hearing ${conference.HearingId}");
                 var hostsInHearingsToday = await _videoApiClient.GetHostsInHearingsTodayAsync();
 
-                var participantContactDetailsResponseVhoMapper = _mapperFactory
-                    .Get<Conference, IEnumerable<ParticipantInHearingResponse>,
-                        IEnumerable<ParticipantContactDetailsResponseVho>>();
+                var participantContactDetailsResponseVhoMapper = _mapperFactory.Get<Conference, IEnumerable<ParticipantInHearingResponse>, IEnumerable<ParticipantContactDetailsResponseVho>>();
                 var response = participantContactDetailsResponseVhoMapper.Map(conference, hostsInHearingsToday);
 
                 return Ok(response);

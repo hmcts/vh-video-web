@@ -8,7 +8,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/VideoWeb/VideoWeb/bin/Debug/netcoreapp3.1/VideoWeb.dll",
+            "program": "${workspaceFolder}/VideoWeb/VideoWeb/bin/Debug/net6.0/VideoWeb.dll",
             "args": [],
             "cwd": "${workspaceFolder}/VideoWeb/VideoWeb/",
             "stopAtEntry": false,

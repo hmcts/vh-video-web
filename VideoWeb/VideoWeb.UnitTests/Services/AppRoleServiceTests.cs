@@ -32,13 +32,12 @@ namespace VideoWeb.UnitTests.Services
             _sut = _mocker.Create<AppRoleService>();
         }
 
-        [TestCase(AppRoleService.JusticeUserRole.VhTeamLead, AppRoles.VhOfficerRole)]
-        [TestCase(AppRoleService.JusticeUserRole.Vho, AppRoles.VhOfficerRole)]
-        [TestCase(AppRoleService.JusticeUserRole.CaseAdmin, AppRoles.CaseAdminRole)]
-        [TestCase(AppRoleService.JusticeUserRole.Judge, AppRoles.JudgeRole)]
-        [TestCase(AppRoleService.JusticeUserRole.StaffMember, AppRoles.StaffMember)]
-        public async Task should_map_justice_user_role_to_app_role_and_set_cache(
-            AppRoleService.JusticeUserRole justiceUserRole, string expectedAppRole)
+        [TestCase(JusticeUserRole.VhTeamLead, AppRoles.VhOfficerRole)]
+        [TestCase(JusticeUserRole.Vho, AppRoles.VhOfficerRole)]
+        [TestCase(JusticeUserRole.CaseAdmin, AppRoles.CaseAdminRole)]
+        [TestCase(JusticeUserRole.Judge, AppRoles.JudgeRole)]
+        [TestCase(JusticeUserRole.StaffMember, AppRoles.StaffMember)]
+        public async Task should_map_justice_user_role_to_app_role_and_set_cache(JusticeUserRole justiceUserRole, string expectedAppRole)
         {
             // arrange
             var username = "random@claims.com";
@@ -63,7 +62,7 @@ namespace VideoWeb.UnitTests.Services
         public async Task should_return_list_of_claims_without_role_if_justice_user_has_no_app_role()
         {
             // arrange
-            var justiceUserRole = AppRoleService.JusticeUserRole.Individual;
+            var justiceUserRole = JusticeUserRole.Individual;
             var username = "random@claims.com";
             var uniqueId = Guid.NewGuid().ToString();
             var justiceUser = InitJusticeUser(justiceUserRole, username);
@@ -118,15 +117,14 @@ namespace VideoWeb.UnitTests.Services
             claims.Should().BeEmpty();
         }
 
-        private static JusticeUserResponse InitJusticeUser(AppRoleService.JusticeUserRole justiceUserRole, string username)
+        private static JusticeUserResponse InitJusticeUser(JusticeUserRole justiceUserRole, string username)
         {
             return new JusticeUserResponse()
             {
-                UserRoleId = (int) justiceUserRole,
+                UserRoles = new List<JusticeUserRole>{justiceUserRole},
                 Username = username,
                 Deleted = false,
                 Id = Guid.NewGuid(),
-                UserRoleName = justiceUserRole.ToString(),
                 FirstName = "John",
                 Lastname = "Doe",
                 FullName = "John Doe"
