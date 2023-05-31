@@ -4,6 +4,10 @@ export class ToggleMuteParticipantEvent {
     constructor(public participant: PanelModel) {}
 }
 
+export class ToggleLocalMuteParticipantEvent {
+    constructor(public participant: PanelModel) {}
+}
+
 export class ToggleSpotlightParticipantEvent {
     constructor(public participant: PanelModel) {}
 }

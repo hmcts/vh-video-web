@@ -33,6 +33,7 @@ import { ParticipantStatusMessage } from './models/participant-status-message';
 import { RequestedConsultationMessage } from './models/requested-consultation-message';
 import { NewAllocationMessage } from './models/new-allocation-message';
 import { UpdateEndpointsDto } from '../shared/models/update-endpoints-dto';
+import { ParticipantToggleLocalMuteMessage } from '../shared/models/participant-toggle-local-mute-message';
 
 @Injectable({
     providedIn: 'root'
@@ -57,6 +58,7 @@ export class EventsService {
     private participantMediaStatusSubject = new Subject<ParticipantMediaStatusMessage>();
     private participantRemoteMuteStatusSubject = new Subject<ParticipantRemoteMuteMessage>();
     private participantHandRaisedStatusSubject = new Subject<ParticipantHandRaisedMessage>();
+    private participantToggleLocalMuteStatusSubject = new Subject<ParticipantToggleLocalMuteMessage>();
     private roomUpdateSubject = new Subject<Room>();
     private roomTransferSubject = new Subject<RoomTransfer>();
     private hearingLayoutChangedSubject = new Subject<HearingLayoutChanged>();
@@ -193,6 +195,16 @@ export class EventsService {
             });
             const payload = new ParticipantHandRaisedMessage(conferenceId, participantId, hasHandRaised);
             this.participantHandRaisedStatusSubject.next(payload);
+        },
+
+        updateparticipantlocalmutemessage: (conferenceId: string, participantId: string, isMuted: boolean) => {
+            this.logger.debug('[EventsService] - Participant Local mute status change received: ', {
+                participantId,
+                conferenceId,
+                isMuted
+            });
+            const payload = new ParticipantToggleLocalMuteMessage(conferenceId, participantId, isMuted);
+            this.participantToggleLocalMuteStatusSubject.next(payload);
         },
 
         RoomUpdate: (payload: Room) => {
@@ -361,6 +373,10 @@ export class EventsService {
         return this.participantHandRaisedStatusSubject.asObservable();
     }
 
+    getParticipantToggleLocalMuteMessage(): Observable<ParticipantToggleLocalMuteMessage> {
+        return this.participantToggleLocalMuteStatusSubject.asObservable();
+    }
+
     getRoomUpdate(): Observable<Room> {
         return this.roomUpdateSubject.asObservable();
     }
@@ -421,6 +437,23 @@ export class EventsService {
             conference: conferenceId,
             participant: participantId,
             isRaised
+        });
+    }
+
+    async updateParticipantLocalMuteStatus(conferenceId: string, participantId: string, isMuted: boolean) {
+        await this.eventsHubConnection.send('ToggleParticipantLocalMute', conferenceId, participantId, isMuted);
+        this.logger.debug('[EventsService] - Sent update local mute status request for participant to EventHub', {
+            conference: conferenceId,
+            participant: participantId,
+            isMuted
+        });
+    }
+
+    async updateAllParticipantLocalMuteStatus(conferenceId: string, isMuted: boolean) {
+        await this.eventsHubConnection.send('ToggleAllParticipantLocalMute', conferenceId, isMuted);
+        this.logger.debug('[EventsService] - Sent update local mute status request for all participants to EventHub', {
+            conference: conferenceId,
+            isMuted
         });
     }
 

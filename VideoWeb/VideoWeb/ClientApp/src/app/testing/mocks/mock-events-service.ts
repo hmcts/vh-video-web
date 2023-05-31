@@ -18,6 +18,7 @@ import { EndpointsUpdatedMessage } from 'src/app/shared/models/endpoints-updated
 import { Room } from '../../shared/models/room';
 import { RoomTransfer } from '../../shared/models/room-transfer';
 import { NewAllocationMessage } from '../../services/models/new-allocation-message';
+import { ParticipantToggleLocalMuteMessage } from 'src/app/shared/models/participant-toggle-local-mute-message';
 
 export const hearingStatusSubjectMock = new Subject<ConferenceStatusMessage>();
 export const participantStatusSubjectMock = new Subject<ParticipantStatusMessage>();
@@ -33,6 +34,7 @@ export const hearingTransferSubjectMock = new Subject<HearingTransfer>();
 export const participantMediaStatusSubjectMock = new Subject<ParticipantMediaStatusMessage>();
 export const participantRemoteMuteStatusSubjectMock = new Subject<ParticipantRemoteMuteMessage>();
 export const participantHandRaisedStatusSubjectMock = new Subject<ParticipantHandRaisedMessage>();
+export const participantToggleLocalMuteSubjectMock = new Subject<ParticipantToggleLocalMuteMessage>();
 export const roomUpdateSubjectMock = new Subject<Room>();
 export const roomTransferSubjectMock = new Subject<RoomTransfer>();
 export const adminAnsweredChatSubjectMock = new Subject<ConferenceMessageAnswered>();
@@ -69,13 +71,16 @@ export const eventsServiceSpy = jasmine.createSpyObj<EventsService>(
         'getAdminAnsweredChat',
         'getParticipantRemoteMuteStatusMessage',
         'getParticipantHandRaisedMessage',
+        'getParticipantToggleLocalMuteMessage',
         'publishParticipantHandRaisedStatus',
         'publishRemoteMuteStatus',
         'onEventsHubReady',
         'getParticipantsUpdated',
         'getEndpointsUpdated',
         'getHearingLayoutChanged',
-        'getAllocationMessage'
+        'getAllocationMessage',
+        'updateParticipantLocalMuteStatus',
+        'updateAllParticipantLocalMuteStatus'
     ],
     ['eventHubIsConnected']
 );
@@ -102,3 +107,4 @@ eventsServiceSpy.getParticipantsUpdated.and.returnValue(getParticipantsUpdatedSu
 eventsServiceSpy.getHearingLayoutChanged.and.returnValue(hearingLayoutChangedSubjectMock.asObservable());
 eventsServiceSpy.getAllocationMessage.and.returnValue(newAllocationMessageSubjectMock.asObservable());
 eventsServiceSpy.getEndpointsUpdated.and.returnValue(getEndpointsUpdatedMessageSubjectMock.asObservable());
+eventsServiceSpy.getParticipantToggleLocalMuteMessage.and.returnValue(participantToggleLocalMuteSubjectMock.asObservable());
