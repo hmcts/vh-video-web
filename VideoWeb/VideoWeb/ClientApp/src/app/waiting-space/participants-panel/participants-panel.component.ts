@@ -124,7 +124,9 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     async toggleLocalMuteParticipantEventHandler(e: ToggleLocalMuteParticipantEvent) {
-        const p = this.participants.find(x => x.id === e.participant.id);
+        // toggling local mute targets individuals, not their links too
+        const allParticipants = this.participants.flatMap(x => x.participantsList());
+        const p = allParticipants.find(x => x.id === e.participant.id);
         await this.eventService.updateParticipantLocalMuteStatus(this.conferenceId, e.participant.id, !p.isLocalMicMuted());
     }
 
