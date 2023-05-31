@@ -25,6 +25,7 @@ import { LowerCasePipe } from '@angular/common';
 import { By } from '@angular/platform-browser';
 import { HearingRoleHelper } from 'src/app/shared/helpers/hearing-role-helper';
 import { RandomPipe } from 'src/app/shared/pipes/random.pipe';
+import { LinkedParticipantPanelModel } from '../models/linked-participant-panel-model';
 
 export class MockElementRef extends ElementRef {
     constructor() {
@@ -476,6 +477,23 @@ describe('JudgeContextMenuComponent', () => {
             component.participant.isLocalMicMuted = () => false;
             component.getLocalMuteAStatusText(component.participant);
             expect(translateServiceSpy.instant).toHaveBeenCalledWith('judge-context-menu.mute');
+        });
+
+        it('linked participant should include the display name in the text', () => {
+            // arrange
+            const linkedParticipants = new ConferenceTestData().getListOfLinkedParticipants();
+            const pats = linkedParticipants.map(p => mapper.mapFromParticipantUserResponse(p));
+            const roomLabel = 'Interpreter1';
+            const roomId = '787';
+            const model = LinkedParticipantPanelModel.fromListOfPanelModels(pats, roomLabel, roomId);
+            component.participant = model;
+            const participant = model.participants[0];
+
+            // act
+            const text = component.getLocalMuteAStatusText(component.participant);
+
+            // assert
+            expect(text).toContain(participant.displayName);
         });
 
         it('should return unmute remote translation when participant is remote muted', () => {
