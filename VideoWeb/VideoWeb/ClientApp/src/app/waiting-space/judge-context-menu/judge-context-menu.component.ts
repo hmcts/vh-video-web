@@ -132,12 +132,12 @@ export class JudgeContextMenuComponent implements OnInit {
             : this.translateService.instant('judge-context-menu.mute-lock');
     }
 
-    getLocalMuteAStatusText(participant: PanelModel): string {
-        let text = participant.isLocalMicMuted()
+    getLocalMuteAStatusText(individualParticipant: PanelModel): string {
+        let text = individualParticipant.isLocalMicMuted()
             ? `${this.translateService.instant('judge-context-menu.unmute')}`
             : `${this.translateService.instant('judge-context-menu.mute')}`;
-        if (participant.participantsList().length > 0) {
-            text = text.concat(` ${participant.displayName}`);
+        if (this.participant.participantsList().length > 1) {
+            text = text.concat(` ${individualParticipant.displayName}`);
         }
         return text;
     }
