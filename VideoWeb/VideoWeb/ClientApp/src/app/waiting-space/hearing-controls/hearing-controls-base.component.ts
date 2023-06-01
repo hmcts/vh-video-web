@@ -207,7 +207,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             .getParticipantToggleLocalMuteMessage()
             .pipe(takeUntil(this.destroyedSubject))
             .subscribe(async message => {
-                this.handleParticipantToggleLocalMuteChange(message);
+                await this.handleParticipantToggleLocalMuteChange(message);
             });
     }
 
@@ -292,7 +292,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.participant.status = message.status;
     }
 
-    handleParticipantToggleLocalMuteChange(message: ParticipantToggleLocalMuteMessage) {
+    async handleParticipantToggleLocalMuteChange(message: ParticipantToggleLocalMuteMessage) {
         if (message.participantId !== this.participant.id || message.conferenceId !== this.conferenceId) {
             this.logger.debug(`${this.loggerPrefix} Participant received a toggle local mute message for another conference/participant`, {
                 messageParticipantId: message.participantId,
@@ -308,13 +308,13 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         }
 
         if (this.audioMuted && !message.muted) {
-            this.toggleMute();
+            await this.toggleMute();
             this.logger.info(`${this.loggerPrefix} Participant has been locally unmuted by the judge`, this.logPayload);
             return;
         }
 
         if (!this.audioMuted && message.muted) {
-            this.toggleMute();
+            await this.toggleMute();
             this.logger.info(`${this.loggerPrefix} Participant has been locally muted by the judge`, this.logPayload);
         }
     }
