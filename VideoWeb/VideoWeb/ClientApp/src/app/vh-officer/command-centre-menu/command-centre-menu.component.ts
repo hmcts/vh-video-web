@@ -1,8 +1,11 @@
-import { Component, EventEmitter, OnInit, Output, OnDestroy } from '@angular/core';
+import {Component, EventEmitter, OnInit, Output, OnDestroy} from '@angular/core';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { MenuOption } from '../models/menus-options';
 import { EventBusService, VHEventType } from 'src/app/services/event-bus.service';
 import { Subscription } from 'rxjs';
+import {JudgeHearingSummary} from "../../shared/models/JudgeHearingSummary";
+import {pageUrls} from "../../shared/page-url.constants";
+import {Router} from "@angular/router";
 
 @Component({
     selector: 'app-command-centre-menu',
@@ -10,10 +13,14 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./command-centre-menu.component.scss']
 })
 export class CommandCentreMenuComponent implements OnInit, OnDestroy {
+    hearings: JudgeHearingSummary[];
     @Output() selectedMenu = new EventEmitter<MenuOption>();
+    @Output() selectedHearing = new EventEmitter<string>();
+
     subscriptions$ = new Subscription();
     currentMenu: MenuOption;
-    constructor(private logger: Logger, private eventbus: EventBusService) {}
+    constructor(private logger: Logger, private eventbus: EventBusService, private router: Router) {
+    }
 
     ngOnInit() {
         this.currentMenu = MenuOption.Hearing;
@@ -46,5 +53,11 @@ export class CommandCentreMenuComponent implements OnInit, OnDestroy {
         this.currentMenu = menuOption;
         this.logger.debug(`[VHO Menu] - Selected menu ${this.currentMenu}`);
         this.selectedMenu.emit(this.currentMenu);
+    }
+    signIntoConference() {
+        debugger;
+        this.logger.debug(`[JudgeHearingList] - Selected conference ${this.selectedHearing}`);
+        this.router.navigate([pageUrls.JudgeWaitingRoom, this.selectedHearing]);
+
     }
 }

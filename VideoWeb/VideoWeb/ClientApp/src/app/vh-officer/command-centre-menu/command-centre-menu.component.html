@@ -1,8 +1,15 @@
 <div class="tabcontainer">
   <div class="tab tab--left">
+
     <button id="hearingsTabButton" [ngClass]="{ active: currentMenu === 'Hearing' }" (click)="displayHearing()">Hearings</button>
   </div>
   <div class="tab tab--right">
     <button id="messagesTabButton" [ngClass]="{ active: currentMenu === 'Message' }" (click)="displayMessages()">Messages</button>
   </div>
+
+    <div  class="tab tab--right">
+ <button id="start-hearing-btn-" [ngClass]="{ active: currentMenu === 'Message' }" (click)="signIntoConference()"> Join Hearing </button>
+
+
+    </div>
 </div>
