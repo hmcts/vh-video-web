@@ -115,7 +115,6 @@ namespace VideoWeb
             IdentityModelEventSource.ShowPII = true;
             app.UseRouting();
             app.UseAuthentication();
-            app.UseMiddleware<UserClaimsMiddleware>(); // this must be before authorization so that the claims can added before the authorization middleware runs
             app.UseAuthorization();
             app.UseMiddleware<ExceptionMiddleware>();
 

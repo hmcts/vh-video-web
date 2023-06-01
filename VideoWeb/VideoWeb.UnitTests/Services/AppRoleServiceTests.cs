@@ -32,18 +32,18 @@ namespace VideoWeb.UnitTests.Services
             _sut = _mocker.Create<AppRoleService>();
         }
 
-        [TestCase(AppRoleService.JusticeUserRole.VhTeamLead, AppRoles.VhOfficerRole)]
-        [TestCase(AppRoleService.JusticeUserRole.Vho, AppRoles.VhOfficerRole)]
-        [TestCase(AppRoleService.JusticeUserRole.CaseAdmin, AppRoles.CaseAdminRole)]
-        [TestCase(AppRoleService.JusticeUserRole.Judge, AppRoles.JudgeRole)]
-        [TestCase(AppRoleService.JusticeUserRole.StaffMember, AppRoles.StaffMember)]
-        public async Task should_map_justice_user_role_to_app_role_and_set_cache(
-            AppRoleService.JusticeUserRole justiceUserRole, string expectedAppRole)
+        [TestCase(JusticeUserRole.VhTeamLead, AppRoles.VhOfficerRole)]
+        [TestCase(JusticeUserRole.Vho, AppRoles.VhOfficerRole)]
+        [TestCase(JusticeUserRole.CaseAdmin, AppRoles.CaseAdminRole)]
+        [TestCase(JusticeUserRole.Judge, AppRoles.JudgeRole)]
+        [TestCase(JusticeUserRole.StaffMember, AppRoles.StaffMember)]
+        public async Task should_map_justice_user_role_to_app_role_and_set_cache(JusticeUserRole justiceUserRole,
+            string expectedAppRole)
         {
             // arrange
             var username = "random@claims.com";
             var uniqueId = Guid.NewGuid().ToString();
-            var justiceUser = InitJusticeUser(justiceUserRole, username);
+            var justiceUser = InitJusticeUser(new List<JusticeUserRole>(){justiceUserRole}, username);
             _mocker.Mock<IBookingsApiClient>().Setup(x => x.GetJusticeUserByUsernameAsync(username))
                 .ReturnsAsync(justiceUser);
 
@@ -52,21 +52,40 @@ namespace VideoWeb.UnitTests.Services
 
             // assert
             claims.Count.Should().Be(4); // name, given name, surname and role
-            claims.First(x=>x.Type == ClaimTypes.Role).Value.Should().Be(expectedAppRole);
+            claims.First(x => x.Type == ClaimTypes.Role).Value.Should().Be(expectedAppRole);
+            claims.First(x => x.Type == ClaimTypes.GivenName).Value.Should().Be(justiceUser.FirstName);
+            claims.First(x => x.Type == ClaimTypes.Surname).Value.Should().Be(justiceUser.Lastname);
+            claims.First(x => x.Type == ClaimTypes.Name).Value.Should().Be(justiceUser.FullName);
+            _cache.Get(uniqueId).Should().Be(claims);
+        }
+
+        [Test]
+        public async Task should_return_list_of_claims_without_role_if_justice_user_has_no_justice_role()
+        {
+            // arrange
+            var username = "random@claims.com";
+            var uniqueId = Guid.NewGuid().ToString();
+            var justiceUser = InitJusticeUser(new List<JusticeUserRole>(), username);
+            _mocker.Mock<IBookingsApiClient>().Setup(x => x.GetJusticeUserByUsernameAsync(username))
+                .ReturnsAsync(justiceUser);
+
+            // act
+            var claims = await _sut.GetClaimsForUserAsync(uniqueId, username);
+
+            // assert
+            claims.Count.Should().Be(3); // name, given name and surname
             claims.First(x=>x.Type == ClaimTypes.GivenName).Value.Should().Be(justiceUser.FirstName);
             claims.First(x=>x.Type == ClaimTypes.Surname).Value.Should().Be(justiceUser.Lastname);
             claims.First(x=>x.Type == ClaimTypes.Name).Value.Should().Be(justiceUser.FullName);
-            _cache.Get(uniqueId).Should().Be(claims);
         }
         
         [Test]
-        public async Task should_return_list_of_claims_without_role_if_justice_user_has_no_app_role()
+        public async Task should_return_list_of_claims_without_role_if_justice_user_has_unsupported_justice_role()
         {
             // arrange
-            var justiceUserRole = AppRoleService.JusticeUserRole.Individual;
             var username = "random@claims.com";
             var uniqueId = Guid.NewGuid().ToString();
-            var justiceUser = InitJusticeUser(justiceUserRole, username);
+            var justiceUser = InitJusticeUser(new List<JusticeUserRole>() {JusticeUserRole.Clerk}, username);
             _mocker.Mock<IBookingsApiClient>().Setup(x => x.GetJusticeUserByUsernameAsync(username))
                 .ReturnsAsync(justiceUser);
 
@@ -118,15 +137,14 @@ namespace VideoWeb.UnitTests.Services
             claims.Should().BeEmpty();
         }
 
-        private static JusticeUserResponse InitJusticeUser(AppRoleService.JusticeUserRole justiceUserRole, string username)
+        private static JusticeUserResponse InitJusticeUser(List<JusticeUserRole> justiceUserRoles, string username)
         {
             return new JusticeUserResponse()
             {
-                UserRoleId = (int) justiceUserRole,
                 Username = username,
                 Deleted = false,
                 Id = Guid.NewGuid(),
-                UserRoleName = justiceUserRole.ToString(),
+                UserRoles = justiceUserRoles,
                 FirstName = "John",
                 Lastname = "Doe",
                 FullName = "John Doe"
