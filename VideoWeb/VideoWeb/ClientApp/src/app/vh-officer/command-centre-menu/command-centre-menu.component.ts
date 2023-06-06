@@ -55,11 +55,11 @@ export class CommandCentreMenuComponent implements OnInit, OnDestroy {
     }
 
     signIntoConference() {
-        this.logger.debug('[VHO Menu] - Signing into judge waiting room', { conference: this.conferenceId });
+        this.logger.debug('[VHO Menu] - Signing into judge waiting room', { conference: this.conferenceId });;
         this.videoWebService.getConferenceById(this.conferenceId).then(conferenceResponse => {
             this.profileService.getUserProfile().then(profile => {
                 if (conferenceResponse.participants.some(x => x.user_name === profile.username)) {
-                    this.router.navigate([pageUrls.StaffMemberWaitingRoom, this.conferenceId]);
+                    this.openWaitingRoomInTab(this.conferenceId);
                 } else {
                     this.videoWebService
                         .staffMemberJoinConference(
@@ -67,13 +67,18 @@ export class CommandCentreMenuComponent implements OnInit, OnDestroy {
                             new StaffMemberJoinConferenceRequest({ username: profile.username })
                         )
                         .then(updatedConference => {
-                            this.router.navigate([pageUrls.StaffMemberWaitingRoom, updatedConference.id]);
+                            this.openWaitingRoomInTab(updatedConference.id);
                         });
                 }
             });
         });
     }
 
+    private openWaitingRoomInTab(conferenceId: string): void {
+        window.open(
+            this.router.serializeUrl(
+                this.router.createUrlTree([pageUrls.StaffMemberWaitingRoom, conferenceId])), '_blank');
+    }
     private publishCurrentMenuOption(menuOption: MenuOption): void {
         this.currentMenu = menuOption;
         this.logger.debug(`[VHO Menu] - Selected menu ${this.currentMenu}`);

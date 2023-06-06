@@ -167,7 +167,7 @@ export class AppInsightsLoggerService implements LogAdapter {
     }
 
     private updatePropertiesIfVho(properties: any) {
-        if (properties && this.isVHO) {
+        if (properties && properties instanceof Object && this.isVHO) {
             properties.isVho = this.isVHO;
         }
     }
