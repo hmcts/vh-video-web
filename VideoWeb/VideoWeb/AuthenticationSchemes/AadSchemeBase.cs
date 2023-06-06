@@ -38,7 +38,7 @@ namespace VideoWeb.AuthenticationSchemes
                 var usernameClaim = jwtToken.Claims.First(x => x.Type == options.TokenValidationParameters.NameClaimType);
                 var appRoleService = context.HttpContext.RequestServices.GetService(typeof(IAppRoleService)) as IAppRoleService;
                 var claims = await appRoleService!.GetClaimsForUserAsync(jwtToken.RawPayload, usernameClaim.Value);
-                context.HttpContext.User.AddIdentity(new ClaimsIdentity(claims));
+                context.Principal!.AddIdentity(new ClaimsIdentity(claims));
             }
         }
     }

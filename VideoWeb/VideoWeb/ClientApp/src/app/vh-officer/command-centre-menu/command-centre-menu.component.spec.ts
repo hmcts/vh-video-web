@@ -3,6 +3,7 @@ import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { MenuOption } from '../models/menus-options';
 import { CommandCentreMenuComponent } from './command-centre-menu.component';
 import { EventBusService, EmitEvent, VHEventType } from 'src/app/services/event-bus.service';
+import {videoWebService} from "../../waiting-space/waiting-room-shared/tests/waiting-room-base-setup";
 
 describe('CommandCentreMenuComponent', () => {
     let component: CommandCentreMenuComponent;
@@ -10,7 +11,7 @@ describe('CommandCentreMenuComponent', () => {
     const logger: Logger = new MockLogger();
 
     beforeEach(() => {
-        component = new CommandCentreMenuComponent(logger, eventbus);
+        component = new CommandCentreMenuComponent(logger, eventbus, null, videoWebService, null);
     });
 
     afterEach(() => {
