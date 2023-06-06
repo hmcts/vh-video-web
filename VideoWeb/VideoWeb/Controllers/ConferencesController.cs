@@ -298,7 +298,8 @@ namespace VideoWeb.Controllers
             }
 
             var exceededTimeLimit = !ConferenceHelper.HasNotPassed(conference.CurrentStatus, conference.ClosedDateTime);
-            if (userProfile.Role != Role.StaffMember && (conference.Participants.All(x => x.Username.ToLower().Trim() != username) || exceededTimeLimit))
+            if (!userProfile.Roles.Contains(Role.StaffMember) && 
+                (conference.Participants.All(x => x.Username.ToLower().Trim() != username) || exceededTimeLimit))
             {
                 _logger.LogInformation(
                     $"Unauthorised to view conference details {conferenceId} because user is neither a VH " +

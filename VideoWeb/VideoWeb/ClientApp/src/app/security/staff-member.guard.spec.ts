@@ -19,7 +19,7 @@ describe('StaffMemberGuard', () => {
     });
 
     it('should not be able to activate component if role is not StaffMember', async () => {
-        const profile = new UserProfileResponse({ role: Role.VideoHearingsOfficer });
+        const profile = new UserProfileResponse({ roles: [Role.VideoHearingsOfficer] });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         const result = await guard.canActivate(null, null);
         expect(result).toBeFalsy();
@@ -27,7 +27,7 @@ describe('StaffMemberGuard', () => {
     });
 
     it('should be able to activate component if role is StaffMember', async () => {
-        const profile = new UserProfileResponse({ role: Role.StaffMember });
+        const profile = new UserProfileResponse({ roles: [Role.StaffMember] });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         const result = await guard.canActivate(null, null);
         expect(result).toBeTruthy();

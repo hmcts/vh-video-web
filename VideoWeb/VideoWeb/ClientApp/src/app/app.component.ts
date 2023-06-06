@@ -166,10 +166,10 @@ export class AppComponent implements OnInit, OnDestroy {
         try {
             const profile = await this.profileService.getUserProfile();
             if (
-                profile.role === Role.Representative ||
-                profile.role === Role.Individual ||
-                profile.role === Role.QuickLinkParticipant ||
-                profile.role === Role.QuickLinkObserver
+                profile.roles.includes(Role.Representative) ||
+                profile.roles.includes(Role.Individual) ||
+                profile.roles.includes(Role.QuickLinkParticipant) ||
+                profile.roles.includes(Role.QuickLinkObserver)
             ) {
                 this.isRepresentativeOrIndividual = true;
             }

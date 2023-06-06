@@ -52,17 +52,19 @@ export class NavigatorComponent implements OnInit {
     }
 
     navigateToHearingList(userProfile: UserProfileResponse) {
-        if (userProfile.role === Role.Judge || userProfile.role === Role.JudicialOfficeHolder) {
+        if (userProfile.roles.includes(Role.Judge) || userProfile.roles.includes(Role.JudicialOfficeHolder)) {
             this.router.navigate([pageUrls.JudgeHearingList]);
-        } else if (userProfile.role === Role.StaffMember) {
-            this.router.navigate([this.staffMemberNavigation]);
-        } else if (userProfile.role === Role.VideoHearingsOfficer) {
+        }
+        else if (userProfile.roles.includes(Role.VideoHearingsOfficer)) {
             this.router.navigate([pageUrls.AdminVenueList]);
+        }
+        else if (userProfile.roles.includes(Role.StaffMember)) {
+            this.router.navigate([this.staffMemberNavigation]);
         } else if (
-            userProfile.role === Role.Representative ||
-            userProfile.role === Role.Individual ||
-            userProfile.role === Role.QuickLinkParticipant ||
-            userProfile.role === Role.QuickLinkObserver
+            userProfile.roles.includes(Role.Representative) ||
+            userProfile.roles.includes(Role.Individual) ||
+            userProfile.roles.includes(Role.QuickLinkParticipant) ||
+            userProfile.roles.includes(Role.QuickLinkObserver)
         ) {
             this.router.navigate([pageUrls.ParticipantHearingList]);
         } else {

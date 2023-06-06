@@ -34,10 +34,10 @@ export class ParticipantGuard extends AuthBaseGuard implements CanActivate {
                 try {
                     const profile = await this.userProfileService.getUserProfile();
                     if (
-                        profile.role === Role.Representative ||
-                        profile.role === Role.Individual ||
-                        profile.role === Role.QuickLinkParticipant ||
-                        profile.role === Role.QuickLinkObserver
+                        profile.roles.includes(Role.Representative) ||
+                        profile.roles.includes(Role.Individual) ||
+                        profile.roles.includes(Role.QuickLinkParticipant) ||
+                        profile.roles.includes(Role.QuickLinkObserver)
                     ) {
                         this.logger.debug('[ParticipantGuard] User is a representative or individual.');
                         return true;
