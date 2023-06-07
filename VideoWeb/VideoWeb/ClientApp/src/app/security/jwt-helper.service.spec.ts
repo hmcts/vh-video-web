@@ -20,7 +20,6 @@ describe('JwtHelperService', () => {
         expect(service).toBeTruthy();
     });
 
-
     it('should call helper to decode token', () => {
         service.decodeToken(testToken);
         expect(auth0Spy.decodeToken).toHaveBeenCalled();

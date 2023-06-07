@@ -2,10 +2,10 @@
   <div class="tab tab--left">
       <button id="hearingsTabButton" [ngClass]="{ active: currentMenu === 'Hearing' }" (click)="displayHearing()">Hearings</button>
   </div>
-  <div class="tab tab--middle">
+  <div [ngClass]="isStaffMember ? 'tab tab--middle' : 'tab tab--right'">
       <button id="messagesTabButton" [ngClass]="{ active: currentMenu === 'Message' }" (click)="displayMessages()">Messages</button>
   </div>
-  <div  class="tab tab--right">
-      <button id="start-hearing-btn" (click)="signIntoConference()" [disabled]="conferenceId === null" > Join Hearing </button>
+  <div  class="tab tab--right" *ngIf="isStaffMember">
+      <button id="start-hearing-btn" (click)="signIntoConference()" [disabled]="!conferenceId" > Join Hearing </button>
   </div>
 </div>

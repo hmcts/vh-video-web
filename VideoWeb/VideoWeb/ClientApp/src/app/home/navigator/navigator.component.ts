@@ -54,11 +54,9 @@ export class NavigatorComponent implements OnInit {
     navigateToHearingList(userProfile: UserProfileResponse) {
         if (userProfile.roles.includes(Role.Judge) || userProfile.roles.includes(Role.JudicialOfficeHolder)) {
             this.router.navigate([pageUrls.JudgeHearingList]);
-        }
-        else if (userProfile.roles.includes(Role.VideoHearingsOfficer)) {
+        } else if (userProfile.roles.includes(Role.VideoHearingsOfficer)) {
             this.router.navigate([pageUrls.AdminVenueList]);
-        }
-        else if (userProfile.roles.includes(Role.StaffMember)) {
+        } else if (userProfile.roles.includes(Role.StaffMember)) {
             this.router.navigate([this.staffMemberNavigation]);
         } else if (
             userProfile.roles.includes(Role.Representative) ||
