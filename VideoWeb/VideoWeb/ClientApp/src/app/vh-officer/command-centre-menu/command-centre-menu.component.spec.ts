@@ -7,9 +7,9 @@ import { ProfileService } from '../../services/api/profile.service';
 import { VideoWebService } from '../../services/api/video-web.service';
 import { Router } from '@angular/router';
 import { Role, UserProfileResponse } from '../../services/clients/api-client';
-import {fakeAsync, tick} from "@angular/core/testing";
-import {ConferenceTestData} from "../../testing/mocks/data/conference-test-data";
-import {pageUrls} from "../../shared/page-url.constants";
+import { fakeAsync, tick } from '@angular/core/testing';
+import { ConferenceTestData } from '../../testing/mocks/data/conference-test-data';
+import { pageUrls } from '../../shared/page-url.constants';
 
 describe('CommandCentreMenuComponent', () => {
     let component: CommandCentreMenuComponent;
@@ -92,9 +92,8 @@ describe('CommandCentreMenuComponent', () => {
         expect(component.currentMenu).toBe(menu);
     });
 
-
     it('should navigate to staff waiting room when conference is selected for user as a staff-member in the conference', fakeAsync(() => {
-        //ARRANGE
+        // ARRANGE
         const conference = new ConferenceTestData().getConferenceForHostResponse();
         const staffMember = conference.participants.find(x => x.role === Role.StaffMember);
         router.navigate.calls.reset();
@@ -102,13 +101,11 @@ describe('CommandCentreMenuComponent', () => {
         videoWebService.getConferenceById.and.returnValue(Promise.resolve(conference));
         videoWebService.staffMemberJoinConference.and.returnValue(Promise.resolve(conference));
         component.conferenceId = conference.id;
-        //ACT
+        // ACT
         component.ngOnInit();
         component.signIntoConference();
         tick();
-        //ASSERT
+        // ASSERT
         expect(router.createUrlTree).toHaveBeenCalledWith([pageUrls.StaffMemberWaitingRoom, conference.id]);
     }));
-
-
 });
