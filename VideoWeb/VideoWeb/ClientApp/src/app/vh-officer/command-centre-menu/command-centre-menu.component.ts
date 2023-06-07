@@ -35,9 +35,7 @@ export class CommandCentreMenuComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.profileService.getUserProfile().then(profile => {
-            this.loggedInUser = profile;
-        });
+        this.profileService.getUserProfile().then(profile => (this.loggedInUser = profile));
         this.currentMenu = MenuOption.Hearing;
         this.setupSubscribers();
     }
