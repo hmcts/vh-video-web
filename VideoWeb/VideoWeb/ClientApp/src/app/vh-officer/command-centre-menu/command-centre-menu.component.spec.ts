@@ -7,9 +7,9 @@ import { ProfileService } from '../../services/api/profile.service';
 import { VideoWebService } from '../../services/api/video-web.service';
 import { Router } from '@angular/router';
 import { Role, UserProfileResponse } from '../../services/clients/api-client';
-import {fakeAsync, tick} from "@angular/core/testing";
-import {ConferenceTestData} from "../../testing/mocks/data/conference-test-data";
-import {pageUrls} from "../../shared/page-url.constants";
+import { fakeAsync, tick } from '@angular/core/testing';
+import { ConferenceTestData } from '../../testing/mocks/data/conference-test-data';
+import { pageUrls } from '../../shared/page-url.constants';
 
 describe('CommandCentreMenuComponent', () => {
     let component: CommandCentreMenuComponent;
@@ -92,56 +92,56 @@ describe('CommandCentreMenuComponent', () => {
         expect(component.currentMenu).toBe(menu);
     });
 
-
     it('should navigate to staff waiting room when conference is selected for user as a staff-member who already exists in conference', fakeAsync(() => {
-        //ARRANGE
+        // ARRANGE
         const conference = new ConferenceTestData().getConferenceForHostResponse();
         const staffMember = conference.participants.find(x => x.role === Role.StaffMember);
         router.navigate.calls.reset();
         profileService.getUserProfile.and.returnValue(Promise.resolve(staffMember));
         videoWebService.getConferenceById.and.returnValue(Promise.resolve(conference));
         component.conferenceId = conference.id;
-        //ACT
+        // ACT
         component.ngOnInit();
         component.signIntoConference();
         tick();
-        //ASSERT
+        // ASSERT
         expect(router.createUrlTree).toHaveBeenCalledWith([pageUrls.StaffMemberWaitingRoom, conference.id]);
     }));
 
-
     it('should navigate to staff waiting room when conference is selected for user as a new staff-member', fakeAsync(() => {
-        //ARRANGE
+        // ARRANGE
         const conference = new ConferenceTestData().getConferenceForHostResponse();
         router.navigate.calls.reset();
         videoWebService.getConferenceById.and.returnValue(Promise.resolve(conference));
         videoWebService.staffMemberJoinConference.and.returnValue(Promise.resolve(conference));
         component.conferenceId = conference.id;
-        //ACT
+        // ACT
         component.ngOnInit();
         component.signIntoConference();
         tick();
-        //ASSERT
+        // ASSERT
         expect(router.createUrlTree).toHaveBeenCalledWith([pageUrls.StaffMemberWaitingRoom, conference.id]);
     }));
 
     it('isStaffMember should return true when user is a staff member', fakeAsync(() => {
-        profileService.getUserProfile.and.returnValue(Promise.resolve(new UserProfileResponse({roles: [Role.StaffMember, Role.VideoHearingsOfficer]})));
-        component.ngOnInit()
+        profileService.getUserProfile.and.returnValue(
+            Promise.resolve(new UserProfileResponse({ roles: [Role.StaffMember, Role.VideoHearingsOfficer] }))
+        );
+        component.ngOnInit();
         tick();
         expect(component.isStaffMember).toBeTrue();
     }));
 
     it('isStaffMember should return false when user not a staff member', fakeAsync(() => {
-        profileService.getUserProfile.and.returnValue(Promise.resolve(new UserProfileResponse({roles: [Role.VideoHearingsOfficer]})));
-        component.ngOnInit()
+        profileService.getUserProfile.and.returnValue(Promise.resolve(new UserProfileResponse({ roles: [Role.VideoHearingsOfficer] })));
+        component.ngOnInit();
         tick();
         expect(component.isStaffMember).toBeFalsy();
     }));
 
     it('isStaffMember should return false when user not set', fakeAsync(() => {
         profileService.getUserProfile.and.returnValue(Promise.resolve(null));
-        component.ngOnInit()
+        component.ngOnInit();
         tick();
         expect(component.isStaffMember).toBeFalsy();
     }));
