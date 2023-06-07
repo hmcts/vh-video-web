@@ -304,7 +304,7 @@ namespace VideoWeb.Controllers
                     Role = Role.VideoHearingsOfficer
                 };
 
-                if (profile.Roles.Any(role => participantsRoles.Contains(role)))
+                if (profile.Roles.Exists(role => participantsRoles.Contains(role)))
                 {
                     var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
                         () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
