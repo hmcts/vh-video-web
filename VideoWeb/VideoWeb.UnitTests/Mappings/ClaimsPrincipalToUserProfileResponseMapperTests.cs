@@ -58,7 +58,25 @@ namespace VideoWeb.UnitTests.Mappings
                 .WithRole("unknown").Build();
             Action action = () => _sut.Map(user);
 
-            action.Should().Throw<NotSupportedException>().WithMessage("Role is not supported for this application");
+            action.Should().Throw<NotSupportedException>().WithMessage("No supported role for this application");
+        }
+        
+        [Test]
+        public void Should_add_multiple_roles()
+        {
+            const string firstName = "John";
+            const string lastname = "Doe";
+            const string displayName = "John Doe";
+            var username = ClaimsPrincipalBuilder.Username;
+            var user = new ClaimsPrincipalBuilder()
+                .WithClaim(ClaimTypes.GivenName, firstName)
+                .WithClaim(ClaimTypes.Surname, lastname)
+                .WithClaim("name", displayName)
+                .WithUsername(username)
+                .WithRole(AppRoles.VhOfficerRole, AppRoles.StaffMember).Build();
+            var response = _sut.Map(user);
+            response.Roles.Should().Contain(Role.VideoHearingsOfficer);
+            response.Roles.Should().Contain(Role.StaffMember);
         }
     }
 }

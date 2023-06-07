@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -44,7 +45,8 @@ public class ClaimsPrincipalToUserProfileResponseMapper : IMapTo<ClaimsPrincipal
             roles.Add(Role.CaseAdmin);
         if (user.IsInRole(AppRoles.StaffMember))
             roles.Add(Role.StaffMember);
-        
+        if(!roles.Any())
+            throw new NotSupportedException($"No supported role for this application");
         return roles;
     }
 }
