@@ -95,6 +95,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     this.currentIdp = this.securityServiceProviderService.currentIdp;
                     this.securityService.checkAuth(undefined, this.currentIdp).subscribe(async ({ isAuthenticated }) => {
                         await this.postAuthSetup(isAuthenticated, false);
+
                         if (this.currentIdp !== 'quickLink') {
                             this.eventService
                                 .registerForEvents()
