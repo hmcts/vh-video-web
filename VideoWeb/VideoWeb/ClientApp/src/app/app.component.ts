@@ -91,19 +91,21 @@ export class AppComponent implements OnInit, OnDestroy {
         ]).subscribe(([securityService, idp]) => {
             this.currentIdp = idp;
             this.securityService = securityService;
+
+            if (this.currentIdp === 'quickLink') {
+                return;
+            }
             this.securityService.checkAuth(undefined, this.currentIdp).subscribe(async ({ isAuthenticated }) => {
                 if (isAuthenticated) {
                     await this.postAuthSetup(isAuthenticated, false);
 
-                    if (this.currentIdp !== 'quickLink') {
-                        this.eventService
-                            .registerForEvents()
-                            .pipe(filter(notification => notification.type === EventTypes.NewAuthenticationResult))
-                            .subscribe(async (value: OidcClientNotification<AuthStateResult>) => {
-                                this.logger.info('[AppComponent] - OidcClientNotification event received with value ', value);
-                                await this.postAuthSetup(true, value.value.isRenewProcess);
-                            });
-                    }
+                    this.eventService
+                        .registerForEvents()
+                        .pipe(filter(notification => notification.type === EventTypes.NewAuthenticationResult))
+                        .subscribe(async (value: OidcClientNotification<AuthStateResult>) => {
+                            this.logger.info('[AppComponent] - OidcClientNotification event received with value ', value);
+                            await this.postAuthSetup(true, value.value.isRenewProcess);
+                        });
                 }
             });
         });
@@ -227,6 +229,10 @@ export class AppComponent implements OnInit, OnDestroy {
                 this.currentIdp = idp;
 
                 this.serviceChanged$.next();
+
+                if (this.currentIdp === 'quickLink') {
+                    return;
+                }
 
                 service
                     .isAuthenticated(this.securityServiceProviderService.currentIdp)

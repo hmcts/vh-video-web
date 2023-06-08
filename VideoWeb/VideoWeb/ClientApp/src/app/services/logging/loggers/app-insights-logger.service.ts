@@ -37,6 +37,9 @@ export class AppInsightsLoggerService implements LogAdapter {
         ]).subscribe(([configSettings, securityService, idp]) => {
             this.currentIdp = idp;
             this.securityService = securityService;
+            if (this.currentIdp === 'quickLink') {
+                return;
+            }
             this.setupAppInsights(configSettings, configService, this.securityService).subscribe(() => {
                 this.checkIfVho();
                 this.trackNavigation();
