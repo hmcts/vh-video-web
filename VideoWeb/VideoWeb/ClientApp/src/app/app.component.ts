@@ -6,7 +6,6 @@ import { AuthStateResult, EventTypes, OidcClientNotification, PublicEventsServic
 import { BehaviorSubject, NEVER, Observable, Subject, Subscription, combineLatest } from 'rxjs';
 import { catchError, delay, filter, map, takeUntil } from 'rxjs/operators';
 import { ProfileService } from './services/api/profile.service';
-import { Role } from './services/clients/api-client';
 import { ConnectionStatusService } from './services/connection-status.service';
 import { DeviceTypeService } from './services/device-type.service';
 import { ErrorService } from './services/error.service';
@@ -20,6 +19,7 @@ import { BackLinkDetails } from './shared/models/back-link-details';
 import { Location } from '@angular/common';
 import { NoSleepService } from './services/no-sleep.service';
 import { HideComponentsService } from './waiting-space/services/hide-components.service';
+import { PARTICIPANT_ROLES } from './shared/user-roles';
 
 @Component({
     selector: 'app-root',
@@ -165,12 +165,7 @@ export class AppComponent implements OnInit, OnDestroy {
     async retrieveProfileRole(): Promise<void> {
         try {
             const profile = await this.profileService.getUserProfile();
-            if (
-                profile.roles.includes(Role.Representative) ||
-                profile.roles.includes(Role.Individual) ||
-                profile.roles.includes(Role.QuickLinkParticipant) ||
-                profile.roles.includes(Role.QuickLinkObserver)
-            ) {
+            if (profile.roles.some(role => PARTICIPANT_ROLES.includes(role))) {
                 this.isRepresentativeOrIndividual = true;
             }
         } catch (error) {

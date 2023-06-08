@@ -8,6 +8,7 @@ import { UserProfileResponse, Role } from '../../services/clients/api-client';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { first, take } from 'rxjs/operators';
 import { FeatureFlagService } from '../../services/feature-flag.service';
+import { PARTICIPANT_ROLES } from '../../shared/user-roles';
 
 @Component({
     selector: 'app-navigator',
@@ -58,12 +59,7 @@ export class NavigatorComponent implements OnInit {
             this.router.navigate([pageUrls.AdminVenueList]);
         } else if (userProfile.roles.includes(Role.StaffMember)) {
             this.router.navigate([this.staffMemberNavigation]);
-        } else if (
-            userProfile.roles.includes(Role.Representative) ||
-            userProfile.roles.includes(Role.Individual) ||
-            userProfile.roles.includes(Role.QuickLinkParticipant) ||
-            userProfile.roles.includes(Role.QuickLinkObserver)
-        ) {
+        } else if (userProfile.roles.some(role => PARTICIPANT_ROLES.includes(role))) {
             this.router.navigate([pageUrls.ParticipantHearingList]);
         } else {
             this.router.navigate([pageUrls.Unauthorised]);

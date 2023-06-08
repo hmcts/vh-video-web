@@ -124,7 +124,7 @@ export class AppInsightsLoggerService implements LogAdapter {
             .pipe(filter(Boolean))
             .subscribe(() => {
                 this.profileService.getUserProfile().then(profile => {
-                    this.isVHO = profile.roles?.includes(Role.VideoHearingsOfficer);
+                    this.isVHO = profile.roles.includes(Role.VideoHearingsOfficer);
                 });
             });
     }
