@@ -3,8 +3,8 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthStateResult, EventTypes, OidcClientNotification, PublicEventsService } from 'angular-auth-oidc-client';
-import { BehaviorSubject, NEVER, Observable, Subject, Subscription, combineLatest } from 'rxjs';
-import { catchError, delay, filter, map, takeUntil } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
+import { delay, filter, first, takeUntil } from 'rxjs/operators';
 import { ProfileService } from './services/api/profile.service';
 import { Role } from './services/clients/api-client';
 import { ConnectionStatusService } from './services/connection-status.service';
@@ -20,6 +20,7 @@ import { BackLinkDetails } from './shared/models/back-link-details';
 import { Location } from '@angular/common';
 import { NoSleepService } from './services/no-sleep.service';
 import { HideComponentsService } from './waiting-space/services/hide-components.service';
+import { ConfigService } from './services/api/config.service';
 
 @Component({
     selector: 'app-root',
@@ -58,6 +59,7 @@ export class AppComponent implements OnInit, OnDestroy {
         pageTracker: PageTrackerService,
         testLanguageService: TestLanguageService,
         translate: TranslateService,
+        private configService: ConfigService,
         private eventService: PublicEventsService,
         private securityServiceProviderService: SecurityServiceProvider,
         private location: Location,
@@ -85,28 +87,27 @@ export class AppComponent implements OnInit, OnDestroy {
         this.checkBrowser();
         this.setupSecurityServiceProviderSubscription();
         this.noSleepService.enable();
-        combineLatest([
-            this.securityServiceProviderService.currentSecurityService$,
-            this.securityServiceProviderService.currentIdp$
-        ]).subscribe(([securityService, idp]) => {
-            this.currentIdp = idp;
-            this.securityService = securityService;
-            this.securityService.checkAuth(undefined, this.currentIdp).subscribe(async ({ isAuthenticated }) => {
-                if (isAuthenticated) {
-                    await this.postAuthSetup(isAuthenticated, false);
+        this.configService
+            .getClientSettings()
+            .pipe(first())
+            .subscribe({
+                next: () => {
+                    this.currentIdp = this.securityServiceProviderService.currentIdp;
+                    this.securityService.checkAuth(undefined, this.currentIdp).subscribe(async ({ isAuthenticated }) => {
+                        await this.postAuthSetup(isAuthenticated, false);
 
-                    if (this.currentIdp !== 'quickLink') {
-                        this.eventService
-                            .registerForEvents()
-                            .pipe(filter(notification => notification.type === EventTypes.NewAuthenticationResult))
-                            .subscribe(async (value: OidcClientNotification<AuthStateResult>) => {
-                                this.logger.info('[AppComponent] - OidcClientNotification event received with value ', value);
-                                await this.postAuthSetup(true, value.value.isRenewProcess);
-                            });
-                    }
+                        if (this.currentIdp !== 'quickLink') {
+                            this.eventService
+                                .registerForEvents()
+                                .pipe(filter(notification => notification.type === EventTypes.NewAuthenticationResult))
+                                .subscribe(async (value: OidcClientNotification<AuthStateResult>) => {
+                                    this.logger.info('[AppComponent] - OidcClientNotification event received with value ', value);
+                                    await this.postAuthSetup(true, value.value.isRenewProcess);
+                                });
+                        }
+                    });
                 }
             });
-        });
     }
 
     setupNavigationSubscriptions() {
@@ -147,19 +148,6 @@ export class AppComponent implements OnInit, OnDestroy {
         if (!this.deviceTypeService.isSupportedBrowser()) {
             this.router.navigateByUrl(pageUrls.UnsupportedBrowser);
         }
-    }
-
-    checkAuth(): Observable<boolean> {
-        return this.securityService.checkAuth(this.currentIdp).pipe(
-            map(loginResponse => loginResponse.isAuthenticated),
-            catchError(err => {
-                this.logger.error('[AppComponent] - Check Auth Error', err);
-                if (!this.isSignInUrl) {
-                    this.router.navigate(['/']);
-                }
-                return NEVER;
-            })
-        );
     }
 
     async retrieveProfileRole(): Promise<void> {
@@ -220,20 +208,16 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     private setupSecurityServiceProviderSubscription() {
-        combineLatest([this.securityServiceProviderService.currentSecurityService$, this.securityServiceProviderService.currentIdp$])
-            .pipe(takeUntil(this.destroyed$))
-            .subscribe(([service, idp]) => {
-                this.securityService = service;
-                this.currentIdp = idp;
+        this.securityServiceProviderService.currentSecurityService$.pipe(takeUntil(this.destroyed$)).subscribe(service => {
+            this.securityService = service;
+            this.serviceChanged$.next();
 
-                this.serviceChanged$.next();
-
-                service
-                    .isAuthenticated(this.securityServiceProviderService.currentIdp)
-                    .pipe(takeUntil(this.serviceChanged$), takeUntil(this.destroyed$), delay(0)) // delay(0) pipe is to prevent angular ExpressionChangedAfterItHasBeenCheckedError
-                    .subscribe(authenticated => {
-                        this.loggedIn = authenticated;
-                    });
-            });
+            service
+                .isAuthenticated(this.securityServiceProviderService.currentIdp)
+                .pipe(takeUntil(this.serviceChanged$), takeUntil(this.destroyed$), delay(0)) // delay(0) pipe is to prevent angular ExpressionChangedAfterItHasBeenCheckedError
+                .subscribe(authenticated => {
+                    this.loggedIn = authenticated;
+                });
+        });
     }
 }
