@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveEnd, Router, RouterEvent } from '@angular/router';
 import { ApplicationInsights, ITelemetryItem, SeverityLevel } from '@microsoft/applicationinsights-web';
-import { combineLatest } from 'rxjs';
 import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
 import { ConfigService } from '../../api/config.service';
 import { LogAdapter } from '../log-adapter';
-import { ClientSettingsResponse, Role } from '../../clients/api-client';
+import { Role } from '../../clients/api-client';
 import { filter, map } from 'rxjs/operators';
 import { ProfileService } from '../../api/profile.service';
 
@@ -29,18 +28,11 @@ export class AppInsightsLoggerService implements LogAdapter {
         private profileService: ProfileService
     ) {
         this.router = router;
+        securityServiceProviderService.currentSecurityService$.subscribe(securityService => (this.securityService = securityService));
 
-        combineLatest([
-            configService.getClientSettings(),
-            securityServiceProviderService.currentSecurityService$,
-            securityServiceProviderService.currentIdp$
-        ]).subscribe(([configSettings, securityService, idp]) => {
-            this.currentIdp = idp;
-            this.securityService = securityService;
-            this.setupAppInsights(configSettings, configService, this.securityService).subscribe(() => {
-                this.checkIfVho();
-                this.trackNavigation();
-            });
+        this.setupAppInsights(configService, this.securityService).subscribe(() => {
+            this.checkIfVho();
+            this.trackNavigation();
         });
     }
 
@@ -100,9 +92,9 @@ export class AppInsightsLoggerService implements LogAdapter {
         this.appInsights.context.user.id = userId;
     }
 
-    private setupAppInsights(configSettings: ClientSettingsResponse, configService: ConfigService, securityService: ISecurityService) {
-        return securityService?.getUserData(this.currentIdp).pipe(
-            map(ud => {
+    private setupAppInsights(configService: ConfigService, securityService: ISecurityService) {
+        return configService.getClientSettings().pipe(
+            map(configSettings => {
                 this.appInsights = new ApplicationInsights({
                     config: {
                         instrumentationKey: configSettings.app_insights_instrumentation_key,
@@ -110,10 +102,21 @@ export class AppInsightsLoggerService implements LogAdapter {
                     }
                 });
                 this.appInsights.loadAppInsights();
-                this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
-                    envelope.tags['ai.cloud.role'] = 'vh-video-web';
-                    envelope.tags['ai.user.id'] = ud.preferred_username.toLowerCase();
-                });
+                securityService?.getUserData(this.currentIdp).pipe(
+                    map(ud => {
+                        this.appInsights = new ApplicationInsights({
+                            config: {
+                                instrumentationKey: configSettings.app_insights_instrumentation_key,
+                                isCookieUseDisabled: true
+                            }
+                        });
+                        this.appInsights.loadAppInsights();
+                        this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
+                            envelope.tags['ai.cloud.role'] = 'vh-video-web';
+                            envelope.tags['ai.user.id'] = ud.preferred_username.toLowerCase();
+                        });
+                    })
+                );
             })
         );
     }
