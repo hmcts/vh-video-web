@@ -531,7 +531,9 @@ export abstract class WaitingRoomBaseDirective {
         this.logger.debug('[WR] - Subscribing to endpoints update complete message');
         this.eventHubSubscription$.add(
             this.eventService.getEndpointsUpdated().subscribe(endpointsUpdatedMessage => {
-                this.handleEndpointsUpdatedMessage(endpointsUpdatedMessage);
+                this.getConference().then(() => {
+                    this.handleEndpointsUpdatedMessage(endpointsUpdatedMessage);
+                });
             })
         );
 
@@ -1360,7 +1362,7 @@ export abstract class WaitingRoomBaseDirective {
             this.hearing.addEndpoint(endpoint);
         });
 
-        endpointsUpdatedMessage.endpoints.existing_endpoints.forEach(endpoint => {
+        endpointsUpdatedMessage.endpoints.existing_endpoints.forEach((endpoint: VideoEndpointResponse) => {
             this.logger.debug('[WR] - Endpoint updated, showing notification', endpoint);
             this.notificationToastrService.showEndpointUpdated(
                 endpoint,
