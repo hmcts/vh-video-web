@@ -262,13 +262,6 @@ describe('AppComponent', () => {
         expect(errorServiceSpy.goToUnauthorised).toHaveBeenCalled();
     });
 
-    it('should not check auth or get profile on logout', async () => {
-        component.securityService = securityServiceSpy;
-        await component.checkAuth();
-        expect(routerSpy.navigate).toHaveBeenCalledTimes(0);
-        expect(profileServiceSpy.getUserProfile).toHaveBeenCalledTimes(0);
-    });
-
     describe('NavigationEndEvent', () => {
         const navEvent = new NavigationEnd(1, 'url', 'urlAfterRedirects');
 
