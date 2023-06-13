@@ -1,3 +1,4 @@
+using System;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -29,6 +30,11 @@ namespace VideoWeb
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSwagger();
+            services.AddHsts(options =>
+            {
+                options.IncludeSubDomains = true;
+                options.MaxAge = TimeSpan.FromDays(365);
+            });
             services.AddJsonOptions();
             RegisterSettings(services);
 
@@ -102,12 +108,12 @@ namespace VideoWeb
 
                 if (!Settings.DisableHttpsRedirection)
                 {
-                    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                    app.UseHsts();
                     app.UseHttpsRedirection();
                 }
             }
 
+            app.UseHsts();
+            
             if (!env.IsDevelopment() || Settings.ZapScan)
             {
                 app.UseSpaStaticFiles();
