@@ -837,8 +837,8 @@
     "for": "",
     "mute-all": "Tewi pawb",
     "unmute-all": "Clywed pawb",
-    "mute-all-parties": "Tewi pob parti",
-    "unmute-all-parties": "Clywed pob part"
+    "mute-all-tooltip": "Rhoi yr holl gyfranogwyr ar miwt",
+    "unmute-all-tooltip": "Tynnu’r holl gyfranogwyr oddi ar miwt"
   },
   "judge-context-menu": {
     "context-menu-icon": "Eicon dewislen cyd-destun",

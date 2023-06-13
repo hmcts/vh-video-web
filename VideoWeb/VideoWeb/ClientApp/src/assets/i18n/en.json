@@ -614,8 +614,8 @@
     "participant-muted": "Participant muted",
     "mute-all": "Mute all",
     "unmute-all": "Unmute all",
-    "mute-all-parties": "Mute all parties",
-    "unmute-all-parties": "Unmute all parties"
+    "mute-all-tooltip": "Mute all participants",
+    "unmute-all-tooltip": "Unmute all participants"
   },
   "private-consultation-room-controls": {
     "join-hearing-from-consultation": "Join hearing",
