@@ -14,7 +14,7 @@ export class AdminGuard implements CanActivate {
         this.logger.debug('[AdminGuard] Checking if user is an admin');
         try {
             const profile = await this.userProfileService.getUserProfile();
-            if (profile.role === Role.VideoHearingsOfficer) {
+            if (profile.roles.includes(Role.VideoHearingsOfficer)) {
                 this.logger.debug('[AdminGuard] User is an admin.');
                 return true;
             } else {

@@ -32,7 +32,7 @@ describe('BetaBannerComponent', () => {
     let router: Router;
 
     const profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
-    const profile = new UserProfileResponse({ role: Role.Representative });
+    const profile = new UserProfileResponse({ roles: [Role.Representative] });
     profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
     const conference = new ConferenceTestData().getConferenceDetailFuture();
     const videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);

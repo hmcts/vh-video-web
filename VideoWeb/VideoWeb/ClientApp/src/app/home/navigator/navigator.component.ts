@@ -8,6 +8,7 @@ import { UserProfileResponse, Role } from '../../services/clients/api-client';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { first, take } from 'rxjs/operators';
 import { FeatureFlagService } from '../../services/feature-flag.service';
+import { PARTICIPANT_ROLES } from '../../shared/user-roles';
 
 @Component({
     selector: 'app-navigator',
@@ -52,18 +53,13 @@ export class NavigatorComponent implements OnInit {
     }
 
     navigateToHearingList(userProfile: UserProfileResponse) {
-        if (userProfile.role === Role.Judge || userProfile.role === Role.JudicialOfficeHolder) {
+        if (userProfile.roles.includes(Role.Judge) || userProfile.roles.includes(Role.JudicialOfficeHolder)) {
             this.router.navigate([pageUrls.JudgeHearingList]);
-        } else if (userProfile.role === Role.StaffMember) {
-            this.router.navigate([this.staffMemberNavigation]);
-        } else if (userProfile.role === Role.VideoHearingsOfficer) {
+        } else if (userProfile.roles.includes(Role.VideoHearingsOfficer)) {
             this.router.navigate([pageUrls.AdminVenueList]);
-        } else if (
-            userProfile.role === Role.Representative ||
-            userProfile.role === Role.Individual ||
-            userProfile.role === Role.QuickLinkParticipant ||
-            userProfile.role === Role.QuickLinkObserver
-        ) {
+        } else if (userProfile.roles.includes(Role.StaffMember)) {
+            this.router.navigate([this.staffMemberNavigation]);
+        } else if (userProfile.roles.some(role => PARTICIPANT_ROLES.includes(role))) {
             this.router.navigate([pageUrls.ParticipantHearingList]);
         } else {
             this.router.navigate([pageUrls.Unauthorised]);

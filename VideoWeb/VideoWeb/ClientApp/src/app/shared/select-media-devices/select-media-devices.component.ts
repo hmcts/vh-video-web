@@ -109,7 +109,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy, AfterView
     }
 
     determineFilterSelectionVisibility(profile: UserProfileResponse) {
-        const isCorrectRole = profile.role === Role.JudicialOfficeHolder || profile.role === Role.Judge;
+        const isCorrectRole = profile.roles.includes(Role.JudicialOfficeHolder) || profile.roles.includes(Role.Judge);
         this.showBackgroundFilter = isCorrectRole && this.videoFilterService.isFeatureEnabled();
     }
 

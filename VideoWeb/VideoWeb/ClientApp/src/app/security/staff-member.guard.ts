@@ -14,7 +14,7 @@ export class StaffMemberGuard implements CanActivate {
         this.logger.debug('[StaffMemberGuard] Checking if user is a Staff Member');
         try {
             const profile = await this.userProfileService.getUserProfile();
-            if (profile.role === Role.StaffMember) {
+            if (profile.roles.includes(Role.StaffMember)) {
                 this.logger.debug('[StaffMemberGuard] User is a StaffMemberGuard.');
                 return true;
             } else {

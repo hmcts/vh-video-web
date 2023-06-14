@@ -60,7 +60,7 @@ describe('AppComponent - Testbed', () => {
         deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isSupportedBrowser']);
 
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
-        const profile = new UserProfileResponse({ role: Role.Representative });
+        const profile = new UserProfileResponse({ roles: [Role.Representative] });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
 
         pageTrackerSpy = jasmine.createSpyObj('PageTrackerService', ['trackNavigation', 'trackPreviousPage']);

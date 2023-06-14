@@ -26,7 +26,7 @@ namespace VideoWeb.UnitTests.Mappings
             };
             var response = _sut.Map(profile);
 
-            response.Role.Should().Be(expectedRole);
+            response.Roles.Should().Contain(expectedRole);
             response.FirstName.Should().Be(profile.FirstName);
             response.LastName.Should().Be(profile.LastName);
             response.DisplayName.Should().Be(profile.DisplayName);

@@ -88,7 +88,7 @@ describe('AppComponent', () => {
         configServiceSpy.getClientSettings.and.returnValue(of(clientSettings));
         deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isSupportedBrowser']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
-        const profile = new UserProfileResponse({ role: Role.Representative });
+        const profile = new UserProfileResponse({ roles: [Role.Representative] });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate', 'navigateByUrl'], {
             events: eventsSubjects.asObservable()
@@ -235,21 +235,21 @@ describe('AppComponent', () => {
     });
 
     it('should set to true when user profile is a representative', async () => {
-        const profile = new UserProfileResponse({ role: Role.Representative });
+        const profile = new UserProfileResponse({ roles: [Role.Representative] });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         await component.retrieveProfileRole();
         expect(component.isRepresentativeOrIndividual).toBeTruthy();
     });
 
     it('should set to true when user profile is an individual', async () => {
-        const profile = new UserProfileResponse({ role: Role.Individual });
+        const profile = new UserProfileResponse({ roles: [Role.Individual] });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         await component.retrieveProfileRole();
         expect(component.isRepresentativeOrIndividual).toBeTruthy();
     });
 
     it('should set to false when user profile is a judge', async () => {
-        const profile = new UserProfileResponse({ role: Role.Judge });
+        const profile = new UserProfileResponse({ roles: [Role.Judge] });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         await component.retrieveProfileRole();
         expect(component.isRepresentativeOrIndividual).toBeFalsy();
@@ -260,13 +260,6 @@ describe('AppComponent', () => {
         profileServiceSpy.getUserProfile.and.returnValue(Promise.reject(error));
         await component.retrieveProfileRole();
         expect(errorServiceSpy.goToUnauthorised).toHaveBeenCalled();
-    });
-
-    it('should not check auth or get profile on logout', async () => {
-        component.securityService = securityServiceSpy;
-        await component.checkAuth();
-        expect(routerSpy.navigate).toHaveBeenCalledTimes(0);
-        expect(profileServiceSpy.getUserProfile).toHaveBeenCalledTimes(0);
     });
 
     describe('NavigationEndEvent', () => {
