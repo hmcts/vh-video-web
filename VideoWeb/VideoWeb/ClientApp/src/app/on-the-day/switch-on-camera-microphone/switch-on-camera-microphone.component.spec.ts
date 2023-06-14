@@ -20,7 +20,7 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
     let component: SwitchOnCameraMicrophoneComponent;
 
     const conference = new ConferenceTestData().getConferenceDetailFuture();
-    const profile = new UserProfileResponse({ role: Role.Judge });
+    const profile = new UserProfileResponse({ roles: [Role.Judge] });
     let currentStreamSubject: Subject<MediaStream>;
     let router: jasmine.SpyObj<Router>;
     let profileService: jasmine.SpyObj<ProfileService>;
@@ -116,7 +116,7 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
 
     profileIsJudgeTestCases.forEach(test => {
         it(`should set "isJudge" to ${test.expected} when profile role is ${test.role}`, async () => {
-            profile.role = test.role;
+            profile.roles = [test.role];
             profileService.getUserProfile.and.returnValue(Promise.resolve(profile));
 
             await component.retrieveProfile();

@@ -14,7 +14,7 @@ import { ProfileService } from 'src/app/services/api/profile.service';
 describe('JudgeSelfTestComponent', () => {
     let component: JudgeSelfTestComponent;
     const conference = new ConferenceTestData().getConferenceDetailNow();
-    const profile = new UserProfileResponse({ role: Role.Individual });
+    const profile = new UserProfileResponse({ roles: [Role.Individual] });
 
     let router: jasmine.SpyObj<Router>;
     const activatedRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };

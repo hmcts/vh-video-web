@@ -35,7 +35,7 @@ export class JudgeGuard extends AuthBaseGuard implements CanActivate {
                 this.logger.debug('[JudgeGuard] Checking if user is a judge or JOH');
                 try {
                     const profile = await this.userProfileService.getUserProfile();
-                    if (profile.role === Role.Judge || profile.role === Role.JudicialOfficeHolder) {
+                    if (profile.roles.includes(Role.Judge) || profile.roles.includes(Role.JudicialOfficeHolder)) {
                         this.logger.debug('[JudgeGuard] User is a judge or JOH.');
                         return true;
                     } else {

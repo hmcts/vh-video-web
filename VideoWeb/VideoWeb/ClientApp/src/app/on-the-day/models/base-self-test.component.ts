@@ -55,7 +55,7 @@ export abstract class BaseSelfTestComponentDirective implements OnInit {
         }
         this.testInProgress = false;
         const profile = await this.profileService.getUserProfile();
-        this.isStaffMember = profile.role === Role.StaffMember;
+        this.isStaffMember = profile.roles.includes(Role.StaffMember);
     }
 
     async getConference(): Promise<void> {

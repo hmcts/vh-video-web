@@ -21,7 +21,7 @@ describe('JudgeHearingListComponent', () => {
         display_name: 'John Doe',
         first_name: 'John',
         last_name: 'Doe',
-        role: Role.Judge
+        roles: [Role.Judge]
     });
 
     const conferences = new ConferenceTestData().getTestData();

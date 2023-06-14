@@ -50,19 +50,19 @@ describe('NavigatorComponent', () => {
     });
 
     it('should go to judge hearing list if user is a judge', async () => {
-        const profile = new UserProfileResponse({ role: Role.Judge });
+        const profile = new UserProfileResponse({ roles: [Role.Judge] });
         component.navigateToHearingList(profile);
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeHearingList]);
     });
 
     it('should go to judge hearing list if user is a JOH', async () => {
-        const profile = new UserProfileResponse({ role: Role.JudicialOfficeHolder });
+        const profile = new UserProfileResponse({ roles: [Role.JudicialOfficeHolder] });
         component.navigateToHearingList(profile);
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeHearingList]);
     });
 
     it('should go to staff member hearing selection if user is a StaffMember and staff-member-feature is ON', async () => {
-        const profile = new UserProfileResponse({ role: Role.StaffMember });
+        const profile = new UserProfileResponse({ roles: [Role.StaffMember] });
         component.navigateToHearingList(profile);
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.StaffMemberHearingSelection]);
     });
@@ -77,37 +77,37 @@ describe('NavigatorComponent', () => {
             configServiceSpy,
             featureFlagServiceSpy
         );
-        const profile = new UserProfileResponse({ role: Role.StaffMember });
+        const profile = new UserProfileResponse({ roles: [Role.StaffMember] });
         localComponent.navigateToHearingList(profile);
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.Unauthorised]);
     });
 
     it('should go to admin venue list if user is a vho', () => {
-        const profile = new UserProfileResponse({ role: Role.VideoHearingsOfficer });
+        const profile = new UserProfileResponse({ roles: [Role.VideoHearingsOfficer] });
         component.navigateToHearingList(profile);
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.AdminVenueList]);
     });
 
     it('should go to participant hearing list if user is a representative', () => {
-        const profile = new UserProfileResponse({ role: Role.Representative });
+        const profile = new UserProfileResponse({ roles: [Role.Representative] });
         component.navigateToHearingList(profile);
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.ParticipantHearingList]);
     });
 
     it('should go to participant hearing list if user is an individual', () => {
-        const profile = new UserProfileResponse({ role: Role.Individual });
+        const profile = new UserProfileResponse({ roles: [Role.Individual] });
         component.navigateToHearingList(profile);
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.ParticipantHearingList]);
     });
 
     it('should go to unauthorised if user is a case admin', () => {
-        const profile = new UserProfileResponse({ role: Role.CaseAdmin });
+        const profile = new UserProfileResponse({ roles: [Role.CaseAdmin] });
         component.navigateToHearingList(profile);
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.Unauthorised]);
     });
 
     it('should navigate to hearing list if ios is supported and is on ios mobile device', fakeAsync(() => {
-        const profile = new UserProfileResponse({ role: Role.Individual });
+        const profile = new UserProfileResponse({ roles: [Role.Individual] });
         deviceTypeServiceSpy.isDesktop.and.returnValue(false);
         deviceTypeServiceSpy.isIOS.and.returnValue(true);
         deviceTypeServiceSpy.isMobile.and.returnValue(true);
@@ -122,7 +122,7 @@ describe('NavigatorComponent', () => {
         expect(component.navigateToHearingList).toHaveBeenCalledWith(profile);
     }));
     it('should navigate to hearing list if ios is supported and is on ios tablet device', fakeAsync(() => {
-        const profile = new UserProfileResponse({ role: Role.Individual });
+        const profile = new UserProfileResponse({ roles: [Role.Individual] });
         deviceTypeServiceSpy.isDesktop.and.returnValue(false);
         deviceTypeServiceSpy.isIOS.and.returnValue(true);
         deviceTypeServiceSpy.isTablet.and.returnValue(true);
@@ -155,7 +155,7 @@ describe('NavigatorComponent', () => {
     }));
 
     it('should navigate to hearing list if android is supported and is on android device', fakeAsync(() => {
-        const profile = new UserProfileResponse({ role: Role.Individual });
+        const profile = new UserProfileResponse({ roles: [Role.Individual] });
         deviceTypeServiceSpy.isDesktop.and.returnValue(false);
         deviceTypeServiceSpy.isAndroid.and.returnValue(true);
         const clientSettings = new ClientSettingsResponse({
@@ -212,7 +212,7 @@ describe('NavigatorComponent', () => {
     });
 
     it('should navigate to hearing list when device is a desktop', fakeAsync(() => {
-        const profile = new UserProfileResponse({ role: Role.Representative });
+        const profile = new UserProfileResponse({ roles: [Role.Representative] });
         profileServiceSpy.getUserProfile.and.callFake(() => Promise.resolve(profile));
         deviceTypeServiceSpy.isDesktop.and.returnValue(true);
         spyOn(component, 'navigateToHearingList');

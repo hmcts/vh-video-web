@@ -59,7 +59,7 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
     async retrieveProfile(): Promise<void> {
         this.logger.debug('[SwitchOnCameraMicrophone] - Retrieving profile');
         const profile = await this.profileService.getUserProfile();
-        this.isJudge = profile.role === Role.Judge;
+        this.isJudge = profile.roles.includes(Role.Judge);
         this.participantName = this.videoWebService.getObfuscatedName(profile.first_name + ' ' + profile.last_name);
     }
 
