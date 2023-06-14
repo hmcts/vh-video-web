@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
@@ -22,20 +23,19 @@ namespace VideoWeb.Mappings
                 FirstName = profile.FirstName,
                 LastName = profile.LastName,
                 DisplayName = profile.DisplayName,
-                Username = profile.UserName
-            };
-
-            var userRole = profile.UserRole;
-
-            response.Role = userRole switch
-            {
-                Vhofficer => Role.VideoHearingsOfficer,
-                Representative => Role.Representative,
-                Individual => Role.Individual,
-                Judge => Role.Judge,
-                CaseAdmin => Role.CaseAdmin,
-                JudicialOfficeHolder => Role.JudicialOfficeHolder,
-                _ => throw new NotSupportedException($"Role {userRole} is not supported for this application")
+                Username = profile.UserName,
+                Roles = new List<Role> { 
+                    profile.UserRole switch
+                    {
+                        Vhofficer => Role.VideoHearingsOfficer,
+                        Representative => Role.Representative,
+                        Individual => Role.Individual,
+                        Judge => Role.Judge,
+                        CaseAdmin => Role.CaseAdmin,
+                        JudicialOfficeHolder => Role.JudicialOfficeHolder,
+                        _ => throw new NotSupportedException($"Role {profile.UserRole} is not supported for this application")
+                    }
+                }
             };
 
             return response;

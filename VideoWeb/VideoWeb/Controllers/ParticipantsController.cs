@@ -304,7 +304,7 @@ namespace VideoWeb.Controllers
                     Role = Role.VideoHearingsOfficer
                 };
 
-                if (participantsRoles.Any(roleParticipant => roleParticipant == profile.Role))
+                if (profile.Roles.Exists(role => participantsRoles.Contains(role)))
                 {
                     var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
                         () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
@@ -327,8 +327,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Unable to get current participant Id for " +
-                                    $"conference: {conferenceId}");
+                _logger.LogError(e, $"Unable to get current participant Id for conference: {conferenceId}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -339,8 +338,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [Authorize(AppRoles.StaffMember)]
-        public async Task<IActionResult> StaffMemberJoinConferenceAsync(Guid conferenceId,
-            StaffMemberJoinConferenceRequest request)
+        public async Task<IActionResult> StaffMemberJoinConferenceAsync(Guid conferenceId, StaffMemberJoinConferenceRequest request)
         {
             var username = request.Username.ToLower().Trim();
             

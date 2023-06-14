@@ -28,7 +28,7 @@ describe('ParticipantSelfTestComponent', () => {
     const pexipConfig = new SelfTestPexipResponse({
         pexip_self_test_node: 'selftest.automated.test'
     });
-    const profile = new UserProfileResponse({ role: Role.Individual });
+    const profile = new UserProfileResponse({ roles: [Role.Individual] });
 
     beforeAll(() => {
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
