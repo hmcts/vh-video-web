@@ -127,7 +127,7 @@ export class AppInsightsLoggerService implements LogAdapter {
             .pipe(filter(Boolean))
             .subscribe(() => {
                 this.profileService.getUserProfile().then(profile => {
-                    this.isVHO = profile.role === Role.VideoHearingsOfficer;
+                    this.isVHO = profile.roles.includes(Role.VideoHearingsOfficer);
                 });
             });
     }
@@ -170,7 +170,7 @@ export class AppInsightsLoggerService implements LogAdapter {
     }
 
     private updatePropertiesIfVho(properties: any) {
-        if (properties && this.isVHO) {
+        if (properties && properties instanceof Object && this.isVHO) {
             properties.isVho = this.isVHO;
         }
     }

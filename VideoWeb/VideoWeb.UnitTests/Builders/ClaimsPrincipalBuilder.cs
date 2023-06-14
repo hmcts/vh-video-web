@@ -20,12 +20,13 @@ namespace VideoWeb.UnitTests.Builders
             };
         }
 
-        public ClaimsPrincipalBuilder WithRole(string role)
+        public ClaimsPrincipalBuilder WithRole(params string[] roles)
         {
-            _claims.Add(new Claim(ClaimTypes.Role, role));
+            foreach (var role in roles)
+                _claims.Add(new Claim(ClaimTypes.Role, role));
             return this;
         }
-
+        
         public ClaimsPrincipalBuilder WithUsername(string username)
         {
             var usernameClaimIndex = _claims.FindIndex(x => x.Type == "preferred_username");

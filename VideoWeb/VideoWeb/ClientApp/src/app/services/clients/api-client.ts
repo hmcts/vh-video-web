@@ -6991,6 +6991,18 @@ export class ApiClient extends ApiClientBase {
     }
 }
 
+export enum JusticeUserRole {
+    CaseAdmin = 'CaseAdmin',
+    Vho = 'Vho',
+    Clerk = 'Clerk',
+    Judge = 'Judge',
+    Individual = 'Individual',
+    Representative = 'Representative',
+    JudicialOfficeHolder = 'JudicialOfficeHolder',
+    StaffMember = 'StaffMember',
+    VhTeamLead = 'VhTeamLead'
+}
+
 export class HearingVenueResponse implements IHearingVenueResponse {
     id?: number;
     name?: string | undefined;
@@ -7037,8 +7049,7 @@ export class JusticeUserResponse implements IJusticeUserResponse {
     contact_email?: string | undefined;
     username?: string | undefined;
     telephone?: string | undefined;
-    user_role_id?: number;
-    user_role_name?: string | undefined;
+    user_roles?: JusticeUserRole[] | undefined;
     is_vh_team_leader?: boolean;
     created_by?: string | undefined;
     full_name?: string | undefined;
@@ -7060,8 +7071,10 @@ export class JusticeUserResponse implements IJusticeUserResponse {
             this.contact_email = _data['contact_email'];
             this.username = _data['username'];
             this.telephone = _data['telephone'];
-            this.user_role_id = _data['user_role_id'];
-            this.user_role_name = _data['user_role_name'];
+            if (Array.isArray(_data['user_roles'])) {
+                this.user_roles = [] as any;
+                for (let item of _data['user_roles']) this.user_roles!.push(item);
+            }
             this.is_vh_team_leader = _data['is_vh_team_leader'];
             this.created_by = _data['created_by'];
             this.full_name = _data['full_name'];
@@ -7084,8 +7097,10 @@ export class JusticeUserResponse implements IJusticeUserResponse {
         data['contact_email'] = this.contact_email;
         data['username'] = this.username;
         data['telephone'] = this.telephone;
-        data['user_role_id'] = this.user_role_id;
-        data['user_role_name'] = this.user_role_name;
+        if (Array.isArray(this.user_roles)) {
+            data['user_roles'] = [];
+            for (let item of this.user_roles) data['user_roles'].push(item);
+        }
         data['is_vh_team_leader'] = this.is_vh_team_leader;
         data['created_by'] = this.created_by;
         data['full_name'] = this.full_name;
@@ -7101,8 +7116,7 @@ export interface IJusticeUserResponse {
     contact_email?: string | undefined;
     username?: string | undefined;
     telephone?: string | undefined;
-    user_role_id?: number;
-    user_role_name?: string | undefined;
+    user_roles?: JusticeUserRole[] | undefined;
     is_vh_team_leader?: boolean;
     created_by?: string | undefined;
     full_name?: string | undefined;
@@ -10995,7 +11009,7 @@ export interface IUnreadInstantMessageConferenceCountResponse {
 }
 
 export class UserProfileResponse implements IUserProfileResponse {
-    role?: Role;
+    roles?: Role[] | undefined;
     first_name?: string | undefined;
     last_name?: string | undefined;
     display_name?: string | undefined;
@@ -11012,7 +11026,10 @@ export class UserProfileResponse implements IUserProfileResponse {
 
     init(_data?: any) {
         if (_data) {
-            this.role = _data['role'];
+            if (Array.isArray(_data['roles'])) {
+                this.roles = [] as any;
+                for (let item of _data['roles']) this.roles!.push(item);
+            }
             this.first_name = _data['first_name'];
             this.last_name = _data['last_name'];
             this.display_name = _data['display_name'];
@@ -11030,7 +11047,10 @@ export class UserProfileResponse implements IUserProfileResponse {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data['role'] = this.role;
+        if (Array.isArray(this.roles)) {
+            data['roles'] = [];
+            for (let item of this.roles) data['roles'].push(item);
+        }
         data['first_name'] = this.first_name;
         data['last_name'] = this.last_name;
         data['display_name'] = this.display_name;
@@ -11041,7 +11061,7 @@ export class UserProfileResponse implements IUserProfileResponse {
 }
 
 export interface IUserProfileResponse {
-    role?: Role;
+    roles?: Role[] | undefined;
     first_name?: string | undefined;
     last_name?: string | undefined;
     display_name?: string | undefined;

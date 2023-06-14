@@ -15,7 +15,7 @@ describe('IndependentSelfTestComponent', () => {
     let component: IndependentSelfTestComponent;
     let selfTestComponent: jasmine.SpyObj<SelfTestComponent>;
     const conference = new ConferenceTestData().getConferenceDetailFuture();
-    const profile = new UserProfileResponse({ role: Role.StaffMember });
+    const profile = new UserProfileResponse({ roles: [Role.StaffMember] });
 
     let router: jasmine.SpyObj<Router>;
     const activatedRoute: any = { snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
