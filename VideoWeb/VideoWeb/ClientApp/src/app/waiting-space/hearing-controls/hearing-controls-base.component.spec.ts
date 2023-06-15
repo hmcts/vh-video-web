@@ -25,7 +25,8 @@ import {
     hearingCountdownCompleteSubjectMock,
     participantHandRaisedStatusSubjectMock,
     participantRemoteMuteStatusSubjectMock,
-    participantStatusSubjectMock
+    participantStatusSubjectMock,
+    participantToggleLocalMuteSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
@@ -48,6 +49,7 @@ import { VideoControlService } from '../../services/conference/video-control.ser
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { VhoStorageKeys } from 'src/app/vh-officer/services/models/session-keys';
+import { ParticipantToggleLocalMuteMessage } from 'src/app/shared/models/participant-toggle-local-mute-message';
 
 describe('HearingControlsBaseComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -67,8 +69,8 @@ describe('HearingControlsBaseComponent', () => {
     });
 
     let component: HearingControlsBaseComponent;
-    const gloalConference = new ConferenceTestData().getConferenceDetailPast() as ConferenceResponse;
-    const globalParticipant = gloalConference.participants.filter(x => x.role === Role.Individual)[0];
+    const globalConference = new ConferenceTestData().getConferenceDetailPast() as ConferenceResponse;
+    const globalParticipant = globalConference.participants.filter(x => x.role === Role.Individual)[0];
 
     const eventsService = eventsServiceSpy;
     const participantStatusSubject = participantStatusSubjectMock;
@@ -156,7 +158,7 @@ describe('HearingControlsBaseComponent', () => {
         );
         conference = new ConferenceTestData().getConferenceNow();
         component.participant = globalParticipant;
-        component.conferenceId = gloalConference.id;
+        component.conferenceId = globalConference.id;
         component.isPrivateConsultation = false;
         component.setupEventhubSubscribers();
         component.setupVideoCallSubscribers();
@@ -329,27 +331,84 @@ describe('HearingControlsBaseComponent', () => {
         });
     });
 
+    describe('handleParticipantToggleLocalMuteChange', () => {
+        const eventSubject = participantToggleLocalMuteSubjectMock;
+
+        beforeEach(() => {
+            videoCallService.toggleMute.calls.reset();
+        });
+
+        describe('message invalid', () => {
+            it('should not toggle when the conference id does not match', fakeAsync(() => {
+                const message = new ParticipantToggleLocalMuteMessage(Guid.create().toString(), globalParticipant.id, true);
+                eventSubject.next(message);
+                tick();
+
+                expect(videoCallService.toggleMute).not.toHaveBeenCalled();
+            }));
+
+            it('should not toggle when the participant id does not match', fakeAsync(() => {
+                const message = new ParticipantToggleLocalMuteMessage(globalConference.id, Guid.create().toString(), true);
+                eventSubject.next(message);
+                tick();
+                expect(videoCallService.toggleMute).not.toHaveBeenCalled();
+            }));
+        });
+
+        describe('remote mute is on', () => {
+            it('should not toggle when the user remote mute is true', fakeAsync(() => {
+                component.remoteMuted = true;
+                const message = new ParticipantToggleLocalMuteMessage(globalConference.id, globalParticipant.id, true);
+                eventSubject.next(message);
+                tick();
+                expect(videoCallService.toggleMute).not.toHaveBeenCalled();
+            }));
+        });
+
+        describe('message is valid and remote mute is off', () => {
+            beforeEach(() => {
+                component.remoteMuted = false;
+            });
+
+            it('should toggle mute when locally muted but requested to be unmuted', fakeAsync(() => {
+                component.audioMuted = true;
+                const message = new ParticipantToggleLocalMuteMessage(globalConference.id, globalParticipant.id, false);
+                eventSubject.next(message);
+                tick();
+                expect(videoCallService.toggleMute).toHaveBeenCalled();
+            }));
+
+            it('should toggle mute when locally unmuted but requested to be muted', fakeAsync(() => {
+                component.audioMuted = false;
+                const message = new ParticipantToggleLocalMuteMessage(globalConference.id, globalParticipant.id, true);
+                eventSubject.next(message);
+                tick();
+                expect(videoCallService.toggleMute).toHaveBeenCalled();
+            }));
+        });
+    });
+
     it('should open self-view by default for judge', () => {
-        component.participant = gloalConference.participants.find(x => x.role === Role.Judge);
+        component.participant = globalConference.participants.find(x => x.role === Role.Judge);
         component.ngOnInit();
         expect(component.selfViewOpen).toBeTruthy();
     });
 
     it('should open self-view by default for non judge participants', () => {
-        component.participant = gloalConference.participants.find(x => x.role === Role.Individual);
+        component.participant = globalConference.participants.find(x => x.role === Role.Individual);
         component.ngOnInit();
         expect(component.selfViewOpen).toBeTruthy();
     });
 
     it('should mute non-judge by default', () => {
-        component.participant = gloalConference.participants.find(x => x.role === Role.Individual);
+        component.participant = globalConference.participants.find(x => x.role === Role.Individual);
         component.ngOnInit();
         expect(videoCallService.toggleMute).toHaveBeenCalled();
     });
 
     it('should ensure participant is unmuted when in a private consultation', () => {
         videoCallService.toggleMute.calls.reset();
-        component.participant = gloalConference.participants.find(x => x.role === Role.Individual);
+        component.participant = globalConference.participants.find(x => x.role === Role.Individual);
         component.isPrivateConsultation = true;
         component.audioMuted = true;
         component.initialiseMuteStatus();
@@ -419,7 +478,7 @@ describe('HearingControlsBaseComponent', () => {
     });
 
     it('should not show raised hand on hand lowered for another participant', () => {
-        const otherParticipant = gloalConference.participants.filter(x => x.role === Role.Representative)[0];
+        const otherParticipant = globalConference.participants.filter(x => x.role === Role.Representative)[0];
         const pexipParticipant = testData.getExamplePexipParticipant(otherParticipant.tiled_display_name);
         pexipParticipant.is_muted = 'YES';
         pexipParticipant.buzz_time = 0;
@@ -436,7 +495,7 @@ describe('HearingControlsBaseComponent', () => {
 
     it('should process hand raised message for participant', () => {
         component.handRaised = false;
-        const payload = new ParticipantHandRaisedMessage(gloalConference.id, globalParticipant.id, true);
+        const payload = new ParticipantHandRaisedMessage(globalConference.id, globalParticipant.id, true);
 
         participantHandRaisedStatusSubjectMock.next(payload);
 
@@ -445,7 +504,7 @@ describe('HearingControlsBaseComponent', () => {
 
     it('should process hand lowered message for participant', () => {
         component.handRaised = true;
-        const payload = new ParticipantHandRaisedMessage(gloalConference.id, globalParticipant.id, false);
+        const payload = new ParticipantHandRaisedMessage(globalConference.id, globalParticipant.id, false);
 
         participantHandRaisedStatusSubjectMock.next(payload);
 
@@ -454,7 +513,7 @@ describe('HearingControlsBaseComponent', () => {
 
     it('should not process hand raised message for another participant', () => {
         component.handRaised = false;
-        const payload = new ParticipantHandRaisedMessage(gloalConference.id, Guid.create().toString(), true);
+        const payload = new ParticipantHandRaisedMessage(globalConference.id, Guid.create().toString(), true);
 
         participantHandRaisedStatusSubjectMock.next(payload);
 
@@ -463,7 +522,7 @@ describe('HearingControlsBaseComponent', () => {
 
     it('should process remote mute message for participant', () => {
         component.remoteMuted = false;
-        const payload = new ParticipantRemoteMuteMessage(gloalConference.id, globalParticipant.id, true);
+        const payload = new ParticipantRemoteMuteMessage(globalConference.id, globalParticipant.id, true);
 
         participantRemoteMuteStatusSubjectMock.next(payload);
 
@@ -472,7 +531,7 @@ describe('HearingControlsBaseComponent', () => {
 
     it('should process remote unnmute message for participant', () => {
         component.remoteMuted = true;
-        const payload = new ParticipantRemoteMuteMessage(gloalConference.id, globalParticipant.id, false);
+        const payload = new ParticipantRemoteMuteMessage(globalConference.id, globalParticipant.id, false);
 
         participantRemoteMuteStatusSubjectMock.next(payload);
 
@@ -481,7 +540,7 @@ describe('HearingControlsBaseComponent', () => {
 
     it('should not process remote mute message for another participant', () => {
         component.remoteMuted = false;
-        const payload = new ParticipantRemoteMuteMessage(gloalConference.id, Guid.create().toString(), true);
+        const payload = new ParticipantRemoteMuteMessage(globalConference.id, Guid.create().toString(), true);
 
         participantRemoteMuteStatusSubjectMock.next(payload);
 
@@ -500,7 +559,7 @@ describe('HearingControlsBaseComponent', () => {
     });
 
     it('should not show lower hand when hand raised for another participant', () => {
-        const otherParticipant = gloalConference.participants.filter(x => x.role === Role.Representative)[0];
+        const otherParticipant = globalConference.participants.filter(x => x.role === Role.Representative)[0];
         const pexipParticipant = testData.getExamplePexipParticipant(otherParticipant.tiled_display_name);
         pexipParticipant.buzz_time = 123;
         const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
@@ -537,7 +596,7 @@ describe('HearingControlsBaseComponent', () => {
     it('should not reset mute when participant status to available', () => {
         spyOn(component, 'resetMute').and.callThrough();
         const status = ParticipantStatus.Available;
-        const message = new ParticipantStatusMessage(globalParticipant.id, '', gloalConference.id, status);
+        const message = new ParticipantStatusMessage(globalParticipant.id, '', globalConference.id, status);
 
         participantStatusSubject.next(message);
 
@@ -548,7 +607,7 @@ describe('HearingControlsBaseComponent', () => {
         spyOn(component, 'resetMute').and.callThrough();
         const status = ParticipantStatus.InConsultation;
         const participant = globalParticipant;
-        const message = new ParticipantStatusMessage(participant.id, '', gloalConference.id, status);
+        const message = new ParticipantStatusMessage(participant.id, '', globalConference.id, status);
 
         participantStatusSubject.next(message);
 
@@ -558,8 +617,8 @@ describe('HearingControlsBaseComponent', () => {
     it('should ignore participant updates for another participant', () => {
         spyOn(component, 'resetMute').and.callThrough();
         const status = ParticipantStatus.InConsultation;
-        const participant = gloalConference.participants.filter(x => x.role === Role.Representative)[0];
-        const message = new ParticipantStatusMessage(participant.id, '', gloalConference.id, status);
+        const participant = globalConference.participants.filter(x => x.role === Role.Representative)[0];
+        const message = new ParticipantStatusMessage(participant.id, '', globalConference.id, status);
 
         participantStatusSubject.next(message);
 
@@ -641,26 +700,26 @@ describe('HearingControlsBaseComponent', () => {
     });
 
     it('should return true when partipant is judge', () => {
-        component.participant = gloalConference.participants.find(x => x.role === Role.Judge);
+        component.participant = globalConference.participants.find(x => x.role === Role.Judge);
         expect(component.isJudge).toBeTruthy();
     });
 
     it('should return false when partipant is an individual', () => {
-        component.participant = gloalConference.participants.find(x => x.role === Role.Individual);
+        component.participant = globalConference.participants.find(x => x.role === Role.Individual);
         expect(component.isJudge).toBeFalsy();
     });
 
     it('should return false when partipant is a representative', () => {
-        component.participant = gloalConference.participants.find(x => x.role === Role.Representative);
+        component.participant = globalConference.participants.find(x => x.role === Role.Representative);
         expect(component.isJudge).toBeFalsy();
     });
 
     it('should reset mute on countdown complete for judge', () => {
         videoCallService.toggleMute.calls.reset();
         component.audioMuted = true;
-        component.participant = gloalConference.participants.filter(x => x.role === Role.Judge)[0];
+        component.participant = globalConference.participants.filter(x => x.role === Role.Judge)[0];
 
-        hearingCountdownCompleteSubjectMock.next(gloalConference.id);
+        hearingCountdownCompleteSubjectMock.next(globalConference.id);
 
         expect(videoCallService.toggleMute).toHaveBeenCalledTimes(1);
     });
@@ -668,9 +727,9 @@ describe('HearingControlsBaseComponent', () => {
     it('should reset mute on countdown complete for staffmember', () => {
         videoCallService.toggleMute.calls.reset();
         component.audioMuted = true;
-        component.participant = gloalConference.participants.filter(x => x.role === Role.StaffMember)[0];
+        component.participant = globalConference.participants.filter(x => x.role === Role.StaffMember)[0];
 
-        hearingCountdownCompleteSubjectMock.next(gloalConference.id);
+        hearingCountdownCompleteSubjectMock.next(globalConference.id);
 
         expect(videoCallService.toggleMute).toHaveBeenCalledTimes(1);
     });
@@ -678,7 +737,7 @@ describe('HearingControlsBaseComponent', () => {
     it('should not reset mute on countdown complete for another hearing', () => {
         videoCallService.toggleMute.calls.reset();
         component.audioMuted = true;
-        component.participant = gloalConference.participants.filter(x => x.role === Role.Judge)[0];
+        component.participant = globalConference.participants.filter(x => x.role === Role.Judge)[0];
 
         hearingCountdownCompleteSubjectMock.next(Guid.create().toString());
 
@@ -688,7 +747,7 @@ describe('HearingControlsBaseComponent', () => {
     it('should not reset mute on countdown complete for another hearing', () => {
         videoCallService.toggleMute.calls.reset();
         component.audioMuted = true;
-        component.participant = gloalConference.participants.filter(x => x.role === Role.Individual)[0];
+        component.participant = globalConference.participants.filter(x => x.role === Role.Individual)[0];
 
         hearingCountdownCompleteSubjectMock.next(globalParticipant.id.toString());
 
@@ -696,22 +755,22 @@ describe('HearingControlsBaseComponent', () => {
     });
 
     it('should make sure non-judge participants are muted after countdown is complete', () => {
-        component.participant = gloalConference.participants.find(x => x.role === Role.Individual);
+        component.participant = globalConference.participants.find(x => x.role === Role.Individual);
         component.audioMuted = false;
         videoCallService.toggleMute.calls.reset();
 
-        hearingCountdownCompleteSubjectMock.next(gloalConference.id.toString());
+        hearingCountdownCompleteSubjectMock.next(globalConference.id.toString());
 
         expect(videoCallService.toggleMute).toHaveBeenCalledTimes(1);
     });
 
     it('should publish media device status for non-judge participants who are already muted after countdown is complete', () => {
-        component.participant = gloalConference.participants.find(x => x.role === Role.Individual);
+        component.participant = globalConference.participants.find(x => x.role === Role.Individual);
         component.audioMuted = true;
         videoCallService.toggleMute.calls.reset();
         eventsService.sendMediaStatus.calls.reset();
 
-        hearingCountdownCompleteSubjectMock.next(gloalConference.id.toString());
+        hearingCountdownCompleteSubjectMock.next(globalConference.id.toString());
 
         expect(videoCallService.toggleMute).toHaveBeenCalledTimes(0);
         expect(eventsService.sendMediaStatus).toHaveBeenCalledTimes(1);
@@ -724,7 +783,7 @@ describe('HearingControlsBaseComponent', () => {
     });
 
     it('should indicates that it is the JOH consultation and returns true if participant is JOH or Judge', () => {
-        component.participant = gloalConference.participants.find(x => x.role === Role.Judge);
+        component.participant = globalConference.participants.find(x => x.role === Role.Judge);
         expect(component.isJOHConsultation).toBe(true);
     });
 
