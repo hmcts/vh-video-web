@@ -398,10 +398,13 @@
     "context-menu-icon": "Context menu icon",
     "call-witness": "Call witness",
     "admit-participant": "Admit {{ role }}",
+    "dismiss-witness": "Dismiss witness",
     "dismiss-participant": "Dismiss {{ role }}",
     "lower-hand": "Lower hand",
     "unmute": "Unmute",
     "mute": "Mute",
+    "mute-lock": "Mute & lock",
+    "unmute-lock": "Unlock mute",
     "unpin": "Unpin",
     "pin": "Pin"
   },
@@ -608,7 +611,11 @@
     "mute-participant": "Mute participant",
     "microphone-muted-icon": "Microphone muted icon",
     "microphone-on-icon": "Microphone on icon",
-    "participant-muted": "Participant muted"
+    "participant-muted": "Participant muted",
+    "mute-all": "Mute all",
+    "unmute-all": "Unmute all",
+    "mute-all-tooltip": "Mute all participants",
+    "unmute-all-tooltip": "Unmute all participants"
   },
   "private-consultation-room-controls": {
     "join-hearing-from-consultation": "Join hearing",

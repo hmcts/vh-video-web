@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using VideoWeb.Common.Models;
 
 namespace VideoWeb.Contract.Responses
 {
     public class UserProfileResponse
     {
-        public Role Role { get; set; }
+        public List<Role> Roles { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string DisplayName { get; set; }

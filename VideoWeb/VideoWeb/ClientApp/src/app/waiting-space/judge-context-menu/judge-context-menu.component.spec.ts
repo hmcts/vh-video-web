@@ -8,7 +8,8 @@ import {
     ToggleSpotlightParticipantEvent,
     LowerParticipantHandEvent,
     CallParticipantIntoHearingEvent,
-    DismissParticipantFromHearingEvent
+    DismissParticipantFromHearingEvent,
+    ToggleLocalMuteParticipantEvent
 } from 'src/app/shared/models/participant-event';
 import { DebugElement, ElementRef } from '@angular/core';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
@@ -24,6 +25,7 @@ import { LowerCasePipe } from '@angular/common';
 import { By } from '@angular/platform-browser';
 import { HearingRoleHelper } from 'src/app/shared/helpers/hearing-role-helper';
 import { RandomPipe } from 'src/app/shared/pipes/random.pipe';
+import { LinkedParticipantPanelModel } from '../models/linked-participant-panel-model';
 
 export class MockElementRef extends ElementRef {
     constructor() {
@@ -202,6 +204,22 @@ describe('JudgeContextMenuComponent', () => {
         // Assert
         expect(component.toggleMuteParticipantEvent.emit).toHaveBeenCalled();
         expect(component.toggleMuteParticipantEvent.emit).toHaveBeenCalledWith(new ToggleMuteParticipantEvent(model));
+    });
+
+    it('should emit event when toggling local mute participant', () => {
+        // Arrange
+        const p = participants[0];
+        p.status = ParticipantStatus.InHearing;
+        const model = mapper.mapFromParticipantUserResponse(p);
+        component.participant = model;
+        spyOn(component.toggleLocalMuteParticipantEvent, 'emit');
+
+        // Act
+        component.toggleLocalMuteParticipant(model);
+
+        // Assert
+        expect(component.toggleLocalMuteParticipantEvent.emit).toHaveBeenCalled();
+        expect(component.toggleLocalMuteParticipantEvent.emit).toHaveBeenCalledWith(new ToggleLocalMuteParticipantEvent(model));
     });
 
     it('should emit event when calling participant', () => {
@@ -446,6 +464,49 @@ describe('JudgeContextMenuComponent', () => {
         const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
         expect(component.canDismissParticipantFromHearing()).toBeTruthy();
+    });
+
+    describe('text for buttons', () => {
+        it('should return unmute local translation when participant is muted', () => {
+            component.participant.isLocalMicMuted = () => true;
+            component.getLocalMuteAStatusText(component.participant);
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith('judge-context-menu.unmute');
+        });
+
+        it('should return mute local translation when participant is unmuted', () => {
+            component.participant.isLocalMicMuted = () => false;
+            component.getLocalMuteAStatusText(component.participant);
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith('judge-context-menu.mute');
+        });
+
+        it('linked participant should include the display name in the text', () => {
+            // arrange
+            const linkedParticipants = new ConferenceTestData().getListOfLinkedParticipants();
+            const pats = linkedParticipants.map(p => mapper.mapFromParticipantUserResponse(p));
+            const roomLabel = 'Interpreter1';
+            const roomId = '787';
+            const model = LinkedParticipantPanelModel.fromListOfPanelModels(pats, roomLabel, roomId);
+            component.participant = model;
+            const participant = model.participants[0];
+
+            // act
+            const text = component.getLocalMuteAStatusText(component.participant);
+
+            // assert
+            expect(text).toContain(participant.displayName);
+        });
+
+        it('should return unmute remote translation when participant is remote muted', () => {
+            component.participant.isMicRemoteMuted = () => true;
+            component.getMuteAndLockStatusText();
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith('judge-context-menu.unmute-lock');
+        });
+
+        it('should return mute remote translation when participant is remote unmuted', () => {
+            component.participant.isMicRemoteMuted = () => false;
+            component.getMuteAndLockStatusText();
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith('judge-context-menu.mute-lock');
+        });
     });
 
     describe('UI tests', () => {

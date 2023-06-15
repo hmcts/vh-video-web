@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, flush, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
+import { async, ComponentFixture, fakeAsync, flush, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
 import { LowerCasePipe } from '@angular/common';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
@@ -21,6 +21,7 @@ import {
     CallParticipantIntoHearingEvent,
     DismissParticipantFromHearingEvent,
     LowerParticipantHandEvent,
+    ToggleLocalMuteParticipantEvent,
     ToggleMuteParticipantEvent,
     ToggleSpotlightParticipantEvent
 } from 'src/app/shared/models/participant-event';
@@ -1011,6 +1012,28 @@ describe('ParticipantsPanelComponent', () => {
         expect(component.toggleMuteParticipant).toHaveBeenCalled();
         expect(component.toggleMuteParticipant).toHaveBeenCalledWith(model);
     });
+
+    it('should toggle local mute participant on event', async () => {
+        // Arrange
+        const p = participants[0];
+        const model = mapper.mapFromParticipantUserResponse(p);
+        model.isLocalMicMuted = () => false;
+
+        // Act
+        await component.toggleLocalMuteParticipantEventHandler(new ToggleLocalMuteParticipantEvent(model));
+
+        // Assert
+        expect(eventService.updateParticipantLocalMuteStatus).toHaveBeenCalledWith(conferenceId, model.id, true);
+    });
+
+    it('should update all participant local mute status', async () => {
+        // Act
+        await component.updateAllParticipantsLocalMuteStatus(false);
+
+        // Assert
+        expect(eventService.updateAllParticipantLocalMuteStatus).toHaveBeenCalledWith(conferenceId, false);
+    });
+
     it('should toggle spotlight participant on event', () => {
         // Arrange
         const p = participants[0];

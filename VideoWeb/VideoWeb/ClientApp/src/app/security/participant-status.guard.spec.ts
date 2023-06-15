@@ -7,17 +7,17 @@ import { ParticipantStatusUpdateService } from '../services/participant-status-u
 import { ErrorService } from '../services/error.service';
 
 const testCases = [
-    { role: Role.None, shouldFireJoiningEvent: false },
-    { role: Role.CaseAdmin, shouldFireJoiningEvent: false },
-    { role: Role.VideoHearingsOfficer, shouldFireJoiningEvent: false },
-    { role: Role.HearingFacilitationSupport, shouldFireJoiningEvent: false },
-    { role: Role.Judge, shouldFireJoiningEvent: false },
-    { role: Role.Individual, shouldFireJoiningEvent: true },
-    { role: Role.Representative, shouldFireJoiningEvent: true },
-    { role: Role.JudicialOfficeHolder, shouldFireJoiningEvent: true },
-    { role: Role.QuickLinkParticipant, shouldFireJoiningEvent: true },
-    { role: Role.QuickLinkObserver, shouldFireJoiningEvent: true },
-    { role: Role.StaffMember, shouldFireJoiningEvent: false }
+    { roles: [Role.None], shouldFireJoiningEvent: false },
+    { roles: [Role.CaseAdmin], shouldFireJoiningEvent: false },
+    { roles: [Role.VideoHearingsOfficer], shouldFireJoiningEvent: false },
+    { roles: [Role.HearingFacilitationSupport], shouldFireJoiningEvent: false },
+    { roles: [Role.Judge], shouldFireJoiningEvent: false },
+    { roles: [Role.Individual], shouldFireJoiningEvent: true },
+    { roles: [Role.Representative], shouldFireJoiningEvent: true },
+    { roles: [Role.JudicialOfficeHolder], shouldFireJoiningEvent: true },
+    { roles: [Role.QuickLinkParticipant], shouldFireJoiningEvent: true },
+    { roles: [Role.QuickLinkObserver], shouldFireJoiningEvent: true },
+    { roles: [Role.StaffMember], shouldFireJoiningEvent: false }
 ];
 
 describe('ParticipantStatusGuard', () => {
@@ -54,8 +54,8 @@ describe('ParticipantStatusGuard', () => {
         if (testCase.shouldFireJoiningEvent) {
             shouldOrShouldNotUpdate = 'should update';
         }
-        it(`${shouldOrShouldNotUpdate} status when user with ${testCase.role} role navigates from /camera-working to /introduction`, async () => {
-            const profile = new UserProfileResponse({ role: testCase.role });
+        it(`${shouldOrShouldNotUpdate} status when user with ${testCase.roles} role navigates from /camera-working to /introduction`, async () => {
+            const profile = new UserProfileResponse({ roles: testCase.roles });
             profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
             participantStatusUpdateService.postParticipantStatus.and.returnValue(Promise.resolve());
 

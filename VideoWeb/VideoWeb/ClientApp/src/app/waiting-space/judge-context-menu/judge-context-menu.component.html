@@ -34,9 +34,21 @@
     (click)="toggleMuteParticipant()"
     (keyup.enter)="toggleMuteParticipant()"
     tabindex="0"
-    [id]="idPrefix + '-toggle-mute-' + (1 | random)"
-    >{{ getMutedStatusText() }}</a
+    [id]="idPrefix + '-toggle-mute-and-lock-' + (1 | random)"
+    >{{ getMuteAndLockStatusText() }}</a
   >
+  <!-- Use participantsList because individual persons will need to have their mic mute toggled rather than the rooms or linked particpants -->
+  <ng-container *ngFor="let pInList of participant.participantsList()">
+    <a
+      *ngIf="pInList.isInHearing() && !pInList.isMicRemoteMuted()"
+      (click)="toggleLocalMuteParticipant(pInList)"
+      (keyup.enter)="toggleLocalMuteParticipant(pInList)"
+      tabindex="0"
+      [id]="idPrefix + '-toggle-mute-' + (1 | random)"
+      >{{ getLocalMuteAStatusText(pInList) }}</a
+    >
+  </ng-container>
+
   <a
     *ngIf="canCallParticipantIntoHearing()"
     (keyup.enter)="callParticipantIntoHearing()"
@@ -55,7 +67,7 @@
   >
     {{
       'judge-context-menu.dismiss-participant'
-        | translate: { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase }
+        | translate : { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase }
     }}
   </a>
   <a
@@ -82,6 +94,6 @@
 <ng-template #isNotWitnessCallContent>
   {{
     'judge-context-menu.admit-participant'
-      | translate: { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase }
+      | translate : { role: 'hearing-role.' + (participant.hearingRole | hyphenate) | translate | lowercase }
   }}
 </ng-template>

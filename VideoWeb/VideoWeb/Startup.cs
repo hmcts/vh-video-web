@@ -118,6 +118,8 @@ namespace VideoWeb
                 await next.Invoke();
             });
             
+            app.UseHsts();
+            
             if (!env.IsDevelopment() || Settings.ZapScan)
             {
                 app.UseSpaStaticFiles();
