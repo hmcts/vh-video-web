@@ -117,9 +117,7 @@ namespace VideoWeb
                 context.Response.Headers.Add("Strict-Transport-Security", "max-age=31536000");
                 await next.Invoke();
             });
-            
-            app.UseHsts();
-            
+
             if (!env.IsDevelopment() || Settings.ZapScan)
             {
                 app.UseSpaStaticFiles();
