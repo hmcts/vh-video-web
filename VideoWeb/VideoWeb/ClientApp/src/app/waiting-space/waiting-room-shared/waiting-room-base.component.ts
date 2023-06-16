@@ -200,6 +200,10 @@ export abstract class WaitingRoomBaseDirective {
         return this.roomTitleLabel.nativeElement.scrollWidth > this.roomTitleLabel.nativeElement.clientWidth;
     }
 
+    get isParticipantInConference(): boolean {
+        return this.participant?.status === ParticipantStatus.InHearing || this.participant?.status === ParticipantStatus.InConsultation;
+    }
+
     isParticipantInCorrectWaitingRoomState(): boolean {
         return (
             this.connected &&
@@ -530,10 +534,36 @@ export abstract class WaitingRoomBaseDirective {
 
         this.logger.debug('[WR] - Subscribing to endpoints update complete message');
         this.eventHubSubscription$.add(
-            this.eventService.getEndpointsUpdated().subscribe(endpointsUpdatedMessage => {
-                this.getConference().then(() => {
-                    this.handleEndpointsUpdatedMessage(endpointsUpdatedMessage);
-                });
+            this.eventService.getEndpointsUpdated().subscribe(async endpointsUpdatedMessage => {
+                await this.getConference();
+                this.handleEndpointsUpdatedMessage(endpointsUpdatedMessage);
+            })
+        );
+
+        this.logger.debug('[WR] - Subscribing to endpoints linked complete message');
+        this.eventHubSubscription$.add(
+            this.eventService.getEndpointLinkedUpdated().subscribe(endpointMessage => {
+                if (endpointMessage.conferenceId === this.conferenceId) {
+                    this.notificationToastrService.showEndpointLinked(endpointMessage.endpoint, this.isParticipantInConference);
+                }
+            })
+        );
+
+        this.logger.debug('[WR] - Subscribing to endpoints unlinked complete message');
+        this.eventHubSubscription$.add(
+            this.eventService.getEndpointUnlinkedUpdated().subscribe(endpointMessage => {
+                if (endpointMessage.conferenceId === this.conferenceId) {
+                    this.notificationToastrService.showEndpointUnlinked(endpointMessage.endpoint, this.isParticipantInConference);
+                }
+            })
+        );
+
+        this.logger.debug('[WR] - Subscribing to endpoints consultation closed complete message');
+        this.eventHubSubscription$.add(
+            this.eventService.getEndpointDisconnectUpdated().subscribe(endpointMessage => {
+                if (endpointMessage.conferenceId === this.conferenceId) {
+                    this.notificationToastrService.showEndpointConsultationClosed(endpointMessage.endpoint, this.isParticipantInConference);
+                }
             })
         );
 
@@ -1341,7 +1371,6 @@ export abstract class WaitingRoomBaseDirective {
 
         this.participant = this.getLoggedParticipant();
     }
-
     private handleEndpointsUpdatedMessage(endpointsUpdatedMessage: EndpointsUpdatedMessage) {
         this.logger.debug('[WR] - Endpoints updated message received', {
             newEndpoints: endpointsUpdatedMessage.endpoints.new_endpoints,
@@ -1354,21 +1383,13 @@ export abstract class WaitingRoomBaseDirective {
 
         endpointsUpdatedMessage.endpoints.new_endpoints.forEach(endpoint => {
             this.logger.debug('[WR] - Endpoint added, showing notification', endpoint);
-            this.notificationToastrService.showEndpointAdded(
-                endpoint,
-                this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
-            );
-
+            this.notificationToastrService.showEndpointAdded(endpoint, this.isParticipantInConference);
             this.hearing.addEndpoint(endpoint);
         });
 
         endpointsUpdatedMessage.endpoints.existing_endpoints.forEach((endpoint: VideoEndpointResponse) => {
             this.logger.debug('[WR] - Endpoint updated, showing notification', endpoint);
-            this.notificationToastrService.showEndpointUpdated(
-                endpoint,
-                this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
-            );
-
+            this.notificationToastrService.showEndpointUpdated(endpoint, this.isParticipantInConference);
             this.hearing.updateEndpoint(endpoint);
         });
 
@@ -1390,9 +1411,6 @@ export abstract class WaitingRoomBaseDirective {
         }
 
         this.logger.debug('[WR] - Hearing Layout Changed showing notification', participant);
-        this.notificationToastrService.showHearingLayoutchanged(
-            participant,
-            this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
-        );
+        this.notificationToastrService.showHearingLayoutchanged(participant, this.isParticipantInConference);
     }
 }

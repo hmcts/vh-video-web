@@ -34,6 +34,7 @@ import { RequestedConsultationMessage } from './models/requested-consultation-me
 import { NewAllocationMessage } from './models/new-allocation-message';
 import { UpdateEndpointsDto } from '../shared/models/update-endpoints-dto';
 import { ParticipantToggleLocalMuteMessage } from '../shared/models/participant-toggle-local-mute-message';
+import { EndpointRepMessage } from '../shared/models/endpoint-rep-message';
 
 @Injectable({
     providedIn: 'root'
@@ -44,6 +45,9 @@ export class EventsService {
     private hearingStatusSubject = new Subject<ConferenceStatusMessage>();
     private participantsUpdatedSubject = new Subject<ParticipantsUpdatedMessage>();
     private endpointsUpdatedSubject = new Subject<EndpointsUpdatedMessage>();
+    private endpointUnlinkedSubject = new Subject<EndpointRepMessage>();
+    private endpointLinkedSubject = new Subject<EndpointRepMessage>();
+    private endpointDisconnectSubject = new Subject<EndpointRepMessage>();
 
     private hearingCountdownCompleteSubject = new Subject<string>();
     private helpMessageSubject = new Subject<HelpMessage>();
@@ -107,6 +111,23 @@ export class EventsService {
             const message = new EndpointsUpdatedMessage(conferenceId, endpoints);
             this.logger.debug('[EventsService] - EndpointsUpdatedMessage received', message);
             this.endpointsUpdatedSubject.next(message);
+        },
+        UnlinkedParticipantFromEndpoint: (conferenceId: string, endpoint: string) => {
+            const message = new EndpointRepMessage(conferenceId, endpoint);
+            this.logger.warn('[EventsService] - UnlinkedParticipantFromEndpoint received', message);
+            this.endpointUnlinkedSubject.next(message);
+        },
+
+        LinkedParticipantFromEndpoint: (conferenceId: string, endpoint: string) => {
+            const message = new EndpointRepMessage(conferenceId, endpoint);
+            this.logger.warn('[EventsService] - LinkedParticipantFromEndpoint received', message);
+            this.endpointLinkedSubject.next(message);
+        },
+
+        CloseConsultationBetweenEndpointAndParticipant: (conferenceId: string, endpoint: string) => {
+            const message = new EndpointRepMessage(conferenceId, endpoint);
+            this.logger.warn('[EventsService] - CloseConsultationBetweenEndpointAndParticipant received', message);
+            this.endpointDisconnectSubject.next(message);
         },
 
         CountdownFinished: (conferenceId: string) => {
@@ -390,6 +411,18 @@ export class EventsService {
 
     getEndpointsUpdated(): Observable<EndpointsUpdatedMessage> {
         return this.endpointsUpdatedSubject.asObservable();
+    }
+
+    getEndpointUnlinkedUpdated(): Observable<EndpointRepMessage> {
+        return this.endpointUnlinkedSubject.asObservable();
+    }
+
+    getEndpointLinkedUpdated(): Observable<EndpointRepMessage> {
+        return this.endpointLinkedSubject.asObservable();
+    }
+
+    getEndpointDisconnectUpdated(): Observable<EndpointRepMessage> {
+        return this.endpointDisconnectSubject.asObservable();
     }
 
     getHearingLayoutChanged(): Observable<HearingLayoutChanged> {
