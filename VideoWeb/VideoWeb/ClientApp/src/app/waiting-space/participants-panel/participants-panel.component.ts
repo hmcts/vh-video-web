@@ -16,6 +16,7 @@ import {
     CallParticipantIntoHearingEvent,
     DismissParticipantFromHearingEvent,
     LowerParticipantHandEvent,
+    ToggleLocalMuteParticipantEvent,
     ToggleMuteParticipantEvent,
     ToggleSpotlightParticipantEvent
 } from 'src/app/shared/models/participant-event';
@@ -120,6 +121,17 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     toggleMuteParticipantEventHandler(e: ToggleMuteParticipantEvent) {
         this.toggleMuteParticipant(e.participant);
+    }
+
+    async toggleLocalMuteParticipantEventHandler(e: ToggleLocalMuteParticipantEvent) {
+        // toggling local mute targets individuals, not their links too
+        const allParticipants = this.participants.flatMap(x => x.participantsList());
+        const p = allParticipants.find(x => x.id === e.participant.id);
+        await this.eventService.updateParticipantLocalMuteStatus(this.conferenceId, e.participant.id, !p.isLocalMicMuted());
+    }
+
+    async updateAllParticipantsLocalMuteStatus(muteStatus: boolean) {
+        await this.eventService.updateAllParticipantLocalMuteStatus(this.conferenceId, muteStatus);
     }
 
     toggleSpotlightParticipantEventHandler(e: ToggleSpotlightParticipantEvent) {

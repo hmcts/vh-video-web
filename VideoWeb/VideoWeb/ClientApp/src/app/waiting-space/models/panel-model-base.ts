@@ -151,6 +151,10 @@ export abstract class PanelModel {
         return this.handRaised;
     }
 
+    participantsList(): PanelModel[] {
+        return [this];
+    }
+
     private setOrderInTheList(): number {
         if (this.role === Role.Judge) {
             return 1;

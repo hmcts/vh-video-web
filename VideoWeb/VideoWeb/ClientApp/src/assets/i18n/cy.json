@@ -849,19 +849,25 @@
     "admit-participant": "Gadael {{role}} i mewn",
     "participant-available": "As gael",
     "joining1": "Yn ymuno...",
-    "for": ""
+    "for": "",
+    "mute-all": "Tewi pawb",
+    "unmute-all": "Clywed pawb",
+    "mute-all-tooltip": "Rhoi yr holl gyfranogwyr ar miwt",
+    "unmute-all-tooltip": "Tynnu’r holl gyfranogwyr oddi ar miwt"
   },
   "judge-context-menu": {
     "context-menu-icon": "Eicon dewislen cyd-destun",
-    "mute": "Mudo",
-    "pin": "Amlygu",
-    "dismiss-witness": "Rhyddhau'r tyst",
-    "lower-hand": "Rhoi llaw i lawr",
     "call-witness": "Galw'r tyst",
-    "unpin": "Peidio amlygu",
-    "unmute": "Dadfudo",
     "admit-participant": "Gadael {{role}} i mewn",
-    "dismiss-participant": "Gwrthod {{role}}"
+    "dismiss-witness": "Rhyddhau'r tyst",
+    "dismiss-participant": "Gwrthod {{role}}",
+    "lower-hand": "Rhoi llaw i lawr",
+    "unmute": "Dadfudo",
+    "mute": "Mudo",
+    "mute-lock": "Mudo a chloi",
+    "unmute-lock": "Datgloi mudo",
+    "unpin": "Peidio amlygu",
+    "pin": "Amlygu"
   },
   "confirm-close-hearing-popup": {
     "title": "Rydych ar fin cau'r gwrandawiad hwn",

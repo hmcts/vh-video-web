@@ -136,9 +136,7 @@ export class LinkedParticipantPanelModel extends PanelModel {
             this.participants
                 .find(p => p.id === participantId)
                 .updateParticipant(isRemoteMuted, handRaised, spotlighted, participantId, isLocalAudioMuted, isLocalVideoMuted);
-        }
-
-        if (!participantId) {
+        } else {
             this.participants.forEach(p =>
                 p.updateParticipant(isRemoteMuted, handRaised, spotlighted, participantId, isLocalAudioMuted, isLocalVideoMuted)
             );
@@ -150,5 +148,9 @@ export class LinkedParticipantPanelModel extends PanelModel {
         if (handRaised !== null) {
             this.handRaised = handRaised;
         }
+    }
+
+    participantsList(): PanelModel[] {
+        return this.participants.map(p => p as PanelModel);
     }
 }

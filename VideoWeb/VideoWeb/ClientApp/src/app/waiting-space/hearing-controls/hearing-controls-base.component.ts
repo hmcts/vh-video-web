@@ -21,6 +21,7 @@ import { VideoControlService } from '../../services/conference/video-control.ser
 import { CaseTypeGroup } from '../models/case-type-group';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { VhoStorageKeys } from 'src/app/vh-officer/services/models/session-keys';
+import { ParticipantToggleLocalMuteMessage } from 'src/app/shared/models/participant-toggle-local-mute-message';
 
 @Injectable()
 export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy {
@@ -191,15 +192,22 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.eventService
             .getParticipantHandRaisedMessage()
             .pipe(takeUntil(this.destroyedSubject))
-            .subscribe(async message => {
+            .subscribe(message => {
                 this.handleParticipantHandRaiseChange(message);
             });
 
         this.eventService
             .getParticipantRemoteMuteStatusMessage()
             .pipe(takeUntil(this.destroyedSubject))
-            .subscribe(async message => {
+            .subscribe(message => {
                 this.handleParticipantRemoteMuteChange(message);
+            });
+
+        this.eventService
+            .getParticipantToggleLocalMuteMessage()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(async message => {
+                await this.handleParticipantToggleLocalMuteChange(message);
             });
     }
 
@@ -282,6 +290,33 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         }
 
         this.participant.status = message.status;
+    }
+
+    async handleParticipantToggleLocalMuteChange(message: ParticipantToggleLocalMuteMessage) {
+        if (message.participantId !== this.participant.id || message.conferenceId !== this.conferenceId) {
+            this.logger.debug(`${this.loggerPrefix} Participant received a toggle local mute message for another conference/participant`, {
+                messageParticipantId: message.participantId,
+                messageConferenceId: message.conferenceId,
+                currentParticipantId: this.participant.id,
+                currentConferenceId: this.conferenceId
+            });
+            return;
+        }
+
+        if (this.remoteMuted) {
+            return;
+        }
+
+        if (this.audioMuted && !message.muted) {
+            await this.toggleMute();
+            this.logger.info(`${this.loggerPrefix} Participant has been locally unmuted by the judge`, this.logPayload);
+            return;
+        }
+
+        if (!this.audioMuted && message.muted) {
+            await this.toggleMute();
+            this.logger.info(`${this.loggerPrefix} Participant has been locally muted by the judge`, this.logPayload);
+        }
     }
 
     handleParticipantRemoteMuteChange(message: ParticipantRemoteMuteMessage) {
