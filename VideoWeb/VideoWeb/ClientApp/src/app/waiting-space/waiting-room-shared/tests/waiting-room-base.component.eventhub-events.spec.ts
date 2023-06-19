@@ -34,7 +34,10 @@ import {
     onEventsHubReadySubjectMock,
     getParticipantsUpdatedSubjectMock,
     getEndpointsUpdatedMessageSubjectMock,
-    hearingLayoutChangedSubjectMock
+    hearingLayoutChangedSubjectMock,
+    getEndpointLinkedUpdatedMock,
+    getEndpointUnlinkedUpdatedMock,
+    getEndpointDisconnectUpdatedMock
 } from 'src/app/testing/mocks/mock-events-service';
 import {
     clockService,
@@ -83,6 +86,7 @@ import { UpdateEndpointsDto } from 'src/app/shared/models/update-endpoints-dto';
 import { HearingLayoutChanged } from 'src/app/services/models/hearing-layout-changed';
 import { vhContactDetails } from 'src/app/shared/contact-information';
 import { Title } from '@angular/platform-browser';
+import { EndpointRepMessage } from '../../../shared/models/endpoint-rep-message';
 
 describe('WaitingRoomComponent EventHub Call', () => {
     let fixture: ComponentFixture<WRTestComponent>;
@@ -1688,6 +1692,9 @@ describe('WaitingRoomComponent EventHub Call', () => {
             let testEndpointMessageUpdate: EndpointsUpdatedMessage;
             let existingEndpoint: VideoEndpointResponse;
             let getConferenceSpy: jasmine.Spy;
+            afterEach(() => {
+                expect(getConferenceSpy).toHaveBeenCalled();
+            });
             beforeEach(() => {
                 notificationToastrService.showEndpointAdded.calls.reset();
                 existingEndpoint = testExistingVideoEndpointResponse;
@@ -1708,7 +1715,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
                 // Assert
                 expect(notificationToastrService.showEndpointAdded).toHaveBeenCalledWith(testAddVideoEndpointResponse, true);
-                expect(getConferenceSpy).toHaveBeenCalled();
             }));
 
             it('should show toast for in consultation', fakeAsync(() => {
@@ -1721,7 +1727,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
                 // Assert
                 expect(notificationToastrService.showEndpointAdded).toHaveBeenCalledWith(testAddVideoEndpointResponse, true);
-                expect(getConferenceSpy).toHaveBeenCalled();
             }));
 
             it('should show toast for not in hearing or consultation', fakeAsync(() => {
@@ -1734,7 +1739,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
                 // Assert
                 expect(notificationToastrService.showEndpointAdded).toHaveBeenCalledWith(testAddVideoEndpointResponse, false);
-                expect(getConferenceSpy).toHaveBeenCalled();
             }));
 
             it('should add new endpoint', fakeAsync(() => {
@@ -1751,7 +1755,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 expect(component.conference.endpoints.length).toEqual(existingEndpointCount + 1);
                 expect(addedEndpoint.id).toBe(testAddVideoEndpointResponse.id);
                 expect(addedEndpoint.display_name).toBe(testAddVideoEndpointResponse.display_name);
-                expect(getConferenceSpy).toHaveBeenCalled();
             }));
 
             it('should update existing endpoint', fakeAsync(() => {
@@ -1766,8 +1769,52 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 const updatedEndpoint = component.conference.endpoints.find(x => x.id === testUpdateVideoEndpointResponse.id);
                 expect(component.conference.endpoints.length).toEqual(1);
                 expect(updatedEndpoint.display_name).toBe(testUpdateVideoEndpointResponse.display_name);
-                expect(getConferenceSpy).toHaveBeenCalled();
             }));
+        });
+    });
+
+    describe('Endpoint/Rep link event updates ', () => {
+        const jvsEndpointName = 'JvsEndpointName';
+        const testConferenceId = 'TestConferenceId';
+        beforeEach(() => {
+            const testConference = new ConferenceResponse(Object.assign({}, globalConference));
+            const testHearing = new Hearing(testConference);
+            testConference.id = testConferenceId;
+            component.hearing = testHearing;
+        });
+
+        describe('when is not correct conference', () => {
+            const testEndpointUpdatedMessage = new EndpointRepMessage('DifferentConferenceId', jvsEndpointName);
+            it('endpoint linked handler should not make any changes', () => {
+                getEndpointLinkedUpdatedMock.next(testEndpointUpdatedMessage);
+                expect(notificationToastrService.showEndpointLinked).not.toHaveBeenCalled();
+            });
+            it('endpoint unlinked handler should not make any changes', () => {
+                getEndpointUnlinkedUpdatedMock.next(testEndpointUpdatedMessage);
+                expect(notificationToastrService.showEndpointUnlinked).not.toHaveBeenCalled();
+            });
+            it('endpoint consultation closed handler should not make any changes', () => {
+                getEndpointDisconnectUpdatedMock.next(testEndpointUpdatedMessage);
+                expect(notificationToastrService.showEndpointConsultationClosed).not.toHaveBeenCalled();
+            });
+        });
+
+        describe('when is correct conference', () => {
+            it('should show toast, when endpoint linked', () => {
+                const testEndpointUpdatedMessage = new EndpointRepMessage(component.conferenceId, jvsEndpointName);
+                getEndpointLinkedUpdatedMock.next(testEndpointUpdatedMessage);
+                expect(notificationToastrService.showEndpointLinked).toHaveBeenCalledWith(jvsEndpointName, true);
+            });
+            it('should show toast, when endpoint unlinked', () => {
+                const testEndpointUpdatedMessage = new EndpointRepMessage(component.conferenceId, jvsEndpointName);
+                getEndpointUnlinkedUpdatedMock.next(testEndpointUpdatedMessage);
+                expect(notificationToastrService.showEndpointUnlinked).toHaveBeenCalledWith(jvsEndpointName, true);
+            });
+            it('should show toast, when endpoint consultation closed', () => {
+                const testEndpointUpdatedMessage = new EndpointRepMessage(component.conferenceId, jvsEndpointName);
+                getEndpointDisconnectUpdatedMock.next(testEndpointUpdatedMessage);
+                expect(notificationToastrService.showEndpointConsultationClosed).toHaveBeenCalledWith(jvsEndpointName, true);
+            });
         });
     });
 

@@ -519,7 +519,7 @@ export abstract class WaitingRoomBaseDirective {
 
         this.logger.debug('[WR] - Subscribing to countdown complete message');
         this.eventHubSubscription$.add(
-            this.eventService.getHearingCountdownCompleteMessage().subscribe(async conferenceId => {
+            this.eventService.getHearingCountdownCompleteMessage().subscribe(conferenceId => {
                 this.handleCountdownCompleteMessage(conferenceId);
                 this.updateShowVideo();
             })
@@ -528,7 +528,7 @@ export abstract class WaitingRoomBaseDirective {
         this.logger.debug('[WR] - Subscribing to participants update complete message');
         this.eventHubSubscription$.add(
             this.eventService.getParticipantsUpdated().subscribe(async participantsUpdatedMessage => {
-                this.handleParticipantsUpdatedMessage(participantsUpdatedMessage);
+                await this.handleParticipantsUpdatedMessage(participantsUpdatedMessage);
             })
         );
 
@@ -569,7 +569,7 @@ export abstract class WaitingRoomBaseDirective {
 
         this.logger.debug('[WR] - Subscribing to hearing layout update complete message');
         this.eventHubSubscription$.add(
-            this.eventService.getHearingLayoutChanged().subscribe(async hearingLayout => {
+            this.eventService.getHearingLayoutChanged().subscribe(hearingLayout => {
                 this.handleHearingLayoutUpdatedMessage(hearingLayout);
             })
         );
