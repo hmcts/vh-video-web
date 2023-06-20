@@ -294,7 +294,10 @@ export class ParticipantService {
         this.conferenceSubscriptions.push(
             this.eventsService
                 .getEndpointsUpdated()
-                .pipe(filter(message => message.conferenceId === conference.id))
+                .pipe(
+                    tap(message => console.log('endpoints updated', message)),
+                    filter(message => message.conferenceId === conference.id)
+                )
                 .subscribe(message => {
                     // if new endpoint, push the endpoint to the endpoint list
                     // if existing endpoint, update the endpoint in the endpoint list

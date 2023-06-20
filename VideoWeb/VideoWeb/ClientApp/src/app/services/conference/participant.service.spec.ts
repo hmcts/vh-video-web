@@ -1,6 +1,6 @@
 import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { Observable, Subject, Subscription, of } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
@@ -523,16 +523,24 @@ describe('ParticipantService', () => {
     });
 
     describe('handle endpoints updated', () => {
-        let conference: ConferenceResponse;
+        let testConference: ConferenceResponse;
+        let existingEndpoints: VideoEndpointResponse[];
 
         beforeEach(() => {
-            conference = new ConferenceTestData().getConferenceDetailNow();
-            currentConferenceSubject.next(conference);
+            testConference = new ConferenceTestData().getConferenceDetailNow();
+            conferenceServiceSpy.getParticipantsForConference.and.returnValue(
+                of(asParticipantModelsFromUserResponse(testConference.participants))
+            );
+            conferenceServiceSpy.getEndpointsForConference.and.returnValue(
+                of(asParticipantModelsFromEndpointResponse(testConference.endpoints))
+            );
+
+            existingEndpoints = testConference.endpoints;
+            currentConferenceSubject.next(testConference);
         });
         it('should set endpoints with updated value', fakeAsync(() => {
             // arrange
-            const beforeUpdateCount = (conference.endpoints.length = 0);
-            const beforeUpdateEndpoints = conference.endpoints;
+            const beforeUpdateCount = existingEndpoints.length;
             const newEndpoint = new VideoEndpointResponse({
                 id: 'TestId1',
                 display_name: 'TestName1NewAddedViaMessage',
@@ -540,20 +548,33 @@ describe('ParticipantService', () => {
                 defence_advocate_username: 'TestUsername1',
                 pexip_display_name: 'TestPexipDisplayName1'
             });
+
             const updatedDto: UpdateEndpointsDto = {
-                existing_endpoints: conference.endpoints,
+                existing_endpoints: [],
                 removed_endpoints: [],
                 new_endpoints: [newEndpoint]
             };
-            const message = new EndpointsUpdatedMessage(conference.id, updatedDto);
+            const message = new EndpointsUpdatedMessage(testConference.id, updatedDto);
 
             // act
             endpointsUpdatedSubject.next(message);
+            // currently the service only publishes one message per update or add
+            existingEndpoints.forEach(x => {
+                const dto: UpdateEndpointsDto = {
+                    existing_endpoints: [x],
+                    removed_endpoints: [],
+                    new_endpoints: []
+                };
+                const updatedEndpointMessage = new EndpointsUpdatedMessage(testConference.id, dto);
+                endpointsUpdatedSubject.next(updatedEndpointMessage);
+            });
             tick();
 
             // assert
             expect(sut.endpointParticipants.length).toBe(beforeUpdateCount + 1);
-            beforeUpdateEndpoints.forEach(x => expect(sut.endpointParticipants).toContain(jasmine.objectContaining(x)));
+            existingEndpoints.forEach(x =>
+                expect(sut.endpointParticipants).toContain(jasmine.objectContaining({ displayName: x.display_name }))
+            );
             expect(sut.endpointParticipants).toContain(jasmine.objectContaining({ displayName: newEndpoint.display_name }));
         }));
     });
