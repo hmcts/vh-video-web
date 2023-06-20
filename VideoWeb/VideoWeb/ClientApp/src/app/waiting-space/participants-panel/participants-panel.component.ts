@@ -91,30 +91,34 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         this.getParticipantsList().then(() => {
-            this.participantRemoteMuteStoreService.conferenceParticipantsStatus$.pipe(take(1)).subscribe(state => {
-                this.participants.forEach(participant => {
-                    if (state.hasOwnProperty(participant.id)) {
-                        this.logger.debug(`${this.loggerPrefix} restoring pexip ID`, {
-                            participantId: participant.id,
-                            pexipId: state[participant.id].pexipId,
-                            state: state
-                        });
-                        if (state[participant.id].pexipId) {
-                            participant.assignPexipId(state[participant.id].pexipId);
-                        }
-                    }
-                    participant.updateParticipant(
-                        state[participant.id]?.isRemoteMuted,
-                        false,
-                        participant.hasSpotlight(),
-                        participant.id,
-                        state[participant.id]?.isLocalAudioMuted,
-                        state[participant.id]?.isLocalVideoMuted
-                    );
-                });
-            });
+            this.postGetParticipantsListHandler();
             this.setupVideoCallSubscribers();
             this.setupEventhubSubscribers();
+        });
+    }
+
+    postGetParticipantsListHandler() {
+        this.participantRemoteMuteStoreService.conferenceParticipantsStatus$.pipe(take(1)).subscribe(state => {
+            this.participants.forEach(participant => {
+                if (state.hasOwnProperty(participant.id)) {
+                    this.logger.debug(`${this.loggerPrefix} restoring pexip ID`, {
+                        participantId: participant.id,
+                        pexipId: state[participant.id].pexipId,
+                        state: state
+                    });
+                    if (state[participant.id].pexipId) {
+                        participant.assignPexipId(state[participant.id].pexipId);
+                    }
+                }
+                participant.updateParticipant(
+                    state[participant.id]?.isRemoteMuted,
+                    false,
+                    participant.hasSpotlight(),
+                    participant.id,
+                    state[participant.id]?.isLocalAudioMuted,
+                    state[participant.id]?.isLocalVideoMuted
+                );
+            });
         });
     }
 
@@ -248,6 +252,19 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                     this.removeParticipantsNotInConference(mappedList);
                     this.updateParticipants();
                 }
+            })
+        );
+
+        this.eventhubSubscription$.add(
+            this.eventService.getEndpointsUpdated().subscribe(async () => {
+                // get updated list of endpoints
+                const updatedEndpoints = await this.videoWebService.getEndpointsForConference(this.conferenceId);
+                const updatedViewModel = updatedEndpoints.map(x => {
+                    return new VideoEndpointPanelModel(x);
+                });
+                this.endpointParticipants = updatedViewModel;
+                // updateParticipants and order
+                this.updateParticipants();
             })
         );
     }
