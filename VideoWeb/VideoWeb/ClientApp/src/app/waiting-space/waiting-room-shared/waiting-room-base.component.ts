@@ -531,9 +531,7 @@ export abstract class WaitingRoomBaseDirective {
         this.logger.debug('[WR] - Subscribing to endpoints update complete message');
         this.eventHubSubscription$.add(
             this.eventService.getEndpointsUpdated().subscribe(endpointsUpdatedMessage => {
-                this.getConference().then(() => {
-                    this.handleEndpointsUpdatedMessage(endpointsUpdatedMessage);
-                });
+                this.handleEndpointsUpdatedMessage(endpointsUpdatedMessage);
             })
         );
 
