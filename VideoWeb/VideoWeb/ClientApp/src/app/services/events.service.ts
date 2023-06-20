@@ -112,21 +112,22 @@ export class EventsService {
             this.logger.debug('[EventsService] - EndpointsUpdatedMessage received', message);
             this.endpointsUpdatedSubject.next(message);
         },
+
         UnlinkedParticipantFromEndpoint: (conferenceId: string, endpoint: string) => {
             const message = new EndpointRepMessage(conferenceId, endpoint);
-            this.logger.warn('[EventsService] - UnlinkedParticipantFromEndpoint received', message);
+            this.logger.debug('[EventsService] - UnlinkedParticipantFromEndpoint received', message);
             this.endpointUnlinkedSubject.next(message);
         },
 
-        LinkedParticipantFromEndpoint: (conferenceId: string, endpoint: string) => {
+        LinkedNewParticipantToEndpoint: (conferenceId: string, endpoint: string) => {
             const message = new EndpointRepMessage(conferenceId, endpoint);
-            this.logger.warn('[EventsService] - LinkedParticipantFromEndpoint received', message);
+            this.logger.debug('[EventsService] - LinkedParticipantFromEndpoint received', message);
             this.endpointLinkedSubject.next(message);
         },
 
         CloseConsultationBetweenEndpointAndParticipant: (conferenceId: string, endpoint: string) => {
             const message = new EndpointRepMessage(conferenceId, endpoint);
-            this.logger.warn('[EventsService] - CloseConsultationBetweenEndpointAndParticipant received', message);
+            this.logger.debug('[EventsService] - CloseConsultationBetweenEndpointAndParticipant received', message);
             this.endpointDisconnectSubject.next(message);
         },
 

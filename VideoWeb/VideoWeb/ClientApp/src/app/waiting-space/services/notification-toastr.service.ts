@@ -372,7 +372,7 @@ export class NotificationToastrService {
     showEndpointLinked(endpoint: string, inHearing: boolean = false): VhToastComponent {
         const toastTitle = this.translateService.instant('notification-toastr.endpoint-linked.title');
         const toastBody = this.translateService.instant('notification-toastr.endpoint-linked.message', {
-            name: endpoint
+            jvsEndpointName: endpoint
         });
         const buttonId = 'notification-toastr-endpoint-linked-dismiss';
         const buttonLabel = this.translateService.instant('notification-toastr.endpoint-linked.dismiss');
@@ -382,7 +382,7 @@ export class NotificationToastrService {
     showEndpointUnlinked(endpoint: string, inHearing: boolean = false): VhToastComponent {
         const toastTitle = this.translateService.instant('notification-toastr.endpoint-unlinked.title');
         const toastBody = this.translateService.instant('notification-toastr.endpoint-unlinked.message', {
-            name: endpoint
+            jvsEndpointName: endpoint
         });
         const buttonId = 'notification-toastr-endpoint-unlinked-dismiss';
         const buttonLabel = this.translateService.instant('notification-toastr.endpoint-unlinked.dismiss');
@@ -392,7 +392,7 @@ export class NotificationToastrService {
     showEndpointConsultationClosed(endpoint: string, inHearing: boolean = false): VhToastComponent {
         const toastTitle = this.translateService.instant('notification-toastr.endpoint-consultation-closed.title');
         const toastBody = this.translateService.instant('notification-toastr.endpoint-consultation-closed.message', {
-            name: endpoint
+            jvsEndpointName: endpoint
         });
         const buttonId = 'notification-toastr-endpoint-consultation-closed-dismiss';
         const buttonLabel = this.translateService.instant('notification-toastr.endpoint-consultation-closed.dismiss');
