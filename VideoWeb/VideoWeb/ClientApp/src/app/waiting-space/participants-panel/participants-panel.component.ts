@@ -257,13 +257,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
         this.eventhubSubscription$.add(
             this.eventService.getEndpointsUpdated().subscribe(async () => {
-                // get updated list of endpoints
                 const updatedEndpoints = await this.videoWebService.getEndpointsForConference(this.conferenceId);
-                const updatedViewModel = updatedEndpoints.map(x => {
-                    return new VideoEndpointPanelModel(x);
-                });
-                this.endpointParticipants = updatedViewModel;
-                // updateParticipants and order
+                this.endpointParticipants = updatedEndpoints.map(x => new VideoEndpointPanelModel(x));
                 this.updateParticipants();
             })
         );

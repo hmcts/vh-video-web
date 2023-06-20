@@ -25,6 +25,7 @@ import { VideoControlCacheService } from './video-control-cache.service';
 import { ParticipantsUpdatedMessage } from '../../shared/models/participants-updated-message';
 import { VideoCallEventsService } from 'src/app/waiting-space/services/video-call-events.service';
 import { ParticipantRemoteMuteStoreService } from '../../waiting-space/services/participant-remote-mute-store.service';
+import { EndpointsUpdatedMessage } from 'src/app/shared/models/endpoints-updated-message';
 
 describe('ParticipantService', () => {
     const asParticipantModelsFromUserResponse = (participants: ParticipantForUserResponse[]) =>
@@ -141,6 +142,7 @@ describe('ParticipantService', () => {
     let eventsServiceSpy: jasmine.SpyObj<EventsService>;
     let participantStatusUpdateSubject: Subject<ParticipantStatusMessage>;
     let participantsUpdatedSubject: Subject<ParticipantsUpdatedMessage>;
+    let endpointsUpdatedSubject: Subject<EndpointsUpdatedMessage>;
     let videoControlCacheServiceSpy: jasmine.SpyObj<VideoControlCacheService>;
 
     let loggerSpy: jasmine.SpyObj<LoggerService>;
@@ -173,12 +175,18 @@ describe('ParticipantService', () => {
         spyOn(participantUpdatedObservable, 'subscribe').and.callThrough();
         getSpiedPropertyGetter(videoCallEventsServiceSpy, 'participantUpdated$').and.returnValue(participantUpdatedObservable);
 
-        eventsServiceSpy = jasmine.createSpyObj<EventsService>('EventsService', ['getParticipantStatusMessage', 'getParticipantsUpdated']);
+        eventsServiceSpy = jasmine.createSpyObj<EventsService>('EventsService', [
+            'getParticipantStatusMessage',
+            'getParticipantsUpdated',
+            'getEndpointsUpdated'
+        ]);
 
         participantStatusUpdateSubject = new Subject<ParticipantStatusMessage>();
         eventsServiceSpy.getParticipantStatusMessage.and.returnValue(participantStatusUpdateSubject.asObservable());
         participantsUpdatedSubject = new Subject<ParticipantsUpdatedMessage>();
         eventsServiceSpy.getParticipantsUpdated.and.returnValue(participantsUpdatedSubject.asObservable());
+        endpointsUpdatedSubject = new Subject<EndpointsUpdatedMessage>();
+        eventsServiceSpy.getEndpointsUpdated.and.returnValue(endpointsUpdatedSubject.asObservable());
 
         videoControlCacheServiceSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', [
             'setSpotlightStatus',
@@ -332,12 +340,15 @@ describe('ParticipantService', () => {
             // Arrange
             const participantStatusUpdate$ = new Observable<ParticipantStatusMessage>();
             const participantsUpdated$ = new Observable<ParticipantsUpdatedMessage>();
+            const endpointsUpdated$ = new Observable<EndpointsUpdatedMessage>();
             const expectedUnsubscribed = [
+                jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']),
                 jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']),
                 jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']),
                 jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe'])
             ];
             const expectedSubscriptions = [
+                jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']),
                 jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']),
                 jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']),
                 jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe'])
@@ -351,6 +362,11 @@ describe('ParticipantService', () => {
 
             spyOn(participantsUpdatedSubject, 'asObservable').and.returnValue(participantsUpdated$);
             eventsServiceSpy.getParticipantsUpdated.and.returnValue(participantsUpdatedSubject.asObservable());
+
+            spyOn(endpointsUpdated$, 'subscribe').and.returnValues(expectedUnsubscribed[3], expectedSubscriptions[3]);
+            spyOn(endpointsUpdatedSubject, 'asObservable').and.returnValue(endpointsUpdated$);
+            eventsServiceSpy.getEndpointsUpdated.and.returnValue(endpointsUpdatedSubject.asObservable());
+
             const conferenceIdOne = 'conference-id-one';
             const conferenceIdTwo = 'conference-id-two';
             const conference = new ConferenceResponse();
