@@ -1,25 +1,10 @@
-import { ChartOptions } from 'chart.js';
+import { ChartOptions, Color } from 'chart.js';
 
-export const graphLabel = {
-    Poor: 'poor',
-    Bad: 'bad',
-    Good: 'good',
-    Disconnected: 'disconnected',
-    Unsupported: 'unsupported'
-};
-
-export class GraphSettings {
+export class GraphSettingsNew {
     static MAX_RECORDS = 180;
 
     static getLineChartOptions(): ChartOptions<'line'> {
         const options: ChartOptions<'line'> = {
-            responsive: true,
-            elements: {
-                point: {
-                    pointStyle: 'line',
-                    radius: 0
-                }
-            },
             scales: {
                 y: {
                     suggestedMin: 0,
@@ -35,7 +20,7 @@ export class GraphSettings {
                 },
                 x: {
                     suggestedMin: 0,
-                    suggestedMax: 180,
+                    suggestedMax: this.MAX_RECORDS,
                     display: false,
                     title: {
                         text: ' ',
@@ -43,13 +28,29 @@ export class GraphSettings {
                     },
                     ticks: {}
                 }
+            },
+            responsive: true,
+            elements: {
+                point: {
+                    pointStyle: 'line',
+                    radius: 0
+                }
+            },
+            plugins: {
+                tooltip: {
+                    enabled: false
+                }
             }
         };
 
         return options;
     }
 
-    static setScaleXLabels(chart, args, options) {
+    static getlineChartColors(): Color[] {
+        return [];
+    }
+
+    static setScaleXLabels(chart, ease) {
         const width = chart.width / 3;
         const ctx = chart.ctx;
         ctx.restore();

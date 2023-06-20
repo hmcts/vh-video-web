@@ -8,18 +8,13 @@
       <div class="boxBody">
         <div class="graph-display">
           <canvas
-            *ngIf="!showUnsupportedBrowser"
             baseChart
             width="525"
             height="150"
-            id="chartCanvas"
-            [datasets]="lineChartData"
-            [labels]="lineChartLabels"
+            [type]="'line'"
+            [data]="lineChartData"
             [options]="lineChartOptions"
-            [colors]="lineChartColors"
             [legend]="lineChartLegend"
-            [chartType]="lineChartType"
-            [plugins]="lineChartPlugins"
           >
           </canvas>
         </div>
