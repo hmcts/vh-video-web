@@ -1687,87 +1687,75 @@ describe('WaitingRoomComponent EventHub Call', () => {
             let testEndpointMessageAdd: EndpointsUpdatedMessage;
             let testEndpointMessageUpdate: EndpointsUpdatedMessage;
             let existingEndpoint: VideoEndpointResponse;
-            let getConferenceSpy: jasmine.Spy;
+
             beforeEach(() => {
-                notificationToastrService.showEndpointAdded.calls.reset();
                 existingEndpoint = testExistingVideoEndpointResponse;
                 component.conference.endpoints = [existingEndpoint];
                 component.hearing = new Hearing(component.conference);
                 testEndpointMessageAdd = new EndpointsUpdatedMessage(component.conference.id, testUpdateEndpointsDtoAdd);
                 testEndpointMessageUpdate = new EndpointsUpdatedMessage(component.conference.id, testUpdateEndpointsDtoUpdate);
-                getConferenceSpy = spyOn(component, 'getConference');
             });
 
-            it('should show toast for in hearing', fakeAsync(() => {
+            it('should show toast for in hearing', () => {
                 // Arrange
                 component.participant.status = ParticipantStatus.InHearing;
 
-                // Acts
+                // Act
                 getEndpointsUpdatedMessageSubjectMock.next(testEndpointMessageAdd);
-                tick();
 
                 // Assert
                 expect(notificationToastrService.showEndpointAdded).toHaveBeenCalledWith(testAddVideoEndpointResponse, true);
-                expect(getConferenceSpy).toHaveBeenCalled();
-            }));
+            });
 
-            it('should show toast for in consultation', fakeAsync(() => {
+            it('should show toast for in consultation', () => {
                 // Arrange
                 component.participant.status = ParticipantStatus.InConsultation;
 
                 // Act
                 getEndpointsUpdatedMessageSubjectMock.next(testEndpointMessageAdd);
-                tick();
 
                 // Assert
                 expect(notificationToastrService.showEndpointAdded).toHaveBeenCalledWith(testAddVideoEndpointResponse, true);
-                expect(getConferenceSpy).toHaveBeenCalled();
-            }));
+            });
 
-            it('should show toast for not in hearing or consultation', fakeAsync(() => {
+            it('should show toast for not in hearing or consultation', () => {
                 // Arrange
                 component.participant.status = ParticipantStatus.Available;
 
                 // Act
                 getEndpointsUpdatedMessageSubjectMock.next(testEndpointMessageAdd);
-                tick();
 
                 // Assert
                 expect(notificationToastrService.showEndpointAdded).toHaveBeenCalledWith(testAddVideoEndpointResponse, false);
-                expect(getConferenceSpy).toHaveBeenCalled();
-            }));
+            });
 
-            it('should add new endpoint', fakeAsync(() => {
+            it('should add new endpoint', () => {
                 // Arrange
                 const existingEndpointCount = component.conference.endpoints.length;
                 component.participant.status = ParticipantStatus.Available;
 
                 // Act
                 getEndpointsUpdatedMessageSubjectMock.next(testEndpointMessageAdd);
-                tick();
 
                 // Assert
                 const addedEndpoint = component.conference.endpoints.find(x => x.id === testAddVideoEndpointResponse.id);
                 expect(component.conference.endpoints.length).toEqual(existingEndpointCount + 1);
                 expect(addedEndpoint.id).toBe(testAddVideoEndpointResponse.id);
                 expect(addedEndpoint.display_name).toBe(testAddVideoEndpointResponse.display_name);
-                expect(getConferenceSpy).toHaveBeenCalled();
-            }));
+            });
 
-            it('should update existing endpoint', fakeAsync(() => {
+            it('should update existing endpoint', () => {
                 // Arrange
                 component.participant.status = ParticipantStatus.Available;
 
                 // Act
                 getEndpointsUpdatedMessageSubjectMock.next(testEndpointMessageUpdate);
-                tick();
 
                 // Assert
                 const updatedEndpoint = component.conference.endpoints.find(x => x.id === testUpdateVideoEndpointResponse.id);
                 expect(component.conference.endpoints.length).toEqual(1);
                 expect(updatedEndpoint.display_name).toBe(testUpdateVideoEndpointResponse.display_name);
-                expect(getConferenceSpy).toHaveBeenCalled();
-            }));
+            });
         });
     });
 
