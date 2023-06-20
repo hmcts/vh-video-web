@@ -290,6 +290,41 @@ export class ParticipantService {
                     this.participantsUpdatedSubject.next(true);
                 })
         );
+
+        this.conferenceSubscriptions.push(
+            this.eventsService
+                .getEndpointsUpdated()
+                .pipe(
+                    filter(message => message.conferenceId === conference.id)
+                    // map(message => {
+
+                    // })
+                )
+                .subscribe(message => {
+                    // if new endpoint, push the endpoint to the endpoint list
+                    // if existing endpoint, update the endpoint in the endpoint list
+                    if (message.endpoints.new_endpoints.length > 0) {
+                        this.logger.info(`${this.loggerPrefix} new endpoints received`, {
+                            endpoints: message.endpoints.new_endpoints
+                        });
+                        this._endpointParticipants.push(
+                            ...message.endpoints.new_endpoints.map(x => ParticipantModel.fromVideoEndpointResponse(x))
+                        );
+                    }
+                    // there is currently an issue where only one endpoint is provided at a time, so it is safe to process just the first entry in the list
+                    if (message.endpoints.existing_endpoints.length > 0) {
+                        this.logger.info(`${this.loggerPrefix} existing endpoints received`, {
+                            endpoints: message.endpoints.existing_endpoints
+                        });
+                        const first = message.endpoints.existing_endpoints[0];
+                        const existingEndpointIndex = this._endpointParticipants.findIndex(x => x.id === first.id);
+                        if (existingEndpointIndex > -1) {
+                            this._endpointParticipants[existingEndpointIndex] = ParticipantModel.fromVideoEndpointResponse(first);
+                        }
+                    }
+                    // TOOD: review if we need an endpointUpdatedSubject, the participant one does not seem to be used
+                })
+        );
     }
 
     private handlePexipVmrUpdate(vmr: VirtualMeetingRoomModel, update: ParticipantUpdated) {
