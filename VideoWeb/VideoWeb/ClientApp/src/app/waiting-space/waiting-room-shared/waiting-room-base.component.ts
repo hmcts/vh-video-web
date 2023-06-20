@@ -1362,15 +1362,16 @@ export abstract class WaitingRoomBaseDirective {
             this.hearing.addEndpoint(endpoint);
         });
 
-        endpointsUpdatedMessage.endpoints.existing_endpoints.forEach((endpoint: VideoEndpointResponse) => {
-            this.logger.debug('[WR] - Endpoint updated, showing notification', endpoint);
-            this.notificationToastrService.showEndpointUpdated(
-                endpoint,
-                this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
-            );
+        // TODO: this should be updated endpoints, not all existing endpoints
+        // endpointsUpdatedMessage.endpoints.existing_endpoints.forEach((endpoint: VideoEndpointResponse) => {
+        //     this.logger.debug('[WR] - Endpoint updated, showing notification', endpoint);
+        //     this.notificationToastrService.showEndpointUpdated(
+        //         endpoint,
+        //         this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
+        //     );
 
-            this.hearing.updateEndpoint(endpoint);
-        });
+        //     this.hearing.updateEndpoint(endpoint);
+        // });
 
         this.conference = { ...this.conference, endpoints: [...this.hearing.getEndpoints()] } as ConferenceResponse;
     }
