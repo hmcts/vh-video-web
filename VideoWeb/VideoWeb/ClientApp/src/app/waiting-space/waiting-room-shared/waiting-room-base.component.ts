@@ -1360,7 +1360,6 @@ export abstract class WaitingRoomBaseDirective {
             this.hearing.addEndpoint(endpoint);
         });
 
-        // TODO: this should be updated endpoints, not all existing endpoints
         endpointsUpdatedMessage.endpoints.existing_endpoints.forEach((endpoint: VideoEndpointResponse) => {
             this.hearing.updateEndpoint(endpoint);
         });

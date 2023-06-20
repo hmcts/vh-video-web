@@ -1,4 +1,4 @@
-import { fakeAsync, flush } from '@angular/core/testing';
+import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
@@ -26,6 +26,8 @@ import { ParticipantsUpdatedMessage } from '../../shared/models/participants-upd
 import { VideoCallEventsService } from 'src/app/waiting-space/services/video-call-events.service';
 import { ParticipantRemoteMuteStoreService } from '../../waiting-space/services/participant-remote-mute-store.service';
 import { EndpointsUpdatedMessage } from 'src/app/shared/models/endpoints-updated-message';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { UpdateEndpointsDto } from 'src/app/shared/models/update-endpoints-dto';
 
 describe('ParticipantService', () => {
     const asParticipantModelsFromUserResponse = (participants: ParticipantForUserResponse[]) =>
@@ -518,6 +520,42 @@ describe('ParticipantService', () => {
             expect(participantsUpdatedEmitted).toBe(false);
             expect(sut.nonEndpointParticipants).toBe(originalNonEndpointParticipants);
         });
+    });
+
+    describe('handle endpoints updated', () => {
+        let conference: ConferenceResponse;
+
+        beforeEach(() => {
+            conference = new ConferenceTestData().getConferenceDetailNow();
+            currentConferenceSubject.next(conference);
+        });
+        it('should set endpoints with updated value', fakeAsync(() => {
+            // arrange
+            const beforeUpdateCount = (conference.endpoints.length = 0);
+            const beforeUpdateEndpoints = conference.endpoints;
+            const newEndpoint = new VideoEndpointResponse({
+                id: 'TestId1',
+                display_name: 'TestName1NewAddedViaMessage',
+                status: EndpointStatus.NotYetJoined,
+                defence_advocate_username: 'TestUsername1',
+                pexip_display_name: 'TestPexipDisplayName1'
+            });
+            const updatedDto: UpdateEndpointsDto = {
+                existing_endpoints: conference.endpoints,
+                removed_endpoints: [],
+                new_endpoints: [newEndpoint]
+            };
+            const message = new EndpointsUpdatedMessage(conference.id, updatedDto);
+
+            // act
+            endpointsUpdatedSubject.next(message);
+            tick();
+
+            // assert
+            expect(sut.endpointParticipants.length).toBe(beforeUpdateCount + 1);
+            beforeUpdateEndpoints.forEach(x => expect(sut.endpointParticipants).toContain(jasmine.objectContaining(x)));
+            expect(sut.endpointParticipants).toContain(jasmine.objectContaining({ displayName: newEndpoint.display_name }));
+        }));
     });
 
     describe('getPexipIdForParticipant', () => {
