@@ -85,11 +85,6 @@ export class MonitoringGraphComponent implements OnInit {
                 }
             ]
         };
-        // this.lineChartData.push({ data: Array.from(Array(GraphSettings.MAX_RECORDS), () => this.POOR_SIGNAL), label: graphLabel.Poor });
-        // this.lineChartData.push({ data: Array.from(Array(GraphSettings.MAX_RECORDS), () => this.BAD_SIGNAL), label: graphLabel.Bad });
-        // this.lineChartData.push({ data: this.packagesLostValues, label: 'Signal' });
-
-        // this.lineChartLabels = Array.from(Array(GraphSettings.MAX_RECORDS), (item, index) => index.toString());
         this.packagesLostValues = Array(GraphSettings.MAX_RECORDS).fill(NaN);
         this.registerPlugin();
         this.setParticipantName();
