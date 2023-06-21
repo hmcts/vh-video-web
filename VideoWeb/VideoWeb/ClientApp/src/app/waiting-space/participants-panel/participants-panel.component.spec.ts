@@ -21,6 +21,7 @@ import {
     CallParticipantIntoHearingEvent,
     DismissParticipantFromHearingEvent,
     LowerParticipantHandEvent,
+    ToggleLocalMuteParticipantEvent,
     ToggleMuteParticipantEvent,
     ToggleSpotlightParticipantEvent
 } from 'src/app/shared/models/participant-event';
@@ -39,7 +40,8 @@ import {
     hearingTransferSubjectMock,
     participantHandRaisedStatusSubjectMock,
     participantMediaStatusSubjectMock,
-    participantStatusSubjectMock
+    participantStatusSubjectMock,
+    getEndpointsUpdatedMessageSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
@@ -52,7 +54,8 @@ import {
     ParticipantResponse,
     ParticipantStatus,
     Role,
-    RoomSummaryResponse
+    RoomSummaryResponse,
+    VideoEndpointResponse
 } from '../../services/clients/api-client';
 import { JudgeContextMenuComponent } from '../judge-context-menu/judge-context-menu.component';
 import { CaseTypeGroup } from '../models/case-type-group';
@@ -73,6 +76,9 @@ import { VideoCallService } from '../services/video-call.service';
 import { ParticipantsPanelComponent } from './participants-panel.component';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { RoomNamePipe } from 'src/app/shared/pipes/room-name.pipe';
+import { EndpointsUpdatedMessage } from 'src/app/shared/models/endpoints-updated-message';
+import { UpdateEndpointsDto } from 'src/app/shared/models/update-endpoints-dto';
+import { before } from 'node:test';
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
@@ -1011,6 +1017,28 @@ describe('ParticipantsPanelComponent', () => {
         expect(component.toggleMuteParticipant).toHaveBeenCalled();
         expect(component.toggleMuteParticipant).toHaveBeenCalledWith(model);
     });
+
+    it('should toggle local mute participant on event', async () => {
+        // Arrange
+        const p = participants[0];
+        const model = mapper.mapFromParticipantUserResponse(p);
+        model.isLocalMicMuted = () => false;
+
+        // Act
+        await component.toggleLocalMuteParticipantEventHandler(new ToggleLocalMuteParticipantEvent(model));
+
+        // Assert
+        expect(eventService.updateParticipantLocalMuteStatus).toHaveBeenCalledWith(conferenceId, model.id, true);
+    });
+
+    it('should update all participant local mute status', async () => {
+        // Act
+        await component.updateAllParticipantsLocalMuteStatus(false);
+
+        // Assert
+        expect(eventService.updateAllParticipantLocalMuteStatus).toHaveBeenCalledWith(conferenceId, false);
+    });
+
     it('should toggle spotlight participant on event', () => {
         // Arrange
         const p = participants[0];
@@ -1895,5 +1923,29 @@ describe('ParticipantsPanelComponent', () => {
             expect(qlObserver1Index).toEqual(15);
             expect(qlObserver2Index).toEqual(16);
         });
+    });
+
+    describe('EventHub getEndpointsUpdated', () => {
+        beforeEach(() => {
+            component.setupEventhubSubscribers();
+        });
+        it('should update endpoint participants when message has been received', fakeAsync(() => {
+            // arrange
+            const fullListOfEndpoints = new ConferenceTestData().getFullListOfEndpoints();
+            fullListOfEndpoints.push(
+                new VideoEndpointResponse({
+                    display_name: 'Endpoint C',
+                    id: 'Endpoint C',
+                    status: EndpointStatus.NotYetJoined
+                })
+            );
+            videoWebServiceSpy.getEndpointsForConference.and.returnValue(Promise.resolve(fullListOfEndpoints));
+
+            // act
+            getEndpointsUpdatedMessageSubjectMock.next(new EndpointsUpdatedMessage(conferenceId, new UpdateEndpointsDto()));
+            tick();
+            // assert
+            expect(component.endpointParticipants).toContain(jasmine.objectContaining({ displayName: 'Endpoint C' }));
+        }));
     });
 });
