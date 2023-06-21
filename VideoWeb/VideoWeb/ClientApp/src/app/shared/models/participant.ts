@@ -82,7 +82,7 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
         return this.fromAParticipantResponseType(participant);
     }
 
-    static fromVideoEndpointResponse(videoEndpointResponse: VideoEndpointResponse): any {
+    static fromVideoEndpointResponse(videoEndpointResponse: VideoEndpointResponse): ParticipantModel {
         return new ParticipantModel(
             videoEndpointResponse.id,
             videoEndpointResponse.defence_advocate_username,
