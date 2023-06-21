@@ -76,7 +76,7 @@ export class MonitoringGraphComponent implements OnInit {
                     borderDash: [5, 5]
                 },
                 {
-                    // one for the poor signal
+                    // one for the bad signal
                     data: Array.from(Array(GraphSettings.MAX_RECORDS), () => this.BAD_SIGNAL),
                     label: 'Bad',
                     borderColor: 'red',
