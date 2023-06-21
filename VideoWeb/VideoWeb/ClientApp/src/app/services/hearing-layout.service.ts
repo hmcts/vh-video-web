@@ -13,14 +13,7 @@ export class HearingLayoutService {
     private loggerPrefix = '[HearingLayoutService] -';
 
     private currentLayoutSubject = new ReplaySubject<HearingLayout>(1);
-    get currentLayout$(): Observable<HearingLayout> {
-        return this.currentLayoutSubject.asObservable();
-    }
-
     private recommendedLayoutSubject = new ReplaySubject<HearingLayout>(1);
-    get recommendedLayout$(): Observable<HearingLayout> {
-        return this.recommendedLayoutSubject.asObservable();
-    }
 
     constructor(
         private logger: Logger,
@@ -30,6 +23,14 @@ export class HearingLayoutService {
     ) {
         this.initialiseCurrentLayoutSubscriptions();
         this.initialiseRecommendedLayoutSubscriptions();
+    }
+
+    get currentLayout$(): Observable<HearingLayout> {
+        return this.currentLayoutSubject.asObservable();
+    }
+
+    get recommendedLayout$(): Observable<HearingLayout> {
+        return this.recommendedLayoutSubject.asObservable();
     }
 
     initialiseCurrentLayoutSubscriptions(): void {
@@ -95,8 +96,8 @@ export class HearingLayoutService {
                         this.recommendedLayoutSubject.next(layout);
                     });
                 }),
-                mergeMap(currentConferenceId => {
-                    return this.eventsService.getParticipantsUpdated().pipe(
+                mergeMap(currentConferenceId =>
+                    this.eventsService.getParticipantsUpdated().pipe(
                         takeUntil(
                             this.conferenceService.currentConference$.pipe(filter(conference => conference?.id !== currentConferenceId))
                         ),
@@ -105,8 +106,8 @@ export class HearingLayoutService {
                             this.logger.debug(`${this.loggerPrefix} Participant list updated getting the new recommended layout`);
                         }),
                         mergeMap(() => this.getCurrentRecommendedLayout())
-                    );
-                })
+                    )
+                )
             )
             .subscribe(layout => {
                 this.logger.info(`${this.loggerPrefix} Participant list updated got the new recommended layout ${layout}`);

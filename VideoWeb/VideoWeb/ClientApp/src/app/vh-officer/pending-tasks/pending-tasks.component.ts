@@ -19,6 +19,14 @@ export class PendingTasksComponent implements OnInit, OnDestroy {
 
     constructor(private queryService: VhoQueryService, private eventbus: EventBusService, private logger: Logger) {}
 
+    get pendingTasks(): number {
+        if (this.tasks) {
+            return this.tasks.filter(x => x.status === TaskStatus.ToDo).length;
+        } else {
+            return 0;
+        }
+    }
+
     ngOnInit() {
         this.setupSubscribers();
         this.logger.debug('[PendingTasks] - Getting tasks for conference', { conference: this.conferenceId });
@@ -47,14 +55,6 @@ export class PendingTasksComponent implements OnInit, OnDestroy {
         const task = this.tasks.find(t => t.id === completedTask.taskId);
         if (task) {
             task.status = TaskStatus.Done;
-        }
-    }
-
-    get pendingTasks(): number {
-        if (this.tasks) {
-            return this.tasks.filter(x => x.status === TaskStatus.ToDo).length;
-        } else {
-            return 0;
         }
     }
 

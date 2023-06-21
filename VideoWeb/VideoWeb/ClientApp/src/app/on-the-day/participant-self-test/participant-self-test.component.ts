@@ -34,6 +34,13 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective
         super(route, videoWebService, profileService, errorService, logger);
     }
 
+    @HostListener('window:beforeunload', ['$event'])
+    beforeunloadHandler($event: any) {
+        $event.returnValue = 'save';
+        this.raiseNotSignedIn();
+        return 'save';
+    }
+
     onSelfTestCompleted(testcallScore: TestCallScoreResponse): void {
         super.onSelfTestCompleted(testcallScore);
         this.selfTestCompleted = true;
@@ -47,9 +54,9 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective
         this.continueClicked = true;
         if (!this.selfTestCompleted) {
             this.logger.warn('[ParticipantSelfTest] - Self test not completed.');
-            this.selfTestComponent.disconnect();
+            this.selfTestComponent?.disconnect();
             const reason = new DisconnectedCall('Conference terminated by another participant');
-            await this.selfTestComponent.handleCallDisconnect(reason);
+            await this.selfTestComponent?.handleCallDisconnect(reason);
             await this.raisedSelfTestIncompleted();
         }
         const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
@@ -63,29 +70,11 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective
         this.selfTestComponent.replayVideo();
     }
 
-    @HostListener('window:beforeunload', ['$event'])
-    beforeunloadHandler($event: any) {
-        $event.returnValue = 'save';
-        this.raiseNotSignedIn();
-        return 'save';
-    }
-
-    private raiseNotSignedIn() {
-        this.logger.debug('[ParticipantSelfTest] - Raising participant not signed in');
-        this.participantStatusUpdateService
-            .postParticipantStatus(EventType.ParticipantNotSignedIn, null)
-            .then(() => {
-                this.logger.info('[ParticipantSelfTest] - Participant status was updated to not signed in');
-            })
-            .catch(err => {
-                this.logger.error('[ParticipantSelfTest] - Unable to update status to not signed in', err);
-            });
-    }
-
     async raisedSelfTestIncompleted() {
+        // conference and participan are not always set if the user clicks next very quickly
         const logPayload = {
-            conference: this.conference.id,
-            participant: this.participant.id,
+            conference: this.conference?.id,
+            participant: this.participant?.id,
             failureReason: SelfTestFailureReason.IncompleteTest
         };
         this.logger.debug('[ParticipantSelfTest] - Raising incomplete self-test failure', logPayload);
@@ -100,5 +89,17 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective
         } catch (error) {
             this.logger.error('[ParticipantSelfTest] - Failed to raise "SelfTestFailureEvent"`', error, logPayload);
         }
+    }
+
+    private raiseNotSignedIn() {
+        this.logger.debug('[ParticipantSelfTest] - Raising participant not signed in');
+        this.participantStatusUpdateService
+            .postParticipantStatus(EventType.ParticipantNotSignedIn, null)
+            .then(() => {
+                this.logger.info('[ParticipantSelfTest] - Participant status was updated to not signed in');
+            })
+            .catch(err => {
+                this.logger.error('[ParticipantSelfTest] - Unable to update status to not signed in', err);
+            });
     }
 }

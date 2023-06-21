@@ -32,5 +32,14 @@ namespace VideoWeb.EventHub.Hub
         Task NewConferenceAddedMessage(Guid conferenceId);
         Task AllocationHearings(string csoUserName, List<HearingDetailRequest> hearings);
         Task EndpointsUpdated(Guid conferenceId, UpdateEndpointsDto endpoints);
+        
+        /// <summary>
+        /// Request a participant's local mute be update. Not to be confused with remote mute (and lock).
+        /// </summary>
+        /// <param name="conferenceId">The UUID of a conference</param>
+        /// <param name="participantId">The UUID of a participant (provided by Video API)</param>
+        /// <param name="isMuted">true to mute a participant or false to unmute</param>
+        /// <returns></returns>
+        Task UpdateParticipantLocalMuteMessage(Guid conferenceId, Guid participantId, bool isMuted);
     }
 }

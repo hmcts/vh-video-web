@@ -18,7 +18,7 @@ describe('ParticipantGuard', () => {
     let securityServiceProviderServiceSpy: jasmine.SpyObj<SecurityServiceProvider>;
 
     beforeAll(() => {
-        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', [], ['isAuthenticated$']);
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['isAuthenticated']);
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
         launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
         securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
@@ -43,7 +43,7 @@ describe('ParticipantGuard', () => {
     });
 
     it('should not be able to activate component if role is VHOfficer', async () => {
-        const profile = new UserProfileResponse({ role: Role.VideoHearingsOfficer });
+        const profile = new UserProfileResponse({ roles: [Role.VideoHearingsOfficer] });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         spyOn(guard, 'isUserAuthorized').and.returnValue(of(true));
 
@@ -53,7 +53,7 @@ describe('ParticipantGuard', () => {
     });
 
     it('should not be able to activate component if role is Judge', async () => {
-        const profile = new UserProfileResponse({ role: Role.Judge });
+        const profile = new UserProfileResponse({ roles: [Role.Judge] });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         spyOn(guard, 'isUserAuthorized').and.returnValue(of(true));
 
@@ -63,7 +63,7 @@ describe('ParticipantGuard', () => {
     });
 
     it('should not be able to activate component if role is Case Admin', async () => {
-        const profile = new UserProfileResponse({ role: Role.CaseAdmin });
+        const profile = new UserProfileResponse({ roles: [Role.CaseAdmin] });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         spyOn(guard, 'isUserAuthorized').and.returnValue(of(true));
 
@@ -73,7 +73,7 @@ describe('ParticipantGuard', () => {
     });
 
     it('should be able to activate component if role is Individual', async () => {
-        const profile = new UserProfileResponse({ role: Role.Individual });
+        const profile = new UserProfileResponse({ roles: [Role.Individual] });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         spyOn(guard, 'isUserAuthorized').and.returnValue(of(true));
 
@@ -82,7 +82,7 @@ describe('ParticipantGuard', () => {
     });
 
     it('should be able to activate component if role is Representative', async () => {
-        const profile = new UserProfileResponse({ role: Role.Representative });
+        const profile = new UserProfileResponse({ roles: [Role.Representative] });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         spyOn(guard, 'isUserAuthorized').and.returnValue(of(true));
         const result = await guard.canActivate(null, null);
@@ -90,7 +90,7 @@ describe('ParticipantGuard', () => {
     });
 
     it('should be not able to activate component if role is JudicialOfficeHolder', async () => {
-        const profile = new UserProfileResponse({ role: Role.JudicialOfficeHolder });
+        const profile = new UserProfileResponse({ roles: [Role.JudicialOfficeHolder] });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         spyOn(guard, 'isUserAuthorized').and.returnValue(of(true));
         const result = await guard.canActivate(null, null);

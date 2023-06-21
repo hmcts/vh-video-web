@@ -13,6 +13,10 @@ export class ParticipantRemoteMuteStoreService extends ComponentStore<IConferenc
         super(INITIAL_STATE);
     }
 
+    get conferenceParticipantsStatus$(): Observable<IConferenceParticipantsStatus> {
+        return this.state$;
+    }
+
     updateRemoteMuteStatus(participantOrVmrId: string, isRemoteMuted: boolean) {
         this.patchState(state => this.updateRemoteMutePatchCallBack(participantOrVmrId, isRemoteMuted, state));
     }
@@ -51,9 +55,5 @@ export class ParticipantRemoteMuteStoreService extends ComponentStore<IConferenc
 
             return newState;
         });
-    }
-
-    get conferenceParticipantsStatus$(): Observable<IConferenceParticipantsStatus> {
-        return this.state$;
     }
 }

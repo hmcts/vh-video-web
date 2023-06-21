@@ -37,16 +37,16 @@ import { HideComponentsService } from '../services/hide-components.service';
     styleUrls: ['../waiting-room-global-styles.scss', './participant-waiting-room.component.scss']
 })
 export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
-    private readonly loggerPrefixParticipant = '[Participant WR] -';
-    private destroyedSubject = new Subject();
-    private title = 'Participant waiting room';
-
     currentTime: Date;
     hearingStartingAnnounced: boolean;
 
     clockSubscription$: Subscription;
     isParticipantsPanelHidden = false;
     hearingVenueIsScottish$: Observable<boolean>;
+
+    private readonly loggerPrefixParticipant = '[Participant WR] -';
+    private destroyedSubject = new Subject();
+    private title = 'Participant waiting room';
 
     constructor(
         protected route: ActivatedRoute,
@@ -95,18 +95,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         );
     }
 
-    ngOnInit() {
-        this.titleService.setTitle(this.title);
-        this.divTrapId = 'video-container';
-        this.init();
-        this.userMediaService.isAudioOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(async audioOnly => {
-            this.audioOnly = audioOnly;
-
-            const mediaStatus = new ParticipantMediaStatus(false, audioOnly);
-            await this.eventService.sendMediaStatus(this.conferenceId, this.participant.id, mediaStatus);
-        });
-    }
-
     get allowAudioOnlyToggle(): boolean {
         return (
             !!this.conference &&
@@ -116,50 +104,44 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         );
     }
 
+    get isJohRoom(): boolean {
+        return this.participant?.current_room?.label.startsWith('JudgeJOH');
+    }
+
+    get isObserver(): boolean {
+        return this.participant?.hearing_role === HearingRole.OBSERVER;
+    }
+
+    get isQuickLinkObserver(): boolean {
+        return this.participant?.role === Role.QuickLinkObserver;
+    }
+
+    get isQuickLinkUser(): boolean {
+        return this.participant?.role === Role.QuickLinkObserver || this.participant?.role === Role.QuickLinkParticipant;
+    }
+
+    get canStartJoinConsultation() {
+        return (
+            !this.isOrHasWitnessLink() &&
+            !this.isObserver &&
+            this.participant?.case_type_group !== CaseTypeGroup.OBSERVER &&
+            !this.isQuickLinkObserver &&
+            !this.participant.linked_participants.length
+        );
+    }
+
+    ngOnInit() {
+        this.titleService.setTitle(this.title);
+        this.divTrapId = 'video-container';
+        this.init();
+    }
+
     toggleParticipantsPanel() {
         this.isParticipantsPanelHidden = !this.isParticipantsPanelHidden;
     }
 
-    private onShouldReload(): void {
-        window.location.reload();
-    }
-
-    private onShouldUnload(): void {
-        this.cleanUp();
-    }
-
-    private init() {
-        this.divTrapId = 'video-container';
-        this.destroyedSubject = new Subject();
-
-        this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.destroyedSubject)).subscribe(() => this.onShouldUnload());
-        this.unloadDetectorService.shouldReload.pipe(take(1)).subscribe(() => this.onShouldReload());
-
-        this.errorCount = 0;
-        this.logger.debug('[Participant WR] - Loading participant waiting room');
-        this.connected = false;
-        this.notificationSoundsService.initHearingAlertSound();
-        this.loggedInUser = this.route.snapshot.data['loggedUser'];
-        this.getConference().then(() => {
-            this.subscribeToClock();
-            this.startEventHubSubscribers();
-            this.connectToPexip();
-        });
-    }
-
     ngOnDestroy(): void {
         this.cleanUp();
-    }
-
-    private cleanUp() {
-        this.logger.debug(`${this.loggerPrefixParticipant} Clearing intervals and subscriptions for JOH waiting room`, {
-            conference: this.conference?.id
-        });
-
-        this.executeWaitingRoomCleanup();
-
-        this.destroyedSubject.next();
-        this.destroyedSubject.complete();
     }
 
     subscribeToClock(): void {
@@ -240,22 +222,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         return this.consultationService.consultationNameToString(this.participant?.current_room?.label, false);
     }
 
-    get isJohRoom(): boolean {
-        return this.participant?.current_room?.label.startsWith('JudgeJOH');
-    }
-
-    get isObserver(): boolean {
-        return this.participant?.hearing_role === HearingRole.OBSERVER;
-    }
-
-    get isQuickLinkObserver(): boolean {
-        return this.participant?.role === Role.QuickLinkObserver;
-    }
-
-    get isQuickLinkUser(): boolean {
-        return this.participant?.role === Role.QuickLinkObserver || this.participant?.role === Role.QuickLinkParticipant;
-    }
-
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
         super.handleConferenceStatusChange(message);
         if (!this.validateIsForConference(message.conferenceId)) {
@@ -289,18 +255,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         );
     }
 
-    get canStartJoinConsultation() {
-        return (
-            !this.isOrHasWitnessLink() &&
-            !this.isObserver &&
-            this.participant?.case_type_group !== CaseTypeGroup.OBSERVER &&
-            !this.isQuickLinkObserver &&
-            !this.participant.linked_participants.length
-        );
-    }
-
     async startPrivateConsultation(participants: string[], endpoints: string[]) {
-        this.logger.info(`[ParticipantWaitingRoomComponent] - attempting to start a private participant consultation`, {
+        this.logger.info('[ParticipantWaitingRoomComponent] - attempting to start a private participant consultation', {
             conference: this.conference?.id,
             participant: this.participant.id
         });
@@ -311,7 +267,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     }
 
     async joinPrivateConsultation(roomLabel: string) {
-        this.logger.info(`[ParticipantWaitingRoomComponent] - attempting to join a private participant consultation`, {
+        this.logger.info('[ParticipantWaitingRoomComponent] - attempting to join a private participant consultation', {
             conference: this.conference?.id,
             participant: this.participant.id,
             roomLabel: roomLabel
@@ -328,7 +284,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             return;
         }
 
-        this.logger.info(`[ParticipantWaitingRoomComponent] - attempting to set room lock state`, {
+        this.logger.info('[ParticipantWaitingRoomComponent] - attempting to set room lock state', {
             conference: this.conference?.id,
             participant: this.participant.id,
             roomLabel: roomLabel,
@@ -351,5 +307,53 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
 
     setTrapFocus() {
         ModalTrapFocus.trap('video-container');
+    }
+
+    private onShouldReload(): void {
+        window.location.reload();
+    }
+
+    private onShouldUnload(): void {
+        this.cleanUp();
+    }
+
+    private init() {
+        this.divTrapId = 'video-container';
+        this.destroyedSubject = new Subject();
+
+        this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.destroyedSubject)).subscribe(() => this.onShouldUnload());
+        this.unloadDetectorService.shouldReload.pipe(take(1)).subscribe(() => this.onShouldReload());
+
+        this.errorCount = 0;
+        this.logger.debug('[Participant WR] - Loading participant waiting room');
+        this.connected = false;
+        this.notificationSoundsService.initHearingAlertSound();
+        this.loggedInUser = this.route.snapshot.data['loggedUser'];
+        this.getConference().then(() => {
+            this.subscribeToClock();
+            this.startEventHubSubscribers();
+            this.connectToPexip();
+            this.registerMediaStatusPublisher();
+        });
+    }
+
+    private registerMediaStatusPublisher() {
+        this.userMediaService.isAudioOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(async audioOnly => {
+            this.audioOnly = audioOnly;
+
+            const mediaStatus = new ParticipantMediaStatus(false, audioOnly);
+            await this.eventService.sendMediaStatus(this.conferenceId, this.participant.id, mediaStatus);
+        });
+    }
+
+    private cleanUp() {
+        this.logger.debug(`${this.loggerPrefixParticipant} Clearing intervals and subscriptions for JOH waiting room`, {
+            conference: this.conference?.id
+        });
+
+        this.executeWaitingRoomCleanup();
+
+        this.destroyedSubject.next();
+        this.destroyedSubject.complete();
     }
 }

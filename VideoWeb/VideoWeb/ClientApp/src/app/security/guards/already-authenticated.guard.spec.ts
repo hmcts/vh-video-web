@@ -1,7 +1,6 @@
 import { fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { SecurityServiceProvider } from '../authentication/security-provider.service';
 import { ISecurityService } from '../authentication/security-service.interface';
@@ -17,8 +16,8 @@ describe('AlreadyAuthenticatedGuard', () => {
 
     beforeEach(() => {
         isAuthenticatedSubject = new Subject<boolean>();
-        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', [], ['isAuthenticated$']);
-        getSpiedPropertyGetter(securityServiceSpy, 'isAuthenticated$').and.returnValue(isAuthenticatedSubject.asObservable());
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['isAuthenticated']);
+        securityServiceSpy.isAuthenticated.and.returnValue(isAuthenticatedSubject.asObservable());
 
         securityServiceProviderSpy = jasmine.createSpyObj<SecurityServiceProvider>('SecurityServiceProvider', ['getSecurityService']);
         securityServiceProviderSpy.getSecurityService.and.returnValue(securityServiceSpy);

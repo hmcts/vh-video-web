@@ -7,7 +7,7 @@ ENV PUPPETEER_EXECUTABLE_PATH /usr/bin/chromium
 # Install NodeJS and chromium
 RUN apt-get -y update \
     && apt-get install -y curl \
-    && curl -sL https://deb.nodesource.com/setup_14.x | bash - \ 
+    && curl -sL https://deb.nodesource.com/setup_18.x | bash - \ 
     && apt-get install -y nodejs \
     && apt-get clean
 
@@ -18,5 +18,3 @@ RUN apt-get update \
 
 COPY ["scripts/tests/run-tests.sh", "/"]
 RUN chmod +x /run-tests.sh
-
-# Remove once npm has been upgraded

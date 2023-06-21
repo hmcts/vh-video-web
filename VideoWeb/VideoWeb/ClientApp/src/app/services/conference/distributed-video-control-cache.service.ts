@@ -22,6 +22,31 @@ export class DistributedVideoControlCacheService implements IVideoControlCacheSt
 
     constructor(private apiClient: ApiClient, private logger: Logger) {}
 
+    saveHearingStateForConference(currentConferenceId: string, hearingControlStates: IHearingControlsState) {
+        const request = this.mapToRequest(hearingControlStates);
+        this.logger.info(`${this.loggerPrefix} saving hearing state for current conference ${currentConferenceId}`, {
+            hearingControlStates: hearingControlStates,
+            request: request
+        });
+        return this.apiClient.setVideoControlStatusesForConference(currentConferenceId, request).pipe(
+            tap(() => {
+                this.logger.info(`${this.loggerPrefix} saved hearing state for current conference ${currentConferenceId}`);
+            })
+        );
+    }
+
+    loadHearingStateForConference(id: string): Observable<IHearingControlsState> {
+        this.logger.info(`${this.loggerPrefix} loading hearing state for current conference ${id}`);
+        return this.apiClient.getVideoControlStatusesForConference(id).pipe(
+            tap(response => {
+                this.logger.info(`${this.loggerPrefix} loaded hearing state for current conference ${id}`, {
+                    response: response
+                });
+            }),
+            map(this.mapFromResponse)
+        );
+    }
+
     private mapToRequest(hearingControlStates: IHearingControlsState) {
         if (!hearingControlStates) {
             return null;
@@ -48,19 +73,6 @@ export class DistributedVideoControlCacheService implements IVideoControlCacheSt
         return setConferenceVideoControlStatusesRequest;
     }
 
-    saveHearingStateForConference(currentConferenceId: string, hearingControlStates: IHearingControlsState) {
-        const request = this.mapToRequest(hearingControlStates);
-        this.logger.info(`${this.loggerPrefix} saving hearing state for current conference ${currentConferenceId}`, {
-            hearingControlStates: hearingControlStates,
-            request: request
-        });
-        return this.apiClient.setVideoControlStatusesForConference(currentConferenceId, request).pipe(
-            tap(() => {
-                this.logger.info(`${this.loggerPrefix} saved hearing state for current conference ${currentConferenceId}`);
-            })
-        );
-    }
-
     private mapFromResponse(response: ConferenceVideoControlStatuses) {
         if (!response) {
             return null;
@@ -83,17 +95,5 @@ export class DistributedVideoControlCacheService implements IVideoControlCacheSt
             }
         }
         return mappedResponse;
-    }
-
-    loadHearingStateForConference(id: string): Observable<IHearingControlsState> {
-        this.logger.info(`${this.loggerPrefix} loading hearing state for current conference ${id}`);
-        return this.apiClient.getVideoControlStatusesForConference(id).pipe(
-            tap(response => {
-                this.logger.info(`${this.loggerPrefix} loaded hearing state for current conference ${id}`, {
-                    response: response
-                });
-            }),
-            map(this.mapFromResponse)
-        );
     }
 }

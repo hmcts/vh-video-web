@@ -28,18 +28,20 @@ import { takeUntil } from 'rxjs/operators';
 
 @Injectable()
 export abstract class ChatWindowBaseComponent extends ChatBaseComponent implements OnInit, OnDestroy, AfterViewChecked {
-    private chatHubSubscription: Subscription;
-
-    public unreadMessageCount: number;
-    public loading: boolean;
-    abstract autoShowChat: boolean;
-
     @Input() public alwaysOn = false;
     @Input() public showChat = false;
     @Input() public hearing: Hearing;
     @Output() public unreadCount = new EventEmitter<number>();
 
     @ViewChild('content', { static: false }) content: ElementRef;
+
+    public unreadMessageCount: number;
+    public loading: boolean;
+    _participantUsername: string;
+
+    private chatHubSubscription: Subscription;
+
+    abstract autoShowChat: boolean;
 
     constructor(
         protected videoWebService: VideoWebService,
@@ -54,14 +56,21 @@ export abstract class ChatWindowBaseComponent extends ChatBaseComponent implemen
         super(videoWebService, profileService, eventService, logger, securityServiceProviderService, imHelper, translateService);
     }
 
-    _participantUsername: string;
-
     get participantUsername(): string {
         return this._participantUsername;
     }
 
     get participantId() {
         return this.loggedInUser.participant_id;
+    }
+
+    @HostListener('window:beforeunload')
+    ngOnDestroy(): void {
+        this.logger.debug(`[ChatHub Judge] closing chat for ${this.hearing.id}`);
+        if (this.chatHubSubscription) {
+            this.chatHubSubscription.unsubscribe();
+        }
+        super.ngOnDestroy();
     }
 
     ngOnInit() {
@@ -75,9 +84,12 @@ export abstract class ChatWindowBaseComponent extends ChatBaseComponent implemen
             this.handleChatHistoryResponse(messages);
         });
 
-        this.securityService.userData$.pipe(takeUntil(this.destroyed$)).subscribe(ud => {
-            this._participantUsername = ud.preferred_username.toLowerCase();
-        });
+        this.securityService
+            .getUserData(this.currentIdp)
+            .pipe(takeUntil(this.destroyed$))
+            .subscribe(ud => {
+                this._participantUsername = ud.preferred_username.toLowerCase();
+            });
     }
 
     ngAfterViewChecked(): void {
@@ -116,15 +128,6 @@ export abstract class ChatWindowBaseComponent extends ChatBaseComponent implemen
         await this.sendInstantMessage(im);
     }
 
-    @HostListener('window:beforeunload')
-    ngOnDestroy(): void {
-        this.logger.debug(`[ChatHub Judge] closing chat for ${this.hearing.id}`);
-        if (this.chatHubSubscription) {
-            this.chatHubSubscription.unsubscribe();
-        }
-        super.ngOnDestroy();
-    }
-
     handleIncomingOtherMessage(message: InstantMessage) {
         if (!this.showChat && !message.is_user) {
             this.setUnreadMessageCount(this.unreadMessageCount + 1);
@@ -143,9 +146,7 @@ export abstract class ChatWindowBaseComponent extends ChatBaseComponent implemen
 
     getCountSinceUsersLastMessage(messages: ChatResponse[]) {
         const reversedMessages = Object.assign([], messages);
-        reversedMessages.sort((a: ChatResponse, b: ChatResponse) => {
-            return b.timestamp.getTime() - a.timestamp.getTime();
-        });
+        reversedMessages.sort((a: ChatResponse, b: ChatResponse) => b.timestamp.getTime() - a.timestamp.getTime());
         const index = reversedMessages.findIndex(x => x.is_user);
         if (index < 0) {
             return reversedMessages.length;

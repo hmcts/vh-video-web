@@ -33,22 +33,12 @@ import { ParticipantStatusMessage } from './models/participant-status-message';
 import { RequestedConsultationMessage } from './models/requested-consultation-message';
 import { NewAllocationMessage } from './models/new-allocation-message';
 import { UpdateEndpointsDto } from '../shared/models/update-endpoints-dto';
+import { ParticipantToggleLocalMuteMessage } from '../shared/models/participant-toggle-local-mute-message';
 
 @Injectable({
     providedIn: 'root'
 })
 export class EventsService {
-    get handlersRegistered() {
-        return this._handlersRegistered;
-    }
-
-    private get eventsHubConnection() {
-        return this.eventsHubService.connection;
-    }
-
-    constructor(private logger: Logger, private eventsHubService: EventsHubService) {
-        eventsHubService.onEventsHubReady.subscribe(() => this.start());
-    }
     private participantStatusSubject = new Subject<ParticipantStatusMessage>();
     private endpointStatusSubject = new Subject<EndpointStatusMessage>();
     private hearingStatusSubject = new Subject<ConferenceStatusMessage>();
@@ -68,6 +58,7 @@ export class EventsService {
     private participantMediaStatusSubject = new Subject<ParticipantMediaStatusMessage>();
     private participantRemoteMuteStatusSubject = new Subject<ParticipantRemoteMuteMessage>();
     private participantHandRaisedStatusSubject = new Subject<ParticipantHandRaisedMessage>();
+    private participantToggleLocalMuteStatusSubject = new Subject<ParticipantToggleLocalMuteMessage>();
     private roomUpdateSubject = new Subject<Room>();
     private roomTransferSubject = new Subject<RoomTransfer>();
     private hearingLayoutChangedSubject = new Subject<HearingLayoutChanged>();
@@ -89,7 +80,7 @@ export class EventsService {
         AllocationHearings: (csoUserName: string, hearingDetails: HearingDetailRequest[]) => {
             this.eventsHubConnection.invoke('AddToGroup', csoUserName);
             const message = new NewAllocationMessage(hearingDetails);
-            this.logger.debug(`[EventsService] - ReceiveMessage allocation for {csoUserName} for hearings`);
+            this.logger.debug('[EventsService] - ReceiveMessage allocation for {csoUserName} for hearings');
             this.messageAllocationSubject.next(message);
         },
 
@@ -206,6 +197,16 @@ export class EventsService {
             this.participantHandRaisedStatusSubject.next(payload);
         },
 
+        updateparticipantlocalmutemessage: (conferenceId: string, participantId: string, isMuted: boolean) => {
+            this.logger.debug('[EventsService] - Participant Local mute status change received: ', {
+                participantId,
+                conferenceId,
+                isMuted
+            });
+            const payload = new ParticipantToggleLocalMuteMessage(conferenceId, participantId, isMuted);
+            this.participantToggleLocalMuteStatusSubject.next(payload);
+        },
+
         RoomUpdate: (payload: Room) => {
             this.logger.debug('[EventsService] - Room Update received: ', payload);
             this.roomUpdateSubject.next(payload);
@@ -248,6 +249,22 @@ export class EventsService {
         }
     };
 
+    constructor(private logger: Logger, private eventsHubService: EventsHubService) {
+        eventsHubService.onEventsHubReady.subscribe(() => this.start());
+    }
+
+    get handlersRegistered() {
+        return this._handlersRegistered;
+    }
+
+    get eventHubIsConnected(): boolean {
+        return this.eventsHubService.isConnectedToHub;
+    }
+
+    private get eventsHubConnection() {
+        return this.eventsHubService.connection;
+    }
+
     start() {
         this.logger.info('[EventsService] - Start.');
 
@@ -286,10 +303,6 @@ export class EventsService {
         }
 
         this._handlersRegistered = false;
-    }
-
-    get eventHubIsConnected(): boolean {
-        return this.eventsHubService.isConnectedToHub;
     }
 
     onEventsHubReady(): Observable<any> {
@@ -360,6 +373,10 @@ export class EventsService {
         return this.participantHandRaisedStatusSubject.asObservable();
     }
 
+    getParticipantToggleLocalMuteMessage(): Observable<ParticipantToggleLocalMuteMessage> {
+        return this.participantToggleLocalMuteStatusSubject.asObservable();
+    }
+
     getRoomUpdate(): Observable<Room> {
         return this.roomUpdateSubject.asObservable();
     }
@@ -420,6 +437,23 @@ export class EventsService {
             conference: conferenceId,
             participant: participantId,
             isRaised
+        });
+    }
+
+    async updateParticipantLocalMuteStatus(conferenceId: string, participantId: string, isMuted: boolean) {
+        await this.eventsHubConnection.send('ToggleParticipantLocalMute', conferenceId, participantId, isMuted);
+        this.logger.debug('[EventsService] - Sent update local mute status request for participant to EventHub', {
+            conference: conferenceId,
+            participant: participantId,
+            isMuted
+        });
+    }
+
+    async updateAllParticipantLocalMuteStatus(conferenceId: string, isMuted: boolean) {
+        await this.eventsHubConnection.send('ToggleAllParticipantLocalMute', conferenceId, isMuted);
+        this.logger.debug('[EventsService] - Sent update local mute status request for all participants to EventHub', {
+            conference: conferenceId,
+            isMuted
         });
     }
 

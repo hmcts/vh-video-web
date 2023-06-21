@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Common.SignalR;
@@ -505,6 +506,66 @@ namespace VideoWeb.EventHub.Hub
             }
         }
 
+        /// <summary>
+         /// A host can force a participant's local mute to be toggled. To be used for participants who do not have peripherals attached.
+         /// This is not to be confused with remote mute, which lock's a participant's ability to toggle their own mute status.
+         /// </summary>
+         /// <param name="conferenceId">The UUID for a conference</param>
+         /// <param name="participantId">The UUID for the participant</param>
+         /// <param name="muted">true to mute or false to unmute a participant.</param>
+         [Authorize("Host")]
+         public async Task ToggleParticipantLocalMute(Guid conferenceId, Guid participantId, bool muted)
+         {
+             try
+             {
+                 var conference = await GetConference(conferenceId);
+                 var participant = conference.Participants.SingleOrDefault(x => x.Id == participantId);
+                 if (participant == null)
+                 {
+
+                     _logger.LogDebug("Participant {ParticipantId} does not exist in conference {ConferenceId}", participantId, conferenceId);
+                     throw new ParticipantNotFoundException(conferenceId, participantId);
+                 }
+                 await Clients.Group(participant.Username.ToLowerInvariant())
+                     .UpdateParticipantLocalMuteMessage(conferenceId, participantId, muted);
+
+             }
+             catch (Exception ex)
+             {
+                 _logger.LogError(ex,
+                     "Error occured when updating participant {ParticipantId} in conference {ConferenceId} local mute status to {Muted}",
+                     participantId, conferenceId, muted);
+             }
+         }
+
+         /// <summary>
+         /// A host can force all participants' local mute to be toggled. To be used for participants who do not have peripherals attached.
+         /// This is not to be confused with remote mute, which lock's a participant's ability to toggle their own mute status.
+         /// </summary>
+         /// <param name="conferenceId">The UUID for a conference</param>
+         /// <param name="muted">true to mute or false to unmute participants.</param>
+         [Authorize("Host")]
+         public async Task ToggleAllParticipantLocalMute(Guid conferenceId, bool muted)
+         {
+             try
+             {
+                 var conference = await GetConference(conferenceId);
+                 var participants = conference.Participants.Where(x => !x.IsHost());
+
+                 foreach (var participant in participants)
+                 {
+                     await Clients.Group(participant.Username.ToLowerInvariant())
+                         .UpdateParticipantLocalMuteMessage(conferenceId, participant.Id, muted);
+                 }
+             }
+             catch (Exception ex)
+             {
+                 _logger.LogError(ex,
+                     "Error occured when updating all participants in conference {ConferenceId} local mute status to {Muted}",
+                     conferenceId, muted);
+             }
+         }
+        
         private List<Participant> GetLinkedParticipants(Conference conference, Participant participant)
         {
             if (participant.IsJudicialOfficeHolder())

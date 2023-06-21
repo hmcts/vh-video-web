@@ -65,7 +65,7 @@ describe('UnreadMessagesParticipantComponent', () => {
         const spy = spyOn(logger, 'error');
         component.ngOnInit();
         tick();
-        expect(spy.calls.mostRecent().args[0]).toMatch(`Failed to get unread vho messages for`);
+        expect(spy.calls.mostRecent().args[0]).toMatch('Failed to get unread vho messages for');
         expect(spy.calls.mostRecent().args[1]).toBe(error);
     }));
 

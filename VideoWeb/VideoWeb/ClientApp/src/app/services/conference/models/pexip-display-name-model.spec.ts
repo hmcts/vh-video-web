@@ -41,7 +41,7 @@ describe('PexipDisplayNameModel', () => {
 
         it('should return null if the format is incorrect', () => {
             // Arrange
-            const pexipDisplayName = `A;B`;
+            const pexipDisplayName = 'A;B';
 
             // Act
             const result = PexipDisplayNameModel.fromString(pexipDisplayName);

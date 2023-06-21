@@ -6,18 +6,21 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using VideoWeb.AuthenticationSchemes;
 using VideoWeb.Common.Configuration;
+using VideoWeb.Services;
 using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.AuthenticationSchemes
 {
     public class EJudiciarySchemeTests
     {
+        private AutoMock _mocker;
         private EJudiciaryScheme sut;
         private EJudAdConfiguration _ejudConfig;
 
@@ -25,6 +28,10 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
         [SetUp]
         public void SetUp()
         {
+            _mocker = AutoMock.GetLoose();
+            _mocker.Mock<IServiceProvider>()
+                .Setup(x => x.GetService(typeof(IAppRoleService)))
+                .Returns(_mocker.Mock<IAppRoleService>().Object);
             _ejudConfig = new EJudAdConfiguration
             {
                 Authority = "https://login.microsoftonline.com/",
@@ -128,7 +135,8 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             var httpContext = new DefaultHttpContext
             {
-                User = claimsPrincipal
+                User = claimsPrincipal,
+                RequestServices = _mocker.Mock<IServiceProvider>().Object
             };
 
             var options = new JwtBearerOptions();
@@ -136,11 +144,11 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
             var tokenValidatedContext = new TokenValidatedContext(httpContext, new AuthenticationScheme("name", "displayName", typeof(AuthenticationHandler<JwtBearerOptions>)), options)
             {
                 Principal = claimsPrincipal,
-                SecurityToken = new JwtSecurityToken(issuer: "Issuer")
+                SecurityToken = new JwtSecurityToken(issuer: "Issuer", claims: claimsPrincipal.Claims)
             };
 
             // Act
-            await sut.OnTokenValidated(tokenValidatedContext);
+            await sut.GetClaimsPostTokenValidation(tokenValidatedContext, new JwtBearerOptions());
 
             // Assert
             var identity = tokenValidatedContext.Principal.Identity.Should().BeOfType<ClaimsIdentity>().Which;

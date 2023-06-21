@@ -9,21 +9,6 @@ export abstract class PanelModel {
     public id: string;
 
     /**
-     * Has been muted by the judge
-     */
-    protected isRemoteMuted: boolean;
-
-    /**
-     * Has been spotlighted by the judge
-     */
-    protected isSpotlighted: boolean;
-
-    /**
-     * Has hand raised
-     */
-    protected handRaised: boolean;
-
-    /**
      * The display name other participants see
      */
     public displayName: string;
@@ -41,6 +26,21 @@ export abstract class PanelModel {
     public caseTypeGroup: string;
     public hearingRole: string;
     public representee: string;
+
+    /**
+     * Has been muted by the judge
+     */
+    protected isRemoteMuted: boolean;
+
+    /**
+     * Has been spotlighted by the judge
+     */
+    protected isSpotlighted: boolean;
+
+    /**
+     * Has hand raised
+     */
+    protected handRaised: boolean;
 
     /**
      * Is participant transferring into a hearing
@@ -76,22 +76,6 @@ export abstract class PanelModel {
         this.orderInTheList = this.setOrderInTheList();
     }
 
-    abstract isInHearing(): boolean;
-    abstract isDisconnected(): boolean;
-    abstract isAvailable(): boolean;
-    abstract isInConsultation(): boolean;
-
-    abstract get isCallableAndReadyToBeDismissed(): boolean;
-    abstract get isCallableAndReadyToJoin(): boolean;
-    abstract get isCallable(): boolean;
-
-    /**
-     * Determines if the panel is hosting the given participant by id
-     * @param participantId participant id by VH
-     */
-    abstract hasParticipant(participantId: string): boolean;
-    abstract updateStatus(status, participantId?: string);
-
     get isJudge(): boolean {
         return this.role === Role.Judge;
     }
@@ -115,6 +99,10 @@ export abstract class PanelModel {
     get transferringIn(): boolean {
         return this._transferringIn;
     }
+
+    abstract get isCallableAndReadyToBeDismissed(): boolean;
+    abstract get isCallableAndReadyToJoin(): boolean;
+    abstract get isCallable(): boolean;
 
     updateTransferringInStatus(isTransferringIn: boolean, participantId?: string) {
         this._transferringIn = isTransferringIn;
@@ -163,6 +151,10 @@ export abstract class PanelModel {
         return this.handRaised;
     }
 
+    participantsList(): PanelModel[] {
+        return [this];
+    }
+
     private setOrderInTheList(): number {
         if (this.role === Role.Judge) {
             return 1;
@@ -182,4 +174,15 @@ export abstract class PanelModel {
             return 4;
         }
     }
+
+    abstract isInHearing(): boolean;
+    abstract isDisconnected(): boolean;
+    abstract isAvailable(): boolean;
+    abstract isInConsultation(): boolean;
+    /**
+     * Determines if the panel is hosting the given participant by id
+     * @param participantId participant id by VH
+     */
+    abstract hasParticipant(participantId: string): boolean;
+    abstract updateStatus(status, participantId?: string);
 }

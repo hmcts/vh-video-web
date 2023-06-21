@@ -10,8 +10,10 @@ import { HearingBase } from './hearing-base';
 import { Participant } from './participant';
 
 export class Hearing extends HearingBase {
+    participants: ReadonlyArray<Participant>;
+
+    private _participants: Participant[];
     private conference: ConferenceResponseVho;
-    readonly participants: Participant[];
 
     constructor(conference: ConferenceResponseVho) {
         super();
@@ -24,7 +26,8 @@ export class Hearing extends HearingBase {
 
         this.conference = conference;
         if (conference.participants) {
-            this.participants = this.conference.participants.map(p => new Participant(p));
+            this._participants = this.conference.participants.map(p => new Participant(p));
+            this.participants = this._participants;
         }
     }
 
@@ -33,7 +36,7 @@ export class Hearing extends HearingBase {
     }
 
     get judge(): Participant {
-        return this.participants.find(x => x.role === Role.Judge);
+        return this._participants.find(x => x.role === Role.Judge);
     }
 
     get caseType(): string {
@@ -46,34 +49,6 @@ export class Hearing extends HearingBase {
 
     get caseName(): string {
         return this.conference.case_name;
-    }
-
-    getConference(): ConferenceResponseVho {
-        return this.conference;
-    }
-
-    getParticipants(): ParticipantResponseVho[] {
-        return this.conference.participants;
-    }
-
-    getEndpoints(): VideoEndpointResponse[] {
-        if (this.conference instanceof ConferenceResponse) {
-            const conf = this.conference as ConferenceResponse;
-            return conf.endpoints || new Array<VideoEndpointResponse>();
-        } else {
-            return new Array<VideoEndpointResponse>();
-        }
-    }
-
-    addEndpoint(ver: VideoEndpointResponse) {
-        const conference = this.conference as ConferenceResponse;
-        conference.endpoints.push(ver);
-    }
-
-    updateEndpoint(ver: VideoEndpointResponse) {
-        const conference = this.conference as ConferenceResponse;
-        const index = conference.endpoints.findIndex(x => x.id === ver.id);
-        conference.endpoints[index] = ver;
     }
 
     get status(): ConferenceStatus {
@@ -94,6 +69,42 @@ export class Hearing extends HearingBase {
         return this.conference.closed_date_time;
     }
 
+    get hearingVenueName(): string {
+        return this.conference.hearing_venue_name;
+    }
+
+    getConference(): ConferenceResponseVho {
+        return this.conference;
+    }
+
+    getParticipants(): ParticipantResponseVho[] {
+        return this.conference.participants;
+    }
+
+    getEndpoints(): VideoEndpointResponse[] {
+        if (this.conference instanceof ConferenceResponse) {
+            const conf = this.conference as ConferenceResponse;
+            return conf.endpoints || new Array<VideoEndpointResponse>();
+        } else {
+            return new Array<VideoEndpointResponse>();
+        }
+    }
+
+    updateParticipants(participants: ParticipantResponseVho[]) {
+        this.updateParticipantList(participants);
+    }
+
+    addEndpoint(ver: VideoEndpointResponse) {
+        const conference = this.conference as ConferenceResponse;
+        conference.endpoints.push(ver);
+    }
+
+    updateEndpoint(ver: VideoEndpointResponse) {
+        const conference = this.conference as ConferenceResponse;
+        const index = conference.endpoints.findIndex(x => x.id === ver.id);
+        conference.endpoints[index] = ver;
+    }
+
     retrieveHearingExpiryTime(): moment.Moment {
         return this.timeReader.retrieveHearingExpiryTime(this.conference.closed_date_time, this.conference.status);
     }
@@ -103,10 +114,12 @@ export class Hearing extends HearingBase {
     }
 
     getParticipantById(participantId: string) {
-        return this.participants.find(p => p.id === participantId);
+        return this._participants.find(p => p.id === participantId);
     }
 
-    get hearingVenueName(): string {
-        return this.conference.hearing_venue_name;
+    private updateParticipantList(participants: ParticipantResponseVho[]) {
+        this.conference.participants = participants;
+        this._participants = this.conference.participants.map(p => new Participant(p));
+        this.participants = this._participants;
     }
 }

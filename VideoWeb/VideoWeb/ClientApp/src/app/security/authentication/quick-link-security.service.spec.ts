@@ -1,7 +1,6 @@
 import { fakeAsync, flush } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 import { ApiClient } from 'src/app/services/clients/api-client';
-import { Logger } from 'src/app/services/logging/logger-base';
 import { JwtHelperService } from '../jwt-helper.service';
 import { QuickLinkJwtBody, QuickLinkSecurityService } from './quick-link-security.service';
 import { SecurityConfigSetupService } from '../security-config-setup.service';
@@ -39,11 +38,7 @@ describe('QuickLinkSecurityService', () => {
         service = new QuickLinkSecurityService(apiClientSpy, jwtHelperSpy, securityConfigSetupService, router);
     });
 
-    it('should be created', () => {
-        expect(service).toBeTruthy();
-    });
-
-    describe('isAuthenticated$', () => {
+    describe('isAuthenticated', () => {
         it('should logoff and revoke the tokens if the token has expired', fakeAsync(() => {
             // Arrange
             jwtHelperSpy.isTokenExpired.and.returnValue(true);
@@ -53,7 +48,7 @@ describe('QuickLinkSecurityService', () => {
             // Act
             let isAuthenticated = true;
             service['isAuthenticatedSubject'].next(true);
-            const subscription = service.isAuthenticated$.subscribe(authenticated => (isAuthenticated = authenticated));
+            const subscription = service.isAuthenticated('quickLink').subscribe(authenticated => (isAuthenticated = authenticated));
             flush();
 
             // Assert
@@ -70,7 +65,7 @@ describe('QuickLinkSecurityService', () => {
             // Act
             let isAuthenticated = false;
             service['isAuthenticatedSubject'].next(true);
-            const subscription = service.isAuthenticated$.subscribe(authenticated => (isAuthenticated = authenticated));
+            const subscription = service.isAuthenticated('quickLink').subscribe(authenticated => (isAuthenticated = authenticated));
             flush();
 
             // Assert
@@ -85,7 +80,7 @@ describe('QuickLinkSecurityService', () => {
             const isQuickLinkParticipantAuthorisedSubject = new Subject<void>();
             apiClientSpy.isQuickLinkParticipantAuthorised.and.returnValue(isQuickLinkParticipantAuthorisedSubject.asObservable());
             // Act
-            service.authorize(null, jwt);
+            service.authorize('quickLink', null, jwt);
 
             // Assert
             expect(apiClientSpy.isQuickLinkParticipantAuthorised).toHaveBeenCalledTimes(1);
@@ -99,11 +94,11 @@ describe('QuickLinkSecurityService', () => {
 
             // Act
             let isAuthenticated = false;
-            service.isAuthenticated$.subscribe(authenticated => {
+            service.isAuthenticated('quickLink').subscribe(authenticated => {
                 isAuthenticated = authenticated;
             });
 
-            service.authorize(null, jwt);
+            service.authorize('quickLink', null, jwt);
             isQuickLinkParticipantAuthorisedSubject.next();
             flush();
 
@@ -120,11 +115,11 @@ describe('QuickLinkSecurityService', () => {
 
             // Act
             let isAuthenticated = true;
-            service.isAuthenticated$.subscribe(authenticated => {
+            service.isAuthenticated('quickLink').subscribe(authenticated => {
                 isAuthenticated = authenticated;
             });
 
-            service.authorize(null, jwt);
+            service.authorize('quickLink', null, jwt);
             isQuickLinkParticipantAuthorisedSubject.error('error');
             flush();
 
@@ -143,11 +138,11 @@ describe('QuickLinkSecurityService', () => {
 
             // Act
             let isAuthenticated = true;
-            service.isAuthenticated$.subscribe(authenticated => {
+            service.isAuthenticated('quickLink').subscribe(authenticated => {
                 isAuthenticated = authenticated;
             });
 
-            service.authorize(null, jwt);
+            service.authorize('quickLink', null, jwt);
             isQuickLinkParticipantAuthorisedSubject.error('error');
             flush();
 
@@ -165,11 +160,11 @@ describe('QuickLinkSecurityService', () => {
 
             // Act
             let userData: QuickLinkJwtBody = null;
-            service.userData$.subscribe(data => {
+            service.getUserData('quickLink').subscribe(data => {
                 userData = data;
             });
 
-            service.authorize(null, jwt);
+            service.authorize('quickLink', null, jwt);
             isQuickLinkParticipantAuthorisedSubject.next();
             flush();
 
@@ -186,11 +181,11 @@ describe('QuickLinkSecurityService', () => {
 
             // Act
             let userData: QuickLinkJwtBody = null;
-            service.userData$.subscribe(data => {
+            service.getUserData('quickLink').subscribe(data => {
                 userData = data;
             });
 
-            service.authorize(null, jwt);
+            service.authorize('quickLink', null, jwt);
             isQuickLinkParticipantAuthorisedSubject.error('error');
             flush();
 
@@ -208,7 +203,7 @@ describe('QuickLinkSecurityService', () => {
 
             // Act
             let result = false;
-            service.checkAuth().subscribe(isAuthorised => (result = isAuthorised));
+            service.checkAuth().subscribe(({ isAuthenticated }) => (result = isAuthenticated));
             isAuthorisedSubject.next();
             flush();
 
@@ -223,7 +218,7 @@ describe('QuickLinkSecurityService', () => {
 
             // Act
             let result = false;
-            service.checkAuth().subscribe(isAuthorised => (result = isAuthorised));
+            service.checkAuth().subscribe(({ isAuthenticated }) => (result = isAuthenticated));
             isAuthorisedSubject.error('');
             flush();
 
@@ -236,7 +231,7 @@ describe('QuickLinkSecurityService', () => {
         it('should emit the isAuthenticated false when the api client call resolves', fakeAsync(() => {
             // Act
             let isAuthenticated = true;
-            service.isAuthenticated$.subscribe(authenticated => (isAuthenticated = authenticated));
+            service.isAuthenticated('quickLink').subscribe(authenticated => (isAuthenticated = authenticated));
             service.logoffAndRevokeTokens().subscribe();
             flush();
 

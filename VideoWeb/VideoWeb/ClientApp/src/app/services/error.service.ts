@@ -13,6 +13,12 @@ import { LocationService } from './location.service';
     providedIn: 'root'
 })
 export class ErrorService {
+    readonly ERROR_MESSAGE_KEY = 'vh.error.message';
+    readonly ERROR_CAMERA_MIC_MESSAGE_KEY = 'vh.error.camera.mic.message';
+
+    errorMessage: SessionStorage<ErrorMessage>;
+    errorCameraMicMessage: SessionStorage<string>;
+
     constructor(
         private router: Router,
         private logger: Logger,
@@ -29,11 +35,6 @@ export class ErrorService {
             }
         });
     }
-    readonly ERROR_MESSAGE_KEY = 'vh.error.message';
-    readonly ERROR_CAMERA_MIC_MESSAGE_KEY = 'vh.error.camera.mic.message';
-
-    errorMessage: SessionStorage<ErrorMessage>;
-    errorCameraMicMessage: SessionStorage<string>;
 
     handleApiError(error: any, skipRedirect: boolean = false) {
         this.logger.error('[ErrorService] - API error', error);

@@ -70,23 +70,6 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
         }
     }
 
-    private static fromAParticipantResponseType(participant: ParticipantResponse | ParticipantForUserResponse | ParticipantResponseVho) {
-        return new ParticipantModel(
-            participant.id,
-            participant.name,
-            participant.display_name,
-            participant.tiled_display_name, // same as pexip_display_name
-            participant.case_type_group,
-            participant.role,
-            participant.hearing_role,
-            false,
-            participant.interpreter_room,
-            participant.linked_participants,
-            participant.status,
-            participant.current_room
-        );
-    }
-
     static fromParticipantResponse(participant: ParticipantResponse) {
         return this.fromAParticipantResponseType(participant);
     }
@@ -113,6 +96,23 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
             null,
             ParticipantStatus[videoEndpointResponse.status], // Will be undefined when not joining...
             videoEndpointResponse.current_room
+        );
+    }
+
+    private static fromAParticipantResponseType(participant: ParticipantResponse | ParticipantForUserResponse | ParticipantResponseVho) {
+        return new ParticipantModel(
+            participant.id,
+            participant.name,
+            participant.display_name,
+            participant.tiled_display_name, // same as pexip_display_name
+            participant.case_type_group,
+            participant.role,
+            participant.hearing_role,
+            false,
+            participant.interpreter_room,
+            participant.linked_participants,
+            participant.status,
+            participant.current_room
         );
     }
 }

@@ -23,6 +23,13 @@ export class UnreadMessagesParticipantComponent extends UnreadMessagesComponentB
         super(eventsService, logger);
     }
 
+    get unreadCount(): number {
+        if (!this.unreadMessages) {
+            return 0;
+        }
+        return this.unreadMessages.number_of_unread_messages;
+    }
+
     ngOnInit() {
         const payload = {
             conference: this.hearing.id,
@@ -46,12 +53,6 @@ export class UnreadMessagesParticipantComponent extends UnreadMessagesComponentB
         this.clearMessageSubscription();
     }
 
-    get unreadCount(): number {
-        if (!this.unreadMessages) {
-            return 0;
-        }
-        return this.unreadMessages.number_of_unread_messages;
-    }
     getHearing(): Hearing {
         return this.hearing;
     }
@@ -71,5 +72,6 @@ export class UnreadMessagesParticipantComponent extends UnreadMessagesComponentB
             this.incrementUnreadCounter(message.conferenceId, message.from);
         }
     }
+
     openImChat() {}
 }

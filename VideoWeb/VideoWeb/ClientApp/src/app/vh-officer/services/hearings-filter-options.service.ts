@@ -31,6 +31,10 @@ export class HearingsFilterOptionsService {
         return this.hearingsFilter;
     }
 
+    countOptions(filter: HearingsFilter) {
+        return this.count(filter.statuses) + this.count(filter.alerts);
+    }
+
     private setFilterOptions() {
         this.hearingsFilter = new HearingsFilter();
         this.setStatuses();
@@ -113,10 +117,6 @@ export class HearingsFilterOptionsService {
         }
 
         return description;
-    }
-
-    countOptions(filter: HearingsFilter) {
-        return this.count(filter.statuses) + this.count(filter.alerts);
     }
 
     private count(options: ListFilter[]) {

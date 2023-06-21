@@ -10,12 +10,22 @@ dotnet test VideoWeb/VideoWeb.UnitTests/VideoWeb.UnitTests.csproj -c $configurat
     "/p:Exclude=\"${exclusions}\"" \
     "/p:CoverletOutput=${PWD}/Coverage/" \
     "/p:MergeWith=${PWD}/Coverage/coverage.json" \
-    "/p:CoverletOutputFormat=\"opencover,json,cobertura,lcov\""
+    "/p:CoverletOutputFormat=\"opencover,json,cobertura,lcov\"" ||
+    {
+        echo "##vso[task.logissue type=error]DotNet Unit Tests Failed."
+        echo "##vso[task.complete result=Failed]"
+        exit 1
+    }
 
 # Run the Jasmine tests
 npm install --prefix VideoWeb/VideoWeb/ClientApp
 npm run --prefix VideoWeb/VideoWeb/ClientApp lint || {
-    echo 'Linting failed'
+    echo "##vso[task.logissue type=error]Node Linting Failed."
+    echo "##vso[task.complete result=Failed]"
     exit 1
 }
-npm run --prefix VideoWeb/VideoWeb/ClientApp test-once-ci
+npm run --prefix VideoWeb/VideoWeb/ClientApp test-once-ci || {
+    echo "##vso[task.logissue type=error]Node Unit Tests Failed."
+    echo "##vso[task.complete result=Failed]"
+    exit 1
+}

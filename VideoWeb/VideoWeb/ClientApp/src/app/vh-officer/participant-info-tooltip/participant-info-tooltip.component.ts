@@ -9,10 +9,12 @@ import { TranslateService } from '@ngx-translate/core';
     styleUrls: ['../vho-global-styles.scss']
 })
 export class ParticipantInfoTooltipComponent {
-    constructor(private translateService: TranslateService) {}
     @Input() participant: ParticipantContactDetails;
+
     quickLinkParticipantDisplayText = 'Participant';
     quickLinkObserverDisplayText = 'Observer';
+
+    constructor(private translateService: TranslateService) {}
 
     getHearingRole() {
         let hearingRole = this.participant.hearingRole;

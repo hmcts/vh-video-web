@@ -1,7 +1,11 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using VideoWeb.Common.Configuration;
+using VideoWeb.Services;
 
 namespace VideoWeb.AuthenticationSchemes
 {
@@ -23,6 +27,19 @@ namespace VideoWeb.AuthenticationSchemes
             options.TokenValidationParameters.NameClaimType = "preferred_username";
             options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
             options.TokenValidationParameters.ValidateLifetime = true;
+            options.Events = new JwtBearerEvents()
+                {OnTokenValidated = context => GetClaimsPostTokenValidation(context, options)};
+        }
+        
+        public virtual async Task GetClaimsPostTokenValidation(TokenValidatedContext context, JwtBearerOptions options)
+        {
+            if (context.SecurityToken is JwtSecurityToken jwtToken)
+            {
+                var usernameClaim = jwtToken.Claims.First(x => x.Type == options.TokenValidationParameters.NameClaimType);
+                var appRoleService = context.HttpContext.RequestServices.GetService(typeof(IAppRoleService)) as IAppRoleService;
+                var claims = await appRoleService!.GetClaimsForUserAsync(jwtToken.RawPayload, usernameClaim.Value);
+                context.Principal!.AddIdentity(new ClaimsIdentity(claims));
+            }
         }
     }
 }

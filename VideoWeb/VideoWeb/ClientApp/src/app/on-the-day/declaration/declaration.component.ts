@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
@@ -11,14 +11,14 @@ import { Logger } from 'src/app/services/logging/logger-base';
     templateUrl: './declaration.component.html'
 })
 export class DeclarationComponent extends ParticipantStatusBaseDirective implements OnInit {
-    declarationForm: FormGroup;
+    declarationForm: UntypedFormGroup;
     submitted = false;
     conferenceId: string;
 
     constructor(
         private router: Router,
         protected route: ActivatedRoute,
-        private fb: FormBuilder,
+        private fb: UntypedFormBuilder,
         protected participantStatusUpdateService: ParticipantStatusUpdateService,
         protected logger: Logger
     ) {

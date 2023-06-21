@@ -10,7 +10,7 @@ import {
     Output,
     ViewChild
 } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import { UntypedFormControl, Validators } from '@angular/forms';
 import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
@@ -33,30 +33,18 @@ import { SecurityServiceProvider } from 'src/app/security/authentication/securit
     styleUrls: ['./vho-chat.component.scss', '../vho-global-styles.scss']
 })
 export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDestroy, AfterViewChecked {
-    newMessageBody: FormControl;
-    chatHubSubscription: Subscription;
-    loading: boolean;
-
-    private _participant: Participant;
     @ViewChild('content', { static: false }) content: ElementRef;
 
-    @Input() set participant(value: Participant) {
-        if (!this._participant) {
-            this._participant = value;
-        } else {
-            this._participant = value;
-            this.updateChatWindow();
-        }
-    }
+    @Input() hearing: Hearing;
 
-    get participant(): Participant {
-        return this._participant;
-    }
+    @Output() unreadMessageCount = new EventEmitter<ConferenceUnreadMessageCount>();
 
+    newMessageBody: UntypedFormControl;
+    chatHubSubscription: Subscription;
+    loading: boolean;
     username: string;
 
-    @Input() hearing: Hearing;
-    @Output() unreadMessageCount = new EventEmitter<ConferenceUnreadMessageCount>();
+    private _participant: Participant;
 
     constructor(
         protected videoWebService: VideoWebService,
@@ -70,12 +58,34 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         super(videoWebService, profileService, eventService, logger, securityServiceProviderService, imHelper, translateService);
     }
 
+    get participant(): Participant {
+        return this._participant;
+    }
+
     get participantUsername() {
         return this._participant.id;
     }
 
     get participantId() {
         return this._participant.id;
+    }
+
+    @Input() set participant(value: Participant) {
+        if (!this._participant) {
+            this._participant = value;
+        } else {
+            this._participant = value;
+            this.updateChatWindow();
+        }
+    }
+
+    @HostListener('window:beforeunload')
+    ngOnDestroy(): void {
+        this.logger.debug(`[ChatHub VHO] closing chat for ${this.hearing.id}`);
+        if (this.chatHubSubscription) {
+            this.chatHubSubscription.unsubscribe();
+        }
+        super.ngOnDestroy();
     }
 
     ngAfterViewChecked(): void {
@@ -87,7 +97,7 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         this.initForm();
         this.setupChatSubscription().then(sub => (this.chatHubSubscription = sub));
         this.updateChatWindow();
-        this.securityService.userData$.subscribe(ud => {
+        this.securityService.getUserData(this.currentIdp).subscribe(ud => {
             this.username = ud.preferred_username;
             this.setLoggedAdminUser();
         });
@@ -111,7 +121,7 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
     }
 
     initForm() {
-        this.newMessageBody = new FormControl(null, [Validators.required, Validators.minLength(1), Validators.maxLength(256)]);
+        this.newMessageBody = new UntypedFormControl(null, [Validators.required, Validators.minLength(1), Validators.maxLength(256)]);
     }
 
     async sendMessage(messageBody: string) {
@@ -132,14 +142,5 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         // no special changes here
         this.disableScrollDown = false;
         this.scrollToBottom();
-    }
-
-    @HostListener('window:beforeunload')
-    ngOnDestroy(): void {
-        this.logger.debug(`[ChatHub VHO] closing chat for ${this.hearing.id}`);
-        if (this.chatHubSubscription) {
-            this.chatHubSubscription.unsubscribe();
-        }
-        super.ngOnDestroy();
     }
 }

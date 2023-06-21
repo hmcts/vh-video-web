@@ -13,6 +13,9 @@ import { VhoQueryService } from '../services/vho-query-service.service';
     styleUrls: ['./participant-network-status.component.scss', '../vho-global-styles.scss']
 })
 export class ParticipantNetworkStatusComponent implements OnInit, AfterContentChecked {
+    @ViewChild('graphContainer', { static: false })
+    graphContainer: ElementRef;
+
     @Input() participant: ParticipantSummary;
     @Input() conferenceId: string;
 
@@ -24,10 +27,8 @@ export class ParticipantNetworkStatusComponent implements OnInit, AfterContentCh
     timeout: NodeJS.Timer;
     mouseEvent: MouseEvent;
 
-    @ViewChild('graphContainer', { static: false })
-    graphContainer: ElementRef;
-
     constructor(private vhoQuery: VhoQueryService, private logger: Logger) {}
+
     ngOnInit(): void {
         this.displayGraph = false;
         this.packageLostArray = [];
@@ -61,16 +62,17 @@ export class ParticipantNetworkStatusComponent implements OnInit, AfterContentCh
             const heartbeatHistory = await this.vhoQuery.getParticipantHeartbeats(this.conferenceId, this.participant.id);
 
             this.loading = false;
-            this.packageLostArray = heartbeatHistory.map(x => {
-                return new PackageLost(
-                    x.recent_packet_loss,
-                    x.browser_name,
-                    x.browser_version,
-                    x.operating_system,
-                    x.operating_system_version,
-                    x.timestamp.getTime()
-                );
-            });
+            this.packageLostArray = heartbeatHistory.map(
+                x =>
+                    new PackageLost(
+                        x.recent_packet_loss,
+                        x.browser_name,
+                        x.browser_version,
+                        x.operating_system,
+                        x.operating_system_version,
+                        x.timestamp.getTime()
+                    )
+            );
 
             this.monitoringParticipant = new ParticipantGraphInfo(
                 this.participant.displayName,
@@ -81,7 +83,7 @@ export class ParticipantNetworkStatusComponent implements OnInit, AfterContentCh
             this.updateGraphPosition($event);
         } catch (err) {
             this.loading = false;
-            this.logger.error(`[ParticipantNetworkStatus] - Failed to get heartbeat history for particpant`, err, {
+            this.logger.error('[ParticipantNetworkStatus] - Failed to get heartbeat history for particpant', err, {
                 conference: this.conferenceId,
                 participant: this.participant.id
             });

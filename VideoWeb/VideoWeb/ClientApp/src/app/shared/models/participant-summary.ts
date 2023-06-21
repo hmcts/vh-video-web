@@ -35,10 +35,6 @@ export class ParticipantSummary {
         return this.participant.status;
     }
 
-    set status(status: ParticipantStatus) {
-        this.participant.status = status;
-    }
-
     get role(): Role {
         return this.participant.role;
     }
@@ -69,6 +65,10 @@ export class ParticipantSummary {
 
     get participantHertBeatHealth(): ParticipantHeartbeat {
         return this.participantHeartBeat;
+    }
+
+    set status(status: ParticipantStatus) {
+        this.participant.status = status;
     }
 
     set participantHertBeatHealth(participantHeartBeat: ParticipantHeartbeat) {

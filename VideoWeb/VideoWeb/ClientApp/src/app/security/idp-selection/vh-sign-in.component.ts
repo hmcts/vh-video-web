@@ -6,7 +6,7 @@ import { IdpProviders } from '../idp-providers';
 
 @Component({
     selector: 'app-vh-sign-in',
-    template: ``,
+    template: '',
     styles: []
 })
 export class VhSignInComponent implements OnInit {

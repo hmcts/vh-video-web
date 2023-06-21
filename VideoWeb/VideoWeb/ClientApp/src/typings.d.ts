@@ -11,13 +11,34 @@ interface Console {
     defaultWarn;
 }
 
+declare interface HeartbeatFactory {
+    HeartbeatFactory(): HeartbeatClient;
+}
+
+declare class HeartbeatClient {
+    logHeartbeat: boolean;
+    constructor(
+        pexipApi: PexipClient,
+        url: string,
+        conferenceId: string,
+        participantId: string,
+        /**
+         * The JWT token to use for authentication.
+         * Must be `Bearer ${token}`.
+         */
+        token: string,
+        callback: (data: any) => void
+    );
+    kill(): void;
+}
+
 declare interface PexRTC {
     PexRTC(): PexipClient;
 }
 
 declare interface PexipClient {
-    video_source: any;
-    audio_source: any;
+    video_source: string;
+    audio_source: string;
     h264_enabled: boolean;
     mutedAudio: boolean;
     mutedVideo: boolean;
@@ -30,27 +51,7 @@ declare interface PexipClient {
     call_tag: string;
     call: PexRTCCall;
     protocol: string;
-    turn_server: any;
-
-    onLog: (message: string, ...args: any[]) => void;
-    onSetup: (stream: any, pinStatus: any, conferenceExtension: any) => void;
-    onConnect: (stream: MediaStream | URL) => void;
-    onError: (reason: any) => void;
-    onDisconnect: (reason: any) => void;
-    onParticipantCreate: (participantUpdate: PexipParticipant) => void;
-    onParticipantUpdate: (participantUpdate: PexipParticipant) => void;
-    onParticipantDelete: (participantUpdate: PexipParticipant) => void;
-    onConferenceUpdate: (conferenceUpdate: PexipConference) => void;
-    onCallTransfer: (reason: any) => void;
-    renegotiate: (sendUpdate: boolean) => void;
-
-    /**
-     * A presentation has started or stopped.
-     * @param setting true = presentation has started; false = presentation has stopped.
-     * @param presenter The name of the presenter (only given when setting = true, else null).
-     * @param uuid The UUID of the presenter.
-     */
-    onPresentation(setting: boolean, presenter: string, uuid: string);
+    turn_server: TurnServer;
 
     /**
      * The WebRTC incoming full-frame rate presentation stream has been set up successfully.
@@ -71,6 +72,26 @@ declare interface PexipClient {
      * The WebRTC screensharing presentation stream has been stopped. The floor may have been taken by another presenter, or the user stopped the screenshare, or some other error occurred.
      */
     onScreenshareStopped: (reason: string) => void;
+
+    onLog: (message: string, ...args: any[]) => void;
+    onSetup: (stream: any, pinStatus: any, conferenceExtension: any) => void;
+    onConnect: (stream: MediaStream | URL) => void;
+    onError: (reason: string) => void;
+    onDisconnect: (reason: string) => void;
+    onParticipantCreate: (participantUpdate: PexipParticipant) => void;
+    onParticipantUpdate: (participantUpdate: PexipParticipant) => void;
+    onParticipantDelete: (participantDeleted: PexipParticipantDeleted) => void;
+    onConferenceUpdate: (conferenceUpdate: PexipConference) => void;
+    onCallTransfer: (alias: string) => void;
+    renegotiate: (sendUpdate: boolean) => void;
+
+    /**
+     * A presentation has started or stopped.
+     * @param setting true = presentation has started; false = presentation has stopped.
+     * @param presenter The name of the presenter (only given when setting = true, else null).
+     * @param uuid The UUID of the presenter.
+     */
+    onPresentation(setting: boolean, presenter: string, uuid: string);
 
     makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number, callType: string);
     connect(pin: string, extension: string);
@@ -121,6 +142,17 @@ declare interface PexipClient {
 
     //Dial out from the conference. And stream to external URL. Only available to users with "chair" (Host) rights.
     dialOut(destination, protocol, role, cb, user_params);
+}
+
+declare interface TurnServer {
+    urls: string[] | string;
+    username: string;
+    credential: string;
+}
+
+declare interface PexipParticipantDeleted {
+    /** The UUID of this participant, to use with other operations. */
+    uuid: string;
 }
 
 declare interface PexipParticipant {
@@ -192,6 +224,6 @@ declare interface PexRTCCall {
     stream: MediaStream | URL;
     recv_audio: boolean;
     recv_video: boolean;
-    video_source: any;
-    audio_source: any;
+    video_source: string;
+    audio_source: string;
 }

@@ -17,6 +17,13 @@ export class ModalComponent implements OnInit, OnDestroy {
         this.element = this.el.nativeElement;
     }
 
+    // remove self from modal service when directive is destroyed
+    @HostListener('window:beforeunload')
+    ngOnDestroy(): void {
+        this.modalService.remove(this.id);
+        this.element.remove();
+    }
+
     ngOnInit() {
         // ensure id attribute exists
         if (!this.id) {
@@ -29,13 +36,6 @@ export class ModalComponent implements OnInit, OnDestroy {
 
         // add self (this modal instance) to the modal service so it's accessible from controllers
         this.modalService.add(this);
-    }
-
-    // remove self from modal service when directive is destroyed
-    @HostListener('window:beforeunload')
-    ngOnDestroy(): void {
-        this.modalService.remove(this.id);
-        this.element.remove();
     }
 
     open(): void {

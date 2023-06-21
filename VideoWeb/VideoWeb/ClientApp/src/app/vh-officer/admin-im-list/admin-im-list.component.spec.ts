@@ -1,6 +1,6 @@
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponseVho, ParticipantContactDetailsResponseVho, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ConferenceResponseVho, ParticipantContactDetailsResponseVho } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ParticipantStatusReader } from 'src/app/shared/models/participant-status-reader';
@@ -10,26 +10,22 @@ import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { AdminImListComponent } from './admin-im-list.component';
 
 describe('AdminImListComponent', () => {
-    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    let errorServiceSpy: jasmine.SpyObj<ErrorService>;
     const eventsService = eventsServiceSpy;
-    let participantStatusReaderSpy: jasmine.SpyObj<ParticipantStatusReader>;
+    const videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
+        'getParticipantsWithContactDetailsByConferenceId',
+        'raiseSelfTestFailureEvent'
+    ]);
+    const errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', [
+        'goToServiceError',
+        'handleApiError',
+        'returnHomeIfUnauthorised'
+    ]);
     let participants: ParticipantContactDetailsResponseVho[];
     let component: AdminImListComponent;
     let conference: ConferenceResponseVho;
     let hearing: Hearing;
 
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
-        'getParticipantsWithContactDetailsByConferenceId',
-        'raiseSelfTestFailureEvent'
-    ]);
-    errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', [
-        'goToServiceError',
-        'handleApiError',
-        'returnHomeIfUnauthorised'
-    ]);
-
-    participantStatusReaderSpy = jasmine.createSpyObj<ParticipantStatusReader>(
+    const participantStatusReaderSpy = jasmine.createSpyObj<ParticipantStatusReader>(
         'ParticipantStatusReader',
         ['getStatusAsText', 'getStatusAsTextForHost'],
         { inAnotherHearingText: 'In Another Hearing' }

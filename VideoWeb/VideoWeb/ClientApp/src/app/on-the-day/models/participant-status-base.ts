@@ -5,9 +5,16 @@ import { Logger } from 'src/app/services/logging/logger-base';
 
 @Directive()
 export abstract class ParticipantStatusBaseDirective {
+    abstract conferenceId: string;
+
     constructor(protected participantStatusUpdateService: ParticipantStatusUpdateService, protected logger: Logger) {}
 
-    abstract conferenceId: string;
+    @HostListener('window:beforeunload', ['$event'])
+    beforeunloadHandler($event: any) {
+        $event.returnValue = 'save';
+        this.raiseNotSignedIn();
+        return 'save';
+    }
 
     raiseNotSignedIn() {
         this.participantStatusUpdateService
@@ -18,12 +25,5 @@ export abstract class ParticipantStatusBaseDirective {
             .catch(err => {
                 this.logger.error('[ParticipantStatus] - Unable to update status to not signed in', err, { conference: this.conferenceId });
             });
-    }
-
-    @HostListener('window:beforeunload', ['$event'])
-    beforeunloadHandler($event: any) {
-        $event.returnValue = 'save';
-        this.raiseNotSignedIn();
-        return 'save';
     }
 }

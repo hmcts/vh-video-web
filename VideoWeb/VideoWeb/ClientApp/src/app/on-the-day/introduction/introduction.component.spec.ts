@@ -17,8 +17,7 @@ describe('IntroductionComponent', () => {
     const activatedRoute: any = { snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
 
-    let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
-    participantStatusUpdateService = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
+    const participantStatusUpdateService = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
 
     beforeAll(() => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getActiveIndividualConference']);

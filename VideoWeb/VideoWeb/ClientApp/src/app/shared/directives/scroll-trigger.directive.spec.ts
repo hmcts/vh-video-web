@@ -28,9 +28,7 @@ describe('ScrollableDirective', () => {
         directive.scrollFooter.subscribe(e => (eventRaisedFooter = true));
     });
 
-    const getElementBottom = (): number => {
-        return nativeElement.clientHeight + nativeElement.offsetTop;
-    };
+    const getElementBottom = (): number => nativeElement.clientHeight + nativeElement.offsetTop;
 
     const scrollPastElementBottom = () => {
         const pos = getElementBottom() + documentHeight;

@@ -27,18 +27,6 @@ export class SecurityServiceProvider {
         });
     }
 
-    getSecurityService(idp: IdpProviders = null): ISecurityService {
-        switch (idp ?? this.securityConfigSetupService.getIdp()) {
-            case IdpProviders.quickLink:
-                return this.quickLinkSecurityService;
-            case IdpProviders.vhaad:
-            case IdpProviders.ejud:
-                return this.oidcSecurityService;
-            default:
-                return null;
-        }
-    }
-
     get currentSecurityService$(): Observable<ISecurityService> {
         return this.securityServiceSubject.asObservable();
     }
@@ -49,5 +37,18 @@ export class SecurityServiceProvider {
 
     get currentIdp(): IdpProviders {
         return this.idpSubject.value;
+    }
+
+    getSecurityService(idp: IdpProviders = null): ISecurityService {
+        switch (idp ?? this.securityConfigSetupService.getIdp()) {
+            case IdpProviders.quickLink:
+                return this.quickLinkSecurityService;
+            case IdpProviders.vhaad:
+            case IdpProviders.ejud:
+            case IdpProviders.dom1:
+                return this.oidcSecurityService;
+            default:
+                return null;
+        }
     }
 }

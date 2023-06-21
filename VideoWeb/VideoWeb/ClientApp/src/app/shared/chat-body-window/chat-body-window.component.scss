@@ -1,4 +1,4 @@
-@import '~govuk-frontend/govuk/base';
+@import 'govuk-frontend/govuk/base';
 
 .failed-message {
   @include govuk-font($size: 16, $weight: 'bold');

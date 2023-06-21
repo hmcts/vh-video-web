@@ -268,20 +268,19 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     });
 
     describe('ngOnInit', () => {
-        it('should subscribe to audio only property and send message when it occurs', done => {
+        it('should subscribe to audio only property and send message when it occurs', fakeAsync(() => {
             component.audioOnly = false;
             component.ngOnInit();
-
-            userMediaServiceSpy.isAudioOnly$.subscribe(() => {
-                expect(eventsService.sendMediaStatus.calls.mostRecent().args[0]).toBe(component.conferenceId);
-                expect(eventsService.sendMediaStatus.calls.mostRecent().args[1]).toBe(component.participant.id);
-                expect(eventsService.sendMediaStatus.calls.mostRecent().args[2].is_local_audio_muted).toBeFalse();
-                expect(eventsService.sendMediaStatus.calls.mostRecent().args[2].is_local_video_muted).toBeTrue();
-                done();
-            });
+            tick();
 
             isAudioOnlySubject.next(true);
-        });
+            tick();
+
+            expect(eventsService.sendMediaStatus.calls.mostRecent().args[0]).toBe(component.conferenceId);
+            expect(eventsService.sendMediaStatus.calls.mostRecent().args[1]).toBe(component.participant.id);
+            expect(eventsService.sendMediaStatus.calls.mostRecent().args[2].is_local_audio_muted).toBeFalse();
+            expect(eventsService.sendMediaStatus.calls.mostRecent().args[2].is_local_video_muted).toBeTrue();
+        }));
     });
 
     it('should start with "What is a private meeting?" accordian collapsed', fakeAsync(() => {

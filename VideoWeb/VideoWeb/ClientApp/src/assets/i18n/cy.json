@@ -535,7 +535,7 @@
     "char-count": "Nifer o nodau",
     "maximum": "caniateir hyd at",
     "unable-send": "Methu anfon y neges",
-      "text-area": "ardal destun",
+    "text-area": "ardal destun",
     "type-a-message": "Teipiwch neges",
     "you-can-enter-up-to": "gallwch ddefnyddio hyd a",
     "characters-in-this-field": "o nodau yn y blwch hwn",
@@ -834,19 +834,25 @@
     "admit-participant": "Gadael {{role}} i mewn",
     "participant-available": "As gael",
     "joining1": "Yn ymuno...",
-    "for": ""
+    "for": "",
+    "mute-all": "Tewi pawb",
+    "unmute-all": "Clywed pawb",
+    "mute-all-tooltip": "Rhoi yr holl gyfranogwyr ar miwt",
+    "unmute-all-tooltip": "Tynnu’r holl gyfranogwyr oddi ar miwt"
   },
   "judge-context-menu": {
     "context-menu-icon": "Eicon dewislen cyd-destun",
-    "mute": "Mudo",
-    "pin": "Amlygu",
-    "dismiss-witness": "Rhyddhau'r tyst",
-    "lower-hand": "Rhoi llaw i lawr",
     "call-witness": "Galw'r tyst",
-    "unpin": "Peidio amlygu",
-    "unmute": "Dadfudo",
     "admit-participant": "Gadael {{role}} i mewn",
-    "dismiss-participant": "Gwrthod {{role}}"
+    "dismiss-witness": "Rhyddhau'r tyst",
+    "dismiss-participant": "Gwrthod {{role}}",
+    "lower-hand": "Rhoi llaw i lawr",
+    "unmute": "Dadfudo",
+    "mute": "Mudo",
+    "mute-lock": "Mudo a chloi",
+    "unmute-lock": "Datgloi mudo",
+    "unpin": "Peidio amlygu",
+    "pin": "Amlygu"
   },
   "confirm-close-hearing-popup": {
     "title": "Rydych ar fin cau'r gwrandawiad hwn",
@@ -935,6 +941,9 @@
     "description": "Mae’n rhaid i chi fewngofnodi gyda’r math cywir o gyfrif defnyddiwr. Gwiriwch yr enw defnyddiwr a anfonwyd atoch a dewiswch un o’r opsiynau canlynol:",
     "ejud": {
       "description": "Mae fy enw defnyddiwr yn gorffen gyda @ejudiciary.net"
+    },
+    "dom1": {
+      "description": "Mae fy enw defnyddiwr yn gorffen gyda @justice.gov.uk"
     },
     "vhaad": {
       "description": "Mae fy enw defnyddiwr yn gorffen gyda @hearings.reform.hmcts.net"
@@ -1252,7 +1261,7 @@
   },
   "true": "Do",
   "false": "Naddo",
-    "allocations-toastr": {
-        "header" : "Gwrandawiad newydd wedi'i ddyrannu"
-    }
+  "allocations-toastr": {
+    "header": "Gwrandawiad newydd wedi'i ddyrannu"
+  }
 }

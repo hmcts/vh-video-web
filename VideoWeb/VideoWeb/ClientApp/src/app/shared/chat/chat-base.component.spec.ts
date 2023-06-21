@@ -37,16 +37,16 @@ class ChatBaseTest extends ChatBaseComponent {
         super(videoWebService, profileService, eventService, logger, securityServiceProviderService, imHelper, translateService);
     }
 
-    sendMessage(messageBody: string): void {
-        this.messagesSent.push(messageBody);
-    }
-
     get participantUsername(): string {
         return 'participant.unit@hmcts.net';
     }
 
     get participantId(): string {
         return '1111-1111';
+    }
+
+    sendMessage(messageBody: string): void {
+        this.messagesSent.push(messageBody);
     }
 
     handleIncomingOtherMessage(messsage: InstantMessage) {
@@ -83,11 +83,11 @@ describe('ChatBaseComponent', () => {
     });
 
     beforeEach(() => {
-        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', [], ['isAuthenticated$', 'userData$']);
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['isAuthenticated', 'getUserData']);
         isAuthenticatedSubject = new Subject<boolean>();
         userDataSubject = new Subject<any>();
-        getSpiedPropertyGetter(securityServiceSpy, 'isAuthenticated$').and.returnValue(isAuthenticatedSubject.asObservable());
-        getSpiedPropertyGetter(securityServiceSpy, 'userData$').and.returnValue(userDataSubject.asObservable());
+        securityServiceSpy.isAuthenticated.and.returnValue(isAuthenticatedSubject.asObservable());
+        securityServiceSpy.getUserData.and.returnValue(userDataSubject.asObservable());
 
         securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',

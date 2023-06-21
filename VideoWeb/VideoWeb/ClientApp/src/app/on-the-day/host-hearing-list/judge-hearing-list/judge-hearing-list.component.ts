@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { HostHearingListBaseComponentDirective } from 'src/app/on-the-day/host-hearing-list/host-hearing-list.component-base';
@@ -20,7 +20,7 @@ import { ScreenHelper } from 'src/app/shared/screen-helper';
 export class JudgeHearingListComponent extends HostHearingListBaseComponentDirective implements OnInit, OnDestroy {
     conferences: ConferenceForHostResponse[];
     conferencesSubscription = new Subscription();
-    hearingListForm: FormGroup;
+    hearingListForm: UntypedFormGroup;
     loadingData: boolean;
     interval: any;
     today = new Date();

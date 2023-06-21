@@ -3,6 +3,11 @@ namespace VideoWeb.Contract.Responses
     public class IdpSettingsResponse
     {
         /// <summary>
+        /// The IDP Config ID (used to identify the IDP by the UI)
+        /// </summary>
+        public string ConfigId { get; set; }
+        
+        /// <summary>
         /// The Azure Tenant Id
         /// </summary>
         public string TenantId { get; set; }

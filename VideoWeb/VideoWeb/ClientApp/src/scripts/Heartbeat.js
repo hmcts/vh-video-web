@@ -15,6 +15,7 @@
         } else {
             heartbeatFactoryInstance = this;
         }
+        this.logHeartbeatPosts = true;
         this.pexipAPI = pexrtc;
         this.cmdurl = cmdurl;
         this.interval = interval || 5000;
@@ -160,9 +161,13 @@
     };
 
     HeartbeatFactory.prototype.postHeartbeat = function (heartbeat) {
-        console.log('HEARTBEAT : ' + heartbeat);
+        if (this.logHeartbeatPosts) {
+            console.log('HEARTBEAT : ' + heartbeat);
+        }
         var url = this.cmdurl + '/heartbeat';
-        console.log('SENDING URL ' + url);
+        if (this.logHeartbeatPosts) {
+            console.log('SENDING URL ' + url);
+        }
         var request = {
             headers: {
                 'content-type': 'application/json; charset=UTF-8'

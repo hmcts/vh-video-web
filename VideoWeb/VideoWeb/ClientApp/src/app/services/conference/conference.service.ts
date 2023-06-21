@@ -14,6 +14,13 @@ import { ConferenceStatusChanged } from './models/conference-status-changed.mode
     providedIn: 'root'
 })
 export class ConferenceService {
+    private loggerPrefix = '[ConferenceService] -';
+    private subscriptions: Subscription[] = [];
+    private _currentConference: ConferenceResponse;
+    private currentConferenceSubject = new ReplaySubject<ConferenceResponse>(1);
+    private onCurrentConferenceStatusChangedSubject = new ReplaySubject<ConferenceStatusChanged>(1);
+    private _currentConferenceId: string;
+
     constructor(
         router: Router,
         private activatedRoute: ActivatedRoute,
@@ -35,40 +42,25 @@ export class ConferenceService {
                 this.onRouteParamsChanged(paramMap);
             });
     }
+
     get currentConference(): ConferenceResponse {
         return this._currentConference;
     }
+
     get currentConference$(): Observable<ConferenceResponse> {
         return this.currentConferenceSubject.asObservable();
     }
+
     get onCurrentConferenceStatusChanged$() {
         return this.onCurrentConferenceStatusChangedSubject.asObservable();
     }
+
     get currentConferenceId(): string {
         return this._currentConferenceId;
     }
-    private loggerPrefix = '[ConferenceService] -';
-
-    private subscriptions: Subscription[] = [];
-
-    private _currentConference: ConferenceResponse;
-
-    private currentConferenceSubject = new ReplaySubject<ConferenceResponse>(1);
-
-    private onCurrentConferenceStatusChangedSubject = new ReplaySubject<ConferenceStatusChanged>(1);
-
-    private _currentConferenceId: string;
 
     initialiseConferenceFromActiveRoute() {
         this.onRouteParamsChanged(this.getConferenceIdFromRoute(this.activatedRoute.snapshot));
-    }
-
-    private getConferenceIdFromRoute(route: ActivatedRouteSnapshot): ParamMap {
-        while (route && !route.paramMap?.has('conferenceId')) {
-            route = route?.firstChild;
-        }
-
-        return route?.paramMap;
     }
 
     getConferenceById(conferenceId: string | Guid): Observable<ConferenceResponse> {
@@ -121,6 +113,14 @@ export class ConferenceService {
                 .pipe(filter(conferenceStatusMessage => conferenceStatusMessage.conferenceId === this.currentConferenceId))
                 .subscribe(hearingStatusMessage => this.handleConferenceStatusChange(hearingStatusMessage))
         );
+    }
+
+    private getConferenceIdFromRoute(route: ActivatedRouteSnapshot): ParamMap {
+        while (route && !route.paramMap?.has('conferenceId')) {
+            route = route?.firstChild;
+        }
+
+        return route?.paramMap;
     }
 
     private handleConferenceStatusChange(conferenceStatusMessage: ConferenceStatusMessage): void {

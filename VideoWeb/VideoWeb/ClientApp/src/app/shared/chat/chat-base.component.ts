@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnDestroy } from '@angular/core';
-import { Subject, Subscription } from 'rxjs';
+import { Subject, Subscription, combineLatest } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { LoggedParticipantResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
@@ -12,16 +12,13 @@ import { TranslateService } from '@ngx-translate/core';
 import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
 import { takeUntil } from 'rxjs/operators';
+import { IdpProviders } from 'src/app/security/idp-providers';
 
 @Component({
     selector: 'app-chat-base-component',
     template: ''
 })
 export abstract class ChatBaseComponent implements OnDestroy {
-    protected hearing: Hearing;
-    protected securityService: ISecurityService;
-    protected destroyed$ = new Subject();
-
     messages: InstantMessage[] = [];
     pendingMessages: Map<string, InstantMessage[]> = new Map<string, InstantMessage[]>();
     loggedInUserProfile: UserProfileResponse;
@@ -30,6 +27,14 @@ export abstract class ChatBaseComponent implements OnDestroy {
     emptyGuid = '00000000-0000-0000-0000-000000000000';
 
     DEFAULT_ADMIN_USERNAME = 'Admin';
+    currentIdp: IdpProviders;
+
+    protected hearing: Hearing;
+    protected securityService: ISecurityService;
+    protected destroyed$ = new Subject();
+
+    abstract content: ElementRef<HTMLElement>;
+
     protected constructor(
         protected videoWebService: VideoWebService,
         protected profileService: ProfileService,
@@ -39,15 +44,14 @@ export abstract class ChatBaseComponent implements OnDestroy {
         protected imHelper: ImHelper,
         protected translateService: TranslateService
     ) {
-        securityServiceProviderService.currentSecurityService$
+        combineLatest([securityServiceProviderService.currentSecurityService$, securityServiceProviderService.currentIdp$])
             .pipe(takeUntil(this.destroyed$))
-            .subscribe(securityService => (this.securityService = securityService));
+            .subscribe(([service, idp]) => {
+                this.securityService = service;
+                this.currentIdp = idp;
+            });
     }
 
-    abstract content: ElementRef<HTMLElement>;
-    abstract sendMessage(messageBody: string): void;
-    abstract get participantUsername(): string;
-    abstract get participantId(): string;
     get pendingMessagesForConversation(): InstantMessage[] {
         if (this.pendingMessages.has(this.participantUsername)) {
             return this.pendingMessages.get(this.participantUsername);
@@ -55,6 +59,9 @@ export abstract class ChatBaseComponent implements OnDestroy {
             return [];
         }
     }
+
+    abstract get participantUsername(): string;
+    abstract get participantId(): string;
 
     ngOnDestroy(): void {
         this.destroyed$.next();
@@ -82,23 +89,26 @@ export abstract class ChatBaseComponent implements OnDestroy {
             return;
         }
 
-        this.securityService.userData$.pipe(takeUntil(this.destroyed$)).subscribe(async ud => {
-            const from = message.from.toUpperCase();
-            const username =
-                this.loggedInUser && this.loggedInUser.participant_id && this.loggedInUser.participant_id !== this.emptyGuid
-                    ? this.loggedInUser.participant_id
-                    : ud.preferred_username.toUpperCase();
-            if (from === username.toUpperCase()) {
-                message.from_display_name = this.translateService.instant('chat-base.you');
-                message.is_user = true;
-            } else {
-                message = await this.verifySender(message);
-                this.handleIncomingOtherMessage(message);
-            }
+        this.securityService
+            .getUserData(this.currentIdp)
+            .pipe(takeUntil(this.destroyed$))
+            .subscribe(async ud => {
+                const from = message.from.toUpperCase();
+                const username =
+                    this.loggedInUser && this.loggedInUser.participant_id && this.loggedInUser.participant_id !== this.emptyGuid
+                        ? this.loggedInUser.participant_id
+                        : ud.preferred_username.toUpperCase();
+                if (from === username.toUpperCase()) {
+                    message.from_display_name = this.translateService.instant('chat-base.you');
+                    message.is_user = true;
+                } else {
+                    message = await this.verifySender(message);
+                    this.handleIncomingOtherMessage(message);
+                }
 
-            this.removeMessageFromPending(message);
-            this.messages.push(message);
-        });
+                this.removeMessageFromPending(message);
+                this.messages.push(message);
+            });
     }
 
     addMessageToPending(message: InstantMessage) {
@@ -152,16 +162,6 @@ export abstract class ChatBaseComponent implements OnDestroy {
         }
     }
 
-    private async getProfileForUser(username: string): Promise<UserProfileResponse> {
-        const profile = this.profileService.checkCacheForProfileByUsername(username);
-        if (profile) {
-            return Promise.resolve(profile);
-        }
-        return this.profileService.getProfileByUsername(username);
-    }
-
-    abstract handleIncomingOtherMessage(messsage: InstantMessage);
-
     async retrieveChatForConference(participantId: string): Promise<InstantMessage[]> {
         this.messages = (await this.videoWebService.getConferenceChatHistory(this.hearing.id, participantId)).map(m => {
             const im = new InstantMessage(m);
@@ -211,4 +211,15 @@ export abstract class ChatBaseComponent implements OnDestroy {
             }
         }
     }
+
+    private async getProfileForUser(username: string): Promise<UserProfileResponse> {
+        const profile = this.profileService.checkCacheForProfileByUsername(username);
+        if (profile) {
+            return Promise.resolve(profile);
+        }
+        return this.profileService.getProfileByUsername(username);
+    }
+
+    abstract sendMessage(messageBody: string): void;
+    abstract handleIncomingOtherMessage(messsage: InstantMessage);
 }

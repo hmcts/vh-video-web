@@ -12,7 +12,7 @@ h3[class^='govuk-'] {
   font-size: 1.5rem;
 }
 
-@import '~govuk-frontend/govuk/all';
+@import 'govuk-frontend/govuk/all';
 
 .govuk-button--black {
   border: 2px solid govuk-colour('black');

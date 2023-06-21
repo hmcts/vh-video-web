@@ -120,18 +120,12 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
             participants = participants.filter(x => x.hearing_role !== HearingRole.WITNESS);
         }
 
-        return participants.map(c => {
-            return this.mapResponseToListItem(c);
-        });
+        return participants.map(c => this.mapResponseToListItem(c));
     }
 
     setJohGroupResult(): void {
         const johGroupsUnmapped = [[...this.panelMembers], [...this.wingers]];
-        this.johGroupResult = johGroupsUnmapped.map(array =>
-            array.map(c => {
-                return this.mapResponseToListItem(c);
-            })
-        );
+        this.johGroupResult = johGroupsUnmapped.map(array => array.map(c => this.mapResponseToListItem(c)));
     }
 
     async handleParticipantStatusChange(message: ParticipantStatusMessage): Promise<void> {
@@ -182,22 +176,6 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     trackParticipant(index: number, item: ParticipantListItem) {
         return item.status;
     }
-
-    private mapResponseToListItem(participantResponse: ParticipantResponse): ParticipantListItem {
-        const participant: ParticipantListItem = { ...participantResponse };
-        const interpreterLink = participantResponse.linked_participants?.find(x => x.link_type === LinkType.Interpreter);
-        if (interpreterLink) {
-            participant.interpreter = this.conference.participants.find(x => x.id === interpreterLink.linked_id);
-        }
-        return participant;
-    }
-
-    private sortAndMapToListItem(participantResponses: Array<ParticipantResponse>): Array<ParticipantListItem> {
-        return participantResponses.map(c => {
-            return this.mapResponseToListItem(c);
-        });
-    }
-
     participantHasInviteRestrictions(participant: ParticipantListItem): boolean {
         const userIsJudicial =
             this.loggedInUser.role === Role.Judge ||
@@ -217,5 +195,18 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
             }
         }
         return false;
+    }
+
+    private mapResponseToListItem(participantResponse: ParticipantResponse): ParticipantListItem {
+        const participant: ParticipantListItem = { ...participantResponse };
+        const interpreterLink = participantResponse.linked_participants?.find(x => x.link_type === LinkType.Interpreter);
+        if (interpreterLink) {
+            participant.interpreter = this.conference.participants.find(x => x.id === interpreterLink.linked_id);
+        }
+        return participant;
+    }
+
+    private sortAndMapToListItem(participantResponses: Array<ParticipantResponse>): Array<ParticipantListItem> {
+        return participantResponses.map(c => this.mapResponseToListItem(c));
     }
 }

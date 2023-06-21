@@ -36,24 +36,6 @@ export class MonitorGraphService {
         return this.compareVersions(browserInfo.version, packageLost.browserVersion);
     }
 
-    private compareVersions(unsupportedBrowserVersion: string, versionBrowserToCheck: string): boolean {
-        const unsupportedVersion = unsupportedBrowserVersion.split('.');
-        const versionToCheck = versionBrowserToCheck.split('.');
-        const minIndex = Math.min(unsupportedVersion.length, versionToCheck.length);
-        let result = false;
-        for (let i = 0; i < minIndex; i++) {
-            if (versionToCheck[i] < unsupportedVersion[i]) {
-                result = true;
-                break;
-            }
-            if (versionToCheck[i] > unsupportedVersion[i]) {
-                result = false;
-                break;
-            }
-        }
-        return result;
-    }
-
     transferPackagesLost(values: PackageLost[]): number[] {
         let packagesLostValues: GraphData[] = [];
         const graphPoints = Array(GraphSettings.MAX_RECORDS).fill(NaN);
@@ -77,6 +59,24 @@ export class MonitorGraphService {
         });
 
         return graphPoints;
+    }
+
+    private compareVersions(unsupportedBrowserVersion: string, versionBrowserToCheck: string): boolean {
+        const unsupportedVersion = unsupportedBrowserVersion.split('.');
+        const versionToCheck = versionBrowserToCheck.split('.');
+        const minIndex = Math.min(unsupportedVersion.length, versionToCheck.length);
+        let result = false;
+        for (let i = 0; i < minIndex; i++) {
+            if (versionToCheck[i] < unsupportedVersion[i]) {
+                result = true;
+                break;
+            }
+            if (versionToCheck[i] > unsupportedVersion[i]) {
+                result = false;
+                break;
+            }
+        }
+        return result;
     }
 
     private getPointValue(packageLost: PackageLost): GraphData {

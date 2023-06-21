@@ -1,5 +1,5 @@
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
+import { Subject, of } from 'rxjs';
 import { ProfileService } from '../services/api/profile.service';
 import { Role, UserProfileResponse } from '../services/clients/api-client';
 import { getSpiedPropertyGetter } from '../shared/jasmine-helpers/property-helpers';
@@ -18,7 +18,7 @@ describe('JudgeGuard', () => {
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
 
     beforeAll(() => {
-        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', [], ['isAuthenticated$']);
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['isAuthenticated']);
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
         launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>('LaunchDarklyService', ['getFlag']);
@@ -38,7 +38,7 @@ describe('JudgeGuard', () => {
     });
 
     it('should not be able to activate component if role is not Judge', async () => {
-        const profile = new UserProfileResponse({ role: Role.VideoHearingsOfficer });
+        const profile = new UserProfileResponse({ roles: [Role.VideoHearingsOfficer] });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         spyOn(guard, 'isUserAuthorized').and.returnValue(of(true));
         const result = await guard.canActivate(null, null);
@@ -47,7 +47,7 @@ describe('JudgeGuard', () => {
     });
 
     it('should be able to activate component if role is Judge', async () => {
-        const profile = new UserProfileResponse({ role: Role.Judge });
+        const profile = new UserProfileResponse({ roles: [Role.Judge] });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         spyOn(guard, 'isUserAuthorized').and.returnValue(of(true));
         const result = await guard.canActivate(null, null);
@@ -55,7 +55,7 @@ describe('JudgeGuard', () => {
     });
 
     it('should be able to activate component if role is JudicialOfficeHolder', async () => {
-        const profile = new UserProfileResponse({ role: Role.JudicialOfficeHolder });
+        const profile = new UserProfileResponse({ roles: [Role.JudicialOfficeHolder] });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         spyOn(guard, 'isUserAuthorized').and.returnValue(of(true));
         const result = await guard.canActivate(null, null);

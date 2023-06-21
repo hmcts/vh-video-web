@@ -7,7 +7,6 @@ import { ParticipantResponse, ParticipantStatus } from 'src/app/services/clients
     styleUrls: ['./participant-item.component.scss']
 })
 export class ParticipantItemComponent {
-    ParticipantStatus = ParticipantStatus;
     @Input() participant: ParticipantResponse;
     @Input() interpreter: ParticipantResponse;
     @Input() participantCallStatuses: any = {};
@@ -15,6 +14,8 @@ export class ParticipantItemComponent {
     @Input() conferenceId: string;
     @Input() canInvite: boolean;
     @Input() status: string;
+
+    ParticipantStatus = ParticipantStatus;
 
     getRowClasses(participant: any): string {
         if (this.isParticipantInCurrentRoom(participant)) {

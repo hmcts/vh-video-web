@@ -4,11 +4,12 @@ import { Directive, EventEmitter, Input, OnInit, Output } from '@angular/core';
     selector: '[appHookElement]'
 })
 export class HookElementDirective implements OnInit {
+    @Input() readyElm: string;
+    @Output() readyEvent: EventEmitter<any> = new EventEmitter();
+
     videoContainerReady = true;
     overflowDivReady = true;
     participantDivReady = true;
-    @Input() readyElm: string;
-    @Output() readyEvent: EventEmitter<any> = new EventEmitter();
 
     ngOnInit(): void {
         if (this.readyElm === 'videoContainer' && this.videoContainerReady) {

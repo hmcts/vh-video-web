@@ -1,6 +1,6 @@
 import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, ActivatedRouteSnapshot, Router } from '@angular/router';
+import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { of, Subject } from 'rxjs';
 import { QuickLinksService } from 'src/app/services/api/quick-links.service';
 import { ErrorService } from 'src/app/services/error.service';
@@ -14,6 +14,7 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { By } from '@angular/platform-browser';
 import { TranslatePipe } from '@ngx-translate/core';
 import { LoadingComponent } from 'src/app/shared/loading/loading.component';
+import { SecurityConfigSetupService } from 'src/app/security/security-config-setup.service';
 
 describe('QuickLinksComponent', () => {
     const quickLinkParticipantRoles = [Role.QuickLinkObserver, Role.QuickLinkParticipant];
@@ -23,12 +24,15 @@ describe('QuickLinksComponent', () => {
     let errorServiceSpy: jasmine.SpyObj<ErrorService>;
     let quickLinksServiceSpy: jasmine.SpyObj<QuickLinksService>;
     let routerSpy: jasmine.SpyObj<Router>;
+    let securityConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
 
     let validateQuickLinkSubject: Subject<boolean>;
 
     const testHearingId = 'testHearingId';
 
     beforeEach(async () => {
+        securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>('SecurityConfigSetupService', ['setIdp']);
+
         errorServiceSpy = jasmine.createSpyObj('errorServiceSpy', {
             goToServiceError: () => {}
         });
@@ -84,10 +88,14 @@ describe('QuickLinksComponent', () => {
                     provide: ErrorService,
                     useValue: errorServiceSpy
                 },
-                FormBuilder,
+                UntypedFormBuilder,
                 {
                     provide: QuickLinksService,
                     useValue: quickLinksServiceSpy
+                },
+                {
+                    provide: SecurityConfigSetupService,
+                    useValue: securityConfigSetupServiceSpy
                 }
             ],
             imports: [ReactiveFormsModule, RouterTestingModule]

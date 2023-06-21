@@ -65,6 +65,9 @@ import { HideComponentsService } from '../services/hide-components.service';
 
 @Directive()
 export abstract class WaitingRoomBaseDirective {
+    @ViewChild('roomTitleLabel', { static: false }) roomTitleLabel: ElementRef<HTMLDivElement>;
+    @ViewChild('hearingControls', { static: false }) hearingControls: PrivateConsultationRoomControlsComponent;
+
     maxBandwidth = null;
     audioOnly: boolean;
     hearingStartingAnnounced: boolean;
@@ -109,19 +112,17 @@ export abstract class WaitingRoomBaseDirective {
 
     CALL_TIMEOUT = 31000; // 31 seconds
     callbackTimeout: NodeJS.Timer;
-    private readonly loggerPrefix = '[WR] -';
+
     loggedInUser: LoggedParticipantResponse;
     linkedParticipantRoom: SharedParticipantRoom;
     contactDetails = vhContactDetails;
-
-    @ViewChild('roomTitleLabel', { static: false }) roomTitleLabel: ElementRef<HTMLDivElement>;
-    @ViewChild('hearingControls', { static: false }) hearingControls: PrivateConsultationRoomControlsComponent;
 
     countdownComplete: boolean;
     hasTriedToLeaveConsultation: boolean;
     connectionFailedCount: number;
     CONNECTION_FAILED_LIMIT = 3;
 
+    private readonly loggerPrefix = '[WR] -';
     private readonly CONSULATION_LEAVE_MODAL_DEFAULT_ELEMENT = 'consultation-leave-button';
     private readonly SELECT_MEDIA_DEVICES_MODAL_DEFAULT_ELEMENT = 'toggle-media-device-img-desktop';
 
@@ -159,12 +160,8 @@ export abstract class WaitingRoomBaseDirective {
         );
     }
 
-    isParticipantInCorrectWaitingRoomState(): boolean {
-        return (
-            this.connected &&
-            this.participant.status === ParticipantStatus.Available &&
-            (!this.participant.current_room || this.participant.current_room.label === 'WaitingRoom')
-        );
+    get showExtraContent(): boolean {
+        return !this.showVideo && !this.isTransferringIn;
     }
 
     get conferenceId(): string {
@@ -185,6 +182,30 @@ export abstract class WaitingRoomBaseDirective {
 
     get areParticipantsVisible() {
         return this.panelStates['Participants'];
+    }
+
+    get isSupportedBrowserForNetworkHealth(): boolean {
+        if (!this.deviceTypeService.isSupportedBrowser()) {
+            return false;
+        }
+        const unsupportedBrowsers = ['MS-Edge'];
+        const browser = this.deviceTypeService.getBrowserName();
+        return unsupportedBrowsers.findIndex(x => x.toUpperCase() === browser.toUpperCase()) < 0;
+    }
+
+    get hasCaseNameOverflowed(): boolean {
+        if (!this.roomTitleLabel) {
+            return false;
+        }
+        return this.roomTitleLabel.nativeElement.scrollWidth > this.roomTitleLabel.nativeElement.clientWidth;
+    }
+
+    isParticipantInCorrectWaitingRoomState(): boolean {
+        return (
+            this.connected &&
+            this.participant.status === ParticipantStatus.Available &&
+            (!this.participant.current_room || this.participant.current_room.label === 'WaitingRoom')
+        );
     }
 
     getLoggedParticipant(): ParticipantResponse {
@@ -238,6 +259,7 @@ export abstract class WaitingRoomBaseDirective {
             this.conference = await this.videoWebService.getConferenceById(conferenceId);
             this.hearingVenueFlagsService.setHearingVenueIsScottish(this.conference.hearing_venue_is_scottish);
             this.hearing = new Hearing(this.conference);
+
             this.participant = this.getLoggedParticipant();
 
             this.logger.info(`${this.loggerPrefix} Conference closed.`, {
@@ -521,21 +543,6 @@ export abstract class WaitingRoomBaseDirective {
         );
     }
 
-    private setTitle(roomTransfer: RoomTransfer): void {
-        const room: string = roomTransfer.to_room;
-        if (this.participant.id === roomTransfer.participant_id) {
-            let title = 'Video Hearings - Waiting Room';
-            if (room.includes('JudgeConsultationRoom') || room.includes('JudgeJOHConsultationRoom')) {
-                title = 'Video Hearings - JOH Consultation Room';
-            } else if (room.includes('ConsultationRoom')) {
-                title = 'Video Hearings - Private Consultation Room';
-            } else if (room.includes('HearingRoom')) {
-                title = 'Video Hearings - Hearing Room';
-            }
-            this.titleService.setTitle(title);
-        }
-    }
-
     resolveParticipant(participantId: any): Participant {
         if (participantId === Guid.EMPTY) {
             return new Participant(new ParticipantResponseVho({ display_name: 'a Video Hearings Officer' }));
@@ -549,57 +556,6 @@ export abstract class WaitingRoomBaseDirective {
                 return;
             }
         }
-    }
-
-    private handleLinkedParticipantConsultationResponse(
-        answer: ConsultationAnswer,
-        requestedFor: string,
-        responseInitiatorId: string,
-        roomLabel: string
-    ) {
-        if (requestedFor === responseInitiatorId) {
-            if (this.isLinkedParticipant(requestedFor)) {
-                const linkedParticipant = this.findParticipant(requestedFor);
-
-                if (answer === ConsultationAnswer.Accepted || answer === ConsultationAnswer.Transferring) {
-                    this.onLinkedParticiantAcceptedConsultationInvite(roomLabel, linkedParticipant.id);
-                } else {
-                    this.onLinkedParticiantRejectedConsultationInvite(linkedParticipant, roomLabel);
-                }
-            }
-        }
-    }
-
-    private isLinkedParticipant(requestedFor: string): boolean {
-        return !!this.participant.linked_participants.find(linkedParticipant => requestedFor === linkedParticipant.linked_id);
-    }
-
-    private async handleMyConsultationResponse(
-        answer: ConsultationAnswer,
-        requestedFor: string,
-        responseInitiatorId: string,
-        roomLabel: string
-    ) {
-        if (answer === ConsultationAnswer.Accepted && requestedFor === responseInitiatorId) {
-            this.hasTriedToLeaveConsultation = false;
-            await this.onConsultationAccepted(roomLabel);
-        } else if (answer === ConsultationAnswer.Transferring) {
-            this.onTransferingToConsultation(roomLabel);
-        } else if (requestedFor === responseInitiatorId) {
-            this.onConsultationRejected(roomLabel);
-        }
-    }
-
-    protected findParticipant(participantId: string): ParticipantResponse {
-        return this.conference.participants.find(x => x.id === participantId);
-    }
-
-    protected findParticipantsInRoom(roomLabel: string): ParticipantResponse[] {
-        return this.conference.participants.filter(x => x.current_room?.label === roomLabel);
-    }
-
-    protected findEndpointsInRoom(roomLabel: string): VideoEndpointResponse[] {
-        return this.conference.endpoints.filter(x => x.current_room?.label === roomLabel);
     }
 
     async onConsultationAccepted(roomLabel: string) {
@@ -665,15 +621,6 @@ export abstract class WaitingRoomBaseDirective {
                 this.errorService.handleApiError(error);
             }
         }
-    }
-
-    get isSupportedBrowserForNetworkHealth(): boolean {
-        if (!this.deviceTypeService.isSupportedBrowser()) {
-            return false;
-        }
-        const unsupportedBrowsers = ['MS-Edge'];
-        const browser = this.deviceTypeService.getBrowserName();
-        return unsupportedBrowsers.findIndex(x => x.toUpperCase() === browser.toUpperCase()) < 0;
     }
 
     async connectToPexip(): Promise<void> {
@@ -1072,100 +1019,6 @@ export abstract class WaitingRoomBaseDirective {
         this.countdownComplete = true;
     }
 
-    private handleParticipantsUpdatedMessage(participantsUpdatedMessage: ParticipantsUpdatedMessage) {
-        this.logger.debug(`[WR] - Participants updated message recieved`, participantsUpdatedMessage.participants);
-
-        if (!this.validateIsForConference(participantsUpdatedMessage.conferenceId)) {
-            return;
-        }
-
-        const currentParticipantInConference = participantsUpdatedMessage.participants.find(p => p.id === this.participant.id);
-        if (!currentParticipantInConference) {
-            return this.router.navigate([pageUrls.Home]);
-        }
-
-        const newParticipants = participantsUpdatedMessage.participants.filter(x => !this.conference.participants.find(y => y.id === x.id));
-
-        newParticipants.forEach(participant => {
-            this.logger.debug(`[WR] - Participant added, showing notification`, participant);
-            this.notificationToastrService.showParticipantAdded(
-                participant,
-                this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
-            );
-        });
-
-        const updatedParticipantsList = [...participantsUpdatedMessage.participants].map(participant => {
-            const currentParticipant = this.conference.participants.find(x => x.id === participant.id);
-            participant.current_room = currentParticipant ? currentParticipant.current_room : null;
-            participant.status = currentParticipant ? currentParticipant.status : ParticipantStatus.NotSignedIn;
-            return participant;
-        });
-        this.conference = { ...this.conference, participants: updatedParticipantsList } as ConferenceResponse;
-        this.participant = this.getLoggedParticipant();
-    }
-
-    private handleEndpointsUpdatedMessage(endpointsUpdatedMessage: EndpointsUpdatedMessage) {
-        this.logger.debug(`[WR] - Endpoints updated message received`, {
-            newEndpoints: endpointsUpdatedMessage.endpoints.new_endpoints,
-            updatedEndpoints: endpointsUpdatedMessage.endpoints.existing_endpoints
-        });
-
-        if (!this.validateIsForConference(endpointsUpdatedMessage.conferenceId)) {
-            return;
-        }
-
-        endpointsUpdatedMessage.endpoints.new_endpoints.forEach(endpoint => {
-            this.logger.debug(`[WR] - Endpoint added, showing notification`, endpoint);
-            this.notificationToastrService.showEndpointAdded(
-                endpoint,
-                this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
-            );
-
-            this.hearing.addEndpoint(endpoint);
-        });
-
-        endpointsUpdatedMessage.endpoints.existing_endpoints.forEach(endpoint => {
-            this.logger.debug(`[WR] - Endpoint updated, showing notification`, endpoint);
-            this.notificationToastrService.showEndpointUpdated(
-                endpoint,
-                this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
-            );
-
-            this.hearing.updateEndpoint(endpoint);
-        });
-
-        this.conference = { ...this.conference, endpoints: [...this.hearing.getEndpoints()] } as ConferenceResponse;
-    }
-
-    private handleHearingLayoutUpdatedMessage(hearingLayoutMessage: HearingLayoutChanged) {
-        this.logger.debug(`[WR] - Hearing layout changed message recieved`, hearingLayoutMessage);
-        if (!this.validateIsForConference(hearingLayoutMessage.conferenceId)) {
-            return;
-        }
-
-        if (!this.isHost()) {
-            return;
-        }
-        const participant = this.findParticipant(hearingLayoutMessage.changedById);
-        if (participant.id === this.getLoggedParticipant().id) {
-            return;
-        }
-
-        this.logger.debug(`[WR] - Hearing Layout Changed showing notification`, participant);
-        this.notificationToastrService.showHearingLayoutchanged(
-            participant,
-            this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
-        );
-    }
-
-    protected validateIsForConference(conferenceId: string): boolean {
-        if (conferenceId !== this.hearing.id) {
-            this.logger.info(`${this.loggerPrefix} message not for current conference`);
-            return false;
-        }
-        return true;
-    }
-
     async onConsultationCancelled() {
         const logPayload = {
             conference: this.conferenceId,
@@ -1296,23 +1149,12 @@ export abstract class WaitingRoomBaseDirective {
         this.displayDeviceChangeModal = false;
         // focusing on the div using scrolling method
         const elm = document.getElementById(this.SELECT_MEDIA_DEVICES_MODAL_DEFAULT_ELEMENT);
-        elm.scrollIntoView();
+        elm?.scrollIntoView();
     }
 
     async publishMediaDeviceStatus() {
         this.hearingControls.audioOnly = this.audioOnly;
         await this.hearingControls.publishMediaDeviceStatus();
-    }
-
-    get showExtraContent(): boolean {
-        return !this.showVideo && !this.isTransferringIn;
-    }
-
-    get hasCaseNameOverflowed(): boolean {
-        if (!this.roomTitleLabel) {
-            return false;
-        }
-        return this.roomTitleLabel.nativeElement.scrollWidth > this.roomTitleLabel.nativeElement.clientWidth;
     }
 
     executeWaitingRoomCleanup() {
@@ -1385,8 +1227,170 @@ export abstract class WaitingRoomBaseDirective {
         this.getConference().then(() => this.updateShowVideo());
     }
 
+    protected findParticipant(participantId: string): ParticipantResponse {
+        return this.conference.participants.find(x => x.id === participantId);
+    }
+
+    protected findParticipantsInRoom(roomLabel: string): ParticipantResponse[] {
+        return this.conference.participants.filter(x => x.current_room?.label === roomLabel);
+    }
+
+    protected findEndpointsInRoom(roomLabel: string): VideoEndpointResponse[] {
+        return this.conference.endpoints.filter(x => x.current_room?.label === roomLabel);
+    }
+
+    protected validateIsForConference(conferenceId: string): boolean {
+        if (conferenceId !== this.hearing.id) {
+            this.logger.info(`${this.loggerPrefix} message not for current conference`);
+            return false;
+        }
+        return true;
+    }
+
     private setShowVideo(showVideo: boolean) {
         this.showVideo = showVideo;
         this.hideComponentsService.hideNonVideoComponents$.next(showVideo);
+    }
+
+    private handleLinkedParticipantConsultationResponse(
+        answer: ConsultationAnswer,
+        requestedFor: string,
+        responseInitiatorId: string,
+        roomLabel: string
+    ) {
+        if (requestedFor === responseInitiatorId) {
+            if (this.isLinkedParticipant(requestedFor)) {
+                const linkedParticipant = this.findParticipant(requestedFor);
+
+                if (answer === ConsultationAnswer.Accepted || answer === ConsultationAnswer.Transferring) {
+                    this.onLinkedParticiantAcceptedConsultationInvite(roomLabel, linkedParticipant.id);
+                } else {
+                    this.onLinkedParticiantRejectedConsultationInvite(linkedParticipant, roomLabel);
+                }
+            }
+        }
+    }
+
+    private isLinkedParticipant(requestedFor: string): boolean {
+        return !!this.participant.linked_participants.find(linkedParticipant => requestedFor === linkedParticipant.linked_id);
+    }
+
+    private async handleMyConsultationResponse(
+        answer: ConsultationAnswer,
+        requestedFor: string,
+        responseInitiatorId: string,
+        roomLabel: string
+    ) {
+        if (answer === ConsultationAnswer.Accepted && requestedFor === responseInitiatorId) {
+            this.hasTriedToLeaveConsultation = false;
+            await this.onConsultationAccepted(roomLabel);
+        } else if (answer === ConsultationAnswer.Transferring) {
+            this.onTransferingToConsultation(roomLabel);
+        } else if (requestedFor === responseInitiatorId) {
+            this.onConsultationRejected(roomLabel);
+        }
+    }
+
+    private setTitle(roomTransfer: RoomTransfer): void {
+        const room: string = roomTransfer.to_room;
+        if (this.participant.id === roomTransfer.participant_id) {
+            let title = 'Video Hearings - Waiting Room';
+            if (room.includes('JudgeConsultationRoom') || room.includes('JudgeJOHConsultationRoom')) {
+                title = 'Video Hearings - JOH Consultation Room';
+            } else if (room.includes('ConsultationRoom')) {
+                title = 'Video Hearings - Private Consultation Room';
+            } else if (room.includes('HearingRoom')) {
+                title = 'Video Hearings - Hearing Room';
+            }
+            this.titleService.setTitle(title);
+        }
+    }
+
+    private handleParticipantsUpdatedMessage(participantsUpdatedMessage: ParticipantsUpdatedMessage) {
+        this.logger.debug('[WR] - Participants updated message recieved', participantsUpdatedMessage.participants);
+
+        if (!this.validateIsForConference(participantsUpdatedMessage.conferenceId)) {
+            return;
+        }
+
+        const currentParticipantInConference = participantsUpdatedMessage.participants.find(p => p.id === this.participant.id);
+        if (!currentParticipantInConference) {
+            return this.router.navigate([pageUrls.Home]);
+        }
+
+        const newParticipants = participantsUpdatedMessage.participants.filter(x => !this.conference.participants.find(y => y.id === x.id));
+
+        newParticipants.forEach(participant => {
+            this.logger.debug('[WR] - Participant added, showing notification', participant);
+            this.notificationToastrService.showParticipantAdded(
+                participant,
+                this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
+            );
+        });
+
+        const updatedParticipantsList = [...participantsUpdatedMessage.participants].map(participant => {
+            const currentParticipant = this.conference.participants.find(x => x.id === participant.id);
+            participant.current_room = currentParticipant ? currentParticipant.current_room : null;
+            participant.status = currentParticipant ? currentParticipant.status : ParticipantStatus.NotSignedIn;
+            return participant;
+        });
+        this.conference = { ...this.conference, participants: updatedParticipantsList } as ConferenceResponse;
+        this.hearing.getConference().participants = updatedParticipantsList;
+
+        this.participant = this.getLoggedParticipant();
+    }
+
+    private handleEndpointsUpdatedMessage(endpointsUpdatedMessage: EndpointsUpdatedMessage) {
+        this.logger.debug('[WR] - Endpoints updated message received', {
+            newEndpoints: endpointsUpdatedMessage.endpoints.new_endpoints,
+            updatedEndpoints: endpointsUpdatedMessage.endpoints.existing_endpoints
+        });
+
+        if (!this.validateIsForConference(endpointsUpdatedMessage.conferenceId)) {
+            return;
+        }
+
+        endpointsUpdatedMessage.endpoints.new_endpoints.forEach(endpoint => {
+            this.logger.debug('[WR] - Endpoint added, showing notification', endpoint);
+            this.notificationToastrService.showEndpointAdded(
+                endpoint,
+                this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
+            );
+
+            this.hearing.addEndpoint(endpoint);
+        });
+
+        endpointsUpdatedMessage.endpoints.existing_endpoints.forEach(endpoint => {
+            this.logger.debug('[WR] - Endpoint updated, showing notification', endpoint);
+            this.notificationToastrService.showEndpointUpdated(
+                endpoint,
+                this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
+            );
+
+            this.hearing.updateEndpoint(endpoint);
+        });
+
+        this.conference = { ...this.conference, endpoints: [...this.hearing.getEndpoints()] } as ConferenceResponse;
+    }
+
+    private handleHearingLayoutUpdatedMessage(hearingLayoutMessage: HearingLayoutChanged) {
+        this.logger.debug('[WR] - Hearing layout changed message recieved', hearingLayoutMessage);
+        if (!this.validateIsForConference(hearingLayoutMessage.conferenceId)) {
+            return;
+        }
+
+        if (!this.isHost()) {
+            return;
+        }
+        const participant = this.findParticipant(hearingLayoutMessage.changedById);
+        if (participant.id === this.getLoggedParticipant().id) {
+            return;
+        }
+
+        this.logger.debug('[WR] - Hearing Layout Changed showing notification', participant);
+        this.notificationToastrService.showHearingLayoutchanged(
+            participant,
+            this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
+        );
     }
 }

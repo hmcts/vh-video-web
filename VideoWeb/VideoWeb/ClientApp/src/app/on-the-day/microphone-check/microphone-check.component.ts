@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SelfTestFailureReason } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
@@ -18,7 +18,7 @@ export class MicrophoneCheckComponent extends EquipmentCheckBaseComponentDirecti
     constructor(
         protected router: Router,
         protected route: ActivatedRoute,
-        protected fb: FormBuilder,
+        protected fb: UntypedFormBuilder,
         protected videoWebService: VideoWebService,
         protected errorService: ErrorService,
         protected logger: Logger,

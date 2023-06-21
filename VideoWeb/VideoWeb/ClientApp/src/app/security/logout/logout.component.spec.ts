@@ -6,10 +6,10 @@ import { of, Subject } from 'rxjs';
 import { SecurityServiceProvider } from '../authentication/security-provider.service';
 import { ISecurityService } from '../authentication/security-service.interface';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
-import { fakeAsync, flush } from '@angular/core/testing';
-import { FeatureFlagService } from '../../services/feature-flag.service';
+import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { pageUrls } from '../../shared/page-url.constants';
 import { LaunchDarklyService, FEATURE_FLAGS } from 'src/app/services/launch-darkly.service';
+import { IdpProviders } from '../idp-providers';
 
 describe('LogoutComponent', () => {
     let component: LogoutComponent;
@@ -29,14 +29,17 @@ describe('LogoutComponent', () => {
         securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
             [],
-            ['currentSecurityService$']
+            ['currentSecurityService$', 'currentIdp$']
         );
 
-        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['logoffAndRevokeTokens'], ['isAuthenticated$']);
+        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.multiIdpSelection).and.returnValue(of(true));
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['logoffAndRevokeTokens', 'isAuthenticated']);
         isAuthenticatedSubject = new Subject<boolean>();
-        getSpiedPropertyGetter(securityServiceSpy, 'isAuthenticated$').and.returnValue(isAuthenticatedSubject.asObservable());
+        securityServiceSpy.logoffAndRevokeTokens.and.returnValue(of(null));
+        securityServiceSpy.isAuthenticated.and.returnValue(isAuthenticatedSubject.asObservable());
 
         getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentIdp$').and.returnValue(of(IdpProviders.vhaad));
 
         component = new LogoutComponent(securityServiceProviderServiceSpy, profileServiceSpy, launchDarklyServiceSpy);
     });
@@ -74,9 +77,9 @@ describe('LogoutComponent', () => {
     it('should return false for "loggedIn" when not authenticated', fakeAsync(() => {
         let loggedIn = true;
         component.loggedIn.subscribe(isLoggedIn => (loggedIn = isLoggedIn));
-
+        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.multiIdpSelection).and.returnValue(of(true));
         isAuthenticatedSubject.next(false);
-        flush();
+        tick();
 
         expect(loggedIn).toBeFalsy();
         expect(component.loginPath).toBe(`../${pageUrls.IdpSelection}`);
