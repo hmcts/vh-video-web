@@ -113,6 +113,8 @@ namespace VideoWeb
             }
 
             app.UseHsts();
+            // this is a workaround to set HSTS in a docker
+            // reference from https://github.com/dotnet/dotnet-docker/issues/2268#issuecomment-714613811
             app.Use(async (context, next) => {
                 context.Response.Headers.Add("Strict-Transport-Security", "max-age=31536000");
                 await next.Invoke();
