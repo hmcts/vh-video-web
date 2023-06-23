@@ -9,22 +9,33 @@ import { Logger } from 'src/app/services/logging/logger-base';
     styleUrls: ['./join-private-consultation.component.scss']
 })
 export class JoinPrivateConsultationComponent {
-    @Input() participants: ParticipantResponse[];
-    @Input() endpoints: VideoEndpointResponse[];
     @Output() continue = new EventEmitter<string>();
     @Output() cancel = new EventEmitter();
 
     selectedRoomLabel: string;
     roomDetails = [];
 
+    private _participants: ParticipantResponse[] = [];
+    private _endpoints: VideoEndpointResponse[] = [];
+
     constructor(protected logger: Logger, protected translateService: TranslateService) {}
+
+    @Input() set participants(val: ParticipantResponse[]) {
+        this._participants = val;
+        this.updateRoomDetails();
+    }
+
+    @Input() set endpoints(val: VideoEndpointResponse[]) {
+        this._endpoints = val;
+        this.updateRoomDetails();
+    }
 
     roomsAvailable(): boolean {
         return this.roomDetails.length > 0;
     }
 
-    getRoomDetails(): Array<any> {
-        const currentRooms = this.participants
+    updateRoomDetails() {
+        const currentRooms = this._participants
             .filter(p => p.current_room != null && p.current_room.label.toLowerCase().startsWith('participant'))
             .map(p => p.current_room)
             .sort((a, b) => (a.label > b.label ? 1 : -1));
@@ -45,7 +56,7 @@ export class JoinPrivateConsultationComponent {
                 const displayName = !r.label
                     ? ''
                     : this.camelToSpaced(r.label.replace('ParticipantConsultationRoom', 'MeetingRoom')).toLowerCase();
-                const roomParticipants = this.participants
+                const roomParticipants = this._participants
                     .filter(p => p.current_room?.label === r.label)
                     .sort((a, b) => (a.display_name > b.display_name ? 1 : -1));
                 this.roomDetails.push({
@@ -59,12 +70,15 @@ export class JoinPrivateConsultationComponent {
                 this.roomDetails
                     .filter(rd => rd.label === r.label)
                     .forEach(rd => {
-                        const roomParticipants = this.participants
+                        console.log('update details');
+                        console.log(this._participants);
+                        console.log(this._endpoints);
+                        const roomParticipants = this._participants
                             .filter(p => p.current_room?.label === r.label)
                             .sort((a, b) => (a.display_name > b.display_name ? 1 : -1));
                         rd.participants = roomParticipants;
 
-                        const roomEndpoints = this.endpoints
+                        const roomEndpoints = this._endpoints
                             .filter(p => p.current_room?.label === r.label)
                             .sort((a, b) => (a.display_name > b.display_name ? 1 : -1));
                         rd.endpoints = roomEndpoints;
@@ -72,7 +86,9 @@ export class JoinPrivateConsultationComponent {
                     });
             }
         });
+    }
 
+    getRoomDetails(): Array<any> {
         return this.roomDetails;
     }
 
