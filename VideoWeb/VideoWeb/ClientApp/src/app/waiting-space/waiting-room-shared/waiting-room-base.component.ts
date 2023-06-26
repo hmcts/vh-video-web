@@ -1388,8 +1388,6 @@ export abstract class WaitingRoomBaseDirective {
         });
 
         endpointsUpdatedMessage.endpoints.existing_endpoints.forEach((endpoint: VideoEndpointResponse) => {
-            this.logger.debug('[WR] - Endpoint updated, showing notification', endpoint);
-            this.notificationToastrService.showEndpointUpdated(endpoint, this.isParticipantInConference);
             this.hearing.updateEndpoint(endpoint);
         });
 
