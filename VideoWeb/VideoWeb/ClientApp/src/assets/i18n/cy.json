@@ -851,8 +851,8 @@
     "mute": "Mudo",
     "mute-lock": "Mudo a chloi",
     "unmute-lock": "Datgloi mudo",
-    "unpin": "Tynnu sbotolau",
-    "pin": "Chwyddwydr"
+    "unpin": "Peidio amlygu",
+    "pin": "Amlygu"
   },
   "confirm-close-hearing-popup": {
     "title": "Rydych ar fin cau'r gwrandawiad hwn",
