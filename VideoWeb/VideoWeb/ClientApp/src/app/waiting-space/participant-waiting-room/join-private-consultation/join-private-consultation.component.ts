@@ -36,7 +36,7 @@ export class JoinPrivateConsultationComponent {
 
     updateRoomDetails() {
         const currentRooms = this._participants
-            .filter(p => p.current_room != null && p.current_room.label.toLowerCase().startsWith('participant'))
+            .filter(p => p.current_room?.label.toLowerCase().startsWith('participant'))
             .map(p => p.current_room)
             .sort((a, b) => (a.label > b.label ? 1 : -1));
 
