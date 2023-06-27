@@ -2,6 +2,7 @@ import { ErrorHandler, Injectable, Injector, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from '../page-url.constants';
+import { ErrorHelper } from '../helpers/error-helper';
 
 @Injectable()
 export class GlobalErrorHandler implements ErrorHandler {
@@ -19,6 +20,9 @@ export class GlobalErrorHandler implements ErrorHandler {
             this.redirectTo(router, pageUrls.Unauthorised);
         } else {
             logger.error('Unhandled error occured', err, { url: router.url });
+            if (ErrorHelper.isPexRtcGetStatsError(err)) {
+                return;
+            }
             this.redirectTo(router, pageUrls.ServiceError);
         }
     }
