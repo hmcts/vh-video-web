@@ -97,6 +97,7 @@ import { SecurityServiceProvider } from '../security/authentication/security-pro
 import { ProfileService } from '../services/api/profile.service';
 import { AppInsightsLoggerService } from '../services/logging/loggers/app-insights-logger.service';
 import { SecurityConfigSetupService } from '../security/security-config-setup.service';
+import { ErrorHelper } from './helpers/error-helper';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -174,7 +175,8 @@ export function getSettings(configService: ConfigService) {
         TestLanguageService,
         DatePipe,
         ParticipantPanelModelMapper,
-        VhoQueryService
+        VhoQueryService,
+        ErrorHelper
     ],
     exports: [
         HeaderComponent,

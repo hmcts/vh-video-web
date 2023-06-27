@@ -6,7 +6,7 @@ import { ErrorHelper } from '../helpers/error-helper';
 
 @Injectable()
 export class GlobalErrorHandler implements ErrorHandler {
-    constructor(private injector: Injector, private zone: NgZone) {}
+    constructor(private injector: Injector, private zone: NgZone, private errorHelper: ErrorHelper) {}
 
     handleError(err: any) {
         const router: Router = this.injector.get(Router);
@@ -20,7 +20,7 @@ export class GlobalErrorHandler implements ErrorHandler {
             this.redirectTo(router, pageUrls.Unauthorised);
         } else {
             logger.error('Unhandled error occured', err, { url: router.url });
-            if (ErrorHelper.isPexRtcGetStatsError(err)) {
+            if (this.errorHelper.isPexRtcGetStatsError(err)) {
                 return;
             }
             this.redirectTo(router, pageUrls.ServiceError);

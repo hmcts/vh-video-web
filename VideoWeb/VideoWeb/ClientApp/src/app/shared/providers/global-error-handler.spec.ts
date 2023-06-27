@@ -3,6 +3,7 @@ import { GlobalErrorHandler } from './global-error-handler';
 import { Router } from '@angular/router';
 import { LoggerService } from 'src/app/services/logging/logger.service';
 import { pageUrls } from '../page-url.constants';
+import { ErrorHelper } from '../helpers/error-helper';
 
 describe('GlobalErrorHandler', () => {
     let ngZoneSpy: jasmine.SpyObj<NgZone>;
@@ -11,11 +12,13 @@ describe('GlobalErrorHandler', () => {
     let injector: Injector;
     let redirectToSpy: jasmine.Spy;
     let errorHandler: GlobalErrorHandler;
+    let errorHelperSpy: jasmine.SpyObj<ErrorHelper>;
 
     beforeEach(() => {
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
         ngZoneSpy = jasmine.createSpyObj<NgZone>('NgZone', ['run']);
         loggerSpy = jasmine.createSpyObj('LoggerService', ['error']);
+        errorHelperSpy = jasmine.createSpyObj('ErrorHelper', ['isPexRtcGetStatsError']);
         ngZoneSpy.run.and.callThrough();
 
         injector = Injector.create({ providers: [] });
@@ -27,7 +30,7 @@ describe('GlobalErrorHandler', () => {
             }
         });
 
-        errorHandler = new GlobalErrorHandler(injector, ngZoneSpy);
+        errorHandler = new GlobalErrorHandler(injector, ngZoneSpy, errorHelperSpy);
         redirectToSpy = spyOn(errorHandler, 'redirectTo');
     });
 
@@ -44,5 +47,15 @@ describe('GlobalErrorHandler', () => {
     it('navigates to unauthorised page when 403 status code is returned', () => {
         errorHandler.handleError({ status: 403 });
         expect(redirectToSpy).toHaveBeenCalledWith(routerSpy, pageUrls.Unauthorised);
+    });
+
+    it('does not navigate to error page when pex rtc get stats error is thrown', () => {
+        const error = new DOMException('An attempt was made to use an object that is not, or is no longer, usable');
+        error.stack = 'PexRTC.getStats';
+        errorHelperSpy.isPexRtcGetStatsError.and.returnValue(true);
+
+        errorHandler.handleError(error);
+        expect(errorHelperSpy.isPexRtcGetStatsError).toHaveBeenCalledWith(error);
+        expect(redirectToSpy).not.toHaveBeenCalled();
     });
 });
