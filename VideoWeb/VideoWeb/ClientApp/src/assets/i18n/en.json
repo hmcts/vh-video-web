@@ -405,8 +405,8 @@
     "mute": "Mute",
     "mute-lock": "Mute & lock",
     "unmute-lock": "Unlock mute",
-    "unpin": "Unpin",
-    "pin": "Pin"
+    "unpin": "Remove spotlight",
+    "pin": "Spotlight"
   },
   "judge-participant-status-list": {
     "crest-alt": "HM Courts &amp; Tribunals Service crest",
