@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { ChartsModule } from 'ng2-charts';
+import { NgChartsModule } from 'ng2-charts';
 import { ClipboardModule } from 'ngx-clipboard';
 import { ParticipantStatusReader } from '../shared/models/participant-status-reader';
 import { SharedModule } from '../shared/shared.module';
@@ -57,7 +57,7 @@ import { CopyQuickLinkComponent } from './copy-quick-link/copy-quick-link.compon
         CopyTelephoneIdComponent,
         CopyQuickLinkComponent
     ],
-    imports: [CommonModule, SharedModule, ChartsModule, ClipboardModule, VhOfficerRoutingModule, NgSelectModule],
+    imports: [CommonModule, SharedModule, NgChartsModule, ClipboardModule, VhOfficerRoutingModule, NgSelectModule],
     providers: [HearingsFilterOptionsService, ParticipantStatusReader, VhoQueryService, UnreadAdminMessageModelMapper],
     exports: [MonitoringGraphComponent, HearingHeaderComponent, HearingStatusComponent]
 })

@@ -1,6 +1,6 @@
-import { fakeAsync, flush } from '@angular/core/testing';
+import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { Observable, Subject, Subscription, of } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
@@ -25,6 +25,9 @@ import { VideoControlCacheService } from './video-control-cache.service';
 import { ParticipantsUpdatedMessage } from '../../shared/models/participants-updated-message';
 import { VideoCallEventsService } from 'src/app/waiting-space/services/video-call-events.service';
 import { ParticipantRemoteMuteStoreService } from '../../waiting-space/services/participant-remote-mute-store.service';
+import { EndpointsUpdatedMessage } from 'src/app/shared/models/endpoints-updated-message';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { UpdateEndpointsDto } from 'src/app/shared/models/update-endpoints-dto';
 
 describe('ParticipantService', () => {
     const asParticipantModelsFromUserResponse = (participants: ParticipantForUserResponse[]) =>
@@ -141,6 +144,7 @@ describe('ParticipantService', () => {
     let eventsServiceSpy: jasmine.SpyObj<EventsService>;
     let participantStatusUpdateSubject: Subject<ParticipantStatusMessage>;
     let participantsUpdatedSubject: Subject<ParticipantsUpdatedMessage>;
+    let endpointsUpdatedSubject: Subject<EndpointsUpdatedMessage>;
     let videoControlCacheServiceSpy: jasmine.SpyObj<VideoControlCacheService>;
 
     let loggerSpy: jasmine.SpyObj<LoggerService>;
@@ -173,12 +177,18 @@ describe('ParticipantService', () => {
         spyOn(participantUpdatedObservable, 'subscribe').and.callThrough();
         getSpiedPropertyGetter(videoCallEventsServiceSpy, 'participantUpdated$').and.returnValue(participantUpdatedObservable);
 
-        eventsServiceSpy = jasmine.createSpyObj<EventsService>('EventsService', ['getParticipantStatusMessage', 'getParticipantsUpdated']);
+        eventsServiceSpy = jasmine.createSpyObj<EventsService>('EventsService', [
+            'getParticipantStatusMessage',
+            'getParticipantsUpdated',
+            'getEndpointsUpdated'
+        ]);
 
         participantStatusUpdateSubject = new Subject<ParticipantStatusMessage>();
         eventsServiceSpy.getParticipantStatusMessage.and.returnValue(participantStatusUpdateSubject.asObservable());
         participantsUpdatedSubject = new Subject<ParticipantsUpdatedMessage>();
         eventsServiceSpy.getParticipantsUpdated.and.returnValue(participantsUpdatedSubject.asObservable());
+        endpointsUpdatedSubject = new Subject<EndpointsUpdatedMessage>();
+        eventsServiceSpy.getEndpointsUpdated.and.returnValue(endpointsUpdatedSubject.asObservable());
 
         videoControlCacheServiceSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', [
             'setSpotlightStatus',
@@ -332,12 +342,15 @@ describe('ParticipantService', () => {
             // Arrange
             const participantStatusUpdate$ = new Observable<ParticipantStatusMessage>();
             const participantsUpdated$ = new Observable<ParticipantsUpdatedMessage>();
+            const endpointsUpdated$ = new Observable<EndpointsUpdatedMessage>();
             const expectedUnsubscribed = [
+                jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']),
                 jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']),
                 jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']),
                 jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe'])
             ];
             const expectedSubscriptions = [
+                jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']),
                 jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']),
                 jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']),
                 jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe'])
@@ -351,6 +364,11 @@ describe('ParticipantService', () => {
 
             spyOn(participantsUpdatedSubject, 'asObservable').and.returnValue(participantsUpdated$);
             eventsServiceSpy.getParticipantsUpdated.and.returnValue(participantsUpdatedSubject.asObservable());
+
+            spyOn(endpointsUpdated$, 'subscribe').and.returnValues(expectedUnsubscribed[3], expectedSubscriptions[3]);
+            spyOn(endpointsUpdatedSubject, 'asObservable').and.returnValue(endpointsUpdated$);
+            eventsServiceSpy.getEndpointsUpdated.and.returnValue(endpointsUpdatedSubject.asObservable());
+
             const conferenceIdOne = 'conference-id-one';
             const conferenceIdTwo = 'conference-id-two';
             const conference = new ConferenceResponse();
@@ -502,6 +520,63 @@ describe('ParticipantService', () => {
             expect(participantsUpdatedEmitted).toBe(false);
             expect(sut.nonEndpointParticipants).toBe(originalNonEndpointParticipants);
         });
+    });
+
+    describe('handle endpoints updated', () => {
+        let testConference: ConferenceResponse;
+        let existingEndpoints: VideoEndpointResponse[];
+
+        beforeEach(() => {
+            testConference = new ConferenceTestData().getConferenceDetailNow();
+            conferenceServiceSpy.getParticipantsForConference.and.returnValue(
+                of(asParticipantModelsFromUserResponse(testConference.participants))
+            );
+            conferenceServiceSpy.getEndpointsForConference.and.returnValue(
+                of(asParticipantModelsFromEndpointResponse(testConference.endpoints))
+            );
+
+            existingEndpoints = testConference.endpoints;
+            currentConferenceSubject.next(testConference);
+        });
+        it('should set endpoints with updated value', fakeAsync(() => {
+            // arrange
+            const beforeUpdateCount = existingEndpoints.length;
+            const newEndpoint = new VideoEndpointResponse({
+                id: 'TestId1',
+                display_name: 'TestName1NewAddedViaMessage',
+                status: EndpointStatus.NotYetJoined,
+                defence_advocate_username: 'TestUsername1',
+                pexip_display_name: 'TestPexipDisplayName1'
+            });
+
+            const updatedDto: UpdateEndpointsDto = {
+                existing_endpoints: [],
+                removed_endpoints: [],
+                new_endpoints: [newEndpoint]
+            };
+            const message = new EndpointsUpdatedMessage(testConference.id, updatedDto);
+
+            // act
+            endpointsUpdatedSubject.next(message);
+            // currently the service only publishes one message per update or add
+            existingEndpoints.forEach(x => {
+                const dto: UpdateEndpointsDto = {
+                    existing_endpoints: [x],
+                    removed_endpoints: [],
+                    new_endpoints: []
+                };
+                const updatedEndpointMessage = new EndpointsUpdatedMessage(testConference.id, dto);
+                endpointsUpdatedSubject.next(updatedEndpointMessage);
+            });
+            tick();
+
+            // assert
+            expect(sut.endpointParticipants.length).toBe(beforeUpdateCount + 1);
+            existingEndpoints.forEach(x =>
+                expect(sut.endpointParticipants).toContain(jasmine.objectContaining({ displayName: x.display_name }))
+            );
+            expect(sut.endpointParticipants).toContain(jasmine.objectContaining({ displayName: newEndpoint.display_name }));
+        }));
     });
 
     describe('getPexipIdForParticipant', () => {

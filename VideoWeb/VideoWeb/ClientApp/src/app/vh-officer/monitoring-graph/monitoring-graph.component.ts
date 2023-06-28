@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Chart, ChartDataSets, ChartType } from 'chart.js';
-import { Color, Label } from 'ng2-charts';
+import { Chart, ChartConfiguration, ChartType } from 'chart.js';
 import { graphLabel, GraphSettings } from '../services/models/graph-settings';
 import { PackageLost } from '../services/models/package-lost';
 import { ParticipantGraphInfo } from '../services/models/participant-graph-info';
@@ -16,12 +15,12 @@ export class MonitoringGraphComponent implements OnInit {
     participantGraphInfo: ParticipantGraphInfo;
 
     packagesLostValues: number[] = [];
-    lineChartData: ChartDataSets[] = [];
-    lineChartLabels: Label[] = [];
+    public lineChartData: ChartConfiguration<'line'>['data'] = {
+        datasets: [],
+        labels: []
+    };
     lineChartLegend = false;
     lineChartType: ChartType = 'line';
-    lineChartPlugins = [];
-    lineChartColors: Color[] = GraphSettings.getlineChartColors();
     lastPoint: number;
     lineChartOptions = GraphSettings.getLineChartOptions();
     showUnsupportedBrowser = false;
@@ -55,11 +54,37 @@ export class MonitoringGraphComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.lineChartData.push({ data: Array.from(Array(GraphSettings.MAX_RECORDS), () => this.POOR_SIGNAL), label: graphLabel.Poor });
-        this.lineChartData.push({ data: Array.from(Array(GraphSettings.MAX_RECORDS), () => this.BAD_SIGNAL), label: graphLabel.Bad });
-        this.lineChartData.push({ data: this.packagesLostValues, label: 'Signal' });
-
-        this.lineChartLabels = Array.from(Array(GraphSettings.MAX_RECORDS), (item, index) => index.toString());
+        this.lineChartData = {
+            labels: Array.from(Array(GraphSettings.MAX_RECORDS), (item, index) => index.toString()),
+            datasets: [
+                {
+                    // one for the heartbeat
+                    data: this.packagesLostValues,
+                    label: 'Signal',
+                    fill: true,
+                    tension: 0.5,
+                    borderColor: 'black',
+                    backgroundColor: 'rgba(0,0,0,0)',
+                    borderWidth: 2
+                },
+                {
+                    // one for the poor signal
+                    data: Array.from(Array(GraphSettings.MAX_RECORDS), () => this.POOR_SIGNAL),
+                    label: 'Poor',
+                    borderColor: '#ffab00',
+                    backgroundColor: 'rgba(0,0,0,0)',
+                    borderDash: [5, 5]
+                },
+                {
+                    // one for the bad signal
+                    data: Array.from(Array(GraphSettings.MAX_RECORDS), () => this.BAD_SIGNAL),
+                    label: 'Bad',
+                    borderColor: 'red',
+                    backgroundColor: 'rgba(0,0,0,0)',
+                    borderDash: [5, 5]
+                }
+            ]
+        };
         this.packagesLostValues = Array(GraphSettings.MAX_RECORDS).fill(NaN);
         this.registerPlugin();
         this.setParticipantName();
@@ -75,8 +100,9 @@ export class MonitoringGraphComponent implements OnInit {
     }
 
     registerPlugin() {
-        Chart.pluginService.register({
-            afterDatasetDraw: (chart, easy) => GraphSettings.setScaleXLabels(chart, easy)
+        Chart.register({
+            id: 'hello',
+            afterDatasetDraw: (chart, args, options) => GraphSettings.setScaleXLabels(chart, args, options)
         });
     }
 
