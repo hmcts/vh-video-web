@@ -486,6 +486,21 @@ export class VideoCallService {
         return this.apiClient.getParticipantRoomForParticipant(conferenceId, participantId, 'Judicial').toPromise();
     }
 
+    ConnectWowzaListener(ingestUrl: string, callbackFunction: Function) {
+        const protocol = 'auto';
+        const params = {
+            streaming: true,
+            call_type: 'audio'
+        };
+
+        this.pexipAPI.dialOut(ingestUrl, protocol, '', callbackFunction, params);
+    }
+
+    disconnectWowzaListener(wowzaUUID: string) {
+        // For test purposes only
+        this.pexipAPI.disconnectParticipant(wowzaUUID);
+    }
+
     private handleSetup(stream: MediaStream | URL) {
         this.onSetupSubject.next(new CallSetup(stream));
     }
