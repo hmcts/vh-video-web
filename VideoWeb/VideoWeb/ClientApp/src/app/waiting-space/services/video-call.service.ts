@@ -486,6 +486,21 @@ export class VideoCallService {
         return this.apiClient.getParticipantRoomForParticipant(conferenceId, participantId, 'Judicial').toPromise();
     }
 
+    ConnectWowzaListener(ingestUrl: string, callbackFunction: Function) {
+        const protocol = 'auto';
+        const params = {
+            streaming: true,
+            call_type: 'audio'
+        };
+
+        this.pexipAPI.dialOut(ingestUrl, protocol, '', callbackFunction, params);
+    }
+
+    disconnectWowzaListener(wowzaUUID: string) {
+        // For test purposes only
+        this.pexipAPI.disconnectParticipant(wowzaUUID);
+    }
+
     private handleSetup(stream: MediaStream | URL) {
         this.onSetupSubject.next(new CallSetup(stream));
     }
@@ -546,28 +561,5 @@ export class VideoCallService {
         this.hasDisconnected$.complete();
         this.kinlyHeartbeatService.stopHeartbeat();
         this.setupClient();
-    }
-
-    ConnectWowzaListener() {
-        const destination = 'rtmps://vh-wowza.dev.platform.hmcts.net:443/vh-recording-app/882048a4-d84a-4a05-8f99-8bc96f0a5b56'
-        const protocol = 'auto'; //'rtmp'
-        //const role = 'GUEST';
-        const params = {
-            streaming: true,
-            call_type: 'audio',
-        }
-        function callbackFromDialOut(msg){
-            if(msg.status === 'failed')
-                alert('Failed to dial out to wowza');
-            else
-                alert('New wowza UUID: ' + msg.result[0])
-        }
-
-        this.pexipAPI.dialOut(destination, protocol, '', callbackFromDialOut, params)
-    }
-
-    //For test purposes only
-    disconnectWowzaListener(wowzaUUID: string) {
-        this.pexipAPI.disconnectParticipant(wowzaUUID);
     }
 }

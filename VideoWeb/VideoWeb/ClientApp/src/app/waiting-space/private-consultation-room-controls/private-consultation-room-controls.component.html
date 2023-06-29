@@ -1,7 +1,6 @@
 <div class="controls-container" id="div-controls-container">
-  <button (click)="killWowza()">Kill Wowza</button>&nbsp;
-  <button (click)="reconnectWowza()">Reconnect</button>
   <div class="icons-container">
+    <button *ngIf="isWowzaKillButtonEnabled" (click)="killWowza()">Kill Wowza</button>&nbsp;
     <div
       class="icon-button dropdown"
       id="toggle-context-menu"

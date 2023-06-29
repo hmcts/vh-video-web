@@ -22,7 +22,7 @@
     "prettify-api-client": "run-script-os",
     "prettify-api-client:nix": "npx prettier --write 'src/app/services/clients/api-client.ts'",
     "prettify-api-client:default": "npx prettier --write \"src\\app\\services\\clients\\api-client.ts\"",
-    "update-api-client": "nswag run /runtime:Net60 && run prettify-fix"
+    "update-api-client": "nswag run /runtime:Net60 && npm run prettify-fix"
   },
   "private": true,
   "dependencies": {

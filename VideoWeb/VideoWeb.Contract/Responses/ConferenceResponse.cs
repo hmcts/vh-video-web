@@ -96,6 +96,6 @@ namespace VideoWeb.Contract.Responses
         /// <summary>
         /// Property to indicate whether wowza recording is via single app setup or bespoke hearing setup
         /// </summary>
-        public bool WowzaSingleApp { get; set; }
+        public string IngestUrl { get; set; }
     }
 }

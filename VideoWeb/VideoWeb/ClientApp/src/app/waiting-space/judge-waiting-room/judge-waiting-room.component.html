@@ -33,7 +33,7 @@
                                 [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
                                 [showConsultationControls]="showConsultationControls"
                                 [unreadMessageCount]="unreadMessageCount"
-                                [wowzaUUID]="wowzaListener.uuid"
+                                [wowzaUUID]="wowzaListener?.uuid"
                                 [isChatVisible]="isChatVisible"
                                 [areParticipantsVisible]="areParticipantsVisible"
                                 (leaveConsultation)="leaveConsultation()"
@@ -97,7 +97,7 @@
                             </video>
                         </div>
                     </div>
-                    <div *ngIf="isSupportedBrowserForNetworkHealth" id="hearing-monitor-container">
+                    <div class="hearing-monitor-container" *ngIf="isSupportedBrowserForNetworkHealth">
                         <app-participant-network-alert [participant]="participant"></app-participant-network-alert>
                     </div>
                 </div>
@@ -118,7 +118,7 @@
                 </button>
             </div>
             <div class="govuk-grid-column-two-thirds">
-                <div *ngIf="isSupportedBrowserForNetworkHealth" id="hearing-monitor-container">
+                <div class="hearing-monitor-container" *ngIf="isSupportedBrowserForNetworkHealth">
                     <app-participant-network-health [participant]="participant"></app-participant-network-health>
                 </div>
             </div>
