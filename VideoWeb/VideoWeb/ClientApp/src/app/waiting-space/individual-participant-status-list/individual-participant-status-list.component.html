@@ -127,7 +127,7 @@
                                     <ng-container *ngSwitchCase="ParticipantStatus.InConsultation">
                                         <span>{{ 'start-private-consultation.in' | translate}} </span>
                                         <span>{{ participant.current_room?.label | roomName | lowercase }} </span>
-                                        <fa-icon *ngIf="participant.current_room.locked" icon="lock"></fa-icon>
+                                        <fa-icon *ngIf="participant.current_room?.locked" icon="lock"></fa-icon>
                                     </ng-container>
                                     <ng-container *ngSwitchDefault>
                                         {{ "individual-participant-status-list.unavailable" | translate }}
