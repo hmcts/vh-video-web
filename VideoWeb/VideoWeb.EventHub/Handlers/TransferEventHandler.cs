@@ -27,8 +27,8 @@ namespace VideoWeb.EventHub.Handlers
         protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
             var participantStatus = DeriveParticipantStatusForTransferEvent(callbackEvent);
-            await PublishParticipantStatusMessage(participantStatus);
             await PublishRoomTransferMessage(new RoomTransfer { ParticipantId = callbackEvent.ParticipantId, FromRoom = callbackEvent.TransferFrom, ToRoom = callbackEvent.TransferTo });
+            await PublishParticipantStatusMessage(participantStatus);
         }
 
         private static ParticipantState DeriveParticipantStatusForTransferEvent(CallbackEvent callbackEvent)
