@@ -1,4 +1,4 @@
-import { Directive, ElementRef, ViewChild } from '@angular/core';
+import { AfterContentChecked, Directive, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
 import { Observable, Subscription } from 'rxjs';
@@ -64,7 +64,7 @@ import { RoomTransfer } from '../../shared/models/room-transfer';
 import { HideComponentsService } from '../services/hide-components.service';
 
 @Directive()
-export abstract class WaitingRoomBaseDirective {
+export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
     @ViewChild('roomTitleLabel', { static: false }) roomTitleLabel: ElementRef<HTMLDivElement>;
     @ViewChild('hearingControls', { static: false }) hearingControls: PrivateConsultationRoomControlsComponent;
 
@@ -101,6 +101,7 @@ export abstract class WaitingRoomBaseDirective {
     displayJoinPrivateConsultationModal: boolean;
     conferenceStartedBy: string;
     phoneNumber$: Observable<string>;
+    hasCaseNameOverflowed = false;
 
     divTrapId: string;
 
@@ -193,11 +194,16 @@ export abstract class WaitingRoomBaseDirective {
         return unsupportedBrowsers.findIndex(x => x.toUpperCase() === browser.toUpperCase()) < 0;
     }
 
-    get hasCaseNameOverflowed(): boolean {
-        if (!this.roomTitleLabel) {
-            return false;
+    ngAfterContentChecked(): void {
+        this.checkCaseNameOverflow();
+    }
+
+    checkCaseNameOverflow() {
+        if (this.roomTitleLabel) {
+            this.hasCaseNameOverflowed = this.roomTitleLabel.nativeElement.scrollWidth > this.roomTitleLabel.nativeElement.clientWidth;
+        } else {
+            this.hasCaseNameOverflowed = false;
         }
-        return this.roomTitleLabel.nativeElement.scrollWidth > this.roomTitleLabel.nativeElement.clientWidth;
     }
 
     isParticipantInCorrectWaitingRoomState(): boolean {

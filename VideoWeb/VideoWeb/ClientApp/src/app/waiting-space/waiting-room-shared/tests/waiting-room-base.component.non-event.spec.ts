@@ -737,15 +737,19 @@ describe('WaitingRoomComponent message and clock', () => {
         const caseNameElement = document.createElement('div');
         const caseName = component.getCaseNameAndNumber();
         caseNameElement.innerHTML = caseName;
+
         spyOnProperty(caseNameElement, 'scrollWidth').and.returnValue(caseName.length + 1);
         const elemRef = new ElementRef(caseNameElement);
         component.roomTitleLabel = elemRef;
 
+        component.checkCaseNameOverflow();
+
         expect(component.hasCaseNameOverflowed).toBeTruthy();
     });
 
-    it('should return true if case name has been truncated', () => {
+    it('should return false if case name element is not set', () => {
         component.roomTitleLabel = null;
+        component.checkCaseNameOverflow();
         expect(component.hasCaseNameOverflowed).toBeFalsy();
     });
 
