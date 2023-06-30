@@ -48,8 +48,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     isRecording: boolean;
     continueWithNoRecording = false;
     audioErrorToastOpen = false;
-    audioRecordingStreamCheckIntervalSeconds = 10;
-    conferenceRecordingInSessionForSeconds = 0;
+    audioStreamIntervalSeconds = 20;
+    recordingSessionSeconds = 0;
     expanedPanel = true;
     hostWantsToJoinHearing = false;
     displayConfirmStartHearingPopup: boolean;
@@ -351,14 +351,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     initAudioRecordingInterval() {
         this.audioRecordingInterval = setInterval(async () => {
             await this.retrieveAudioStreamInfo(this.conference.hearing_ref_id);
-        }, this.audioRecordingStreamCheckIntervalSeconds * 1000);
+        }, this.audioStreamIntervalSeconds * 1000);
     }
 
     continueWithNoRecordingCallback() {
-        if (this.audioErrorToast.actioned) {
-            this.continueWithNoRecording = true;
-        }
-
         if (this.audioErrorRetryToast.actioned) {
             this.continueWithNoRecording = true;
         }
@@ -368,47 +364,31 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     async retrieveAudioStreamInfo(hearingId): Promise<void> {
         if (this.conference.status === ConferenceStatus.InSession) {
-            this.conferenceRecordingInSessionForSeconds += this.audioRecordingStreamCheckIntervalSeconds;
+            this.recordingSessionSeconds += this.audioStreamIntervalSeconds;
         } else {
-            this.conferenceRecordingInSessionForSeconds = 0;
+            this.recordingSessionSeconds = 0;
             this.continueWithNoRecording = false;
         }
 
-        if (this.conferenceRecordingInSessionForSeconds > 20 && !this.continueWithNoRecording) {
+        if (this.recordingSessionSeconds > 20 && !this.continueWithNoRecording) {
             this.logger.info(`${this.loggerPrefixJudge} Attempting to retrieve audio stream info for ${hearingId}`);
             try {
-                const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(
-                    hearingId,
-                    this.conference.ingest_url.includes('vh-recording')
-                );
+                const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId, this.conference.ingest_url.includes('vh-recording'));
                 this.logger.info(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
                 // if recorder not found on a wowza vm and returns false OR wowzaListener participant is not present in conference
-                if (!this.wowzaListener && !this.continueWithNoRecording && this.showVideo) {
+                if ((!this.wowzaListener || !audioStreamWorking) && !this.continueWithNoRecording && this.showVideo) {
                     this.logger.warn(`${this.loggerPrefixJudge} not recording when expected, show alert`, {
                         conference: this.conferenceId
                     });
-                    this.showAudioRecordingRestartAlert();
-                } else if (!audioStreamWorking && !this.continueWithNoRecording && this.showVideo) {
-                    this.logger.warn(`${this.loggerPrefixJudge} not recording when expected, show alert`, {
-                        conference: this.conferenceId
-                    });
-                    this.showAudioRecordingStandardAlert();
+                    if(this.audioErrorRetryToast?.actioned)
+                        this.notificationToastrService.showAudioRecordingRestartFailure(this.continueWithNoRecordingCallback.bind(this));
+                    else
+                        this.showAudioRecordingRestartAlert();
                 }
             } catch (error) {
                 this.logger.error(`${this.loggerPrefixJudge} Failed to get audio stream info.`, error, { conference: this.conferenceId });
             }
         }
-    }
-
-    reconnectWowza() {
-        const callback = function callbackFromDialOut(msg) {
-            if (msg.status === 'failed') {
-                this.notificationToastrService.showAudioRecordingRestartFailure(this.continueWithNoRecordingCallback.bind(this));
-            } else {
-                this.notificationToastrService.showAudioRecordingRestartSuccess();
-            }
-        };
-        this.videoCallService.ConnectWowzaListener(this.conference.ingest_url, callback);
     }
 
     defineIsIMEnabled(): boolean {
@@ -611,21 +591,20 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.destroyedSubject.complete();
     }
 
-    private showAudioRecordingStandardAlert() {
-        if (this.audioErrorToastOpen) {
+    private showAudioRecordingRestartAlert() {
+        if (this.audioErrorRetryToast)
             return;
-        }
-
         this.audioErrorToastOpen = true;
-        this.audioErrorToast = this.notificationToastrService.showAudioRecordingError(this.continueWithNoRecordingCallback.bind(this));
+        this.audioErrorRetryToast = this.notificationToastrService.showAudioRecordingErrorWithRestart(this.reconnectToWowza);
     }
 
-    private showAudioRecordingRestartAlert() {
-        if (this.audioErrorRetryToast) {
-            return;
-        }
-
-        this.audioErrorToastOpen = true;
-        this.audioErrorRetryToast = this.notificationToastrService.showAudioRecordingErrorWithRestart(this.reconnectWowza);
+    private reconnectToWowza() {
+        this.videoCallService.ConnectWowzaListener(this.conference.ingest_url, (msg) => {
+            if (msg.status === 'failed') {
+                this.notificationToastrService.showAudioRecordingRestartFailure(this.continueWithNoRecordingCallback.bind(this));
+            } else {
+                this.notificationToastrService.showAudioRecordingRestartSuccess();
+            }
+        });
     }
 }

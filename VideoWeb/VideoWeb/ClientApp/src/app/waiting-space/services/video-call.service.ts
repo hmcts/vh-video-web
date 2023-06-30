@@ -486,14 +486,12 @@ export class VideoCallService {
         return this.apiClient.getParticipantRoomForParticipant(conferenceId, participantId, 'Judicial').toPromise();
     }
 
-    ConnectWowzaListener(ingestUrl: string, callbackFunction: Function) {
-        const protocol = 'auto';
+    ConnectWowzaListener(ingestUrl: string, callbackFn: Function) {
         const params = {
             streaming: true,
             call_type: 'audio'
         };
-
-        this.pexipAPI.dialOut(ingestUrl, protocol, '', callbackFunction, params);
+        this.pexipAPI.dialOut(ingestUrl, 'auto', '', callbackFn, params);
     }
 
     disconnectWowzaListener(wowzaUUID: string) {

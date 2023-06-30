@@ -537,7 +537,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             const toast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', { actioned: true });
             notificationToastrService.showAudioRecordingError.and.returnValue(toast);
             audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(false));
-            component.conferenceRecordingInSessionForSeconds = 61;
+            component.recordingSessionSeconds = 61;
             component.conference.status = ConferenceStatus.InSession;
             await component.retrieveAudioStreamInfo(globalConference.id);
 
@@ -551,7 +551,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             const toast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', { actioned: true });
             notificationToastrService.showAudioRecordingError.and.returnValue(toast);
             audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(false));
-            component.conferenceRecordingInSessionForSeconds = 61;
+            component.recordingSessionSeconds = 61;
             component.conference.status = ConferenceStatus.InSession;
 
             await component.retrieveAudioStreamInfo(globalConference.id);
@@ -566,7 +566,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             toast.actioned = false;
             notificationToastrService.showAudioRecordingError.and.returnValue(toast);
             audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(false));
-            component.conferenceRecordingInSessionForSeconds = 61;
+            component.recordingSessionSeconds = 61;
             component.conference.status = ConferenceStatus.InSession;
             await component.retrieveAudioStreamInfo(globalConference.id);
             component.continueWithNoRecording = false;
@@ -579,7 +579,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         it('should display audio recording alert when audio info returns false and hearing must be recorded', async () => {
             audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(false));
-            component.conferenceRecordingInSessionForSeconds = 61;
+            component.recordingSessionSeconds = 61;
             component.conference.status = ConferenceStatus.InSession;
             await component.retrieveAudioStreamInfo(globalConference.id);
             expect(component.audioErrorToastOpen).toBeTruthy();
@@ -589,7 +589,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         it('should not display audio recording alert before 60 seconds has passed', async () => {
             audioRecordingService.getAudioStreamInfo.calls.reset();
-            component.conferenceRecordingInSessionForSeconds = 0;
+            component.recordingSessionSeconds = 0;
             component.conference.status = ConferenceStatus.InSession;
             await component.retrieveAudioStreamInfo(globalConference.id);
             expect(component.audioErrorToastOpen).toBeFalsy();
@@ -599,7 +599,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         it('should not preform audio recording check if continuing with no recording', async () => {
             audioRecordingService.getAudioStreamInfo.calls.reset();
-            component.conferenceRecordingInSessionForSeconds = 100;
+            component.recordingSessionSeconds = 100;
             component.conference.status = ConferenceStatus.InSession;
             component.continueWithNoRecording = true;
             await component.retrieveAudioStreamInfo(globalConference.id);
@@ -610,7 +610,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         it('should not preform audio recording check if hearing isnt InSession', async () => {
             audioRecordingService.getAudioStreamInfo.calls.reset();
-            component.conferenceRecordingInSessionForSeconds = 100;
+            component.recordingSessionSeconds = 100;
             component.conference.status = ConferenceStatus.Paused;
             await component.retrieveAudioStreamInfo(globalConference.id);
             expect(component.audioErrorToastOpen).toBeFalsy();
@@ -620,7 +620,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         it('should reset notification state if hearing status not InSession', async () => {
             audioRecordingService.getAudioStreamInfo.calls.reset();
-            component.conferenceRecordingInSessionForSeconds = 100;
+            component.recordingSessionSeconds = 100;
             component.conference.status = ConferenceStatus.Paused;
             component.audioErrorToastOpen = true;
             component.continueWithNoRecording = true;
@@ -632,7 +632,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         it('should not display audio recording alert when audio info throws an error and hearing must be recorded', async () => {
             audioRecordingService.getAudioStreamInfo.and.throwError('Error');
             component.continueWithNoRecording = false;
-            component.conferenceRecordingInSessionForSeconds = 61;
+            component.recordingSessionSeconds = 61;
             component.conference.status = ConferenceStatus.InSession;
             await component.retrieveAudioStreamInfo(globalConference.id);
             expect(component.audioErrorToastOpen).toBeFalsy();
@@ -640,7 +640,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         it('should not display audio recording alert when audio info returns true', async () => {
             audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(true));
-            component.conferenceRecordingInSessionForSeconds = 61;
+            component.recordingSessionSeconds = 61;
             component.conference.status = ConferenceStatus.InSession;
             await component.retrieveAudioStreamInfo(globalConference.id);
             expect(component.audioErrorToastOpen).toBeFalsy();
@@ -649,7 +649,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         it('should display audio recording alert when audio info returns false and hearing must be recorded', async () => {
             audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(false));
             component.continueWithNoRecording = false;
-            component.conferenceRecordingInSessionForSeconds = 61;
+            component.recordingSessionSeconds = 61;
             component.conference.status = ConferenceStatus.InSession;
             await component.retrieveAudioStreamInfo(globalConference.id);
             expect(component.audioErrorToastOpen).toBeTruthy();
@@ -659,7 +659,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             component.wowzaListener = null;
             audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(true));
             component.continueWithNoRecording = false;
-            component.conferenceRecordingInSessionForSeconds = 61;
+            component.recordingSessionSeconds = 61;
             component.conference.status = ConferenceStatus.InSession;
             await component.retrieveAudioStreamInfo(globalConference.id);
             expect(component.audioErrorToastOpen).toBeTruthy();
@@ -690,14 +690,14 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         beforeEach(() => {
             audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(false));
             component.continueWithNoRecording = false;
-            component.conferenceRecordingInSessionForSeconds = currentConferenceRecordingInSessionForSeconds;
-            component.audioRecordingStreamCheckIntervalSeconds = currentAudioRecordingStreamCheckIntervalSeconds;
+            component.recordingSessionSeconds = currentConferenceRecordingInSessionForSeconds;
+            component.audioStreamIntervalSeconds = currentAudioRecordingStreamCheckIntervalSeconds;
         });
 
         it('should accumulate when conference is in session', async () => {
             component.conference.status = ConferenceStatus.InSession;
             await component.retrieveAudioStreamInfo(globalConference.id);
-            expect(component.conferenceRecordingInSessionForSeconds).toBe(
+            expect(component.recordingSessionSeconds).toBe(
                 currentConferenceRecordingInSessionForSeconds + currentAudioRecordingStreamCheckIntervalSeconds
             );
         });
@@ -705,7 +705,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         it('should reset when conference is not in session', async () => {
             component.conference.status = ConferenceStatus.Paused;
             await component.retrieveAudioStreamInfo(globalConference.id);
-            expect(component.conferenceRecordingInSessionForSeconds).toBe(0);
+            expect(component.recordingSessionSeconds).toBe(0);
         });
 
         it('should switch the continueWithNoRecording flag to false when conference is not in session', async () => {
