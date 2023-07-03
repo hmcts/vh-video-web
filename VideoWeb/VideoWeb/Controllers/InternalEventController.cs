@@ -156,6 +156,42 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
+        
+        [HttpPost("UnlinkedParticipantFromEndpoint")]
+        [SwaggerOperation(OperationId = "UnlinkedParticipantFromEndpoint")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> PushUnlinkedParticipantFromEndpoint(Guid conferenceId, string participant, string endpoint)
+        {
+            _logger.LogDebug("UnlinkedParticipantFromEndpoint called. ConferenceId: {ConferenceId}, Participant {Participant}, Endpoint {Endpoint}", 
+                conferenceId, participant, endpoint);
+            await _endpointsUpdatedEventNotifier.PushUnlinkedParticipantFromEndpoint(conferenceId, participant, endpoint);
+            return NoContent();
+        }
+
+        [HttpPost("LinkedNewParticipantToEndpoint")]
+        [SwaggerOperation(OperationId = "LinkedNewParticipantToEndpoint")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> PushLinkedNewParticipantToEndpoint(Guid conferenceId, string participant, string endpoint)
+        {
+            _logger.LogDebug("UnlinkedParticipantFromEndpoint called. ConferenceId: {ConferenceId}, Participant {Participant}, Endpoint {Endpoint}", 
+                conferenceId, participant, endpoint);
+            await _endpointsUpdatedEventNotifier.PushLinkedNewParticipantToEndpoint(conferenceId, participant, endpoint);
+            return NoContent();
+        }  
+        
+        [HttpPost("CloseConsultationBetweenEndpointAndParticipant")]
+        [SwaggerOperation(OperationId = "CloseConsultationBetweenEndpointAndParticipant")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> PushCloseConsultationBetweenEndpointAndParticipant(Guid conferenceId, string participant, string endpoint)
+        {
+            _logger.LogDebug("UnlinkedParticipantFromEndpoint called. ConferenceId: {ConferenceId}, Participant {Participant}, Endpoint {Endpoint}", 
+                conferenceId, participant, endpoint);
+            await _endpointsUpdatedEventNotifier.PushCloseConsultationBetweenEndpointAndParticipant(conferenceId, participant, endpoint);
+            return NoContent();
+        }
 
         [HttpPost("AllocationHearings")]
         [SwaggerOperation(OperationId = "AllocationHearings")]
