@@ -194,6 +194,10 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         return unsupportedBrowsers.findIndex(x => x.toUpperCase() === browser.toUpperCase()) < 0;
     }
 
+    get isParticipantInConference(): boolean {
+        return this.participant?.status === ParticipantStatus.InHearing || this.participant?.status === ParticipantStatus.InConsultation;
+    }
+
     ngAfterContentChecked(): void {
         this.checkCaseNameOverflow();
     }
@@ -204,10 +208,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         } else {
             this.hasCaseNameOverflowed = false;
         }
-    }
-
-    get isParticipantInConference(): boolean {
-        return this.participant?.status === ParticipantStatus.InHearing || this.participant?.status === ParticipantStatus.InConsultation;
     }
 
     isParticipantInCorrectWaitingRoomState(): boolean {
