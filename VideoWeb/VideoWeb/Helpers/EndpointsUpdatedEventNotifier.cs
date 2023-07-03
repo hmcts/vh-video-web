@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
 using VideoWeb.Common.Models;
@@ -39,5 +40,15 @@ namespace VideoWeb.Helpers
                     .EndpointsUpdated(conference.Id, endpoints);
             }
         }
+
+        public async Task PushUnlinkedParticipantFromEndpoint(Guid conferenceId, string participant, string jvsEndpointName) => 
+            await _hubContext.Clients.Group(participant.ToLowerInvariant()).UnlinkedParticipantFromEndpoint(conferenceId, jvsEndpointName);
+        
+        public async Task PushLinkedNewParticipantToEndpoint(Guid conferenceId, string participant, string jvsEndpointName) =>
+            await _hubContext.Clients.Group(participant.ToLowerInvariant()).LinkedNewParticipantToEndpoint(conferenceId, jvsEndpointName);
+
+        public async Task PushCloseConsultationBetweenEndpointAndParticipant(Guid conferenceId, string participant, string jvsEndpointName) =>
+            await _hubContext.Clients.Group(participant.ToLowerInvariant()).CloseConsultationBetweenEndpointAndParticipant(conferenceId, jvsEndpointName);
+        
     }
 }

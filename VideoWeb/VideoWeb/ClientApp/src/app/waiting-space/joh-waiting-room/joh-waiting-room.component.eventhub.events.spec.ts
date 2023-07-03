@@ -1,9 +1,9 @@
-import { fakeAsync, flush, flushMicrotasks } from '@angular/core/testing';
+import { fakeAsync, flush } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { ConferenceResponse, ConferenceStatus, ParticipantResponse } from 'src/app/services/clients/api-client';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { Hearing } from 'src/app/shared/models/hearing';
-import { hearingStatusSubjectMock, roomTransferSubjectMock } from 'src/app/testing/mocks/mock-events-service';
+import { hearingStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import {
     activatedRoute,
     clockService,

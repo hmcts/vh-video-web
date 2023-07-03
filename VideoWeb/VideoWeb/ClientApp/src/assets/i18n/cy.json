@@ -597,6 +597,21 @@
       "message": "Pwynt mynediad fideo wedi cael ei ddiweddaru yn y gwrandawiad.",
       "dismiss": "Gwrthod"
     },
+      "endpoint-linked": {
+          "title": "Rhybudd",
+          "message": "Rydych wedi cael eich ychwanegu fel cynrychiolydd cyfreithiol {{jvsEndpointName}}",
+          "dismiss": "Gwrthod"
+      },
+      "endpoint-unlinked": {
+          "title": "Rhybudd",
+          "message": "Nid ydych yn gallu dechrau ymgynghoriad â/ag {{jvsEndpointName}} gan nad chi yw’r cynrychiolydd cyfreithiol bellach",
+          "dismiss": "Gwrthod"
+      },
+      "endpoint-consultation-closed": {
+          "title": "Rhybudd",
+          "message": "Mae’r ymgynghoriad â/ag {{jvsEndpointName}} wedi gorffen gan nad chi yw’r cynrychiolydd cyfreithiol bellach",
+          "dismiss": "Gwrthod"
+      },
     "hearing-layout-changed": {
       "title": "Mae {{name}}",
       "message": "wedi newid cynllun y gwrandawiad.",

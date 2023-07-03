@@ -41,5 +41,8 @@ namespace VideoWeb.EventHub.Hub
         /// <param name="isMuted">true to mute a participant or false to unmute</param>
         /// <returns></returns>
         Task UpdateParticipantLocalMuteMessage(Guid conferenceId, Guid participantId, bool isMuted);
+        Task UnlinkedParticipantFromEndpoint(Guid conferenceId, string endpoint);
+        Task LinkedNewParticipantToEndpoint(Guid conferenceId, string endpoint);
+        Task CloseConsultationBetweenEndpointAndParticipant(Guid conferenceId, string endpoint);
     }
 }

@@ -206,6 +206,10 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         }
     }
 
+    get isParticipantInConference(): boolean {
+        return this.participant?.status === ParticipantStatus.InHearing || this.participant?.status === ParticipantStatus.InConsultation;
+    }
+
     isParticipantInCorrectWaitingRoomState(): boolean {
         return (
             this.connected &&
@@ -521,7 +525,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
         this.logger.debug('[WR] - Subscribing to countdown complete message');
         this.eventHubSubscription$.add(
-            this.eventService.getHearingCountdownCompleteMessage().subscribe(async conferenceId => {
+            this.eventService.getHearingCountdownCompleteMessage().subscribe(conferenceId => {
                 this.handleCountdownCompleteMessage(conferenceId);
                 this.updateShowVideo();
             })
@@ -530,20 +534,48 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         this.logger.debug('[WR] - Subscribing to participants update complete message');
         this.eventHubSubscription$.add(
             this.eventService.getParticipantsUpdated().subscribe(async participantsUpdatedMessage => {
-                this.handleParticipantsUpdatedMessage(participantsUpdatedMessage);
+                await this.handleParticipantsUpdatedMessage(participantsUpdatedMessage);
             })
         );
 
         this.logger.debug('[WR] - Subscribing to endpoints update complete message');
         this.eventHubSubscription$.add(
-            this.eventService.getEndpointsUpdated().subscribe(endpointsUpdatedMessage => {
+            this.eventService.getEndpointsUpdated().subscribe(async endpointsUpdatedMessage => {
+                await this.getConference();
                 this.handleEndpointsUpdatedMessage(endpointsUpdatedMessage);
+            })
+        );
+
+        this.logger.debug('[WR] - Subscribing to endpoints linked complete message');
+        this.eventHubSubscription$.add(
+            this.eventService.getEndpointLinkedUpdated().subscribe(endpointMessage => {
+                if (endpointMessage.conferenceId === this.conferenceId) {
+                    this.notificationToastrService.showEndpointLinked(endpointMessage.endpoint, this.isParticipantInConference);
+                }
+            })
+        );
+
+        this.logger.debug('[WR] - Subscribing to endpoints unlinked complete message');
+        this.eventHubSubscription$.add(
+            this.eventService.getEndpointUnlinkedUpdated().subscribe(endpointMessage => {
+                if (endpointMessage.conferenceId === this.conferenceId) {
+                    this.notificationToastrService.showEndpointUnlinked(endpointMessage.endpoint, this.isParticipantInConference);
+                }
+            })
+        );
+
+        this.logger.debug('[WR] - Subscribing to endpoints consultation closed complete message');
+        this.eventHubSubscription$.add(
+            this.eventService.getEndpointDisconnectUpdated().subscribe(endpointMessage => {
+                if (endpointMessage.conferenceId === this.conferenceId) {
+                    this.notificationToastrService.showEndpointConsultationClosed(endpointMessage.endpoint, this.isParticipantInConference);
+                }
             })
         );
 
         this.logger.debug('[WR] - Subscribing to hearing layout update complete message');
         this.eventHubSubscription$.add(
-            this.eventService.getHearingLayoutChanged().subscribe(async hearingLayout => {
+            this.eventService.getHearingLayoutChanged().subscribe(hearingLayout => {
                 this.handleHearingLayoutUpdatedMessage(hearingLayout);
             })
         );
@@ -1345,7 +1377,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
         this.participant = this.getLoggedParticipant();
     }
-
     private handleEndpointsUpdatedMessage(endpointsUpdatedMessage: EndpointsUpdatedMessage) {
         this.logger.debug('[WR] - Endpoints updated message received', {
             newEndpoints: endpointsUpdatedMessage.endpoints.new_endpoints,
@@ -1358,11 +1389,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
         endpointsUpdatedMessage.endpoints.new_endpoints.forEach(endpoint => {
             this.logger.debug('[WR] - Endpoint added, showing notification', endpoint);
-            this.notificationToastrService.showEndpointAdded(
-                endpoint,
-                this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
-            );
-
+            this.notificationToastrService.showEndpointAdded(endpoint, this.isParticipantInConference);
             this.hearing.addEndpoint(endpoint);
         });
 
@@ -1388,9 +1415,6 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         }
 
         this.logger.debug('[WR] - Hearing Layout Changed showing notification', participant);
-        this.notificationToastrService.showHearingLayoutchanged(
-            participant,
-            this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation
-        );
+        this.notificationToastrService.showHearingLayoutchanged(participant, this.isParticipantInConference);
     }
 }
