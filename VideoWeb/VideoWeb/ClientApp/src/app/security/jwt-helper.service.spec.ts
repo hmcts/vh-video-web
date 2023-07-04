@@ -20,7 +20,13 @@ describe('JwtHelperService', () => {
         expect(service).toBeTruthy();
     });
 
-    // it('should call helper to decode token', () => {service.decodeToken(testToken);expect(auth0Spy.decodeToken).toHaveBeenCalledOnceWith(testToken);});
+    it('should call helper to decode token', () => {
+        service.decodeToken(testToken);
+        expect(auth0Spy.decodeToken).toHaveBeenCalledOnceWith(testToken);
+    });
 
-    // it('should call helper to check if token is expired', () => {service.isTokenExpired(testToken);expect(auth0Spy.isTokenExpired).toHaveBeenCalledOnceWith(testToken);});
+    it('should call helper to check if token is expired', () => {
+        service.isTokenExpired(testToken);
+        expect(auth0Spy.isTokenExpired).toHaveBeenCalledOnceWith(testToken);
+    });
 });
