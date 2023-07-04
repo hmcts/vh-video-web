@@ -310,31 +310,6 @@ export class NotificationToastrService {
         return this.generateAudioAlertToastrComponent(message, callback, id, label);
     }
 
-    private generateAudioAlertToastrComponent(message, callback, id, label){
-        const toast = this.toastr.show('', '', {
-            tapToDismiss: false,
-            toastComponent: VhToastComponent,
-            disableTimeOut: true
-        });
-        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
-            color: 'white',
-            htmlBody: message,
-            buttons: [
-                {
-                    id: id,
-                    label: this.translateService.instant(label),
-                    cssClass: 'green',
-                    action: async () => {
-                        this.toastr.remove(toast.toastId);
-                        if(callback)
-                            callback();
-                    }
-                }
-            ]
-        };
-        return toast.toastRef.componentInstance as VhToastComponent;
-    }
-
     showParticipantAdded(participant: ParticipantResponse, inHearing: boolean = false): VhToastComponent {
         const showParty = !!participant.case_type_group;
         const messageBody = this.translateService.instant(
@@ -563,6 +538,32 @@ export class NotificationToastrService {
             ]
         };
 
+        return toast.toastRef.componentInstance as VhToastComponent;
+    }
+
+    private generateAudioAlertToastrComponent(message, callback, id, label) {
+        const toast = this.toastr.show('', '', {
+            tapToDismiss: false,
+            toastComponent: VhToastComponent,
+            disableTimeOut: true
+        });
+        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
+            color: 'white',
+            htmlBody: message,
+            buttons: [
+                {
+                    id: id,
+                    label: this.translateService.instant(label),
+                    cssClass: 'green',
+                    action: async () => {
+                        this.toastr.remove(toast.toastId);
+                        if (callback) {
+                            callback();
+                        }
+                    }
+                }
+            ]
+        };
         return toast.toastRef.componentInstance as VhToastComponent;
     }
 

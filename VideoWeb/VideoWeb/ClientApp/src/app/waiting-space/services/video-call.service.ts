@@ -487,7 +487,7 @@ export class VideoCallService {
         return this.apiClient.getParticipantRoomForParticipant(conferenceId, participantId, 'Judicial').toPromise();
     }
 
-    ConnectWowzaAgent(ingestUrl: string, callbackFn: Function) {
+    connectWowzaAgent(ingestUrl: string, callbackFn: Function) {
         const params = {
             streaming: true,
             call_type: 'audio',

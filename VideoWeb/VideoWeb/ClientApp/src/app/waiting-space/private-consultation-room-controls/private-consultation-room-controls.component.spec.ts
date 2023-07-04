@@ -791,4 +791,12 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             expect(spy).toHaveBeenCalledWith(true, participantServiceSpy.participants);
         });
     });
+
+    describe('killWowza', () => {
+        it('should call video-call service disconnect wowza participant', function () {
+            component.wowzaUUID = '1234';
+            component.killWowza();
+            expect(videoCallService.disconnectWowzaAgent).toHaveBeenCalledWith('1234');
+        });
+    });
 });

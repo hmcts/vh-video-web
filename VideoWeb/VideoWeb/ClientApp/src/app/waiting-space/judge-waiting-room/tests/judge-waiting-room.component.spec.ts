@@ -56,6 +56,7 @@ import { createParticipantRemoteMuteStoreServiceSpy } from '../../services/mock-
 import { ParticipantDeleted, ParticipantUpdated } from '../../models/video-call-models';
 import { PexipDisplayNameModel } from '../../../services/conference/models/pexip-display-name.model';
 import { WaitingRoomBaseDirective } from '../../waiting-room-shared/waiting-room-base.component';
+import { videoCallServiceSpy } from '../../../testing/mocks/mock-video-call.service';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     const participantOneId = Guid.create().toString();
@@ -646,23 +647,62 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             expect(component.audioErrorToastOpen).toBeFalsy();
         });
 
-        it('should display audio recording alert when audio info returns false and hearing must be recorded', async () => {
-            audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(false));
-            component.continueWithNoRecording = false;
-            component.recordingSessionSeconds = 61;
-            component.conference.status = ConferenceStatus.InSession;
-            await component.retrieveAudioStreamInfo(globalConference.id);
-            expect(component.audioErrorToastOpen).toBeTruthy();
+        describe('should display audio recording restart alert, then success toastr', () => {
+            beforeEach(() => {
+                videoCallServiceSpy.connectWowzaAgent.and.callFake((ingestUrl, callback) => callback({ status: 'success' }));
+            });
+
+            it('when audio info returns false and hearing must be recorded', async () => {
+                audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(false));
+                component.continueWithNoRecording = false;
+                component.recordingSessionSeconds = 61;
+                component.conference.status = ConferenceStatus.InSession;
+                await component.retrieveAudioStreamInfo(globalConference.id);
+                await component.reconnectToWowza();
+                expect(component.audioErrorToastOpen).toBeTruthy();
+                expect(notificationToastrService.showAudioRecordingRestartSuccess).toHaveBeenCalled();
+            });
+
+            it('when audio info returns true but wowza listener missing', async () => {
+                component.wowzaAgent = null;
+                audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(true));
+                component.continueWithNoRecording = false;
+                component.recordingSessionSeconds = 61;
+                component.conference.status = ConferenceStatus.InSession;
+                await component.retrieveAudioStreamInfo(globalConference.id);
+                await component.reconnectToWowza();
+                expect(component.audioErrorToastOpen).toBeTruthy();
+                expect(notificationToastrService.showAudioRecordingRestartSuccess).toHaveBeenCalled();
+            });
         });
 
-        it('should display audio recording alert when audio info returns true but wowza listener missing', async () => {
-            component.wowzaAgent = null;
-            audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(true));
-            component.continueWithNoRecording = false;
-            component.recordingSessionSeconds = 61;
-            component.conference.status = ConferenceStatus.InSession;
-            await component.retrieveAudioStreamInfo(globalConference.id);
-            expect(component.audioErrorToastOpen).toBeTruthy();
+        describe('should display audio recording restart alert, then failed toastr', () => {
+            beforeEach(() => {
+                videoCallServiceSpy.connectWowzaAgent.and.callFake((ingestUrl, callback) => callback({ status: 'failed' }));
+            });
+
+            it('when audio info returns false and hearing must be recorded', async () => {
+                audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(false));
+                component.continueWithNoRecording = false;
+                component.recordingSessionSeconds = 61;
+                component.conference.status = ConferenceStatus.InSession;
+                await component.retrieveAudioStreamInfo(globalConference.id);
+                await component.reconnectToWowza();
+                expect(component.audioErrorToastOpen).toBeTruthy();
+                expect(notificationToastrService.showAudioRecordingRestartFailure).toHaveBeenCalled();
+            });
+
+            it('when audio info returns true but wowza listener missing', async () => {
+                component.wowzaAgent = null;
+                audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(true));
+                component.continueWithNoRecording = false;
+                component.recordingSessionSeconds = 61;
+                component.conference.status = ConferenceStatus.InSession;
+                await component.retrieveAudioStreamInfo(globalConference.id);
+                await component.reconnectToWowza();
+                expect(component.audioErrorToastOpen).toBeTruthy();
+                expect(notificationToastrService.showAudioRecordingRestartFailure).toHaveBeenCalled();
+            });
         });
     });
 

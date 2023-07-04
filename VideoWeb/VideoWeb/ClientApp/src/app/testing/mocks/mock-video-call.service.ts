@@ -85,7 +85,9 @@ export const videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>(
         'selectScreenWithMicrophone',
         'stopScreenWithMicrophone',
         'onParticipantCreated',
-        'onParticipantDeleted'
+        'onParticipantDeleted',
+        'connectWowzaAgent',
+        'disconnectWowzaAgent'
     ],
     {
         pexipAPI: pexipApiMock,
