@@ -914,22 +914,19 @@
     "message": "There’s a problem with recording. Some or all of the audio for this hearing may not be recorded."
   },
   "audio-alert-with-restart": {
-    "warning-icon": "warning exclamation mark",
-    "title": "Warning",
-    "message": "Recording has stopped working. Please click below to restart recording..",
-    "button": "Restart"
+      "title": "Warning",
+      "message": "Recording has stopped working. Please click below to restart recording..",
+      "button": "Restart"
   },
   "audio-alert-restart-success": {
-    "warning-icon": "Audio being recorded",
-    "title": "Warning",
-    "message": "The recording has been resumed successfully",
-    "button": "OK"
+      "title": "Audio being recorded",
+      "message": "The recording has been resumed successfully",
+      "button": "OK"
   },
   "audio-alert-restart-failure": {
-    "warning-icon": "Unable to resume recording",
-    "title": "Warning",
-    "message": "Sorry, we’re unable to resume recording. Please revert to alternative recording equipment",
-    "button": "OK"
+      "title": "Unable to resume recording",
+      "message": "Sorry, we’re unable to resume recording. Please revert to alternative recording equipment",
+      "button": "OK"
   },
   "unread-messages": {
     "im-image-alt": "instant message icon"
