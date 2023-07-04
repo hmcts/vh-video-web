@@ -19,6 +19,7 @@ import { Room } from '../../shared/models/room';
 import { RoomTransfer } from '../../shared/models/room-transfer';
 import { NewAllocationMessage } from '../../services/models/new-allocation-message';
 import { ParticipantToggleLocalMuteMessage } from 'src/app/shared/models/participant-toggle-local-mute-message';
+import { EndpointRepMessage } from '../../shared/models/endpoint-rep-message';
 
 export const hearingStatusSubjectMock = new Subject<ConferenceStatusMessage>();
 export const participantStatusSubjectMock = new Subject<ParticipantStatusMessage>();
@@ -44,6 +45,9 @@ export const getParticipantsUpdatedSubjectMock = new Subject<ParticipantsUpdated
 export const hearingLayoutChangedSubjectMock = new Subject<HearingLayoutChanged>();
 export const newAllocationMessageSubjectMock = new Subject<NewAllocationMessage>();
 export const getEndpointsUpdatedMessageSubjectMock = new Subject<EndpointsUpdatedMessage>();
+export const getEndpointUnlinkedUpdatedMock = new Subject<EndpointRepMessage>();
+export const getEndpointLinkedUpdatedMock = new Subject<EndpointRepMessage>();
+export const getEndpointDisconnectUpdatedMock = new Subject<EndpointRepMessage>();
 
 export const eventsServiceSpy = jasmine.createSpyObj<EventsService>(
     'EventsService',
@@ -80,7 +84,10 @@ export const eventsServiceSpy = jasmine.createSpyObj<EventsService>(
         'getHearingLayoutChanged',
         'getAllocationMessage',
         'updateParticipantLocalMuteStatus',
-        'updateAllParticipantLocalMuteStatus'
+        'updateAllParticipantLocalMuteStatus',
+        'getEndpointUnlinkedUpdated',
+        'getEndpointLinkedUpdated',
+        'getEndpointDisconnectUpdated'
     ],
     ['eventHubIsConnected']
 );
@@ -108,3 +115,6 @@ eventsServiceSpy.getHearingLayoutChanged.and.returnValue(hearingLayoutChangedSub
 eventsServiceSpy.getAllocationMessage.and.returnValue(newAllocationMessageSubjectMock.asObservable());
 eventsServiceSpy.getEndpointsUpdated.and.returnValue(getEndpointsUpdatedMessageSubjectMock.asObservable());
 eventsServiceSpy.getParticipantToggleLocalMuteMessage.and.returnValue(participantToggleLocalMuteSubjectMock.asObservable());
+eventsServiceSpy.getEndpointUnlinkedUpdated.and.returnValue(getEndpointUnlinkedUpdatedMock.asObservable());
+eventsServiceSpy.getEndpointLinkedUpdated.and.returnValue(getEndpointLinkedUpdatedMock.asObservable());
+eventsServiceSpy.getEndpointDisconnectUpdated.and.returnValue(getEndpointDisconnectUpdatedMock.asObservable());

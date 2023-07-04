@@ -1197,6 +1197,21 @@
       "message": "Video Access Point has been updated in the hearing",
       "dismiss": "Dismiss"
     },
+    "endpoint-linked": {
+      "title": "Alert",
+      "message": "You have been added as the linked legal representative to {{jvsEndpointName}}",
+      "dismiss": "Dismiss"
+    },
+    "endpoint-unlinked": {
+        "title": "Alert",
+        "message": "You cannot start a consultation with {{jvsEndpointName}} as you are no longer the linked legal representative",
+        "dismiss": "Dismiss"
+    },
+    "endpoint-consultation-closed": {
+        "title": "Alert",
+        "message": "Consultation with {{jvsEndpointName}} has ended as you are no longer the linked legal representative",
+        "dismiss": "Dismiss"
+    },
     "hearing-layout-changed": {
       "title": "{{name}}",
       "message": "has changed the hearing layout.",

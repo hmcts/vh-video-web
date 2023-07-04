@@ -450,6 +450,36 @@ export class NotificationToastrService {
         return this.showEndpointToast(toastTitle, toastBody, inHearing, buttonId, buttonLabel);
     }
 
+    showEndpointLinked(endpoint: string, inHearing: boolean = false): VhToastComponent {
+        const toastTitle = this.translateService.instant('notification-toastr.endpoint-linked.title');
+        const toastBody = this.translateService.instant('notification-toastr.endpoint-linked.message', {
+            jvsEndpointName: endpoint
+        });
+        const buttonId = 'notification-toastr-endpoint-linked-dismiss';
+        const buttonLabel = this.translateService.instant('notification-toastr.endpoint-linked.dismiss');
+        return this.showEndpointToast(toastTitle, toastBody, inHearing, buttonId, buttonLabel);
+    }
+
+    showEndpointUnlinked(endpoint: string, inHearing: boolean = false): VhToastComponent {
+        const toastTitle = this.translateService.instant('notification-toastr.endpoint-unlinked.title');
+        const toastBody = this.translateService.instant('notification-toastr.endpoint-unlinked.message', {
+            jvsEndpointName: endpoint
+        });
+        const buttonId = 'notification-toastr-endpoint-unlinked-dismiss';
+        const buttonLabel = this.translateService.instant('notification-toastr.endpoint-unlinked.dismiss');
+        return this.showEndpointToast(toastTitle, toastBody, inHearing, buttonId, buttonLabel);
+    }
+
+    showEndpointConsultationClosed(endpoint: string, inHearing: boolean = false): VhToastComponent {
+        const toastTitle = this.translateService.instant('notification-toastr.endpoint-consultation-closed.title');
+        const toastBody = this.translateService.instant('notification-toastr.endpoint-consultation-closed.message', {
+            jvsEndpointName: endpoint
+        });
+        const buttonId = 'notification-toastr-endpoint-consultation-closed-dismiss';
+        const buttonLabel = this.translateService.instant('notification-toastr.endpoint-consultation-closed.dismiss');
+        return this.showEndpointToast(toastTitle, toastBody, inHearing, buttonId, buttonLabel);
+    }
+
     showHearingLayoutchanged(participant: ParticipantResponse, inHearing: boolean = false): VhToastComponent {
         const messageBody = this.translateService.instant('notification-toastr.hearing-layout-changed.message');
         let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${this.translateService.instant(
