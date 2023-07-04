@@ -274,34 +274,6 @@ export class NotificationToastrService {
         };
     }
 
-    showAudioRecordingError(callback: Function) {
-        this.logger.debug(`${this.loggerPrefix} creating 'audio recording error' toastr notification`);
-
-        let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('audio-alert.title')}</span>`;
-        message += `<br/>${this.translateService.instant('audio-alert.message')}<br/>`;
-        const toast = this.toastr.show('', '', {
-            tapToDismiss: false,
-            toastComponent: VhToastComponent,
-            disableTimeOut: true
-        });
-        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
-            color: 'white',
-            htmlBody: message,
-            buttons: [
-                {
-                    id: 'notification-toastr-audio-recording-error.dismiss',
-                    label: this.translateService.instant('notification-toastr.poor-connection.dismiss'),
-                    cssClass: 'green',
-                    action: async () => {
-                        this.toastr.remove(toast.toastId);
-                        callback();
-                    }
-                }
-            ]
-        };
-        return toast.toastRef.componentInstance as VhToastComponent;
-    }
-
     showAudioRecordingErrorWithRestart(callback: Function) {
         this.logger.debug(`${this.loggerPrefix} creating 'audio recording error with restart' toastr notification`);
 
@@ -354,6 +326,7 @@ export class NotificationToastrService {
                 }
             ]
         };
+        return toast.toastRef.componentInstance as VhToastComponent;
     }
 
     showAudioRecordingRestartFailure(callback: Function) {
@@ -381,6 +354,7 @@ export class NotificationToastrService {
                 }
             ]
         };
+        return toast.toastRef.componentInstance as VhToastComponent;
     }
 
     showParticipantAdded(participant: ParticipantResponse, inHearing: boolean = false): VhToastComponent {

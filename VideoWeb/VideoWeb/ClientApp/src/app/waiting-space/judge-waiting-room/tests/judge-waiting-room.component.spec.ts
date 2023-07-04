@@ -285,7 +285,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         component.participant = participant;
         component.connected = true; // assume connected to pexip
         videoWebService.getConferenceById.calls.reset();
-        notificationToastrService.showAudioRecordingError.calls.reset();
+        notificationToastrService.showAudioRecordingErrorWithRestart.calls.reset();
     });
 
     afterEach(() => {
@@ -523,7 +523,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
             component.ngOnInit();
             expect(component.audioErrorToastOpen).toBe(true);
-            expect(notificationToastrService.showAudioRecordingError).toHaveBeenCalled();
+            expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalled();
         });
     });
 
@@ -535,7 +535,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         it('should continue with no recording when judge dismisses the audio recording alert mid hearing', async () => {
             const toast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', { actioned: true });
-            notificationToastrService.showAudioRecordingError.and.returnValue(toast);
+            notificationToastrService.showAudioRecordingErrorWithRestart.and.returnValue(toast);
             audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(false));
             component.recordingSessionSeconds = 61;
             component.conference.status = ConferenceStatus.InSession;
@@ -549,7 +549,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         it('should only display one toast for audio recording issues', async () => {
             const toast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', { actioned: true });
-            notificationToastrService.showAudioRecordingError.and.returnValue(toast);
+            notificationToastrService.showAudioRecordingErrorWithRestart.and.returnValue(toast);
             audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(false));
             component.recordingSessionSeconds = 61;
             component.conference.status = ConferenceStatus.InSession;
@@ -558,13 +558,13 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             await component.retrieveAudioStreamInfo(globalConference.id);
 
             expect(component.audioErrorToastOpen).toBeTruthy();
-            expect(notificationToastrService.showAudioRecordingError).toHaveBeenCalledTimes(1);
+            expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalledTimes(1);
         });
 
         it('should update toast visibility variable on auto dimiss ', async () => {
             const toast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', { actioned: false });
             toast.actioned = false;
-            notificationToastrService.showAudioRecordingError.and.returnValue(toast);
+            notificationToastrService.showAudioRecordingErrorWithRestart.and.returnValue(toast);
             audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(false));
             component.recordingSessionSeconds = 61;
             component.conference.status = ConferenceStatus.InSession;
@@ -583,7 +583,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             component.conference.status = ConferenceStatus.InSession;
             await component.retrieveAudioStreamInfo(globalConference.id);
             expect(component.audioErrorToastOpen).toBeTruthy();
-            expect(notificationToastrService.showAudioRecordingError).toHaveBeenCalled();
+            expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalled();
             expect(audioRecordingService.getAudioStreamInfo).toHaveBeenCalled();
         });
 
@@ -593,7 +593,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             component.conference.status = ConferenceStatus.InSession;
             await component.retrieveAudioStreamInfo(globalConference.id);
             expect(component.audioErrorToastOpen).toBeFalsy();
-            expect(notificationToastrService.showAudioRecordingError).not.toHaveBeenCalled();
+            expect(notificationToastrService.showAudioRecordingErrorWithRestart).not.toHaveBeenCalled();
             expect(audioRecordingService.getAudioStreamInfo).not.toHaveBeenCalled();
         });
 
@@ -604,7 +604,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             component.continueWithNoRecording = true;
             await component.retrieveAudioStreamInfo(globalConference.id);
             expect(component.audioErrorToastOpen).toBeFalsy();
-            expect(notificationToastrService.showAudioRecordingError).not.toHaveBeenCalled();
+            expect(notificationToastrService.showAudioRecordingErrorWithRestart).not.toHaveBeenCalled();
             expect(audioRecordingService.getAudioStreamInfo).not.toHaveBeenCalled();
         });
 
@@ -614,7 +614,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             component.conference.status = ConferenceStatus.Paused;
             await component.retrieveAudioStreamInfo(globalConference.id);
             expect(component.audioErrorToastOpen).toBeFalsy();
-            expect(notificationToastrService.showAudioRecordingError).toHaveBeenCalledTimes(0);
+            expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalledTimes(0);
             expect(audioRecordingService.getAudioStreamInfo).not.toHaveBeenCalled();
         });
 

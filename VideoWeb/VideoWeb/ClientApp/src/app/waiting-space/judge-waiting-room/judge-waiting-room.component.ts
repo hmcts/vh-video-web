@@ -55,7 +55,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     displayConfirmStartHearingPopup: boolean;
 
     unreadMessageCount = 0;
-    audioErrorToast: VhToastComponent;
     audioErrorRetryToast: VhToastComponent;
     onParticipantOrVmrPexipConnectedOrIdUpdatedSubscription: Subscription;
     hearingCountdownFinishedSubscription: Subscription;
@@ -358,7 +357,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             this.continueWithNoRecording = true;
         }
         this.audioErrorToastOpen = false;
-        this.audioErrorToast = null;
     }
 
     async retrieveAudioStreamInfo(hearingId): Promise<void> {
@@ -456,7 +454,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             )
             .subscribe(createdParticipant => {
                 this.assignPexipIdToRemoteStore(createdParticipant);
-                if (createdParticipant.pexipDisplayName.includes(this.videoCallService.wowzaAgent)) {
+                if (createdParticipant.pexipDisplayName.includes(this.videoCallService.wowzaAgentName)) {
                     this.wowzaAgent = createdParticipant;
                     this.participants.push(createdParticipant);
                     this.logger.debug(`${this.loggerPrefixJudge} WowzaListener added`, {

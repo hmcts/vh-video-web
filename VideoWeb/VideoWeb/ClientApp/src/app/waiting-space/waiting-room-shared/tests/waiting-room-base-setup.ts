@@ -120,7 +120,7 @@ export function initAllWRDependencies() {
         'showConsultationRejectedByLinkedParticipant',
         'showWaitingForLinkedParticipantsToAccept',
         'reportPoorConnection',
-        'showAudioRecordingError',
+        'showAudioRecordingErrorWithRestart',
         'showParticipantAdded',
         'showEndpointAdded',
         'showEndpointUpdated',

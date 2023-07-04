@@ -88,7 +88,8 @@ export const videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>(
         'onParticipantDeleted'
     ],
     {
-        pexipAPI: pexipApiMock
+        pexipAPI: pexipApiMock,
+        wowzaAgentName: 'vh-wowza'
     }
 );
 

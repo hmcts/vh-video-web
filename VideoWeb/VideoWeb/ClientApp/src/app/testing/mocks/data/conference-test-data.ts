@@ -1283,7 +1283,8 @@ export class ConferenceTestData {
             participant_uri: 'participant@kinly.com',
             pexip_node_uri: 'node@kinly.com',
             hearing_venue_name: 'venue name',
-            endpoints: endpoints
+            endpoints: endpoints,
+            ingest_url: 'rtmp://vh-wowza-node/hearing_id'
         });
     }
 }
