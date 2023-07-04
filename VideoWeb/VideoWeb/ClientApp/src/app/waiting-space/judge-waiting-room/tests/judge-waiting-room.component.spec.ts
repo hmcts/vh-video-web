@@ -514,7 +514,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         });
         it('Should set wowza listener property when participant exists in onParticipantCreated callback', () => {
             component.ngOnInit();
-            expect(component.wowzaListener).toBeTruthy();
+            expect(component.wowzaAgent).toBeTruthy();
         });
 
         it('Should display audio alert if wowza listener is deleted', () => {
@@ -530,7 +530,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     describe('Audio Alert tests', () => {
         beforeEach(() => {
             component.showVideo = true;
-            component.wowzaListener = ParticipantUpdated.fromPexipParticipant(wowzaParticipant);
+            component.wowzaAgent = ParticipantUpdated.fromPexipParticipant(wowzaParticipant);
         });
 
         it('should continue with no recording when judge dismisses the audio recording alert mid hearing', async () => {
@@ -656,7 +656,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         });
 
         it('should display audio recording alert when audio info returns true but wowza listener missing', async () => {
-            component.wowzaListener = null;
+            component.wowzaAgent = null;
             audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(true));
             component.continueWithNoRecording = false;
             component.recordingSessionSeconds = 61;

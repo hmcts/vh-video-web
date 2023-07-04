@@ -118,6 +118,6 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     }
 
     killWowza() {
-        this.videoCallService.disconnectWowzaListener(this.wowzaUUID);
+        this.videoCallService.disconnectWowzaAgent(this.wowzaUUID);
     }
 }

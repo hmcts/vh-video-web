@@ -37,6 +37,7 @@ export class VideoCallService {
 
     pexipAPI: PexipClient;
     streamModifiedSubscription: Subscription;
+    WOWZA_AGENT_NAME = 'vh-wowza'
 
     private readonly loggerPrefix = '[VideoCallService] -';
     private readonly preferredLayoutCache: SessionStorage<Record<string, HearingLayout>>;
@@ -486,15 +487,16 @@ export class VideoCallService {
         return this.apiClient.getParticipantRoomForParticipant(conferenceId, participantId, 'Judicial').toPromise();
     }
 
-    ConnectWowzaListener(ingestUrl: string, callbackFn: Function) {
+    ConnectWowzaAgent(ingestUrl: string, callbackFn: Function) {
         const params = {
             streaming: true,
-            call_type: 'audio'
+            call_type: 'audio',
+            remote_display_name: this.WOWZA_AGENT_NAME
         };
         this.pexipAPI.dialOut(ingestUrl, 'auto', '', callbackFn, params);
     }
 
-    disconnectWowzaListener(wowzaUUID: string) {
+    disconnectWowzaAgent(wowzaUUID: string) {
         // For test purposes only
         this.pexipAPI.disconnectParticipant(wowzaUUID);
     }

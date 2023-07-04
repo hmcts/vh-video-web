@@ -62,10 +62,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     conferenceStatusChangedSubscription: Subscription;
     participantStatusChangedSubscription: Subscription;
     onConferenceStatusChangedSubscription: Subscription;
-    wowzaListener: ParticipantUpdated;
+    wowzaAgent: ParticipantUpdated;
     participants: ParticipantUpdated[] = [];
 
-    private wowzaName = 'vh-wowza';
     private readonly loggerPrefixJudge = '[Judge WR] -';
     private destroyedSubject = new Subject();
 
@@ -376,7 +375,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId, this.conference.ingest_url.includes('vh-recording'));
                 this.logger.info(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
                 // if recorder not found on a wowza vm and returns false OR wowzaListener participant is not present in conference
-                if ((!this.wowzaListener || !audioStreamWorking) && !this.continueWithNoRecording && this.showVideo) {
+                if ((!this.wowzaAgent || !audioStreamWorking) && !this.continueWithNoRecording && this.showVideo) {
                     this.logger.warn(`${this.loggerPrefixJudge} not recording when expected, show alert`, {
                         conference: this.conferenceId
                     });
@@ -453,8 +452,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             )
             .subscribe(createdParticipant => {
                 this.assignPexipIdToRemoteStore(createdParticipant);
-                if (createdParticipant.pexipDisplayName.includes(this.wowzaName)) {
-                    this.wowzaListener = createdParticipant;
+                if (createdParticipant.pexipDisplayName.includes(this.videoCallService.WOWZA_AGENT_NAME)) {
+                    this.wowzaAgent = createdParticipant;
                     this.participants.push(createdParticipant);
                     this.logger.debug(`${this.loggerPrefixJudge} WowzaListener added`, {
                         pexipId: createdParticipant.uuid,
@@ -477,16 +476,16 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             .subscribe(updatedParticipant => this.assignPexipIdToRemoteStore(updatedParticipant));
 
         this.videoCallService.onParticipantDeleted().subscribe(deletedParticipant => {
-            if (this.wowzaListener) {
-                if (deletedParticipant.uuid === this.wowzaListener.uuid && this.conference.audio_recording_required) {
+            if (this.wowzaAgent) {
+                if (deletedParticipant.uuid === this.wowzaAgent.uuid && this.conference.audio_recording_required) {
                     this.logger.warn(
                         `${this.loggerPrefixJudge} WowzaListener removed: ParticipantDeleted callback received for participant from Pexip`,
                         {
-                            pexipId: this.wowzaListener?.uuid,
-                            dispayName: this.wowzaListener?.pexipDisplayName
+                            pexipId: this.wowzaAgent?.uuid,
+                            dispayName: this.wowzaAgent?.pexipDisplayName
                         }
                     );
-                    this.wowzaListener = null;
+                    this.wowzaAgent = null;
                     this.showAudioRecordingRestartAlert();
                 }
             }
@@ -599,7 +598,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     private reconnectToWowza() {
-        this.videoCallService.ConnectWowzaListener(this.conference.ingest_url, (msg) => {
+        this.videoCallService.ConnectWowzaAgent(this.conference.ingest_url, (msg) => {
             if (msg.status === 'failed') {
                 this.notificationToastrService.showAudioRecordingRestartFailure(this.continueWithNoRecordingCallback.bind(this));
             } else {
