@@ -372,17 +372,21 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         if (this.recordingSessionSeconds > 20 && !this.continueWithNoRecording) {
             this.logger.info(`${this.loggerPrefixJudge} Attempting to retrieve audio stream info for ${hearingId}`);
             try {
-                const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId, this.conference.ingest_url.includes('vh-recording'));
+                const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(
+                    hearingId,
+                    this.conference.ingest_url.includes('vh-recording')
+                );
                 this.logger.info(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
                 // if recorder not found on a wowza vm and returns false OR wowzaListener participant is not present in conference
                 if ((!this.wowzaAgent || !audioStreamWorking) && !this.continueWithNoRecording && this.showVideo) {
                     this.logger.warn(`${this.loggerPrefixJudge} not recording when expected, show alert`, {
                         conference: this.conferenceId
                     });
-                    if(this.audioErrorRetryToast?.actioned)
+                    if (this.audioErrorRetryToast?.actioned) {
                         this.notificationToastrService.showAudioRecordingRestartFailure(this.continueWithNoRecordingCallback.bind(this));
-                    else
+                    } else {
                         this.showAudioRecordingRestartAlert();
+                    }
                 }
             } catch (error) {
                 this.logger.error(`${this.loggerPrefixJudge} Failed to get audio stream info.`, error, { conference: this.conferenceId });
@@ -452,7 +456,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             )
             .subscribe(createdParticipant => {
                 this.assignPexipIdToRemoteStore(createdParticipant);
-                if (createdParticipant.pexipDisplayName.includes(this.videoCallService.WOWZA_AGENT_NAME)) {
+                if (createdParticipant.pexipDisplayName.includes(this.videoCallService.wowzaAgent)) {
                     this.wowzaAgent = createdParticipant;
                     this.participants.push(createdParticipant);
                     this.logger.debug(`${this.loggerPrefixJudge} WowzaListener added`, {
@@ -591,14 +595,15 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     private showAudioRecordingRestartAlert() {
-        if (this.audioErrorRetryToast)
+        if (this.audioErrorRetryToast) {
             return;
+        }
         this.audioErrorToastOpen = true;
         this.audioErrorRetryToast = this.notificationToastrService.showAudioRecordingErrorWithRestart(this.reconnectToWowza.bind(this));
     }
 
     private reconnectToWowza() {
-        this.videoCallService.ConnectWowzaAgent(this.conference.ingest_url, (msg) => {
+        this.videoCallService.ConnectWowzaAgent(this.conference.ingest_url, msg => {
             if (msg.status === 'failed') {
                 this.notificationToastrService.showAudioRecordingRestartFailure(this.continueWithNoRecordingCallback.bind(this));
             } else {

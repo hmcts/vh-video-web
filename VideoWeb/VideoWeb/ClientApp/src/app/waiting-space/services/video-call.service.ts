@@ -37,7 +37,7 @@ export class VideoCallService {
 
     pexipAPI: PexipClient;
     streamModifiedSubscription: Subscription;
-    WOWZA_AGENT_NAME = 'vh-wowza'
+    wowzaAgent = 'vh-wowza';
 
     private readonly loggerPrefix = '[VideoCallService] -';
     private readonly preferredLayoutCache: SessionStorage<Record<string, HearingLayout>>;
@@ -491,7 +491,7 @@ export class VideoCallService {
         const params = {
             streaming: true,
             call_type: 'audio',
-            remote_display_name: this.WOWZA_AGENT_NAME
+            remote_display_name: this.wowzaAgent
         };
         this.pexipAPI.dialOut(ingestUrl, 'auto', '', callbackFn, params);
     }

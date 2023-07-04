@@ -137,10 +137,10 @@ declare interface PexipClient {
      */
     getPresentation();
 
-    //Disconnect a given participant. Only available to users with "chair" (Host) rights.
+    // Disconnect a given participant. Only available to users with "chair" (Host) rights.
     disconnectParticipant(uuid);
 
-    //Dial out from the conference. And stream to external URL. Only available to users with "chair" (Host) rights.
+    // Dial out from the conference. And stream to external URL. Only available to users with "chair" (Host) rights.
     dialOut(destination, protocol, role, cb, user_params);
 }
 
