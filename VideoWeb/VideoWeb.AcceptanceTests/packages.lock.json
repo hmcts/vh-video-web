@@ -287,8 +287,8 @@
       },
       "BookingsApi.Client": {
         "type": "Transitive",
-        "resolved": "1.44.6",
-        "contentHash": "pr59SEWnlnkGyZmilLh+6JiUEZqLXn6iic5NVTEjO22VFs3Qij0RfZ2q+fotW2rk/tVcs0P2WGITt9kulBm5SQ==",
+        "resolved": "1.45.7-pr-0658-0010",
+        "contentHash": "8W5Yd7k0CyiNCsFV1qMddIn4gp2+n4vPCR98S95pVuixScmbJnf6CNAMPuu6tUGxzIsHoYz5ZG2Ggs54IUb/Nw==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5"
         }
@@ -2341,7 +2341,7 @@
       "videoweb.common": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Client": "[1.44.6, )",
+          "BookingsApi.Client": "[1.45.7-pr-0658-0010, )",
           "Microsoft.ApplicationInsights": "[2.16.0, )",
           "Microsoft.ApplicationInsights.AspNetCore": "[2.16.0, )",
           "Microsoft.AspNetCore.SignalR": "[1.1.0, )",
