@@ -95,7 +95,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     beforeAll(() => {
         featureFlagServiceSpy = jasmine.createSpyObj<FeatureFlagService>('FeatureFlagService', ['getFeatureFlagByName']);
         featureFlagServiceSpy.getFeatureFlagByName.and.returnValue(of(true));
-        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.wowzaKillButton).and.returnValue(of(true));
+        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.wowzaKillButton, false).and.returnValue(of(true));
     });
     beforeEach(() => {
         clientSettingsResponse = new ClientSettingsResponse({
