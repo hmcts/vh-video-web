@@ -473,7 +473,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             .subscribe(updatedParticipant => this.assignPexipIdToRemoteStore(updatedParticipant));
 
         this.videoCallService.onParticipantDeleted().subscribe(deletedParticipant => {
-            if (this.wowzaListener) {
+            if (this.wowzaListener && this.conference.status == ConferenceStatus.InSession) {
                 if (deletedParticipant.uuid === this.wowzaListener.uuid && this.conference.audio_recording_required) {
                     this.logger.warn(
                         `${this.loggerPrefixJudge} WowzaListener removed: ParticipantDeleted callback received for participant from Pexip`,
