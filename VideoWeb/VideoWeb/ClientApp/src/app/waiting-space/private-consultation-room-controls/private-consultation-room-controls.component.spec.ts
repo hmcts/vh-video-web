@@ -43,7 +43,7 @@ import { ConfigService } from 'src/app/services/api/config.service';
 import { FeatureFlagService } from 'src/app/services/feature-flag.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
-import {FEATURE_FLAGS, LaunchDarklyService} from '../../services/launch-darkly.service';
+import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
     const participantOneId = Guid.create().toString();
