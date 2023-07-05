@@ -496,8 +496,10 @@ export class VideoCallService {
         this.pexipAPI.dialOut(ingestUrl, 'auto', '', callbackFn, params);
     }
 
+    /**
+     * Disconnects the audio recording agent for wowza. Should only be used for testing
+     * @param wowzaUUID string - pexip id of the wowza participant **/
     disconnectWowzaAgent(wowzaUUID: string) {
-        // For test purposes only
         this.pexipAPI.disconnectParticipant(wowzaUUID);
     }
 

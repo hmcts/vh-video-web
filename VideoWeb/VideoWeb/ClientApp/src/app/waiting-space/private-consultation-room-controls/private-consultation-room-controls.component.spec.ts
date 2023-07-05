@@ -43,7 +43,7 @@ import { ConfigService } from 'src/app/services/api/config.service';
 import { FeatureFlagService } from 'src/app/services/feature-flag.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
-import { LaunchDarklyService } from '../../services/launch-darkly.service';
+import {FEATURE_FLAGS, LaunchDarklyService} from '../../services/launch-darkly.service';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -75,7 +75,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     const onScreenshareStoppedSubject = onScreenshareStoppedMock;
 
     const logger: Logger = new MockLogger();
-    const ldSpy = jasmine.createSpyObj<LaunchDarklyService>(['getFlag']);
+    const launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>(['getFlag']);
 
     const testData = new VideoCallTestData();
     const translateService = translateServiceSpy;
@@ -95,7 +95,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     beforeAll(() => {
         featureFlagServiceSpy = jasmine.createSpyObj<FeatureFlagService>('FeatureFlagService', ['getFeatureFlagByName']);
         featureFlagServiceSpy.getFeatureFlagByName.and.returnValue(of(true));
-        ldSpy.getFlag.and.returnValue(of(true));
+        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.wowzaKillButton).and.returnValue(of(true));
     });
     beforeEach(() => {
         clientSettingsResponse = new ClientSettingsResponse({
@@ -147,7 +147,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             configServiceSpy,
             featureFlagServiceSpy,
             videoControlCacheSpy,
-            ldSpy
+            launchDarklyServiceSpy
         );
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;
@@ -258,7 +258,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             configServiceSpy,
             featureFlagServiceSpy,
             videoControlCacheSpy,
-            ldSpy
+            launchDarklyServiceSpy
         );
         expect(_component.enableDynamicEvidenceSharing).toBe(false);
     });
@@ -284,7 +284,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             configServiceSpy,
             featureFlagServiceSpy,
             videoControlCacheSpy,
-            ldSpy
+            launchDarklyServiceSpy
         );
         expect(_component.enableDynamicEvidenceSharing).toBe(true);
     });

@@ -50,7 +50,7 @@ import { VideoControlCacheService } from '../../services/conference/video-contro
 import { SessionStorage } from 'src/app/services/session-storage';
 import { VhoStorageKeys } from 'src/app/vh-officer/services/models/session-keys';
 import { ParticipantToggleLocalMuteMessage } from 'src/app/shared/models/participant-toggle-local-mute-message';
-import { LaunchDarklyService } from '../../services/launch-darkly.service';
+import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 
 describe('HearingControlsBaseComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -86,7 +86,7 @@ describe('HearingControlsBaseComponent', () => {
     const deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', ['isDesktop', 'getBrowserName']);
 
     const logger: Logger = new MockLogger();
-    const ldSpy = jasmine.createSpyObj<LaunchDarklyService>(['getFlag']);
+    const launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>(['getFlag']);
 
     const testData = new VideoCallTestData();
     let conference: ConferenceResponse;
@@ -143,7 +143,7 @@ describe('HearingControlsBaseComponent', () => {
 
         featureFlagServiceSpy = jasmine.createSpyObj<FeatureFlagService>('FeatureFlagService', ['getFeatureFlagByName']);
         featureFlagServiceSpy.getFeatureFlagByName.and.returnValue(of(true));
-        ldSpy.getFlag.and.returnValue(of(true));
+        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.wowzaKillButton).and.returnValue(of(true));
 
         component = new PrivateConsultationRoomControlsComponent(
             videoCallService,
@@ -158,7 +158,7 @@ describe('HearingControlsBaseComponent', () => {
             configServiceSpy,
             featureFlagServiceSpy,
             videoControlCacheSpy,
-            ldSpy
+            launchDarklyServiceSpy
         );
         conference = new ConferenceTestData().getConferenceNow();
         component.participant = globalParticipant;
