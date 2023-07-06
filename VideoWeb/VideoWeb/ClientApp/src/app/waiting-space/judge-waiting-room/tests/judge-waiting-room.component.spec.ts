@@ -519,11 +519,22 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         it('Should display audio alert if wowza listener is deleted', () => {
             videoCallService.onParticipantDeleted.and.returnValue(of(new ParticipantDeleted(wowzaParticipant.uuid)));
+            component.conference.status = ConferenceStatus.InSession;
             component.conference.audio_recording_required = true;
 
             component.ngOnInit();
             expect(component.audioErrorToastOpen).toBe(true);
             expect(notificationToastrService.showAudioRecordingError).toHaveBeenCalled();
+        });
+
+        it('Should not display audio alert if wowza listener is deleted, but conference is not in session', () => {
+            videoCallService.onParticipantDeleted.and.returnValue(of(new ParticipantDeleted(wowzaParticipant.uuid)));
+            component.conference.status = ConferenceStatus.Paused;
+            component.conference.audio_recording_required = true;
+
+            component.ngOnInit();
+            expect(component.audioErrorToastOpen).toBe(false);
+            expect(notificationToastrService.showAudioRecordingError).not.toHaveBeenCalled();
         });
     });
 
