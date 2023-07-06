@@ -535,7 +535,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
             component.ngOnInit();
             expect(component.audioErrorToastOpen).toBe(false);
-            expect(notificationToastrService.showAudioRecordingError).not.toHaveBeenCalled();
+            expect(notificationToastrService.showAudioRecordingErrorWithRestart).not.toHaveBeenCalled();
         });
     });
 
