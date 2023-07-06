@@ -581,8 +581,8 @@ describe('NotificationToastrService', () => {
                 }
             } as ActiveToast<VhToastComponent>;
             toastrService.show.and.returnValue(mockToast);
-
-            const result = service.showAudioRecordingRestartSuccess();
+            const callback = jasmine.createSpy();
+            const result = service.showAudioRecordingRestartSuccess(callback);
 
             expect(result).toBeDefined();
             expect(result.vhToastOptions.htmlBody).toContain('audio-alert-restart-success.message');

@@ -286,7 +286,7 @@ export class NotificationToastrService {
         return this.generateAudioAlertToastrComponent(message, callback, id, label);
     }
 
-    showAudioRecordingRestartSuccess() {
+    showAudioRecordingRestartSuccess(callback: Function) {
         this.logger.debug(`${this.loggerPrefix} creating 'audio recording restart success' toastr notification`);
 
         let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('audio-alert-restart-success.title')}</span>`;
@@ -295,7 +295,7 @@ export class NotificationToastrService {
         const id = 'notification-toastr-audio-recording-error-restart-success.dismiss';
         const label = 'audio-alert-restart-success.button';
 
-        return this.generateAudioAlertToastrComponent(message, null, id, label);
+        return this.generateAudioAlertToastrComponent(message, callback(false), id, label);
     }
 
     showAudioRecordingRestartFailure(callback: Function) {

@@ -542,7 +542,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             component.conference.status = ConferenceStatus.InSession;
             await component.retrieveAudioStreamInfo(globalConference.id);
 
-            component.continueWithNoRecordingCallback();
+            component.audioRestartCallback();
 
             expect(component.audioErrorToastOpen).toBeFalsy();
             expect(component.continueWithNoRecording).toBeTruthy();
@@ -572,7 +572,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             await component.retrieveAudioStreamInfo(globalConference.id);
             component.continueWithNoRecording = false;
 
-            component.continueWithNoRecordingCallback();
+            component.audioRestartCallback();
 
             expect(component.audioErrorToastOpen).toBeFalsy();
             expect(component.continueWithNoRecording).toBeFalsy();
