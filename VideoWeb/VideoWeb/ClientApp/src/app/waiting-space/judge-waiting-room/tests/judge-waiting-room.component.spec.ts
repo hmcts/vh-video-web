@@ -583,7 +583,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             expect(audioRecordingService.getAudioStreamInfo).toHaveBeenCalled();
         });
 
-        it('should not display audio recording alert before 60 seconds has passed', async () => {
+        it('should not display audio recording alert before 20 seconds has passed', async () => {
             audioRecordingService.getAudioStreamInfo.calls.reset();
             component.recordingSessionSeconds = 0;
             component.conference.status = ConferenceStatus.InSession;
