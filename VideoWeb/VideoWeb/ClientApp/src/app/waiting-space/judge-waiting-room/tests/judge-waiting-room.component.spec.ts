@@ -553,7 +553,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             component.conference.status = ConferenceStatus.InSession;
             await component.retrieveAudioStreamInfo(globalConference.id);
 
-            component.audioRestartCallback();
+            component.audioRestartCallback(false);
 
             expect(component.audioErrorToastOpen).toBeFalsy();
             expect(component.continueWithNoRecording).toBeTruthy();
@@ -571,22 +571,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
             expect(component.audioErrorToastOpen).toBeTruthy();
             expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalledTimes(1);
-        });
-
-        it('should update toast visibility variable on auto dimiss ', async () => {
-            const toast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', { actioned: false });
-            toast.actioned = false;
-            notificationToastrService.showAudioRecordingErrorWithRestart.and.returnValue(toast);
-            audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(false));
-            component.recordingSessionSeconds = 61;
-            component.conference.status = ConferenceStatus.InSession;
-            await component.retrieveAudioStreamInfo(globalConference.id);
-            component.continueWithNoRecording = false;
-
-            component.audioRestartCallback();
-
-            expect(component.audioErrorToastOpen).toBeFalsy();
-            expect(component.continueWithNoRecording).toBeFalsy();
         });
 
         it('should display audio recording alert when audio info returns false and hearing must be recorded', async () => {

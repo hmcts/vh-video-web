@@ -56,6 +56,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     unreadMessageCount = 0;
     audioErrorRetryToast: VhToastComponent;
+    audioErrorRetrySuccessToast: VhToastComponent;
+    audioErrorRetryFailureToast: VhToastComponent;
     onParticipantOrVmrPexipConnectedOrIdUpdatedSubscription: Subscription;
     hearingCountdownFinishedSubscription: Subscription;
     conferenceStatusChangedSubscription: Subscription;
@@ -352,22 +354,25 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         }, this.audioStreamIntervalSeconds * 1000);
     }
 
-    audioRestartCallback(continueWithNoRecording: boolean) {
-        if (this.audioErrorRetryToast.actioned) {
-            this.continueWithNoRecording = continueWithNoRecording;
+    audioRestartCallback(continueWithRecording: boolean) {
+        this.continueWithNoRecording = !continueWithRecording;
+        if (!continueWithRecording) {
+            this.initAudioRecordingInterval();
         }
+
         this.audioErrorToastOpen = false;
     }
 
     async retrieveAudioStreamInfo(hearingId): Promise<void> {
         if (this.conference.status === ConferenceStatus.InSession) {
+            this.logger.debug(`${this.loggerPrefixJudge} Recording Session Seconds: ${this.recordingSessionSeconds}`);
             this.recordingSessionSeconds += this.audioStreamIntervalSeconds;
         } else {
             this.recordingSessionSeconds = 0;
             this.continueWithNoRecording = false;
         }
 
-        if (this.recordingSessionSeconds > 10 && !this.continueWithNoRecording && !this.audioErrorToastOpen) {
+        if (this.recordingSessionSeconds > 20 && !this.continueWithNoRecording) {
             this.logger.info(`${this.loggerPrefixJudge} Attempting to retrieve audio stream info for ${hearingId}`);
             try {
                 const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(
@@ -376,18 +381,13 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 );
                 this.logger.info(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
                 // if recorder not found on a wowza vm and returns false OR wowzaListener participant is not present in conference
-                if (
-                    (!this.wowzaAgent || !audioStreamWorking) &&
-                    this.showVideo &&
-                    !this.continueWithNoRecording &&
-                    !this.audioErrorToastOpen
-                ) {
-                    this.logger.warn(`${this.loggerPrefixJudge} not recording when expected, show alert`, {
+                if ((!this.wowzaAgent || !audioStreamWorking) && this.showVideo && !this.audioErrorToastOpen) {
+                    this.logger.warn(`${this.loggerPrefixJudge} mot recording when expected, show alert`, {
                         showVideo: this.showVideo,
                         continueWithNoRecording: this.continueWithNoRecording,
                         audioErrorToastOpen: this.audioErrorToastOpen
                     });
-                    if (this.audioErrorRetryToast?.actioned) {
+                    if (this.audioErrorRetryToast?.actioned && !this.audioErrorRetryFailureToast) {
                         this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
                     } else {
                         this.showAudioRecordingRestartAlert();
@@ -438,10 +438,14 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     reconnectToWowza() {
         this.videoCallService.connectWowzaAgent(this.conference.ingest_url, msg => {
-            if (msg.status === 'success') {
-                this.notificationToastrService.showAudioRecordingRestartSuccess(this.audioRestartCallback.bind(this));
-            } else {
-                this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
+            if (msg.status === 'success' && !this.audioErrorRetrySuccessToast) {
+                this.audioErrorRetrySuccessToast = this.notificationToastrService.showAudioRecordingRestartSuccess(
+                    this.audioRestartCallback.bind(this)
+                );
+            } else if (!this.audioErrorRetryFailureToast) {
+                this.audioErrorRetryFailureToast = this.notificationToastrService.showAudioRecordingRestartFailure(
+                    this.audioRestartCallback.bind(this)
+                );
             }
         });
     }
@@ -621,6 +625,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             return;
         }
         this.audioErrorToastOpen = true;
+        this.recordingSessionSeconds = 0;
+        clearInterval(this.audioRecordingInterval);
         this.audioErrorRetryToast = this.notificationToastrService.showAudioRecordingErrorWithRestart(this.reconnectToWowza.bind(this));
     }
 }
