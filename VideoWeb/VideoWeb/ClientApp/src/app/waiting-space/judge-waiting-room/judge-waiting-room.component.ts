@@ -369,7 +369,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             this.continueWithNoRecording = false;
         }
 
-        if (this.recordingSessionSeconds > 30 && !this.continueWithNoRecording && this.showVideo) {
+        if (this.recordingSessionSeconds > 30 && !this.continueWithNoRecording && this.showVideo && !this.audioErrorToastOpen) {
             this.logger.info(`${this.loggerPrefixJudge} Attempting to retrieve audio stream info for ${hearingId}`);
             try {
                 const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(
@@ -385,6 +385,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                         audioErrorToastOpen: this.audioErrorToastOpen
                     });
                     if (this.audioErrorRetryToast?.actioned) {
+                        this.audioErrorToastOpen = true;
                         this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
                     } else {
                         this.showAudioRecordingRestartAlert();
@@ -620,6 +621,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             );
             this.wowzaAgent = null;
             if (this.audioErrorRetryToast?.actioned) {
+                this.audioErrorToastOpen = true;
                 this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
             } else {
                 this.showAudioRecordingRestartAlert();
