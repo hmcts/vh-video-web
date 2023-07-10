@@ -543,6 +543,9 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         beforeEach(() => {
             component.showVideo = true;
             component.wowzaAgent = ParticipantUpdated.fromPexipParticipant(wowzaParticipant);
+            notificationToastrService.showAudioRecordingRestartSuccess.calls.reset();
+            notificationToastrService.showAudioRecordingRestartFailure.calls.reset();
+            notificationToastrService.showAudioRecordingErrorWithRestart.calls.reset();
         });
 
         it('should continue with no recording when judge dismisses the audio recording alert mid hearing', async () => {
@@ -640,6 +643,51 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             component.conference.status = ConferenceStatus.InSession;
             await component.retrieveAudioStreamInfo(globalConference.id);
             expect(component.audioErrorToastOpen).toBeFalsy();
+        });
+
+        it('when wowza listerner missing, but toast for restart already open, do nothing', async () => {
+            videoCallService.onParticipantDeleted.and.returnValue(of(new ParticipantDeleted(wowzaParticipant.uuid)));
+            component.conference.status = ConferenceStatus.InSession;
+            component.conference.audio_recording_required = true;
+            component.audioErrorRetryToast = jasmine.createSpyObj(VhToastComponent, ['actioned']);
+            component.audioErrorRetryToast.actioned = false;
+            component.ngOnInit();
+            expect(notificationToastrService.showAudioRecordingRestartFailure).toHaveBeenCalledTimes(0);
+            expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalledTimes(0);
+        });
+
+        it('when wowza listerner missing, but restart already actioned, show failure', async () => {
+            videoCallService.onParticipantDeleted.and.returnValue(of(new ParticipantDeleted(wowzaParticipant.uuid)));
+            component.conference.status = ConferenceStatus.InSession;
+            component.conference.audio_recording_required = true;
+            component.audioErrorRetryToast = jasmine.createSpyObj(VhToastComponent, ['actioned']);
+            component.audioErrorRetryToast.actioned = true;
+            component.ngOnInit();
+            expect(notificationToastrService.showAudioRecordingRestartFailure).toHaveBeenCalled();
+        });
+
+        it('when audio stream triggered again before action, and restart previously actioned, show failure', async () => {
+            audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(false));
+            component.continueWithNoRecording = false;
+            component.audioErrorToastOpen = false;
+            component.recordingSessionSeconds = 61;
+            component.audioErrorRetryToast = jasmine.createSpyObj(VhToastComponent, ['actioned']);
+            component.audioErrorRetryToast.actioned = true;
+            component.conference.status = ConferenceStatus.InSession;
+            await component.retrieveAudioStreamInfo(globalConference.id);
+            expect(notificationToastrService.showAudioRecordingRestartFailure).toHaveBeenCalled();
+            expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalledTimes(0);
+        });
+
+        it('when audio stream triggered again before action, but toast for restart already open, do nothing', async () => {
+            audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(false));
+            component.continueWithNoRecording = false;
+            component.audioErrorToastOpen = true;
+            component.recordingSessionSeconds = 61;
+            component.conference.status = ConferenceStatus.InSession;
+            await component.retrieveAudioStreamInfo(globalConference.id);
+            expect(notificationToastrService.showAudioRecordingRestartFailure).toHaveBeenCalledTimes(0);
+            expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalledTimes(0);
         });
 
         describe('should display audio recording restart alert, then success toastr', () => {

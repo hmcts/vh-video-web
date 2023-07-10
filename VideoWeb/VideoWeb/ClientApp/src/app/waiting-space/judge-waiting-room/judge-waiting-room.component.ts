@@ -26,7 +26,7 @@ import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-map
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
-import { CallError, ParticipantUpdated } from '../models/video-call-models';
+import { CallError, ParticipantDeleted, ParticipantUpdated } from '../models/video-call-models';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
@@ -56,8 +56,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     unreadMessageCount = 0;
     audioErrorRetryToast: VhToastComponent;
-    audioErrorRetrySuccessToast: VhToastComponent;
-    audioErrorRetryFailureToast: VhToastComponent;
     onParticipantOrVmrPexipConnectedOrIdUpdatedSubscription: Subscription;
     hearingCountdownFinishedSubscription: Subscription;
     conferenceStatusChangedSubscription: Subscription;
@@ -359,7 +357,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         if (!continueWithRecording) {
             this.initAudioRecordingInterval();
         }
-
         this.audioErrorToastOpen = false;
     }
 
@@ -387,7 +384,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                         continueWithNoRecording: this.continueWithNoRecording,
                         audioErrorToastOpen: this.audioErrorToastOpen
                     });
-                    if (this.audioErrorRetryToast?.actioned && !this.audioErrorRetryFailureToast) {
+                    if (this.audioErrorRetryToast?.actioned) {
                         this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
                     } else {
                         this.showAudioRecordingRestartAlert();
@@ -438,14 +435,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     reconnectToWowza() {
         this.videoCallService.connectWowzaAgent(this.conference.ingest_url, msg => {
-            if (msg.status === 'success' && !this.audioErrorRetrySuccessToast) {
-                this.audioErrorRetrySuccessToast = this.notificationToastrService.showAudioRecordingRestartSuccess(
-                    this.audioRestartCallback.bind(this)
-                );
-            } else if (!this.audioErrorRetryFailureToast) {
-                this.audioErrorRetryFailureToast = this.notificationToastrService.showAudioRecordingRestartFailure(
-                    this.audioRestartCallback.bind(this)
-                );
+            if (msg.status === 'success') {
+                this.notificationToastrService.showAudioRecordingRestartSuccess(this.audioRestartCallback.bind(this));
+            } else {
+                this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
             }
         });
     }
@@ -499,26 +492,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             .subscribe(updatedParticipant => this.assignPexipIdToRemoteStore(updatedParticipant));
 
         this.videoCallService.onParticipantDeleted().subscribe(deletedParticipant => {
-            if (
-                this.conference.audio_recording_required &&
-                this.wowzaAgent &&
-                this.conference.status === ConferenceStatus.InSession &&
-                deletedParticipant.uuid === this.wowzaAgent.uuid
-            ) {
-                this.logger.warn(
-                    `${this.loggerPrefixJudge} WowzaListener removed: ParticipantDeleted callback received for participant from Pexip`,
-                    {
-                        pexipId: this.wowzaAgent?.uuid,
-                        dispayName: this.wowzaAgent?.pexipDisplayName
-                    }
-                );
-                this.wowzaAgent = null;
-                if (this.audioErrorRetryToast?.actioned) {
-                    this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
-                } else {
-                    this.showAudioRecordingRestartAlert();
-                }
-            }
+            this.handleWowzaAgentDisconnect(deletedParticipant);
         });
 
         this.eventService
@@ -628,5 +602,28 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.recordingSessionSeconds = 0;
         clearInterval(this.audioRecordingInterval);
         this.audioErrorRetryToast = this.notificationToastrService.showAudioRecordingErrorWithRestart(this.reconnectToWowza.bind(this));
+    }
+
+    private handleWowzaAgentDisconnect(deletedParticipant: ParticipantDeleted) {
+        if (
+            this.conference.audio_recording_required &&
+            this.wowzaAgent &&
+            this.conference.status === ConferenceStatus.InSession &&
+            deletedParticipant.uuid === this.wowzaAgent.uuid
+        ) {
+            this.logger.warn(
+                `${this.loggerPrefixJudge} WowzaListener removed: ParticipantDeleted callback received for participant from Pexip`,
+                {
+                    pexipId: this.wowzaAgent?.uuid,
+                    dispayName: this.wowzaAgent?.pexipDisplayName
+                }
+            );
+            this.wowzaAgent = null;
+            if (this.audioErrorRetryToast?.actioned) {
+                this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
+            } else {
+                this.showAudioRecordingRestartAlert();
+            }
+        }
     }
 }
