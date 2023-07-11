@@ -37,7 +37,7 @@ namespace VideoWeb.Mappings
                 HearingRefId = conference.HearingId,
                 Endpoints = MapEndpoints(conference),
                 HearingVenueIsScottish = conference.HearingVenueIsScottish,
-                WowzaSingleApp = conference.WowzaSingleApp ?? true
+                IngestUrl = conference.IngestUrl
             };
 
             if (conference.MeetingRoom != null)

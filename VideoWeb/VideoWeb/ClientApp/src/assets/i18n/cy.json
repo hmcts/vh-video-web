@@ -942,6 +942,21 @@
     "title": "Rhybudd",
     "message": "Mae problem gyda'r adnodd recordio. Efallai na fydd rhywfaint o'r hyn a ddywedir yn y gwrandawiad hwn neu bopeth a ddywedir wedi'i recordio."
   },
+  "audio-alert-with-restart": {
+    "title": "Rhybudd",
+    "message": "Wedi stopio recordio. Cliciwch isod i ailddechrau recordio",
+    "button": "Ailddechrau"
+  },
+  "audio-alert-restart-success": {
+    "title": "Sain yn cael ei recordio",
+    "message": "Wedi ailddechrau recordio yn llwyddiannus",
+    "button": "lawn"
+  },
+  "audio-alert-restart-failure": {
+     "title": "Methu ailddechrau recordio",
+     "message": "Mae’n ddrwg gennym, nid ydym yn gallu ailddechrau recordio. Defnyddiwch yr offer recordio amgen",
+     "button": "lawn"
+  },
   "participant-network-status": {
     "icon-alt": "Saeth agor y ffenestr sgwrsio dros y we"
   },

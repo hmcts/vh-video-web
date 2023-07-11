@@ -274,32 +274,40 @@ export class NotificationToastrService {
         };
     }
 
-    showAudioRecordingError(callback: Function) {
-        this.logger.debug(`${this.loggerPrefix} creating 'audio recording error' toastr notification`);
+    showAudioRecordingErrorWithRestart(callback: Function) {
+        this.logger.debug(`${this.loggerPrefix} creating 'audio recording error with restart' toastr notification`);
 
-        let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('audio-alert.title')}</span>`;
-        message += `<br/>${this.translateService.instant('audio-alert.message')}<br/>`;
-        const toast = this.toastr.show('', '', {
-            tapToDismiss: false,
-            toastComponent: VhToastComponent,
-            disableTimeOut: true
-        });
-        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
-            color: 'white',
-            htmlBody: message,
-            buttons: [
-                {
-                    id: 'notification-toastr-audio-recording-error.dismiss',
-                    label: this.translateService.instant('notification-toastr.poor-connection.dismiss'),
-                    cssClass: 'green',
-                    action: async () => {
-                        this.toastr.remove(toast.toastId);
-                        callback();
-                    }
-                }
-            ]
-        };
-        return toast.toastRef.componentInstance as VhToastComponent;
+        let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('audio-alert-with-restart.title')}</span>`;
+        message += `<br/>${this.translateService.instant('audio-alert-with-restart.message')}<br/>`;
+
+        const id = 'notification-toastr-audio-recording-error-restart.dismiss';
+        const label = 'audio-alert-with-restart.button';
+
+        return this.generateAudioAlertToastrComponent(message, callback, id, label);
+    }
+
+    showAudioRecordingRestartSuccess(callback: Function) {
+        this.logger.debug(`${this.loggerPrefix} creating 'audio recording restart success' toastr notification`);
+
+        let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('audio-alert-restart-success.title')}</span>`;
+        message += `<br/>${this.translateService.instant('audio-alert-restart-success.message')}<br/>`;
+
+        const id = 'notification-toastr-audio-recording-error-restart-success.dismiss';
+        const label = 'audio-alert-restart-success.button';
+
+        return this.generateAudioAlertToastrComponent(message, callback(false), id, label);
+    }
+
+    showAudioRecordingRestartFailure(callback: Function) {
+        this.logger.debug(`${this.loggerPrefix} creating 'audio recording error restart failure' toastr notification`);
+
+        let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('audio-alert-restart-failure.title')}</span>`;
+        message += `<br/>${this.translateService.instant('audio-alert-restart-failure.message')}<br/>`;
+
+        const id = 'notification-toastr-audio-recording-error-restart-failure.dismiss';
+        const label = 'audio-alert-restart-failure.button';
+
+        return this.generateAudioAlertToastrComponent(message, callback(true), id, label);
     }
 
     showParticipantAdded(participant: ParticipantResponse, inHearing: boolean = false): VhToastComponent {
@@ -530,6 +538,32 @@ export class NotificationToastrService {
             ]
         };
 
+        return toast.toastRef.componentInstance as VhToastComponent;
+    }
+
+    private generateAudioAlertToastrComponent(message, callback, id, label) {
+        const toast = this.toastr.show('', '', {
+            tapToDismiss: false,
+            toastComponent: VhToastComponent,
+            disableTimeOut: true
+        });
+        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
+            color: 'white',
+            htmlBody: message,
+            buttons: [
+                {
+                    id: id,
+                    label: this.translateService.instant(label),
+                    cssClass: 'green',
+                    action: async () => {
+                        this.toastr.remove(toast.toastId);
+                        if (callback) {
+                            callback();
+                        }
+                    }
+                }
+            ]
+        };
         return toast.toastRef.componentInstance as VhToastComponent;
     }
 

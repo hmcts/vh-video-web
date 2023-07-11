@@ -103,7 +103,9 @@ describe('VideoCallService', () => {
             'present',
             'getPresentation',
             'stopPresentation',
-            'renegotiate'
+            'renegotiate',
+            'dialOut',
+            'disconnectParticipant'
         ]);
 
         streamMixerServiceSpy = jasmine.createSpyObj<StreamMixerService>('StreamMixerService', ['mergeAudioStreams']);
@@ -622,5 +624,21 @@ describe('VideoCallService', () => {
             expect(service.pexipAPI.user_media_stream).not.toEqual(screenStream);
             expect(service.pexipAPI.user_media_stream).toEqual(mockCamStream);
         }));
+    });
+
+    describe('Wowza Listener connection', () => {
+        it('Reconnect wowza agent via Dialout pexip function', () => {
+            service.pexipAPI = pexipSpy;
+            const ingestUrl = 'ingestUrl';
+            service.connectWowzaAgent(ingestUrl, null);
+            expect(pexipSpy.dialOut).toHaveBeenCalledOnceWith(ingestUrl, 'auto', '', null, jasmine.any(Object));
+        });
+
+        it('Disconnect wowza agent via pexip Participant Delete function', () => {
+            service.pexipAPI = pexipSpy;
+            const uuid = 'uuid';
+            service.disconnectWowzaAgent(uuid);
+            expect(pexipSpy.disconnectParticipant).toHaveBeenCalledOnceWith(uuid);
+        });
     });
 });
