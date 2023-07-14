@@ -136,6 +136,12 @@ declare interface PexipClient {
      * Although this method can be used at any time, it only makes sense to do this after onPresentation callback has said that a presentation is available.
      */
     getPresentation();
+
+    // Disconnect a given participant. Only available to users with "chair" (Host) rights.
+    disconnectParticipant(uuid);
+
+    // Dial out from the conference. And stream to external URL. Only available to users with "chair" (Host) rights.
+    dialOut(destination, protocol, role, cb, user_params);
 }
 
 declare interface TurnServer {

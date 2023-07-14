@@ -43,6 +43,7 @@ import { ConfigService } from 'src/app/services/api/config.service';
 import { FeatureFlagService } from 'src/app/services/feature-flag.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
+import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -74,6 +75,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     const onScreenshareStoppedSubject = onScreenshareStoppedMock;
 
     const logger: Logger = new MockLogger();
+    const launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>(['getFlag']);
 
     const testData = new VideoCallTestData();
     const translateService = translateServiceSpy;
@@ -90,10 +92,10 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     let featureFlagServiceSpy: jasmine.SpyObj<FeatureFlagService>;
     let videoControlServiceSpy: jasmine.SpyObj<VideoControlService>;
     let videoControlCacheSpy: jasmine.SpyObj<VideoControlCacheService>;
-
     beforeAll(() => {
         featureFlagServiceSpy = jasmine.createSpyObj<FeatureFlagService>('FeatureFlagService', ['getFeatureFlagByName']);
         featureFlagServiceSpy.getFeatureFlagByName.and.returnValue(of(true));
+        launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.wowzaKillButton, false).and.returnValue(of(true));
     });
     beforeEach(() => {
         clientSettingsResponse = new ClientSettingsResponse({
@@ -144,7 +146,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             conferenceServiceSpy,
             configServiceSpy,
             featureFlagServiceSpy,
-            videoControlCacheSpy
+            videoControlCacheSpy,
+            launchDarklyServiceSpy
         );
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;
@@ -254,7 +257,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             conferenceServiceSpy,
             configServiceSpy,
             featureFlagServiceSpy,
-            videoControlCacheSpy
+            videoControlCacheSpy,
+            launchDarklyServiceSpy
         );
         expect(_component.enableDynamicEvidenceSharing).toBe(false);
     });
@@ -279,7 +283,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             conferenceServiceSpy,
             configServiceSpy,
             featureFlagServiceSpy,
-            videoControlCacheSpy
+            videoControlCacheSpy,
+            launchDarklyServiceSpy
         );
         expect(_component.enableDynamicEvidenceSharing).toBe(true);
     });
@@ -784,6 +789,14 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
             expect(spy).toHaveBeenCalledTimes(1);
             expect(spy).toHaveBeenCalledWith(true, participantServiceSpy.participants);
+        });
+    });
+
+    describe('killWowza', () => {
+        it('should call video-call service disconnect wowza participant', function () {
+            component.wowzaUUID = '1234';
+            component.killWowza();
+            expect(videoCallService.disconnectWowzaAgent).toHaveBeenCalledWith('1234');
         });
     });
 });

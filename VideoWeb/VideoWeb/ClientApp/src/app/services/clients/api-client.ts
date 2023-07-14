@@ -9590,7 +9590,7 @@ export class ConferenceResponse implements IConferenceResponse {
     /** Flags true when hearing venue is in Scotland */
     hearing_venue_is_scottish?: boolean;
     /** Property to indicate whether wowza recording is via single app setup or bespoke hearing setup */
-    wowza_single_app?: boolean;
+    ingest_url?: string | undefined;
 
     constructor(data?: IConferenceResponse) {
         if (data) {
@@ -9625,7 +9625,7 @@ export class ConferenceResponse implements IConferenceResponse {
                 for (let item of _data['endpoints']) this.endpoints!.push(VideoEndpointResponse.fromJS(item));
             }
             this.hearing_venue_is_scottish = _data['hearing_venue_is_scottish'];
-            this.wowza_single_app = _data['wowza_single_app'];
+            this.ingest_url = _data['ingest_url'];
         }
     }
 
@@ -9661,7 +9661,7 @@ export class ConferenceResponse implements IConferenceResponse {
             for (let item of this.endpoints) data['endpoints'].push(item.toJSON());
         }
         data['hearing_venue_is_scottish'] = this.hearing_venue_is_scottish;
-        data['wowza_single_app'] = this.wowza_single_app;
+        data['ingest_url'] = this.ingest_url;
         return data;
     }
 }
@@ -9702,7 +9702,7 @@ export interface IConferenceResponse {
     /** Flags true when hearing venue is in Scotland */
     hearing_venue_is_scottish?: boolean;
     /** Property to indicate whether wowza recording is via single app setup or bespoke hearing setup */
-    wowza_single_app?: boolean;
+    ingest_url?: string | undefined;
 }
 
 /** Detailed information about a conference for VHO officer */

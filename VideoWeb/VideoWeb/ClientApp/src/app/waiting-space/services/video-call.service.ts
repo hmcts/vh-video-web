@@ -37,6 +37,7 @@ export class VideoCallService {
 
     pexipAPI: PexipClient;
     streamModifiedSubscription: Subscription;
+    wowzaAgentName = 'vh-wowza';
 
     private readonly loggerPrefix = '[VideoCallService] -';
     private readonly preferredLayoutCache: SessionStorage<Record<string, HearingLayout>>;
@@ -484,6 +485,22 @@ export class VideoCallService {
         });
 
         return this.apiClient.getParticipantRoomForParticipant(conferenceId, participantId, 'Judicial').toPromise();
+    }
+
+    connectWowzaAgent(ingestUrl: string, callbackFn: Function) {
+        const params = {
+            streaming: true,
+            call_type: 'audio',
+            remote_display_name: this.wowzaAgentName
+        };
+        this.pexipAPI.dialOut(ingestUrl, 'auto', '', callbackFn, params);
+    }
+
+    /**
+     * Disconnects the audio recording agent for wowza. Should only be used for testing
+     * @param wowzaUUID string - pexip id of the wowza participant **/
+    disconnectWowzaAgent(wowzaUUID: string) {
+        this.pexipAPI.disconnectParticipant(wowzaUUID);
     }
 
     private handleSetup(stream: MediaStream | URL) {

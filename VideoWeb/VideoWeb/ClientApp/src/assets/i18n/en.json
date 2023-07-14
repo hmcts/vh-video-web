@@ -913,6 +913,21 @@
     "title": "Warning",
     "message": "There’s a problem with recording. Some or all of the audio for this hearing may not be recorded."
   },
+  "audio-alert-with-restart": {
+      "title": "Warning",
+      "message": "Recording has stopped working. Please click below to restart recording.",
+      "button": "Restart"
+  },
+  "audio-alert-restart-success": {
+      "title": "Audio being recorded",
+      "message": "The recording has been resumed successfully.",
+      "button": "OK"
+  },
+  "audio-alert-restart-failure": {
+      "title": "Unable to resume recording",
+      "message": "Sorry, we’re unable to resume recording. Please revert to alternative recording equipment",
+      "button": "OK"
+  },
   "unread-messages": {
     "im-image-alt": "instant message icon"
   },

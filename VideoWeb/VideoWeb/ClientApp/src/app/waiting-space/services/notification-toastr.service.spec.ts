@@ -556,7 +556,7 @@ describe('NotificationToastrService', () => {
         });
     });
 
-    describe('showAudioRecordingError', () => {
+    describe('showAudioRecordingErrorRestart', () => {
         it('should return the audio alert component', () => {
             const mockToast = {
                 toastRef: {
@@ -566,10 +566,43 @@ describe('NotificationToastrService', () => {
             toastrService.show.and.returnValue(mockToast);
             const callback = jasmine.createSpy();
 
-            const result = service.showAudioRecordingError(callback);
+            const result = service.showAudioRecordingErrorWithRestart(callback);
 
             expect(result).toBeDefined();
-            expect(result.vhToastOptions.htmlBody).toContain('audio-alert.title');
+            expect(result.vhToastOptions.htmlBody).toContain('audio-alert-with-restart.message');
+        });
+    });
+
+    describe('showAudioRecordingRestartSuccess', () => {
+        it('should return the audio restart success component', () => {
+            const mockToast = {
+                toastRef: {
+                    componentInstance: {}
+                }
+            } as ActiveToast<VhToastComponent>;
+            toastrService.show.and.returnValue(mockToast);
+            const callback = jasmine.createSpy();
+            const result = service.showAudioRecordingRestartSuccess(callback);
+
+            expect(result).toBeDefined();
+            expect(result.vhToastOptions.htmlBody).toContain('audio-alert-restart-success.message');
+        });
+    });
+
+    describe('showAudioRecordingRestartFailure', () => {
+        it('should return the restart audio recording failure', () => {
+            const mockToast = {
+                toastRef: {
+                    componentInstance: {}
+                }
+            } as ActiveToast<VhToastComponent>;
+            toastrService.show.and.returnValue(mockToast);
+            const callback = jasmine.createSpy();
+
+            const result = service.showAudioRecordingRestartFailure(callback);
+
+            expect(result).toBeDefined();
+            expect(result.vhToastOptions.htmlBody).toContain('audio-alert-restart-failure.message');
         });
     });
 
