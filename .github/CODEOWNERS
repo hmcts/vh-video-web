@@ -1,0 +1,7 @@
+* @hmcts/vh @hmcts/vh-qa
+/variables/ @hmcts/vh
+/charts/ @hmcts/vh
+/.github/ @hmcts/vh-devops
+/.githooks/ @hmcts/vh-devops
+/.config/ @hmcts/vh-devops
+azure-pipelines* @hmcts/vh-devops
