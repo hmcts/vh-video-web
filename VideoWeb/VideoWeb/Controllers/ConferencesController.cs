@@ -157,7 +157,9 @@ namespace VideoWeb.Controllers
             _logger.LogDebug("GetConferencesForVhOfficer");
             try
             {
-                var conferences = await _videoApiClient.GetConferencesTodayForAdminByHearingVenueNameAsync(query.HearingVenueNames);
+                
+                var hearingsForToday = await _bookingApiClient.GetHearingsForTodayByVenueAsync(query.HearingVenueNames);
+                var conferences = await _videoApiClient.GetConferencesForAdminByHearingRefIdAsync(hearingsForToday.Select(e => e.Id));
                 var allocatedHearings =
                     await _bookingApiClient.GetAllocationsForHearingsAsync(conferences.Select(e => e.HearingRefId));
                 var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>();
