@@ -50,14 +50,15 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var conferences =
-                    await _videoApiClient.GetConferencesTodayForAdminByHearingVenueNameAsync(query.HearingVenueNames);
-                var allocatedHearings =
-                    await _bookingApiClient.GetAllocationsForHearingsAsync(conferences.Select(e => e.HearingRefId));
+                var allocatedHearings = await _bookingApiClient.GetAllocationsForHearingsByVenueAsync(query.HearingVenueNames);
+                if(allocatedHearings == null || !allocatedHearings.Any())
+                    return NotFound();
+                
+                var conferences = await _videoApiClient.GetConferencesForAdminByHearingRefIdAsync(allocatedHearings.Select(e => e.HearingId));
                 var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>();
      
                 var responses = conferences
-                    .Select(x => conferenceForVhOfficerResponseMapper.Map(x, allocatedHearings?.FirstOrDefault(conference => conference.HearingId == x.HearingRefId)))
+                    .Select(x => conferenceForVhOfficerResponseMapper.Map(x, allocatedHearings.FirstOrDefault(conference => conference.HearingId == x.HearingRefId)))
                     .ApplyCsoFilter(query)
                     .ToList();
 

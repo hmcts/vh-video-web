@@ -98,7 +98,8 @@ namespace VideoWeb.Controllers
             try
             {
                 var conferenceForHostResponseMapper = _mapperFactory.Get<HostConference, ConferenceForHostResponse>();
-                var conferencesForStaffMember = await _videoApiClient.GetConferencesTodayForStaffMemberByHearingVenueNameAsync(hearingVenueNames);
+                var hearingsForToday = await _bookingApiClient.GetHearingsForTodayByVenueAsync(hearingVenueNames);
+                var conferencesForStaffMember = await _videoApiClient.GetConferencesForHostByHearingRefIdAsync(hearingsForToday.Select(e => e.Id));
                 var response = conferencesForStaffMember
                     .Select(conferenceForHostResponseMapper.Map)
                     .ToList();
