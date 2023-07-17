@@ -19,6 +19,16 @@ namespace VideoWeb.Mappings
 
         public ConferenceForVhOfficerResponse Map(ConferenceForAdminResponse conference, AllocatedCsoResponse allocatedCsoResponse)
         {
+            string allocatedCso;
+            if(!allocatedCsoResponse?.SupportsWorkAllocation ?? false)
+            {
+                allocatedCso = "Not Required";
+            }
+            else
+            {
+                allocatedCso = allocatedCsoResponse?.Cso?.FullName ?? "Unallocated";
+            }
+            
             var response = new ConferenceForVhOfficerResponse
             {
                 Id = conference.Id,
@@ -36,7 +46,7 @@ namespace VideoWeb.Mappings
                 TelephoneConferenceNumbers = conference.TelephoneConferenceNumbers,
                 CreatedDateTime = conference.CreatedDateTime,
                 HearingRefId = conference.HearingRefId,
-                AllocatedCso = allocatedCsoResponse?.Cso?.FullName ?? "Unallocated",
+                AllocatedCso = allocatedCso,
                 AllocatedCsoId = allocatedCsoResponse?.Cso?.Id
             };
             return response;
