@@ -157,7 +157,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         return availableStatuses.indexOf(participant.status) >= 0;
     }
 
-    isEndpointAvailable(endpoint: any): boolean {
+    isEndpointAvailable(endpoint: VideoEndpointResponse): boolean {
         // this is a workaround because the endpoint status when the hearing started is 'Connected'
         const isHearingOn = this.conference.status === ConferenceStatus.InSession;
         const availableStatuses = ['Available', 'Connected', 'InConsultation'];
