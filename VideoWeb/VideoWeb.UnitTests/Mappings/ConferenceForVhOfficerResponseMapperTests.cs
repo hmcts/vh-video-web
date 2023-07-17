@@ -46,7 +46,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.TelephoneConferenceId.Should().Be(conference.TelephoneConferenceId);
             response.TelephoneConferenceNumbers.Should().Be(conference.TelephoneConferenceNumbers);
             response.CreatedDateTime.Should().Be(conference.CreatedDateTime);
-            response.AllocatedCso.Should().Be("Unallocated");
+            response.AllocatedCso.Should().Be(ConferenceForVhOfficerResponseMapper.NotAllocated);
         }
 
         [Test]
@@ -60,7 +60,7 @@ namespace VideoWeb.UnitTests.Mappings
             
             var response = _sut.Map(conference, allocatedCsoResponse);
             
-            response.AllocatedCso.Should().Be("Unallocated");
+            response.AllocatedCso.Should().Be(ConferenceForVhOfficerResponseMapper.NotAllocated);
         }
         
         [Test]
@@ -93,7 +93,7 @@ namespace VideoWeb.UnitTests.Mappings
             
             var response = _sut.Map(conference, allocatedCsoResponse);
             
-            response.AllocatedCso.Should().Be("Not Required");
+            response.AllocatedCso.Should().Be(ConferenceForVhOfficerResponseMapper.NotRequired);
         }
 
         private ConferenceForAdminResponse BuildConferenceForTest()

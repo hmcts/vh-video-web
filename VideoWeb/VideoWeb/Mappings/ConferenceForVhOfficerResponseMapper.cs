@@ -10,6 +10,8 @@ namespace VideoWeb.Mappings
 {
     public class ConferenceForVhOfficerResponseMapper : IMapTo<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>
     {
+        public const string NotRequired = "Not Required";
+        public const string NotAllocated = "Not Allocated";
         private readonly IMapTo<IEnumerable<ParticipantSummaryResponse>, List<ParticipantForUserResponse>> _participantForUserResponseMapper;
 
         public ConferenceForVhOfficerResponseMapper(IMapTo<IEnumerable<ParticipantSummaryResponse>, List<ParticipantForUserResponse>> participantForUserResponseMapper)
@@ -22,11 +24,11 @@ namespace VideoWeb.Mappings
             string allocatedCso;
             if(!allocatedCsoResponse?.SupportsWorkAllocation ?? false)
             {
-                allocatedCso = "Not Required";
+                allocatedCso = NotRequired;
             }
             else
             {
-                allocatedCso = allocatedCsoResponse?.Cso?.FullName ?? "Unallocated";
+                allocatedCso = allocatedCsoResponse?.Cso?.FullName ?? NotAllocated;
             }
             
             var response = new ConferenceForVhOfficerResponse
