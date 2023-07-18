@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Contract.Request;
@@ -40,12 +41,12 @@ public class ConferenceForVhOfficerResponseExtensionsTests
             new ConferenceForVhOfficerResponse()
             {
                 AllocatedCsoId = null,
-                HearingVenueName = "Ayr"
+                HearingVenueName = "Ayr Social Security and Child Support Tribunal"
             },
             new ConferenceForVhOfficerResponse()
             {
                 AllocatedCsoId = null,
-                HearingVenueName = "Dundee Tribunal Hearing Centre",
+                HearingVenueName = "Dundee Tribunal Hearing Centre - Endeavour House",
             },
             new ConferenceForVhOfficerResponse()
             {
@@ -69,7 +70,9 @@ public class ConferenceForVhOfficerResponseExtensionsTests
         var allocatedCsoId = Guid.NewGuid();
         unallocatedConferences.Add(
             new ConferenceForVhOfficerResponse { AllocatedCsoId = allocatedCsoId,  HearingVenueName = "Birmingham Magistrates Court" });
-        var filteredConferences = unallocatedConferences.ApplyCsoFilter(new VhoConferenceFilterQuery{IncludeUnallocated = true, AllocatedCsoIds = new[] {allocatedCsoId}});
+        var filteredConferences = unallocatedConferences
+            .ApplyCsoFilter(new VhoConferenceFilterQuery{IncludeUnallocated = true, AllocatedCsoIds = new[] {allocatedCsoId}})
+            .ToList();
         filteredConferences.Should().HaveCount(2);
     }    
     
