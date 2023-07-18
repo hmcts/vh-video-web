@@ -5,6 +5,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     AllowedEndpointResponse,
     ConferenceResponse,
+    ConferenceStatus,
     ConsultationAnswer,
     EndpointStatus,
     LoggedParticipantResponse,
@@ -114,7 +115,14 @@ describe('PrivateConsultationParticipantsComponent', () => {
     it('should return endpoint available', () => {
         const p = conference.endpoints[0];
         p.status = EndpointStatus.Connected;
-        expect(component.isParticipantAvailable(p)).toEqual(true);
+        expect(component.isEndpointAvailable(p)).toEqual(true);
+    });
+
+    it('should return endpoint not available', () => {
+        const p = conference.endpoints[0];
+        p.status = EndpointStatus.Connected;
+        conference.status = ConferenceStatus.InSession;
+        expect(component.isEndpointAvailable(p)).toEqual(false);
     });
 
     it('should get joh consultation', () => {
@@ -467,6 +475,25 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
         // Room contains another endpount
         conference.endpoints[1].current_room.label = 'test-room';
+
+        // Has permissions
+        component.participantEndpoints.push({ id: endpoint.id } as AllowedEndpointResponse);
+
+        expect(component.canCallEndpoint(endpoint)).toBeFalse();
+    });
+
+    it('should return can not call endpoint - when conference is started', () => {
+        // In current room
+        const roomLabel = 'test-room';
+        const endpoint = conference.endpoints[0];
+        component.roomLabel = endpoint.current_room.label = roomLabel;
+
+        // Available
+        endpoint.status = EndpointStatus.Connected;
+
+        // Room contains another endpount
+        conference.endpoints[1].current_room.label = 'test-room';
+        conference.status = ConferenceStatus.InSession;
 
         // Has permissions
         component.participantEndpoints.push({ id: endpoint.id } as AllowedEndpointResponse);

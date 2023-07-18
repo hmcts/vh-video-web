@@ -63,8 +63,6 @@
                 </app-participant-item>
             </div>
         </ng-container>
-
-
         <ng-container *ngFor="let endpoint of endpoints">
             <div class="endpoint-row">
                 <div class="header-left" [class]="getRowClasses(endpoint)">
@@ -77,14 +75,16 @@
                         icon="check"
                         aria-hidden="true"></fa-icon>
                 </div>
-
                 <app-private-consultation-participant-display-name
                     [displayName]="endpoint?.display_name"
                     [isInCurrentRoom]="isParticipantInCurrentRoom(endpoint)"
-                    [isAvailable]="isParticipantAvailable(endpoint)">
+                    [isAvailable]="isEndpointAvailable(endpoint)">
                 </app-private-consultation-participant-display-name>
 
-                <app-private-consultation-participant-status [entity]="endpoint" [status]="getParticipantStatus(endpoint)" [roomLabel]="roomLabel">
+                <app-private-consultation-participant-status
+                    [entity]="endpoint"
+                    [status]="getParticipantStatus(endpoint)"
+                    [roomLabel]="roomLabel">
                 </app-private-consultation-participant-status>
             </div>
         </ng-container>
