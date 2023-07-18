@@ -3,7 +3,14 @@ import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { LinkType, ParticipantResponse, ParticipantStatus, Role, VideoEndpointResponse } from 'src/app/services/clients/api-client';
+import {
+    ConferenceStatus,
+    LinkType,
+    ParticipantResponse,
+    ParticipantStatus,
+    Role,
+    VideoEndpointResponse
+} from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
@@ -148,6 +155,13 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     isParticipantAvailable(participant: any): boolean {
         const availableStatuses = ['Available', 'Connected', 'InConsultation'];
         return availableStatuses.indexOf(participant.status) >= 0;
+    }
+
+    isEndpointAvailable(endpoint: VideoEndpointResponse): boolean {
+        // this is a workaround because the endpoint status when the hearing started is 'Connected'
+        const isHearingOn = this.conference.status === ConferenceStatus.InSession;
+        const availableStatuses = ['Available', 'Connected', 'InConsultation'];
+        return availableStatuses.indexOf(endpoint.status) >= 0 && !isHearingOn;
     }
 
     isParticipantInCurrentRoom(participant: any): boolean {
