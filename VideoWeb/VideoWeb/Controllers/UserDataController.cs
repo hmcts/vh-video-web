@@ -13,6 +13,7 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using UserApi.Client;
 using VideoApi.Client;
+using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
 using VideoWeb.Extensions;
 
@@ -51,10 +52,10 @@ namespace VideoWeb.Controllers
             try
             {
                 var allocatedHearings = await _bookingApiClient.GetAllocationsForHearingsByVenueAsync(query.HearingVenueNames);
-                if(allocatedHearings == null || !allocatedHearings.Any())
-                    return NotFound();
-                
-                var conferences = await _videoApiClient.GetConferencesForAdminByHearingRefIdAsync(allocatedHearings.Select(e => e.HearingId));
+                if (allocatedHearings == null || !allocatedHearings.Any())
+                    return new List<CourtRoomsAccountResponse>();
+                var request = new GetConferencesByHearingIdsRequest{ HearingRefIds = allocatedHearings.Select(x => x.HearingId).ToArray() };
+                var conferences = await _videoApiClient.GetConferencesForAdminByHearingRefIdAsync(request);
                 var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>();
      
                 var responses = conferences

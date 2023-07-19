@@ -24,6 +24,7 @@ using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
 using VideoApi.Contract.Enums;
+using VideoApi.Contract.Requests;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
 {
@@ -51,7 +52,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<IEnumerable<Guid>>()))
+                .Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
                 .ThrowsAsync(apiException);
 
             var result = await _controller.GetConferencesForVhOfficerAsync(new VhoConferenceFilterQuery());
@@ -101,7 +102,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Select(x => x.Id).ToList();
 
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<IEnumerable<Guid>>()))
+                .Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
                 .ReturnsAsync(conferences);
 
             _mocker.Mock<IBookingsApiClient>()
@@ -196,7 +197,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             }
 
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<IEnumerable<Guid>>()))
+                .Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
                 .ReturnsAsync(conferences);
 
             _mocker.Mock<IBookingsApiClient>()
@@ -299,7 +300,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             }
 
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<IEnumerable<Guid>>()))
+                .Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
                 .ReturnsAsync(conferences);
 
             _mocker.Mock<IBookingsApiClient>()

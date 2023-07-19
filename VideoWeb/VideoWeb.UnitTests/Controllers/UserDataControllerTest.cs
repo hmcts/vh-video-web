@@ -18,6 +18,7 @@ using VideoWeb.Mappings;
 using UserApi.Client;
 using UserApi.Contract.Responses;
 using VideoApi.Client;
+using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 
@@ -53,7 +54,7 @@ namespace VideoWeb.UnitTests.Controllers
         {
             var conferences = ConferenceForAdminResponseBuilder.BuildData();
 
-            _mocker.Mock<IVideoApiClient>().Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<IEnumerable<Guid>>())).ReturnsAsync(conferences);
+            _mocker.Mock<IVideoApiClient>().Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>())).ReturnsAsync(conferences);
 
             var result = await _sut.GetCourtRoomsAccounts(_query);
 
@@ -83,7 +84,7 @@ namespace VideoWeb.UnitTests.Controllers
             // Arrange
             var conferences = ConferenceForAdminResponseBuilder.BuildData();
 
-            _mocker.Mock<IVideoApiClient>().Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<IEnumerable<Guid>>())).ReturnsAsync(conferences);
+            _mocker.Mock<IVideoApiClient>().Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>())).ReturnsAsync(conferences);
             
             var allocatedCsoResponses = conferences.Select(conference => new AllocatedCsoResponse { HearingId = conference.HearingRefId}).ToList();
             var allocatedCsoIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() };
@@ -147,7 +148,7 @@ namespace VideoWeb.UnitTests.Controllers
             _mocker.Mock<IBookingsApiClient>()
                 .Setup(x => x.GetAllocationsForHearingsByVenueAsync(It.IsAny<IEnumerable<string>>()))
                 .ReturnsAsync(new List<AllocatedCsoResponse>{Mock.Of<AllocatedCsoResponse>()});
-            _mocker.Mock<IVideoApiClient>().Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<IEnumerable<Guid>>())).ReturnsAsync(conferences);
+            _mocker.Mock<IVideoApiClient>().Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>())).ReturnsAsync(conferences);
             
             var allocatedCsoResponses = 
                 conferences.Select(conference => new AllocatedCsoResponse { HearingId = conference.HearingRefId, Cso = new JusticeUserResponse{FullName = $"TestUserFor{conference.HearingRefId}"}}).ToList();
@@ -180,7 +181,7 @@ namespace VideoWeb.UnitTests.Controllers
 
             var apiException = new UserApiException("Court rooms accounts not found", (int)HttpStatusCode.BadRequest, "Error", null, null);
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<IEnumerable<Guid>>()))
+                .Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
                 .ThrowsAsync(apiException);
 
             var result = await _sut.GetCourtRoomsAccounts(_query);
@@ -190,15 +191,14 @@ namespace VideoWeb.UnitTests.Controllers
         }
 
         [Test]
-        public async Task Should_return_return_not_found_if_no_hearings_found_for_venues()
+        public async Task Should_empty_list_if_no_hearings_found_for_venues()
         {
             _mocker.Mock<IBookingsApiClient>()
                 .Setup(x => x.GetAllocationsForHearingsByVenueAsync(It.IsAny<IEnumerable<string>>()))
                 .ReturnsAsync(new List<AllocatedCsoResponse>());
             var result = await _sut.GetCourtRoomsAccounts(_query);
-            var typedResult = (NotFoundResult)result.Result;
-            typedResult.Should().NotBeNull();
-            typedResult?.StatusCode.Should().Be(StatusCodes.Status404NotFound);
+            var courtRoomsAccountResponses = result.Value as List<CourtRoomsAccountResponse>;
+            courtRoomsAccountResponses.Should().BeEmpty();
         }
 
         [Test]

@@ -14,6 +14,7 @@ using BookingsApi.Client;
 using BookingsApi.Contract.Responses;
 using VideoApi.Client;
 using VideoApi.Contract.Enums;
+using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
@@ -51,7 +52,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 "Stacktrace goes here", null, default, null);
             
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<IEnumerable<Guid>>()))
+                .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
                 .ThrowsAsync(apiException);
 
             var result = await _controller.GetConferencesForStaffMemberAsync(new List<string>());
@@ -79,7 +80,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Build().ToList();
 
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<IEnumerable<Guid>>()))
+                .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
                 .ReturnsAsync(conferences);
 
             var result = await _controller.GetConferencesForStaffMemberAsync(hearingVenueNamesQuery);
@@ -103,7 +104,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var hearingVenueNamesQuery = new List<string>();
             var conferences = new List<Conference>();
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<IEnumerable<Guid>>()))
+                .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
                 .ReturnsAsync(conferences);
 
             var result = await _controller.GetConferencesForStaffMemberAsync(hearingVenueNamesQuery);
