@@ -20,7 +20,7 @@ public class ConferenceForVhOfficerResponseExtensionsTests
             new ConferenceForVhOfficerResponse()
             {
                 AllocatedCsoId = null,
-                HearingVenueName = "Teesside Combined Court Centre"
+                HearingVenueName = "Teesside Combined Court Centre",
             },
             new ConferenceForVhOfficerResponse()
             {
@@ -40,12 +40,12 @@ public class ConferenceForVhOfficerResponseExtensionsTests
             new ConferenceForVhOfficerResponse()
             {
                 AllocatedCsoId = null,
-                HearingVenueName = "Ayr"
+                HearingVenueName = "Ayr Social Security and Child Support Tribunal"
             },
             new ConferenceForVhOfficerResponse()
             {
                 AllocatedCsoId = null,
-                HearingVenueName = "Dundee Tribunal Hearing Centre",
+                HearingVenueName = "Dundee Tribunal Hearing Centre - Endeavour House",
             },
             new ConferenceForVhOfficerResponse()
             {
