@@ -21,7 +21,7 @@ public class ConferenceForVhOfficerResponseExtensionsTests
             new ConferenceForVhOfficerResponse()
             {
                 AllocatedCsoId = null,
-                HearingVenueName = "Teesside Combined Court Centre"
+                HearingVenueName = "Teesside Combined Court Centre",
             },
             new ConferenceForVhOfficerResponse()
             {
