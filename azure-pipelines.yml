@@ -162,9 +162,6 @@ parameters:
     - name: appSettings
       type: object
       default:
-          - name: ApplicationInsights:InstrumentationKey
-            value: vh-core-infra-AppInsightsKey
-            secret: true
           - name: ConnectionStrings:SignalR
             value: signalr-connection-str
             secret: true

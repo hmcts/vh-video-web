@@ -47,7 +47,7 @@
     "@mediapipe/control_utils": "0.6.1629159505",
     "@mediapipe/drawing_utils": "0.3.1620248257",
     "@mediapipe/selfie_segmentation": "0.1.1632777926",
-    "@microsoft/applicationinsights-web": "^2.7.3",
+    "@microsoft/applicationinsights-web": "^3.0.2",
     "@microsoft/signalr": "^6.0.0",
     "@ministryofjustice/frontend": "^1.0.0",
     "@ng-select/ng-select": "^10.0.0",
