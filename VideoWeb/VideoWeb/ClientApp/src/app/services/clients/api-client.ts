@@ -4201,6 +4201,327 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
+     * @param conferenceId (optional)
+     * @param participant (optional)
+     * @param endpoint (optional)
+     * @return No Content
+     */
+    unlinkedParticipantFromEndpoint(
+        conferenceId: string | undefined,
+        participant: string | undefined,
+        endpoint: string | undefined
+    ): Observable<void> {
+        let url_ = this.baseUrl + '/internalevent/UnlinkedParticipantFromEndpoint?';
+        if (conferenceId === null) throw new Error("The parameter 'conferenceId' cannot be null.");
+        else if (conferenceId !== undefined) url_ += 'conferenceId=' + encodeURIComponent('' + conferenceId) + '&';
+        if (participant === null) throw new Error("The parameter 'participant' cannot be null.");
+        else if (participant !== undefined) url_ += 'participant=' + encodeURIComponent('' + participant) + '&';
+        if (endpoint === null) throw new Error("The parameter 'endpoint' cannot be null.");
+        else if (endpoint !== undefined) url_ += 'endpoint=' + encodeURIComponent('' + endpoint) + '&';
+        url_ = url_.replace(/[?&]$/, '');
+
+        let options_: any = {
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({})
+        };
+
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processUnlinkedParticipantFromEndpoint(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processUnlinkedParticipantFromEndpoint(response_ as any);
+                        } catch (e) {
+                            return _observableThrow(e) as any as Observable<void>;
+                        }
+                    } else return _observableThrow(response_) as any as Observable<void>;
+                })
+            );
+    }
+
+    protected processUnlinkedParticipantFromEndpoint(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse
+                ? response.body
+                : (response as any).error instanceof Blob
+                ? (response as any).error
+                : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 500) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result500: any = null;
+                    let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result500 = resultData500 !== undefined ? resultData500 : <any>null;
+
+                    return throwException('Server Error', status, _responseText, _headers, result500);
+                })
+            );
+        } else if (status === 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return _observableOf<void>(null as any);
+                })
+            );
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result400: any = null;
+                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result400 = resultData400 !== undefined ? resultData400 : <any>null;
+
+                    return throwException('Bad Request', status, _responseText, _headers, result400);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<void>(null as any);
+    }
+
+    /**
+     * @param conferenceId (optional)
+     * @param participant (optional)
+     * @param endpoint (optional)
+     * @return No Content
+     */
+    linkedNewParticipantToEndpoint(
+        conferenceId: string | undefined,
+        participant: string | undefined,
+        endpoint: string | undefined
+    ): Observable<void> {
+        let url_ = this.baseUrl + '/internalevent/LinkedNewParticipantToEndpoint?';
+        if (conferenceId === null) throw new Error("The parameter 'conferenceId' cannot be null.");
+        else if (conferenceId !== undefined) url_ += 'conferenceId=' + encodeURIComponent('' + conferenceId) + '&';
+        if (participant === null) throw new Error("The parameter 'participant' cannot be null.");
+        else if (participant !== undefined) url_ += 'participant=' + encodeURIComponent('' + participant) + '&';
+        if (endpoint === null) throw new Error("The parameter 'endpoint' cannot be null.");
+        else if (endpoint !== undefined) url_ += 'endpoint=' + encodeURIComponent('' + endpoint) + '&';
+        url_ = url_.replace(/[?&]$/, '');
+
+        let options_: any = {
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({})
+        };
+
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processLinkedNewParticipantToEndpoint(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processLinkedNewParticipantToEndpoint(response_ as any);
+                        } catch (e) {
+                            return _observableThrow(e) as any as Observable<void>;
+                        }
+                    } else return _observableThrow(response_) as any as Observable<void>;
+                })
+            );
+    }
+
+    protected processLinkedNewParticipantToEndpoint(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse
+                ? response.body
+                : (response as any).error instanceof Blob
+                ? (response as any).error
+                : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 500) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result500: any = null;
+                    let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result500 = resultData500 !== undefined ? resultData500 : <any>null;
+
+                    return throwException('Server Error', status, _responseText, _headers, result500);
+                })
+            );
+        } else if (status === 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return _observableOf<void>(null as any);
+                })
+            );
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result400: any = null;
+                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result400 = resultData400 !== undefined ? resultData400 : <any>null;
+
+                    return throwException('Bad Request', status, _responseText, _headers, result400);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<void>(null as any);
+    }
+
+    /**
+     * @param conferenceId (optional)
+     * @param participant (optional)
+     * @param endpoint (optional)
+     * @return No Content
+     */
+    closeConsultationBetweenEndpointAndParticipant(
+        conferenceId: string | undefined,
+        participant: string | undefined,
+        endpoint: string | undefined
+    ): Observable<void> {
+        let url_ = this.baseUrl + '/internalevent/CloseConsultationBetweenEndpointAndParticipant?';
+        if (conferenceId === null) throw new Error("The parameter 'conferenceId' cannot be null.");
+        else if (conferenceId !== undefined) url_ += 'conferenceId=' + encodeURIComponent('' + conferenceId) + '&';
+        if (participant === null) throw new Error("The parameter 'participant' cannot be null.");
+        else if (participant !== undefined) url_ += 'participant=' + encodeURIComponent('' + participant) + '&';
+        if (endpoint === null) throw new Error("The parameter 'endpoint' cannot be null.");
+        else if (endpoint !== undefined) url_ += 'endpoint=' + encodeURIComponent('' + endpoint) + '&';
+        url_ = url_.replace(/[?&]$/, '');
+
+        let options_: any = {
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({})
+        };
+
+        return _observableFrom(this.transformOptions(options_))
+            .pipe(
+                _observableMergeMap(transformedOptions_ => {
+                    return this.http.request('post', url_, transformedOptions_);
+                })
+            )
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processCloseConsultationBetweenEndpointAndParticipant(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processCloseConsultationBetweenEndpointAndParticipant(response_ as any);
+                        } catch (e) {
+                            return _observableThrow(e) as any as Observable<void>;
+                        }
+                    } else return _observableThrow(response_) as any as Observable<void>;
+                })
+            );
+    }
+
+    protected processCloseConsultationBetweenEndpointAndParticipant(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse
+                ? response.body
+                : (response as any).error instanceof Blob
+                ? (response as any).error
+                : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 500) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result500: any = null;
+                    let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result500 = resultData500 !== undefined ? resultData500 : <any>null;
+
+                    return throwException('Server Error', status, _responseText, _headers, result500);
+                })
+            );
+        } else if (status === 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return _observableOf<void>(null as any);
+                })
+            );
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result400: any = null;
+                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result400 = resultData400 !== undefined ? resultData400 : <any>null;
+
+                    return throwException('Bad Request', status, _responseText, _headers, result400);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<void>(null as any);
+    }
+
+    /**
      * @param body (optional)
      * @return No Content
      */
@@ -9122,8 +9443,8 @@ export interface IChatResponse {
 
 /** Configuration to initialise the UI application */
 export class ClientSettingsResponse implements IClientSettingsResponse {
-    /** The application insight instrumentation key */
-    app_insights_instrumentation_key?: string | undefined;
+    /** The Application Insights Connection String */
+    app_insights_connection_string?: string | undefined;
     /** The eventhub path */
     event_hub_path?: string | undefined;
     /** The date to set option ON to display functionality to join hearing by phone */
@@ -9162,7 +9483,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
 
     init(_data?: any) {
         if (_data) {
-            this.app_insights_instrumentation_key = _data['app_insights_instrumentation_key'];
+            this.app_insights_connection_string = _data['app_insights_connection_string'];
             this.event_hub_path = _data['event_hub_path'];
             this.join_by_phone_from_date = _data['join_by_phone_from_date'];
             this.kinly_turn_server = _data['kinly_turn_server'];
@@ -9192,7 +9513,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data['app_insights_instrumentation_key'] = this.app_insights_instrumentation_key;
+        data['app_insights_connection_string'] = this.app_insights_connection_string;
         data['event_hub_path'] = this.event_hub_path;
         data['join_by_phone_from_date'] = this.join_by_phone_from_date;
         data['kinly_turn_server'] = this.kinly_turn_server;
@@ -9214,8 +9535,8 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
 
 /** Configuration to initialise the UI application */
 export interface IClientSettingsResponse {
-    /** The application insight instrumentation key */
-    app_insights_instrumentation_key?: string | undefined;
+    /** The Application Insights Connection String */
+    app_insights_connection_string?: string | undefined;
     /** The eventhub path */
     event_hub_path?: string | undefined;
     /** The date to set option ON to display functionality to join hearing by phone */
