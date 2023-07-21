@@ -17,6 +17,7 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
 using VideoWeb.Mappings;
 using VideoApi.Client;
+using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
 using VideoWeb.Extensions;
 using HostConference = VideoApi.Contract.Responses.ConferenceForHostResponse;
@@ -98,7 +99,9 @@ namespace VideoWeb.Controllers
             try
             {
                 var conferenceForHostResponseMapper = _mapperFactory.Get<HostConference, ConferenceForHostResponse>();
-                var conferencesForStaffMember = await _videoApiClient.GetConferencesTodayForStaffMemberByHearingVenueNameAsync(hearingVenueNames);
+                var hearingsForToday = await _bookingApiClient.GetHearingsForTodayByVenueAsync(hearingVenueNames);
+                var request = new GetConferencesByHearingIdsRequest{ HearingRefIds = hearingsForToday.Select(x => x.Id).ToArray() };
+                var conferencesForStaffMember = await _videoApiClient.GetConferencesForHostByHearingRefIdAsync(request);
                 var response = conferencesForStaffMember
                     .Select(conferenceForHostResponseMapper.Map)
                     .ToList();
@@ -156,7 +159,10 @@ namespace VideoWeb.Controllers
             _logger.LogDebug("GetConferencesForVhOfficer");
             try
             {
-                var conferences = await _videoApiClient.GetConferencesTodayForAdminByHearingVenueNameAsync(query.HearingVenueNames);
+                
+                var hearingsForToday = await _bookingApiClient.GetHearingsForTodayByVenueAsync(query.HearingVenueNames);
+                var request = new GetConferencesByHearingIdsRequest { HearingRefIds = hearingsForToday.Select(e => e.Id).ToArray() };
+                var conferences = await _videoApiClient.GetConferencesForAdminByHearingRefIdAsync(request);
                 var allocatedHearings =
                     await _bookingApiClient.GetAllocationsForHearingsAsync(conferences.Select(e => e.HearingRefId));
                 var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>();
