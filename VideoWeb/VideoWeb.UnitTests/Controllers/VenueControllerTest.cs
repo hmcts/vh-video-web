@@ -31,7 +31,7 @@ namespace VideoWeb.UnitTests.Controllers
         public async Task GetVenues_Should_return_list_of_judges_with_hearings_with_status_ok()
         {
             var judges = new List<HearingVenueResponse>();
-            _bookingsApiClientMock.Setup(x => x.GetHearingVenuesAsync()).ReturnsAsync(judges);
+            _bookingsApiClientMock.Setup(x => x.GetHearingVenuesForHearingsTodayAsync()).ReturnsAsync(judges);
             var result = await _controller.GetVenues();
             var typedResult = (OkObjectResult)result.Result;
             typedResult.Should().NotBeNull();
@@ -45,7 +45,7 @@ namespace VideoWeb.UnitTests.Controllers
             var apiException = new BookingsApiException("Venues not found", (int)HttpStatusCode.NotFound,
                 "Error", null, null);
             _bookingsApiClientMock
-                .Setup(x => x.GetHearingVenuesAsync())
+                .Setup(x => x.GetHearingVenuesForHearingsTodayAsync())
                 .ThrowsAsync(apiException);
 
             var result = await _controller.GetVenues();
