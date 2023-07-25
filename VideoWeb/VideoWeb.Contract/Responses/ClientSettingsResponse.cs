@@ -6,9 +6,9 @@ namespace VideoWeb.Contract.Responses
     public class ClientSettingsResponse
     {
         /// <summary>
-        /// The application insight instrumentation key
+        /// The Application Insights Connection String
         /// </summary>
-        public string AppInsightsInstrumentationKey { get; set; }
+        public string AppInsightsConnectionString { get; set; }
 
         /// <summary>
         /// The eventhub path

@@ -47,7 +47,7 @@ namespace VideoWeb
                     opt.Filters.Add(new ProducesResponseTypeAttribute(typeof(string), 500));
                 })
                 .AddFluentValidation();
-            services.AddApplicationInsightsTelemetry(Configuration["ApplicationInsights:InstrumentationKey"]);
+            services.AddApplicationInsightsTelemetry();
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/dist"; });
         }

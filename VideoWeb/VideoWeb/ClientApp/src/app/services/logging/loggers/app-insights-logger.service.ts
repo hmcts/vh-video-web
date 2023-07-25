@@ -97,7 +97,7 @@ export class AppInsightsLoggerService implements LogAdapter {
             map(configSettings => {
                 this.appInsights = new ApplicationInsights({
                     config: {
-                        instrumentationKey: configSettings.app_insights_instrumentation_key,
+                        connectionString: configSettings.app_insights_connection_string,
                         isCookieUseDisabled: true
                     }
                 });
@@ -106,7 +106,7 @@ export class AppInsightsLoggerService implements LogAdapter {
                     map(ud => {
                         this.appInsights = new ApplicationInsights({
                             config: {
-                                instrumentationKey: configSettings.app_insights_instrumentation_key,
+                                connectionString: configSettings.app_insights_connection_string,
                                 isCookieUseDisabled: true
                             }
                         });

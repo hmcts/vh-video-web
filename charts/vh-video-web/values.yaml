@@ -16,7 +16,8 @@ java:
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
       usePodIdentity: true
       secrets:
-        - applicationinsights--instrumentationkey
+        - name: connectionstrings--applicationinsights
+          alias: applicationinsights--connectionstring
         - azuread--tenantid
         - azuread--vhvideowebclientid
         - connectionstrings--signalr
