@@ -40,7 +40,7 @@ namespace VideoWeb.Controllers
             _logger.LogDebug("GetVenues");
             try
             {
-                var response = await _bookingsApiClient.GetHearingVenuesAsync();
+                var response = await _bookingsApiClient.GetHearingVenuesForHearingsTodayAsync();
                 return Ok(response);
             }
             catch (BookingsApiException e)
