@@ -587,7 +587,7 @@
     "blue": "blue",
     "grey": "grey",
     "participants": "Participants",
-    "mute-lock": "Mute & lock",
+    "mute-lock": "Mute & lock x",
     "mute-tooltip": "Mute all participants and prevent them from unmuting",
     "unmute-lock": "Unlock mute",
     "unmute-tooltip": "Allow all participants to unmute",
