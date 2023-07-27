@@ -612,7 +612,7 @@
     "microphone-muted-icon": "Microphone muted icon",
     "microphone-on-icon": "Microphone on icon",
     "participant-muted": "Participant muted",
-    "mute-all": "Mute all",
+    "mute-all": "Mute all x",
     "unmute-all": "Unmute all",
     "mute-all-tooltip": "Mute all participants",
     "unmute-all-tooltip": "Unmute all participants"
@@ -914,19 +914,19 @@
     "message": "There’s a problem with recording. Some or all of the audio for this hearing may not be recorded."
   },
   "audio-alert-with-restart": {
-      "title": "Warning",
-      "message": "Recording has stopped working. Please click below to restart recording.",
-      "button": "Restart"
+    "title": "Warning",
+    "message": "Recording has stopped working. Please click below to restart recording.",
+    "button": "Restart"
   },
   "audio-alert-restart-success": {
-      "title": "Audio being recorded",
-      "message": "The recording has been resumed successfully.",
-      "button": "OK"
+    "title": "Audio being recorded",
+    "message": "The recording has been resumed successfully.",
+    "button": "OK"
   },
   "audio-alert-restart-failure": {
-      "title": "Unable to resume recording",
-      "message": "Sorry, we’re unable to resume recording. Please revert to alternative recording equipment",
-      "button": "OK"
+    "title": "Unable to resume recording",
+    "message": "Sorry, we’re unable to resume recording. Please revert to alternative recording equipment",
+    "button": "OK"
   },
   "unread-messages": {
     "im-image-alt": "instant message icon"
@@ -1200,14 +1200,14 @@
       "dismiss": "Dismiss"
     },
     "endpoint-unlinked": {
-        "title": "Alert",
-        "message": "You cannot start a consultation with {{jvsEndpointName}} as you are no longer the linked legal representative",
-        "dismiss": "Dismiss"
+      "title": "Alert",
+      "message": "You cannot start a consultation with {{jvsEndpointName}} as you are no longer the linked legal representative",
+      "dismiss": "Dismiss"
     },
     "endpoint-consultation-closed": {
-        "title": "Alert",
-        "message": "Consultation with {{jvsEndpointName}} has ended as you are no longer the linked legal representative",
-        "dismiss": "Dismiss"
+      "title": "Alert",
+      "message": "Consultation with {{jvsEndpointName}} has ended as you are no longer the linked legal representative",
+      "dismiss": "Dismiss"
     },
     "hearing-layout-changed": {
       "title": "{{name}}",
