@@ -30,7 +30,7 @@ namespace VideoWeb.UnitTests.Mappings
 
             var response = _sut.Map(azureAdConfiguration, ejudAdConfiguration, dom1Configuration, servicesConfiguration, kinlyConfiguration);
 
-            response.AppInsightsInstrumentationKey.Should().Be(azureAdConfiguration.ApplicationInsights.InstrumentationKey);
+            response.AppInsightsConnectionString.Should().Be(azureAdConfiguration.ApplicationInsights.ConnectionString);
             response.EventHubPath.Should().Be(servicesConfiguration.EventHubPath);
             response.KinlyTurnServer.Should().Be(kinlyConfiguration.TurnServer);
             response.KinlyTurnServerUser.Should().Be(kinlyConfiguration.TurnServerUser);

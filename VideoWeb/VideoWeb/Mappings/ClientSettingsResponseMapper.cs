@@ -25,7 +25,7 @@ namespace VideoWeb.Mappings
             var dom1Settings = mapper.Map(dom1AdConfiguration);
             return new ClientSettingsResponse
             {
-                AppInsightsInstrumentationKey = azureAdConfiguration.ApplicationInsights.InstrumentationKey,
+                AppInsightsConnectionString = azureAdConfiguration.ApplicationInsights.ConnectionString,
                 EventHubPath = servicesConfiguration.EventHubPath,
                 JoinByPhoneFromDate = kinlyConfiguration.JoinByPhoneFromDate,
                 KinlyTurnServer = kinlyConfiguration.TurnServer,

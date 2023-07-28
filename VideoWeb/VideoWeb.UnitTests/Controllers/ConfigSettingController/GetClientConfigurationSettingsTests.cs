@@ -37,7 +37,7 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
                 ClientSecret = "ClientSecret",
                 TenantId = "TenantId",
                 Authority = "Authority",
-                ApplicationInsights = new ApplicationInsightsConfiguration { InstrumentationKey = "AiKey" }
+                ApplicationInsights = new ApplicationInsightsConfiguration { ConnectionString = "InstrumentationKey=AiKey" }
             };
 
             var eJudAdConfiguration = new EJudAdConfiguration()
@@ -98,7 +98,7 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
                 ClientSecret = "ClientSecret",
                 TenantId = "TenantId",
                 Authority = "Authority",
-                ApplicationInsights = new ApplicationInsightsConfiguration { InstrumentationKey = "AiKey" }
+                ApplicationInsights = new ApplicationInsightsConfiguration { ConnectionString = "InstrumentationKey=AiKey" }
             };
 
             var servicesConfiguration = new HearingServicesConfiguration
