@@ -44,5 +44,6 @@ namespace VideoWeb.EventHub.Hub
         Task UnlinkedParticipantFromEndpoint(Guid conferenceId, string endpoint);
         Task LinkedNewParticipantToEndpoint(Guid conferenceId, string endpoint);
         Task CloseConsultationBetweenEndpointAndParticipant(Guid conferenceId, string endpoint);
+        Task AudioRestartActioned(Guid conferenceId);
     }
 }
