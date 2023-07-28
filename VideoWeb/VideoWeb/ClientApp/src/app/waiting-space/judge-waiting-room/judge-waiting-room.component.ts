@@ -425,7 +425,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         ModalTrapFocus.trap('video-container');
     }
 
-    reconnectToWowza() {
+    async reconnectToWowza() {
+        await this.eventService.sendAudioRestartActioned(this.conferenceId, this.participant.id);
         this.videoCallService.connectWowzaAgent(this.conference.ingest_url, msg => {
             if (msg.status === 'success') {
                 this.notificationToastrService.showAudioRecordingRestartSuccess(this.audioRestartCallback.bind(this));
@@ -462,6 +463,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             .subscribe(createdParticipant => {
                 this.assignPexipIdToRemoteStore(createdParticipant);
                 if (createdParticipant.pexipDisplayName.includes(this.videoCallService.wowzaAgentName)) {
+                    this.continueWithNoRecording = false;
                     this.wowzaAgent = createdParticipant;
                     this.participants.push(createdParticipant);
                     this.logger.debug(`${this.loggerPrefixJudge} WowzaListener added`, {
@@ -500,6 +502,16 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                     );
                 }
             });
+
+        this.eventService
+            .getAudioRestartActioned()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe((conferenceId: string)=>{
+                if (conferenceId === this.conference.id) {
+                    this.audioErrorRetryToast = null;
+                    this.continueWithNoRecording = true;
+                }
+            })
 
         try {
             this.logger.debug(`${this.loggerPrefixJudge} Defined default devices in cache`);

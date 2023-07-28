@@ -538,33 +538,57 @@ namespace VideoWeb.EventHub.Hub
              }
          }
 
-         /// <summary>
-         /// A host can force all participants' local mute to be toggled. To be used for participants who do not have peripherals attached.
-         /// This is not to be confused with remote mute, which lock's a participant's ability to toggle their own mute status.
-         /// </summary>
-         /// <param name="conferenceId">The UUID for a conference</param>
-         /// <param name="muted">true to mute or false to unmute participants.</param>
-         [Authorize("Host")]
-         public async Task ToggleAllParticipantLocalMute(Guid conferenceId, bool muted)
-         {
-             try
-             {
-                 var conference = await GetConference(conferenceId);
-                 var participants = conference.Participants.Where(x => !x.IsHost());
+        /// <summary>
+        /// A host can force all participants' local mute to be toggled. To be used for participants who do not have peripherals attached.
+        /// This is not to be confused with remote mute, which lock's a participant's ability to toggle their own mute status.
+        /// </summary>
+        /// <param name="conferenceId">The UUID for a conference</param>
+        /// <param name="muted">true to mute or false to unmute participants.</param>
+        [Authorize("Host")]
+        public async Task ToggleAllParticipantLocalMute(Guid conferenceId, bool muted)
+        {
+            try
+            {
+                var conference = await GetConference(conferenceId);
+                var participants = conference.Participants.Where(x => !x.IsHost());
 
-                 foreach (var participant in participants)
-                 {
-                     await Clients.Group(participant.Username.ToLowerInvariant())
-                         .UpdateParticipantLocalMuteMessage(conferenceId, participant.Id, muted);
-                 }
-             }
-             catch (Exception ex)
-             {
-                 _logger.LogError(ex,
-                     "Error occured when updating all participants in conference {ConferenceId} local mute status to {Muted}",
-                     conferenceId, muted);
-             }
-         }
+                foreach (var participant in participants)
+                {
+                    await Clients.Group(participant.Username.ToLowerInvariant())
+                        .UpdateParticipantLocalMuteMessage(conferenceId, participant.Id, muted);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error occured when updating all participants in conference {ConferenceId} local mute status to {Muted}",
+                    conferenceId, muted);
+            }
+        }
+        
+        /// <summary>
+        /// Send a message to all other hosts in the conference, that the audio restart has been actioned.
+        /// </summary>
+        /// <param name="conferenceId">The UUID for a conference</param>
+        /// <param name="hostId">The UUID for the host</param>
+        [Authorize("Host")]
+        public async Task AudioRestartActioned(Guid conferenceId, Guid hostId)
+        {
+            try
+            {
+                var conference = await GetConference(conferenceId);
+                var hosts = conference.Participants.Where(x => x.IsHost() && x.Id != hostId).ToArray();
+                
+                if(hosts.Any())
+                    foreach (var host in hosts)
+                        await Clients.Group(host.Username.ToLowerInvariant()).AudioRestartActioned(conferenceId);
+                
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occured when updating other hosts in conference {ConferenceId}", conferenceId);
+            }
+        }
         
         private List<Participant> GetLinkedParticipants(Conference conference, Participant participant)
         {
