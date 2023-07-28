@@ -48,6 +48,7 @@ export const getEndpointsUpdatedMessageSubjectMock = new Subject<EndpointsUpdate
 export const getEndpointUnlinkedUpdatedMock = new Subject<EndpointRepMessage>();
 export const getEndpointLinkedUpdatedMock = new Subject<EndpointRepMessage>();
 export const getEndpointDisconnectUpdatedMock = new Subject<EndpointRepMessage>();
+export const getAudioRestartActionedMock = new Subject<string>();
 
 export const eventsServiceSpy = jasmine.createSpyObj<EventsService>(
     'EventsService',
@@ -87,7 +88,9 @@ export const eventsServiceSpy = jasmine.createSpyObj<EventsService>(
         'updateAllParticipantLocalMuteStatus',
         'getEndpointUnlinkedUpdated',
         'getEndpointLinkedUpdated',
-        'getEndpointDisconnectUpdated'
+        'getEndpointDisconnectUpdated',
+        'getAudioRestartActioned',
+        'sendAudioRestartActioned'
     ],
     ['eventHubIsConnected']
 );
@@ -118,3 +121,4 @@ eventsServiceSpy.getParticipantToggleLocalMuteMessage.and.returnValue(participan
 eventsServiceSpy.getEndpointUnlinkedUpdated.and.returnValue(getEndpointUnlinkedUpdatedMock.asObservable());
 eventsServiceSpy.getEndpointLinkedUpdated.and.returnValue(getEndpointLinkedUpdatedMock.asObservable());
 eventsServiceSpy.getEndpointDisconnectUpdated.and.returnValue(getEndpointDisconnectUpdatedMock.asObservable());
+eventsServiceSpy.getAudioRestartActioned.and.returnValue(getAudioRestartActionedMock.asObservable());
