@@ -529,6 +529,16 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
             this.errorService.handlePexipError(new CallError(error.name), conferenceId);
         }
+
+        this.eventService
+            .getAudioRestartActioned()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe((conferenceId: string)=>{
+                if (conferenceId === this.conference.id) {
+                    this.audioErrorRetryToast = null;
+                    this.continueWithNoRecording = true;
+                }
+            })
     }
 
     private onShouldReload(): void {
