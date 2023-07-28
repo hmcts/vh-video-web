@@ -506,12 +506,12 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.eventService
             .getAudioRestartActioned()
             .pipe(takeUntil(this.destroyedSubject))
-            .subscribe((conferenceId: string)=>{
+            .subscribe((conferenceId: string) => {
                 if (conferenceId === this.conference.id) {
                     this.audioErrorRetryToast = null;
                     this.continueWithNoRecording = true;
                 }
-            })
+            });
 
         try {
             this.logger.debug(`${this.loggerPrefixJudge} Defined default devices in cache`);
