@@ -518,14 +518,16 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             expect(component.wowzaAgent).toBeTruthy();
         });
 
-        it('Should display audio alert if wowza listener is deleted', () => {
+        it('Should display audio alert if wowza listener is deleted', fakeAsync(() => {
             videoCallService.onParticipantDeleted.and.returnValue(of(new ParticipantDeleted(wowzaParticipant.uuid)));
             component.conference.status = ConferenceStatus.InSession;
             component.conference.audio_recording_required = true;
 
             component.ngOnInit();
+            tick();
+
             expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalled();
-        });
+        }));
 
         it('Should not display audio alert if wowza listener is deleted, but conference is not in session', () => {
             component.audioErrorRetryToast = null;

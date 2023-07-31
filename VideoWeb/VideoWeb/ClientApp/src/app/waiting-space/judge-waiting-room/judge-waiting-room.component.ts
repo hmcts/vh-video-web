@@ -624,7 +624,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         );
     }
 
-    private handleWowzaAgentDisconnect(deletedParticipant: ParticipantDeleted) {
+    private async handleWowzaAgentDisconnect(deletedParticipant: ParticipantDeleted) {
         if (
             this.conference.audio_recording_required &&
             this.wowzaAgent &&
@@ -639,7 +639,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 }
             );
             this.wowzaAgent = null;
-            this.showAudioRecordingRestartAlert();
+            await this.showAudioRecordingRestartAlert();
         }
     }
 }
