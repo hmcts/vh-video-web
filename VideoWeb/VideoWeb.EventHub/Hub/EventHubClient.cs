@@ -33,8 +33,13 @@ namespace VideoWeb.EventHub.Hub
         private readonly IConferenceVideoControlStatusService _conferenceVideoControlStatusService;
         private readonly HearingServicesConfiguration _servicesConfiguration;
 
-        public EventHub(IUserProfileService userProfileService, IVideoApiClient videoApiClient,
-            ILogger<EventHub> logger, IConferenceCache conferenceCache, IHeartbeatRequestMapper heartbeatRequestMapper, IOptions<HearingServicesConfiguration> servicesConfiguration, IConferenceVideoControlStatusService conferenceVideoControlStatusService)
+        public EventHub(IUserProfileService userProfileService, 
+            IVideoApiClient videoApiClient,
+            ILogger<EventHub> logger, 
+            IConferenceCache conferenceCache, 
+            IHeartbeatRequestMapper heartbeatRequestMapper, 
+            IOptions<HearingServicesConfiguration> servicesConfiguration, 
+            IConferenceVideoControlStatusService conferenceVideoControlStatusService)
         {
             _userProfileService = userProfileService;
             _logger = logger;
@@ -565,6 +570,31 @@ namespace VideoWeb.EventHub.Hub
                      conferenceId, muted);
              }
          }
+        
+        /// <summary>
+        /// Send a message to all other hosts in the conference, that the audio restart has been actioned.
+        /// </summary>
+        /// <param name="conferenceId">The UUID for a conference</param>
+        /// <param name="participantId">The Participant ID for the host that actioned the audio restart</param>
+        [Authorize("Host")]
+        public async Task PushAudioRestartAction(Guid conferenceId, Guid participantId)
+        {
+            try
+            {
+                var conference = await GetConference(conferenceId);
+                var otherHosts = conference.Participants
+                    .Where(x => x.IsHost() && x.Id != participantId)
+                    .ToArray();
+                
+                if(otherHosts.Any())
+                    foreach (var host in otherHosts)
+                        await Clients.Group(host.Username.ToLowerInvariant()).AudioRestartActioned(conferenceId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occured when updating other hosts in conference {ConferenceId}", conferenceId);
+            }
+        }
         
         private List<Participant> GetLinkedParticipants(Conference conference, Participant participant)
         {
