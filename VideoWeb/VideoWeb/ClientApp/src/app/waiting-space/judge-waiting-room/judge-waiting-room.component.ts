@@ -436,7 +436,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         });
     }
 
-    async audioRestartActioned(){
+    async audioRestartActioned() {
         await this.eventService.sendAudioRestartActioned(this.conferenceId, this.participant.id);
         this.reconnectToWowza();
     }
@@ -510,12 +510,12 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.eventService
             .getAudioRestartActioned()
             .pipe(takeUntil(this.destroyedSubject))
-            .subscribe((conferenceId: string)=>{
+            .subscribe((conferenceId: string) => {
                 if (conferenceId === this.conference.id) {
                     this.audioErrorRetryToast = null;
                     this.continueWithNoRecording = true;
                 }
-            })
+            });
 
         try {
             this.logger.debug(`${this.loggerPrefixJudge} Defined default devices in cache`);
@@ -537,12 +537,12 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.eventService
             .getAudioRestartActioned()
             .pipe(takeUntil(this.destroyedSubject))
-            .subscribe((conferenceId: string)=>{
+            .subscribe((conferenceId: string) => {
                 if (conferenceId === this.conference.id) {
                     this.audioErrorRetryToast = null;
                     this.continueWithNoRecording = true;
                 }
-            })
+            });
     }
 
     private onShouldReload(): void {
@@ -619,7 +619,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         }
         this.recordingSessionSeconds = 0;
         clearInterval(this.audioRecordingInterval);
-        this.audioErrorRetryToast = this.notificationToastrService.showAudioRecordingErrorWithRestart(await this.audioRestartActioned.bind(this));
+        this.audioErrorRetryToast = this.notificationToastrService.showAudioRecordingErrorWithRestart(
+            await this.audioRestartActioned.bind(this)
+        );
     }
 
     private handleWowzaAgentDisconnect(deletedParticipant: ParticipantDeleted) {
