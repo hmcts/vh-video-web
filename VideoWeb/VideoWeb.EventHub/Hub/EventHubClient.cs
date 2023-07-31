@@ -570,31 +570,7 @@ namespace VideoWeb.EventHub.Hub
                     conferenceId, muted);
             }
         }
-        
-        /// <summary>
-        /// Send a message to all other hosts in the conference, that the audio restart has been actioned.
-        /// </summary>
-        /// <param name="conferenceId">The UUID for a conference</param>
-        /// <param name="hostId">The UUID for the host</param>
-        [Authorize("Host")]
-        public async Task AudioRestartActioned(Guid conferenceId, Guid hostId)
-        {
-            try
-            {
-                var conference = await GetConference(conferenceId);
-                var hosts = conference.Participants.Where(x => x.IsHost() && x.Id != hostId).ToArray();
-                
-                if(hosts.Any())
-                    foreach (var host in hosts)
-                        await Clients.Group(host.Username.ToLowerInvariant()).AudioRestartActioned(conferenceId);
-                
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occured when updating other hosts in conference {ConferenceId}", conferenceId);
-            }
-        }
-        
+
         /// <summary>
         /// Send a message to all other hosts in the conference, that the audio restart has been actioned.
         /// </summary>
