@@ -425,7 +425,12 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         ModalTrapFocus.trap('video-container');
     }
 
-    reconnectToWowza() {
+    async audioRestartActioned() {
+        await this.eventService.sendAudioRestartActioned(this.conferenceId, this.participant.id);
+        this.reconnectToWowza();
+    }
+
+    private reconnectToWowza() {
         this.videoCallService.connectWowzaAgent(this.conference.ingest_url, msg => {
             if (msg.status === 'success') {
                 this.notificationToastrService.showAudioRecordingRestartSuccess(this.audioRestartCallback.bind(this));
@@ -433,12 +438,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             } else {
                 this.notificationToastrService.showAudioRecordingRestartFailure(this.audioRestartCallback.bind(this));
             }
-        });
-    }
-
-    audioRestartActioned() {
-        this.eventService.sendAudioRestartActioned(this.conferenceId, this.participant.id).then(() => {
-            this.reconnectToWowza();
         });
     }
 

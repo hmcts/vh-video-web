@@ -1044,8 +1044,9 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                     component.recordingSessionSeconds = 61;
                     component.conference.status = ConferenceStatus.InSession;
                     await component.retrieveAudioStreamInfo(globalConference.id);
-                    await component.reconnectToWowza();
+                    await component.audioRestartActioned();
                     expect(component.audioErrorRetryToast).toBeTruthy();
+                    expect(eventsService.sendAudioRestartActioned).toHaveBeenCalled();
                     expect(notificationToastrService.showAudioRecordingRestartSuccess).toHaveBeenCalled();
                 });
 
@@ -1056,8 +1057,9 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                     component.recordingSessionSeconds = 61;
                     component.conference.status = ConferenceStatus.InSession;
                     await component.retrieveAudioStreamInfo(globalConference.id);
-                    await component.reconnectToWowza();
+                    await component.audioRestartActioned();
                     expect(component.audioErrorRetryToast).toBeTruthy();
+                    expect(eventsService.sendAudioRestartActioned).toHaveBeenCalled();
                     expect(notificationToastrService.showAudioRecordingRestartSuccess).toHaveBeenCalled();
                 });
             });
@@ -1073,8 +1075,9 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                     component.recordingSessionSeconds = 61;
                     component.conference.status = ConferenceStatus.InSession;
                     await component.retrieveAudioStreamInfo(globalConference.id);
-                    await component.reconnectToWowza();
+                    await component.audioRestartActioned();
                     expect(component.audioErrorRetryToast).toBeTruthy();
+                    expect(eventsService.sendAudioRestartActioned).toHaveBeenCalled();
                     expect(notificationToastrService.showAudioRecordingRestartFailure).toHaveBeenCalled();
                 });
 
@@ -1085,8 +1088,9 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                     component.recordingSessionSeconds = 61;
                     component.conference.status = ConferenceStatus.InSession;
                     await component.retrieveAudioStreamInfo(globalConference.id);
-                    await component.reconnectToWowza();
+                    await component.audioRestartActioned();
                     expect(component.audioErrorRetryToast).toBeTruthy();
+                    expect(eventsService.sendAudioRestartActioned).toHaveBeenCalled();
                     expect(notificationToastrService.showAudioRecordingRestartFailure).toHaveBeenCalled();
                 });
             });
