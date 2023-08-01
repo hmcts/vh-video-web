@@ -380,7 +380,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                         continueWithNoRecording: this.continueWithNoRecording,
                         audioErrorRetryToast: this.audioErrorRetryToast
                     });
-                    await this.showAudioRecordingRestartAlert();
+                    this.showAudioRecordingRestartAlert();
                 }
             } catch (error) {
                 this.logger.error(`${this.loggerPrefixJudge} Failed to get audio stream info.`, error, { conference: this.conferenceId });
