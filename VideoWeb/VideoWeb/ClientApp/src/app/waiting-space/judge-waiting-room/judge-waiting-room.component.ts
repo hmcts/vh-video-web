@@ -538,8 +538,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             .getAudioRestartActioned()
             .pipe(takeUntil(this.destroyedSubject))
             .subscribe((conferenceId: string) => {
-                if (conferenceId === this.conference.id)
+                if (conferenceId === this.conference.id) {
                     this.audioErrorRetryToast = null;
+                }
             });
     }
 

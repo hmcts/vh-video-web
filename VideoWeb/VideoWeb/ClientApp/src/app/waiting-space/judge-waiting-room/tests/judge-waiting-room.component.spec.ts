@@ -1,4 +1,4 @@
-import {discardPeriodicTasks, fakeAsync, flush, flushMicrotasks, tick} from '@angular/core/testing';
+import { discardPeriodicTasks, fakeAsync, flush, flushMicrotasks, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import {
@@ -1092,18 +1092,18 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             });
 
             describe('Multiple Hosts Audio Alert', () => {
-                it('When Audio Recording Alert is displayed, restart is actioned by another user and closed for the current user',  async () => {
-                    //Arrange
+                it('When Audio Recording Alert is displayed, restart is actioned by another user and closed for the current user', async () => {
+                    // Arrange
                     audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(false));
                     component.continueWithNoRecording = false;
                     component.recordingSessionSeconds = 61;
                     component.conference.status = ConferenceStatus.InSession;
-                    //Act
+                    // Act
                     await component.retrieveAudioStreamInfo(globalConference.id);
-                    //Assert
+                    // Assert
                     expect(notificationToastrService.showAudioRecordingErrorWithRestart).toHaveBeenCalled();
                     expect(component.audioErrorRetryToast).toBeTruthy();
-                    //Act
+                    // Act
                     await eventsService.getAudioRestartActioned.and.returnValue(of(globalConference.id));
                     await component.ngOnInit();
                     expect(component.audioErrorRetryToast).toBeFalsy();
