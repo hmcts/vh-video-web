@@ -511,7 +511,7 @@ export class EventsService {
     }
 
     async sendAudioRestartActioned(conferenceId: string, participantId: string) {
-        await this.eventsHubConnection.send('AudioRestartActioned', conferenceId, participantId);
+        await this.eventsHubConnection.send('PushAudioRestartAction', conferenceId, participantId);
         this.logger.debug('[EventsService] - Sent device Audio Restart action to EventHub', {
             conference: conferenceId,
             participant: participantId
