@@ -528,7 +528,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             .getAudioRestartActioned()
             .pipe(takeUntil(this.destroyedSubject))
             .subscribe((conferenceId: string) => {
-                if (conferenceId === this.conference.id) {
+                if (conferenceId === this.conference.id && this.audioErrorRetryToast) {
+                    this.logger.warn(`${this.loggerPrefixJudge} Audio restart actioned by another host`);
+                    const actionToast = this.audioErrorRetryToast.vhToastOptions.buttons[0].action;
+                    actionToast();
                     this.audioErrorRetryToast = null;
                 }
             });

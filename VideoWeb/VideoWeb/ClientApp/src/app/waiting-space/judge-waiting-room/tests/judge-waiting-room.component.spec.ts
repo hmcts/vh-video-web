@@ -1100,6 +1100,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                     // Arrange
                     audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(false));
                     component.continueWithNoRecording = false;
+                    component.audioErrorRetryToast = null;
                     component.recordingSessionSeconds = 61;
                     component.conference.status = ConferenceStatus.InSession;
                     // Act
@@ -1110,6 +1111,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                     // Act
                     await eventsService.getAudioRestartActioned.and.returnValue(of(globalConference.id));
                     await component.ngOnInit();
+                    // Assert
                     expect(component.audioErrorRetryToast).toBeFalsy();
                 });
             });
