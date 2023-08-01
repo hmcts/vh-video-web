@@ -436,9 +436,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         });
     }
 
-    async audioRestartActioned() {
-        await this.eventService.sendAudioRestartActioned(this.conferenceId, this.participant.id);
-        this.reconnectToWowza();
+    audioRestartActioned() {
+        this.eventService.sendAudioRestartActioned(this.conferenceId, this.participant.id).then(() => {
+            this.reconnectToWowza();
+        });
     }
 
     private init() {
@@ -513,7 +514,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             .subscribe((conferenceId: string) => {
                 if (conferenceId === this.conference.id) {
                     this.audioErrorRetryToast = null;
-                    this.continueWithNoRecording = true;
                 }
             });
 
@@ -538,10 +538,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             .getAudioRestartActioned()
             .pipe(takeUntil(this.destroyedSubject))
             .subscribe((conferenceId: string) => {
-                if (conferenceId === this.conference.id) {
+                if (conferenceId === this.conference.id)
                     this.audioErrorRetryToast = null;
-                    this.continueWithNoRecording = true;
-                }
             });
     }
 
@@ -613,18 +611,16 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.destroyedSubject.complete();
     }
 
-    private async showAudioRecordingRestartAlert() {
+    private showAudioRecordingRestartAlert() {
         if (this.audioErrorRetryToast) {
             return;
         }
         this.recordingSessionSeconds = 0;
         clearInterval(this.audioRecordingInterval);
-        this.audioErrorRetryToast = this.notificationToastrService.showAudioRecordingErrorWithRestart(
-            await this.audioRestartActioned.bind(this)
-        );
+        this.audioErrorRetryToast = this.notificationToastrService.showAudioRecordingErrorWithRestart(this.audioRestartActioned.bind(this));
     }
 
-    private async handleWowzaAgentDisconnect(deletedParticipant: ParticipantDeleted) {
+    private handleWowzaAgentDisconnect(deletedParticipant: ParticipantDeleted) {
         if (
             this.conference.audio_recording_required &&
             this.wowzaAgent &&
@@ -639,7 +635,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 }
             );
             this.wowzaAgent = null;
-            await this.showAudioRecordingRestartAlert();
+            this.showAudioRecordingRestartAlert();
         }
     }
 }
