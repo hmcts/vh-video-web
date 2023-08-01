@@ -425,14 +425,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         ModalTrapFocus.trap('video-container');
     }
 
-    async audioRestartActioned() {
-        await this.eventService.sendAudioRestartActioned(this.conferenceId, this.participant.id);
-        this.reconnectToWowza();
-    }
-
-    private reconnectToWowza() {
-        this.videoCallService.connectWowzaAgent(this.conference.ingest_url, msg => {
-            if (msg.status === 'success') {
+    reconnectToWowza() {
+        this.videoCallService.connectWowzaAgent(this.conference.ingest_url, async dialOutToWowzaResponse => {
+            if (dialOutToWowzaResponse.status === 'success') {
+                await this.eventService.sendAudioRestartActioned(this.conferenceId, this.participant.id);
                 this.notificationToastrService.showAudioRecordingRestartSuccess(this.audioRestartCallback.bind(this));
                 this.initAudioRecordingInterval();
             } else {
@@ -530,9 +526,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             .subscribe((conferenceId: string) => {
                 if (conferenceId === this.conference.id && this.audioErrorRetryToast) {
                     this.logger.warn(`${this.loggerPrefixJudge} Audio restart actioned by another host`);
-                    const actionToast = this.audioErrorRetryToast.vhToastOptions.buttons[0].action;
-                    actionToast();
-                    this.audioErrorRetryToast = null;
+                    this.audioErrorRetryToast.vhToastOptions.concludeToast(this.audioRestartCallback.bind(this));
                 }
             });
     }
@@ -611,7 +605,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         }
         this.recordingSessionSeconds = 0;
         clearInterval(this.audioRecordingInterval);
-        this.audioErrorRetryToast = this.notificationToastrService.showAudioRecordingErrorWithRestart(this.audioRestartActioned.bind(this));
+        this.audioErrorRetryToast = this.notificationToastrService.showAudioRecordingErrorWithRestart(this.reconnectToWowza.bind(this));
     }
 
     private handleWowzaAgentDisconnect(deletedParticipant: ParticipantDeleted) {
