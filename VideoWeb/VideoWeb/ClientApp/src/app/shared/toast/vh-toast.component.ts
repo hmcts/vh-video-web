@@ -8,6 +8,7 @@ export interface VhToastOptions {
     buttons: VhToastButton[];
     onNoAction?: () => void;
     onRemove?: () => void;
+    concludeToast?: (callback) => void;
 }
 
 export interface VhToastButton {

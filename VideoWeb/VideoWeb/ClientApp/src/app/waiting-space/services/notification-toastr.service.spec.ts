@@ -557,7 +557,7 @@ describe('NotificationToastrService', () => {
     });
 
     describe('showAudioRecordingErrorRestart', () => {
-        it('should return the audio alert component', () => {
+        it('should return the audio alert component, then close with the conclude', () => {
             const mockToast = {
                 toastRef: {
                     componentInstance: {}
@@ -569,7 +569,12 @@ describe('NotificationToastrService', () => {
             const result = service.showAudioRecordingErrorWithRestart(callback);
 
             expect(result).toBeDefined();
+
             expect(result.vhToastOptions.htmlBody).toContain('audio-alert-with-restart.message');
+
+            result.vhToastOptions.concludeToast(callback);
+
+            expect(callback).toHaveBeenCalled();
         });
     });
 

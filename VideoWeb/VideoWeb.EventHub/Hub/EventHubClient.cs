@@ -556,7 +556,7 @@ namespace VideoWeb.EventHub.Hub
              {
                  var conference = await GetConference(conferenceId);
                  var participants = conference.Participants.Where(x => !x.IsHost());
-
+ 
                  foreach (var participant in participants)
                  {
                      await Clients.Group(participant.Username.ToLowerInvariant())
@@ -570,7 +570,7 @@ namespace VideoWeb.EventHub.Hub
                      conferenceId, muted);
              }
          }
-        
+
         /// <summary>
         /// Send a message to all other hosts in the conference, that the audio restart has been actioned.
         /// </summary>

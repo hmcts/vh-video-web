@@ -63,6 +63,7 @@ export class EventsService {
     private participantRemoteMuteStatusSubject = new Subject<ParticipantRemoteMuteMessage>();
     private participantHandRaisedStatusSubject = new Subject<ParticipantHandRaisedMessage>();
     private participantToggleLocalMuteStatusSubject = new Subject<ParticipantToggleLocalMuteMessage>();
+    private audioRestartActionedSubject = new Subject<string>();
     private roomUpdateSubject = new Subject<Room>();
     private roomTransferSubject = new Subject<RoomTransfer>();
     private hearingLayoutChangedSubject = new Subject<HearingLayoutChanged>();
@@ -217,6 +218,11 @@ export class EventsService {
             });
             const payload = new ParticipantHandRaisedMessage(conferenceId, participantId, hasHandRaised);
             this.participantHandRaisedStatusSubject.next(payload);
+        },
+
+        AudioRestartActioned: (conferenceId: string) => {
+            this.logger.debug('[EventsService] - Audio restart actioned received: ', conferenceId);
+            this.audioRestartActionedSubject.next(conferenceId);
         },
 
         updateparticipantlocalmutemessage: (conferenceId: string, participantId: string, isMuted: boolean) => {
@@ -430,6 +436,10 @@ export class EventsService {
         return this.hearingLayoutChangedSubject.asObservable();
     }
 
+    getAudioRestartActioned(): Observable<string> {
+        return this.audioRestartActionedSubject.asObservable();
+    }
+
     async sendMessage(instantMessage: InstantMessage) {
         this.logger.debug('[EventsService] - Sent message to EventHub', instantMessage);
         try {
@@ -497,6 +507,14 @@ export class EventsService {
             conference: conferenceId,
             participant: participantId,
             mediaStatus: mediaStatus
+        });
+    }
+
+    async sendAudioRestartActioned(conferenceId: string, participantId: string) {
+        await this.eventsHubConnection.send('PushAudioRestartAction', conferenceId, participantId);
+        this.logger.debug('[EventsService] - Sent device Audio Restart action to EventHub', {
+            conference: conferenceId,
+            participant: participantId
         });
     }
 }

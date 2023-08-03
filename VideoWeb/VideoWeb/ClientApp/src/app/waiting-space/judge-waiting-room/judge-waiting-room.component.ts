@@ -426,8 +426,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     reconnectToWowza() {
-        this.videoCallService.connectWowzaAgent(this.conference.ingest_url, msg => {
-            if (msg.status === 'success') {
+        this.videoCallService.connectWowzaAgent(this.conference.ingest_url, async dialOutToWowzaResponse => {
+            if (dialOutToWowzaResponse.status === 'success') {
+                await this.eventService.sendAudioRestartActioned(this.conferenceId, this.participant.id);
                 this.notificationToastrService.showAudioRecordingRestartSuccess(this.audioRestartCallback.bind(this));
                 this.initAudioRecordingInterval();
             } else {
@@ -462,6 +463,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             .subscribe(createdParticipant => {
                 this.assignPexipIdToRemoteStore(createdParticipant);
                 if (createdParticipant.pexipDisplayName.includes(this.videoCallService.wowzaAgentName)) {
+                    this.continueWithNoRecording = false;
                     this.wowzaAgent = createdParticipant;
                     this.participants.push(createdParticipant);
                     this.logger.debug(`${this.loggerPrefixJudge} WowzaListener added`, {
@@ -517,6 +519,16 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
             this.errorService.handlePexipError(new CallError(error.name), conferenceId);
         }
+
+        this.eventService
+            .getAudioRestartActioned()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe((conferenceId: string) => {
+                if (conferenceId === this.conference.id && this.audioErrorRetryToast) {
+                    this.logger.warn(`${this.loggerPrefixJudge} Audio restart actioned by another host`);
+                    this.audioErrorRetryToast.vhToastOptions.concludeToast(this.audioRestartCallback.bind(this));
+                }
+            });
     }
 
     private onShouldReload(): void {
