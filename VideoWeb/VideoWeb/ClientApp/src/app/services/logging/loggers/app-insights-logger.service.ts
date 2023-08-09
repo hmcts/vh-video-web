@@ -6,8 +6,10 @@ import { ISecurityService } from 'src/app/security/authentication/security-servi
 import { ConfigService } from '../../api/config.service';
 import { LogAdapter } from '../log-adapter';
 import { Role } from '../../clients/api-client';
-import { filter, map } from 'rxjs/operators';
+import { filter, switchMap } from 'rxjs/operators';
 import { ProfileService } from '../../api/profile.service';
+import { combineLatest, of } from 'rxjs';
+import { IdpProviders } from 'src/app/security/idp-providers';
 
 @Injectable({
     providedIn: 'root'
@@ -17,7 +19,7 @@ export class AppInsightsLoggerService implements LogAdapter {
     appInsights: ApplicationInsights;
     isVHO: boolean;
     userData;
-    currentIdp: string;
+    currentIdp: IdpProviders;
 
     private securityService: ISecurityService;
 
@@ -28,12 +30,23 @@ export class AppInsightsLoggerService implements LogAdapter {
         private profileService: ProfileService
     ) {
         this.router = router;
+
+        combineLatest([securityServiceProviderService.currentSecurityService$, securityServiceProviderService.currentIdp$]).subscribe(
+            ([securityService, idp]) => {
+                this.currentIdp = idp;
+                this.securityService = securityService;
+                this.setupAppInsights(configService).subscribe(() => {
+                    this.checkIfVho();
+                    this.trackNavigation();
+                });
+            }
+        );
         securityServiceProviderService.currentSecurityService$.subscribe(securityService => (this.securityService = securityService));
 
-        this.setupAppInsights(configService, this.securityService).subscribe(() => {
-            this.checkIfVho();
-            this.trackNavigation();
-        });
+        // this.setupAppInsights(configService).subscribe(() => {
+        //     this.checkIfVho();
+        //     this.trackNavigation();
+        // });
     }
 
     debug(message: string, properties: any = null): void {
@@ -92,31 +105,28 @@ export class AppInsightsLoggerService implements LogAdapter {
         this.appInsights.context.user.id = userId;
     }
 
-    private setupAppInsights(configService: ConfigService, securityService: ISecurityService) {
-        return configService.getClientSettings().pipe(
-            map(configSettings => {
+    private setupAppInsights(configService: ConfigService) {
+        return combineLatest([this.securityService.getUserData(this.currentIdp), configService.getClientSettings()]).pipe(
+            switchMap(([ud, cs]) => {
+                this.userData = ud;
+                console.log('user data', this.userData);
                 this.appInsights = new ApplicationInsights({
                     config: {
-                        connectionString: configSettings.app_insights_connection_string,
+                        connectionString: cs.app_insights_connection_string,
                         isCookieUseDisabled: true
                     }
                 });
+                let userId = ud.preferred_username.toLowerCase();
+                if (this.currentIdp === IdpProviders.quickLink) {
+                    const participantId = ud.preferred_username.split('@')[0];
+                    userId = `${ud.unique_name.toLowerCase()}_${participantId}`;
+                }
                 this.appInsights.loadAppInsights();
-                securityService?.getUserData(this.currentIdp).pipe(
-                    map(ud => {
-                        this.appInsights = new ApplicationInsights({
-                            config: {
-                                connectionString: configSettings.app_insights_connection_string,
-                                isCookieUseDisabled: true
-                            }
-                        });
-                        this.appInsights.loadAppInsights();
-                        this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
-                            envelope.tags['ai.cloud.role'] = 'vh-video-web';
-                            envelope.tags['ai.user.id'] = ud.preferred_username.toLowerCase();
-                        });
-                    })
-                );
+                this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
+                    envelope.tags['ai.cloud.role'] = 'vh-video-web';
+                    envelope.tags['ai.user.id'] = userId;
+                });
+                return of(null);
             })
         );
     }
