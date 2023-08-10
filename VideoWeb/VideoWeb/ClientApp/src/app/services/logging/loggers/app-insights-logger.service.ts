@@ -42,11 +42,6 @@ export class AppInsightsLoggerService implements LogAdapter {
             }
         );
         securityServiceProviderService.currentSecurityService$.subscribe(securityService => (this.securityService = securityService));
-
-        // this.setupAppInsights(configService).subscribe(() => {
-        //     this.checkIfVho();
-        //     this.trackNavigation();
-        // });
     }
 
     debug(message: string, properties: any = null): void {
@@ -109,7 +104,6 @@ export class AppInsightsLoggerService implements LogAdapter {
         return combineLatest([this.securityService.getUserData(this.currentIdp), configService.getClientSettings()]).pipe(
             switchMap(([ud, cs]) => {
                 this.userData = ud;
-                console.log('user data', this.userData);
                 this.appInsights = new ApplicationInsights({
                     config: {
                         connectionString: cs.app_insights_connection_string,
