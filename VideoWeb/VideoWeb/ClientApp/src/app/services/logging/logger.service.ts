@@ -26,6 +26,9 @@ export class LoggerService implements Logger {
             });
         this.higherLevelLogsOnly = environment.production;
     }
+    addUserIdToLogger(userId: string) {
+        this.adapters.forEach(logger => logger.addUserIdToLogger(userId));
+    }
 
     addConferenceIdToProperties(properties?: any, conferenceIdKey: string = LoggerService.currentConferenceIdPropertyKey) {
         properties = properties ?? {};

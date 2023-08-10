@@ -5,7 +5,7 @@ import { SecurityServiceProvider } from 'src/app/security/authentication/securit
 import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
 import { ConfigService } from '../../api/config.service';
 import { LogAdapter } from '../log-adapter';
-import { Role } from '../../clients/api-client';
+import { ClientSettingsResponse, Role } from '../../clients/api-client';
 import { filter, switchMap } from 'rxjs/operators';
 import { ProfileService } from '../../api/profile.service';
 import { combineLatest, of } from 'rxjs';
@@ -20,8 +20,10 @@ export class AppInsightsLoggerService implements LogAdapter {
     isVHO: boolean;
     userData;
     currentIdp: IdpProviders;
+    private config: ClientSettingsResponse;
 
     private securityService: ISecurityService;
+    private idAddedToLog: boolean;
 
     constructor(
         securityServiceProviderService: SecurityServiceProvider,
@@ -31,17 +33,20 @@ export class AppInsightsLoggerService implements LogAdapter {
     ) {
         this.router = router;
 
-        combineLatest([securityServiceProviderService.currentSecurityService$, securityServiceProviderService.currentIdp$]).subscribe(
-            ([securityService, idp]) => {
-                this.currentIdp = idp;
-                this.securityService = securityService;
-                this.setupAppInsights(configService).subscribe(() => {
-                    this.checkIfVho();
-                    this.trackNavigation();
-                });
-            }
-        );
-        securityServiceProviderService.currentSecurityService$.subscribe(securityService => (this.securityService = securityService));
+        combineLatest([
+            securityServiceProviderService.currentSecurityService$,
+            securityServiceProviderService.currentIdp$,
+            configService.getClientSettings()
+        ]).subscribe(([securityService, idp, config]) => {
+            this.config = config;
+            this.currentIdp = idp;
+            this.securityService = securityService;
+
+            this.setupAppInsights().subscribe(() => {
+                this.checkIfVho();
+                this.trackNavigation();
+            });
+        });
     }
 
     debug(message: string, properties: any = null): void {
@@ -96,30 +101,42 @@ export class AppInsightsLoggerService implements LogAdapter {
         });
     }
 
-    updateUserId(userId: string) {
-        this.appInsights.context.user.id = userId;
+    addUserIdToLogger(userId: string) {
+        if (userId && !this.idAddedToLog) {
+            const loweredUserId = userId.toLowerCase();
+            this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
+                envelope.tags['ai.user.id'] = loweredUserId;
+            });
+            this.appInsights.setAuthenticatedUserContext(loweredUserId, loweredUserId, true);
+            this.idAddedToLog = true;
+        }
     }
 
-    private setupAppInsights(configService: ConfigService) {
-        return combineLatest([this.securityService.getUserData(this.currentIdp), configService.getClientSettings()]).pipe(
-            switchMap(([ud, cs]) => {
-                this.userData = ud;
+    private setupAppInsights() {
+        return this.securityService.getUserData(this.currentIdp).pipe(
+            switchMap(userData => {
+                this.userData = userData;
                 this.appInsights = new ApplicationInsights({
                     config: {
-                        connectionString: cs.app_insights_connection_string,
+                        connectionString: this.config.app_insights_connection_string,
                         isCookieUseDisabled: true
                     }
                 });
-                let userId = ud.preferred_username.toLowerCase();
+                let userId: string = null;
+                if (userData?.preferred_username) {
+                    userId = userData?.preferred_username.toLowerCase();
+                }
+
                 if (this.currentIdp === IdpProviders.quickLink) {
-                    const participantId = ud.preferred_username.split('@')[0];
-                    userId = `${ud.unique_name.toLowerCase()}_${participantId}`;
+                    const participantId = userData.preferred_username.split('@')[0];
+                    userId = `${userData.unique_name.toLowerCase()}_${participantId}`;
                 }
                 this.appInsights.loadAppInsights();
                 this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
                     envelope.tags['ai.cloud.role'] = 'vh-video-web';
-                    envelope.tags['ai.user.id'] = userId;
                 });
+
+                this.addUserIdToLogger(userId);
                 return of(null);
             })
         );
