@@ -1,4 +1,3 @@
-import { TestBed } from '@angular/core/testing';
 import { LoggerService } from '../logging/logger.service';
 
 import { LocalStorageService } from './local-storage.service';
@@ -9,7 +8,7 @@ describe('LocalStorageService', () => {
     let service: LocalStorageService;
 
     beforeEach(() => {
-        loggerServiceSpy = jasmine.createSpyObj<LoggerService>('LoggerService', ['info', 'warn']);
+        loggerServiceSpy = jasmine.createSpyObj<LoggerService>('LoggerService', ['info', 'warn', 'debug']);
 
         service = new LocalStorageService(loggerServiceSpy);
     });

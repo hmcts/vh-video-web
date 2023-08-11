@@ -42,7 +42,7 @@ describe('VideoControlCacheService', () => {
         videoControlCacheStorageServiceSpy.loadHearingStateForConference.and.returnValue(loadHearingStateForConference$);
         videoControlCacheStorageServiceSpy.saveHearingStateForConference.and.returnValue(of(null));
 
-        loggerServiceSpy = jasmine.createSpyObj<LoggerService>('LoggerService', ['info', 'warn']);
+        loggerServiceSpy = jasmine.createSpyObj<LoggerService>('LoggerService', ['info', 'warn', 'debug']);
 
         service = new VideoControlCacheService(conferenceServiceSpy, videoControlCacheStorageServiceSpy, loggerServiceSpy);
     });
