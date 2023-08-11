@@ -914,19 +914,19 @@
     "message": "There’s a problem with recording. Some or all of the audio for this hearing may not be recorded."
   },
   "audio-alert-with-restart": {
-      "title": "Warning",
-      "message": "Recording has stopped working. Please click below to restart recording.",
-      "button": "Restart"
+    "title": "Warning",
+    "message": "Recording has stopped working. Please click below to restart recording.",
+    "button": "Restart"
   },
   "audio-alert-restart-success": {
-      "title": "Audio being recorded",
-      "message": "The recording has been resumed successfully.",
-      "button": "OK"
+    "title": "Audio being recorded",
+    "message": "The recording has been resumed successfully.",
+    "button": "OK"
   },
   "audio-alert-restart-failure": {
-      "title": "Unable to resume recording",
-      "message": "Sorry, we’re unable to resume recording. Please revert to alternative recording equipment",
-      "button": "OK"
+    "title": "Unable to resume recording",
+    "message": "Sorry, we’re unable to resume recording. Please revert to alternative recording equipment",
+    "button": "OK"
   },
   "unread-messages": {
     "im-image-alt": "instant message icon"
@@ -1176,49 +1176,49 @@
     "poor-connection": {
       "title": "Alert",
       "message": "Your internet connection is poor. People may have trouble seeing and hearing you.",
-      "dismiss": "Dismiss"
+      "dismiss": "OK"
     },
     "participant-added": {
       "title": "{{name}}",
       "message-without-party": "{{role}} has been added to the hearing.",
       "message-with-party": "{{role}} ({{party}}) has been added to the hearing.",
-      "dismiss": "Dismiss"
+      "dismiss": "OK"
     },
     "endpoint-added": {
       "title": "{{name}}",
       "message": "Video Access Point has been added to the hearing",
-      "dismiss": "Dismiss"
+      "dismiss": "OK"
     },
     "endpoint-updated": {
       "title": "{{name}}",
       "message": "Video Access Point has been updated in the hearing",
-      "dismiss": "Dismiss"
+      "dismiss": "OK"
     },
     "endpoint-linked": {
       "title": "Alert",
       "message": "You have been added as the linked legal representative to {{jvsEndpointName}}",
-      "dismiss": "Dismiss"
+      "dismiss": "OK"
     },
     "endpoint-unlinked": {
-        "title": "Alert",
-        "message": "You cannot start a consultation with {{jvsEndpointName}} as you are no longer the linked legal representative",
-        "dismiss": "Dismiss"
+      "title": "Alert",
+      "message": "You cannot start a consultation with {{jvsEndpointName}} as you are no longer the linked legal representative",
+      "dismiss": "OK"
     },
     "endpoint-consultation-closed": {
-        "title": "Alert",
-        "message": "Consultation with {{jvsEndpointName}} has ended as you are no longer the linked legal representative",
-        "dismiss": "Dismiss"
+      "title": "Alert",
+      "message": "Consultation with {{jvsEndpointName}} has ended as you are no longer the linked legal representative",
+      "dismiss": "OK"
     },
     "hearing-layout-changed": {
       "title": "{{name}}",
       "message": "has changed the hearing layout.",
-      "dismiss": "Dismiss"
+      "dismiss": "OK"
     },
     "hearing-started": {
       "title": "Alert!",
       "join-hearing": "Join hearing",
       "message": "The hearing is now in session.",
-      "dismiss": "Dismiss"
+      "dismiss": "OK"
     }
   },
   "consultation-service": {
