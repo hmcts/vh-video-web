@@ -115,7 +115,7 @@ export class EventsHubService implements OnDestroy {
 
     start() {
         if (this.isWaitingToReconnect) {
-            this.logger.info('[EventsService] - A reconnection promise already exists');
+            this.logger.debug('[EventsService] - A reconnection promise already exists');
             return;
         }
 
@@ -148,7 +148,7 @@ export class EventsHubService implements OnDestroy {
                 this.start();
             });
         } else {
-            this.logger.info(`[EventsService] - Failed to connect too many times (#${this.reconnectionAttempt}), going to service error`);
+            this.logger.warn(`[EventsService] - Failed to connect too many times (#${this.reconnectionAttempt}), going to service error`);
             this.errorService.goToServiceError('Your connection was lost');
 
             // Only subscibe to the first emitted event where the reconnection was successful
@@ -160,7 +160,7 @@ export class EventsHubService implements OnDestroy {
 
     stop() {
         if (!this.isDisconnectedFromHub) {
-            this.logger.debug(`[EventsService] - Ending connection to EventHub. Current state: ${this.connection.state}`);
+            this.logger.info(`[EventsService] - Ending connection to EventHub. Current state: ${this.connection.state}`);
             this.connection
                 .stop()
                 .then(() => {
@@ -208,7 +208,7 @@ export class EventsHubService implements OnDestroy {
 
     private onEventHubReconnecting(error: Error): void {
         this._reconnectionAttempt++;
-        this.logger.info('[EventsService] - Attempting to reconnect to EventHub: attempt #' + this.reconnectionAttempt);
+        this.logger.debug('[EventsService] - Attempting to reconnect to EventHub: attempt #' + this.reconnectionAttempt);
         if (error) {
             this.logger.error('[EventsService] - Error during reconnect to EventHub', error);
             this.eventHubDisconnectSubject.next(this.reconnectionAttempt);

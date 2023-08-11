@@ -9,7 +9,7 @@ export class LocalStorageService {
     constructor(private logger: LoggerService) {}
 
     save<T extends object>(key: string, value: T, overwrite: boolean = true): boolean {
-        this.logger.info(`${this.loggerPrefix} Saving to local storage.`, {
+        this.logger.debug(`${this.loggerPrefix} Saving to local storage.`, {
             localStorageKey: key,
             value: value,
             canOverwrite: overwrite

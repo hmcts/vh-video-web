@@ -74,7 +74,7 @@ export class NoSleepService {
     }
 
     disable() {
-        this.logger.info(`${this.loggerPrefix} disabled`);
+        this.logger.debug(`${this.loggerPrefix} disabled`);
         this.videoElement?.parentElement?.removeChild(this.videoElement);
         this.videoElement = null;
     }
@@ -89,7 +89,7 @@ export class NoSleepService {
     }
 
     private start() {
-        this.logger.info(`${this.loggerPrefix} starting`);
+        this.logger.debug(`${this.loggerPrefix} starting`);
         this.videoElement.play();
         this.videoElement.muted = true;
     }

@@ -50,7 +50,7 @@ export class FooterComponent implements OnInit, OnDestroy {
     }
 
     setLanguage(language: string) {
-        this.logger.info(`[FooterComponent] - Switching translation language from ${this.translate.currentLang} to ${language}`);
+        this.logger.debug(`[FooterComponent] - Switching translation language from ${this.translate.currentLang} to ${language}`);
         localStorage.setItem('language', language);
         this.translate.setDefaultLang(language);
         this.translate.use(language);

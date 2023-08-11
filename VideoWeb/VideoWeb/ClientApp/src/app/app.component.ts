@@ -108,7 +108,7 @@ export class AppComponent implements OnInit, OnDestroy {
                                 .registerForEvents()
                                 .pipe(filter(notification => notification.type === EventTypes.NewAuthenticationResult))
                                 .subscribe(async (value: OidcClientNotification<AuthStateResult>) => {
-                                    this.logger.info('[AppComponent] - OidcClientNotification event received with value ', value);
+                                    this.logger.debug('[AppComponent] - OidcClientNotification event received with value ', value);
                                     await this.postAuthSetup(true, value.value.isRenewProcess);
                                 });
                         }

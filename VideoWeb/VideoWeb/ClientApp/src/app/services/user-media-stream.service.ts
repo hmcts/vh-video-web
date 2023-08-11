@@ -181,7 +181,7 @@ export class UserMediaStreamService {
             this.streamModifiedSubject.next();
         }
 
-        this.logger.info(`${this.loggerPrefix} Audio only update complete.`, {
+        this.logger.debug(`${this.loggerPrefix} Audio only update complete.`, {
             audioOnly: this.isAudioOnly,
             activeCamera: this.activeCameraStream,
             currentStream: this.currentStream,
@@ -242,7 +242,7 @@ export class UserMediaStreamService {
                             });
                         });
 
-                        this.logger.info(`${this.loggerPrefix} Updated active camera for current stream`, {
+                        this.logger.debug(`${this.loggerPrefix} Updated active camera for current stream`, {
                             activeCamStream: this.activeCameraStream,
                             currentStream: this.currentStream,
                             isAudioOnly: this.isAudioOnly
@@ -307,7 +307,7 @@ export class UserMediaStreamService {
                         });
                     });
 
-                    this.logger.info(`${this.loggerPrefix} Updated active microphone for current stream`, {
+                    this.logger.debug(`${this.loggerPrefix} Updated active microphone for current stream`, {
                         activeMicStream: this.activeMicrophoneStream,
                         currentStream: this.currentStream,
                         isAudioOnly: this.isAudioOnly
