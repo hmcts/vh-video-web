@@ -56,9 +56,6 @@ export class LoggerService implements Logger {
     }
 
     info(message: string, properties?: any): void {
-        if (this.higherLevelLogsOnly) {
-            return;
-        }
         properties = this.addConferenceIdToProperties(properties);
         this.adapters.forEach(logger => logger.info(message, properties));
     }

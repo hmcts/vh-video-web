@@ -356,7 +356,7 @@ export class VideoCallService {
     }
 
     leaveHearing(conferenceId: string, participantId: string): Promise<void> {
-        this.logger.info(`${this.loggerPrefix} Attempting to suspend hearing`, { conference: conferenceId });
+        this.logger.info(`${this.loggerPrefix} Attempting to leave hearing`, { conference: conferenceId, participant: participantId });
         return this.apiClient.leaveHearing(conferenceId, participantId).toPromise();
     }
 
