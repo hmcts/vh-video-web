@@ -133,7 +133,9 @@ export class QuickLinksComponent implements OnInit, OnDestroy {
                 .subscribe(
                     response => {
                         this.logger.info(`${this.loggerPrefix} Joined conference as quick link participant`, {
-                            apiResponse: response
+                            apiResponse: response,
+                            name: this.quickLinkNameFormControl.value,
+                            role: this.quickLinkRoleFormControl.value
                         });
 
                         this.router.navigate([pageUrls.Navigator]);

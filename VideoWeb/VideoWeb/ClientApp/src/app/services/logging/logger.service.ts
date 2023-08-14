@@ -26,6 +26,9 @@ export class LoggerService implements Logger {
             });
         this.higherLevelLogsOnly = environment.production;
     }
+    addUserIdToLogger(userId: string) {
+        this.adapters.forEach(logger => logger.addUserIdToLogger(userId));
+    }
 
     addConferenceIdToProperties(properties?: any, conferenceIdKey: string = LoggerService.currentConferenceIdPropertyKey) {
         properties = properties ?? {};
@@ -53,9 +56,6 @@ export class LoggerService implements Logger {
     }
 
     info(message: string, properties?: any): void {
-        if (this.higherLevelLogsOnly) {
-            return;
-        }
         properties = this.addConferenceIdToProperties(properties);
         this.adapters.forEach(logger => logger.info(message, properties));
     }

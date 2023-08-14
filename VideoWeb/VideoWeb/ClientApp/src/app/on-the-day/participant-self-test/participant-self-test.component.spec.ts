@@ -124,12 +124,12 @@ describe('ParticipantSelfTestComponent', () => {
     });
     it('should update participant status on log out', fakeAsync(() => {
         const event: any = { returnValue: 'save' };
-        spyOn(logger, 'info');
+        spyOn(logger, 'debug');
         participantStatusUpdateService.postParticipantStatus.and.returnValue(Promise.resolve());
         component.beforeunloadHandler(event);
         flushMicrotasks();
         expect(participantStatusUpdateService.postParticipantStatus).toHaveBeenCalled();
-        expect(logger.info).toHaveBeenCalled();
+        expect(logger.debug).toHaveBeenCalled();
     }));
     it('should throw error message when update participant status on log out', fakeAsync(() => {
         const event: any = { returnValue: 'save' };

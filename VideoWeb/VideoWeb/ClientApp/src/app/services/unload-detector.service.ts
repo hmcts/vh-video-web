@@ -65,18 +65,18 @@ export class UnloadDetectorService {
     }
 
     private initialiseEventHandlersForDesktopDevices() {
-        this.logger.info(`${this.loggerPrefix} Desktop device detected. Will raise unload event when window:beforeunload is raised!`);
+        this.logger.debug(`${this.loggerPrefix} Desktop device detected. Will raise unload event when window:beforeunload is raised!`);
 
         this.renderer.listen('window', 'beforeunload', () => this.beforeUnloadSubject.next());
         this.beforeUnload.subscribe(() => {
-            this.logger.info(`${this.loggerPrefix} window:beforeunload recieved. Emitting the should unload event!`);
+            this.logger.debug(`${this.loggerPrefix} window:beforeunload recieved. Emitting the should unload event!`);
             this.shouldUnloadSubject.next();
             this.hasEmittedUnload = true;
         });
     }
 
     private initialiseEventHandlersForMobileDevices() {
-        this.logger.info(
+        this.logger.debug(
             `${this.loggerPrefix} Mobile device detected. Will raise unload/reload events when document:visibilitychange and unload when window:pagehide is raised!`
         );
 
@@ -84,19 +84,19 @@ export class UnloadDetectorService {
         this.renderer.listen('window', 'pagehide', () => this.pageHiddenSubject.next());
 
         this.visibilityChangedToHidden.subscribe(() => {
-            this.logger.info(`${this.loggerPrefix} Visibility changed to hidden. Emitting the should unload event!`);
+            this.logger.debug(`${this.loggerPrefix} Visibility changed to hidden. Emitting the should unload event!`);
             this.shouldUnloadSubject.next();
             this.hasEmittedUnload = true;
         });
 
         this.pageHidden.subscribe(() => {
-            this.logger.info(`${this.loggerPrefix} Page hidden changed to hidden. Emitting the should unload event!`);
+            this.logger.debug(`${this.loggerPrefix} Page hidden changed to hidden. Emitting the should unload event!`);
             this.shouldUnloadSubject.next();
             this.hasEmittedUnload = true;
         });
 
         this.visibilityChangedToVisible.pipe(filter(() => this.hasEmittedUnload)).subscribe(() => {
-            this.logger.info(`${this.loggerPrefix} Visibility changed to visible. Emitting the should reload event!`);
+            this.logger.debug(`${this.loggerPrefix} Visibility changed to visible. Emitting the should reload event!`);
             this.shouldReloadSubject.next();
             this.hasEmittedUnload = false;
         });

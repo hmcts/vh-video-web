@@ -13,7 +13,7 @@ describe('VideoControlCacheStorageService', () => {
 
     beforeEach(() => {
         localStorageServiceSpy = jasmine.createSpyObj<LocalStorageService>('LocalStorageService', ['save', 'load']);
-        loggerServiceSpy = jasmine.createSpyObj<LoggerService>('LoggerService', ['info', 'warn']);
+        loggerServiceSpy = jasmine.createSpyObj<LoggerService>('LoggerService', ['info', 'warn', 'debug']);
 
         service = new VideoControlCacheLocalStorageService(localStorageServiceSpy, loggerServiceSpy);
     });

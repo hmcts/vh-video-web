@@ -76,7 +76,7 @@ export class IdpSelectionComponent implements OnInit {
             return false;
         }
 
-        this.logger.info(`Sending to idp: ${provider}`);
+        this.logger.debug(`Sending to idp: ${provider}`);
         this.securityConfigSetupService.setIdp(provider);
         this.router.navigate([this.idpSelectorModel.getProviderLogin(provider)]);
         return true;

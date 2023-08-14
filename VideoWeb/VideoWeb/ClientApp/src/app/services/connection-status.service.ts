@@ -33,7 +33,7 @@ export class ConnectionStatusService {
 
     start() {
         if (this.timer) {
-            this.logger.info(`${this.loggerPrefix} Timer already started`);
+            this.logger.debug(`${this.loggerPrefix} Timer already started`);
             return;
         }
         this.timer = setInterval(() => this.checkConnection(), this.INTERVAL_IN_MS);
@@ -74,7 +74,7 @@ export class ConnectionStatusService {
     }
 
     private handleConnectionResult(connectionResult: boolean) {
-        this.logger.info(`${this.loggerPrefix} ${connectionResult ? 'Good ping received' : 'Bad ping received'}`);
+        this.logger.debug(`${this.loggerPrefix} ${connectionResult ? 'Good ping received' : 'Bad ping received'}`);
         if (this.status === connectionResult) {
             return;
         }
@@ -83,7 +83,7 @@ export class ConnectionStatusService {
         this.pings.push(connectionResult);
 
         if (this.status === connectionResult) {
-            this.logger.info(`${this.loggerPrefix} ${this.status ? 'Online' : 'Offline'}`);
+            this.logger.debug(`${this.loggerPrefix} ${this.status ? 'Online' : 'Offline'}`);
             this.connectionStatus.next(this.status);
         }
     }

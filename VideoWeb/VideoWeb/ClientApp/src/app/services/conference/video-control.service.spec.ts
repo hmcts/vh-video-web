@@ -71,7 +71,7 @@ describe('VideoControlService', () => {
             'getHandRaiseStatus'
         ]);
 
-        loggerSpy = jasmine.createSpyObj<LoggerService>('Logger', ['error', 'warn', 'info']);
+        loggerSpy = jasmine.createSpyObj<LoggerService>('Logger', ['error', 'warn', 'info', 'debug']);
 
         sut = new VideoControlService(conferenceServiceSpy, videoCallServiceSpy, videoControlCacheServiceSpy, loggerSpy);
     });

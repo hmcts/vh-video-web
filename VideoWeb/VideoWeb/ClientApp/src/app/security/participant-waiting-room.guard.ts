@@ -20,7 +20,7 @@ export class ParticipantWaitingRoomGuard implements CanActivate {
             this.hearing = new Hearing(data);
 
             if (this.hearing.isPastClosedTime()) {
-                this.logger.info(
+                this.logger.debug(
                     '[ParticipantWaitingRoomGuard] - Returning back to hearing list because hearing has been closed for over 2 hours.'
                 );
                 this.router.navigate([pageUrls.ParticipantHearingList]);

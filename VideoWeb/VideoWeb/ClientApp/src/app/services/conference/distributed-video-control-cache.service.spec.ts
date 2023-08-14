@@ -4,7 +4,6 @@ import { LoggerService } from '../logging/logger.service';
 
 import { DistributedVideoControlCacheService } from './distributed-video-control-cache.service';
 import { IHearingControlsState, IHearingControlStates, IParticipantControlsState } from './video-control-cache-storage.service.interface';
-import { Logger } from '../logging/logger-base';
 
 describe('DistributedVideoControlCacheService', () => {
     let service: DistributedVideoControlCacheService;
@@ -51,7 +50,7 @@ describe('DistributedVideoControlCacheService', () => {
             service.saveHearingStateForConference(conferenceId, hearingControlsState);
 
             // Assert
-            expect(loggerServiceSpy.info).toHaveBeenCalledTimes(1);
+            expect(loggerServiceSpy.debug).toHaveBeenCalledTimes(1);
         });
     });
 
@@ -81,7 +80,7 @@ describe('DistributedVideoControlCacheService', () => {
             service.loadHearingStateForConference(conferenceId);
 
             // Assert
-            expect(loggerServiceSpy.info).toHaveBeenCalledTimes(1);
+            expect(loggerServiceSpy.debug).toHaveBeenCalledTimes(1);
         });
     });
 });

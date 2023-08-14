@@ -31,8 +31,6 @@ export abstract class ParticipantStatusDirective {
     }
 
     async loadData() {
-        this.logger.info('[ParticipantStatus] - Loading VH Officer Dashboard Participant Status list');
-
         const participantDetails = await this.getParticipantsByConference(this.conferenceId);
 
         this.participants = participantDetails.map(x => {
@@ -82,7 +80,7 @@ export abstract class ParticipantStatusDirective {
         this.logger.debug('[ParticipantStatus] - Subscribing to EventHub reconnects');
         this.eventHubSubscriptions.add(
             this.eventService.getServiceConnected().subscribe(async () => {
-                this.logger.info('[ParticipantStatus] - EventHub reconnected for vh officer');
+                this.logger.debug('[ParticipantStatus] - EventHub reconnected for vh officer');
                 await this.refreshConferenceDataDuringDisconnect();
             })
         );

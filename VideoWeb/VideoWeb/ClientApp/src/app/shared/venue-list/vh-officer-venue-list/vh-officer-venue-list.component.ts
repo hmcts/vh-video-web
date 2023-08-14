@@ -118,6 +118,6 @@ export class VhOfficerVenueListComponent extends VenueListComponentDirective imp
             previousFilter.forEach(x => updateFilterSelection(x));
         }
         this.courtAccountsAllocationStorage.set(this.filterCourtRoomsAccounts);
-        this.logger.info('[VenueList] - Venue selection is changed');
+        this.logger.debug('[VenueList] - Venue selection is changed');
     }
 }

@@ -30,7 +30,7 @@ describe('UnloadDetectorService', () => {
     beforeEach(() => {
         deviceDetectorServiceSpy = jasmine.createSpyObj<DeviceDetectorService>('DeviceDetectorService', ['isDesktop']);
         renderer2FactorySpy = jasmine.createSpyObj<RendererFactory2>('RendererFactory2', ['createRenderer']);
-        loggerSpy = jasmine.createSpyObj<Logger>('Logger', ['info']);
+        loggerSpy = jasmine.createSpyObj<Logger>('Logger', ['info', 'debug']);
 
         renderer2Mock = new Renderer2Mock();
         spyOn(renderer2Mock, 'listen').and.callThrough();

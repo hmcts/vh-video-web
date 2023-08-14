@@ -172,22 +172,6 @@ describe('LoggerService', () => {
             expect(logAdapter.debug).not.toHaveBeenCalled();
         });
 
-        it('should not log info messages in production', () => {
-            // Arrange
-            logAdapter.info.calls.reset();
-            const message = 'msg';
-            const properties = {
-                message: message
-            };
-            service['higherLevelLogsOnly'] = true;
-
-            // Act
-            service.info(message, properties);
-
-            // Assert
-            expect(logAdapter.info).not.toHaveBeenCalled();
-        });
-
         it('should add conference id to the properties', () => {
             // Arrange
             const message = 'msg';

@@ -139,8 +139,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             this.videoMuted = this.videoCallService.pexipAPI.call.mutedVideo || this.audioOnly;
         });
 
-        this.logger.info(`${this.loggerPrefix} initialising hearing controls`, this.logPayload);
-
         this.setupVideoCallSubscribers();
         this.setupEventhubSubscribers();
 
@@ -411,14 +409,14 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     pause() {
-        this.logger.debug(`${this.loggerPrefix} Attempting to pause hearing`, this.logPayload);
+        this.logger.info(`${this.loggerPrefix} Attempting to pause hearing`, this.logPayload);
         this.videoCallService.pauseHearing(this.conferenceId);
     }
 
     close(answer: boolean) {
         this.displayConfirmPopup = false;
         if (answer) {
-            this.logger.debug(`${this.loggerPrefix} Attempting to close hearing`, this.logPayload);
+            this.logger.info(`${this.loggerPrefix} Attempting to close hearing`, this.logPayload);
             this.videoCallService.endHearing(this.conferenceId);
             this.sessionStorage.clear();
         }
@@ -444,12 +442,12 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     leavePrivateConsultation() {
-        this.logger.debug(`${this.loggerPrefix} Leave private consultation clicked`, this.logPayload);
+        this.logger.info(`${this.loggerPrefix} Leave private consultation clicked`, this.logPayload);
         this.leaveConsultation.emit();
     }
 
     lockPrivateConsultation(lock: boolean) {
-        this.logger.debug(`${this.loggerPrefix} Lock private consultation clicked`, this.logPayload);
+        this.logger.info(`${this.loggerPrefix} Lock private consultation clicked`, this.logPayload);
         this.lockConsultation.emit(lock);
     }
 
@@ -496,10 +494,10 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     private newParticipantEnteredHandshake(newParticipantEntered) {
-        this.logger.info(`${this.loggerPrefix} Waiting 3 seconds before sending handshake`);
+        this.logger.debug(`${this.loggerPrefix} Waiting 3 seconds before sending handshake`);
         if (this.participant.hearing_role !== HearingRole.JUDGE && this.participant.hearing_role !== HearingRole.STAFF_MEMBER) {
             setTimeout(() => {
-                this.logger.info(`${this.loggerPrefix} Sending handshake for entry of: ${newParticipantEntered}`);
+                this.logger.debug(`${this.loggerPrefix} Sending handshake for entry of: ${newParticipantEntered}`);
                 this.publishMediaDeviceStatus();
                 this.eventService.publishParticipantHandRaisedStatus(this.conferenceId, this.participant.id, this.handRaised);
             }, 3000); // 3Seconds: Give 2nd host time initialise participants, before receiving status updates

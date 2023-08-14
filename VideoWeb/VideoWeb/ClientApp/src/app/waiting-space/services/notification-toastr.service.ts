@@ -259,7 +259,7 @@ export class NotificationToastrService {
             color: 'white',
             htmlBody: message,
             onNoAction: async () => {
-                this.logger.info(`${this.loggerPrefix} No action called on poor connection alert`);
+                this.logger.debug(`${this.loggerPrefix} No action called on poor connection alert`);
             },
             buttons: [
                 {
@@ -340,7 +340,7 @@ export class NotificationToastrService {
             color: inHearing ? 'white' : 'black',
             htmlBody: message,
             onNoAction: async () => {
-                this.logger.info(`${this.loggerPrefix} No action called on participant added alert`);
+                this.logger.debug(`${this.loggerPrefix} No action called on participant added alert`);
             },
             buttons: [
                 {
@@ -427,7 +427,7 @@ export class NotificationToastrService {
             color: inHearing ? 'white' : 'black',
             htmlBody: message,
             onNoAction: async () => {
-                this.logger.info(`${this.loggerPrefix} No action called on hearing layout change alert`);
+                this.logger.debug(`${this.loggerPrefix} No action called on hearing layout change alert`);
             },
             buttons: [
                 {
@@ -451,7 +451,7 @@ export class NotificationToastrService {
         let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${title}</span>`;
         message += `<span class="toast-content toast-body">${messageBody}</span>`;
         const joinHearingFromAlert = async () => {
-            this.logger.info(
+            this.logger.debug(
                 `${this.loggerPrefix} Participant ${participantId} is join Hearing conference ${conferenceId} from Hearing Started Alert`
             );
             await this.videoCallService.joinHearingInSession(conferenceId, participantId);
@@ -466,7 +466,7 @@ export class NotificationToastrService {
             color: 'white',
             htmlBody: message,
             onNoAction: async () => {
-                this.logger.info(`${this.loggerPrefix} No action called on hearing started alert`);
+                this.logger.debug(`${this.loggerPrefix} No action called on hearing started alert`);
             },
             buttons: [
                 {
@@ -524,7 +524,7 @@ export class NotificationToastrService {
             color: 'black',
             htmlBody: message,
             onNoAction: async () => {
-                this.logger.info(`${this.loggerPrefix} No action called on allocation hearing alert`);
+                this.logger.debug(`${this.loggerPrefix} No action called on allocation hearing alert`);
             },
             buttons: [
                 {
@@ -591,7 +591,7 @@ export class NotificationToastrService {
             color: inHearing ? 'white' : 'black',
             htmlBody: message,
             onNoAction: async () => {
-                this.logger.info(`${this.loggerPrefix} No action called on endpoint added alert`);
+                this.logger.debug(`${this.loggerPrefix} No action called on endpoint added alert`);
             },
             buttons: [
                 {

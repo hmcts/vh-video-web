@@ -33,7 +33,7 @@ export class VideoControlCacheService {
                 .pipe(take(1))
                 .subscribe(state => {
                     this.hearingControlStates = state;
-                    this.logger.info(`${this.loggerPrefix} initialised state for ${this.conferenceId}.`, {
+                    this.logger.debug(`${this.loggerPrefix} initialised state for ${this.conferenceId}.`, {
                         hearingControlStates: this.hearingControlStates
                     });
                 });
@@ -41,7 +41,7 @@ export class VideoControlCacheService {
     }
 
     async setSpotlightStatus(participantId: string, spotlightValue: boolean, syncChanges: boolean = true) {
-        this.logger.info(`${this.loggerPrefix} Setting spotlight status.`, {
+        this.logger.debug(`${this.loggerPrefix} Setting spotlight status.`, {
             participantId: participantId,
             oldValue: this.hearingControlStates?.participantStates[participantId]?.isSpotlighted ?? null,
             newValue: spotlightValue
@@ -66,7 +66,7 @@ export class VideoControlCacheService {
     }
 
     getSpotlightStatus(participantId: string): boolean {
-        this.logger.info(`${this.loggerPrefix} Getting spotlight status.`, {
+        this.logger.debug(`${this.loggerPrefix} Getting spotlight status.`, {
             participantId: participantId,
             value: this.hearingControlStates?.participantStates[participantId]?.isSpotlighted ?? null
         });
@@ -74,7 +74,7 @@ export class VideoControlCacheService {
     }
 
     async setRemoteMutedStatus(participantId: string, isRemoteMutedValue: boolean, syncChanges: boolean = true) {
-        this.logger.info(`${this.loggerPrefix} Setting Remote Mute status.`, {
+        this.logger.debug(`${this.loggerPrefix} Setting Remote Mute status.`, {
             participantId: participantId,
             oldValue: this.hearingControlStates?.participantStates[participantId]?.isRemoteMuted ?? null,
             newValue: isRemoteMutedValue
@@ -100,7 +100,7 @@ export class VideoControlCacheService {
     }
 
     getRemoteMutedStatus(participantId: string): boolean {
-        this.logger.info(`${this.loggerPrefix} Getting Remote Mute status.`, {
+        this.logger.debug(`${this.loggerPrefix} Getting Remote Mute status.`, {
             participantId: participantId,
             value: this.hearingControlStates?.participantStates[participantId]?.isRemoteMuted ?? null
         });
@@ -121,7 +121,7 @@ export class VideoControlCacheService {
     }
 
     async setHandRaiseStatus(participantId: string, isHandRaisedValue: boolean, syncChanges: boolean = true) {
-        this.logger.info(`${this.loggerPrefix} Setting Hand raise status.`, {
+        this.logger.debug(`${this.loggerPrefix} Setting Hand raise status.`, {
             participantId: participantId,
             oldValue: this.hearingControlStates?.participantStates[participantId]?.isHandRaised ?? null,
             newValue: isHandRaisedValue,
@@ -147,7 +147,7 @@ export class VideoControlCacheService {
     }
 
     getHandRaiseStatus(participantId: string): boolean {
-        this.logger.info(`${this.loggerPrefix} Getting hand raise status.`, {
+        this.logger.debug(`${this.loggerPrefix} Getting hand raise status.`, {
             participantId: participantId,
             value: this.hearingControlStates?.participantStates[participantId]?.isHandRaised ?? null
         });
@@ -155,7 +155,7 @@ export class VideoControlCacheService {
     }
 
     async setLocalAudioMuted(participantId: string, localAudioMuted: boolean, syncChanges: boolean = true) {
-        this.logger.info(`${this.loggerPrefix} Setting local audio muted.`, {
+        this.logger.debug(`${this.loggerPrefix} Setting local audio muted.`, {
             participantId: participantId,
             oldValue: this.hearingControlStates?.participantStates[participantId]?.isLocalAudioMuted ?? null,
             newValue: localAudioMuted
@@ -181,7 +181,7 @@ export class VideoControlCacheService {
     }
 
     getLocalAudioMuted(participantId: string): boolean {
-        this.logger.info(`${this.loggerPrefix} Getting local audio muted.`, {
+        this.logger.debug(`${this.loggerPrefix} Getting local audio muted.`, {
             participantId: participantId,
             value: this.hearingControlStates?.participantStates[participantId]?.isLocalAudioMuted ?? null
         });
@@ -189,7 +189,7 @@ export class VideoControlCacheService {
     }
 
     setLocalVideoMuted(participantId: string, localVideoMuted: boolean, syncChanges: boolean = true) {
-        this.logger.info(`${this.loggerPrefix} Setting local video muted.`, {
+        this.logger.debug(`${this.loggerPrefix} Setting local video muted.`, {
             participantId: participantId,
             oldValue: this.hearingControlStates?.participantStates[participantId]?.isLocalVideoMuted ?? null,
             newValue: localVideoMuted
@@ -214,7 +214,7 @@ export class VideoControlCacheService {
     }
 
     getLocalVideoMuted(participantId: string): boolean {
-        this.logger.info(`${this.loggerPrefix} Getting local video muted.`, {
+        this.logger.debug(`${this.loggerPrefix} Getting local video muted.`, {
             participantId: participantId,
             value: this.hearingControlStates?.participantStates[participantId]?.isLocalVideoMuted ?? null
         });

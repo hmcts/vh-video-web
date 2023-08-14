@@ -93,15 +93,22 @@ export class AppComponent implements OnInit, OnDestroy {
             .subscribe({
                 next: () => {
                     this.currentIdp = this.securityServiceProviderService.currentIdp;
-                    this.securityService.checkAuth(undefined, this.currentIdp).subscribe(async ({ isAuthenticated }) => {
+                    this.securityService.checkAuth(undefined, this.currentIdp).subscribe(async ({ isAuthenticated, userData }) => {
                         await this.postAuthSetup(isAuthenticated, false);
 
                         if (this.currentIdp !== 'quickLink') {
                             this.eventService
                                 .registerForEvents()
+                                .pipe(filter(notification => notification.type === EventTypes.CheckingAuthFinished))
+                                .subscribe(() => {
+                                    this.logger.addUserIdToLogger(userData.preferred_username);
+                                });
+
+                            this.eventService
+                                .registerForEvents()
                                 .pipe(filter(notification => notification.type === EventTypes.NewAuthenticationResult))
                                 .subscribe(async (value: OidcClientNotification<AuthStateResult>) => {
-                                    this.logger.info('[AppComponent] - OidcClientNotification event received with value ', value);
+                                    this.logger.debug('[AppComponent] - OidcClientNotification event received with value ', value);
                                     await this.postAuthSetup(true, value.value.isRenewProcess);
                                 });
                         }
