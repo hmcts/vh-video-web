@@ -585,43 +585,43 @@
       "title": "Mae {{name}}",
       "message-without-party": "{{role}} wedi cael ei (h)ychwanegu at y gwrandawiad.",
       "message-with-party": "{{role}} ({{party}}) wedi cael ei (h)ychwanegu at y gwrandawiad.",
-      "dismiss": "Gwrthod"
+      "dismiss": "Iawn"
     },
     "endpoint-added": {
       "title": "{{name}}",
       "message": "Pwynt mynediad fideo wedi cael ei ychwanegu at y gwrandawiad.",
-      "dismiss": "Gwrthod"
+      "dismiss": "Iawn"
     },
     "endpoint-updated": {
       "title": "{{name}}",
       "message": "Pwynt mynediad fideo wedi cael ei ddiweddaru yn y gwrandawiad.",
-      "dismiss": "Gwrthod"
+      "dismiss": "Iawn"
     },
-      "endpoint-linked": {
-          "title": "Rhybudd",
-          "message": "Rydych wedi cael eich ychwanegu fel cynrychiolydd cyfreithiol {{jvsEndpointName}}",
-          "dismiss": "Gwrthod"
-      },
-      "endpoint-unlinked": {
-          "title": "Rhybudd",
-          "message": "Nid ydych yn gallu dechrau ymgynghoriad â/ag {{jvsEndpointName}} gan nad chi yw’r cynrychiolydd cyfreithiol bellach",
-          "dismiss": "Gwrthod"
-      },
-      "endpoint-consultation-closed": {
-          "title": "Rhybudd",
-          "message": "Mae’r ymgynghoriad â/ag {{jvsEndpointName}} wedi gorffen gan nad chi yw’r cynrychiolydd cyfreithiol bellach",
-          "dismiss": "Gwrthod"
-      },
+    "endpoint-linked": {
+      "title": "Rhybudd",
+      "message": "Rydych wedi cael eich ychwanegu fel cynrychiolydd cyfreithiol {{jvsEndpointName}}",
+      "dismiss": "Iawn"
+    },
+    "endpoint-unlinked": {
+      "title": "Rhybudd",
+      "message": "Nid ydych yn gallu dechrau ymgynghoriad â/ag {{jvsEndpointName}} gan nad chi yw’r cynrychiolydd cyfreithiol bellach",
+      "dismiss": "Iawn"
+    },
+    "endpoint-consultation-closed": {
+      "title": "Rhybudd",
+      "message": "Mae’r ymgynghoriad â/ag {{jvsEndpointName}} wedi gorffen gan nad chi yw’r cynrychiolydd cyfreithiol bellach",
+      "dismiss": "Iawn"
+    },
     "hearing-layout-changed": {
       "title": "Mae {{name}}",
       "message": "wedi newid cynllun y gwrandawiad.",
-      "dismiss": "Gwrthod"
+      "dismiss": "Iawn"
     },
     "hearing-started": {
       "title": " Rhybudd!",
       "join-hearing": " Ymuno â'r gwrandawiad",
       "message": "Mae'r gwrandawiad bellach yn mynd rhagddo.",
-      "dismiss": "Gwrthod"
+      "dismiss": "Iawn"
     }
   },
   "consultation-error": {
@@ -953,9 +953,9 @@
     "button": "lawn"
   },
   "audio-alert-restart-failure": {
-     "title": "Methu ailddechrau recordio",
-     "message": "Mae’n ddrwg gennym, nid ydym yn gallu ailddechrau recordio. Defnyddiwch yr offer recordio amgen",
-     "button": "lawn"
+    "title": "Methu ailddechrau recordio",
+    "message": "Mae’n ddrwg gennym, nid ydym yn gallu ailddechrau recordio. Defnyddiwch yr offer recordio amgen",
+    "button": "lawn"
   },
   "participant-network-status": {
     "icon-alt": "Saeth agor y ffenestr sgwrsio dros y we"
