@@ -265,3 +265,15 @@ $govuk-show-breakpoints: true;
 .recording-offense-message-container {
   margin-top: 0px;
 }
+
+.recording-offense-message-button {
+  max-height: 32px;
+}
+
+.recording-offense-message-button-container {
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  padding-right: 10px;
+  justify-content: flex-end;
+}

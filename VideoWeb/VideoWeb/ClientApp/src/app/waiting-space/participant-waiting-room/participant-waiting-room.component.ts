@@ -39,6 +39,7 @@ import { HideComponentsService } from '../services/hide-components.service';
 export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
     currentTime: Date;
     hearingStartingAnnounced: boolean;
+    showRecordingOffenceNotice: boolean = true;
 
     clockSubscription$: Subscription;
     isParticipantsPanelHidden = false;
@@ -355,5 +356,9 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
 
         this.destroyedSubject.next();
         this.destroyedSubject.complete();
+    }
+
+    dismissRecordingOffenceNotice() {
+        this.showRecordingOffenceNotice = false;
     }
 }

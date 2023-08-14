@@ -49,10 +49,13 @@
       </ng-container>
     </div>
   </div>
-  <div class="header-bar recording-offense-message-header-bar">
+  <div class="header-bar recording-offense-message-header-bar" *ngIf="showRecordingOffenceNotice">
     <div class="header-content-grid govuk-body recording-offense-message-header-container">
         <div class="room-title recording-offense-message-container">
             <h1 class="room-title-label recording-offense-message">Notice: It is a criminal offence to record this hearing (by audio or video), to publish any such recording, or to take any images (by photos or screenshot).</h1>
+        </div>
+        <div class="recording-offense-message-button-container">
+          <button data-module="govuk-button" class="recording-offense-message-button" id="recording-offence-notice-dismiss" (click)="dismissRecordingOffenceNotice()">OK</button>
         </div>
     </div>
   </div>
