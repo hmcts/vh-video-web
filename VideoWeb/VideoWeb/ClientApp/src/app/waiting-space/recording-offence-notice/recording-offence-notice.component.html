@@ -1,0 +1,10 @@
+<div class="header-bar recording-offense-notice-header-bar" *ngIf="showRecordingOffenceNotice">
+    <div class="header-content-grid govuk-body recording-offense-notice-header-container">
+        <div class="room-title recording-offense-notice-container">
+            <h1 class="room-title-label recording-offense-notice-message">Notice: It is a criminal offence to record this hearing (by audio or video), to publish any such recording, or to take any images (by photos or screenshot).</h1>
+        </div>
+        <div class="recording-offense-notice-button-container">
+          <button data-module="govuk-button" class="recording-offense-notice-button" id="recording-offence-notice-dismiss" (click)="dismissRecordingOffenceNotice()">OK</button>
+        </div>
+    </div>
+  </div>

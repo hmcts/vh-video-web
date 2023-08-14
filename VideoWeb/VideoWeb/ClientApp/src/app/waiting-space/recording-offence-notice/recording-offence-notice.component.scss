@@ -1,0 +1,40 @@
+@import 'govuk-frontend/govuk/base';
+
+.recording-offense-notice-header-bar {
+    background-color: rgba(212, 53, 28, 0.7);
+    color: govuk-colour('white');
+}
+
+.recording-offense-notice-message {
+    max-width: none;
+    white-space: normal;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.recording-offense-notice-header-container {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.recording-offense-notice-container {
+    margin-top: 0px;
+}
+
+.recording-offense-notice-button {
+    max-height: 32px;
+}
+
+.recording-offense-notice-button-container {
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    padding-right: 10px;
+    justify-content: flex-end;
+}
+
+.header-content-grid {
+    display: grid;
+    grid-template-columns: auto auto;
+    width: 100%;
+}
