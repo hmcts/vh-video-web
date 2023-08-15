@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using AcceptanceTests.Common.Api.Helpers;
+using BookingsApi.Contract.V1.Configuration;
+using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Contract.V1.Requests.Enums;
+using BookingsApi.Contract.V1.Responses;
+using Faker;
+using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
 using TechTalk.SpecFlow;
@@ -12,13 +18,7 @@ using TestApi.Contract.Enums;
 using TestContext = VideoWeb.AcceptanceTests.Helpers.TestContext;
 using TestApi.Contract.Responses;
 using TestApi.Contract.Requests;
-using BookingsApi.Contract.Requests;
-using BookingsApi.Contract.Requests.Enums;
 using VideoApi.Contract.Responses;
-using BookingsApi.Contract.Responses;
-using FizzWare.NBuilder;
-using Faker;
-using BookingsApi.Contract.Configuration;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Autofac.Extras.Moq;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Responses;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;

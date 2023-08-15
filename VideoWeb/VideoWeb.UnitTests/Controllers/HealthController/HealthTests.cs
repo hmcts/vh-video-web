@@ -10,7 +10,7 @@ using Moq;
 using NUnit.Framework;
 using VideoWeb.Controllers;
 using BookingsApi.Client;
-using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.V1.Requests;
 using UserApi.Client;
 using UserApi.Contract.Responses;
 using VideoApi.Client;

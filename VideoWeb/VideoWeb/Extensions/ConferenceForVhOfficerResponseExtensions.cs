@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BookingsApi.Contract.V1.Helper;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
-using BookingsApi.Contract.Helper;
-
 namespace VideoWeb.Extensions
 {
     public static class ConferenceForVhOfficerResponseExtensions
