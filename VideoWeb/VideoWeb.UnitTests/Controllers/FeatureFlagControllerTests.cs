@@ -1,10 +1,10 @@
 using Autofac.Extras.Moq;
 using BookingsApi.Client;
-using BookingsApi.Contract.Configuration;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using BookingsApi.Contract.V1.Configuration;
 using VideoWeb.Controllers;
 
 namespace VideoWeb.UnitTests.Controllers

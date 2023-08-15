@@ -9,7 +9,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
 using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
-using BookingParticipant = BookingsApi.Contract.Responses.ParticipantResponse;
+using BookingParticipant = BookingsApi.Contract.V1.Responses.ParticipantResponse;
 using VideoApi.Contract.Enums;
 
 namespace VideoWeb.UnitTests.Mappings

@@ -13,12 +13,11 @@ using VideoWeb.Controllers;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
-
 using Conference = VideoApi.Contract.Responses.ConferenceForHostResponse;
 using Participant = VideoApi.Contract.Responses.ParticipantForHostResponse;
 using ConferenceForHostResponse = VideoWeb.Contract.Responses.ConferenceForHostResponse;
 using Autofac.Extras.Moq;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Contract.Responses;
 using VideoApi.Contract.Enums;

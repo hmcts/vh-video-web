@@ -1,11 +1,11 @@
 using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Api.Helpers;
-using BookingsApi.Contract.Responses;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using BookingsApi.Contract.V1.Responses;
 using TechTalk.SpecFlow;
 using TestApi.Contract.Enums;
 using VideoApi.Contract.Responses;

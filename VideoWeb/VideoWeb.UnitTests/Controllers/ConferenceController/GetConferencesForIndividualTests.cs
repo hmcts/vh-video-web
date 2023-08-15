@@ -16,7 +16,7 @@ using VideoWeb.UnitTests.Builders;
 using Conference = VideoApi.Contract.Responses.ConferenceForIndividualResponse;
 using ConferenceForIndividualResponse = VideoWeb.Contract.Responses.ConferenceForIndividualResponse;
 using Autofac.Extras.Moq;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Contract.Responses;
 
