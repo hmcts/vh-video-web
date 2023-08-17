@@ -1088,7 +1088,21 @@
     "lay-member": "Aelod Lleyg",
     "cica-presenting-officer": "Swyddog Cyflwyno CICA",
     "royal-british-legion": "Y Lleng Brydeinig Frenhinol",
-    "expert-witness": "Tyst Arbenigwr"
+    "expert-witness": "Tyst Arbenigwr",
+    "appointee": "Penodai",
+    "other-party": "Parti Arall",
+    "welfare-representative": "Cynrychiolydd Lles",
+    "support": "Cefnogaeth",
+    "applicant": "Ceisydd",
+    "victim": "Dioddefwr",
+    "party": "Parti",
+    "defendant": "Diffynnydd",
+    "intermediaries": "Cyfryngwyr",
+    "prosecutor": "Erlynydd",
+    "police": "Yr Heddlu",
+    "defence-counsel": "Cwnsler yr Amddiffyniad",
+    "prosecution-counsel": "Cwnsler yr Erlyniad",
+    "claimant": "Hawlydd"
   },
   "case-type-group": {
     "respondent": "Atebydd",
@@ -1116,7 +1130,8 @@
     "operator": "Gweithredwr",
     "siteproviders": "Darparwyr Safle",
     "respondentauthority": "Awdurdod sy'n Atebydd",
-    "localauthority": "Awdurdod Lleol"
+    "localauthority": "Awdurdod Lleol",
+    "party": "Parti"
   },
   "case-type": {
     "placement": "Lleoliad",
@@ -1172,7 +1187,8 @@
     "upper-tribunal-lands-chamber": "Siambr Tiroedd yr Uwch Dribiwnlys",
     "special-educational-needs-and-disability": "Anghenion Addysgol Arbennig ac Anabledd",
     "care-standards": "Safonau Gofal",
-    "damages": "Iawndal"
+    "damages": "Iawndal",
+    "crime-crown-court": "Llys y Goron - Troseddol"
   },
   "case-role": {
     "state": "Y Wladwriaeth",
@@ -1199,7 +1215,8 @@
     "operator": "Gweithredwr",
     "siteproviders": "Darparwyr Safle",
     "respondentauthority": "Awdurdod sy'n Atebydd",
-    "localauthority": "Awdurdod Lleol"
+    "localauthority": "Awdurdod Lleol",
+    "party": "Parti"
   },
   "venue-list": {
     "title": "Dewis eich gwrandawiadau",
