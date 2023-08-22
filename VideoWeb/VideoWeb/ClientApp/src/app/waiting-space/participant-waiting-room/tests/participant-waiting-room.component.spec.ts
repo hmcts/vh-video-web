@@ -411,6 +411,18 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         });
     });
 
+    it('should return false if the participant is a victim - canStartJoinConsultation', () => {
+        component.participant.hearing_role = HearingRole.VICTIM;
+        component.participant.linked_participants = [];
+        expect(component.canStartJoinConsultation).toBeFalsy();
+    });
+
+    it('should return false if the participant is police - canStartJoinConsultation', () => {
+        component.participant.hearing_role = HearingRole.POLICE;
+        component.participant.linked_participants = [];
+        expect(component.canStartJoinConsultation).toBeFalsy();
+    });
+
     it('should return if the participant is a witness or not - isWitness', () => {
         [
             [HearingRole.WINGER, false],

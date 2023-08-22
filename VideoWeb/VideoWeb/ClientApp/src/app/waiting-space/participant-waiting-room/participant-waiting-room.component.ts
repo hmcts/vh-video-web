@@ -120,13 +120,23 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         return this.participant?.role === Role.QuickLinkObserver || this.participant?.role === Role.QuickLinkParticipant;
     }
 
+    get isVictim(): boolean {
+        return this.participant?.hearing_role === HearingRole.VICTIM;
+    }
+
+    get isPolice(): boolean {
+        return this.participant?.hearing_role === HearingRole.POLICE;
+    }
+
     get canStartJoinConsultation() {
         return (
             !this.isOrHasWitnessLink() &&
             !this.isObserver &&
             this.participant?.case_type_group !== CaseTypeGroup.OBSERVER &&
             !this.isQuickLinkObserver &&
-            !this.participant.linked_participants.length
+            !this.participant.linked_participants.length &&
+            !this.isVictim &&
+            !this.isPolice
         );
     }
 

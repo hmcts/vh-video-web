@@ -731,7 +731,21 @@
     "lay-member": "Lay Member",
     "cica-presenting-officer": "CICA Presenting Officer",
     "royal-british-legion": "Royal British Legion",
-    "expert-witness": "Expert Witness"
+    "expert-witness": "Expert Witness",
+    "appointee": "Appointee",
+    "other-party": "Other Party",
+    "welfare-representative": "Welfare Representative",
+    "support": "Support",
+    "applicant": "Applicant",
+    "victim": "Victim",
+    "party": "Party",
+    "defendant": "Defendant",
+    "intermediaries": "Intermediaries",
+    "prosecutor": "Prosecutor",
+    "police": "Police",
+    "defence-counsel": "Defence Counsel",
+    "prosecution-counsel": "Prosecution Counsel",
+    "claimant": "Claimant"
   },
   "case-role": {
     "appellant": "Appellant",
@@ -758,7 +772,8 @@
     "operator": "Operator",
     "siteproviders": "Site Providers",
     "respondentauthority": "Respondent Authority",
-    "localauthority": "Local Authority"
+    "localauthority": "Local Authority",
+    "party": "Party"
   },
   "case-type": {
     "adoption": "Adoption",
@@ -813,7 +828,9 @@
     "criminal-injuries-compensation": "Criminal Injuries Compensation",
     "war-pensions-appeals": "War Pensions Appeals",
     "special-educational-needs-and-disability": "Special Educational Needs and Disability",
-    "care-standards": "Care Standards"
+    "care-standards": "Care Standards",
+    "damages": "Damages",
+    "crime-crown-court": "Crime Crown Court"
   },
   "case-type-group": {
     "state": "State",
@@ -841,7 +858,8 @@
     "operator": "Operator",
     "siteproviders": "Site Providers",
     "respondentauthority": "Respondent Authority",
-    "localauthority": "Local Authority"
+    "localauthority": "Local Authority",
+    "party": "Party"
   },
   "user-role": {
     "case-admin": "Case admin",
