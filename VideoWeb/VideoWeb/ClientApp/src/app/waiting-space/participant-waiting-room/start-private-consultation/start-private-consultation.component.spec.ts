@@ -181,6 +181,16 @@ describe('StartPrivateConsultationComponent', () => {
                 id: '4',
                 Role: Role.QuickLinkObserver,
                 linked_participants: []
+            },
+            {
+                id: '5',
+                hearing_role: HearingRole.VICTIM,
+                linked_participants: []
+            },
+            {
+                id: '6',
+                hearing_role: HearingRole.POLICE,
+                linked_participants: []
             }
         ];
 
