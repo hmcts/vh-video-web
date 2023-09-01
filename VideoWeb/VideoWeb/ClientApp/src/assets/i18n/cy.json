@@ -100,17 +100,12 @@
         "heading": "Datganiad hygyrchedd gwasanaeth gwrandawiadau fideo GLlTEM",
         "paragraph1": "Mae'r gwasanaeth hwn yn galluogi unigolion i gymryd rhan mewn gwrandawiad llys trwy gyswllt fideo - o'u cartref, eu swyddfa, neu o rywle arall gan ddefnyddio gliniadur neu gyfrifiadur bwrdd gwaith.",
         "paragraph2": "Mae'r datganiad hygyrchedd hwn yn seiliedig ar werthusiad a gynhaliwyd gan Digital Accessibility Centre (DAC), Castell Nedd, yn ystod Medi 2019. ",
-        "paragraph3": "Gwasanaeth Llysoedd a Thribiwnlysoedd EM sy'n gyfrifol am y wefan hon. Rydym eisiau i gymaint o bobl â phosibl allu defnyddio'r gwasanaeth hwn. Er enghraifft, golyga hyn y dylech allu:",
         "list": {
-          "1": "newid y lliwiau, y lefelau cyferbyniad a'r ffontiau",
-          "2": "gwneud y testun hyd at 300% yn fwy heb iddo ddiflannu oddi ar y sgrin",
-          "3": "llywio'r rhan fwyaf o'r wefan gan ddefnyddio bysellfwrdd yn unig",
-          "4": "llywio'r rhan fwyaf o'r wefan gan ddefnyddio meddalwedd adnabod llais",
-          "5": "gwrando ar y rhan fwyaf o'r wefan gan ddefnyddio darllenydd sgrin"
+          "1": "mynd drwy’r rhan fwyaf o’r wefan gan ddefnyddio bysellfwrdd yn unig; a",
+          "2": "gwrando ar y rhan fwyaf o’r wefan gan ddefnyddio darllenydd sgrin (gan gynnwys fersiynau diweddaraf JAWS, NVDA a VoiceOver)."
         },
-        "paragraph4": "Rydym hefyd wedi sicrhau ein bod wedi defnyddio iaith syml.",
-        "abilityNet": "Gallwch gael cyngor gan AbilityNet ",
-        "paragraph5": "ynghylch gwneud eich dyfais yn haws i'w defnyddio os oes gennych anabledd."
+        "abilityNet": "Mae gan AbilityNet",
+        "paragraph3": "gyngor ynghylch gwneud eich dyfais yn haws i’w defnyddio os oes gennych anabledd."
       },
       "how-accessible": {
         "heading": "Pa mor hygyrch yw'r wefan hon?",
