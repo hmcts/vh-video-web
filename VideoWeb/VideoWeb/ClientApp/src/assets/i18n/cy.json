@@ -97,7 +97,7 @@
     "menu": {
       "heading": "Cynnwys",
       "accessibility-statement": {
-        "heading": "Datganiad hygyrchedd gwasanaeth gwrandawiadau fideo GLlTEM",
+        "heading": "Pa mor hygyrch yw’r gwasanaeth hwn?",
         "paragraph1": "Mae'r gwasanaeth hwn yn galluogi unigolion i gymryd rhan mewn gwrandawiad llys trwy gyswllt fideo - o'u cartref, eu swyddfa, neu o rywle arall gan ddefnyddio gliniadur neu gyfrifiadur bwrdd gwaith.",
         "paragraph2": "Mae'r datganiad hygyrchedd hwn yn seiliedig ar werthusiad a gynhaliwyd gan Digital Accessibility Centre (DAC), Castell Nedd, yn ystod Medi 2019. ",
         "list": {
@@ -107,13 +107,29 @@
         "abilityNet": "Mae gan AbilityNet",
         "paragraph3": "gyngor ynghylch gwneud eich dyfais yn haws i’w defnyddio os oes gennych anabledd."
       },
-      "how-accessible": {
-        "heading": "Pa mor hygyrch yw'r wefan hon?",
-        "paragraph1": "Mae'r gwasanaeth gwrandawiadau fideo yn cynnig ffordd arall i gynnal gwrandawiad. Er ein bod yn ceisio sicrhau bod y gwasanaeth mor hygyrch â phosibl, efallai na fydd gwrandawiad fideo yn addas i bawb. ",
-        "paragraph2": "Mae'r gwasanaeth gwrandawiadau fideo yn cynnwys adnodd asesu fel y gall pobl hysbysu'r llys am unrhyw gyflwr neu nam sydd ganddynt a allai effeithio ar eu gallu i gymryd rhan mewn gwrandawiad fideo. ",
-        "paragraph3": "Y barnwr fydd wastad yn penderfynu p'un a ddylid cynnal gwrandawiad fideo, a sicrhau budd cyfiawnder yn unrhyw wrandawiad a gynhelir. ",
-        "paragraph4": "Yn ystod y gwerthusiad a gynhaliwyd gan DAC, nodwyd bod defnyddwyr sydd â nam gwybyddol a dyslecsia yn gallu defnyddio'r wefan yn 'gwbl annibynnol, heb unrhyw broblemau'. Roedd y problemau hygyrchedd a gafodd eu riportio yn effeithio'n benodol ar y rhai hynny sydd â nam ar eu golwg neu sy'n defnyddio technoleg llais."
-      },
+        "how-accessible": {
+            "heading": "Pa mor hygyrch yw’r gwasanaeth hwn?",
+            "paragraph1": "Gwyddwn nad yw rhai rhannau o’r platfform yn gwbl hygyrch:",
+            "list": {
+                "1": "Nid yw’r adnodd hunan-brawf ar gyfer profi offer cyfrifiadurol cyn gwrandawiad fideo yn hygyrch i bobl â nam ar eu golwg. ",
+                "2": "Efallai y bydd defnyddwyr darllenydd sgrin yn cael trafferthion wrth ddefnyddio adrannau canlynol y gwasanaeth: ",
+                "3": "Efallai y bydd pobl sydd angen defnyddio eu bysellfwrdd i fynd drwy’r gwasanaeth yn cael y trafferthion canlynol: ",
+                "4": "Efallai y bydd pobl gyda golwg gwan yn cael trafferthion wrth ddarllen y testun yn y gwasanaeth gan nad oes yna ddigon o gyferbyniad rhwng y testun a’r cefndir.  ",
+                "5": "Efallai y bydd pobl gyda nam ar eu golwg yn cael trafferthion wrth geisio defnyddio’r adnodd Sgwrsio Dros y We yn yr Ystafell Wrandawiadau. Byddant yn gallu gwrando ar y rhan fwyaf o’r wefan gan ddefnyddio darllenydd sgrin."
+            },
+            "sub-list1": {
+                "1": "Gweld y Rhestr o’r Cyfranogwyr yn yr Ystafell Aros",
+                "2": "Defnyddio’r rheolyddion mewn gwrandawiad yn yr Ystafell Wrandawiadau.",
+                "3": "Dewis gwrandawiad o’r Rhestr o Wrandawiadau. ",
+                "4": "Dewis y Camera, y Meicroffon a’r adnodd Sgwrsio Dros y We yn yr Ystafell Aros."
+            },
+            "sub-list2": {
+                "1": "Dewis y Camera a’r Meicroffon yn yr Ystafell Aros.",
+                "2": "Gadael Ystafell Ymgynghori.",
+                "3": "Defnyddio’r rheolyddion mewn gwrandawiad yn yr Ystafell Wrandawiadau. "
+            },
+            "paragraph2": "Rydym eisiau i gymaint o bobl â phosibl allu defnyddio’r gwasanaeth hwn, felly rydym yn gweithio i ddatblygu’r platfform Gwrandawiadau Fideo ymhellach fel ei fod yn hygyrch i’n holl ddefnyddwyr. Ein nod yw sicrhau bod y gwelliannau hyn mewn lle erbyn Gorffennaf 2023."
+        },
       "cannot-access": {
         "heading": "Beth i'w wneud os na allwch ddefnyddio rhai rhannau o'r wefan hon",
         "paragraph1": "Os ydych angen help i gael mynediad i'r wybodaeth sydd ar y wefan hon, cysylltwch â'r tîm gwrandawiadau fideo: ",

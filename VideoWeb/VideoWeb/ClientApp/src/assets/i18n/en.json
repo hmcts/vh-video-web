@@ -1010,11 +1010,27 @@
         "paragraph3": "has advice on making your device easier to use if you have a disability."
       },
       "how-accessible": {
+        "paragraph1": "We know some parts of this website are not fully accessible:",
         "heading": "How accessible is this service?",
-        "paragraph1": "We know some parts of our platform are not fully accessible:",
-        "paragraph2": "The video hearings service includes a triage process so that people can make the court aware of any particular condition or impairment that may impact their ability to take part in a video hearing.",
-        "paragraph3": "It will always be for a judge to decide whether to use the option of a fully video hearing, and to ensure the interests of justice are served in any given hearing.",
-        "paragraph4": "During testing by DAC, users with cognitive impairment and dyslexia were able to navigate the website ‘completely independently, with no issues’. The access issues reported particularly affected those who are visually impaired or use voice activation technology."
+          "list": {
+              "1": "The self-test feature, for testing computer equipment in advance of a video hearing, is not accessible for visually impaired people.",
+              "2": "Screen reader users may experience issues using the following sections of the application:",
+              "3": "People needing to use their keyboard for navigation may experience the following issues:",
+              "4": "Users with low vision may have issues reading the text on the platform, due to there being not enough contrast between text and its background",
+              "5": "Users with visual impairments may have issues using the Instant Messaging feature in the Hearing Room. They will be able to listen to most of the website using a screen reader."
+          },
+          "sub-list1": {
+              "1": "Viewing the Participant List in the Waiting Room. ",
+              "2": "Navigating the in-hearing controls in the Hearing Room. ",
+              "3": "Selecting a hearing from the Hearing List. ",
+              "4": "Selecting the Camera, Microphone, and the Instant Messaging feature in the Waiting Room."
+          },
+          "sub-list2": {
+              "1": "Selecting the Camera and Microphone from the Waiting Room.",
+              "2": "Leaving a Consultation Room.",
+              "3": "Navigating the in-hearing controls in the Hearing Room "
+          },
+          "paragraph2": "We want as many people as possible to be able to use our service, we are therefore working to further develop the Video Hearings platform, so that it is accessible for all our users. Our aim is to ensure that improvements are in place by July 2023."
       },
       "cannot-access": {
         "heading": "What to do if you cannot access parts of this website",
