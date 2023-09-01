@@ -1032,14 +1032,24 @@
           },
           "paragraph2": "We want as many people as possible to be able to use our service, we are therefore working to further develop the Video Hearings platform, so that it is accessible for all our users. Our aim is to ensure that improvements are in place by July 2023."
       },
-      "cannot-access": {
-        "heading": "What to do if you cannot access parts of this website",
-        "paragraph1": "If you need help to access the information on this website, contact the video hearings team:",
-        "paragraph2": "Available between 9am and 5pm, Monday to Friday.",
-        "list": {
-          "1": "email {{email}}",
-          "2": "call {{phone}}"
-        }
+      "feedback": {
+        "heading": "Feedback and contact information",
+        "paragraph1": "Contact the court or tribunal that arranged your hearing if: you feel you cannot attend your hearing by video; if you have additional needs; if you need information about our service in a different format like accessible PDF, large print, easy read, audio recording or braille.",
+        "paragraph2": "If you have a notice of hearing, you can find the court and tribunal contact details there.",
+        "paragraph3": "If you know the name of the court or tribunal, you can search for their contact details at.",
+        "paragraph4": "If you have technical questions about your Video Hearing, or if you are experiencing technical difficulties with your equipment, such as your camera or microphone not working, then please contact the video hearings team using the details below: ",
+        "paragraph5": "For England and Wales:",
+        "paragraph6": "For Scotland:",
+        "paragraph7": "If you email us, include the location of your court or tribunal centre and case number in the subject line.",
+        "paragraph8": "We aim to respond to emails the same working day.",
+          "list": {
+              "1": "call {{phoneNumber}} between 9am and 5pm, Monday to Friday",
+              "2": "email {{email}}"
+          },
+          "list-scotland": {
+              "1": "call {{phoneNumber}} between 9am and 5pm, between 8.30am and 5pm, Monday to Friday",
+              "2": "email {{email}}"
+          }
       },
       "reporting-accessibility": {
         "heading": "Reporting accessibility problems with this website",

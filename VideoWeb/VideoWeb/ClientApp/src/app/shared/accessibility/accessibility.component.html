@@ -21,8 +21,8 @@
             </a>
           </li>
           <li class="vh-text">
-            <a class="govuk-link" href="javascript:void(0)" (click)="goToDiv('what-to-do-if-you-cant-access-parts-of-this-website')">
-              {{ 'accessibility.menu.cannot-access.heading' | translate }}
+            <a class="govuk-link" href="javascript:void(0)" (click)="goToDiv('feedback-and-contact-information')">
+              {{ 'accessibility.menu.feedback.heading' | translate }}
             </a>
           </li>
           <li class="vh-text">
@@ -121,16 +121,41 @@
       </p>
 
     </div>
-    <div id="what-to-do-if-you-cant-access-parts-of-this-website" class="vh-section">
-      <h2 class="govuk-heading-m">{{ 'accessibility.menu.cannot-access.heading' | translate }}</h2>
+    <div id="feedback-and-contact-information" class="vh-section">
+      <h2 class="govuk-heading-m">{{ 'accessibility.menu.feedback.heading' | translate }}</h2>
       <p class="govuk-body">
-        {{ 'accessibility.menu.cannot-access.paragraph1' | translate }}
+        {{ 'accessibility.menu.feedback.paragraph1' | translate }}
       </p>
-      <ul class="govuk-body">
-          <li>{{ 'accessibility.menu.cannot-access.list.1' | translate: { email: contactDetails.englandAndWales.email } }}</li>
-          <li>{{ 'accessibility.menu.cannot-access.list.2' | translate: { phone: contactDetails.englandAndWales.phoneNumber } }}</li>
-      </ul>
-        <p class="govuk-body">{{ 'accessibility.menu.cannot-access.paragraph2' | translate }}</p>
+        <p class="govuk-body">
+            {{ 'accessibility.menu.feedback.paragraph2' | translate }}
+        </p>
+        <p class="govuk-body">
+            {{ 'accessibility.menu.feedback.paragraph3' | translate }}
+            <a class="govuk-link" rel="external" href="https://www.gov.uk/find-court-tribunal">https://www.gov.uk/find-court-tribunal</a>.
+        </p>
+        <p class="govuk-body">
+            {{ 'accessibility.menu.feedback.paragraph4' | translate }}
+        </p>
+        <p class="govuk-body">
+            {{ 'accessibility.menu.feedback.paragraph5' | translate }}
+        </p>
+          <ul class="govuk-body">
+              <li>{{ 'accessibility.menu.feedback.list.1' | translate: { phoneNumber: contactDetails.englandAndWales.phoneNumber } }}</li>
+              <li>{{ 'accessibility.menu.feedback.list.2' | translate: { email: contactDetails.englandAndWales.email } }}</li>
+          </ul>
+        <p class="govuk-body">
+            {{ 'accessibility.menu.feedback.paragraph6' | translate }}
+        </p>
+        <ul class="govuk-body">
+            <li>{{ 'accessibility.menu.feedback.list-scotland.1' | translate: { phoneNumber: contactDetails.scotland.phoneNumber } }}</li>
+            <li>{{ 'accessibility.menu.feedback.list-scotland.2' | translate: { email: contactDetails.scotland.email } }}</li>
+        </ul>
+        <p class="govuk-body">
+            {{ 'accessibility.menu.feedback.paragraph7' | translate }}
+        </p>
+        <p class="govuk-body">
+            {{ 'accessibility.menu.feedback.paragraph8' | translate }}
+        </p>
     </div>
     <div id="reporting-accessibility-problems-with-this-website" class="vh-section">
         <h2 class="govuk-heading-m">{{ 'accessibility.menu.reporting-accessibility.heading' | translate }}</h2>

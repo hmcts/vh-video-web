@@ -130,15 +130,25 @@
             },
             "paragraph2": "Rydym eisiau i gymaint o bobl â phosibl allu defnyddio’r gwasanaeth hwn, felly rydym yn gweithio i ddatblygu’r platfform Gwrandawiadau Fideo ymhellach fel ei fod yn hygyrch i’n holl ddefnyddwyr. Ein nod yw sicrhau bod y gwelliannau hyn mewn lle erbyn Gorffennaf 2023."
         },
-      "cannot-access": {
-        "heading": "Beth i'w wneud os na allwch ddefnyddio rhai rhannau o'r wefan hon",
-        "paragraph1": "Os ydych angen help i gael mynediad i'r wybodaeth sydd ar y wefan hon, cysylltwch â'r tîm gwrandawiadau fideo: ",
-        "list": {
-          "1": "anfonwch e-bost i {{email}}",
-          "2": "ffoniwch {{phone}}"
+        "feedback": {
+            "heading": "Adborth a gwybodaeth gyswllt",
+            "paragraph1": "Cysylltwch â’r llys neu’r tribiwnlys a drefnodd eich gwrandawiad: os ydych chi’n teimlo na allwch gymryd rhan drwy fideo; os oes gennych anghenion ychwanegol; os ydych angen gwybodaeth am ein gwasanaeth mewn fformat arall, e.e. PDF hygyrch, fersiwn print bras, fersiwn hawdd i’w ddarllen, recordiad sain neu braille.",
+            "paragraph2": "Os oes gennych rybudd o wrandawiad, bydd manylion cyswllt y llys neu dribiwnlys i’w gweld yno. ",
+            "paragraph3": "Os ydych chi’n gwybod beth yw enw’r llys neu’r tribiwnlys, gallwch chwilio am eu manylion cyswllt yn",
+            "paragraph4": "Os oes gennych gwestiynau technegol am eich gwrandawiad fideo, neu os ydych chi’n cael trafferthion technegol gyda’ch offer, er enghraifft, nid yw eich camera neu’ch meicroffon yn gweithio, yna defnyddiwch y manylion a nodir isod i gysylltu â’r tîm gwrandawiadau fideo: ",
+            "paragraph5": "Ar gyfer siaradwyr Cymraeg yng Nghymru a Lloegr:",
+            "paragraph6": "Ar gyfer yr Alban:",
+            "paragraph7": "Os byddwch yn anfon neges e-bost atom, dylech gynnwys lleoliad eich llys neu eich canolfan tribiwnlys a rhif yr achos yn y llinell pwnc.",
+            "paragraph8": "Ein nod yw ymateb i negeseuon e-bost yr un diwrnod gwaith.",
+            "list": {
+                "1": "ffoniwch: {{phoneNumber}} rhwng 9am - 5pm dydd Llun i ddydd Iau a 9am - 4.30pm ar ddydd Gwener",
+                "2": "e-bost: {{email}}"
+            },
+            "list-scotland": {
+                "1": "ffoniwch {{phoneNumber}} rhwng 8.30am a 5pm, o ddydd Llun i ddydd Gwener",
+                "2": "e-bost: {{email}}"
+            }
         },
-        "paragraph2": "Rhwng 9am a 5pm, dydd Llun i ddydd Gwener."
-      },
       "reporting-accessibility": {
         "heading": "Riportio problemau hygyrchedd gyda'r wefan hon",
         "paragraph1": "Rydym wastad yn ceisio gwella hygyrchedd y wefan hon. Os byddwch yn cael unrhyw broblemau nad ydynt wedi'u cynnwys ar y dudalen hon, neu'n credu nad ydym yn bodloni'r gofynion o ran hygyrchedd, cysylltwch â'r tîm gwrandawiadau fideo (gweler uchod)."
