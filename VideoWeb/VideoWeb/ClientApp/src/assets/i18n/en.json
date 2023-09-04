@@ -1064,6 +1064,13 @@
         "paragraph1": "The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018 (the ‘accessibility regulations’). If you’re not happy with how we respond to your complaint, ",
         "paragraph2": "contact the Equality Advisory and Support Service (EASS)"
       },
+      "contacting-us": {
+          "heading": "Contacting us by phone or visiting us in person",
+          "paragraph1": "We provide a text relay service if you’re deaf, hearing impaired or have a speech impediment.",
+          "paragraph2": "Our offices have audio induction loops, or if you contact us before your visit, we can arrange a British Sign Language (BSL) interpreter.",
+          "paragraph3": "Find out how to at: ",
+          "link:": "Find a court or tribunal - GOV.UK (www.gov.uk)"
+      },
       "technical-information": {
         "heading": "Technical information about this website’s accessibility",
         "paragraph1": "HM Courts and Tribunals Service is committed to making its website accessible, in accordance with the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018.",
