@@ -169,20 +169,27 @@
          "paragraph3": "Gallwch gael rhagor o wybodaeth am sut i gysylltu â ni yn ",
          "link:": "Chwilio am lys neu dribiwnlys - GOV.UK (www.gov.uk)."
       },
-      "technical-information": {
-        "heading": "Gwybodaeth dechnegol am hygyrchedd y wefan hon",
-        "paragraph1": "Mae Gwasanaeth Llysoedd a Thribiwnlysoedd EM wedi ymrwymo i sicrhau bod ei wefan yn hygyrch, yn unol â Rheoliadau Hygyrchedd Cyrff y Sector Cyhoeddus (Gwefannau a Rhaglenni Symudol) (Rhif 2) 2018.",
-        "paragraph2": {
-          "1": "Mae'r wefan hon yn cydymffurfio'n rhannol â",
-          "2": "Chanllawiau Hygyrchedd Cynnwys Gwe fersiwn 2.1",
-          "3": "safon AA, oherwydd y materion o beidio â chydymffurfio a restrir isod."
+        "technical-information": {
+            "heading": "Technical information about the Video Hearings service’s accessibility",
+            "paragraph1": "Mae Gwasanaeth Llysoedd a Thribiwnlysoedd EF wedi ymrwymo i sicrhau bod ei wasanaethau yn hygyrch, yn unol â Rheoliadau Hygyrchedd Cyrff y Sector Cyhoeddus (Gwefannau a Rhaglenni Symudol) (Rhif 2) 2018."
         },
-        "paragraph3": "paragraff 1 "
-      },
-      "non-accessible-content": {
-        "heading": "Cynnwys anhygyrch",
-        "paragraph1": "Cafodd nifer o faterion eu riportio yn ymwneud â hygyrchedd a defnyddioldeb.  Roedd y rhain yn effeithio'n arbennig ar y rhai hynny sydd â nam ar eu golwg neu sy'n defnyddio technoleg llais.  Cafodd y rhan fwyaf o'r problemau eu datrys cyn i'r gwasanaeth beta preifat gael ei ryddhau.  Mae'r rhai hynny sy'n weddill i'w gweld isod. "
-      },
+        "compliance-status": {
+            "heading": "Compliance status",
+            "paragraph1.1": "Our service is partially compliant with the",
+            "link": "Web Content Accessibility Guidelines version 2.1",
+            "paragraph1.2": "AA standard due to the non-compliances listed below."
+        },
+        "non-accessible-content": {
+            "heading": "Cynnwys anhygyrch",
+            "paragraph1": "Mae’r cynnwys a restrir isod yn anhygyrch am y rhesymau canlynol.",
+            "paragraph2": "Mae’r adnodd hunan-brawf yn golygu bod angen i ddefnyddwyr brofi eu hoffer cyfrifiadurol cyn dyddiad eu gwrandawiad fideo. Fe chwaraeir fideo a dywedir wrth y defnyddiwr am gyfrif i 5 yn uchel i wirio bod eu meicroffon yn gweithio. Mae dangosydd sain y meicroffon yn dibynnu ar y gallu i weld ac nid yw’n rhoi’r wybodaeth angenrheidiol i ddefnyddwyr sydd â nam ar eu golwg. Nid yw hyn yn diwallu maen prawf llwyddiant 1.1.1 WCAG (cynnwys di-destun) na 1.3.3 (nodweddion synhwyraidd). ",
+            "paragraph3": "Mae cynlluniau ar y gweill i ail-ddylunio’r adnodd hunan-brawf erbyn Gorffennaf 2024.",
+            "paragraph4": "Efallai y bydd defnyddwyr darllenydd sgrin yn cael trafferthion wrth ddefnyddio rhai rhannau o’r gwasanaeth. Nid yw Gweld y Rhestr o’r Cyfranogwyr yn yr Ystafell Aros yn diwallu maen prawf llwyddiant 1.3.1 WCAG (Gwybodaeth a Pherthnasau). Nid yw defnyddio’r rheolyddion mewn gwrandawiad yn yr Ystafell Wrandawiadau yn diwallu maen prawf llwyddiant 2.4.3 WCAG (Gorchymyn Ffocws). Nid yw dewis gwrandawiad o’r Rhestr o Wrandawiadau yn diwallu maen prawf llwyddiant 2.4.6 WCAG (Penawdau a Labeli), nac ychwaith Dewis y Camera a’r Meicroffon yn yr Ystafell Aros. Nid yw’r adnodd Sgwrsio Dros y We yn yr Ystafell Aros yn diwallu maen prawf llwyddiant 4.1.3 WCAG (Negeseuon Statws) gan nad yw’r nifer o nodau yn cael ei ddarllen arall i ddefnyddwyr.",
+            "paragraph5": "Bydd y nodweddion hyn yn cael eu cynnwys yn y Gwasanaeth Gwrandawiadau Fideo erbyn Chwefror 2023.",
+            "paragraph6": "Efallai y bydd defnyddwyr sy’n gorfod dibynnu ar ddefnyddio’u bysellfwrdd i fynd drwy’r gwasanaeth yn cael trafferthion gyda rhai rhannau o’r wefan. Nid yw Dewis y Camera a’r Meicroffon yn yr Ystafell Aros yn diwallu maen prawf llwyddiant 2.4.3 WCAG (Gorchymyn Ffocws), ac y mae’r un peth yn wir am Gadael yr Ystafell Ymgynghori. Nid yw defnyddio’r rheolyddion mewn gwrandawiad yn yr Ystafell Wrandawiadau yn diwallu maen prawf llwyddiant 1.4.12 WCAG (Cynnwys wrth Hofran neu Ffocysu).",
+            "paragraph7": "Bydd y nodweddion hyn yn cael eu cynnwys yn y Gwasanaeth Gwrandawiadau Fideo erbyn Chwefror 2023.",
+            "paragraph8": "Efallai y bydd pobl gyda golwg gwan yn cael trafferthion wrth geisio defnyddio’r adnodd Sgwrsio Dros y We yn yr Ystafell Wrandawiadau. Nid yw hyn yn cydymffurfio â maen prawf llwyddiant 1.4.2 WCAG (Cyferbyniad Lleiaf). Bydd defnyddwyr yn gallu gwrando ar y rhan fwyaf o’r wefan gan ddefnyddio darllenydd sgrin."
+        },
       "non-compliance-accessibility-regulations": {
         "heading": "Methiant i gydymffurfio â'r rheoliadau hygyrchedd",
         "sub-heading1": "Fideos gwybodaeth",
