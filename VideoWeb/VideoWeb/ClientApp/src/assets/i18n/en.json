@@ -1052,8 +1052,12 @@
           }
       },
       "reporting-accessibility": {
-        "heading": "Reporting accessibility problems with this website",
-        "paragraph1": "We’re always looking to improve the accessibility of this website. If you find any problems not listed on this page or think we’re not meeting accessibility requirements, contact the video hearings team (above)."
+        "heading": "Reporting accessibility problems with this service",
+        "paragraph1": "We’re always looking to improve the accessibility of our service. If you find any problems that aren’t listed on this page or think we’re not meeting the requirements of the accessibility regulations contact:",
+        "list": {
+            "1": "email video-hearings@justice.gov.uk",
+            "2": "call 0300 303 0655, Monday to Friday, 9am and 5pm"
+        }
       },
       "enforcement-procedure": {
         "heading": "Enforcement procedure",

@@ -149,10 +149,14 @@
                 "2": "e-bost: {{email}}"
             }
         },
-      "reporting-accessibility": {
-        "heading": "Riportio problemau hygyrchedd gyda'r wefan hon",
-        "paragraph1": "Rydym wastad yn ceisio gwella hygyrchedd y wefan hon. Os byddwch yn cael unrhyw broblemau nad ydynt wedi'u cynnwys ar y dudalen hon, neu'n credu nad ydym yn bodloni'r gofynion o ran hygyrchedd, cysylltwch â'r tîm gwrandawiadau fideo (gweler uchod)."
-      },
+        "reporting-accessibility": {
+            "heading": "Riportio problemau hygyrchedd gyda’r gwasanaeth Gwrandawiadau Fideo",
+            "paragraph1": "Rydym wastad yn ceisio gwella hygyrchedd ein gwasanaeth. Os byddwch yn cael unrhyw broblemau nad ydynt yn cael eu crybwyll ar y dudalen hon, neu os ydych yn credu nad ydym yn bodloni gofynion y rheoliadau hygyrchedd, cysylltwch â:",
+            "list": {
+                "1": "E-bost: video-hearings@justice.gov.uk",
+                "2": "Ar gyfer siaradwyr Cymraeg yng Nghymru a Lloegr: ffoniwch 0300 303 5177, rhwng 9am - 5pm dydd Llun i ddydd Iau a 9am - 4.30pm ar ddydd Gwener"
+            }
+        },
       "enforcement-procedure": {
         "heading": "Y Weithdrefn Orfodi",
         "paragraph1": "Y Comisiwn Cydraddoldeb a Hawliau Dynol (EHRC) sy'n gyfrifol am orfodi Rheoliadau Hygyrchedd Cyrff y Sector Cyhoeddus (Gwefannau a Rhaglenni Symudol) (Rhif 2) 2018 (y 'rheoliadau hygyrchedd'). Os ydych yn anhapus â'r ffordd rydym yn ymateb i'ch cwyn,",
