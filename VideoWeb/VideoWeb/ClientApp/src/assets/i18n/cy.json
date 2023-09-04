@@ -200,10 +200,16 @@
         "paragraph4": "Yn fwriadol, nid oes gan y fideo reolyddion. Mae angen i'r fideo chwarae hyd nes y diwedd i wirio cryfder cysylltiad rhyngrwyd y defnyddiwr.  Mae hyn yn cymryd o leiaf 20 i 30 eiliad.  Rydym wedi ychwanegu eglurhad. ",
         "paragraph5": "Erbyn gwanwyn 2020 byddwn yn adolygu'r ffordd yr ydym yn helpu defnyddwyr i brofi eu hoffer i fynd i'r afael â'r problemau hygyrchedd a adnabuwyd yn adroddiad DAC. "
       },
-      "not-within-the-scope": {
-        "heading": "Nid yw hyn o fewn y cwmpas/Nid yw'n berthnasol",
-        "paragraph1": "Wrth i gyfranogwyr posibl baratoi ar gyfer gwrandawiad fideo fe ofynnir nifer o gwestiynau iddynt.  Fe ofynnir un cwestiwn ar bob tudalen ac mae opsiwn i ateb gyda 'ie' neu 'na'.  Mi wnaeth DAC ein cynghori i grwpio'r botymau 'ie' a 'na' i helpu defnyddwyr darllenwyr sgrin.  (WCAG cyfeirnod 1.3.1 - A). Mae'r cyngor hwn yn berthnasol i ffurflenni hirach sy'n cynnwys grwpiau gwahanol o gwestiynau ar un dudalen, ac nid yw'n berthnasol yn yr achos hwn. "
-      },
+        "improving-accessibility": {
+            "heading": "Beth rydym yn ei wneud i wella hygyrchedd y gwasanaeth hwn",
+            "paragraph1": "Mae GLlTEF yn defnyddio meddalwedd hygyrchedd a phrofion awtomataidd i brofi’r gwasanaeth Gwrandawiadau Fideo yn barhaus. Bydd unrhyw nodweddion newydd a gyflwynir hefyd yn cael eu profi. Mae hyn yn ein helpu i ddatrys problemau cyn i ni lansio tudalennau neu nodweddion newydd.",
+            "paragraph2": "Gall defnyddwyr ddefnyddio’r gwasanaeth cyn eu gwrandawiad fideo i newid eu cyfrinair a phrofi eu hoffer cyfrifiadurol. Cafodd y rhan hon o’r wefan ei hasesu gan y Ganolfan Hygyrchedd Digidol yn ystod Medi 2019.",
+            "paragraph3": "Defnyddir y gwasanaeth i alluogi defnyddiwr i fynychu ei wrandawiad fideo. Cafodd y rhan hon o’r wefan ei hasesu gan y Ganolfan Hygyrchedd Digidol yn ystod Ebrill 2021.",
+            "paragraph4": "Mae adrannau ac asiantaethau yn gweithio’n galed i ddatrys y materion sydd ddim yn cydymffurfio â safon AA Canllawiau Hygyrchedd Cynnwys Gwe fersiwn 2.1 cyn gynted â phosibl. Byddwn yn diweddaru’r dudalen hon wrth i’r materion hyn gael eu datrys.",
+            "paragraph5.1": "Mae ein ",
+            "paragraph5.link": "map trywydd ",
+            "paragraph5.2": "hygyrchedd yn dangos sut a phryd rydym yn cynllunio i wella hygyrchedd y platfform gwrandawiadau fideo."
+        },
       "how-we-tested-this-website": {
         "heading": "Sut rydym wedi profi'r wefan hon?",
         "paragraph1": "Cafodd y wefan hon ei phrofi gan Digital Accessibility Centre, Castell Nedd, yn ystod Medi 2019. ",
