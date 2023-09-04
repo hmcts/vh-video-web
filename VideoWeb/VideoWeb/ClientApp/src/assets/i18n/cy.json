@@ -167,7 +167,7 @@
          "paragraph1": "Rydym yn darparu gwasanaeth cyfnewid negeseuon testun ar gyfer pobl fyddar, pobl sydd â nam ar eu clyw a phobl sydd â nam ar eu lleferydd.",
          "paragraph2": "Mae yna ddolenni sain yn ein swyddfeydd, neu os byddwch yn cysylltu â ni cyn eich ymweliad, gallwn drefnu cyfieithydd Iaith Arwyddion Prydain (BSL) ar eich cyfer.",
          "paragraph3": "Gallwch gael rhagor o wybodaeth am sut i gysylltu â ni yn ",
-         "link:": "Chwilio am lys neu dribiwnlys - GOV.UK (www.gov.uk)."
+         "paragraph3.link:": "Chwilio am lys neu dribiwnlys - GOV.UK (www.gov.uk)."
       },
         "technical-information": {
             "heading": "Technical information about the Video Hearings service’s accessibility",
@@ -210,16 +210,19 @@
             "paragraph5.link": "map trywydd ",
             "paragraph5.2": "hygyrchedd yn dangos sut a phryd rydym yn cynllunio i wella hygyrchedd y platfform gwrandawiadau fideo."
         },
-      "how-we-tested-this-website": {
-        "heading": "Sut rydym wedi profi'r wefan hon?",
-        "paragraph1": "Cafodd y wefan hon ei phrofi gan Digital Accessibility Centre, Castell Nedd, yn ystod Medi 2019. ",
-        "paragraph2": "Dyma ddyfyniad o'u hadroddiad yn esbonio eu methodoleg:",
-        "paragraph3": "Cafodd y wefan ei phrofi gan dîm o archwilwyr profiadol, ac mae llawer ohonynt yn unigolion anabl ac yn ddefnyddwyr technoleg addasol. Mae'r cyfuniad o adborth goddrychol gan ddefnyddwyr anabl ac archwiliadau technegol cynhwysfawr yn ein galluogi i fesur sut mae'r wefan yn perfformio'n dechnegol ac yn ymarferol, gan gynnig dimensiwn ychwanegol hanfodol i ganlyniadau ein profion na all dulliau eraill o brofi eu darparu.",
-        "sub-heading1": "Profi gyda defnyddwyr:",
-        "paragraph4": "Cynhaliwyd archwiliadau hygyrchedd â llaw gan dîm o unigolion anabl, gan ddefnyddio ystod o dechnolegau addasol (caledwedd a meddalwedd a gynlluniwyd i hwyluso'r defnydd o gyfrifiaduron gan bobl ag anableddau).",
-        "sub-heading2": "Archwilio technegol:",
-        "paragraph5": "Mae archwilio technegol yn cynnwys cymhwyso nifer o ddulliau archwilio technegol a safonau asesu cydymffurfiaeth. Mae hyn, ynghyd â gwybodaeth helaeth am WCAG, y broses o'i roi ar waith ac ymarfer byd-eang ehangach, yn rhoi hygrededd ac ansawdd pellach i wefan DAC."
-      }
+        "preparation-of-statement": {
+            "heading": "Paratoi’r datganiad hygyrchedd hwn",
+            "paragraph1": "Cafodd y datganiad hwn ei baratoi ar 29 Hydref 2019.  Cafodd ei adolygu ddiwethaf ar 20 Rhagfyr 2022.",
+            "paragraph2": "Profwyd y wefan hon ddiwethaf yn ystod Ebrill 2021.  Cynhaliwyd y prawf gan y Ganolfan Hygyrchedd Digidol (DAC). Mi wnaethom benderfynu profi holl dudalennau’r gwasanaeth i sicrhau ein bod yn diwallu anghenion ein defnyddwyr.  ",
+            "paragraph3": "Gallwch ddarllen yr adroddiad prawf hygyrchedd llawn ",
+            "paragraph3.link": "yma",
+            "paragraph4": "Methodoleg DAC yw:",
+            "paragraph5": "Cafodd y wefan ei phrofi gan dîm o archwilwyr profiadol, ac mae llawer ohonynt yn unigolion anabl ac yn ddefnyddwyr technoleg addasol. Mae’r cyfuniad o adborth goddrychol gan ddefnyddwyr anabl ac archwiliadau technegol cynhwysfawr yn ein galluogi i fesur sut mae’r wefan yn perfformio’n dechnegol ac yn ymarferol, gan gynnig dimensiwn ychwanegol hanfodol i ganlyniadau ein profion na all dulliau eraill o brofi eu darparu.",
+            "paragraph6": "Profi gyda defnyddwyr:",
+            "paragraph7": "Cynhaliwyd archwiliadau hygyrchedd â llaw gan dîm o unigolion anabl, gan ddefnyddio ystod o dechnolegau addasol (caledwedd a meddalwedd a gynlluniwyd i hwyluso'r defnydd o gyfrifiaduron gan bobl ag anableddau).",
+            "paragraph8": "Archwilio technegol:",
+            "paragraph9": "Mae archwilio technegol yn cynnwys cymhwyso nifer o ddulliau archwilio technegol a safonau asesu cydymffurfiaeth. Mae hyn, ynghyd â gwybodaeth helaeth am WCAG, y broses o’i roi ar waith ac ymarfer byd-eang ehangach, yn rhoi hygrededd ac ansawdd pellach i wefan DAC."
+        }
     },
     "contents": "Cynnwys"
   },

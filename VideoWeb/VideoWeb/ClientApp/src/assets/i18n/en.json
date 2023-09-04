@@ -1069,7 +1069,7 @@
           "paragraph1": "We provide a text relay service if you’re deaf, hearing impaired or have a speech impediment.",
           "paragraph2": "Our offices have audio induction loops, or if you contact us before your visit, we can arrange a British Sign Language (BSL) interpreter.",
           "paragraph3": "Find out how to at: ",
-          "link:": "Find a court or tribunal - GOV.UK (www.gov.uk)"
+          "paragraph3.link": "Find a court or tribunal - GOV.UK (www.gov.uk)"
       },
       "technical-information": {
         "heading": "Technical information about the Video Hearings service’s accessibility",
@@ -1111,7 +1111,20 @@
         "paragraph4": "Manual accessibility checking was conducted by a team of disabled individuals, using a range of adaptive technologies (hardware and software designed to facilitate the use of computers by people with disabilities).",
         "sub-heading2": "Technical auditing:",
         "paragraph5": "Technical auditing involves the experienced application of a number of technical auditing and standards compliance assessment tools. This combined with an extensive knowledge of WCAG, its application and wider global practice provides the DAC website with further credibility and quality."
-      }
+      },
+      "preparation-of-statement": {
+            "heading": "Preparation of this accessibility statement",
+            "paragraph1": "This statement was prepared on 29 October 2019.  It was last reviewed on 20 December 2022.",
+            "paragraph2": "The website was last tested in April 2021.  The test was carried out by the Digital Accessibility Centre (DAC). We decided to test all the pages within our platform to make sure that we were meeting the needs of our users.",
+            "paragraph3": "You can read the full accessibility test report ",
+            "paragraph3.link": "here",
+            "paragraph4": "The DAC’s methodology is:",
+            "paragraph5": "The website was tested by a team of experienced auditors, many of whom are disabled individuals and users of adaptive technology. The combination of subjective pan-disability user feedback and comprehensive technical auditing allows us to measure how the website performs technically and practically, thereby offering an essential added dimension to our test results that other methods of testing cannot provide.",
+            "paragraph6": "User testing:",
+            "paragraph7": "Manual accessibility checking was conducted by a team of disabled individuals, using a range of adaptive technologies (hardware and software designed to facilitate the use of computers by people with disabilities).”",
+            "paragraph8": "Technical auditing:",
+            "paragraph9": "“Technical auditing involves the experienced application of a number of technical auditing and standards compliance assessment tools. This combined with an extensive knowledge of WCAG, its application and wider global practice provides the DAC website with further credibility and quality.”"
+        }
     },
     "contents": "Contents"
   },

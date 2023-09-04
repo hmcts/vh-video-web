@@ -11,11 +11,6 @@
       <div id="contents" appScrollTrigger (scrolledPast)="scrollHandler($event)" (scrollFooter)="scrollFooter($event)">
         <ol class="vh-text">
           <li class="vh-text">
-            <a class="govuk-link" href="javascript:void(0)" (click)="goToDiv('accessibilityStatment')">
-              {{ 'accessibility.menu.accessibility-statement.heading' | translate }}
-            </a>
-          </li>
-          <li class="vh-text">
             <a class="govuk-link" href="javascript:void(0)" (click)="goToDiv('how-accessible-this-website-is')">
               {{ 'accessibility.menu.how-accessible.heading' | translate }}
             </a>
@@ -45,11 +40,17 @@
               {{ 'accessibility.menu.non-accessible-content.heading' | translate }}
             </a>
           </li>
-          <li class="vh-text">
-            <a class="govuk-link" href="javascript:void(0)" (click)="goToDiv('improvingAccessibility')">
-              {{ 'accessibility.menu.improving-accessibility.heading' | translate }}
-            </a>
-          </li>
+            <li class="vh-text">
+                <a class="govuk-link" href="javascript:void(0)" (click)="goToDiv('improvingAccessibility')">
+                    {{ 'accessibility.menu.improving-accessibility.heading' | translate }}
+                </a>
+            </li>
+
+            <li class="vh-text">
+                <a class="govuk-link" href="javascript:void(0)" (click)="goToDiv('preparation-of-statement')">
+                    {{ 'accessibility.menu.preparation-of-statement.heading' | translate }}
+                </a>
+            </li>
         </ol>
       </div>
     </nav>
@@ -172,14 +173,14 @@
       </p>
       <p class="govuk-body">
           {{ 'accessibility.menu.contacting-us.paragraph3' | translate }}
-          <a class="govuk-link" rel="external" href="https://www.gov.uk/find-court-tribunal">
-              {{ 'accessibility.menu.contacting-us.link' | translate }}</a
+          <a class="govuk-link" rel="external" href="https://www.gov.uk/find-court-tribunal"
+            >{{ 'accessibility.menu.contacting-us.paragraph3.link' | translate }}</a
           >.
       </p>
   </div>
 
   <div id="technicalInformation" class="vh-section">
-      <h1 class="govuk-heading-m" id="technical-information-about-this-websites-accessibility"> {{ 'accessibility.menu.technical-information.heading' | translate }} </h1>
+      <h1 class="govuk-heading-l" id="technical-information-about-this-websites-accessibility"> {{ 'accessibility.menu.technical-information.heading' | translate }} </h1>
       <p class="govuk-body">
         {{ 'accessibility.menu.technical-information.paragraph1' | translate }}
       </p>
@@ -240,6 +241,37 @@
       {{ 'accessibility.menu.improving-accessibility.paragraph5.2' | translate }}
       </p>
     </div>
+
+
+      <div id="preparation-of-statement" class="vh-section">
+          <h2 class="govuk-heading-m">{{ 'accessibility.menu.preparation-of-statement.heading' | translate }}</h2>
+          <p class="govuk-body">
+              {{ 'accessibility.menu.preparation-of-statement.paragraph1' | translate }}
+          <p class="govuk-body">
+              {{ 'accessibility.menu.preparation-of-statement.paragraph2' | translate }}
+          </p>
+          <p class="govuk-body"> {{ 'accessibility.menu.preparation-of-statement.paragraph3' | translate }}
+              <a class="govuk-link" rel="external" href="">{{ 'accessibility.menu.preparation-of-statement.paragraph3.link' | translate }}</a>
+          </p>
+          <p class="govuk-body">
+              {{ 'accessibility.menu.preparation-of-statement.paragraph4' | translate }}
+          </p>
+          <p class="govuk-body">
+              {{ 'accessibility.menu.preparation-of-statement.paragraph5' | translate }}
+          </p>
+          <p class="govuk-body">
+              {{ 'accessibility.menu.preparation-of-statement.paragraph6' | translate }}
+          </p>
+          <p class="govuk-body">
+              {{ 'accessibility.menu.preparation-of-statement.paragraph7' | translate }}
+          </p>
+          <p class="govuk-body">
+              {{ 'accessibility.menu.preparation-of-statement.paragraph8' | translate }}
+          </p>
+          <p class="govuk-body">
+              {{ 'accessibility.menu.preparation-of-statement.paragraph9' | translate }}
+          </p>
+      </div>
   </div>
 </div>
 
