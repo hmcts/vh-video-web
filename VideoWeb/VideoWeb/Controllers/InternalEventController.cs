@@ -119,10 +119,15 @@ namespace VideoWeb.Controllers
                 _logger.LogDebug($"WILL TRACE: ParticipantsUpdated finished. ConferenceId: {conferenceId}");
                 return NoContent();
             }
-            catch (Exception e)
+            catch (VideoApiException e)
             {
                 _logger.LogError(e, "ConferenceId: {ConferenceId}, ErrorCode: {StatusCode}", conferenceId, e.StatusCode);
                 return StatusCode(e.StatusCode, e.Response);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "ConferenceId: {ConferenceId}, ErrorCode: {StatusCode}", conferenceId, e.StatusCode);
+                return BadRequest();
             }
         }
 
