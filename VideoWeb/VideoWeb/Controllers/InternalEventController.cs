@@ -80,17 +80,17 @@ namespace VideoWeb.Controllers
             {
                 var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
                 {
-                    _logger.LogTrace("Retrieving conference details for conference: {ConferenceId}", conferenceId);
+                    _logger.LogTrace("WILL TRACE: Retrieving conference details for conference: {ConferenceId}", conferenceId);
                     return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
                 });
 
-                _logger.LogTrace($"Initial conference details: {conference}");
+                _logger.LogTrace($"WILL TRACE: Initial conference details: {conference}");
 
                 request.NewParticipants.ToList().ForEach(participant =>
                 {
-                    _logger.LogTrace($"Mapping new participant: {JsonSerializer.Serialize(participant)}");
+                    _logger.LogTrace($"WILL TRACE: Mapping new participant: {JsonSerializer.Serialize(participant)}");
                     var mappedParticipant = requestToParticipantMapper.Map(participant, conference.Participants);
-                    _logger.LogTrace($"Adding participant to conference: {JsonSerializer.Serialize(mappedParticipant)}");
+                    _logger.LogTrace($"WILL TRACE: Adding participant to conference: {JsonSerializer.Serialize(mappedParticipant)}");
                     conference.AddParticipant(mappedParticipant);
                 });
 
@@ -98,31 +98,30 @@ namespace VideoWeb.Controllers
                 
                 request.RemovedParticipants.ToList().ForEach(referenceId =>
                 {
-                    _logger.LogTrace($"Removing participant from conference. ReferenceID: {referenceId}");
+                    _logger.LogTrace($"WILL TRACE: Removing participant from conference. ReferenceID: {referenceId}");
                     conference.RemoveParticipant(referenceId);
                 });
 
                 request.ExistingParticipants.ToList().ForEach(updateRequest =>
                 {
-                    _logger.LogTrace($"Mapping existing participant update: {JsonSerializer.Serialize(updateRequest)}");
+                    _logger.LogTrace($"WILL TRACE: Mapping existing participant update: {JsonSerializer.Serialize(updateRequest)}");
                     var mappedUpdateParticipant = updateParticipantRequestToUpdateParticipantMapper.Map(updateRequest, conference.Participants);
-                    _logger.LogTrace($"Updating existing participant in conference: {JsonSerializer.Serialize(mappedUpdateParticipant)}");
+                    _logger.LogTrace($"WILL TRACE: Updating existing participant in conference: {JsonSerializer.Serialize(mappedUpdateParticipant)}");
                     conference.UpdateParticipant(mappedUpdateParticipant);
                 });
 
-                _logger.LogTrace($"Updating conference in cache: {JsonSerializer.Serialize(conference)}");
+                _logger.LogTrace($"WILL TRACE: Updating conference in cache: {JsonSerializer.Serialize(conference)}");
                 await _conferenceCache.UpdateConferenceAsync(conference);
 
                 var participantsToNotify = conference.Participants.Union(removedParticipants).ToList();
 
                 await _participantsUpdatedEventNotifier.PushParticipantsUpdatedEvent(conference, participantsToNotify);
-                _logger.LogDebug($"ParticipantsUpdated finished. ConferenceId: {conferenceId}");
+                _logger.LogDebug($"WILL TRACE: ParticipantsUpdated finished. ConferenceId: {conferenceId}");
                 return NoContent();
             }
-            catch (VideoApiException e)
+            catch (Exception e)
             {
-                _logger.LogError(e, "ConferenceId: {ConferenceId}, ErrorCode: {StatusCode}", conferenceId,
-                    e.StatusCode);
+                _logger.LogError(e, "ConferenceId: {ConferenceId}, ErrorCode: {StatusCode}", conferenceId, e.StatusCode);
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
