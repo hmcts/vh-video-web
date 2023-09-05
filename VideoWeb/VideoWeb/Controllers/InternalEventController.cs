@@ -126,7 +126,7 @@ namespace VideoWeb.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "ConferenceId: {ConferenceId}, ErrorCode: {StatusCode}", conferenceId, e.StatusCode);
+                _logger.LogError(e, "WILL LOG: ERROR");
                 return BadRequest();
             }
         }
