@@ -135,6 +135,7 @@
             "paragraph1": "Cysylltwch â’r llys neu’r tribiwnlys a drefnodd eich gwrandawiad: os ydych chi’n teimlo na allwch gymryd rhan drwy fideo; os oes gennych anghenion ychwanegol; os ydych angen gwybodaeth am ein gwasanaeth mewn fformat arall, e.e. PDF hygyrch, fersiwn print bras, fersiwn hawdd i’w ddarllen, recordiad sain neu braille.",
             "paragraph2": "Os oes gennych rybudd o wrandawiad, bydd manylion cyswllt y llys neu dribiwnlys i’w gweld yno. ",
             "paragraph3": "Os ydych chi’n gwybod beth yw enw’r llys neu’r tribiwnlys, gallwch chwilio am eu manylion cyswllt yn",
+            "paragraph3.link": "https://www.gov.uk/chwilio-am-lys-neu-dribiwnlys",
             "paragraph4": "Os oes gennych gwestiynau technegol am eich gwrandawiad fideo, neu os ydych chi’n cael trafferthion technegol gyda’ch offer, er enghraifft, nid yw eich camera neu’ch meicroffon yn gweithio, yna defnyddiwch y manylion a nodir isod i gysylltu â’r tîm gwrandawiadau fideo: ",
             "paragraph5": "Ar gyfer siaradwyr Cymraeg yng Nghymru a Lloegr:",
             "paragraph6": "Ar gyfer yr Alban:",
@@ -167,17 +168,17 @@
          "paragraph1": "Rydym yn darparu gwasanaeth cyfnewid negeseuon testun ar gyfer pobl fyddar, pobl sydd â nam ar eu clyw a phobl sydd â nam ar eu lleferydd.",
          "paragraph2": "Mae yna ddolenni sain yn ein swyddfeydd, neu os byddwch yn cysylltu â ni cyn eich ymweliad, gallwn drefnu cyfieithydd Iaith Arwyddion Prydain (BSL) ar eich cyfer.",
          "paragraph3": "Gallwch gael rhagor o wybodaeth am sut i gysylltu â ni yn ",
-         "paragraph3.link:": "Chwilio am lys neu dribiwnlys - GOV.UK (www.gov.uk)."
+         "paragraph3.link": "Chwilio am lys neu dribiwnlys - GOV.UK (www.gov.uk)."
       },
         "technical-information": {
             "heading": "Technical information about the Video Hearings service’s accessibility",
             "paragraph1": "Mae Gwasanaeth Llysoedd a Thribiwnlysoedd EF wedi ymrwymo i sicrhau bod ei wasanaethau yn hygyrch, yn unol â Rheoliadau Hygyrchedd Cyrff y Sector Cyhoeddus (Gwefannau a Rhaglenni Symudol) (Rhif 2) 2018."
         },
         "compliance-status": {
-            "heading": "Compliance status",
-            "paragraph1.1": "Our service is partially compliant with the",
-            "link": "Web Content Accessibility Guidelines version 2.1",
-            "paragraph1.2": "AA standard due to the non-compliances listed below."
+            "heading": "Statws cydymffurfiaeth",
+            "paragraph1.1": "Mae ein gwasanaeth yn cydymffurfio’n rhannol â safon AA",
+            "link": "Canllawiau Hygyrchedd Cynnwys Gwe fersiwn 2.1,",
+            "paragraph1.2": "a hynny oherwydd yr enghreifftiau o beidio â chydymffurfio a restrir isod. "
         },
         "non-accessible-content": {
             "heading": "Cynnwys anhygyrch",
