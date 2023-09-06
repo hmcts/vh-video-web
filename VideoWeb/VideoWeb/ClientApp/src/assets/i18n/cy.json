@@ -143,18 +143,18 @@
             "paragraph8": "Ein nod yw ymateb i negeseuon e-bost yr un diwrnod gwaith.",
             "list": {
                 "1": "ffoniwch: {{phoneNumber}} rhwng 9am - 5pm dydd Llun i ddydd Iau a 9am - 4.30pm ar ddydd Gwener",
-                "2": "e-bost: {{email}}"
+                "2": "e-bost:"
             },
             "list-scotland": {
                 "1": "ffoniwch {{phoneNumber}} rhwng 8.30am a 5pm, o ddydd Llun i ddydd Gwener",
-                "2": "e-bost: {{email}}"
+                "2": "e-bost:"
             }
         },
         "reporting-accessibility": {
             "heading": "Riportio problemau hygyrchedd gyda’r gwasanaeth Gwrandawiadau Fideo",
             "paragraph1": "Rydym wastad yn ceisio gwella hygyrchedd ein gwasanaeth. Os byddwch yn cael unrhyw broblemau nad ydynt yn cael eu crybwyll ar y dudalen hon, neu os ydych yn credu nad ydym yn bodloni gofynion y rheoliadau hygyrchedd, cysylltwch â:",
             "list": {
-                "1": "E-bost: video-hearings@justice.gov.uk",
+                "1": "e-bost:",
                 "2": "Ar gyfer siaradwyr Cymraeg yng Nghymru a Lloegr: ffoniwch 0300 303 5177, rhwng 9am - 5pm dydd Llun i ddydd Iau a 9am - 4.30pm ar ddydd Gwener"
             }
         },

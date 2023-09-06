@@ -1045,18 +1045,18 @@
         "paragraph8": "We aim to respond to emails the same working day.",
           "list": {
               "1": "call {{phoneNumber}} between 9am and 5pm, Monday to Friday",
-              "2": "email {{email}}"
+              "2": "email: "
           },
           "list-scotland": {
               "1": "call {{phoneNumber}} between 8.30am and 5pm, Monday to Friday",
-              "2": "email {{email}}"
+              "2": "email: "
           }
       },
       "reporting-accessibility": {
         "heading": "Reporting accessibility problems with this service",
         "paragraph1": "We’re always looking to improve the accessibility of our service. If you find any problems that aren’t listed on this page or think we’re not meeting the requirements of the accessibility regulations contact:",
         "list": {
-            "1": "email video-hearings@justice.gov.uk",
+            "1": "email: ",
             "2": "call 0300 303 0655, Monday to Friday, 9am and 5pm"
         }
       },

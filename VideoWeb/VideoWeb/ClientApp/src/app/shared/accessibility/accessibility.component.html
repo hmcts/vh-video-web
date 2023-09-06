@@ -128,14 +128,18 @@
         </p>
           <ul class="govuk-body">
               <li>{{ 'accessibility.menu.feedback.list.1' | translate: { phoneNumber: contactDetails.englandAndWales.phoneNumber } }}</li>
-              <li>{{ 'accessibility.menu.feedback.list.2' | translate: { email: contactDetails.englandAndWales.email } }}</li>
+              <li>{{ 'accessibility.menu.feedback.list.2' | translate }}
+                  <a href="mailto:{{contactDetails.englandAndWales.email}}" target="_top">{{contactDetails.englandAndWales.email}}</a>
+              </li>
           </ul>
         <p class="govuk-body">
             {{ 'accessibility.menu.feedback.paragraph6' | translate }}
         </p>
         <ul class="govuk-body">
             <li>{{ 'accessibility.menu.feedback.list-scotland.1' | translate: { phoneNumber: contactDetails.scotland.phoneNumber } }}</li>
-            <li>{{ 'accessibility.menu.feedback.list-scotland.2' | translate: { email: contactDetails.scotland.email } }}</li>
+            <li>{{ 'accessibility.menu.feedback.list-scotland.2' | translate}}
+                <a href="mailto:{{contactDetails.scotland.email }}" target="_top">{{contactDetails.scotland.email}}</a>
+            </li>
         </ul>
         <p class="govuk-body">
             {{ 'accessibility.menu.feedback.paragraph7' | translate }}
@@ -150,7 +154,9 @@
         {{ 'accessibility.menu.reporting-accessibility.paragraph1' | translate }}
       </p>
       <ul class="govuk-body">
-        <li>{{ 'accessibility.menu.reporting-accessibility.list.1' | translate }}</li>
+          <li>{{'accessibility.menu.reporting-accessibility.list.1' | translate }}
+              <a href="mailto:video-hearings@justice.gov.uk" target="_top">video-hearings@justice.gov.uk</a>
+          </li>
         <li>{{ 'accessibility.menu.reporting-accessibility.list.2' | translate }}</li>
       </ul>
     </div>
