@@ -110,7 +110,7 @@ export class ParticipantService {
     }
 
     handlePexipUpdate(update: ParticipantUpdated): void {
-        this.logger.info(`${this.loggerPrefix} handling pexip update`, {
+        this.logger.debug(`${this.loggerPrefix} handling pexip update`, {
             participantUpdate: update
         });
 
@@ -123,7 +123,7 @@ export class ParticipantService {
     }
 
     handleParticipantStatusUpdate(participantStatusMessage: ParticipantStatusMessage) {
-        this.logger.info(`${this.loggerPrefix} handling participant status update`);
+        this.logger.debug(`${this.loggerPrefix} handling participant status update`);
 
         const participant = this.participants.find(x => x.id === participantStatusMessage.participantId);
 
@@ -140,7 +140,7 @@ export class ParticipantService {
         const oldValue = participant.status;
 
         if (oldValue !== participantStatusMessage.status) {
-            this.logger.info(`${this.loggerPrefix} updating participants status`, {
+            this.logger.debug(`${this.loggerPrefix} updating participants status`, {
                 participantId: participant.id,
                 oldValue: oldValue,
                 newValue: participantStatusMessage.status
@@ -160,7 +160,7 @@ export class ParticipantService {
 
     private initialise() {
         this.conferenceService.currentConference$.subscribe(conference => {
-            this.logger.info(`${this.loggerPrefix} new conference`, {
+            this.logger.debug(`${this.loggerPrefix} new conference`, {
                 conference: conference
             });
 
@@ -207,7 +207,7 @@ export class ParticipantService {
     }
 
     private loadParticipants(): Observable<ParticipantModel[]> {
-        this.logger.info(`${this.loggerPrefix} loading participants and VMRs`);
+        this.logger.debug(`${this.loggerPrefix} loading participants and VMRs`);
 
         const conferenceId = this.conferenceService.currentConferenceId;
         return zip(
@@ -220,7 +220,7 @@ export class ParticipantService {
     }
 
     private populateVirtualMeetingRooms() {
-        this.logger.info(`${this.loggerPrefix} populating VMRs`, {
+        this.logger.debug(`${this.loggerPrefix} populating VMRs`, {
             currentValue: this.virtualMeetingRooms ?? null
         });
 
@@ -248,7 +248,7 @@ export class ParticipantService {
             }
         }
 
-        this.logger.info(`${this.loggerPrefix} populated VMRs`, {
+        this.logger.debug(`${this.loggerPrefix} populated VMRs`, {
             newValue:
                 this.virtualMeetingRooms.map(x => ({
                     id: x.id,
@@ -302,7 +302,7 @@ export class ParticipantService {
                     // if new endpoint, push the endpoint to the endpoint list
                     // if existing endpoint, update the endpoint in the endpoint list
                     if (message.endpoints.new_endpoints.length > 0) {
-                        this.logger.info(`${this.loggerPrefix} new endpoints received`, {
+                        this.logger.debug(`${this.loggerPrefix} new endpoints received`, {
                             endpoints: message.endpoints.new_endpoints
                         });
                         this._endpointParticipants.push(
@@ -311,7 +311,7 @@ export class ParticipantService {
                     }
                     // there is currently an issue where only one endpoint is provided at a time, so it is safe to process just the first entry in the list
                     if (message.endpoints.existing_endpoints.length > 0) {
-                        this.logger.info(`${this.loggerPrefix} existing endpoints received`, {
+                        this.logger.debug(`${this.loggerPrefix} existing endpoints received`, {
                             endpoints: message.endpoints.existing_endpoints
                         });
                         const first = message.endpoints.existing_endpoints[0];
@@ -337,7 +337,7 @@ export class ParticipantService {
 
             return;
         } else if (vmr.pexipId !== update.uuid) {
-            this.logger.info(`${this.loggerPrefix} updating VMRs pexip ID`, {
+            this.logger.debug(`${this.loggerPrefix} updating VMRs pexip ID`, {
                 vmrId: vmr.id,
                 oldValue: vmr.pexipId,
                 newValue: update.uuid
@@ -370,7 +370,7 @@ export class ParticipantService {
     private updateParticipantVideoControlState(participants: ParticipantModel[], update: ParticipantUpdated) {
         for (const participant of participants) {
             if (participant.pexipId !== update.uuid) {
-                this.logger.info(`${this.loggerPrefix} participant pexip ID changed.`, {
+                this.logger.debug(`${this.loggerPrefix} participant pexip ID changed.`, {
                     participantId: participant.id,
                     participantUpdate: update
                 });
@@ -380,7 +380,7 @@ export class ParticipantService {
             }
 
             if (participant.isSpotlighted !== update.isSpotlighted) {
-                this.logger.info(`${this.loggerPrefix} updating participants spotlight status`, {
+                this.logger.debug(`${this.loggerPrefix} updating participants spotlight status`, {
                     participantId: participant.id,
                     pexipDisplayName: update.pexipDisplayName,
                     oldValue: participant.isSpotlighted,
@@ -392,7 +392,7 @@ export class ParticipantService {
             }
 
             if (participant.isRemoteMuted !== update.isRemoteMuted) {
-                this.logger.info(`${this.loggerPrefix} updating participants remote muted status`, {
+                this.logger.debug(`${this.loggerPrefix} updating participants remote muted status`, {
                     participantId: participant.id,
                     pexipDisplayName: update.pexipDisplayName,
                     oldValue: participant.isRemoteMuted,
@@ -404,7 +404,7 @@ export class ParticipantService {
             }
 
             if (participant.isHandRaised !== update.handRaised) {
-                this.logger.info(`${this.loggerPrefix} updating participants hand raised status`, {
+                this.logger.debug(`${this.loggerPrefix} updating participants hand raised status`, {
                     participantId: participant.id,
                     pexipDisplayName: update.pexipDisplayName,
                     oldValue: participant.isHandRaised,

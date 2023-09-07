@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using AcceptanceTests.Common.Data.TestData;
+using BookingsApi.Contract.V1.Responses;
 using VideoWeb.AcceptanceTests.Data.TestData;
 using TestApi.Contract.Dtos;
 using VideoApi.Contract.Responses;
-using BookingsApi.Contract.Responses;
 
 namespace VideoWeb.AcceptanceTests.Data
 {

@@ -24,22 +24,22 @@ export class DistributedVideoControlCacheService implements IVideoControlCacheSt
 
     saveHearingStateForConference(currentConferenceId: string, hearingControlStates: IHearingControlsState) {
         const request = this.mapToRequest(hearingControlStates);
-        this.logger.info(`${this.loggerPrefix} saving hearing state for current conference ${currentConferenceId}`, {
+        this.logger.debug(`${this.loggerPrefix} saving hearing state for current conference ${currentConferenceId}`, {
             hearingControlStates: hearingControlStates,
             request: request
         });
         return this.apiClient.setVideoControlStatusesForConference(currentConferenceId, request).pipe(
             tap(() => {
-                this.logger.info(`${this.loggerPrefix} saved hearing state for current conference ${currentConferenceId}`);
+                this.logger.debug(`${this.loggerPrefix} saved hearing state for current conference ${currentConferenceId}`);
             })
         );
     }
 
     loadHearingStateForConference(id: string): Observable<IHearingControlsState> {
-        this.logger.info(`${this.loggerPrefix} loading hearing state for current conference ${id}`);
+        this.logger.debug(`${this.loggerPrefix} loading hearing state for current conference ${id}`);
         return this.apiClient.getVideoControlStatusesForConference(id).pipe(
             tap(response => {
-                this.logger.info(`${this.loggerPrefix} loaded hearing state for current conference ${id}`, {
+                this.logger.debug(`${this.loggerPrefix} loaded hearing state for current conference ${id}`, {
                     response: response
                 });
             }),

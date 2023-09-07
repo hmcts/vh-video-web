@@ -39,7 +39,7 @@ export class VideoFilterComponent implements OnInit, OnDestroy {
     }
 
     updateFilter(newFilter: BackgroundFilter | null) {
-        this.logger.info(`${this.loggerPrefix} filter dropdown changed ${newFilter}`);
+        this.logger.debug(`${this.loggerPrefix} filter dropdown changed ${newFilter}`);
         this.videoFilterService.updateFilter(newFilter);
     }
 

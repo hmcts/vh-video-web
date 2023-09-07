@@ -21,12 +21,12 @@ export class MediaStreamService {
     ) {}
 
     initialiseNewStream(tracks?: MediaStreamTrack[]) {
-        this.logger.info(`[MediaStreamTrack] - Returning audio or video tracks: ${tracks}`);
+        this.logger.debug(`[MediaStreamTrack] - Returning audio or video tracks: ${tracks}`);
         return new MediaStream(tracks);
     }
 
     getStreamForMic(device: UserMediaDevice): Observable<MediaStream> {
-        this.logger.info(
+        this.logger.debug(
             `${this.loggerPrefix} getting microphone with the device label ${device.label} and ID ${device.deviceId} ${device.deviceId}`
         );
         return from(this.navigator.mediaDevices.getUserMedia({ audio: { deviceId: { exact: device.deviceId } } }))
@@ -41,14 +41,14 @@ export class MediaStreamService {
     }
 
     getStreamForCam(device: UserMediaDevice): Observable<MediaStream> {
-        this.logger.info(`${this.loggerPrefix} getting camera with the device label ${device.label} and ID ${device.deviceId}`);
+        this.logger.debug(`${this.loggerPrefix} getting camera with the device label ${device.label} and ID ${device.deviceId}`);
         const constraints = { video: { deviceId: { exact: device.deviceId }, width: { ideal: 1280 }, height: { ideal: 720 } } };
         return from(this.navigator.mediaDevices.getUserMedia(constraints))
             .pipe(retry(3))
             .pipe(
                 mergeMap(stream => {
                     if (this.videoFilterService.doesSupportVideoFiltering()) {
-                        this.logger.info(`${this.loggerPrefix} video filtering is supported`);
+                        this.logger.debug(`${this.loggerPrefix} video filtering is supported`);
                         return this.videoFilterService.filterOn$.pipe(
                             mergeMap(filterOn => {
                                 if (filterOn) {
@@ -66,7 +66,7 @@ export class MediaStreamService {
                             })
                         );
                     } else {
-                        this.logger.info(`${this.loggerPrefix} video filtering is NOT supported`);
+                        this.logger.debug(`${this.loggerPrefix} video filtering is NOT supported`);
                         return of(stream);
                     }
                 }),

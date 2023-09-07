@@ -89,7 +89,7 @@ export class VideoCallService {
      * the user's preferred camera and microphone (if selected)
      */
     async setupClient(): Promise<void> {
-        this.logger.info(`${this.loggerPrefix} setting up client.`);
+        this.logger.debug(`${this.loggerPrefix} setting up client.`);
         this.hasDisconnected$ = new Subject();
 
         const self = this;
@@ -177,7 +177,7 @@ export class VideoCallService {
     }
 
     makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number) {
-        this.logger.info(`${this.loggerPrefix} make pexip call`, {
+        this.logger.debug(`${this.loggerPrefix} make pexip call`, {
             pexipNode: pexipNode
         });
         this.stopPresentation();
@@ -187,7 +187,7 @@ export class VideoCallService {
 
     disconnectFromCall() {
         if (this.pexipAPI) {
-            this.logger.info(`${this.loggerPrefix} Disconnecting from pexip node.`);
+            this.logger.debug(`${this.loggerPrefix} Disconnecting from pexip node.`);
             this.stopPresentation();
             this.pexipAPI.disconnect();
             this.cleanUpConnection();
@@ -356,7 +356,7 @@ export class VideoCallService {
     }
 
     leaveHearing(conferenceId: string, participantId: string): Promise<void> {
-        this.logger.info(`${this.loggerPrefix} Attempting to suspend hearing`, { conference: conferenceId });
+        this.logger.info(`${this.loggerPrefix} Attempting to leave hearing`, { conference: conferenceId, participant: participantId });
         return this.apiClient.leaveHearing(conferenceId, participantId).toPromise();
     }
 
@@ -390,16 +390,16 @@ export class VideoCallService {
     }
 
     renegotiateCall(sendUpdate: boolean = false) {
-        this.logger.info(`${this.loggerPrefix} renegotiating`);
+        this.logger.debug(`${this.loggerPrefix} renegotiating`);
         this.renegotiating = true;
         this.pexipAPI.renegotiate(sendUpdate);
         this.renegotiating = false;
         this.justRenegotiated = true;
-        this.logger.info(`${this.loggerPrefix} renegotiated`);
+        this.logger.debug(`${this.loggerPrefix} renegotiated`);
     }
 
     async selectScreenWithMicrophone() {
-        this.logger.info(`${this.loggerPrefix} mixing screen and microphone stream`);
+        this.logger.debug(`${this.loggerPrefix} mixing screen and microphone stream`);
         const displayStream = await this.userMediaService.selectScreenToShare();
         // capture the original screen stream to stop sharing screen when the button is clicked
         this._displayStream = displayStream;
@@ -418,7 +418,7 @@ export class VideoCallService {
     }
 
     stopScreenWithMicrophone() {
-        this.logger.info(`${this.loggerPrefix} stopping mixed screen and microphone stream`);
+        this.logger.debug(`${this.loggerPrefix} stopping mixed screen and microphone stream`);
         this._displayStream.getTracks().forEach(t => {
             t.stop();
         });
@@ -431,7 +431,7 @@ export class VideoCallService {
             this.pexipAPI.user_media_stream = currentStream;
             this.renegotiateCall();
             this.onVideoEvidenceStoppedSubject.next();
-            this.logger.info(`${this.loggerPrefix} calling renegotiateCall`);
+            this.logger.debug(`${this.loggerPrefix} calling renegotiateCall`);
         });
     }
 
@@ -461,7 +461,7 @@ export class VideoCallService {
     }
 
     retrieveInterpreterRoom(conferenceId: string, participantId: string): Promise<SharedParticipantRoom> {
-        this.logger.info(`${this.loggerPrefix} Attempting to retrieve interpreter room for participant`, {
+        this.logger.debug(`${this.loggerPrefix} Attempting to retrieve interpreter room for participant`, {
             conference: conferenceId,
             participant: participantId
         });
@@ -470,7 +470,7 @@ export class VideoCallService {
     }
 
     retrieveWitnessInterpreterRoom(conferenceId: string, participantId: string): Promise<SharedParticipantRoom> {
-        this.logger.info(`${this.loggerPrefix} Attempting to retrieve interpreter room for participant`, {
+        this.logger.debug(`${this.loggerPrefix} Attempting to retrieve interpreter room for participant`, {
             conference: conferenceId,
             participant: participantId
         });
@@ -479,7 +479,7 @@ export class VideoCallService {
     }
 
     retrieveJudicialRoom(conferenceId: string, participantId: string): Promise<SharedParticipantRoom> {
-        this.logger.info(`${this.loggerPrefix} Attempting to retrieve judicial room for participant`, {
+        this.logger.debug(`${this.loggerPrefix} Attempting to retrieve judicial room for participant`, {
             conference: conferenceId,
             participant: participantId
         });

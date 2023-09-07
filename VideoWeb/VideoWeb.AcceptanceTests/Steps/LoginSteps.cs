@@ -4,12 +4,12 @@ using AcceptanceTests.Common.Driver.Drivers;
 using AcceptanceTests.Common.Driver.Enums;
 using AcceptanceTests.Common.PageObject.Pages;
 using AcceptanceTests.Common.Test.Steps;
+using BookingsApi.Contract.V1.Configuration;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using TestApi.Contract.Dtos;
 using VideoWeb.AcceptanceTests.Pages;
 using TestApi.Contract.Enums;
-using BookingsApi.Contract.Configuration;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {

@@ -1596,7 +1596,7 @@ describe('NotificationToastrService', () => {
             toastComponentInstance.vhToastOptions.onNoAction();
 
             // Assert
-            expect(logger.info).toHaveBeenCalled();
+            expect(logger.debug).toHaveBeenCalled();
         });
     });
 });

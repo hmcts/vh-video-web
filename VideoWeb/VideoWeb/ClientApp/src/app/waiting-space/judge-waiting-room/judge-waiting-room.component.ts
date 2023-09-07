@@ -150,7 +150,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     onConferenceStatusChanged(conferenceStatus: ConferenceStatusChanged): void {
         if (conferenceStatus.newStatus === ConferenceStatus.InSession) {
-            this.logger.info(`${this.loggerPrefixJudge} spotlighting judge as it is the start of the hearing`);
+            this.logger.debug(`${this.loggerPrefixJudge} spotlighting judge as it is the start of the hearing`);
 
             const participants = this.participantService.participants;
 
@@ -201,7 +201,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             participant.status === ParticipantStatus.Disconnected &&
             this.conferenceService.currentConference.status === ConferenceStatus.InSession
         ) {
-            this.logger.info(`${this.loggerPrefixJudge} Participant disconnected while conference is in session`, {
+            this.logger.debug(`${this.loggerPrefixJudge} Participant disconnected while conference is in session`, {
                 message: participant
             });
 
@@ -211,12 +211,12 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                     x => x.id === (participantOrVmr as ParticipantModel).virtualMeetingRoomSummary.id
                 );
 
-                this.logger.info(`${this.loggerPrefixJudge} Participant belongs to a VMR`, {
+                this.logger.debug(`${this.loggerPrefixJudge} Participant belongs to a VMR`, {
                     vmr: vmr
                 });
 
                 if (vmr.participants.some(x => x.status === ParticipantStatus.InHearing)) {
-                    this.logger.info(
+                    this.logger.debug(
                         `${this.loggerPrefixJudge} Some participants are still in hearing. Not going to unspotlight the VMR.`,
                         {
                             vmr: vmr
@@ -228,7 +228,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 participantOrVmr = vmr;
             }
 
-            this.logger.info(`${this.loggerPrefixJudge} Unspotlighting the participant or VMR.`, {
+            this.logger.debug(`${this.loggerPrefixJudge} Unspotlighting the participant or VMR.`, {
                 participantOrVmr: participantOrVmr
             });
 
@@ -366,13 +366,13 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         }
 
         if (this.recordingSessionSeconds > 30 && !this.continueWithNoRecording && this.showVideo && !this.audioErrorRetryToast) {
-            this.logger.info(`${this.loggerPrefixJudge} Attempting to retrieve audio stream info for ${hearingId}`);
+            this.logger.debug(`${this.loggerPrefixJudge} Attempting to retrieve audio stream info for ${hearingId}`);
             try {
                 const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(
                     hearingId,
                     this.conference.ingest_url.includes('vh-recording')
                 );
-                this.logger.info(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
+                this.logger.debug(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
                 // if recorder not found on a wowza vm and returns false OR wowzaListener participant is not present in conference
                 if ((!this.wowzaAgent || !audioStreamWorking) && !this.audioErrorRetryToast) {
                     this.logger.warn(`${this.loggerPrefixJudge} mot recording when expected, show alert`, {

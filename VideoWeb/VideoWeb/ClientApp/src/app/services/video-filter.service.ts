@@ -191,27 +191,27 @@ export class VideoFilterService {
 
     doesSupportVideoFiltering() {
         if (!this._enableVideoFilters) {
-            this.logger.info(`${this.loggerPrefix} Custom backgrounds not supported - feature is disabled`);
+            this.logger.debug(`${this.loggerPrefix} Custom backgrounds not supported - feature is disabled`);
             return false;
         }
 
         const allowedBrowser = !this.deviceTypeService.getBrowserName().includes(browsers.Safari);
         if (!allowedBrowser) {
-            this.logger.info(`${this.loggerPrefix} Custom backgrounds not supported - Browser is not supported for video filtering`);
+            this.logger.debug(`${this.loggerPrefix} Custom backgrounds not supported - Browser is not supported for video filtering`);
             return false;
         }
 
         if (!this.isWebGL2Supported()) {
-            this.logger.info(`${this.loggerPrefix} Custom backgrounds not supported - WebGl2 is not supported on client`);
+            this.logger.debug(`${this.loggerPrefix} Custom backgrounds not supported - WebGl2 is not supported on client`);
             return false;
         }
 
         if (!this.deviceTypeService.isDesktop()) {
-            this.logger.info(`${this.loggerPrefix} Custom backgrounds not supported - Client is not a desktop`);
+            this.logger.debug(`${this.loggerPrefix} Custom backgrounds not supported - Client is not a desktop`);
             return false;
         }
 
-        this.logger.info(`${this.loggerPrefix} Custom backgrounds supported`);
+        this.logger.debug(`${this.loggerPrefix} Custom backgrounds supported`);
         return true;
     }
     /* eslint-disable no-console */

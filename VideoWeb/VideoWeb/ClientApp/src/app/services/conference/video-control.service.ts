@@ -77,7 +77,7 @@ export class VideoControlService {
                 take(1)
             )
             .subscribe(update => {
-                this.logger.info(`${this.loggerPrefix} Update received. Attempting to update cache.`, {
+                this.logger.debug(`${this.loggerPrefix} Update received. Attempting to update cache.`, {
                     requestedValue: spotlightStatus,
                     updatedValue: update.isSpotlighted,
                     wasValueChangedPerRequest: spotlightStatus === update.isSpotlighted,
@@ -97,7 +97,7 @@ export class VideoControlService {
         const isSpotlighted = this.videoControlCacheService.getSpotlightStatus(participantOrVmr.id);
 
         if (isSpotlighted) {
-            this.logger.info(`${this.loggerPrefix} restoring participant spotlight state.`, {
+            this.logger.debug(`${this.loggerPrefix} restoring participant spotlight state.`, {
                 participantOrVmrId: participantOrVmr.id,
                 participantOrVmrDisplayName: participantOrVmr.displayName,
                 spotlightState: isSpotlighted
@@ -122,15 +122,13 @@ export class VideoControlService {
     }
 
     getLocalAudioMutedById(id: string): boolean {
-        this.logger.info(`${this.loggerPrefix} Attempting to get local audio mute status of participant/vmr with ID ${id}.`, {
-            participantOrVmrId: id
-        });
         return this.videoControlCacheService.getLocalAudioMuted(id);
     }
 
     setRemoteMuteStatus(participantOrVmr: ParticipantModel | VirtualMeetingRoomModel, remoteMuteStatus: boolean) {
         this.setRemoteMuteStatusById(participantOrVmr.id, participantOrVmr.pexipId, remoteMuteStatus);
     }
+
     setRemoteMuteStatusById(id: string, pexipId: string, remoteMuteStatus: boolean) {
         const conferenceId = this.conferenceService.currentConferenceId;
 
@@ -145,7 +143,7 @@ export class VideoControlService {
         );
         this.videoCallService.muteParticipant(pexipId, remoteMuteStatus, this.conferenceService.currentConferenceId, id);
 
-        this.logger.info(`${this.loggerPrefix} Attempted to make call to pexip to update remote mute status. Subscribing for update.`, {
+        this.logger.debug(`${this.loggerPrefix} Attempted to make call to pexip to update remote mute status. Subscribing for update.`, {
             spotlightStatus: remoteMuteStatus,
             conferenceId: conferenceId,
             participantId: id
@@ -183,7 +181,7 @@ export class VideoControlService {
                 take(1)
             )
             .subscribe(update => {
-                this.logger.info(`${this.loggerPrefix} Update received. Attempting to update cache. remote`, {
+                this.logger.debug(`${this.loggerPrefix} Update received. Attempting to update cache. remote`, {
                     requestedValue: remoteMuteStatus,
                     updatedValue: update.isRemoteMuted,
                     wasValueChangedPerRequest: remoteMuteStatus === update.isRemoteMuted,
@@ -196,9 +194,6 @@ export class VideoControlService {
     }
 
     getRemoteMutedById(id: string): boolean {
-        this.logger.info(`${this.loggerPrefix} Attempting to get remote mute status of participant/vmr with ID ${id}.`, {
-            participantOrVmrId: id
-        });
         return this.videoControlCacheService.getRemoteMutedStatus(id);
     }
 
@@ -222,9 +217,6 @@ export class VideoControlService {
     }
 
     getHandRaiseById(id: string): boolean {
-        this.logger.info(`${this.loggerPrefix} Attempting to get hand raise status of participant/vmr with ID ${id}.`, {
-            participantOrVmrId: id
-        });
         return this.videoControlCacheService.getHandRaiseStatus(id);
     }
 
@@ -237,9 +229,6 @@ export class VideoControlService {
     }
 
     getLocalVideoMutedById(id: string): boolean {
-        this.logger.info(`${this.loggerPrefix} Attempting to get local video mute status of participant/vmr with ID ${id}.`, {
-            participantOrVmrId: id
-        });
         return this.videoControlCacheService.getLocalVideoMuted(id);
     }
 }

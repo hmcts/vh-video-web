@@ -585,43 +585,43 @@
       "title": "Mae {{name}}",
       "message-without-party": "{{role}} wedi cael ei (h)ychwanegu at y gwrandawiad.",
       "message-with-party": "{{role}} ({{party}}) wedi cael ei (h)ychwanegu at y gwrandawiad.",
-      "dismiss": "Gwrthod"
+      "dismiss": "Iawn"
     },
     "endpoint-added": {
       "title": "{{name}}",
       "message": "Pwynt mynediad fideo wedi cael ei ychwanegu at y gwrandawiad.",
-      "dismiss": "Gwrthod"
+      "dismiss": "Iawn"
     },
     "endpoint-updated": {
       "title": "{{name}}",
       "message": "Pwynt mynediad fideo wedi cael ei ddiweddaru yn y gwrandawiad.",
-      "dismiss": "Gwrthod"
+      "dismiss": "Iawn"
     },
-      "endpoint-linked": {
-          "title": "Rhybudd",
-          "message": "Rydych wedi cael eich ychwanegu fel cynrychiolydd cyfreithiol {{jvsEndpointName}}",
-          "dismiss": "Gwrthod"
-      },
-      "endpoint-unlinked": {
-          "title": "Rhybudd",
-          "message": "Nid ydych yn gallu dechrau ymgynghoriad â/ag {{jvsEndpointName}} gan nad chi yw’r cynrychiolydd cyfreithiol bellach",
-          "dismiss": "Gwrthod"
-      },
-      "endpoint-consultation-closed": {
-          "title": "Rhybudd",
-          "message": "Mae’r ymgynghoriad â/ag {{jvsEndpointName}} wedi gorffen gan nad chi yw’r cynrychiolydd cyfreithiol bellach",
-          "dismiss": "Gwrthod"
-      },
+    "endpoint-linked": {
+      "title": "Rhybudd",
+      "message": "Rydych wedi cael eich ychwanegu fel cynrychiolydd cyfreithiol {{jvsEndpointName}}",
+      "dismiss": "Iawn"
+    },
+    "endpoint-unlinked": {
+      "title": "Rhybudd",
+      "message": "Nid ydych yn gallu dechrau ymgynghoriad â/ag {{jvsEndpointName}} gan nad chi yw’r cynrychiolydd cyfreithiol bellach",
+      "dismiss": "Iawn"
+    },
+    "endpoint-consultation-closed": {
+      "title": "Rhybudd",
+      "message": "Mae’r ymgynghoriad â/ag {{jvsEndpointName}} wedi gorffen gan nad chi yw’r cynrychiolydd cyfreithiol bellach",
+      "dismiss": "Iawn"
+    },
     "hearing-layout-changed": {
       "title": "Mae {{name}}",
       "message": "wedi newid cynllun y gwrandawiad.",
-      "dismiss": "Gwrthod"
+      "dismiss": "Iawn"
     },
     "hearing-started": {
       "title": " Rhybudd!",
       "join-hearing": " Ymuno â'r gwrandawiad",
       "message": "Mae'r gwrandawiad bellach yn mynd rhagddo.",
-      "dismiss": "Gwrthod"
+      "dismiss": "Iawn"
     }
   },
   "consultation-error": {
@@ -953,9 +953,9 @@
     "button": "lawn"
   },
   "audio-alert-restart-failure": {
-     "title": "Methu ailddechrau recordio",
-     "message": "Mae’n ddrwg gennym, nid ydym yn gallu ailddechrau recordio. Defnyddiwch yr offer recordio amgen",
-     "button": "lawn"
+    "title": "Methu ailddechrau recordio",
+    "message": "Mae’n ddrwg gennym, nid ydym yn gallu ailddechrau recordio. Defnyddiwch yr offer recordio amgen",
+    "button": "lawn"
   },
   "participant-network-status": {
     "icon-alt": "Saeth agor y ffenestr sgwrsio dros y we"
@@ -1088,7 +1088,21 @@
     "lay-member": "Aelod Lleyg",
     "cica-presenting-officer": "Swyddog Cyflwyno CICA",
     "royal-british-legion": "Y Lleng Brydeinig Frenhinol",
-    "expert-witness": "Tyst Arbenigwr"
+    "expert-witness": "Tyst Arbenigwr",
+    "appointee": "Penodai",
+    "other-party": "Parti Arall",
+    "welfare-representative": "Cynrychiolydd Lles",
+    "support": "Cefnogaeth",
+    "applicant": "Ceisydd",
+    "victim": "Dioddefwr",
+    "party": "Parti",
+    "defendant": "Diffynnydd",
+    "intermediaries": "Cyfryngwyr",
+    "prosecutor": "Erlynydd",
+    "police": "Yr Heddlu",
+    "defence-counsel": "Cwnsler yr Amddiffyniad",
+    "prosecution-counsel": "Cwnsler yr Erlyniad",
+    "claimant": "Hawlydd"
   },
   "case-type-group": {
     "respondent": "Atebydd",
@@ -1116,7 +1130,8 @@
     "operator": "Gweithredwr",
     "siteproviders": "Darparwyr Safle",
     "respondentauthority": "Awdurdod sy'n Atebydd",
-    "localauthority": "Awdurdod Lleol"
+    "localauthority": "Awdurdod Lleol",
+    "party": "Parti"
   },
   "case-type": {
     "placement": "Lleoliad",
@@ -1172,7 +1187,8 @@
     "upper-tribunal-lands-chamber": "Siambr Tiroedd yr Uwch Dribiwnlys",
     "special-educational-needs-and-disability": "Anghenion Addysgol Arbennig ac Anabledd",
     "care-standards": "Safonau Gofal",
-    "damages": "Iawndal"
+    "damages": "Iawndal",
+    "crime-crown-court": "Llys y Goron - Troseddol"
   },
   "case-role": {
     "state": "Y Wladwriaeth",
@@ -1199,7 +1215,8 @@
     "operator": "Gweithredwr",
     "siteproviders": "Darparwyr Safle",
     "respondentauthority": "Awdurdod sy'n Atebydd",
-    "localauthority": "Awdurdod Lleol"
+    "localauthority": "Awdurdod Lleol",
+    "party": "Parti"
   },
   "venue-list": {
     "title": "Dewis eich gwrandawiadau",

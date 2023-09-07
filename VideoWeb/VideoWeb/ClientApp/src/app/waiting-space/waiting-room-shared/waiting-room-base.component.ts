@@ -507,7 +507,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub reconnects`);
         this.eventHubSubscription$.add(
             this.eventService.getServiceConnected().subscribe(async () => {
-                this.logger.info(`${this.loggerPrefix} EventHub re-connected`, {
+                this.logger.debug(`${this.loggerPrefix} EventHub re-connected`, {
                     conference: this.conferenceId,
                     participant: this.participant.id
                 });
@@ -671,7 +671,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
             this.eventHubSubscription$.add(
                 this.eventService.onEventsHubReady().subscribe(async () => {
-                    this.logger.info(`${this.loggerPrefix} EventHub ready`, {
+                    this.logger.debug(`${this.loggerPrefix} EventHub ready`, {
                         conference: this.conferenceId,
                         participant: this.participant.id
                     });
@@ -775,7 +775,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             conference: this.conferenceId,
             participant: this.participant.id
         };
-        this.logger.info(`${this.loggerPrefix} calling pexip`, logPayload);
+        this.logger.debug(`${this.loggerPrefix} calling pexip`, logPayload);
         let pexipNode = this.hearing.getConference().pexip_node_uri;
         let conferenceAlias = this.hearing.getConference().participant_uri;
         let displayName = this.participant.tiled_display_name;
@@ -905,7 +905,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
         if (error.reason.toUpperCase().includes('FAILED TO GATHER IP ADDRESSES')) {
             // This error happens when the Pexip connection isn't completely set up
-            this.logger.info(`${this.loggerPrefix} Failed to gather IP addresses, retrying`);
+            this.logger.debug(`${this.loggerPrefix} Failed to gather IP addresses, retrying`);
             this.connectionFailedCount++;
 
             if (this.connectionFailedCount < this.CONNECTION_FAILED_LIMIT) {
@@ -987,7 +987,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             this.isTransferringIn = false;
         }
         participant.status = message.status;
-        this.logger.info(`${this.conferenceId} ${this.loggerPrefix} Handling participant update status change`, {
+        this.logger.debug(`${this.conferenceId} ${this.loggerPrefix} Handling participant update status change`, {
             conference: this.conferenceId,
             participant: participant.id,
             status: participant.status
@@ -1042,7 +1042,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
             if (this.isTransferringIn) {
                 this.notificationSoundsService.playHearingAlertSound();
             }
-            this.logger.info(`${this.loggerPrefix} updating transfer status`, {
+            this.logger.debug(`${this.loggerPrefix} updating transfer status`, {
                 conference: message.conferenceId,
                 transferDirection: message.transferDirection,
                 participant: message.participantId
@@ -1279,7 +1279,7 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
 
     protected validateIsForConference(conferenceId: string): boolean {
         if (conferenceId !== this.hearing.id) {
-            this.logger.info(`${this.loggerPrefix} message not for current conference`);
+            this.logger.debug(`${this.loggerPrefix} message not for current conference`);
             return false;
         }
         return true;

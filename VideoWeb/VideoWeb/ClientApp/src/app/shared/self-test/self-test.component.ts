@@ -321,7 +321,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
                 this.testCallResult = await this.videoWebService.getIndependentTestCallScore(this.selfTestParticipantId);
             }
 
-            this.logger.info(`${this.loggerPrefix} Test call score: ${this.testCallResult.score}`, {
+            this.logger.debug(`${this.loggerPrefix} Test call score: ${this.testCallResult.score}`, {
                 conference: this.conference?.id,
                 participant: this.selfTestParticipantId
             });
@@ -352,10 +352,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this.logger.info(`${this.loggerPrefix} Raising failed self test score event because ${reason}`, {
-            conference: this.conference?.id,
-            participant: this.selfTestParticipantId
-        });
         const request = new AddSelfTestFailureEventRequest({
             self_test_failure_reason: reason
         });

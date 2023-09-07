@@ -738,7 +738,21 @@
     "lay-member": "Lay Member",
     "cica-presenting-officer": "CICA Presenting Officer",
     "royal-british-legion": "Royal British Legion",
-    "expert-witness": "Expert Witness"
+    "expert-witness": "Expert Witness",
+    "appointee": "Appointee",
+    "other-party": "Other Party",
+    "welfare-representative": "Welfare Representative",
+    "support": "Support",
+    "applicant": "Applicant",
+    "victim": "Victim",
+    "party": "Party",
+    "defendant": "Defendant",
+    "intermediaries": "Intermediaries",
+    "prosecutor": "Prosecutor",
+    "police": "Police",
+    "defence-counsel": "Defence Counsel",
+    "prosecution-counsel": "Prosecution Counsel",
+    "claimant": "Claimant"
   },
   "case-role": {
     "appellant": "Appellant",
@@ -765,7 +779,8 @@
     "operator": "Operator",
     "siteproviders": "Site Providers",
     "respondentauthority": "Respondent Authority",
-    "localauthority": "Local Authority"
+    "localauthority": "Local Authority",
+    "party": "Party"
   },
   "case-type": {
     "adoption": "Adoption",
@@ -821,7 +836,8 @@
     "war-pensions-appeals": "War Pensions Appeals",
     "special-educational-needs-and-disability": "Special Educational Needs and Disability",
     "care-standards": "Care Standards",
-    "damages": "Damages"
+    "damages": "Damages",
+    "crime-crown-court": "Crime Crown Court"
   },
   "case-type-group": {
     "state": "State",
@@ -849,7 +865,8 @@
     "operator": "Operator",
     "siteproviders": "Site Providers",
     "respondentauthority": "Respondent Authority",
-    "localauthority": "Local Authority"
+    "localauthority": "Local Authority",
+    "party": "Party"
   },
   "user-role": {
     "case-admin": "Case admin",
@@ -914,19 +931,19 @@
     "message": "There’s a problem with recording. Some or all of the audio for this hearing may not be recorded."
   },
   "audio-alert-with-restart": {
-      "title": "Warning",
-      "message": "Recording has stopped working. Please click below to restart recording.",
-      "button": "Restart"
+    "title": "Warning",
+    "message": "Recording has stopped working. Please click below to restart recording.",
+    "button": "Restart"
   },
   "audio-alert-restart-success": {
-      "title": "Audio being recorded",
-      "message": "The recording has been resumed successfully.",
-      "button": "OK"
+    "title": "Audio being recorded",
+    "message": "The recording has been resumed successfully.",
+    "button": "OK"
   },
   "audio-alert-restart-failure": {
-      "title": "Unable to resume recording",
-      "message": "Sorry, we’re unable to resume recording. Please revert to alternative recording equipment",
-      "button": "OK"
+    "title": "Unable to resume recording",
+    "message": "Sorry, we’re unable to resume recording. Please revert to alternative recording equipment",
+    "button": "OK"
   },
   "unread-messages": {
     "im-image-alt": "instant message icon"
@@ -1176,49 +1193,49 @@
     "poor-connection": {
       "title": "Alert",
       "message": "Your internet connection is poor. People may have trouble seeing and hearing you.",
-      "dismiss": "Dismiss"
+      "dismiss": "OK"
     },
     "participant-added": {
       "title": "{{name}}",
       "message-without-party": "{{role}} has been added to the hearing.",
       "message-with-party": "{{role}} ({{party}}) has been added to the hearing.",
-      "dismiss": "Dismiss"
+      "dismiss": "OK"
     },
     "endpoint-added": {
       "title": "{{name}}",
       "message": "Video Access Point has been added to the hearing",
-      "dismiss": "Dismiss"
+      "dismiss": "OK"
     },
     "endpoint-updated": {
       "title": "{{name}}",
       "message": "Video Access Point has been updated in the hearing",
-      "dismiss": "Dismiss"
+      "dismiss": "OK"
     },
     "endpoint-linked": {
       "title": "Alert",
       "message": "You have been added as the linked legal representative to {{jvsEndpointName}}",
-      "dismiss": "Dismiss"
+      "dismiss": "OK"
     },
     "endpoint-unlinked": {
-        "title": "Alert",
-        "message": "You cannot start a consultation with {{jvsEndpointName}} as you are no longer the linked legal representative",
-        "dismiss": "Dismiss"
+      "title": "Alert",
+      "message": "You cannot start a consultation with {{jvsEndpointName}} as you are no longer the linked legal representative",
+      "dismiss": "OK"
     },
     "endpoint-consultation-closed": {
-        "title": "Alert",
-        "message": "Consultation with {{jvsEndpointName}} has ended as you are no longer the linked legal representative",
-        "dismiss": "Dismiss"
+      "title": "Alert",
+      "message": "Consultation with {{jvsEndpointName}} has ended as you are no longer the linked legal representative",
+      "dismiss": "OK"
     },
     "hearing-layout-changed": {
       "title": "{{name}}",
       "message": "has changed the hearing layout.",
-      "dismiss": "Dismiss"
+      "dismiss": "OK"
     },
     "hearing-started": {
       "title": "Alert!",
       "join-hearing": "Join hearing",
       "message": "The hearing is now in session.",
-      "dismiss": "Dismiss"
+      "dismiss": "OK"
     }
   },
   "consultation-service": {

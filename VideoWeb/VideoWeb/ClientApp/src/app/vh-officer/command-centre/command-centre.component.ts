@@ -126,7 +126,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         this.eventHubSubscriptions.add(
             this.eventService.getServiceDisconnected().subscribe(async reconnectionAttempt => {
                 if (reconnectionAttempt <= 6) {
-                    this.logger.info(`${this.loggerPrefix} EventHub disconnection for vh officer`);
+                    this.logger.debug(`${this.loggerPrefix} EventHub disconnection for vh officer`);
                     await this.refreshConferenceDataDuringDisconnect();
                 } else {
                     this.errorService.goToServiceError('Your connection was lost');
@@ -137,14 +137,14 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub reconnects`);
         this.eventHubSubscriptions.add(
             this.eventService.getServiceConnected().subscribe(async () => {
-                this.logger.info(`${this.loggerPrefix} EventHub reconnected for vh officer`);
+                this.logger.debug(`${this.loggerPrefix} EventHub reconnected for vh officer`);
                 await this.refreshConferenceDataDuringDisconnect();
             })
         );
 
         this.eventHubSubscriptions.add(
             this.eventService.getHeartbeat().subscribe(heartbeat => {
-                this.logger.info(`${this.loggerPrefix} Participant Network Heartbeat Captured`);
+                this.logger.debug(`${this.loggerPrefix} Participant Network Heartbeat Captured`);
                 this.persistHeartbeat(heartbeat);
                 this.handleHeartbeat(heartbeat);
             })
@@ -165,7 +165,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     onConferenceSelected(conference: ConferenceForVhOfficerResponse) {
-        this.logger.info(`${this.loggerPrefix} Conference ${conference.id} selected`, { conference: conference.id });
+        this.logger.debug(`${this.loggerPrefix} Conference ${conference.id} selected`, { conference: conference.id });
         if (!this.isCurrentConference(conference.id)) {
             this.clearSelectedConference();
             this.retrieveConferenceDetails(conference.id);

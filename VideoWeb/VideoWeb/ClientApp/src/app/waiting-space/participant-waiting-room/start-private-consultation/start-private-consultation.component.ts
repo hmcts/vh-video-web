@@ -138,7 +138,9 @@ export class StartPrivateConsultationComponent implements OnChanges {
                 p =>
                     p.hearing_role !== HearingRole.INTERPRETER &&
                     p.hearing_role !== HearingRole.MACKENZIE_FRIEND &&
-                    p.role !== Role.QuickLinkObserver
+                    p.role !== Role.QuickLinkObserver &&
+                    p.hearing_role !== HearingRole.VICTIM &&
+                    p.hearing_role !== HearingRole.POLICE
             )
             .map(p => {
                 const interpreterLink = p.linked_participants.find(x => x.link_type === LinkType.Interpreter);
