@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
+using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
@@ -24,7 +26,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         }
 
         [Test]
-        [Ignore("Temp")]
         public async Task should_return_unauthorised_if_participant_is_not_a_witness_or_quick_link_user()
         {
             var judge = TestConference.GetJudge();
@@ -50,7 +51,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         }
 
         [Test]
-        [Ignore("Temp")]
         public async Task should_return_unauthorised_if_participant_does_not_exists()
         {
             var judge = TestConference.GetJudge();
@@ -93,7 +93,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         }
 
         [Test]
-        [Ignore("Temp")]
         public async Task should_return_video_api_error()
         {
             var judge = TestConference.GetJudge();
@@ -121,7 +120,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         }
 
         [Test]
-        [Ignore("Temp")]
         public async Task should_return_accepted_when_participant_is_witness_and_judge_is_in_conference()
         {
             var judge = TestConference.GetJudge();
@@ -166,6 +164,81 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         }
 
         [Test]
+        public async Task should_return_accepted_when_participant_is_witness_and_has_an_interpreter_and_witness_is_not_in_the_cache_but_returned_from_api()
+        {
+            var judge = TestConference.GetJudge();
+            var witness = TestConference.Participants.First(x => x.IsWitness() && x.LinkedParticipants.Any());
+            var user = new ClaimsPrincipalBuilder()
+                .WithUsername(judge.Username)
+                .WithRole(AppRoles.JudgeRole).Build();
+
+            var controller  = SetupControllerWithClaims(user);
+
+            _mocker.Mock<IVideoApiClient>()
+                .Setup(x => x.GetConferenceDetailsByIdAsync(TestConference.Id))
+                .ReturnsAsync(new ConferenceDetailsResponse
+                {
+                    Id = TestConference.Id,
+                    Participants = TestConference.Participants.Select(x => new ParticipantDetailsResponse
+                    {
+                        Id = x.Id,
+                        LinkedParticipants = x.LinkedParticipants.Select(y => new LinkedParticipantResponse
+                        {
+                            LinkedId = y.LinkedId
+                        }).ToList()
+                    }).ToList(),
+                    CivilianRooms = TestConference.CivilianRooms.Select(x => new CivilianRoomResponse
+                    {
+                        Id = x.Id,
+                        Participants = x.Participants.ToList()
+                    }).ToList()
+                });
+            
+            // Remove witness from the cache
+            TestConference.CivilianRooms[0].Participants.Remove(witness.Id);
+
+            var result = await controller.CallParticipantAsync(TestConference.Id, witness.Id);
+            result.Should().BeOfType<AcceptedResult>();
+            var typedResult = (AcceptedResult)result;
+            typedResult.Should().NotBeNull();
+
+            _mocker.Mock<IVideoApiClient>().Verify(
+                x => x.TransferParticipantAsync(TestConference.Id,
+                    It.Is<TransferParticipantRequest>(r =>
+                        r.ParticipantId == witness.Id && r.TransferType == TransferType.Call)), Times.Once);
+        }
+
+        [Test]
+        public async Task Should_return_unauthorized_when_participant_is_witness_and_has_an_interpreter_and_witness_is_not_in_the_room()
+        {
+            var judge = TestConference.GetJudge();
+            var witness = TestConference.Participants.First(x => x.IsWitness() && x.LinkedParticipants.Any());
+            var user = new ClaimsPrincipalBuilder()
+                .WithUsername(judge.Username)
+                .WithRole(AppRoles.JudgeRole).Build();
+
+            var controller  = SetupControllerWithClaims(user);
+
+            _mocker.Mock<IVideoApiClient>()
+                .Setup(x => x.GetConferenceDetailsByIdAsync(TestConference.Id))
+                .ReturnsAsync(new ConferenceDetailsResponse
+                {
+                    Id = TestConference.Id,
+                    Participants = new List<ParticipantDetailsResponse>(),
+                    CivilianRooms = new List<CivilianRoomResponse>()
+                });
+            
+            // Remove witness from the cache
+            TestConference.CivilianRooms[0].Participants.Remove(witness.Id);
+
+            var result = await controller.CallParticipantAsync(TestConference.Id, witness.Id);
+            result.Should().BeOfType<UnauthorizedObjectResult>();
+            var typedResult = (UnauthorizedObjectResult)result;
+            typedResult.Should().NotBeNull();
+            typedResult.Value.Should().Be("Participant is not callable");
+        }
+
+        [Test]
         public async Task should_return_unauthorised_when_witness_is_called_before_interpreter_joins()
         {
             var judge = TestConference.GetJudge();
@@ -190,7 +263,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         
         [TestCase(Role.QuickLinkObserver)]
         [TestCase(Role.QuickLinkParticipant)]
-        [Ignore("Temp")]
         public async Task should_return_accepted_when_participant_is_quick_link_user_and_judge_is_in_conference(Role role)
         {
             var judge = TestConference.GetJudge();

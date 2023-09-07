@@ -439,7 +439,7 @@ namespace VideoWeb.Controllers
         private async Task<bool> IsConferenceHost(Guid conferenceId)
         {
             var conference = await GetConference(conferenceId);
-            return conference.Participants.Any(x => x.Username.Equals(User.Identity.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase) && x.IsHost());
+            return conference.Participants.Exists(x => x.Username.Equals(User.Identity.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase) && x.IsHost());
         }
 
         private async Task<bool> IsParticipantCallable(Guid conferenceId, Guid participantId)
@@ -449,20 +449,6 @@ namespace VideoWeb.Controllers
                 conferenceId,
                 () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
             );
-
-            var witnessRoom = GetRoomForParticipant(conference, participantId);
-            
-            if (witnessRoom == null)
-            {
-                conference = await RefreshConferenceCache(conferenceId);
-
-                witnessRoom = GetRoomForParticipant(conference, participantId);
-                
-                if (witnessRoom == null)
-                {
-                    return false;
-                }
-            }
 
             var participant = conference.Participants.SingleOrDefault(x => x.Id == participantId);
 
@@ -476,9 +462,29 @@ namespace VideoWeb.Controllers
                 return participant.IsCallable();
             }
 
+            var witnessRoom = await GetWitnessRoom(conference, participantId);
+
+            if (witnessRoom == null)
+            {
+                return false;
+            }
+        
             var expectedParticipantsInRoomIds = participant.LinkedParticipants.Select(x => x.LinkedId).ToList();
             expectedParticipantsInRoomIds.Add(participant.Id);
-            return expectedParticipantsInRoomIds.All(p => witnessRoom.Participants.Contains(p));
+            return expectedParticipantsInRoomIds.TrueForAll(p => witnessRoom.Participants.Contains(p));
+        }
+
+        private async Task<CivilianRoom> GetWitnessRoom(Conference conference, Guid participantId)
+        {
+            var witnessRoom = GetRoomForParticipant(conference, participantId);
+
+            if (witnessRoom != null) return witnessRoom;
+            
+            conference = await RefreshConferenceCache(conference.Id);
+        
+            witnessRoom = GetRoomForParticipant(conference, participantId);
+
+            return witnessRoom;
         }
 
         private static CivilianRoom GetRoomForParticipant(Conference conference, Guid participantId) => 
