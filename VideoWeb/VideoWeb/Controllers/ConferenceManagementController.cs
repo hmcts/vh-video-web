@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoApi.Client;
@@ -11,6 +12,7 @@ using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
+using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Services;
 
 namespace VideoWeb.Controllers
@@ -25,14 +27,16 @@ namespace VideoWeb.Controllers
         private readonly ILogger<ConferenceManagementController> _logger;
         private readonly IConferenceCache _conferenceCache;
         private readonly IHearingLayoutService _hearingLayoutService;
+        protected readonly IHubContext<EventHub.Hub.EventHub, IEventHubClient> HubContext;
 
         public ConferenceManagementController(IVideoApiClient videoApiClient,
-            ILogger<ConferenceManagementController> logger, IConferenceCache conferenceCache, IHearingLayoutService hearingLayoutService)
+            ILogger<ConferenceManagementController> logger, IConferenceCache conferenceCache, IHearingLayoutService hearingLayoutService, IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
             _conferenceCache = conferenceCache;
             _hearingLayoutService = hearingLayoutService;
+            HubContext = hubContext;
         }
 
         /// <summary>
@@ -359,6 +363,8 @@ namespace VideoWeb.Controllers
             try
             {
                 await TransferParticipantAsync(conferenceId, participantId, TransferType.Dismiss);
+                // reset hand raise on dismiss
+                await HubContext.Clients.Group(conferenceId.ToString()).ParticipantHandRaiseMessage(participantId, conferenceId, false);
             }
             catch (VideoApiException ex)
             {
@@ -439,7 +445,7 @@ namespace VideoWeb.Controllers
         private async Task<bool> IsConferenceHost(Guid conferenceId)
         {
             var conference = await GetConference(conferenceId);
-            return conference.Participants.Any(x => x.Username.Equals(User.Identity.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase) && x.IsHost());
+            return conference.Participants.Exists(x => x.Username.Equals(User?.Identity?.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase) && x.IsHost());
         }
 
         private async Task<bool> IsParticipantCallable(Guid conferenceId, Guid participantId)
@@ -465,7 +471,7 @@ namespace VideoWeb.Controllers
             var witnessRoom = conference.CivilianRooms.First(x => x.Participants.Contains(participant.Id));
             var expectedParticipantsInRoomIds = participant.LinkedParticipants.Select(x => x.LinkedId).ToList();
             expectedParticipantsInRoomIds.Add(participant.Id);
-            return expectedParticipantsInRoomIds.All(p => witnessRoom.Participants.Contains(p));
+            return expectedParticipantsInRoomIds.TrueForAll(p => witnessRoom.Participants.Contains(p));
         }
 
         private async Task<Conference> GetConference(Guid conferenceId)

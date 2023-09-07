@@ -33,11 +33,11 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
               .WithUsername(judge.Username)
               .WithRole(AppRoles.JudgeRole).Build();
 
-            var Controller = SetupControllerWithClaims(user);
+            var controller = SetupControllerWithClaims(user);
 
             foreach (var participant in invalidParticipants)
             {
-                var result = await Controller.DismissParticipantAsync(TestConference.Id, participant.Id);
+                var result = await controller.DismissParticipantAsync(TestConference.Id, participant.Id);
                 var typedResult = (UnauthorizedObjectResult)result;
                 typedResult.Should().NotBeNull();
                 typedResult.Value.Should().Be("Participant is not callable");
@@ -57,9 +57,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
               .WithUsername(judge.Username)
               .WithRole(AppRoles.JudgeRole).Build();
 
-            var Controller = SetupControllerWithClaims(user);
+            var controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.DismissParticipantAsync(TestConference.Id, Guid.NewGuid());
+            var result = await controller.DismissParticipantAsync(TestConference.Id, Guid.NewGuid());
             var typedResult = (UnauthorizedObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().Be("Participant is not callable");
@@ -77,9 +77,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithUsername(participant.Username)
                 .WithRole(AppRoles.CitizenRole).Build();
 
-            var Controller = SetupControllerWithClaims(user);
+            var controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.DismissParticipantAsync(TestConference.Id, participant.Id);
+            var result = await controller.DismissParticipantAsync(TestConference.Id, participant.Id);
             var typedResult = (UnauthorizedObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().Be("User must be either Judge or StaffMember.");
@@ -98,7 +98,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithUsername(judge.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
 
-            var Controller = SetupControllerWithClaims(user);
+            var controller = SetupControllerWithClaims(user);
 
             var responseMessage = "Could not start transfer participant";
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
@@ -109,7 +109,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 x => x.TransferParticipantAsync(TestConference.Id,
                     It.IsAny<TransferParticipantRequest>())).ThrowsAsync(apiException);
 
-            var result = await Controller.DismissParticipantAsync(TestConference.Id, witness.Id);
+            var result = await controller.DismissParticipantAsync(TestConference.Id, witness.Id);
             result.Should().BeOfType<ObjectResult>();
             var typedResult = (ObjectResult)result;
             typedResult.Value.Should().Be(responseMessage);
@@ -125,9 +125,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithUsername(judge.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
 
-            var Controller = SetupControllerWithClaims(user);
+            var controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.DismissParticipantAsync(TestConference.Id, witness.Id);
+            var result = await controller.DismissParticipantAsync(TestConference.Id, witness.Id);
             var typedResult = (AcceptedResult)result;
             typedResult.Should().NotBeNull();
 
@@ -135,6 +135,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 x => x.TransferParticipantAsync(TestConference.Id,
                     It.Is<TransferParticipantRequest>(r =>
                         r.ParticipantId == witness.Id && r.TransferType == TransferType.Dismiss)), Times.Once);
+            
+            EventComponentHelper.EventHubClientMock.Verify(
+                x => x.ParticipantHandRaiseMessage(witness.Id, TestConference.Id, false), Times.Once);
         }
 
         [Test]
@@ -148,11 +151,11 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(judge.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
-            var Controller = SetupControllerWithClaims(user);
+            var controller = SetupControllerWithClaims(user);
 
             string expectedBody = $"{expectedPrefix} dismissed by {judge.HearingRole}";
 
-            var result = await Controller.DismissParticipantAsync(TestConference.Id, participant.Id);
+            var result = await controller.DismissParticipantAsync(TestConference.Id, participant.Id);
             var typedResult = (AcceptedResult)result;
             typedResult.Should().NotBeNull();
 
@@ -160,6 +163,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             _mocker.Mock<IVideoApiClient>().Verify(x => x.AddTaskAsync(TestConference.Id,
                 It.Is<AddTaskRequest>(r => r.ParticipantId == participant.Id && r.Body == expectedBody && r.TaskType == TaskType.Participant)),
                 Times.Once);
+            
+            EventComponentHelper.EventHubClientMock.Verify(
+                x => x.ParticipantHandRaiseMessage(participant.Id, TestConference.Id, false), Times.Once);
         }
 
         [Test]
@@ -171,11 +177,11 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(judge.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
-            var Controller = SetupControllerWithClaims(user);
+            var controller = SetupControllerWithClaims(user);
 
             string expectedBody = $"{participant.HearingRole} dismissed by {judge.HearingRole}";
 
-            var result = await Controller.DismissParticipantAsync(TestConference.Id, participant.Id);
+            var result = await controller.DismissParticipantAsync(TestConference.Id, participant.Id);
             var typedResult = (AcceptedResult)result;
             typedResult.Should().NotBeNull();
 
@@ -183,6 +189,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             _mocker.Mock<IVideoApiClient>().Verify(x => x.AddTaskAsync(TestConference.Id,
                 It.Is<AddTaskRequest>(r => r.ParticipantId == participant.Id && r.Body == expectedBody && r.TaskType == TaskType.Participant)),
                 Times.Once);
+            
+            EventComponentHelper.EventHubClientMock.Verify(
+                x => x.ParticipantHandRaiseMessage(participant.Id, TestConference.Id, false), Times.Once);
         }
 
         [Test]
@@ -194,11 +203,11 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(dismisser.Username)
                 .WithRole(appRole).Build();
-            var Controller = SetupControllerWithClaims(user);
+            var controller = SetupControllerWithClaims(user);
 
             string expectedBody = $"{participant.HearingRole} dismissed by {dismisser.HearingRole}";
 
-            var result = await Controller.DismissParticipantAsync(TestConference.Id, participant.Id);
+            var result = await controller.DismissParticipantAsync(TestConference.Id, participant.Id);
             var typedResult = (AcceptedResult)result;
             typedResult.Should().NotBeNull();
 
@@ -206,22 +215,25 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             _mocker.Mock<IVideoApiClient>().Verify(x => x.AddTaskAsync(TestConference.Id,
                 It.Is<AddTaskRequest>(r => r.ParticipantId == participant.Id && r.Body == expectedBody && r.TaskType == TaskType.Participant)),
                 Times.Once);
+            
+            EventComponentHelper.EventHubClientMock.Verify(
+                x => x.ParticipantHandRaiseMessage(participant.Id, TestConference.Id, false), Times.Once);
         }
 
         [Test]
         public async Task should_return_accepted_when_participant_is_a_room()
         {
             var judge = TestConference.GetJudge();
-            var room = TestConference.CivilianRooms.First();
+            var room = TestConference.CivilianRooms[0];
             var participant = TestConference.Participants.First(x => x.IsWitness() && room.Participants.Contains(x.Id));
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(judge.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
-            var Controller = SetupControllerWithClaims(user);
+            var controller = SetupControllerWithClaims(user);
 
             string expectedBody = $"{participant.HearingRole} dismissed by {judge.HearingRole}";
 
-            var result = await Controller.DismissParticipantAsync(TestConference.Id, participant.Id);
+            var result = await controller.DismissParticipantAsync(TestConference.Id, participant.Id);
             var typedResult = (AcceptedResult)result;
             typedResult.Should().NotBeNull();
 
@@ -233,6 +245,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             _mocker.Mock<IVideoApiClient>().Verify(x => x.AddTaskAsync(TestConference.Id,
                     It.Is<AddTaskRequest>(r => r.ParticipantId == participant.Id && r.Body == expectedBody && r.TaskType == TaskType.Participant)),
                 Times.Once);
+            
+            EventComponentHelper.EventHubClientMock.Verify(
+                x => x.ParticipantHandRaiseMessage(participant.Id, TestConference.Id, false), Times.Once);
         }
 
         [Test]
@@ -244,7 +259,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithUsername(judge.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
 
-            var Controller = SetupControllerWithClaims(user);
+            var controller = SetupControllerWithClaims(user);
 
             var responseMessage = "Could not add dismiss alert for participant";
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
@@ -255,7 +270,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 x => x.AddTaskAsync(TestConference.Id,
                     It.IsAny<AddTaskRequest>())).ThrowsAsync(apiException);
 
-            var result = await Controller.DismissParticipantAsync(TestConference.Id, witness.Id);
+            var result = await controller.DismissParticipantAsync(TestConference.Id, witness.Id);
             result.Should().BeOfType<ObjectResult>();
             var typedResult = (ObjectResult)result;
             typedResult.Value.Should().Be(responseMessage);
@@ -273,9 +288,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithUsername(judge.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
 
-            var Controller = SetupControllerWithClaims(user);
+            var controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.DismissParticipantAsync(TestConference.Id, quickLinkUser.Id);
+            var result = await controller.DismissParticipantAsync(TestConference.Id, quickLinkUser.Id);
             var typedResult = (AcceptedResult)result;
             typedResult.Should().NotBeNull();
 
