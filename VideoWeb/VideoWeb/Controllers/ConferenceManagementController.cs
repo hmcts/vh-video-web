@@ -445,7 +445,7 @@ namespace VideoWeb.Controllers
         private async Task<bool> IsConferenceHost(Guid conferenceId)
         {
             var conference = await GetConference(conferenceId);
-            return conference.Participants.Exists(x => x.Username.Equals(User.Identity?.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase) && x.IsHost());
+            return conference.Participants.Exists(x => x.Username.Equals(User.Identity!.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase) && x.IsHost());
         }
 
         private async Task<bool> IsParticipantCallable(Guid conferenceId, Guid participantId)
