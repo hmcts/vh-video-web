@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Autofac;
 using FizzWare.NBuilder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,9 +12,6 @@ using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using VideoApi.Contract.Responses;
 using Autofac.Extras.Moq;
-using Microsoft.AspNetCore.SignalR;
-using VideoWeb.EventHub.Hub;
-using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 {
@@ -23,23 +19,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
     {
         protected AutoMock _mocker;
         protected Conference TestConference;
-        protected EventComponentHelper EventComponentHelper;
 
         protected ConferenceManagementController SetupControllerWithClaims(ClaimsPrincipal claimsPrincipal)
         {
-            EventComponentHelper = new EventComponentHelper
-            {
-                EventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>(),
-                EventHubClientMock = new Mock<IEventHubClient>()
-            };
-            EventComponentHelper.RegisterUsersForHubContext(TestConference.Participants);
-            EventComponentHelper.EventHubContextMock.Setup(x => x.Clients.Group(TestConference.Id.ToString()))
-                .Returns(EventComponentHelper.EventHubClientMock.Object);
-            _mocker = AutoMock.GetLoose(builder =>
-            {
-                builder.RegisterInstance(EventComponentHelper.EventHubContextMock.Object);
-                builder.RegisterInstance(EventComponentHelper.EventHubClientMock.Object);
-            });
+            _mocker = AutoMock.GetLoose();
             var sut = _mocker.Create<ConferenceManagementController>();
             sut.ControllerContext = new ControllerContext
             {

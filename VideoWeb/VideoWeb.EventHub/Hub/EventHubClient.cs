@@ -32,6 +32,7 @@ namespace VideoWeb.EventHub.Hub
         private readonly IHeartbeatRequestMapper _heartbeatRequestMapper;
         private readonly IConferenceVideoControlStatusService _conferenceVideoControlStatusService;
         private readonly HearingServicesConfiguration _servicesConfiguration;
+        private readonly IConferenceManagementService _conferenceManagementService;
 
         public EventHub(IUserProfileService userProfileService, 
             IVideoApiClient videoApiClient,
@@ -39,13 +40,15 @@ namespace VideoWeb.EventHub.Hub
             IConferenceCache conferenceCache, 
             IHeartbeatRequestMapper heartbeatRequestMapper, 
             IOptions<HearingServicesConfiguration> servicesConfiguration, 
-            IConferenceVideoControlStatusService conferenceVideoControlStatusService)
+            IConferenceVideoControlStatusService conferenceVideoControlStatusService, 
+            IConferenceManagementService conferenceManagementService)
         {
             _userProfileService = userProfileService;
             _logger = logger;
             _conferenceCache = conferenceCache;
             _heartbeatRequestMapper = heartbeatRequestMapper;
             _conferenceVideoControlStatusService = conferenceVideoControlStatusService;
+            _conferenceManagementService = conferenceManagementService;
             _videoApiClient = videoApiClient;
             _servicesConfiguration = servicesConfiguration.Value;
         }
@@ -477,31 +480,8 @@ namespace VideoWeb.EventHub.Hub
         {
             try
             {
-                var conference = await GetConference(conferenceId);
-                var participant = conference.Participants.Single(x => x.Id == participantId);
-                var linkedParticipants = GetLinkedParticipants(conference, participant);
-
-                var groupNames = new List<string> { participant.Username.ToLowerInvariant() };
-                groupNames.AddRange(conference.Participants.Where(x => x.IsHost()).Select(h => h.Username.ToLowerInvariant()));
-
-                foreach (var groupName in groupNames)
-                {
-                    await Clients.Group(groupName)
-                        .ParticipantHandRaiseMessage(participantId, conferenceId, isRaised);
-                }
-               
-                _logger.LogTrace(
-                    "Participant hand status updated: Participant Id: {ParticipantId} | Conference Id: {ConferenceId} to {IsHandRaised}",
-                    participantId, conferenceId, isRaised);
-                foreach (var linkedParticipant in linkedParticipants)
-                {
-                    await Clients
-                        .Group(linkedParticipant.Username.ToLowerInvariant())
-                        .ParticipantHandRaiseMessage(linkedParticipant.Id, conferenceId, isRaised);
-                    _logger.LogTrace(
-                        "Participant hand status updated: Participant Id: {ParticipantId} | Conference Id: {ConferenceId} to {IsHandRaised}",
-                        linkedParticipant.Id, conferenceId, isRaised);
-                }
+                await _conferenceManagementService.UpdateParticipantHandStatusInConference(conferenceId, participantId,
+                    isRaised);
             }
             catch (Exception ex)
             {

@@ -1,105 +1,44 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoApi.Contract.Responses;
+using VideoWeb.EventHub.Exceptions;
 
 namespace VideoWeb.UnitTests.Hub
 {
     public class UpdateParticipantHandStatusTests : EventHubBaseTests
     {
         [Test]
-        public async Task should_publish_hand_raised_to_participants_and_linked_and_judge()
+        public void should_capture_exception_and_log_it()
         {
-            var participantUsername = "individual@hmcts.net";
-            var conference = CreateTestConference(participantUsername, true);
-            var conferenceId = conference.Id;
-            var participant = conference.Participants.First(x => x.Username == participantUsername);
-            var handRaised = true;
+            // arrange
+            var conferenceId = Guid.NewGuid();
+            var participantId = Guid.NewGuid();
+            ConferenceManagementServiceMock.Setup(x =>
+                    x.UpdateParticipantHandStatusInConference(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>()))
+                .ThrowsAsync(new ParticipantNotFoundException(conferenceId, participantId));
 
-            SetupEventHubClientsForAllParticipantsInConference(conference, false);
-
-            ConferenceCacheMock.Setup(cache =>
-                    cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(conference);
-
-            await Hub.UpdateParticipantHandStatus(conferenceId, participant.Id, handRaised);
-            
-            
-            var judge = conference.Participants.Single(x => x.IsJudge());
-            EventHubClientMock.Verify(
-                x => x.Group(judge.Username.ToLowerInvariant())
-                    .ParticipantHandRaiseMessage(participant.Id, conference.Id, handRaised),  Times.Once);
-            
-            EventHubClientMock.Verify(
-                x => x.Group(participant.Username.ToLowerInvariant())
-                    .ParticipantHandRaiseMessage(participant.Id, conference.Id, handRaised), Times.Once);
-
-            foreach (var lp in participant.LinkedParticipants)
-            {
-                var linkedPat = conference.Participants.Single(p => p.Id == lp.LinkedId);
-                EventHubClientMock.Verify(
-                    x => x.Group(linkedPat.Username.ToLowerInvariant())
-                        .ParticipantHandRaiseMessage(lp.LinkedId, conference.Id, handRaised), Times.Once);
-            }
-        }
-
-        [Test]
-        public async Task should_publish_hand_raised_to_all_johs_when_one_joh_is_is_raised()
-        {
-            var participantUsername = "individual@hmcts.net";
-            var conference = CreateTestConference(participantUsername, true);
-            var conferenceId = conference.Id;
-            var allJohs = conference.Participants.Where(x => x.IsJudicialOfficeHolder()).ToList();
-            var participant = conference.Participants.First(x => x.IsJudicialOfficeHolder());
-            var handRaised = true;
-            
-            SetupEventHubClientsForAllParticipantsInConference(conference, false);
-
-            ConferenceCacheMock.Setup(cache =>
-                    cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(conference);
-            
-            await Hub.UpdateParticipantHandStatus(conferenceId, participant.Id, handRaised);
-
-            
-            var judge = conference.Participants.Single(x => x.IsJudge());
-            EventHubClientMock.Verify(
-                x => x.Group(judge.Username.ToLowerInvariant())
-                    .ParticipantHandRaiseMessage(participant.Id, conference.Id, handRaised),  Times.Once);
-            
-            foreach (var joh in allJohs)
-            {
-                EventHubClientMock.Verify(
-                    x => x.Group(joh.Username.ToLowerInvariant())
-                        .ParticipantHandRaiseMessage(joh.Id, conference.Id, handRaised), Times.Once);
-            }
+            // act / assert
+            Func<Task> action = async () => await Hub.UpdateParticipantHandStatus(conferenceId, participantId, false);
+            action.Should().NotThrow<ParticipantNotFoundException>();
         }
         
         [Test]
-        public async Task should_not_send_message_when_participant_does_not_exist()
+        public async Task should_invoke_conference_management_service()
         {
             var participantUsername = "individual@hmcts.net";
             var conference = CreateTestConference(participantUsername, true);
             var conferenceId = conference.Id;
             var participantId = Guid.NewGuid();
-            var handRaised = true;
+            const bool handRaised = true;
             
-            SetupEventHubClientsForAllParticipantsInConference(conference, false);
-
-            ConferenceCacheMock.Setup(cache =>
-                    cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(conference);
-
             await Hub.UpdateParticipantHandStatus(conferenceId, participantId, handRaised);
             
-            EventHubClientMock.Verify(
-                x => x.Group(It.IsAny<string>())
-                    .ParticipantHandRaiseMessage(participantId, conference.Id, handRaised), Times.Never);
+            ConferenceManagementServiceMock.Verify(x => x.UpdateParticipantHandStatusInConference(conferenceId, participantId, handRaised), Times.Once);
         }
     }
 }

@@ -4,7 +4,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoApi.Client;
@@ -12,7 +11,6 @@ using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
-using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Services;
 
 namespace VideoWeb.Controllers
@@ -27,16 +25,16 @@ namespace VideoWeb.Controllers
         private readonly ILogger<ConferenceManagementController> _logger;
         private readonly IConferenceCache _conferenceCache;
         private readonly IHearingLayoutService _hearingLayoutService;
-        protected readonly IHubContext<EventHub.Hub.EventHub, IEventHubClient> HubContext;
+        private readonly IConferenceManagementService _conferenceManagementService;
 
         public ConferenceManagementController(IVideoApiClient videoApiClient,
-            ILogger<ConferenceManagementController> logger, IConferenceCache conferenceCache, IHearingLayoutService hearingLayoutService, IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext)
+            ILogger<ConferenceManagementController> logger, IConferenceCache conferenceCache, IHearingLayoutService hearingLayoutService, IConferenceManagementService conferenceManagementService)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
             _conferenceCache = conferenceCache;
             _hearingLayoutService = hearingLayoutService;
-            HubContext = hubContext;
+            _conferenceManagementService = conferenceManagementService;
         }
 
         /// <summary>
@@ -364,7 +362,8 @@ namespace VideoWeb.Controllers
             {
                 await TransferParticipantAsync(conferenceId, participantId, TransferType.Dismiss);
                 // reset hand raise on dismiss
-                await HubContext.Clients.Group(conferenceId.ToString()).ParticipantHandRaiseMessage(participantId, conferenceId, false);
+                await _conferenceManagementService.UpdateParticipantHandStatusInConference(conferenceId, participantId,
+                    false);
             }
             catch (VideoApiException ex)
             {

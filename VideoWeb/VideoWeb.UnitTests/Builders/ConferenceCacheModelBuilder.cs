@@ -20,14 +20,19 @@ namespace VideoWeb.UnitTests.Builders
                 {
                     Builder<Participant>.CreateNew()
                         .With(x => x.Role = Role.Judge).With(x => x.Id = Guid.NewGuid())
+                        .With(x => x.Username = Faker.Internet.Email())
                         .Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
+                        .With(x => x.Username = Faker.Internet.Email())
                         .With(x => x.Id = Guid.NewGuid()).Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
+                        .With(x => x.Username = Faker.Internet.Email())
                         .With(x => x.Id = Guid.NewGuid()).Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
+                        .With(x => x.Username = Faker.Internet.Email())
                         .With(x => x.Id = Guid.NewGuid()).Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
+                        .With(x => x.Username = Faker.Internet.Email())
                         .With(x => x.Id = Guid.NewGuid()).Build()
                 },
                 Endpoints = new List<Endpoint>
@@ -41,6 +46,18 @@ namespace VideoWeb.UnitTests.Builders
             };
         }
 
+        public ConferenceCacheModelBuilder WithJudicialOfficeHolders(int count = 2)
+        {
+            var participants = Builder<Participant>.CreateListOfSize(count)
+                .All().With(x => x.Id = Guid.NewGuid())
+                .With(x => x.Username = Faker.Internet.Email())
+                .With(x => x.LinkedParticipants = new List<LinkedParticipant>())
+                .With(x => x.Role = Role.JudicialOfficeHolder).Build().ToList();
+            _conference.Participants.AddRange(participants);
+            
+            return this;
+        }
+
         public ConferenceCacheModelBuilder WithLinkedParticipantsInRoom()
         {
             _conference.CivilianRooms = new List<CivilianRoom>
@@ -52,8 +69,8 @@ namespace VideoWeb.UnitTests.Builders
             participantA.LinkedParticipants.Add(new LinkedParticipant{LinkedId = participantB.Id, LinkType = LinkType.Interpreter});
             participantB.LinkedParticipants.Add(new LinkedParticipant{LinkedId = participantA.Id, LinkType = LinkType.Interpreter});
             
-            _conference.CivilianRooms.First().Participants.Add(participantA.Id);
-            _conference.CivilianRooms.First().Participants.Add(participantB.Id);
+            _conference.CivilianRooms[0].Participants.Add(participantA.Id);
+            _conference.CivilianRooms[0].Participants.Add(participantB.Id);
 
             return this;
         }
