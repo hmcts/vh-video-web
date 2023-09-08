@@ -3,7 +3,7 @@ java:
     image: '${IMAGE_NAME}'
     ingressHost: ${SERVICE_FQDN}
     releaseNameOverride: ${RELEASE_NAME}
-    disableTraefikTls: true
+    disableTraefikTls: false
     environment:
         AZUREAD__POSTLOGOUTREDIRECTURI: https://${SERVICE_FQDN}/logout
         AZUREAD__REDIRECTURI: https://${SERVICE_FQDN}/home
@@ -11,4 +11,3 @@ java:
         EJUDAD__REDIRECTURI: https://${SERVICE_FQDN}/home
         DOM1__POSTLOGOUTREDIRECTURI: https://${SERVICE_FQDN}/logout
         DOM1__REDIRECTURI: https://${SERVICE_FQDN}/home
-        VHSERVICES__VIDEOAPIURL: https://vh-video-api-pr-596.dev.platform.hmcts.net
