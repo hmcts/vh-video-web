@@ -97,60 +97,100 @@
     "menu": {
       "heading": "Cynnwys",
       "accessibility-statement": {
-        "heading": "Datganiad hygyrchedd gwasanaeth gwrandawiadau fideo GLlTEM",
+        "heading": "Datganiad hygyrchedd Gwasanaeth Gwrandawiadau Fideo GLlTEF",
         "paragraph1": "Mae'r gwasanaeth hwn yn galluogi unigolion i gymryd rhan mewn gwrandawiad llys trwy gyswllt fideo - o'u cartref, eu swyddfa, neu o rywle arall gan ddefnyddio gliniadur neu gyfrifiadur bwrdd gwaith.",
         "paragraph2": "Mae'r datganiad hygyrchedd hwn yn seiliedig ar werthusiad a gynhaliwyd gan Digital Accessibility Centre (DAC), Castell Nedd, yn ystod Medi 2019. ",
-        "paragraph3": "Gwasanaeth Llysoedd a Thribiwnlysoedd EM sy'n gyfrifol am y wefan hon. Rydym eisiau i gymaint o bobl â phosibl allu defnyddio'r gwasanaeth hwn. Er enghraifft, golyga hyn y dylech allu:",
         "list": {
-          "1": "newid y lliwiau, y lefelau cyferbyniad a'r ffontiau",
-          "2": "gwneud y testun hyd at 300% yn fwy heb iddo ddiflannu oddi ar y sgrin",
-          "3": "llywio'r rhan fwyaf o'r wefan gan ddefnyddio bysellfwrdd yn unig",
-          "4": "llywio'r rhan fwyaf o'r wefan gan ddefnyddio meddalwedd adnabod llais",
-          "5": "gwrando ar y rhan fwyaf o'r wefan gan ddefnyddio darllenydd sgrin"
+          "1": "mynd drwy’r rhan fwyaf o’r wefan gan ddefnyddio bysellfwrdd yn unig; a",
+          "2": "gwrando ar y rhan fwyaf o’r wefan gan ddefnyddio darllenydd sgrin (gan gynnwys fersiynau diweddaraf JAWS, NVDA a VoiceOver)."
         },
-        "paragraph4": "Rydym hefyd wedi sicrhau ein bod wedi defnyddio iaith syml.",
-        "abilityNet": "Gallwch gael cyngor gan AbilityNet ",
-        "paragraph5": "ynghylch gwneud eich dyfais yn haws i'w defnyddio os oes gennych anabledd."
+        "abilityNet": "Mae gan AbilityNet",
+        "paragraph3": "gyngor ynghylch gwneud eich dyfais yn haws i’w defnyddio os oes gennych anabledd."
       },
-      "how-accessible": {
-        "heading": "Pa mor hygyrch yw'r wefan hon?",
-        "paragraph1": "Mae'r gwasanaeth gwrandawiadau fideo yn cynnig ffordd arall i gynnal gwrandawiad. Er ein bod yn ceisio sicrhau bod y gwasanaeth mor hygyrch â phosibl, efallai na fydd gwrandawiad fideo yn addas i bawb. ",
-        "paragraph2": "Mae'r gwasanaeth gwrandawiadau fideo yn cynnwys adnodd asesu fel y gall pobl hysbysu'r llys am unrhyw gyflwr neu nam sydd ganddynt a allai effeithio ar eu gallu i gymryd rhan mewn gwrandawiad fideo. ",
-        "paragraph3": "Y barnwr fydd wastad yn penderfynu p'un a ddylid cynnal gwrandawiad fideo, a sicrhau budd cyfiawnder yn unrhyw wrandawiad a gynhelir. ",
-        "paragraph4": "Yn ystod y gwerthusiad a gynhaliwyd gan DAC, nodwyd bod defnyddwyr sydd â nam gwybyddol a dyslecsia yn gallu defnyddio'r wefan yn 'gwbl annibynnol, heb unrhyw broblemau'. Roedd y problemau hygyrchedd a gafodd eu riportio yn effeithio'n benodol ar y rhai hynny sydd â nam ar eu golwg neu sy'n defnyddio technoleg llais."
-      },
-      "cannot-access": {
-        "heading": "Beth i'w wneud os na allwch ddefnyddio rhai rhannau o'r wefan hon",
-        "paragraph1": "Os ydych angen help i gael mynediad i'r wybodaeth sydd ar y wefan hon, cysylltwch â'r tîm gwrandawiadau fideo: ",
-        "list": {
-          "1": "anfonwch e-bost i {{email}}",
-          "2": "ffoniwch {{phone}}"
+        "how-accessible": {
+            "heading": "Pa mor hygyrch yw’r gwasanaeth hwn?",
+            "paragraph1": "Gwyddwn nad yw rhai rhannau o’r platfform yn gwbl hygyrch:",
+            "list": {
+                "1": "Nid yw’r adnodd hunan-brawf ar gyfer profi offer cyfrifiadurol cyn gwrandawiad fideo yn hygyrch i bobl â nam ar eu golwg. ",
+                "2": "Efallai y bydd defnyddwyr darllenydd sgrin yn cael trafferthion wrth ddefnyddio adrannau canlynol y gwasanaeth: ",
+                "3": "Efallai y bydd pobl sydd angen defnyddio eu bysellfwrdd i fynd drwy’r gwasanaeth yn cael y trafferthion canlynol: ",
+                "4": "Efallai y bydd pobl gyda golwg gwan yn cael trafferthion wrth ddarllen y testun yn y gwasanaeth gan nad oes yna ddigon o gyferbyniad rhwng y testun a’r cefndir.  ",
+                "5": "Efallai y bydd pobl gyda nam ar eu golwg yn cael trafferthion wrth geisio defnyddio’r adnodd Sgwrsio Dros y We yn yr Ystafell Wrandawiadau. Byddant yn gallu gwrando ar y rhan fwyaf o’r wefan gan ddefnyddio darllenydd sgrin."
+            },
+            "sub-list1": {
+                "1": "Gweld y Rhestr o’r Cyfranogwyr yn yr Ystafell Aros",
+                "2": "Defnyddio’r rheolyddion mewn gwrandawiad yn yr Ystafell Wrandawiadau.",
+                "3": "Dewis gwrandawiad o’r Rhestr o Wrandawiadau. ",
+                "4": "Dewis y Camera, y Meicroffon a’r adnodd Sgwrsio Dros y We yn yr Ystafell Aros."
+            },
+            "sub-list2": {
+                "1": "Dewis y Camera a’r Meicroffon yn yr Ystafell Aros.",
+                "2": "Gadael Ystafell Ymgynghori.",
+                "3": "Defnyddio’r rheolyddion mewn gwrandawiad yn yr Ystafell Wrandawiadau. "
+            },
+            "paragraph2": "Rydym eisiau i gymaint o bobl â phosibl allu defnyddio’r gwasanaeth hwn, felly rydym yn gweithio i ddatblygu’r platfform Gwrandawiadau Fideo ymhellach fel ei fod yn hygyrch i’n holl ddefnyddwyr. Ein nod yw sicrhau bod y gwelliannau hyn mewn lle erbyn Gorffennaf 2023."
         },
-        "paragraph2": "Rhwng 9am a 5pm, dydd Llun i ddydd Gwener."
-      },
-      "reporting-accessibility": {
-        "heading": "Riportio problemau hygyrchedd gyda'r wefan hon",
-        "paragraph1": "Rydym wastad yn ceisio gwella hygyrchedd y wefan hon. Os byddwch yn cael unrhyw broblemau nad ydynt wedi'u cynnwys ar y dudalen hon, neu'n credu nad ydym yn bodloni'r gofynion o ran hygyrchedd, cysylltwch â'r tîm gwrandawiadau fideo (gweler uchod)."
-      },
+        "feedback": {
+            "heading": "Adborth a gwybodaeth gyswllt",
+            "paragraph1": "Cysylltwch â’r llys neu’r tribiwnlys a drefnodd eich gwrandawiad: os ydych chi’n teimlo na allwch gymryd rhan drwy fideo; os oes gennych anghenion ychwanegol; os ydych angen gwybodaeth am ein gwasanaeth mewn fformat arall, e.e. PDF hygyrch, fersiwn print bras, fersiwn hawdd i’w ddarllen, recordiad sain neu braille.",
+            "paragraph2": "Os oes gennych rybudd o wrandawiad, bydd manylion cyswllt y llys neu dribiwnlys i’w gweld yno. ",
+            "paragraph3": "Os ydych chi’n gwybod beth yw enw’r llys neu’r tribiwnlys, gallwch chwilio am eu manylion cyswllt yn",
+            "paragraph3.link": "https://www.gov.uk/chwilio-am-lys-neu-dribiwnlys",
+            "paragraph4": "Os oes gennych gwestiynau technegol am eich gwrandawiad fideo, neu os ydych chi’n cael trafferthion technegol gyda’ch offer, er enghraifft, nid yw eich camera neu’ch meicroffon yn gweithio, yna defnyddiwch y manylion a nodir isod i gysylltu â’r tîm gwrandawiadau fideo: ",
+            "paragraph5": "Ar gyfer siaradwyr Cymraeg yng Nghymru a Lloegr:",
+            "paragraph6": "Ar gyfer yr Alban:",
+            "paragraph7": "Os byddwch yn anfon neges e-bost atom, dylech gynnwys lleoliad eich llys neu eich canolfan tribiwnlys a rhif yr achos yn y llinell pwnc.",
+            "paragraph8": "Ein nod yw ymateb i negeseuon e-bost yr un diwrnod gwaith.",
+            "list": {
+                "1": "ffoniwch: {{phoneNumber}} rhwng 9am - 5pm dydd Llun i ddydd Iau a 9am - 4.30pm ar ddydd Gwener",
+                "2": "e-bost:"
+            },
+            "list-scotland": {
+                "1": "ffoniwch {{phoneNumber}} rhwng 8.30am a 5pm, o ddydd Llun i ddydd Gwener",
+                "2": "e-bost:"
+            }
+        },
+        "reporting-accessibility": {
+            "heading": "Riportio problemau hygyrchedd gyda’r gwasanaeth Gwrandawiadau Fideo",
+            "paragraph1": "Rydym wastad yn ceisio gwella hygyrchedd ein gwasanaeth. Os byddwch yn cael unrhyw broblemau nad ydynt yn cael eu crybwyll ar y dudalen hon, neu os ydych yn credu nad ydym yn bodloni gofynion y rheoliadau hygyrchedd, cysylltwch â:",
+            "list": {
+                "1": "e-bost:",
+                "2": "Ar gyfer siaradwyr Cymraeg yng Nghymru a Lloegr: ffoniwch 0300 303 5177, rhwng 9am - 5pm dydd Llun i ddydd Iau a 9am - 4.30pm ar ddydd Gwener"
+            }
+        },
       "enforcement-procedure": {
         "heading": "Y Weithdrefn Orfodi",
         "paragraph1": "Y Comisiwn Cydraddoldeb a Hawliau Dynol (EHRC) sy'n gyfrifol am orfodi Rheoliadau Hygyrchedd Cyrff y Sector Cyhoeddus (Gwefannau a Rhaglenni Symudol) (Rhif 2) 2018 (y 'rheoliadau hygyrchedd'). Os ydych yn anhapus â'r ffordd rydym yn ymateb i'ch cwyn,",
         "paragraph2": "cysylltwch â'r Gwasanaeth Cynghori a Chefnogi Cydraddoldeb (EASS)"
       },
-      "technical-information": {
-        "heading": "Gwybodaeth dechnegol am hygyrchedd y wefan hon",
-        "paragraph1": "Mae Gwasanaeth Llysoedd a Thribiwnlysoedd EM wedi ymrwymo i sicrhau bod ei wefan yn hygyrch, yn unol â Rheoliadau Hygyrchedd Cyrff y Sector Cyhoeddus (Gwefannau a Rhaglenni Symudol) (Rhif 2) 2018.",
-        "paragraph2": {
-          "1": "Mae'r wefan hon yn cydymffurfio'n rhannol â",
-          "2": "Chanllawiau Hygyrchedd Cynnwys Gwe fersiwn 2.1",
-          "3": "safon AA, oherwydd y materion o beidio â chydymffurfio a restrir isod."
+       "contacting-us": {
+         "heading": "Cysylltu â ni dros y ffôn neu ymweld â ni’n bersonol",
+         "paragraph1": "Rydym yn darparu gwasanaeth cyfnewid negeseuon testun ar gyfer pobl fyddar, pobl sydd â nam ar eu clyw a phobl sydd â nam ar eu lleferydd.",
+         "paragraph2": "Mae yna ddolenni sain yn ein swyddfeydd, neu os byddwch yn cysylltu â ni cyn eich ymweliad, gallwn drefnu cyfieithydd Iaith Arwyddion Prydain (BSL) ar eich cyfer.",
+         "paragraph3": "Gallwch gael rhagor o wybodaeth am sut i gysylltu â ni yn ",
+         "paragraph3.link": "Chwilio am lys neu dribiwnlys - GOV.UK (www.gov.uk)."
+      },
+        "technical-information": {
+            "heading": "Technical information about the Video Hearings service’s accessibility",
+            "paragraph1": "Mae Gwasanaeth Llysoedd a Thribiwnlysoedd EF wedi ymrwymo i sicrhau bod ei wasanaethau yn hygyrch, yn unol â Rheoliadau Hygyrchedd Cyrff y Sector Cyhoeddus (Gwefannau a Rhaglenni Symudol) (Rhif 2) 2018."
         },
-        "paragraph3": "paragraff 1 "
-      },
-      "non-accessible-content": {
-        "heading": "Cynnwys anhygyrch",
-        "paragraph1": "Cafodd nifer o faterion eu riportio yn ymwneud â hygyrchedd a defnyddioldeb.  Roedd y rhain yn effeithio'n arbennig ar y rhai hynny sydd â nam ar eu golwg neu sy'n defnyddio technoleg llais.  Cafodd y rhan fwyaf o'r problemau eu datrys cyn i'r gwasanaeth beta preifat gael ei ryddhau.  Mae'r rhai hynny sy'n weddill i'w gweld isod. "
-      },
+        "compliance-status": {
+            "heading": "Statws cydymffurfiaeth",
+            "paragraph1.1": "Mae ein gwasanaeth yn cydymffurfio’n rhannol â safon AA",
+            "link": "Canllawiau Hygyrchedd Cynnwys Gwe fersiwn 2.1,",
+            "paragraph1.2": "a hynny oherwydd yr enghreifftiau o beidio â chydymffurfio a restrir isod. "
+        },
+        "non-accessible-content": {
+            "heading": "Cynnwys anhygyrch",
+            "paragraph1": "Mae’r cynnwys a restrir isod yn anhygyrch am y rhesymau canlynol.",
+            "paragraph2": "Mae’r adnodd hunan-brawf yn golygu bod angen i ddefnyddwyr brofi eu hoffer cyfrifiadurol cyn dyddiad eu gwrandawiad fideo. Fe chwaraeir fideo a dywedir wrth y defnyddiwr am gyfrif i 5 yn uchel i wirio bod eu meicroffon yn gweithio. Mae dangosydd sain y meicroffon yn dibynnu ar y gallu i weld ac nid yw’n rhoi’r wybodaeth angenrheidiol i ddefnyddwyr sydd â nam ar eu golwg. Nid yw hyn yn diwallu maen prawf llwyddiant 1.1.1 WCAG (cynnwys di-destun) na 1.3.3 (nodweddion synhwyraidd). ",
+            "paragraph3": "Mae cynlluniau ar y gweill i ail-ddylunio’r adnodd hunan-brawf erbyn Gorffennaf 2024.",
+            "paragraph4": "Efallai y bydd defnyddwyr darllenydd sgrin yn cael trafferthion wrth ddefnyddio rhai rhannau o’r gwasanaeth. Nid yw Gweld y Rhestr o’r Cyfranogwyr yn yr Ystafell Aros yn diwallu maen prawf llwyddiant 1.3.1 WCAG (Gwybodaeth a Pherthnasau). Nid yw defnyddio’r rheolyddion mewn gwrandawiad yn yr Ystafell Wrandawiadau yn diwallu maen prawf llwyddiant 2.4.3 WCAG (Gorchymyn Ffocws). Nid yw dewis gwrandawiad o’r Rhestr o Wrandawiadau yn diwallu maen prawf llwyddiant 2.4.6 WCAG (Penawdau a Labeli), nac ychwaith Dewis y Camera a’r Meicroffon yn yr Ystafell Aros. Nid yw’r adnodd Sgwrsio Dros y We yn yr Ystafell Aros yn diwallu maen prawf llwyddiant 4.1.3 WCAG (Negeseuon Statws) gan nad yw’r nifer o nodau yn cael ei ddarllen arall i ddefnyddwyr.",
+            "paragraph5": "Bydd y nodweddion hyn yn cael eu cynnwys yn y Gwasanaeth Gwrandawiadau Fideo erbyn Chwefror 2023.",
+            "paragraph6": "Efallai y bydd defnyddwyr sy’n gorfod dibynnu ar ddefnyddio’u bysellfwrdd i fynd drwy’r gwasanaeth yn cael trafferthion gyda rhai rhannau o’r wefan. Nid yw Dewis y Camera a’r Meicroffon yn yr Ystafell Aros yn diwallu maen prawf llwyddiant 2.4.3 WCAG (Gorchymyn Ffocws), ac y mae’r un peth yn wir am Gadael yr Ystafell Ymgynghori. Nid yw defnyddio’r rheolyddion mewn gwrandawiad yn yr Ystafell Wrandawiadau yn diwallu maen prawf llwyddiant 1.4.12 WCAG (Cynnwys wrth Hofran neu Ffocysu).",
+            "paragraph7": "Bydd y nodweddion hyn yn cael eu cynnwys yn y Gwasanaeth Gwrandawiadau Fideo erbyn Chwefror 2023.",
+            "paragraph8": "Efallai y bydd pobl gyda golwg gwan yn cael trafferthion wrth geisio defnyddio’r adnodd Sgwrsio Dros y We yn yr Ystafell Wrandawiadau. Nid yw hyn yn cydymffurfio â maen prawf llwyddiant 1.4.2 WCAG (Cyferbyniad Lleiaf). Bydd defnyddwyr yn gallu gwrando ar y rhan fwyaf o’r wefan gan ddefnyddio darllenydd sgrin."
+        },
       "non-compliance-accessibility-regulations": {
         "heading": "Methiant i gydymffurfio â'r rheoliadau hygyrchedd",
         "sub-heading1": "Fideos gwybodaeth",
@@ -161,20 +201,29 @@
         "paragraph4": "Yn fwriadol, nid oes gan y fideo reolyddion. Mae angen i'r fideo chwarae hyd nes y diwedd i wirio cryfder cysylltiad rhyngrwyd y defnyddiwr.  Mae hyn yn cymryd o leiaf 20 i 30 eiliad.  Rydym wedi ychwanegu eglurhad. ",
         "paragraph5": "Erbyn gwanwyn 2020 byddwn yn adolygu'r ffordd yr ydym yn helpu defnyddwyr i brofi eu hoffer i fynd i'r afael â'r problemau hygyrchedd a adnabuwyd yn adroddiad DAC. "
       },
-      "not-within-the-scope": {
-        "heading": "Nid yw hyn o fewn y cwmpas/Nid yw'n berthnasol",
-        "paragraph1": "Wrth i gyfranogwyr posibl baratoi ar gyfer gwrandawiad fideo fe ofynnir nifer o gwestiynau iddynt.  Fe ofynnir un cwestiwn ar bob tudalen ac mae opsiwn i ateb gyda 'ie' neu 'na'.  Mi wnaeth DAC ein cynghori i grwpio'r botymau 'ie' a 'na' i helpu defnyddwyr darllenwyr sgrin.  (WCAG cyfeirnod 1.3.1 - A). Mae'r cyngor hwn yn berthnasol i ffurflenni hirach sy'n cynnwys grwpiau gwahanol o gwestiynau ar un dudalen, ac nid yw'n berthnasol yn yr achos hwn. "
-      },
-      "how-we-tested-this-website": {
-        "heading": "Sut rydym wedi profi'r wefan hon?",
-        "paragraph1": "Cafodd y wefan hon ei phrofi gan Digital Accessibility Centre, Castell Nedd, yn ystod Medi 2019. ",
-        "paragraph2": "Dyma ddyfyniad o'u hadroddiad yn esbonio eu methodoleg:",
-        "paragraph3": "Cafodd y wefan ei phrofi gan dîm o archwilwyr profiadol, ac mae llawer ohonynt yn unigolion anabl ac yn ddefnyddwyr technoleg addasol. Mae'r cyfuniad o adborth goddrychol gan ddefnyddwyr anabl ac archwiliadau technegol cynhwysfawr yn ein galluogi i fesur sut mae'r wefan yn perfformio'n dechnegol ac yn ymarferol, gan gynnig dimensiwn ychwanegol hanfodol i ganlyniadau ein profion na all dulliau eraill o brofi eu darparu.",
-        "sub-heading1": "Profi gyda defnyddwyr:",
-        "paragraph4": "Cynhaliwyd archwiliadau hygyrchedd â llaw gan dîm o unigolion anabl, gan ddefnyddio ystod o dechnolegau addasol (caledwedd a meddalwedd a gynlluniwyd i hwyluso'r defnydd o gyfrifiaduron gan bobl ag anableddau).",
-        "sub-heading2": "Archwilio technegol:",
-        "paragraph5": "Mae archwilio technegol yn cynnwys cymhwyso nifer o ddulliau archwilio technegol a safonau asesu cydymffurfiaeth. Mae hyn, ynghyd â gwybodaeth helaeth am WCAG, y broses o'i roi ar waith ac ymarfer byd-eang ehangach, yn rhoi hygrededd ac ansawdd pellach i wefan DAC."
-      }
+        "improving-accessibility": {
+            "heading": "Beth rydym yn ei wneud i wella hygyrchedd y gwasanaeth hwn",
+            "paragraph1": "Mae GLlTEF yn defnyddio meddalwedd hygyrchedd a phrofion awtomataidd i brofi’r gwasanaeth Gwrandawiadau Fideo yn barhaus. Bydd unrhyw nodweddion newydd a gyflwynir hefyd yn cael eu profi. Mae hyn yn ein helpu i ddatrys problemau cyn i ni lansio tudalennau neu nodweddion newydd.",
+            "paragraph2": "Gall defnyddwyr ddefnyddio’r gwasanaeth cyn eu gwrandawiad fideo i newid eu cyfrinair a phrofi eu hoffer cyfrifiadurol. Cafodd y rhan hon o’r wefan ei hasesu gan y Ganolfan Hygyrchedd Digidol yn ystod Medi 2019.",
+            "paragraph3": "Defnyddir y gwasanaeth i alluogi defnyddiwr i fynychu ei wrandawiad fideo. Cafodd y rhan hon o’r wefan ei hasesu gan y Ganolfan Hygyrchedd Digidol yn ystod Ebrill 2021.",
+            "paragraph4": "Mae adrannau ac asiantaethau yn gweithio’n galed i ddatrys y materion sydd ddim yn cydymffurfio â safon AA Canllawiau Hygyrchedd Cynnwys Gwe fersiwn 2.1 cyn gynted â phosibl. Byddwn yn diweddaru’r dudalen hon wrth i’r materion hyn gael eu datrys.",
+            "paragraph5.1": "Mae ein ",
+            "paragraph5.link": "map trywydd ",
+            "paragraph5.2": "hygyrchedd yn dangos sut a phryd rydym yn cynllunio i wella hygyrchedd y platfform gwrandawiadau fideo."
+        },
+        "preparation-of-statement": {
+            "heading": "Paratoi’r datganiad hygyrchedd hwn",
+            "paragraph1": "Cafodd y datganiad hwn ei baratoi ar 29 Hydref 2019.  Cafodd ei adolygu ddiwethaf ar 20 Rhagfyr 2022.",
+            "paragraph2": "Profwyd y wefan hon ddiwethaf yn ystod Ebrill 2021.  Cynhaliwyd y prawf gan y Ganolfan Hygyrchedd Digidol (DAC). Mi wnaethom benderfynu profi holl dudalennau’r gwasanaeth i sicrhau ein bod yn diwallu anghenion ein defnyddwyr.  ",
+            "paragraph3": "Gallwch ddarllen yr adroddiad prawf hygyrchedd llawn ",
+            "paragraph3.link": "yma",
+            "paragraph4": "Methodoleg DAC yw:",
+            "paragraph5": "Cafodd y wefan ei phrofi gan dîm o archwilwyr profiadol, ac mae llawer ohonynt yn unigolion anabl ac yn ddefnyddwyr technoleg addasol. Mae’r cyfuniad o adborth goddrychol gan ddefnyddwyr anabl ac archwiliadau technegol cynhwysfawr yn ein galluogi i fesur sut mae’r wefan yn perfformio’n dechnegol ac yn ymarferol, gan gynnig dimensiwn ychwanegol hanfodol i ganlyniadau ein profion na all dulliau eraill o brofi eu darparu.",
+            "paragraph6": "Profi gyda defnyddwyr:",
+            "paragraph7": "Cynhaliwyd archwiliadau hygyrchedd â llaw gan dîm o unigolion anabl, gan ddefnyddio ystod o dechnolegau addasol (caledwedd a meddalwedd a gynlluniwyd i hwyluso'r defnydd o gyfrifiaduron gan bobl ag anableddau).",
+            "paragraph8": "Archwilio technegol:",
+            "paragraph9": "Mae archwilio technegol yn cynnwys cymhwyso nifer o ddulliau archwilio technegol a safonau asesu cydymffurfiaeth. Mae hyn, ynghyd â gwybodaeth helaeth am WCAG, y broses o’i roi ar waith ac ymarfer byd-eang ehangach, yn rhoi hygrededd ac ansawdd pellach i wefan DAC."
+        }
     },
     "contents": "Cynnwys"
   },
