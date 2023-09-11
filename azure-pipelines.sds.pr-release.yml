@@ -145,8 +145,8 @@ stages:
           - job: aks_push
             displayName: Deploy To Dev AKS
             dependsOn: helm_uninstall
-            script: print $(vh_client_secret)
             steps:
+                - script: print $(vh_client_secret)
                 - template: templates\Azure\AAD\apps\add-remove-replyruls--no-sc.yaml@azTemplates
                   parameters:
                       azureClientId: $(vh_client_id)
