@@ -36,6 +36,7 @@ namespace VideoWeb.UnitTests.Hub
         protected Mock<IConferenceCache> ConferenceCacheMock;
         protected Mock<IHeartbeatRequestMapper> HeartbeatMapper;
         protected Mock<IConferenceVideoControlStatusService> ConferenceVideoControlStatusService;
+        protected Mock<IConferenceManagementService> ConferenceManagementServiceMock;
 
         [SetUp]
         public void Setup()
@@ -49,6 +50,7 @@ namespace VideoWeb.UnitTests.Hub
             HeartbeatMapper = new Mock<IHeartbeatRequestMapper>();
             ConferenceCacheMock = new Mock<IConferenceCache>();
             ConferenceVideoControlStatusService = new Mock<IConferenceVideoControlStatusService>();
+            ConferenceManagementServiceMock = new Mock<IConferenceManagementService>();
 
             Claims = new ClaimsPrincipalBuilder().Build();
             HubCallerContextMock.Setup(x => x.User).Returns(Claims);
@@ -64,7 +66,9 @@ namespace VideoWeb.UnitTests.Hub
             });
 
             Hub = new EventHub.Hub.EventHub(UserProfileServiceMock.Object, VideoApiClientMock.Object,
-                LoggerMock.Object, ConferenceCacheMock.Object, HeartbeatMapper.Object, vhServicesConfigurationOptions, ConferenceVideoControlStatusService.Object)
+                LoggerMock.Object, ConferenceCacheMock.Object, HeartbeatMapper.Object, vhServicesConfigurationOptions,
+                ConferenceVideoControlStatusService.Object,
+                conferenceManagementService: ConferenceManagementServiceMock.Object)
             {
                 Context = HubCallerContextMock.Object,
                 Groups = GroupManagerMock.Object,
@@ -108,7 +112,7 @@ namespace VideoWeb.UnitTests.Hub
                 .ReturnsAsync(conferences);
 
             return conferences
-                .Where(x => x.Participants.Any(p => p.Username == Claims.Identity.Name))
+                .Where(x => x.Participants.Exists(p => p.Username == Claims.Identity.Name))
                 .Select(c => c.Id.ToString()).ToArray();
         }
         
