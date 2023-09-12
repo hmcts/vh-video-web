@@ -133,6 +133,14 @@ export class AppInsightsLoggerService implements LogAdapter {
                 }
                 this.appInsights.loadAppInsights();
                 this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
+                    const remoteDepedencyType = 'RemoteDependencyData';
+                    if (envelope.baseType === remoteDepedencyType && (envelope.baseData.name as string)) {
+                        const name = envelope.baseData.name as string;
+                        if (name.startsWith('HEAD /assets/images/favicons/favicon.ico?')) {
+                            // ignore favicon requests used to poll for availability
+                            return false;
+                        }
+                    }
                     envelope.tags['ai.cloud.role'] = 'vh-video-web';
                 });
 

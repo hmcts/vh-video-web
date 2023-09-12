@@ -25,14 +25,16 @@ namespace VideoWeb.Controllers
         private readonly ILogger<ConferenceManagementController> _logger;
         private readonly IConferenceCache _conferenceCache;
         private readonly IHearingLayoutService _hearingLayoutService;
+        private readonly IConferenceManagementService _conferenceManagementService;
 
         public ConferenceManagementController(IVideoApiClient videoApiClient,
-            ILogger<ConferenceManagementController> logger, IConferenceCache conferenceCache, IHearingLayoutService hearingLayoutService)
+            ILogger<ConferenceManagementController> logger, IConferenceCache conferenceCache, IHearingLayoutService hearingLayoutService, IConferenceManagementService conferenceManagementService)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
             _conferenceCache = conferenceCache;
             _hearingLayoutService = hearingLayoutService;
+            _conferenceManagementService = conferenceManagementService;
         }
 
         /// <summary>
@@ -359,6 +361,9 @@ namespace VideoWeb.Controllers
             try
             {
                 await TransferParticipantAsync(conferenceId, participantId, TransferType.Dismiss);
+                // reset hand raise on dismiss
+                await _conferenceManagementService.UpdateParticipantHandStatusInConference(conferenceId, participantId,
+                    false);
             }
             catch (VideoApiException ex)
             {
@@ -439,7 +444,7 @@ namespace VideoWeb.Controllers
         private async Task<bool> IsConferenceHost(Guid conferenceId)
         {
             var conference = await GetConference(conferenceId);
-            return conference.Participants.Exists(x => x.Username.Equals(User.Identity.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase) && x.IsHost());
+            return conference.Participants.Exists(x => x.Username.Equals(User.Identity!.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase) && x.IsHost());
         }
 
         private async Task<bool> IsParticipantCallable(Guid conferenceId, Guid participantId)
