@@ -212,7 +212,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         public async Task should_return_accepted_when_participant_is_a_room()
         {
             var judge = TestConference.GetJudge();
-            var room = TestConference.CivilianRooms.First();
+            var room = TestConference.CivilianRooms[0];
             var participant = TestConference.Participants.First(x => x.IsWitness() && room.Participants.Contains(x.Id));
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(judge.Username)
