@@ -467,10 +467,41 @@ namespace VideoWeb.Controllers
                 return participant.IsCallable();
             }
 
-            var witnessRoom = conference.CivilianRooms.First(x => x.Participants.Contains(participant.Id));
+            var witnessRoom = await GetWitnessRoom(conference, participantId);
+
+            if (witnessRoom == null)
+            {
+                return false;
+            }
+        
             var expectedParticipantsInRoomIds = participant.LinkedParticipants.Select(x => x.LinkedId).ToList();
             expectedParticipantsInRoomIds.Add(participant.Id);
             return expectedParticipantsInRoomIds.TrueForAll(p => witnessRoom.Participants.Contains(p));
+        }
+
+        private async Task<CivilianRoom> GetWitnessRoom(Conference conference, Guid participantId)
+        {
+            var witnessRoom = GetRoomForParticipant(conference, participantId);
+
+            if (witnessRoom != null) return witnessRoom;
+            
+            conference = await RefreshConferenceCache(conference.Id);
+        
+            witnessRoom = GetRoomForParticipant(conference, participantId);
+
+            return witnessRoom;
+        }
+
+        private static CivilianRoom GetRoomForParticipant(Conference conference, Guid participantId) => 
+            conference.CivilianRooms.Find(x => x.Participants.Contains(participantId));
+
+        private async Task<Conference> RefreshConferenceCache(Guid conferenceId)
+        {
+            var conferenceResponse = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
+            var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse);
+            await _conferenceCache.UpdateConferenceAsync(conference);
+
+            return conference;
         }
 
         private async Task<Conference> GetConference(Guid conferenceId)
