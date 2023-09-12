@@ -68,6 +68,7 @@ namespace VideoWeb.Controllers
         [HttpPost("ParticipantsUpdated")]
         [SwaggerOperation(OperationId = "ParticipantsUpdated")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> ParticipantsUpdated(Guid conferenceId, UpdateConferenceParticipantsRequest request)
         {
