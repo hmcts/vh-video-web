@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace VideoWeb.Middleware;
 
+[ExcludeFromCodeCoverage]
 public class RequestBodyLoggingMiddleware
 {
     private readonly RequestDelegate _next;
