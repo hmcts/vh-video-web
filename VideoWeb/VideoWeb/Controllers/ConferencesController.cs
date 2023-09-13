@@ -142,7 +142,6 @@ namespace VideoWeb.Controllers
                 var username = User.Identity!.Name;
                 var hearings = await _bookingApiClient.GetConfirmedHearingsByUsernameForTodayAsync(username);
                 var conferencesForIndividual = await _videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username);
-                // conferencesForIndividual = conferencesForIndividual.Where(c => ConferenceHelper.HasNotPassed(c.Status, c.ClosedDateTime)).ToList();
                 var conferenceForIndividualResponseMapper = _mapperFactory
                     .Get<ConfirmedHearingsTodayResponse, List<IndividualConference>, ConferenceForIndividualResponse>();
                 var response = hearings

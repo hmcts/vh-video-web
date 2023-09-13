@@ -62,7 +62,8 @@ namespace VideoWeb.Common.Models
 
         public void UpdateParticipant(UpdateParticipant updateParticipant)
         {
-            var participant = Participants.FirstOrDefault(x => x.RefId == updateParticipant.ParticipantRefId);
+            var participant = Participants.Find(x => x.RefId == updateParticipant.ParticipantRefId);
+            if(participant == null) return;
             participant.Name = updateParticipant.Fullname;
             participant.FirstName = updateParticipant.FirstName;
             participant.LastName = updateParticipant.LastName;
@@ -76,7 +77,7 @@ namespace VideoWeb.Common.Models
 
         private CivilianRoom GetOrCreateCivilianRoom(long roomId)
         {
-            var room = CivilianRooms.FirstOrDefault(x => x.Id == roomId);
+            var room = CivilianRooms.Find(x => x.Id == roomId);
             if (room != null) return room;
             room = new CivilianRoom {Id = roomId};
             CivilianRooms.Add(room);
@@ -86,23 +87,18 @@ namespace VideoWeb.Common.Models
 
         public CivilianRoom GetRoom(Guid participantId)
         {
-            return CivilianRooms.FirstOrDefault(room => room.Participants.Contains(participantId));
+            return CivilianRooms.Find(room => room.Participants.Contains(participantId));
         }
 
         public HearingLayout GetRecommendedLayout()
         {
             var numOfParticipantsIncJudge = Participants.Count + Endpoints.Count;
-            if (numOfParticipantsIncJudge >= 10)
+            return numOfParticipantsIncJudge switch
             {
-                return HearingLayout.TwoPlus21;
-            }
-
-            if (numOfParticipantsIncJudge >= 6 && numOfParticipantsIncJudge <= 9)
-            {
-                return HearingLayout.OnePlus7;
-            }
-
-            return HearingLayout.Dynamic;
+                >= 10 => HearingLayout.TwoPlus21,
+                >= 6 => HearingLayout.OnePlus7,
+                _ => HearingLayout.Dynamic
+            };
         }
     }
 }
