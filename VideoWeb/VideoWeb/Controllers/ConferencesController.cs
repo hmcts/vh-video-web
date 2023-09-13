@@ -141,7 +141,8 @@ namespace VideoWeb.Controllers
             {
                 var username = User.Identity!.Name;
                 var hearings = await _bookingApiClient.GetConfirmedHearingsByUsernameForTodayAsync(username);
-                var conferencesForIndividual = await _videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username);
+                var conferencesForIndividual =
+                    await _videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username);
                 var conferenceForIndividualResponseMapper = _mapperFactory
                     .Get<ConfirmedHearingsTodayResponse, List<IndividualConference>, ConferenceForIndividualResponse>();
                 var response = hearings
@@ -150,7 +151,16 @@ namespace VideoWeb.Controllers
                 response = response.Where(c => c.IsWaitingRoomOpen);
                 return Ok(response.ToList());
             }
-            
+            catch (BookingsApiException e)
+            {
+                if (e.StatusCode == (int)HttpStatusCode.NotFound)
+                {
+                    _logger.LogWarning("No hearings found for user");
+                    return Ok(new List<ConferenceForIndividualResponse>());
+                }
+ 
+                throw;
+            }
             catch (VideoApiException e)
             {
                 _logger.LogError(e, "Unable to get conferences for user");

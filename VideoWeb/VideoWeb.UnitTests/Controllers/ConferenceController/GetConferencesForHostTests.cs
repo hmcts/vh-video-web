@@ -122,13 +122,13 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         public async Task Should_return_ok_with_no_conferences()
         {
             var conferences = new List<Conference>();
-            var bookings = new List<ConfirmedHearingsTodayResponse>();
+            var bookingException = new BookingsApiException("User does not have any hearings", (int)HttpStatusCode.NotFound, "Error", null, null);
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferencesTodayForHostAsync(It.IsAny<string>()))
                 .ReturnsAsync(conferences);
             _mocker.Mock<IBookingsApiClient>()
                 .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>()))
-                .ReturnsAsync(bookings);
+                .ThrowsAsync(bookingException);
 
             var result = await _controller.GetConferencesForHostAsync();
 
