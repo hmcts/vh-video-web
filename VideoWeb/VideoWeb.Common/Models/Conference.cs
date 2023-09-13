@@ -48,7 +48,11 @@ namespace VideoWeb.Common.Models
 
         public void AddParticipant(Participant participant)
         {
-            Participants.Add(participant);
+            if (!Participants.Exists(p =>
+                    p.Username.Equals(participant.Username, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                Participants.Add(participant);
+            }
         }
 
         public void RemoveParticipant(Guid referenceId)

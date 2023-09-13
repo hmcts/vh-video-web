@@ -17,10 +17,12 @@ using Conference = VideoApi.Contract.Responses.ConferenceForHostResponse;
 using Participant = VideoApi.Contract.Responses.ParticipantForHostResponse;
 using ConferenceForHostResponse = VideoWeb.Contract.Responses.ConferenceForHostResponse;
 using Autofac.Extras.Moq;
+using BookingsApi.Client;
 using BookingsApi.Contract.V1.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Contract.Responses;
 using VideoApi.Contract.Enums;
+using EndpointResponse = BookingsApi.Contract.V1.Responses.EndpointResponse;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
 {
@@ -48,8 +50,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .AddTypedParameters<ParticipantForHostResponseMapper>()
                 .AddTypedParameters<ParticipantResponseForVhoMapper>()
                 .AddTypedParameters<ParticipantForUserResponseMapper>()
+                .AddTypedParameters<BookingForHostResponseMapper>()
                 .Build();
 
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConfirmedHearingsTodayResponse, List<VideoApi.Contract.Responses.ConferenceForHostResponse>, ConferenceForHostResponse>()).Returns(_mocker.Create<BookingForHostResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Conference, ConferenceForHostResponse>()).Returns(_mocker.Create<ConferenceForHostResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoApi.Contract.Responses.ConferenceForIndividualResponse, Contract.Responses.ConferenceForIndividualResponse>()).Returns(_mocker.Create<ConferenceForIndividualResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>()).Returns(_mocker.Create<ConferenceForVhOfficerResponseMapper>(parameters));
@@ -63,6 +67,13 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         [Test]
         public async Task Should_return_ok_with_list_of_conferences()
         {
+            var bookings = Builder<ConfirmedHearingsTodayResponse>.CreateListOfSize(10).All()
+                .With(x => x.Id = Guid.NewGuid())
+                .With(x => x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-60))
+                .With(x => x.ScheduledDuration = 20)
+                .With(x => x.Endpoints = Builder<EndpointResponse>.CreateListOfSize(1).Build().ToList())
+                .Build().ToList();
+            
             var participants = new List<Participant>
             {
                 Builder<Participant>.CreateNew().With(x => x.Role = UserRole.Individual).Build(),
@@ -78,9 +89,18 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .With(x => x.Participants = participants)
                 .Build().ToList();
 
+            for (var i = 0; i < bookings.Count; i++)
+            {
+                conferences[i].HearingId = bookings[i].Id;
+            }
+
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferencesTodayForHostAsync(It.IsAny<string>()))
                 .ReturnsAsync(conferences);
+
+            _mocker.Mock<IBookingsApiClient>()
+                .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>()))
+                .ReturnsAsync(bookings);
 
             var result = await _controller.GetConferencesForHostAsync();
 
@@ -89,11 +109,12 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
             var conferencesForUser = (List<ConferenceForHostResponse>) typedResult.Value;
             conferencesForUser.Should().NotBeNullOrEmpty();
-            conferencesForUser.Count.Should().Be(conferences.Count);
-            var i = 1;
-            foreach (var conference in conferencesForUser)
+            conferencesForUser!.Count.Should().Be(conferences.Count);
+            
+            for (var i = 0; i < conferencesForUser.Count; i++)
             {
-                conference.CaseName.Should().Be($"CaseName{i++}");
+                var position = i + 1;
+                conferencesForUser[i].CaseName.Should().Be($"CaseName{position}");
             }
         }
 
@@ -101,9 +122,13 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         public async Task Should_return_ok_with_no_conferences()
         {
             var conferences = new List<Conference>();
+            var bookings = new List<ConfirmedHearingsTodayResponse>();
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferencesTodayForHostAsync(It.IsAny<string>()))
                 .ReturnsAsync(conferences);
+            _mocker.Mock<IBookingsApiClient>()
+                .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>()))
+                .ReturnsAsync(bookings);
 
             var result = await _controller.GetConferencesForHostAsync();
 

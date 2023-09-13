@@ -39,5 +39,10 @@ namespace VideoWeb.Contract.Responses
         /// Flags true when hearing venue is in Scotland
         /// </summary>
         public bool HearingVenueIsScottish { get; set; }
+        
+        /// <summary>
+        /// Flags true when waiting room is open to users
+        /// </summary>
+        public bool IsWaitingRoomOpen { get; set; }
     }
 }
