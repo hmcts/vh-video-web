@@ -152,16 +152,23 @@ namespace VideoWeb
                 });
                 
                 // TODO: need to update the config. currently this route is used for liveness and readiness checks
-                endpoints.MapHealthChecks("/healthcheck/health", new HealthCheckOptions()
+                endpoints.MapHealthChecks("/healthcheck/liveness", new HealthCheckOptions()
                 {
                     Predicate = check => check.Tags.Contains("self"),
                     ResponseWriter = HealthCheckResponseWriter
                 });
 
                 // TODO: need to update the config. currently the liveness route is used for startup
-                endpoints.MapHealthChecks("health/liveness", new HealthCheckOptions()
+                endpoints.MapHealthChecks("/healthcheck/startup", new HealthCheckOptions()
                 {
-                    Predicate = check => check.Tags.Contains("services"),
+                    Predicate = check => check.Tags.Contains("startup"),
+                    ResponseWriter = HealthCheckResponseWriter
+                });
+                
+                // TODO: need to update the config. currently this route is used for liveness and readiness checks
+                endpoints.MapHealthChecks("/healthcheck/readiness", new HealthCheckOptions()
+                {
+                    Predicate = check => check.Tags.Contains("readiness"),
                     ResponseWriter = HealthCheckResponseWriter
                 });
             });

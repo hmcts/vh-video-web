@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Azure.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
@@ -18,35 +17,36 @@ public static class HealthCheckExtensions
         var servicesConfiguration = container.GetService<IOptions<HearingServicesConfiguration>>().Value;
         services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
-            .AddRedis(connectionStrings.RedisCache, tags: new[] {"services"})
-            .AddUrlGroup(
-                new Uri(
-                    new Uri(new ServiceEndpoint(connectionStrings.SignalR).Endpoint),
-                    "/api/v1/health"),
-                name: "SignalR Azure Hub",
-                failureStatus: HealthStatus.Unhealthy,
-                tags: new[] {"services"})
+            .AddRedis(connectionStrings.RedisCache, tags: new[] {"startup", "readiness"})
+                // .AddUrlGroup(
+                // need a private endpoint o check signalr health
+                // new Uri(
+                //     new Uri(new ServiceEndpoint(connectionStrings.SignalR).Endpoint),
+                //     "/api/v1/health"),
+                // name: "SignalR Azure Hub",
+                // failureStatus: HealthStatus.Unhealthy,
+                // tags: new[] {"startup", "readiness"})
             .AddUrlGroup(
                 new Uri(
                     new Uri(servicesConfiguration.VideoApiUrl),
                     "/healthcheck/health"),
                 name: "Video API",
                 failureStatus: HealthStatus.Unhealthy,
-                tags: new[] {"services"})
+                tags: new[] {"startup", "readiness"})
             .AddUrlGroup(
                 new Uri(
                     new Uri(servicesConfiguration.BookingsApiUrl),
                     "/healthcheck/health"),
                 name: "Bookings API",
                 failureStatus: HealthStatus.Unhealthy,
-                tags: new[] {"services"})
+                tags: new[] {"startup", "readiness"})
             .AddUrlGroup(
                 new Uri(
                     new Uri(servicesConfiguration.UserApiUrl),
                     "/healthcheck/health"),
                 name: "User API",
                 failureStatus: HealthStatus.Unhealthy,
-                tags: new[] {"services"});
+                tags: new[] {"startup", "readiness"});
         return services;
     }
 }
