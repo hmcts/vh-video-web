@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Azure.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -7,6 +8,7 @@ using VideoWeb.Common.Configuration;
 
 namespace VideoWeb.Health;
 
+[ExcludeFromCodeCoverage]
 public static class HealthCheckExtensions
 {
     public static IServiceCollection AddVhHealthChecks(this IServiceCollection services)
