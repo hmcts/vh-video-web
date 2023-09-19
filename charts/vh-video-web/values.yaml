@@ -5,9 +5,9 @@ java:
   replicas: 2
   ingressHost: vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net
   releaseNameOverride: vh-video-web
-  livenessPath: /healthcheck/liveness
-  readinessPath: /healthcheck/readiness
-  startupPath: /healthcheck/startup
+  livenessPath: /health/liveness
+  readinessPath: /health/readiness
+  startupPath: /health/startup
   aadIdentityName: vh-aad-identity
   keyVaults:
     vh-infra-core:
