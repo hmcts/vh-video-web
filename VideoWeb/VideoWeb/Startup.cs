@@ -1,19 +1,13 @@
 using System;
-using System.Linq;
-using System.Threading.Tasks;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
-using Newtonsoft.Json;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Extensions;
@@ -150,24 +144,8 @@ namespace VideoWeb
                     options.Transports = HttpTransportType.ServerSentEvents | HttpTransportType.LongPolling |
                                          HttpTransportType.WebSockets;
                 });
-                
-                endpoints.MapHealthChecks("/health/liveness", new HealthCheckOptions()
-                {
-                    Predicate = check => check.Tags.Contains("self"),
-                    ResponseWriter = HealthCheckResponseWriter
-                });
 
-                endpoints.MapHealthChecks("/health/startup", new HealthCheckOptions()
-                {
-                    Predicate = check => check.Tags.Contains("startup"),
-                    ResponseWriter = HealthCheckResponseWriter
-                });
-                
-                endpoints.MapHealthChecks("/health/readiness", new HealthCheckOptions()
-                {
-                    Predicate = check => check.Tags.Contains("readiness"),
-                    ResponseWriter = HealthCheckResponseWriter
-                });
+                endpoints.AddVhHealthCheckRouteMaps();
             });
 
             app.UseSpa(spa =>
@@ -181,21 +159,6 @@ namespace VideoWeb
                     spa.UseProxyToSpaDevelopmentServer(ngBaseUri);
                 }
             });
-        }
-
-        private async Task HealthCheckResponseWriter(HttpContext context, HealthReport report)
-        {
-            var result = JsonConvert.SerializeObject(new
-            {
-                status = report.Status.ToString(),
-                details = report.Entries.Select(e => new
-                {
-                    key = e.Key, value = Enum.GetName(typeof(HealthStatus), e.Value.Status),
-                    error = e.Value.Exception?.Message
-                })
-            });
-            context.Response.ContentType = "application/json";
-            await context.Response.WriteAsync(result);
         }
     }
 }
