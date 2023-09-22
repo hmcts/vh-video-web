@@ -65,7 +65,7 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
             var exception = new AggregateException("kinly api error");
 
             _bookingsApiClientMock
-                .Setup(x => x.GetCaseTypesAsync())
+                .Setup(x => x.GetCaseTypesAsync(false))
                 .ThrowsAsync(exception);
 
             var result = await _controller.HealthAsync();
@@ -118,7 +118,7 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
             var exception = new UriFormatException("Test format is invalid");
 
             _bookingsApiClientMock
-                .Setup(x => x.GetCaseTypesAsync())
+                .Setup(x => x.GetCaseTypesAsync(false))
                 .ThrowsAsync(exception);
 
             var result = await _controller.HealthAsync();

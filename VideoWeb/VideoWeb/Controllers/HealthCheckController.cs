@@ -68,7 +68,7 @@ namespace VideoWeb.Controllers
 
             try
             {
-                await _bookingsApiClient.GetCaseTypesAsync();
+                await _bookingsApiClient.GetCaseTypesAsync(false);
             }
             catch (Exception ex)
             {

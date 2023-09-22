@@ -79,6 +79,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .With(x => x.ScheduledDuration = 20)
                 .With(x => x.Status = ConferenceState.NotStarted)
                 .With(x => x.ClosedDateTime = null)
+                .With(x => x.IsWaitingRoomOpen = true)
                 .Build().ToList();
 
             var allocatedCsoResponses = 
@@ -172,6 +173,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .With(x => x.ScheduledDuration = 20)
                 .With(x => x.Status = ConferenceState.NotStarted)
                 .With(x => x.ClosedDateTime = null)
+                .With(x=> x.IsWaitingRoomOpen = true)
                 .Build().ToList();
 
             var allocatedCsoResponses = 
@@ -282,6 +284,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .With(x => x.ScheduledDuration = 20)
                 .With(x => x.Status = ConferenceState.NotStarted)
                 .With(x => x.ClosedDateTime = null)
+                .With(x => x.IsWaitingRoomOpen = true)
                 .Build().ToList();
 
             var allocatedCsoResponses = 
