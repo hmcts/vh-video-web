@@ -16,6 +16,7 @@ using VideoWeb.UnitTests.Builders;
 using Conference = VideoApi.Contract.Responses.ConferenceForIndividualResponse;
 using ConferenceForIndividualResponse = VideoWeb.Contract.Responses.ConferenceForIndividualResponse;
 using Autofac.Extras.Moq;
+using BookingsApi.Client;
 using BookingsApi.Contract.V1.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Contract.Responses;
@@ -47,8 +48,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .AddTypedParameters<ParticipantForHostResponseMapper>()
                 .AddTypedParameters<ParticipantResponseForVhoMapper>()
                 .AddTypedParameters<ParticipantForUserResponseMapper>()
+                .AddTypedParameters<BookingForIndividualResponseMapper>()
                 .Build();
 
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConfirmedHearingsTodayResponse, List<VideoApi.Contract.Responses.ConferenceForIndividualResponse>, ConferenceForIndividualResponse>()).Returns(_mocker.Create<BookingForIndividualResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoApi.Contract.Responses.ConferenceForHostResponse, Contract.Responses.ConferenceForHostResponse>()).Returns(_mocker.Create<ConferenceForHostResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Conference, ConferenceForIndividualResponse>()).Returns(_mocker.Create<ConferenceForIndividualResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>()).Returns(_mocker.Create<ConferenceForVhOfficerResponseMapper>(parameters));
@@ -62,13 +65,30 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         [Test]
         public async Task Should_return_ok_with_list_of_conferences()
         {
+            var bookings = Builder<ConfirmedHearingsTodayResponse>.CreateListOfSize(10).All()
+                .With(x => x.Id = Guid.NewGuid())
+                .With(x => x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-60))
+                .With(x => x.ScheduledDuration = 20)
+                .With(x => x.Endpoints = Builder<BookingsApi.Contract.V1.Responses.EndpointResponse>.CreateListOfSize(1).Build().ToList())
+                .Build().ToList();
+            
             var conferences = Builder<Conference>.CreateListOfSize(10).All()
                 .With(x => x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-60))
+                .With(x => x.IsWaitingRoomOpen = true)
                 .Build().ToList();
+            
+            for (var i = 0; i < bookings.Count; i++)
+            {
+                conferences[i].HearingId = bookings[i].Id;
+            }
 
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferencesTodayForIndividualByUsernameAsync(It.IsAny<string>()))
                 .ReturnsAsync(conferences);
+            
+            _mocker.Mock<IBookingsApiClient>()
+                .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>()))
+                .ReturnsAsync(bookings);
 
             var result = await _sut.GetConferencesForIndividual();
 
@@ -84,9 +104,13 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         public async Task Should_return_ok_with_no_conferences()
         {
             var conferences = new List<Conference>();
+            var bookingException = new BookingsApiException("User does not have any hearings", (int)HttpStatusCode.NotFound, "Error", null, null);
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferencesTodayForIndividualByUsernameAsync(It.IsAny<string>()))
                 .ReturnsAsync(conferences);
+            _mocker.Mock<IBookingsApiClient>()
+                .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>()))
+                .ThrowsAsync(bookingException);
 
             var result = await _sut.GetConferencesForIndividual();
 

@@ -37,9 +37,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="6.0.4" />
-    <PackageReference Include="AspNetCore.HealthChecks.Uris" Version="6.0.3" />
-    <PackageReference Include="BookingsApi.Client" Version="1.46.3" />
+    <PackageReference Include="BookingsApi.Client" Version="1.47.5" />
     <PackageReference Include="Castle.Core" Version="5.1.1" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="10.4.0" />
     <PackageReference Include="MicroElements.Swashbuckle.FluentValidation" Version="5.7.0" />
@@ -65,9 +63,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.5.0" />
-    <PackageReference Include="UserApi.Client" Version="1.44.2" />
+    <PackageReference Include="UserApi.Client" Version="1.45.2" />
     <PackageReference Include="VH.Core.Configuration" Version="0.1.13" />
-    <PackageReference Include="VideoApi.Client" Version="1.44.12" />
+    <PackageReference Include="VideoApi.Client" Version="1.44.20" />
   </ItemGroup>
 
   <ItemGroup>

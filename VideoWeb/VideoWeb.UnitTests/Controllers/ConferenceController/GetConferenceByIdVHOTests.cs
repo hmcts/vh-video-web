@@ -135,6 +135,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
             var conference = Builder<ConferenceDetailsResponse>.CreateNew()
                 .With(x => x.Participants = participants)
+                .With(x => x.IsWaitingRoomOpen = true)
                 .Build();
             return conference;
         }

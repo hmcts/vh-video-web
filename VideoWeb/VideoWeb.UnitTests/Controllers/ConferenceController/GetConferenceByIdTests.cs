@@ -113,6 +113,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         {
             var conference = CreateValidConferenceResponse(null);
             conference.CurrentStatus = ConferenceState.Closed;
+            conference.IsWaitingRoomOpen = false;
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
@@ -204,6 +205,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var conference = Builder<ConferenceDetailsResponse>.CreateNew()
                 .With(x => x.Participants = participants)
                 .With(x => x.Endpoints = endpoints)
+                .With(x => x.IsWaitingRoomOpen = true)
                 .Build();
             return conference;
         }
