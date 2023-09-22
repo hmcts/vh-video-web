@@ -25,14 +25,6 @@ public static class HealthCheckExtensions
         services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
             .AddRedis(connectionStrings.RedisCache, tags: new[] {"startup", "readiness"})
-                // .AddUrlGroup(
-                // need a private endpoint o check signalr health
-                // new Uri(
-                //     new Uri(new ServiceEndpoint(connectionStrings.SignalR).Endpoint),
-                //     "/api/v1/health"),
-                // name: "SignalR Azure Hub",
-                // failureStatus: HealthStatus.Unhealthy,
-                // tags: new[] {"startup", "readiness"})
             .AddUrlGroup(
                 new Uri(
                     new Uri(servicesConfiguration.VideoApiUrl),
