@@ -1,4 +1,4 @@
-@import '~govuk-frontend/govuk/base';
+@import 'govuk-frontend/govuk/base';
 
 .container {
   padding: 12px;
@@ -79,6 +79,16 @@
   grid-template-columns: auto auto auto;
   grid-column-gap: 5px;
   width: 100%;
+
+  .row1 {
+    grid-row: 1;
+    margin-bottom: 0.6vh;
+  }
+
+  .row2 {
+    grid-row: 2;
+    margin-bottom: 0.6vh;
+  }
 }
 
 .small-button {

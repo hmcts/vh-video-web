@@ -11,13 +11,14 @@ import { VideoFilterService } from 'src/app/services/video-filter.service';
     styleUrls: ['./video-filter.component.scss']
 })
 export class VideoFilterComponent implements OnInit, OnDestroy {
-    destroy$: Subject<boolean> = new Subject<boolean>();
-    private readonly loggerPrefix = '[VideoFilter] -';
     filtersAvailable = BackgroundFilter;
     activeFilter: BackgroundFilter;
     filterOn: boolean;
     showOptions: boolean;
     browserSupportsFilters: boolean;
+    destroy$: Subject<boolean> = new Subject<boolean>();
+
+    private readonly loggerPrefix = '[VideoFilter] -';
 
     constructor(private videoFilterService: VideoFilterService, private logger: Logger) {}
 
@@ -25,19 +26,6 @@ export class VideoFilterComponent implements OnInit, OnDestroy {
         this.browserSupportsFilters = this.videoFilterService.doesSupportVideoFiltering();
         this.showOptions = false;
         this.initCurrentFilter();
-    }
-
-    private initCurrentFilter() {
-        this.videoFilterService.onFilterChanged$
-            .pipe(startWith(this.videoFilterService.activeFilter), takeUntil(this.destroy$))
-            .subscribe(newFilter => {
-                if (newFilter) {
-                    this.activeFilter = newFilter;
-                    this.filterOn = true;
-                } else {
-                    this.filterOn = false;
-                }
-            });
     }
 
     ngOnDestroy() {
@@ -51,11 +39,24 @@ export class VideoFilterComponent implements OnInit, OnDestroy {
     }
 
     updateFilter(newFilter: BackgroundFilter | null) {
-        this.logger.info(`${this.loggerPrefix} filter dropdown changed ${newFilter}`);
+        this.logger.debug(`${this.loggerPrefix} filter dropdown changed ${newFilter}`);
         this.videoFilterService.updateFilter(newFilter);
     }
 
     toggleDisplayOptions() {
         this.showOptions = !this.showOptions;
+    }
+
+    private initCurrentFilter() {
+        this.videoFilterService.onFilterChanged$
+            .pipe(startWith(this.videoFilterService.activeFilter), takeUntil(this.destroy$))
+            .subscribe(newFilter => {
+                if (newFilter) {
+                    this.activeFilter = newFilter;
+                    this.filterOn = true;
+                } else {
+                    this.filterOn = false;
+                }
+            });
     }
 }

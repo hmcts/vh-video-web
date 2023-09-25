@@ -5,7 +5,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Responses;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -135,6 +135,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
             var conference = Builder<ConferenceDetailsResponse>.CreateNew()
                 .With(x => x.Participants = participants)
+                .With(x => x.IsWaitingRoomOpen = true)
                 .Build();
             return conference;
         }

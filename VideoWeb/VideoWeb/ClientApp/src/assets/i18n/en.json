@@ -66,7 +66,7 @@
     "maximum": "maximum allowed",
     "unable-send": "Unable to send message.",
     "type-a-message": "Type a message",
-      "text-area": "Text area",
+    "text-area": "Text area",
     "you-can-enter-up-to": "You can enter up to",
     "characters-in-this-field": "characters in this field",
     "maximum-characters-entered": "You have entered the maximum number of characters"
@@ -398,12 +398,15 @@
     "context-menu-icon": "Context menu icon",
     "call-witness": "Call witness",
     "admit-participant": "Admit {{ role }}",
+    "dismiss-witness": "Dismiss witness",
     "dismiss-participant": "Dismiss {{ role }}",
     "lower-hand": "Lower hand",
     "unmute": "Unmute",
     "mute": "Mute",
-    "unpin": "Unpin",
-    "pin": "Pin"
+    "mute-lock": "Mute & lock",
+    "unmute-lock": "Unlock mute",
+    "unpin": "Remove spotlight",
+    "pin": "Spotlight"
   },
   "judge-participant-status-list": {
     "crest-alt": "HM Courts &amp; Tribunals Service crest",
@@ -608,7 +611,11 @@
     "mute-participant": "Mute participant",
     "microphone-muted-icon": "Microphone muted icon",
     "microphone-on-icon": "Microphone on icon",
-    "participant-muted": "Participant muted"
+    "participant-muted": "Participant muted",
+    "mute-all": "Mute all",
+    "unmute-all": "Unmute all",
+    "mute-all-tooltip": "Mute all participants",
+    "unmute-all-tooltip": "Unmute all participants"
   },
   "private-consultation-room-controls": {
     "join-hearing-from-consultation": "Join hearing",
@@ -731,7 +738,21 @@
     "lay-member": "Lay Member",
     "cica-presenting-officer": "CICA Presenting Officer",
     "royal-british-legion": "Royal British Legion",
-    "expert-witness": "Expert Witness"
+    "expert-witness": "Expert Witness",
+    "appointee": "Appointee",
+    "other-party": "Other Party",
+    "welfare-representative": "Welfare Representative",
+    "support": "Support",
+    "applicant": "Applicant",
+    "victim": "Victim",
+    "party": "Party",
+    "defendant": "Defendant",
+    "intermediaries": "Intermediaries",
+    "prosecutor": "Prosecutor",
+    "police": "Police",
+    "defence-counsel": "Defence Counsel",
+    "prosecution-counsel": "Prosecution Counsel",
+    "claimant": "Claimant"
   },
   "case-role": {
     "appellant": "Appellant",
@@ -758,7 +779,8 @@
     "operator": "Operator",
     "siteproviders": "Site Providers",
     "respondentauthority": "Respondent Authority",
-    "localauthority": "Local Authority"
+    "localauthority": "Local Authority",
+    "party": "Party"
   },
   "case-type": {
     "adoption": "Adoption",
@@ -813,7 +835,9 @@
     "criminal-injuries-compensation": "Criminal Injuries Compensation",
     "war-pensions-appeals": "War Pensions Appeals",
     "special-educational-needs-and-disability": "Special Educational Needs and Disability",
-    "care-standards": "Care Standards"
+    "care-standards": "Care Standards",
+    "damages": "Damages",
+    "crime-crown-court": "Crime Crown Court"
   },
   "case-type-group": {
     "state": "State",
@@ -841,7 +865,8 @@
     "operator": "Operator",
     "siteproviders": "Site Providers",
     "respondentauthority": "Respondent Authority",
-    "localauthority": "Local Authority"
+    "localauthority": "Local Authority",
+    "party": "Party"
   },
   "user-role": {
     "case-admin": "Case admin",
@@ -905,6 +930,21 @@
     "title": "Warning",
     "message": "There’s a problem with recording. Some or all of the audio for this hearing may not be recorded."
   },
+  "audio-alert-with-restart": {
+    "title": "Warning",
+    "message": "Recording has stopped working. Please click below to restart recording.",
+    "button": "Restart"
+  },
+  "audio-alert-restart-success": {
+    "title": "Audio being recorded",
+    "message": "The recording has been resumed successfully.",
+    "button": "OK"
+  },
+  "audio-alert-restart-failure": {
+    "title": "Unable to resume recording",
+    "message": "Sorry, we’re unable to resume recording. Please revert to alternative recording equipment",
+    "button": "OK"
+  },
   "unread-messages": {
     "im-image-alt": "instant message icon"
   },
@@ -955,76 +995,113 @@
   },
   "accessibility": {
     "crest-image-alt": "HMCTS logo crest image",
+      "content": "",
     "menu": {
       "heading": "Contents",
       "accessibility-statement": {
         "heading": "Accessibility statement for the HMCTS video hearing service",
-        "paragraph1": "This service allows all participants to take part in a court hearing by video - from their home, office or somewhere else using a laptop or desktop computer.",
-        "paragraph2": "This accessibility statement is based on evaluation conducted by the Digital Accessibility Centre (DAC), Neath, during September 2019.",
-        "paragraph3": "This website is run by HM Courts and Tribunals Service. We want as many people as possible to be able to use this service. For example, this means you should be able to:",
+        "paragraph1": "This accessibility statement applies to the Video Hearings service available at: video.hearings.reform.hmcts.net. This service allows all participants to take part in a court or tribunal hearing by video - from their home, office, or somewhere else using a laptop or desktop computer.",
+        "paragraph2": "This website is run by His Majesty’s Courts and Tribunals Service (HMCTS). We want as many people as possible to be able to use this website. On this website, you should be able to:",
         "list": {
-          "1": "change colours, contrast levels and fonts",
-          "2": "zoom in up to 300% without the text spilling off the screen",
-          "3": "navigate most of the website using just a keyboard",
-          "4": "navigate most of the website using speech recognition software",
-          "5": "listen to most of the website using a screen reader"
+          "1": "navigate most of the website using just a keyboard; and",
+          "2": "listen to most of the website using a screen reader (including the most recent versions of JAWS, NVDA and VoiceOver)."
         },
-        "paragraph4": "We’ve also made the website text as simple as possible to understand.",
         "abilityNet": "AbilityNet",
-        "paragraph5": "has advice on making your device easier to use if you have a disability."
+        "paragraph3": "has advice on making your device easier to use if you have a disability."
       },
       "how-accessible": {
-        "heading": "How accessible is this website?",
-        "paragraph1": "Fully video hearings provide an additional channel for conducting a hearing. While they are being made as accessible as possible, they may not be suitable for everyone.",
-        "paragraph2": "The video hearings service includes a triage process so that people can make the court aware of any particular condition or impairment that may impact their ability to take part in a video hearing.",
-        "paragraph3": "It will always be for a judge to decide whether to use the option of a fully video hearing, and to ensure the interests of justice are served in any given hearing.",
-        "paragraph4": "During testing by DAC, users with cognitive impairment and dyslexia were able to navigate the website ‘completely independently, with no issues’. The access issues reported particularly affected those who are visually impaired or use voice activation technology."
+        "paragraph1": "We know some parts of this website are not fully accessible:",
+        "heading": "How accessible is this service?",
+          "list": {
+              "1": "The self-test feature, for testing computer equipment in advance of a video hearing, is not accessible for visually impaired people.",
+              "2": "Screen reader users may experience issues using the following sections of the application:",
+              "3": "People needing to use their keyboard for navigation may experience the following issues:",
+              "4": "Users with low vision may have issues reading the text on the platform, due to there being not enough contrast between text and its background",
+              "5": "Users with visual impairments may have issues using the Instant Messaging feature in the Hearing Room. They will be able to listen to most of the website using a screen reader."
+          },
+          "sub-list1": {
+              "1": "Viewing the Participant List in the Waiting Room. ",
+              "2": "Navigating the in-hearing controls in the Hearing Room. ",
+              "3": "Selecting a hearing from the Hearing List. ",
+              "4": "Selecting the Camera, Microphone, and the Instant Messaging feature in the Waiting Room."
+          },
+          "sub-list2": {
+              "1": "Selecting the Camera and Microphone from the Waiting Room.",
+              "2": "Leaving a Consultation Room.",
+              "3": "Navigating the in-hearing controls in the Hearing Room "
+          },
+          "paragraph2": "We want as many people as possible to be able to use our service, we are therefore working to further develop the Video Hearings platform, so that it is accessible for all our users. Our aim is to ensure that improvements are in place by July 2023."
       },
-      "cannot-access": {
-        "heading": "What to do if you cannot access parts of this website",
-        "paragraph1": "If you need help to access the information on this website, contact the video hearings team:",
-        "paragraph2": "Available between 9am and 5pm, Monday to Friday.",
-        "list": {
-          "1": "email {{email}}",
-          "2": "call {{phone}}"
-        }
+      "feedback": {
+        "heading": "Feedback and contact information",
+        "paragraph1": "Contact the court or tribunal that arranged your hearing if: you feel you cannot attend your hearing by video; if you have additional needs; if you need information about our service in a different format like accessible PDF, large print, easy read, audio recording or braille.",
+        "paragraph2": "If you have a notice of hearing, you can find the court and tribunal contact details there.",
+        "paragraph3": "If you know the name of the court or tribunal, you can search for their contact details at.",
+        "paragraph3.link": "https://www.gov.uk/find-court-tribunal",
+        "paragraph4": "If you have technical questions about your Video Hearing, or if you are experiencing technical difficulties with your equipment, such as your camera or microphone not working, then please contact the video hearings team using the details below: ",
+        "paragraph5": "For England and Wales:",
+        "paragraph6": "For Scotland:",
+        "paragraph7": "If you email us, include the location of your court or tribunal centre and case number in the subject line.",
+        "paragraph8": "We aim to respond to emails the same working day.",
+          "list": {
+              "1": "call {{phoneNumber}} between 9am and 5pm, Monday to Friday",
+              "2": "email: "
+          },
+          "list-scotland": {
+              "1": "call {{phoneNumber}} between 8.30am and 5pm, Monday to Friday",
+              "2": "email: "
+          }
       },
       "reporting-accessibility": {
-        "heading": "Reporting accessibility problems with this website",
-        "paragraph1": "We’re always looking to improve the accessibility of this website. If you find any problems not listed on this page or think we’re not meeting accessibility requirements, contact the video hearings team (above)."
+        "heading": "Reporting accessibility problems with this service",
+        "paragraph1": "We’re always looking to improve the accessibility of our service. If you find any problems that aren’t listed on this page or think we’re not meeting the requirements of the accessibility regulations contact:",
+        "list": {
+            "1": "email: ",
+            "2": "call 0300 303 0655, Monday to Friday, 9am and 5pm"
+        }
       },
       "enforcement-procedure": {
         "heading": "Enforcement procedure",
         "paragraph1": "The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018 (the ‘accessibility regulations’). If you’re not happy with how we respond to your complaint, ",
         "paragraph2": "contact the Equality Advisory and Support Service (EASS)"
       },
-      "technical-information": {
-        "heading": "Technical information about this website’s accessibility",
-        "paragraph1": "HM Courts and Tribunals Service is committed to making its website accessible, in accordance with the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018.",
-        "paragraph2": {
-          "1": "This website is partially compliant with the",
-          "2": "Web Content Accessibility Guidelines version 2.1",
-          "3": "AA standard, due to the non-compliances listed below."
-        },
-        "paragraph3": "paragraph1"
+      "contacting-us": {
+          "heading": "Contacting us by phone or visiting us in person",
+          "paragraph1": "We provide a text relay service if you’re deaf, hearing impaired or have a speech impediment.",
+          "paragraph2": "Our offices have audio induction loops, or if you contact us before your visit, we can arrange a British Sign Language (BSL) interpreter.",
+          "paragraph3": "Find out how to at: ",
+          "paragraph3.link": "Find a court or tribunal - GOV.UK (www.gov.uk)"
       },
+      "technical-information": {
+        "heading": "Technical information about the Video Hearings service’s accessibility",
+        "paragraph1": "HM Courts and Tribunals Service is committed to making its services accessible, in accordance with the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018."
+      },
+        "compliance-status": {
+            "heading": "Compliance status",
+            "paragraph1.1": "Our service is partially compliant with the",
+            "link": "Web Content Accessibility Guidelines version 2.1",
+            "paragraph1.2": "AA standard due to the non-compliances listed below."
+        },
       "non-accessible-content": {
         "heading": "Non accessible content",
-        "paragraph1": "A number of accessibility and usability issues were reported. These particularly impacted those who are visually impaired or use voice activation technology. Most issues were resolved before the private beta was released. Those that remain are shown below."
+        "paragraph1": "The content listed below is non-accessible for the following reasons.",
+        "paragraph2": "The self-test feature means that users need to test their computer equipment in advance of their video hearing. A video plays and the user is prompted to count to 5 out loud to check their microphone is working. The microphone volume indicator relies on sight and does not convey information to visually impaired users. This fails WCAG success criteria 1.1.1 (non-text content) and 1.3.3 (sensory characteristics). ",
+        "paragraph3": "The self-test feature is scheduled for redesign by July 2024. ",
+        "paragraph4": "Screen reader users may experience issues using some sections of the application. Viewing the Participant List in Waiting Room fails WCAG success criterion 1.3.1 (Info and Relationships). Navigating to the in-hearing controls in the Hearing Room fails WCAG success criteria 2.4.3 (Focus Order). Selecting a hearing from the Hearing List fails WCAG success criterion 2.4.6 (Headings and Labels), as does Selecting Camera and Microphone from the Waiting Room. The Instant Messaging feature in the Waiting Room fails WCAG success criterion 4.1.3. (Status Messages) as the character count is not read out to users.",
+        "paragraph5": "These features are due to be incorporated onto the Video Hearings Platform by March 2023.",
+        "paragraph6": "Users reliant on using the keyboard for navigation may experience issues some sections of the application. Selecting Camera and Microphone from the Waiting Room fails WCAG success criterion 2.4.3 (Focus Order), as does Leaving a Consultation. Navigating to the in-hearing controls in the Hearing Room fails WCAG success criterion 1.4.12 (Content on Hover or Focus).",
+        "paragraph7": "These features are due to be incorporated onto the Video Hearings Platform by March 2023.",
+        "paragraph8": "Users with low vision may have issues using the Instant Messaging feature in the Hearing Room. This fails WCAG success criterion 1.4.2 (Contrast (Minimum)). Users will be able to listen to most of the website using a screen reader."
       },
-      "non-compliance-accessibility-regulations": {
-        "heading": "Non compliance with the accessibility regulations",
-        "sub-heading1": "Information videos",
-        "paragraph1": "We currently use video to help users see what their experience would be like either attending a court building or taking part in a video hearing. This has proved popular in user testing and we’ll make the necessary changes to make the videos more accessible by the end of 2019.",
-        "sub-heading2": "Equipment check",
-        "paragraph2": "We use video to help users test whether their computer equipment is suitable for a video hearing. This has caused some accessibility issues, detailed below.",
-        "paragraph3": "We use a visual method to indicate to the user that their microphone is working. This is not suitable for those with visual impairments. We’re considering providing an audible indicator so they know their microphone is picking up sound.",
-        "paragraph4": "The video intentionally has no controls. It needs to play to the end to detect the strength of the user’s internet connection. This takes at least 20 to 30 seconds. We’ve added an explanation.",
-        "paragraph5": "By Spring 2020 we’ll review the way we help users test their equipment to address the accessibility issues identified in the DAC report."
-      },
-      "not-within-the-scope": {
-        "heading": "Not within scope/not applicable",
-        "paragraph1": "In preparing for a video hearing, potential participants are asked a series of questions. These are presented as one question per page, with the option of a ‘yes’ or ‘no’ answer. DAC advised that we should group the ‘yes’ and ‘no’ buttons to assist screen reader users. (WCAG reference 1.3.1 – A). This advice reflects guidance for longer forms with separate groups of questions on a single page, which is not applicable in this instance."
+      "improving-accessibility": {
+        "heading": "What we’re doing to improve accessibility",
+        "paragraph1": "The Video Hearings service is continually tested by HMCTS using automated tests and with accessibility software. Any new features which are introduced are also tested. This helps us to resolve issues before we launch new pages or features.",
+        "paragraph2": "The platform can be used in advance of a video hearing to enable a user to change their password and test their computer equipment. This aspect of the website was assessed by the Digital Accessibility Centre in September 2019.",
+        "paragraph3": "The platform is used to enable a user to attend their video hearing. This aspect of the website was assessed by the Digital Accessibility Centre in April 2021.",
+        "paragraph4": "Departments and agencies are urgently fixing issues which fail to meet the Web Content Accessibility Guidelines version 2.1 AA standard. We will update this page when issues are fixed.",
+        "paragraph5.1": "By Spring 2020 we’ll review the way we help users test their equipment to address the accessibility issues identified in the DAC report.",
+        "paragraph5.link": "roadmap ",
+        "paragraph5.2": "shows how and when we plan to improve accessibility on the video hearings platform.."
       },
       "how-we-tested-this-website": {
         "heading": "How we tested this website",
@@ -1035,7 +1112,20 @@
         "paragraph4": "Manual accessibility checking was conducted by a team of disabled individuals, using a range of adaptive technologies (hardware and software designed to facilitate the use of computers by people with disabilities).",
         "sub-heading2": "Technical auditing:",
         "paragraph5": "Technical auditing involves the experienced application of a number of technical auditing and standards compliance assessment tools. This combined with an extensive knowledge of WCAG, its application and wider global practice provides the DAC website with further credibility and quality."
-      }
+      },
+      "preparation-of-statement": {
+            "heading": "Preparation of this accessibility statement",
+            "paragraph1": "This statement was prepared on 29 October 2019.  It was last reviewed on 20 December 2022.",
+            "paragraph2": "The website was last tested in April 2021.  The test was carried out by the Digital Accessibility Centre (DAC). We decided to test all the pages within our platform to make sure that we were meeting the needs of our users.",
+            "paragraph3": "You can read the full accessibility test report ",
+            "paragraph3.link": "here",
+            "paragraph4": "The DAC’s methodology is:",
+            "paragraph5": "The website was tested by a team of experienced auditors, many of whom are disabled individuals and users of adaptive technology. The combination of subjective pan-disability user feedback and comprehensive technical auditing allows us to measure how the website performs technically and practically, thereby offering an essential added dimension to our test results that other methods of testing cannot provide.",
+            "paragraph6": "User testing:",
+            "paragraph7": "Manual accessibility checking was conducted by a team of disabled individuals, using a range of adaptive technologies (hardware and software designed to facilitate the use of computers by people with disabilities).”",
+            "paragraph8": "Technical auditing:",
+            "paragraph9": "“Technical auditing involves the experienced application of a number of technical auditing and standards compliance assessment tools. This combined with an extensive knowledge of WCAG, its application and wider global practice provides the DAC website with further credibility and quality.”"
+        }
     },
     "contents": "Contents"
   },
@@ -1153,34 +1243,49 @@
     "poor-connection": {
       "title": "Alert",
       "message": "Your internet connection is poor. People may have trouble seeing and hearing you.",
-      "dismiss": "Dismiss"
+      "dismiss": "OK"
     },
     "participant-added": {
       "title": "{{name}}",
       "message-without-party": "{{role}} has been added to the hearing.",
       "message-with-party": "{{role}} ({{party}}) has been added to the hearing.",
-      "dismiss": "Dismiss"
+      "dismiss": "OK"
     },
     "endpoint-added": {
       "title": "{{name}}",
       "message": "Video Access Point has been added to the hearing",
-      "dismiss": "Dismiss"
+      "dismiss": "OK"
     },
     "endpoint-updated": {
       "title": "{{name}}",
       "message": "Video Access Point has been updated in the hearing",
-      "dismiss": "Dismiss"
+      "dismiss": "OK"
+    },
+    "endpoint-linked": {
+      "title": "Alert",
+      "message": "You have been added as the linked legal representative to {{jvsEndpointName}}",
+      "dismiss": "OK"
+    },
+    "endpoint-unlinked": {
+      "title": "Alert",
+      "message": "You cannot start a consultation with {{jvsEndpointName}} as you are no longer the linked legal representative",
+      "dismiss": "OK"
+    },
+    "endpoint-consultation-closed": {
+      "title": "Alert",
+      "message": "Consultation with {{jvsEndpointName}} has ended as you are no longer the linked legal representative",
+      "dismiss": "OK"
     },
     "hearing-layout-changed": {
       "title": "{{name}}",
       "message": "has changed the hearing layout.",
-      "dismiss": "Dismiss"
+      "dismiss": "OK"
     },
     "hearing-started": {
       "title": "Alert!",
       "join-hearing": "Join hearing",
       "message": "The hearing is now in session.",
-      "dismiss": "Dismiss"
+      "dismiss": "OK"
     }
   },
   "consultation-service": {
@@ -1194,6 +1299,9 @@
     "description": "You must sign in with the right kind of user account. Check the user name you were sent and select from the following options:",
     "ejud": {
       "description": "My user name ends with @ejudiciary.net"
+    },
+    "dom1": {
+      "description": "My user name ends with @justice.gov.uk"
     },
     "vhaad": {
       "description": "My user name ends with @hearings.reform.hmcts.net"
@@ -1250,7 +1358,7 @@
   },
   "true": "Yes",
   "false": "No",
-    "allocations-toastr": {
-        "header" : "New hearing(s) allocated"
-    }
+  "allocations-toastr": {
+    "header": "New hearing(s) allocated"
+  }
 }

@@ -14,6 +14,13 @@ import { ConferenceStatusChanged } from './models/conference-status-changed.mode
     providedIn: 'root'
 })
 export class ConferenceService {
+    private loggerPrefix = '[ConferenceService] -';
+    private subscriptions: Subscription[] = [];
+    private _currentConference: ConferenceResponse;
+    private currentConferenceSubject = new ReplaySubject<ConferenceResponse>(1);
+    private onCurrentConferenceStatusChangedSubject = new ReplaySubject<ConferenceStatusChanged>(1);
+    private _currentConferenceId: string;
+
     constructor(
         router: Router,
         private activatedRoute: ActivatedRoute,
@@ -35,50 +42,35 @@ export class ConferenceService {
                 this.onRouteParamsChanged(paramMap);
             });
     }
+
     get currentConference(): ConferenceResponse {
         return this._currentConference;
     }
+
     get currentConference$(): Observable<ConferenceResponse> {
         return this.currentConferenceSubject.asObservable();
     }
+
     get onCurrentConferenceStatusChanged$() {
         return this.onCurrentConferenceStatusChangedSubject.asObservable();
     }
+
     get currentConferenceId(): string {
         return this._currentConferenceId;
     }
-    private loggerPrefix = '[ConferenceService] -';
-
-    private subscriptions: Subscription[] = [];
-
-    private _currentConference: ConferenceResponse;
-
-    private currentConferenceSubject = new ReplaySubject<ConferenceResponse>(1);
-
-    private onCurrentConferenceStatusChangedSubject = new ReplaySubject<ConferenceStatusChanged>(1);
-
-    private _currentConferenceId: string;
 
     initialiseConferenceFromActiveRoute() {
         this.onRouteParamsChanged(this.getConferenceIdFromRoute(this.activatedRoute.snapshot));
     }
 
-    private getConferenceIdFromRoute(route: ActivatedRouteSnapshot): ParamMap {
-        while (route && !route.paramMap?.has('conferenceId')) {
-            route = route?.firstChild;
-        }
-
-        return route?.paramMap;
-    }
-
     getConferenceById(conferenceId: string | Guid): Observable<ConferenceResponse> {
-        this.logger.info(`${this.loggerPrefix} getting conference by ID: ${conferenceId}`);
+        this.logger.debug(`${this.loggerPrefix} getting conference by ID: ${conferenceId}`);
 
         return this.apiClient.getConferenceById(conferenceId.toString());
     }
 
     getParticipantsForConference(conferenceId: Guid | string): Observable<ParticipantModel[]> {
-        this.logger.info(`${this.loggerPrefix} getting participants for conference.`);
+        this.logger.debug(`${this.loggerPrefix} getting participants for conference.`);
 
         return this.apiClient
             .getParticipantsByConferenceId(conferenceId.toString())
@@ -90,7 +82,7 @@ export class ConferenceService {
     }
 
     getEndpointsForConference(conferenceId: Guid | string): Observable<ParticipantModel[]> {
-        this.logger.info(`${this.loggerPrefix} getting endpoints for conference.`);
+        this.logger.debug(`${this.loggerPrefix} getting endpoints for conference.`);
 
         return this.apiClient
             .getVideoEndpointsForConference(conferenceId.toString())
@@ -123,10 +115,18 @@ export class ConferenceService {
         );
     }
 
+    private getConferenceIdFromRoute(route: ActivatedRouteSnapshot): ParamMap {
+        while (route && !route.paramMap?.has('conferenceId')) {
+            route = route?.firstChild;
+        }
+
+        return route?.paramMap;
+    }
+
     private handleConferenceStatusChange(conferenceStatusMessage: ConferenceStatusMessage): void {
         if (this.currentConference.status !== conferenceStatusMessage.status) {
             const oldValue = this.currentConference.status;
-            this.logger.info(`${this.loggerPrefix} updating conference status`, {
+            this.logger.debug(`${this.loggerPrefix} updating conference status`, {
                 oldValue: oldValue,
                 newValue: conferenceStatusMessage.status
             });
@@ -139,7 +139,7 @@ export class ConferenceService {
     private onRouteParamsChanged(params: ParamMap): void {
         this._currentConferenceId = params?.get('conferenceId');
 
-        this.logger.info(`${this.loggerPrefix} New route - Conference ID: ${this._currentConferenceId}`, {
+        this.logger.debug(`${this.loggerPrefix} New route - Conference ID: ${this._currentConferenceId}`, {
             routeParams: params
         });
 
@@ -156,7 +156,7 @@ export class ConferenceService {
 
         this.logger.debug(`${this.loggerPrefix} attempting to get conference details.`);
         this.getConferenceById(this.currentConferenceId).subscribe(conference => {
-            this.logger.info(`${this.loggerPrefix} conference details retrieved.`, {
+            this.logger.debug(`${this.loggerPrefix} conference details retrieved.`, {
                 oldDetails: this.currentConference,
                 newDetails: conference
             });

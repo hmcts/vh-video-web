@@ -6,29 +6,14 @@ import { WindowScrolling } from './window-scrolling';
     selector: '[appScrollTrigger]'
 })
 export class ScrollTriggerDirective {
-    lastScrollPosition = 0;
-    margin = 30;
-
     @Output() scrolledPast = new EventEmitter<ScrolledEvent>();
     @Output() scrollFooter = new EventEmitter<ScrolledFooter>();
 
+    lastScrollPosition = 0;
+    margin = 30;
+
     constructor(private element: ElementRef, private scroll: WindowScrolling) {}
 
-    private getScreenBottom(): number {
-        return this.scroll.getPosition();
-    }
-
-    private getElementBottom(): number {
-        return this.element.nativeElement.clientHeight + this.element.nativeElement.offsetTop;
-    }
-
-    private hasScrolledPastElementBottom(scrollPosition: number): boolean {
-        return scrollPosition > this.getElementBottom();
-    }
-
-    private hasScrolledPastElementUp(scrollPosition: number): boolean {
-        return scrollPosition < this.getElementBottom();
-    }
     @HostListener('window:scroll', [])
     onWindowScroll() {
         const currentScrollPosition = this.getScreenBottom();
@@ -49,5 +34,21 @@ export class ScrollTriggerDirective {
 
     checkOffset(currentScrollPosition): boolean {
         return document.body.offsetHeight - currentScrollPosition > window.innerHeight + this.margin;
+    }
+
+    private getScreenBottom(): number {
+        return this.scroll.getPosition();
+    }
+
+    private getElementBottom(): number {
+        return this.element.nativeElement.clientHeight + this.element.nativeElement.offsetTop;
+    }
+
+    private hasScrolledPastElementBottom(scrollPosition: number): boolean {
+        return scrollPosition > this.getElementBottom();
+    }
+
+    private hasScrolledPastElementUp(scrollPosition: number): boolean {
+        return scrollPosition < this.getElementBottom();
     }
 }

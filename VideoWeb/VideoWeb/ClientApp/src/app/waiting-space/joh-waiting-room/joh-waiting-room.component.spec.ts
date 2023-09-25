@@ -17,7 +17,6 @@ import {
     errorService,
     eventsService,
     globalConference,
-    globalJudge,
     globalParticipant,
     heartbeatModelMapper,
     hideComponentsService,
@@ -38,17 +37,10 @@ import { UnloadDetectorService } from 'src/app/services/unload-detector.service'
 import { Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { createParticipantRemoteMuteStoreServiceSpy } from '../services/mock-participant-remote-mute-store.service';
-import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
-import { RoomTransfer } from '../../shared/models/room-transfer';
-import { roomTransferSubjectMock } from '../../testing/mocks/mock-events-service';
 
 describe('JohWaitingRoomComponent', () => {
     let component: JohWaitingRoomComponent;
     const conferenceTestData = new ConferenceTestData();
-    let activatedRoute: ActivatedRoute;
-    let unloadDetectorServiceSpy: jasmine.SpyObj<UnloadDetectorService>;
-    let shouldUnloadSubject: Subject<void>;
-    let shouldReloadSubject: Subject<void>;
     let participantRemoteMuteStoreServiceSpy = createParticipantRemoteMuteStoreServiceSpy();
 
     beforeAll(() => {
@@ -59,15 +51,19 @@ describe('JohWaitingRoomComponent', () => {
         display_name: globalParticipant.display_name,
         role: globalParticipant.role
     });
-    activatedRoute = <any>{
+    const activatedRoute = <any>{
         snapshot: { data: { loggedUser: logged } }
     };
 
     const translateService = translateServiceSpy;
 
-    unloadDetectorServiceSpy = jasmine.createSpyObj<UnloadDetectorService>('UnloadDetectorService', [], ['shouldUnload', 'shouldReload']);
-    shouldUnloadSubject = new Subject<void>();
-    shouldReloadSubject = new Subject<void>();
+    const unloadDetectorServiceSpy = jasmine.createSpyObj<UnloadDetectorService>(
+        'UnloadDetectorService',
+        [],
+        ['shouldUnload', 'shouldReload']
+    );
+    const shouldUnloadSubject = new Subject<void>();
+    const shouldReloadSubject = new Subject<void>();
     getSpiedPropertyGetter(unloadDetectorServiceSpy, 'shouldUnload').and.returnValue(shouldUnloadSubject.asObservable());
     getSpiedPropertyGetter(unloadDetectorServiceSpy, 'shouldReload').and.returnValue(shouldReloadSubject.asObservable());
 

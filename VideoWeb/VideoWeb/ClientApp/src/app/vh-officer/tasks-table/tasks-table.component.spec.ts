@@ -69,7 +69,7 @@ describe('TasksTableComponent', () => {
         tick();
 
         expect(component.loading).toBeTruthy();
-        expect(spy.calls.mostRecent().args[0]).toMatch(`Failed to init tasks list for conference`);
+        expect(spy.calls.mostRecent().args[0]).toMatch('Failed to init tasks list for conference');
         expect(spy.calls.mostRecent().args[1]).toBe(error);
         expect(component.tasks).toBeUndefined();
         expect(component.conference).toBeUndefined();

@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
@@ -6,7 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Client;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Responses;
 using Microsoft.AspNetCore.Authorization;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
@@ -14,6 +13,7 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using UserApi.Client;
 using VideoApi.Client;
+using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
 using VideoWeb.Extensions;
 
@@ -51,14 +51,15 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var conferences =
-                    await _videoApiClient.GetConferencesTodayForAdminByHearingVenueNameAsync(query.HearingVenueNames);
-                var allocatedHearings =
-                    await _bookingApiClient.GetAllocationsForHearingsAsync(conferences.Select(e => e.HearingRefId));
+                var allocatedHearings = await _bookingApiClient.GetAllocationsForHearingsByVenueAsync(query.HearingVenueNames);
+                if (allocatedHearings == null || !allocatedHearings.Any())
+                    return new List<CourtRoomsAccountResponse>();
+                var request = new GetConferencesByHearingIdsRequest{ HearingRefIds = allocatedHearings.Select(x => x.HearingId).ToArray() };
+                var conferences = await _videoApiClient.GetConferencesForAdminByHearingRefIdAsync(request);
                 var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>();
      
                 var responses = conferences
-                    .Select(x => conferenceForVhOfficerResponseMapper.Map(x, allocatedHearings?.FirstOrDefault(conference => conference.HearingId == x.HearingRefId)))
+                    .Select(x => conferenceForVhOfficerResponseMapper.Map(x, allocatedHearings.FirstOrDefault(conference => conference.HearingId == x.HearingRefId)))
                     .ApplyCsoFilter(query)
                     .ToList();
 
@@ -80,6 +81,6 @@ namespace VideoWeb.Controllers
         /// </summary>
         [HttpGet("csos", Name = "GetCSOs")]
         [ProducesResponseType(typeof(IList<JusticeUserResponse>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<IList<JusticeUserResponse>>> GetJusticeUsers() =>Ok(await _bookingApiClient.GetJusticeUserListAsync(String.Empty, null));
+        public async Task<ActionResult<IList<JusticeUserResponse>>> GetJusticeUsers() =>Ok(await _bookingApiClient.GetJusticeUserListAsync(string.Empty, null));
     }
 }

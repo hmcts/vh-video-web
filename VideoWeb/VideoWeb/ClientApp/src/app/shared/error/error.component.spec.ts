@@ -98,7 +98,7 @@ describe('ErrorComponent', () => {
         spyPropertyGetter(connectionStatusServiceSpy, 'status').and.returnValue(false);
         translateServiceSpy.instant.calls.reset();
         const text1 = 'error.default-body-message';
-        const text2 = `error.problem-with-connection`;
+        const text2 = 'error.problem-with-connection';
 
         component.ngOnInit();
         expect(component.errorMessageTitle).toBe(text2);
@@ -112,7 +112,7 @@ describe('ErrorComponent', () => {
         component.hasLostInternet = true;
         translateServiceSpy.instant.calls.reset();
         const text1 = 'error.default-body-message';
-        const text2 = `error.problem-with-connection`;
+        const text2 = 'error.problem-with-connection';
 
         component.ngOnInit();
         expect(component.errorMessageTitle).toBe(text2);

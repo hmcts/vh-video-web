@@ -6,7 +6,8 @@ import {
     ToggleSpotlightParticipantEvent,
     LowerParticipantHandEvent,
     CallParticipantIntoHearingEvent,
-    DismissParticipantFromHearingEvent
+    DismissParticipantFromHearingEvent,
+    ToggleLocalMuteParticipantEvent
 } from 'src/app/shared/models/participant-event';
 import { HearingRole } from '../models/hearing-role-model';
 import { CaseTypeGroup } from '../models/case-type-group';
@@ -19,25 +20,36 @@ import { HearingRoleHelper } from 'src/app/shared/helpers/hearing-role-helper';
     styleUrls: ['./judge-context-menu.component.scss']
 })
 export class JudgeContextMenuComponent implements OnInit {
-    private readonly loggerPrefix = '[JudgeContextMenu] -';
-    private readonly initialPrefix = 'judge-context-menu';
-    idPrefix: string;
-    isDroppedDown = false;
-    participant: PanelModel;
-
-    @Input() set participantInput(participant: PanelModel) {
-        this.participant = participant;
-    }
-
     @Output() toggleMuteParticipantEvent = new EventEmitter<ToggleMuteParticipantEvent>();
     @Output() toggleSpotlightParticipantEvent = new EventEmitter<ToggleSpotlightParticipantEvent>();
     @Output() lowerParticipantHandEvent = new EventEmitter<LowerParticipantHandEvent>();
     @Output() callParticipantIntoHearingEvent = new EventEmitter<CallParticipantIntoHearingEvent>();
     @Output() dismissParticipantFromHearingEvent = new EventEmitter<DismissParticipantFromHearingEvent>();
+    @Output() toggleLocalMuteParticipantEvent = new EventEmitter<ToggleLocalMuteParticipantEvent>();
+
+    idPrefix: string;
+    isDroppedDown = false;
+    participant: PanelModel;
+
+    private readonly loggerPrefix = '[JudgeContextMenu] -';
+    private readonly initialPrefix = 'judge-context-menu';
 
     constructor(private logger: Logger, private elementRef: ElementRef, protected translateService: TranslateService) {}
-    ngOnInit(): void {
-        this.idPrefix = this.participant?.id ? `${this.initialPrefix}-participant-${this.participant.id}` : this.initialPrefix;
+
+    get isJudge(): boolean {
+        return this.participant.hearingRole === HearingRole.JUDGE;
+    }
+
+    get isWitness(): boolean {
+        return this.participant.hearingRole === HearingRole.WITNESS;
+    }
+
+    get isPanelMember(): boolean {
+        return HearingRoleHelper.isPanelMember(this.participant.hearingRole);
+    }
+
+    @Input() set participantInput(participant: PanelModel) {
+        this.participant = participant;
     }
 
     @HostListener('document:click', ['$event'])
@@ -48,6 +60,9 @@ export class JudgeContextMenuComponent implements OnInit {
             });
             this.isDroppedDown = false;
         }
+    }
+    ngOnInit(): void {
+        this.idPrefix = this.participant?.id ? `${this.initialPrefix}-participant-${this.participant.id}` : this.initialPrefix;
     }
 
     isClickedOutsideOfOpenMenu(event: Event) {
@@ -72,6 +87,12 @@ export class JudgeContextMenuComponent implements OnInit {
         this.toggleDropdown();
     }
 
+    toggleLocalMuteParticipant(participant: PanelModel) {
+        this.logger.debug(`${this.loggerPrefix} Attempting to toggle local mute`, { participant: participant.id });
+        this.toggleLocalMuteParticipantEvent.emit(new ToggleLocalMuteParticipantEvent(participant));
+        this.toggleDropdown();
+    }
+
     callParticipantIntoHearing() {
         this.logger.debug(`${this.loggerPrefix} Attempting to call witness`, { participant: this.participant.id });
         this.callParticipantIntoHearingEvent.emit(new CallParticipantIntoHearingEvent(this.participant));
@@ -91,18 +112,6 @@ export class JudgeContextMenuComponent implements OnInit {
         this.isDroppedDown = !this.isDroppedDown;
     }
 
-    get isJudge(): boolean {
-        return this.participant.hearingRole === HearingRole.JUDGE;
-    }
-
-    get isWitness(): boolean {
-        return this.participant.hearingRole === HearingRole.WITNESS;
-    }
-
-    get isPanelMember(): boolean {
-        return HearingRoleHelper.isPanelMember(this.participant.hearingRole);
-    }
-
     showCaseTypeGroup(): boolean {
         return !this.participant.caseTypeGroup ||
             this.participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
@@ -117,10 +126,20 @@ export class JudgeContextMenuComponent implements OnInit {
         return !(this.isJudge || this.isPanelMember);
     }
 
-    getMutedStatusText(): string {
+    getMuteAndLockStatusText(): string {
         return this.participant.isMicRemoteMuted()
-            ? this.translateService.instant('judge-context-menu.unmute')
-            : this.translateService.instant('judge-context-menu.mute');
+            ? this.translateService.instant('judge-context-menu.unmute-lock')
+            : this.translateService.instant('judge-context-menu.mute-lock');
+    }
+
+    getLocalMuteAStatusText(individualParticipant: PanelModel): string {
+        let text = individualParticipant.isLocalMicMuted()
+            ? `${this.translateService.instant('judge-context-menu.unmute')}`
+            : `${this.translateService.instant('judge-context-menu.mute')}`;
+        if (this.participant.participantsList().length > 1) {
+            text = text.concat(` ${individualParticipant.displayName}`);
+        }
+        return text;
     }
 
     getPinStatusText(): string {

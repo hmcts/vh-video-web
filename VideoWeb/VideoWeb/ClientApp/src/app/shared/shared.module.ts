@@ -37,15 +37,10 @@ import { MultilinePipe } from './pipes/multiline.pipe';
 import { NgxDatePipe } from './pipes/ngx-date.pipe';
 import { ParticipantPanelModelMapper } from './mappers/participant-panel-model-mapper';
 import { LoadingComponent } from './loading/loading.component';
-import { Router } from '@angular/router';
-import { SecurityServiceProvider } from '../security/authentication/security-provider.service';
 import { ConfigService } from '../services/api/config.service';
-import { ProfileService } from '../services/api/profile.service';
 import { LoggerService, LOG_ADAPTER } from '../services/logging/logger.service';
-import { AppInsightsLoggerService } from '../services/logging/loggers/app-insights-logger.service';
 import { ConsoleLogger } from '../services/logging/loggers/console-logger';
 import { Logger } from '../services/logging/logger-base';
-import { SecurityConfigSetupService } from '../security/security-config-setup.service';
 import { HeaderLogoSvgComponent } from './header-logo-svg/header-logo-svg.component';
 import { VideoFilterComponent } from './video-filter/video-filter.component';
 import { HyphenatePipe } from './pipes/hyphenate.pipe';
@@ -97,20 +92,16 @@ import {
 import { RoomNamePipe } from './pipes/room-name.pipe';
 import { HookElementDirective } from './directives/hook-element.directive';
 import { RandomPipe } from './pipes/random.pipe';
+import { Router } from '@angular/router';
+import { SecurityServiceProvider } from '../security/authentication/security-provider.service';
+import { ProfileService } from '../services/api/profile.service';
+import { AppInsightsLoggerService } from '../services/logging/loggers/app-insights-logger.service';
+import { SecurityConfigSetupService } from '../security/security-config-setup.service';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
 }
 
-export function setupSecurity(securityConfigService: SecurityConfigSetupService) {
-    return () => securityConfigService.setupConfig().toPromise();
-}
-
-export function restoreConfig(securityConfigSetupService: SecurityConfigSetupService): Function {
-    return () => {
-        securityConfigSetupService.restoreConfig();
-    };
-}
 @NgModule({
     imports: [
         CommonModule,
@@ -175,7 +166,7 @@ export function restoreConfig(securityConfigSetupService: SecurityConfigSetupSer
             provide: LOG_ADAPTER,
             useClass: AppInsightsLoggerService,
             multi: true,
-            deps: [SecurityServiceProvider, ConfigService, Router, ProfileService]
+            deps: [SecurityServiceProvider, ConfigService, Router, ProfileService, SecurityConfigSetupService]
         },
         ConfigService,
         WindowScrolling,

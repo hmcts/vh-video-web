@@ -1,5 +1,6 @@
-@import '~govuk-frontend/govuk/base';
+@import 'govuk-frontend/govuk/base';
 @import 'abstracts';
+$govuk-show-breakpoints: true;
 
 .fill-container {
   width: 100%;
@@ -190,14 +191,10 @@
   display: flex;
   flex-direction: row;
   width: auto;
-  max-width: rem(150px);
+  max-width: 100vw;
   font-size: rem(13px);
   @include responds-to(extra-small) {
-    max-width: rem(250px);
     font-size: rem(15px);
-  }
-  @include responds-to(medium) {
-    max-width: rem(350px);
   }
 }
 
@@ -207,10 +204,12 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: rem(400px);
-
-  @include responds-to(large) {
-    max-width: rem(600px);
+  max-width: 30vw;
+  @include govuk-media-query(1180) {
+    max-width: 30vw;
+  }
+  @include govuk-media-query(1600) {
+    max-width: 100vw;
   }
 }
 

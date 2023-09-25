@@ -1,6 +1,6 @@
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { ParticipantForUserResponse, ParticipantStatus, Role, RoomSummaryResponse } from '../../services/clients/api-client';
+import { ParticipantStatus, Role } from '../../services/clients/api-client';
 import { ParticipantPanelModel } from '../models/participant-panel-model';
 import { JudgeContextMenuComponent } from './judge-context-menu.component';
 import {
@@ -8,7 +8,8 @@ import {
     ToggleSpotlightParticipantEvent,
     LowerParticipantHandEvent,
     CallParticipantIntoHearingEvent,
-    DismissParticipantFromHearingEvent
+    DismissParticipantFromHearingEvent,
+    ToggleLocalMuteParticipantEvent
 } from 'src/app/shared/models/participant-event';
 import { DebugElement, ElementRef } from '@angular/core';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
@@ -17,15 +18,14 @@ import { HearingRole } from '../models/hearing-role-model';
 import { CaseTypeGroup } from '../models/case-type-group';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { ComponentFixture, TestBed, tick } from '@angular/core/testing';
-import { MockBuilder, MockPipe } from 'ng-mocks';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MockPipe } from 'ng-mocks';
 import { HyphenatePipe } from 'src/app/shared/pipes/hyphenate.pipe';
 import { LowerCasePipe } from '@angular/common';
 import { By } from '@angular/platform-browser';
-import { finalize } from 'rxjs/operators';
-import { PanelModel } from '../models/panel-model-base';
 import { HearingRoleHelper } from 'src/app/shared/helpers/hearing-role-helper';
 import { RandomPipe } from 'src/app/shared/pipes/random.pipe';
+import { LinkedParticipantPanelModel } from '../models/linked-participant-panel-model';
 
 export class MockElementRef extends ElementRef {
     constructor() {
@@ -36,11 +36,9 @@ export class MockElementRef extends ElementRef {
 describe('JudgeContextMenuComponent', () => {
     const participants = new ConferenceTestData().getListOfParticipants();
     const logger = new MockLogger();
-    // const nativeElementSpy = jasmine.createSpyObj<any>(['contains']);
-    let elementRef: MockElementRef;
-    elementRef = new MockElementRef();
+
+    const elementRef = new MockElementRef();
     elementRef.nativeElement = jasmine.createSpyObj('nativeElement', ['contains']);
-    // let nativeElement: HTMLDivElement;
 
     let component: JudgeContextMenuComponent;
     let fixture: ComponentFixture<JudgeContextMenuComponent>;
@@ -117,7 +115,7 @@ describe('JudgeContextMenuComponent', () => {
         const dontShowForCaseTypeGroup = [CaseTypeGroup.NONE, CaseTypeGroup.JUDGE, CaseTypeGroup.OBSERVER, CaseTypeGroup.ENDPOINT];
         const caseTypeGroups = Object.keys(CaseTypeGroup);
 
-        it(`should return false when case type group is null`, () => {
+        it('should return false when case type group is null', () => {
             component.participant.caseTypeGroup = null;
             expect(component.showCaseTypeGroup()).toBe(false);
         });
@@ -131,7 +129,7 @@ describe('JudgeContextMenuComponent', () => {
             });
         });
 
-        it(`should return true when case type group is any other value`, () => {
+        it('should return true when case type group is any other value', () => {
             const caseTypeGroup = 'AnyOtherValue';
             component.participant.caseTypeGroup = caseTypeGroup;
             expect(caseTypeGroups).not.toContain(caseTypeGroup);
@@ -152,7 +150,7 @@ describe('JudgeContextMenuComponent', () => {
             });
         });
 
-        it(`should return true when hearing role is any other value`, () => {
+        it('should return true when hearing role is any other value', () => {
             const hearingRole = 'AnyOtherValue';
             component.participant.hearingRole = hearingRole;
             expect(hearingRoles).not.toContain(hearingRole);
@@ -206,6 +204,22 @@ describe('JudgeContextMenuComponent', () => {
         // Assert
         expect(component.toggleMuteParticipantEvent.emit).toHaveBeenCalled();
         expect(component.toggleMuteParticipantEvent.emit).toHaveBeenCalledWith(new ToggleMuteParticipantEvent(model));
+    });
+
+    it('should emit event when toggling local mute participant', () => {
+        // Arrange
+        const p = participants[0];
+        p.status = ParticipantStatus.InHearing;
+        const model = mapper.mapFromParticipantUserResponse(p);
+        component.participant = model;
+        spyOn(component.toggleLocalMuteParticipantEvent, 'emit');
+
+        // Act
+        component.toggleLocalMuteParticipant(model);
+
+        // Assert
+        expect(component.toggleLocalMuteParticipantEvent.emit).toHaveBeenCalled();
+        expect(component.toggleLocalMuteParticipantEvent.emit).toHaveBeenCalledWith(new ToggleLocalMuteParticipantEvent(model));
     });
 
     it('should emit event when calling participant', () => {
@@ -450,6 +464,49 @@ describe('JudgeContextMenuComponent', () => {
         const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
         expect(component.canDismissParticipantFromHearing()).toBeTruthy();
+    });
+
+    describe('text for buttons', () => {
+        it('should return unmute local translation when participant is muted', () => {
+            component.participant.isLocalMicMuted = () => true;
+            component.getLocalMuteAStatusText(component.participant);
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith('judge-context-menu.unmute');
+        });
+
+        it('should return mute local translation when participant is unmuted', () => {
+            component.participant.isLocalMicMuted = () => false;
+            component.getLocalMuteAStatusText(component.participant);
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith('judge-context-menu.mute');
+        });
+
+        it('linked participant should include the display name in the text', () => {
+            // arrange
+            const linkedParticipants = new ConferenceTestData().getListOfLinkedParticipants();
+            const pats = linkedParticipants.map(p => mapper.mapFromParticipantUserResponse(p));
+            const roomLabel = 'Interpreter1';
+            const roomId = '787';
+            const model = LinkedParticipantPanelModel.fromListOfPanelModels(pats, roomLabel, roomId);
+            component.participant = model;
+            const participant = model.participants[0];
+
+            // act
+            const text = component.getLocalMuteAStatusText(component.participant);
+
+            // assert
+            expect(text).toContain(participant.displayName);
+        });
+
+        it('should return unmute remote translation when participant is remote muted', () => {
+            component.participant.isMicRemoteMuted = () => true;
+            component.getMuteAndLockStatusText();
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith('judge-context-menu.unmute-lock');
+        });
+
+        it('should return mute remote translation when participant is remote unmuted', () => {
+            component.participant.isMicRemoteMuted = () => false;
+            component.getMuteAndLockStatusText();
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith('judge-context-menu.mute-lock');
+        });
     });
 
     describe('UI tests', () => {

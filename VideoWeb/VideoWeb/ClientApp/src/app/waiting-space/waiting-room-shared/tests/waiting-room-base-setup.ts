@@ -68,7 +68,7 @@ export const jwToken = new TokenResponse({
 });
 export let titleService: jasmine.SpyObj<Title>;
 
-export let hideComponentsService = jasmine.createSpyObj<HideComponentsService>('HideComponentsService', ['hideNonVideoComponents$']);
+export const hideComponentsService = jasmine.createSpyObj<HideComponentsService>('HideComponentsService', ['hideNonVideoComponents$']);
 hideComponentsService.hideNonVideoComponents$ = new BehaviorSubject(false);
 
 export function initAllWRDependencies() {
@@ -120,12 +120,17 @@ export function initAllWRDependencies() {
         'showConsultationRejectedByLinkedParticipant',
         'showWaitingForLinkedParticipantsToAccept',
         'reportPoorConnection',
-        'showAudioRecordingError',
+        'showAudioRecordingErrorWithRestart',
         'showParticipantAdded',
         'showEndpointAdded',
         'showEndpointUpdated',
         'showHearingLayoutchanged',
-        'showHearingStarted'
+        'showHearingStarted',
+        'showEndpointLinked',
+        'showEndpointUnlinked',
+        'showEndpointConsultationClosed',
+        'showAudioRecordingRestartSuccess',
+        'showAudioRecordingRestartFailure'
     ]);
     toastrService = jasmine.createSpyObj<ToastrService>('ToastrService', ['show', 'clear', 'remove']);
     roomClosingToastrService = jasmine.createSpyObj<RoomClosingToastrService>('RoomClosingToastrService', [

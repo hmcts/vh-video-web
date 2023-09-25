@@ -6,7 +6,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using BookingsApi.Client;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Responses;
 using Faker;
 using FizzWare.NBuilder;
 using FluentAssertions;
@@ -24,6 +24,7 @@ using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
 using VideoApi.Contract.Enums;
+using VideoApi.Contract.Requests;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
 {
@@ -36,6 +37,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
+            _mocker.Mock<IBookingsApiClient>()
+                .Setup(x => x.GetHearingsForTodayByVenueAsync(It.IsAny<IEnumerable<string>>()))
+                .ReturnsAsync(new List<HearingDetailsResponse>{Mock.Of<HearingDetailsResponse>()});
 
             var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.VhOfficerRole).Build();
             _controller = SetupControllerWithClaims(claimsPrincipal);
@@ -48,7 +52,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(It.IsAny<IEnumerable<string>>()))
+                .Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
                 .ThrowsAsync(apiException);
 
             var result = await _controller.GetConferencesForVhOfficerAsync(new VhoConferenceFilterQuery());
@@ -75,6 +79,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .With(x => x.ScheduledDuration = 20)
                 .With(x => x.Status = ConferenceState.NotStarted)
                 .With(x => x.ClosedDateTime = null)
+                .With(x => x.IsWaitingRoomOpen = true)
                 .Build().ToList();
 
             var allocatedCsoResponses = 
@@ -98,7 +103,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Select(x => x.Id).ToList();
 
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(It.IsAny<IEnumerable<string>>()))
+                .Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
                 .ReturnsAsync(conferences);
 
             _mocker.Mock<IBookingsApiClient>()
@@ -168,6 +173,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .With(x => x.ScheduledDuration = 20)
                 .With(x => x.Status = ConferenceState.NotStarted)
                 .With(x => x.ClosedDateTime = null)
+                .With(x=> x.IsWaitingRoomOpen = true)
                 .Build().ToList();
 
             var allocatedCsoResponses = 
@@ -193,7 +199,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             }
 
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(It.IsAny<IEnumerable<string>>()))
+                .Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
                 .ReturnsAsync(conferences);
 
             _mocker.Mock<IBookingsApiClient>()
@@ -278,6 +284,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .With(x => x.ScheduledDuration = 20)
                 .With(x => x.Status = ConferenceState.NotStarted)
                 .With(x => x.ClosedDateTime = null)
+                .With(x => x.IsWaitingRoomOpen = true)
                 .Build().ToList();
 
             var allocatedCsoResponses = 
@@ -296,7 +303,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             }
 
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(It.IsAny<IEnumerable<string>>()))
+                .Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
                 .ReturnsAsync(conferences);
 
             _mocker.Mock<IBookingsApiClient>()

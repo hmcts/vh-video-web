@@ -5,6 +5,7 @@ using System.Linq;
 using AcceptanceTests.Common.Driver.Drivers;
 using AcceptanceTests.Common.Driver.Enums;
 using AcceptanceTests.Common.Driver.Helpers;
+using BookingsApi.Contract.V1.Responses;
 using FluentAssertions;
 using OpenQA.Selenium.Interactions;
 using TechTalk.SpecFlow;
@@ -13,7 +14,6 @@ using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using TestApi.Contract.Dtos;
 using VideoApi.Contract.Responses;
-using BookingsApi.Contract.Responses;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {

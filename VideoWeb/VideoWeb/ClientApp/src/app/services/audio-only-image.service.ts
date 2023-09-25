@@ -14,10 +14,15 @@ export class AudioOnlyImageService {
 
     constructor(private logger: Logger) {}
 
+    getAudioOnlyImageStream(): Observable<MediaStream> {
+        const canvas$ = this.createAudioOnlyImageCanvas(this.getAudioOnlyImage(this.audioOnlyImagePath));
+        return canvas$.pipe(map(canvas => canvas.captureStream(this.audioOnlyImageStreamFps)));
+    }
+
     private createAudioOnlyImageCanvas(image$: Observable<HTMLImageElement>): Observable<HTMLCanvasElement> {
         return image$.pipe(
             map(image => {
-                this.logger.info(
+                this.logger.debug(
                     `${this.loggerPrefix} Building canvas for image. Width: ${image.width} Height: ${image.height} IsLoading: ${image.loading} Image: ${image}`
                 );
 
@@ -33,7 +38,7 @@ export class AudioOnlyImageService {
     }
 
     private createAudioOnlyImage(imagePath: string): Observable<HTMLImageElement> {
-        this.logger.info(`${this.loggerPrefix} Creating image from path: ${imagePath}`);
+        this.logger.debug(`${this.loggerPrefix} Creating image from path: ${imagePath}`);
 
         const audioOnlyImageSubject = new Subject<HTMLImageElement>();
 
@@ -48,7 +53,7 @@ export class AudioOnlyImageService {
     }
 
     private getAudioOnlyImage(imagePath: string): Observable<HTMLImageElement> {
-        this.logger.info(`${this.loggerPrefix} Attempting to get image with path: ${imagePath}`);
+        this.logger.debug(`${this.loggerPrefix} Attempting to get image with path: ${imagePath}`);
         const existingImage = this.loadedImages[imagePath];
 
         if (!existingImage) {
@@ -58,10 +63,5 @@ export class AudioOnlyImageService {
 
         this.logger.debug(`${this.loggerPrefix} image was cached.`);
         return of(existingImage);
-    }
-
-    getAudioOnlyImageStream(): Observable<MediaStream> {
-        const canvas$ = this.createAudioOnlyImageCanvas(this.getAudioOnlyImage(this.audioOnlyImagePath));
-        return canvas$.pipe(map(canvas => canvas.captureStream(this.audioOnlyImageStreamFps)));
     }
 }

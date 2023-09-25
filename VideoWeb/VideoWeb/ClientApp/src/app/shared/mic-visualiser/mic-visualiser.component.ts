@@ -18,35 +18,37 @@ import 'webrtc-adapter';
     styleUrls: ['./mic-visualiser.component.scss']
 })
 export class MicVisualiserComponent implements AfterViewInit, OnDestroy, AfterViewChecked, OnChanges {
-    private canvasContext: CanvasRenderingContext2D;
-    private audioContext: AudioContext;
-    private source: MediaStreamAudioSourceNode;
-    private analyser: AnalyserNode;
-
-    private dataArray: Uint8Array;
-    private rafId: number;
-
     @ViewChild('meter') meterCanvas: ElementRef;
     @ViewChild('container') meterContainer: ElementRef;
+
+    @Input() stream: MediaStream;
+    @Input() incomingStream: MediaStream;
+
     meterCurrentWidth: number;
     readonly scaleMultiplier = 1.75;
     readonly fillColor = '#008000';
     readonly feedbackMax = 255;
+
+    private canvasContext: CanvasRenderingContext2D;
+    private audioContext: AudioContext;
+    private source: MediaStreamAudioSourceNode;
+    private analyser: AnalyserNode;
+    private dataArray: Uint8Array;
+    private rafId: number;
+
     constructor(private changeDetector: ChangeDetectorRef) {}
 
-    @Input() stream: MediaStream;
-    @Input() incomingStream: MediaStream;
+    @HostListener('window:beforeunload')
+    ngOnDestroy(): void {
+        cancelAnimationFrame(this.rafId);
+    }
+
     ngAfterViewInit() {
         this.canvasContext = this.meterCanvas.nativeElement.getContext('2d');
     }
 
     ngOnChanges(): void {
         this.setupStream();
-    }
-
-    @HostListener('window:beforeunload')
-    ngOnDestroy(): void {
-        cancelAnimationFrame(this.rafId);
     }
 
     ngAfterViewChecked() {

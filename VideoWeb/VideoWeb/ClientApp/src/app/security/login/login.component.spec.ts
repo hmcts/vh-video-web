@@ -1,6 +1,5 @@
 import { Router } from '@angular/router';
 import { ReturnUrlService } from '../../services/return-url.service';
-import { MockOidcSecurityService } from '../../testing/mocks/mock-oidc-security.service';
 import { MockLogger } from '../../testing/mocks/mock-logger';
 import { LoginComponent } from './login.component';
 import { fakeAsync, flush, tick } from '@angular/core/testing';
@@ -9,6 +8,7 @@ import { Observable, of, Subject } from 'rxjs';
 import { SecurityServiceProvider } from '../authentication/security-provider.service';
 import { ISecurityService } from '../authentication/security-service.interface';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
+import { IdpProviders } from '../idp-providers';
 
 describe('LoginComponent', () => {
     let component: LoginComponent;
@@ -28,14 +28,15 @@ describe('LoginComponent', () => {
         securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
             [],
-            ['currentSecurityService$']
+            ['currentSecurityService$', 'currentIdp$']
         );
 
-        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', [], ['isAuthenticated$']);
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['isAuthenticated']);
         isAuthenticatedSubject = new Subject<boolean>();
-        getSpiedPropertyGetter(securityServiceSpy, 'isAuthenticated$').and.returnValue(isAuthenticatedSubject.asObservable());
+        securityServiceSpy.isAuthenticated.and.returnValue(isAuthenticatedSubject.asObservable());
 
         getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentIdp$').and.returnValue(of(IdpProviders.vhaad));
 
         component = new LoginComponent(router, returnUrlService, new MockLogger(), securityServiceProviderServiceSpy, configServiceSpy);
         configServiceSpy.getClientSettings.and.returnValue(of(null));
@@ -105,11 +106,12 @@ describe('LoginComponent', () => {
     it('should fallback to root url if return ejud url & error', fakeAsync(() => {
         spyOn(returnUrlService, 'popUrl').and.returnValue('/ejud-signin');
 
-        getSpiedPropertyGetter(securityServiceSpy, 'isAuthenticated$').and.returnValue(
+        securityServiceSpy.isAuthenticated.and.returnValue(
             new Observable<boolean>(() => {
                 throw new Error('');
             })
         );
+
         router.navigateByUrl.and.callFake(() => {
             throw new Error('Invalid URL');
         });
@@ -122,11 +124,13 @@ describe('LoginComponent', () => {
 
     it('should fallback to root url if return ejud url & error', fakeAsync(() => {
         spyOn(returnUrlService, 'popUrl').and.returnValue('/vh-signin');
-        getSpiedPropertyGetter(securityServiceSpy, 'isAuthenticated$').and.returnValue(
+
+        securityServiceSpy.isAuthenticated.and.returnValue(
             new Observable<boolean>(() => {
                 throw new Error('');
             })
         );
+
         router.navigateByUrl.and.callFake(() => {
             throw new Error('Invalid URL');
         });

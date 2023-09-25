@@ -11,7 +11,10 @@ import { EventsService } from 'src/app/services/events.service';
     templateUrl: './beta-banner.component.html'
 })
 export class BetaBannerComponent implements OnInit, OnDestroy {
+    @Input() isRepresentativeOrIndividual: boolean;
     pageUrl: string;
+    status: ConferenceStatus;
+
     readonly inPageFeedbackUrl = {
         en: 'https://www.smartsurvey.co.uk/s/VideoHearings_Feedback/?pageurl=',
         cy: 'https://www.smartsurvey.co.uk/s/VideoHearings_Feedback/?pageurl=&language=cy',
@@ -22,8 +25,6 @@ export class BetaBannerComponent implements OnInit, OnDestroy {
         cy: 'https://www.smartsurvey.co.uk/s/VideoHearings_ExitSurvey/?pageurl=&language=cy',
         tl: 'https://www.smartsurvey.co.uk/s/VideoHearings_ExitSurvey/?pageurl=&language=tl'
     };
-    @Input() isRepresentativeOrIndividual: boolean;
-    status: ConferenceStatus;
 
     private subscriptions = new Subscription();
 
@@ -37,6 +38,18 @@ export class BetaBannerComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.subscriptions.unsubscribe();
+    }
+
+    updateFeedbackUrl() {
+        if (this.status === ConferenceStatus.Closed) {
+            this.setFeedbackUrl(this.exitSurveyUrl[this.translateService.currentLang]);
+        } else {
+            this.setFeedbackUrl(this.inPageFeedbackUrl[this.translateService.currentLang]);
+        }
+    }
+
+    setFeedbackUrl(feedbackUrl: string): void {
+        this.pageUrl = feedbackUrl + this.router.url;
     }
 
     private setupSubscribers() {
@@ -60,17 +73,5 @@ export class BetaBannerComponent implements OnInit, OnDestroy {
                 this.updateFeedbackUrl();
             })
         );
-    }
-
-    updateFeedbackUrl() {
-        if (this.status === ConferenceStatus.Closed) {
-            this.setFeedbackUrl(this.exitSurveyUrl[this.translateService.currentLang]);
-        } else {
-            this.setFeedbackUrl(this.inPageFeedbackUrl[this.translateService.currentLang]);
-        }
-    }
-
-    setFeedbackUrl(feedbackUrl: string): void {
-        this.pageUrl = feedbackUrl + this.router.url;
     }
 }

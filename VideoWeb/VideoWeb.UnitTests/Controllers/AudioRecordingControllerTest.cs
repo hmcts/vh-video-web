@@ -40,18 +40,32 @@ namespace VideoWeb.UnitTests.Controllers
 
 
         [Test]
-        public async Task Should_throw_exception_getting_audio_stream_info_recording()
+        public async Task Should_throw_expected_exception_getting_audio_stream_info_recording_and_return_Ok_with_false()
         {
-            var videoException = new VideoApiException("Error to stop audio", (int)HttpStatusCode.Conflict, "Error", null, null);
+            var videoException = new VideoApiException("Not Found", (int)HttpStatusCode.NotFound, "Error", null, null);
 
             _videoApiClientMock.Setup(x => x.GetAudioStreamInfoAsync(It.IsAny<Guid>(), It.IsAny<bool>())).ThrowsAsync(videoException);
 
             var result      = await _controller.GetAudioStreamInfoAsync(Guid.NewGuid(), It.IsAny<bool>());
             var typedResult = (ObjectResult)result;
             typedResult.Should().NotBeNull();
-            typedResult.StatusCode.Should().Be(409);
+            typedResult.StatusCode.Should().Be(200);
+            typedResult.Value.Should().Be(false);
         }
+        
+        [Test]
+        public async Task Should_throw_unexpected_exception_getting_audio_stream_info_recording_and_return_throw_it()
+        {
+            var videoException = new VideoApiException("Bad request", (int)HttpStatusCode.BadRequest, "Error", null, null);
 
+            _videoApiClientMock.Setup(x => x.GetAudioStreamInfoAsync(It.IsAny<Guid>(), It.IsAny<bool>())).ThrowsAsync(videoException);
+
+            var result      = await _controller.GetAudioStreamInfoAsync(Guid.NewGuid(), It.IsAny<bool>());
+            var typedResult = (ObjectResult)result;
+            typedResult.Should().NotBeNull();
+            typedResult.StatusCode.Should().Be(400);
+        }
+        
         [Test]
         public async Task Should_throw_exception_stopping_audio_recording()
         {

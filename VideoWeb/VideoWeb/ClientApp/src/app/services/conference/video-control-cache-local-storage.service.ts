@@ -21,7 +21,7 @@ export class VideoControlCacheLocalStorageService implements IVideoControlCacheS
     }
 
     saveHearingStateForConference(conferenceId: string, hearingControlStates: IHearingControlsState) {
-        this.logger.info(`${this.loggerPrefix} saving state for the conference`, {
+        this.logger.debug(`${this.loggerPrefix} saving state for the conference`, {
             state: hearingControlStates
         });
 
@@ -35,7 +35,7 @@ export class VideoControlCacheLocalStorageService implements IVideoControlCacheS
     loadHearingStateForConference(conferenceId: string): Observable<IHearingControlsState> {
         const state = this.localStorageService.load<IHearingControlStates>(this.localStorageKey) ?? {};
 
-        this.logger.info(`${this.loggerPrefix} loading state for the conference`, {
+        this.logger.debug(`${this.loggerPrefix} loading state for the conference`, {
             state: state
         });
 

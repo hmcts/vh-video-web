@@ -16,6 +16,7 @@ import {
     CallParticipantIntoHearingEvent,
     DismissParticipantFromHearingEvent,
     LowerParticipantHandEvent,
+    ToggleLocalMuteParticipantEvent,
     ToggleMuteParticipantEvent,
     ToggleSpotlightParticipantEvent
 } from 'src/app/shared/models/participant-event';
@@ -38,6 +39,23 @@ import { IndividualPanelModel } from '../models/individual-panel-model';
     styleUrls: ['./participants-panel.component.scss']
 })
 export class ParticipantsPanelComponent implements OnInit, OnDestroy {
+    @Input() isCountdownCompleted: boolean;
+
+    participants: PanelModel[] = [];
+    nonEndpointParticipants: PanelModel[] = [];
+    endpointParticipants: PanelModel[] = [];
+    isMuteAll = false;
+    conferenceId: string;
+
+    videoCallSubscription$ = new Subscription();
+    eventhubSubscription$ = new Subscription();
+    participantsSubscription$ = new Subscription();
+
+    transferTimeout: { [id: string]: NodeJS.Timeout } = {};
+
+    readonly idPrefix = 'participants-panel';
+
+    private readonly loggerPrefix = '[ParticipantsPanel] -';
     constructor(
         private videoWebService: VideoWebService,
         private route: ActivatedRoute,
@@ -49,20 +67,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private mapper: ParticipantPanelModelMapper,
         private participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService
     ) {}
-    private readonly loggerPrefix = '[ParticipantsPanel] -';
-    participants: PanelModel[] = [];
-    nonEndpointParticipants: PanelModel[] = [];
-    endpointParticipants: PanelModel[] = [];
-    isMuteAll = false;
-    conferenceId: string;
-    readonly idPrefix = 'participants-panel';
-
-    videoCallSubscription$ = new Subscription();
-    eventhubSubscription$ = new Subscription();
-    participantsSubscription$ = new Subscription();
-
-    transferTimeout: { [id: string]: NodeJS.Timeout } = {};
-    @Input() isCountdownCompleted: boolean;
 
     private static showCaseRole(participant: PanelModel) {
         return !(
@@ -88,35 +92,50 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         this.getParticipantsList().then(() => {
-            this.participantRemoteMuteStoreService.conferenceParticipantsStatus$.pipe(take(1)).subscribe(state => {
-                this.participants.forEach(participant => {
-                    if (state.hasOwnProperty(participant.id)) {
-                        this.logger.debug(`${this.loggerPrefix} restoring pexip ID`, {
-                            participantId: participant.id,
-                            pexipId: state[participant.id].pexipId,
-                            state: state
-                        });
-                        if (state[participant.id].pexipId) {
-                            participant.assignPexipId(state[participant.id].pexipId);
-                        }
-                    }
-                    participant.updateParticipant(
-                        state[participant.id]?.isRemoteMuted,
-                        false,
-                        participant.hasSpotlight(),
-                        participant.id,
-                        state[participant.id]?.isLocalAudioMuted,
-                        state[participant.id]?.isLocalVideoMuted
-                    );
-                });
-            });
+            this.postGetParticipantsListHandler();
             this.setupVideoCallSubscribers();
             this.setupEventhubSubscribers();
         });
     }
 
+    postGetParticipantsListHandler() {
+        this.participantRemoteMuteStoreService.conferenceParticipantsStatus$.pipe(take(1)).subscribe(state => {
+            this.participants.forEach(participant => {
+                if (state.hasOwnProperty(participant.id)) {
+                    this.logger.debug(`${this.loggerPrefix} restoring pexip ID`, {
+                        participantId: participant.id,
+                        pexipId: state[participant.id].pexipId,
+                        state: state
+                    });
+                    if (state[participant.id].pexipId) {
+                        participant.assignPexipId(state[participant.id].pexipId);
+                    }
+                }
+                participant.updateParticipant(
+                    state[participant.id]?.isRemoteMuted,
+                    false,
+                    participant.hasSpotlight(),
+                    participant.id,
+                    state[participant.id]?.isLocalAudioMuted,
+                    state[participant.id]?.isLocalVideoMuted
+                );
+            });
+        });
+    }
+
     toggleMuteParticipantEventHandler(e: ToggleMuteParticipantEvent) {
         this.toggleMuteParticipant(e.participant);
+    }
+
+    async toggleLocalMuteParticipantEventHandler(e: ToggleLocalMuteParticipantEvent) {
+        // toggling local mute targets individuals, not their links too
+        const allParticipants = this.participants.flatMap(x => x.participantsList());
+        const p = allParticipants.find(x => x.id === e.participant.id);
+        await this.eventService.updateParticipantLocalMuteStatus(this.conferenceId, e.participant.id, !p.isLocalMicMuted());
+    }
+
+    async updateAllParticipantsLocalMuteStatus(muteStatus: boolean) {
+        await this.eventService.updateAllParticipantLocalMuteStatus(this.conferenceId, muteStatus);
     }
 
     toggleSpotlightParticipantEventHandler(e: ToggleSpotlightParticipantEvent) {
@@ -245,6 +264,14 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                     this.removeParticipantsNotInConference(mappedList);
                     this.updateParticipants();
                 }
+            })
+        );
+
+        this.eventhubSubscription$.add(
+            this.eventService.getEndpointsUpdated().subscribe(async () => {
+                const updatedEndpoints = await this.videoWebService.getEndpointsForConference(this.conferenceId);
+                this.endpointParticipants = updatedEndpoints.map(x => new VideoEndpointPanelModel(x));
+                this.updateParticipants();
             })
         );
     }
@@ -551,17 +578,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         }, 10000);
     }
 
-    private async sendTransferDirection(participant: PanelModel, direction: TransferDirection) {
-        if (participant instanceof LinkedParticipantPanelModel) {
-            participant.participants.forEach(async linkedParticipant => {
-                this.updateLocalAudioMutedForWitnessInterpreterVmr(linkedParticipant, participant.id, true);
-                await this.eventService.sendTransferRequest(this.conferenceId, linkedParticipant.id, direction);
-            });
-        } else {
-            await this.eventService.sendTransferRequest(this.conferenceId, participant.id, direction);
-        }
-    }
-
     async initiateTransfer(participant: PanelModel) {
         try {
             this.resetWitnessTransferTimeout(participant.id);
@@ -682,6 +698,17 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     isWitness(participant: PanelModel) {
         return participant.isWitness;
+    }
+
+    private async sendTransferDirection(participant: PanelModel, direction: TransferDirection) {
+        if (participant instanceof LinkedParticipantPanelModel) {
+            participant.participants.forEach(async linkedParticipant => {
+                this.updateLocalAudioMutedForWitnessInterpreterVmr(linkedParticipant, participant.id, true);
+                await this.eventService.sendTransferRequest(this.conferenceId, linkedParticipant.id, direction);
+            });
+        } else {
+            await this.eventService.sendTransferRequest(this.conferenceId, participant.id, direction);
+        }
     }
 
     private getHearingRole(participant: PanelModel): string {

@@ -23,6 +23,20 @@ namespace VideoWeb.UnitTests.Mappings
         }
 
         [Test]
+        public void should_map_dom1_config()
+        {
+            var dom1AdConfiguration = Builder<Dom1AdConfiguration>.CreateNew().Build();
+            
+            var response = _sut.Map(dom1AdConfiguration);
+            
+            response.ClientId.Should().Be(dom1AdConfiguration.ClientId);
+            response.TenantId.Should().Be(dom1AdConfiguration.TenantId);
+            response.RedirectUri.Should().Be(dom1AdConfiguration.RedirectUri);
+            response.PostLogoutRedirectUri.Should().Be(dom1AdConfiguration.PostLogoutRedirectUri);
+            response.ResourceId.Should().Be(dom1AdConfiguration.ResourceId);
+        }
+
+        [Test]
         public void should_map_vh_config()
         {
             var azureAdConfiguration = Builder<AzureAdConfiguration>.CreateNew()

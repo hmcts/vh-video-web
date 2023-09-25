@@ -8,9 +8,9 @@ import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
     styleUrls: ['./yes-no-popup-base.component.scss']
 })
 export class ConfirmLeaveHearingPopupComponent extends YesNoPopupBaseDirective implements AfterViewInit {
-    private readonly LEAVE_MODAL = 'confirm-leave-hearing-modal';
-
     @ViewChild('btnConfirmStartRef') btnLeave: ElementRef;
+
+    private readonly LEAVE_MODAL = 'confirm-leave-hearing-modal';
 
     ngAfterViewInit(): void {
         ModalTrapFocus.trap(this.LEAVE_MODAL);

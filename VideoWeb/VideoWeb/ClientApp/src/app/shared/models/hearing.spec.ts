@@ -1,6 +1,6 @@
 import { Hearing } from './hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { ConferenceStatus } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, ParticipantResponseVho, Role } from 'src/app/services/clients/api-client';
 
 describe('Hearing', () => {
     const testData = new ConferenceTestData();
@@ -26,6 +26,25 @@ describe('Hearing', () => {
         const hearing = new Hearing(conference);
         const endTime = hearing.scheduledStartTime;
         expect(endTime.getTime()).toBe(hearing.getConference().scheduled_date_time.getTime());
+    });
+
+    it('should update participants', () => {
+        const conference = testData.getConferenceDetailNow();
+        const hearing = new Hearing(conference);
+        const newList = hearing.getParticipants();
+        newList.push(
+            new ParticipantResponseVho({
+                id: '123',
+                name: 'new participant',
+                role: Role.JudicialOfficeHolder,
+                status: undefined
+            })
+        );
+
+        hearing.updateParticipants(newList);
+
+        const participants = hearing.getParticipants();
+        expect(participants).toBe(newList);
     });
 
     it('should return participants', () => {

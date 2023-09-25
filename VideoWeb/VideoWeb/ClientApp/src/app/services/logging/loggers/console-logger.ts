@@ -3,6 +3,9 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class ConsoleLogger implements LogAdapter {
+    addUserIdToLogger(userId: string) {
+        // not requried for console logger
+    }
     debug(message: string, properties: any = null): void {
         const propertiesFormatted = properties ? JSON.stringify(properties) : '';
         console.debug(`${message} ${propertiesFormatted}`);

@@ -53,7 +53,7 @@ describe('PendingTasksComponent', () => {
         component.ngOnInit();
         tick();
         expect(component.tasks).toBeUndefined();
-        expect(spy.calls.mostRecent().args[0]).toMatch(`Failed to get tasks for`);
+        expect(spy.calls.mostRecent().args[0]).toMatch('Failed to get tasks for');
         expect(spy.calls.mostRecent().args[1]).toBe(error);
     }));
 

@@ -1,3 +1,4 @@
+using System;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,6 +11,7 @@ using Microsoft.IdentityModel.Logging;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Extensions;
+using VideoWeb.Health;
 using VideoWeb.Middleware;
 
 namespace VideoWeb
@@ -29,6 +31,11 @@ namespace VideoWeb
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSwagger();
+            services.AddHsts(options =>
+            {
+                options.IncludeSubDomains = true;
+                options.MaxAge = TimeSpan.FromDays(365);
+            });
             services.AddJsonOptions();
             RegisterSettings(services);
 
@@ -41,7 +48,7 @@ namespace VideoWeb
                     opt.Filters.Add(new ProducesResponseTypeAttribute(typeof(string), 500));
                 })
                 .AddFluentValidation();
-            services.AddApplicationInsightsTelemetry(Configuration["ApplicationInsights:InstrumentationKey"]);
+            services.AddApplicationInsightsTelemetry();
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/dist"; });
         }
@@ -64,6 +71,11 @@ namespace VideoWeb
             {
                 Configuration.Bind("EJudAd", options);
             });
+            
+            services.Configure<Dom1AdConfiguration>(options =>
+            {
+                Configuration.Bind(Dom1AdConfiguration.ConfigSectionKey, options);
+            });
 
             services.Configure<QuickLinksConfiguration>(options =>
             {
@@ -76,6 +88,8 @@ namespace VideoWeb
 
             var connectionStrings = Configuration.GetSection("ConnectionStrings").Get<ConnectionStrings>();
             services.AddSingleton(connectionStrings);
+            
+            services.AddVhHealthChecks();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -97,11 +111,17 @@ namespace VideoWeb
 
                 if (!Settings.DisableHttpsRedirection)
                 {
-                    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                    app.UseHsts();
                     app.UseHttpsRedirection();
                 }
             }
+
+            app.UseHsts();
+            // this is a workaround to set HSTS in a docker
+            // reference from https://github.com/dotnet/dotnet-docker/issues/2268#issuecomment-714613811
+            app.Use(async (context, next) => {
+                context.Response.Headers.Add("Strict-Transport-Security", "max-age=31536000");
+                await next.Invoke();
+            });
 
             if (!env.IsDevelopment() || Settings.ZapScan)
             {
@@ -111,6 +131,7 @@ namespace VideoWeb
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseMiddleware<RequestBodyLoggingMiddleware>();
             app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseEndpoints(endpoints =>
@@ -123,6 +144,8 @@ namespace VideoWeb
                     options.Transports = HttpTransportType.ServerSentEvents | HttpTransportType.LongPolling |
                                          HttpTransportType.WebSockets;
                 });
+
+                endpoints.AddVhHealthCheckRouteMaps();
             });
 
             app.UseSpa(spa =>

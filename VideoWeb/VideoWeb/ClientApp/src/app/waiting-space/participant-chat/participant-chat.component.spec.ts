@@ -13,11 +13,11 @@ import { adminTestProfile, judgeTestProfile } from '../../testing/data/test-prof
 import { ParticipantChatComponent } from './participant-chat.component';
 import { ActivatedRoute } from '@angular/router';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
-import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-security.service';
 import { of, Subject } from 'rxjs';
 import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
+import { IdpProviders } from 'src/app/security/idp-providers';
 
 describe('ParticipantChatComponent', () => {
     let component: ParticipantChatComponent;
@@ -29,8 +29,6 @@ describe('ParticipantChatComponent', () => {
     const eventsService = eventsServiceSpy;
     let profileService: jasmine.SpyObj<ProfileService>;
     let activatedRoute: ActivatedRoute;
-
-    const oidcSecurityService = new MockOidcSecurityService();
 
     const judgeProfile = judgeTestProfile;
     const adminProfile = adminTestProfile;
@@ -50,14 +48,10 @@ describe('ParticipantChatComponent', () => {
             'getProfileByUsername',
             'getUserProfile'
         ]);
-
-        oidcSecurityService.setUserData({ preferred_username: judgeUsername });
-        oidcSecurityService.setAuthenticated(true);
     });
 
     beforeEach(() => {
         spyOn(global, 'setTimeout').and.returnValue(<any>timer);
-        oidcSecurityService.setUserData({ preferred_username: judgeUsername });
         const chatHistory = new ConferenceTestData().getChatHistory(judgeUsername, conference.id);
         const logged = new LoggedParticipantResponse({
             participant_id: hearing.participants[2].id,
@@ -73,18 +67,21 @@ describe('ParticipantChatComponent', () => {
             snapshot: { data: { loggedUser: logged } }
         };
 
-        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', [], ['isAuthenticated$', 'userData$']);
+        securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['isAuthenticated', 'getUserData']);
         isAuthenticatedSubject = new Subject<boolean>();
         userDataSubject = new Subject<any>();
-        getSpiedPropertyGetter(securityServiceSpy, 'isAuthenticated$').and.returnValue(isAuthenticatedSubject.asObservable());
-        getSpiedPropertyGetter(securityServiceSpy, 'userData$').and.returnValue(userDataSubject.asObservable());
+        securityServiceSpy.isAuthenticated.and.returnValue(isAuthenticatedSubject.asObservable());
+        securityServiceSpy.getUserData.and.returnValue(userDataSubject.asObservable());
+        isAuthenticatedSubject.next(true);
+        userDataSubject.next({ preferred_username: judgeTestProfile.username });
 
         securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
             [],
-            ['currentSecurityService$']
+            ['currentSecurityService$', 'currentIdp$']
         );
         getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentIdp$').and.returnValue(of(IdpProviders.vhaad));
 
         component = new ParticipantChatComponent(
             videoWebService,
@@ -196,7 +193,6 @@ describe('ParticipantChatComponent', () => {
 
     it('should reset unread counter to number of messages since user never replied', () => {
         const othername = 'never@sent.com';
-        oidcSecurityService.setUserData({ preferred_username: judgeUsername });
         const messages = new ConferenceTestData().getChatHistory(othername, conference.id);
         const count = component.getCountSinceUsersLastMessage(messages);
         expect(count).toBe(messages.length);

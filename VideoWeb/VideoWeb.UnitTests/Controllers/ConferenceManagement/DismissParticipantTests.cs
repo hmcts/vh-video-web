@@ -13,6 +13,7 @@ using VideoApi.Contract.Requests;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 using VideoApi.Contract.Enums;
+using VideoWeb.EventHub.Services;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 {
@@ -45,6 +46,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 _mocker.Mock<IVideoApiClient>().Verify(
                     x => x.TransferParticipantAsync(TestConference.Id,
                         It.Is<TransferParticipantRequest>(r => r.ParticipantId == participant.Id)), Times.Never);
+                
+                _mocker.Mock<IConferenceManagementService>().Verify(
+                    x => x.UpdateParticipantHandStatusInConference(TestConference.Id, participant.Id, false), Times.Never);
             }
         }
 
@@ -67,6 +71,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             _mocker.Mock<IVideoApiClient>().Verify(
                 x => x.TransferParticipantAsync(TestConference.Id,
                     It.Is<TransferParticipantRequest>(r => r.ParticipantId == participant.Id)), Times.Never);
+            
+            _mocker.Mock<IConferenceManagementService>().Verify(
+                x => x.UpdateParticipantHandStatusInConference(TestConference.Id, participant.Id, false), Times.Never);
         }
 
         [Test]
@@ -87,6 +94,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             _mocker.Mock<IVideoApiClient>().Verify(
                 x => x.TransferParticipantAsync(TestConference.Id,
                     It.Is<TransferParticipantRequest>(r => r.ParticipantId == participant.Id)), Times.Never);
+
+            _mocker.Mock<IConferenceManagementService>().Verify(
+                x => x.UpdateParticipantHandStatusInConference(TestConference.Id, participant.Id, false), Times.Never);
         }
 
         [Test]
@@ -114,6 +124,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var typedResult = (ObjectResult)result;
             typedResult.Value.Should().Be(responseMessage);
             typedResult.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
+            
+            _mocker.Mock<IConferenceManagementService>().Verify(
+                x => x.UpdateParticipantHandStatusInConference(TestConference.Id, witness.Id, false), Times.Never);
         }
 
         [Test]
@@ -135,6 +148,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 x => x.TransferParticipantAsync(TestConference.Id,
                     It.Is<TransferParticipantRequest>(r =>
                         r.ParticipantId == witness.Id && r.TransferType == TransferType.Dismiss)), Times.Once);
+            
+            _mocker.Mock<IConferenceManagementService>().Verify(
+                x => x.UpdateParticipantHandStatusInConference(TestConference.Id, witness.Id, false), Times.Once);
         }
 
         [Test]
@@ -160,6 +176,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             _mocker.Mock<IVideoApiClient>().Verify(x => x.AddTaskAsync(TestConference.Id,
                 It.Is<AddTaskRequest>(r => r.ParticipantId == participant.Id && r.Body == expectedBody && r.TaskType == TaskType.Participant)),
                 Times.Once);
+            
+            _mocker.Mock<IConferenceManagementService>().Verify(
+                x => x.UpdateParticipantHandStatusInConference(TestConference.Id, participant.Id, false), Times.Once);
         }
 
         [Test]
@@ -212,7 +231,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         public async Task should_return_accepted_when_participant_is_a_room()
         {
             var judge = TestConference.GetJudge();
-            var room = TestConference.CivilianRooms.First();
+            var room = TestConference.CivilianRooms[0];
             var participant = TestConference.Participants.First(x => x.IsWitness() && room.Participants.Contains(x.Id));
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(judge.Username)

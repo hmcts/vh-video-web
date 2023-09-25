@@ -15,10 +15,6 @@ export class NoSleepService {
     private renderer: Renderer2;
     private touchStartSubject = new Subject<void>();
 
-    private get touchStart$(): Observable<void> {
-        return this.touchStartSubject.asObservable();
-    }
-
     constructor(
         private userMediaStreamService: UserMediaStreamService,
         renderer2Factory: RendererFactory2,
@@ -31,6 +27,10 @@ export class NoSleepService {
         this.userMediaStreamService.currentStream$.subscribe(stream => {
             this.onStreamChange(stream);
         });
+    }
+
+    private get touchStart$(): Observable<void> {
+        return this.touchStartSubject.asObservable();
     }
 
     enable() {
@@ -73,14 +73,8 @@ export class NoSleepService {
         }
     }
 
-    private start() {
-        this.logger.info(`${this.loggerPrefix} starting`);
-        this.videoElement.play();
-        this.videoElement.muted = true;
-    }
-
     disable() {
-        this.logger.info(`${this.loggerPrefix} disabled`);
+        this.logger.debug(`${this.loggerPrefix} disabled`);
         this.videoElement?.parentElement?.removeChild(this.videoElement);
         this.videoElement = null;
     }
@@ -92,5 +86,11 @@ export class NoSleepService {
             this.videoElement.srcObject = this.currentStream;
             this.videoElement.muted = true;
         }
+    }
+
+    private start() {
+        this.logger.debug(`${this.loggerPrefix} starting`);
+        this.videoElement.play();
+        this.videoElement.muted = true;
     }
 }

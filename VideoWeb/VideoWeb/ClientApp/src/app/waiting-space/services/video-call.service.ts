@@ -19,22 +19,28 @@ import {
     ConnectedScreenshare,
     DisconnectedCall,
     DisconnectedPresentation,
+    ParticipantDeleted,
     ParticipantUpdated,
     Presentation,
     StoppedScreenshare
 } from '../models/video-call-models';
 import { VideoCallEventsService } from './video-call-events.service';
 
-declare var PexRTC: any;
+/* eslint-disable @typescript-eslint/naming-convention */
+declare let PexRTC: any;
 
 @Injectable()
 export class VideoCallService {
-    private readonly loggerPrefix = '[VideoCallService] -';
-    private readonly preferredLayoutCache: SessionStorage<Record<string, HearingLayout>>;
     readonly VIDEO_CALL_PREFERENCE_KEY = 'vh.videocall.preferences';
     readonly PREFERRED_LAYOUT_KEY = 'vh.preferred.layout';
-
     readonly callTypeAudioOnly = 'audioonly';
+
+    pexipAPI: PexipClient;
+    streamModifiedSubscription: Subscription;
+    wowzaAgentName = 'vh-wowza';
+
+    private readonly loggerPrefix = '[VideoCallService] -';
+    private readonly preferredLayoutCache: SessionStorage<Record<string, HearingLayout>>;
 
     private onSetupSubject = new Subject<CallSetup>();
     private onConnectedSubject = new Subject<ConnectedCall>();
@@ -44,6 +50,7 @@ export class VideoCallService {
     private onParticipantUpdatedSubject = new Subject<ParticipantUpdated>();
     private onConferenceUpdatedSubject = new Subject<ConferenceUpdated>();
     private onParticipantCreatedSubject = new Subject<ParticipantUpdated>();
+    private onParticipantDeletedSubject = new Subject<ParticipantDeleted>();
 
     private onConnectedScreenshareSubject = new Subject<ConnectedScreenshare>();
     private onStoppedScreenshareSubject = new Subject<StoppedScreenshare>();
@@ -58,8 +65,6 @@ export class VideoCallService {
     private renegotiating = false;
     private justRenegotiated = false;
 
-    pexipAPI: PexipClient;
-    streamModifiedSubscription: Subscription;
     private _displayStream: MediaStream;
 
     constructor(
@@ -84,7 +89,7 @@ export class VideoCallService {
      * the user's preferred camera and microphone (if selected)
      */
     async setupClient(): Promise<void> {
-        this.logger.info(`${this.loggerPrefix} setting up client.`);
+        this.logger.debug(`${this.loggerPrefix} setting up client.`);
         this.hasDisconnected$ = new Subject();
 
         const self = this;
@@ -115,6 +120,7 @@ export class VideoCallService {
 
         this.pexipAPI.onParticipantUpdate = this.handleParticipantUpdate.bind(this);
         this.pexipAPI.onParticipantCreate = this.handleParticipantCreated.bind(this);
+        this.pexipAPI.onParticipantDelete = this.handleParticipantDeleted.bind(this);
 
         this.pexipAPI.onConferenceUpdate = function (conferenceUpdate) {
             self.onConferenceUpdatedSubject.next(new ConferenceUpdated(conferenceUpdate.guests_muted));
@@ -170,57 +176,8 @@ export class VideoCallService {
         this.pexipAPI.call_tag = Guid.create().toString();
     }
 
-    private handleSetup(stream: MediaStream | URL) {
-        this.onSetupSubject.next(new CallSetup(stream));
-    }
-
-    private handleConnect(stream: MediaStream | URL) {
-        if (this.renegotiating || this.justRenegotiated) {
-            this.logger.warn(
-                `${this.loggerPrefix} Not initialising heartbeat or subscribing to stream modified as it was during a renegotation`
-            );
-            this.justRenegotiated = false;
-        } else {
-            this.kinlyHeartbeatService.initialiseHeartbeat(this.pexipAPI);
-
-            if (!this.streamModifiedSubscription) {
-                this.streamModifiedSubscription = this.userMediaStreamService.streamModified$
-                    .pipe(takeUntil(this.hasDisconnected$))
-                    .subscribe(() => this.renegotiateCall());
-            }
-        }
-
-        this.onConnectedSubject.next(new ConnectedCall(stream));
-    }
-
-    private handleParticipantCreated(participantUpdate: PexipParticipant) {
-        this.logger.debug(`${this.loggerPrefix} handling participant created`);
-
-        this.onParticipantCreatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
-    }
-
-    private handleParticipantUpdate(participantUpdate: PexipParticipant) {
-        this.videoCallEventsService.handleParticipantUpdated(ParticipantUpdated.fromPexipParticipant(participantUpdate));
-        this.onParticipantUpdatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
-    }
-
-    private handleError(error: string) {
-        this.cleanUpConnection();
-
-        this.onErrorSubject.next(new CallError(error));
-    }
-
-    // Handles server issued disconections - NOT CLIENT
-    // https://docs.pexip.com/api_client/api_pexrtc.htm#onDisconnect
-    private handleServerDisconnect(reason: string) {
-        this.logger.debug(`${this.loggerPrefix} handling server disconnection`);
-
-        this.cleanUpConnection();
-        this.onDisconnected.next(new DisconnectedCall(reason));
-    }
-
     makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number) {
-        this.logger.info(`${this.loggerPrefix} make pexip call`, {
+        this.logger.debug(`${this.loggerPrefix} make pexip call`, {
             pexipNode: pexipNode
         });
         this.stopPresentation();
@@ -230,21 +187,13 @@ export class VideoCallService {
 
     disconnectFromCall() {
         if (this.pexipAPI) {
-            this.logger.info(`${this.loggerPrefix} Disconnecting from pexip node.`);
+            this.logger.debug(`${this.loggerPrefix} Disconnecting from pexip node.`);
             this.stopPresentation();
             this.pexipAPI.disconnect();
             this.cleanUpConnection();
         } else {
             throw new Error(`${this.loggerPrefix} Pexip Client has not been initialised.`);
         }
-    }
-
-    private cleanUpConnection() {
-        this.logger.warn(`${this.loggerPrefix} Cleaning up connection.`);
-        this.hasDisconnected$.next();
-        this.hasDisconnected$.complete();
-        this.kinlyHeartbeatService.stopHeartbeat();
-        this.setupClient();
     }
 
     connect(pin: string, extension: string) {
@@ -273,6 +222,10 @@ export class VideoCallService {
 
     onParticipantCreated(): Observable<ParticipantUpdated> {
         return this.onParticipantCreatedSubject.asObservable();
+    }
+
+    onParticipantDeleted(): Observable<ParticipantDeleted> {
+        return this.onParticipantDeletedSubject.asObservable();
     }
 
     onParticipantUpdated(): Observable<ParticipantUpdated> {
@@ -403,7 +356,7 @@ export class VideoCallService {
     }
 
     leaveHearing(conferenceId: string, participantId: string): Promise<void> {
-        this.logger.info(`${this.loggerPrefix} Attempting to suspend hearing`, { conference: conferenceId });
+        this.logger.info(`${this.loggerPrefix} Attempting to leave hearing`, { conference: conferenceId, participant: participantId });
         return this.apiClient.leaveHearing(conferenceId, participantId).toPromise();
     }
 
@@ -437,16 +390,16 @@ export class VideoCallService {
     }
 
     renegotiateCall(sendUpdate: boolean = false) {
-        this.logger.info(`${this.loggerPrefix} renegotiating`);
+        this.logger.debug(`${this.loggerPrefix} renegotiating`);
         this.renegotiating = true;
         this.pexipAPI.renegotiate(sendUpdate);
         this.renegotiating = false;
         this.justRenegotiated = true;
-        this.logger.info(`${this.loggerPrefix} renegotiated`);
+        this.logger.debug(`${this.loggerPrefix} renegotiated`);
     }
 
     async selectScreenWithMicrophone() {
-        this.logger.info(`${this.loggerPrefix} mixing screen and microphone stream`);
+        this.logger.debug(`${this.loggerPrefix} mixing screen and microphone stream`);
         const displayStream = await this.userMediaService.selectScreenToShare();
         // capture the original screen stream to stop sharing screen when the button is clicked
         this._displayStream = displayStream;
@@ -465,7 +418,7 @@ export class VideoCallService {
     }
 
     stopScreenWithMicrophone() {
-        this.logger.info(`${this.loggerPrefix} stopping mixed screen and microphone stream`);
+        this.logger.debug(`${this.loggerPrefix} stopping mixed screen and microphone stream`);
         this._displayStream.getTracks().forEach(t => {
             t.stop();
         });
@@ -478,7 +431,7 @@ export class VideoCallService {
             this.pexipAPI.user_media_stream = currentStream;
             this.renegotiateCall();
             this.onVideoEvidenceStoppedSubject.next();
-            this.logger.info(`${this.loggerPrefix} calling renegotiateCall`);
+            this.logger.debug(`${this.loggerPrefix} calling renegotiateCall`);
         });
     }
 
@@ -508,7 +461,7 @@ export class VideoCallService {
     }
 
     retrieveInterpreterRoom(conferenceId: string, participantId: string): Promise<SharedParticipantRoom> {
-        this.logger.info(`${this.loggerPrefix} Attempting to retrieve interpreter room for participant`, {
+        this.logger.debug(`${this.loggerPrefix} Attempting to retrieve interpreter room for participant`, {
             conference: conferenceId,
             participant: participantId
         });
@@ -517,7 +470,7 @@ export class VideoCallService {
     }
 
     retrieveWitnessInterpreterRoom(conferenceId: string, participantId: string): Promise<SharedParticipantRoom> {
-        this.logger.info(`${this.loggerPrefix} Attempting to retrieve interpreter room for participant`, {
+        this.logger.debug(`${this.loggerPrefix} Attempting to retrieve interpreter room for participant`, {
             conference: conferenceId,
             participant: participantId
         });
@@ -526,11 +479,89 @@ export class VideoCallService {
     }
 
     retrieveJudicialRoom(conferenceId: string, participantId: string): Promise<SharedParticipantRoom> {
-        this.logger.info(`${this.loggerPrefix} Attempting to retrieve judicial room for participant`, {
+        this.logger.debug(`${this.loggerPrefix} Attempting to retrieve judicial room for participant`, {
             conference: conferenceId,
             participant: participantId
         });
 
         return this.apiClient.getParticipantRoomForParticipant(conferenceId, participantId, 'Judicial').toPromise();
+    }
+
+    connectWowzaAgent(ingestUrl: string, callbackFn: Function) {
+        const params = {
+            streaming: true,
+            call_type: 'audio',
+            remote_display_name: this.wowzaAgentName
+        };
+        this.pexipAPI.dialOut(ingestUrl, 'auto', '', callbackFn, params);
+    }
+
+    /**
+     * Disconnects the audio recording agent for wowza. Should only be used for testing
+     * @param wowzaUUID string - pexip id of the wowza participant **/
+    disconnectWowzaAgent(wowzaUUID: string) {
+        this.pexipAPI.disconnectParticipant(wowzaUUID);
+    }
+
+    private handleSetup(stream: MediaStream | URL) {
+        this.onSetupSubject.next(new CallSetup(stream));
+    }
+
+    private handleConnect(stream: MediaStream | URL) {
+        if (this.renegotiating || this.justRenegotiated) {
+            this.logger.warn(
+                `${this.loggerPrefix} Not initialising heartbeat or subscribing to stream modified as it was during a renegotation`
+            );
+            this.justRenegotiated = false;
+        } else {
+            this.kinlyHeartbeatService.initialiseHeartbeat(this.pexipAPI);
+
+            if (!this.streamModifiedSubscription) {
+                this.streamModifiedSubscription = this.userMediaStreamService.streamModified$
+                    .pipe(takeUntil(this.hasDisconnected$))
+                    .subscribe(() => this.renegotiateCall());
+            }
+        }
+
+        this.onConnectedSubject.next(new ConnectedCall(stream));
+    }
+
+    private handleParticipantCreated(participantUpdate: PexipParticipant) {
+        this.logger.debug(`${this.loggerPrefix} handling participant created`);
+
+        this.onParticipantCreatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
+    }
+
+    private handleParticipantDeleted(participantDeleted: PexipParticipantDeleted) {
+        this.logger.debug(`${this.loggerPrefix} handling participant Delete`);
+        this.onParticipantDeletedSubject.next(new ParticipantDeleted(participantDeleted.uuid));
+    }
+
+    private handleParticipantUpdate(participantUpdate: PexipParticipant) {
+        this.videoCallEventsService.handleParticipantUpdated(ParticipantUpdated.fromPexipParticipant(participantUpdate));
+        this.onParticipantUpdatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
+    }
+
+    private handleError(error: string) {
+        this.cleanUpConnection();
+
+        this.onErrorSubject.next(new CallError(error));
+    }
+
+    // Handles server issued disconections - NOT CLIENT
+    // https://docs.pexip.com/api_client/api_pexrtc.htm#onDisconnect
+    private handleServerDisconnect(reason: string) {
+        this.logger.debug(`${this.loggerPrefix} handling server disconnection`);
+
+        this.cleanUpConnection();
+        this.onDisconnected.next(new DisconnectedCall(reason));
+    }
+
+    private cleanUpConnection() {
+        this.logger.warn(`${this.loggerPrefix} Cleaning up connection.`);
+        this.hasDisconnected$.next();
+        this.hasDisconnected$.complete();
+        this.kinlyHeartbeatService.stopHeartbeat();
+        this.setupClient();
     }
 }

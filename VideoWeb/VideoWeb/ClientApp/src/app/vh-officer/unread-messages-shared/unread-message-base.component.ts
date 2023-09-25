@@ -11,11 +11,6 @@ export abstract class UnreadMessagesComponentBase {
     protected constructor(protected eventsService: EventsService, protected logger: Logger) {}
 
     abstract get unreadCount(): number;
-    abstract getHearing(): Hearing;
-    abstract resetUnreadCounter(conferenceId: string, participantId: string): void;
-    abstract incrementUnreadCounter(conferenceId: string, participantId: string): void;
-    abstract openImChat();
-    abstract handleImReceived(message: InstantMessage);
 
     getIMStatus(): string {
         return this.unreadCount > 0 ? 'IM_icon.png' : 'IM-empty.png';
@@ -50,4 +45,10 @@ export abstract class UnreadMessagesComponentBase {
     protected clearMessageSubscription() {
         this.messagesSubscription$.unsubscribe();
     }
+
+    abstract getHearing(): Hearing;
+    abstract resetUnreadCounter(conferenceId: string, participantId: string): void;
+    abstract incrementUnreadCounter(conferenceId: string, participantId: string): void;
+    abstract openImChat();
+    abstract handleImReceived(message: InstantMessage);
 }

@@ -1,13 +1,9 @@
-using System;
 using System.Collections.Specialized;
 using Autofac.Extras.Moq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
-using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security.HashGen;
@@ -26,7 +22,7 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<AzureAdConfiguration, EJudAdConfiguration, HearingServicesConfiguration, KinlyConfiguration, ClientSettingsResponse>())
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<AzureAdConfiguration, EJudAdConfiguration, Dom1AdConfiguration, HearingServicesConfiguration, KinlyConfiguration, ClientSettingsResponse>())
                 .Returns(_mocker.Create<ClientSettingsResponseMapper>());
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<IdpConfiguration, IdpSettingsResponse>())
                 .Returns(_mocker.Create<IdpSettingsResponseMapper>());
@@ -41,7 +37,7 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
                 ClientSecret = "ClientSecret",
                 TenantId = "TenantId",
                 Authority = "Authority",
-                ApplicationInsights = new ApplicationInsightsConfiguration { InstrumentationKey = "AiKey" }
+                ApplicationInsights = new ApplicationInsightsConfiguration { ConnectionString = "InstrumentationKey=AiKey" }
             };
 
             var eJudAdConfiguration = new EJudAdConfiguration()
@@ -51,6 +47,15 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
                 Authority = "EjudAuthority",
                 RedirectUri = "EjudRedirectUri",
                 PostLogoutRedirectUri = "EjudPostLogoutRedirectUri"
+            };
+            
+            var dom1AdConfiguration = new Dom1AdConfiguration()
+            {
+                ClientId = "Dom1ClientId",
+                TenantId = "Dom1TenantId",
+                Authority = "Dom1Authority",
+                RedirectUri = "Dom1RedirectUri",
+                PostLogoutRedirectUri = "Dom1PostLogoutRedirectUri"
             };
 
             var servicesConfiguration = new HearingServicesConfiguration
@@ -65,18 +70,12 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
             {
                 JoinByPhoneFromDate = "2021-02-09"
             };
-            
-            var headers = new NameValueCollection
-            {
-                { HeaderNames.CacheControl, "no-cache" }
-            };
-            
-            
 
             var parameters = new ParameterBuilder(_mocker).AddObject(Options.Create(securitySettings))
                 .AddObject(Options.Create(servicesConfiguration))
                 .AddObject(kinlyConfiguration)
                 .AddObject(Options.Create(eJudAdConfiguration))
+                .AddObject(Options.Create(dom1AdConfiguration))
                 .Build();
 
             var configSettingsController = _mocker.Create<ConfigSettingsController>(parameters);
@@ -99,7 +98,7 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
                 ClientSecret = "ClientSecret",
                 TenantId = "TenantId",
                 Authority = "Authority",
-                ApplicationInsights = new ApplicationInsightsConfiguration { InstrumentationKey = "AiKey" }
+                ApplicationInsights = new ApplicationInsightsConfiguration { ConnectionString = "InstrumentationKey=AiKey" }
             };
 
             var servicesConfiguration = new HearingServicesConfiguration

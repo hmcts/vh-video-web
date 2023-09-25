@@ -18,8 +18,8 @@ import { EndpointsUpdatedMessage } from 'src/app/shared/models/endpoints-updated
 import { Room } from '../../shared/models/room';
 import { RoomTransfer } from '../../shared/models/room-transfer';
 import { NewAllocationMessage } from '../../services/models/new-allocation-message';
-
-export let eventsServiceSpy: jasmine.SpyObj<EventsService>;
+import { ParticipantToggleLocalMuteMessage } from 'src/app/shared/models/participant-toggle-local-mute-message';
+import { EndpointRepMessage } from '../../shared/models/endpoint-rep-message';
 
 export const hearingStatusSubjectMock = new Subject<ConferenceStatusMessage>();
 export const participantStatusSubjectMock = new Subject<ParticipantStatusMessage>();
@@ -35,6 +35,7 @@ export const hearingTransferSubjectMock = new Subject<HearingTransfer>();
 export const participantMediaStatusSubjectMock = new Subject<ParticipantMediaStatusMessage>();
 export const participantRemoteMuteStatusSubjectMock = new Subject<ParticipantRemoteMuteMessage>();
 export const participantHandRaisedStatusSubjectMock = new Subject<ParticipantHandRaisedMessage>();
+export const participantToggleLocalMuteSubjectMock = new Subject<ParticipantToggleLocalMuteMessage>();
 export const roomUpdateSubjectMock = new Subject<Room>();
 export const roomTransferSubjectMock = new Subject<RoomTransfer>();
 export const adminAnsweredChatSubjectMock = new Subject<ConferenceMessageAnswered>();
@@ -44,8 +45,12 @@ export const getParticipantsUpdatedSubjectMock = new Subject<ParticipantsUpdated
 export const hearingLayoutChangedSubjectMock = new Subject<HearingLayoutChanged>();
 export const newAllocationMessageSubjectMock = new Subject<NewAllocationMessage>();
 export const getEndpointsUpdatedMessageSubjectMock = new Subject<EndpointsUpdatedMessage>();
+export const getEndpointUnlinkedUpdatedMock = new Subject<EndpointRepMessage>();
+export const getEndpointLinkedUpdatedMock = new Subject<EndpointRepMessage>();
+export const getEndpointDisconnectUpdatedMock = new Subject<EndpointRepMessage>();
+export const getAudioRestartActionedMock = new Subject<string>();
 
-eventsServiceSpy = jasmine.createSpyObj<EventsService>(
+export const eventsServiceSpy = jasmine.createSpyObj<EventsService>(
     'EventsService',
     [
         'start',
@@ -71,13 +76,21 @@ eventsServiceSpy = jasmine.createSpyObj<EventsService>(
         'getAdminAnsweredChat',
         'getParticipantRemoteMuteStatusMessage',
         'getParticipantHandRaisedMessage',
+        'getParticipantToggleLocalMuteMessage',
         'publishParticipantHandRaisedStatus',
         'publishRemoteMuteStatus',
         'onEventsHubReady',
         'getParticipantsUpdated',
         'getEndpointsUpdated',
         'getHearingLayoutChanged',
-        'getAllocationMessage'
+        'getAllocationMessage',
+        'updateParticipantLocalMuteStatus',
+        'updateAllParticipantLocalMuteStatus',
+        'getEndpointUnlinkedUpdated',
+        'getEndpointLinkedUpdated',
+        'getEndpointDisconnectUpdated',
+        'getAudioRestartActioned',
+        'sendAudioRestartActioned'
     ],
     ['eventHubIsConnected']
 );
@@ -104,3 +117,8 @@ eventsServiceSpy.getParticipantsUpdated.and.returnValue(getParticipantsUpdatedSu
 eventsServiceSpy.getHearingLayoutChanged.and.returnValue(hearingLayoutChangedSubjectMock.asObservable());
 eventsServiceSpy.getAllocationMessage.and.returnValue(newAllocationMessageSubjectMock.asObservable());
 eventsServiceSpy.getEndpointsUpdated.and.returnValue(getEndpointsUpdatedMessageSubjectMock.asObservable());
+eventsServiceSpy.getParticipantToggleLocalMuteMessage.and.returnValue(participantToggleLocalMuteSubjectMock.asObservable());
+eventsServiceSpy.getEndpointUnlinkedUpdated.and.returnValue(getEndpointUnlinkedUpdatedMock.asObservable());
+eventsServiceSpy.getEndpointLinkedUpdated.and.returnValue(getEndpointLinkedUpdatedMock.asObservable());
+eventsServiceSpy.getEndpointDisconnectUpdated.and.returnValue(getEndpointDisconnectUpdatedMock.asObservable());
+eventsServiceSpy.getAudioRestartActioned.and.returnValue(getAudioRestartActionedMock.asObservable());

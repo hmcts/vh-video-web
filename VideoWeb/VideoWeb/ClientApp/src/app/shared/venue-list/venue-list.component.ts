@@ -13,6 +13,21 @@ import { ProfileService } from 'src/app/services/api/profile.service';
 
 @Directive()
 export abstract class VenueListComponentDirective implements OnInit {
+    static ALLOCATED_TO_ME = 'AllocatedToMe';
+    static UNALLOCATED = 'Unallocated';
+
+    venues: HearingVenueResponse[];
+    csos: JusticeUserResponse[];
+    selectedVenues: string[];
+    selectedCsos: string[];
+    filterCourtRoomsAccounts: CourtRoomsAccounts[];
+    errorMessage: string | null;
+    vhoWorkAllocationFeatureFlag: boolean;
+
+    protected readonly judgeAllocationStorage: SessionStorage<string[]>;
+    protected readonly courtAccountsAllocationStorage: SessionStorage<CourtRoomsAccounts[]>;
+    protected readonly csoAllocationStorage: SessionStorage<CsoFilter>;
+
     constructor(
         protected videoWebService: VideoWebService,
         protected router: Router,
@@ -28,7 +43,7 @@ export abstract class VenueListComponentDirective implements OnInit {
         this.courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
         this.csoAllocationStorage = new SessionStorage<CsoFilter>(VhoStorageKeys.CSO_ALLOCATIONS_KEY);
     }
-    abstract get showVhoSpecificContent(): boolean;
+
     get venuesSelected(): boolean {
         return this.selectedVenues && this.selectedVenues.length > 0;
     }
@@ -37,47 +52,24 @@ export abstract class VenueListComponentDirective implements OnInit {
         return this.selectedCsos && this.selectedCsos.length > 0;
     }
 
-    static ALLOCATED_TO_ME = 'AllocatedToMe';
-    static UNALLOCATED = 'Unallocated';
-    protected readonly judgeAllocationStorage: SessionStorage<string[]>;
-    protected readonly courtAccountsAllocationStorage: SessionStorage<CourtRoomsAccounts[]>;
-    protected readonly csoAllocationStorage: SessionStorage<CsoFilter>;
-    venues: HearingVenueResponse[];
-    csos: JusticeUserResponse[];
-    selectedVenues: string[];
-    selectedCsos: string[];
-    filterCourtRoomsAccounts: CourtRoomsAccounts[];
-    errorMessage: string | null;
-    vhoWorkAllocationFeatureFlag: boolean;
+    abstract get showVhoSpecificContent(): boolean;
 
     ngOnInit() {
         this.setupSubscribers();
     }
-
-    private setupSubscribers() {
-        this.ldService.flagChange.subscribe(value => {
-            if (value) {
-                this.vhoWorkAllocationFeatureFlag = value[FEATURE_FLAGS.vhoWorkAllocation];
-            }
-        });
-
-        this.videoWebService.getVenues().subscribe(venues => {
-            this.venues = venues;
-            this.selectedVenues = this.judgeAllocationStorage.get();
-        });
-    }
-    abstract goToHearingList();
 
     updateVenueSelection() {
         this.selectedCsos = [];
         this.judgeAllocationStorage.set(this.selectedVenues);
         this.csoAllocationStorage.clear();
     }
+
     async updateCsoSelection() {
         this.selectedVenues = [];
         this.csoAllocationStorage.set(await this.getCsoFilter());
         this.judgeAllocationStorage.clear();
     }
+
     async getCsoFilter(): Promise<CsoFilter> {
         let includeUnallocated = false;
         const allocatedCsoIds = [...this.selectedCsos];
@@ -98,9 +90,23 @@ export abstract class VenueListComponentDirective implements OnInit {
         }
         return new CsoFilter(allocatedCsoIds, includeUnallocated);
     }
+
     async getLoggedInCso(users: JusticeUserResponse[]): Promise<JusticeUserResponse> {
         const loggedInUser = await this.profileService.getUserProfile();
         const loggedInCso = users.find(c => c.username?.toUpperCase() === loggedInUser.username.toUpperCase());
         return loggedInCso;
     }
+
+    private setupSubscribers() {
+        this.ldService.getFlag<boolean>(FEATURE_FLAGS.vhoWorkAllocation, false).subscribe(value => {
+            this.vhoWorkAllocationFeatureFlag = value;
+        });
+
+        this.videoWebService.getVenues().subscribe(venues => {
+            this.venues = venues;
+            this.selectedVenues = this.judgeAllocationStorage.get();
+        });
+    }
+
+    abstract goToHearingList();
 }

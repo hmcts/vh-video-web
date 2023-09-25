@@ -18,16 +18,17 @@ import { ParticipantListItem } from '../participant-list-item';
     styleUrls: ['./start-private-consultation.component.scss']
 })
 export class StartPrivateConsultationComponent implements OnChanges {
-    selectedParticipants = Array<string>();
-    selectedEndpoints = Array<string>();
     @Input() participants: ParticipantResponse[];
-
-    filteredParticipants: ParticipantListItem[] = [];
-
     @Input() allowedEndpoints: AllowedEndpointResponse[];
     @Input() endpoints: VideoEndpointResponse[];
     @Output() continue = new EventEmitter<{ participants: string[]; endpoints: string[] }>();
     @Output() cancel = new EventEmitter();
+
+    selectedParticipants = Array<string>();
+    selectedEndpoints = Array<string>();
+
+    filteredParticipants: ParticipantListItem[] = [];
+
     constructor(private translateService: TranslateService) {}
 
     ngOnChanges(changes: SimpleChanges) {
@@ -137,7 +138,9 @@ export class StartPrivateConsultationComponent implements OnChanges {
                 p =>
                     p.hearing_role !== HearingRole.INTERPRETER &&
                     p.hearing_role !== HearingRole.MACKENZIE_FRIEND &&
-                    p.role !== Role.QuickLinkObserver
+                    p.role !== Role.QuickLinkObserver &&
+                    p.hearing_role !== HearingRole.VICTIM &&
+                    p.hearing_role !== HearingRole.POLICE
             )
             .map(p => {
                 const interpreterLink = p.linked_participants.find(x => x.link_type === LinkType.Interpreter);

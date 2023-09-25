@@ -1,66 +1,50 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveEnd, Router, RouterEvent } from '@angular/router';
 import { ApplicationInsights, ITelemetryItem, SeverityLevel } from '@microsoft/applicationinsights-web';
-import { Observable } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
 import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
 import { ConfigService } from '../../api/config.service';
-import { ProfileService } from '../../api/profile.service';
-import { Role } from '../../clients/api-client';
 import { LogAdapter } from '../log-adapter';
+import { ClientSettingsResponse, Role } from '../../clients/api-client';
+import { filter, switchMap } from 'rxjs/operators';
+import { ProfileService } from '../../api/profile.service';
+import { combineLatest, of } from 'rxjs';
+import { IdpProviders } from 'src/app/security/idp-providers';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AppInsightsLoggerService implements LogAdapter {
-    private securityService: ISecurityService;
     errorInfo: any;
-    router: Router;
     appInsights: ApplicationInsights;
     isVHO: boolean;
     userData;
+    currentIdp: IdpProviders;
+    private config: ClientSettingsResponse;
+
+    private securityService: ISecurityService;
+    private idAddedToLog: boolean;
 
     constructor(
         securityServiceProviderService: SecurityServiceProvider,
         configService: ConfigService,
-        router: Router,
+        private router: Router,
         private profileService: ProfileService
     ) {
         this.router = router;
-        securityServiceProviderService.currentSecurityService$.subscribe(securityService => (this.securityService = securityService));
 
-        this.setupAppInsights(configService, this.securityService).subscribe(() => {
-            this.checkIfVho(this.securityService);
-            this.trackNavigation();
-        });
-    }
+        combineLatest([
+            securityServiceProviderService.currentSecurityService$,
+            securityServiceProviderService.currentIdp$,
+            configService.getClientSettings()
+        ]).subscribe(([securityService, idp, config]) => {
+            this.config = config;
+            this.currentIdp = idp;
+            this.securityService = securityService;
 
-    private setupAppInsights(configService: ConfigService, securityService: ISecurityService): Observable<void> {
-        configService.loadConfig();
-        return configService.getClientSettings().pipe(
-            map(configSettings => {
-                this.appInsights = new ApplicationInsights({
-                    config: {
-                        instrumentationKey: configSettings.app_insights_instrumentation_key,
-                        isCookieUseDisabled: true
-                    }
-                });
-                this.appInsights.loadAppInsights();
-                securityService?.userData$.subscribe(ud => {
-                    this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
-                        envelope.tags['ai.cloud.role'] = 'vh-video-web';
-                        envelope.tags['ai.user.id'] = ud.preferred_username.toLowerCase();
-                    });
-                });
-            })
-        );
-    }
-
-    private checkIfVho(securityService: ISecurityService) {
-        securityService?.isAuthenticated$.pipe(filter(Boolean)).subscribe(() => {
-            this.profileService.getUserProfile().then(profile => {
-                this.isVHO = profile.role === Role.VideoHearingsOfficer;
+            this.setupAppInsights().subscribe(() => {
+                this.checkIfVho();
+                this.trackNavigation();
             });
         });
     }
@@ -73,21 +57,33 @@ export class AppInsightsLoggerService implements LogAdapter {
     }
 
     info(message: string, properties: any = null): void {
+        if (!this.appInsights) {
+            return;
+        }
         this.updatePropertiesIfVho(properties);
         this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Information }, properties);
     }
 
     warn(message: string, properties: any = null): void {
+        if (!this.appInsights) {
+            return;
+        }
         this.updatePropertiesIfVho(properties);
         this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Warning }, properties);
     }
 
     trackEvent(eventName: string, properties: any) {
+        if (!this.appInsights) {
+            return;
+        }
         this.updatePropertiesIfVho(properties);
         this.appInsights.trackEvent({ name: eventName }, properties);
     }
 
     trackException(message: string, err: Error, properties: any) {
+        if (!this.appInsights) {
+            return;
+        }
         properties = properties || {};
         properties.message = message;
         this.updatePropertiesIfVho(properties);
@@ -96,7 +92,7 @@ export class AppInsightsLoggerService implements LogAdapter {
         properties.errorInformation = this.errorInfo
             ? `${this.errorInfo.error} : ${this.errorInfo.status}
        : ${this.errorInfo.statusText} : ${this.errorInfo.url} : ${this.errorInfo.message}`
-            : ``;
+            : '';
 
         this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Error }, properties);
         this.appInsights.trackException({
@@ -105,8 +101,64 @@ export class AppInsightsLoggerService implements LogAdapter {
         });
     }
 
-    updateUserId(userId: string) {
-        this.appInsights.context.user.id = userId;
+    addUserIdToLogger(userId: string) {
+        if (userId && !this.idAddedToLog) {
+            const loweredUserId = userId.toLowerCase();
+            this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
+                envelope.tags['ai.user.id'] = loweredUserId;
+            });
+            this.appInsights.setAuthenticatedUserContext(loweredUserId, loweredUserId, true);
+            this.idAddedToLog = true;
+        }
+    }
+
+    private setupAppInsights() {
+        return this.securityService.getUserData(this.currentIdp).pipe(
+            switchMap(userData => {
+                this.userData = userData;
+                this.appInsights = new ApplicationInsights({
+                    config: {
+                        connectionString: this.config.app_insights_connection_string,
+                        isCookieUseDisabled: true
+                    }
+                });
+                let userId: string = null;
+                if (userData?.preferred_username) {
+                    userId = userData?.preferred_username.toLowerCase();
+                }
+
+                if (this.currentIdp === IdpProviders.quickLink) {
+                    const participantId = userData.preferred_username.split('@')[0];
+                    userId = `${userData.unique_name.toLowerCase()}_${participantId}`;
+                }
+                this.appInsights.loadAppInsights();
+                this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
+                    const remoteDepedencyType = 'RemoteDependencyData';
+                    if (envelope.baseType === remoteDepedencyType && (envelope.baseData.name as string)) {
+                        const name = envelope.baseData.name as string;
+                        if (name.startsWith('HEAD /assets/images/favicons/favicon.ico?')) {
+                            // ignore favicon requests used to poll for availability
+                            return false;
+                        }
+                    }
+                    envelope.tags['ai.cloud.role'] = 'vh-video-web';
+                });
+
+                this.addUserIdToLogger(userId);
+                return of(null);
+            })
+        );
+    }
+
+    private checkIfVho() {
+        this.securityService
+            .isAuthenticated(this.currentIdp)
+            .pipe(filter(Boolean))
+            .subscribe(() => {
+                this.profileService.getUserProfile().then(profile => {
+                    this.isVHO = profile.roles.includes(Role.VideoHearingsOfficer);
+                });
+            });
     }
 
     private trackNavigation() {
@@ -123,7 +175,9 @@ export class AppInsightsLoggerService implements LogAdapter {
     }
 
     private trackPage(pageName: string, url: string) {
-        this.appInsights.trackPageView({ name: pageName, uri: url });
+        if (this.appInsights) {
+            this.appInsights.trackPageView({ name: pageName, uri: url });
+        }
     }
 
     private getActivatedComponent(snapshot: ActivatedRouteSnapshot): any {
@@ -145,7 +199,7 @@ export class AppInsightsLoggerService implements LogAdapter {
     }
 
     private updatePropertiesIfVho(properties: any) {
-        if (properties && this.isVHO) {
+        if (properties && properties instanceof Object && this.isVHO) {
             properties.isVho = this.isVHO;
         }
     }

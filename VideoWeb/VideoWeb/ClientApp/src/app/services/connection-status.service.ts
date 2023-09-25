@@ -18,12 +18,13 @@ export class ConnectionStatusService {
     private pings = new Array<boolean>(this.NUMBER_OF_GOOD_PINGS_REQUIRED);
 
     private _onUserTriggeredReconnect = new Subject<boolean>();
-    get onUserTriggeredReconnect(): Observable<boolean> {
-        return this._onUserTriggeredReconnect.asObservable();
-    }
 
     constructor(private logger: Logger, private http: HttpClient) {
         this.pings.every(x => (x = true));
+    }
+
+    get onUserTriggeredReconnect(): Observable<boolean> {
+        return this._onUserTriggeredReconnect.asObservable();
     }
 
     get status() {
@@ -32,7 +33,7 @@ export class ConnectionStatusService {
 
     start() {
         if (this.timer) {
-            this.logger.info(`${this.loggerPrefix} Timer already started`);
+            this.logger.debug(`${this.loggerPrefix} Timer already started`);
             return;
         }
         this.timer = setInterval(() => this.checkConnection(), this.INTERVAL_IN_MS);
@@ -50,6 +51,14 @@ export class ConnectionStatusService {
         }
     }
 
+    userTriggeredReconnect() {
+        this._onUserTriggeredReconnect.next(this.status);
+    }
+
+    onConnectionStatusChange(): Observable<boolean> {
+        return this.connectionStatus.asObservable();
+    }
+
     private checkConnection() {
         this.getFavicon().subscribe(result => {
             this.handleConnectionResult(result);
@@ -59,17 +68,13 @@ export class ConnectionStatusService {
     private getFavicon(): Observable<boolean> {
         // NOTE: a status of "0" is received when app is offline
         return this.http.head('/assets/images/favicons/favicon.ico?_=' + new Date().getTime(), { observe: 'response' }).pipe(
-            map(response => {
-                return response.status > 0;
-            }),
-            catchError((err: HttpErrorResponse) => {
-                return of(err.status !== 0);
-            })
+            map(response => response.status > 0),
+            catchError((err: HttpErrorResponse) => of(err.status !== 0))
         );
     }
 
     private handleConnectionResult(connectionResult: boolean) {
-        this.logger.info(`${this.loggerPrefix} ${connectionResult ? 'Good ping received' : 'Bad ping received'}`);
+        this.logger.debug(`${this.loggerPrefix} ${connectionResult ? 'Good ping received' : 'Bad ping received'}`);
         if (this.status === connectionResult) {
             return;
         }
@@ -78,16 +83,8 @@ export class ConnectionStatusService {
         this.pings.push(connectionResult);
 
         if (this.status === connectionResult) {
-            this.logger.info(`${this.loggerPrefix} ${this.status ? 'Online' : 'Offline'}`);
+            this.logger.debug(`${this.loggerPrefix} ${this.status ? 'Online' : 'Offline'}`);
             this.connectionStatus.next(this.status);
         }
-    }
-
-    userTriggeredReconnect() {
-        this._onUserTriggeredReconnect.next(this.status);
-    }
-
-    onConnectionStatusChange(): Observable<boolean> {
-        return this.connectionStatus.asObservable();
     }
 }

@@ -5,7 +5,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using BookingsApi.Client;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -17,6 +17,7 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
 using VideoWeb.Mappings;
 using VideoApi.Client;
+using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
 using VideoWeb.Extensions;
 using HostConference = VideoApi.Contract.Responses.ConferenceForHostResponse;
@@ -67,13 +68,24 @@ namespace VideoWeb.Controllers
            
             try
             {
-                var conferenceForHostResponseMapper = _mapperFactory.Get<HostConference, ConferenceForHostResponse>();
-                var username = User.Identity.Name;
+                var conferenceForHostResponseMapper = _mapperFactory.Get<ConfirmedHearingsTodayResponse, List<HostConference>, ConferenceForHostResponse>();
+                var username = User.Identity!.Name;
+                var hearings = await _bookingApiClient.GetConfirmedHearingsByUsernameForTodayAsync(username);
                 var conferencesForHost = await _videoApiClient.GetConferencesTodayForHostAsync(username);
-                var response = conferencesForHost
-                    .Select(conferenceForHostResponseMapper.Map)
+                var response = hearings
+                    .Select(h => conferenceForHostResponseMapper.Map(h, conferencesForHost.ToList()))
                     .ToList();
                 return Ok(response);
+            }
+            catch (BookingsApiException e)
+            {
+                if (e.StatusCode == (int)HttpStatusCode.NotFound)
+                {
+                    _logger.LogWarning("No hearings found for user");
+                    return Ok(new List<ConferenceForHostResponse>());
+                }
+ 
+                throw;
             }
             catch (VideoApiException e)
             {
@@ -98,7 +110,9 @@ namespace VideoWeb.Controllers
             try
             {
                 var conferenceForHostResponseMapper = _mapperFactory.Get<HostConference, ConferenceForHostResponse>();
-                var conferencesForStaffMember = await _videoApiClient.GetConferencesTodayForStaffMemberByHearingVenueNameAsync(hearingVenueNames);
+                var hearingsForToday = await _bookingApiClient.GetHearingsForTodayByVenueAsync(hearingVenueNames);
+                var request = new GetConferencesByHearingIdsRequest{ HearingRefIds = hearingsForToday.Select(x => x.Id).ToArray() };
+                var conferencesForStaffMember = await _videoApiClient.GetConferencesForHostByHearingRefIdAsync(request);
                 var response = conferencesForStaffMember
                     .Select(conferenceForHostResponseMapper.Map)
                     .ToList();
@@ -120,19 +134,32 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [SwaggerOperation(OperationId = "GetConferencesForIndividual")]
         [Authorize("Individual")]
-        public async Task<ActionResult<IEnumerable<ConferenceForIndividualResponse>>> GetConferencesForIndividual()
+        public async Task<ActionResult<List<ConferenceForIndividualResponse>>> GetConferencesForIndividual()
         {
             _logger.LogDebug("GetConferencesForIndividual");
             try
             {
-                var username = User.Identity.Name;
-                var conferencesForIndividual = await _videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username);
-                conferencesForIndividual = conferencesForIndividual.Where(c => ConferenceHelper.HasNotPassed(c.Status, c.ClosedDateTime)).ToList();
-                var conferenceForIndividualResponseMapper = _mapperFactory.Get<IndividualConference, ConferenceForIndividualResponse>();
-                var response = conferencesForIndividual
-                    .Select(conferenceForIndividualResponseMapper.Map)
-                    .ToList();
-                return Ok(response);
+                var username = User.Identity!.Name;
+                var hearings = await _bookingApiClient.GetConfirmedHearingsByUsernameForTodayAsync(username);
+                var conferencesForIndividual =
+                    await _videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username);
+                var conferenceForIndividualResponseMapper = _mapperFactory
+                    .Get<ConfirmedHearingsTodayResponse, List<IndividualConference>, ConferenceForIndividualResponse>();
+                var response = hearings
+                    .Select(hearing =>
+                        conferenceForIndividualResponseMapper.Map(hearing, conferencesForIndividual.ToList()));
+                response = response.Where(c => c.IsWaitingRoomOpen);
+                return Ok(response.ToList());
+            }
+            catch (BookingsApiException e)
+            {
+                if (e.StatusCode == (int)HttpStatusCode.NotFound)
+                {
+                    _logger.LogWarning("No hearings found for user");
+                    return Ok(new List<ConferenceForIndividualResponse>());
+                }
+ 
+                throw;
             }
             catch (VideoApiException e)
             {
@@ -156,12 +183,15 @@ namespace VideoWeb.Controllers
             _logger.LogDebug("GetConferencesForVhOfficer");
             try
             {
-                var conferences = await _videoApiClient.GetConferencesTodayForAdminByHearingVenueNameAsync(query.HearingVenueNames);
+                
+                var hearingsForToday = await _bookingApiClient.GetHearingsForTodayByVenueAsync(query.HearingVenueNames);
+                var request = new GetConferencesByHearingIdsRequest { HearingRefIds = hearingsForToday.Select(e => e.Id).ToArray() };
+                var conferences = await _videoApiClient.GetConferencesForAdminByHearingRefIdAsync(request);
                 var allocatedHearings =
                     await _bookingApiClient.GetAllocationsForHearingsAsync(conferences.Select(e => e.HearingRefId));
                 var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>();
                 var responses = conferences
-                    .Where(c => ConferenceHelper.HasNotPassed(c.Status, c.ClosedDateTime))
+                    .Where(c => c.IsWaitingRoomOpen)
                     .Select(x => conferenceForVhOfficerResponseMapper.Map(x, allocatedHearings?.FirstOrDefault(conference => conference.HearingId == x.HearingRefId)))
                     .ApplyCsoFilter(query)
                     .OrderBy(x => x.ClosedDateTime)
@@ -217,8 +247,7 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e.Response);
             }
 
-            var exceededTimeLimit = !ConferenceHelper.HasNotPassed(conference.CurrentStatus, conference.ClosedDateTime);
-            if (exceededTimeLimit)
+            if (!conference.IsWaitingRoomOpen)
             {
                 _logger.LogInformation(
                     $"Unauthorised to view conference details {conferenceId} because user is not " +
@@ -297,8 +326,8 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e.Response);
             }
 
-            var exceededTimeLimit = !ConferenceHelper.HasNotPassed(conference.CurrentStatus, conference.ClosedDateTime);
-            if (userProfile.Role != Role.StaffMember && (conference.Participants.All(x => x.Username.ToLower().Trim() != username) || exceededTimeLimit))
+            if (!userProfile.Roles.Contains(Role.StaffMember) && 
+                (conference.Participants.TrueForAll(x => x.Username.ToLower().Trim() != username) || !conference.IsWaitingRoomOpen))
             {
                 _logger.LogInformation(
                     $"Unauthorised to view conference details {conferenceId} because user is neither a VH " +

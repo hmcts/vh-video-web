@@ -18,7 +18,7 @@ describe('SelectMediaDevicesComponent', () => {
         display_name: 'John Doe',
         first_name: 'John',
         last_name: 'Doe',
-        role: Role.Judge
+        roles: [Role.Judge]
     });
 
     let component: SelectMediaDevicesComponent;
@@ -236,7 +236,7 @@ describe('SelectMediaDevicesComponent', () => {
                 display_name: 'John Doe',
                 first_name: 'John',
                 last_name: 'Doe',
-                role: Role.Individual
+                roles: [Role.Individual]
             });
             profileService.getUserProfile.and.returnValue(Promise.resolve(individualProfile));
             component.ngOnInit();

@@ -21,11 +21,10 @@ import { VideoControlService } from '../../services/conference/video-control.ser
 import { CaseTypeGroup } from '../models/case-type-group';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { VhoStorageKeys } from 'src/app/vh-officer/services/models/session-keys';
+import { ParticipantToggleLocalMuteMessage } from 'src/app/shared/models/participant-toggle-local-mute-message';
 
 @Injectable()
 export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy {
-    protected readonly loggerPrefix = '[HearingControlsBase] -';
-
     @Input() public participant: ParticipantResponse;
     @Input() public isPrivateConsultation: boolean;
     @Input() public outgoingStream: MediaStream | URL;
@@ -55,9 +54,11 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     isSpotlighted: boolean;
     showEvidenceContextMenu: boolean;
 
-    protected destroyedSubject = new Subject<void>();
     sharingDynamicEvidence: boolean;
     sessionStorage = new SessionStorage<boolean>(VhoStorageKeys.EQUIPMENT_SELF_TEST_KEY);
+
+    protected readonly loggerPrefix = '[HearingControlsBase] -';
+    protected destroyedSubject = new Subject<void>();
 
     protected constructor(
         protected videoCallService: VideoCallService,
@@ -111,6 +112,24 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         return { conference: this.conferenceId, participant: this.participant.id };
     }
 
+    get handToggleText(): string {
+        if (this.handRaised) {
+            return this.translateService.instant('hearing-controls.lower-my-hand');
+        } else {
+            return this.translateService.instant('hearing-controls.raise-my-hand');
+        }
+    }
+
+    get videoMutedText(): string {
+        return this.videoMuted
+            ? this.translateService.instant('hearing-controls.switch-camera-on')
+            : this.translateService.instant('hearing-controls.switch-camera-off');
+    }
+
+    get roomLocked(): boolean {
+        return this.participant?.current_room?.locked ?? false;
+    }
+
     ngOnInit(): void {
         this.audioMuted = this.videoCallService.pexipAPI.call.mutedAudio;
         this.videoMuted = this.videoCallService.pexipAPI.call.mutedVideo || this.audioOnly;
@@ -119,8 +138,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             this.audioOnly = audioOnly;
             this.videoMuted = this.videoCallService.pexipAPI.call.mutedVideo || this.audioOnly;
         });
-
-        this.logger.info(`${this.loggerPrefix} initialising hearing controls`, this.logPayload);
 
         this.setupVideoCallSubscribers();
         this.setupEventhubSubscribers();
@@ -173,15 +190,22 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.eventService
             .getParticipantHandRaisedMessage()
             .pipe(takeUntil(this.destroyedSubject))
-            .subscribe(async message => {
+            .subscribe(message => {
                 this.handleParticipantHandRaiseChange(message);
             });
 
         this.eventService
             .getParticipantRemoteMuteStatusMessage()
             .pipe(takeUntil(this.destroyedSubject))
-            .subscribe(async message => {
+            .subscribe(message => {
                 this.handleParticipantRemoteMuteChange(message);
+            });
+
+        this.eventService
+            .getParticipantToggleLocalMuteMessage()
+            .pipe(takeUntil(this.destroyedSubject))
+            .subscribe(async message => {
+                await this.handleParticipantToggleLocalMuteChange(message);
             });
     }
 
@@ -195,24 +219,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         if (this.sharingDynamicEvidence) {
             this.videoCallService.stopScreenWithMicrophone();
         }
-    }
-
-    get handToggleText(): string {
-        if (this.handRaised) {
-            return this.translateService.instant('hearing-controls.lower-my-hand');
-        } else {
-            return this.translateService.instant('hearing-controls.raise-my-hand');
-        }
-    }
-
-    get videoMutedText(): string {
-        return this.videoMuted
-            ? this.translateService.instant('hearing-controls.switch-camera-on')
-            : this.translateService.instant('hearing-controls.switch-camera-off');
-    }
-
-    get roomLocked(): boolean {
-        return this.participant?.current_room?.locked ?? false;
     }
 
     setupVideoCallSubscribers() {
@@ -268,17 +274,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         return true;
     }
 
-    private newParticipantEnteredHandshake(newParticipantEntered) {
-        this.logger.info(`${this.loggerPrefix} Waiting 3 seconds before sending handshake`);
-        if (this.participant.hearing_role !== HearingRole.JUDGE && this.participant.hearing_role !== HearingRole.STAFF_MEMBER) {
-            setTimeout(() => {
-                this.logger.info(`${this.loggerPrefix} Sending handshake for entry of: ${newParticipantEntered}`);
-                this.publishMediaDeviceStatus();
-                this.eventService.publishParticipantHandRaisedStatus(this.conferenceId, this.participant.id, this.handRaised);
-            }, 3000); // 3Seconds: Give 2nd host time initialise participants, before receiving status updates
-        }
-    }
-
     handleParticipantStatusChange(message: ParticipantStatusMessage) {
         if (message.participantId !== this.participant.id) {
             if (message.status === ParticipantStatus.InHearing) {
@@ -293,6 +288,33 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         }
 
         this.participant.status = message.status;
+    }
+
+    async handleParticipantToggleLocalMuteChange(message: ParticipantToggleLocalMuteMessage) {
+        if (message.participantId !== this.participant.id || message.conferenceId !== this.conferenceId) {
+            this.logger.debug(`${this.loggerPrefix} Participant received a toggle local mute message for another conference/participant`, {
+                messageParticipantId: message.participantId,
+                messageConferenceId: message.conferenceId,
+                currentParticipantId: this.participant.id,
+                currentConferenceId: this.conferenceId
+            });
+            return;
+        }
+
+        if (this.remoteMuted) {
+            return;
+        }
+
+        if (this.audioMuted && !message.muted) {
+            await this.toggleMute();
+            this.logger.info(`${this.loggerPrefix} Participant has been locally unmuted by the judge`, this.logPayload);
+            return;
+        }
+
+        if (!this.audioMuted && message.muted) {
+            await this.toggleMute();
+            this.logger.info(`${this.loggerPrefix} Participant has been locally muted by the judge`, this.logPayload);
+        }
     }
 
     handleParticipantRemoteMuteChange(message: ParticipantRemoteMuteMessage) {
@@ -387,14 +409,14 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     pause() {
-        this.logger.debug(`${this.loggerPrefix} Attempting to pause hearing`, this.logPayload);
+        this.logger.info(`${this.loggerPrefix} Attempting to pause hearing`, this.logPayload);
         this.videoCallService.pauseHearing(this.conferenceId);
     }
 
     close(answer: boolean) {
         this.displayConfirmPopup = false;
         if (answer) {
-            this.logger.debug(`${this.loggerPrefix} Attempting to close hearing`, this.logPayload);
+            this.logger.info(`${this.loggerPrefix} Attempting to close hearing`, this.logPayload);
             this.videoCallService.endHearing(this.conferenceId);
             this.sessionStorage.clear();
         }
@@ -420,12 +442,12 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     leavePrivateConsultation() {
-        this.logger.debug(`${this.loggerPrefix} Leave private consultation clicked`, this.logPayload);
+        this.logger.info(`${this.loggerPrefix} Leave private consultation clicked`, this.logPayload);
         this.leaveConsultation.emit();
     }
 
     lockPrivateConsultation(lock: boolean) {
-        this.logger.debug(`${this.loggerPrefix} Lock private consultation clicked`, this.logPayload);
+        this.logger.info(`${this.loggerPrefix} Lock private consultation clicked`, this.logPayload);
         this.lockConsultation.emit(lock);
     }
 
@@ -469,5 +491,16 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         }
 
         return false;
+    }
+
+    private newParticipantEnteredHandshake(newParticipantEntered) {
+        this.logger.debug(`${this.loggerPrefix} Waiting 3 seconds before sending handshake`);
+        if (this.participant.hearing_role !== HearingRole.JUDGE && this.participant.hearing_role !== HearingRole.STAFF_MEMBER) {
+            setTimeout(() => {
+                this.logger.debug(`${this.loggerPrefix} Sending handshake for entry of: ${newParticipantEntered}`);
+                this.publishMediaDeviceStatus();
+                this.eventService.publishParticipantHandRaisedStatus(this.conferenceId, this.participant.id, this.handRaised);
+            }, 3000); // 3Seconds: Give 2nd host time initialise participants, before receiving status updates
+        }
     }
 }

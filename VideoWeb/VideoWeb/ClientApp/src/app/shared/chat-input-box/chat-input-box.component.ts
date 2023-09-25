@@ -1,5 +1,5 @@
 import { Component, OnInit, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit, Input } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import { UntypedFormControl, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -8,25 +8,15 @@ import { TranslateService } from '@ngx-translate/core';
     styleUrls: ['./chat-input-box.component.scss']
 })
 export class ChatInputBoxComponent implements OnInit, AfterViewInit {
-    maxInputLength = 256;
-    newMessageBody: FormControl;
-    screenReaderAlert: HTMLElement;
+    @ViewChild('screenReaderInputLimitAlert') screenReaderInputLimitAlert: ElementRef;
     @Input() useLightText = false;
     @Output() submittedMessage = new EventEmitter<string>();
-    @ViewChild('screenReaderInputLimitAlert') screenReaderInputLimitAlert: ElementRef;
+
+    maxInputLength = 256;
+    newMessageBody: UntypedFormControl;
+    screenReaderAlert: HTMLElement;
+
     constructor(private translateService: TranslateService) {}
-
-    ngOnInit() {
-        this.initForm();
-    }
-
-    ngAfterViewInit() {
-        this.screenReaderAlert = this.screenReaderInputLimitAlert.nativeElement;
-    }
-
-    initForm() {
-        this.newMessageBody = new FormControl(null, [Validators.minLength(1), Validators.maxLength(this.maxInputLength)]);
-    }
 
     get currentInputLength(): number {
         if (this.newMessageBody.value) {
@@ -42,6 +32,18 @@ export class ChatInputBoxComponent implements OnInit, AfterViewInit {
 
     get isInputInvalid(): boolean {
         return this.newMessageBody.dirty && this.newMessageBody.hasError('maxlength');
+    }
+
+    ngOnInit() {
+        this.initForm();
+    }
+
+    ngAfterViewInit() {
+        this.screenReaderAlert = this.screenReaderInputLimitAlert.nativeElement;
+    }
+
+    initForm() {
+        this.newMessageBody = new UntypedFormControl(null, [Validators.minLength(1), Validators.maxLength(this.maxInputLength)]);
     }
 
     sendMessage() {

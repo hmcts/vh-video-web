@@ -7,14 +7,15 @@ import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.s
     selector: '[appCrestLogoImageSource]'
 })
 export class CrestLogoImageSourceDirective implements OnInit, OnChanges, OnDestroy {
-    destroyed$ = new Subject();
-    private inputChanged$ = new ReplaySubject<any>(1);
-
     @Input() sctsImageSource: string;
     @Input() hmctsImageSource: string;
 
     @Input() sctsAltText: string;
     @Input() hmctsAltText: string;
+
+    destroyed$ = new Subject();
+
+    private inputChanged$ = new ReplaySubject<any>(1);
 
     constructor(private hearingVenueFlagsService: HearingVenueFlagsService, private element: ElementRef, private renderer2: Renderer2) {}
 

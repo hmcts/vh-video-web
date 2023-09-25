@@ -5,10 +5,9 @@ java:
   replicas: 2
   ingressHost: vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net
   releaseNameOverride: vh-video-web
-  readinessPath: /healthcheck/health
-  livenessPath: /healthcheck/health
-  livenessDelay: 360
-  livenessPeriod: 120
+  livenessPath: /health/liveness
+  readinessPath: /health/readiness
+  startupPath: /health/startup
   aadIdentityName: vh-aad-identity
   keyVaults:
     vh-infra-core:
@@ -16,13 +15,18 @@ java:
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
       usePodIdentity: true
       secrets:
-        - applicationinsights--instrumentationkey
+        - name: connectionstrings--applicationinsights
+          alias: applicationinsights--connectionstring
         - azuread--tenantid
         - azuread--vhvideowebclientid
         - connectionstrings--signalr
         - connectionstrings--rediscache
         - name: launchdarkly-client-id
           alias: VHSERVICES--LAUNCHDARKLYCLIENTID
+        - name: dom1--tenant--id
+          alias: DOM1--TenantId
+        - name: dom1--videoweb--clientid
+          alias: DOM1--ClientId
     vh-video-web:
       excludeEnvironmentSuffix: false
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
@@ -77,10 +81,12 @@ java:
     AZUREAD__REDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/home
     EJUDAD__POSTLOGOUTREDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/logout
     EJUDAD__REDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/home
+    DOM1__POSTLOGOUTREDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/logout
+    DOM1__REDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/home
     DISABLEHTTPSREDIRECTION: true
-    Logging__LogLevel__Default: debug
-    Logging__LogLevel__Microsoft: debug
-    Logging__LogLevel__System: debug
+    Logging__LogLevel__Default: warning
+    Logging__LogLevel__Microsoft: warning
+    Logging__LogLevel__System: warning
     VHSERVICES__BOOKINGSAPIURL: https://vh-bookings-api.{{ .Values.global.environment }}.platform.hmcts.net/
     VHSERVICES__ENABLEANDROIDSUPPORT: true
     VHSERVICES__ENABLEDYNAMICEVIDENCESHARING: true

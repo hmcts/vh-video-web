@@ -17,7 +17,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { ParticipantUpdated } from '../models/video-call-models';
+import { ParticipantDeleted, ParticipantUpdated } from '../models/video-call-models';
 import { mockCamStream, mockMicStream } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { VideoCallEventsService } from './video-call-events.service';
 import { VideoCallService } from './video-call.service';
@@ -103,7 +103,9 @@ describe('VideoCallService', () => {
             'present',
             'getPresentation',
             'stopPresentation',
-            'renegotiate'
+            'renegotiate',
+            'dialOut',
+            'disconnectParticipant'
         ]);
 
         streamMixerServiceSpy = jasmine.createSpyObj<StreamMixerService>('StreamMixerService', ['mergeAudioStreams']);
@@ -397,6 +399,7 @@ describe('VideoCallService', () => {
             expect(service.onError()).toBeDefined();
             expect(service.onParticipantUpdated()).toBeDefined();
             expect(service.onConferenceUpdated()).toBeDefined();
+            expect(service.onParticipantDeleted()).toBeDefined();
             expect(service.onCallTransferred()).toBeDefined();
             expect(service.onPresentation()).toBeDefined();
             expect(service.onPresentationConnected()).toBeDefined();
@@ -488,6 +491,23 @@ describe('VideoCallService', () => {
             expect(result).toBeTruthy();
             expect(result).toEqual(expectedUpdate);
             expect(videoCallEventsServiceSpy.handleParticipantUpdated).toHaveBeenCalledOnceWith(expectedUpdate);
+        }));
+    });
+
+    describe('handleParticipantDelete', () => {
+        it('should push the deleted participant subject from pexip into the service onParticipantDeleted observable', fakeAsync(() => {
+            // Arrange
+            const participant = { uuid: 'uuid' };
+            // Act
+            let result: ParticipantDeleted | null = null;
+            service.onParticipantDeleted().subscribe(update => (result = update));
+
+            service.pexipAPI.onParticipantDelete(participant);
+            flush();
+
+            // Assert
+            expect(result).toBeTruthy();
+            expect(result.uuid).toEqual(participant.uuid);
         }));
     });
 
@@ -604,5 +624,21 @@ describe('VideoCallService', () => {
             expect(service.pexipAPI.user_media_stream).not.toEqual(screenStream);
             expect(service.pexipAPI.user_media_stream).toEqual(mockCamStream);
         }));
+    });
+
+    describe('Wowza Listener connection', () => {
+        it('Reconnect wowza agent via Dialout pexip function', () => {
+            service.pexipAPI = pexipSpy;
+            const ingestUrl = 'ingestUrl';
+            service.connectWowzaAgent(ingestUrl, null);
+            expect(pexipSpy.dialOut).toHaveBeenCalledOnceWith(ingestUrl, 'auto', '', null, jasmine.any(Object));
+        });
+
+        it('Disconnect wowza agent via pexip Participant Delete function', () => {
+            service.pexipAPI = pexipSpy;
+            const uuid = 'uuid';
+            service.disconnectWowzaAgent(uuid);
+            expect(pexipSpy.disconnectParticipant).toHaveBeenCalledOnceWith(uuid);
+        });
     });
 });

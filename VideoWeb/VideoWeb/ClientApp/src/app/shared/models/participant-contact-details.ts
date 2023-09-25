@@ -50,16 +50,8 @@ export class ParticipantContactDetails {
         return this.participant.status;
     }
 
-    set status(value: ParticipantStatus) {
-        this.participant.status = value;
-    }
-
     get statusText(): string {
         return this.participantStatusText;
-    }
-
-    set statusText(value: string) {
-        this.participantStatusText = value;
     }
 
     get role(): Role {
@@ -92,10 +84,6 @@ export class ParticipantContactDetails {
         return this.isHostInAnotherHearing;
     }
 
-    set hostInAnotherHearing(value: boolean) {
-        this.isHostInAnotherHearing = value;
-    }
-
     get showCaseRole(): boolean {
         if (!this.participant.case_type_group) {
             return false;
@@ -112,5 +100,17 @@ export class ParticipantContactDetails {
 
     get isInterpreterOrInterpretee(): boolean {
         return this.participant.hearing_role === HearingRole.INTERPRETER || this.participant.linked_participants.length > 0;
+    }
+
+    set status(value: ParticipantStatus) {
+        this.participant.status = value;
+    }
+
+    set statusText(value: string) {
+        this.participantStatusText = value;
+    }
+
+    set hostInAnotherHearing(value: boolean) {
+        this.isHostInAnotherHearing = value;
     }
 }

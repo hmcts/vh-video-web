@@ -15,6 +15,7 @@ import { HearingControlsBaseComponent } from '../hearing-controls/hearing-contro
 import { VideoCallService } from '../services/video-call.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
+import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
 @Component({
     selector: 'app-private-consultation-room-controls',
     templateUrl: './private-consultation-room-controls.component.html',
@@ -31,15 +32,16 @@ import { VideoControlCacheService } from '../../services/conference/video-contro
     outputs: ['leaveConsultation', 'lockConsultation', 'togglePanel', 'changeDeviceToggle', 'leaveHearing']
 })
 export class PrivateConsultationRoomControlsComponent extends HearingControlsBaseComponent {
-    showContextMenu = false;
-
     @Input() public canToggleParticipantsPanel: boolean;
     @Input() public isChatVisible: boolean;
     @Input() public areParticipantsVisible: boolean;
+    @Input() public wowzaUUID: string;
 
-    private conferenceStatus: ConferenceStatusChanged;
+    showContextMenu = false;
     enableDynamicEvidenceSharing = false;
     isStaffMemberFeatureEnabled = false;
+    isWowzaKillButtonEnabled = false;
+    private conferenceStatus: ConferenceStatusChanged;
 
     constructor(
         protected videoCallService: VideoCallService,
@@ -53,7 +55,8 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         conferenceService: ConferenceService,
         configSerivce: ConfigService,
         featureFlagService: FeatureFlagService,
-        protected videoControlCacheService: VideoControlCacheService
+        protected videoControlCacheService: VideoControlCacheService,
+        ldService: LaunchDarklyService
     ) {
         super(
             videoCallService,
@@ -79,6 +82,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
             .getFeatureFlagByName('StaffMemberFeature')
             .pipe(first())
             .subscribe(result => (this.isStaffMemberFeatureEnabled = result));
+        ldService.getFlag<boolean>(FEATURE_FLAGS.wowzaKillButton, false).subscribe(value => (this.isWowzaKillButtonEnabled = value));
     }
 
     get canShowCloseHearingPopup(): boolean {
@@ -111,5 +115,9 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
 
     leave(confirmation: boolean) {
         super.leave(confirmation, this.participantService.participants);
+    }
+
+    killWowza() {
+        this.videoCallService.disconnectWowzaAgent(this.wowzaUUID);
     }
 }

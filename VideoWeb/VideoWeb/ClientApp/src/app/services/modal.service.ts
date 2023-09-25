@@ -21,10 +21,6 @@ export class ModalService {
         }
     }
 
-    private checkModalExists(id: string): ModalComponent {
-        return this.modals.find(x => x.id === id);
-    }
-
     open(id: string) {
         // open modal specified by id
         const modal = this.checkModalExists(id);
@@ -49,5 +45,9 @@ export class ModalService {
 
     getModals(): readonly ModalComponent[] {
         return this.modals;
+    }
+
+    private checkModalExists(id: string): ModalComponent {
+        return this.modals.find(x => x.id === id);
     }
 }

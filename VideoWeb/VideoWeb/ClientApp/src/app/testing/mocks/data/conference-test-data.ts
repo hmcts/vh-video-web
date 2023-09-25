@@ -189,25 +189,6 @@ export class ConferenceTestData {
         return this.initConferenceDetails(date);
     }
 
-    private initConferenceDetails(scheduledDateTime): ConferenceResponse {
-        const participants = this.getListOfParticipantDetails();
-        const endpoints = this.getListOfEndpoints();
-        return new ConferenceResponse({
-            id: '612AB52C-BDA5-4F4D-95B8-3F49065219A6',
-            case_name: 'WM V T',
-            case_number: '0987UDIHH',
-            case_type: 'Financial Tax Remedy',
-            scheduled_date_time: scheduledDateTime,
-            scheduled_duration: 45,
-            status: ConferenceStatus.NotStarted,
-            participants: participants,
-            participant_uri: 'participant@kinly.com',
-            pexip_node_uri: 'node@kinly.com',
-            hearing_venue_name: 'venue name',
-            endpoints: endpoints
-        });
-    }
-
     getListOfLinkedParticipants(isWitness: boolean = false): ParticipantForUserResponse[] {
         const participants: ParticipantForUserResponse[] = [];
 
@@ -1285,5 +1266,25 @@ export class ConferenceTestData {
         wingers.push(winger2);
         wingers.push(winger3);
         return wingers;
+    }
+
+    private initConferenceDetails(scheduledDateTime): ConferenceResponse {
+        const participants = this.getListOfParticipantDetails();
+        const endpoints = this.getListOfEndpoints();
+        return new ConferenceResponse({
+            id: '612AB52C-BDA5-4F4D-95B8-3F49065219A6',
+            case_name: 'WM V T',
+            case_number: '0987UDIHH',
+            case_type: 'Financial Tax Remedy',
+            scheduled_date_time: scheduledDateTime,
+            scheduled_duration: 45,
+            status: ConferenceStatus.NotStarted,
+            participants: participants,
+            participant_uri: 'participant@kinly.com',
+            pexip_node_uri: 'node@kinly.com',
+            hearing_venue_name: 'venue name',
+            endpoints: endpoints,
+            ingest_url: 'rtmp://vh-wowza-node/hearing_id'
+        });
     }
 }

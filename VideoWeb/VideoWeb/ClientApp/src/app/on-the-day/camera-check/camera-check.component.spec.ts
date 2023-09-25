@@ -1,4 +1,4 @@
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { convertToParamMap, Router } from '@angular/router';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
@@ -18,7 +18,7 @@ describe('CameraCheckComponent', () => {
     const conferenceLite = new ConferenceLite(conference.id, conference.case_number);
     let router: jasmine.SpyObj<Router>;
     const activatedRoute: any = { snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
-    const formBuilder = new FormBuilder();
+    const formBuilder = new UntypedFormBuilder();
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     let errorService: jasmine.SpyObj<ErrorService>;
     const logger: Logger = new MockLogger();

@@ -31,7 +31,6 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
     newStaffMemberDisplayName: string;
     isUserJudge: boolean;
     isStaffMember: boolean;
-
     hearing: Hearing;
 
     constructor(
@@ -89,16 +88,6 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         return this.camelToSnake(endpoint.status.toString());
     }
 
-    private filterRepresentatives(): void {
-        this.representativeParticipants = this.conference.participants.filter(
-            x => x.role === Role.Representative && x.hearing_role !== HearingRole.OBSERVER
-        );
-        this.litigantInPerson = this.representativeParticipants.length === 0;
-        this.individualParticipants = this.conference.participants.filter(
-            x => x.role === Role.Individual && x.hearing_role !== HearingRole.OBSERVER
-        );
-    }
-
     changeJudgeNameShow() {
         this.showChangeJudgeDisplayName = true;
         this.newJudgeDisplayName = this.judge.display_name;
@@ -147,6 +136,16 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         this.showChangeJudgeDisplayName = false;
     }
 
+    private filterRepresentatives(): void {
+        this.representativeParticipants = this.conference.participants.filter(
+            x => x.role === Role.Representative && x.hearing_role !== HearingRole.OBSERVER
+        );
+        this.litigantInPerson = this.representativeParticipants.length === 0;
+        this.individualParticipants = this.conference.participants.filter(
+            x => x.role === Role.Individual && x.hearing_role !== HearingRole.OBSERVER
+        );
+    }
+
     private async updateJudgeDisplayName() {
         const updateParticipantRequest = new UpdateParticipantDisplayNameRequest({
             fullname: this.judge.name,
@@ -157,7 +156,7 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         });
 
         try {
-            this.logger.debug(`[JudgeParticipantStatusList] - Attempting to update judge`, {
+            this.logger.debug('[JudgeParticipantStatusList] - Attempting to update judge', {
                 judge: this.judge.id,
                 displayName: this.judge.display_name
             });
@@ -177,7 +176,7 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         });
 
         try {
-            this.logger.debug(`[JudgeParticipantStatusList] - Attempting to update staff member`, {
+            this.logger.debug('[JudgeParticipantStatusList] - Attempting to update staff member', {
                 staffMember: staffMember.id,
                 displayName: staffMember.display_name
             });

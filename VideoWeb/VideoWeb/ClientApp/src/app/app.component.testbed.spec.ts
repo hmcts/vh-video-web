@@ -2,7 +2,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { configureTestSuite } from 'ng-bullet';
 import { AppComponent } from './app.component';
 import { ConfigService } from './services/api/config.service';
 import { ProfileService } from './services/api/profile.service';
@@ -28,6 +27,7 @@ import { ISecurityService } from './security/authentication/security-service.int
 import { SecurityConfigSetupService } from './security/security-config-setup.service';
 import { getSpiedPropertyGetter } from './shared/jasmine-helpers/property-helpers';
 import { NoSleepService } from './services/no-sleep.service';
+import { IdpProviders } from './security/idp-providers';
 
 describe('AppComponent - Testbed', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
@@ -42,7 +42,7 @@ describe('AppComponent - Testbed', () => {
     const clientSettings = new ClientSettingsResponse({
         event_hub_path: 'evenhub',
         join_by_phone_from_date: '2020-09-01',
-        app_insights_instrumentation_key: 'appinsights'
+        app_insights_connection_string: 'InstrumentationKey=appinsights'
     });
 
     let component: AppComponent;
@@ -52,7 +52,7 @@ describe('AppComponent - Testbed', () => {
     let securityConfigSetupServiceSpy: jasmine.SpyObj<SecurityConfigSetupService>;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
 
-    configureTestSuite(() => {
+    beforeEach(() => {
         noSleepServiceSpy = jasmine.createSpyObj<NoSleepService>(['enable']);
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings', 'loadConfig']);
         configServiceSpy.getClientSettings.and.returnValue(of(clientSettings));
@@ -60,7 +60,7 @@ describe('AppComponent - Testbed', () => {
         deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isSupportedBrowser']);
 
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
-        const profile = new UserProfileResponse({ role: Role.Representative });
+        const profile = new UserProfileResponse({ roles: [Role.Representative] });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
 
         pageTrackerSpy = jasmine.createSpyObj('PageTrackerService', ['trackNavigation', 'trackPreviousPage']);
@@ -73,11 +73,12 @@ describe('AppComponent - Testbed', () => {
         securityServiceProviderServiceSpy = jasmine.createSpyObj<SecurityServiceProvider>(
             'SecurityServiceProviderService',
             [],
-            ['currentSecurityService$']
+            ['currentSecurityService$', 'currentIdp$']
         );
 
         securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['authorize']);
         getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentSecurityService$').and.returnValue(of(securityServiceSpy));
+        getSpiedPropertyGetter(securityServiceProviderServiceSpy, 'currentIdp$').and.returnValue(of(IdpProviders.vhaad));
 
         securityConfigSetupServiceSpy = jasmine.createSpyObj<SecurityConfigSetupService>('SecurityConfigSetupService', ['getIdp']);
 
@@ -101,9 +102,7 @@ describe('AppComponent - Testbed', () => {
                 { provide: NoSleepService, useValue: noSleepServiceSpy }
             ]
         });
-    });
 
-    beforeEach(() => {
         fixture = TestBed.createComponent(AppComponent);
         component = fixture.componentInstance;
         deviceTypeServiceSpy.isSupportedBrowser.and.returnValue(true);
@@ -112,6 +111,7 @@ describe('AppComponent - Testbed', () => {
         spyOn(router, 'navigateByUrl').and.returnValue(Promise.resolve(true));
     });
 
+    // TODO: fix this before merge
     it('should have a tag Skip to main content', () => {
         const compiled = fixture.debugElement.nativeElement;
         expect(compiled.querySelector('.govuk-skip-link').innerHTML).toBe('');

@@ -7,10 +7,12 @@ import { ConsultationAnswer, ParticipantResponse, VideoEndpointResponse } from '
     styleUrls: ['./private-consultation-participant-status.component.scss']
 })
 export class PrivateConsultationParticipantStatusComponent {
-    ConsultationAnswer = ConsultationAnswer;
     @Input() entity: ParticipantResponse | VideoEndpointResponse;
     @Input() status: string;
     @Input() roomLabel: string;
+
+    ConsultationAnswer = ConsultationAnswer;
+
     private availableStatuses = ['Available', 'Connected', 'InConsultation'];
 
     isAvailable(): boolean {

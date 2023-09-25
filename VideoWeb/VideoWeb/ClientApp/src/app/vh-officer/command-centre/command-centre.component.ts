@@ -25,6 +25,7 @@ import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly
 import { NewAllocationMessage } from '../../services/models/new-allocation-message';
 import { NotificationToastrService } from '../../waiting-space/services/notification-toastr.service';
 import { CsoFilter } from '../services/models/cso-filter';
+import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 
 @Component({
     selector: 'app-command-centre',
@@ -33,10 +34,6 @@ import { CsoFilter } from '../services/models/cso-filter';
 })
 export class CommandCentreComponent implements OnInit, OnDestroy {
     public menuOption = MenuOption;
-
-    private readonly judgeAllocationStorage: SessionStorage<string[]>;
-    private readonly courtAccountsAllocationStorage: SessionStorage<CourtRoomsAccounts[]>;
-    private readonly csoAllocationStorage: SessionStorage<CsoFilter>;
 
     venueAllocations: string[] = [];
     courtRoomsAccountsFilters: CourtRoomsAccounts[] = [];
@@ -57,10 +54,13 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
     loadingData: boolean;
     configSettings: ClientSettingsResponse;
-
     displayFilters = false;
-    private readonly loggerPrefix = '[CommandCentre] -';
     vhoWorkAllocationFeatureFlag: boolean;
+
+    private readonly loggerPrefix = '[CommandCentre] -';
+    private readonly judgeAllocationStorage: SessionStorage<string[]>;
+    private readonly courtAccountsAllocationStorage: SessionStorage<CourtRoomsAccounts[]>;
+    private readonly csoAllocationStorage: SessionStorage<CsoFilter>;
 
     constructor(
         private queryService: VhoQueryService,
@@ -78,8 +78,8 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
         this.courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
         this.csoAllocationStorage = new SessionStorage<CsoFilter>(VhoStorageKeys.CSO_ALLOCATIONS_KEY);
-        this.ldService.flagChange.subscribe(value => {
-            this.vhoWorkAllocationFeatureFlag = value[FEATURE_FLAGS.vhoWorkAllocation];
+        this.ldService.getFlag<boolean>(FEATURE_FLAGS.vhoWorkAllocation, false).subscribe(value => {
+            this.vhoWorkAllocationFeatureFlag = value;
         });
     }
 
@@ -126,7 +126,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         this.eventHubSubscriptions.add(
             this.eventService.getServiceDisconnected().subscribe(async reconnectionAttempt => {
                 if (reconnectionAttempt <= 6) {
-                    this.logger.info(`${this.loggerPrefix} EventHub disconnection for vh officer`);
+                    this.logger.debug(`${this.loggerPrefix} EventHub disconnection for vh officer`);
                     await this.refreshConferenceDataDuringDisconnect();
                 } else {
                     this.errorService.goToServiceError('Your connection was lost');
@@ -137,16 +137,23 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub reconnects`);
         this.eventHubSubscriptions.add(
             this.eventService.getServiceConnected().subscribe(async () => {
-                this.logger.info(`${this.loggerPrefix} EventHub reconnected for vh officer`);
+                this.logger.debug(`${this.loggerPrefix} EventHub reconnected for vh officer`);
                 await this.refreshConferenceDataDuringDisconnect();
             })
         );
 
         this.eventHubSubscriptions.add(
             this.eventService.getHeartbeat().subscribe(heartbeat => {
-                this.logger.info(`${this.loggerPrefix} Participant Network Heartbeat Captured`);
+                this.logger.debug(`${this.loggerPrefix} Participant Network Heartbeat Captured`);
                 this.persistHeartbeat(heartbeat);
                 this.handleHeartbeat(heartbeat);
+            })
+        );
+
+        this.logger.debug('[WR] - Subscribing to participants update complete message');
+        this.eventHubSubscriptions.add(
+            this.eventService.getParticipantsUpdated().subscribe(async participantsUpdatedMessage => {
+                this.handleParticipantsUpdatedMessage(participantsUpdatedMessage);
             })
         );
 
@@ -158,7 +165,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     onConferenceSelected(conference: ConferenceForVhOfficerResponse) {
-        this.logger.info(`${this.loggerPrefix} Conference ${conference.id} selected`, { conference: conference.id });
+        this.logger.debug(`${this.loggerPrefix} Conference ${conference.id} selected`, { conference: conference.id });
         if (!this.isCurrentConference(conference.id)) {
             this.clearSelectedConference();
             this.retrieveConferenceDetails(conference.id);
@@ -173,6 +180,17 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         conference.status = message.status;
         if (this.isCurrentConference(message.conferenceId)) {
             this.selectedHearing.getConference().status = message.status;
+        }
+    }
+
+    handleParticipantsUpdatedMessage(participantsUpdatedMessage: ParticipantsUpdatedMessage) {
+        this.logger.debug(`${this.loggerPrefix} - Participants updated message recieved`, {
+            conference: participantsUpdatedMessage.conferenceId,
+            participants: participantsUpdatedMessage.participants
+        });
+
+        if (this.isCurrentConference(participantsUpdatedMessage.conferenceId)) {
+            this.selectedHearing.updateParticipants(participantsUpdatedMessage.participants);
         }
     }
 
@@ -363,6 +381,8 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     handleAllocationUpdate(allocationHearingMessage: NewAllocationMessage) {
-        this.notificationToastrService.createAllocationNotificationToast(allocationHearingMessage.hearingDetails);
+        if (allocationHearingMessage.hearingDetails.length > 0) {
+            this.notificationToastrService.createAllocationNotificationToast(allocationHearingMessage.hearingDetails);
+        }
     }
 }

@@ -4,7 +4,6 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TranslateService } from '@ngx-translate/core';
-import { configureTestSuite } from 'ng-bullet';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { TranslatePipeMock } from 'src/app/testing/mocks/mock-translation-pipe';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
@@ -26,7 +25,9 @@ describe('FooterComponent', () => {
     let mockedHearingVenueFlagsService: jasmine.SpyObj<HearingVenueFlagsService>;
     let hearingVenueIsScottishSubject: BehaviorSubject<boolean>;
 
-    configureTestSuite(() => {
+    beforeAll(() => {});
+
+    beforeEach(() => {
         mockedHearingVenueFlagsService = jasmine.createSpyObj<HearingVenueFlagsService>(
             'HearingVenueFlagsService',
             ['setHearingVenueIsScottish'],
@@ -57,9 +58,7 @@ describe('FooterComponent', () => {
             ],
             schemas: [NO_ERRORS_SCHEMA]
         });
-    });
 
-    beforeEach(() => {
         translateServiceSpy.setDefaultLang.calls.reset();
         translateServiceSpy.use.calls.reset();
 

@@ -1,13 +1,13 @@
 import { Component, Injectable, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { ProfileService } from 'src/app/services/api/profile.service';
-import { FeatureFlagService } from 'src/app/services/feature-flag.service';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
 import { SecurityServiceProvider } from '../authentication/security-provider.service';
 import { ISecurityService } from '../authentication/security-service.interface';
+import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
 @Component({
     selector: 'app-logout',
@@ -15,33 +15,42 @@ import { ISecurityService } from '../authentication/security-service.interface';
 })
 @Injectable()
 export class LogoutComponent implements OnInit {
-    private securityService: ISecurityService;
-    private readonly judgeAllocationStorage: SessionStorage<string[]>;
     public loginPath: string;
+
+    private securityService: ISecurityService;
+    private currentIdp: string;
+    private readonly judgeAllocationStorage: SessionStorage<string[]>;
+
     constructor(
         securityServiceProviderService: SecurityServiceProvider,
         private profileService: ProfileService,
-        private featureFlagService: FeatureFlagService
+        private ldService: LaunchDarklyService
     ) {
-        securityServiceProviderService.currentSecurityService$.subscribe(securityService => (this.securityService = securityService));
+        combineLatest([securityServiceProviderService.currentSecurityService$, securityServiceProviderService.currentIdp$]).subscribe(
+            ([service, idp]) => {
+                this.securityService = service;
+                this.currentIdp = idp;
+            }
+        );
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
-        this.featureFlagService
-            .getFeatureFlagByName('EJudFeature')
+
+        this.ldService
+            .getFlag<boolean>(FEATURE_FLAGS.multiIdpSelection)
             .pipe(first())
             .subscribe(flag => (this.loginPath = flag ? '../' + pageUrls.IdpSelection : '../' + pageUrls.Login));
     }
 
+    get loggedIn(): Observable<boolean> {
+        return this.securityService.isAuthenticated(this.currentIdp);
+    }
+
     ngOnInit() {
-        this.securityService.isAuthenticated$.subscribe(authenticated => {
+        this.securityService.isAuthenticated(this.currentIdp).subscribe(authenticated => {
             if (authenticated) {
                 this.profileService.clearUserProfile();
                 this.judgeAllocationStorage.clear();
-                this.securityService.logoffAndRevokeTokens();
+                this.securityService.logoffAndRevokeTokens(this.currentIdp).subscribe();
             }
         });
-    }
-
-    get loggedIn(): Observable<boolean> {
-        return this.securityService.isAuthenticated$;
     }
 }

@@ -7,7 +7,7 @@ parameters:
     - name: PackageACTests
       displayName: Package Acceptance Tests
       type: boolean
-      default: false
+      default: true
 
     - name: RunUnitTests
       displayName: Run Unit Tests
@@ -32,7 +32,7 @@ parameters:
     - name: RunACTests
       displayName: Run Acceptance Tests
       type: boolean
-      default: false
+      default: true
 
     - name: RunNodeTests
       displayName: Run Node Tests
@@ -311,6 +311,7 @@ extends:
     template: stages\dotnet-package.yml@templates
     parameters:
         netVersion: 6.x
+        nodeVersion: '18.15.0'
         coreProjectPath: VideoWeb/VideoWeb
         nodeProjectPath: VideoWeb/VideoWeb/ClientApp
         PackageApp: ${{ parameters.PackageApp }}

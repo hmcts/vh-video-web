@@ -556,8 +556,8 @@ describe('NotificationToastrService', () => {
         });
     });
 
-    describe('showAudioRecordingError', () => {
-        it('should return the audio alert component', () => {
+    describe('showAudioRecordingErrorRestart', () => {
+        it('should return the audio alert component, then close with the conclude', () => {
             const mockToast = {
                 toastRef: {
                     componentInstance: {}
@@ -566,10 +566,48 @@ describe('NotificationToastrService', () => {
             toastrService.show.and.returnValue(mockToast);
             const callback = jasmine.createSpy();
 
-            const result = service.showAudioRecordingError(callback);
+            const result = service.showAudioRecordingErrorWithRestart(callback);
 
             expect(result).toBeDefined();
-            expect(result.vhToastOptions.htmlBody).toContain('audio-alert.title');
+
+            expect(result.vhToastOptions.htmlBody).toContain('audio-alert-with-restart.message');
+
+            result.vhToastOptions.concludeToast(callback);
+
+            expect(callback).toHaveBeenCalled();
+        });
+    });
+
+    describe('showAudioRecordingRestartSuccess', () => {
+        it('should return the audio restart success component', () => {
+            const mockToast = {
+                toastRef: {
+                    componentInstance: {}
+                }
+            } as ActiveToast<VhToastComponent>;
+            toastrService.show.and.returnValue(mockToast);
+            const callback = jasmine.createSpy();
+            const result = service.showAudioRecordingRestartSuccess(callback);
+
+            expect(result).toBeDefined();
+            expect(result.vhToastOptions.htmlBody).toContain('audio-alert-restart-success.message');
+        });
+    });
+
+    describe('showAudioRecordingRestartFailure', () => {
+        it('should return the restart audio recording failure', () => {
+            const mockToast = {
+                toastRef: {
+                    componentInstance: {}
+                }
+            } as ActiveToast<VhToastComponent>;
+            toastrService.show.and.returnValue(mockToast);
+            const callback = jasmine.createSpy();
+
+            const result = service.showAudioRecordingRestartFailure(callback);
+
+            expect(result).toBeDefined();
+            expect(result.vhToastOptions.htmlBody).toContain('audio-alert-restart-failure.message');
         });
     });
 
@@ -874,7 +912,7 @@ describe('NotificationToastrService', () => {
         });
     });
 
-    describe('showEndpointAdded', () => {
+    describe('endpoint notifications', () => {
         let mockToast: ActiveToast<VhToastComponent>;
         const expectedToastId = 2;
         const testAddEndpoint = new VideoEndpointResponse();
@@ -928,12 +966,282 @@ describe('NotificationToastrService', () => {
                 .and.returnValue(translatedNameMessage);
         });
 
-        it('add should call toastr.show with the correct parameters when in hearing', () => {
+        describe('showEndpointAdded', () => {
+            it('add should call toastr.show with the correct parameters when in hearing', () => {
+                toastrService.show.and.returnValue(mockToast);
+
+                // Act
+                service.showEndpointAdded(testAddEndpoint, true);
+
+                // Assert
+                expect(toastrService.show).toHaveBeenCalledOnceWith('', '', {
+                    timeOut: 0,
+                    extendedTimeOut: 0,
+                    tapToDismiss: false,
+                    toastComponent: VhToastComponent
+                });
+            });
+
+            it('add should call toastr.show with the correct parameters when NOT in hearing', () => {
+                toastrService.show.and.returnValue(mockToast);
+
+                // Act
+                service.showEndpointAdded(testAddEndpoint, false);
+
+                // Assert
+                expect(toastrService.show).toHaveBeenCalledOnceWith('', '', {
+                    timeOut: 0,
+                    extendedTimeOut: 0,
+                    tapToDismiss: false,
+                    toastComponent: VhToastComponent
+                });
+            });
+
+            it('add should have a button to close the toast when in hearing', () => {
+                // Arrange
+                const expectedHoverColor = 'green';
+                toastrService.show.and.returnValue(mockToast);
+                const btnId = 'notification-toastr-endpoint-added-dismiss';
+
+                // Act
+                const toastComponentInstance = service.showEndpointAdded(testAddEndpoint, true);
+
+                // Assert
+                expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(1);
+                expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy();
+                expect(toastComponentInstance.vhToastOptions.buttons[0].id).toBe(btnId);
+                expect(toastComponentInstance.vhToastOptions.buttons[0].cssClass).toBe(expectedHoverColor);
+                expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedEndpointAddedButtonTranslationString);
+                expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedEndpointAddedButtonTranslationString);
+            });
+
+            it('add should have a button to close the toast when NOT in hearing', () => {
+                // Arrange
+                const expectedHoverColor = 'green';
+                toastrService.show.and.returnValue(mockToast);
+                const btnId = 'notification-toastr-endpoint-added-dismiss';
+
+                // Act
+                const toastComponentInstance = service.showEndpointAdded(testAddEndpoint, false);
+
+                // Assert
+                expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(1);
+                expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy();
+                expect(toastComponentInstance.vhToastOptions.buttons[0].id).toBe(btnId);
+                expect(toastComponentInstance.vhToastOptions.buttons[0].cssClass).toBe(expectedHoverColor);
+                expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedEndpointAddedButtonTranslationString);
+                expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedEndpointAddedButtonTranslationString);
+            });
+
+            it('add should call toastr.remove with the toast id when the button action is triggered when in hearing', () => {
+                // Arrange
+                toastrService.show.and.returnValue(mockToast);
+
+                const toastComponentInstance = service.showEndpointAdded(testAddEndpoint, true);
+                const button = toastComponentInstance.vhToastOptions.buttons[0];
+
+                // Act
+                button.action();
+
+                // Assert
+                expect(toastrService.remove).toHaveBeenCalledOnceWith(expectedToastId);
+            });
+
+            it('add should call toastr.remove with the toast id when the button action is triggered when NOT in hearing', () => {
+                // Arrange
+                toastrService.show.and.returnValue(mockToast);
+
+                const toastComponentInstance = service.showEndpointAdded(testAddEndpoint, false);
+                const button = toastComponentInstance.vhToastOptions.buttons[0];
+
+                // Act
+                button.action();
+
+                // Assert
+                expect(toastrService.remove).toHaveBeenCalledOnceWith(expectedToastId);
+            });
+
+            it('add should NOT call toastr.remove with the toast id when the NO action is triggered when in hearing', () => {
+                // Arrange
+                toastrService.show.and.returnValue(mockToast);
+                const toastComponentInstance = service.showEndpointAdded(testAddEndpoint, true);
+
+                // Act
+                toastComponentInstance.vhToastOptions.onNoAction();
+
+                // Assert
+                expect(toastrService.remove).not.toHaveBeenCalled();
+            });
+
+            it('add should NOT call toastr.remove with the toast id when the NO action is triggered when NOT in hearing', () => {
+                // Arrange
+                toastrService.show.and.returnValue(mockToast);
+                const toastComponentInstance = service.showEndpointAdded(testAddEndpoint, false);
+
+                // Act
+                toastComponentInstance.vhToastOptions.onNoAction();
+
+                // Assert
+                expect(toastrService.remove).not.toHaveBeenCalled();
+            });
+
+            it('add should have the color white when in hearing', () => {
+                // Act
+                const toastComponentInstance = service.showEndpointAdded(testAddEndpoint, true);
+
+                // Assert
+                expect(toastComponentInstance.vhToastOptions.color).toBe(expectedInHearingColor);
+            });
+
+            it('add should have the color black when NOT in hearing', () => {
+                // Act
+                const toastComponentInstance = service.showEndpointAdded(testAddEndpoint, false);
+
+                // Assert
+                expect(toastComponentInstance.vhToastOptions.color).toBe(expectedNotInHearingColor);
+            });
+        });
+
+        describe('showEndpointUpdated', () => {
+            it('update should call toastr.show with the correct parameters when in hearing', () => {
+                toastrService.show.and.returnValue(mockToast);
+
+                // Act
+                service.showEndpointUpdated(testUpdateEndpoint, true);
+
+                // Assert
+                expect(toastrService.show).toHaveBeenCalledOnceWith('', '', {
+                    timeOut: 0,
+                    extendedTimeOut: 0,
+                    tapToDismiss: false,
+                    toastComponent: VhToastComponent
+                });
+            });
+
+            it('update should call toastr.show with the correct parameters when NOT in hearing', () => {
+                toastrService.show.and.returnValue(mockToast);
+
+                // Act
+                service.showEndpointUpdated(testUpdateEndpoint, false);
+
+                // Assert
+                expect(toastrService.show).toHaveBeenCalledOnceWith('', '', {
+                    timeOut: 0,
+                    extendedTimeOut: 0,
+                    tapToDismiss: false,
+                    toastComponent: VhToastComponent
+                });
+            });
+
+            it('update should have a button to close the toast when in hearing', () => {
+                // Arrange
+                const expectedHoverColor = 'green';
+                toastrService.show.and.returnValue(mockToast);
+                const btnId = 'notification-toastr-endpoint-updated-dismiss';
+
+                // Act
+                const toastComponentInstance = service.showEndpointUpdated(testUpdateEndpoint, true);
+
+                // Assert
+                expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(1);
+                expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy();
+                expect(toastComponentInstance.vhToastOptions.buttons[0].id).toBe(btnId);
+                expect(toastComponentInstance.vhToastOptions.buttons[0].cssClass).toBe(expectedHoverColor);
+                expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedEndpointUpdatedButtonTranslationString);
+                expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedEndpointUpdatedButtonTranslationString);
+            });
+
+            it('update should have a button to close the toast when NOT in hearing', () => {
+                // Arrange
+                const expectedHoverColor = 'green';
+                toastrService.show.and.returnValue(mockToast);
+                const btnId = 'notification-toastr-endpoint-updated-dismiss';
+
+                // Act
+                const toastComponentInstance = service.showEndpointUpdated(testUpdateEndpoint, false);
+
+                // Assert
+                expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(1);
+                expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy();
+                expect(toastComponentInstance.vhToastOptions.buttons[0].id).toBe(btnId);
+                expect(toastComponentInstance.vhToastOptions.buttons[0].cssClass).toBe(expectedHoverColor);
+                expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedEndpointUpdatedButtonTranslationString);
+                expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedEndpointUpdatedButtonTranslationString);
+            });
+
+            it('update should call toastr.remove with the toast id when the button action is triggered when in hearing', () => {
+                // Arrange
+                toastrService.show.and.returnValue(mockToast);
+
+                const toastComponentInstance = service.showEndpointUpdated(testUpdateEndpoint, true);
+                const button = toastComponentInstance.vhToastOptions.buttons[0];
+
+                // Act
+                button.action();
+
+                // Assert
+                expect(toastrService.remove).toHaveBeenCalledOnceWith(expectedToastId);
+            });
+
+            it('update should call toastr.remove with the toast id when the button action is triggered when NOT in hearing', () => {
+                // Arrange
+                toastrService.show.and.returnValue(mockToast);
+
+                const toastComponentInstance = service.showEndpointUpdated(testUpdateEndpoint, false);
+                const button = toastComponentInstance.vhToastOptions.buttons[0];
+
+                // Act
+                button.action();
+
+                // Assert
+                expect(toastrService.remove).toHaveBeenCalledOnceWith(expectedToastId);
+            });
+
+            it('update should NOT call toastr.remove with the toast id when the NO action is triggered when in hearing', () => {
+                // Arrange
+                toastrService.show.and.returnValue(mockToast);
+                const toastComponentInstance = service.showEndpointUpdated(testUpdateEndpoint, true);
+
+                // Act
+                toastComponentInstance.vhToastOptions.onNoAction();
+
+                // Assert
+                expect(toastrService.remove).not.toHaveBeenCalled();
+            });
+
+            it('update should NOT call toastr.remove with the toast id when the NO action is triggered when NOT in hearing', () => {
+                // Arrange
+                toastrService.show.and.returnValue(mockToast);
+                const toastComponentInstance = service.showEndpointUpdated(testUpdateEndpoint, false);
+
+                // Act
+                toastComponentInstance.vhToastOptions.onNoAction();
+
+                // Assert
+                expect(toastrService.remove).not.toHaveBeenCalled();
+            });
+
+            it('update should have the color white when in hearing', () => {
+                // Act
+                const toastComponentInstance = service.showEndpointUpdated(testUpdateEndpoint, true);
+
+                // Assert
+                expect(toastComponentInstance.vhToastOptions.color).toBe(expectedInHearingColor);
+            });
+
+            it('update should have the color black when NOT in hearing', () => {
+                // Act
+                const toastComponentInstance = service.showEndpointUpdated(testUpdateEndpoint, false);
+
+                // Assert
+                expect(toastComponentInstance.vhToastOptions.color).toBe(expectedNotInHearingColor);
+            });
+        });
+
+        it('should show showEndpointLinked', () => {
             toastrService.show.and.returnValue(mockToast);
-
             // Act
-            service.showEndpointAdded(testAddEndpoint, true);
-
+            service.showEndpointLinked('jvsEndpoint', false);
             // Assert
             expect(toastrService.show).toHaveBeenCalledOnceWith('', '', {
                 timeOut: 0,
@@ -943,12 +1251,10 @@ describe('NotificationToastrService', () => {
             });
         });
 
-        it('add should call toastr.show with the correct parameters when NOT in hearing', () => {
+        it('should show showEndpointUnlinked', () => {
             toastrService.show.and.returnValue(mockToast);
-
             // Act
-            service.showEndpointAdded(testAddEndpoint, false);
-
+            service.showEndpointUnlinked('jvsEndpoint', false);
             // Assert
             expect(toastrService.show).toHaveBeenCalledOnceWith('', '', {
                 timeOut: 0,
@@ -958,12 +1264,10 @@ describe('NotificationToastrService', () => {
             });
         });
 
-        it('update should call toastr.show with the correct parameters when in hearing', () => {
+        it('should show showEndpointConsultationClosed', () => {
             toastrService.show.and.returnValue(mockToast);
-
             // Act
-            service.showEndpointUpdated(testUpdateEndpoint, true);
-
+            service.showEndpointConsultationClosed('jvsEndpoint', false);
             // Assert
             expect(toastrService.show).toHaveBeenCalledOnceWith('', '', {
                 timeOut: 0,
@@ -971,229 +1275,6 @@ describe('NotificationToastrService', () => {
                 tapToDismiss: false,
                 toastComponent: VhToastComponent
             });
-        });
-
-        it('update should call toastr.show with the correct parameters when NOT in hearing', () => {
-            toastrService.show.and.returnValue(mockToast);
-
-            // Act
-            service.showEndpointUpdated(testUpdateEndpoint, false);
-
-            // Assert
-            expect(toastrService.show).toHaveBeenCalledOnceWith('', '', {
-                timeOut: 0,
-                extendedTimeOut: 0,
-                tapToDismiss: false,
-                toastComponent: VhToastComponent
-            });
-        });
-
-        it('add should have a button to close the toast when in hearing', () => {
-            // Arrange
-            const expectedHoverColor = 'green';
-            toastrService.show.and.returnValue(mockToast);
-            const btnId = 'notification-toastr-endpoint-added-dismiss';
-
-            // Act
-            const toastComponentInstance = service.showEndpointAdded(testAddEndpoint, true);
-
-            // Assert
-            expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(1);
-            expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy();
-            expect(toastComponentInstance.vhToastOptions.buttons[0].id).toBe(btnId);
-            expect(toastComponentInstance.vhToastOptions.buttons[0].cssClass).toBe(expectedHoverColor);
-            expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedEndpointAddedButtonTranslationString);
-            expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedEndpointAddedButtonTranslationString);
-        });
-
-        it('add should have a button to close the toast when NOT in hearing', () => {
-            // Arrange
-            const expectedHoverColor = 'green';
-            toastrService.show.and.returnValue(mockToast);
-            const btnId = 'notification-toastr-endpoint-added-dismiss';
-
-            // Act
-            const toastComponentInstance = service.showEndpointAdded(testAddEndpoint, false);
-
-            // Assert
-            expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(1);
-            expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy();
-            expect(toastComponentInstance.vhToastOptions.buttons[0].id).toBe(btnId);
-            expect(toastComponentInstance.vhToastOptions.buttons[0].cssClass).toBe(expectedHoverColor);
-            expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedEndpointAddedButtonTranslationString);
-            expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedEndpointAddedButtonTranslationString);
-        });
-
-        it('update should have a button to close the toast when in hearing', () => {
-            // Arrange
-            const expectedHoverColor = 'green';
-            toastrService.show.and.returnValue(mockToast);
-            const btnId = 'notification-toastr-endpoint-updated-dismiss';
-
-            // Act
-            const toastComponentInstance = service.showEndpointUpdated(testUpdateEndpoint, true);
-
-            // Assert
-            expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(1);
-            expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy();
-            expect(toastComponentInstance.vhToastOptions.buttons[0].id).toBe(btnId);
-            expect(toastComponentInstance.vhToastOptions.buttons[0].cssClass).toBe(expectedHoverColor);
-            expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedEndpointUpdatedButtonTranslationString);
-            expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedEndpointUpdatedButtonTranslationString);
-        });
-
-        it('update should have a button to close the toast when NOT in hearing', () => {
-            // Arrange
-            const expectedHoverColor = 'green';
-            toastrService.show.and.returnValue(mockToast);
-            const btnId = 'notification-toastr-endpoint-updated-dismiss';
-
-            // Act
-            const toastComponentInstance = service.showEndpointUpdated(testUpdateEndpoint, false);
-
-            // Assert
-            expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(1);
-            expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy();
-            expect(toastComponentInstance.vhToastOptions.buttons[0].id).toBe(btnId);
-            expect(toastComponentInstance.vhToastOptions.buttons[0].cssClass).toBe(expectedHoverColor);
-            expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedEndpointUpdatedButtonTranslationString);
-            expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedEndpointUpdatedButtonTranslationString);
-        });
-
-        it('add should call toastr.remove with the toast id when the button action is triggered when in hearing', () => {
-            // Arrange
-            toastrService.show.and.returnValue(mockToast);
-
-            const toastComponentInstance = service.showEndpointAdded(testAddEndpoint, true);
-            const button = toastComponentInstance.vhToastOptions.buttons[0];
-
-            // Act
-            button.action();
-
-            // Assert
-            expect(toastrService.remove).toHaveBeenCalledOnceWith(expectedToastId);
-        });
-
-        it('add should call toastr.remove with the toast id when the button action is triggered when NOT in hearing', () => {
-            // Arrange
-            toastrService.show.and.returnValue(mockToast);
-
-            const toastComponentInstance = service.showEndpointAdded(testAddEndpoint, false);
-            const button = toastComponentInstance.vhToastOptions.buttons[0];
-
-            // Act
-            button.action();
-
-            // Assert
-            expect(toastrService.remove).toHaveBeenCalledOnceWith(expectedToastId);
-        });
-
-        it('update should call toastr.remove with the toast id when the button action is triggered when in hearing', () => {
-            // Arrange
-            toastrService.show.and.returnValue(mockToast);
-
-            const toastComponentInstance = service.showEndpointUpdated(testUpdateEndpoint, true);
-            const button = toastComponentInstance.vhToastOptions.buttons[0];
-
-            // Act
-            button.action();
-
-            // Assert
-            expect(toastrService.remove).toHaveBeenCalledOnceWith(expectedToastId);
-        });
-
-        it('update should call toastr.remove with the toast id when the button action is triggered when NOT in hearing', () => {
-            // Arrange
-            toastrService.show.and.returnValue(mockToast);
-
-            const toastComponentInstance = service.showEndpointUpdated(testUpdateEndpoint, false);
-            const button = toastComponentInstance.vhToastOptions.buttons[0];
-
-            // Act
-            button.action();
-
-            // Assert
-            expect(toastrService.remove).toHaveBeenCalledOnceWith(expectedToastId);
-        });
-
-        it('add should NOT call toastr.remove with the toast id when the NO action is triggered when in hearing', () => {
-            // Arrange
-            toastrService.show.and.returnValue(mockToast);
-            const toastComponentInstance = service.showEndpointAdded(testAddEndpoint, true);
-
-            // Act
-            toastComponentInstance.vhToastOptions.onNoAction();
-
-            // Assert
-            expect(toastrService.remove).not.toHaveBeenCalled();
-        });
-
-        it('add should NOT call toastr.remove with the toast id when the NO action is triggered when NOT in hearing', () => {
-            // Arrange
-            toastrService.show.and.returnValue(mockToast);
-            const toastComponentInstance = service.showEndpointAdded(testAddEndpoint, false);
-
-            // Act
-            toastComponentInstance.vhToastOptions.onNoAction();
-
-            // Assert
-            expect(toastrService.remove).not.toHaveBeenCalled();
-        });
-
-        it('update should NOT call toastr.remove with the toast id when the NO action is triggered when in hearing', () => {
-            // Arrange
-            toastrService.show.and.returnValue(mockToast);
-            const toastComponentInstance = service.showEndpointUpdated(testUpdateEndpoint, true);
-
-            // Act
-            toastComponentInstance.vhToastOptions.onNoAction();
-
-            // Assert
-            expect(toastrService.remove).not.toHaveBeenCalled();
-        });
-
-        it('update should NOT call toastr.remove with the toast id when the NO action is triggered when NOT in hearing', () => {
-            // Arrange
-            toastrService.show.and.returnValue(mockToast);
-            const toastComponentInstance = service.showEndpointUpdated(testUpdateEndpoint, false);
-
-            // Act
-            toastComponentInstance.vhToastOptions.onNoAction();
-
-            // Assert
-            expect(toastrService.remove).not.toHaveBeenCalled();
-        });
-
-        it('add should have the color white when in hearing', () => {
-            // Act
-            const toastComponentInstance = service.showEndpointAdded(testAddEndpoint, true);
-
-            // Assert
-            expect(toastComponentInstance.vhToastOptions.color).toBe(expectedInHearingColor);
-        });
-
-        it('add should have the color black when NOT in hearing', () => {
-            // Act
-            const toastComponentInstance = service.showEndpointAdded(testAddEndpoint, false);
-
-            // Assert
-            expect(toastComponentInstance.vhToastOptions.color).toBe(expectedNotInHearingColor);
-        });
-
-        it('update should have the color white when in hearing', () => {
-            // Act
-            const toastComponentInstance = service.showEndpointUpdated(testUpdateEndpoint, true);
-
-            // Assert
-            expect(toastComponentInstance.vhToastOptions.color).toBe(expectedInHearingColor);
-        });
-
-        it('update should have the color black when NOT in hearing', () => {
-            // Act
-            const toastComponentInstance = service.showEndpointUpdated(testUpdateEndpoint, false);
-
-            // Assert
-            expect(toastComponentInstance.vhToastOptions.color).toBe(expectedNotInHearingColor);
         });
     });
 
@@ -1426,12 +1507,12 @@ describe('NotificationToastrService', () => {
         const hearingsPassed: HearingDetailRequest[] = [];
         let hearing = new HearingDetailRequest();
         hearing.judge = 'Judge1';
-        hearing.time = '10:00';
+        hearing.time = new Date(2023, 1, 1, 10, 0, 0, 0);
         hearing.case_name = 'case name 1';
         hearingsPassed.push(hearing);
         hearing = new HearingDetailRequest();
         hearing.judge = 'Judge2';
-        hearing.time = '11:00';
+        hearing.time = new Date(2023, 1, 1, 11, 0, 0, 0);
         hearing.case_name = 'case name 2';
         hearingsPassed.push(hearing);
 
@@ -1515,7 +1596,7 @@ describe('NotificationToastrService', () => {
             toastComponentInstance.vhToastOptions.onNoAction();
 
             // Assert
-            expect(logger.info).toHaveBeenCalled();
+            expect(logger.debug).toHaveBeenCalled();
         });
     });
 });

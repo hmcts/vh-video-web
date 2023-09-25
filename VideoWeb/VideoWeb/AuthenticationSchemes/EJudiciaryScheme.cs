@@ -13,14 +13,10 @@ namespace VideoWeb.AuthenticationSchemes
         }
 
         public override AuthProvider Provider => AuthProvider.EJudiciary;
-        public override void SetJwtBearerOptions(JwtBearerOptions options)
-        {
-            base.SetJwtBearerOptions(options);
-            options.Events = new JwtBearerEvents { OnTokenValidated = OnTokenValidated };
-        }
 
-        public Task OnTokenValidated(TokenValidatedContext context)
+        public override async Task GetClaimsPostTokenValidation(TokenValidatedContext context, JwtBearerOptions options)
         {
+            await base.GetClaimsPostTokenValidation(context, options);
             if (context.SecurityToken is JwtSecurityToken jwtToken)
             {
                 // TODO: Make call to api to get the users roles and groups.
@@ -29,8 +25,6 @@ namespace VideoWeb.AuthenticationSchemes
                 var claimsIdentity = context.Principal.Identity as ClaimsIdentity;
                 claimsIdentity?.AddClaim(new Claim(claimsIdentity.RoleClaimType, "Judge"));
             }
-
-            return Task.CompletedTask;
         }
     }
 }

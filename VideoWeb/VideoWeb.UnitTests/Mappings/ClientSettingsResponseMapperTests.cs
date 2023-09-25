@@ -21,13 +21,16 @@ namespace VideoWeb.UnitTests.Mappings
 
             var ejudAdConfiguration = Builder<EJudAdConfiguration>.CreateNew()
                 .Build();
+            
+            var dom1Configuration = Builder<Dom1AdConfiguration>.CreateNew()
+                .Build();
 
             var servicesConfiguration = Builder<HearingServicesConfiguration>.CreateNew().Build();
             var kinlyConfiguration = Builder<KinlyConfiguration>.CreateNew().Build();
 
-            var response = _sut.Map(azureAdConfiguration, ejudAdConfiguration, servicesConfiguration, kinlyConfiguration);
+            var response = _sut.Map(azureAdConfiguration, ejudAdConfiguration, dom1Configuration, servicesConfiguration, kinlyConfiguration);
 
-            response.AppInsightsInstrumentationKey.Should().Be(azureAdConfiguration.ApplicationInsights.InstrumentationKey);
+            response.AppInsightsConnectionString.Should().Be(azureAdConfiguration.ApplicationInsights.ConnectionString);
             response.EventHubPath.Should().Be(servicesConfiguration.EventHubPath);
             response.KinlyTurnServer.Should().Be(kinlyConfiguration.TurnServer);
             response.KinlyTurnServerUser.Should().Be(kinlyConfiguration.TurnServerUser);

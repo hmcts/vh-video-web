@@ -28,7 +28,7 @@ describe('ParticipantSelfTestComponent', () => {
     const pexipConfig = new SelfTestPexipResponse({
         pexip_self_test_node: 'selftest.automated.test'
     });
-    const profile = new UserProfileResponse({ role: Role.Individual });
+    const profile = new UserProfileResponse({ roles: [Role.Individual] });
 
     beforeAll(() => {
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
@@ -124,12 +124,12 @@ describe('ParticipantSelfTestComponent', () => {
     });
     it('should update participant status on log out', fakeAsync(() => {
         const event: any = { returnValue: 'save' };
-        spyOn(logger, 'info');
+        spyOn(logger, 'debug');
         participantStatusUpdateService.postParticipantStatus.and.returnValue(Promise.resolve());
         component.beforeunloadHandler(event);
         flushMicrotasks();
         expect(participantStatusUpdateService.postParticipantStatus).toHaveBeenCalled();
-        expect(logger.info).toHaveBeenCalled();
+        expect(logger.debug).toHaveBeenCalled();
     }));
     it('should throw error message when update participant status on log out', fakeAsync(() => {
         const event: any = { returnValue: 'save' };

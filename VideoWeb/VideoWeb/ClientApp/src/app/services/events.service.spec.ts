@@ -139,7 +139,7 @@ describe('EventsService', () => {
     });
 
     describe('handlers', () => {
-        const expectedNumberOfRegisterations = 21;
+        const expectedNumberOfRegistrations = 26;
 
         describe('registerHandlers', () => {
             it('should register the handlers if they are NOT already registered', () => {
@@ -154,7 +154,7 @@ describe('EventsService', () => {
                 // Assert
 
                 expect(serviceUnderTest.handlersRegistered).toBeTrue();
-                expect(hubConnectionSpy.on).toHaveBeenCalledTimes(expectedNumberOfRegisterations);
+                expect(hubConnectionSpy.on).toHaveBeenCalledTimes(expectedNumberOfRegistrations);
             });
 
             it('should NOT register the handlers if they are already registered', () => {
@@ -185,7 +185,7 @@ describe('EventsService', () => {
 
                 // Assert
                 expect(serviceUnderTest.handlersRegistered).toBeTrue();
-                expect(hubConnectionSpy.off).toHaveBeenCalledTimes(expectedNumberOfRegisterations);
+                expect(hubConnectionSpy.off).toHaveBeenCalledTimes(expectedNumberOfRegistrations);
             });
 
             it('should NOT deregister the handlers if they are NOT already registered', () => {
@@ -457,6 +457,46 @@ describe('EventsService', () => {
                 expectedParticipantId,
                 expectedIsRaised
             );
+        }));
+
+        it('updateParticipantLocalMuteStatus', fakeAsync(() => {
+            // Arrange
+            const expectedMessageName = 'ToggleParticipantLocalMute';
+            const expectedConferenceId = 'test-conference-id';
+            const expectedParticipantId = 'test-participant-id';
+            const expectedIsMuted = false;
+            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['send']);
+
+            spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
+
+            // Act
+            serviceUnderTest.updateParticipantLocalMuteStatus(expectedConferenceId, expectedParticipantId, expectedIsMuted);
+            tick();
+
+            // Assert
+            expect(hubConnectionSpy.send).toHaveBeenCalledOnceWith(
+                expectedMessageName,
+                expectedConferenceId,
+                expectedParticipantId,
+                expectedIsMuted
+            );
+        }));
+
+        it('updateAllParticipantLocalMuteStatus', fakeAsync(() => {
+            // Arrange
+            const expectedMessageName = 'ToggleAllParticipantLocalMute';
+            const expectedConferenceId = 'test-conference-id';
+            const expectedIsMuted = false;
+            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['send']);
+
+            spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
+
+            // Act
+            serviceUnderTest.updateAllParticipantLocalMuteStatus(expectedConferenceId, expectedIsMuted);
+            tick();
+
+            // Assert
+            expect(hubConnectionSpy.send).toHaveBeenCalledOnceWith(expectedMessageName, expectedConferenceId, expectedIsMuted);
         }));
 
         it('sendMediaStatus', fakeAsync(() => {

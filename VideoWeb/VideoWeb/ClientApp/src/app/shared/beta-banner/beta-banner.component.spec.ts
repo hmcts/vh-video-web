@@ -30,13 +30,12 @@ describe('BetaBannerComponent', () => {
     let component: BetaBannerComponent;
     let fixture: ComponentFixture<BetaBannerComponent>;
     let router: Router;
-    let profileServiceSpy: jasmine.SpyObj<ProfileService>;
-    profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
-    const profile = new UserProfileResponse({ role: Role.Representative });
+
+    const profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
+    const profile = new UserProfileResponse({ roles: [Role.Representative] });
     profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
     const conference = new ConferenceTestData().getConferenceDetailFuture();
-    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
+    const videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
     videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(conference));
 
     beforeEach(waitForAsync(() => {

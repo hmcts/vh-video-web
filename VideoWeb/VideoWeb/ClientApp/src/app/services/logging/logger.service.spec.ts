@@ -1,7 +1,6 @@
 import { fakeAsync, flush } from '@angular/core/testing';
 import { LoggerService } from './logger.service';
 import { LogAdapter } from './log-adapter';
-import { ConferenceService } from '../conference/conference.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { ActivatedRoute, ActivatedRouteSnapshot, convertToParamMap, Event, NavigationEnd, Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -24,7 +23,7 @@ describe('LoggerService', () => {
 
         getSpiedPropertyGetter(activatedRouteSpy, 'firstChild').and.returnValue(activatedRouteFirstChildSpy);
 
-        logAdapter = jasmine.createSpyObj<LogAdapter>(['trackException', 'trackEvent', 'info']);
+        logAdapter = jasmine.createSpyObj<LogAdapter>(['debug', 'trackException', 'trackEvent', 'info']);
 
         service = new LoggerService([logAdapter], routerSpy, activatedRouteSpy);
     });
@@ -155,6 +154,22 @@ describe('LoggerService', () => {
 
             // Assert
             expect(logAdapter.trackException).toHaveBeenCalledWith(message, error, expectedProperties);
+        });
+
+        it('should not log debug messages in production', () => {
+            // Arrange
+            logAdapter.debug.calls.reset();
+            const message = 'msg';
+            const properties = {
+                message: message
+            };
+            service['higherLevelLogsOnly'] = true;
+
+            // Act
+            service.debug(message, properties);
+
+            // Assert
+            expect(logAdapter.debug).not.toHaveBeenCalled();
         });
 
         it('should add conference id to the properties', () => {

@@ -55,7 +55,7 @@ export abstract class BaseSelfTestComponentDirective implements OnInit {
         }
         this.testInProgress = false;
         const profile = await this.profileService.getUserProfile();
-        this.isStaffMember = profile.role === Role.StaffMember;
+        this.isStaffMember = profile.roles.includes(Role.StaffMember);
     }
 
     async getConference(): Promise<void> {
@@ -76,10 +76,10 @@ export abstract class BaseSelfTestComponentDirective implements OnInit {
     }
 
     async getPexipConfig(): Promise<void> {
-        this.logger.debug(`[SelfTest] - retrieving pexip configuration`);
+        this.logger.debug('[SelfTest] - retrieving pexip configuration');
         try {
             this.selfTestPexipConfig = await this.videoWebService.getPexipConfig();
-            this.logger.debug(`[SelfTest] - Retrieved pexip configuration successfully`, this.selfTestPexipConfig);
+            this.logger.debug('[SelfTest] - Retrieved pexip configuration successfully', this.selfTestPexipConfig);
         } catch (error) {
             this.logger.warn('[SelfTest] - There was a problem getting pexip config');
             this.errorService.handleApiError(error);

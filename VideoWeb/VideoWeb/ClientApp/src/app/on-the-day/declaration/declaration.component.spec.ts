@@ -1,4 +1,4 @@
-import { AbstractControl, FormBuilder } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder } from '@angular/forms';
 import { convertToParamMap, Router } from '@angular/router';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -12,7 +12,7 @@ describe('DeclarationComponent Tests', () => {
 
     let router: jasmine.SpyObj<Router>;
     const activatedRoute: any = { snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
-    const formBuilder = new FormBuilder();
+    const formBuilder = new UntypedFormBuilder();
     let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
 
     let checkboxControl: AbstractControl;

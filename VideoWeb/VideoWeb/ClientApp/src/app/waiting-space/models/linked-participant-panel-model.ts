@@ -6,36 +6,6 @@ import { PanelModel } from './panel-model-base';
 export class LinkedParticipantPanelModel extends PanelModel {
     public participants: IndividualPanelModel[] = [];
 
-    static fromListOfPanelModels(
-        participants: IndividualPanelModel[],
-        pexipDisplayName: string,
-        roomid: string
-    ): LinkedParticipantPanelModel {
-        const lip = participants.find(x => x.hearingRole !== HearingRole.INTERPRETER);
-        const pexipName = pexipDisplayName;
-        const displayName = participants.map(x => x.displayName).join(', ');
-        const role = lip.role;
-        const caseTypeGroup = lip.caseTypeGroup;
-        const hearingRole = lip.hearingRole;
-        const representee = lip.representee;
-        const model = new LinkedParticipantPanelModel(roomid, displayName, role, caseTypeGroup, pexipName, hearingRole, representee);
-        model.participants = participants;
-        return model;
-    }
-
-    static forJudicialHolders(participants: IndividualPanelModel[], pexipDisplayName: string, roomid: string): LinkedParticipantPanelModel {
-        const joh = participants.find(x => x.role === Role.JudicialOfficeHolder);
-        const pexipName = pexipDisplayName;
-        const displayName = participants.map(x => x.displayName).join(', ');
-        const role = joh.role;
-        const caseTypeGroup = joh.caseTypeGroup;
-        const hearingRole = joh.hearingRole;
-
-        const model = new LinkedParticipantPanelModel(roomid, displayName, role, caseTypeGroup, pexipName, hearingRole, null);
-        model.participants = participants;
-        return model;
-    }
-
     get isJudicalOfficeHolder(): boolean {
         return this.participants.every(x => x.role === Role.JudicialOfficeHolder);
     }
@@ -69,6 +39,36 @@ export class LinkedParticipantPanelModel extends PanelModel {
 
     private get participantsInHearing(): IndividualPanelModel[] {
         return this.participants.filter(p => p.isInHearing());
+    }
+
+    static fromListOfPanelModels(
+        participants: IndividualPanelModel[],
+        pexipDisplayName: string,
+        roomid: string
+    ): LinkedParticipantPanelModel {
+        const lip = participants.find(x => x.hearingRole !== HearingRole.INTERPRETER);
+        const pexipName = pexipDisplayName;
+        const displayName = participants.map(x => x.displayName).join(', ');
+        const role = lip.role;
+        const caseTypeGroup = lip.caseTypeGroup;
+        const hearingRole = lip.hearingRole;
+        const representee = lip.representee;
+        const model = new LinkedParticipantPanelModel(roomid, displayName, role, caseTypeGroup, pexipName, hearingRole, representee);
+        model.participants = participants;
+        return model;
+    }
+
+    static forJudicialHolders(participants: IndividualPanelModel[], pexipDisplayName: string, roomid: string): LinkedParticipantPanelModel {
+        const joh = participants.find(x => x.role === Role.JudicialOfficeHolder);
+        const pexipName = pexipDisplayName;
+        const displayName = participants.map(x => x.displayName).join(', ');
+        const role = joh.role;
+        const caseTypeGroup = joh.caseTypeGroup;
+        const hearingRole = joh.hearingRole;
+
+        const model = new LinkedParticipantPanelModel(roomid, displayName, role, caseTypeGroup, pexipName, hearingRole, null);
+        model.participants = participants;
+        return model;
     }
 
     isInHearing(): boolean {
@@ -136,9 +136,7 @@ export class LinkedParticipantPanelModel extends PanelModel {
             this.participants
                 .find(p => p.id === participantId)
                 .updateParticipant(isRemoteMuted, handRaised, spotlighted, participantId, isLocalAudioMuted, isLocalVideoMuted);
-        }
-
-        if (!participantId) {
+        } else {
             this.participants.forEach(p =>
                 p.updateParticipant(isRemoteMuted, handRaised, spotlighted, participantId, isLocalAudioMuted, isLocalVideoMuted)
             );
@@ -150,5 +148,9 @@ export class LinkedParticipantPanelModel extends PanelModel {
         if (handRaised !== null) {
             this.handRaised = handRaised;
         }
+    }
+
+    participantsList(): PanelModel[] {
+        return this.participants.map(p => p as PanelModel);
     }
 }

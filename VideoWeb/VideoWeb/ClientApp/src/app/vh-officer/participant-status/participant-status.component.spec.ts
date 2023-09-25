@@ -12,27 +12,24 @@ import { MockLogger } from '../../testing/mocks/mock-logger';
 import { ParticipantStatusComponent } from './participant-status.component';
 
 describe('ParticipantStatusComponent', () => {
-    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    let errorServiceSpy: jasmine.SpyObj<ErrorService>;
     const eventsService = eventsServiceSpy;
-    let participantStatusReaderSpy: jasmine.SpyObj<ParticipantStatusReader>;
-    let participants: ParticipantContactDetailsResponseVho[];
-    let component: ParticipantStatusComponent;
-
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
+    const videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
         'getParticipantsWithContactDetailsByConferenceId',
         'raiseSelfTestFailureEvent'
     ]);
-    errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', [
+    const errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', [
         'goToServiceError',
         'handleApiError',
         'returnHomeIfUnauthorised'
     ]);
-    participantStatusReaderSpy = jasmine.createSpyObj<ParticipantStatusReader>(
+    const participantStatusReaderSpy = jasmine.createSpyObj<ParticipantStatusReader>(
         'ParticipantStatusReader',
         ['getStatusAsText', 'getStatusAsTextForHost'],
         { inAnotherHearingText: 'In Another Hearing' }
     );
+
+    let participants: ParticipantContactDetailsResponseVho[];
+    let component: ParticipantStatusComponent;
 
     beforeEach(() => {
         participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(

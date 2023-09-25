@@ -3,7 +3,7 @@ import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/partic
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { Directive, Component } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({})
 class ParticipantStatusBaseTestComponent extends ParticipantStatusBaseDirective {
@@ -15,8 +15,7 @@ class ParticipantStatusBaseTestComponent extends ParticipantStatusBaseDirective 
 
 describe('ParticipantStatusBase', () => {
     const loggerMock: Logger = new MockLogger();
-    let participantStatusUpdateServiceSpy: jasmine.SpyObj<ParticipantStatusUpdateService>;
-    participantStatusUpdateServiceSpy = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
+    const participantStatusUpdateServiceSpy = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
 
     const component = new ParticipantStatusBaseTestComponent(participantStatusUpdateServiceSpy, loggerMock);
 

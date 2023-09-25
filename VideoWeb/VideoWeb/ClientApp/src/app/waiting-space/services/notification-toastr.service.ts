@@ -14,7 +14,12 @@ import { VideoCallService } from './video-call.service';
 
 @Injectable()
 export class NotificationToastrService {
+    activeRoomInviteRequests = [];
+    activeHeartbeatReport = [];
+    activeLinkedParticipantRejectionToasts: { [inviteKey: string]: VhToastComponent } = {};
+
     private readonly loggerPrefix = '[NotificationToastService] -';
+
     constructor(
         private logger: Logger,
         private toastr: ToastrService,
@@ -25,10 +30,6 @@ export class NotificationToastrService {
     ) {
         this.notificationSoundService.initConsultationRequestRingtone();
     }
-
-    activeRoomInviteRequests = [];
-    activeHeartbeatReport = [];
-    activeLinkedParticipantRejectionToasts: { [inviteKey: string]: VhToastComponent } = {};
 
     getInviteKey(conferenceId: string, roomLabel: string): string {
         return `${conferenceId}_${roomLabel}`;
@@ -258,7 +259,7 @@ export class NotificationToastrService {
             color: 'white',
             htmlBody: message,
             onNoAction: async () => {
-                this.logger.info(`${this.loggerPrefix} No action called on poor connection alert`);
+                this.logger.debug(`${this.loggerPrefix} No action called on poor connection alert`);
             },
             buttons: [
                 {
@@ -273,32 +274,40 @@ export class NotificationToastrService {
         };
     }
 
-    showAudioRecordingError(callback: Function) {
-        this.logger.debug(`${this.loggerPrefix} creating 'audio recording error' toastr notification`);
+    showAudioRecordingErrorWithRestart(callback: Function) {
+        this.logger.debug(`${this.loggerPrefix} creating 'audio recording error with restart' toastr notification`);
 
-        let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('audio-alert.title')}</span>`;
-        message += `<br/>${this.translateService.instant('audio-alert.message')}<br/>`;
-        const toast = this.toastr.show('', '', {
-            tapToDismiss: false,
-            toastComponent: VhToastComponent,
-            disableTimeOut: true
-        });
-        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
-            color: 'white',
-            htmlBody: message,
-            buttons: [
-                {
-                    id: 'notification-toastr-audio-recording-error.dismiss',
-                    label: this.translateService.instant('notification-toastr.poor-connection.dismiss'),
-                    cssClass: 'green',
-                    action: async () => {
-                        this.toastr.remove(toast.toastId);
-                        callback();
-                    }
-                }
-            ]
-        };
-        return toast.toastRef.componentInstance as VhToastComponent;
+        let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('audio-alert-with-restart.title')}</span>`;
+        message += `<br/>${this.translateService.instant('audio-alert-with-restart.message')}<br/>`;
+
+        const id = 'notification-toastr-audio-recording-error-restart.dismiss';
+        const label = 'audio-alert-with-restart.button';
+
+        return this.generateAudioAlertToastrComponent(message, callback, id, label);
+    }
+
+    showAudioRecordingRestartSuccess(callback: Function) {
+        this.logger.debug(`${this.loggerPrefix} creating 'audio recording restart success' toastr notification`);
+
+        let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('audio-alert-restart-success.title')}</span>`;
+        message += `<br/>${this.translateService.instant('audio-alert-restart-success.message')}<br/>`;
+
+        const id = 'notification-toastr-audio-recording-error-restart-success.dismiss';
+        const label = 'audio-alert-restart-success.button';
+
+        return this.generateAudioAlertToastrComponent(message, callback(false), id, label);
+    }
+
+    showAudioRecordingRestartFailure(callback: Function) {
+        this.logger.debug(`${this.loggerPrefix} creating 'audio recording error restart failure' toastr notification`);
+
+        let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('audio-alert-restart-failure.title')}</span>`;
+        message += `<br/>${this.translateService.instant('audio-alert-restart-failure.message')}<br/>`;
+
+        const id = 'notification-toastr-audio-recording-error-restart-failure.dismiss';
+        const label = 'audio-alert-restart-failure.button';
+
+        return this.generateAudioAlertToastrComponent(message, callback(true), id, label);
     }
 
     showParticipantAdded(participant: ParticipantResponse, inHearing: boolean = false): VhToastComponent {
@@ -331,7 +340,7 @@ export class NotificationToastrService {
             color: inHearing ? 'white' : 'black',
             htmlBody: message,
             onNoAction: async () => {
-                this.logger.info(`${this.loggerPrefix} No action called on participant added alert`);
+                this.logger.debug(`${this.loggerPrefix} No action called on participant added alert`);
             },
             buttons: [
                 {
@@ -368,41 +377,34 @@ export class NotificationToastrService {
         return this.showEndpointToast(toastTitle, toastBody, inHearing, buttonId, buttonLabel);
     }
 
-    private showEndpointToast(
-        toastTitle: string,
-        toastBody: string,
-        inHearing: boolean,
-        buttonId: string,
-        buttonLabel: string
-    ): VhToastComponent {
-        let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${toastTitle}</span>`;
-        message += `<span class="toast-content toast-body">${toastBody}</span>`;
-
-        const toast = this.toastr.show('', '', {
-            timeOut: 0,
-            extendedTimeOut: 0,
-            tapToDismiss: false,
-            toastComponent: VhToastComponent
+    showEndpointLinked(endpoint: string, inHearing: boolean = false): VhToastComponent {
+        const toastTitle = this.translateService.instant('notification-toastr.endpoint-linked.title');
+        const toastBody = this.translateService.instant('notification-toastr.endpoint-linked.message', {
+            jvsEndpointName: endpoint
         });
-        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
-            color: inHearing ? 'white' : 'black',
-            htmlBody: message,
-            onNoAction: async () => {
-                this.logger.info(`${this.loggerPrefix} No action called on endpoint added alert`);
-            },
-            buttons: [
-                {
-                    id: buttonId,
-                    label: buttonLabel,
-                    cssClass: 'green',
-                    action: async () => {
-                        this.toastr.remove(toast.toastId);
-                    }
-                }
-            ]
-        };
+        const buttonId = 'notification-toastr-endpoint-linked-dismiss';
+        const buttonLabel = this.translateService.instant('notification-toastr.endpoint-linked.dismiss');
+        return this.showEndpointToast(toastTitle, toastBody, inHearing, buttonId, buttonLabel);
+    }
 
-        return toast.toastRef.componentInstance as VhToastComponent;
+    showEndpointUnlinked(endpoint: string, inHearing: boolean = false): VhToastComponent {
+        const toastTitle = this.translateService.instant('notification-toastr.endpoint-unlinked.title');
+        const toastBody = this.translateService.instant('notification-toastr.endpoint-unlinked.message', {
+            jvsEndpointName: endpoint
+        });
+        const buttonId = 'notification-toastr-endpoint-unlinked-dismiss';
+        const buttonLabel = this.translateService.instant('notification-toastr.endpoint-unlinked.dismiss');
+        return this.showEndpointToast(toastTitle, toastBody, inHearing, buttonId, buttonLabel);
+    }
+
+    showEndpointConsultationClosed(endpoint: string, inHearing: boolean = false): VhToastComponent {
+        const toastTitle = this.translateService.instant('notification-toastr.endpoint-consultation-closed.title');
+        const toastBody = this.translateService.instant('notification-toastr.endpoint-consultation-closed.message', {
+            jvsEndpointName: endpoint
+        });
+        const buttonId = 'notification-toastr-endpoint-consultation-closed-dismiss';
+        const buttonLabel = this.translateService.instant('notification-toastr.endpoint-consultation-closed.dismiss');
+        return this.showEndpointToast(toastTitle, toastBody, inHearing, buttonId, buttonLabel);
     }
 
     showHearingLayoutchanged(participant: ParticipantResponse, inHearing: boolean = false): VhToastComponent {
@@ -425,7 +427,7 @@ export class NotificationToastrService {
             color: inHearing ? 'white' : 'black',
             htmlBody: message,
             onNoAction: async () => {
-                this.logger.info(`${this.loggerPrefix} No action called on hearing layout change alert`);
+                this.logger.debug(`${this.loggerPrefix} No action called on hearing layout change alert`);
             },
             buttons: [
                 {
@@ -449,7 +451,7 @@ export class NotificationToastrService {
         let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${title}</span>`;
         message += `<span class="toast-content toast-body">${messageBody}</span>`;
         const joinHearingFromAlert = async () => {
-            this.logger.info(
+            this.logger.debug(
                 `${this.loggerPrefix} Participant ${participantId} is join Hearing conference ${conferenceId} from Hearing Started Alert`
             );
             await this.videoCallService.joinHearingInSession(conferenceId, participantId);
@@ -464,7 +466,7 @@ export class NotificationToastrService {
             color: 'white',
             htmlBody: message,
             onNoAction: async () => {
-                this.logger.info(`${this.loggerPrefix} No action called on hearing started alert`);
+                this.logger.debug(`${this.loggerPrefix} No action called on hearing started alert`);
             },
             buttons: [
                 {
@@ -506,7 +508,8 @@ export class NotificationToastrService {
 
         hearings.forEach(h => {
             const judge = h.judge;
-            const time = h.time;
+            const options = { hour: '2-digit', minute: '2-digit', hour12: false } as Intl.DateTimeFormatOptions;
+            const time = new Date(h.time).toLocaleTimeString('en-GB', options);
             const caseName = h.case_name;
 
             messageBody += '<div class="govuk-!-font-weight-bold">' + time + '</div>';
@@ -521,13 +524,80 @@ export class NotificationToastrService {
             color: 'black',
             htmlBody: message,
             onNoAction: async () => {
-                this.logger.info(`${this.loggerPrefix} No action called on allocation hearing alert`);
+                this.logger.debug(`${this.loggerPrefix} No action called on allocation hearing alert`);
             },
             buttons: [
                 {
                     id: 'notification-toastr-create-consultation-notification-close',
                     label: this.translateService.instant('notification-toastr.linked-participants.button-close'),
                     cssClass: 'red',
+                    action: async () => {
+                        this.toastr.remove(toast.toastId);
+                    }
+                }
+            ]
+        };
+
+        return toast.toastRef.componentInstance as VhToastComponent;
+    }
+
+    private generateAudioAlertToastrComponent(message, callback, id, label) {
+        const toast = this.toastr.show('', '', {
+            tapToDismiss: false,
+            toastComponent: VhToastComponent,
+            disableTimeOut: true
+        });
+        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
+            color: 'white',
+            htmlBody: message,
+            buttons: [
+                {
+                    id: id,
+                    label: this.translateService.instant(label),
+                    cssClass: 'green',
+                    action: async () => {
+                        this.toastr.remove(toast.toastId);
+                        if (callback) {
+                            callback();
+                        }
+                    }
+                }
+            ],
+            concludeToast: async fn => {
+                this.toastr.remove(toast.toastId);
+                this.showAudioRecordingRestartSuccess(fn);
+            }
+        };
+        return toast.toastRef.componentInstance as VhToastComponent;
+    }
+
+    private showEndpointToast(
+        toastTitle: string,
+        toastBody: string,
+        inHearing: boolean,
+        buttonId: string,
+        buttonLabel: string
+    ): VhToastComponent {
+        let message = `<span class="govuk-!-font-weight-bold toast-content toast-header">${toastTitle}</span>`;
+        message += `<span class="toast-content toast-body">${toastBody}</span>`;
+
+        const toast = this.toastr.show('', '', {
+            timeOut: 0,
+            extendedTimeOut: 0,
+            tapToDismiss: false,
+            toastComponent: VhToastComponent
+        });
+        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
+            color: inHearing ? 'white' : 'black',
+            htmlBody: message,
+            onNoAction: async () => {
+                this.logger.debug(`${this.loggerPrefix} No action called on endpoint added alert`);
+            },
+            buttons: [
+                {
+                    id: buttonId,
+                    label: buttonLabel,
+                    cssClass: 'green',
                     action: async () => {
                         this.toastr.remove(toast.toastId);
                     }

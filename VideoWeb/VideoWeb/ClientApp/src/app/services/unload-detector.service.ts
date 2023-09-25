@@ -22,52 +22,6 @@ export class UnloadDetectorService {
         this.initialise(deviceDetectorService.isDesktop());
     }
 
-    private initialise(isDesktop: boolean) {
-        if (isDesktop) {
-            this.initialiseEventHandlersForDesktopDevices();
-        } else {
-            this.initialiseEventHandlersForMobileDevices();
-        }
-    }
-
-    private initialiseEventHandlersForDesktopDevices() {
-        this.logger.info(`${this.loggerPrefix} Desktop device detected. Will raise unload event when window:beforeunload is raised!`);
-
-        this.renderer.listen('window', 'beforeunload', () => this.beforeUnloadSubject.next());
-        this.beforeUnload.subscribe(() => {
-            this.logger.info(`${this.loggerPrefix} window:beforeunload recieved. Emitting the should unload event!`);
-            this.shouldUnloadSubject.next();
-            this.hasEmittedUnload = true;
-        });
-    }
-
-    private initialiseEventHandlersForMobileDevices() {
-        this.logger.info(
-            `${this.loggerPrefix} Mobile device detected. Will raise unload/reload events when document:visibilitychange and unload when window:pagehide is raised!`
-        );
-
-        this.renderer.listen('document', 'visibilitychange', () => this.visibilityChangeSubject.next(document.hidden));
-        this.renderer.listen('window', 'pagehide', () => this.pageHiddenSubject.next());
-
-        this.visibilityChangedToHidden.subscribe(() => {
-            this.logger.info(`${this.loggerPrefix} Visibility changed to hidden. Emitting the should unload event!`);
-            this.shouldUnloadSubject.next();
-            this.hasEmittedUnload = true;
-        });
-
-        this.pageHidden.subscribe(() => {
-            this.logger.info(`${this.loggerPrefix} Page hidden changed to hidden. Emitting the should unload event!`);
-            this.shouldUnloadSubject.next();
-            this.hasEmittedUnload = true;
-        });
-
-        this.visibilityChangedToVisible.pipe(filter(() => this.hasEmittedUnload)).subscribe(() => {
-            this.logger.info(`${this.loggerPrefix} Visibility changed to visible. Emitting the should reload event!`);
-            this.shouldReloadSubject.next();
-            this.hasEmittedUnload = false;
-        });
-    }
-
     get shouldUnload(): Observable<void> {
         return this.shouldUnloadSubject.asObservable();
     }
@@ -91,18 +45,60 @@ export class UnloadDetectorService {
     private get visibilityChangedToHidden(): Observable<void> {
         return this.visibilityChange.pipe(
             filter(value => value === true),
-            map(() => {
-                return;
-            })
+            map(() => void 0)
         );
     }
 
     private get visibilityChangedToVisible(): Observable<void> {
         return this.visibilityChange.pipe(
             filter(value => value === false),
-            map(() => {
-                return;
-            })
+            map(() => void 0)
         );
+    }
+
+    private initialise(isDesktop: boolean) {
+        if (isDesktop) {
+            this.initialiseEventHandlersForDesktopDevices();
+        } else {
+            this.initialiseEventHandlersForMobileDevices();
+        }
+    }
+
+    private initialiseEventHandlersForDesktopDevices() {
+        this.logger.debug(`${this.loggerPrefix} Desktop device detected. Will raise unload event when window:beforeunload is raised!`);
+
+        this.renderer.listen('window', 'beforeunload', () => this.beforeUnloadSubject.next());
+        this.beforeUnload.subscribe(() => {
+            this.logger.debug(`${this.loggerPrefix} window:beforeunload recieved. Emitting the should unload event!`);
+            this.shouldUnloadSubject.next();
+            this.hasEmittedUnload = true;
+        });
+    }
+
+    private initialiseEventHandlersForMobileDevices() {
+        this.logger.debug(
+            `${this.loggerPrefix} Mobile device detected. Will raise unload/reload events when document:visibilitychange and unload when window:pagehide is raised!`
+        );
+
+        this.renderer.listen('document', 'visibilitychange', () => this.visibilityChangeSubject.next(document.hidden));
+        this.renderer.listen('window', 'pagehide', () => this.pageHiddenSubject.next());
+
+        this.visibilityChangedToHidden.subscribe(() => {
+            this.logger.debug(`${this.loggerPrefix} Visibility changed to hidden. Emitting the should unload event!`);
+            this.shouldUnloadSubject.next();
+            this.hasEmittedUnload = true;
+        });
+
+        this.pageHidden.subscribe(() => {
+            this.logger.debug(`${this.loggerPrefix} Page hidden changed to hidden. Emitting the should unload event!`);
+            this.shouldUnloadSubject.next();
+            this.hasEmittedUnload = true;
+        });
+
+        this.visibilityChangedToVisible.pipe(filter(() => this.hasEmittedUnload)).subscribe(() => {
+            this.logger.debug(`${this.loggerPrefix} Visibility changed to visible. Emitting the should reload event!`);
+            this.shouldReloadSubject.next();
+            this.hasEmittedUnload = false;
+        });
     }
 }

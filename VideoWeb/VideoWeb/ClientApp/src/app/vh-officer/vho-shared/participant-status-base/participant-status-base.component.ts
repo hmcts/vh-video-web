@@ -31,8 +31,6 @@ export abstract class ParticipantStatusDirective {
     }
 
     async loadData() {
-        this.logger.info('[ParticipantStatus] - Loading VH Officer Dashboard Participant Status list');
-
         const participantDetails = await this.getParticipantsByConference(this.conferenceId);
 
         this.participants = participantDetails.map(x => {
@@ -82,16 +80,16 @@ export abstract class ParticipantStatusDirective {
         this.logger.debug('[ParticipantStatus] - Subscribing to EventHub reconnects');
         this.eventHubSubscriptions.add(
             this.eventService.getServiceConnected().subscribe(async () => {
-                this.logger.info(`[ParticipantStatus] - EventHub reconnected for vh officer`);
+                this.logger.debug('[ParticipantStatus] - EventHub reconnected for vh officer');
                 await this.refreshConferenceDataDuringDisconnect();
             })
         );
 
         this.eventHubSubscriptions.add(
             this.eventService.getParticipantsUpdated().subscribe(participantsUpdatedMessage => {
-                this.logger.debug(`[WR] - Participants Updated`, participantsUpdatedMessage);
+                this.logger.debug('[WR] - Participants Updated', participantsUpdatedMessage);
                 if (this.conferenceId === participantsUpdatedMessage.conferenceId) {
-                    this.logger.debug(`[WR] - Participants updated for current conference, updating list`);
+                    this.logger.debug('[WR] - Participants updated for current conference, updating list');
                     this.loadData();
                 }
             })

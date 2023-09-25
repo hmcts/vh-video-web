@@ -20,22 +20,6 @@ export class AnalogueClockComponent implements OnInit {
 
     constructor(private clockService: ClockService) {}
 
-    ngOnInit() {
-        this.setCurrentTime();
-
-        this.clockService.getClock().subscribe(time => {
-            this.currentTime = time;
-            this.updateclock();
-        });
-    }
-
-    updateclock() {
-        if (!this.hearing) {
-            return;
-        }
-        this.updateClockUI(this.currentTime);
-    }
-
     get isOnTime() {
         return (
             (this.isWitness && this.hearing.isStarting()) ||
@@ -53,6 +37,22 @@ export class AnalogueClockComponent implements OnInit {
 
     get isStarting() {
         return (!this.isWitness && !this.isJudicialOfficeHolder && this.hearing.isStarting()) || this.hearing.isInSession();
+    }
+
+    ngOnInit() {
+        this.setCurrentTime();
+
+        this.clockService.getClock().subscribe(time => {
+            this.currentTime = time;
+            this.updateclock();
+        });
+    }
+
+    updateclock() {
+        if (!this.hearing) {
+            return;
+        }
+        this.updateClockUI(this.currentTime);
     }
 
     private setCurrentTime(): void {

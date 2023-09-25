@@ -13,14 +13,7 @@ export class HearingLayoutService {
     private loggerPrefix = '[HearingLayoutService] -';
 
     private currentLayoutSubject = new ReplaySubject<HearingLayout>(1);
-    get currentLayout$(): Observable<HearingLayout> {
-        return this.currentLayoutSubject.asObservable();
-    }
-
     private recommendedLayoutSubject = new ReplaySubject<HearingLayout>(1);
-    get recommendedLayout$(): Observable<HearingLayout> {
-        return this.recommendedLayoutSubject.asObservable();
-    }
 
     constructor(
         private logger: Logger,
@@ -30,6 +23,14 @@ export class HearingLayoutService {
     ) {
         this.initialiseCurrentLayoutSubscriptions();
         this.initialiseRecommendedLayoutSubscriptions();
+    }
+
+    get currentLayout$(): Observable<HearingLayout> {
+        return this.currentLayoutSubject.asObservable();
+    }
+
+    get recommendedLayout$(): Observable<HearingLayout> {
+        return this.recommendedLayoutSubject.asObservable();
     }
 
     initialiseCurrentLayoutSubscriptions(): void {
@@ -51,7 +52,7 @@ export class HearingLayoutService {
             .subscribe(currentConferenceId => {
                 this.logger.debug(`${this.loggerPrefix} Retrieving current layout for conference: ${currentConferenceId}`);
                 this.apiClient.getLayoutForHearing(currentConferenceId).subscribe(layout => {
-                    this.logger.info(`${this.loggerPrefix} Retrieved current layout (${layout}) for conference: ${currentConferenceId}`);
+                    this.logger.debug(`${this.loggerPrefix} Retrieved current layout (${layout}) for conference: ${currentConferenceId}`);
                     this.currentLayoutSubject.next(layout);
                 });
 
@@ -91,12 +92,12 @@ export class HearingLayoutService {
                 tap(() => {
                     this.logger.debug(`${this.loggerPrefix} Conference changed getting the new recommended layout`);
                     this.getCurrentRecommendedLayout().subscribe(layout => {
-                        this.logger.info(`${this.loggerPrefix} Conference changed got the new recommended layout ${layout}`);
+                        this.logger.debug(`${this.loggerPrefix} Conference changed got the new recommended layout ${layout}`);
                         this.recommendedLayoutSubject.next(layout);
                     });
                 }),
-                mergeMap(currentConferenceId => {
-                    return this.eventsService.getParticipantsUpdated().pipe(
+                mergeMap(currentConferenceId =>
+                    this.eventsService.getParticipantsUpdated().pipe(
                         takeUntil(
                             this.conferenceService.currentConference$.pipe(filter(conference => conference?.id !== currentConferenceId))
                         ),
@@ -105,11 +106,11 @@ export class HearingLayoutService {
                             this.logger.debug(`${this.loggerPrefix} Participant list updated getting the new recommended layout`);
                         }),
                         mergeMap(() => this.getCurrentRecommendedLayout())
-                    );
-                })
+                    )
+                )
             )
             .subscribe(layout => {
-                this.logger.info(`${this.loggerPrefix} Participant list updated got the new recommended layout ${layout}`);
+                this.logger.debug(`${this.loggerPrefix} Participant list updated got the new recommended layout ${layout}`);
                 this.recommendedLayoutSubject.next(layout);
             });
     }
@@ -137,7 +138,7 @@ export class HearingLayoutService {
                 map(conference => conference.id)
             )
             .subscribe(currentConferenceId => {
-                this.logger.info(
+                this.logger.debug(
                     `${this.loggerPrefix} updating current layout to ${layout} for current conference: ${currentConferenceId}`
                 );
                 this.apiClient.updateLayoutForHearing(currentConferenceId, layout).subscribe();

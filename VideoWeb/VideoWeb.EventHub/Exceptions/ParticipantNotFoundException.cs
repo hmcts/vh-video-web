@@ -9,5 +9,10 @@ namespace VideoWeb.EventHub.Exceptions
             $"{username} is not a participant in conference {conferenceId}")
         {
         }
+        
+        public ParticipantNotFoundException(Guid conferenceId, Guid participantId) : base(
+            $"{participantId} is not a participant in conference {conferenceId}")
+        {
+        }
     }
 }

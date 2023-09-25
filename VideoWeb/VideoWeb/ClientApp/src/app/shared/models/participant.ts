@@ -70,6 +70,35 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
         }
     }
 
+    static fromParticipantResponse(participant: ParticipantResponse) {
+        return this.fromAParticipantResponseType(participant);
+    }
+
+    static fromParticipantForUserResponse(participant: ParticipantForUserResponse) {
+        return this.fromAParticipantResponseType(participant);
+    }
+
+    static fromParticipantResponseVho(participant: ParticipantResponseVho) {
+        return this.fromAParticipantResponseType(participant);
+    }
+
+    static fromVideoEndpointResponse(videoEndpointResponse: VideoEndpointResponse): ParticipantModel {
+        return new ParticipantModel(
+            videoEndpointResponse.id,
+            videoEndpointResponse.defence_advocate_username,
+            videoEndpointResponse.display_name,
+            videoEndpointResponse.pexip_display_name, // same as tiled_display_name
+            null,
+            null,
+            null,
+            true,
+            null,
+            null,
+            ParticipantStatus[videoEndpointResponse.status], // Will be undefined when not joining...
+            videoEndpointResponse.current_room
+        );
+    }
+
     private static fromAParticipantResponseType(participant: ParticipantResponse | ParticipantForUserResponse | ParticipantResponseVho) {
         return new ParticipantModel(
             participant.id,
@@ -84,35 +113,6 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
             participant.linked_participants,
             participant.status,
             participant.current_room
-        );
-    }
-
-    static fromParticipantResponse(participant: ParticipantResponse) {
-        return this.fromAParticipantResponseType(participant);
-    }
-
-    static fromParticipantForUserResponse(participant: ParticipantForUserResponse) {
-        return this.fromAParticipantResponseType(participant);
-    }
-
-    static fromParticipantResponseVho(participant: ParticipantResponseVho) {
-        return this.fromAParticipantResponseType(participant);
-    }
-
-    static fromVideoEndpointResponse(videoEndpointResponse: VideoEndpointResponse): any {
-        return new ParticipantModel(
-            videoEndpointResponse.id,
-            videoEndpointResponse.defence_advocate_username,
-            videoEndpointResponse.display_name,
-            videoEndpointResponse.pexip_display_name, // same as tiled_display_name
-            null,
-            null,
-            null,
-            true,
-            null,
-            null,
-            ParticipantStatus[videoEndpointResponse.status], // Will be undefined when not joining...
-            videoEndpointResponse.current_room
         );
     }
 }

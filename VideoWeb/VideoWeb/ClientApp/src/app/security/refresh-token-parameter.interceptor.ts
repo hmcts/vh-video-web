@@ -1,7 +1,7 @@
 import { HttpInterceptor, HttpHandler, HttpEvent, HttpRequest } from '@angular/common/http';
 import { Injectable, Injector } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { first, map, switchMap, tap } from 'rxjs/operators';
 import { Logger } from '../services/logging/logger-base';
 import { SecurityServiceProvider } from './authentication/security-provider.service';
 import { ISecurityService } from './authentication/security-service.interface';
@@ -32,13 +32,19 @@ export class RefreshTokenParameterInterceptor implements HttpInterceptor {
                 return next.handle(req);
             }
 
-            if (this.securityService.configuration.configuration.scope && req.body) {
-                let body = req.body as string;
-                body += `&scope=${encodeURI(this.securityService.configuration.configuration.scope)}`;
-                req = req.clone({
-                    body: body
-                });
-            }
+            return this.securityService.getConfiguration(this.idp).pipe(
+                first(),
+                switchMap(config => {
+                    if (config.scope && req.body) {
+                        let body = req.body as string;
+                        body += `&scope=${encodeURI(config.scope)}`;
+                        req = req.clone({
+                            body: body
+                        });
+                    }
+                    return next.handle(req);
+                })
+            );
         }
 
         return next.handle(req);

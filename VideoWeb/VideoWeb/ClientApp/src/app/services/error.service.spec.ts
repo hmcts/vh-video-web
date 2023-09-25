@@ -185,7 +185,7 @@ describe('ErrorService', () => {
         createService();
         spyOn(service, 'goToServiceError');
         const error = new CallError(
-            `Your camera and/or microphone are not available. Please make sure they are not being actively used by another app`
+            'Your camera and/or microphone are not available. Please make sure they are not being actively used by another app'
         );
         const conferenceId = Guid.create().toString();
         const text1 = 'error-service.camera-mic-blocked';
@@ -217,7 +217,7 @@ describe('ErrorService', () => {
         // arrange
         createService();
         spyOn(service, 'goToMediaDeviceError');
-        const error = new CallError(`NotReadableError`);
+        const error = new CallError('NotReadableError');
         const conferenceId = Guid.create().toString();
 
         // act
@@ -231,7 +231,7 @@ describe('ErrorService', () => {
         // arrange
         createService();
         spyOn(service, 'goToMediaDeviceError');
-        const error = new CallError(`OverconstrainedError`);
+        const error = new CallError('OverconstrainedError');
         const conferenceId = Guid.create().toString();
 
         // act
@@ -259,7 +259,7 @@ describe('ErrorService', () => {
         // arrange
         createService();
         spyOn(service, 'goToMediaDeviceError');
-        const error = new CallError(`Preferred device is no longer connected`);
+        const error = new CallError('Preferred device is no longer connected');
         const conferenceId = Guid.create().toString();
         // act
         service.handlePexipError(error, conferenceId);

@@ -6,6 +6,7 @@ import {
     DisconnectedCall,
     CallError,
     ParticipantUpdated,
+    ParticipantDeleted,
     ConferenceUpdated,
     ConnectedPresentation,
     ConnectedScreenshare,
@@ -14,13 +15,12 @@ import {
     Presentation
 } from 'src/app/waiting-space/models/video-call-models';
 
-export let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
-
 export const onSetupSubjectMock = new Subject<CallSetup>();
 export const onConnectedSubjectMock = new Subject<ConnectedCall>();
 export const onDisconnectedSubjectMock = new Subject<DisconnectedCall>();
 export const onErrorSubjectMock = new Subject<CallError>();
 export const onParticipantUpdatedMock = new Subject<ParticipantUpdated>();
+export const onParticipantDeleteMock = new Subject<ParticipantDeleted>();
 export const onConferenceUpdatedMock = new Subject<ConferenceUpdated>();
 export const onCallTransferredMock = new Subject<any>();
 export const onScreenshareConnectedMock = new Subject<ConnectedScreenshare>();
@@ -34,7 +34,7 @@ export const onVideoEvidenceStoppedMock = new Subject<void>();
 export const pexipCallMock = jasmine.createSpyObj<PexRTCCall>('PexRTCCall', [], ['mutedAudio', 'mutedVideo']);
 export const pexipApiMock = jasmine.createSpyObj<PexipClient>('PexipClient', [], { call: pexipCallMock });
 
-videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>(
+export const videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>(
     'VideoCallService',
     [
         'setupClient',
@@ -84,10 +84,14 @@ videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>(
         'onVideoEvidenceStopped',
         'selectScreenWithMicrophone',
         'stopScreenWithMicrophone',
-        'onParticipantCreated'
+        'onParticipantCreated',
+        'onParticipantDeleted',
+        'connectWowzaAgent',
+        'disconnectWowzaAgent'
     ],
     {
-        pexipAPI: pexipApiMock
+        pexipAPI: pexipApiMock,
+        wowzaAgentName: 'vh-wowza'
     }
 );
 
@@ -98,6 +102,7 @@ videoCallServiceSpy.onError.and.returnValue(onErrorSubjectMock.asObservable());
 videoCallServiceSpy.onParticipantUpdated.and.returnValue(onParticipantUpdatedMock.asObservable());
 videoCallServiceSpy.onConferenceUpdated.and.returnValue(onConferenceUpdatedMock.asObservable());
 videoCallServiceSpy.onParticipantCreated.and.returnValue(onParticipantUpdatedMock.asObservable());
+videoCallServiceSpy.onParticipantDeleted.and.returnValue(onParticipantDeleteMock.asObservable());
 videoCallServiceSpy.onCallTransferred.and.returnValue(onCallTransferredMock.asObservable());
 
 videoCallServiceSpy.onScreenshareConnected.and.returnValue(onScreenshareConnectedMock.asObservable());

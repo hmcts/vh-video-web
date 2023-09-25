@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Responses;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
@@ -10,6 +10,8 @@ namespace VideoWeb.Mappings
 {
     public class ConferenceForVhOfficerResponseMapper : IMapTo<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>
     {
+        public const string NotRequired = "Not Required";
+        public const string NotAllocated = "Not Allocated";
         private readonly IMapTo<IEnumerable<ParticipantSummaryResponse>, List<ParticipantForUserResponse>> _participantForUserResponseMapper;
 
         public ConferenceForVhOfficerResponseMapper(IMapTo<IEnumerable<ParticipantSummaryResponse>, List<ParticipantForUserResponse>> participantForUserResponseMapper)
@@ -19,6 +21,16 @@ namespace VideoWeb.Mappings
 
         public ConferenceForVhOfficerResponse Map(ConferenceForAdminResponse conference, AllocatedCsoResponse allocatedCsoResponse)
         {
+            string allocatedCso;
+            if(!allocatedCsoResponse?.SupportsWorkAllocation ?? false)
+            {
+                allocatedCso = NotRequired;
+            }
+            else
+            {
+                allocatedCso = allocatedCsoResponse?.Cso?.FullName ?? NotAllocated;
+            }
+            
             var response = new ConferenceForVhOfficerResponse
             {
                 Id = conference.Id,
@@ -36,7 +48,7 @@ namespace VideoWeb.Mappings
                 TelephoneConferenceNumbers = conference.TelephoneConferenceNumbers,
                 CreatedDateTime = conference.CreatedDateTime,
                 HearingRefId = conference.HearingRefId,
-                AllocatedCso = allocatedCsoResponse?.Cso?.FullName ?? "Unallocated",
+                AllocatedCso = allocatedCso,
                 AllocatedCsoId = allocatedCsoResponse?.Cso?.Id
             };
             return response;

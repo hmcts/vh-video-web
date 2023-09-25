@@ -1,4 +1,3 @@
-using Castle.Core.Internal;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -15,6 +14,7 @@ using VideoWeb.Helpers;
 using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
+using VideoWeb.Extensions;
 using VideoWeb.Middleware;
 
 namespace VideoWeb.Controllers
