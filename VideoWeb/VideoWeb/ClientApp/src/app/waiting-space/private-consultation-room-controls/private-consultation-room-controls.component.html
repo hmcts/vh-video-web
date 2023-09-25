@@ -18,9 +18,11 @@
           *ngIf="isHost && !isPrivateConsultation"
           colour="grey"
           (click)="togglePanelStatus('Chat')"
+          tabindex="0"
+          (keyup.enter)="togglePanelStatus('Chat')"
+          (keyup.space)="togglePanelStatus('Chat')"
         >
-          <fa-icon [icon]="[isChatVisible ? 'fas' : 'far', 'comment-alt']" tabindex="0" (keyup.enter)="togglePanelStatus('Chat')">
-          </fa-icon>
+          <fa-icon [icon]="[isChatVisible ? 'fas' : 'far', 'comment-alt']"></fa-icon>
           <span class="context-item">
             {{
               (isChatVisible
@@ -57,13 +59,16 @@
         </div>
         <div class="icon-button-dark" id="toggle-media-device-img" colour="grey" (click)="changeDeviceSelected()">
           <span>
-            <fa-icon icon="sliders-h" tabindex="0" (keyup.enter)="changeDeviceSelected()"></fa-icon>
+            <fa-icon icon="sliders-h"
+                     tabindex="0"
+                     (keyup.enter)="changeDeviceSelected()"
+                     (keyup.space)="changeDeviceSelected()"></fa-icon>
             <span class="context-item">{{ 'private-consultation-room-controls.change-camera-mic' | translate }}</span>
           </span>
         </div>
         <div class="icon-button-dark" id="toggle-self-view-img" *ngIf="!audioOnly" colour="grey" (click)="toggleView()">
           <span>
-            <fa-icon [icon]="selfViewOpen ? ['far', 'eye'] : ['far', 'eye-slash']" tabindex="0" (keyup.enter)="toggleView()"></fa-icon>
+            <fa-icon [icon]="selfViewOpen ? ['far', 'eye'] : ['far', 'eye-slash']" tabindex="0" (keyup.enter)="toggleView()" (keyup.space)="toggleView()"></fa-icon>
             <span class="context-item">
               {{
                 (selfViewOpen
@@ -76,7 +81,7 @@
         </div>
         <div class="icon-button-dark" id="toggle-video-mute-img" *ngIf="!isJudge && !audioOnly" colour="grey" (click)="toggleVideoMute()">
           <span>
-            <fa-icon [icon]="videoMuted ? 'video-slash' : 'video'" tabindex="0" (keyup.enter)="toggleVideoMute()"></fa-icon>
+            <fa-icon [icon]="videoMuted ? 'video-slash' : 'video'" tabindex="0" (keyup.enter)="toggleVideoMute()" (keyup.space)="toggleVideoMute()"></fa-icon>
             <span class="context-item">
               {{
                 (videoMuted
@@ -90,7 +95,7 @@
 
         <div class="icon-button-dark" id="toggle-audio-mute-img" *ngIf="!remoteMuted || isJudge" colour="grey" (click)="toggleMute()">
           <span>
-            <fa-icon [icon]="audioMuted ? 'microphone-slash' : 'microphone'" tabindex="0" (keyup.enter)="toggleMute()"></fa-icon>
+            <fa-icon [icon]="audioMuted ? 'microphone-slash' : 'microphone'" tabindex="0" (keyup.enter)="toggleMute()" (keyup.space)="toggleMute()"></fa-icon>
             <span class="context-item">
               {{
                 (audioMuted
@@ -126,7 +131,7 @@
           (click)="toggleHandRaised()"
         >
           <span>
-            <fa-icon [icon]="['far', 'hand-paper']" tabindex="0" (keyup.enter)="toggleHandRaised()"></fa-icon>
+            <fa-icon [icon]="['far', 'hand-paper']" tabindex="0" (keyup.enter)="toggleHandRaised()" (keyup.space)="toggleHandRaised()"></fa-icon>
             <span class="context-item">
               {{
                 (handRaised
@@ -156,7 +161,7 @@
           [hidden]="!canCloseOrPauseHearing()"
         >
           <span>
-            <fa-icon [icon]="['far', 'pause-circle']" tabindex="0" (keyup.enter)="pause()"></fa-icon>
+            <fa-icon [icon]="['far', 'pause-circle']" tabindex="0" (keyup.enter)="pause()" (keyup.space)="pause()"></fa-icon>
             <span class="context-item">{{ 'private-consultation-room-controls.pause' | translate }} </span>
           </span>
         </div>
@@ -170,7 +175,7 @@
           [hidden]="!canCloseOrPauseHearing()"
         >
           <span>
-            <fa-icon [icon]="['far', 'stop-circle']" tabindex="0" (keyup.enter)="displayConfirmationDialog()"></fa-icon>
+            <fa-icon [icon]="['far', 'stop-circle']" tabindex="0" (keyup.enter)="displayConfirmationDialog()" (keyup.space)="displayConfirmationDialog()"></fa-icon>
             <span class="context-item">{{ 'private-consultation-room-controls.close' | translate }}</span>
           </span>
         </div>
@@ -184,7 +189,7 @@
           (click)="lockPrivateConsultation(!roomLocked)"
         >
           <span>
-            <fa-icon class="lock" tabindex="0" (keyup.enter)="lockPrivateConsultation(!roomLocked)"></fa-icon>
+            <fa-icon class="lock" tabindex="0" (keyup.enter)="lockPrivateConsultation(!roomLocked)" (keyup.space)="lockPrivateConsultation(!roomLocked)"></fa-icon>
             <span class="context-item">{{ 'private-consultation-room-controls.lock-the-room-toggle-' + roomLocked | translate }}</span>
           </span>
         </div>
@@ -227,8 +232,10 @@
       colour="grey"
       (click)="togglePanelStatus('Participants')"
       tabindex="0"
+      (keyup.enter)="togglePanelStatus('Participants')"
+      (keyup.space)="togglePanelStatus('Participants')"
     >
-      <fa-icon [icon]="[areParticipantsVisible ? 'fas' : 'far', 'user']" (keyup.enter)="togglePanelStatus('Participants')"></fa-icon>
+      <fa-icon [icon]="[areParticipantsVisible ? 'fas' : 'far', 'user']"></fa-icon>
     </div>
     <div class="show-for-medium-only">
       <ng-container *ngIf="isHost && !isPrivateConsultation">
@@ -306,8 +313,10 @@
         disableChildTooltip
         (click)="togglePanelStatus('Chat')"
         tabindex="0"
+        (keyup.enter)="togglePanelStatus('Chat')"
+        (keyup.space)="togglePanelStatus('Chat')"
       >
-        <fa-icon [icon]="[isChatVisible ? 'fas' : 'far', 'comment-alt']" (keyup.enter)="togglePanelStatus('Chat')"></fa-icon>
+        <fa-icon [icon]="[isChatVisible ? 'fas' : 'far', 'comment-alt']"></fa-icon>
         <span class="badge" *ngIf="unreadMessageCount > 0">{{ unreadMessageCount > 9 ? '9+' : unreadMessageCount }}</span>
       </div>
 
@@ -320,8 +329,10 @@
         colour="grey"
         (click)="showEvidenceContextMenu = !showEvidenceContextMenu"
         tabindex="0"
+        (keyup.enter)="showEvidenceContextMenu = !showEvidenceContextMenu"
+        (keyup.space)="showEvidenceContextMenu = !showEvidenceContextMenu"
       >
-        <fa-icon icon="share-square" (keyup.enter)="showEvidenceContextMenu = !showEvidenceContextMenu"></fa-icon>
+        <fa-icon icon="share-square"></fa-icon>
         <div id="shareDropdown" class="dropdown-content govuk-!-padding-0" [ngClass]="{ show: showEvidenceContextMenu }">
           <div
             id="shareDropdown-startEvidenceSharing"
@@ -338,6 +349,7 @@
                 aria-hidden="true"
                 tabindex="0"
                 (keyup.enter)="startScreenShareWithMicrophone()"
+                (keyup.space)="startScreenShareWithMicrophone()"
               ></fa-icon>
               <span style="margin-left: 4px">{{ 'private-consultation-room-controls.share-video-evidence' | translate }}</span>
             </span>
@@ -363,7 +375,7 @@
             colour="grey"
           >
             <span class="action"
-              ><fa-icon icon="file-alt" tabindex="0" (keyup.enter)="startScreenShare()"></fa-icon>
+              ><fa-icon icon="file-alt" tabindex="0" (keyup.enter)="startScreenShare()" (keyup.space)="startScreenShare()"></fa-icon>
               <span style="margin-left: 4px">{{ 'private-consultation-room-controls.share-document-evidence' | translate }}</span>
             </span>
           </div>
@@ -393,8 +405,10 @@
         colour="grey"
         (click)="changeDeviceSelected()"
         tabindex="0"
+        (keyup.enter)="changeDeviceSelected()"
+        (keyup.space)="changeDeviceSelected()"
       >
-        <fa-icon icon="sliders-h" (keyup.enter)="changeDeviceSelected()"></fa-icon>
+        <fa-icon icon="sliders-h"></fa-icon>
       </div>
 
       <div
@@ -411,8 +425,10 @@
         colour="grey"
         (click)="toggleView()"
         tabindex="0"
+        (keyup.enter)="toggleView()"
+        (keyup.space)="toggleView()"
       >
-        <fa-icon [icon]="selfViewOpen ? ['far', 'eye'] : ['far', 'eye-slash']" (keyup.enter)="toggleView()"></fa-icon>
+        <fa-icon [icon]="selfViewOpen ? ['far', 'eye'] : ['far', 'eye-slash']"></fa-icon>
       </div>
 
       <div
@@ -429,8 +445,10 @@
         colour="grey"
         (click)="toggleVideoMute()"
         tabindex="0"
+        (keyup.enter)="toggleVideoMute()"
+        (keyup.space)="toggleVideoMute()"
       >
-        <fa-icon [icon]="videoMuted ? 'video-slash' : 'video'" (keyup.enter)="toggleVideoMute()"></fa-icon>
+        <fa-icon [icon]="videoMuted ? 'video-slash' : 'video'"></fa-icon>
       </div>
 
       <div
@@ -447,8 +465,10 @@
         colour="grey"
         (click)="toggleMute()"
         tabindex="0"
+        (keyup.enter)="toggleMute()"
+        (keyup.space)="toggleMute()"
       >
-        <fa-icon [icon]="audioMuted ? 'microphone-slash' : 'microphone'" (keyup.enter)="toggleMute()"></fa-icon>
+        <fa-icon [icon]="audioMuted ? 'microphone-slash' : 'microphone'"></fa-icon>
       </div>
 
       <div
@@ -476,8 +496,10 @@
         colour="grey"
         (click)="toggleHandRaised()"
         tabindex="0"
+        (keyup.enter)="toggleHandRaised()"
+        (keyup.space)="toggleHandRaised()"
       >
-        <fa-icon [icon]="['far', 'hand-paper']" [class]="{ yellow: handRaised }" (keyup.enter)="toggleHandRaised()"></fa-icon>
+        <fa-icon [icon]="['far', 'hand-paper']" [class]="{ yellow: handRaised }"></fa-icon>
       </div>
 
       <ng-container *ngIf="canShowLeaveButton">
@@ -489,6 +511,8 @@
           appTooltip
           colour="grey"
           tabindex="0"
+          (keyup.enter)="displayLeaveHearingPopup = !displayLeaveHearingPopup"
+          (keyup.space)="displayLeaveHearingPopup = !displayLeaveHearingPopup"
           [text]="'private-consultation-room-controls.leave-hearing' | translate"
           (click)="displayLeaveHearingPopup = !displayLeaveHearingPopup"
         >
@@ -496,7 +520,6 @@
             icon="sign-out-alt"
             flip="horizontal"
             class="leave-hearing-button"
-            (keyup.enter)="displayLeaveHearingPopup = !displayLeaveHearingPopup"
           ></fa-icon>
         </div>
 
