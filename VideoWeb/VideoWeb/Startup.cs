@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Logging;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Extensions;
+using VideoWeb.Health;
 using VideoWeb.Middleware;
 
 namespace VideoWeb
@@ -87,6 +88,8 @@ namespace VideoWeb
 
             var connectionStrings = Configuration.GetSection("ConnectionStrings").Get<ConnectionStrings>();
             services.AddSingleton(connectionStrings);
+            
+            services.AddVhHealthChecks();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -141,6 +144,8 @@ namespace VideoWeb
                     options.Transports = HttpTransportType.ServerSentEvents | HttpTransportType.LongPolling |
                                          HttpTransportType.WebSockets;
                 });
+
+                endpoints.AddVhHealthCheckRouteMaps();
             });
 
             app.UseSpa(spa =>
