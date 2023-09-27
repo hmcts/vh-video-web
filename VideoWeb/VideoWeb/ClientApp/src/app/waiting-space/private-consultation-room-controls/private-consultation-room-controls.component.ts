@@ -53,7 +53,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         protected videoControlService: VideoControlService,
         protected userMediaService: UserMediaService,
         conferenceService: ConferenceService,
-        configSerivce: ConfigService,
+        configService: ConfigService,
         featureFlagService: FeatureFlagService,
         protected videoControlCacheService: VideoControlCacheService,
         ldService: LaunchDarklyService
@@ -74,7 +74,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
             this.conferenceStatus = status;
         });
 
-        configSerivce
+        configService
             .getClientSettings()
             .pipe(takeUntil(this.destroyedSubject))
             .subscribe(settings => (this.enableDynamicEvidenceSharing = settings.enable_dynamic_evidence_sharing));
