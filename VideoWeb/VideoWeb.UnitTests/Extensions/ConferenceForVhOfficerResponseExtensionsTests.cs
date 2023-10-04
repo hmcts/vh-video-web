@@ -21,17 +21,17 @@ public class ConferenceForVhOfficerResponseExtensionsTests
             new ConferenceForVhOfficerResponse()
             {
                 AllocatedCsoId = null,
-                HearingVenueName = "Teesside Combined Court Centre",
+                HearingVenueName = "Aberdeen Tribunal Hearing Centre",
             },
             new ConferenceForVhOfficerResponse()
             {
                 AllocatedCsoId = null,
-                HearingVenueName = "Teesside Magistrates Court"
+                HearingVenueName = "Glasgow Tribunals Centre"
             },
             new ConferenceForVhOfficerResponse()
             {
                 AllocatedCsoId = null,
-                HearingVenueName = "Middlesbrough County Court"
+                HearingVenueName = "Edinburgh Employment Tribunal"
             },
             new ConferenceForVhOfficerResponse()
             {
