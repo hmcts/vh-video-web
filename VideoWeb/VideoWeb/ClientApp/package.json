@@ -58,7 +58,7 @@
     "aspnet-prerendering": "^3.0.1",
     "chart.js": "^3.8.0",
     "core-js": "^3.8.2",
-    "govuk-frontend": "^3.14.0",
+    "govuk-frontend": "^4.7.0",
     "guid-typescript": "^1.0.9",
     "launchdarkly-js-client-sdk": "^3.1.0",
     "moment": "^2.29.1",
