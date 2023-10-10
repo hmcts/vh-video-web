@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System;
+using System.Text.RegularExpressions;
 
 namespace VideoWeb.Common
 {
@@ -27,7 +28,7 @@ namespace VideoWeb.Common
 
         public string GetObfuscatedUsername(string participantUserName)
         {
-            var obfuscatedUsername = System.Text.RegularExpressions.Regex.Replace(participantUserName, @"(?!\b)\w", "*");
+            var obfuscatedUsername = Regex.Replace(participantUserName, @"(?!\b)\w", "*", RegexOptions.None, TimeSpan.FromMilliseconds(100));
             return obfuscatedUsername;
         }
 
