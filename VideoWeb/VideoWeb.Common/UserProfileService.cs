@@ -4,13 +4,15 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace VideoWeb.Common
 {
     public interface IUserProfileService
     {
-        string GetObfuscatedUsernameAsync(string participantUserName);
+        string GetObfuscatedUsername(string participantUserName);
         Task<UserProfile> GetUserAsync(string username);
         Task<UserProfile> CacheUserProfileAsync(ClaimsPrincipal user);
     }
@@ -24,7 +26,7 @@ namespace VideoWeb.Common
             _userCache = userCache;
         }
 
-        public string GetObfuscatedUsernameAsync(string participantUserName)
+        public string GetObfuscatedUsername(string participantUserName)
         {
             var obfuscatedUsername = System.Text.RegularExpressions.Regex.Replace(participantUserName, @"(?!\b)\w", "*");
             return obfuscatedUsername;
@@ -57,10 +59,10 @@ namespace VideoWeb.Common
             return user.IsInRole(AppRoles.VhOfficerRole);
         }
 
+        [ExcludeFromCodeCoverage]
         private static List<Role> DetermineRolesFromClaims(ClaimsPrincipal user)
         {
             var roles = new List<Role>();
-
             if (user.IsInRole(AppRoles.VhOfficerRole))
                 roles.Add(Role.VideoHearingsOfficer);
             if (user.IsInRole(AppRoles.JudgeRole))
@@ -80,7 +82,10 @@ namespace VideoWeb.Common
             if (user.IsInRole(AppRoles.StaffMember))
                 roles.Add(Role.StaffMember);
             if (!roles.Any())
+            {
                 throw new NotSupportedException($"No supported role for this application");
+            }
+
             return roles;
         }
     }

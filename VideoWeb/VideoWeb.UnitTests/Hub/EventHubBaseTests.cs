@@ -57,7 +57,7 @@ namespace VideoWeb.UnitTests.Hub
             HubCallerContextMock.Setup(x => x.ConnectionId).Returns(Guid.NewGuid().ToString());
             HubCallerContextMock.Setup(x => x.UserIdentifier).Returns(Claims.Identity.Name);
 
-            UserProfileServiceMock.Setup(x => x.GetObfuscatedUsernameAsync(It.IsAny<string>()))
+            UserProfileServiceMock.Setup(x => x.GetObfuscatedUsername(It.IsAny<string>()))
                 .Returns("o**** f*****");
 
             var vhServicesConfigurationOptions = Options.Create(new HearingServicesConfiguration

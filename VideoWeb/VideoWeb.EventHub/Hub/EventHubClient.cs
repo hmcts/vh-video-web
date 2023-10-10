@@ -151,7 +151,7 @@ namespace VideoWeb.EventHub.Hub
 
         private string GetObfuscatedUsernameAsync(string username)
         {
-            return _userProfileService.GetObfuscatedUsernameAsync(username);
+            return _userProfileService.GetObfuscatedUsername(username);
         }
 
         /// <summary>
@@ -247,7 +247,7 @@ namespace VideoWeb.EventHub.Hub
             var participant = dto.Conference.Participants.Single(x =>
                 x.Username.Equals(dto.ParticipantUsername, StringComparison.InvariantCultureIgnoreCase));
 
-            var username = _userProfileService.GetObfuscatedUsernameAsync(participant.Username);
+            var username = _userProfileService.GetObfuscatedUsername(participant.Username);
             _logger.LogDebug("Sending message {MessageUuid} to group {Username}", dto.MessageUuid, username);
 
             var from = participant.Id.ToString() == dto.To ? dto.From : participant.Id.ToString();
@@ -295,7 +295,7 @@ namespace VideoWeb.EventHub.Hub
         private async Task<bool> IsAllowedToSendMessageAsync(Guid conferenceId, bool isSenderAdmin,
             bool isRecipientAdmin, string participantUsername)
         {
-            var username = _userProfileService.GetObfuscatedUsernameAsync(participantUsername);
+            var username = _userProfileService.GetObfuscatedUsername(participantUsername);
             if (!IsConversationBetweenAdminAndParticipant(isSenderAdmin, isRecipientAdmin))
             {
                 return false;
