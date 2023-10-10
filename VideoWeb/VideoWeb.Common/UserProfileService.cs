@@ -17,6 +17,7 @@ namespace VideoWeb.Common
         Task<UserProfile> CacheUserProfileAsync(ClaimsPrincipal user);
     }
 
+    [ExcludeFromCodeCoverage]
     public class UserProfileService : IUserProfileService
     {
         private readonly IUserCache _userCache;
@@ -59,7 +60,6 @@ namespace VideoWeb.Common
             return user.IsInRole(AppRoles.VhOfficerRole);
         }
 
-        [ExcludeFromCodeCoverage]
         private static List<Role> DetermineRolesFromClaims(ClaimsPrincipal user)
         {
             var roles = new List<Role>();
