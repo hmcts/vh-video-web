@@ -115,25 +115,6 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             typedResult.Value.Should().Be(errorResponse);
         }
 
-        //[Test]
-        //public async Task Should_throw_error_when_get_user_throws_error()
-        //{
-        //    var conferenceId = _testConference.Id;
-        //    var errorResponse = $"Unable to get current staff member " +
-        //                        $"Username{Username} profile for conference: {conferenceId}";
-        //    _mocker.Mock<IVideoApiClient>()
-        //        .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
-        //        .ReturnsAsync(_testConference);
-        //    _mocker.Mock<IParticipantService>().Setup(x => x.CanStaffMemberJoinConference(_testConference))
-        //        .Returns(true);
-
-        //    var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId,
-        //        new StaffMemberJoinConferenceRequest { Username = Username });
-        //    var typedResult = (ObjectResult)result;
-        //    typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-        //    typedResult.Value.Should().Be(errorResponse);
-        //}
-
         [Test]
         public async Task Should_throw_error_when_get_conference_details_throws_error()
         {

@@ -208,6 +208,25 @@ namespace VideoWeb.UnitTests.Hub
         }
 
         [Test]
+        public void
+            should_throw_exception_when_send_message_to_admin_group_and_participant_group_when_recipient_profile_is_null()
+        {
+            SetupSendMessageTests();
+            // setup claims to return admin username
+            var claims = new ClaimsPrincipalBuilder().WithUsername(AdminUsername).WithRole(AppRoles.VhOfficerRole)
+                .Build();
+            UpdateUserIdentity(claims);
+
+            var fromUsername = AdminUsername;
+            var toUsername = "does@notexist.com";
+            var toParticipantId = Guid.NewGuid().ToString();
+            const string message = "test message";
+            var messageUuid = Guid.NewGuid();
+
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await Hub.SendMessage(Conference.Id, message, toUsername, messageUuid));
+        }
+
+        [Test]
         public async Task should_not_send_messages_between_participants()
         {
             SetupSendMessageTests();

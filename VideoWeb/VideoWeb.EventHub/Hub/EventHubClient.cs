@@ -233,11 +233,6 @@ namespace VideoWeb.EventHub.Hub
             {
                 return true;
             }
-
-            if (!recipientUsername.ToLower().EndsWith(_servicesConfiguration.EmailReformDomain))
-            {
-                return false;
-            }
             
             var user = await _userProfileService.GetUserAsync(recipientUsername);
             if (user == null)
