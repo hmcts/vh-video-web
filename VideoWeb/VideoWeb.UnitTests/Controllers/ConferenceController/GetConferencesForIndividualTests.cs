@@ -18,6 +18,7 @@ using ConferenceForIndividualResponse = VideoWeb.Contract.Responses.ConferenceFo
 using Autofac.Extras.Moq;
 using BookingsApi.Client;
 using BookingsApi.Contract.V1.Responses;
+using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
 using VideoWeb.Contract.Responses;
 
@@ -62,6 +63,34 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             _sut.ControllerContext = context;
         }
 
+        [Test]
+        public async Task Should_return_ok_with_list_of_conferences_for_quickLink_user()
+        {            
+            var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.QuickLinkParticipant).Build();
+            var context = new ControllerContext { HttpContext = new DefaultHttpContext { User = claimsPrincipal } };
+            
+            _sut = _mocker.Create<ConferencesController>();
+            _sut.ControllerContext = context;
+            
+            var conferences = Builder<Conference>.CreateListOfSize(10).All()
+                .With(x => x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-60))
+                .With(x => x.IsWaitingRoomOpen = true)
+                .Build().ToList();
+
+            _mocker.Mock<IVideoApiClient>()
+                .Setup(x => x.GetConferencesTodayForIndividualByUsernameAsync(It.IsAny<string>()))
+                .ReturnsAsync(conferences);
+            
+            var result = await _sut.GetConferencesForIndividual();
+
+            var typedResult = (OkObjectResult)result.Result;
+            typedResult.Should().NotBeNull();
+
+            var conferencesForUser = (List<ConferenceForIndividualResponse>)typedResult.Value;
+            conferencesForUser.Should().NotBeNullOrEmpty();
+            conferencesForUser.Count.Should().Be(conferences.Count);
+        }
+        
         [Test]
         public async Task Should_return_ok_with_list_of_conferences()
         {
