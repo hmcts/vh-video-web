@@ -8,7 +8,6 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
-using UserApi.Contract.Responses;
 using System.Threading;
 
 namespace VideoWeb.UnitTests
@@ -32,17 +31,8 @@ namespace VideoWeb.UnitTests
             _distributedCacheMock.Setup(x => x.GetAsync(profile.UserName, CancellationToken.None)).ReturnsAsync(rawData);
 
             var cache = new DistributedUserCache(_distributedCacheMock.Object);
-            var callCount = 0;
-
-            Task<UserProfile> FakeApiCall(string s)
-            {
-                callCount++;
-                return Task.FromResult(profile);
-            }
-
-            var result = await cache.GetOrAddAsync(profile.UserName, FakeApiCall);
+            var result = await cache.GetOrAddAsync(profile.UserName, new UserProfile());
             result.Should().BeEquivalentTo(profile);
-            callCount.Should().Be(0);
         }
         
         [Test]
@@ -50,17 +40,9 @@ namespace VideoWeb.UnitTests
         {
             var profile = Builder<UserProfile>.CreateNew().Build();
             var cache = new DistributedUserCache(_distributedCacheMock.Object);
-            var callCount = 0;
 
-            Task<UserProfile> FakeApiCall(string s)
-            {
-                callCount++;
-                return Task.FromResult(profile);
-            }
-
-            var result = await cache.GetOrAddAsync(profile.UserName, FakeApiCall);
+            var result = await cache.GetOrAddAsync(profile.UserName, profile);
             result.Should().BeEquivalentTo(profile);
-            callCount.Should().Be(1);
         }
         
         [Test]
@@ -72,20 +54,11 @@ namespace VideoWeb.UnitTests
             var rawData = Encoding.UTF8.GetBytes(serialisedConference);
             _distributedCacheMock.Setup(x => x.Get(profile.UserName)).Returns(rawData);
             var cache = new DistributedUserCache(_distributedCacheMock.Object);
-            var callCount = 0;
-            
-            Task<UserProfile> FakeApiCall(string s)
-            {
-                callCount++;
-                return Task.FromResult(profile);
-            }
-            
-            var result = await cache.GetOrAddAsync(profile.UserName, FakeApiCall);
+                     
+            var result = await cache.GetOrAddAsync(profile.UserName, profile);
             result.Should().BeEquivalentTo(profile);
-            callCount.Should().Be(1);
-
         }
-        
+
         private static JsonSerializerSettings SerializerSettings => new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Objects, Formatting = Formatting.None

@@ -12,9 +12,8 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Mappings;
-using UserApi.Client;
-using UserApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
+using UserProfile = VideoWeb.Common.Models.UserProfile;
 
 namespace VideoWeb.UnitTests.Controllers.ProfileController
 {
@@ -62,12 +61,12 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
                 .WithClaim(ClaimTypes.Surname, "Doe")
                 .Build();
             _sut = SetupControllerWithClaims(claimsPrincipal);
-            var apiException = new UserApiException<ProblemDetails>("Internal Server Error",
-                (int) HttpStatusCode.InternalServerError,
-                "Stacktrace goes here", null, default, null);
-            _mocker.Mock<IUserApiClient>()
-                .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
-                .ThrowsAsync(apiException);
+            //var apiException = new UserApiException<ProblemDetails>("Internal Server Error",
+            //    (int) HttpStatusCode.InternalServerError,
+            //    "Stacktrace goes here", null, default, null);
+            //_mocker.Mock<IUserApiClient>()
+            //    .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
+            //    .ThrowsAsync(apiException);
 
             var result = _sut.GetUserProfile();
             var typedResult = (ObjectResult) result;
@@ -87,8 +86,8 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
 
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<UserProfile, UserProfileResponse>()).Returns(_mocker.Create<UserProfileToUserProfileResponseMapper>());
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ClaimsPrincipal, UserProfileResponse>()).Returns(_mocker.Create<ClaimsPrincipalToUserProfileResponseMapper>());
-            var parameters = new ParameterBuilder(_mocker).AddObject(new DictionaryUserCache()).Build();
-            var controller = _mocker.Create<ProfilesController>(parameters);
+            //var parameters = new ParameterBuilder(_mocker).AddObject(new DictionaryUserCache()).Build();
+            var controller = _mocker.Create<ProfilesController>();
             controller.ControllerContext = context;
             return controller;
         }

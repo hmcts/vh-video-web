@@ -10,7 +10,7 @@ namespace VideoWeb.Mappings;
 public class ClaimsPrincipalToUserProfileResponseMapper : IMapTo<ClaimsPrincipal, UserProfileResponse>
 {
     public UserProfileResponse Map(ClaimsPrincipal user)
-    {
+    {   
         var response = new UserProfileResponse
         {
             Roles = DetermineRolesFromClaims(user),

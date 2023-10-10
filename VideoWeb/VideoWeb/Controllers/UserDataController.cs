@@ -11,7 +11,6 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
-using UserApi.Client;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
@@ -49,31 +48,23 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<ActionResult<IList<CourtRoomsAccountResponse>>> GetCourtRoomsAccounts([FromQuery] VhoConferenceFilterQuery query)
         {
-            try
-            {
-                var allocatedHearings = await _bookingApiClient.GetAllocationsForHearingsByVenueAsync(query.HearingVenueNames);
-                if (allocatedHearings == null || !allocatedHearings.Any())
-                    return new List<CourtRoomsAccountResponse>();
-                var request = new GetConferencesByHearingIdsRequest{ HearingRefIds = allocatedHearings.Select(x => x.HearingId).ToArray() };
-                var conferences = await _videoApiClient.GetConferencesForAdminByHearingRefIdAsync(request);
-                var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>();
-     
-                var responses = conferences
-                    .Select(x => conferenceForVhOfficerResponseMapper.Map(x, allocatedHearings.FirstOrDefault(conference => conference.HearingId == x.HearingRefId)))
-                    .ApplyCsoFilter(query)
-                    .ToList();
+            var allocatedHearings = await _bookingApiClient.GetAllocationsForHearingsByVenueAsync(query.HearingVenueNames);
+            if (allocatedHearings == null || !allocatedHearings.Any())
+                return new List<CourtRoomsAccountResponse>();
+            var request = new GetConferencesByHearingIdsRequest { HearingRefIds = allocatedHearings.Select(x => x.HearingId).ToArray() };
+            var conferences = await _videoApiClient.GetConferencesForAdminByHearingRefIdAsync(request);
+            var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>();
 
-                var courtRoomsAccountResponsesMapper = _mapperFactory
-                    .Get<IEnumerable<ConferenceForVhOfficerResponse>, List<CourtRoomsAccountResponse>>();
-                var accountList = courtRoomsAccountResponsesMapper.Map(responses);
+            var responses = conferences
+                .Select(x => conferenceForVhOfficerResponseMapper.Map(x, allocatedHearings.FirstOrDefault(conference => conference.HearingId == x.HearingRefId)))
+                .ApplyCsoFilter(query)
+                .ToList();
 
-                return Ok(accountList);
-            }
-            catch (UserApiException e)
-            {
-                _logger.LogError(e, "Unable to get list of court rooms accounts");
-                return StatusCode(e.StatusCode, e.Response);
-            }
+            var courtRoomsAccountResponsesMapper = _mapperFactory
+                .Get<IEnumerable<ConferenceForVhOfficerResponse>, List<CourtRoomsAccountResponse>>();
+            var accountList = courtRoomsAccountResponsesMapper.Map(responses);
+
+            return Ok(accountList);
         }
 
         /// <summary>

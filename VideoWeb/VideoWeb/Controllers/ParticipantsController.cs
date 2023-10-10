@@ -17,14 +17,12 @@ using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
 using BookingsApi.Client;
-using UserApi.Client;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Enums;
 using VideoWeb.Middleware;
 using VideoWeb.Services;
-using System.Text.Json;
 
 namespace VideoWeb.Controllers
 {
@@ -38,7 +36,6 @@ namespace VideoWeb.Controllers
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<ParticipantsController> _logger;
         private readonly IMapperFactory _mapperFactory;
-        private readonly IUserApiClient _userApiClient;
         private readonly IParticipantService _participantService;
 
         public ParticipantsController(
@@ -47,7 +44,6 @@ namespace VideoWeb.Controllers
             IConferenceCache conferenceCache,
             ILogger<ParticipantsController> logger,
             IMapperFactory mapperFactory,
-            IUserApiClient userApiClient,
             IParticipantService participantService
         )
         {
@@ -57,7 +53,6 @@ namespace VideoWeb.Controllers
             _logger = logger;
             _participantService = participantService;
             _mapperFactory = mapperFactory;
-            _userApiClient = userApiClient;
         }
 
         [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
@@ -340,10 +335,13 @@ namespace VideoWeb.Controllers
         [Authorize(AppRoles.StaffMember)]
         public async Task<IActionResult> StaffMemberJoinConferenceAsync(Guid conferenceId, StaffMemberJoinConferenceRequest request)
         {
-            var username = request.Username.ToLower().Trim();
-            
             try
             {
+                if (!User.IsInRole(AppRoles.StaffMember))
+                {
+                    return Unauthorized();
+                }
+
                 var originalConference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
 
                 if (!_participantService.CanStaffMemberJoinConference(originalConference))
@@ -356,13 +354,13 @@ namespace VideoWeb.Controllers
                 _logger.LogDebug("Attempting to assign {StaffMember} to conference {conferenceId}", request.Username,
                     conferenceId);
 
-                var userProfile = await _userApiClient.GetUserByAdUserNameAsync(username);
-
                 var claimsPrincipalToUserProfileResponseMapper =
                     _mapperFactory.Get<ClaimsPrincipal, UserProfileResponse>();
-                var staffMemberProfile = claimsPrincipalToUserProfileResponseMapper.Map(User); 
-                
-                var response = await _videoApiClient.AddStaffMemberToConferenceAsync(conferenceId, _participantService.InitialiseAddStaffMemberRequest(staffMemberProfile, userProfile.Email, User));
+                var staffMemberProfile = claimsPrincipalToUserProfileResponseMapper.Map(User);
+
+                var email = User.Identity.Name.ToLower().Trim();
+
+                var response = await _videoApiClient.AddStaffMemberToConferenceAsync(conferenceId, _participantService.InitialiseAddStaffMemberRequest(staffMemberProfile, email, User));
 
                 await _participantService.AddStaffMemberToConferenceCache(response);
                 
@@ -376,13 +374,6 @@ namespace VideoWeb.Controllers
             catch (VideoApiException e)
             {
                 _logger.LogError(e, $"Unable to add staff member for " +
-                                    $"conference: {conferenceId}");
-                return StatusCode(e.StatusCode, e.Response);
-            }
-            catch (UserApiException e)
-            {
-                _logger.LogError(e, $"Unable to get current staff member " + $"Username{username}" +
-                                    "profile for " +
                                     $"conference: {conferenceId}");
                 return StatusCode(e.StatusCode, e.Response);
             }

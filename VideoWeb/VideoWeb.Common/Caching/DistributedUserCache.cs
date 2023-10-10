@@ -2,12 +2,11 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
-using Newtonsoft.Json;
-using UserApi.Contract.Responses;
+using VideoWeb.Common.Models;
 
 namespace VideoWeb.Common.Caching
 {
-    public class DistributedUserCache : RedisCacheBase<string, UserProfile>, IUserCache
+    public class DistributedUserCache : RedisCacheBase<string, Models.UserProfile>, IUserCache
     {
         public override DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
 
@@ -19,18 +18,15 @@ namespace VideoWeb.Common.Caching
             };
         }
 
-        public async Task<UserProfile> GetOrAddAsync(string key, Func<string, Task<UserProfile>> valueFactory)
+        public async Task<UserProfile> GetOrAddAsync(string key, UserProfile userProfile)
         {
             var profile = await ReadFromCache(key);
 
-            if (profile != null) return profile;            
-            profile = await valueFactory(key);
+            if (profile != null) return profile;
+            await WriteToCache(key, userProfile);
 
-            await WriteToCache(key, profile);
-
-            return profile;
+            return userProfile;
         }
-
         public override string GetKey(string key)
         {
             return key;

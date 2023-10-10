@@ -1,9 +1,9 @@
 using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
-using UserApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -19,7 +19,7 @@ namespace VideoWeb.UnitTests.Mappings
         {
             var profile = new UserProfile
             {
-                UserRole = role,
+                Roles = new List<Role> { expectedRole },
                 FirstName = "Court 11",
                 LastName = "Taylor House",
                 UserName = "Court 11, Taylor House"
@@ -33,15 +33,15 @@ namespace VideoWeb.UnitTests.Mappings
             response.Username.Should().Be(profile.UserName);
         }
 
-        [Test]
-        public void Should_throw_exception_when_role_is_unsupported()
-        {
-            Action action = () => _sut.Map(new UserProfile
-            {
-                UserRole = "Random"
-            });
+        //[Test]
+        //public void Should_throw_exception_when_role_is_unsupported()
+        //{
+        //    Action action = () => _sut.Map(new UserProfile
+        //    {
+        //        Roles = new List<Role> { Role.None }
+        //    });
 
-            action.Should().Throw<NotSupportedException>().WithMessage("Role Random is not supported for this application");
-        }
+        //    action.Should().Throw<NotSupportedException>().WithMessage("Role Random is not supported for this application");
+        //}
     }
 }

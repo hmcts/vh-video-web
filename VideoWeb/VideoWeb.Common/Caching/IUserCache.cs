@@ -1,11 +1,10 @@
-using System;
 using System.Threading.Tasks;
-using UserApi.Contract.Responses;
+using VideoWeb.Common.Models;
 
 namespace VideoWeb.Common.Caching
 {
     public interface IUserCache
     {
-        Task<UserProfile> GetOrAddAsync(string key, Func<string, Task<UserProfile>> valueFactory);
+        Task<UserProfile> GetOrAddAsync(string key, UserProfile userProfile);
     }
 }

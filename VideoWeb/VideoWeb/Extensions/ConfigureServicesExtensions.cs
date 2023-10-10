@@ -32,7 +32,6 @@ using VideoWeb.Mappings.Interfaces;
 using VideoWeb.Middleware;
 using BookingsApi.Client;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
-using UserApi.Client;
 using VideoApi.Client;
 using VideoWeb.EventHub.Services;
 using VideoWeb.Swagger;
@@ -101,9 +100,9 @@ namespace VideoWeb.Extensions
             services.AddScoped<ITokenProvider, TokenProvider>();
             services.AddScoped<IKinlyJwtTokenProvider, KinlyJwtTokenProvider>();
             services.AddScoped<IHashGenerator, HashGenerator>();
-            services.AddScoped<AdUserProfileService>();
+            services.AddScoped<UserProfileService>();
             services.AddScoped<IAppRoleService, AppRoleService>();
-            services.AddScoped<IUserProfileService, CachedProfileService>();
+            //services.AddScoped<IUserProfileService, CachedProfileService>();
             services.AddScoped<IConferenceCache, DistributedConferenceCache>();
             services.AddScoped<IMessageDecoder, MessageFromDecoder>();
             services.AddScoped<IHeartbeatRequestMapper, HeartbeatRequestMapper>();
@@ -134,10 +133,6 @@ namespace VideoWeb.Extensions
             services.AddHttpClient<IVideoApiClient, VideoApiClient>()
                 .AddHttpMessageHandler<VideoApiTokenHandler>()
                 .AddTypedClient(httpClient => BuildVideoApiClient(httpClient, servicesConfiguration));
-
-            services.AddHttpClient<IUserApiClient, UserApiClient>()
-                .AddHttpMessageHandler<UserApiTokenHandler>()
-                .AddTypedClient(httpClient => BuildUserApiClient(httpClient, servicesConfiguration));
 
             services.AddScoped<IEventHandlerFactory, EventHandlerFactory>();
             services.AddScoped<IParticipantsUpdatedEventNotifier, ParticipantsUpdatedEventNotifier>();
@@ -282,12 +277,6 @@ namespace VideoWeb.Extensions
             HearingServicesConfiguration serviceSettings)
         {
             return VideoApiClient.GetClient(serviceSettings.VideoApiUrl, httpClient);
-        }
-
-        private static IUserApiClient BuildUserApiClient(HttpClient httpClient,
-            HearingServicesConfiguration serviceSettings)
-        {
-            return UserApiClient.GetClient(serviceSettings.UserApiUrl, httpClient);
         }
     }
 }

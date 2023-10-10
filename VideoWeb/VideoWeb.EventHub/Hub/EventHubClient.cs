@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
-using VideoWeb.Common.SignalR;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Mappers;
@@ -17,6 +16,7 @@ using VideoApi.Contract.Requests;
 using VideoWeb.Common.Configuration;
 using Microsoft.Extensions.Options;
 using VideoWeb.EventHub.Services;
+using VideoWeb.Common;
 
 namespace VideoWeb.EventHub.Hub
 {
@@ -55,7 +55,7 @@ namespace VideoWeb.EventHub.Hub
 
         public override async Task OnConnectedAsync()
         {
-            var userName = await GetObfuscatedUsernameAsync(Context.User.Identity.Name);
+            var userName = GetObfuscatedUsernameAsync(Context.User.Identity.Name);
             _logger.LogTrace("Connected to event hub server-side: {Username}", userName);
             var isAdmin = IsSenderAdmin();
 
@@ -63,6 +63,9 @@ namespace VideoWeb.EventHub.Hub
             await AddUserToConferenceGroups(isAdmin);
 
             await base.OnConnectedAsync();
+
+            // Cache user profile in the redis cache
+            await _userProfileService.CacheUserProfileAsync(Context.User);
         }
 
         private async Task AddUserToConferenceGroups(bool isAdmin)
@@ -93,7 +96,7 @@ namespace VideoWeb.EventHub.Hub
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            var userName = await GetObfuscatedUsernameAsync(Context.User.Identity.Name.ToLowerInvariant());
+            var userName = GetObfuscatedUsernameAsync(Context.User.Identity.Name.ToLowerInvariant());
             if (exception == null)
             {
                 _logger.LogInformation("Disconnected from chat hub server-side: {Username}", userName);
@@ -146,9 +149,9 @@ namespace VideoWeb.EventHub.Hub
             return Context.User.IsInRole(AppRoles.VhOfficerRole);
         }
 
-        private async Task<string> GetObfuscatedUsernameAsync(string username)
+        private string GetObfuscatedUsernameAsync(string username)
         {
-            return await _userProfileService.GetObfuscatedUsernameAsync(username);
+            return _userProfileService.GetObfuscatedUsernameAsync(username);
         }
 
         /// <summary>
@@ -161,7 +164,7 @@ namespace VideoWeb.EventHub.Hub
         /// <returns></returns>
         public async Task SendMessage(Guid conferenceId, string message, string to, Guid messageUuid)
         {
-            var userName = await GetObfuscatedUsernameAsync(Context.User.Identity.Name);
+            var userName = GetObfuscatedUsernameAsync(Context.User.Identity.Name);
             _logger.LogTrace("{Username} is attempting to SendMessages", userName);
             // this determines if the message is from admin
             var isSenderAdmin = IsSenderAdmin();
@@ -235,10 +238,13 @@ namespace VideoWeb.EventHub.Hub
             {
                 return false;
             }
-
-
+            
             var user = await _userProfileService.GetUserAsync(recipientUsername);
-            return user != null && user.UserRole.Equals("VHOfficer", StringComparison.InvariantCultureIgnoreCase);
+            if (user == null)
+            {
+                throw new InvalidOperationException("Unable to find the user from Cache");
+            }
+            return user != null && user.IsAdmin;
         }
 
         private async Task SendToParticipant(SendMessageDto dto)
@@ -246,7 +252,7 @@ namespace VideoWeb.EventHub.Hub
             var participant = dto.Conference.Participants.Single(x =>
                 x.Username.Equals(dto.ParticipantUsername, StringComparison.InvariantCultureIgnoreCase));
 
-            var username = await _userProfileService.GetObfuscatedUsernameAsync(participant.Username);
+            var username = _userProfileService.GetObfuscatedUsernameAsync(participant.Username);
             _logger.LogDebug("Sending message {MessageUuid} to group {Username}", dto.MessageUuid, username);
 
             var from = participant.Id.ToString() == dto.To ? dto.From : participant.Id.ToString();
@@ -294,7 +300,7 @@ namespace VideoWeb.EventHub.Hub
         private async Task<bool> IsAllowedToSendMessageAsync(Guid conferenceId, bool isSenderAdmin,
             bool isRecipientAdmin, string participantUsername)
         {
-            var username = await _userProfileService.GetObfuscatedUsernameAsync(participantUsername);
+            var username = _userProfileService.GetObfuscatedUsernameAsync(participantUsername);
             if (!IsConversationBetweenAdminAndParticipant(isSenderAdmin, isRecipientAdmin))
             {
                 return false;

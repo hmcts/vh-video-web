@@ -1,10 +1,10 @@
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
-using UserApi.Client;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common;
+using System.Threading.Tasks;
 
 namespace VideoWeb.Helpers
 {
@@ -25,13 +25,11 @@ namespace VideoWeb.Helpers
 
     public class MessageFromDecoder : IMessageDecoder
     {
-        private readonly IUserApiClient _userApiClient;
-        private readonly IUserCache _userCache;
+        private readonly IUserProfileService _userProfileService;
 
-        public MessageFromDecoder(IUserApiClient userApiClient, IUserCache userCache)
+        public MessageFromDecoder(IUserProfileService userProfileService)
         {
-            _userApiClient = userApiClient;
-            _userCache = userCache;
+            _userProfileService = userProfileService;
         }
 
         public async Task<string> GetMessageOriginatorAsync(Conference conference, InstantMessageResponse message)
@@ -42,12 +40,7 @@ namespace VideoWeb.Helpers
             {
                 return participant.DisplayName;
             }
-
-            var username = message.From.ToLower();
-            var userProfile = await _userCache.GetOrAddAsync
-            (
-                username, async key => await _userApiClient.GetUserByAdUserNameAsync(key)
-            );
+            var userProfile = await _userProfileService.GetUserAsync(message.From);
 
             return userProfile.FirstName;
         }
