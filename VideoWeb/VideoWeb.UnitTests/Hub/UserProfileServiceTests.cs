@@ -85,19 +85,26 @@ namespace VideoWeb.UnitTests.Hub
             result.DisplayName.Should().Be(profile.DisplayName);
         }
 
-        [Test]
-        public async Task Should_cache_profile_by_username()
+        [TestCase("VHO", Role.VideoHearingsOfficer)]
+        [TestCase("Citizen", Role.Individual)]
+        [TestCase("ProfessionalUser", Role.Representative)]
+        [TestCase("StaffMember", Role.StaffMember)]
+        [TestCase("QuickLinkObserver", Role.QuickLinkObserver)]
+        [TestCase("QuickLinkParticipant", Role.QuickLinkParticipant)]
+        [TestCase("JudicialOfficeHolder", Role.JudicialOfficeHolder)]
+        [TestCase("Judge", Role.Judge)]
+        public async Task Should_cache_profile_by_username(string appRole, Role userRole)
         {
             var username = "VHO@hmcts.net";
             var role = Role.Judge.ToString();
             var profile = Builder<UserProfile>.CreateNew()
                 .With(x => x.UserName = username)
-                .With(x => x.Roles = new List<Role> { Role.VideoHearingsOfficer })
+                .With(x => x.Roles = new List<Role> { userRole })
                 .Build();
 
             var identity = new ClaimsIdentity(new List<Claim> { 
                 new Claim(ClaimTypes.Name, username),
-                new Claim(ClaimTypes.Role, "VHO"),
+                new Claim(ClaimTypes.Role, appRole),
                 new Claim(ClaimTypes.GivenName, profile.FirstName),
                 new Claim(ClaimTypes.Surname, profile.LastName),
                 new Claim(ClaimTypes.Surname, profile.LastName),

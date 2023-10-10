@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace VideoWeb.Common
 {
@@ -17,7 +16,6 @@ namespace VideoWeb.Common
         Task<UserProfile> CacheUserProfileAsync(ClaimsPrincipal user);
     }
 
-    [ExcludeFromCodeCoverage]
     public class UserProfileService : IUserProfileService
     {
         private readonly IUserCache _userCache;
@@ -63,24 +61,30 @@ namespace VideoWeb.Common
         private static List<Role> DetermineRolesFromClaims(ClaimsPrincipal user)
         {
             var roles = new List<Role>();
-            if (user.IsInRole(AppRoles.VhOfficerRole))
-                roles.Add(Role.VideoHearingsOfficer);
-            if (user.IsInRole(AppRoles.JudgeRole))
-                roles.Add(Role.Judge);
-            if (user.IsInRole(AppRoles.JudicialOfficeHolderRole))
-                roles.Add(Role.JudicialOfficeHolder);
-            if (user.IsInRole(AppRoles.RepresentativeRole))
-                roles.Add(Role.Representative);
-            if (user.IsInRole(AppRoles.CitizenRole))
-                roles.Add(Role.Individual);
-            if (user.IsInRole(AppRoles.QuickLinkObserver))
-                roles.Add(Role.QuickLinkObserver);
-            if (user.IsInRole(AppRoles.QuickLinkParticipant))
-                roles.Add(Role.QuickLinkParticipant);
-            if (user.IsInRole(AppRoles.CaseAdminRole))
-                roles.Add(Role.CaseAdmin);
-            if (user.IsInRole(AppRoles.StaffMember))
-                roles.Add(Role.StaffMember);
+            var userRoles = Enum.GetValues(typeof(Role)).Cast<Role>().Select(x => x.ToString());
+
+            var fields = typeof(AppRoles).GetFields(BindingFlags.Public | BindingFlags.Static);
+            foreach(var field in fields)
+            {
+                var appRole = (string)field.GetValue(null);
+                var userRole = Enum.GetValues(typeof(Role)).Cast<Role>().SingleOrDefault(x => x.ToString().Contains(appRole));
+                if (user.IsInRole(appRole) && userRoles.Contains(appRole))
+                {
+                    roles.Add(userRole);
+                }
+                if (user.IsInRole(appRole) && appRole == "Citizen")
+                {
+                    roles.Add(Role.Individual);
+                }
+                if (user.IsInRole(appRole) && appRole == "VHO")
+                {
+                    roles.Add(Role.VideoHearingsOfficer);
+                }
+                if (user.IsInRole(appRole) && appRole == "ProfessionalUser")
+                {
+                    roles.Add(Role.Representative);
+                }
+            }
             if (!roles.Any())
             {
                 throw new NotSupportedException($"No supported role for this application");

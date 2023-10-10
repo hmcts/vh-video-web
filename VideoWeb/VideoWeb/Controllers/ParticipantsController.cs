@@ -16,7 +16,6 @@ using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
-using BookingsApi.Client;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
@@ -236,13 +235,6 @@ namespace VideoWeb.Controllers
             catch (VideoApiException ex)
             {
                 _logger.LogError(ex, $"Unable to retrieve conference: ${conferenceId}");
-
-                return StatusCode(ex.StatusCode, ex.Response);
-            }
-            catch (BookingsApiException ex)
-            {
-                _logger.LogError(ex,
-                    $"Unable to retrieve booking participants from hearing with conferenceId: ${conferenceId}");
 
                 return StatusCode(ex.StatusCode, ex.Response);
             }
