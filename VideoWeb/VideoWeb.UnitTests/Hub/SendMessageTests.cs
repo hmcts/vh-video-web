@@ -199,6 +199,7 @@ namespace VideoWeb.UnitTests.Hub
             var toParticipantId = Guid.NewGuid().ToString();
             const string message = "test message";
             var messageUuid = Guid.NewGuid();
+            UserProfileServiceMock.Setup(x => x.GetUserAsync("")).ReturnsAsync(new UserProfile { IsAdmin = false});
 
             await Hub.SendMessage(Conference.Id, message, toUsername, messageUuid);
 
