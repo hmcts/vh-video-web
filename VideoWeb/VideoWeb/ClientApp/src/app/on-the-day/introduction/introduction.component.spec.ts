@@ -6,8 +6,10 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { IntroductionComponent } from './introduction.component';
 import { of } from 'rxjs';
+import { ProfileService } from 'src/app/services/api/profile.service';
+import { UserProfileResponse, Role } from 'src/app/services/clients/api-client';
 
-describe('IntroductionComponent', () => {
+fdescribe('IntroductionComponent', () => {
     let component: IntroductionComponent;
 
     const conference = new ConferenceTestData().getConferenceDetailNow();
@@ -16,6 +18,7 @@ describe('IntroductionComponent', () => {
     let router: jasmine.SpyObj<Router>;
     const activatedRoute: any = { snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
+    let profilesServiceSpy: jasmine.SpyObj<ProfileService>;
 
     const participantStatusUpdateService = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
 
@@ -25,13 +28,24 @@ describe('IntroductionComponent', () => {
             'checkUserHasCompletedSelfTest'
         ]);
 
+        const profile = new UserProfileResponse({ roles: [Role.Individual] });
+        profilesServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
+        profilesServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
+
         videoWebServiceSpy.getActiveIndividualConference.and.returnValue(confLite);
         videoWebServiceSpy.checkUserHasCompletedSelfTest.and.returnValue(of(false));
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
     });
 
     beforeEach(() => {
-        component = new IntroductionComponent(router, activatedRoute, videoWebServiceSpy, participantStatusUpdateService, new MockLogger());
+        component = new IntroductionComponent(
+            router,
+            activatedRoute,
+            videoWebServiceSpy,
+            profilesServiceSpy,
+            participantStatusUpdateService,
+            new MockLogger()
+        );
         router.navigate.calls.reset();
         component.ngOnInit();
     });

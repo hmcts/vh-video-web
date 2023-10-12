@@ -24,7 +24,7 @@
           </ul>
 
           <button
-            *ngIf="existingTest$ | async"
+            *ngIf="(existingTest$ | async) && isRepresentative"
             class="govuk-button govuk-button--secondary govuk-!-margin-top-4 govuk-!-margin-right-3"
             data-module="govuk-button"
             (click)="skipToCourtRulesPage()"
