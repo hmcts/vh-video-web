@@ -18,13 +18,13 @@ namespace VideoWeb.UnitTests.Hub
 {
     public class UserProfileServiceTests
     {
-        private Mock<IUserCache> _userCacheMock;
+        private Mock<IUserProfileCache> _userCacheMock;
         private UserProfileService _userProfileService;
 
         [SetUp]
         public void Setup()
         {
-            _userCacheMock = new Mock<IUserCache>();
+            _userCacheMock = new Mock<IUserProfileCache>();
             _userProfileService = new UserProfileService(_userCacheMock.Object);
         }
 
@@ -76,7 +76,7 @@ namespace VideoWeb.UnitTests.Hub
             var userProfile = new UserProfile { UserName = quickLinkParticipantUserName, 
                 Roles = new List<Role> { Role.QuickLinkParticipant }, DisplayName = profile.DisplayName };
 
-            _userCacheMock.Setup(x => x.GetOrAddAsync(quickLinkParticipantUserName, null)).ReturnsAsync(userProfile);
+            _userCacheMock.Setup(x => x.GetAsync(quickLinkParticipantUserName)).ReturnsAsync(userProfile);
             var result = await _userProfileService.GetUserAsync(quickLinkParticipantUserName);
 
             result.Roles.Should().Contain(Role.QuickLinkParticipant);

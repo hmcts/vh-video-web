@@ -66,7 +66,7 @@ namespace VideoWeb.UnitTests.Hub
             });
 
             Hub = new EventHub.Hub.EventHub(UserProfileServiceMock.Object, VideoApiClientMock.Object,
-                LoggerMock.Object, ConferenceCacheMock.Object, HeartbeatMapper.Object, vhServicesConfigurationOptions,
+                LoggerMock.Object, ConferenceCacheMock.Object, HeartbeatMapper.Object,
                 ConferenceVideoControlStatusService.Object,
                 conferenceManagementService: ConferenceManagementServiceMock.Object)
             {

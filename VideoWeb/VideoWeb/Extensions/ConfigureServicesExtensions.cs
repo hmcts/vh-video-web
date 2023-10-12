@@ -106,7 +106,7 @@ namespace VideoWeb.Extensions
             services.AddScoped<IConferenceCache, DistributedConferenceCache>();
             services.AddScoped<IMessageDecoder, MessageFromDecoder>();
             services.AddScoped<IHeartbeatRequestMapper, HeartbeatRequestMapper>();
-            services.AddSingleton<IUserCache, DistributedUserCache>();
+            services.AddSingleton<IUserProfileCache, DistributedUserProfileCache>();
             services.AddScoped<ILoggingDataExtractor, LoggingDataExtractor>();
             services.AddScoped<IConsultationInvitationCache, DistributedConsultationInvitationCache>();
             services.AddScoped<IConsultationInvitationTracker, ConsultationInvitationTracker>();

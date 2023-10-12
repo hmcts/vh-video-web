@@ -44,6 +44,11 @@ namespace VideoWeb.Common.Caching
             }
         }
 
+        public virtual async Task RemoveFromCache(TKey key)
+        {
+            await _distributedCache.RemoveAsync(GetKey(key));
+        }
+
         public abstract string GetKey(TKey key);
     }
 }

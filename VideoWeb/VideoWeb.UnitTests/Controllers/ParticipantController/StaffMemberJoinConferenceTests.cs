@@ -85,8 +85,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 .Setup(x => x.AddStaffMemberToConferenceAsync(It.IsAny<Guid>(), addStaffMemberRequest))
                 .Returns(Task.FromResult(default(AddStaffMemberResponse)));
 
-            var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId,
-                new StaffMemberJoinConferenceRequest { Username = "Staff_UserName" });
+            var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId);
             var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
         }
@@ -108,8 +107,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 .Setup(x => x.AddStaffMemberToConferenceAsync(It.IsAny<Guid>(), It.IsAny<AddStaffMemberRequest>()))
                 .ThrowsAsync(videoApiException);
 
-            var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId,
-                new StaffMemberJoinConferenceRequest { Username = "Staff_UserName" });
+            var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId);
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
             typedResult.Value.Should().Be(errorResponse);
@@ -126,8 +124,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ThrowsAsync(videoApiException);
-            var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId,
-                new StaffMemberJoinConferenceRequest { Username = Username });
+            var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId);
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
             typedResult.Value.Should().Be(errorResponse);
@@ -144,8 +141,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _mocker.Mock<IParticipantService>().Setup(x => x.CanStaffMemberJoinConference(_testConference))
                 .Returns(false);
 
-            var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId,
-                new StaffMemberJoinConferenceRequest { Username = Username });
+            var result = await _sut.StaffMemberJoinConferenceAsync(conferenceId);
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }

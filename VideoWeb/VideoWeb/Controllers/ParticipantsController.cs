@@ -325,7 +325,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [Authorize(AppRoles.StaffMember)]
-        public async Task<IActionResult> StaffMemberJoinConferenceAsync(Guid conferenceId, StaffMemberJoinConferenceRequest request)
+        public async Task<IActionResult> StaffMemberJoinConferenceAsync(Guid conferenceId)
         {
             try
             {
@@ -333,7 +333,7 @@ namespace VideoWeb.Controllers
                 {
                     return Unauthorized();
                 }
-
+                var username = User.Identity.Name.ToLower().Trim();
                 var originalConference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
 
                 if (!_participantService.CanStaffMemberJoinConference(originalConference))
@@ -343,16 +343,14 @@ namespace VideoWeb.Controllers
                     return BadRequest(ModelState);
                 }
                 
-                _logger.LogDebug("Attempting to assign {StaffMember} to conference {conferenceId}", request.Username,
+                _logger.LogDebug("Attempting to assign {StaffMember} to conference {conferenceId}", username,
                     conferenceId);
 
                 var claimsPrincipalToUserProfileResponseMapper =
                     _mapperFactory.Get<ClaimsPrincipal, UserProfileResponse>();
                 var staffMemberProfile = claimsPrincipalToUserProfileResponseMapper.Map(User);
 
-                var email = User.Identity.Name.ToLower().Trim();
-
-                var response = await _videoApiClient.AddStaffMemberToConferenceAsync(conferenceId, _participantService.InitialiseAddStaffMemberRequest(staffMemberProfile, email, User));
+                var response = await _videoApiClient.AddStaffMemberToConferenceAsync(conferenceId, _participantService.InitialiseAddStaffMemberRequest(staffMemberProfile, username, User));
 
                 await _participantService.AddStaffMemberToConferenceCache(response);
                 

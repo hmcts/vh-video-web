@@ -19,11 +19,11 @@ namespace VideoWeb.Common
 
     public class UserProfileService : IUserProfileService
     {
-        private readonly IUserCache _userCache;
+        private readonly IUserProfileCache _userProfileCache;
 
-        public UserProfileService(IUserCache userCache)
+        public UserProfileService(IUserProfileCache userCache)
         {
-            _userCache = userCache;
+            _userProfileCache = userCache;
         }
 
         public string GetObfuscatedUsername(string participantUserName)
@@ -35,13 +35,13 @@ namespace VideoWeb.Common
         public async Task<UserProfile> GetUserAsync(string username)
         {
             var usernameClean = username.ToLower().Trim();
-            return await _userCache.GetOrAddAsync(usernameClean, null);
+            return await _userProfileCache.GetAsync(usernameClean);
         }
 
         public async Task<UserProfile> CacheUserProfileAsync(ClaimsPrincipal user)
         {
             var usernameClean = user.Identity.Name.ToLower().Trim();
-            var userProfile = await _userCache.GetOrAddAsync(usernameClean, new UserProfile
+            var userProfile = await _userProfileCache.GetOrAddAsync(usernameClean, new UserProfile
             {
                 FirstName = user.FindFirst(ClaimTypes.GivenName).Value,
                 LastName = user.FindFirst(ClaimTypes.Surname).Value,
@@ -54,6 +54,11 @@ namespace VideoWeb.Common
             return userProfile;
         }
 
+        public async Task ClearUserCaches(string username)
+        {
+            await _userProfileCache.ClearFromCache(username);
+        }
+
         private static bool IsAdmin(ClaimsPrincipal user)
         {
             return user.IsInRole(AppRoles.VhOfficerRole);
@@ -62,6 +67,7 @@ namespace VideoWeb.Common
         private static List<Role> DetermineRolesFromClaims(ClaimsPrincipal user)
         {
             var roles = new List<Role>();
+            var cliams = new List<Claim>();
             var userRoles = Enum.GetValues(typeof(Role)).Cast<Role>().Select(x => x.ToString());
 
             var fields = typeof(AppRoles).GetFields(BindingFlags.Public | BindingFlags.Static);
@@ -72,18 +78,22 @@ namespace VideoWeb.Common
                 if (user.IsInRole(appRole) && userRoles.Contains(appRole))
                 {
                     roles.Add(userRole);
+                    cliams.Add(new Claim(ClaimTypes.Role, appRole));
                 }
                 if (user.IsInRole(appRole) && appRole == "Citizen")
                 {
                     roles.Add(Role.Individual);
+                    cliams.Add(new Claim(ClaimTypes.Role, appRole));
                 }
                 if (user.IsInRole(appRole) && appRole == "VHO")
                 {
                     roles.Add(Role.VideoHearingsOfficer);
+                    cliams.Add(new Claim(ClaimTypes.Role, appRole));
                 }
                 if (user.IsInRole(appRole) && appRole == "ProfessionalUser")
                 {
                     roles.Add(Role.Representative);
+                    cliams.Add(new Claim(ClaimTypes.Role, appRole));
                 }
             }
             if (!roles.Any())

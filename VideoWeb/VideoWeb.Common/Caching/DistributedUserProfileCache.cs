@@ -6,11 +6,12 @@ using VideoWeb.Common.Models;
 
 namespace VideoWeb.Common.Caching
 {
-    public class DistributedUserCache : RedisCacheBase<string, Models.UserProfile>, IUserCache
+    public class DistributedUserProfileCache : RedisCacheBase<string, UserProfile>, IUserProfileCache
     {
+        private readonly string _entryPrefix = "userprofile_";
         public override DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
 
-        public DistributedUserCache(IDistributedCache distributedCache) : base(distributedCache)
+        public DistributedUserProfileCache(IDistributedCache distributedCache) : base(distributedCache)
         {
             CacheEntryOptions = new DistributedCacheEntryOptions
             {
@@ -27,9 +28,26 @@ namespace VideoWeb.Common.Caching
 
             return userProfile;
         }
+
+        public async Task<UserProfile> GetAsync(string key)
+        {
+            return await ReadFromCache(key);
+        }
+
+        public async Task<UserProfile> SetAsync(string key, UserProfile userProfile)
+        { 
+            await WriteToCache(key, userProfile);
+            return userProfile;
+        }
+
+        public async Task ClearFromCache(string key)
+        {
+            await RemoveFromCache(key);
+        }
+
         public override string GetKey(string key)
         {
-            return key;
+            return $"{_entryPrefix}{key}";
         }
     }
 }

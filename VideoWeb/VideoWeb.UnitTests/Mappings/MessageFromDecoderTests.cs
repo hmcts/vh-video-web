@@ -18,7 +18,7 @@ namespace VideoWeb.UnitTests.Mappings
     public class MessageFromDecoderTests
     {
         private MessageFromDecoder _decoder;
-        private DistributedUserCache _userCache;
+        private DistributedUserProfileCache _userCache;
         private IUserProfileService _userProfileService;
         private Mock<IUserProfileService> _userProfileServiceMock;
 

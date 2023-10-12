@@ -4,15 +4,14 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Autofac;
-using Autofac.Extras.Moq;
 using BookingsApi.Client;
 using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.Contract.V1.Responses;
 using FluentAssertions;
-using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Services;
 
@@ -20,16 +19,18 @@ namespace VideoWeb.UnitTests.Services
 {
     public class AppRoleServiceTests
     {
-        private AutoMock _mocker;
         private AppRoleService _sut;
-        private MemoryCache _cache;
+        private Mock<IUserClaimsCache> _cacheMock;
+        private Mock<IBookingsApiClient> _bookingsApiClientMock;
+        private Mock<ILogger<AppRoleService>> _loggerMock;
 
         [SetUp]
         public void Setup()
         {
-            _cache = new MemoryCache(new MemoryCacheOptions());
-            _mocker = AutoMock.GetLoose(builder => builder.RegisterInstance<IMemoryCache>(_cache));
-            _sut = _mocker.Create<AppRoleService>();
+            _cacheMock = new Mock<IUserClaimsCache>();
+            _bookingsApiClientMock = new Mock<IBookingsApiClient>();
+            _loggerMock = new Mock<ILogger<AppRoleService>>();
+            _sut = new AppRoleService(_cacheMock.Object, _bookingsApiClientMock.Object, _loggerMock.Object);
         }
 
         [TestCase(JusticeUserRole.VhTeamLead, AppRoles.VhOfficerRole)]
@@ -44,11 +45,20 @@ namespace VideoWeb.UnitTests.Services
             var username = "random@claims.com";
             var uniqueId = Guid.NewGuid().ToString();
             var justiceUser = InitJusticeUser(new List<JusticeUserRole>(){justiceUserRole}, username);
-            _mocker.Mock<IBookingsApiClient>().Setup(x => x.GetJusticeUserByUsernameAsync(username))
+            _bookingsApiClientMock.Setup(x => x.GetJusticeUserByUsernameAsync(username))
                 .ReturnsAsync(justiceUser);
 
+            var userClaims = new List<Claim>
+            {
+                new Claim(ClaimTypes.GivenName, justiceUser.FirstName),
+                new Claim(ClaimTypes.Surname, justiceUser.Lastname),
+                new Claim(ClaimTypes.Name, justiceUser.FullName),
+                new Claim(ClaimTypes.Role, expectedAppRole)
+            };
+
+            _cacheMock.Setup(x => x.GetAsync(uniqueId)).ReturnsAsync(userClaims);
             // act
-            var claims = await _sut.GetClaimsForUserAsync(uniqueId, username);
+            var claims = await _sut.GetClaimsForUserAsync(username);
 
             // assert
             claims.Count.Should().Be(4); // name, given name, surname and role
@@ -56,7 +66,6 @@ namespace VideoWeb.UnitTests.Services
             claims.First(x => x.Type == ClaimTypes.GivenName).Value.Should().Be(justiceUser.FirstName);
             claims.First(x => x.Type == ClaimTypes.Surname).Value.Should().Be(justiceUser.Lastname);
             claims.First(x => x.Type == ClaimTypes.Name).Value.Should().Be(justiceUser.FullName);
-            _cache.Get(uniqueId).Should().Be(claims);
         }
 
         [Test]
@@ -66,11 +75,11 @@ namespace VideoWeb.UnitTests.Services
             var username = "random@claims.com";
             var uniqueId = Guid.NewGuid().ToString();
             var justiceUser = InitJusticeUser(new List<JusticeUserRole>(), username);
-            _mocker.Mock<IBookingsApiClient>().Setup(x => x.GetJusticeUserByUsernameAsync(username))
+            _bookingsApiClientMock.Setup(x => x.GetJusticeUserByUsernameAsync(username))
                 .ReturnsAsync(justiceUser);
 
             // act
-            var claims = await _sut.GetClaimsForUserAsync(uniqueId, username);
+            var claims = await _sut.GetClaimsForUserAsync(username);
 
             // assert
             claims.Count.Should().Be(3); // name, given name and surname
@@ -86,11 +95,11 @@ namespace VideoWeb.UnitTests.Services
             var username = "random@claims.com";
             var uniqueId = Guid.NewGuid().ToString();
             var justiceUser = InitJusticeUser(new List<JusticeUserRole>() {JusticeUserRole.Clerk}, username);
-            _mocker.Mock<IBookingsApiClient>().Setup(x => x.GetJusticeUserByUsernameAsync(username))
+            _bookingsApiClientMock.Setup(x => x.GetJusticeUserByUsernameAsync(username))
                 .ReturnsAsync(justiceUser);
 
             // act
-            var claims = await _sut.GetClaimsForUserAsync(uniqueId, username);
+            var claims = await _sut.GetClaimsForUserAsync(username);
 
             // assert
             claims.Count.Should().Be(3); // name, given name and surname
@@ -109,14 +118,14 @@ namespace VideoWeb.UnitTests.Services
             {
                 new(ClaimTypes.Role, AppRoles.JudgeRole)
             };
-            _cache.Set(uniqueId, existingClaims);
+            _cacheMock.Setup(x => x.GetAsync(uniqueId)).ReturnsAsync(existingClaims);
 
             // act
-            var claims = await _sut.GetClaimsForUserAsync(uniqueId, username);
+            var claims = await _sut.GetClaimsForUserAsync(username);
 
             // assert
             claims.Should().BeEquivalentTo(existingClaims);
-            _mocker.Mock<IBookingsApiClient>().Verify(x => x.GetJusticeUserByUsernameAsync(username), Times.Never);
+            _bookingsApiClientMock.Verify(x => x.GetJusticeUserByUsernameAsync(username), Times.Never);
         }
 
         [Test]
@@ -127,11 +136,11 @@ namespace VideoWeb.UnitTests.Services
             var uniqueId = Guid.NewGuid().ToString();
             var apiException = new BookingsApiException<string>("Conflict", (int) HttpStatusCode.NotFound,
                 "Conflict", null, null, null);
-            _mocker.Mock<IBookingsApiClient>().Setup(x => x.GetJusticeUserByUsernameAsync(username))
+            _bookingsApiClientMock.Setup(x => x.GetJusticeUserByUsernameAsync(username))
                 .ThrowsAsync(apiException);
 
             // act
-            var claims = await _sut.GetClaimsForUserAsync(uniqueId, username);
+            var claims = await _sut.GetClaimsForUserAsync(username);
 
             // assert
             claims.Should().BeEmpty();

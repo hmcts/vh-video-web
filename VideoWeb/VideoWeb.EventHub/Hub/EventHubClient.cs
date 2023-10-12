@@ -13,8 +13,6 @@ using VideoWeb.EventHub.Mappers;
 using VideoWeb.EventHub.Models;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
-using VideoWeb.Common.Configuration;
-using Microsoft.Extensions.Options;
 using VideoWeb.EventHub.Services;
 using VideoWeb.Common;
 
@@ -31,7 +29,6 @@ namespace VideoWeb.EventHub.Hub
         private readonly IConferenceCache _conferenceCache;
         private readonly IHeartbeatRequestMapper _heartbeatRequestMapper;
         private readonly IConferenceVideoControlStatusService _conferenceVideoControlStatusService;
-        private readonly HearingServicesConfiguration _servicesConfiguration;
         private readonly IConferenceManagementService _conferenceManagementService;
 
         public EventHub(IUserProfileService userProfileService, 
@@ -39,7 +36,6 @@ namespace VideoWeb.EventHub.Hub
             ILogger<EventHub> logger, 
             IConferenceCache conferenceCache, 
             IHeartbeatRequestMapper heartbeatRequestMapper, 
-            IOptions<HearingServicesConfiguration> servicesConfiguration, 
             IConferenceVideoControlStatusService conferenceVideoControlStatusService, 
             IConferenceManagementService conferenceManagementService)
         {
@@ -50,7 +46,6 @@ namespace VideoWeb.EventHub.Hub
             _conferenceVideoControlStatusService = conferenceVideoControlStatusService;
             _conferenceManagementService = conferenceManagementService;
             _videoApiClient = videoApiClient;
-            _servicesConfiguration = servicesConfiguration.Value;
         }
 
         public override async Task OnConnectedAsync()
@@ -237,9 +232,9 @@ namespace VideoWeb.EventHub.Hub
             var user = await _userProfileService.GetUserAsync(recipientUsername);
             if (user == null)
             {
-                throw new InvalidOperationException("Unable to find the user from Cache");
+                throw new InvalidOperationException($"Unable to find the user {recipientUsername} from Cache");
             }
-            return user != null && user.IsAdmin;
+            return user.IsAdmin;
         }
 
         private async Task SendToParticipant(SendMessageDto dto)
