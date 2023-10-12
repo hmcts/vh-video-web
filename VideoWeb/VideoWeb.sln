@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb.Common", "VideoWeb
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb.Contract", "VideoWeb.Contract\VideoWeb.Contract.csproj", "{6F865A99-C586-4FF1-B102-81F87C686578}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb.AcceptanceTests", "VideoWeb.AcceptanceTests\VideoWeb.AcceptanceTests.csproj", "{E901FAB5-4429-4A0B-BEF0-058610D0EDB6}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb.EventHub", "VideoWeb.EventHub\VideoWeb.EventHub.csproj", "{371E895D-1CDC-4872-BCCC-7199DD3AA519}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoWeb", "VideoWeb\VideoWeb.csproj", "{8FA72ADD-8CB7-4BC5-B99B-AF2871B31E09}"
@@ -31,10 +29,6 @@ Global
 		{6F865A99-C586-4FF1-B102-81F87C686578}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F865A99-C586-4FF1-B102-81F87C686578}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F865A99-C586-4FF1-B102-81F87C686578}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E901FAB5-4429-4A0B-BEF0-058610D0EDB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E901FAB5-4429-4A0B-BEF0-058610D0EDB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E901FAB5-4429-4A0B-BEF0-058610D0EDB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E901FAB5-4429-4A0B-BEF0-058610D0EDB6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{371E895D-1CDC-4872-BCCC-7199DD3AA519}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{371E895D-1CDC-4872-BCCC-7199DD3AA519}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{371E895D-1CDC-4872-BCCC-7199DD3AA519}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -52,7 +46,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{E901FAB5-4429-4A0B-BEF0-058610D0EDB6} = {CB8C2DB8-804A-467F-B03A-68D2D968D237}
 		{0B6AB100-040E-48FC-9CD0-ECE4099A459E} = {CB8C2DB8-804A-467F-B03A-68D2D968D237}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
