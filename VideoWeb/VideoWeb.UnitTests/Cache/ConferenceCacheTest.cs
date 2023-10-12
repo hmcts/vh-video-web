@@ -7,12 +7,11 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NUnit.Framework;
+using VideoApi.Contract.Responses;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
-using VideoApi.Contract.Responses;
 
-
-namespace VideoWeb.UnitTests
+namespace VideoWeb.UnitTests.Cache
 {
     public class ConferenceCacheTest
     {

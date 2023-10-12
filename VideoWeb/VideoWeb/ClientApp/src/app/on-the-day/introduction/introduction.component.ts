@@ -43,6 +43,7 @@ export class IntroductionComponent extends ParticipantStatusBaseDirective implem
     }
 
     skipToCourtRulesPage() {
+        this.logger.info('Skipping to court rules page', { conferenceId: this.conferenceId });
         this.router.navigate([pageUrls.HearingRules, this.conferenceId]);
     }
 }

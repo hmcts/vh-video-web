@@ -18,7 +18,7 @@ public sealed class DistributedTestCallCache : RedisCacheBase<string, bool>, ITe
         
     public override string GetKey(string key)
     {
-        return key;
+        return $"{key}_SelfTestCompleted";
     }
 
     public Task AddTestCompletedForTodayAsync(string username)

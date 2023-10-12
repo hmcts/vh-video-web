@@ -9,10 +9,10 @@ using Microsoft.Extensions.Caching.Distributed;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using VideoWeb.Common.Caching;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common.Caching;
 
-namespace VideoWeb.UnitTests
+namespace VideoWeb.UnitTests.Cache
 {
     public class DistributedConferenceCacheTests
     {

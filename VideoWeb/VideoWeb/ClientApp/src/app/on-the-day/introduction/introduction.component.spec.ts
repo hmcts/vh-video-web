@@ -1,11 +1,11 @@
 import { convertToParamMap, Router } from '@angular/router';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceLite } from 'src/app/services/models/conference-lite';
-import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { IntroductionComponent } from './introduction.component';
+import { of } from 'rxjs';
 
 describe('IntroductionComponent', () => {
     let component: IntroductionComponent;
@@ -20,9 +20,13 @@ describe('IntroductionComponent', () => {
     const participantStatusUpdateService = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
 
     beforeAll(() => {
-        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getActiveIndividualConference']);
+        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
+            'getActiveIndividualConference',
+            'checkUserHasCompletedSelfTest'
+        ]);
 
         videoWebServiceSpy.getActiveIndividualConference.and.returnValue(confLite);
+        videoWebServiceSpy.checkUserHasCompletedSelfTest.and.returnValue(of(false));
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
     });
 
@@ -41,5 +45,10 @@ describe('IntroductionComponent', () => {
     it('should navigate to equipment check', () => {
         component.goToEquipmentCheck();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.EquipmentCheck, conference.id]);
+    });
+
+    it('should navigate to hearing rules', () => {
+        component.skipToCourtRulesPage();
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.HearingRules, conference.id]);
     });
 });

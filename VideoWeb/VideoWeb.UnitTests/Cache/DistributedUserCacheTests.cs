@@ -1,4 +1,5 @@
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using FluentAssertions;
@@ -6,12 +7,11 @@ using Microsoft.Extensions.Caching.Distributed;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using UserApi.Contract.Responses;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
-using UserApi.Contract.Responses;
-using System.Threading;
 
-namespace VideoWeb.UnitTests
+namespace VideoWeb.UnitTests.Cache
 {
     public class DistributedUserCacheTests
     {
