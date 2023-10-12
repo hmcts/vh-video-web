@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extras.Moq;
@@ -13,34 +14,40 @@ using NUnit.Framework;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common.Caching;
-using VideoWeb.Controllers;
+using VideoWeb.Contract.Responses;
+using VideoWeb.Mappings;
 using VideoWeb.UnitTests.Builders;
 
-namespace VideoWeb.UnitTests.Controllers.TestCallsController
+namespace VideoWeb.UnitTests.Controllers.SelfTestController
 {
     public class GetTestCallResultForParticipantTests
     {
         private AutoMock _mocker;
-        private TestCallController _controller;
+        private VideoWeb.Controllers.SelfTestController _controller;
+        private ClaimsPrincipal _claimsPrincipal;
+        private TestCallCache _testCallCache;
 
         [SetUp]
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
-            var memoryCache = new MemoryCache(new MemoryCacheOptions());
-            var testCallCache = new TestCallCache(memoryCache);
             
-            var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
-
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<PexipConfigResponse, SelfTestPexipResponse>())
+                .Returns(_mocker.Create<PexipServiceConfigurationResponseMapper>());
+            
+            var memoryCache = new MemoryCache(new MemoryCacheOptions());
+            _testCallCache = new TestCallCache(memoryCache);
+            
+            _claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             var context = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext
                 {
-                    User = claimsPrincipal
+                    User = _claimsPrincipal
                 }
             };
 
-            _controller = _mocker.Create<TestCallController>(new TypedParameter(typeof(IConferenceCache), testCallCache));
+            _controller = _mocker.Create<VideoWeb.Controllers.SelfTestController>(new TypedParameter(typeof(ITestCallCache), _testCallCache));
             _controller.ControllerContext = context;
         }
 
@@ -58,6 +65,7 @@ namespace VideoWeb.UnitTests.Controllers.TestCallsController
             var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().BeEquivalentTo(testCallResponse);
+            _testCallCache.HasUserCompletedATestToday(_claimsPrincipal.Identity.Name).Result.Should().BeTrue();
         }
 
         [Test]
@@ -74,6 +82,7 @@ namespace VideoWeb.UnitTests.Controllers.TestCallsController
             var result = await _controller.GetTestCallResultForParticipantAsync(conferenceId, participantId);
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            _testCallCache.HasUserCompletedATestToday(_claimsPrincipal.Identity.Name).Result.Should().BeFalse();
         }
 
         [Test]
@@ -89,6 +98,7 @@ namespace VideoWeb.UnitTests.Controllers.TestCallsController
             var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().BeEquivalentTo(testCallResponse);
+            _testCallCache.HasUserCompletedATestToday(_claimsPrincipal.Identity.Name).Result.Should().BeTrue();
         }
 
         [Test]
@@ -104,6 +114,7 @@ namespace VideoWeb.UnitTests.Controllers.TestCallsController
             var result = await _controller.GetIndependentTestCallResultAsync(participantId);
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            _testCallCache.HasUserCompletedATestToday(_claimsPrincipal.Identity.Name).Result.Should().BeFalse();
         }
     }
 }
