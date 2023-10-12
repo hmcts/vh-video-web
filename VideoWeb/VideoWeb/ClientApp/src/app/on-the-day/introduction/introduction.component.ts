@@ -36,15 +36,10 @@ export class IntroductionComponent extends ParticipantStatusBaseDirective implem
     ngOnInit() {
         this.getConference();
         // check if the user is a representative
-        this.profileService
-            .getUserProfile()
-            .then(profile => {
-                this.isRepresentative = profile.roles.includes(Role.Representative);
-                this.existingTest$ = this.videoWebService.checkUserHasCompletedSelfTest();
-            })
-            .catch(err => {
-                this.logger.error('[Introduction] - Failed to get user profile on introduction page', err);
-            });
+        this.profileService.getUserProfile().then(profile => {
+            this.isRepresentative = profile.roles.includes(Role.Representative);
+            this.existingTest$ = this.videoWebService.checkUserHasCompletedSelfTest();
+        });
     }
 
     getConference() {
