@@ -313,8 +313,7 @@ namespace VideoWeb.Controllers
                     return BadRequest(ModelState);
                 }
                 
-                _logger.LogDebug("Attempting to assign {StaffMember} to conference {conferenceId}", request.Username,
-                    conferenceId);
+                _logger.LogDebug("Attempting to assign user to conference {ConferenceId}", conferenceId);
 
                 var userProfile = await _userApiClient.GetUserByAdUserNameAsync(username);
 
