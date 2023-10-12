@@ -29,6 +29,7 @@ import {
 import { ConferenceLite } from '../models/conference-lite';
 import { SessionStorage } from '../session-storage';
 import { IVideoWebApiService } from './video-web-service.interface';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root'
@@ -74,6 +75,13 @@ export class VideoWebService implements IVideoWebApiService {
 
     getIndependentTestCallScore(participantId: string): Promise<TestCallScoreResponse> {
         return this.apiClient.getIndependentTestCallResult(participantId).toPromise();
+    }
+
+    checkUserHasCompletedSelfTest(): Observable<boolean> {
+        return this.apiClient.checkUserCompletedATestToday().pipe(
+            map(() => true),
+            catchError(() => [false])
+        );
     }
 
     getSelfTestToken(participantId: string): Promise<TokenResponse> {

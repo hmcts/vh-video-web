@@ -10,33 +10,27 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.Common.Caching;
-using VideoWeb.Common.Models;
-using VideoWeb.Controllers;
-using VideoWeb.EventHub.Handlers.Core;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common.Caching;
+using VideoWeb.Controllers;
 using VideoWeb.UnitTests.Builders;
-using EventComponentHelper = VideoWeb.UnitTests.Builders.EventComponentHelper;
 
-namespace VideoWeb.UnitTests.Controllers.ParticipantController
+namespace VideoWeb.UnitTests.Controllers.TestCallsController
 {
     public class GetTestCallResultForParticipantTests
     {
         private AutoMock _mocker;
-        private ParticipantsController _controller;
-        private EventComponentHelper _eventComponentHelper;
-        private Conference _testConference;
+        private TestCallController _controller;
 
         [SetUp]
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
             var memoryCache = new MemoryCache(new MemoryCacheOptions());
-            var conferenceCache = new ConferenceCache(memoryCache);
-            _eventComponentHelper = new EventComponentHelper();
+            var testCallCache = new TestCallCache(memoryCache);
+            
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
-            _testConference = _eventComponentHelper.BuildConferenceForTest();
 
             var context = new ControllerContext
             {
@@ -46,11 +40,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 }
             };
 
-            var eventHandlerFactory = new EventHandlerFactory(_eventComponentHelper.GetHandlers());
-            _controller = _mocker.Create<ParticipantsController>(new TypedParameter(typeof(IEventHandlerFactory), eventHandlerFactory), new TypedParameter(typeof(IConferenceCache), conferenceCache));
+            _controller = _mocker.Create<TestCallController>(new TypedParameter(typeof(IConferenceCache), testCallCache));
             _controller.ControllerContext = context;
-            _eventComponentHelper.Cache.Set(_testConference.Id, _testConference);
-            _eventComponentHelper.RegisterUsersForHubContext(_testConference.Participants);
         }
 
         [Test]

@@ -233,7 +233,8 @@
     "next-we-are-going-to": "Next, we're going to:",
     "check-that-your-equipment-is-working": "check that your equipment is working",
     "tell-you-about-the-rules-of-the-court": "tell you about the rules of the court",
-    "next": "Next"
+    "next": "Next",
+    "skipToCourtRules": "Skip the equipment check"
   },
   "judge-hearing-list": {
     "loading-please-wait": "Loading please wait...",
@@ -995,7 +996,7 @@
   },
   "accessibility": {
     "crest-image-alt": "HMCTS logo crest image",
-      "content": "",
+    "content": "",
     "menu": {
       "heading": "Contents",
       "accessibility-statement": {
@@ -1012,25 +1013,25 @@
       "how-accessible": {
         "paragraph1": "We know some parts of this website are not fully accessible:",
         "heading": "How accessible is this service?",
-          "list": {
-              "1": "The self-test feature, for testing computer equipment in advance of a video hearing, is not accessible for visually impaired people.",
-              "2": "Screen reader users may experience issues using the following sections of the application:",
-              "3": "People needing to use their keyboard for navigation may experience the following issues:",
-              "4": "Users with low vision may have issues reading the text on the platform, due to there being not enough contrast between text and its background",
-              "5": "Users with visual impairments may have issues using the Instant Messaging feature in the Hearing Room. They will be able to listen to most of the website using a screen reader."
-          },
-          "sub-list1": {
-              "1": "Viewing the Participant List in the Waiting Room. ",
-              "2": "Navigating the in-hearing controls in the Hearing Room. ",
-              "3": "Selecting a hearing from the Hearing List. ",
-              "4": "Selecting the Camera, Microphone, and the Instant Messaging feature in the Waiting Room."
-          },
-          "sub-list2": {
-              "1": "Selecting the Camera and Microphone from the Waiting Room.",
-              "2": "Leaving a Consultation Room.",
-              "3": "Navigating the in-hearing controls in the Hearing Room "
-          },
-          "paragraph2": "We want as many people as possible to be able to use our service, we are therefore working to further develop the Video Hearings platform, so that it is accessible for all our users. Our aim is to ensure that improvements are in place by July 2023."
+        "list": {
+          "1": "The self-test feature, for testing computer equipment in advance of a video hearing, is not accessible for visually impaired people.",
+          "2": "Screen reader users may experience issues using the following sections of the application:",
+          "3": "People needing to use their keyboard for navigation may experience the following issues:",
+          "4": "Users with low vision may have issues reading the text on the platform, due to there being not enough contrast between text and its background",
+          "5": "Users with visual impairments may have issues using the Instant Messaging feature in the Hearing Room. They will be able to listen to most of the website using a screen reader."
+        },
+        "sub-list1": {
+          "1": "Viewing the Participant List in the Waiting Room. ",
+          "2": "Navigating the in-hearing controls in the Hearing Room. ",
+          "3": "Selecting a hearing from the Hearing List. ",
+          "4": "Selecting the Camera, Microphone, and the Instant Messaging feature in the Waiting Room."
+        },
+        "sub-list2": {
+          "1": "Selecting the Camera and Microphone from the Waiting Room.",
+          "2": "Leaving a Consultation Room.",
+          "3": "Navigating the in-hearing controls in the Hearing Room "
+        },
+        "paragraph2": "We want as many people as possible to be able to use our service, we are therefore working to further develop the Video Hearings platform, so that it is accessible for all our users. Our aim is to ensure that improvements are in place by July 2023."
       },
       "feedback": {
         "heading": "Feedback and contact information",
@@ -1043,21 +1044,21 @@
         "paragraph6": "For Scotland:",
         "paragraph7": "If you email us, include the location of your court or tribunal centre and case number in the subject line.",
         "paragraph8": "We aim to respond to emails the same working day.",
-          "list": {
-              "1": "call {{phoneNumber}} between 9am and 5pm, Monday to Friday",
-              "2": "email: "
-          },
-          "list-scotland": {
-              "1": "call {{phoneNumber}} between 8.30am and 5pm, Monday to Friday",
-              "2": "email: "
-          }
+        "list": {
+          "1": "call {{phoneNumber}} between 9am and 5pm, Monday to Friday",
+          "2": "email: "
+        },
+        "list-scotland": {
+          "1": "call {{phoneNumber}} between 8.30am and 5pm, Monday to Friday",
+          "2": "email: "
+        }
       },
       "reporting-accessibility": {
         "heading": "Reporting accessibility problems with this service",
         "paragraph1": "We’re always looking to improve the accessibility of our service. If you find any problems that aren’t listed on this page or think we’re not meeting the requirements of the accessibility regulations contact:",
         "list": {
-            "1": "email: ",
-            "2": "call 0300 303 0655, Monday to Friday, 9am and 5pm"
+          "1": "email: ",
+          "2": "call 0300 303 0655, Monday to Friday, 9am and 5pm"
         }
       },
       "enforcement-procedure": {
@@ -1066,22 +1067,22 @@
         "paragraph2": "contact the Equality Advisory and Support Service (EASS)"
       },
       "contacting-us": {
-          "heading": "Contacting us by phone or visiting us in person",
-          "paragraph1": "We provide a text relay service if you’re deaf, hearing impaired or have a speech impediment.",
-          "paragraph2": "Our offices have audio induction loops, or if you contact us before your visit, we can arrange a British Sign Language (BSL) interpreter.",
-          "paragraph3": "Find out how to at: ",
-          "paragraph3.link": "Find a court or tribunal - GOV.UK (www.gov.uk)"
+        "heading": "Contacting us by phone or visiting us in person",
+        "paragraph1": "We provide a text relay service if you’re deaf, hearing impaired or have a speech impediment.",
+        "paragraph2": "Our offices have audio induction loops, or if you contact us before your visit, we can arrange a British Sign Language (BSL) interpreter.",
+        "paragraph3": "Find out how to at: ",
+        "paragraph3.link": "Find a court or tribunal - GOV.UK (www.gov.uk)"
       },
       "technical-information": {
         "heading": "Technical information about the Video Hearings service’s accessibility",
         "paragraph1": "HM Courts and Tribunals Service is committed to making its services accessible, in accordance with the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018."
       },
-        "compliance-status": {
-            "heading": "Compliance status",
-            "paragraph1.1": "Our service is partially compliant with the",
-            "link": "Web Content Accessibility Guidelines version 2.1",
-            "paragraph1.2": "AA standard due to the non-compliances listed below."
-        },
+      "compliance-status": {
+        "heading": "Compliance status",
+        "paragraph1.1": "Our service is partially compliant with the",
+        "link": "Web Content Accessibility Guidelines version 2.1",
+        "paragraph1.2": "AA standard due to the non-compliances listed below."
+      },
       "non-accessible-content": {
         "heading": "Non accessible content",
         "paragraph1": "The content listed below is non-accessible for the following reasons.",
@@ -1114,18 +1115,18 @@
         "paragraph5": "Technical auditing involves the experienced application of a number of technical auditing and standards compliance assessment tools. This combined with an extensive knowledge of WCAG, its application and wider global practice provides the DAC website with further credibility and quality."
       },
       "preparation-of-statement": {
-            "heading": "Preparation of this accessibility statement",
-            "paragraph1": "This statement was prepared on 29 October 2019.  It was last reviewed on 20 December 2022.",
-            "paragraph2": "The website was last tested in April 2021.  The test was carried out by the Digital Accessibility Centre (DAC). We decided to test all the pages within our platform to make sure that we were meeting the needs of our users.",
-            "paragraph3": "You can read the full accessibility test report ",
-            "paragraph3.link": "here",
-            "paragraph4": "The DAC’s methodology is:",
-            "paragraph5": "The website was tested by a team of experienced auditors, many of whom are disabled individuals and users of adaptive technology. The combination of subjective pan-disability user feedback and comprehensive technical auditing allows us to measure how the website performs technically and practically, thereby offering an essential added dimension to our test results that other methods of testing cannot provide.",
-            "paragraph6": "User testing:",
-            "paragraph7": "Manual accessibility checking was conducted by a team of disabled individuals, using a range of adaptive technologies (hardware and software designed to facilitate the use of computers by people with disabilities).”",
-            "paragraph8": "Technical auditing:",
-            "paragraph9": "“Technical auditing involves the experienced application of a number of technical auditing and standards compliance assessment tools. This combined with an extensive knowledge of WCAG, its application and wider global practice provides the DAC website with further credibility and quality.”"
-        }
+        "heading": "Preparation of this accessibility statement",
+        "paragraph1": "This statement was prepared on 29 October 2019.  It was last reviewed on 20 December 2022.",
+        "paragraph2": "The website was last tested in April 2021.  The test was carried out by the Digital Accessibility Centre (DAC). We decided to test all the pages within our platform to make sure that we were meeting the needs of our users.",
+        "paragraph3": "You can read the full accessibility test report ",
+        "paragraph3.link": "here",
+        "paragraph4": "The DAC’s methodology is:",
+        "paragraph5": "The website was tested by a team of experienced auditors, many of whom are disabled individuals and users of adaptive technology. The combination of subjective pan-disability user feedback and comprehensive technical auditing allows us to measure how the website performs technically and practically, thereby offering an essential added dimension to our test results that other methods of testing cannot provide.",
+        "paragraph6": "User testing:",
+        "paragraph7": "Manual accessibility checking was conducted by a team of disabled individuals, using a range of adaptive technologies (hardware and software designed to facilitate the use of computers by people with disabilities).”",
+        "paragraph8": "Technical auditing:",
+        "paragraph9": "“Technical auditing involves the experienced application of a number of technical auditing and standards compliance assessment tools. This combined with an extensive knowledge of WCAG, its application and wider global practice provides the DAC website with further credibility and quality.”"
+      }
     },
     "contents": "Contents"
   },
