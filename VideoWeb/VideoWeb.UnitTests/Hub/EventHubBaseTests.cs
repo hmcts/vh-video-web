@@ -26,6 +26,7 @@ namespace VideoWeb.UnitTests.Hub
     public abstract class EventHubBaseTests
     {
         protected Mock<IUserProfileService> UserProfileServiceMock;
+        protected Mock<IAppRoleService> AppRoleServiceMock;
         protected Mock<IVideoApiClient> VideoApiClientMock;
         protected Mock<ILogger<EventHub.Hub.EventHub>> LoggerMock;
         protected Mock<HubCallerContext> HubCallerContextMock;
@@ -43,6 +44,7 @@ namespace VideoWeb.UnitTests.Hub
         {
             EventHubClientMock = new Mock<IHubCallerClients<IEventHubClient>>();
             UserProfileServiceMock = new Mock<IUserProfileService>();
+            AppRoleServiceMock = new Mock<IAppRoleService>();
             VideoApiClientMock = new Mock<IVideoApiClient>();
             LoggerMock = new Mock<ILogger<EventHub.Hub.EventHub>>();
             HubCallerContextMock = new Mock<HubCallerContext>();
@@ -65,7 +67,7 @@ namespace VideoWeb.UnitTests.Hub
                 EmailReformDomain = "@hearings.reform.hmcts.net"
             });
 
-            Hub = new EventHub.Hub.EventHub(UserProfileServiceMock.Object, VideoApiClientMock.Object,
+            Hub = new EventHub.Hub.EventHub(UserProfileServiceMock.Object, AppRoleServiceMock.Object, VideoApiClientMock.Object,
                 LoggerMock.Object, ConferenceCacheMock.Object, HeartbeatMapper.Object,
                 ConferenceVideoControlStatusService.Object,
                 conferenceManagementService: ConferenceManagementServiceMock.Object)

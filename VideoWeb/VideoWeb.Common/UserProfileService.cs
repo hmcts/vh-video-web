@@ -15,6 +15,7 @@ namespace VideoWeb.Common
         string GetObfuscatedUsername(string participantUserName);
         Task<UserProfile> GetUserAsync(string username);
         Task<UserProfile> CacheUserProfileAsync(ClaimsPrincipal user);
+        Task ClearUserCache(string username);
     }
 
     public class UserProfileService : IUserProfileService
@@ -54,7 +55,7 @@ namespace VideoWeb.Common
             return userProfile;
         }
 
-        public async Task ClearUserCaches(string username)
+        public async Task ClearUserCache(string username)
         {
             await _userProfileCache.ClearFromCache(username);
         }

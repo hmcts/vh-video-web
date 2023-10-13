@@ -11,9 +11,9 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
-using VideoWeb.Services;
 
 namespace VideoWeb.UnitTests.Services
 {

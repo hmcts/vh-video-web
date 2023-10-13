@@ -24,6 +24,7 @@ namespace VideoWeb.EventHub.Hub
         public static string DefaultAdminName => "Admin";
 
         private readonly IUserProfileService _userProfileService;
+        private readonly IAppRoleService _appRoleService;
         private readonly ILogger<EventHub> _logger;
         private readonly IVideoApiClient _videoApiClient;
         private readonly IConferenceCache _conferenceCache;
@@ -32,6 +33,7 @@ namespace VideoWeb.EventHub.Hub
         private readonly IConferenceManagementService _conferenceManagementService;
 
         public EventHub(IUserProfileService userProfileService, 
+            IAppRoleService appRoleService,
             IVideoApiClient videoApiClient,
             ILogger<EventHub> logger, 
             IConferenceCache conferenceCache, 
@@ -40,6 +42,7 @@ namespace VideoWeb.EventHub.Hub
             IConferenceManagementService conferenceManagementService)
         {
             _userProfileService = userProfileService;
+            _appRoleService = appRoleService;
             _logger = logger;
             _conferenceCache = conferenceCache;
             _heartbeatRequestMapper = heartbeatRequestMapper;
@@ -105,6 +108,8 @@ namespace VideoWeb.EventHub.Hub
             var isAdmin = IsSenderAdmin();
             await RemoveUserFromUserGroup(isAdmin);
             await RemoveUserFromConferenceGroups(isAdmin);
+            await _userProfileService.ClearUserCache(userName);
+            await _appRoleService.ClearUserCache(userName);
 
             await base.OnDisconnectedAsync(exception);
         }

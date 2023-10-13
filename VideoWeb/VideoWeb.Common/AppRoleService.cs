@@ -6,16 +6,16 @@ using BookingsApi.Client;
 using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.Contract.V1.Responses;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 
-namespace VideoWeb.Services
+namespace VideoWeb.Common
 {
     public interface IAppRoleService
     {
         Task<List<Claim>> GetClaimsForUserAsync(string username);
+        Task ClearUserCache(string username);
     }
     
     public class AppRoleService : IAppRoleService
@@ -68,7 +68,12 @@ namespace VideoWeb.Services
             await _userClaimscache.SetAsync(username, claims);
             return claims;
         }
-        
+
+        public async Task ClearUserCache(string username)
+        {
+            await _userClaimscache.ClearFromCache(username);
+        }
+
         private static List<Claim> MapUserRoleToAppRole(List<JusticeUserRole> userRoles)
         {
             var claims = new List<Claim>();
