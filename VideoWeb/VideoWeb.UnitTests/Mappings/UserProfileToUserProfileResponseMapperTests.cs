@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
@@ -32,16 +31,5 @@ namespace VideoWeb.UnitTests.Mappings
             response.DisplayName.Should().Be(profile.DisplayName);
             response.Username.Should().Be(profile.UserName);
         }
-
-        //[Test]
-        //public void Should_throw_exception_when_role_is_unsupported()
-        //{
-        //    Action action = () => _sut.Map(new UserProfile
-        //    {
-        //        Roles = new List<Role> { Role.None }
-        //    });
-
-        //    action.Should().Throw<NotSupportedException>().WithMessage("Role Random is not supported for this application");
-        //}
     }
 }
