@@ -107,7 +107,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Unable to get independent test call result for participant: {participantId}");
+                _logger.LogError(e, "Unable to get independent test call result for participant: {ParticipantId}", participantId);
                 return StatusCode(e.StatusCode, e.Response);
             }
         }

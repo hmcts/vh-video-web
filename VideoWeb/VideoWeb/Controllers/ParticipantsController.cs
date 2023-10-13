@@ -287,7 +287,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Unable to get current participant Id for conference: {conferenceId}");
+                _logger.LogError(e, "Unable to get current participant Id for conference: {ConferenceId}", conferenceId);
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
