@@ -10,7 +10,7 @@ public sealed class DistributedTestCallCache : RedisCacheBase<string, bool>, ITe
     {
         CacheEntryOptions = new DistributedCacheEntryOptions
         {
-            AbsoluteExpiration = DateTimeOffset.UtcNow.Date
+            AbsoluteExpiration = DateTimeOffset.UtcNow.Date.AddDays(1)
         };
     }
 
