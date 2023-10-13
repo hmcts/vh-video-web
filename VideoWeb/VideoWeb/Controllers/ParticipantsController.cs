@@ -329,10 +329,6 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                if (!User.IsInRole(AppRoles.StaffMember))
-                {
-                    return Unauthorized();
-                }
                 var username = User.Identity.Name.ToLower().Trim();
                 var originalConference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
 
