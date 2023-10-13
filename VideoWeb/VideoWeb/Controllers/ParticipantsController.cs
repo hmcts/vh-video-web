@@ -340,9 +340,7 @@ namespace VideoWeb.Controllers
             }
             catch (UserApiException e)
             {
-                _logger.LogError(e, $"Unable to get current staff member " + $"Username{username}" +
-                                    "profile for " +
-                                    $"conference: {conferenceId}");
+                _logger.LogError(e, "Unable to get current staff member profile for conference {ConferenceId}", conferenceId);
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
