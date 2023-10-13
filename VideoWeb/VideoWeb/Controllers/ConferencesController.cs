@@ -140,16 +140,28 @@ namespace VideoWeb.Controllers
             try
             {
                 var username = User.Identity!.Name;
-                var hearings = await _bookingApiClient.GetConfirmedHearingsByUsernameForTodayAsync(username);
-                var conferencesForIndividual =
-                    await _videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username);
-                var conferenceForIndividualResponseMapper = _mapperFactory
-                    .Get<ConfirmedHearingsTodayResponse, List<IndividualConference>, ConferenceForIndividualResponse>();
-                var response = hearings
-                    .Select(hearing =>
-                        conferenceForIndividualResponseMapper.Map(hearing, conferencesForIndividual.ToList()));
-                response = response.Where(c => c.IsWaitingRoomOpen);
-                return Ok(response.ToList());
+                if (IsQuicklinkUser())
+                {
+                    var conferencesForIndividual = await _videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username);
+                    var conferenceForIndividualResponseMapper = _mapperFactory.Get<IndividualConference, ConferenceForIndividualResponse>();
+                    var response = conferencesForIndividual
+                        .Select(conferenceForIndividualResponseMapper.Map)
+                        .ToList();
+                    return Ok(response);
+                }
+                else
+                {
+                    var hearings = await _bookingApiClient.GetConfirmedHearingsByUsernameForTodayAsync(username);
+                    var conferencesForIndividual =
+                        await _videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username);
+                    var conferenceForIndividualResponseMapper = _mapperFactory
+                        .Get<ConfirmedHearingsTodayResponse, List<IndividualConference>, ConferenceForIndividualResponse>();
+                    var response = hearings
+                        .Select(hearing =>
+                            conferenceForIndividualResponseMapper.Map(hearing, conferencesForIndividual.ToList()));
+                    response = response.Where(c => c.IsWaitingRoomOpen);
+                    return Ok(response.ToList());
+                }
             }
             catch (BookingsApiException e)
             {
@@ -168,7 +180,14 @@ namespace VideoWeb.Controllers
             }
         }
 
-
+        private bool IsQuicklinkUser()
+        {
+            var claims = User.Identities!.FirstOrDefault()?.Claims as List<Claim>;
+            var isQuicklinkUser = claims?.FirstOrDefault(x =>
+                    x.Value == Role.QuickLinkObserver.ToString() || x.Value == Role.QuickLinkParticipant.ToString());
+            return isQuicklinkUser != null;
+        }
+        
         /// <summary>
         /// Get conferences for user
         /// </summary>
