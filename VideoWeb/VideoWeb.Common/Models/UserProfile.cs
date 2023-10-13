@@ -12,6 +12,5 @@ namespace VideoWeb.Common.Models
         public string LastName { get; set; }
         public string Email { get; set; }
         public bool IsAdmin { get; set; }
-        public List<Claim> Claims { get; set; } = new List<Claim>();
     }
 }

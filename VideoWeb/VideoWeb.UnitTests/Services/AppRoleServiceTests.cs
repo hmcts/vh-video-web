@@ -43,7 +43,6 @@ namespace VideoWeb.UnitTests.Services
         {
             // arrange
             var username = "random@claims.com";
-            var uniqueId = Guid.NewGuid().ToString();
             var justiceUser = InitJusticeUser(new List<JusticeUserRole>(){justiceUserRole}, username);
             _bookingsApiClientMock.Setup(x => x.GetJusticeUserByUsernameAsync(username))
                 .ReturnsAsync(justiceUser);
@@ -56,7 +55,7 @@ namespace VideoWeb.UnitTests.Services
                 new Claim(ClaimTypes.Role, expectedAppRole)
             };
 
-            _cacheMock.Setup(x => x.GetAsync(uniqueId)).ReturnsAsync(userClaims);
+            _cacheMock.Setup(x => x.GetAsync(username)).ReturnsAsync(userClaims);
             // act
             var claims = await _sut.GetClaimsForUserAsync(username);
 
@@ -73,7 +72,6 @@ namespace VideoWeb.UnitTests.Services
         {
             // arrange
             var username = "random@claims.com";
-            var uniqueId = Guid.NewGuid().ToString();
             var justiceUser = InitJusticeUser(new List<JusticeUserRole>(), username);
             _bookingsApiClientMock.Setup(x => x.GetJusticeUserByUsernameAsync(username))
                 .ReturnsAsync(justiceUser);
@@ -93,7 +91,6 @@ namespace VideoWeb.UnitTests.Services
         {
             // arrange
             var username = "random@claims.com";
-            var uniqueId = Guid.NewGuid().ToString();
             var justiceUser = InitJusticeUser(new List<JusticeUserRole>() {JusticeUserRole.Clerk}, username);
             _bookingsApiClientMock.Setup(x => x.GetJusticeUserByUsernameAsync(username))
                 .ReturnsAsync(justiceUser);
@@ -113,12 +110,11 @@ namespace VideoWeb.UnitTests.Services
         {
             // arrange
             var username = "random@claims.com";
-            var uniqueId = Guid.NewGuid().ToString();
             var existingClaims = new List<Claim>()
             {
                 new(ClaimTypes.Role, AppRoles.JudgeRole)
             };
-            _cacheMock.Setup(x => x.GetAsync(uniqueId)).ReturnsAsync(existingClaims);
+            _cacheMock.Setup(x => x.GetAsync(username)).ReturnsAsync(existingClaims);
 
             // act
             var claims = await _sut.GetClaimsForUserAsync(username);
@@ -133,7 +129,6 @@ namespace VideoWeb.UnitTests.Services
         {
             // arrange
             var username = "random@claims.com";
-            var uniqueId = Guid.NewGuid().ToString();
             var apiException = new BookingsApiException<string>("Conflict", (int) HttpStatusCode.NotFound,
                 "Conflict", null, null, null);
             _bookingsApiClientMock.Setup(x => x.GetJusticeUserByUsernameAsync(username))

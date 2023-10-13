@@ -31,7 +31,7 @@ namespace VideoWeb.UnitTests
             _distributedCacheMock.Setup(x => x.GetAsync(profile.UserName, CancellationToken.None)).ReturnsAsync(rawData);
 
             var cache = new DistributedUserProfileCache(_distributedCacheMock.Object);
-            var result = await cache.GetOrAddAsync(profile.UserName, new UserProfile());
+            var result = await cache.GetOrAddAsync(profile.UserName, profile);
             result.Should().BeEquivalentTo(profile);
         }
         
