@@ -100,9 +100,10 @@ namespace VideoWeb.Extensions
             services.AddScoped<ITokenProvider, TokenProvider>();
             services.AddScoped<IKinlyJwtTokenProvider, KinlyJwtTokenProvider>();
             services.AddScoped<IHashGenerator, HashGenerator>();
-            services.AddScoped<UserProfileService>();
             services.AddScoped<IAppRoleService, AppRoleService>();
-            //services.AddScoped<IUserProfileService, CachedProfileService>();
+            services.AddScoped<IUserProfileService, UserProfileService>();
+            services.AddScoped<IUserProfileCache, DistributedUserProfileCache>();
+            services.AddScoped<IUserClaimsCache, DistributedUserClaimsCache>();
             services.AddScoped<IConferenceCache, DistributedConferenceCache>();
             services.AddScoped<IMessageDecoder, MessageFromDecoder>();
             services.AddScoped<IHeartbeatRequestMapper, HeartbeatRequestMapper>();
