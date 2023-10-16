@@ -1,0 +1,69 @@
+using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Autofac;
+using Autofac.Extras.Moq;
+using FluentAssertions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using NUnit.Framework;
+using VideoApi.Contract.Responses;
+using VideoWeb.Common.Caching;
+using VideoWeb.Contract.Responses;
+using VideoWeb.Mappings;
+using VideoWeb.UnitTests.Builders;
+
+namespace VideoWeb.UnitTests.Controllers.SelfTestController;
+
+public class CheckUserCompletedATestTodayTests
+{
+    private AutoMock _mocker;
+    private VideoWeb.Controllers.SelfTestController _controller;
+    private ClaimsPrincipal _claimsPrincipal;
+    private TestCallCache _testCallCache;
+    private string _username;
+
+    [SetUp]
+    public void Setup()
+    {
+        _username = $"{Guid.NewGuid()}@test.net";
+        _mocker = AutoMock.GetLoose();
+
+        _mocker.Mock<IMapperFactory>().Setup(x => x.Get<PexipConfigResponse, SelfTestPexipResponse>())
+            .Returns(_mocker.Create<PexipServiceConfigurationResponseMapper>());
+
+        var memoryCache = new MemoryCache(new MemoryCacheOptions());
+        _testCallCache = new TestCallCache(memoryCache);
+
+        _claimsPrincipal = new ClaimsPrincipalBuilder().WithUsername(_username).Build();
+        var context = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                User = _claimsPrincipal
+            }
+        };
+
+        _controller =
+            _mocker.Create<VideoWeb.Controllers.SelfTestController>(new TypedParameter(typeof(ITestCallCache),
+                _testCallCache));
+        _controller.ControllerContext = context;
+    }
+
+    [Test]
+    public async Task should_return_ok_when_user_has_completed_a_test_call_today()
+    {
+        await _testCallCache.AddTestCompletedForTodayAsync(_username);
+        var result = await _controller.CheckUserCompletedATestTodayAsync();
+        result.Should().BeOfType<OkResult>();
+    }
+
+    [Test]
+    public async Task should_return_not_found_when_user_has_not_completed_a_test_call_today()
+    {
+        var result = await _controller.CheckUserCompletedATestTodayAsync();
+        result.Should().BeOfType<NotFoundResult>();
+    }
+
+}

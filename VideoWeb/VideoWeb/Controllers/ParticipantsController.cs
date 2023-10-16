@@ -24,7 +24,6 @@ using VideoApi.Contract.Requests;
 using VideoApi.Contract.Enums;
 using VideoWeb.Middleware;
 using VideoWeb.Services;
-using System.Text.Json;
 
 namespace VideoWeb.Controllers
 {
@@ -58,26 +57,6 @@ namespace VideoWeb.Controllers
             _participantService = participantService;
             _mapperFactory = mapperFactory;
             _userApiClient = userApiClient;
-        }
-
-        [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
-        [HttpGet("{conferenceId}/participants/{participantId}/selftestresult")]
-        [SwaggerOperation(OperationId = "GetTestCallResult")]
-        [ProducesResponseType(typeof(TestCallScoreResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetTestCallResultForParticipantAsync(Guid conferenceId, Guid participantId)
-        {
-            try
-            {
-                var score = await _videoApiClient.GetTestCallResultForParticipantAsync(conferenceId, participantId);
-                return Ok(score);
-            }
-            catch (VideoApiException e)
-            {
-                _logger.LogError(e, $"Unable to get test call result for " +
-                                    $"participant: {participantId} in conference: {conferenceId}");
-                return StatusCode(e.StatusCode, e.Response);
-            }
         }
 
         [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
@@ -137,26 +116,7 @@ namespace VideoWeb.Controllers
             return conference.Participants
                 .Single(x => x.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase)).Id;
         }
-
-        [HttpGet("independentselftestresult")]
-        [SwaggerOperation(OperationId = "GetIndependentTestCallResult")]
-        [ProducesResponseType(typeof(TestCallScoreResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetIndependentTestCallResultAsync(Guid participantId)
-        {
-            try
-            {
-                var score = await _videoApiClient.GetIndependentTestCallResultAsync(participantId);
-
-                return Ok(score);
-            }
-            catch (VideoApiException e)
-            {
-                _logger.LogError(e, $"Unable to get independent test call result for participant: {participantId}");
-                return StatusCode(e.StatusCode, e.Response);
-            }
-        }
-
+       
         [Authorize(AppRoles.VhOfficerRole)]
         [HttpGet("{conferenceId}/participant/{participantId}/heartbeatrecent")]
         [SwaggerOperation(OperationId = "GetHeartbeatDataForParticipant")]
@@ -327,7 +287,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Unable to get current participant Id for conference: {conferenceId}");
+                _logger.LogError(e, "Unable to get current participant Id for conference: {ConferenceId}", conferenceId);
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -353,8 +313,7 @@ namespace VideoWeb.Controllers
                     return BadRequest(ModelState);
                 }
                 
-                _logger.LogDebug("Attempting to assign {StaffMember} to conference {conferenceId}", request.Username,
-                    conferenceId);
+                _logger.LogDebug("Attempting to assign user to conference {ConferenceId}", conferenceId);
 
                 var userProfile = await _userApiClient.GetUserByAdUserNameAsync(username);
 
@@ -381,9 +340,7 @@ namespace VideoWeb.Controllers
             }
             catch (UserApiException e)
             {
-                _logger.LogError(e, $"Unable to get current staff member " + $"Username{username}" +
-                                    "profile for " +
-                                    $"conference: {conferenceId}");
+                _logger.LogError(e, "Unable to get current staff member profile for conference {ConferenceId}", conferenceId);
                 return StatusCode(e.StatusCode, e.Response);
             }
         }

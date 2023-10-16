@@ -4,9 +4,9 @@
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-quarter vh-crest-column">
           <img
-           appCrestLogoImageSource
-            [sctsAltText]="('introduction.scottish-crest' | translate)"
-            [hmctsAltText]="('introduction.hm-courts-and-tribunals-service-crest' | translate)"
+            appCrestLogoImageSource
+            [sctsAltText]="'introduction.scottish-crest' | translate"
+            [hmctsAltText]="'introduction.hm-courts-and-tribunals-service-crest' | translate"
             [sctsImageSource]="'/assets/images/scottish-crest-circle.png'"
             [hmctsImageSource]="'/assets/images/BluePanelIdent.png'"
             class="govuk-header__logotype-crest govuk-!-margin-bottom-6"
@@ -24,12 +24,21 @@
           </ul>
 
           <button
+            *ngIf="(existingTest$ | async) && isRepresentative"
+            class="govuk-button govuk-button--secondary govuk-!-margin-top-4 govuk-!-margin-right-3"
+            data-module="govuk-button"
+            (click)="skipToCourtRulesPage()"
+            id="next"
+          >
+            {{ 'introduction.skipToCourtRules' | translate }}
+          </button>
+          <button
             class="govuk-button govuk-button--secondary govuk-!-margin-top-4"
             data-module="govuk-button"
             (click)="goToEquipmentCheck()"
             id="next"
           >
-          {{ 'introduction.next' | translate }}
+            {{ 'introduction.next' | translate }}
           </button>
         </div>
       </div>
