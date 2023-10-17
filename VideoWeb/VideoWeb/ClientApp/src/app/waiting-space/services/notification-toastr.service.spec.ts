@@ -27,7 +27,7 @@ import { VideoCallService } from './video-call.service';
 import { Guid } from 'guid-typescript';
 import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 
-describe('NotificationToastrService', () => {
+fdescribe('NotificationToastrService', () => {
     let service: NotificationToastrService;
     let logger: jasmine.SpyObj<Logger>;
     let roomLabel: string;
@@ -1541,6 +1541,23 @@ describe('NotificationToastrService', () => {
 
         it('should call toastr.show with the correct parameters', () => {
             toastrService.show.and.returnValue(mockToast);
+
+            // Act
+            service.createAllocationNotificationToast(hearingsPassed);
+
+            // Assert
+            expect(toastrService.show).toHaveBeenCalledOnceWith('', '', {
+                timeOut: 0,
+                extendedTimeOut: 0,
+                toastClass: 'vh-no-pointer',
+                tapToDismiss: false,
+                toastComponent: VhToastComponent
+            });
+        });
+
+        it('should call toastr.show with the correct parameters without a judge', () => {
+            toastrService.show.and.returnValue(mockToast);
+            hearingsPassed[0].judge = null;
 
             // Act
             service.createAllocationNotificationToast(hearingsPassed);
