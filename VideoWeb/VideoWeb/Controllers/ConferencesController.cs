@@ -213,7 +213,6 @@ namespace VideoWeb.Controllers
                     .Where(c => c.IsWaitingRoomOpen)
                     .Select(x => conferenceForVhOfficerResponseMapper.Map(x, allocatedHearings?.FirstOrDefault(conference => conference.HearingId == x.HearingRefId)))
                     .ApplyCsoFilter(query)
-                    .OrderBy(x => x.ClosedDateTime)
                     .ToList();
 
                 // display conferences in order of scheduled date time and then by case name. if a conference if closed then it should be at the bottom of the list. if a conference is closed at the same time then order by case name
