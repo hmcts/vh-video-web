@@ -27,7 +27,7 @@ import { VideoCallService } from './video-call.service';
 import { Guid } from 'guid-typescript';
 import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 
-fdescribe('NotificationToastrService', () => {
+describe('NotificationToastrService', () => {
     let service: NotificationToastrService;
     let logger: jasmine.SpyObj<Logger>;
     let roomLabel: string;
