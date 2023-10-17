@@ -14,12 +14,12 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
-using VideoWeb.Helpers;
 using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
 using VideoWeb.Extensions;
+using VideoWeb.Helpers.Sorting;
 using HostConference = VideoApi.Contract.Responses.ConferenceForHostResponse;
 using IndividualConference = VideoApi.Contract.Responses.ConferenceForIndividualResponse;
 using ConferenceForIndividualResponse = VideoWeb.Contract.Responses.ConferenceForIndividualResponse;
@@ -216,12 +216,7 @@ namespace VideoWeb.Controllers
                     .ToList();
 
                 // display conferences in order of scheduled date time and then by case name. if a conference if closed then it should be at the bottom of the list. if a conference is closed at the same time then order by case name
-                var closedHearings = responses.Where(x => x.Status == ConferenceStatus.Closed)
-                    .OrderBy(x => x.ClosedDateTime).ThenBy(x => x.CaseName).ToList();
-                var openHearings = responses.Where(x => x.Status != ConferenceStatus.Closed)
-                    .OrderBy(x => x.ScheduledDateTime).ThenBy(x => x.CaseName).ToList();
-                
-                responses = openHearings.Concat(closedHearings).ToList();
+                responses.Sort(new SortConferenceForVhoOfficerHelper());
                 return Ok(responses);
             }
             catch (VideoApiException e)
