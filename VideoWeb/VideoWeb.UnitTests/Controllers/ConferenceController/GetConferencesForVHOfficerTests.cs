@@ -82,7 +82,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .With(x => x.ClosedDateTime = null)
                 .With(x => x.IsWaitingRoomOpen = true)
                 .Random(2).With(x => x.CaseName = "Test case name same").And(x=> x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-10))
-                .Random(2).With(x => x.Status = ConferenceState.Closed).And(x => x.ClosedDateTime = DateTime.UtcNow.AddMinutes(-30)).And(x => x.ScheduledDateTime = x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-200))
+                .Random(2).With(x => x.CaseName = "Test case name same closed").With(x => x.Status = ConferenceState.Closed).And(x => x.ClosedDateTime = DateTime.UtcNow.AddMinutes(-30)).And(x => x.ScheduledDateTime = x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-200))
                 .Random(1).With(x => x.Status = ConferenceState.Closed).And(x => x.ClosedDateTime = DateTime.UtcNow.AddMinutes(-25)).And(x => x.ScheduledDateTime = x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-100))
                 .Random(1).With(x=> x.Status = ConferenceState.InSession).And(x => x.ScheduledDateTime = x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-100))
                 .Build().ToList();
