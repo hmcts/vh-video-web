@@ -100,6 +100,60 @@ namespace VideoWeb.UnitTests.Mappings
             result.Should().BeEquivalentTo(userProfile.FirstName);
         }
 
+        [Test]
+        public async Task Should_get_first_name_when_user_is_not_found_in_the_confeerence_and_cache()
+        {
+            var nonCachedUsername = "manual.panelmember_1123@test.net";
+            var userProfile = new UserProfile
+            {
+                FirstName = "manual",
+                LastName = "panelmember_1123",
+                UserName = nonCachedUsername,
+                DisplayName = "Some other user display",
+                Email = "else@someone.net",
+                Roles = new List<Role> { Role.VideoHearingsOfficer }
+            };
+
+            var loggedInUsername = "john@hmcts.net";
+            var displayName = "johnny";
+            var conference = CreateConferenceResponse(loggedInUsername, displayName);
+
+            var message = new InstantMessageResponse
+            {
+                From = nonCachedUsername, MessageText = "test", TimeStamp = DateTime.UtcNow
+            };
+            var result = await _decoder.GetMessageOriginatorAsync(conference, message);
+            result.Should().BeEquivalentTo(userProfile.FirstName);
+        }
+
+        [Test]
+        public async Task Should_get_first_name_when_user_is_not_found_in_the_confeerence_and_cache_and_no_dot_in_username()
+        {
+            var nonCachedUsername = "manual@test.net";
+            var userProfile = new UserProfile
+            {
+                FirstName = "manual",
+                LastName = "panelmember_1123",
+                UserName = nonCachedUsername,
+                DisplayName = "Some other user display",
+                Email = "else@someone.net",
+                Roles = new List<Role> { Role.VideoHearingsOfficer }
+            };
+
+            var loggedInUsername = "john@hmcts.net";
+            var displayName = "johnny";
+            var conference = CreateConferenceResponse(loggedInUsername, displayName);
+
+            var message = new InstantMessageResponse
+            {
+                From = nonCachedUsername, MessageText = "test", TimeStamp = DateTime.UtcNow
+            };
+            var result = await _decoder.GetMessageOriginatorAsync(conference, message);
+            result.Should().BeEquivalentTo(userProfile.FirstName);
+        }
+
+
+
         private static Conference CreateConferenceResponse(string username, string displayName)
         {
             var participants = Builder<Participant>.CreateListOfSize(2)

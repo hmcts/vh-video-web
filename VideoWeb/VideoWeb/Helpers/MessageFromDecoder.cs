@@ -41,7 +41,11 @@ namespace VideoWeb.Helpers
                 return participant.DisplayName;
             }
             var userProfile = await _userProfileService.GetUserAsync(message.From);
-
+            if(userProfile == null)
+            {
+                var name = message.From.Split('@')[0];
+                return name.ToString().Split('.')[0];
+            }
             return userProfile.FirstName;
         }
 
