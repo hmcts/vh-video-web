@@ -1555,6 +1555,23 @@ describe('NotificationToastrService', () => {
             });
         });
 
+        it('should call toastr.show with the correct parameters without a judge', () => {
+            toastrService.show.and.returnValue(mockToast);
+            hearingsPassed[0].judge = null;
+
+            // Act
+            service.createAllocationNotificationToast(hearingsPassed);
+
+            // Assert
+            expect(toastrService.show).toHaveBeenCalledOnceWith('', '', {
+                timeOut: 0,
+                extendedTimeOut: 0,
+                toastClass: 'vh-no-pointer',
+                tapToDismiss: false,
+                toastComponent: VhToastComponent
+            });
+        });
+
         it('should have a button to close the toast', () => {
             // Arrange
             const expectedHoverColor = 'red';
