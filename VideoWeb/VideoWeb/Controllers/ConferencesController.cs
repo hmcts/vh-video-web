@@ -216,7 +216,12 @@ namespace VideoWeb.Controllers
                     .ToList();
 
                 // display conferences in order of scheduled date time and then by case name. if a conference if closed then it should be at the bottom of the list. if a conference is closed at the same time then order by case name
-                responses = responses.OrderBy(x => x.ClosedDateTime ?? x.ScheduledDateTime).ThenBy(x => x.CaseName).ToList();
+                var closedHearings = responses.Where(x => x.Status == ConferenceStatus.Closed)
+                    .OrderBy(x => x.ClosedDateTime).ThenBy(x => x.CaseName).ToList();
+                var openHearings = responses.Where(x => x.Status != ConferenceStatus.Closed)
+                    .OrderBy(x => x.ScheduledDateTime).ThenBy(x => x.CaseName).ToList();
+                
+                responses = openHearings.Concat(closedHearings).ToList();
                 return Ok(responses);
             }
             catch (VideoApiException e)
