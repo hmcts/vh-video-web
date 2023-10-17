@@ -9,7 +9,7 @@ import { of } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { UserProfileResponse, Role } from 'src/app/services/clients/api-client';
 
-fdescribe('IntroductionComponent', () => {
+describe('IntroductionComponent', () => {
     let component: IntroductionComponent;
 
     const conference = new ConferenceTestData().getConferenceDetailNow();
