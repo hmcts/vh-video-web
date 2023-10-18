@@ -19,8 +19,7 @@ public class SortConferenceForVhoOfficerHelperTests
         {
             ScheduledDateTime = today.AddHours(8),
             CaseName = "Case early morning A",
-            Status = ConferenceStatus.InSession,
-            StartedDateTime = today.AddHours(8).AddMinutes(5)
+            Status = ConferenceStatus.InSession
         };
         
         var conferenceEarlyMorningDupe2 = new ConferenceForVhOfficerResponse
@@ -34,32 +33,28 @@ public class SortConferenceForVhoOfficerHelperTests
         {
             ScheduledDateTime = today.AddHours(10),
             CaseName = "Case mid morning",
-            Status = ConferenceStatus.InSession,
-            StartedDateTime = today.AddHours(10).AddMinutes(10)
+            Status = ConferenceStatus.InSession
         };
         
         var conferenceEarlyAfternoon = new ConferenceForVhOfficerResponse
         {
             ScheduledDateTime = today.AddHours(14),
             CaseName = "Case early afternoon",
-            Status = ConferenceStatus.InSession,
-            StartedDateTime = today.AddHours(14).AddMinutes(10)
+            Status = ConferenceStatus.InSession
         };
         
         var conferenceMidAfternoon = new ConferenceForVhOfficerResponse
         {
             ScheduledDateTime = today.AddHours(15).AddMinutes(10),
             CaseName = "Case mid afternoon",
-            Status = ConferenceStatus.InSession,
-            StartedDateTime = today.AddHours(15).AddMinutes(10)
+            Status = ConferenceStatus.InSession
         };
         
         var conferenceLateAfternoon = new ConferenceForVhOfficerResponse
         {
             ScheduledDateTime = today.AddHours(16).AddMinutes(40),
             CaseName = "Case late afternoon",
-            Status = ConferenceStatus.NotStarted,
-            StartedDateTime = today.AddHours(16).AddMinutes(40)
+            Status = ConferenceStatus.NotStarted
         };
         
         var conferenceLateMorningClosed = new ConferenceForVhOfficerResponse
@@ -67,7 +62,6 @@ public class SortConferenceForVhoOfficerHelperTests
             ScheduledDateTime = today.AddHours(10),
             CaseName = "Case late morning closed",
             Status = ConferenceStatus.Closed,
-            StartedDateTime = today.AddHours(10).AddMinutes(10),
             ClosedDateTime = today.AddHours(10)
         };
         
@@ -76,7 +70,6 @@ public class SortConferenceForVhoOfficerHelperTests
             ScheduledDateTime = today.AddHours(14),
             CaseName = "Case early Afternoon closed A",
             Status = ConferenceStatus.Closed,
-            StartedDateTime = today.AddHours(14).AddMinutes(10),
             ClosedDateTime = today.AddHours(15)
         };
         
@@ -85,7 +78,6 @@ public class SortConferenceForVhoOfficerHelperTests
             ScheduledDateTime = today.AddHours(14).AddMinutes(40),
             CaseName = "Case early Afternoon closed B",
             Status = ConferenceStatus.Closed,
-            StartedDateTime = today.AddHours(14).AddMinutes(40),
             ClosedDateTime = today.AddHours(15)
         };
         
@@ -94,7 +86,6 @@ public class SortConferenceForVhoOfficerHelperTests
             ScheduledDateTime = today.AddHours(16).AddMinutes(40),
             CaseName = "Case late afternoon Closed",
             Status = ConferenceStatus.Closed,
-            StartedDateTime = today.AddHours(16).AddMinutes(40),
             ClosedDateTime = today.AddHours(18)
         };
 
@@ -130,6 +121,7 @@ public class SortConferenceForVhoOfficerHelperTests
             conferenceEarlyAfternoonClosedDupe2,
             conferenceLateAfternoonClosed
         };
+        
         conferences.Should().ContainInOrder(expected);
     }
 }

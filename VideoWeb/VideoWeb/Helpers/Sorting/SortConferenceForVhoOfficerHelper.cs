@@ -45,7 +45,7 @@ public class SortConferenceForVhoOfficerHelper : IComparer<ConferenceForVhOffice
             return string.CompareOrdinal(x.CaseName, y.CaseName);
         }
 
-        return x.StartedDateTime > y.StartedDateTime ? 1 : -1;
+        return x.ScheduledDateTime > y.ScheduledDateTime ? 1 : -1;
     }
 
     private static int CompareStatus(ConferenceForVhOfficerResponse x, ConferenceForVhOfficerResponse y)
