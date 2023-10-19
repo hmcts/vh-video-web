@@ -30,14 +30,14 @@
                     <td class="govuk-table__cell">
                         <p id="case-name-{{ hearing.id }}"
                             class="govuk-!-margin-0 govuk-!-padding-0 govuk-!-font-weight-bold">
-                            {{ hearing.caseName }}
+                            <app-truncatable-text [text]="hearing.caseName" [maxLimit]="15" [hideShowMore]="true"></app-truncatable-text>
                         </p>
                         <p id="case-type-{{ hearing.id }}" class="govuk-!-margin-0">
                             {{ 'case-type.' + stringToTranslateId(hearing.caseType) | translate }}
                         </p>
                         <p class="govuk-!-margin-0 govuk-!-padding-0">
                             {{ 'judge-hearing-table.case-number' | translate }}<span id="case-number-{{ hearing.id }}"
-                                class="govuk-!-font-weight-bold">{{ hearing.caseNumber }}</span>
+                                class="govuk-!-font-weight-bold"><app-truncatable-text [text]="hearing.caseNumber" [maxLimit]="15" [hideShowMore]="true"></app-truncatable-text></span>
                         </p>
                     </td>
 

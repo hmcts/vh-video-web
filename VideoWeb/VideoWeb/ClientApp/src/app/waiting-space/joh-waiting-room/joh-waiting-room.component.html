@@ -119,11 +119,11 @@
             <tbody class="govuk-table__body">
             <tr class="govuk-table__row">
                 <td class="govuk-table__cell hearing-details-col1-width">
-                    <strong>{{ hearing.caseName }}</strong>
+                    <strong><app-truncatable-text [text]="conference.case_name" [maxLimit]="40"></app-truncatable-text></strong>
                     ({{ 'case-type.' + stringToTranslateId(hearing.caseType) | translate }})
-                    <span>{{ 'joh-waiting-room.case-number' | translate }}</span
-                    >:
-                    <strong>{{ hearing.caseNumber }}</strong>
+                    <br /> 
+                    <span>{{ 'joh-waiting-room.case-number' | translate }}</span>:
+                    <strong><app-truncatable-text [text]="conference.case_number" [maxLimit]="40"></app-truncatable-text></strong>
                 </td>
                 <td class="govuk-table__cell hearing-details-col2-width">
                     {{ hearing.scheduledStartTime | translateDate : 'dd MMMM yyyy' }}
