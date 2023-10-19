@@ -1,6 +1,10 @@
 <div class="govuk-grid-row">
-  <div class="half-left">
-    <h1 id="header-{{ hearing.id }}-case-name" class="govuk-heading-s">{{ hearing.caseName }}</h1>
+  <div class="govuk-grid-column-three-quarters">
+    <h1 id="header-{{ hearing.id }}-case-name" class="govuk-heading-s">
+      <app-truncatable-text [text]="hearing.caseName" [maxLimit]="130"></app-truncatable-text>
+    </h1>
   </div>
-  <div id="{{ hearing.id }}-hearing-status-header" class="half-right"><app-hearing-status [hearing]="hearing"></app-hearing-status></div>
+  <div id="{{ hearing.id }}-hearing-status-header" class="govuk-grid-column-one-quarter">
+    <app-hearing-status [hearing]="hearing"></app-hearing-status>
+  </div>
 </div>
