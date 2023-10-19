@@ -6,18 +6,18 @@ import { Component, ElementRef, Input, ViewChild, OnInit } from '@angular/core';
     styleUrls: ['./truncatable-text.component.scss']
 })
 export class TruncatableTextComponent implements OnInit {
+    @ViewChild('textField', { static: false }) textField: ElementRef<HTMLSpanElement>;
+
+    @Input() maxLimit = 95;
+    @Input() hideShowMore = false;
+
     displayTooltip: boolean;
     displayText: string;
     originalText: string;
 
-    @ViewChild('textField', { static: false }) textField: ElementRef<HTMLSpanElement>;
-
     @Input() set text(value: string) {
         this.originalText = value;
     }
-
-    @Input() maxLimit = 95;
-    @Input() hideShowMore = false;
 
     ngOnInit(): void {
         this.checkOverFlow();
@@ -28,17 +28,18 @@ export class TruncatableTextComponent implements OnInit {
         return longestWord.length > this.maxLimit;
     }
 
-    getLongestWord(str: string): string {
+    private getLongestWord(str: string): string {
         const words = str.split(' ');
-        return words.reduce((longest, current) => {
-            return current.length > longest.length ? current : longest;
-        }, '');
+        return words.reduce((longest, current) => (current.length > longest.length ? current : longest), '');
     }
 
     private checkOverFlow() {
         if (this.hasOverflowed()) {
             this.displayText = this.originalText.substring(0, this.maxLimit);
             this.displayTooltip = true;
+            if (this.hideShowMore) {
+                this.displayText += '...';
+            }
         } else {
             this.displayText = this.originalText;
             this.displayTooltip = false;
