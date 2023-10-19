@@ -9,7 +9,7 @@
         <span *ngIf="participant.isInterpreterOrInterpretee" class="vh-interpreter-icon">
           <fa-icon icon="language"></fa-icon>
         </span>
-      </div>        
+      </div>
       <div id="participant-contact-details-link-{{ participant.id }}" class="govuk-body-s tooltip-wrapper">
         <ng-container *ngIf="participant.isJudge || participant.isQuickLinkUser; else individualName">
           {{ participant.displayName }}
@@ -21,7 +21,7 @@
           <app-participant-info-tooltip [participant]="participant"></app-participant-info-tooltip>
         </div>
       </div>
-    </div>            
+    </div>
 
     <div class="govuk-grid-column-one-half">
       <p
