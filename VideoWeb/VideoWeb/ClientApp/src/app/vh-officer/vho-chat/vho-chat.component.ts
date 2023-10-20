@@ -13,7 +13,6 @@ import {
 import { UntypedFormControl, Validators } from '@angular/forms';
 import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
-import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -48,14 +47,13 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
 
     constructor(
         protected videoWebService: VideoWebService,
-        protected profileService: ProfileService,
         protected eventService: EventsService,
         protected logger: Logger,
         securityServiceProviderService: SecurityServiceProvider,
         protected imHelper: ImHelper,
         protected translateService: TranslateService
     ) {
-        super(videoWebService, profileService, eventService, logger, securityServiceProviderService, imHelper, translateService);
+        super(videoWebService, eventService, logger, securityServiceProviderService, imHelper, translateService);
     }
 
     get participant(): Participant {

@@ -23,7 +23,9 @@ namespace VideoWeb.EventHub.Hub
         Task RoomUpdate(Room room);
         Task RoomTransfer(RoomTransfer roomTransfer);
         Task HelpMessage(Guid conferenceId, string participantName);
-        Task ReceiveMessage(Guid conferenceId, string from, string to, string message, DateTime timestamp, Guid messageId);
+
+        Task ReceiveMessage(Guid conferenceId, string from, string fromDisplayName, string to, string message,
+            DateTime timestamp, Guid messageId);
         Task AdminAnsweredChat(Guid conferenceId, string username);
         Task ReceiveHeartbeat(Guid conferenceId, Guid participantId, HeartbeatHealth heartbeatHealth, string browserName, string browserVersion, string osName, string osVersion);
         Task HearingTransfer(Guid conferenceId, Guid participantId, TransferDirection transferDirection);
