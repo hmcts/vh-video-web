@@ -5,7 +5,6 @@ using Autofac.Extras.Moq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;

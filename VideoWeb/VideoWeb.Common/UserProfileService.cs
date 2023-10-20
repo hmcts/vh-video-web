@@ -46,8 +46,8 @@ namespace VideoWeb.Common
             {
                 FirstName = user.FindFirst(ClaimTypes.GivenName).Value,
                 LastName = user.FindFirst(ClaimTypes.Surname).Value,
-                Email = user.FindFirst(ClaimTypes.Email).Value,
-                UserName = user.Identity.Name,
+                Email = usernameClean,
+                UserName = usernameClean,
                 Roles = DetermineRolesFromClaims(user),
                 IsAdmin = IsAdmin(user)
             });

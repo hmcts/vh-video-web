@@ -19,6 +19,8 @@ namespace VideoWeb.Common.Caching
 
         public virtual async Task WriteToCache(TKey key, TEntry toWrite)
         {
+            if(key == null)
+                throw new ArgumentNullException(nameof(key));
             if (CacheEntryOptions == null)
                 throw new InvalidOperationException($"Cannot write to cache without setting the {nameof(CacheEntryOptions)}");
 
