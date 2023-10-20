@@ -9,7 +9,6 @@ using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
-using VideoWeb.Common.SignalR;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Mappers;
 using VideoApi.Client;
@@ -18,14 +17,15 @@ using VideoWeb.UnitTests.Builders;
 using VideoApi.Contract.Enums;
 using VideoWeb.Common.Configuration;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Configuration;
 using VideoWeb.EventHub.Services;
+using VideoWeb.Common;
 
 namespace VideoWeb.UnitTests.Hub
 {
     public abstract class EventHubBaseTests
     {
         protected Mock<IUserProfileService> UserProfileServiceMock;
+        protected Mock<IAppRoleService> AppRoleServiceMock;
         protected Mock<IVideoApiClient> VideoApiClientMock;
         protected Mock<ILogger<EventHub.Hub.EventHub>> LoggerMock;
         protected Mock<HubCallerContext> HubCallerContextMock;
@@ -43,6 +43,7 @@ namespace VideoWeb.UnitTests.Hub
         {
             EventHubClientMock = new Mock<IHubCallerClients<IEventHubClient>>();
             UserProfileServiceMock = new Mock<IUserProfileService>();
+            AppRoleServiceMock = new Mock<IAppRoleService>();
             VideoApiClientMock = new Mock<IVideoApiClient>();
             LoggerMock = new Mock<ILogger<EventHub.Hub.EventHub>>();
             HubCallerContextMock = new Mock<HubCallerContext>();
@@ -57,16 +58,16 @@ namespace VideoWeb.UnitTests.Hub
             HubCallerContextMock.Setup(x => x.ConnectionId).Returns(Guid.NewGuid().ToString());
             HubCallerContextMock.Setup(x => x.UserIdentifier).Returns(Claims.Identity.Name);
 
-            UserProfileServiceMock.Setup(x => x.GetObfuscatedUsernameAsync(It.IsAny<string>()))
-                .ReturnsAsync("o**** f*****");
+            UserProfileServiceMock.Setup(x => x.GetObfuscatedUsername(It.IsAny<string>()))
+                .Returns("o**** f*****");
 
             var vhServicesConfigurationOptions = Options.Create(new HearingServicesConfiguration
             {
                 EmailReformDomain = "@hearings.reform.hmcts.net"
             });
 
-            Hub = new EventHub.Hub.EventHub(UserProfileServiceMock.Object, VideoApiClientMock.Object,
-                LoggerMock.Object, ConferenceCacheMock.Object, HeartbeatMapper.Object, vhServicesConfigurationOptions,
+            Hub = new EventHub.Hub.EventHub(UserProfileServiceMock.Object, AppRoleServiceMock.Object, VideoApiClientMock.Object,
+                LoggerMock.Object, ConferenceCacheMock.Object, HeartbeatMapper.Object,
                 ConferenceVideoControlStatusService.Object,
                 conferenceManagementService: ConferenceManagementServiceMock.Object)
             {

@@ -9,7 +9,6 @@ using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Hub;
-using UserApi.Contract.Responses;
 using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
 using VideoWeb.UnitTests.Builders;
@@ -26,10 +25,10 @@ namespace VideoWeb.UnitTests.Hub
         private static string IndividualUsername => "individual@hmcts.net";
         private static string RepresentativeUsername => "representative@hmcts.net";
         private static string AdminUsername => "admin@hearings.reform.hmcts.net";
-        private UserProfile JudgeUserProfile { get; set; }
-        private UserProfile IndividualUserProfile { get; set; }
-        private UserProfile RepresentativeUserProfile { get; set; }
-        private UserProfile AdminUserProfile { get; set; }
+        private VideoWeb.Common.Models.UserProfile JudgeUserProfile { get; set; }
+        private VideoWeb.Common.Models.UserProfile IndividualUserProfile { get; set; }
+        private VideoWeb.Common.Models.UserProfile RepresentativeUserProfile { get; set; }
+        private VideoWeb.Common.Models.UserProfile AdminUserProfile { get; set; }
 
         private Mock<IEventHubClient> ConferenceGroupChannel { get; set; }
         private Mock<IEventHubClient> AdminGroupChannel { get; set; }
@@ -200,12 +199,30 @@ namespace VideoWeb.UnitTests.Hub
             var toParticipantId = Guid.NewGuid().ToString();
             const string message = "test message";
             var messageUuid = Guid.NewGuid();
+            UserProfileServiceMock.Setup(x => x.GetUserAsync("")).ReturnsAsync(new UserProfile { IsAdmin = false});
 
             await Hub.SendMessage(Conference.Id, message, toUsername, messageUuid);
 
             AssertMessageNotSentToHub(fromUsername, toParticipantId, message, messageUuid, JudgeGroupChannel);
             AssertMessageNotSentToApi(fromUsername, toUsername, message);
             AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id, toUsername), Times.Never);
+        }
+
+        [Test]
+        public void
+            should_throw_exception_when_send_message_to_admin_group_and_participant_group_when_recipient_profile_is_null()
+        {
+            SetupSendMessageTests();
+            // setup claims to return admin username
+            var claims = new ClaimsPrincipalBuilder().WithUsername(AdminUsername).WithRole(AppRoles.VhOfficerRole)
+                .Build();
+            UpdateUserIdentity(claims);
+
+            var toUsername = "does@notexist.com";
+            const string message = "test message";
+            var messageUuid = Guid.NewGuid();
+
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await Hub.SendMessage(Conference.Id, message, toUsername, messageUuid));
         }
 
         [Test]
@@ -304,7 +321,7 @@ namespace VideoWeb.UnitTests.Hub
         private void SetupSendMessageTests()
         {
             Conference = InitConference();
-            AdminUserProfile = InitProfile(AdminUsername, "VhOfficer");
+            AdminUserProfile = InitProfile(AdminUsername, Role.VideoHearingsOfficer.ToString());
             JudgeUserProfile = InitProfile(JudgeUsername, Role.Judge.ToString());
             IndividualUserProfile = InitProfile(IndividualUsername, Role.Individual.ToString());
             RepresentativeUserProfile = InitProfile(RepresentativeUsername, Role.Representative.ToString());
@@ -367,9 +384,11 @@ namespace VideoWeb.UnitTests.Hub
 
         private UserProfile InitProfile(string username, string role)
         {
+            var userRole = Enum.Parse<Role>(role);
             return Builder<UserProfile>.CreateNew()
                 .With(x => x.UserName = username)
-                .With(x => x.UserRole = role)
+                .With(x => x.Roles = new List<Role> { userRole })
+                .With(x => x.IsAdmin = userRole == Role.VideoHearingsOfficer )
                 .Build();
         }
     }

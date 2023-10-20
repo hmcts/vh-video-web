@@ -265,7 +265,6 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 string role, bool shouldBeAllowed)
         {
             var controller = GetControllerWithContextForRole(role);
-            var request = ConsultationHelper.GetStartJohConsultationRequest(_testConference);
 
             var result =
                 await controller.StartConsultationAsync(

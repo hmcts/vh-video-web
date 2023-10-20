@@ -144,7 +144,6 @@ namespace VideoWeb.UnitTests.Caching
                 Participants = participants
             };
 
-            var exception = new Exception();
             _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(x => x == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ReturnsAsync(conference);
             _mocker.Mock<IHearingLayoutCache>().Setup(x => x.ReadFromCache(It.Is<Guid>(x => x == conferenceId))).ReturnsAsync(defaultLayout);
 
@@ -183,7 +182,6 @@ namespace VideoWeb.UnitTests.Caching
             var defaultLayout = conference.GetRecommendedLayout();
             var expectedHostGroups = participants.Where(participant => participant.IsHost()).Select(participant => participant.Username.ToLowerInvariant());
 
-            var exception = new Exception();
             _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(x => x == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ReturnsAsync(conference);
             _mocker.Mock<IHearingLayoutCache>().Setup(x => x.ReadFromCache(It.Is<Guid>(x => x == conferenceId))).Returns(Task.FromResult<HearingLayout?>(null));
 

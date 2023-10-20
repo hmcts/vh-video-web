@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
-using VideoWeb.Common.Caching;
+using VideoWeb.Common;
+using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
-using UserApi.Client;
-using UserApi.Contract.Responses;
 
 namespace VideoWeb.Controllers
 {
@@ -18,21 +17,17 @@ namespace VideoWeb.Controllers
     [Route("profile")]
     public class ProfilesController : Controller
     {
-        private readonly IUserApiClient _userApiClient;
-        private readonly IUserCache _userCache;
         private readonly ILogger<ProfilesController> _logger;
         private readonly IMapperFactory _mapperFactory;
+        private readonly IUserProfileService _userProfileService;
 
         public ProfilesController(
-            IUserApiClient userApiClient,
             ILogger<ProfilesController> logger,
-            IUserCache userCache,
-            IMapperFactory mapperFactory)
+            IMapperFactory mapperFactory, IUserProfileService userProfileService)
         {
-            _userApiClient = userApiClient;
             _logger = logger;
-            _userCache = userCache;
             _mapperFactory = mapperFactory;
+            _userProfileService = userProfileService;
         }
 
         /// <summary>
@@ -46,7 +41,8 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var claimsPrincipalToUserProfileResponseMapper = _mapperFactory.Get<ClaimsPrincipal, UserProfileResponse>();
+                var claimsPrincipalToUserProfileResponseMapper =
+                    _mapperFactory.Get<ClaimsPrincipal, UserProfileResponse>();
                 var response = claimsPrincipalToUserProfileResponseMapper.Map(User);
                 return Ok(response);
             }
@@ -65,26 +61,20 @@ namespace VideoWeb.Controllers
         /// <returns></returns>
         [HttpGet("query")]
         [SwaggerOperation(OperationId = "GetProfileByUsername")]
-        [ProducesResponseType(typeof(UserProfileResponse), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetProfileByUsernameAsync([FromQuery]string username)
+        [ProducesResponseType(typeof(UserProfileResponse), (int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetProfileByUsernameAsync([FromQuery] string username)
         {
             var usernameClean = username.ToLower().Trim();
-            try
-            {
-                var userProfile = await _userCache.GetOrAddAsync
-                (
-                    usernameClean, key => _userApiClient.GetUserByAdUserNameAsync(usernameClean)
-                );
-                var userProfileToUserProfileResponseMapper = _mapperFactory.Get<UserProfile, UserProfileResponse>();
-                var response = userProfileToUserProfileResponseMapper.Map(userProfile);
-                
-                return Ok(response);
-            }
-            catch (UserApiException e)
-            {
-                _logger.LogError(e, $"Unable to get user profile for username: {username}");
-                return StatusCode(e.StatusCode, e.Response);
-            }
+
+            var userProfile = await _userProfileService.GetUserAsync(usernameClean);
+            if (userProfile == null) return NotFound();
+
+            var userProfileToUserProfileResponseMapper = _mapperFactory.Get<UserProfile, UserProfileResponse>();
+            var response = userProfileToUserProfileResponseMapper.Map(userProfile);
+
+            return Ok(response);
+
         }
     }
 }
