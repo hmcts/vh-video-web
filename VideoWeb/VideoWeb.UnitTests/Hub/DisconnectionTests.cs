@@ -17,7 +17,7 @@ namespace VideoWeb.UnitTests.Hub
             var conferences = SetupAdminConferences(numOfConferences);
             var conferenceIds = conferences.Select(c => c.Id.ToString()).ToArray();
 
-            await Hub.OnDisconnectedAsync(null);
+            await HubPr2079.OnDisconnectedAsync(null);
 
             GroupManagerMock.Verify(
                 x => x.RemoveFromGroupAsync(HubCallerContextMock.Object.ConnectionId, It.IsIn(conferenceIds),
@@ -31,7 +31,7 @@ namespace VideoWeb.UnitTests.Hub
             const int numOfConferencesWithUser = 2;
             var conferenceIds = SetupJudgeConferences(numOfConferences, numOfConferencesWithUser);
 
-            await Hub.OnDisconnectedAsync(null);
+            await HubPr2079.OnDisconnectedAsync(null);
 
             GroupManagerMock.Verify(
                 x => x.RemoveFromGroupAsync(HubCallerContextMock.Object.ConnectionId, It.IsIn(conferenceIds),
@@ -42,7 +42,7 @@ namespace VideoWeb.UnitTests.Hub
         public async Task Should_log_critical_when_exception_on_disconnect()
         {
             var exception = new InconclusiveException("Some test");
-            await Hub.OnDisconnectedAsync(exception);
+            await HubPr2079.OnDisconnectedAsync(exception);
 
             LoggerMock.Verify(
                 x => x.Log(
@@ -61,7 +61,7 @@ namespace VideoWeb.UnitTests.Hub
             const int numOfConferencesWithUser = 2;
             SetupJudgeConferences(numOfConferences, numOfConferencesWithUser);
 
-            await Hub.OnDisconnectedAsync(null);
+            await HubPr2079.OnDisconnectedAsync(null);
 
             GroupManagerMock.Verify(
                 x => x.RemoveFromGroupAsync(HubCallerContextMock.Object.ConnectionId,

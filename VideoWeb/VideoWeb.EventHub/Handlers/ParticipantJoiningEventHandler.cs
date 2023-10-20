@@ -13,7 +13,7 @@ namespace VideoWeb.EventHub.Handlers
 {
     public class ParticipantJoiningEventHandler : EventHandlerBase
     {
-        public ParticipantJoiningEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+        public ParticipantJoiningEventHandler(IHubContext<Hub.EventHubPR2079, IEventHubClient> hubContext,
             IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient) : base(
             hubContext, conferenceCache, logger, videoApiClient)
         {

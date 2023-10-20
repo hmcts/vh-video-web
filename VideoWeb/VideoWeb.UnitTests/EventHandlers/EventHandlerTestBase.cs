@@ -18,7 +18,7 @@ namespace VideoWeb.UnitTests.EventHandlers
     {
         protected List<IEventHandler> EventHandlersList { get; private set; }
         protected Mock<IEventHubClient> EventHubClientMock { get; private set; }
-        protected Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>> EventHubContextMock { get; private set; }
+        protected Mock<IHubContext<EventHub.Hub.EventHubPR2079, IEventHubClient>> EventHubContextMock { get; private set; }
         protected IMemoryCache MemoryCache { get; set; }
         protected IConferenceCache ConferenceCache { get; private set; }
         protected Mock<ILogger<EventHandlerBase>> LoggerMock { get; private set; }

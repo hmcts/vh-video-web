@@ -17,7 +17,6 @@ using VideoWeb.UnitTests.Builders;
 using VideoApi.Contract.Enums;
 using VideoWeb.Common.Configuration;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Configuration;
 using VideoWeb.EventHub.Services;
 using VideoWeb.Common;
 
@@ -28,11 +27,11 @@ namespace VideoWeb.UnitTests.Hub
         protected Mock<IUserProfileService> UserProfileServiceMock;
         protected Mock<IAppRoleService> AppRoleServiceMock;
         protected Mock<IVideoApiClient> VideoApiClientMock;
-        protected Mock<ILogger<EventHub.Hub.EventHub>> LoggerMock;
+        protected Mock<ILogger<EventHub.Hub.EventHubPR2079>> LoggerMock;
         protected Mock<HubCallerContext> HubCallerContextMock;
         protected Mock<IGroupManager> GroupManagerMock;
         protected Mock<IHubCallerClients<IEventHubClient>> EventHubClientMock;
-        protected EventHub.Hub.EventHub Hub;
+        protected EventHub.Hub.EventHubPR2079 HubPr2079;
         protected ClaimsPrincipal Claims;
         protected Mock<IConferenceCache> ConferenceCacheMock;
         protected Mock<IHeartbeatRequestMapper> HeartbeatMapper;
@@ -46,7 +45,7 @@ namespace VideoWeb.UnitTests.Hub
             UserProfileServiceMock = new Mock<IUserProfileService>();
             AppRoleServiceMock = new Mock<IAppRoleService>();
             VideoApiClientMock = new Mock<IVideoApiClient>();
-            LoggerMock = new Mock<ILogger<EventHub.Hub.EventHub>>();
+            LoggerMock = new Mock<ILogger<EventHub.Hub.EventHubPR2079>>();
             HubCallerContextMock = new Mock<HubCallerContext>();
             GroupManagerMock = new Mock<IGroupManager>();
             HeartbeatMapper = new Mock<IHeartbeatRequestMapper>();
@@ -67,7 +66,7 @@ namespace VideoWeb.UnitTests.Hub
                 EmailReformDomain = "@hearings.reform.hmcts.net"
             });
 
-            Hub = new EventHub.Hub.EventHub(UserProfileServiceMock.Object, AppRoleServiceMock.Object, VideoApiClientMock.Object,
+            HubPr2079 = new EventHub.Hub.EventHubPR2079(UserProfileServiceMock.Object, AppRoleServiceMock.Object, VideoApiClientMock.Object,
                 LoggerMock.Object, ConferenceCacheMock.Object, HeartbeatMapper.Object,
                 ConferenceVideoControlStatusService.Object,
                 conferenceManagementService: ConferenceManagementServiceMock.Object)
@@ -157,7 +156,7 @@ namespace VideoWeb.UnitTests.Hub
             if (includeAdmin)
             {
                 var mockAdminClient = new Mock<IEventHubClient>();
-                EventHubClientMock.Setup(x => x.Group(EventHub.Hub.EventHub.VhOfficersGroupName))
+                EventHubClientMock.Setup(x => x.Group(EventHub.Hub.EventHubPR2079.VhOfficersGroupName))
                     .Returns(mockAdminClient.Object);
             }
 

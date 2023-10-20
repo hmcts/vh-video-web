@@ -13,7 +13,7 @@ namespace VideoWeb.EventHub.Handlers
 {
     public class CloseEventHandler : EventHandlerBase
     {
-        public CloseEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext, IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient) :
+        public CloseEventHandler(IHubContext<Hub.EventHubPR2079, IEventHubClient> hubContext, IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient) :
             base(hubContext, conferenceCache, logger, videoApiClient)
         {
         }

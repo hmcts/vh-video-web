@@ -30,7 +30,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             _testConference = ConsultationHelper.BuildConferenceForTest();
 
-            var eventHubContextMock = _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>();
+            var eventHubContextMock = _mocker.Mock<IHubContext<EventHub.Hub.EventHubPR2079, IEventHubClient>>();
             var eventHubClientMock = _mocker.Mock<IEventHubClient>();
             foreach (var participant in _testConference.Participants)
             {
@@ -38,7 +38,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                     .Returns(eventHubClientMock.Object);
             }
 
-            eventHubContextMock.Setup(x => x.Clients.Group(EventHub.Hub.EventHub.VhOfficersGroupName))
+            eventHubContextMock.Setup(x => x.Clients.Group(EventHub.Hub.EventHubPR2079.VhOfficersGroupName))
                 .Returns(eventHubClientMock.Object);
 
             _mocker.Mock<IConferenceCache>().Setup(cache =>

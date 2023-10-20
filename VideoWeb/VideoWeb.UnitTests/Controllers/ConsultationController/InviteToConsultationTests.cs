@@ -34,7 +34,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             _testConference = ConsultationHelper.BuildConferenceForTest();
 
             _mocker.Mock<IHubClients<IEventHubClient>>().Setup(x => x.Group(It.IsAny<string>())).Returns(_mocker.Mock<IEventHubClient>().Object);
-            _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients).Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
+            _mocker.Mock<IHubContext<EventHub.Hub.EventHubPR2079, IEventHubClient>>().Setup(x => x.Clients).Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
 
             _mocker.Mock<IConferenceCache>().Setup(cache =>
                     cache.GetOrAddConferenceAsync(_testConference.Id,

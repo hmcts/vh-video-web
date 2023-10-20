@@ -30,7 +30,7 @@ namespace VideoWeb.UnitTests.Helpers
             _conference = new ConferenceCacheModelBuilder().Build();
             _eventHelper = new EventComponentHelper
             {
-                EventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>(),
+                EventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHubPR2079, IEventHubClient>>(),
                 EventHubClientMock = new Mock<IEventHubClient>()
             };
             // this will register all participants as connected to the hub

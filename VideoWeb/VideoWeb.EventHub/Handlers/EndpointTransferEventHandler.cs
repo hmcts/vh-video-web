@@ -16,7 +16,7 @@ namespace VideoWeb.EventHub.Handlers
 {
     public class EndpointTransferEventHandler : EventHandlerBase
     {
-        public EndpointTransferEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+        public EndpointTransferEventHandler(IHubContext<Hub.EventHubPR2079, IEventHubClient> hubContext,
             IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient) : base(
             hubContext, conferenceCache, logger, videoApiClient)
         {

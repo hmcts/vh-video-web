@@ -42,7 +42,7 @@ namespace VideoWeb.UnitTests.Hub
             var mockAdminClient = new Mock<IEventHubClient>();
             var mockParticipantClient = new Mock<IEventHubClient>();
             var mockJudgeClient = new Mock<IEventHubClient>();
-            EventHubClientMock.Setup(x => x.Group(EventHub.Hub.EventHub.VhOfficersGroupName)).Returns(mockAdminClient.Object);
+            EventHubClientMock.Setup(x => x.Group(EventHub.Hub.EventHubPR2079.VhOfficersGroupName)).Returns(mockAdminClient.Object);
             EventHubClientMock.Setup(x => x.Group(participantUsername.ToLowerInvariant())).Returns(mockParticipantClient.Object);
             EventHubClientMock.Setup(x => x.Group(judgeName.ToLowerInvariant())).Returns(mockJudgeClient.Object);
             HeartbeatMapper.Setup(x => x.MapToHealth(heartbeat)).Returns(HeartbeatHealth.Good);
@@ -52,7 +52,7 @@ namespace VideoWeb.UnitTests.Hub
                 IncomingAudioPercentageLostRecent = 10.3m
             };
             HeartbeatMapper.Setup(x => x.MapToRequest(heartbeat)).Returns(addHeartbeatRequest);
-            await Hub.SendHeartbeat(conferenceId, participantId, heartbeat);
+            await HubPr2079.SendHeartbeat(conferenceId, participantId, heartbeat);
 
             mockAdminClient.Verify
             (
@@ -116,7 +116,7 @@ namespace VideoWeb.UnitTests.Hub
             var mockAdminClient = new Mock<IEventHubClient>();
             var mockParticipantClient = new Mock<IEventHubClient>();
             var mockJudgeClient = new Mock<IEventHubClient>();
-            EventHubClientMock.Setup(x => x.Group(EventHub.Hub.EventHub.VhOfficersGroupName)).Returns(mockAdminClient.Object);
+            EventHubClientMock.Setup(x => x.Group(EventHub.Hub.EventHubPR2079.VhOfficersGroupName)).Returns(mockAdminClient.Object);
             EventHubClientMock.Setup(x => x.Group(participantUsername.ToLowerInvariant())).Returns(mockParticipantClient.Object);
             EventHubClientMock.Setup(x => x.Group(judgeUserName.ToLowerInvariant())).Returns(mockJudgeClient.Object);
             HeartbeatMapper.Setup(x => x.MapToHealth(heartbeat)).Returns(HeartbeatHealth.Good);
@@ -126,7 +126,7 @@ namespace VideoWeb.UnitTests.Hub
                 IncomingAudioPercentageLostRecent = 10.3m
             };
             HeartbeatMapper.Setup(x => x.MapToRequest(heartbeat)).Returns(addHeartbeatRequest);
-            await Hub.SendHeartbeat(conferenceId, judgeId, heartbeat);
+            await HubPr2079.SendHeartbeat(conferenceId, judgeId, heartbeat);
 
             mockAdminClient.Verify
             (
@@ -169,7 +169,7 @@ namespace VideoWeb.UnitTests.Hub
             };
             
             var mockClient = new Mock<IEventHubClient>();
-            EventHubClientMock.Setup(x => x.Group(EventHub.Hub.EventHub.VhOfficersGroupName)).Returns(mockClient.Object);
+            EventHubClientMock.Setup(x => x.Group(EventHub.Hub.EventHubPR2079.VhOfficersGroupName)).Returns(mockClient.Object);
             HeartbeatMapper.Setup(x => x.MapToHealth(heartbeat)).Returns(HeartbeatHealth.Good);
             mockClient.Setup
             (
@@ -184,7 +184,7 @@ namespace VideoWeb.UnitTests.Hub
                 IncomingAudioPercentageLostRecent = 10.3m
             };
             HeartbeatMapper.Setup(x => x.MapToRequest(heartbeat)).Returns(addHeartbeatRequest);
-            await Hub.SendHeartbeat(conferenceId, participantId, heartbeat);
+            await HubPr2079.SendHeartbeat(conferenceId, participantId, heartbeat);
 
             VideoApiClientMock.Verify
             (

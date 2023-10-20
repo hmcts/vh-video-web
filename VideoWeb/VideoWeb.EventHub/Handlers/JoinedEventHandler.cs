@@ -17,7 +17,7 @@ namespace VideoWeb.EventHub.Handlers
 {
     public class JoinedEventHandler : EventHandlerBase
     {
-        public JoinedEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+        public JoinedEventHandler(IHubContext<Hub.EventHubPR2079, IEventHubClient> hubContext,
             IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient) : base(
             hubContext, conferenceCache, logger, videoApiClient)
         {
