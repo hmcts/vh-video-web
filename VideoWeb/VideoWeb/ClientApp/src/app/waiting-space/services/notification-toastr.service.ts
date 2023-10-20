@@ -513,7 +513,9 @@ export class NotificationToastrService {
             const caseName = h.case_name;
 
             messageBody += '<div class="govuk-!-font-weight-bold">' + time + '</div>';
-            messageBody += '<div class="govuk-!-font-weight-bold">' + judge + '</div>';
+            if (judge) {
+                messageBody += '<div class="govuk-!-font-weight-bold">' + judge + '</div>';
+            }
             messageBody += '<div class="govuk-!-font-weight-bold">' + caseName + '</div>';
             messageBody += '</br></br>';
         });

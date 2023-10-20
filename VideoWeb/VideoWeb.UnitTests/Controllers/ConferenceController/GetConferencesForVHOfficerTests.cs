@@ -75,26 +75,22 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
             var conferences = Builder<ConferenceForAdminResponse>.CreateListOfSize(10).All()
                 .With(x => x.Participants = participants)
+                .With((x, i) => x.CaseName = $"Test case name {i+1}")
                 .With(x => x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-60))
                 .With(x => x.ScheduledDuration = 20)
                 .With(x => x.Status = ConferenceState.NotStarted)
                 .With(x => x.ClosedDateTime = null)
                 .With(x => x.IsWaitingRoomOpen = true)
+                .Random(2).With(x => x.CaseName = "Test case name same").And(x=> x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-10))
+                .Random(2).With(x => x.CaseName = "Test case name same closed").With(x => x.Status = ConferenceState.Closed).And(x => x.ClosedDateTime = DateTime.UtcNow.AddMinutes(-30)).And(x => x.ScheduledDateTime = x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-200))
+                .Random(1).With(x => x.Status = ConferenceState.Closed).And(x => x.ClosedDateTime = DateTime.UtcNow.AddMinutes(-25)).And(x => x.ScheduledDateTime = x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-100))
+                .Random(1).With(x=> x.Status = ConferenceState.InSession).And(x => x.ScheduledDateTime = x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-100))
                 .Build().ToList();
 
             var allocatedCsoResponses = 
                 conferences.Select(conference => new AllocatedCsoResponse { HearingId = conference.HearingRefId, Cso = new JusticeUserResponse{FullName = $"TestUserFor{conference.HearingRefId}"}}).ToList();
             allocatedCsoResponses.Add(new AllocatedCsoResponse{ HearingId = Guid.NewGuid() }); //add one non existing hearing
-            allocatedCsoResponses.First().Cso = null; //on unallocated hearing 
-            
-            conferences.Last().Status = ConferenceState.InSession;
-
-            var minutes = -60;
-            foreach (var conference in conferences)
-            {
-                conference.ClosedDateTime = DateTime.UtcNow.AddMinutes(minutes);
-                minutes += 30;
-            }
+            allocatedCsoResponses[0].Cso = null; //on unallocated hearing 
 
             var closedConferenceTimeLimit = DateTime.UtcNow.AddMinutes(30);
             var expectedConferenceIds = conferences.Where(x =>
@@ -110,7 +106,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetAllocationsForHearingsAsync(It.IsAny<IEnumerable<Guid>>()))
                 .ReturnsAsync(allocatedCsoResponses);
             
-            var conferenceWithMessages = conferences.First();
+            var conferenceWithMessages = conferences[0];
             var judge = conferenceWithMessages.Participants.Single(x => x.UserRole == UserRole.Judge);
             var messages = new List<InstantMessageResponse>
             {
@@ -144,14 +140,16 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             conferencesForUser.Should().NotBeNullOrEmpty();
             var returnedIds = conferencesForUser.Select(x => x.Id).ToList();
             returnedIds.Should().Contain(expectedConferenceIds);
-            var i = 1;
-            foreach (var conference in conferencesForUser)
+            
+            
+            // paused hearings in sessions cannot chat, no need to get history
+            foreach (var conference in conferences.Where(x=> x.Status == ConferenceState.InSession))
             {
-                conference.CaseName.Should().Be($"CaseName{i++}");
+                _mocker.Mock<IVideoApiClient>().Verify(x => x.GetInstantMessageHistoryAsync(conference.Id), Times.Never);
             }
 
-            // paused hearings in sessions cannot chat, no need to get history
-            _mocker.Mock<IVideoApiClient>().Verify(x => x.GetInstantMessageHistoryAsync(conferences.Last().Id), Times.Never);
+            conferencesForUser.TakeLast(3).Select(x => x.Status).ToList().TrueForAll(x => x == ConferenceStatus.Closed)
+                .Should().BeTrue();
         }
         
         [TestCase(false)]
@@ -189,7 +187,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 j++;
             }
 
-            conferences.Last().Status = ConferenceState.InSession;
+            conferences[^1].Status = ConferenceState.InSession;
 
             var minutes = -60;
             foreach (var conference in conferences)
@@ -206,7 +204,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetAllocationsForHearingsAsync(It.IsAny<IEnumerable<Guid>>()))
                 .ReturnsAsync(allocatedCsoResponses);
             
-            var conferenceWithMessages = conferences.First();
+            var conferenceWithMessages = conferences[0];
             var judge = conferenceWithMessages.Participants.Single(x => x.UserRole == UserRole.Judge);
             var messages = new List<InstantMessageResponse>
             {
@@ -290,10 +288,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var allocatedCsoResponses = 
                 conferences.Select(conference => new AllocatedCsoResponse { HearingId = conference.HearingRefId, Cso = new JusticeUserResponse{FullName = $"TestUserFor{conference.HearingRefId}"}}).ToList();
             allocatedCsoResponses.Add(new AllocatedCsoResponse{ HearingId = Guid.NewGuid() }); //add one non existing hearing
-            var unallocatedHearing = allocatedCsoResponses.First();
+            var unallocatedHearing = allocatedCsoResponses[0];
             unallocatedHearing.Cso = null;
 
-            conferences.Last().Status = ConferenceState.InSession;
+            conferences[^1].Status = ConferenceState.InSession;
 
             var minutes = -60;
             foreach (var conference in conferences)
@@ -310,7 +308,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetAllocationsForHearingsAsync(It.IsAny<IEnumerable<Guid>>()))
                 .ReturnsAsync(allocatedCsoResponses);
             
-            var conferenceWithMessages = conferences.First();
+            var conferenceWithMessages = conferences[0];
             var judge = conferenceWithMessages.Participants.Single(x => x.UserRole == UserRole.Judge);
             var messages = new List<InstantMessageResponse>
             {
@@ -350,7 +348,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             conferencesForUser.Should().NotBeNullOrEmpty();
 
             conferencesForUser.Count.Should().Be(1);
-            conferencesForUser.First().HearingRefId.Should().Be(unallocatedHearing.HearingId);
+            conferencesForUser[0].HearingRefId.Should().Be(unallocatedHearing.HearingId);
         }
 
         private ConferencesController SetupControllerWithClaims(ClaimsPrincipal claimsPrincipal)
