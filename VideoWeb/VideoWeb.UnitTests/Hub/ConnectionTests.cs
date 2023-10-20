@@ -15,7 +15,7 @@ namespace VideoWeb.UnitTests.Hub
             var conferences = SetupAdminConferences(numOfConferences);
             var conferenceIds = conferences.Select(c => c.Id.ToString()).ToArray();
 
-            await HubPr2079.OnConnectedAsync();
+            await Hub.OnConnectedAsync();
             
             GroupManagerMock.Verify(
                 x => x.AddToGroupAsync(HubCallerContextMock.Object.ConnectionId, It.IsIn(conferenceIds),
@@ -28,11 +28,11 @@ namespace VideoWeb.UnitTests.Hub
             var numOfConferences = 10;
             SetupAdminConferences(numOfConferences);
 
-            await HubPr2079.OnConnectedAsync();
+            await Hub.OnConnectedAsync();
 
             GroupManagerMock.Verify(
                 x => x.AddToGroupAsync(HubCallerContextMock.Object.ConnectionId,
-                    EventHub.Hub.EventHubPR2079.VhOfficersGroupName, CancellationToken.None),
+                    EventHub.Hub.EventHub.VhOfficersGroupName, CancellationToken.None),
                 Times.Once);
         }
         
@@ -43,7 +43,7 @@ namespace VideoWeb.UnitTests.Hub
             const int numOfConferencesWithUser = 2;
             var conferenceIds = SetupJudgeConferences(numOfConferences, numOfConferencesWithUser);
             
-            await HubPr2079.OnConnectedAsync();
+            await Hub.OnConnectedAsync();
             
             GroupManagerMock.Verify(
                 x => x.AddToGroupAsync(HubCallerContextMock.Object.ConnectionId, It.IsIn(conferenceIds),
@@ -57,7 +57,7 @@ namespace VideoWeb.UnitTests.Hub
             const int numOfConferencesWithUser = 2;
             SetupJudgeConferences(numOfConferences, numOfConferencesWithUser);
 
-            await HubPr2079.OnConnectedAsync();
+            await Hub.OnConnectedAsync();
 
             GroupManagerMock.Verify(
                 x => x.AddToGroupAsync(HubCallerContextMock.Object.ConnectionId,

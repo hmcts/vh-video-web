@@ -28,10 +28,10 @@ public class ConferenceManagementService : IConferenceManagementService
 {
     private readonly IConferenceCache _conferenceCache;
     private readonly IVideoApiClient _videoApiClient;
-    private readonly IHubContext<VideoWeb.EventHub.Hub.EventHubPR2079, IEventHubClient> _hubContext;
+    private readonly IHubContext<VideoWeb.EventHub.Hub.EventHub, IEventHubClient> _hubContext;
     private readonly ILogger<ConferenceManagementService> _logger;
 
-    public ConferenceManagementService(IConferenceCache conferenceCache, IVideoApiClient videoApiClient, IHubContext<Hub.EventHubPR2079, IEventHubClient> hubContext, ILogger<ConferenceManagementService> logger)
+    public ConferenceManagementService(IConferenceCache conferenceCache, IVideoApiClient videoApiClient, IHubContext<Hub.EventHub, IEventHubClient> hubContext, ILogger<ConferenceManagementService> logger)
     {
         _conferenceCache = conferenceCache;
         _videoApiClient = videoApiClient;

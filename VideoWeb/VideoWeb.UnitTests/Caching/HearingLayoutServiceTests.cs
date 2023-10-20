@@ -35,7 +35,7 @@ namespace VideoWeb.UnitTests.Caching
                 .Setup(x => x.Group(It.IsAny<string>()))
                 .Returns(_mocker.Mock<IEventHubClient>().Object);
 
-            _mocker.Mock<IHubContext<EventHub.Hub.EventHubPR2079, IEventHubClient>>()
+            _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>()
                 .Setup(x => x.Clients)
                 .Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
         }
@@ -144,12 +144,11 @@ namespace VideoWeb.UnitTests.Caching
                 Participants = participants
             };
 
-            var exception = new Exception();
             _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(x => x == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ReturnsAsync(conference);
             _mocker.Mock<IHearingLayoutCache>().Setup(x => x.ReadFromCache(It.Is<Guid>(x => x == conferenceId))).ReturnsAsync(defaultLayout);
 
 
-            _mocker.Mock<IHubContext<EventHub.Hub.EventHubPR2079, IEventHubClient>>().Setup(x => x.Clients)
+            _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients)
                 .Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
 
             _mocker.Mock<IHubClients<IEventHubClient>>().Setup(x => x.Groups(It.IsAny<IReadOnlyList<string>>()))
@@ -183,11 +182,10 @@ namespace VideoWeb.UnitTests.Caching
             var defaultLayout = conference.GetRecommendedLayout();
             var expectedHostGroups = participants.Where(participant => participant.IsHost()).Select(participant => participant.Username.ToLowerInvariant());
 
-            var exception = new Exception();
             _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(x => x == conferenceId), It.IsAny<Func<Task<ConferenceDetailsResponse>>>())).ReturnsAsync(conference);
             _mocker.Mock<IHearingLayoutCache>().Setup(x => x.ReadFromCache(It.Is<Guid>(x => x == conferenceId))).Returns(Task.FromResult<HearingLayout?>(null));
 
-            _mocker.Mock<IHubContext<EventHub.Hub.EventHubPR2079, IEventHubClient>>().Setup(x => x.Clients)
+            _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients)
                 .Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
 
             _mocker.Mock<IHubClients<IEventHubClient>>().Setup(x => x.Groups(It.IsAny<IReadOnlyList<string>>()))

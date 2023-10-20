@@ -32,7 +32,7 @@ namespace VideoWeb.UnitTests.Hub
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(conference);
 
-            await HubPr2079.SendMediaDeviceStatus(conferenceId, participant.Id, deviceStatus);
+            await Hub.SendMediaDeviceStatus(conferenceId, participant.Id, deviceStatus);
             
             VerifyMessageCallCount(conference, participant.Id, deviceStatus, Times.Once());
             ConferenceVideoControlStatusService.Verify(
@@ -59,7 +59,7 @@ namespace VideoWeb.UnitTests.Hub
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(conference);
 
-            await HubPr2079.SendMediaDeviceStatus(conferenceId, participantId, deviceStatus);
+            await Hub.SendMediaDeviceStatus(conferenceId, participantId, deviceStatus);
 
             VerifyMessageCallCount(conference, participantId, deviceStatus, Times.Never());
         }
@@ -85,7 +85,7 @@ namespace VideoWeb.UnitTests.Hub
 
 
             EventHubClientMock.Verify(
-                x => x.Group(EventHub.Hub.EventHubPR2079.VhOfficersGroupName)
+                x => x.Group(EventHub.Hub.EventHub.VhOfficersGroupName)
                     .ParticipantMediaStatusMessage(participantId, conference.Id, message), times);
         }
     }

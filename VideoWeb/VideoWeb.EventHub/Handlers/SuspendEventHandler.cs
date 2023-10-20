@@ -13,7 +13,7 @@ namespace VideoWeb.EventHub.Handlers
 {
     public class SuspendEventHandler : EventHandlerBase
     {
-        public SuspendEventHandler(IHubContext<Hub.EventHubPR2079, IEventHubClient> hubContext,
+        public SuspendEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
             IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient) : base(
             hubContext, conferenceCache, logger, videoApiClient)
         {

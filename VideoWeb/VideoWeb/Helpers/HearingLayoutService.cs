@@ -18,9 +18,9 @@ namespace VideoWeb.Helpers
         private readonly IVideoApiClient _videoApiClient;
         private readonly IConferenceCache _conferenceCache;
         private readonly IHearingLayoutCache _hearingLayoutCache;
-        private readonly IHubContext<EventHub.Hub.EventHubPR2079, IEventHubClient> _hubContext;
+        private readonly IHubContext<EventHub.Hub.EventHub, IEventHubClient> _hubContext;
 
-        public HearingLayoutService(ILogger<HearingLayoutService> logger, IVideoApiClient videoApiClient, IConferenceCache conferenceCache, IHearingLayoutCache hearingLayoutCache, IHubContext<EventHub.Hub.EventHubPR2079, IEventHubClient> hubContext)
+        public HearingLayoutService(ILogger<HearingLayoutService> logger, IVideoApiClient videoApiClient, IConferenceCache conferenceCache, IHearingLayoutCache hearingLayoutCache, IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext)
         {
             _logger = logger;
             _videoApiClient = videoApiClient;

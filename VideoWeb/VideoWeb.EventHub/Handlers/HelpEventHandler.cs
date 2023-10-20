@@ -12,7 +12,7 @@ namespace VideoWeb.EventHub.Handlers
 {
     public class HelpEventHandler : EventHandlerBase
     {
-        public HelpEventHandler(IHubContext<Hub.EventHubPR2079, IEventHubClient> hubContext, IConferenceCache conferenceCache,
+        public HelpEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext, IConferenceCache conferenceCache,
             ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient) : base(hubContext, conferenceCache,
             logger, videoApiClient)
         {
@@ -22,7 +22,7 @@ namespace VideoWeb.EventHub.Handlers
 
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            return HubContext.Clients.Group(Hub.EventHubPR2079.VhOfficersGroupName)
+            return HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .HelpMessage(SourceConference.Id, SourceParticipant?.DisplayName);
         }
     }

@@ -14,7 +14,7 @@ namespace VideoWeb.EventHub.Handlers
 {
     public class ParticipantsUpdatedEventHandler : EventHandlerBase
     {
-        public ParticipantsUpdatedEventHandler(IHubContext<Hub.EventHubPR2079, IEventHubClient> hubContext,
+        public ParticipantsUpdatedEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
             IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient) : base(
             hubContext, conferenceCache, logger, videoApiClient)
         {
@@ -38,7 +38,7 @@ namespace VideoWeb.EventHub.Handlers
                     participant.Role);
             }
 
-            await HubContext.Clients.Group(Hub.EventHubPR2079.VhOfficersGroupName)
+            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .ParticipantsUpdatedMessage(SourceConference.Id, updatedParticipants);
         }
     }

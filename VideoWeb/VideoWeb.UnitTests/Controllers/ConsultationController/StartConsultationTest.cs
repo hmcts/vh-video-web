@@ -62,7 +62,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             _mocker.Mock<IHubClients<IEventHubClient>>().Setup(x => x.Group(It.IsAny<string>()))
                 .Returns(_mocker.Mock<IEventHubClient>().Object);
-            _mocker.Mock<IHubContext<EventHub.Hub.EventHubPR2079, IEventHubClient>>().Setup(x => x.Clients)
+            _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients)
                 .Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
 
             _controller = _mocker.Create<ConsultationsController>();
@@ -265,7 +265,6 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 string role, bool shouldBeAllowed)
         {
             var controller = GetControllerWithContextForRole(role);
-            var request = ConsultationHelper.GetStartJohConsultationRequest(_testConference);
 
             var result =
                 await controller.StartConsultationAsync(
