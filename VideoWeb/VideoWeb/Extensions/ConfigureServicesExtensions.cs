@@ -32,7 +32,6 @@ using VideoWeb.Mappings.Interfaces;
 using VideoWeb.Middleware;
 using BookingsApi.Client;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
-using UserApi.Client;
 using VideoApi.Client;
 using VideoWeb.EventHub.Services;
 using VideoWeb.Swagger;
@@ -101,13 +100,14 @@ namespace VideoWeb.Extensions
             services.AddScoped<ITokenProvider, TokenProvider>();
             services.AddScoped<IKinlyJwtTokenProvider, KinlyJwtTokenProvider>();
             services.AddScoped<IHashGenerator, HashGenerator>();
-            services.AddScoped<AdUserProfileService>();
             services.AddScoped<IAppRoleService, AppRoleService>();
-            services.AddScoped<IUserProfileService, CachedProfileService>();
+            services.AddScoped<IUserProfileService, UserProfileService>();
+            services.AddScoped<IUserProfileCache, DistributedUserProfileCache>();
+            services.AddScoped<IUserClaimsCache, DistributedUserClaimsCache>();
             services.AddScoped<IConferenceCache, DistributedConferenceCache>();
             services.AddScoped<IMessageDecoder, MessageFromDecoder>();
             services.AddScoped<IHeartbeatRequestMapper, HeartbeatRequestMapper>();
-            services.AddSingleton<IUserCache, DistributedUserCache>();
+            services.AddSingleton<IUserProfileCache, DistributedUserProfileCache>();
             services.AddScoped<ILoggingDataExtractor, LoggingDataExtractor>();
             services.AddScoped<IConsultationInvitationCache, DistributedConsultationInvitationCache>();
             services.AddScoped<IConsultationInvitationTracker, ConsultationInvitationTracker>();
@@ -134,10 +134,6 @@ namespace VideoWeb.Extensions
             services.AddHttpClient<IVideoApiClient, VideoApiClient>()
                 .AddHttpMessageHandler<VideoApiTokenHandler>()
                 .AddTypedClient(httpClient => BuildVideoApiClient(httpClient, servicesConfiguration));
-
-            services.AddHttpClient<IUserApiClient, UserApiClient>()
-                .AddHttpMessageHandler<UserApiTokenHandler>()
-                .AddTypedClient(httpClient => BuildUserApiClient(httpClient, servicesConfiguration));
 
             services.AddScoped<IEventHandlerFactory, EventHandlerFactory>();
             services.AddScoped<IParticipantsUpdatedEventNotifier, ParticipantsUpdatedEventNotifier>();
@@ -282,12 +278,6 @@ namespace VideoWeb.Extensions
             HearingServicesConfiguration serviceSettings)
         {
             return VideoApiClient.GetClient(serviceSettings.VideoApiUrl, httpClient);
-        }
-
-        private static IUserApiClient BuildUserApiClient(HttpClient httpClient,
-            HearingServicesConfiguration serviceSettings)
-        {
-            return UserApiClient.GetClient(serviceSettings.UserApiUrl, httpClient);
         }
     }
 }

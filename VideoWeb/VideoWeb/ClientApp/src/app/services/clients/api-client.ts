@@ -5692,23 +5692,18 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
-     * @param body (optional)
      * @return Success
      */
-    staffMemberJoinConference(conferenceId: string, body: StaffMemberJoinConferenceRequest | undefined): Observable<ConferenceResponse> {
+    staffMemberJoinConference(conferenceId: string): Observable<ConferenceResponse> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/joinConference';
         if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
         url_ = url_.replace(/[?&]$/, '');
 
-        const content_ = JSON.stringify(body);
-
         let options_: any = {
-            body: content_,
             observe: 'response',
             responseType: 'blob',
             headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json',
                 Accept: 'application/json'
             })
         };
@@ -5970,6 +5965,15 @@ export class ApiClient extends ApiClientBase {
                     let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
                     result200 = UserProfileResponse.fromJS(resultData200);
                     return _observableOf(result200);
+                })
+            );
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result404: any = null;
+                    let resultData404 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result404 = ProblemDetails.fromJS(resultData404);
+                    return throwException('Not Found', status, _responseText, _headers, result404);
                 })
             );
         } else if (status === 401) {
@@ -9027,43 +9031,6 @@ export interface ISetConferenceVideoControlStatusesRequest_VideoControlStatusReq
     is_remote_muted?: boolean;
     is_hand_raised?: boolean;
     is_local_video_muted?: boolean;
-}
-
-export class StaffMemberJoinConferenceRequest implements IStaffMemberJoinConferenceRequest {
-    /** Staff Member Username */
-    username?: string | undefined;
-
-    constructor(data?: IStaffMemberJoinConferenceRequest) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.username = _data['username'];
-        }
-    }
-
-    static fromJS(data: any): StaffMemberJoinConferenceRequest {
-        data = typeof data === 'object' ? data : {};
-        let result = new StaffMemberJoinConferenceRequest();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data['username'] = this.username;
-        return data;
-    }
-}
-
-export interface IStaffMemberJoinConferenceRequest {
-    /** Staff Member Username */
-    username?: string | undefined;
 }
 
 export class StartPrivateConsultationRequest implements IStartPrivateConsultationRequest {

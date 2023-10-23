@@ -23,7 +23,6 @@ import {
     LoggedParticipantResponse,
     AllowedEndpointResponse,
     HearingVenueResponse,
-    StaffMemberJoinConferenceRequest,
     JusticeUserResponse
 } from '../clients/api-client';
 import { ConferenceLite } from '../models/conference-lite';
@@ -104,8 +103,8 @@ export class VideoWebService implements IVideoWebApiService {
         return this.apiClient.getCSOs();
     }
 
-    staffMemberJoinConference(conferenceId: string, request: StaffMemberJoinConferenceRequest): Promise<ConferenceForHostResponse> {
-        return this.apiClient.staffMemberJoinConference(conferenceId, request).toPromise();
+    staffMemberJoinConference(conferenceId: string): Promise<ConferenceForHostResponse> {
+        return this.apiClient.staffMemberJoinConference(conferenceId).toPromise();
     }
 
     /**

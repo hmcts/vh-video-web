@@ -6,14 +6,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using FizzWare.NBuilder;
 using VideoWeb.AuthenticationSchemes;
 using VideoWeb.Common.Configuration;
-using VideoWeb.Services;
+using VideoWeb.Common;
 using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.AuthenticationSchemes

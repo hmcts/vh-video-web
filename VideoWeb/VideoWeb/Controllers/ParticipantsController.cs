@@ -16,15 +16,12 @@ using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
-using BookingsApi.Client;
-using UserApi.Client;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Enums;
 using VideoWeb.Middleware;
 using VideoWeb.Services;
-using System.Text.Json;
 
 namespace VideoWeb.Controllers
 {
@@ -38,7 +35,6 @@ namespace VideoWeb.Controllers
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<ParticipantsController> _logger;
         private readonly IMapperFactory _mapperFactory;
-        private readonly IUserApiClient _userApiClient;
         private readonly IParticipantService _participantService;
 
         public ParticipantsController(
@@ -47,7 +43,6 @@ namespace VideoWeb.Controllers
             IConferenceCache conferenceCache,
             ILogger<ParticipantsController> logger,
             IMapperFactory mapperFactory,
-            IUserApiClient userApiClient,
             IParticipantService participantService
         )
         {
@@ -57,27 +52,6 @@ namespace VideoWeb.Controllers
             _logger = logger;
             _participantService = participantService;
             _mapperFactory = mapperFactory;
-            _userApiClient = userApiClient;
-        }
-
-        [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
-        [HttpGet("{conferenceId}/participants/{participantId}/selftestresult")]
-        [SwaggerOperation(OperationId = "GetTestCallResult")]
-        [ProducesResponseType(typeof(TestCallScoreResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetTestCallResultForParticipantAsync(Guid conferenceId, Guid participantId)
-        {
-            try
-            {
-                var score = await _videoApiClient.GetTestCallResultForParticipantAsync(conferenceId, participantId);
-                return Ok(score);
-            }
-            catch (VideoApiException e)
-            {
-                _logger.LogError(e, $"Unable to get test call result for " +
-                                    $"participant: {participantId} in conference: {conferenceId}");
-                return StatusCode(e.StatusCode, e.Response);
-            }
         }
 
         [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
@@ -137,26 +111,7 @@ namespace VideoWeb.Controllers
             return conference.Participants
                 .Single(x => x.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase)).Id;
         }
-
-        [HttpGet("independentselftestresult")]
-        [SwaggerOperation(OperationId = "GetIndependentTestCallResult")]
-        [ProducesResponseType(typeof(TestCallScoreResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetIndependentTestCallResultAsync(Guid participantId)
-        {
-            try
-            {
-                var score = await _videoApiClient.GetIndependentTestCallResultAsync(participantId);
-
-                return Ok(score);
-            }
-            catch (VideoApiException e)
-            {
-                _logger.LogError(e, $"Unable to get independent test call result for participant: {participantId}");
-                return StatusCode(e.StatusCode, e.Response);
-            }
-        }
-
+       
         [Authorize(AppRoles.VhOfficerRole)]
         [HttpGet("{conferenceId}/participant/{participantId}/heartbeatrecent")]
         [SwaggerOperation(OperationId = "GetHeartbeatDataForParticipant")]
@@ -241,13 +196,6 @@ namespace VideoWeb.Controllers
             catch (VideoApiException ex)
             {
                 _logger.LogError(ex, $"Unable to retrieve conference: ${conferenceId}");
-
-                return StatusCode(ex.StatusCode, ex.Response);
-            }
-            catch (BookingsApiException ex)
-            {
-                _logger.LogError(ex,
-                    $"Unable to retrieve booking participants from hearing with conferenceId: ${conferenceId}");
 
                 return StatusCode(ex.StatusCode, ex.Response);
             }
@@ -338,12 +286,11 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [Authorize(AppRoles.StaffMember)]
-        public async Task<IActionResult> StaffMemberJoinConferenceAsync(Guid conferenceId, StaffMemberJoinConferenceRequest request)
+        public async Task<IActionResult> StaffMemberJoinConferenceAsync(Guid conferenceId)
         {
-            var username = request.Username.ToLower().Trim();
-            
             try
             {
+                var username = User.Identity.Name.ToLower().Trim();
                 var originalConference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
 
                 if (!_participantService.CanStaffMemberJoinConference(originalConference))
@@ -353,16 +300,13 @@ namespace VideoWeb.Controllers
                     return BadRequest(ModelState);
                 }
                 
-                _logger.LogDebug("Attempting to assign {StaffMember} to conference {conferenceId}", request.Username,
-                    conferenceId);
-
-                var userProfile = await _userApiClient.GetUserByAdUserNameAsync(username);
+                _logger.LogDebug("Attempting to assign {StaffMember} to conference {conferenceId}", username, conferenceId);
 
                 var claimsPrincipalToUserProfileResponseMapper =
                     _mapperFactory.Get<ClaimsPrincipal, UserProfileResponse>();
-                var staffMemberProfile = claimsPrincipalToUserProfileResponseMapper.Map(User); 
-                
-                var response = await _videoApiClient.AddStaffMemberToConferenceAsync(conferenceId, _participantService.InitialiseAddStaffMemberRequest(staffMemberProfile, userProfile.Email, User));
+                var staffMemberProfile = claimsPrincipalToUserProfileResponseMapper.Map(User);
+
+                var response = await _videoApiClient.AddStaffMemberToConferenceAsync(conferenceId, _participantService.InitialiseAddStaffMemberRequest(staffMemberProfile, username, User));
 
                 await _participantService.AddStaffMemberToConferenceCache(response);
                 
@@ -376,13 +320,6 @@ namespace VideoWeb.Controllers
             catch (VideoApiException e)
             {
                 _logger.LogError(e, $"Unable to add staff member for " +
-                                    $"conference: {conferenceId}");
-                return StatusCode(e.StatusCode, e.Response);
-            }
-            catch (UserApiException e)
-            {
-                _logger.LogError(e, $"Unable to get current staff member " + $"Username{username}" +
-                                    "profile for " +
                                     $"conference: {conferenceId}");
                 return StatusCode(e.StatusCode, e.Response);
             }

@@ -14,7 +14,6 @@ using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Mappings;
-using UserApi.Client;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
@@ -171,21 +170,6 @@ namespace VideoWeb.UnitTests.Controllers
             courtRoomsAccounts.Count.Should().Be(1);
             courtRoomsAccounts[0].FirstName.Should().Be("FirstName1");
             courtRoomsAccounts[0].LastNames[0].Should().Be("LastName1");
-        }
-
-        [Test]
-        public async Task Should_return_error_when_unable_to_retrieve_court_rooms_accounts()
-        {
-
-            var apiException = new UserApiException("Court rooms accounts not found", (int)HttpStatusCode.BadRequest, "Error", null, null);
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
-                .ThrowsAsync(apiException);
-
-            var result = await _sut.GetCourtRoomsAccounts(_query);
-            var typedResult = (ObjectResult)result.Result;
-            typedResult.Should().NotBeNull();
-            typedResult.StatusCode.Should().Be(apiException.StatusCode);
         }
 
         [Test]

@@ -59,6 +59,11 @@ namespace VideoWeb.Common.Models
         {
             Participants.RemoveAll(x => x.RefId == referenceId);
         }
+        
+        public bool IsParticipantInConference(string username)
+        {
+            return Participants.Exists(p => p.Username.Equals(username, StringComparison.InvariantCultureIgnoreCase));
+        }
 
         public void UpdateParticipant(UpdateParticipant updateParticipant)
         {

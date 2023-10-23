@@ -7,16 +7,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
-using VideoWeb.Common.SignalR;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Mappers;
 using VideoWeb.EventHub.Models;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
-using VideoWeb.Common.Configuration;
-using Microsoft.Extensions.Options;
 using VideoWeb.EventHub.Services;
+using VideoWeb.Common;
 
 namespace VideoWeb.EventHub.Hub
 {
@@ -26,36 +24,37 @@ namespace VideoWeb.EventHub.Hub
         public static string DefaultAdminName => "Admin";
 
         private readonly IUserProfileService _userProfileService;
+        private readonly IAppRoleService _appRoleService;
         private readonly ILogger<EventHub> _logger;
         private readonly IVideoApiClient _videoApiClient;
         private readonly IConferenceCache _conferenceCache;
         private readonly IHeartbeatRequestMapper _heartbeatRequestMapper;
         private readonly IConferenceVideoControlStatusService _conferenceVideoControlStatusService;
-        private readonly HearingServicesConfiguration _servicesConfiguration;
         private readonly IConferenceManagementService _conferenceManagementService;
 
-        public EventHub(IUserProfileService userProfileService, 
+        public EventHub(IUserProfileService userProfileService,
+            IAppRoleService appRoleService,
             IVideoApiClient videoApiClient,
-            ILogger<EventHub> logger, 
-            IConferenceCache conferenceCache, 
-            IHeartbeatRequestMapper heartbeatRequestMapper, 
-            IOptions<HearingServicesConfiguration> servicesConfiguration, 
-            IConferenceVideoControlStatusService conferenceVideoControlStatusService, 
+            ILogger<EventHub> logger,
+            IConferenceCache conferenceCache,
+            IHeartbeatRequestMapper heartbeatRequestMapper,
+            IConferenceVideoControlStatusService conferenceVideoControlStatusService,
             IConferenceManagementService conferenceManagementService)
         {
             _userProfileService = userProfileService;
+            _appRoleService = appRoleService;
             _logger = logger;
             _conferenceCache = conferenceCache;
             _heartbeatRequestMapper = heartbeatRequestMapper;
             _conferenceVideoControlStatusService = conferenceVideoControlStatusService;
             _conferenceManagementService = conferenceManagementService;
             _videoApiClient = videoApiClient;
-            _servicesConfiguration = servicesConfiguration.Value;
         }
 
         public override async Task OnConnectedAsync()
         {
-            var userName = await GetObfuscatedUsernameAsync(Context.User.Identity.Name);
+            if (!Context.User.Identity.IsAuthenticated) return;
+            var userName = GetObfuscatedUsernameAsync(Context.User.Identity.Name);
             _logger.LogTrace("Connected to event hub server-side: {Username}", userName);
             var isAdmin = IsSenderAdmin();
 
@@ -63,11 +62,14 @@ namespace VideoWeb.EventHub.Hub
             await AddUserToConferenceGroups(isAdmin);
 
             await base.OnConnectedAsync();
+
+            // Cache user profile in the redis cache
+            await _userProfileService.CacheUserProfileAsync(Context.User);
         }
 
         private async Task AddUserToConferenceGroups(bool isAdmin)
         {
-           var conferenceIds = await GetConferenceIds(isAdmin);
+            var conferenceIds = await GetConferenceIds(isAdmin);
             var tasks = conferenceIds.Select(c => Groups.AddToGroupAsync(Context.ConnectionId, c.ToString())).ToArray();
 
             await Task.WhenAll(tasks);
@@ -93,7 +95,7 @@ namespace VideoWeb.EventHub.Hub
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            var userName = await GetObfuscatedUsernameAsync(Context.User.Identity.Name.ToLowerInvariant());
+            var userName = GetObfuscatedUsernameAsync(Context.User.Identity.Name.ToLowerInvariant());
             if (exception == null)
             {
                 _logger.LogInformation("Disconnected from chat hub server-side: {Username}", userName);
@@ -107,6 +109,8 @@ namespace VideoWeb.EventHub.Hub
             var isAdmin = IsSenderAdmin();
             await RemoveUserFromUserGroup(isAdmin);
             await RemoveUserFromConferenceGroups(isAdmin);
+            await _userProfileService.ClearUserCache(userName);
+            await _appRoleService.ClearUserCache(userName);
 
             await base.OnDisconnectedAsync(exception);
         }
@@ -146,9 +150,14 @@ namespace VideoWeb.EventHub.Hub
             return Context.User.IsInRole(AppRoles.VhOfficerRole);
         }
 
-        private async Task<string> GetObfuscatedUsernameAsync(string username)
+        private bool IsSenderAdmin(Conference conference)
         {
-            return await _userProfileService.GetObfuscatedUsernameAsync(username);
+            return !conference.IsParticipantInConference(Context.User.Identity!.Name) && IsSenderAdmin();
+        }
+
+        private string GetObfuscatedUsernameAsync(string username)
+        {
+            return _userProfileService.GetObfuscatedUsername(username);
         }
 
         /// <summary>
@@ -161,10 +170,11 @@ namespace VideoWeb.EventHub.Hub
         /// <returns></returns>
         public async Task SendMessage(Guid conferenceId, string message, string to, Guid messageUuid)
         {
-            var userName = await GetObfuscatedUsernameAsync(Context.User.Identity.Name);
+            var userName = GetObfuscatedUsernameAsync(Context.User.Identity.Name);
             _logger.LogTrace("{Username} is attempting to SendMessages", userName);
+            var conference = await GetConference(conferenceId);
             // this determines if the message is from admin
-            var isSenderAdmin = IsSenderAdmin();
+            var isSenderAdmin = IsSenderAdmin(conference);
             _logger.LogDebug("{Username} is sender admin: {IsSenderAdmin}", userName, isSenderAdmin);
 
             var participantTo = to;
@@ -180,7 +190,7 @@ namespace VideoWeb.EventHub.Hub
             }
 
 
-            var isRecipientAdmin = await IsRecipientAdmin(participantTo);
+            var isRecipientAdmin = await IsRecipientAdmin(participantTo, conference);
             _logger.LogDebug("{Username} is recipient admin: {IsSenderAdmin}", userName, isSenderAdmin);
             //only admins and participants in the conference can send or receive a message within a conference channel
             var from = Context.User.Identity.Name.ToLowerInvariant();
@@ -224,21 +234,22 @@ namespace VideoWeb.EventHub.Hub
             }
         }
 
-        private async Task<bool> IsRecipientAdmin(string recipientUsername)
+        private async Task<bool> IsRecipientAdmin(string recipientUsername, Conference conference)
         {
             if (recipientUsername.Equals(DefaultAdminName, StringComparison.InvariantCultureIgnoreCase))
             {
                 return true;
             }
-
-            if (!recipientUsername.ToLower().EndsWith(_servicesConfiguration.EmailReformDomain))
+            
+            if (conference.IsParticipantInConference(recipientUsername)) return false;
+            
+            var user = await _userProfileService.GetUserAsync(recipientUsername);
+            if (user == null)
             {
-                return false;
+                throw new InvalidOperationException($"Unable to find the user {recipientUsername} from Cache");
             }
 
-
-            var user = await _userProfileService.GetUserAsync(recipientUsername);
-            return user != null && user.UserRole.Equals("VHOfficer", StringComparison.InvariantCultureIgnoreCase);
+            return user.IsAdmin;
         }
 
         private async Task SendToParticipant(SendMessageDto dto)
@@ -246,7 +257,7 @@ namespace VideoWeb.EventHub.Hub
             var participant = dto.Conference.Participants.Single(x =>
                 x.Username.Equals(dto.ParticipantUsername, StringComparison.InvariantCultureIgnoreCase));
 
-            var username = await _userProfileService.GetObfuscatedUsernameAsync(participant.Username);
+            var username = _userProfileService.GetObfuscatedUsername(participant.Username);
             _logger.LogDebug("Sending message {MessageUuid} to group {Username}", dto.MessageUuid, username);
 
             var from = participant.Id.ToString() == dto.To ? dto.From : participant.Id.ToString();
@@ -294,7 +305,7 @@ namespace VideoWeb.EventHub.Hub
         private async Task<bool> IsAllowedToSendMessageAsync(Guid conferenceId, bool isSenderAdmin,
             bool isRecipientAdmin, string participantUsername)
         {
-            var username = await _userProfileService.GetObfuscatedUsernameAsync(participantUsername);
+            var username = _userProfileService.GetObfuscatedUsername(participantUsername);
             if (!IsConversationBetweenAdminAndParticipant(isSenderAdmin, isRecipientAdmin))
             {
                 return false;
@@ -420,16 +431,18 @@ namespace VideoWeb.EventHub.Hub
                     throw new ParticipantNotFoundException(conferenceId, Context.User.Identity.Name);
                 }
 
-                await _conferenceVideoControlStatusService.UpdateMediaStatusForParticipantInConference(conferenceId, participant.Id.ToString(), mediaStatus);
+                await _conferenceVideoControlStatusService.UpdateMediaStatusForParticipantInConference(conferenceId,
+                    participant.Id.ToString(), mediaStatus);
 
-                var groupNames = new List<string> { VhOfficersGroupName };
-                groupNames.AddRange(conference.Participants.Where(x => x.IsHost()).Select(h => h.Username.ToLowerInvariant()));
-                foreach(var groupName in groupNames)
+                var groupNames = new List<string> {VhOfficersGroupName};
+                groupNames.AddRange(conference.Participants.Where(x => x.IsHost())
+                    .Select(h => h.Username.ToLowerInvariant()));
+                foreach (var groupName in groupNames)
                 {
                     await Clients.Group(groupName)
                         .ParticipantMediaStatusMessage(participantId, conferenceId, mediaStatus);
                 }
-               
+
                 _logger.LogTrace(
                     "Participant device status updated: Participant Id: {ParticipantId} | Conference Id: {ConferenceId}",
                     participantId, conferenceId);
@@ -492,64 +505,66 @@ namespace VideoWeb.EventHub.Hub
         }
 
         /// <summary>
-         /// A host can force a participant's local mute to be toggled. To be used for participants who do not have peripherals attached.
-         /// This is not to be confused with remote mute, which lock's a participant's ability to toggle their own mute status.
-         /// </summary>
-         /// <param name="conferenceId">The UUID for a conference</param>
-         /// <param name="participantId">The UUID for the participant</param>
-         /// <param name="muted">true to mute or false to unmute a participant.</param>
-         [Authorize("Host")]
-         public async Task ToggleParticipantLocalMute(Guid conferenceId, Guid participantId, bool muted)
-         {
-             try
-             {
-                 var conference = await GetConference(conferenceId);
-                 var participant = conference.Participants.SingleOrDefault(x => x.Id == participantId);
-                 if (participant == null)
-                 {
+        /// A host can force a participant's local mute to be toggled. To be used for participants who do not have peripherals attached.
+        /// This is not to be confused with remote mute, which lock's a participant's ability to toggle their own mute status.
+        /// </summary>
+        /// <param name="conferenceId">The UUID for a conference</param>
+        /// <param name="participantId">The UUID for the participant</param>
+        /// <param name="muted">true to mute or false to unmute a participant.</param>
+        [Authorize("Host")]
+        public async Task ToggleParticipantLocalMute(Guid conferenceId, Guid participantId, bool muted)
+        {
+            try
+            {
+                var conference = await GetConference(conferenceId);
+                var participant = conference.Participants.SingleOrDefault(x => x.Id == participantId);
+                if (participant == null)
+                {
 
-                     _logger.LogDebug("Participant {ParticipantId} does not exist in conference {ConferenceId}", participantId, conferenceId);
-                     throw new ParticipantNotFoundException(conferenceId, participantId);
-                 }
-                 await Clients.Group(participant.Username.ToLowerInvariant())
-                     .UpdateParticipantLocalMuteMessage(conferenceId, participantId, muted);
+                    _logger.LogDebug("Participant {ParticipantId} does not exist in conference {ConferenceId}",
+                        participantId, conferenceId);
+                    throw new ParticipantNotFoundException(conferenceId, participantId);
+                }
 
-             }
-             catch (Exception ex)
-             {
-                 _logger.LogError(ex,
-                     "Error occured when updating participant {ParticipantId} in conference {ConferenceId} local mute status to {Muted}",
-                     participantId, conferenceId, muted);
-             }
-         }
+                await Clients.Group(participant.Username.ToLowerInvariant())
+                    .UpdateParticipantLocalMuteMessage(conferenceId, participantId, muted);
 
-         /// <summary>
-         /// A host can force all participants' local mute to be toggled. To be used for participants who do not have peripherals attached.
-         /// This is not to be confused with remote mute, which lock's a participant's ability to toggle their own mute status.
-         /// </summary>
-         /// <param name="conferenceId">The UUID for a conference</param>
-         /// <param name="muted">true to mute or false to unmute participants.</param>
-         [Authorize("Host")]
-         public async Task ToggleAllParticipantLocalMute(Guid conferenceId, bool muted)
-         {
-             try
-             {
-                 var conference = await GetConference(conferenceId);
-                 var participants = conference.Participants.Where(x => !x.IsHost());
- 
-                 foreach (var participant in participants)
-                 {
-                     await Clients.Group(participant.Username.ToLowerInvariant())
-                         .UpdateParticipantLocalMuteMessage(conferenceId, participant.Id, muted);
-                 }
-             }
-             catch (Exception ex)
-             {
-                 _logger.LogError(ex,
-                     "Error occured when updating all participants in conference {ConferenceId} local mute status to {Muted}",
-                     conferenceId, muted);
-             }
-         }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error occured when updating participant {ParticipantId} in conference {ConferenceId} local mute status to {Muted}",
+                    participantId, conferenceId, muted);
+            }
+        }
+
+        /// <summary>
+        /// A host can force all participants' local mute to be toggled. To be used for participants who do not have peripherals attached.
+        /// This is not to be confused with remote mute, which lock's a participant's ability to toggle their own mute status.
+        /// </summary>
+        /// <param name="conferenceId">The UUID for a conference</param>
+        /// <param name="muted">true to mute or false to unmute participants.</param>
+        [Authorize("Host")]
+        public async Task ToggleAllParticipantLocalMute(Guid conferenceId, bool muted)
+        {
+            try
+            {
+                var conference = await GetConference(conferenceId);
+                var participants = conference.Participants.Where(x => !x.IsHost());
+
+                foreach (var participant in participants)
+                {
+                    await Clients.Group(participant.Username.ToLowerInvariant())
+                        .UpdateParticipantLocalMuteMessage(conferenceId, participant.Id, muted);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error occured when updating all participants in conference {ConferenceId} local mute status to {Muted}",
+                    conferenceId, muted);
+            }
+        }
 
         /// <summary>
         /// Send a message to all other hosts in the conference, that the audio restart has been actioned.
@@ -565,17 +580,18 @@ namespace VideoWeb.EventHub.Hub
                 var otherHosts = conference.Participants
                     .Where(x => x.IsHost() && x.Id != participantId)
                     .ToArray();
-                
-                if(otherHosts.Any())
+
+                if (otherHosts.Any())
                     foreach (var host in otherHosts)
                         await Clients.Group(host.Username.ToLowerInvariant()).AudioRestartActioned(conferenceId);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occured when updating other hosts in conference {ConferenceId}", conferenceId);
+                _logger.LogError(ex, "Error occured when updating other hosts in conference {ConferenceId}",
+                    conferenceId);
             }
         }
-        
+
         private List<Participant> GetLinkedParticipants(Conference conference, Participant participant)
         {
             if (participant.IsJudicialOfficeHolder())
