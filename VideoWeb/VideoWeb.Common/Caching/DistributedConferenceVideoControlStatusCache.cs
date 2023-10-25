@@ -5,7 +5,7 @@ using VideoWeb.Common.Models;
 
 namespace VideoWeb.Common.Caching
 {
-    public class DistributedConferenceVideoControlStatusCache : RedisCacheBase<Guid, ConferenceVideoControlStatuses?>, IConferenceVideoControlStatusCache
+    public class DistributedConferenceVideoControlStatusCache : RedisCacheBase<Guid, ConferenceVideoControlStatuses>, IConferenceVideoControlStatusCache
     {
         private readonly string _entryPrefix = "video_control_statuses_";
         public override DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
