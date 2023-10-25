@@ -1,12 +1,15 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 
 namespace VideoWeb.Common.Caching;
 
 public sealed class DistributedTestCallCache : RedisCacheBase<string, bool>, ITestCallCache
 {
-    public DistributedTestCallCache(IDistributedCache distributedCache) : base(distributedCache)
+    public DistributedTestCallCache(
+        IDistributedCache distributedCache,
+        ILogger<RedisCacheBase<string, bool>> logger) : base(distributedCache, logger)
     {
         CacheEntryOptions = new DistributedCacheEntryOptions
         {
@@ -15,8 +18,8 @@ public sealed class DistributedTestCallCache : RedisCacheBase<string, bool>, ITe
     }
 
     public override DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
-        
-    public override string GetKey(string key)
+
+    protected override string GetKey(string key)
     {
         return $"{key}_SelfTestCompleted";
     }

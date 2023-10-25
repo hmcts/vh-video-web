@@ -1,10 +1,6 @@
 using Microsoft.Extensions.Caching.Distributed;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using VideoApi.Contract.Requests;
+using Microsoft.Extensions.Logging;
 using VideoWeb.Common.Models;
 
 namespace VideoWeb.Common.Caching
@@ -14,7 +10,9 @@ namespace VideoWeb.Common.Caching
         private readonly string _entryPrefix = "video_control_statuses_";
         public override DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
         
-        public DistributedConferenceVideoControlStatusCache(IDistributedCache distributedCache) : base(distributedCache)
+        public DistributedConferenceVideoControlStatusCache(
+            IDistributedCache distributedCache, 
+            ILogger<RedisCacheBase<Guid, ConferenceVideoControlStatuses>> logger) : base(distributedCache, logger)
         {
             CacheEntryOptions = new DistributedCacheEntryOptions
             {
@@ -22,7 +20,7 @@ namespace VideoWeb.Common.Caching
             };
         }
 
-        public override string GetKey(Guid key)
+        protected override string GetKey(Guid key)
         {
             return $"{_entryPrefix}{key}";
         }

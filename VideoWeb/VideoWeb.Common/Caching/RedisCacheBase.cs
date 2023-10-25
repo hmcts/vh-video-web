@@ -1,20 +1,24 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace VideoWeb.Common.Caching
 {
     public abstract class RedisCacheBase<TKey, TEntry>
     {
         private readonly IDistributedCache _distributedCache;
+        private readonly ILogger<RedisCacheBase<TKey, TEntry>> _logger;
         public abstract DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
 
-        public RedisCacheBase(IDistributedCache distributedCache)
+        protected RedisCacheBase(
+            IDistributedCache distributedCache, 
+            ILogger<RedisCacheBase<TKey, TEntry>> logger)
         {
             _distributedCache = distributedCache;
+            _logger = logger;
         }
 
         public virtual async Task WriteToCache(TKey key, TEntry toWrite)
@@ -26,7 +30,15 @@ namespace VideoWeb.Common.Caching
 
             var serialisedLayout = JsonConvert.SerializeObject(toWrite, CachingHelper.SerializerSettings);
             var data = Encoding.UTF8.GetBytes(serialisedLayout);
-            await _distributedCache.SetAsync(GetKey(key), data, CacheEntryOptions);
+
+            try
+            {
+                await _distributedCache.SetAsync(GetKey(key), data, CacheEntryOptions);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error writing to cache for key {key}", key);
+            }
         }
 
         public virtual async Task<TEntry> ReadFromCache(TKey key)
@@ -46,11 +58,19 @@ namespace VideoWeb.Common.Caching
             }
         }
 
-        public virtual async Task RemoveFromCache(TKey key)
+        protected virtual async Task RemoveFromCache(TKey key)
         {
-            await _distributedCache.RemoveAsync(GetKey(key));
+            try
+            {
+                await _distributedCache.RemoveAsync(GetKey(key));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error removing from cache for key {key}", key);
+            }
+            
         }
 
-        public abstract string GetKey(TKey key);
+        protected abstract string GetKey(TKey key);
     }
 }
