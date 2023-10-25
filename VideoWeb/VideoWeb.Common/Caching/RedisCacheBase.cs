@@ -52,8 +52,9 @@ namespace VideoWeb.Common.Caching
                         CachingHelper.SerializerSettings);
                 return layout;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error reading from cache for key {key}", key);
                 return default(TEntry);
             }
         }
