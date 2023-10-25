@@ -17,9 +17,12 @@
         </p>
       </td>
       <td class="govuk-table__cell">
-        <p id="participant-case-name-{{ conference.id }}" class="govuk-!-margin-0 govuk-!-padding-0">{{ conference.case_name }}</p>
+        <p id="participant-case-name-{{ conference.id }}" class="govuk-!-margin-0 govuk-!-padding-0">
+          <app-truncatable-text [text]="conference.case_name" [maxLimit]="15" [hideShowMore]="true"></app-truncatable-text>
+        </p>
         <p id="participant-case-number-{{ conference.id }}" class="govuk-!-margin-0 govuk-!-padding-0">
-          {{ 'hearing-list-table.case-number' | translate }}: <strong>{{ conference.case_number }}</strong>
+          {{ 'hearing-list-table.case-number' | translate }}:
+          <strong><app-truncatable-text [text]="conference.case_number" [maxLimit]="15" [hideShowMore]="true"></app-truncatable-text></strong>
         </p>
       </td>
       <td class="govuk-table__cell">

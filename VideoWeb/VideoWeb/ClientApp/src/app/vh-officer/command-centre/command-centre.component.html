@@ -1,6 +1,5 @@
 <div>
-
-  <div class="govuk-grid-row menu" style="clear: both;">
+  <div class="govuk-grid-row menu" style="clear: both">
     <div class="half-left">
       <input
         type="button"
@@ -28,13 +27,15 @@
   </div>
   <div class="govuk-grid-row">
     <div class="conference-list" tabindex="0">
-      <app-vho-hearing-list #conferenceList
-                            [conferences]="hearings"
-                            [workAllocationFeatureFlag]="vhoWorkAllocationFeatureFlag"
-                            (selectedConference)="onConferenceSelected($event)">
+      <app-vho-hearing-list
+        #conferenceList
+        [conferences]="hearings"
+        [workAllocationFeatureFlag]="vhoWorkAllocationFeatureFlag"
+        (selectedConference)="onConferenceSelected($event)"
+      >
       </app-vho-hearing-list>
     </div>
-    <div class="selected-menu-content" [ngSwitch]="selectedMenu">
+    <div *ngIf="selectedHearing" class="selected-menu-content" [ngSwitch]="selectedMenu">
       <ng-container *ngSwitchCase="menuOption.Hearing">
         <app-admin-hearing *ngIf="selectedHearing; else nohearing" [hearing]="selectedHearing"></app-admin-hearing>
       </ng-container>

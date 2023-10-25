@@ -1,0 +1,5 @@
+<span *ngIf="!displayTooltip" #textField [class.word-break]="hasOverflowed()">{{ displayText }}</span>
+
+<span *ngIf="displayTooltip" #textField class="word-break"
+  >{{ displayText }}<span *ngIf="!hideShowMore" class="show-more-tooltip" appTooltip [text]="originalText"> (show more)</span>
+</span>
