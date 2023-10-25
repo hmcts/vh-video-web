@@ -97,6 +97,7 @@ import { SecurityServiceProvider } from '../security/authentication/security-pro
 import { ProfileService } from '../services/api/profile.service';
 import { AppInsightsLoggerService } from '../services/logging/loggers/app-insights-logger.service';
 import { SecurityConfigSetupService } from '../security/security-config-setup.service';
+import { TruncatableTextComponent } from './truncatable-text/truncatable-text.component';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -157,7 +158,8 @@ export function getSettings(configService: ConfigService) {
         VhOfficerVenueListComponent,
         RoomNamePipe,
         HookElementDirective,
-        RandomPipe
+        RandomPipe,
+        TruncatableTextComponent
     ],
     providers: [
         { provide: Logger, useClass: LoggerService },
@@ -211,7 +213,8 @@ export function getSettings(configService: ConfigService) {
         FontAwesomeModule,
         RoomNamePipe,
         HookElementDirective,
-        RandomPipe
+        RandomPipe,
+        TruncatableTextComponent
     ]
 })
 export class SharedModule {
