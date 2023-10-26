@@ -32,6 +32,7 @@ export class UserMediaService {
     private activeVideoDeviceSubject = new ReplaySubject<UserMediaDevice>(1);
     private activeMicrophoneDeviceSubject = new ReplaySubject<UserMediaDevice>(1);
     private isAudioOnlySubject = new ReplaySubject<boolean>(1);
+    private readonly START_AUDIO_MUTED_KEY = 'vh.start-audio-muted';
 
     constructor(private errorService: ErrorService, private logger: Logger, private localStorageService: LocalStorageService) {}
 
@@ -57,6 +58,14 @@ export class UserMediaService {
 
     get connectedMicrophoneDevices$(): Observable<UserMediaDevice[]> {
         return this.connectedDevicesSubject.pipe(map(devices => devices.filter(x => x.kind === 'audioinput')));
+    }
+
+    get startAudioMuted(): boolean {
+        return localStorage.getItem(this.START_AUDIO_MUTED_KEY) === 'true';
+    }
+
+    set startAudioMuted(value: boolean) {
+        localStorage.setItem(this.START_AUDIO_MUTED_KEY, value.toString());
     }
 
     initialise() {

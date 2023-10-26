@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { YesNoPopupBaseDirective } from './yes-no-popup-base.component';
 import { FormBuilder, FormControl } from '@angular/forms';
+import { UserMediaService } from 'src/app/services/user-media.service';
 
 @Component({
     selector: 'app-confirm-start-hearing-popup',
@@ -11,17 +12,19 @@ import { FormBuilder, FormControl } from '@angular/forms';
 export class ConfirmStartHearingPopupComponent extends YesNoPopupBaseDirective {
     @Input() hearingStarted = false;
 
-    readonly START_AUDIO_MUTED_KEY = 'vh.start-audio-muted';
-
     form = this.formBuilder.group({
         muteMicrophone: new FormControl(false)
     });
 
-    constructor(protected translateService: TranslateService, private formBuilder: FormBuilder) {
+    constructor(
+        protected translateService: TranslateService,
+        private formBuilder: FormBuilder,
+        private userMediaService: UserMediaService
+    ) {
         super();
 
         this.form.reset({
-            muteMicrophone: this.startAudioMuted
+            muteMicrophone: this.userMediaService.startAudioMuted
         });
     }
 
@@ -31,16 +34,8 @@ export class ConfirmStartHearingPopupComponent extends YesNoPopupBaseDirective {
             : this.translateService.instant('confirm-start-hearing-popup.start');
     }
 
-    private get startAudioMuted(): boolean {
-        return localStorage.getItem(this.START_AUDIO_MUTED_KEY) === 'true';
-    }
-
-    private set startAudioMuted(value: boolean) {
-        localStorage.setItem(this.START_AUDIO_MUTED_KEY, value.toString());
-    }
-
     respondWithYes(): void {
-        this.startAudioMuted = this.form.value.muteMicrophone;
+        this.userMediaService.startAudioMuted = this.form.value.muteMicrophone;
 
         super.respondWithYes();
     }
