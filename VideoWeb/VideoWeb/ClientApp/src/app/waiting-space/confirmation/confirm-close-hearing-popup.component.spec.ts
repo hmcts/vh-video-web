@@ -1,13 +1,18 @@
+import { FormBuilder } from '@angular/forms';
 import { ConfirmStartHearingPopupComponent } from './confirm-start-hearing-popup.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { UserMediaService } from 'src/app/services/user-media.service';
 
 describe('ConfirmStartHearingPopupComponent', () => {
     let component: ConfirmStartHearingPopupComponent;
     const translateService = translateServiceSpy;
+    let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
 
     beforeEach(() => {
         translateService.instant.calls.reset();
-        component = new ConfirmStartHearingPopupComponent(translateService);
+        const formBuilder = new FormBuilder();
+        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>(['startAudioMuted']);
+        component = new ConfirmStartHearingPopupComponent(translateService, formBuilder, userMediaServiceSpy);
     });
 
     it('should return "start" by default', () => {
