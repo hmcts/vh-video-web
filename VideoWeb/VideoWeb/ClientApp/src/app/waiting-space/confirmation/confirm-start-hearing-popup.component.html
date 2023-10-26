@@ -3,30 +3,48 @@
         <h1 class="govuk-heading-m">{{ 'confirm-start-hearing-popup.hearing-about-to-start' | translate:{action: action} }}</h1>
 
         <p class="govuk-body">{{ 'confirm-start-hearing-popup.participant-sees-countdown-timer' | translate }}</p>
-        <p class="govuk-body govuk-!-margin-bottom-9">
+        <p class="govuk-body govuk">
             {{ 'confirm-start-hearing-popup.private-consultations' | translate }}
         </p>
-
-        <button
-            id="btnConfirmStart"
-            class="govuk-button govuk-!-margin-right-1"
-            type="button"
-            data-module="govuk-button"
-            [attr.aria-label]="'confirm-start-hearing-popup.confirm-start-hearing' | translate"
-            (click)="respondWithYes()"
-        >
-            {{ action | titlecase }} {{ 'confirm-start-hearing-popup.hearing' | translate }}
-        </button>
-
-        <button
-            id="btnCancelStart"
-            class="govuk-button govuk-button--secondary"
-            type="button"
-            data-module="govuk-button"
-            [attr.aria-label]="'confirm-start-hearing-popup.cancel-start-hearing' | translate"
-            (click)="respondWithNo()"
-        >
-            {{ 'confirm-start-hearing-popup.cancel' | translate }}
-        </button>
+        <div class="govuk-warning-text">
+            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+            <strong class="govuk-warning-text__text">
+                {{ 'confirm-start-hearing-popup.mute-microphone-warning' | translate }}
+            </strong>
+        </div>
+        <form [formGroup]="form">
+            <div class="govuk-form-group govuk-!-margin-bottom-9">
+              <div class="govuk-checkboxes__item">
+                <input
+                  class="govuk-checkboxes__input"
+                  id="muteMicrophone"
+                  name="muteMicrophone"
+                  type="checkbox"
+                  formControlName="muteMicrophone"
+                />
+                <label class="govuk-label govuk-checkboxes__label" for="muteMicrophone">{{ 'confirm-start-hearing-popup.mute-my-microphone' | translate }}</label>
+              </div>
+            </div>
+            <button
+                id="btnConfirmStart"
+                class="govuk-button govuk-!-margin-right-1"
+                type="button"
+                data-module="govuk-button"
+                [attr.aria-label]="'confirm-start-hearing-popup.confirm-start-hearing' | translate"
+                (click)="respondWithYes()"
+            >
+                {{ action | titlecase }} {{ 'confirm-start-hearing-popup.hearing' | translate }}
+            </button>
+            <button
+                id="btnCancelStart"
+                class="govuk-button govuk-button--secondary"
+                type="button"
+                data-module="govuk-button"
+                [attr.aria-label]="'confirm-start-hearing-popup.cancel-start-hearing' | translate"
+                (click)="respondWithNo()"
+            >
+                {{ 'confirm-start-hearing-popup.cancel' | translate }}
+            </button>
+          </form>
     </div>
 </div>

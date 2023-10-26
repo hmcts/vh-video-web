@@ -866,7 +866,9 @@
     "cancel": "Canslo",
     "hearing": "gwrandawiad",
     "confirm-start-hearing": "Cadarnhau dechrau'r gwrandawiad",
-    "cancel-start-hearing": "Canslo dechrau'r gwrandawiad"
+    "cancel-start-hearing": "Canslo dechrau'r gwrandawiad",
+    "mute-microphone-warning": "Os ydych yn defnyddio system sain yn yr ystafell llys, dylech droi meicroffôn eich cyfrifiadur i ffwrdd i atal ymyrraeth.",
+    "mute-my-microphone": "Troi fy meicroffôn i ffwrdd"
   },
   "participants-panel": {
     "participants": "Cyfranogwyr",

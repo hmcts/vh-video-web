@@ -913,7 +913,9 @@
     "cancel-start-hearing": "Cancel start hearing",
     "cancel": "Cancel",
     "resume": "resume",
-    "start": "start"
+    "start": "start",
+    "mute-microphone-warning": "If you are using a courtroom audio system, you should mute your computer microphone to avoid audio interference.",
+    "mute-my-microphone": "Mute my microphone"
   },
   "copy-telephone-id": {
     "alt": "Copy joining by phone details to clipboard",
