@@ -39,12 +39,10 @@ export class ApiClient extends ApiClientBase {
     /**
      * @return Success
      */
-    getAudioStreamInfo(hearingId: string, wowzaSingleApp: boolean): Observable<boolean> {
-        let url_ = this.baseUrl + '/conferences/audiostreams/{hearingId}/{wowzaSingleApp}';
+    getAudioStreamInfo(hearingId: string): Observable<boolean> {
+        let url_ = this.baseUrl + '/conferences/audiostreams/{hearingId}';
         if (hearingId === undefined || hearingId === null) throw new Error("The parameter 'hearingId' must be defined.");
         url_ = url_.replace('{hearingId}', encodeURIComponent('' + hearingId));
-        if (wowzaSingleApp === undefined || wowzaSingleApp === null) throw new Error("The parameter 'wowzaSingleApp' must be defined.");
-        url_ = url_.replace('{wowzaSingleApp}', encodeURIComponent('' + wowzaSingleApp));
         url_ = url_.replace(/[?&]$/, '');
 
         let options_: any = {
