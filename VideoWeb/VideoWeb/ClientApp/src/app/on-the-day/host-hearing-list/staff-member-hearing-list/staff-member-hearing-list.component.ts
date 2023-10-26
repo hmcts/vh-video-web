@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceForHostResponse, StaffMemberJoinConferenceRequest } from 'src/app/services/clients/api-client';
+import { ConferenceForHostResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { HearingVenueFlagsService } from 'src/app/services/hearing-venue-flags.service';
@@ -63,11 +63,9 @@ export class StaffMemberHearingListComponent extends HostHearingListBaseComponen
                 if (conferenceResponse.participants.some(x => x.user_name === profile.username)) {
                     this.router.navigate([pageUrls.StaffMemberWaitingRoom, conference.id]);
                 } else {
-                    this.videoWebService
-                        .staffMemberJoinConference(conference.id, new StaffMemberJoinConferenceRequest({ username: profile.username }))
-                        .then(updatedConference => {
-                            this.router.navigate([pageUrls.StaffMemberWaitingRoom, updatedConference.id]);
-                        });
+                    this.videoWebService.staffMemberJoinConference(conference.id).then(updatedConference => {
+                        this.router.navigate([pageUrls.StaffMemberWaitingRoom, updatedConference.id]);
+                    });
                 }
             });
         });

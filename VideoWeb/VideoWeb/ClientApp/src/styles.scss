@@ -170,6 +170,7 @@ $govuk-global-styles: true;
   display: none;
   opacity: 0.9;
   pointer-events: none;
+  word-break: break-all;
 }
 
 .vh-tooltip-blue {

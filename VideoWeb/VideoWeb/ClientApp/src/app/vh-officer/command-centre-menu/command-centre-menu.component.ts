@@ -5,7 +5,7 @@ import { EventBusService, VHEventType } from 'src/app/services/event-bus.service
 import { Subscription } from 'rxjs';
 import { pageUrls } from '../../shared/page-url.constants';
 import { Router } from '@angular/router';
-import { Role, StaffMemberJoinConferenceRequest, UserProfileResponse } from '../../services/clients/api-client';
+import { Role, UserProfileResponse } from '../../services/clients/api-client';
 import { VideoWebService } from '../../services/api/video-web.service';
 import { ProfileService } from '../../services/api/profile.service';
 
@@ -68,14 +68,9 @@ export class CommandCentreMenuComponent implements OnInit, OnDestroy {
             if (conferenceResponse.participants.some(x => x.user_name === this.loggedInUser.username)) {
                 this.openWaitingRoomInTab(this.conferenceId);
             } else {
-                this.videoWebService
-                    .staffMemberJoinConference(
-                        this.conferenceId,
-                        new StaffMemberJoinConferenceRequest({ username: this.loggedInUser.username })
-                    )
-                    .then(updatedConference => {
-                        this.openWaitingRoomInTab(updatedConference.id);
-                    });
+                this.videoWebService.staffMemberJoinConference(this.conferenceId).then(updatedConference => {
+                    this.openWaitingRoomInTab(updatedConference.id);
+                });
             }
         });
     }

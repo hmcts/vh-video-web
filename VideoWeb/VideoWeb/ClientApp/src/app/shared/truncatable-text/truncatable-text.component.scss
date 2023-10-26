@@ -1,0 +1,13 @@
+@import 'govuk-frontend/govuk/base';
+
+.word-break {
+  width: 100%;
+  word-break: break-word;
+  text-overflow: ellipsis;
+  max-lines: 2.222em;
+}
+
+.show-more-tooltip {
+  text-decoration: underline;
+  color: $govuk-link-colour !important;
+}

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using VideoWeb.Common;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Services;
 
@@ -37,7 +38,7 @@ namespace VideoWeb.AuthenticationSchemes
             {
                 var usernameClaim = jwtToken.Claims.First(x => x.Type == options.TokenValidationParameters.NameClaimType);
                 var appRoleService = context.HttpContext.RequestServices.GetService(typeof(IAppRoleService)) as IAppRoleService;
-                var claims = await appRoleService!.GetClaimsForUserAsync(jwtToken.RawPayload, usernameClaim.Value);
+                var claims = await appRoleService!.GetClaimsForUserAsync(usernameClaim.Value);
                 context.Principal!.AddIdentity(new ClaimsIdentity(claims));
             }
         }
