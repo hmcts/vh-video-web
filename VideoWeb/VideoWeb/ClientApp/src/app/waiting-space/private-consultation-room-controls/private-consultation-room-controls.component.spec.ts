@@ -220,16 +220,6 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             expect(videoCallServiceSpy.joinHearingInSession).toHaveBeenCalledWith(component.conferenceId, component.participant.id);
         }));
     });
-    describe('StaffMemberFeature', () => {
-        it('should show leave button when staff member feature is enabled', async () => {
-            // Act
-            component.isStaffMemberFeatureEnabled = true;
-            spyOnProperty(component, 'isHost').and.returnValue(true);
-            component.isPrivateConsultation = false;
-            // Assert
-            expect(component.canShowLeaveButton).toBeTrue();
-        });
-    });
 
     it('enableDynamicEvidenceSharing returns false when dynamic evidence sharing is disabled', () => {
         configServiceSpy.getClientSettings.and.returnValue(

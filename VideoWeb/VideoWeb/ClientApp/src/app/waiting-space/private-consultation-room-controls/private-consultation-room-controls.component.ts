@@ -38,7 +38,6 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
 
     showContextMenu = false;
     enableDynamicEvidenceSharing = false;
-    isStaffMemberFeatureEnabled = true;
     isWowzaKillButtonEnabled = false;
     private conferenceStatus: ConferenceStatusChanged;
 
@@ -84,7 +83,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     }
 
     get canShowLeaveButton(): boolean {
-        return this.isHost && !this.isPrivateConsultation && this.isStaffMemberFeatureEnabled;
+        return this.isHost && !this.isPrivateConsultation;
     }
 
     get canJoinHearingFromConsultation(): boolean {
