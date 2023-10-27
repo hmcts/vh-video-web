@@ -6,25 +6,28 @@
         <p class="govuk-body govuk">
             {{ 'confirm-start-hearing-popup.private-consultations' | translate }}
         </p>
-        <div class="govuk-warning-text">
-            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-            <strong class="govuk-warning-text__text">
-                {{ 'confirm-start-hearing-popup.mute-microphone-warning' | translate }}
-            </strong>
-        </div>
         <form [formGroup]="form">
-            <div class="govuk-form-group govuk-!-margin-bottom-9">
-              <div class="govuk-checkboxes__item">
-                <input
-                  class="govuk-checkboxes__input"
-                  id="muteMicrophone"
-                  name="muteMicrophone"
-                  type="checkbox"
-                  formControlName="muteMicrophone"
-                />
-                <label class="govuk-label govuk-checkboxes__label" for="muteMicrophone">{{ 'confirm-start-hearing-popup.mute-my-microphone' | translate }}</label>
-              </div>
+            <div *ngIf="isHostMuteMicrophoneEnabled">
+                <div class="govuk-warning-text">
+                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                    <strong class="govuk-warning-text__text">
+                        {{ 'confirm-start-hearing-popup.mute-microphone-warning' | translate }}
+                    </strong>
+                </div>
+                <div class="govuk-form-group">
+                  <div class="govuk-checkboxes__item">
+                    <input
+                      class="govuk-checkboxes__input"
+                      id="muteMicrophone"
+                      name="muteMicrophone"
+                      type="checkbox"
+                      formControlName="muteMicrophone"
+                    />
+                    <label class="govuk-label govuk-checkboxes__label" for="muteMicrophone">{{ 'confirm-start-hearing-popup.mute-my-microphone' | translate }}</label>
+                  </div>
+                </div>
             </div>
+            <div class="govuk-!-margin-bottom-9"></div>
             <button
                 id="btnConfirmStart"
                 class="govuk-button govuk-!-margin-right-1"

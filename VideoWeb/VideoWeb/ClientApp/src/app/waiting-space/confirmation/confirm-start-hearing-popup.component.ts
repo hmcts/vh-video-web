@@ -3,6 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { YesNoPopupBaseDirective } from './yes-no-popup-base.component';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
 @Component({
     selector: 'app-confirm-start-hearing-popup',
@@ -12,6 +13,8 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 export class ConfirmStartHearingPopupComponent extends YesNoPopupBaseDirective {
     @Input() hearingStarted = false;
 
+    isHostMuteMicrophoneEnabled = false;
+
     form = this.formBuilder.group({
         muteMicrophone: new FormControl(false)
     });
@@ -19,13 +22,22 @@ export class ConfirmStartHearingPopupComponent extends YesNoPopupBaseDirective {
     constructor(
         protected translateService: TranslateService,
         private formBuilder: FormBuilder,
-        private userMediaService: UserMediaService
+        private userMediaService: UserMediaService,
+        launchDarklyService: LaunchDarklyService
     ) {
         super();
 
-        this.form.reset({
-            muteMicrophone: this.userMediaService.startAudioMuted
-        });
+        launchDarklyService
+            .getFlag<boolean>(FEATURE_FLAGS.hostMuteMicrophone, false)
+            .subscribe(value => (this.isHostMuteMicrophoneEnabled = value));
+    }
+
+    ngOnInit(): void {
+        if (this.hearingStarted && this.isHostMuteMicrophoneEnabled) {
+            this.form.reset({
+                muteMicrophone: this.userMediaService.startAudioMuted
+            });
+        }
     }
 
     get action(): string {
