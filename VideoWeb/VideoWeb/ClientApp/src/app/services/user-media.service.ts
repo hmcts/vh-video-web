@@ -61,11 +61,11 @@ export class UserMediaService {
     }
 
     get startAudioMuted(): boolean {
-        return localStorage.getItem(this.START_AUDIO_MUTED_KEY) === 'true';
+        return this.localStorageService.load(this.START_AUDIO_MUTED_KEY);
     }
 
     set startAudioMuted(value: boolean) {
-        localStorage.setItem(this.START_AUDIO_MUTED_KEY, value.toString());
+        this.localStorageService.save(this.START_AUDIO_MUTED_KEY, value.toString());
     }
 
     initialise() {

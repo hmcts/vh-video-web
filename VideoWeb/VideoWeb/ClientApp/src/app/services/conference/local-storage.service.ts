@@ -8,7 +8,7 @@ export class LocalStorageService {
     private loggerPrefix = '[LocalStorageService] -';
     constructor(private logger: LoggerService) {}
 
-    save<T extends object>(key: string, value: T, overwrite: boolean = true): boolean {
+    save(key: string, value: string | object, overwrite: boolean = true): boolean {
         this.logger.debug(`${this.loggerPrefix} Saving to local storage.`, {
             localStorageKey: key,
             value: value,
@@ -28,17 +28,29 @@ export class LocalStorageService {
             return false;
         }
 
-        window.localStorage.setItem(key, JSON.stringify(value));
+        if (typeof value !== 'string') {
+            value = JSON.stringify(value);
+        }
+
+        window.localStorage.setItem(key, value);
         return true;
     }
 
-    load<T extends object>(key: string): T {
+    load<T>(key: string): T {
         const valueJson = window.localStorage.getItem(key);
 
-        if (!valueJson) {
+        if (valueJson === null) {
             return undefined;
         }
 
+        if (typeof valueJson === 'boolean') {
+            return valueJson as T;
+        }
+
         return JSON.parse(valueJson) as T;
+    }
+
+    loadBoolean(key: string): boolean {
+        return window.localStorage.getItem(key) === 'true';
     }
 }
