@@ -1,9 +1,6 @@
 using Microsoft.Extensions.Caching.Distributed;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VideoApi.Contract.Requests;
 
 namespace VideoWeb.Common.Caching
@@ -13,7 +10,9 @@ namespace VideoWeb.Common.Caching
         private readonly string _entryPrefix = "layout_";
         public override DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
         
-        public DistributedHearingLayoutCache(IDistributedCache distributedCache) : base(distributedCache)
+        public DistributedHearingLayoutCache(
+            IDistributedCache distributedCache,
+            ILogger<RedisCacheBase<Guid, HearingLayout?>> logger) : base(distributedCache, logger)
         {
             CacheEntryOptions = new DistributedCacheEntryOptions
             {
@@ -21,7 +20,7 @@ namespace VideoWeb.Common.Caching
             };
         }
 
-        public override string GetKey(Guid key)
+        protected override string GetKey(Guid key)
         {
             return $"{_entryPrefix}{key}";
         }

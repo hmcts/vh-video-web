@@ -8,7 +8,9 @@ using Autofac.Extras.Moq;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
@@ -22,6 +24,7 @@ namespace VideoWeb.UnitTests.Common.Caching
         private AutoMock _mocker;
         private IDistributedCache _distributedCache;
         private DistributedConsultationInvitationCache _sut;
+        private Mock<ILogger<RedisCacheBase<Guid, ConsultationInvitation>>> _loggerMock; 
 
         private async Task WriteToCache<T>(Guid key, T obj) where T : class
         {
@@ -46,7 +49,12 @@ namespace VideoWeb.UnitTests.Common.Caching
         {
             var opts = Options.Create(new MemoryDistributedCacheOptions());
             _distributedCache = new MemoryDistributedCache(opts);
-            _mocker = AutoMock.GetStrict(builder => builder.RegisterInstance(_distributedCache));
+            _loggerMock = new Mock<ILogger<RedisCacheBase<Guid, ConsultationInvitation>>>();
+            _mocker = AutoMock.GetStrict(builder =>
+            {
+                builder.RegisterInstance(_distributedCache);
+                builder.RegisterInstance(_loggerMock.Object);
+            });
             _sut = _mocker.Create<DistributedConsultationInvitationCache>();
         }
         

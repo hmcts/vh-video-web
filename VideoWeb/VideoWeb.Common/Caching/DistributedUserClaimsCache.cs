@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 
 namespace VideoWeb.Common.Caching
 {
@@ -18,7 +19,9 @@ namespace VideoWeb.Common.Caching
         private readonly string _entryPrefix = "userclaims_";
         public override DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
 
-        public DistributedUserClaimsCache(IDistributedCache distributedCache) : base(distributedCache)
+        public DistributedUserClaimsCache(
+            IDistributedCache distributedCache,
+            ILogger<RedisCacheBase<string, List<Claim>>> logger) : base(distributedCache, logger)
         {
             CacheEntryOptions = new DistributedCacheEntryOptions
             {
@@ -43,7 +46,7 @@ namespace VideoWeb.Common.Caching
             await RemoveFromCache(key);
         }
 
-        public override string GetKey(string key)
+        protected override string GetKey(string key)
         {
             return $"{_entryPrefix}{key}";
         }

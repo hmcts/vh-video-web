@@ -1,10 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
 using VideoWeb.Common.Models;
 
 namespace VideoWeb.Common.Caching
@@ -13,7 +10,9 @@ namespace VideoWeb.Common.Caching
     {
         public override DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
 
-        public DistributedConsultationInvitationCache(IDistributedCache distributedCache) : base(distributedCache)
+        public DistributedConsultationInvitationCache(
+            IDistributedCache distributedCache,
+            ILogger<RedisCacheBase<Guid, ConsultationInvitation>> logger) : base(distributedCache, logger)
         {
             CacheEntryOptions = new DistributedCacheEntryOptions
             {
@@ -26,7 +25,7 @@ namespace VideoWeb.Common.Caching
             await base.WriteToCache(consultationInvitation.InvitationId, consultationInvitation); 
         }
 
-        public override string GetKey(Guid key)
+        protected override string GetKey(Guid key)
         {
             return key.ToString();
         }

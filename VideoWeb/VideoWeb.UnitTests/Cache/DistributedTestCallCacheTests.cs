@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
@@ -13,12 +14,14 @@ public class DistributedTestCallCacheTests
 {
     private Mock<IDistributedCache> _distributedCacheMock;
     private DistributedTestCallCache _sut;
+    private Mock<ILogger<RedisCacheBase<string, bool>>> _loggerMock;
 
     [SetUp]
     public void Setup()
     {
         _distributedCacheMock = new Mock<IDistributedCache>();
-        _sut = new DistributedTestCallCache(_distributedCacheMock.Object);
+        _loggerMock = new Mock<ILogger<RedisCacheBase<string, bool>>>();
+        _sut = new DistributedTestCallCache(_distributedCacheMock.Object, _loggerMock.Object);
     }
     
     [Test]
