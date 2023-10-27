@@ -345,7 +345,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             return;
         }
 
-        if (this.isHost) {
+        if (this.isHost && !this.startAudioMuted) {
             await this.resetMute();
             return;
         }
