@@ -130,8 +130,12 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         return this.participant?.current_room?.locked ?? false;
     }
 
+    get startAudioMuted(): boolean {
+        return this.userMediaService.startAudioMuted && !this.isPrivateConsultation;
+    }
+
     ngOnInit(): void {
-        this.audioMuted = this.videoCallService.pexipAPI.call.mutedAudio || this.userMediaService.startAudioMuted;
+        this.audioMuted = this.videoCallService.pexipAPI.call.mutedAudio || this.startAudioMuted;
         this.videoMuted = this.videoCallService.pexipAPI.call.mutedVideo || this.audioOnly;
 
         this.userMediaService.isAudioOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(audioOnly => {
