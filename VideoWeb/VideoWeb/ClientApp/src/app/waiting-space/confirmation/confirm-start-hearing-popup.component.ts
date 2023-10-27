@@ -33,14 +33,6 @@ export class ConfirmStartHearingPopupComponent extends YesNoPopupBaseDirective {
         });
     }
 
-    private initialiseForm(): void {
-        if (this.hearingStarted && this.isHostMuteMicrophoneEnabled) {
-            this.form.reset({
-                muteMicrophone: this.userMediaService.startAudioMuted
-            });
-        }
-    }
-
     get action(): string {
         return this.hearingStarted
             ? this.translateService.instant('confirm-start-hearing-popup.resume')
@@ -51,5 +43,13 @@ export class ConfirmStartHearingPopupComponent extends YesNoPopupBaseDirective {
         this.userMediaService.startAudioMuted = this.form.value.muteMicrophone;
 
         super.respondWithYes();
+    }
+
+    private initialiseForm(): void {
+        if (this.hearingStarted && this.isHostMuteMicrophoneEnabled) {
+            this.form.reset({
+                muteMicrophone: this.userMediaService.startAudioMuted
+            });
+        }
     }
 }
