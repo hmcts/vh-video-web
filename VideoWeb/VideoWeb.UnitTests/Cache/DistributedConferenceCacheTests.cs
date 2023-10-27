@@ -6,22 +6,26 @@ using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 
 namespace VideoWeb.UnitTests.Cache
 {
     public class DistributedConferenceCacheTests
     {
         private Mock<IDistributedCache> _distributedCacheMock;
+        private Mock<ILogger<RedisCacheBase<Guid, Conference>>> _loggerMock;
 
         [SetUp]
         public void Setup()
         {
             _distributedCacheMock = new Mock<IDistributedCache>();
+            _loggerMock = new Mock<ILogger<RedisCacheBase<Guid, Conference>>>();
         }
         
         [Test]
@@ -35,7 +39,7 @@ namespace VideoWeb.UnitTests.Cache
                 .Setup(x => x.GetAsync(conference.Id.ToString(), CancellationToken.None))
                 .ReturnsAsync(rawData);
 
-            var cache = new DistributedConferenceCache(_distributedCacheMock.Object);
+            var cache = new DistributedConferenceCache(_distributedCacheMock.Object, _loggerMock.Object);
 
             var result = await cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>());
             result.Should().BeEquivalentTo(conference);
@@ -56,7 +60,7 @@ namespace VideoWeb.UnitTests.Cache
             _distributedCacheMock
                 .Setup(x => x.SetAsync(conference.Id.ToString(), rawData, It.IsAny<DistributedCacheEntryOptions>(), CancellationToken.None));
 
-            var cache = new DistributedConferenceCache(_distributedCacheMock.Object);
+            var cache = new DistributedConferenceCache(_distributedCacheMock.Object, _loggerMock.Object);
 
             var result = await cache.GetOrAddConferenceAsync(conference.Id, async () => await Task.FromResult(conferenceResponse));
             result.Should().BeEquivalentTo(conference);

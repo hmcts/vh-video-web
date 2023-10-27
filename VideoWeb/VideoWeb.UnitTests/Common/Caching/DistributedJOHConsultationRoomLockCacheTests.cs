@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -14,13 +15,15 @@ namespace VideoWeb.UnitTests.Common.Caching
     {
         private Mock<IDistributedCache> _distributedCacheMock;
         private DistributedJOHConsultationRoomLockCache _distributedJohConsultationRoomLockCache;
+        private Mock<ILogger<RedisCacheBase<string, bool>>> _loggerMock;
         
         [SetUp]
         public void Setup()
         {
             _distributedCacheMock = new Mock<IDistributedCache>();
+            _loggerMock = new Mock<ILogger<RedisCacheBase<string, bool>>>();
             _distributedJohConsultationRoomLockCache =
-                new DistributedJOHConsultationRoomLockCache(_distributedCacheMock.Object);
+                new DistributedJOHConsultationRoomLockCache(_distributedCacheMock.Object, _loggerMock.Object);
         }
 
         [Test]

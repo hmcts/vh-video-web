@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -15,11 +16,13 @@ namespace VideoWeb.UnitTests
     public class DistributedUserCacheTests
     {
         private Mock<IDistributedCache> _distributedCacheMock;
+        private Mock<ILogger<RedisCacheBase<string, UserProfile>>> _loggerMock;
         
         [SetUp]
         public void Setup()
         {
             _distributedCacheMock = new Mock<IDistributedCache>();
+            _loggerMock = new Mock<ILogger<RedisCacheBase<string, UserProfile>>>();
         }
 
         [Test]
@@ -30,7 +33,7 @@ namespace VideoWeb.UnitTests
             var rawData = Encoding.UTF8.GetBytes(serialized);
             _distributedCacheMock.Setup(x => x.GetAsync(profile.UserName, CancellationToken.None)).ReturnsAsync(rawData);
 
-            var cache = new DistributedUserProfileCache(_distributedCacheMock.Object);
+            var cache = new DistributedUserProfileCache(_distributedCacheMock.Object, _loggerMock.Object);
             var result = await cache.GetOrAddAsync(profile.UserName, profile);
             result.Should().BeEquivalentTo(profile);
         }
@@ -39,7 +42,7 @@ namespace VideoWeb.UnitTests
         public async Task Should_call_function_and_add_to_cache_when_cache_empty()
         {
             var profile = Builder<UserProfile>.CreateNew().Build();
-            var cache = new DistributedUserProfileCache(_distributedCacheMock.Object);
+            var cache = new DistributedUserProfileCache(_distributedCacheMock.Object, _loggerMock.Object);
 
             var result = await cache.GetOrAddAsync(profile.UserName, profile);
             result.Should().BeEquivalentTo(profile);
@@ -53,7 +56,7 @@ namespace VideoWeb.UnitTests
             var serialisedConference = JsonConvert.SerializeObject(conferenceResponse, SerializerSettings);
             var rawData = Encoding.UTF8.GetBytes(serialisedConference);
             _distributedCacheMock.Setup(x => x.Get(profile.UserName)).Returns(rawData);
-            var cache = new DistributedUserProfileCache(_distributedCacheMock.Object);
+            var cache = new DistributedUserProfileCache(_distributedCacheMock.Object, _loggerMock.Object);
                      
             var result = await cache.GetOrAddAsync(profile.UserName, profile);
             result.Should().BeEquivalentTo(profile);

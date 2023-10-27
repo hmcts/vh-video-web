@@ -1,7 +1,7 @@
 using System;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using VideoWeb.Common.Models;
 
 namespace VideoWeb.Common.Caching
@@ -11,7 +11,9 @@ namespace VideoWeb.Common.Caching
         private readonly string _entryPrefix = "userprofile_";
         public override DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
 
-        public DistributedUserProfileCache(IDistributedCache distributedCache) : base(distributedCache)
+        public DistributedUserProfileCache(
+            IDistributedCache distributedCache,
+            ILogger<RedisCacheBase<string, UserProfile>> logger) : base(distributedCache, logger)
         {
             CacheEntryOptions = new DistributedCacheEntryOptions
             {
@@ -45,7 +47,7 @@ namespace VideoWeb.Common.Caching
             await RemoveFromCache(key);
         }
 
-        public override string GetKey(string key)
+        protected override string GetKey(string key)
         {
             return $"{_entryPrefix}{key}";
         }
