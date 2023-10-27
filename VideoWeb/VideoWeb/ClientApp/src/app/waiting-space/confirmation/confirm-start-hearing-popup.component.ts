@@ -27,12 +27,13 @@ export class ConfirmStartHearingPopupComponent extends YesNoPopupBaseDirective {
     ) {
         super();
 
-        launchDarklyService
-            .getFlag<boolean>(FEATURE_FLAGS.hostMuteMicrophone, false)
-            .subscribe(value => (this.isHostMuteMicrophoneEnabled = value));
+        launchDarklyService.getFlag<boolean>(FEATURE_FLAGS.hostMuteMicrophone, false).subscribe(value => {
+            this.isHostMuteMicrophoneEnabled = value;
+            this.initialiseForm();
+        });
     }
 
-    ngOnInit(): void {
+    private initialiseForm(): void {
         if (this.hearingStarted && this.isHostMuteMicrophoneEnabled) {
             this.form.reset({
                 muteMicrophone: this.userMediaService.startAudioMuted
