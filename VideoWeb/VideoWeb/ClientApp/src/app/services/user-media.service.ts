@@ -32,7 +32,7 @@ export class UserMediaService {
     private activeVideoDeviceSubject = new ReplaySubject<UserMediaDevice>(1);
     private activeMicrophoneDeviceSubject = new ReplaySubject<UserMediaDevice>(1);
     private isAudioOnlySubject = new ReplaySubject<boolean>(1);
-    private readonly START_AUDIO_MUTED_KEY = 'vh.start-audio-muted';
+    private readonly START_WITH_AUDIO_MUTED_KEY = 'vh.start-with-audio-muted';
 
     constructor(private errorService: ErrorService, private logger: Logger, private localStorageService: LocalStorageService) {}
 
@@ -60,12 +60,12 @@ export class UserMediaService {
         return this.connectedDevicesSubject.pipe(map(devices => devices.filter(x => x.kind === 'audioinput')));
     }
 
-    get startAudioMuted(): boolean {
-        return this.localStorageService.load(this.START_AUDIO_MUTED_KEY);
+    get startWithAudioMuted(): boolean {
+        return this.localStorageService.load(this.START_WITH_AUDIO_MUTED_KEY);
     }
 
-    set startAudioMuted(value: boolean) {
-        this.localStorageService.save(this.START_AUDIO_MUTED_KEY, value.toString());
+    set startWithAudioMuted(value: boolean) {
+        this.localStorageService.save(this.START_WITH_AUDIO_MUTED_KEY, value.toString());
     }
 
     initialise() {

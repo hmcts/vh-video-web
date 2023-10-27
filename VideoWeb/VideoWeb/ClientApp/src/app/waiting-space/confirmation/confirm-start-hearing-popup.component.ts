@@ -13,7 +13,7 @@ import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-dark
 export class ConfirmStartHearingPopupComponent extends YesNoPopupBaseDirective {
     @Input() hearingStarted = false;
 
-    isHostMuteMicrophoneEnabled = false;
+    isMuteMicrophoneEnabled = false;
 
     form = this.formBuilder.group({
         muteMicrophone: new FormControl(false)
@@ -28,7 +28,7 @@ export class ConfirmStartHearingPopupComponent extends YesNoPopupBaseDirective {
         super();
 
         launchDarklyService.getFlag<boolean>(FEATURE_FLAGS.hostMuteMicrophone, false).subscribe(value => {
-            this.isHostMuteMicrophoneEnabled = value;
+            this.isMuteMicrophoneEnabled = value;
             this.initialiseForm();
         });
     }
@@ -40,15 +40,15 @@ export class ConfirmStartHearingPopupComponent extends YesNoPopupBaseDirective {
     }
 
     respondWithYes(): void {
-        this.userMediaService.startAudioMuted = this.form.value.muteMicrophone;
+        this.userMediaService.startWithAudioMuted = this.form.value.muteMicrophone;
 
         super.respondWithYes();
     }
 
     private initialiseForm(): void {
-        if (this.hearingStarted && this.isHostMuteMicrophoneEnabled) {
+        if (this.hearingStarted && this.isMuteMicrophoneEnabled) {
             this.form.reset({
-                muteMicrophone: this.userMediaService.startAudioMuted
+                muteMicrophone: this.userMediaService.startWithAudioMuted
             });
         }
     }
