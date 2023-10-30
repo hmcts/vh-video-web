@@ -1,6 +1,5 @@
 import { Component, ElementRef, OnDestroy } from '@angular/core';
 import { Subject, Subscription, combineLatest } from 'rxjs';
-import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { LoggedParticipantResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
@@ -37,7 +36,6 @@ export abstract class ChatBaseComponent implements OnDestroy {
 
     protected constructor(
         protected videoWebService: VideoWebService,
-        protected profileService: ProfileService,
         protected eventService: EventsService,
         protected logger: Logger,
         securityServiceProviderService: SecurityServiceProvider,
@@ -102,7 +100,7 @@ export abstract class ChatBaseComponent implements OnDestroy {
                     message.from_display_name = this.translateService.instant('chat-base.you');
                     message.is_user = true;
                 } else {
-                    message = await this.verifySender(message);
+                    message.is_user = false;
                     this.handleIncomingOtherMessage(message);
                 }
 
@@ -141,25 +139,6 @@ export abstract class ChatBaseComponent implements OnDestroy {
         }
 
         return this.imHelper.isImForUser(message, this.participantId, this.loggedInUser);
-    }
-
-    async verifySender(message: InstantMessage): Promise<InstantMessage> {
-        if (message.from !== this.DEFAULT_ADMIN_USERNAME) {
-            message.from_display_name = await this.getDisplayNameForSender(message.from);
-        }
-        message.is_user = false;
-        return message;
-    }
-
-    async getDisplayNameForSender(participantId: string): Promise<string> {
-        const participant = this.hearing.getParticipantById(participantId);
-        if (participant) {
-            return participant.displayName;
-        } else {
-            // if it's not a participant then we have username of vho
-            const profile = await this.getProfileForUser(participantId);
-            return profile.first_name;
-        }
     }
 
     async retrieveChatForConference(participantId: string): Promise<InstantMessage[]> {
@@ -210,14 +189,6 @@ export abstract class ChatBaseComponent implements OnDestroy {
                 entry[index].failedToSend = true;
             }
         }
-    }
-
-    private async getProfileForUser(username: string): Promise<UserProfileResponse> {
-        const profile = this.profileService.checkCacheForProfileByUsername(username);
-        if (profile) {
-            return Promise.resolve(profile);
-        }
-        return this.profileService.getProfileByUsername(username);
     }
 
     abstract sendMessage(messageBody: string): void;

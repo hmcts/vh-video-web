@@ -1,7 +1,6 @@
 import { fakeAsync, flush, flushMicrotasks, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { of, Subject, Subscription } from 'rxjs';
-import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse, LoggedParticipantResponse, Role } from 'src/app/services/clients/api-client';
 import { InstantMessage } from 'src/app/services/models/instant-message';
@@ -10,22 +9,20 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { eventsServiceSpy, messageSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { adminTestProfile, judgeTestProfile } from '../../testing/data/test-profiles';
 import { VhoChatComponent } from './vho-chat.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { SecurityServiceProvider } from 'src/app/security/authentication/security-provider.service';
 import { ISecurityService } from 'src/app/security/authentication/security-service.interface';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { IdpProviders } from 'src/app/security/idp-providers';
+import { adminTestProfile } from 'src/app/testing/data/test-profiles';
 
 describe('VhoChatComponent', () => {
     let component: VhoChatComponent;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     const eventsService = eventsServiceSpy;
-    let profileServiceSpy: jasmine.SpyObj<ProfileService>;
     let conference: ConferenceResponse;
     let hearing: Hearing;
-    const judgeProfile = judgeTestProfile;
     const adminProfile = adminTestProfile;
     const timer = jasmine.createSpyObj<NodeJS.Timeout>('NodeJS.Timeout', ['ref', 'unref']);
     let chatSub$: Subscription;
@@ -40,11 +37,6 @@ describe('VhoChatComponent', () => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
             'getConferenceChatHistory',
             'getCurrentParticipant'
-        ]);
-        profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', [
-            'checkCacheForProfileByUsername',
-            'getProfileByUsername',
-            'getUserProfile'
         ]);
     });
 
@@ -61,12 +53,8 @@ describe('VhoChatComponent', () => {
             role: Role.VideoHearingsOfficer
         });
 
-        profileServiceSpy.checkCacheForProfileByUsername.and.callFake(() => null);
-        profileServiceSpy.getProfileByUsername.and.returnValue(Promise.resolve(judgeProfile));
         videoWebServiceSpy.getConferenceChatHistory.and.returnValue(Promise.resolve(chatHistory));
         videoWebServiceSpy.getCurrentParticipant.and.returnValue(Promise.resolve(loggedParticipant));
-
-        profileServiceSpy.getUserProfile.and.resolveTo(adminProfile);
 
         securityServiceSpy = jasmine.createSpyObj<ISecurityService>('ISecurityService', ['isAuthenticated', 'getUserData']);
         isAuthenticatedSubject = new Subject<boolean>();
@@ -87,7 +75,6 @@ describe('VhoChatComponent', () => {
 
         component = new VhoChatComponent(
             videoWebServiceSpy,
-            profileServiceSpy,
             eventsService,
             new MockLogger(),
             securityServiceProviderServiceSpy,
@@ -225,22 +212,6 @@ describe('VhoChatComponent', () => {
         expect(lastArg.message).toBe(message);
         expect(lastArg.to).toBe(component.participant.id);
         expect(component.disableScrollDown).toBeFalse();
-    });
-
-    it('should use participant name when message is not from admin', async () => {
-        const judgeUsername = hearing.judge.id;
-        const adminUsername = 'admin@hmcts.net';
-        const instantMessage = new InstantMessage({
-            conferenceId: conference.id,
-            id: Guid.create().toString(),
-            from: judgeUsername,
-            to: adminUsername,
-            message: 'test message',
-            timestamp: new Date()
-        });
-        profileServiceSpy.checkCacheForProfileByUsername.and.returnValue(judgeProfile);
-        const result = await component.verifySender(instantMessage);
-        expect(result.from_display_name).toEqual(hearing.judge.displayName);
     });
 
     it('should clear subscription on destroy', async () => {
