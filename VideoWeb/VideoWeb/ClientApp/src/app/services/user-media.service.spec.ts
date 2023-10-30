@@ -365,4 +365,28 @@ describe('UserMediaService', () => {
             expect(userMediaService['loadDefaultMicrophone']).toHaveBeenCalledOnceWith(testData.getListOfDevices());
         }));
     });
+
+    describe('get startWithAudioMuted', () => {
+        it('should return true if the value is true', () => {
+            localStorageServiceSpy.load.and.returnValue(true);
+            expect(userMediaService.startWithAudioMuted).toBeTrue();
+        });
+
+        it('should return false if the value is false', () => {
+            localStorageServiceSpy.load.and.returnValue(false);
+            expect(userMediaService.startWithAudioMuted).toBeFalse();
+        });
+    });
+
+    describe('set startWithAudioMuted', () => {
+        it('should save true value to local storage', () => {
+            userMediaService.startWithAudioMuted = true;
+            expect(localStorageServiceSpy.save).toHaveBeenCalledWith(userMediaService.START_WITH_AUDIO_MUTED_KEY, 'true');
+        });
+
+        it('should save false value to local storage', () => {
+            userMediaService.startWithAudioMuted = false;
+            expect(localStorageServiceSpy.save).toHaveBeenCalledWith(userMediaService.START_WITH_AUDIO_MUTED_KEY, 'false');
+        });
+    });
 });

@@ -46,7 +46,7 @@ export class ConfirmStartHearingPopupComponent extends YesNoPopupBaseDirective {
     }
 
     private initialiseForm(): void {
-        if (this.hearingStarted && this.isMuteMicrophoneEnabled) {
+        if (this.isMuteMicrophoneEnabled) {
             this.form.reset({
                 muteMicrophone: this.userMediaService.startWithAudioMuted
             });

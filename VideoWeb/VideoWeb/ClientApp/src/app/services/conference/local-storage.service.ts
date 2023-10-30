@@ -39,18 +39,10 @@ export class LocalStorageService {
     load<T>(key: string): T {
         const valueJson = window.localStorage.getItem(key);
 
-        if (valueJson === null) {
+        if (!valueJson) {
             return undefined;
         }
 
-        if (typeof valueJson === 'boolean') {
-            return valueJson as T;
-        }
-
         return JSON.parse(valueJson) as T;
-    }
-
-    loadBoolean(key: string): boolean {
-        return window.localStorage.getItem(key) === 'true';
     }
 }

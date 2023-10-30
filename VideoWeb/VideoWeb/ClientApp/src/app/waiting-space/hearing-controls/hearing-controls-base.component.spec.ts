@@ -130,7 +130,7 @@ describe('HearingControlsBaseComponent', () => {
         );
         getSpiedPropertyGetter(participantServiceSpy, 'loggedInParticipant$').and.returnValue(loggedInParticipantSubject.asObservable());
 
-        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>([], ['isAudioOnly$']);
+        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>([], ['isAudioOnly$', 'startWithAudioMuted']);
         isAudioOnlySubject = new Subject<boolean>();
         getSpiedPropertyGetter(userMediaServiceSpy, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
 
@@ -1041,4 +1041,77 @@ describe('HearingControlsBaseComponent', () => {
         expect(component.publishMediaDeviceStatus).toHaveBeenCalled();
         expect(eventsService.publishParticipantHandRaisedStatus).toHaveBeenCalled();
     }));
+
+    describe('startWithAudioMuted', () => {
+        beforeEach(() => {
+            getSpiedPropertyGetter(userMediaServiceSpy, 'startWithAudioMuted').and.returnValue(true);
+            component.isPrivateConsultation = false;
+        });
+
+        it('should return true when userMediaService.startWithAudioMuted is true and not private consultation', () => {
+            // Arrange
+            getSpiedPropertyGetter(userMediaServiceSpy, 'startWithAudioMuted').and.returnValue(true);
+            component.isPrivateConsultation = false;
+            // Act
+            const value = component.startWithAudioMuted;
+            // Assert
+            expect(value).toBeTrue();
+        });
+
+        it('should return false when userMediaService.startWithAudioMuted is false', () => {
+            // Arrange
+            getSpiedPropertyGetter(userMediaServiceSpy, 'startWithAudioMuted').and.returnValue(false);
+            // Act
+            const value = component.startWithAudioMuted;
+            // Assert
+            expect(value).toBeFalse();
+        });
+
+        it('should return false when private consultation', () => {
+            // Arrange
+            component.isPrivateConsultation = true;
+            // Act
+            const value = component.startWithAudioMuted;
+            // Assert
+            expect(value).toBeFalse();
+        });
+    });
+
+    describe('ngOnInit', () => {
+        it('should mute audio when starting with audio muted', () => {
+            // Arrange
+            getSpiedPropertyGetter(userMediaServiceSpy, 'startWithAudioMuted').and.returnValue(true);
+            // Act
+            component.ngOnInit();
+            // Assert
+            expect(component.audioMuted).toBeTrue();
+        });
+
+        it('should not mute audio when not starting with audio muted', () => {
+            // Arrange
+            getSpiedPropertyGetter(userMediaServiceSpy, 'startWithAudioMuted').and.returnValue(false);
+            // Act
+            component.ngOnInit();
+            // Assert
+            expect(component.audioMuted).toBeFalse();
+        });
+    });
+
+    describe('handleHearingCountdownComplete', () => {
+        beforeEach(() => {
+            videoCallService.toggleMute.calls.reset();
+        });
+
+        it('should not unmute audio when host is starting with audio muted', async () => {
+            // Arrange
+            component.participant = globalConference.participants.find(x => x.role === Role.Judge);
+            getSpiedPropertyGetter(userMediaServiceSpy, 'startWithAudioMuted').and.returnValue(true);
+            component.isPrivateConsultation = false;
+            component.audioMuted = true;
+            // Act
+            await component.handleHearingCountdownComplete(component.conferenceId);
+            // Assert
+            expect(videoCallService.toggleMute).toHaveBeenCalledTimes(0);
+        });
+    });
 });

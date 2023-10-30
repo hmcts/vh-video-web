@@ -20,6 +20,7 @@ export class UserMediaService {
     };
     readonly PREFERRED_CAMERA_KEY = 'vh.preferred.camera';
     readonly PREFERRED_MICROPHONE_KEY = 'vh.preferred.microphone';
+    readonly START_WITH_AUDIO_MUTED_KEY = 'vh.start-with-audio-muted';
     navigator: Navigator = navigator;
 
     private initialised = false;
@@ -32,7 +33,6 @@ export class UserMediaService {
     private activeVideoDeviceSubject = new ReplaySubject<UserMediaDevice>(1);
     private activeMicrophoneDeviceSubject = new ReplaySubject<UserMediaDevice>(1);
     private isAudioOnlySubject = new ReplaySubject<boolean>(1);
-    private readonly START_WITH_AUDIO_MUTED_KEY = 'vh.start-with-audio-muted';
 
     constructor(private errorService: ErrorService, private logger: Logger, private localStorageService: LocalStorageService) {}
 

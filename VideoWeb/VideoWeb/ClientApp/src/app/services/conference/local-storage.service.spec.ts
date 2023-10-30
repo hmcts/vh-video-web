@@ -76,6 +76,19 @@ describe('LocalStorageService', () => {
             expect(result).toBeFalse();
             expect(window.localStorage.getItem(key)).toEqual(initialValue);
         });
+
+        it('should save a string value under a new key and return true', () => {
+            // Arrange
+            const key = 'key';
+            const value = 'value';
+
+            // Act
+            const result = service.save(key, value, true);
+
+            // Assert
+            expect(result).toBeTrue();
+            expect(window.localStorage.getItem(key)).toEqual(value);
+        });
     });
 
     describe('load', () => {
@@ -98,6 +111,32 @@ describe('LocalStorageService', () => {
 
             // Assert
             expect(result).toBeUndefined();
+        });
+
+        it('should load a true boolean value from a key', () => {
+            // Arrange
+            const key = 'key';
+            const value = 'true';
+            window.localStorage.setItem(key, value);
+
+            // Act
+            const result = service.load<boolean>('key');
+
+            // Assert
+            expect(result).toBeTrue();
+        });
+
+        it('should load a false boolean value from a key', () => {
+            // Arrange
+            const key = 'key';
+            const value = 'false';
+            window.localStorage.setItem(key, value);
+
+            // Act
+            const result = service.load<boolean>('key');
+
+            // Assert
+            expect(result).toBeFalse();
         });
     });
 });
