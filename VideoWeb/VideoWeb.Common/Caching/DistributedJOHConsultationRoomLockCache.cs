@@ -1,12 +1,15 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 
 namespace VideoWeb.Common.Caching
 {
     public class DistributedJOHConsultationRoomLockCache : RedisCacheBase<string , bool>,IDistributedJOHConsultationRoomLockCache
     {
-        public DistributedJOHConsultationRoomLockCache(IDistributedCache distributedCache) : base(distributedCache)
+        public DistributedJOHConsultationRoomLockCache(
+            IDistributedCache distributedCache,
+            ILogger<RedisCacheBase<string, bool>> logger) : base(distributedCache, logger)
         {
             CacheEntryOptions = new DistributedCacheEntryOptions
             {
@@ -15,7 +18,7 @@ namespace VideoWeb.Common.Caching
         }
 
         public override DistributedCacheEntryOptions CacheEntryOptions { get; protected set; }
-        public override string GetKey(string key)
+        protected override string GetKey(string key)
         {
             return key;
         }

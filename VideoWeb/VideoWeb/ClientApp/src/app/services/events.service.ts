@@ -175,9 +175,25 @@ export class EventsService {
             this.consultationRequestResponseMessageSubject.next(message);
         },
 
-        ReceiveMessage: (conferenceId: string, from: string, to: string, message: string, timestamp: Date, messageUuid: string) => {
+        ReceiveMessage: (
+            conferenceId: string,
+            from: string,
+            fromDisplayName: string,
+            to: string,
+            message: string,
+            timestamp: Date,
+            messageUuid: string
+        ) => {
             const date = new Date(timestamp);
-            const chat = new InstantMessage({ conferenceId, id: messageUuid, to, from, message, timestamp: date });
+            const chat = new InstantMessage({
+                conferenceId,
+                id: messageUuid,
+                to,
+                from,
+                from_display_name: fromDisplayName,
+                message,
+                timestamp: date
+            });
             this.logger.debug('[EventsService] - ReceiveMessage received', chat);
             this.messageSubject.next(chat);
         },

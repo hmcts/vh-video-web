@@ -9,6 +9,7 @@ namespace VideoWeb.EventHub.Models
         public Conference Conference { get; set; }
         public string Message { get; set; }
         public string From { get; set; }
+        public string FromDisplayName { get; set; }
         public string To { get; set; }
         public string ParticipantUsername { get; set; }
         public DateTime Timestamp { get; set; }
