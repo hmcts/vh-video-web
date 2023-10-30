@@ -13,7 +13,6 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
-import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ChatResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
@@ -45,7 +44,6 @@ export abstract class ChatWindowBaseComponent extends ChatBaseComponent implemen
 
     constructor(
         protected videoWebService: VideoWebService,
-        protected profileService: ProfileService,
         protected eventService: EventsService,
         protected logger: Logger,
         securityServiceProviderService: SecurityServiceProvider,
@@ -53,7 +51,7 @@ export abstract class ChatWindowBaseComponent extends ChatBaseComponent implemen
         protected route: ActivatedRoute,
         protected translateService: TranslateService
     ) {
-        super(videoWebService, profileService, eventService, logger, securityServiceProviderService, imHelper, translateService);
+        super(videoWebService, eventService, logger, securityServiceProviderService, imHelper, translateService);
     }
 
     get participantUsername(): string {

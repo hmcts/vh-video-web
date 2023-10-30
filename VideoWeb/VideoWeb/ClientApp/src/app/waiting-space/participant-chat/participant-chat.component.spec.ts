@@ -1,6 +1,5 @@
 import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse, LoggedParticipantResponse } from 'src/app/services/clients/api-client';
 import { InstantMessage } from 'src/app/services/models/instant-message';
@@ -27,7 +26,6 @@ describe('ParticipantChatComponent', () => {
     let videoWebService: jasmine.SpyObj<VideoWebService>;
     const judgeUsername = judgeTestProfile.username;
     const eventsService = eventsServiceSpy;
-    let profileService: jasmine.SpyObj<ProfileService>;
     let activatedRoute: ActivatedRoute;
 
     const judgeProfile = judgeTestProfile;
@@ -43,11 +41,6 @@ describe('ParticipantChatComponent', () => {
         conference = new ConferenceTestData().getConferenceDetailFuture();
         hearing = new Hearing(conference);
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceChatHistory', 'getCurrentParticipant']);
-        profileService = jasmine.createSpyObj<ProfileService>('ProfileService', [
-            'checkCacheForProfileByUsername',
-            'getProfileByUsername',
-            'getUserProfile'
-        ]);
     });
 
     beforeEach(() => {
@@ -58,9 +51,7 @@ describe('ParticipantChatComponent', () => {
             display_name: hearing.participants[2].displayName,
             role: hearing.participants[2].role
         });
-        profileService.checkCacheForProfileByUsername.and.returnValue(null);
-        profileService.getProfileByUsername.and.resolveTo(adminProfile);
-        profileService.getUserProfile.and.resolveTo(judgeProfile);
+
         videoWebService.getConferenceChatHistory.and.resolveTo(chatHistory);
         videoWebService.getCurrentParticipant.and.resolveTo(logged);
         activatedRoute = <any>{
@@ -85,7 +76,6 @@ describe('ParticipantChatComponent', () => {
 
         component = new ParticipantChatComponent(
             videoWebService,
-            profileService,
             eventsService,
             new MockLogger(),
             new ImHelper(),
@@ -174,15 +164,6 @@ describe('ParticipantChatComponent', () => {
         });
         component.handleIncomingOtherMessage(message);
         expect(component.unreadMessageCount).toBe(0);
-    });
-
-    it('should call api when local cache does not have user profile', async () => {
-        const username = adminProfile.username;
-        profileService.checkCacheForProfileByUsername.and.returnValue(null);
-        const expectedFirstName = adminProfile.first_name;
-
-        const messageInfo = await component.getDisplayNameForSender(username);
-        expect(messageInfo).toEqual(expectedFirstName);
     });
 
     it('should reset unread counter to number of messages since judge replied', () => {

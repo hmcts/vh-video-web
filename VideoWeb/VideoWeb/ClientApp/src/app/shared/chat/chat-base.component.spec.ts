@@ -1,12 +1,10 @@
 import { ElementRef } from '@angular/core';
 import { Guid } from 'guid-typescript';
-import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse, LoggedParticipantResponse, Role } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { InstantMessage } from 'src/app/services/models/instant-message';
-import { adminTestProfile } from 'src/app/testing/data/test-profiles';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
@@ -27,14 +25,13 @@ class ChatBaseTest extends ChatBaseComponent {
 
     constructor(
         protected videoWebService: VideoWebService,
-        protected profileService: ProfileService,
         protected eventService: EventsService,
         protected logger: Logger,
         protected securityServiceProviderService: SecurityServiceProvider,
         protected imHelper: ImHelper,
         protected translateService: TranslateService
     ) {
-        super(videoWebService, profileService, eventService, logger, securityServiceProviderService, imHelper, translateService);
+        super(videoWebService, eventService, logger, securityServiceProviderService, imHelper, translateService);
     }
 
     get participantUsername(): string {
@@ -58,10 +55,9 @@ describe('ChatBaseComponent', () => {
     let component: ChatBaseComponent;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     const eventsService = eventsServiceSpy;
-    let profileServiceSpy: jasmine.SpyObj<ProfileService>;
     let conference: ConferenceResponse;
     let hearing: Hearing;
-    const adminProfile = adminTestProfile;
+
     let contentElement: HTMLDivElement;
     let securityServiceSpy: jasmine.SpyObj<ISecurityService>;
     let isAuthenticatedSubject: Subject<boolean>;
@@ -74,11 +70,6 @@ describe('ChatBaseComponent', () => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
             'getConferenceChatHistory',
             'getCurrentParticipant'
-        ]);
-        profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', [
-            'checkCacheForProfileByUsername',
-            'getProfileByUsername',
-            'getUserProfile'
         ]);
     });
 
@@ -98,7 +89,6 @@ describe('ChatBaseComponent', () => {
 
         component = new ChatBaseTest(
             videoWebServiceSpy,
-            profileServiceSpy,
             eventsService,
             new MockLogger(),
             securityServiceProviderServiceSpy,
