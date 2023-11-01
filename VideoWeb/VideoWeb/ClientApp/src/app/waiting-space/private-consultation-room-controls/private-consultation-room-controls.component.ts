@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { first, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
@@ -8,7 +8,6 @@ import { ConferenceStatusChanged } from 'src/app/services/conference/models/conf
 import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { EventsService } from 'src/app/services/events.service';
-import { FeatureFlagService } from 'src/app/services/feature-flag.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { HearingControlsBaseComponent } from '../hearing-controls/hearing-controls-base.component';
@@ -39,7 +38,6 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
 
     showContextMenu = false;
     enableDynamicEvidenceSharing = false;
-    isStaffMemberFeatureEnabled = false;
     isWowzaKillButtonEnabled = false;
     private conferenceStatus: ConferenceStatusChanged;
 
@@ -54,7 +52,6 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         protected userMediaService: UserMediaService,
         conferenceService: ConferenceService,
         configService: ConfigService,
-        featureFlagService: FeatureFlagService,
         protected videoControlCacheService: VideoControlCacheService,
         ldService: LaunchDarklyService
     ) {
@@ -78,10 +75,6 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
             .getClientSettings()
             .pipe(takeUntil(this.destroyedSubject))
             .subscribe(settings => (this.enableDynamicEvidenceSharing = settings.enable_dynamic_evidence_sharing));
-        featureFlagService
-            .getFeatureFlagByName('StaffMemberFeature')
-            .pipe(first())
-            .subscribe(result => (this.isStaffMemberFeatureEnabled = result));
         ldService.getFlag<boolean>(FEATURE_FLAGS.wowzaKillButton, false).subscribe(value => (this.isWowzaKillButtonEnabled = value));
     }
 
@@ -90,7 +83,7 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
     }
 
     get canShowLeaveButton(): boolean {
-        return this.isHost && !this.isPrivateConsultation && this.isStaffMemberFeatureEnabled;
+        return this.isHost && !this.isPrivateConsultation;
     }
 
     get canJoinHearingFromConsultation(): boolean {
