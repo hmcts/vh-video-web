@@ -170,31 +170,38 @@ namespace VideoWeb.EventHub.Hub
         /// <returns></returns>
         public async Task SendMessage(Guid conferenceId, string message, string to, Guid messageUuid)
         {
-            var userName = GetObfuscatedUsernameAsync(Context.User.Identity.Name);
-            _logger.LogTrace("{Username} is attempting to SendMessages", userName);
+            _logger.LogDebug("Attempting to SendMessages in {Conference}", conferenceId);
             var conference = await GetConference(conferenceId);
             // this determines if the message is from admin
             var isSenderAdmin = IsSenderAdmin(conference);
-            _logger.LogDebug("{Username} is sender admin: {IsSenderAdmin}", userName, isSenderAdmin);
+            _logger.LogDebug("Is sender admin: {IsSenderAdmin} in conference {Conference}", isSenderAdmin, conferenceId);
 
             var participantTo = to;
 
             var fromId = string.Empty;
+            string fromDisplayName;
+            
             if (isSenderAdmin)
             {
                 participantTo = await GetParticipantUsernameByIdAsync(conferenceId, participantTo);
+                var user = await _userProfileService.GetUserAsync(Context.User.Identity.Name);
+                fromDisplayName = user.FirstName;
             }
             else
             {
                 fromId = await GetParticipantIdByUsernameAsync(conferenceId, Context.User.Identity.Name);
+                var participant = conference.Participants.SingleOrDefault(x =>
+                    x.Id == Guid.Parse(fromId));
+                fromDisplayName = participant?.DisplayName;
             }
 
 
             var isRecipientAdmin = await IsRecipientAdmin(participantTo, conference);
-            _logger.LogDebug("{Username} is recipient admin: {IsSenderAdmin}", userName, isSenderAdmin);
+            _logger.LogDebug("Is recipient admin: {IsRecipientAdmin}", isRecipientAdmin);
             //only admins and participants in the conference can send or receive a message within a conference channel
             var from = Context.User.Identity.Name.ToLowerInvariant();
             var participantUsername = isSenderAdmin ? participantTo : from;
+            
             var isAllowed =
                 await IsAllowedToSendMessageAsync(conferenceId, isSenderAdmin, isRecipientAdmin, participantUsername);
             if (!isAllowed)
@@ -206,6 +213,7 @@ namespace VideoWeb.EventHub.Hub
             {
                 Conference = new Conference {Id = conferenceId},
                 From = from,
+                FromDisplayName = fromDisplayName,
                 To = to,
                 Message = message,
                 ParticipantUsername = participantUsername,
@@ -263,7 +271,8 @@ namespace VideoWeb.EventHub.Hub
             var from = participant.Id.ToString() == dto.To ? dto.From : participant.Id.ToString();
 
             await Clients.Group(participant.Username.ToLowerInvariant())
-                .ReceiveMessage(dto.Conference.Id, from, dto.To, dto.Message, dto.Timestamp, dto.MessageUuid);
+                .ReceiveMessage(dto.Conference.Id, from, dto.FromDisplayName, dto.To, dto.Message, dto.Timestamp,
+                    dto.MessageUuid);
         }
 
         private async Task SendToAdmin(SendMessageDto dto, string fromId)
@@ -272,7 +281,8 @@ namespace VideoWeb.EventHub.Hub
             _logger.LogDebug("Sending message {MessageUuid} to group {GroupName}", dto.MessageUuid, groupName);
             var from = string.IsNullOrEmpty(fromId) ? dto.From : fromId;
             await Clients.Group(groupName)
-                .ReceiveMessage(dto.Conference.Id, from, dto.To, dto.Message, dto.Timestamp, dto.MessageUuid);
+                .ReceiveMessage(dto.Conference.Id, from, dto.FromDisplayName, dto.To, dto.Message, dto.Timestamp,
+                    dto.MessageUuid);
         }
 
         private bool IsConversationBetweenAdminAndParticipant(bool isSenderAdmin, bool isRecipientAdmin)
