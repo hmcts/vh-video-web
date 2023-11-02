@@ -1,29 +1,27 @@
-import { ConfirmStartHearingPopupComponent } from './confirm-start-hearing-popup.component';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ConfirmCloseHearingPopupComponent } from './confirm-close-hearing-popup.component';
 
-describe('ConfirmStartHearingPopupComponent', () => {
-    let component: ConfirmStartHearingPopupComponent;
-    const translateService = translateServiceSpy;
+describe('ConfirmCloseHearingPopupComponent', () => {
+    let component: ConfirmCloseHearingPopupComponent;
+    let fixture: ComponentFixture<ConfirmCloseHearingPopupComponent>;
+
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [ConfirmCloseHearingPopupComponent]
+        }).compileComponents();
+    });
 
     beforeEach(() => {
-        translateService.instant.calls.reset();
-        component = new ConfirmStartHearingPopupComponent(translateService);
+        fixture = TestBed.createComponent(ConfirmCloseHearingPopupComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
     });
 
-    it('should return "start" by default', () => {
-        const expectedText = 'confirm-start-hearing-popup.start';
-        expect(component.action).toBe(expectedText);
+    it('should create', () => {
+        expect(component).toBeTruthy();
     });
 
-    it('should return "start" if hearing has not started', () => {
-        component.hearingStarted = false;
-        const expectedText = 'confirm-start-hearing-popup.start';
-        expect(component.action).toBe(expectedText);
-    });
-
-    it('should return "resume" if hearing has already begun', () => {
-        component.hearingStarted = true;
-        const expectedText = 'confirm-start-hearing-popup.resume';
-        expect(component.action).toBe(expectedText);
+    it('should set modalDivId to confirmationDialog', () => {
+        expect(component.modalDivId).toEqual('confirmationDialog');
     });
 });
