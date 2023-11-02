@@ -32,10 +32,12 @@ export class ModalTrapFocus {
                     /* shift + tab */
                     if (document.activeElement === firstFocusableEl) {
                         e.preventDefault();
+                        lastFocusableEl.focus();
                     }
                 } /* tab */ else {
                     if (document.activeElement === lastFocusableEl) {
                         e.preventDefault();
+                        firstFocusableEl.focus();
                     }
                 }
             }
