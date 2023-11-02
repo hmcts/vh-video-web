@@ -6,4 +6,9 @@ import { YesNoPopupBaseDirective } from './yes-no-popup-base.component';
     templateUrl: './confirm-close-hearing-popup.component.html',
     styleUrls: ['./yes-no-popup-base.component.scss']
 })
-export class ConfirmCloseHearingPopupComponent extends YesNoPopupBaseDirective {}
+export class ConfirmCloseHearingPopupComponent extends YesNoPopupBaseDirective {
+    constructor() {
+        super();
+        this.modalDivId = 'confirmationDialog';
+    }
+}

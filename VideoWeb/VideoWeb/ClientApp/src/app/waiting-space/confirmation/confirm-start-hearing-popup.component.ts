@@ -12,6 +12,7 @@ export class ConfirmStartHearingPopupComponent extends YesNoPopupBaseDirective {
 
     constructor(protected translateService: TranslateService) {
         super();
+        this.modalDivId = 'confirmationDialog';
     }
 
     get action(): string {
