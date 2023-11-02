@@ -3,11 +3,14 @@ import { ModalTrapFocus } from 'src/app/shared/modal/modal-trap-focus';
 
 @Directive()
 export abstract class YesNoPopupBaseDirective implements AfterViewInit {
-    modalDivId: string;
     @Output() popupAnswered = new EventEmitter<boolean>();
 
+    modalDivId: string;
+
     ngAfterViewInit(): void {
-        ModalTrapFocus.trap(this.modalDivId);
+        if (this.modalDivId) {
+            ModalTrapFocus.trap(this.modalDivId);
+        }
     }
 
     respondWithYes() {
