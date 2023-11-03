@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
@@ -22,6 +22,9 @@ import { WRParticipantStatusListDirective } from '../waiting-room-shared/wr-part
     styleUrls: ['./judge-participant-status-list.component.scss']
 })
 export class JudgeParticipantStatusListComponent extends WRParticipantStatusListDirective implements OnInit, OnDestroy {
+    @ViewChild('judgeEditNameLink') editJudgeNameLink: ElementRef;
+    @ViewChild('staffMemberEditNameLink') editStaffMemberNameLink: ElementRef;
+
     representativeParticipants: ParticipantResponse[];
     litigantInPerson: boolean;
     individualParticipants: ParticipantResponse[];
@@ -119,6 +122,7 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         this.judge.display_name = this.removeSpecialCharacters(this.judge.display_name);
         this.showChangeJudgeDisplayName = false;
         await this.updateJudgeDisplayName();
+        this.editJudgeNameLink?.nativeElement.focus();
     }
 
     async saveStaffMemberDisplayName(id: string) {
@@ -126,6 +130,7 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         staffMember.display_name = this.newStaffMemberDisplayName;
         this.showChangeStaffMemberDisplayName = false;
         await this.updateStaffMemberDisplayName(staffMember);
+        this.editStaffMemberNameLink?.nativeElement.focus();
     }
 
     cancelStaffMemberDisplayName() {

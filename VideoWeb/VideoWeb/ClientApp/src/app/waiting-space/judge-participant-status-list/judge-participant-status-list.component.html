@@ -17,7 +17,12 @@
       <dt class="govuk-heading-m govuk-!-margin-bottom-0">
         <span>{{ 'judge-participant-status-list.judge' | translate }}</span>
         <span *ngIf="isUserJudge"
-          ><a href="javascript:void(0);" (click)="changeJudgeNameShow()" class="govuk-body govuk-link vh-ml10"
+          ><a
+            #judgeEditNameLink
+            id="edit-judge-link"
+            href="javascript:void(0);"
+            (click)="changeJudgeNameShow()"
+            class="govuk-body govuk-link vh-ml10"
             >{{ 'judge-participant-status-list.edit' | translate }}
             <span class="govuk-visually-hidden-focusable">
               {{ 'judge-participant-status-list.your-name' | translate }} {{ judge.display_name }}</span
@@ -153,7 +158,12 @@
           <dt id="p-{{ participant.id }}-name-staff-member" class="govuk-heading-s govuk-!-margin-bottom-3">
             {{ participant.display_name }}
             <span *ngIf="canChangeStaffMemberName(participant.id)"
-              ><a href="javascript:void(0);" (click)="changeStaffMemberNameShow(participant.id)" class="govuk-body govuk-link vh-ml10"
+              ><a
+                #staffMemberEditNameLink
+                id="edit-staff-member-link"
+                href="javascript:void(0);"
+                (click)="changeStaffMemberNameShow(participant.id)"
+                class="govuk-body govuk-link vh-ml10"
                 >{{ 'judge-participant-status-list.edit' | translate }}
                 <span class="govuk-visually-hidden-focusable">
                   {{ 'judge-participant-status-list.your-name' | translate }} {{ participant.display_name }}</span
