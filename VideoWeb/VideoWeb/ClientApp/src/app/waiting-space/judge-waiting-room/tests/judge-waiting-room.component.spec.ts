@@ -21,6 +21,7 @@ import {
     deviceTypeService,
     errorService,
     eventsService,
+    focusService,
     globalConference,
     globalParticipant,
     heartbeatModelMapper,
@@ -274,7 +275,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             participantRemoteMuteStoreServiceSpy,
             mockedHearingVenueFlagsService,
             titleService,
-            hideComponentsService
+            hideComponentsService,
+            focusService
         );
 
         consultationInvitiationService.getInvitation.and.returnValue(consultationInvitiation);

@@ -62,6 +62,7 @@ import { VideoCallService } from '../services/video-call.service';
 import { Title } from '@angular/platform-browser';
 import { RoomTransfer } from '../../shared/models/room-transfer';
 import { HideComponentsService } from '../services/hide-components.service';
+import { FocusService } from 'src/app/services/focus.service';
 
 @Directive()
 export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
@@ -146,7 +147,8 @@ export abstract class WaitingRoomBaseDirective implements AfterContentChecked {
         protected participantRemoteMuteStoreService: ParticipantRemoteMuteStoreService,
         protected hearingVenueFlagsService: HearingVenueFlagsService,
         protected titleService: Title,
-        protected hideComponentsService: HideComponentsService
+        protected hideComponentsService: HideComponentsService,
+        protected focusService: FocusService
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;

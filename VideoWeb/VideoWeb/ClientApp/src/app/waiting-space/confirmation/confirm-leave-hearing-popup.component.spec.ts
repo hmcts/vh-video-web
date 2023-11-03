@@ -1,11 +1,14 @@
+import { FocusService } from 'src/app/services/focus.service';
 import { ConfirmLeaveHearingPopupComponent } from './confirm-leave-hearing-popup.component';
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 
 describe('ConfirmLeaveHearingPopupComponent', () => {
     let component: ConfirmLeaveHearingPopupComponent;
+    let focusServiceSpy: jasmine.SpyObj<FocusService>;
 
     beforeEach(() => {
-        component = new ConfirmLeaveHearingPopupComponent();
+        focusServiceSpy = jasmine.createSpyObj<FocusService>('FocusService', ['restoreFocus']);
+        component = new ConfirmLeaveHearingPopupComponent(focusServiceSpy);
     });
 
     describe('AfterViewInit', () => {

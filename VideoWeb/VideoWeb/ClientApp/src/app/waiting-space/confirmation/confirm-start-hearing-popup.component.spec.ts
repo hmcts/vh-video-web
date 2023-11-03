@@ -1,13 +1,16 @@
+import { FocusService } from 'src/app/services/focus.service';
 import { ConfirmStartHearingPopupComponent } from './confirm-start-hearing-popup.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 
 describe('ConfirmStartHearingPopupComponent', () => {
     let component: ConfirmStartHearingPopupComponent;
     const translateService = translateServiceSpy;
+    let focusServiceSpy: jasmine.SpyObj<FocusService>;
 
     beforeEach(() => {
+        focusServiceSpy = jasmine.createSpyObj<FocusService>('FocusService', ['restoreFocus']);
         translateService.instant.calls.reset();
-        component = new ConfirmStartHearingPopupComponent(translateService);
+        component = new ConfirmStartHearingPopupComponent(translateService, focusServiceSpy);
     });
 
     it('should return "start" by default', () => {

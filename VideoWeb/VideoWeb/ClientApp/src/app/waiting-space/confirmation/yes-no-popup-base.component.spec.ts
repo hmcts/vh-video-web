@@ -5,8 +5,9 @@ class YesNoPopupBaseTest extends YesNoPopupBaseDirective {}
 
 describe('YesNoPopupBaseComponent', () => {
     let component: YesNoPopupBaseDirective;
+    const focusServiceSpy = jasmine.createSpyObj('FocusService', ['restoreFocus']);
     beforeEach(() => {
-        component = new YesNoPopupBaseTest();
+        component = new YesNoPopupBaseTest(focusServiceSpy);
         spyOn(component.popupAnswered, 'emit');
     });
 

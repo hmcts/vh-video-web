@@ -25,6 +25,7 @@ import {
     deviceTypeService,
     errorService,
     eventsService,
+    focusService,
     globalConference,
     globalParticipant,
     heartbeatModelMapper,
@@ -130,7 +131,8 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             mockedHearingVenueFlagsService,
             userMediaServiceSpy,
             titleService,
-            hideComponentsService
+            hideComponentsService,
+            focusService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));

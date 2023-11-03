@@ -43,6 +43,7 @@ import { ConfigService } from 'src/app/services/api/config.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
+import { FocusService } from 'src/app/services/focus.service';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -75,6 +76,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
     const logger: Logger = new MockLogger();
     const launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>(['getFlag']);
+    const focusServiceSpy = jasmine.createSpyObj<FocusService>('FocusService', ['storeFocus', 'restoreFocus']);
 
     const testData = new VideoCallTestData();
     const translateService = translateServiceSpy;
@@ -142,7 +144,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             conferenceServiceSpy,
             configServiceSpy,
             videoControlCacheSpy,
-            launchDarklyServiceSpy
+            launchDarklyServiceSpy,
+            focusServiceSpy
         );
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;
@@ -241,7 +244,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             conferenceServiceSpy,
             configServiceSpy,
             videoControlCacheSpy,
-            launchDarklyServiceSpy
+            launchDarklyServiceSpy,
+            focusServiceSpy
         );
         expect(_component.enableDynamicEvidenceSharing).toBe(false);
     });
@@ -266,7 +270,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             conferenceServiceSpy,
             configServiceSpy,
             videoControlCacheSpy,
-            launchDarklyServiceSpy
+            launchDarklyServiceSpy,
+            focusServiceSpy
         );
         expect(_component.enableDynamicEvidenceSharing).toBe(true);
     });
