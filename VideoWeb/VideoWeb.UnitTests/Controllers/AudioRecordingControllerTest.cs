@@ -30,9 +30,10 @@ namespace VideoWeb.UnitTests.Controllers
         public async Task Should_return_success_to_get_audio_stream_info_an_returns_status_ok()
         {
 
-            _videoApiClientMock.Setup(x => x.GetAudioStreamInfoAsync(It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(new AudioStreamInfoResponse());
+            _videoApiClientMock.Setup(x 
+                => x.GetAudioStreamInfoAsync(It.IsAny<Guid>())).ReturnsAsync(new AudioStreamInfoResponse());
 
-            var result      = await _controller.GetAudioStreamInfoAsync(Guid.NewGuid(), It.IsAny<bool>());
+            var result      = await _controller.GetAudioStreamInfoAsync(Guid.NewGuid());
             var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.StatusCode.Should().Be(200);
@@ -44,9 +45,9 @@ namespace VideoWeb.UnitTests.Controllers
         {
             var videoException = new VideoApiException("Not Found", (int)HttpStatusCode.NotFound, "Error", null, null);
 
-            _videoApiClientMock.Setup(x => x.GetAudioStreamInfoAsync(It.IsAny<Guid>(), It.IsAny<bool>())).ThrowsAsync(videoException);
+            _videoApiClientMock.Setup(x => x.GetAudioStreamInfoAsync(It.IsAny<Guid>())).ThrowsAsync(videoException);
 
-            var result      = await _controller.GetAudioStreamInfoAsync(Guid.NewGuid(), It.IsAny<bool>());
+            var result      = await _controller.GetAudioStreamInfoAsync(Guid.NewGuid());
             var typedResult = (ObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.StatusCode.Should().Be(200);
@@ -58,9 +59,9 @@ namespace VideoWeb.UnitTests.Controllers
         {
             var videoException = new VideoApiException("Bad request", (int)HttpStatusCode.BadRequest, "Error", null, null);
 
-            _videoApiClientMock.Setup(x => x.GetAudioStreamInfoAsync(It.IsAny<Guid>(), It.IsAny<bool>())).ThrowsAsync(videoException);
+            _videoApiClientMock.Setup(x => x.GetAudioStreamInfoAsync(It.IsAny<Guid>())).ThrowsAsync(videoException);
 
-            var result      = await _controller.GetAudioStreamInfoAsync(Guid.NewGuid(), It.IsAny<bool>());
+            var result      = await _controller.GetAudioStreamInfoAsync(Guid.NewGuid());
             var typedResult = (ObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.StatusCode.Should().Be(400);
