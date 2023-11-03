@@ -445,7 +445,13 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     displayConfirmationDialog() {
+        this.focusService.storeFocus();
         this.displayConfirmPopup = true;
+    }
+
+    displayConfirmationLeaveHearingDialog() {
+        this.focusService.storeFocus();
+        this.displayLeaveHearingPopup = true;
     }
 
     leavePrivateConsultation() {
