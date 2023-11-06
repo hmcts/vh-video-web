@@ -50,6 +50,7 @@ import { SessionStorage } from 'src/app/services/session-storage';
 import { VhoStorageKeys } from 'src/app/vh-officer/services/models/session-keys';
 import { ParticipantToggleLocalMuteMessage } from 'src/app/shared/models/participant-toggle-local-mute-message';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
+import { FocusService } from 'src/app/services/focus.service';
 
 describe('HearingControlsBaseComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -86,6 +87,7 @@ describe('HearingControlsBaseComponent', () => {
 
     const logger: Logger = new MockLogger();
     const launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>(['getFlag']);
+    const focusService = jasmine.createSpyObj<FocusService>(['restoreFocus', 'storeFocus']);
 
     const testData = new VideoCallTestData();
     let conference: ConferenceResponse;
@@ -153,7 +155,8 @@ describe('HearingControlsBaseComponent', () => {
             conferenceServiceSpy,
             configServiceSpy,
             videoControlCacheSpy,
-            launchDarklyServiceSpy
+            launchDarklyServiceSpy,
+            focusService
         );
         conference = new ConferenceTestData().getConferenceNow();
         component.participant = globalParticipant;

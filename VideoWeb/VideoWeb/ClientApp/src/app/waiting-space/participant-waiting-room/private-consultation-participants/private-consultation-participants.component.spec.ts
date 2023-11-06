@@ -35,6 +35,7 @@ import { HearingRole } from '../../models/hearing-role-model';
 import { WRParticipantStatusListDirective } from '../../waiting-room-shared/wr-participant-list-shared.component';
 import { ParticipantListItem } from '../participant-list-item';
 import { PrivateConsultationParticipantsComponent } from './private-consultation-participants.component';
+import { FocusService } from 'src/app/services/focus.service';
 
 describe('PrivateConsultationParticipantsComponent', () => {
     let component: PrivateConsultationParticipantsComponent;
@@ -49,9 +50,11 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
     let logged: LoggedParticipantResponse;
     let activatedRoute: ActivatedRoute;
+    let focusServiceSpy: jasmine.SpyObj<FocusService>;
     const translateService = translateServiceSpy;
 
     beforeAll(() => {
+        focusServiceSpy = jasmine.createSpyObj<FocusService>('FocusService', ['restoreFocus', 'storeFocus']);
         oidcSecurityService = mockOidcSecurityService;
 
         consultationService = consultationServiceSpyFactory();
@@ -83,7 +86,8 @@ describe('PrivateConsultationParticipantsComponent', () => {
             logger,
             videoWebService,
             activatedRoute,
-            translateService
+            translateService,
+            focusServiceSpy
         );
 
         component.conference = conference;

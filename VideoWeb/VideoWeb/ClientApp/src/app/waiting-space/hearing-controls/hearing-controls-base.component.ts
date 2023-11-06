@@ -22,6 +22,7 @@ import { CaseTypeGroup } from '../models/case-type-group';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { VhoStorageKeys } from 'src/app/vh-officer/services/models/session-keys';
 import { ParticipantToggleLocalMuteMessage } from 'src/app/shared/models/participant-toggle-local-mute-message';
+import { FocusService } from 'src/app/services/focus.service';
 
 @Injectable()
 export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy {
@@ -68,7 +69,8 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         protected participantService: ParticipantService,
         protected translateService: TranslateService,
         protected videoControlService: VideoControlService,
-        protected userMediaService: UserMediaService
+        protected userMediaService: UserMediaService,
+        protected focusService: FocusService
     ) {
         this.handRaised = false;
         this.remoteMuted = false;
@@ -409,6 +411,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     pause() {
+        this.focusService.storeFocus();
         this.logger.info(`${this.loggerPrefix} Attempting to pause hearing`, this.logPayload);
         this.videoCallService.pauseHearing(this.conferenceId);
     }
@@ -419,6 +422,8 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             this.logger.info(`${this.loggerPrefix} Attempting to close hearing`, this.logPayload);
             this.videoCallService.endHearing(this.conferenceId);
             this.sessionStorage.clear();
+        } else {
+            this.focusService.restoreFocus();
         }
     }
 
@@ -434,14 +439,23 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             } else {
                 this.videoCallService.suspendHearing(this.conferenceId);
             }
+        } else {
+            this.focusService.restoreFocus();
         }
     }
 
     displayConfirmationDialog() {
+        this.focusService.storeFocus();
         this.displayConfirmPopup = true;
     }
 
+    displayConfirmationLeaveHearingDialog() {
+        this.focusService.storeFocus();
+        this.displayLeaveHearingPopup = true;
+    }
+
     leavePrivateConsultation() {
+        this.focusService.storeFocus();
         this.logger.info(`${this.loggerPrefix} Leave private consultation clicked`, this.logPayload);
         this.leaveConsultation.emit();
     }

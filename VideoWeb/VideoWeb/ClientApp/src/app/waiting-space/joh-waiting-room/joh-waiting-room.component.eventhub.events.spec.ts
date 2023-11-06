@@ -12,6 +12,7 @@ import {
     deviceTypeService,
     errorService,
     eventsService,
+    focusService,
     globalConference,
     globalJudge,
     globalParticipant,
@@ -77,7 +78,8 @@ describe('JohWaitingRoomComponent eventhub events', () => {
             participantRemoteMuteStoreServiceSpy,
             mockedHearingVenueFlagsService,
             titleService,
-            hideComponentsService
+            hideComponentsService,
+            focusService
         );
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));

@@ -29,6 +29,7 @@ import {
     deviceTypeService,
     errorService,
     eventsService,
+    focusService,
     globalConference,
     globalParticipant,
     heartbeatModelMapper,
@@ -92,7 +93,8 @@ describe('WaitingRoomComponent message and clock', () => {
             participantRemoteMuteStoreServiceSpy,
             mockedHearingVenueFlagsService,
             titleService,
-            hideComponentsService
+            hideComponentsService,
+            focusService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
