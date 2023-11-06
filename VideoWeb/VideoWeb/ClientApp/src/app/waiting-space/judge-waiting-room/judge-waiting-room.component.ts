@@ -374,10 +374,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         if (this.recordingSessionSeconds > 30 && !this.continueWithNoRecording && this.showVideo && !this.audioErrorRetryToast) {
             this.logger.debug(`${this.loggerPrefixJudge} Attempting to retrieve audio stream info for ${hearingId}`);
             try {
-                const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(
-                    hearingId,
-                    this.conference.ingest_url.includes('vh-recording')
-                );
+                const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId);
                 this.logger.debug(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
                 // if recorder not found on a wowza vm and returns false OR wowzaListener participant is not present in conference
                 if ((!this.wowzaAgent || !audioStreamWorking) && !this.audioErrorRetryToast) {
