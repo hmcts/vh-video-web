@@ -27,6 +27,7 @@ import { WRParticipantStatusListDirective } from './wr-participant-list-shared.c
 import { HearingRole } from '../models/hearing-role-model';
 import { TranslateService } from '@ngx-translate/core';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { FocusService } from 'src/app/services/focus.service';
 
 class WrParticipantStatusListTest extends WRParticipantStatusListDirective implements OnInit, OnDestroy {
     constructor(
@@ -34,9 +35,10 @@ class WrParticipantStatusListTest extends WRParticipantStatusListDirective imple
         protected eventService: EventsService,
         protected logger: Logger,
         protected videoWebService: VideoWebService,
-        protected translateService: TranslateService
+        protected translateService: TranslateService,
+        protected focusService: FocusService
     ) {
-        super(consultationService, eventService, videoWebService, logger, translateService);
+        super(consultationService, eventService, videoWebService, logger, translateService, focusService);
     }
 
     ngOnInit() {
@@ -59,6 +61,7 @@ describe('WaitingRoom ParticipantList Base', () => {
     const logger: Logger = new MockLogger();
     let conference: ConferenceResponse;
     const participantStatusSubject = participantStatusSubjectMock;
+    let focusServiceSpy: jasmine.SpyObj<FocusService>;
 
     beforeAll(() => {
         consultationService = consultationServiceSpyFactory();
@@ -67,6 +70,7 @@ describe('WaitingRoom ParticipantList Base', () => {
     });
 
     beforeEach(() => {
+        focusServiceSpy = jasmine.createSpyObj<FocusService>('FocusService', ['restoreFocus', 'storeFocus']);
         conference = new ConferenceTestData().getConferenceDetailNow();
         const participantObserverPanelMember = new ConferenceTestData().getListOfParticipantsObserverAndPanelMembers();
         participantObserverPanelMember.forEach(x => conference.participants.push(x));
@@ -77,7 +81,14 @@ describe('WaitingRoom ParticipantList Base', () => {
             role: loggedUser.role
         });
 
-        component = new WrParticipantStatusListTest(consultationService, eventsService, logger, videoWebService, translateService);
+        component = new WrParticipantStatusListTest(
+            consultationService,
+            eventsService,
+            logger,
+            videoWebService,
+            translateService,
+            focusServiceSpy
+        );
         component.conference = conference;
         component.loggedInUser = userLogged;
         component.ngOnInit();
@@ -275,7 +286,14 @@ describe('WaitingRoom ParticipantList Base', () => {
                 role: loggedUser.role
             });
 
-            component = new WrParticipantStatusListTest(consultationService, eventsService, logger, videoWebService, translateService);
+            component = new WrParticipantStatusListTest(
+                consultationService,
+                eventsService,
+                logger,
+                videoWebService,
+                translateService,
+                focusServiceSpy
+            );
             component.conference = conference;
             component.loggedInUser = userLogged;
             component.ngOnInit();
