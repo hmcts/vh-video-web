@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
@@ -15,6 +15,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingRole } from '../models/hearing-role-model';
 import { WRParticipantStatusListDirective } from '../waiting-room-shared/wr-participant-list-shared.component';
+import { FocusService } from 'src/app/services/focus.service';
 
 @Component({
     selector: 'app-judge-participant-status-list',
@@ -22,9 +23,6 @@ import { WRParticipantStatusListDirective } from '../waiting-room-shared/wr-part
     styleUrls: ['./judge-participant-status-list.component.scss']
 })
 export class JudgeParticipantStatusListComponent extends WRParticipantStatusListDirective implements OnInit, OnDestroy {
-    @ViewChild('judgeEditNameLink') editJudgeNameLink: ElementRef;
-    @ViewChild('staffMemberEditNameLink') editStaffMemberNameLink: ElementRef;
-
     representativeParticipants: ParticipantResponse[];
     litigantInPerson: boolean;
     individualParticipants: ParticipantResponse[];
@@ -42,9 +40,10 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         protected logger: Logger,
         protected videoWebService: VideoWebService,
         protected route: ActivatedRoute,
-        protected translateService: TranslateService
+        protected translateService: TranslateService,
+        protected focusService: FocusService
     ) {
-        super(consultationService, eventService, videoWebService, logger, translateService);
+        super(consultationService, eventService, videoWebService, logger, translateService, focusService);
     }
 
     ngOnInit() {
@@ -122,7 +121,7 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         this.judge.display_name = this.removeSpecialCharacters(this.judge.display_name);
         this.showChangeJudgeDisplayName = false;
         await this.updateJudgeDisplayName();
-        this.editJudgeNameLink?.nativeElement.focus();
+        this.focusService.restoreFocus();
     }
 
     async saveStaffMemberDisplayName(id: string) {
@@ -130,15 +129,17 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         staffMember.display_name = this.newStaffMemberDisplayName;
         this.showChangeStaffMemberDisplayName = false;
         await this.updateStaffMemberDisplayName(staffMember);
-        this.editStaffMemberNameLink?.nativeElement.focus();
+        this.focusService.restoreFocus();
     }
 
     cancelStaffMemberDisplayName() {
         this.showChangeStaffMemberDisplayName = false;
+        this.focusService.restoreFocus();
     }
 
     cancelJudgeDisplayName() {
         this.showChangeJudgeDisplayName = false;
+        this.focusService.restoreFocus();
     }
 
     private filterRepresentatives(): void {

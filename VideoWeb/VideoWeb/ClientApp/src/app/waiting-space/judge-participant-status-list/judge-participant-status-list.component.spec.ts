@@ -19,6 +19,7 @@ import { VideoWebService } from '../../services/api/video-web.service';
 import { Logger } from '../../services/logging/logger-base';
 import { HearingRole } from '../models/hearing-role-model';
 import { JudgeParticipantStatusListComponent } from './judge-participant-status-list.component';
+import { FocusService } from 'src/app/services/focus.service';
 
 describe('JudgeParticipantStatusListComponent', () => {
     const testData = new ConferenceTestData();
@@ -31,9 +32,11 @@ describe('JudgeParticipantStatusListComponent', () => {
     let conference: ConferenceResponse;
     let activatedRoute: ActivatedRoute;
     const translateService = translateServiceSpy;
+    let focusServiceSpy: jasmine.SpyObj<FocusService>;
     let editedStaffMember;
 
     beforeAll(() => {
+        focusServiceSpy = jasmine.createSpyObj<FocusService>('FocusService', ['restoreFocus', 'storeFocus']);
         consultationService = consultationServiceSpyFactory();
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['updateParticipantDetails', 'getObfuscatedName']);
         const logged = new LoggedParticipantResponse({
@@ -59,7 +62,8 @@ describe('JudgeParticipantStatusListComponent', () => {
             logger,
             videoWebService,
             activatedRoute,
-            translateService
+            translateService,
+            focusServiceSpy
         );
         component.conference = conference;
         component.ngOnInit();
@@ -303,7 +307,8 @@ describe('JudgeParticipantStatusListComponent', () => {
             logger,
             videoWebService,
             activatedRoute,
-            translateService
+            translateService,
+            focusServiceSpy
         );
         component.conference = conference;
         component.ngOnInit();

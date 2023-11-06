@@ -8,6 +8,7 @@ import { ParticipantResponse, ParticipantStatus } from 'src/app/services/clients
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { WRParticipantStatusListDirective } from '../waiting-room-shared/wr-participant-list-shared.component';
+import { FocusService } from 'src/app/services/focus.service';
 
 @Component({
     selector: 'app-individual-participant-status-list',
@@ -25,9 +26,10 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         protected logger: Logger,
         protected videoWebService: VideoWebService,
         protected route: ActivatedRoute,
-        protected translateService: TranslateService
+        protected translateService: TranslateService,
+        protected focusService: FocusService
     ) {
-        super(consultationService, eventService, videoWebService, logger, translateService);
+        super(consultationService, eventService, videoWebService, logger, translateService, focusService);
     }
 
     ngOnInit() {

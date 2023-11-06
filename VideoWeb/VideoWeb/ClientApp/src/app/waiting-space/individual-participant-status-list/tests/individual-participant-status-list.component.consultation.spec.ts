@@ -16,6 +16,7 @@ import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-security.service';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
+import { FocusService } from 'src/app/services/focus.service';
 
 describe('IndividualParticipantStatusListComponent consultations', () => {
     let component: IndividualParticipantStatusListComponent;
@@ -37,8 +38,10 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     let logged: LoggedParticipantResponse;
     let activatedRoute: ActivatedRoute;
     const translateService = translateServiceSpy;
+    let focusServiceSpy: jasmine.SpyObj<FocusService>;
 
     beforeAll(() => {
+        focusServiceSpy = jasmine.createSpyObj<FocusService>('FocusService', ['restoreFocus', 'storeFocus']);
         oidcSecurityService = mockOidcSecurityService;
 
         consultationService = consultationServiceSpyFactory();
@@ -75,7 +78,8 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
             logger,
             videoWebService,
             activatedRoute,
-            translateService
+            translateService,
+            focusServiceSpy
         );
 
         component.conference = conference;
