@@ -93,6 +93,7 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
     changeJudgeNameShow() {
         this.showChangeJudgeDisplayName = true;
         this.newJudgeDisplayName = this.judge.display_name;
+        this.focusService.storeFocus();
     }
 
     canChangeStaffMemberName(id: string) {
@@ -100,6 +101,7 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
     }
 
     changeStaffMemberNameShow(id: string) {
+        this.focusService.storeFocus();
         this.showChangeStaffMemberDisplayName = true;
         this.newStaffMemberDisplayName = this.staffMembers.find(p => p.id === id).display_name;
     }
