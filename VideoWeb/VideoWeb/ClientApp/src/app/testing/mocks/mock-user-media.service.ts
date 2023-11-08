@@ -5,15 +5,6 @@ import { SessionStorage } from 'src/app/services/session-storage';
 
 export class MockUserMediaService extends UserMediaService {
     private testData = new MediaDeviceTestData();
-    private _startWithAudioMuted = false;
-
-    get startWithAudioMuted(): boolean {
-        return this._startWithAudioMuted;
-    }
-
-    set startWithAudioMuted(value: boolean) {
-        this._startWithAudioMuted = value;
-    }
 
     async requestAccess(): Promise<boolean> {
         return true;

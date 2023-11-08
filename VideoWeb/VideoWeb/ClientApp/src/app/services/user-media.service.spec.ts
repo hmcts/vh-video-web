@@ -7,6 +7,7 @@ import { fakeAsync, flush } from '@angular/core/testing';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Guid } from 'guid-typescript';
 import { ErrorService } from './error.service';
+import { ConferenceSetting } from '../shared/models/conference-setting';
 
 describe('UserMediaService', () => {
     const testData = new MediaDeviceTestData();
@@ -366,27 +367,40 @@ describe('UserMediaService', () => {
         }));
     });
 
-    describe('get startWithAudioMuted', () => {
-        it('should return true if the value is true', () => {
-            localStorageServiceSpy.load.and.returnValue(true);
-            expect(userMediaService.startWithAudioMuted).toBeTrue();
+    describe('getConferenceSetting', () => {
+        it('should return conference if one is present', () => {
+            const conferenceId = 'conferenceId';
+            const startWithAudioMuted = true;
+            const conferences = [new ConferenceSetting(conferenceId, startWithAudioMuted), new ConferenceSetting('conferenceId2', false)];
+            localStorageServiceSpy.load.and.returnValue(conferences);
+            expect(userMediaService.getConferenceSetting(conferenceId)).toEqual(new ConferenceSetting(conferenceId, startWithAudioMuted));
         });
 
-        it('should return false if the value is false', () => {
-            localStorageServiceSpy.load.and.returnValue(false);
-            expect(userMediaService.startWithAudioMuted).toBeFalse();
+        it('should return null if one does not exist', () => {
+            localStorageServiceSpy.load.and.returnValue(null);
+            expect(userMediaService.getConferenceSetting('conferenceId')).toBeNull();
         });
     });
 
-    describe('set startWithAudioMuted', () => {
-        it('should save true value to local storage', () => {
-            userMediaService.startWithAudioMuted = true;
-            expect(localStorageServiceSpy.save).toHaveBeenCalledWith(userMediaService.START_WITH_AUDIO_MUTED_KEY, 'true');
+    describe('updateStartWithAudioMuted', () => {
+        it('should value to local storage when conference already exists', () => {
+            const conferenceId = 'conferenceId';
+            const conferences = [new ConferenceSetting(conferenceId, false), new ConferenceSetting('conferenceId2', false)];
+            localStorageServiceSpy.load.and.returnValue(conferences);
+            userMediaService.updateStartWithAudioMuted(conferenceId, true);
+            expect(localStorageServiceSpy.save).toHaveBeenCalledWith(userMediaService.CONFERENCES_KEY, [
+                new ConferenceSetting(conferenceId, true),
+                new ConferenceSetting('conferenceId2', false)
+            ]);
         });
 
-        it('should save false value to local storage', () => {
-            userMediaService.startWithAudioMuted = false;
-            expect(localStorageServiceSpy.save).toHaveBeenCalledWith(userMediaService.START_WITH_AUDIO_MUTED_KEY, 'false');
+        it('should save value to local storage when conference does not already exist', () => {
+            const conferenceId = 'conferenceId';
+            localStorageServiceSpy.load.and.returnValue(null);
+            userMediaService.updateStartWithAudioMuted(conferenceId, true);
+            expect(localStorageServiceSpy.save).toHaveBeenCalledWith(userMediaService.CONFERENCES_KEY, [
+                new ConferenceSetting(conferenceId, true)
+            ]);
         });
     });
 });

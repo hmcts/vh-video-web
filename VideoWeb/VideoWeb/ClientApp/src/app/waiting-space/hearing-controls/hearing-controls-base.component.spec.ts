@@ -51,6 +51,7 @@ import { SessionStorage } from 'src/app/services/session-storage';
 import { VhoStorageKeys } from 'src/app/vh-officer/services/models/session-keys';
 import { ParticipantToggleLocalMuteMessage } from 'src/app/shared/models/participant-toggle-local-mute-message';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
+import { ConferenceSetting } from 'src/app/shared/models/conference-setting';
 
 describe('HearingControlsBaseComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -130,7 +131,8 @@ describe('HearingControlsBaseComponent', () => {
         );
         getSpiedPropertyGetter(participantServiceSpy, 'loggedInParticipant$').and.returnValue(loggedInParticipantSubject.asObservable());
 
-        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>([], ['isAudioOnly$', 'startWithAudioMuted']);
+        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>('UserMediaService', ['getConferenceSetting'], ['isAudioOnly$']);
+        userMediaServiceSpy.getConferenceSetting.and.returnValue(null);
         isAudioOnlySubject = new Subject<boolean>();
         getSpiedPropertyGetter(userMediaServiceSpy, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
 
@@ -1043,14 +1045,18 @@ describe('HearingControlsBaseComponent', () => {
     }));
 
     describe('startWithAudioMuted', () => {
+        let conferenceSetting: ConferenceSetting;
+
         beforeEach(() => {
-            getSpiedPropertyGetter(userMediaServiceSpy, 'startWithAudioMuted').and.returnValue(true);
+            conferenceSetting = new ConferenceSetting('conferenceId', true);
+            userMediaServiceSpy.getConferenceSetting.and.returnValue(conferenceSetting);
             component.isPrivateConsultation = false;
         });
 
-        it('should return true when userMediaService.startWithAudioMuted is true and not private consultation', () => {
+        it('should return true when conference.startWithAudioMuted is true and not private consultation', () => {
             // Arrange
-            getSpiedPropertyGetter(userMediaServiceSpy, 'startWithAudioMuted').and.returnValue(true);
+            conferenceSetting.startWithAudioMuted = true;
+            userMediaServiceSpy.getConferenceSetting.and.returnValue(conferenceSetting);
             component.isPrivateConsultation = false;
             // Act
             const value = component.startWithAudioMuted;
@@ -1058,9 +1064,10 @@ describe('HearingControlsBaseComponent', () => {
             expect(value).toBeTrue();
         });
 
-        it('should return false when userMediaService.startWithAudioMuted is false', () => {
+        it('should return false when conference.startWithAudioMuted is false', () => {
             // Arrange
-            getSpiedPropertyGetter(userMediaServiceSpy, 'startWithAudioMuted').and.returnValue(false);
+            conferenceSetting.startWithAudioMuted = false;
+            userMediaServiceSpy.getConferenceSetting.and.returnValue(conferenceSetting);
             // Act
             const value = component.startWithAudioMuted;
             // Assert
@@ -1078,9 +1085,16 @@ describe('HearingControlsBaseComponent', () => {
     });
 
     describe('ngOnInit', () => {
+        let conferenceSetting: ConferenceSetting;
+
+        beforeEach(() => {
+            conferenceSetting = new ConferenceSetting('conferenceId', true);
+        });
+
         it('should mute audio when starting with audio muted', () => {
             // Arrange
-            getSpiedPropertyGetter(userMediaServiceSpy, 'startWithAudioMuted').and.returnValue(true);
+            conferenceSetting.startWithAudioMuted = true;
+            userMediaServiceSpy.getConferenceSetting.and.returnValue(conferenceSetting);
             // Act
             component.ngOnInit();
             // Assert
@@ -1089,7 +1103,8 @@ describe('HearingControlsBaseComponent', () => {
 
         it('should not mute audio when not starting with audio muted', () => {
             // Arrange
-            getSpiedPropertyGetter(userMediaServiceSpy, 'startWithAudioMuted').and.returnValue(false);
+            conferenceSetting.startWithAudioMuted = false;
+            userMediaServiceSpy.getConferenceSetting.and.returnValue(conferenceSetting);
             // Act
             component.ngOnInit();
             // Assert
@@ -1098,14 +1113,18 @@ describe('HearingControlsBaseComponent', () => {
     });
 
     describe('handleHearingCountdownComplete', () => {
+        let conferenceSetting: ConferenceSetting;
+
         beforeEach(() => {
+            conferenceSetting = new ConferenceSetting('conferenceId', true);
             videoCallService.toggleMute.calls.reset();
         });
 
         it('should not unmute audio when host is starting with audio muted', async () => {
             // Arrange
             component.participant = globalConference.participants.find(x => x.role === Role.Judge);
-            getSpiedPropertyGetter(userMediaServiceSpy, 'startWithAudioMuted').and.returnValue(true);
+            conferenceSetting.startWithAudioMuted = true;
+            userMediaServiceSpy.getConferenceSetting.and.returnValue(conferenceSetting);
             component.isPrivateConsultation = false;
             component.audioMuted = true;
             // Act

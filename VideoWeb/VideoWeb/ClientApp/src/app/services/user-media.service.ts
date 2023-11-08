@@ -6,6 +6,7 @@ import { Logger } from './logging/logger-base';
 import { catchError, filter, map, mergeMap, retry, take } from 'rxjs/operators';
 import { LocalStorageService } from './conference/local-storage.service';
 import { ErrorService } from './error.service';
+import { ConferenceSetting } from '../shared/models/conference-setting';
 
 @Injectable({
     providedIn: 'root'
@@ -20,7 +21,7 @@ export class UserMediaService {
     };
     readonly PREFERRED_CAMERA_KEY = 'vh.preferred.camera';
     readonly PREFERRED_MICROPHONE_KEY = 'vh.preferred.microphone';
-    readonly START_WITH_AUDIO_MUTED_KEY = 'vh.start-with-audio-muted';
+    readonly CONFERENCES_KEY = 'vh.conferences';
     navigator: Navigator = navigator;
 
     private initialised = false;
@@ -58,14 +59,6 @@ export class UserMediaService {
 
     get connectedMicrophoneDevices$(): Observable<UserMediaDevice[]> {
         return this.connectedDevicesSubject.pipe(map(devices => devices.filter(x => x.kind === 'audioinput')));
-    }
-
-    get startWithAudioMuted(): boolean {
-        return this.localStorageService.load(this.START_WITH_AUDIO_MUTED_KEY);
-    }
-
-    set startWithAudioMuted(value: boolean) {
-        this.localStorageService.save(this.START_WITH_AUDIO_MUTED_KEY, value.toString());
     }
 
     initialise() {
@@ -154,6 +147,21 @@ export class UserMediaService {
 
     isDeviceStillConnected(device: UserMediaDevice): Observable<boolean> {
         return this.connectedDevices$.pipe(map(connectedDevices => !!connectedDevices.find(x => x.deviceId === device.deviceId)));
+    }
+
+    getConferenceSetting(conferenceId: string): ConferenceSetting {
+        const conferences: ConferenceSetting[] = this.localStorageService.load(this.CONFERENCES_KEY);
+        return conferences ? conferences.find(x => x.conferenceId === conferenceId) : null;
+    }
+
+    updateStartWithAudioMuted(conferenceId: string, startWithAudioMuted: boolean) {
+        const conferenceSetting = this.getConferenceSetting(conferenceId);
+        if (conferenceSetting) {
+            conferenceSetting.startWithAudioMuted = startWithAudioMuted;
+            this.saveConferenceSetting(conferenceSetting);
+        } else {
+            this.saveConferenceSetting(new ConferenceSetting(conferenceId, startWithAudioMuted));
+        }
     }
 
     async selectScreenToShare(): Promise<MediaStream> {
@@ -296,5 +304,21 @@ export class UserMediaService {
 
         this.isAudioOnly = audioOnly;
         this.isAudioOnlySubject.next(this.isAudioOnly);
+    }
+
+    private saveConferenceSetting(conferenceSetting: ConferenceSetting) {
+        let conferences: ConferenceSetting[] = this.localStorageService.load(this.CONFERENCES_KEY);
+        if (!conferences) {
+            conferences = [];
+        }
+
+        const index = conferences.findIndex(x => x.conferenceId === conferenceSetting.conferenceId);
+        if (index >= 0) {
+            conferences[index] = conferenceSetting;
+        } else {
+            conferences.push(conferenceSetting);
+        }
+
+        this.localStorageService.save(this.CONFERENCES_KEY, conferences);
     }
 }

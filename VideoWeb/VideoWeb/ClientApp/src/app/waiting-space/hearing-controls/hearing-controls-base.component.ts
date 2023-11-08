@@ -131,7 +131,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     get startWithAudioMuted(): boolean {
-        return this.userMediaService.startWithAudioMuted && !this.isPrivateConsultation;
+        return this.userMediaService.getConferenceSetting(this.conferenceId)?.startWithAudioMuted && !this.isPrivateConsultation;
     }
 
     ngOnInit(): void {

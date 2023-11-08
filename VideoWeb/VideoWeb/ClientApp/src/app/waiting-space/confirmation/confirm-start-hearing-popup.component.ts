@@ -12,6 +12,7 @@ import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-dark
 })
 export class ConfirmStartHearingPopupComponent extends YesNoPopupBaseDirective {
     @Input() hearingStarted = false;
+    @Input() hearingId: string;
 
     isMuteMicrophoneEnabled = false;
 
@@ -40,15 +41,16 @@ export class ConfirmStartHearingPopupComponent extends YesNoPopupBaseDirective {
     }
 
     respondWithYes(): void {
-        this.userMediaService.startWithAudioMuted = this.form.value.muteMicrophone;
+        this.userMediaService.updateStartWithAudioMuted(this.hearingId, this.form.value.muteMicrophone);
 
         super.respondWithYes();
     }
 
     private initialiseForm(): void {
         if (this.isMuteMicrophoneEnabled) {
+            const conferenceSetting = this.userMediaService.getConferenceSetting(this.hearingId);
             this.form.reset({
-                muteMicrophone: this.userMediaService.startWithAudioMuted
+                muteMicrophone: conferenceSetting?.startWithAudioMuted ?? false
             });
         }
     }

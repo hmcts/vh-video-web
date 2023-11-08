@@ -92,6 +92,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     let featureFlagServiceSpy: jasmine.SpyObj<FeatureFlagService>;
     let videoControlServiceSpy: jasmine.SpyObj<VideoControlService>;
     let videoControlCacheSpy: jasmine.SpyObj<VideoControlCacheService>;
+
     beforeAll(() => {
         featureFlagServiceSpy = jasmine.createSpyObj<FeatureFlagService>('FeatureFlagService', ['getFeatureFlagByName']);
         featureFlagServiceSpy.getFeatureFlagByName.and.returnValue(of(true));
@@ -121,9 +122,10 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             'clearHandRaiseStatusForAll',
             'setHandRaiseStatus'
         ]);
-        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>([], ['isAudioOnly$']);
+        userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>('UserMediaService', ['getConferenceSetting'], ['isAudioOnly$']);
         isAudioOnlySubject = new Subject<boolean>();
         getSpiedPropertyGetter(userMediaServiceSpy, 'isAudioOnly$').and.returnValue(isAudioOnlySubject.asObservable());
+        userMediaServiceSpy.getConferenceSetting.and.returnValue(null);
 
         const loggedInParticipantSubject = new BehaviorSubject<ParticipantModel>(
             ParticipantModel.fromParticipantForUserResponse(participantOne)
