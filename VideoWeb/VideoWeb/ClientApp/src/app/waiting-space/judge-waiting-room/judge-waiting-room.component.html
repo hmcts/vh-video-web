@@ -245,7 +245,7 @@
                     *ngIf="isHearingInSession()"
                     type="button"
                     class="govuk-button govuk-button--start govuk-!-margin-right-3 vh-btn-text"
-                    (click)="joinHearingInSession()"
+                    (click)="joinHearingClicked()"
                 >
                     {{ 'judge-waiting-room.buttons.join-hearing' | translate }}
                 </button>
@@ -294,6 +294,8 @@
     (popupAnswered)="onStartConfirmAnswered($event)"
     [hearingId]="hearing.id"
 ></app-confirm-start-hearing-popup>
+
+<app-confirm-join-hearing-popup *ngIf="displayJoinHearingPopup" (popupAnswered)="onJoinConfirmAnswered($event)" [hearingId]="hearing.id"></app-confirm-join-hearing-popup>
 
 <app-modal id="pc-leave-modal" class="modal clear consultation">
     <app-consultation-leave (leave)="onConsultationCancelled()"

@@ -6,48 +6,13 @@
         <p class="govuk-body govuk">
             {{ 'confirm-start-hearing-popup.private-consultations' | translate }}
         </p>
-        <form [formGroup]="form">
-            <div *ngIf="isMuteMicrophoneEnabled">
-                <div class="govuk-warning-text">
-                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-                    <strong class="govuk-warning-text__text">
-                        {{ 'confirm-start-hearing-popup.mute-microphone-warning' | translate }}
-                    </strong>
-                </div>
-                <div class="govuk-form-group">
-                  <div class="govuk-checkboxes__item">
-                    <input
-                      class="govuk-checkboxes__input"
-                      id="muteMicrophone"
-                      name="muteMicrophone"
-                      type="checkbox"
-                      formControlName="muteMicrophone"
-                    />
-                    <label class="govuk-label govuk-checkboxes__label" for="muteMicrophone">{{ 'confirm-start-hearing-popup.mute-my-microphone' | translate }}</label>
-                  </div>
-                </div>
-            </div>
-            <div class="govuk-!-margin-bottom-9"></div>
-            <button
-                id="btnConfirmStart"
-                class="govuk-button govuk-!-margin-right-1"
-                type="button"
-                data-module="govuk-button"
-                [attr.aria-label]="'confirm-start-hearing-popup.confirm-start-hearing' | translate"
-                (click)="respondWithYes()"
-            >
-                {{ action | titlecase }} {{ 'confirm-start-hearing-popup.hearing' | translate }}
-            </button>
-            <button
-                id="btnCancelStart"
-                class="govuk-button govuk-button--secondary"
-                type="button"
-                data-module="govuk-button"
-                [attr.aria-label]="'confirm-start-hearing-popup.cancel-start-hearing' | translate"
-                (click)="respondWithNo()"
-            >
-                {{ 'confirm-start-hearing-popup.cancel' | translate }}
-            </button>
-          </form>
+        <app-mute-microphone 
+            *ngIf="isMuteMicrophoneEnabled" 
+            [hearingId]="hearingId" 
+            (confirmAnswered)="onConfirmAnswered($event)" 
+            [confirmButtonText]="(action | titlecase) + ' ' + ('confirm-start-hearing-popup.hearing' | translate)" 
+            [confirmButtonLabel]="'confirm-start-hearing-popup.confirm-start-hearing' | translate" 
+            [cancelButtonLabel]="'confirm-start-hearing-popup.cancel-start-hearing' | translate">
+        </app-mute-microphone>
     </div>
 </div>
