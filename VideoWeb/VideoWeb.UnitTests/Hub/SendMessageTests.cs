@@ -165,6 +165,35 @@ namespace VideoWeb.UnitTests.Hub
         }
 
         [Test]
+        public async Task should_send_message_to_conference_if_user_is_a_staff_member_who_joins_a_conference()
+        {
+            SetupSendMessageTests();
+            // setup claims to return admin username
+            var claims = new ClaimsPrincipalBuilder().WithUsername(AdminUsername).WithRole(AppRoles.VhOfficerRole)
+                .Build();
+            UpdateUserIdentity(claims);
+            Conference.Participants.Add(new Participant()
+            {
+                Role = Role.StaffMember,
+                Username = AdminUsername
+            });
+
+            var fromUsername = AdminUsername;
+            var fromDisplayName = AdminUserProfile.FirstName;
+            var toJudgeId = JudgeParticipantId;
+            var toUsername = JudgeUsername;
+            const string message = "test message";
+            var messageUuid = Guid.NewGuid();
+
+            await Hub.SendMessage(Conference.Id, message, toJudgeId.ToString(), messageUuid);
+
+            AssertMessageSentToHub(fromUsername, fromDisplayName, toJudgeId.ToString(), message, messageUuid, JudgeGroupChannel);
+            AssertMessageSentStatusToApi(fromUsername, toUsername, message, Times.Once());
+
+            AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id, toJudgeId.ToString()), Times.Once);
+        }
+
+        [Test]
         public async Task
             should_not_send_message_to_admin_group_and_participant_group_when_sender_not_in_conference()
         {
