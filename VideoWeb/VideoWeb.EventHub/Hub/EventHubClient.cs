@@ -152,7 +152,12 @@ namespace VideoWeb.EventHub.Hub
 
         private bool IsSenderAdmin(Conference conference)
         {
-            return !conference.IsParticipantInConference(Context.User.Identity!.Name) && IsSenderAdmin();
+            var username = Context.User.Identity!.Name;
+            var isStaffMember = conference.GetParticipant(username)?.Role == Role.StaffMember;
+            var isAdmin = IsSenderAdmin();
+            var isInConference = conference.IsParticipantInConference(username);
+            // once staff members join a hearing, they become participants so we have to exclude staff member in the is in conference check
+            return isInConference && isStaffMember || !isInConference && isAdmin;
         }
 
         private string GetObfuscatedUsernameAsync(string username)
