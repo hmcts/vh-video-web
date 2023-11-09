@@ -871,8 +871,8 @@
     "mute-my-microphone": "Troi fy meicroffôn i ffwrdd"
   },
   "confirm-join-hearing-popup": {
-    "about-to-join-hearing": "Rydych ar fin ymuno y gwrandawiad hwn",
-    "confirm-join-hearing": "Cadarnhau ymuno â gwrandawiad",
+    "about-to-join-hearing": "Rydych chi ar fin ymuno â'r gwrandawiad hwn",
+    "confirm-join-hearing": "Cadarnhau eich bod am ymuno â'r gwrandawiad",
     "join-hearing": "Ymuno â'r gwrandawiad",
     "cancel-join-hearing": "Canslo yn ymuno â gwrandawiad"
   },
