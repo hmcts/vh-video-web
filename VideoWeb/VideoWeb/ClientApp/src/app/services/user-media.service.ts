@@ -7,6 +7,7 @@ import { catchError, filter, map, mergeMap, retry, take } from 'rxjs/operators';
 import { LocalStorageService } from './conference/local-storage.service';
 import { ErrorService } from './error.service';
 import { ConferenceSetting } from '../shared/models/conference-setting';
+import { ConferenceSettingHelper } from '../shared/helpers/conference-setting-helper';
 
 @Injectable({
     providedIn: 'root'
@@ -161,6 +162,14 @@ export class UserMediaService {
             this.saveConferenceSetting(conferenceSetting);
         } else {
             this.saveConferenceSetting(new ConferenceSetting(conferenceId, startWithAudioMuted));
+        }
+    }
+
+    removeExpiredConferenceSettings() {
+        const conferenceSettings: ConferenceSetting[] = this.localStorageService.load(this.CONFERENCES_KEY);
+        if (conferenceSettings) {
+            const nonExpiredConferenceSettings = conferenceSettings.filter(x => !ConferenceSettingHelper.isExpired(x));
+            this.localStorageService.save(this.CONFERENCES_KEY, nonExpiredConferenceSettings);
         }
     }
 

@@ -383,15 +383,16 @@ describe('UserMediaService', () => {
     });
 
     describe('updateStartWithAudioMuted', () => {
-        it('should value to local storage when conference already exists', () => {
+        it('should save value to local storage when conference already exists', () => {
             const conferenceId = 'conferenceId';
             const conferences = [new ConferenceSetting(conferenceId, false), new ConferenceSetting('conferenceId2', false)];
             localStorageServiceSpy.load.and.returnValue(conferences);
             userMediaService.updateStartWithAudioMuted(conferenceId, true);
-            expect(localStorageServiceSpy.save).toHaveBeenCalledWith(userMediaService.CONFERENCES_KEY, [
-                new ConferenceSetting(conferenceId, true),
-                new ConferenceSetting('conferenceId2', false)
-            ]);
+            const expectedConferences = [
+                new ConferenceSetting(conferenceId, true, conferences[0].createdDate),
+                new ConferenceSetting('conferenceId2', false, conferences[1].createdDate)
+            ];
+            expect(localStorageServiceSpy.save).toHaveBeenCalledWith(userMediaService.CONFERENCES_KEY, expectedConferences);
         });
 
         it('should save value to local storage when conference does not already exist', () => {
@@ -401,6 +402,25 @@ describe('UserMediaService', () => {
             expect(localStorageServiceSpy.save).toHaveBeenCalledWith(userMediaService.CONFERENCES_KEY, [
                 new ConferenceSetting(conferenceId, true)
             ]);
+        });
+    });
+
+    describe('removeExpiredConferenceSettings', () => {
+        it('should remove expired conference settings', () => {
+            const expiredConferenceSettings: ConferenceSetting[] = [
+                new ConferenceSetting('conferenceId1', true, new Date(2020, 1, 1, 8, 0, 0)),
+                new ConferenceSetting('conferenceId2', false, new Date(2020, 1, 2, 8, 0, 0))
+            ];
+            const nonExpiredConferenceSettings: ConferenceSetting[] = [new ConferenceSetting('conferenceId3', true, new Date())];
+            const conferenceSettings = [...expiredConferenceSettings, ...nonExpiredConferenceSettings];
+            localStorageServiceSpy.load.and.returnValue(conferenceSettings);
+            userMediaService.removeExpiredConferenceSettings();
+            expect(localStorageServiceSpy.save).toHaveBeenCalledWith(userMediaService.CONFERENCES_KEY, nonExpiredConferenceSettings);
+        });
+
+        it('should do nothing when no conference settings exist', () => {
+            localStorageServiceSpy.load.and.returnValue(null);
+            expect(localStorageServiceSpy.save).not.toHaveBeenCalled();
         });
     });
 });

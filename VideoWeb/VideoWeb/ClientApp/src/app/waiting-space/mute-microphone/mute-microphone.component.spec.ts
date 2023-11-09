@@ -14,7 +14,8 @@ describe('MuteMicrophoneComponent', () => {
         const formBuilder = new FormBuilder();
         userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
             'getConferenceSetting',
-            'updateStartWithAudioMuted'
+            'updateStartWithAudioMuted',
+            'removeExpiredConferenceSettings'
         ]);
         component = new MuteMicrophoneComponent(formBuilder, userMediaService);
     });
@@ -25,6 +26,7 @@ describe('MuteMicrophoneComponent', () => {
             userMediaService.getConferenceSetting.and.returnValue(conference);
             component.ngOnInit();
             expect(component.form.value.muteMicrophone).toBeTrue();
+            expect(userMediaService.removeExpiredConferenceSettings).toHaveBeenCalled();
         });
     });
 
