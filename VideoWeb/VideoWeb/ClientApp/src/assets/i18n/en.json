@@ -921,7 +921,8 @@
     "about-to-join-hearing": "You are about to join this hearing",
     "confirm-join-hearing": "Confirm join hearing",
     "join-hearing": "Join hearing",
-    "cancel-join-hearing": "Cancel join hearing"
+    "cancel-join-hearing": "Cancel join hearing",
+    "cancel": "Cancel"
   },
   "mute-microphone": {
     "cancel": "Cancel"

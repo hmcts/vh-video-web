@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { UserMediaService } from 'src/app/services/user-media.service';
 
@@ -8,10 +8,6 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 })
 export class MuteMicrophoneComponent implements OnInit {
     @Input() hearingId: string;
-    @Input() confirmButtonText: string;
-    @Input() confirmButtonLabel: string;
-    @Input() cancelButtonLabel: string;
-    @Output() confirmAnswered = new EventEmitter<boolean>();
 
     form = this.formBuilder.group({
         muteMicrophone: new FormControl(false)
@@ -24,14 +20,8 @@ export class MuteMicrophoneComponent implements OnInit {
         this.initialiseForm();
     }
 
-    confirm() {
+    save() {
         this.userMediaService.updateStartWithAudioMuted(this.hearingId, this.form.value.muteMicrophone);
-
-        this.confirmAnswered.emit(true);
-    }
-
-    cancel() {
-        this.confirmAnswered.emit(false);
     }
 
     private initialiseForm(): void {

@@ -874,7 +874,8 @@
     "about-to-join-hearing": "Rydych chi ar fin ymuno â'r gwrandawiad hwn",
     "confirm-join-hearing": "Cadarnhau eich bod am ymuno â'r gwrandawiad",
     "join-hearing": "Ymuno â'r gwrandawiad",
-    "cancel-join-hearing": "Canslo yn ymuno â gwrandawiad"
+    "cancel-join-hearing": "Canslo yn ymuno â gwrandawiad",
+    "cancel": "Canslo"
   },
   "mute-microphone": {
     "cancel": "Canslo"

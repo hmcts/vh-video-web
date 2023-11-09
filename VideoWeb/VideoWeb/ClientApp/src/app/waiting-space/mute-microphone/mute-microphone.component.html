@@ -17,25 +17,4 @@
         <label class="govuk-label govuk-checkboxes__label" for="muteMicrophone">{{ 'confirm-start-hearing-popup.mute-my-microphone' | translate }}</label>
       </div>
     </div>
-    <div class="govuk-!-margin-bottom-9"></div>
-    <button
-        id="btnConfirm"
-        class="govuk-button govuk-!-margin-right-1"
-        type="button"
-        data-module="govuk-button"
-        [attr.aria-label]="confirmButtonLabel"
-        (click)="confirm()"
-    >
-        {{ confirmButtonText }}
-    </button>
-    <button
-        id="btnCancel"
-        class="govuk-button govuk-button--secondary"
-        type="button"
-        data-module="govuk-button"
-        [attr.aria-label]="cancelButtonLabel"
-        (click)="cancel()"
-    >
-        {{ 'mute-microphone.cancel' | translate }}
-    </button>
   </form>

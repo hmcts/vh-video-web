@@ -6,13 +6,27 @@
         <p class="govuk-body govuk">
             {{ 'confirm-start-hearing-popup.private-consultations' | translate }}
         </p>
-        <app-mute-microphone 
-            *ngIf="isMuteMicrophoneEnabled" 
-            [hearingId]="hearingId" 
-            (confirmAnswered)="onConfirmAnswered($event)" 
-            [confirmButtonText]="(action | titlecase) + ' ' + ('confirm-start-hearing-popup.hearing' | translate)" 
-            [confirmButtonLabel]="'confirm-start-hearing-popup.confirm-start-hearing' | translate" 
-            [cancelButtonLabel]="'confirm-start-hearing-popup.cancel-start-hearing' | translate">
-        </app-mute-microphone>
+        <app-mute-microphone *ngIf="isMuteMicrophoneEnabled" [hearingId]="hearingId"></app-mute-microphone>
+        <div class="govuk-!-margin-bottom-9"></div>
+        <button
+            id="btnConfirmStart"
+            class="govuk-button govuk-!-margin-right-1"
+            type="button"
+            data-module="govuk-button"
+            [attr.aria-label]="'confirm-start-hearing-popup.confirm-start-hearing' | translate"
+            (click)="respondWithYes()"
+        >
+            {{ action | titlecase }} {{ 'confirm-start-hearing-popup.hearing' | translate }}
+        </button>
+        <button
+            id="btnCancelStart"
+            class="govuk-button govuk-button--secondary"
+            type="button"
+            data-module="govuk-button"
+            [attr.aria-label]="'confirm-start-hearing-popup.cancel-start-hearing' | translate"
+            (click)="respondWithNo()"
+        >
+            {{ 'confirm-start-hearing-popup.cancel' | translate }}
+        </button>
     </div>
 </div>

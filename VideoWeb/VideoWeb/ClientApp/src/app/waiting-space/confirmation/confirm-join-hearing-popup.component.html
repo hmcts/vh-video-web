@@ -1,13 +1,27 @@
 <div id="confirmationDialog" class="vh-popup-overlay">
     <div class="modal-content">
         <h1 class="govuk-heading-m">{{ 'confirm-join-hearing-popup.about-to-join-hearing' | translate }}</h1>
-        <app-mute-microphone 
-          *ngIf="isMuteMicrophoneEnabled" 
-          [hearingId]="hearingId" 
-          (confirmAnswered)="onConfirmAnswered($event)" 
-          [confirmButtonText]="'confirm-join-hearing-popup.join-hearing' | translate" 
-          [confirmButtonLabel]="'confirm-join-hearing-popup.confirm-join-hearing' | translate" 
-          [cancelButtonLabel]="'confirm-join-hearing-popup.cancel-join-hearing' | translate">
-        </app-mute-microphone>
+        <app-mute-microphone *ngIf="isMuteMicrophoneEnabled" [hearingId]="hearingId"></app-mute-microphone>
+        <div class="govuk-!-margin-bottom-9"></div>
+        <button
+            id="btnConfirmJoin"
+            class="govuk-button govuk-!-margin-right-1"
+            type="button"
+            data-module="govuk-button"
+            [attr.aria-label]="'confirm-join-hearing-popup.join-hearing' | translate"
+            (click)="respondWithYes()"
+        >
+            {{ 'confirm-join-hearing-popup.join-hearing' | translate }}
+        </button>
+        <button
+            id="btnCancelJoin"
+            class="govuk-button govuk-button--secondary"
+            type="button"
+            data-module="govuk-button"
+            [attr.aria-label]="'confirm-join-hearing-popup.cancel-join-hearing' | translate"
+            (click)="respondWithNo()"
+        >
+            {{ 'confirm-join-hearing-popup.cancel' | translate }}
+        </button>
   </div>
 </div>

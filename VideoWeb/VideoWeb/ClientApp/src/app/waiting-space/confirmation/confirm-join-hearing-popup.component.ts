@@ -1,6 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { YesNoPopupBaseDirective } from './yes-no-popup-base.component';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
+import { MuteMicrophoneComponent } from '../mute-microphone/mute-microphone.component';
 
 @Component({
     selector: 'app-confirm-join-hearing-popup',
@@ -8,6 +9,7 @@ import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-dark
     styleUrls: ['./yes-no-popup-base.component.scss']
 })
 export class ConfirmJoinHearingPopupComponent extends YesNoPopupBaseDirective {
+    @ViewChild(MuteMicrophoneComponent) muteMicrophoneForm: MuteMicrophoneComponent;
     @Input() hearingId: string;
 
     isMuteMicrophoneEnabled = false;
@@ -20,11 +22,10 @@ export class ConfirmJoinHearingPopupComponent extends YesNoPopupBaseDirective {
         });
     }
 
-    onConfirmAnswered(actionConfirmed: boolean) {
-        if (actionConfirmed) {
-            this.respondWithYes();
-        } else {
-            this.respondWithNo();
+    respondWithYes() {
+        if (this.isMuteMicrophoneEnabled) {
+            this.muteMicrophoneForm.save();
         }
+        super.respondWithYes();
     }
 }

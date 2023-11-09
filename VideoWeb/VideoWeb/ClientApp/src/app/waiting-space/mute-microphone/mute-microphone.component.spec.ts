@@ -30,21 +30,11 @@ describe('MuteMicrophoneComponent', () => {
         });
     });
 
-    describe('confirm', () => {
-        it('should save mute microphone setting when clicking confirm', () => {
-            const emitSpy = spyOn(component.confirmAnswered, 'emit');
+    describe('save', () => {
+        it('should save mute microphone setting', () => {
             component.form.setValue({ muteMicrophone: true });
-            component.confirm();
+            component.save();
             expect(userMediaService.updateStartWithAudioMuted).toHaveBeenCalledWith(component.hearingId, true);
-            expect(emitSpy).toHaveBeenCalledWith(true);
-        });
-    });
-
-    describe('cancel', () => {
-        it('should emit event when clicking cancel', () => {
-            const emitSpy = spyOn(component.confirmAnswered, 'emit');
-            component.cancel();
-            expect(emitSpy).toHaveBeenCalledWith(false);
         });
     });
 });
