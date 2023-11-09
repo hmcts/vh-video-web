@@ -6,7 +6,7 @@
 }
 
 .chat-window {
-  height: 400px;
+  height: calc(50vh - 50px);
   border: 1px solid govuk-colour('light-grey');
   clear: both;
   margin-right: 0px !important;

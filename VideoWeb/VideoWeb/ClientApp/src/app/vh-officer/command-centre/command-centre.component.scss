@@ -27,6 +27,8 @@
 
 .selected-menu-content {
   @include govuk-grid-column(two-thirds);
+  height: 70vh;
+  max-height: 100vh;
 }
 
 .title {
