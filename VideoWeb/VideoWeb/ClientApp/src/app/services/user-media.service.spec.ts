@@ -7,6 +7,7 @@ import { fakeAsync, flush } from '@angular/core/testing';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Guid } from 'guid-typescript';
 import { ErrorService } from './error.service';
+import { ConferenceSetting } from '../shared/models/conference-setting';
 
 describe('UserMediaService', () => {
     const testData = new MediaDeviceTestData();
@@ -364,5 +365,66 @@ describe('UserMediaService', () => {
             expect(userMediaService['setActiveMicrophone']).toHaveBeenCalledOnceWith(testData.getListOfMicrophones()[0]);
             expect(userMediaService['loadDefaultMicrophone']).toHaveBeenCalledOnceWith(testData.getListOfDevices());
         }));
+    });
+
+    describe('getConferenceSetting', () => {
+        it('should return conference setting if one is present', () => {
+            const conferenceId = 'conferenceId';
+            const startWithAudioMuted = true;
+            const conferences = [new ConferenceSetting(conferenceId, startWithAudioMuted), new ConferenceSetting('conferenceId2', true)];
+            localStorageServiceSpy.load.and.returnValue(conferences);
+            expect(userMediaService.getConferenceSetting(conferenceId)).toEqual(conferences.find(x => x.conferenceId === conferenceId));
+        });
+
+        it('should return null if one does not exist', () => {
+            localStorageServiceSpy.load.and.returnValue(null);
+            expect(userMediaService.getConferenceSetting('conferenceId')).toBeNull();
+        });
+    });
+
+    describe('updateStartWithAudioMuted', () => {
+        it('should save to local storage when conference does not already exist', () => {
+            const conferenceId = 'conferenceId';
+            localStorageServiceSpy.load.and.returnValue(null);
+            userMediaService.updateStartWithAudioMuted(conferenceId, true);
+            expect(localStorageServiceSpy.save).toHaveBeenCalledWith(userMediaService.CONFERENCES_KEY, [
+                new ConferenceSetting(conferenceId, true)
+            ]);
+        });
+
+        it('should not insert into local storage when startWithAudioMuted is false', () => {
+            const conferenceId = 'conferenceId';
+            localStorageServiceSpy.load.and.returnValue(null);
+            userMediaService.updateStartWithAudioMuted(conferenceId, false);
+            expect(localStorageServiceSpy.save).not.toHaveBeenCalled();
+        });
+
+        it('should remove existing setting when updating startWithAudioMuted from true to false', () => {
+            const conferenceIdToRemove = 'conferenceIdToRemove';
+            const conferences = [new ConferenceSetting(conferenceIdToRemove, true), new ConferenceSetting('conferenceId2', true)];
+            localStorageServiceSpy.load.and.returnValue(conferences);
+            userMediaService.updateStartWithAudioMuted(conferenceIdToRemove, false);
+            const expectedConferences = conferences.filter(x => x.conferenceId !== conferenceIdToRemove);
+            expect(localStorageServiceSpy.save).toHaveBeenCalledWith(userMediaService.CONFERENCES_KEY, expectedConferences);
+        });
+    });
+
+    describe('removeExpiredConferenceSettings', () => {
+        it('should remove expired conference settings', () => {
+            const expiredConferenceSettings: ConferenceSetting[] = [
+                new ConferenceSetting('conferenceId1', true, new Date(2020, 1, 1, 8, 0, 0)),
+                new ConferenceSetting('conferenceId2', false, new Date(2020, 1, 2, 8, 0, 0))
+            ];
+            const nonExpiredConferenceSettings: ConferenceSetting[] = [new ConferenceSetting('conferenceId3', true, new Date())];
+            const conferenceSettings = [...expiredConferenceSettings, ...nonExpiredConferenceSettings];
+            localStorageServiceSpy.load.and.returnValue(conferenceSettings);
+            userMediaService.removeExpiredConferenceSettings();
+            expect(localStorageServiceSpy.save).toHaveBeenCalledWith(userMediaService.CONFERENCES_KEY, nonExpiredConferenceSettings);
+        });
+
+        it('should not remove when no conference settings exist', () => {
+            localStorageServiceSpy.load.and.returnValue(null);
+            expect(localStorageServiceSpy.save).not.toHaveBeenCalled();
+        });
     });
 });

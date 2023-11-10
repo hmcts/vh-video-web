@@ -38,6 +38,7 @@ import { Title } from '@angular/platform-browser';
 import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
 import { HideComponentsService } from '../services/hide-components.service';
 import { FocusService } from 'src/app/services/focus.service';
+import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
 @Component({
     selector: 'app-judge-waiting-room',
@@ -53,6 +54,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     expanedPanel = true;
     hostWantsToJoinHearing = false;
     displayConfirmStartHearingPopup: boolean;
+    displayJoinHearingPopup: boolean;
+    isMuteMicrophoneEnabled = false;
 
     unreadMessageCount = 0;
     audioErrorRetryToast: VhToastComponent;
@@ -95,7 +98,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected hearingVenueFlagsService: HearingVenueFlagsService,
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
-        protected focusService: FocusService
+        protected focusService: FocusService,
+        private launchDarklyService: LaunchDarklyService
     ) {
         super(
             route,
@@ -134,6 +138,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     ngOnInit() {
         this.init();
         this.divTrapId = 'video-container';
+
+        this.launchDarklyService.getFlag<boolean>(FEATURE_FLAGS.hostMuteMicrophone, false).subscribe(value => {
+            this.isMuteMicrophoneEnabled = value;
+        });
     }
 
     assignPexipIdToRemoteStore(participant: ParticipantUpdated): void {
@@ -287,6 +295,30 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         } else {
             this.focusService.restoreFocus();
         }
+    }
+
+    async onJoinConfirmAnswered(actionConfirmed: boolean) {
+        this.logger.debug(`${this.loggerPrefixJudge} Judge responded to join hearing confirmation`, {
+            conference: this.conferenceId,
+            status: this.conference.status,
+            confirmStart: actionConfirmed
+        });
+        this.displayJoinHearingPopup = false;
+        if (actionConfirmed) {
+            await this.joinHearingInSession();
+        }
+    }
+
+    async joinHearingClicked() {
+        if (this.isMuteMicrophoneEnabled) {
+            this.displayJoinPopup();
+        } else {
+            await this.joinHearingInSession();
+        }
+    }
+
+    displayJoinPopup() {
+        this.displayJoinHearingPopup = true;
     }
 
     async startHearing() {

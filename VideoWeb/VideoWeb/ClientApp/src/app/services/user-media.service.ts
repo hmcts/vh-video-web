@@ -6,6 +6,8 @@ import { Logger } from './logging/logger-base';
 import { catchError, filter, map, mergeMap, retry, take } from 'rxjs/operators';
 import { LocalStorageService } from './conference/local-storage.service';
 import { ErrorService } from './error.service';
+import { ConferenceSetting } from '../shared/models/conference-setting';
+import { ConferenceSettingHelper } from '../shared/helpers/conference-setting-helper';
 
 @Injectable({
     providedIn: 'root'
@@ -20,6 +22,7 @@ export class UserMediaService {
     };
     readonly PREFERRED_CAMERA_KEY = 'vh.preferred.camera';
     readonly PREFERRED_MICROPHONE_KEY = 'vh.preferred.microphone';
+    readonly CONFERENCES_KEY = 'vh.conferences';
     navigator: Navigator = navigator;
 
     private initialised = false;
@@ -145,6 +148,36 @@ export class UserMediaService {
 
     isDeviceStillConnected(device: UserMediaDevice): Observable<boolean> {
         return this.connectedDevices$.pipe(map(connectedDevices => !!connectedDevices.find(x => x.deviceId === device.deviceId)));
+    }
+
+    getConferenceSetting(conferenceId: string): ConferenceSetting {
+        const conferences: ConferenceSetting[] = this.localStorageService.load(this.CONFERENCES_KEY);
+        return conferences ? conferences.find(x => x.conferenceId === conferenceId) : null;
+    }
+
+    updateStartWithAudioMuted(conferenceId: string, startWithAudioMuted: boolean) {
+        const conferenceSetting = this.getConferenceSetting(conferenceId);
+        if (conferenceSetting) {
+            if (!startWithAudioMuted) {
+                // Remove the conference setting, no longer need to store it
+                this.removeConferenceSetting(conferenceSetting);
+                return;
+            }
+        } else {
+            if (!startWithAudioMuted) {
+                // Don't insert the conference setting, preserve storage space
+                return;
+            }
+            this.insertConferenceSetting(new ConferenceSetting(conferenceId, startWithAudioMuted));
+        }
+    }
+
+    removeExpiredConferenceSettings() {
+        const conferenceSettings: ConferenceSetting[] = this.localStorageService.load(this.CONFERENCES_KEY);
+        if (conferenceSettings) {
+            const nonExpiredConferenceSettings = conferenceSettings.filter(x => !ConferenceSettingHelper.isExpired(x));
+            this.localStorageService.save(this.CONFERENCES_KEY, nonExpiredConferenceSettings);
+        }
     }
 
     async selectScreenToShare(): Promise<MediaStream> {
@@ -287,5 +320,32 @@ export class UserMediaService {
 
         this.isAudioOnly = audioOnly;
         this.isAudioOnlySubject.next(this.isAudioOnly);
+    }
+
+    private insertConferenceSetting(conferenceSetting: ConferenceSetting) {
+        let conferences: ConferenceSetting[] = this.localStorageService.load(this.CONFERENCES_KEY);
+        if (!conferences) {
+            conferences = [];
+        }
+
+        conferences.push(conferenceSetting);
+
+        this.localStorageService.save(this.CONFERENCES_KEY, conferences);
+    }
+
+    private removeConferenceSetting(conferenceSetting: ConferenceSetting) {
+        const conferences: ConferenceSetting[] = this.localStorageService.load(this.CONFERENCES_KEY);
+        if (!conferences) {
+            return;
+        }
+
+        const index = conferences.findIndex(x => x.conferenceId === conferenceSetting.conferenceId);
+        const conferenceFound = index >= 0;
+        if (!conferenceFound) {
+            return;
+        }
+
+        conferences.splice(index, 1);
+        this.localStorageService.save(this.CONFERENCES_KEY, conferences);
     }
 }

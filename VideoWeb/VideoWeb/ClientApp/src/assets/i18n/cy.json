@@ -869,6 +869,18 @@
     "confirm-start-hearing": "Cadarnhau dechrau'r gwrandawiad",
     "cancel-start-hearing": "Canslo dechrau'r gwrandawiad"
   },
+  "confirm-join-hearing-popup": {
+    "about-to-join-hearing": "Rydych chi ar fin ymuno â'r gwrandawiad hwn",
+    "confirm-join-hearing": "Cadarnhau eich bod am ymuno â'r gwrandawiad",
+    "join-hearing": "Ymuno â'r gwrandawiad",
+    "cancel-join-hearing": "Canslo yn ymuno â gwrandawiad",
+    "cancel": "Canslo"
+  },
+  "mute-microphone": {
+    "mute-microphone-warning": "Os ydych yn defnyddio system sain yn yr ystafell llys, dylech droi meicroffôn eich cyfrifiadur i ffwrdd i atal ymyrraeth.",
+    "mute-my-microphone": "Troi fy meicroffôn i ffwrdd",
+    "cancel": "Canslo"
+  },
   "participants-panel": {
     "participants": "Cyfranogwyr",
     "mute-lock": "Mudo a chloi",

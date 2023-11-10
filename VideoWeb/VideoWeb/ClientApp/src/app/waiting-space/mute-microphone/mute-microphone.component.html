@@ -1,0 +1,20 @@
+<form [formGroup]="form">
+    <div class="govuk-warning-text">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+            {{ 'mute-microphone.mute-microphone-warning' | translate }}
+        </strong>
+    </div>
+    <div class="govuk-form-group">
+      <div class="govuk-checkboxes__item">
+        <input
+          class="govuk-checkboxes__input"
+          id="muteMicrophone"
+          name="muteMicrophone"
+          type="checkbox"
+          formControlName="muteMicrophone"
+        />
+        <label class="govuk-label govuk-checkboxes__label" for="muteMicrophone">{{ 'mute-microphone.mute-my-microphone' | translate }}</label>
+      </div>
+    </div>
+  </form>

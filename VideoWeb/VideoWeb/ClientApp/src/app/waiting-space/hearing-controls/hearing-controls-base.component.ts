@@ -132,8 +132,12 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         return this.participant?.current_room?.locked ?? false;
     }
 
+    get startWithAudioMuted(): boolean {
+        return this.userMediaService.getConferenceSetting(this.conferenceId)?.startWithAudioMuted && !this.isPrivateConsultation;
+    }
+
     ngOnInit(): void {
-        this.audioMuted = this.videoCallService.pexipAPI.call.mutedAudio;
+        this.audioMuted = this.videoCallService.pexipAPI.call.mutedAudio || this.startWithAudioMuted;
         this.videoMuted = this.videoCallService.pexipAPI.call.mutedVideo || this.audioOnly;
 
         this.userMediaService.isAudioOnly$.pipe(takeUntil(this.destroyedSubject)).subscribe(audioOnly => {
@@ -343,7 +347,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             return;
         }
 
-        if (this.isHost) {
+        if (this.isHost && !this.startWithAudioMuted) {
             await this.resetMute();
             return;
         }

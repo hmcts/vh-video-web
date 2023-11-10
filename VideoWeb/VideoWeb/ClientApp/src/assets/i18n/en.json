@@ -916,6 +916,18 @@
     "resume": "resume",
     "start": "start"
   },
+  "confirm-join-hearing-popup": {
+    "about-to-join-hearing": "You are about to join this hearing",
+    "confirm-join-hearing": "Confirm join hearing",
+    "join-hearing": "Join hearing",
+    "cancel-join-hearing": "Cancel join hearing",
+    "cancel": "Cancel"
+  },
+  "mute-microphone": {
+    "mute-microphone-warning": "If you are using a courtroom audio system, you should mute your computer microphone to avoid audio interference.",
+    "mute-my-microphone": "Mute my microphone",
+    "cancel": "Cancel"
+  },
   "copy-telephone-id": {
     "alt": "Copy joining by phone details to clipboard",
     "display-text": "Copy joining by phone details to clipboard",

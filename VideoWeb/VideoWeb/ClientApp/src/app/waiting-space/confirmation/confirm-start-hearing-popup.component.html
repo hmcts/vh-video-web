@@ -3,10 +3,11 @@
         <h1 class="govuk-heading-m">{{ 'confirm-start-hearing-popup.hearing-about-to-start' | translate:{action: action} }}</h1>
 
         <p class="govuk-body">{{ 'confirm-start-hearing-popup.participant-sees-countdown-timer' | translate }}</p>
-        <p class="govuk-body govuk-!-margin-bottom-9">
+        <p class="govuk-body govuk">
             {{ 'confirm-start-hearing-popup.private-consultations' | translate }}
         </p>
-
+        <app-mute-microphone *ngIf="isMuteMicrophoneEnabled" [hearingId]="hearingId"></app-mute-microphone>
+        <div class="govuk-!-margin-bottom-9"></div>
         <button
             id="btnConfirmStart"
             class="govuk-button govuk-!-margin-right-1"
@@ -17,7 +18,6 @@
         >
             {{ action | titlecase }} {{ 'confirm-start-hearing-popup.hearing' | translate }}
         </button>
-
         <button
             id="btnCancelStart"
             class="govuk-button govuk-button--secondary"

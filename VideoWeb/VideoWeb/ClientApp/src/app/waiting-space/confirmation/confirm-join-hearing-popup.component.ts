@@ -1,39 +1,27 @@
 import { Component, Input, ViewChild } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import { YesNoPopupBaseDirective } from './yes-no-popup-base.component';
-import { FocusService } from 'src/app/services/focus.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { MuteMicrophoneComponent } from '../mute-microphone/mute-microphone.component';
+import { FocusService } from 'src/app/services/focus.service';
 
 @Component({
-    selector: 'app-confirm-start-hearing-popup',
-    templateUrl: './confirm-start-hearing-popup.component.html',
+    selector: 'app-confirm-join-hearing-popup',
+    templateUrl: './confirm-join-hearing-popup.component.html',
     styleUrls: ['./yes-no-popup-base.component.scss']
 })
-export class ConfirmStartHearingPopupComponent extends YesNoPopupBaseDirective {
+export class ConfirmJoinHearingPopupComponent extends YesNoPopupBaseDirective {
     @ViewChild(MuteMicrophoneComponent) muteMicrophoneForm: MuteMicrophoneComponent;
-    @Input() hearingStarted = false;
     @Input() hearingId: string;
 
     isMuteMicrophoneEnabled = false;
 
-    constructor(
-        protected translateService: TranslateService,
-        protected focusService: FocusService,
-        launchDarklyService: LaunchDarklyService
-    ) {
+    constructor(launchDarklyService: LaunchDarklyService, protected focusService: FocusService) {
         super(focusService);
         this.modalDivId = 'confirmationDialog';
 
         launchDarklyService.getFlag<boolean>(FEATURE_FLAGS.hostMuteMicrophone, false).subscribe(value => {
             this.isMuteMicrophoneEnabled = value;
         });
-    }
-
-    get action(): string {
-        return this.hearingStarted
-            ? this.translateService.instant('confirm-start-hearing-popup.resume')
-            : this.translateService.instant('confirm-start-hearing-popup.start');
     }
 
     respondWithYes() {
