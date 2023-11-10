@@ -914,9 +914,7 @@
     "cancel-start-hearing": "Cancel start hearing",
     "cancel": "Cancel",
     "resume": "resume",
-    "start": "start",
-    "mute-microphone-warning": "If you are using a courtroom audio system, you should mute your computer microphone to avoid audio interference.",
-    "mute-my-microphone": "Mute my microphone"
+    "start": "start"
   },
   "confirm-join-hearing-popup": {
     "about-to-join-hearing": "You are about to join this hearing",
@@ -926,6 +924,8 @@
     "cancel": "Cancel"
   },
   "mute-microphone": {
+    "mute-microphone-warning": "If you are using a courtroom audio system, you should mute your computer microphone to avoid audio interference.",
+    "mute-my-microphone": "Mute my microphone",
     "cancel": "Cancel"
   },
   "copy-telephone-id": {
