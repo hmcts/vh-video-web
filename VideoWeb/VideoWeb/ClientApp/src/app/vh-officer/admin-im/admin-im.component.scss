@@ -1,0 +1,8 @@
+@import 'govuk-frontend/govuk/all';
+
+.im-participant-list {
+  @include govuk-grid-column(one-third);
+  overflow-y: auto;
+  height: 70vh;
+  max-height: 100vh;
+}

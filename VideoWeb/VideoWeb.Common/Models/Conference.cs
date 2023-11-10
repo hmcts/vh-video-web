@@ -65,6 +65,11 @@ namespace VideoWeb.Common.Models
             return Participants.Exists(p => p.Username.Equals(username, StringComparison.InvariantCultureIgnoreCase));
         }
 
+        public Participant GetParticipant(string username)
+        {
+            return Participants.Find(p => p.Username.Equals(username, StringComparison.InvariantCultureIgnoreCase));
+        }
+
         public void UpdateParticipant(UpdateParticipant updateParticipant)
         {
             var participant = Participants.Find(x => x.RefId == updateParticipant.ParticipantRefId);

@@ -1,6 +1,7 @@
 import { Component, Input, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { YesNoPopupBaseDirective } from './yes-no-popup-base.component';
+import { FocusService } from 'src/app/services/focus.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { MuteMicrophoneComponent } from '../mute-microphone/mute-microphone.component';
 
@@ -16,8 +17,13 @@ export class ConfirmStartHearingPopupComponent extends YesNoPopupBaseDirective {
 
     isMuteMicrophoneEnabled = false;
 
-    constructor(protected translateService: TranslateService, launchDarklyService: LaunchDarklyService) {
-        super();
+    constructor(
+        protected translateService: TranslateService,
+        protected focusService: FocusService,
+        launchDarklyService: LaunchDarklyService
+    ) {
+        super(focusService);
+        this.modalDivId = 'confirmationDialog';
 
         launchDarklyService.getFlag<boolean>(FEATURE_FLAGS.hostMuteMicrophone, false).subscribe(value => {
             this.isMuteMicrophoneEnabled = value;

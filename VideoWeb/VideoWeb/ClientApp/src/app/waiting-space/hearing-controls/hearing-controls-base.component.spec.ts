@@ -44,13 +44,13 @@ import { CaseTypeGroup } from '../models/case-type-group';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
 import { ConfigService } from 'src/app/services/api/config.service';
-import { FeatureFlagService } from 'src/app/services/feature-flag.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { VhoStorageKeys } from 'src/app/vh-officer/services/models/session-keys';
 import { ParticipantToggleLocalMuteMessage } from 'src/app/shared/models/participant-toggle-local-mute-message';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
+import { FocusService } from 'src/app/services/focus.service';
 import { ConferenceSetting } from 'src/app/shared/models/conference-setting';
 
 describe('HearingControlsBaseComponent', () => {
@@ -88,6 +88,7 @@ describe('HearingControlsBaseComponent', () => {
 
     const logger: Logger = new MockLogger();
     const launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>(['getFlag']);
+    const focusService = jasmine.createSpyObj<FocusService>(['restoreFocus', 'storeFocus']);
 
     const testData = new VideoCallTestData();
     let conference: ConferenceResponse;
@@ -101,7 +102,6 @@ describe('HearingControlsBaseComponent', () => {
     let onCurrentConferenceStatusSubject: Subject<ConferenceStatusChanged>;
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
     let clientSettingsResponse: ClientSettingsResponse;
-    let featureFlagServiceSpy: jasmine.SpyObj<FeatureFlagService>;
     let videoControlServiceSpy: jasmine.SpyObj<VideoControlService>;
     let videoControlCacheSpy: jasmine.SpyObj<VideoControlCacheService>;
 
@@ -143,8 +143,6 @@ describe('HearingControlsBaseComponent', () => {
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings']);
         configServiceSpy.getClientSettings.and.returnValue(of(clientSettingsResponse));
 
-        featureFlagServiceSpy = jasmine.createSpyObj<FeatureFlagService>('FeatureFlagService', ['getFeatureFlagByName']);
-        featureFlagServiceSpy.getFeatureFlagByName.and.returnValue(of(true));
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.wowzaKillButton, false).and.returnValue(of(true));
 
         component = new PrivateConsultationRoomControlsComponent(
@@ -158,9 +156,9 @@ describe('HearingControlsBaseComponent', () => {
             userMediaServiceSpy,
             conferenceServiceSpy,
             configServiceSpy,
-            featureFlagServiceSpy,
             videoControlCacheSpy,
-            launchDarklyServiceSpy
+            launchDarklyServiceSpy,
+            focusService
         );
         conference = new ConferenceTestData().getConferenceNow();
         component.participant = globalParticipant;

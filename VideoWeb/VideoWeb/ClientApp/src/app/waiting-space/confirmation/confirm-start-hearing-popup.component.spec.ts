@@ -1,20 +1,40 @@
+import { FocusService } from 'src/app/services/focus.service';
+import { ConfirmStartHearingPopupComponent } from './confirm-start-hearing-popup.component';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 import { of } from 'rxjs';
-import { ConfirmJoinHearingPopupComponent } from './confirm-join-hearing-popup.component';
-import { FocusService } from 'src/app/services/focus.service';
 
-describe('ConfirmJoinHearingPopupComponent', () => {
-    let component: ConfirmJoinHearingPopupComponent;
+describe('ConfirmStartHearingPopupComponent', () => {
+    let component: ConfirmStartHearingPopupComponent;
+    const translateService = translateServiceSpy;
     let focusServiceSpy: jasmine.SpyObj<FocusService>;
     const launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>(['getFlag']);
     const muteMicrophoneFormSpy = jasmine.createSpyObj('MuteMicrophoneComponent', ['save']);
 
     beforeEach(() => {
         focusServiceSpy = jasmine.createSpyObj<FocusService>('FocusService', ['restoreFocus']);
+        translateService.instant.calls.reset();
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.hostMuteMicrophone, false).and.returnValue(of(true));
-        component = new ConfirmJoinHearingPopupComponent(launchDarklyServiceSpy, focusServiceSpy);
+        component = new ConfirmStartHearingPopupComponent(translateService, focusServiceSpy, launchDarklyServiceSpy);
         component.muteMicrophoneForm = muteMicrophoneFormSpy;
         muteMicrophoneFormSpy.save.calls.reset();
+    });
+
+    it('should return "start" by default', () => {
+        const expectedText = 'confirm-start-hearing-popup.start';
+        expect(component.action).toBe(expectedText);
+    });
+
+    it('should return "start" if hearing has not started', () => {
+        component.hearingStarted = false;
+        const expectedText = 'confirm-start-hearing-popup.start';
+        expect(component.action).toBe(expectedText);
+    });
+
+    it('should return "resume" if hearing has already begun', () => {
+        component.hearingStarted = true;
+        const expectedText = 'confirm-start-hearing-popup.resume';
+        expect(component.action).toBe(expectedText);
     });
 
     describe('respondWithYes', () => {

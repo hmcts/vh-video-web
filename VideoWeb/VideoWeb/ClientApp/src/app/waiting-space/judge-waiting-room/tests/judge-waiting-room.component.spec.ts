@@ -21,6 +21,7 @@ import {
     deviceTypeService,
     errorService,
     eventsService,
+    focusService,
     globalConference,
     globalParticipant,
     heartbeatModelMapper,
@@ -279,6 +280,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             mockedHearingVenueFlagsService,
             titleService,
             hideComponentsService,
+            focusService,
             launchDarklyServiceSpy
         );
 

@@ -21,6 +21,7 @@ import { HearingRoleHelper } from 'src/app/shared/helpers/hearing-role-helper';
 import { CaseTypeGroup } from '../models/case-type-group';
 
 import { HearingRole } from '../models/hearing-role-model';
+import { FocusService } from 'src/app/services/focus.service';
 
 @Directive()
 export abstract class WRParticipantStatusListDirective {
@@ -45,7 +46,8 @@ export abstract class WRParticipantStatusListDirective {
         protected eventService: EventsService,
         protected videoWebService: VideoWebService,
         protected logger: Logger,
-        protected translateService: TranslateService
+        protected translateService: TranslateService,
+        protected focusService: FocusService
     ) {}
 
     get canInvite(): boolean {
@@ -119,6 +121,7 @@ export abstract class WRParticipantStatusListDirective {
 
     closeAllPCModals(): void {
         this.consultationService.clearModals();
+        this.focusService.restoreFocus();
     }
 
     isParticipantAvailable(participant: ParticipantResponse): boolean {

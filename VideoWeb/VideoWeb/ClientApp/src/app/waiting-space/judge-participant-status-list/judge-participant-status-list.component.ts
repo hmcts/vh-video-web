@@ -15,6 +15,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingRole } from '../models/hearing-role-model';
 import { WRParticipantStatusListDirective } from '../waiting-room-shared/wr-participant-list-shared.component';
+import { FocusService } from 'src/app/services/focus.service';
 
 @Component({
     selector: 'app-judge-participant-status-list',
@@ -39,9 +40,10 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         protected logger: Logger,
         protected videoWebService: VideoWebService,
         protected route: ActivatedRoute,
-        protected translateService: TranslateService
+        protected translateService: TranslateService,
+        protected focusService: FocusService
     ) {
-        super(consultationService, eventService, videoWebService, logger, translateService);
+        super(consultationService, eventService, videoWebService, logger, translateService, focusService);
     }
 
     ngOnInit() {
@@ -91,6 +93,7 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
     changeJudgeNameShow() {
         this.showChangeJudgeDisplayName = true;
         this.newJudgeDisplayName = this.judge.display_name;
+        this.focusService.storeFocus();
     }
 
     canChangeStaffMemberName(id: string) {
@@ -98,6 +101,7 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
     }
 
     changeStaffMemberNameShow(id: string) {
+        this.focusService.storeFocus();
         this.showChangeStaffMemberDisplayName = true;
         this.newStaffMemberDisplayName = this.staffMembers.find(p => p.id === id).display_name;
     }
@@ -119,6 +123,7 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         this.judge.display_name = this.removeSpecialCharacters(this.judge.display_name);
         this.showChangeJudgeDisplayName = false;
         await this.updateJudgeDisplayName();
+        this.focusService.restoreFocus();
     }
 
     async saveStaffMemberDisplayName(id: string) {
@@ -126,14 +131,17 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         staffMember.display_name = this.newStaffMemberDisplayName;
         this.showChangeStaffMemberDisplayName = false;
         await this.updateStaffMemberDisplayName(staffMember);
+        this.focusService.restoreFocus();
     }
 
     cancelStaffMemberDisplayName() {
         this.showChangeStaffMemberDisplayName = false;
+        this.focusService.restoreFocus();
     }
 
     cancelJudgeDisplayName() {
         this.showChangeJudgeDisplayName = false;
+        this.focusService.restoreFocus();
     }
 
     private filterRepresentatives(): void {

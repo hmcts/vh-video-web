@@ -137,7 +137,7 @@
                 <td class="govuk-table__cell hearing-details-col1-width">
                     <strong><app-truncatable-text [text]="conference.case_name" [maxLimit]="40"></app-truncatable-text></strong>
                     ({{ 'case-type.' + stringToTranslateId(conference.case_type) | translate }})
-                    <br /> 
+                    <br />
                     <span>{{ 'judge-waiting-room.case-number' | translate }}</span>:
                     <strong><app-truncatable-text [text]="conference.case_number" [maxLimit]="40"></app-truncatable-text></strong>
                 </td>
@@ -302,3 +302,4 @@
                             (closedModal)="closeAllPCModals()">
     </app-consultation-leave>
 </app-modal>
+</div>

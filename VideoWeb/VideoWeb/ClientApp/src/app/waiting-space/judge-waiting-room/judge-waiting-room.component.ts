@@ -37,6 +37,7 @@ import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-ba
 import { Title } from '@angular/platform-browser';
 import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
 import { HideComponentsService } from '../services/hide-components.service';
+import { FocusService } from 'src/app/services/focus.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from 'src/app/services/launch-darkly.service';
 
 @Component({
@@ -97,6 +98,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected hearingVenueFlagsService: HearingVenueFlagsService,
         protected titleService: Title,
         protected hideComponentsService: HideComponentsService,
+        protected focusService: FocusService,
         private launchDarklyService: LaunchDarklyService
     ) {
         super(
@@ -118,7 +120,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             participantRemoteMuteStoreService,
             hearingVenueFlagsService,
             titleService,
-            hideComponentsService
+            hideComponentsService,
+            focusService
         );
         this.displayConfirmStartHearingPopup = false;
         this.hearingStartingAnnounced = true; // no need to play announcements for a judge
@@ -276,6 +279,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             conference: this.conferenceId,
             status: this.conference.status
         });
+        this.focusService.storeFocus();
         this.displayConfirmStartHearingPopup = true;
     }
 
@@ -288,6 +292,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.displayConfirmStartHearingPopup = false;
         if (actionConfirmed) {
             this.startHearing();
+        } else {
+            this.focusService.restoreFocus();
         }
     }
 
@@ -400,10 +406,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         if (this.recordingSessionSeconds > 30 && !this.continueWithNoRecording && this.showVideo && !this.audioErrorRetryToast) {
             this.logger.debug(`${this.loggerPrefixJudge} Attempting to retrieve audio stream info for ${hearingId}`);
             try {
-                const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(
-                    hearingId,
-                    this.conference.ingest_url.includes('vh-recording')
-                );
+                const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId);
                 this.logger.debug(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
                 // if recorder not found on a wowza vm and returns false OR wowzaListener participant is not present in conference
                 if ((!this.wowzaAgent || !audioStreamWorking) && !this.audioErrorRetryToast) {

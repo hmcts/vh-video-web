@@ -1,27 +1,29 @@
-<div
-  *ngFor="let participant of participants"
-  (click)="selectParticipant(participant)"
-  class="im-list"
-  [ngClass]="{
-    'im-list-top': participant.isJudge
-  }"
->
-  <div id="{{ participant.id }}-unread-messages-image" class="im-icon">
-    <app-unread-messages-participant [hearing]="hearing" [participant]="participant"></app-unread-messages-participant>
+<div id="list-pat">
+  <div
+    *ngFor="let participant of participants"
+    (click)="selectParticipant(participant)"
+    class="im-list"
+    [ngClass]="{
+      'im-list-top': participant.isJudge
+    }"
+  >
+    <div id="{{ participant.id }}-unread-messages-image" class="im-icon">
+      <app-unread-messages-participant [hearing]="hearing" [participant]="participant"></app-unread-messages-participant>
+    </div>
+    <div class="name list-item" [ngClass]="isParticipantAvailable(participant) ? 'available' : 'unavailable'">
+      {{ participant.displayName }}
+    </div>
+
+    <span *ngIf="participant.isInterpreterOrInterpretee" class="vh-interpreter-icon"><fa-icon icon="language"></fa-icon></span>
+    <ng-container *ngIf="participant.role === roles.Representative">
+      <div class="rep list-item">{{ 'admin-im-list.representing' | translate }}</div>
+      <div class="repname list-item">{{ participant.representee }}</div>
+    </ng-container>
+
+    <ng-container *ngIf="!isParticipantAvailable(participant)">
+      <div class="pStatus list-item unavailable small">{{ 'admin-im-list.unavailable' | translate }}</div>
+    </ng-container>
+
+    <div class="rowsplitter"><hr /></div>
   </div>
-  <div class="name list-item" [ngClass]="isParticipantAvailable(participant) ? 'available' : 'unavailable'">
-    {{ participant.displayName }}
-  </div>
-
-  <span *ngIf="participant.isInterpreterOrInterpretee" class="vh-interpreter-icon"><fa-icon icon="language"></fa-icon></span>
-  <ng-container *ngIf="participant.role === roles.Representative">
-    <div class="rep list-item">{{'admin-im-list.representing' | translate}}</div>
-    <div class="repname list-item">{{ participant.representee }}</div>
-  </ng-container>
-
-  <ng-container *ngIf="!isParticipantAvailable(participant)">
-    <div class="pStatus list-item unavailable small">{{'admin-im-list.unavailable' | translate}}</div>
-  </ng-container>
-
-  <div class="rowsplitter"><hr /></div>
 </div>

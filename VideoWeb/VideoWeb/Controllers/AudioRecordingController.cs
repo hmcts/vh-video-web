@@ -26,15 +26,15 @@ namespace VideoWeb.Controllers
 
         }
 
-        [HttpGet("audiostreams/{hearingId}/{wowzaSingleApp}")]
+        [HttpGet("audiostreams/{hearingId}")]
         [SwaggerOperation(OperationId = "GetAudioStreamInfo")]
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [Authorize("Host")]
-        public async Task<IActionResult> GetAudioStreamInfoAsync(Guid hearingId, bool wowzaSingleApp)
+        public async Task<IActionResult> GetAudioStreamInfoAsync(Guid hearingId)
         {
             try
             {
-                var response = await _videoApiClient.GetAudioStreamInfoAsync(hearingId, wowzaSingleApp);
+                var response = await _videoApiClient.GetAudioStreamInfoAsync(hearingId);
                 return Ok(response.IsRecording);
             }
             catch (VideoApiException e)

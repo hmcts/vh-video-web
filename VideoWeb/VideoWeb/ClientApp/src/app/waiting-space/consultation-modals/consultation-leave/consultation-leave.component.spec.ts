@@ -1,10 +1,12 @@
+import { FocusService } from 'src/app/services/focus.service';
 import { ConsultationLeaveComponent } from './consultation-leave.component';
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 
 describe('ConsultationLeaveComponent', () => {
     let component: ConsultationLeaveComponent;
+    const focusServiceSpy = jasmine.createSpyObj<FocusService>('FocusService', ['restoreFocus']);
     beforeEach(() => {
-        component = new ConsultationLeaveComponent();
+        component = new ConsultationLeaveComponent(focusServiceSpy);
     });
 
     it('should emit leave', () => {

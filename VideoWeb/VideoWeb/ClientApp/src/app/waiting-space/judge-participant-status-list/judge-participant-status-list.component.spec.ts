@@ -19,6 +19,8 @@ import { VideoWebService } from '../../services/api/video-web.service';
 import { Logger } from '../../services/logging/logger-base';
 import { HearingRole } from '../models/hearing-role-model';
 import { JudgeParticipantStatusListComponent } from './judge-participant-status-list.component';
+import { FocusService } from 'src/app/services/focus.service';
+import * as exp from 'constants';
 
 describe('JudgeParticipantStatusListComponent', () => {
     const testData = new ConferenceTestData();
@@ -31,9 +33,11 @@ describe('JudgeParticipantStatusListComponent', () => {
     let conference: ConferenceResponse;
     let activatedRoute: ActivatedRoute;
     const translateService = translateServiceSpy;
+    let focusServiceSpy: jasmine.SpyObj<FocusService>;
     let editedStaffMember;
 
     beforeAll(() => {
+        focusServiceSpy = jasmine.createSpyObj<FocusService>('FocusService', ['restoreFocus', 'storeFocus']);
         consultationService = consultationServiceSpyFactory();
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['updateParticipantDetails', 'getObfuscatedName']);
         const logged = new LoggedParticipantResponse({
@@ -59,7 +63,8 @@ describe('JudgeParticipantStatusListComponent', () => {
             logger,
             videoWebService,
             activatedRoute,
-            translateService
+            translateService,
+            focusServiceSpy
         );
         component.conference = conference;
         component.ngOnInit();
@@ -102,11 +107,13 @@ describe('JudgeParticipantStatusListComponent', () => {
         component.changeJudgeNameShow();
         expect(component.showChangeJudgeDisplayName).toBe(true);
         expect(component.newJudgeDisplayName).toBe(component.judge.display_name);
+        expect(focusServiceSpy.storeFocus).toHaveBeenCalled();
     });
 
     it('should hide input template for change judge display name', () => {
         component.cancelJudgeDisplayName();
         expect(component.showChangeJudgeDisplayName).toBe(false);
+        expect(focusServiceSpy.restoreFocus).toHaveBeenCalled();
     });
 
     it('should show input template for change staff member display name', () => {
@@ -117,6 +124,7 @@ describe('JudgeParticipantStatusListComponent', () => {
         expect(component.showChangeStaffMemberDisplayName).toBe(true);
         expect(component.canChangeStaffMemberName(editedStaffMember.id)).toBe(true);
         expect(component.newStaffMemberDisplayName).toBe(component.staffMembers.find(p => p.id === editedStaffMember.id).display_name);
+        expect(focusServiceSpy.storeFocus).toHaveBeenCalled();
     });
 
     it('should not show input template for changing staff member display name if for a different staff member', () => {
@@ -143,6 +151,7 @@ describe('JudgeParticipantStatusListComponent', () => {
     it('should hide input template for change judge display name', () => {
         component.cancelStaffMemberDisplayName();
         expect(component.showChangeStaffMemberDisplayName).toBe(false);
+        expect(focusServiceSpy.restoreFocus).toHaveBeenCalled();
     });
 
     it('should update new judge display name with user input', () => {
@@ -158,6 +167,7 @@ describe('JudgeParticipantStatusListComponent', () => {
         expect(component.judge.display_name).toBe(newName);
         expect(component.showChangeJudgeDisplayName).toBe(false);
         expect(videoWebService.updateParticipantDetails).toHaveBeenCalledTimes(1);
+        expect(focusServiceSpy.restoreFocus).toHaveBeenCalled();
     });
 
     it('should return name with alphanumeric characters', async () => {
@@ -197,6 +207,7 @@ describe('JudgeParticipantStatusListComponent', () => {
         expect(component.staffMembers.find(p => p.id === editedStaffMember.id).display_name).toBe(newName);
         expect(component.showChangeStaffMemberDisplayName).toBe(false);
         expect(videoWebService.updateParticipantDetails).toHaveBeenCalledTimes(1);
+        expect(focusServiceSpy.restoreFocus).toHaveBeenCalled();
     });
 
     it('should log error when unable to save new staff member name', async () => {
@@ -303,7 +314,8 @@ describe('JudgeParticipantStatusListComponent', () => {
             logger,
             videoWebService,
             activatedRoute,
-            translateService
+            translateService,
+            focusServiceSpy
         );
         component.conference = conference;
         component.ngOnInit();

@@ -40,10 +40,10 @@ import { ConferenceStatusChanged } from 'src/app/services/conference/models/conf
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { fakeAsync, flush } from '@angular/core/testing';
 import { ConfigService } from 'src/app/services/api/config.service';
-import { FeatureFlagService } from 'src/app/services/feature-flag.service';
 import { VideoControlService } from '../../services/conference/video-control.service';
 import { VideoControlCacheService } from '../../services/conference/video-control-cache.service';
 import { FEATURE_FLAGS, LaunchDarklyService } from '../../services/launch-darkly.service';
+import { FocusService } from 'src/app/services/focus.service';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
     const participantOneId = Guid.create().toString();
@@ -76,6 +76,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
     const logger: Logger = new MockLogger();
     const launchDarklyServiceSpy = jasmine.createSpyObj<LaunchDarklyService>(['getFlag']);
+    const focusServiceSpy = jasmine.createSpyObj<FocusService>('FocusService', ['storeFocus', 'restoreFocus']);
 
     const testData = new VideoCallTestData();
     const translateService = translateServiceSpy;
@@ -89,13 +90,10 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     let onCurrentConferenceStatusSubject: Subject<ConferenceStatusChanged>;
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
     let clientSettingsResponse: ClientSettingsResponse;
-    let featureFlagServiceSpy: jasmine.SpyObj<FeatureFlagService>;
     let videoControlServiceSpy: jasmine.SpyObj<VideoControlService>;
     let videoControlCacheSpy: jasmine.SpyObj<VideoControlCacheService>;
 
     beforeAll(() => {
-        featureFlagServiceSpy = jasmine.createSpyObj<FeatureFlagService>('FeatureFlagService', ['getFeatureFlagByName']);
-        featureFlagServiceSpy.getFeatureFlagByName.and.returnValue(of(true));
         launchDarklyServiceSpy.getFlag.withArgs(FEATURE_FLAGS.wowzaKillButton, false).and.returnValue(of(true));
     });
     beforeEach(() => {
@@ -147,9 +145,9 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             userMediaServiceSpy,
             conferenceServiceSpy,
             configServiceSpy,
-            featureFlagServiceSpy,
             videoControlCacheSpy,
-            launchDarklyServiceSpy
+            launchDarklyServiceSpy,
+            focusServiceSpy
         );
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;
@@ -227,17 +225,6 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             expect(videoCallServiceSpy.joinHearingInSession).toHaveBeenCalledWith(component.conferenceId, component.participant.id);
         }));
     });
-    describe('StaffMemberFeature', () => {
-        it('should show leave button when staff member feature is enabled', async () => {
-            // Act
-            featureFlagServiceSpy.getFeatureFlagByName.and.returnValue(of(true));
-            spyOnProperty(component, 'isHost').and.returnValue(true);
-            component.isPrivateConsultation = false;
-            // Assert
-            expect(component.canShowLeaveButton).toBeTrue();
-            expect(component.isStaffMemberFeatureEnabled).toBeTrue();
-        });
-    });
 
     it('enableDynamicEvidenceSharing returns false when dynamic evidence sharing is disabled', () => {
         configServiceSpy.getClientSettings.and.returnValue(
@@ -258,9 +245,9 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             userMediaServiceSpy,
             conferenceServiceSpy,
             configServiceSpy,
-            featureFlagServiceSpy,
             videoControlCacheSpy,
-            launchDarklyServiceSpy
+            launchDarklyServiceSpy,
+            focusServiceSpy
         );
         expect(_component.enableDynamicEvidenceSharing).toBe(false);
     });
@@ -284,9 +271,9 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             userMediaServiceSpy,
             conferenceServiceSpy,
             configServiceSpy,
-            featureFlagServiceSpy,
             videoControlCacheSpy,
-            launchDarklyServiceSpy
+            launchDarklyServiceSpy,
+            focusServiceSpy
         );
         expect(_component.enableDynamicEvidenceSharing).toBe(true);
     });

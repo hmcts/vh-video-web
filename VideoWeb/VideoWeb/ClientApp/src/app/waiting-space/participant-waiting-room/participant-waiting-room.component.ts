@@ -30,6 +30,7 @@ import { CaseTypeGroup } from '../models/case-type-group';
 import { Title } from '@angular/platform-browser';
 import { ModalTrapFocus } from '../../shared/modal/modal-trap-focus';
 import { HideComponentsService } from '../services/hide-components.service';
+import { FocusService } from 'src/app/services/focus.service';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -70,7 +71,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         protected hearingVenueFlagsService: HearingVenueFlagsService,
         protected userMediaService: UserMediaService,
         protected titleService: Title,
-        protected hideComponentsService: HideComponentsService
+        protected hideComponentsService: HideComponentsService,
+        protected focusService: FocusService
     ) {
         super(
             route,
@@ -91,7 +93,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             participantRemoteMuteStoreService,
             hearingVenueFlagsService,
             titleService,
-            hideComponentsService
+            hideComponentsService,
+            focusService
         );
     }
 

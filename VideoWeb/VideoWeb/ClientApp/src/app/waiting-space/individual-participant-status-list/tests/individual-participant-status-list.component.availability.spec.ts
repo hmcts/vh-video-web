@@ -16,6 +16,7 @@ import { eventsServiceSpy, participantStatusSubjectMock } from 'src/app/testing/
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
+import { FocusService } from 'src/app/services/focus.service';
 
 describe('IndividualParticipantStatusListComponent Participant Status and Availability', () => {
     let component: IndividualParticipantStatusListComponent;
@@ -31,8 +32,10 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
     let activatedRoute: ActivatedRoute;
     let logged: LoggedParticipantResponse;
     const translateService = translateServiceSpy;
+    let focusServiceSpy: jasmine.SpyObj<FocusService>;
 
     beforeAll(() => {
+        focusServiceSpy = jasmine.createSpyObj<FocusService>('FocusService', ['restoreFocus', 'storeFocus']);
         conference = new ConferenceTestData().getConferenceDetailFuture();
         participantsObserverPanelMember = new ConferenceTestData().getListOfParticipantsObserverAndPanelMembers();
         participantsWinger = new ConferenceTestData().getListOfParticipantsWingers();
@@ -61,7 +64,8 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
             logger,
             videoWebService,
             activatedRoute,
-            translateService
+            translateService,
+            focusServiceSpy
         );
         conference = new ConferenceTestData().getConferenceDetailFuture();
         component.conference = conference;

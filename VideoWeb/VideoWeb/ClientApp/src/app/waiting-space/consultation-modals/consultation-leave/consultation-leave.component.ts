@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, EventEmitter, Output } from '@angular/core';
 import { ModalTrapFocus } from '../../../shared/modal/modal-trap-focus';
+import { FocusService } from 'src/app/services/focus.service';
 @Component({
     selector: 'app-consultation-leave',
     templateUrl: './consultation-leave.component.html',
@@ -11,13 +12,14 @@ export class ConsultationLeaveComponent implements AfterViewInit {
 
     private readonly CONSULATION_LEAVE_MODAL = 'modal-window-confirmation';
 
-    constructor() {}
+    constructor(private focusService: FocusService) {}
 
     ngAfterViewInit(): void {
         ModalTrapFocus.trap(this.CONSULATION_LEAVE_MODAL);
     }
 
     closeModal() {
+        this.focusService.restoreFocus();
         this.closedModal.emit();
     }
 
