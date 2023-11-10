@@ -368,12 +368,12 @@ describe('UserMediaService', () => {
     });
 
     describe('getConferenceSetting', () => {
-        it('should return conference if one is present', () => {
+        it('should return conference setting if one is present', () => {
             const conferenceId = 'conferenceId';
             const startWithAudioMuted = true;
-            const conferences = [new ConferenceSetting(conferenceId, startWithAudioMuted), new ConferenceSetting('conferenceId2', false)];
+            const conferences = [new ConferenceSetting(conferenceId, startWithAudioMuted), new ConferenceSetting('conferenceId2', true)];
             localStorageServiceSpy.load.and.returnValue(conferences);
-            expect(userMediaService.getConferenceSetting(conferenceId)).toEqual(new ConferenceSetting(conferenceId, startWithAudioMuted));
+            expect(userMediaService.getConferenceSetting(conferenceId)).toEqual(conferences.find(x => x.conferenceId === conferenceId));
         });
 
         it('should return null if one does not exist', () => {
@@ -383,25 +383,29 @@ describe('UserMediaService', () => {
     });
 
     describe('updateStartWithAudioMuted', () => {
-        it('should save value to local storage when conference already exists', () => {
-            const conferenceId = 'conferenceId';
-            const conferences = [new ConferenceSetting(conferenceId, false), new ConferenceSetting('conferenceId2', false)];
-            localStorageServiceSpy.load.and.returnValue(conferences);
-            userMediaService.updateStartWithAudioMuted(conferenceId, true);
-            const expectedConferences = [
-                new ConferenceSetting(conferenceId, true, conferences[0].createdDate),
-                new ConferenceSetting('conferenceId2', false, conferences[1].createdDate)
-            ];
-            expect(localStorageServiceSpy.save).toHaveBeenCalledWith(userMediaService.CONFERENCES_KEY, expectedConferences);
-        });
-
-        it('should save value to local storage when conference does not already exist', () => {
+        it('should save to local storage when conference does not already exist', () => {
             const conferenceId = 'conferenceId';
             localStorageServiceSpy.load.and.returnValue(null);
             userMediaService.updateStartWithAudioMuted(conferenceId, true);
             expect(localStorageServiceSpy.save).toHaveBeenCalledWith(userMediaService.CONFERENCES_KEY, [
                 new ConferenceSetting(conferenceId, true)
             ]);
+        });
+
+        it('should not insert into local storage when startWithAudioMuted is false', () => {
+            const conferenceId = 'conferenceId';
+            localStorageServiceSpy.load.and.returnValue(null);
+            userMediaService.updateStartWithAudioMuted(conferenceId, false);
+            expect(localStorageServiceSpy.save).not.toHaveBeenCalled();
+        });
+
+        it('should remove existing setting when updating startWithAudioMuted from true to false', () => {
+            const conferenceIdToRemove = 'conferenceIdToRemove';
+            const conferences = [new ConferenceSetting(conferenceIdToRemove, true), new ConferenceSetting('conferenceId2', true)];
+            localStorageServiceSpy.load.and.returnValue(conferences);
+            userMediaService.updateStartWithAudioMuted(conferenceIdToRemove, false);
+            const expectedConferences = conferences.filter(x => x.conferenceId !== conferenceIdToRemove);
+            expect(localStorageServiceSpy.save).toHaveBeenCalledWith(userMediaService.CONFERENCES_KEY, expectedConferences);
         });
     });
 
@@ -418,7 +422,7 @@ describe('UserMediaService', () => {
             expect(localStorageServiceSpy.save).toHaveBeenCalledWith(userMediaService.CONFERENCES_KEY, nonExpiredConferenceSettings);
         });
 
-        it('should do nothing when no conference settings exist', () => {
+        it('should not remove when no conference settings exist', () => {
             localStorageServiceSpy.load.and.returnValue(null);
             expect(localStorageServiceSpy.save).not.toHaveBeenCalled();
         });

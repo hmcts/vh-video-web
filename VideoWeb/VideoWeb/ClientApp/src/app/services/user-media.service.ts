@@ -158,10 +158,17 @@ export class UserMediaService {
     updateStartWithAudioMuted(conferenceId: string, startWithAudioMuted: boolean) {
         const conferenceSetting = this.getConferenceSetting(conferenceId);
         if (conferenceSetting) {
-            conferenceSetting.startWithAudioMuted = startWithAudioMuted;
-            this.saveConferenceSetting(conferenceSetting);
+            if (!startWithAudioMuted) {
+                // Remove the conference setting, no longer need to store it
+                this.removeConferenceSetting(conferenceSetting);
+                return;
+            }
         } else {
-            this.saveConferenceSetting(new ConferenceSetting(conferenceId, startWithAudioMuted));
+            if (!startWithAudioMuted) {
+                // Don't insert the conference setting, preserve storage space
+                return;
+            }
+            this.insertConferenceSetting(new ConferenceSetting(conferenceId, startWithAudioMuted));
         }
     }
 
@@ -315,19 +322,30 @@ export class UserMediaService {
         this.isAudioOnlySubject.next(this.isAudioOnly);
     }
 
-    private saveConferenceSetting(conferenceSetting: ConferenceSetting) {
+    private insertConferenceSetting(conferenceSetting: ConferenceSetting) {
         let conferences: ConferenceSetting[] = this.localStorageService.load(this.CONFERENCES_KEY);
         if (!conferences) {
             conferences = [];
         }
 
-        const index = conferences.findIndex(x => x.conferenceId === conferenceSetting.conferenceId);
-        if (index >= 0) {
-            conferences[index] = conferenceSetting;
-        } else {
-            conferences.push(conferenceSetting);
+        conferences.push(conferenceSetting);
+
+        this.localStorageService.save(this.CONFERENCES_KEY, conferences);
+    }
+
+    private removeConferenceSetting(conferenceSetting: ConferenceSetting) {
+        const conferences: ConferenceSetting[] = this.localStorageService.load(this.CONFERENCES_KEY);
+        if (!conferences) {
+            return;
         }
 
+        const index = conferences.findIndex(x => x.conferenceId === conferenceSetting.conferenceId);
+        const conferenceFound = index >= 0;
+        if (!conferenceFound) {
+            return;
+        }
+
+        conferences.splice(index, 1);
         this.localStorageService.save(this.CONFERENCES_KEY, conferences);
     }
 }
