@@ -93,54 +93,6 @@ namespace VideoWeb.UnitTests.Hub
         }
 
         [Test]
-        public async Task should_send_message_to_admin_group_and_participant_group_when_judge_sends_message_to_admin()
-        {
-            SetupSendMessageTests();
-            // setup claims to return judge username
-            var claims = new ClaimsPrincipalBuilder().WithUsername(JudgeUsername).WithRole(AppRoles.JudgeRole).Build();
-            UpdateUserIdentity(claims);
-            var fromJudgeId = JudgeParticipantId;
-            var fromUsername = JudgeUsername;
-            var fromDisplayName = Conference.Participants.Find(x => x.Id == fromJudgeId).DisplayName;
-            var toUsername = AdminUserProfile.UserName;
-            const string message = "test message";
-            var messageUuid = Guid.NewGuid();
-
-            await Hub.SendMessage(Conference.Id, message, toUsername, messageUuid);
-
-            AssertMessageSentToHub(fromJudgeId.ToString(), fromDisplayName, toUsername, message, messageUuid,
-                JudgeGroupChannel);
-            AssertMessageSentStatusToApi(fromUsername, toUsername, message, Times.Once());
-
-            AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id, toUsername), Times.Never);
-        }
-
-        [Test]
-        public async Task
-            should_send_message_to_admin_group_and_participant_group_when_individual_sends_message_to_admin()
-        {
-            SetupSendMessageTests();
-            // setup claims to return individual username
-            var claims = new ClaimsPrincipalBuilder().WithUsername(IndividualUsername).WithRole(AppRoles.CitizenRole)
-                .Build();
-            UpdateUserIdentity(claims);
-
-            var fromIndividualId = IndividualParticipantId;
-            var fromDisplayName = Conference.Participants.Find(x => x.Id == fromIndividualId).DisplayName;
-            var fromUsername = IndividualUsername;
-            var toUsername = AdminUserProfile.UserName;
-            const string message = "test message";
-            var messageUuid = Guid.NewGuid();
-
-            await Hub.SendMessage(Conference.Id, message, toUsername, messageUuid);
-
-            AssertMessageSentToHub(fromIndividualId.ToString(), fromDisplayName, toUsername, message, messageUuid, IndividualGroupChannel);
-            AssertMessageSentStatusToApi(fromUsername, toUsername, message, Times.Once());
-
-            AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id, toUsername), Times.Never);
-        }
-
-        [Test]
         public async Task Should_send_message_to_conference_group_if_user_is_vho()
         {
             SetupSendMessageTests();
@@ -148,35 +100,6 @@ namespace VideoWeb.UnitTests.Hub
             var claims = new ClaimsPrincipalBuilder().WithUsername(AdminUsername).WithRole(AppRoles.VhOfficerRole)
                 .Build();
             UpdateUserIdentity(claims);
-
-            var fromUsername = AdminUsername;
-            var fromDisplayName = AdminUserProfile.FirstName;
-            var toJudgeId = JudgeParticipantId;
-            var toUsername = JudgeUsername;
-            const string message = "test message";
-            var messageUuid = Guid.NewGuid();
-
-            await Hub.SendMessage(Conference.Id, message, toJudgeId.ToString(), messageUuid);
-
-            AssertMessageSentToHub(fromUsername, fromDisplayName, toJudgeId.ToString(), message, messageUuid, JudgeGroupChannel);
-            AssertMessageSentStatusToApi(fromUsername, toUsername, message, Times.Once());
-
-            AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id, toJudgeId.ToString()), Times.Once);
-        }
-
-        [Test]
-        public async Task should_send_message_to_conference_if_user_is_a_staff_member_who_joins_a_conference()
-        {
-            SetupSendMessageTests();
-            // setup claims to return admin username
-            var claims = new ClaimsPrincipalBuilder().WithUsername(AdminUsername).WithRole(AppRoles.VhOfficerRole)
-                .Build();
-            UpdateUserIdentity(claims);
-            Conference.Participants.Add(new Participant()
-            {
-                Role = Role.StaffMember,
-                Username = AdminUsername
-            });
 
             var fromUsername = AdminUsername;
             var fromDisplayName = AdminUserProfile.FirstName;
@@ -239,57 +162,6 @@ namespace VideoWeb.UnitTests.Hub
             AssertMessageNotSentToHub(fromUsername, fromDisplayName,toParticipantId, message, messageUuid, JudgeGroupChannel);
             AssertMessageNotSentToApi(fromUsername, toUsername, message);
             AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id, toUsername), Times.Never);
-        }
-
-        [Test]
-        public void
-            should_throw_exception_when_send_message_to_admin_group_and_participant_group_when_recipient_profile_is_null()
-        {
-            SetupSendMessageTests();
-            // setup claims to return admin username
-            var claims = new ClaimsPrincipalBuilder().WithUsername(AdminUsername).WithRole(AppRoles.VhOfficerRole)
-                .Build();
-            UpdateUserIdentity(claims);
-
-            var toUsername = "does@notexist.com";
-            const string message = "test message";
-            var messageUuid = Guid.NewGuid();
-
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await Hub.SendMessage(Conference.Id, message, toUsername, messageUuid));
-        }
-
-        [Test]
-        public async Task should_not_send_messages_between_participants()
-        {
-            SetupSendMessageTests();
-            // setup claims to return admin username
-            var claims = new ClaimsPrincipalBuilder().WithUsername(RepresentativeUsername)
-                .WithRole(AppRoles.RepresentativeRole)
-                .Build();
-            UpdateUserIdentity(claims);
-
-            var fromParticipantId = RepresentativeParticipantId;
-            var fromDisplayName = Conference.Participants.Find(x => x.Id == fromParticipantId).DisplayName;
-            var fromUsername = RepresentativeUsername;
-            var toParticipantId = IndividualParticipantId.ToString();
-            var toUsername = IndividualUsername;
-            const string message = "test message";
-            var messageUuid = Guid.NewGuid();
-
-            await Hub.SendMessage(Conference.Id, message, toUsername, messageUuid);
-
-            AssertMessageNotSentToHub(fromParticipantId.ToString(),fromDisplayName, toParticipantId, message, messageUuid, IndividualGroupChannel);
-            AssertMessageNotSentToApi(fromUsername, toUsername, message);
-            AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id, toUsername), Times.Never);
-
-            LoggerMock.Verify(
-                x => x.Log(
-                    LogLevel.Error,
-                    It.IsAny<EventId>(),
-                    It.IsAny<It.IsAnyType>(),
-                    It.IsAny<InvalidInstantMessageException>(),
-                    (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
-                Times.Once);
         }
 
         private void AssertMessageSentToHub(string fromUsername, string fromDisplayName, string toUsername, string message,

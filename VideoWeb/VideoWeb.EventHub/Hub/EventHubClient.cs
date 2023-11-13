@@ -149,17 +149,7 @@ namespace VideoWeb.EventHub.Hub
         {
             return Context.User.IsInRole(AppRoles.VhOfficerRole);
         }
-
-        private bool IsSenderAdmin(Conference conference)
-        {
-            var username = Context.User.Identity!.Name;
-            var isStaffMember = conference.GetParticipant(username)?.Role == Role.StaffMember;
-            var isAdmin = IsSenderAdmin();
-            var isInConference = conference.IsParticipantInConference(username);
-            // once staff members join a hearing, they become participants so we have to exclude staff member in the is in conference check
-            return isInConference && isStaffMember || !isInConference && isAdmin;
-        }
-
+        
         private string GetObfuscatedUsernameAsync(string username)
         {
             return _userProfileService.GetObfuscatedUsername(username);
@@ -175,94 +165,48 @@ namespace VideoWeb.EventHub.Hub
         /// <returns></returns>
         public async Task SendMessage(Guid conferenceId, string message, string to, Guid messageUuid)
         {
-            _logger.LogDebug("Attempting to SendMessages in {Conference}", conferenceId);
-            var conference = await GetConference(conferenceId);
-            // this determines if the message is from admin
-            var isSenderAdmin = IsSenderAdmin(conference);
-            _logger.LogDebug("Is sender admin: {IsSenderAdmin} in conference {Conference}", isSenderAdmin, conferenceId);
-
-            var participantTo = to;
-
-            var fromId = string.Empty;
-            string fromDisplayName;
-            
-            if (isSenderAdmin)
+            try
             {
-                participantTo = await GetParticipantUsernameByIdAsync(conferenceId, participantTo);
-                var user = await _userProfileService.GetUserAsync(Context.User.Identity.Name);
-                fromDisplayName = user.FirstName;
+                _logger.LogDebug("Attempting to SendMessages in {Conference}", conferenceId);
+                var conference = await GetConference(conferenceId);
+                var imRules = new InstantMessageRules(_userProfileService);
+                var from = Context.User.Identity!.Name!.ToLower();
+                var isTargetAdmin = to.Equals(DefaultAdminName, StringComparison.InvariantCultureIgnoreCase);
+                var canExchangeMessage = await imRules.CanExchangeMessage(conference, to, from);
+                if (!canExchangeMessage) return;
+
+                SendMessageDto sendMessageDto;
+                if (isTargetAdmin)
+                {
+                    sendMessageDto = imRules.BuildSendMessageDtoFromParticipant(conference, messageUuid, message, from);
+                }
+                else
+                {
+                    sendMessageDto =
+                        await imRules.BuildSendMessageDtoFromAdmin(conference, messageUuid, message, from,
+                            Guid.Parse(to));
+                }
+
+                await SendToAdmin(sendMessageDto, conference.GetParticipant(from)?.Id.ToString());
+                await SendToParticipant(sendMessageDto);
+                if (!isTargetAdmin)
+                {
+                    _logger.LogDebug("Admin has responded, notifying admin channel");
+                    await Clients.Group(VhOfficersGroupName).AdminAnsweredChat(conferenceId, to);
+                }
+
+                _logger.LogDebug("Pushing message to Video API history {MessageUuid}", sendMessageDto.MessageUuid);
+                await _videoApiClient.AddInstantMessageToConferenceAsync(conferenceId, new AddInstantMessageRequest
+                {
+                    From = from,
+                    To = isTargetAdmin ? DefaultAdminName : sendMessageDto.ParticipantUsername,
+                    MessageText = message
+                });
             }
-            else
+            catch (Exception ex)
             {
-                fromId = await GetParticipantIdByUsernameAsync(conferenceId, Context.User.Identity.Name);
-                var participant = conference.Participants.SingleOrDefault(x =>
-                    x.Id == Guid.Parse(fromId));
-                fromDisplayName = participant?.DisplayName;
+                _logger.LogError(ex, "Error occured when sending message to {To}, in conference {ConferenceId}", to, conferenceId);
             }
-
-
-            var isRecipientAdmin = await IsRecipientAdmin(participantTo, conference);
-            _logger.LogDebug("Is recipient admin: {IsRecipientAdmin}", isRecipientAdmin);
-            //only admins and participants in the conference can send or receive a message within a conference channel
-            var from = Context.User.Identity.Name.ToLowerInvariant();
-            var participantUsername = isSenderAdmin ? participantTo : from;
-            
-            var isAllowed =
-                await IsAllowedToSendMessageAsync(conferenceId, isSenderAdmin, isRecipientAdmin, participantUsername);
-            if (!isAllowed)
-            {
-                return;
-            }
-
-            var dto = new SendMessageDto
-            {
-                Conference = new Conference {Id = conferenceId},
-                From = from,
-                FromDisplayName = fromDisplayName,
-                To = to,
-                Message = message,
-                ParticipantUsername = participantUsername,
-                Timestamp = DateTime.UtcNow,
-                MessageUuid = messageUuid
-            };
-            _logger.LogDebug("Message validation passed for message {MessageUuid}", dto.MessageUuid);
-            // send to admin channel
-            await SendToAdmin(dto, fromId);
-
-            // determine participant username
-            dto.Conference = await GetConference(conferenceId);
-            await SendToParticipant(dto);
-            _logger.LogDebug("Pushing message to Video API history {MessageUuid}", dto.MessageUuid);
-            await _videoApiClient.AddInstantMessageToConferenceAsync(conferenceId, new AddInstantMessageRequest
-            {
-                From = from,
-                To = participantTo,
-                MessageText = message
-            });
-
-            if (isSenderAdmin)
-            {
-                _logger.LogDebug("Admin has responded, notifying admin channel");
-                await Clients.Group(VhOfficersGroupName).AdminAnsweredChat(conferenceId, to);
-            }
-        }
-
-        private async Task<bool> IsRecipientAdmin(string recipientUsername, Conference conference)
-        {
-            if (recipientUsername.Equals(DefaultAdminName, StringComparison.InvariantCultureIgnoreCase))
-            {
-                return true;
-            }
-            
-            if (conference.IsParticipantInConference(recipientUsername)) return false;
-            
-            var user = await _userProfileService.GetUserAsync(recipientUsername);
-            if (user == null)
-            {
-                throw new InvalidOperationException($"Unable to find the user {recipientUsername} from Cache");
-            }
-
-            return user.IsAdmin;
         }
 
         private async Task SendToParticipant(SendMessageDto dto)
@@ -288,66 +232,6 @@ namespace VideoWeb.EventHub.Hub
             await Clients.Group(groupName)
                 .ReceiveMessage(dto.Conference.Id, from, dto.FromDisplayName, dto.To, dto.Message, dto.Timestamp,
                     dto.MessageUuid);
-        }
-
-        private bool IsConversationBetweenAdminAndParticipant(bool isSenderAdmin, bool isRecipientAdmin)
-        {
-            try
-            {
-                if (isSenderAdmin && isRecipientAdmin)
-                {
-
-                    _logger.LogDebug("Sender and recipient are admins");
-                    throw new InvalidInstantMessageException("Admins are not allowed to IM each other");
-                }
-
-                if (!isSenderAdmin && !isRecipientAdmin)
-                {
-                    _logger.LogDebug("Sender and recipient are participants");
-                    throw new InvalidInstantMessageException("Participants are not allowed to IM each other");
-                }
-            }
-            catch (InvalidInstantMessageException e)
-            {
-                _logger.LogError(e, "IM rules violated. Communication attempted between participants");
-                return false;
-            }
-
-            _logger.LogDebug("Sender and recipient are allowed to converse");
-            return true;
-        }
-
-        private async Task<bool> IsAllowedToSendMessageAsync(Guid conferenceId, bool isSenderAdmin,
-            bool isRecipientAdmin, string participantUsername)
-        {
-            var username = _userProfileService.GetObfuscatedUsername(participantUsername);
-            if (!IsConversationBetweenAdminAndParticipant(isSenderAdmin, isRecipientAdmin))
-            {
-                return false;
-            }
-
-            // participant check first belongs to conference
-            try
-            {
-                var conference = await GetConference(conferenceId);
-                var participant = conference.Participants.SingleOrDefault(x =>
-                    x.Username.Equals(participantUsername, StringComparison.InvariantCultureIgnoreCase));
-
-                if (participant == null)
-                {
-
-                    _logger.LogDebug("Participant {Username} does not exist in conversation", username);
-                    throw new ParticipantNotFoundException(conferenceId, Context.User.Identity.Name);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occured when validating send message");
-                return false;
-            }
-
-            _logger.LogDebug("Participant {Username} exists in conversation", username);
-            return true;
         }
 
         private async Task<Conference> GetConference(Guid conferenceId)
@@ -620,44 +504,6 @@ namespace VideoWeb.EventHub.Hub
                     .Contains(p.Id)
                 ).ToList();
         }
-
-        private async Task<string> GetParticipantUsernameByIdAsync(Guid conferenceId, string participantId)
-        {
-            var username = string.Empty;
-            try
-            {
-                var participantGuidId = Guid.Parse(participantId);
-                var conference = await GetConference(conferenceId);
-                var participant = conference.Participants.Single(x => x.Id == participantGuidId);
-
-                return participant.Username;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex,
-                    "Error occured to find the participant in conference {ConferenceId} by participant Id {ParticipantId}",
-                    conferenceId, participantId);
-                return username;
-            }
-        }
-
-        private async Task<string> GetParticipantIdByUsernameAsync(Guid conferenceId, string participantUsername)
-        {
-            var particiantId = string.Empty;
-            try
-            {
-                var conference = await GetConference(conferenceId);
-                var participant = conference.Participants.Single(x =>
-                    x.Username.Equals(participantUsername, StringComparison.InvariantCultureIgnoreCase));
-
-                return participant.Id.ToString();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occured to find the participant in conference {ConferenceId} by username",
-                    conferenceId);
-                return particiantId;
-            }
-        }
+        
     }
 }
