@@ -72,3 +72,13 @@
   grid-template-columns: 1fr rem(100px) auto auto;
   width: 100%;
 }
+
+.audio-icon {
+  height: 24px;
+  padding-top: 5px;
+}
+
+.audio-recording-container {
+  display: flex;
+  align-items: center;
+}
