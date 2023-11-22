@@ -698,9 +698,20 @@ describe('ParticipantsPanelComponent', () => {
     });
 
     it('should unlock all participants', () => {
+        // arrange
         component.isMuteAll = true;
+        const manuallyLockedPat = component.participants.filter(x => x.role !== Role.Judge)[1];
+        spyOn(manuallyLockedPat, 'isInHearing').and.returnValue(true);
+        manuallyLockedPat.updateParticipant(true, false, false);
+        // act
         component.unlockAll();
+        // assert
         expect(videocallService.muteAllParticipants).toHaveBeenCalledWith(false, component.conferenceId);
+        expect(videoControlServiceSpy.setRemoteMuteStatusById).toHaveBeenCalledOnceWith(
+            manuallyLockedPat.id,
+            manuallyLockedPat.pexipId,
+            false
+        );
     });
 
     it('should mute all participants', () => {
@@ -715,6 +726,7 @@ describe('ParticipantsPanelComponent', () => {
         component.toggleMuteParticipant(pat);
         expect(videoControlServiceSpy.setRemoteMuteStatusById).toHaveBeenCalledWith(pat.id, pat.pexipId, true);
     });
+
     describe('handleParticipantMediaStatusChange', () => {
         it('should call updateParticipant for a linked participant witha hearing role interpreter', () => {
             // Arrange

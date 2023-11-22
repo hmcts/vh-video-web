@@ -454,7 +454,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     muteAndLockAll() {
-        this.logger.debug(`${this.loggerPrefix} Judge is attempting to mute all`, {
+        this.logger.debug(`${this.loggerPrefix} Judge is attempting to mute and lock all`, {
             conference: this.conferenceId,
             current: this.isMuteAll,
             new: true
@@ -463,12 +463,19 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     unlockAll() {
-        this.logger.debug(`${this.loggerPrefix} Judge is attempting to unmute all`, {
+        this.logger.debug(`${this.loggerPrefix} Judge is attempting to unlock-mute all`, {
             conference: this.conferenceId,
             current: this.isMuteAll,
             new: false
         });
+        // Unlock 'mute all guest participants' setting on conference
         this.videoCallService.muteAllParticipants(false, this.conferenceId);
+        // If participants have been manually (Administratively) locked - independent of setting above - unmute them too
+        this.participants
+            .filter(x => x.isInHearing() && x.isMicRemoteMuted())
+            .forEach(p => {
+                this.videoControlService.setRemoteMuteStatusById(p.id, p.pexipId, false);
+            });
     }
 
     toggleSpotlightParticipant(participant: PanelModel) {
