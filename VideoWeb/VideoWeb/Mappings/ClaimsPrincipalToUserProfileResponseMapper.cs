@@ -14,8 +14,8 @@ public class ClaimsPrincipalToUserProfileResponseMapper : IMapTo<ClaimsPrincipal
         var response = new UserProfileResponse
         {
             Roles = DetermineRolesFromClaims(user),
-            FirstName = user.Claims.First(c => c.Type == ClaimTypes.GivenName).Value,
-            LastName = user.Claims.First(c => c.Type == ClaimTypes.Surname).Value,
+            FirstName = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value,
+            LastName = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value,
             DisplayName = user.Claims.Last(c => c.Type == ClaimTypes.Name).Value,
             Username = user.Identity.Name.ToLower().Trim(),
             Name =  user.Claims.Last(c => c.Type == ClaimTypes.Name).Value
