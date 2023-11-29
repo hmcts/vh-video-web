@@ -43,6 +43,9 @@ export abstract class HostHearingListBaseComponentDirective implements OnInit, O
     }
 
     get courtName(): string {
+        if (!this.profile.first_name || !this.profile.last_name) {
+            return this.profile.display_name;
+        }
         return this.profile ? `${this.profile.first_name}, ${this.profile.last_name}` : '';
     }
 
