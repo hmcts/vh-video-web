@@ -113,6 +113,20 @@ describe('JudgeHearingListComponent', () => {
         expect(component.courtName).toBe('');
     });
 
+    it('should use profile display name if first name is null', async () => {
+        const profile = mockProfile;
+        profile.first_name = null;
+        component.profile = profile;
+        expect(component.courtName).toBe(`${profile.display_name}`);
+    });
+
+    it('should use profile display name if last name is null', async () => {
+        const profile = mockProfile;
+        profile.last_name = null;
+        component.profile = profile;
+        expect(component.courtName).toBe(`${profile.display_name}`);
+    });
+
     it('should navigate to judge waiting room when conference is selected for user as a judge in the conference', fakeAsync(() => {
         const conference = conferences[0];
         const judge = conference.participants.find(x => x.role === Role.Judge);
