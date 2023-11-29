@@ -116,5 +116,23 @@ namespace VideoWeb.UnitTests.Hub
             var userProfile = await _userProfileService.CacheUserProfileAsync(principal);
             userProfile.Should().BeNull();
         }
+
+        [Test]
+        public async Task Should_cache_profile_when_given_name_and_surname_claims_dont_exist()
+        {
+            var username = "Judge@hmcts.net";
+            var appRole = "Judge";
+
+            var identity = new ClaimsIdentity(new List<Claim> { 
+                new(ClaimTypes.Name, username),
+                new(ClaimTypes.Role, appRole),
+                new(ClaimTypes.Email, username),
+                new(ClaimTypes.NameIdentifier, username)}, "Basic" );
+
+            var principal = new ClaimsPrincipal(identity);
+
+            var userProfile = await _userProfileService.CacheUserProfileAsync(principal);
+            userProfile.Should().BeNull();
+        }
     }
 }

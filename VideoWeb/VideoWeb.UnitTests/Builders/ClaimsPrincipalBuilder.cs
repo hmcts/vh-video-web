@@ -8,16 +8,24 @@ namespace VideoWeb.UnitTests.Builders
         public static string Username = "john@hmcts.net";
 
         private readonly List<Claim> _claims;
-        public ClaimsPrincipalBuilder()
+        public ClaimsPrincipalBuilder(bool includeGivenName = true, bool includeSurname = true)
         {
             _claims = new List<Claim>
             { 
-                new Claim("preferred_username", Username),
-                new Claim(ClaimTypes.NameIdentifier, "userId"),
-                new Claim(ClaimTypes.GivenName, "John"),
-                new Claim(ClaimTypes.Surname, "Doe"),
-                new Claim(ClaimTypes.Name, "John Doe")
+                new("preferred_username", Username),
+                new(ClaimTypes.NameIdentifier, "userId"),
+                new(ClaimTypes.Name, "John Doe")
             };
+
+            if (includeGivenName)
+            {
+                _claims.Add(new Claim(ClaimTypes.GivenName, "John"));
+            }
+
+            if (includeSurname)
+            {
+                _claims.Add(new Claim(ClaimTypes.Surname, "Doe"));
+            }
         }
 
         public ClaimsPrincipalBuilder WithRole(params string[] roles)
