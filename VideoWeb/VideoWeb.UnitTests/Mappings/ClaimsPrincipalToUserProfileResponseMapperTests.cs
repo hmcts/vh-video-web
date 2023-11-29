@@ -78,5 +78,18 @@ namespace VideoWeb.UnitTests.Mappings
             response.Roles.Should().Contain(Role.VideoHearingsOfficer);
             response.Roles.Should().Contain(Role.StaffMember);
         }
+
+        [Test]
+        public void Should_map_ejud_claims()
+        {
+            const string displayName = "John Doe";
+            var username = ClaimsPrincipalBuilder.Username;
+            var user = new EjudClaimsPrincipalBuilder()
+                .WithClaim("name", displayName)
+                .WithUsername(username)
+                .WithRole(AppRoles.JudgeRole).Build();
+            var response = _sut.Map(user);
+            response.Roles.Should().Contain(Role.Judge);
+        }
     }
 }

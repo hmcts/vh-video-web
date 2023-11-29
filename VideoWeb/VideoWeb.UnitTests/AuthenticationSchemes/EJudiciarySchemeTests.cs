@@ -130,7 +130,7 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
         public async Task ShouldAddClaimsOnTokenValidation()
         {
             // Arrange
-            var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
+            var claimsPrincipal = new EjudClaimsPrincipalBuilder().Build();
             var httpContext = new DefaultHttpContext
             {
                 User = claimsPrincipal,
