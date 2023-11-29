@@ -44,8 +44,8 @@ namespace VideoWeb.Common
             var usernameClean = user.Identity.Name.ToLower().Trim();
             var userProfile = await _userProfileCache.GetOrAddAsync(usernameClean, new UserProfile
             {
-                FirstName = user.FindFirst(ClaimTypes.GivenName).Value,
-                LastName = user.FindFirst(ClaimTypes.Surname).Value,
+                FirstName = user.FindFirst(ClaimTypes.GivenName)?.Value,
+                LastName = user.FindFirst(ClaimTypes.Surname)?.Value,
                 Email = usernameClean,
                 UserName = usernameClean,
                 Roles = DetermineRolesFromClaims(user),
