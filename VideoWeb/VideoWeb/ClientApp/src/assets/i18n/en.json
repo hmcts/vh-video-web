@@ -839,7 +839,10 @@
     "special-educational-needs": "Special Educational Needs",
     "care-standards": "Care Standards",
     "damages": "Damages",
-    "crime-crown-court": "Crime Crown Court"
+    "crime-crown-court": "Crime Crown Court",
+    "family-private-law": "Family Private Law",
+    "food-safety": "Food Safety",
+    "specified-money-claims": "Specified Money Claims"
   },
   "case-type-group": {
     "state": "State",
