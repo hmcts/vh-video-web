@@ -1251,7 +1251,10 @@
     "special-educational-needs": "Anghenion Addysgol Arbennig",
     "care-standards": "Safonau Gofal",
     "damages": "Iawndal",
-    "crime-crown-court": "Llys y Goron - Troseddol"
+    "crime-crown-court": "Llys y Goron - Troseddol",
+    "family-private-law": "Cyfraith Deulu Breifat",
+    "food-safety": "Diogelwch Bwyd",
+    "specified-money-claims": "Hawliadau Swm Penodedig"
   },
   "case-role": {
     "state": "Y Wladwriaeth",
