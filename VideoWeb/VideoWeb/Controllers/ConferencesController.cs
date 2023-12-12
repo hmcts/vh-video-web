@@ -204,7 +204,9 @@ namespace VideoWeb.Controllers
             {
 
                 var hearingsForToday = await _bookingApiClient.GetHearingsForTodayByVenueAsync(query.HearingVenueNames);
-                var request = new GetConferencesByHearingIdsRequest { HearingRefIds = hearingsForToday.Select(e => e.Id).ToArray() };
+                var request = new GetConferencesByHearingIdsRequest { HearingRefIds = hearingsForToday
+                    .Where(x => x.Participants.Exists(p => p.HearingRoleName == "Judge")) 
+                    .Select(e => e.Id).ToArray()};
                 var conferences = await _videoApiClient.GetConferencesForAdminByHearingRefIdAsync(request);
                 var allocatedHearings =
                     await _bookingApiClient.GetAllocationsForHearingsAsync(conferences.Select(e => e.HearingRefId));

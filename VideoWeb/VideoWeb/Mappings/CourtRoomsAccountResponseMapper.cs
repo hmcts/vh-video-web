@@ -11,7 +11,8 @@ namespace VideoWeb.Mappings
         {
 
             var accountList = userResponses
-                .Select(x => x.Participants.FindAll(s => s.HearingRole == "Judge").First())
+                .Select(x => x.Participants.FindAll(s => s.HearingRole == "Judge").FirstOrDefault())
+                .Where(judge => judge != null)
                 .Select(s => new { firstName = s.FirstName, lastName = s.LastName }).Distinct()
                 .GroupBy(x => x.firstName)
                 .Select(s => new CourtRoomsAccountResponse(s.Key, s.Select(g => g.lastName).OrderBy(o => o).ToList()))

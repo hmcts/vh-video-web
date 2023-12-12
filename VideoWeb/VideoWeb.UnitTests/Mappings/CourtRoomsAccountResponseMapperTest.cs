@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using System.Collections.Generic;
+using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.UnitTests.Builders;
 
@@ -28,6 +29,18 @@ namespace VideoWeb.UnitTests.Mappings
 
             result[1].LastNames[0].Should().Be("LastName4");
 
+        }
+        
+        [Test]
+        public void Should_map_user_response_to_court_rooms_account_but_exclude_hearings_without_judge()
+        {
+            var conferences = ConferenceForVhOfficerResponseBuilder.BuildData();
+            conferences.ForEach(e => e.Participants.RemoveAll(x => x.HearingRole == "Judge") );
+            conferences[0].Participants.Add(new ParticipantForUserResponse{HearingRole = "Judge", FirstName = "JudgeFName", LastName = "JudgeLName"});
+            var result = _sut.Map(conferences);
+
+            result.Should().NotBeNull();
+            result.Count.Should().Be(1);
         }
     }
 }
