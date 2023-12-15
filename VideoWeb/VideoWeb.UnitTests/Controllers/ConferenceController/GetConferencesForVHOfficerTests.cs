@@ -37,14 +37,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         [SetUp]
         public void Setup()
         {
-            var listOfHearings = Builder<HearingDetailsResponse>.CreateListOfSize(3).Build().ToList();
-            //Include one judge
-            listOfHearings[0].Participants = new List<ParticipantResponse> { new() {HearingRoleName = "Judge"} };
-                    
             _mocker = AutoMock.GetLoose();
             _mocker.Mock<IBookingsApiClient>()
                 .Setup(x => x.GetHearingsForTodayByVenueAsync(It.IsAny<IEnumerable<string>>()))
-                .ReturnsAsync(new List<HearingDetailsResponse>{});
+                .ReturnsAsync(new List<HearingDetailsResponse>{Mock.Of<HearingDetailsResponse>()});
 
             var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.VhOfficerRole).Build();
             _controller = SetupControllerWithClaims(claimsPrincipal);
