@@ -72,7 +72,9 @@ namespace VideoWeb.Controllers
                 var conferenceForHostResponseMapper = _mapperFactory.Get<ConfirmedHearingsTodayResponse, List<HostConference>, ConferenceForHostResponse>();
                 var username = User.Identity!.Name;
                 var hearings = await _bookingApiClient.GetConfirmedHearingsByUsernameForTodayAsync(username);
-                var conferencesForHost = await _videoApiClient.GetConferencesTodayForHostAsync(username);
+                var conferencesForHost = await _videoApiClient
+                    .GetConferencesForHostByHearingRefIdAsync(
+                        new GetConferencesByHearingIdsRequest { HearingRefIds = hearings.Select(x => x.Id).ToArray() });
                 var response = hearings
                     .Select(h => conferenceForHostResponseMapper.Map(h, conferencesForHost.ToList()))
                     .ToList();
@@ -153,8 +155,9 @@ namespace VideoWeb.Controllers
                 else
                 {
                     var hearings = await _bookingApiClient.GetConfirmedHearingsByUsernameForTodayAsync(username);
-                    var conferencesForIndividual =
-                        await _videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username);
+                    var request = new GetConferencesByHearingIdsRequest { HearingRefIds = hearings.Select(x => x.Id).ToArray() };
+                    var conferencesForIndividual = await _videoApiClient.GetConferencesForIndividualByHearingRefIdAsync(request);
+
                     var conferenceForIndividualResponseMapper = _mapperFactory
                         .Get<ConfirmedHearingsTodayResponse, List<IndividualConference>, ConferenceForIndividualResponse>();
                     var response = hearings
