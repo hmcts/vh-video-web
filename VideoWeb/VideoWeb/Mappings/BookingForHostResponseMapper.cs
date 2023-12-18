@@ -20,23 +20,20 @@ public class BookingForHostResponseMapper : IMapTo<ConfirmedHearingsTodayRespons
     public Contract.Responses.ConferenceForHostResponse Map(ConfirmedHearingsTodayResponse booking, List<ConferenceForHostResponse> conferences)
     {
         var conference = conferences.Find(x => x.HearingId == booking.Id);
-        var dto = new Contract.Responses.ConferenceForHostResponse
-        {
-            Id = conference.Id,
-
-            CaseName = booking.CaseName,
-            CaseNumber = booking.CaseNumber,
-            CaseType = booking.CaseTypeName,
-            ScheduledDuration = booking.ScheduledDuration,
-            ScheduledDateTime = booking.ScheduledDateTime,
-            NumberOfEndpoints = booking.Endpoints.Count,
-            HearingVenueIsScottish = booking.IsHearingVenueScottish,
-            Status = Enum.Parse<ConferenceStatus>(conference.Status.ToString()),
-            ClosedDateTime = conference.ClosedDateTime,
-            Participants =
-                conference.Participants.Select(_participantForHostResponseMapper.Map)
-                    .ToList() // need to use participant list from video api to include QL users
-        };
+        var dto = new Contract.Responses.ConferenceForHostResponse();
+        dto.Id = conference.Id;
+        dto.CaseName = booking.CaseName;
+        dto.CaseNumber = booking.CaseNumber;
+        dto.CaseType = booking.CaseTypeName;
+        dto.ScheduledDuration = booking.ScheduledDuration;
+        dto.ScheduledDateTime = booking.ScheduledDateTime;
+        dto.NumberOfEndpoints = booking.Endpoints.Count;
+        dto.HearingVenueIsScottish = booking.IsHearingVenueScottish;
+        dto.Status = Enum.Parse<ConferenceStatus>(conference.Status.ToString());
+        dto.ClosedDateTime = conference.ClosedDateTime;
+        dto.Participants =
+            conference.Participants.Select(_participantForHostResponseMapper.Map)
+                .ToList(); // need to use participant list from video api to include QL users
         return dto;
     }
 }
