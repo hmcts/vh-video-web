@@ -258,15 +258,26 @@ namespace VideoWeb.Controllers
                         () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
                     if (conference != null)
                     {
-                        var participant = conference.Participants
-                            .Single(x =>
-                                x.Username.Equals(profile.Username, StringComparison.CurrentCultureIgnoreCase));
+                        
+                        var participantFromCache = conference.Participants
+                            .SingleOrDefault(x => x.Username.Equals(profile.Username, StringComparison.CurrentCultureIgnoreCase));
 
+                        if (participantFromCache == null)
+                        {
+                            var updatedConference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
+                            var updatedConferenceToCacheModel = ConferenceCacheMapper.MapConferenceToCacheModel(updatedConference);
+                            participantFromCache = updatedConferenceToCacheModel.Participants
+                                .Single(x =>
+                                    x.Username.Equals(profile.Username, StringComparison.CurrentCultureIgnoreCase));
+                            
+                            await _conferenceCache.UpdateConferenceAsync(updatedConferenceToCacheModel);
+                        }
+                        
                         response = new LoggedParticipantResponse
                         {
-                            ParticipantId = participant.Id,
-                            DisplayName = participant.DisplayName,
-                            Role = participant.Role
+                            ParticipantId = participantFromCache.Id,
+                            DisplayName = participantFromCache.DisplayName,
+                            Role = participantFromCache.Role
                         };
                     }
                 }
