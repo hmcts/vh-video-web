@@ -80,18 +80,11 @@ namespace VideoWeb.Controllers
             }
             catch (BookingsApiException e)
             {
-                if (e.StatusCode == (int)HttpStatusCode.NotFound)
-                {
-                    _logger.LogWarning("No hearings found for user");
-                    return Ok(new List<ConferenceForHostResponse>());
-                }
-
-                return StatusCode(e.StatusCode, e.Response);
+                return HandleBookingsApiExceptionForHost(e);
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, "Unable to get conferences for user");
-                return StatusCode(e.StatusCode, e.Response);
+                return HandleVideoApiExceptionForHost(e);
             }
         }
 
@@ -121,18 +114,11 @@ namespace VideoWeb.Controllers
             }
             catch (BookingsApiException e)
             {
-                if (e.StatusCode == (int)HttpStatusCode.NotFound)
-                {
-                    _logger.LogWarning("No hearings found for staff member");
-                    return Ok(new List<ConferenceForHostResponse>());
-                }
-            
-                return StatusCode(e.StatusCode, e.Response);
+                return HandleBookingsApiExceptionForHost(e);
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, "Unable to get conferences for staff member");
-                return StatusCode(e.StatusCode, e.Response);
+                return HandleVideoApiExceptionForHost(e);
             }
         }
 
@@ -398,6 +384,23 @@ namespace VideoWeb.Controllers
             await _conferenceCache.AddConferenceAsync(conference);
 
             return Ok(response);
+        }
+
+        private ActionResult HandleBookingsApiExceptionForHost(BookingsApiException e)
+        {
+            if (e.StatusCode == (int)HttpStatusCode.NotFound)
+            {
+                _logger.LogWarning("No hearings found for user");
+                return Ok(new List<ConferenceForHostResponse>());
+            }
+
+            return StatusCode(e.StatusCode, e.Response);
+        }
+
+        private ActionResult HandleVideoApiExceptionForHost(VideoApiException e)
+        {
+            _logger.LogError(e, "Unable to get conferences for user");
+            return StatusCode(e.StatusCode, e.Response);
         }
     }
 }
