@@ -61,6 +61,23 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var typedResult = (ObjectResult) result.Result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
         }
+        
+        [Test]
+        public async Task Should_forward_error_when_bookings_api_returns_error()
+        {
+            var apiException = new BookingsApiException<ProblemDetails>("Internal Server Error",
+                (int)HttpStatusCode.InternalServerError,
+                "Stacktrace goes here", null, default, null);
+            
+            _mocker.Mock<IBookingsApiClient>()
+                .Setup(x => x.GetHearingsForTodayByVenueAsync(It.IsAny<List<string>>()))
+                .ThrowsAsync(apiException);
+
+            var result = await _controller.GetConferencesForVhOfficerAsync(new VhoConferenceFilterQuery());
+
+            var typedResult = (ObjectResult)result.Result;
+            typedResult.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
+        }
 
 
         [Test]
@@ -350,6 +367,27 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
             conferencesForUser.Count.Should().Be(1);
             conferencesForUser[0].HearingRefId.Should().Be(unallocatedHearing.HearingId);
+        }
+        
+        [Test]
+        public async Task Should_return_ok_with_no_conferences()
+        {
+            var conferences = new List<ConferenceForAdminResponse>();
+            var bookingException = new BookingsApiException("User does not have any hearings", (int)HttpStatusCode.NotFound, "Error", null, null);
+            _mocker.Mock<IVideoApiClient>()
+                .Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
+                .ReturnsAsync(conferences);
+            _mocker.Mock<IBookingsApiClient>()
+                .Setup(x => x.GetHearingsForTodayByVenueAsync(It.IsAny<List<string>>()))
+                .ThrowsAsync(bookingException);
+
+            var result = await _controller.GetConferencesForVhOfficerAsync(new VhoConferenceFilterQuery());
+
+            var typedResult = (OkObjectResult)result.Result;
+            typedResult.Should().NotBeNull();
+
+            var conferencesForUser = (List<ConferenceForVhOfficerResponse>)typedResult.Value;
+            conferencesForUser.Should().BeEmpty();
         }
 
         private ConferencesController SetupControllerWithClaims(ClaimsPrincipal claimsPrincipal)

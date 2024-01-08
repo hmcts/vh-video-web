@@ -86,7 +86,7 @@ namespace VideoWeb.Controllers
                     return Ok(new List<ConferenceForHostResponse>());
                 }
 
-                throw;
+                return StatusCode(e.StatusCode, e.Response);
             }
             catch (VideoApiException e)
             {
@@ -118,6 +118,16 @@ namespace VideoWeb.Controllers
                     .Select(conferenceForHostResponseMapper.Map)
                     .ToList();
                 return Ok(response);
+            }
+            catch (BookingsApiException e)
+            {
+                if (e.StatusCode == (int)HttpStatusCode.NotFound)
+                {
+                    _logger.LogWarning("No hearings found for staff member");
+                    return Ok(new List<ConferenceForHostResponse>());
+                }
+            
+                return StatusCode(e.StatusCode, e.Response);
             }
             catch (VideoApiException e)
             {
@@ -172,7 +182,7 @@ namespace VideoWeb.Controllers
                     return Ok(new List<ConferenceForIndividualResponse>());
                 }
 
-                throw;
+                return StatusCode(e.StatusCode, e.Response);
             }
             catch (VideoApiException e)
             {
@@ -221,6 +231,16 @@ namespace VideoWeb.Controllers
                 // display conferences in order of scheduled date time and then by case name. if a conference if closed then it should be at the bottom of the list. if a conference is closed at the same time then order by case name
                 responses.Sort(new SortConferenceForVhoOfficerHelper());
                 return Ok(responses);
+            }
+            catch (BookingsApiException e)
+            {
+                if (e.StatusCode == (int)HttpStatusCode.NotFound)
+                {
+                    _logger.LogWarning("No hearings found for vh officer");
+                    return Ok(new List<ConferenceForVhOfficerResponse>());
+                }
+            
+                return StatusCode(e.StatusCode, e.Response);
             }
             catch (VideoApiException e)
             {
