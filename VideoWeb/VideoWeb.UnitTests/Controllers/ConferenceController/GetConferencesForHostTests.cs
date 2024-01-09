@@ -171,7 +171,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         }
 
         [Test]
-        public async Task Should_return_exception()
+        public async Task Should_forward_error_when_video_api_returns_error()
         {
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
                 (int) HttpStatusCode.InternalServerError,
@@ -183,6 +183,23 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var result = await _controller.GetConferencesForHostAsync();
             var typedResult = result.Value;
             typedResult.Should().BeNull();
+        }
+        
+        [Test]
+        public async Task Should_forward_error_when_bookings_api_returns_error()
+        {
+            var apiException = new BookingsApiException<ProblemDetails>("Internal Server Error",
+                (int)HttpStatusCode.InternalServerError,
+                "Stacktrace goes here", null, default, null);
+            
+            _mocker.Mock<IBookingsApiClient>()
+                .Setup(x => x.GetConfirmedHearingsByUsernameForTodayAsync(It.IsAny<string>()))
+                .ThrowsAsync(apiException);
+
+            var result = await _controller.GetConferencesForHostAsync();
+
+            var typedResult = (ObjectResult)result.Result;
+            typedResult.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
         }
     }
 }
