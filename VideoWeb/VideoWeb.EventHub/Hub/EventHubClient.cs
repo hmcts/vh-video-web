@@ -211,16 +211,16 @@ namespace VideoWeb.EventHub.Hub
 
         private async Task SendToParticipant(SendMessageDto dto)
         {
-            var participant = dto.Conference.Participants.Single(x =>
-                x.Username.Equals(dto.ParticipantUsername, StringComparison.InvariantCultureIgnoreCase));
+            //var participant = dto.Conference.Participants.Single(x =>
+            //    x.Username.Equals(dto.ParticipantUsername, StringComparison.InvariantCultureIgnoreCase));
 
-            var username = _userProfileService.GetObfuscatedUsername(participant.Username);
+            var username = _userProfileService.GetObfuscatedUsername(dto.ParticipantUsername);
             _logger.LogDebug("Sending message {MessageUuid} to group {Username}", dto.MessageUuid, username);
 
-            var from = participant.Id.ToString() == dto.To ? dto.From : participant.Id.ToString();
+            //var from = participant.Id.ToString() == dto.To ? dto.From : participant.Id.ToString();
 
-            await Clients.Group(participant.Username.ToLowerInvariant())
-                .ReceiveMessage(dto.Conference.Id, from, dto.FromDisplayName, dto.To, dto.Message, dto.Timestamp,
+            await Clients.Group(dto.ParticipantUsername.ToLowerInvariant())
+                .ReceiveMessage(dto.Conference.Id, dto.From, dto.FromDisplayName, dto.To, dto.Message, dto.Timestamp,
                     dto.MessageUuid);
         }
 
