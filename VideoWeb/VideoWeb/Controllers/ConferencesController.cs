@@ -80,18 +80,11 @@ namespace VideoWeb.Controllers
             }
             catch (BookingsApiException e)
             {
-                if (e.StatusCode == (int)HttpStatusCode.NotFound)
-                {
-                    _logger.LogWarning("No hearings found for user");
-                    return Ok(new List<ConferenceForHostResponse>());
-                }
-
-                throw;
+                return HandleBookingsApiExceptionForGetHearings<ConferenceForHostResponse>(e);
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, "Unable to get conferences for user");
-                return StatusCode(e.StatusCode, e.Response);
+                return HandleVideoApiExceptionForGetConferences(e);
             }
         }
 
@@ -119,10 +112,13 @@ namespace VideoWeb.Controllers
                     .ToList();
                 return Ok(response);
             }
+            catch (BookingsApiException e)
+            {
+                return HandleBookingsApiExceptionForGetHearings<ConferenceForHostResponse>(e);
+            }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, "Unable to get conferences for staff member");
-                return StatusCode(e.StatusCode, e.Response);
+                return HandleVideoApiExceptionForGetConferences(e);
             }
         }
 
@@ -166,18 +162,11 @@ namespace VideoWeb.Controllers
             }
             catch (BookingsApiException e)
             {
-                if (e.StatusCode == (int)HttpStatusCode.NotFound)
-                {
-                    _logger.LogWarning("No hearings found for user");
-                    return Ok(new List<ConferenceForIndividualResponse>());
-                }
-
-                throw;
+                return HandleBookingsApiExceptionForGetHearings<ConferenceForIndividualResponse>(e);
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, "Unable to get conferences for user");
-                return StatusCode(e.StatusCode, e.Response);
+                return HandleVideoApiExceptionForGetConferences(e);
             }
         }
 
@@ -222,10 +211,13 @@ namespace VideoWeb.Controllers
                 responses.Sort(new SortConferenceForVhoOfficerHelper());
                 return Ok(responses);
             }
+            catch (BookingsApiException e)
+            {
+                return HandleBookingsApiExceptionForGetHearings<ConferenceForVhOfficerResponse>(e);
+            }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, "Unable to get conferences for vh officer");
-                return StatusCode(e.StatusCode, e.Response);
+                return HandleVideoApiExceptionForGetConferences(e);
             }
         }
 
@@ -376,6 +368,23 @@ namespace VideoWeb.Controllers
             await _conferenceCache.AddConferenceAsync(conference);
 
             return Ok(response);
+        }
+
+        private ActionResult HandleBookingsApiExceptionForGetHearings<T>(BookingsApiException e) where T : class
+        {
+            if (e.StatusCode == (int)HttpStatusCode.NotFound)
+            {
+                _logger.LogWarning("No hearings found for user");
+                return Ok(new List<T>());
+            }
+
+            return StatusCode(e.StatusCode, e.Response);
+        }
+
+        private ActionResult HandleVideoApiExceptionForGetConferences(VideoApiException e)
+        {
+            _logger.LogError(e, "Unable to get conferences for user");
+            return StatusCode(e.StatusCode, e.Response);
         }
     }
 }

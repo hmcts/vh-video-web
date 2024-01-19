@@ -60,6 +60,23 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var typedResult = (ObjectResult)result.Result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
         }
+        
+        [Test]
+        public async Task Should_forward_error_when_bookings_api_returns_error()
+        {
+            var apiException = new BookingsApiException<ProblemDetails>("Internal Server Error",
+                (int)HttpStatusCode.InternalServerError,
+                "Stacktrace goes here", null, default, null);
+            
+            _mocker.Mock<IBookingsApiClient>()
+                .Setup(x => x.GetHearingsForTodayByVenueAsync(It.IsAny<List<string>>()))
+                .ThrowsAsync(apiException);
+
+            var result = await _controller.GetConferencesForStaffMemberAsync(new List<string>());
+
+            var typedResult = (ObjectResult)result.Result;
+            typedResult.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
+        }
 
         [Test]
         public async Task Should_return_ok_with_list_of_conferences()
@@ -103,9 +120,13 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         {
             var hearingVenueNamesQuery = new List<string>();
             var conferences = new List<Conference>();
+            var bookingException = new BookingsApiException("User does not have any hearings", (int)HttpStatusCode.NotFound, "Error", null, null);
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferencesForHostByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>()))
                 .ReturnsAsync(conferences);
+            _mocker.Mock<IBookingsApiClient>()
+                .Setup(x => x.GetHearingsForTodayByVenueAsync(It.IsAny<List<string>>()))
+                .ThrowsAsync(bookingException);
 
             var result = await _controller.GetConferencesForStaffMemberAsync(hearingVenueNamesQuery);
 
