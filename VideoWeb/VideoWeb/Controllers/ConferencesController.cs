@@ -340,7 +340,8 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e.Response);
             }
 
-            if (userProfile.Roles.Contains(Role.VideoHearingsOfficer) || !conference.IsWaitingRoomOpen)
+            if (!userProfile.Roles.Contains(Role.StaffMember) &&
+                            (conference.Participants.TrueForAll(x => x.Username.ToLower().Trim() != userProfile.Username) || !conference.IsWaitingRoomOpen))
             {
                 _logger.LogInformation(
                     $"Unauthorised to view conference details {conferenceId} because user is neither a VH " +
