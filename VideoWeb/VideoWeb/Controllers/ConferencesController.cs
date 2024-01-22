@@ -72,7 +72,7 @@ namespace VideoWeb.Controllers
                 var conferenceForHostResponseMapper = _mapperFactory.Get<ConfirmedHearingsTodayResponse, List<HostConference>, ConferenceForHostResponse>();
                 var username = User.Identity!.Name;
                 var hearings = await _bookingApiClient.GetConfirmedHearingsByUsernameForTodayAsync(username);
-                var conferencesForHost = await _videoApiClient.GetConferencesTodayForHostAsync(username);
+                var conferencesForHost = await _videoApiClient.GetConferencesForHostByHearingRefIdAsync(new GetConferencesByHearingIdsRequest { HearingRefIds = hearings.Select(x => x.Id).ToArray() });
                 var response = hearings
                     .Select(h => conferenceForHostResponseMapper.Map(h, conferencesForHost.ToList()))
                     .ToList();
@@ -150,7 +150,7 @@ namespace VideoWeb.Controllers
                 {
                     var hearings = await _bookingApiClient.GetConfirmedHearingsByUsernameForTodayAsync(username);
                     var conferencesForIndividual =
-                        await _videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username);
+                        await _videoApiClient.GetConferencesForIndividualByHearingRefIdAsync(new GetConferencesByHearingIdsRequest { HearingRefIds = hearings.Select(x => x.Id).ToArray() });
                     var conferenceForIndividualResponseMapper = _mapperFactory
                         .Get<ConfirmedHearingsTodayResponse, List<IndividualConference>, ConferenceForIndividualResponse>();
                     var response = hearings
@@ -322,7 +322,6 @@ namespace VideoWeb.Controllers
                 return BadRequest(ModelState);
             }
 
-            var username = userProfile.Username.ToLower().Trim();
             ConferenceDetailsResponse conference;
             try
             {
@@ -342,7 +341,7 @@ namespace VideoWeb.Controllers
             }
 
             if (!userProfile.Roles.Contains(Role.StaffMember) &&
-                (conference.Participants.TrueForAll(x => x.Username.ToLower().Trim() != username) || !conference.IsWaitingRoomOpen))
+                            (conference.Participants.TrueForAll(x => x.Username.ToLower().Trim() != userProfile.Username) || !conference.IsWaitingRoomOpen))
             {
                 _logger.LogInformation(
                     $"Unauthorised to view conference details {conferenceId} because user is neither a VH " +

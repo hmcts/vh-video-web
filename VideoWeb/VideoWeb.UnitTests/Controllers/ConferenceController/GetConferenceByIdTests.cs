@@ -99,6 +99,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         public async Task Should_return_unauthorised_when_getting_conference_user_does_not_belong_to()
         {
             var conference = CreateValidConferenceResponse(null);
+
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
