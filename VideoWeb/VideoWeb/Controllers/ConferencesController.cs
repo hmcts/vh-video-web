@@ -73,9 +73,15 @@ namespace VideoWeb.Controllers
                 var username = User.Identity!.Name;
                 var hearings = await _bookingApiClient.GetConfirmedHearingsByUsernameForTodayAsync(username);
                 var conferencesForHost = await _videoApiClient.GetConferencesTodayForHostAsync(username);
+                
+                if(conferencesForHost.Count != hearings.Count)
+                    _logger.LogError($"Number of hearings ({hearings.Count}) does not match number of conferences ({conferencesForHost.Count}) for user {username}");
+                
                 var response = hearings
+                    .Where(h => conferencesForHost.Any(c => c.HearingId == h.Id))
                     .Select(h => conferenceForHostResponseMapper.Map(h, conferencesForHost.ToList()))
                     .ToList();
+                
                 return Ok(response);
             }
             catch (BookingsApiException e)
