@@ -6,10 +6,10 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Client;
 using BookingsApi.Contract.V1.Responses;
+using Microsoft.Extensions.Logging;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
@@ -26,6 +26,7 @@ namespace VideoWeb.UnitTests.Controllers
         private AutoMock _mocker;
         private UserDataController _sut;
         private VhoConferenceFilterQuery _query;
+        private Mock<ILogger<UserDataController>> _logger;
 
         [SetUp]
         public void Setup()
@@ -38,6 +39,7 @@ namespace VideoWeb.UnitTests.Controllers
             
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceForAdminResponse, AllocatedCsoResponse, ConferenceForVhOfficerResponse>()).Returns(_mocker.Create<ConferenceForVhOfficerResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<IEnumerable<ConferenceForVhOfficerResponse>, List<CourtRoomsAccountResponse>>()).Returns(_mocker.Create<CourtRoomsAccountResponseMapper>());
+            _logger = _mocker.Mock<ILogger<UserDataController>>().SetupAllProperties();
             _sut = _mocker.Create<UserDataController>();
             _query = new VhoConferenceFilterQuery { HearingVenueNames = new List<string> { "Venue Name 01", "Venue Name 02" } };
             _mocker.Mock<IBookingsApiClient>()
@@ -74,7 +76,30 @@ namespace VideoWeb.UnitTests.Controllers
             courtRoomsAccounts[0].LastNames[2].Should().Be("LastName3");
 
             courtRoomsAccounts[1].LastNames[0].Should().Be("LastName4");
+        }
+        
+        [Test]
+        public async Task Should_return_list_of_court_rooms_accounts_where_hearings_match_conferences_and_log_errors_where_appropriate()
+        {
+            var conferences = ConferenceForAdminResponseBuilder.BuildData();
+            _mocker.Mock<IBookingsApiClient>()
+                .Setup(x => x.GetAllocationsForHearingsByVenueAsync(It.IsAny<IEnumerable<string>>()))
+                .ReturnsAsync(conferences.Select(c => new AllocatedCsoResponse{HearingId = c.HearingRefId}).ToList());
+            //remove one conference to test logging
+            conferences.RemoveAt(0);
+            //remove a judge from a conference to test logging
+            conferences[0].Participants.RemoveAt(0);
+            
+            _mocker.Mock<IVideoApiClient>().Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>())).ReturnsAsync(conferences);
 
+            var result = await _sut.GetCourtRoomsAccounts(_query);
+
+            var typedResult = (OkObjectResult)result.Result;
+            typedResult.Should().NotBeNull();
+            var courtRoomsAccounts = typedResult.Value as List<CourtRoomsAccountResponse>;
+            courtRoomsAccounts.Should().NotBeNull();
+            courtRoomsAccounts.Count.Should().Be(2);
+            _logger.Verify(x => x.Log(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), It.IsAny<Func<It.IsAnyType, Exception, string>>()), Times.Exactly(2));
         }
         
         [TestCase(false)]
