@@ -10,7 +10,7 @@ namespace VideoWeb.Mappings
         public List<CourtRoomsAccountResponse> Map(IEnumerable<ConferenceForVhOfficerResponse> userResponses)
         {
 
-            var judgeAccounts = userResponses
+           var judgeAccounts = userResponses
                 .Select(x => x.Participants.FindAll(s => s.HearingRole == "Judge").FirstOrDefault()); 
             
            var groupedJudges = judgeAccounts
