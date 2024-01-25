@@ -75,7 +75,8 @@ namespace VideoWeb.Controllers
                 var conferencesForHost = await _videoApiClient.GetConferencesTodayForHostAsync(username);
                 
                 if(conferencesForHost.Count != hearings.Count)
-                    _logger.LogError($"Number of hearings ({hearings.Count}) does not match number of conferences ({conferencesForHost.Count}) for user {username}");
+                    _logger.LogError(@"Number of hearings ({HearingCount}) does not match number of conferences ({ConferenceCount}) for user {Username}", 
+                        hearings.Count, conferencesForHost.Count, username);
                 
                 var response = hearings
                     .Where(h => conferencesForHost.Any(c => c.HearingId == h.Id))
