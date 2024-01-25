@@ -50,7 +50,10 @@ namespace VideoWeb.UnitTests.Controllers
         public async Task Should_return_list_of_court_rooms_accounts_with_status_ok()
         {
             var conferences = ConferenceForAdminResponseBuilder.BuildData();
-
+            _mocker.Mock<IBookingsApiClient>()
+                .Setup(x => x.GetAllocationsForHearingsByVenueAsync(It.IsAny<IEnumerable<string>>()))
+                .ReturnsAsync(conferences.Select(c => new AllocatedCsoResponse{HearingId = c.HearingRefId}).ToList());
+            
             _mocker.Mock<IVideoApiClient>().Setup(x => x.GetConferencesForAdminByHearingRefIdAsync(It.IsAny<GetConferencesByHearingIdsRequest>())).ReturnsAsync(conferences);
 
             var result = await _sut.GetCourtRoomsAccounts(_query);
