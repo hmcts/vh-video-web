@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using BookingsApi.Client;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
@@ -31,13 +32,15 @@ namespace VideoWeb.Controllers
         private readonly IDistributedJOHConsultationRoomLockCache _distributedJohConsultationRoomLockCache;
         private readonly ILogger<ConsultationsController> _logger;
         private readonly IMapperFactory _mapperFactory;
+        private readonly IBookingsApiClient _bookingApi;
 
         public ConsultationsController(
             IVideoApiClient videoApiClient,
             IConferenceCache conferenceCache,
             ILogger<ConsultationsController> logger,
             IMapperFactory mapperFactory, IConsultationNotifier consultationNotifier, IConsultationInvitationTracker consultationInvitationTracker,
-            IDistributedJOHConsultationRoomLockCache distributedJohConsultationRoomLockCache)
+            IDistributedJOHConsultationRoomLockCache distributedJohConsultationRoomLockCache,
+            IBookingsApiClient bookingApi)
         {
             _videoApiClient = videoApiClient;
             _conferenceCache = conferenceCache;
@@ -46,6 +49,7 @@ namespace VideoWeb.Controllers
             _consultationNotifier = consultationNotifier;
             _consultationInvitationTracker = consultationInvitationTracker;
             _distributedJohConsultationRoomLockCache = distributedJohConsultationRoomLockCache;
+            _bookingApi = bookingApi;
         }
 
         [HttpPost("leave")]
@@ -174,7 +178,8 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var username = User.Identity.Name?.ToLower().Trim();
+                var username = User.Identity?.Name?.ToLower().Trim();
+                var user = await _bookingApi.GetPersonByUsernameAsync(username);
                 var conference = await GetConference(request.ConferenceId);
 
                 var requestedBy = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedBy && x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
@@ -198,7 +203,10 @@ namespace VideoWeb.Controllers
 
                     var validSelectedEndpoints = request.InviteEndpoints
                         .Select(endpointId => conference.Endpoints.SingleOrDefault(p => p.Id == endpointId))
-                        .Where(x => x != null && x.DefenceAdvocateUsername.Equals(username, StringComparison.OrdinalIgnoreCase));
+                        .Where(x => x != null && 
+                                    (x.DefenceAdvocateUsername.Equals(username, StringComparison.OrdinalIgnoreCase) || 
+                                    x.DefenceAdvocateUsername.Equals(user?.ContactEmail, StringComparison.OrdinalIgnoreCase)));
+                    
                     foreach (var endpoint in validSelectedEndpoints)
                     {
                         try
@@ -223,9 +231,7 @@ namespace VideoWeb.Controllers
                 else
                 {
                     if (!CanStartJohConsultation())
-                    {
                         return Forbid();
-                    }
 
                     var johConsultationRoomLockedStatusKeyName = $"johConsultationRoomLockedStatus_{conference.Id}";
                     var isLocked =
@@ -311,13 +317,15 @@ namespace VideoWeb.Controllers
         {
             var conference = await GetConference(request.ConferenceId);
 
-            var username = User.Identity.Name?.ToLower().Trim();
+            var username = User.Identity?.Name?.ToLower().Trim();
+            var user = await _bookingApi.GetPersonByUsernameAsync(username);
+            
             var requestedBy = conference.Participants.SingleOrDefault(x =>
-                x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
+                x.Username.Trim().Equals(user?.Username, StringComparison.CurrentCultureIgnoreCase) ||
+                x.Username.Trim().Equals(user?.ContactEmail, StringComparison.CurrentCultureIgnoreCase));
+            
             if (requestedBy == null)
-            {
                 return Unauthorized("You must be a VHO or a member of the conference");
-            }
 
             try
             {

@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
+using BookingsApi.Client;
+using BookingsApi.Contract.V1.Responses;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -31,7 +33,6 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
             _mocker = AutoMock.GetLoose();
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Endpoint, AllowedEndpointResponse>()).Returns(_mocker.Create<AllowedEndpointResponseMapper>());
             _testConference = ConsultationHelper.BuildConferenceForTest();
-
             _mocker.Mock<IConferenceCache>().Setup(cache =>
                     cache.GetOrAddConferenceAsync(_testConference.Id,
                         It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
@@ -41,7 +42,7 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
             _controller = _mocker.Create<EndpointsController>();
         }
 
-        private void SetupLoginAs(string username)
+        private void SetupLoginAs(string username, string contactEmail = null)
         {
             var cp = new ClaimsPrincipalBuilder().WithRole(AppRoles.RepresentativeRole)
                 .WithUsername(username).Build();
@@ -52,8 +53,10 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
                     User = cp
                 }
             };
-
             _controller.ControllerContext = context;
+            _mocker.Mock<IBookingsApiClient>()
+                .Setup(x => x.GetPersonByUsernameAsync(username))
+                .ReturnsAsync(new PersonResponse { Username = username, ContactEmail = contactEmail ?? username });
         }
 
         [Test]
@@ -73,6 +76,29 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
             allowedEndpoints.Should().BeEmpty();
         }
 
+        [Test]
+        public async Task Should_return_ok_when_contact_email_matches()
+        {
+            var conferenceId = _testConference.Id;
+            SetupLoginAs("randomUserThatDoesntMatch", "rep1@hmcts.net");
+
+            // Act
+            var result = await _controller.GetEndpointsLinkedToUser(conferenceId);
+
+            // Assert
+            var typedResult = (OkObjectResult)result;
+            typedResult.Should().NotBeNull();
+            var allowedEndpoints = typedResult.Value as List<AllowedEndpointResponse>;
+            allowedEndpoints.Count.Should().Be(1);
+        }
+        
+        [Test]
+        public async Task Should_throw_not_authorized_if_user_claims_null()
+        {
+            Func<Task> action = async () => await _controller.GetEndpointsLinkedToUser(Guid.NewGuid());
+            await action.Should().ThrowAsync<UnauthorizedAccessException>();
+        }
+        
         [TestCase("rep1@hmcts.net", 1)]
         [TestCase("john@hmcts.net", 2)]
         [TestCase("NoEndpointUser@hmcts.net", 0)]
